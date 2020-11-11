@@ -1,9 +1,12 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <ul class="ai">
-      <li v-for="ai in ongoing" :key="ai.pk">{{ ai.title }}</li>
-    </ul>
+    <h1>{{ meeting.title || 'Laddar möte' }}</h1>
+    <template v-for="group in aiGroups" :key="group.name">
+      <h2>{{ group.title }}</h2>
+      <ul class="ai">
+        <li v-for="ai in aiType(group.name)" :key="ai.pk">{{ ai.title }}</li>
+      </ul>
+    </template>
     <h3>Installed CLI Plugins</h3>
     <ul>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
@@ -11,14 +14,6 @@
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
     </ul>
     <h3>Ecosystem</h3>
     <ul>
@@ -34,6 +29,25 @@
 <script>
 import { mapMutations, mapState } from 'vuex'
 
+const AI_GROUPS = [
+  {
+    name: 'ongoing',
+    title: 'Pågående'
+  },
+  {
+    name: 'upcoming',
+    title: 'Kommande'
+  },
+  {
+    name: 'closed',
+    title: 'Avslutade'
+  },
+  {
+    name: 'private',
+    title: 'Privata'
+  }
+]
+
 export default {
   name: 'HelloWorld',
   props: {
@@ -41,26 +55,31 @@ export default {
   },
   data () {
     return {
-      id: 1 // Get from $route, probably
+      id: 1, // Get from $route, probably
+      aiGroups: AI_GROUPS
     }
   },
   methods: {
     aiType (type) {
       return this.agenda.filter(ai => ai.state === type)
     },
-    ...mapMutations(['updateAgenda'])
+    ...mapMutations(['updateAgenda', 'updateMeeting'])
   },
   computed: {
-    ongoing () {
-      return this.aiType('ongoing')
-    },
-    ...mapState(['agenda'])
+    ...mapState(['agenda', 'meeting'])
   },
   created () {
     this.$subscribeObject(`agenda/${this.id}`, this.updateAgenda)
-    this.$api.get(`meetings/${this.id}`)
-      .then(data => {
+    this.$api.get(`meetings/${this.id}/`)
+      .then(({ data }) => {
         console.log('loaded meeting', data)
+        this.updateMeeting(data)
+        this.updateAgenda({
+          t: 'agenda.changed',
+          p: {
+            items: data.agenda_items
+          }
+        })
       })
       .catch(err => {
         console.log('failed loading meeting', err)

@@ -37,13 +37,12 @@ export default {
     socket.addEventListener('message', event => {
       const data = JSON.parse(event.data)
       const baseType = data.t.split('.')[0]
-      console.log('socket message', data)
       // Do callback for every registered subscription matching first part
       Object.keys(subscriptions)
         .filter(k => k.split('/')[0] === baseType)
         .forEach(k => {
           subscriptions[k].forEach(fn => {
-            fn(data.p) // Send only payload for now
+            fn(data)
           })
         })
     })
