@@ -4,4 +4,7 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 
-createApp(App).use(store).use(router).mount('#app')
+import Api from './plugins/Api'
+import Socket from './plugins/Socket'
+
+createApp(App).use(store).use(router).use(Api).use(Socket).mount('#app')
