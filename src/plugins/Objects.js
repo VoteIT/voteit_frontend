@@ -126,7 +126,6 @@ export default {
       get (uri) {
         return new ProgressPromise((resolve, reject, progress) => {
           const steps = 15
-          const delay = () => Math.random() * 300
           let count = 0
           function tick () {
             count += 1
@@ -135,13 +134,13 @@ export default {
               if (Math.random() < 1 / steps / 2) {
                 reject('nay')
               } else {
-                setTimeout(tick, delay())
+                setTimeout(tick, Math.random() * 300)
               }
             } else {
               resolve('yay')
             }
           }
-          setTimeout(tick, delay())
+          tick()
         })
       },
       post (uri) {

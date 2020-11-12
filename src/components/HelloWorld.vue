@@ -1,12 +1,12 @@
 <template>
   <div class="hello">
-    <h1>{{ meeting.title || 'Laddar möte' }}</h1>
+    <h1>{{ meeting.title || 'Ladda möte' }}</h1>
     <button v-if="buttonProgress === null" @click="getWithProgress">Get with progress</button>
     <div v-else class="progress" :class="{ failed: failed }"><div class="bar" :style="{ width: `${buttonProgress * 100}%` }">
       {{ failed ? 'Failed' : '' }}
       {{ buttonProgress === 1 ? 'Done' : '' }}
     </div></div>
-    <div id="agenda">
+    <div id="agenda" v-if="meeting.title">
       <template v-for="group in aiGroups" :key="group.name">
         <h2>{{ group.title }}</h2>
         <ul class="ai">
@@ -74,46 +74,40 @@ export default {
     },
     getWithProgress () {
       this.buttonProgress = 0
-      this.failed = false
       this.$objects.get()
         .onProgress(value => { this.buttonProgress = value })
-        .then(() => {
-          setTimeout(() => { this.buttonProgress = null }, 2000)
-        })
+        .then(this.loadMeeting)
         .catch(() => {
           this.failed = true
-          setTimeout(() => { this.buttonProgress = null }, 2000)
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.buttonProgress = null
+            this.failed = false
+          }, 2000)
+        })
+    },
+    loadMeeting () {
+      this.$objects.subscribe(`agenda/${this.id}`, this.updateAgenda)
+      this.$api.get(`meetings/${this.id}/`)
+        .then(({ data }) => {
+          console.log('loaded meeting', data)
+          this.updateMeeting(data)
+          this.updateAgenda({
+            t: 'agenda.changed',
+            p: {
+              items: data.agenda_items
+            }
+          })
+        })
+        .catch(err => {
+          alert('failed loading meeting', err)
         })
     },
     ...mapMutations(['updateAgenda', 'updateMeeting'])
   },
   computed: {
     ...mapState(['agenda', 'meeting'])
-  },
-  created () {
-    this.$objects.subscribe(`agenda/${this.id}`, this.updateAgenda)
-    this.$api.get(`meetings/${this.id}/`)
-      .then(({ data }) => {
-        console.log('loaded meeting', data)
-        this.updateMeeting(data)
-        this.updateAgenda({
-          t: 'agenda.changed',
-          p: {
-            items: data.agenda_items
-          }
-        })
-      })
-      .catch(err => {
-        console.log('failed loading meeting', err)
-      })
-    this.$objects.get('agenda/1')
-      .onProgress(console.log)
-      .then((response) => {
-        console.log(response)
-      })
-      .catch(err => {
-        console.log(err)
-      })
   },
   beforeUnmount () {
     this.$objects.leave(`agenda/${this.id}`, this.updateAgenda)
