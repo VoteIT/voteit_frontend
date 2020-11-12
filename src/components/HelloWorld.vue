@@ -1,12 +1,19 @@
 <template>
   <div class="hello">
     <h1>{{ meeting.title || 'Laddar möte' }}</h1>
-    <template v-for="group in aiGroups" :key="group.name">
-      <h2>{{ group.title }}</h2>
-      <ul class="ai">
-        <li v-for="ai in aiType(group.name)" :key="ai.pk">{{ ai.title }}</li>
-      </ul>
-    </template>
+    <button v-if="buttonProgress === null" @click="getWithProgress">Get with progress</button>
+    <div v-else class="progress" :class="{ failed: failed }"><div class="bar" :style="{ width: `${buttonProgress * 100}%` }">
+      {{ failed ? 'Failed' : '' }}
+      {{ buttonProgress === 1 ? 'Done' : '' }}
+    </div></div>
+    <div id="agenda">
+      <template v-for="group in aiGroups" :key="group.name">
+        <h2>{{ group.title }}</h2>
+        <ul class="ai">
+          <li v-for="ai in aiType(group.name)" :key="ai.pk">{{ ai.title }}</li>
+        </ul>
+      </template>
+    </div>
     <h3>Installed CLI Plugins</h3>
     <ul>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
@@ -56,12 +63,27 @@ export default {
   data () {
     return {
       id: 1, // Get from $route, probably
-      aiGroups: AI_GROUPS
+      aiGroups: AI_GROUPS,
+      buttonProgress: null,
+      failed: false
     }
   },
   methods: {
     aiType (type) {
       return this.agenda.filter(ai => ai.state === type)
+    },
+    getWithProgress () {
+      this.buttonProgress = 0
+      this.failed = false
+      this.$objects.get()
+        .onProgress(value => { this.buttonProgress = value })
+        .then(() => {
+          setTimeout(() => { this.buttonProgress = null }, 2000)
+        })
+        .catch(() => {
+          this.failed = true
+          setTimeout(() => { this.buttonProgress = null }, 2000)
+        })
     },
     ...mapMutations(['updateAgenda', 'updateMeeting'])
   },
@@ -69,7 +91,7 @@ export default {
     ...mapState(['agenda', 'meeting'])
   },
   created () {
-    this.$subscribeObject(`agenda/${this.id}`, this.updateAgenda)
+    this.$objects.subscribe(`agenda/${this.id}`, this.updateAgenda)
     this.$api.get(`meetings/${this.id}/`)
       .then(({ data }) => {
         console.log('loaded meeting', data)
@@ -84,9 +106,17 @@ export default {
       .catch(err => {
         console.log('failed loading meeting', err)
       })
+    this.$objects.get('agenda/1')
+      .onProgress(console.log)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   },
   beforeUnmount () {
-    this.$leaveObject(`agenda/${this.id}`, this.updateAgenda)
+    this.$objects.leave(`agenda/${this.id}`, this.updateAgenda)
   }
 }
 </script>
@@ -95,13 +125,35 @@ export default {
 <style scoped lang="sass">
 h3
   margin: 40px 0 0
-ul:not(.ai)
+ul
   list-style-type: none
   padding: 0
 
   li
     display: inline-block
     margin: 0 10px
+
+#agenda
+  text-align: left
+  ul
+    li
+      display: list-item
+      margin: 0
+      padding: .3rem
+
+.progress
+  width: 400px
+  border: 1px solid #444
+  border-radius: 3px
+  margin: 0 auto
+  .bar
+    background-color: #4b4
+    height: 1.2em
+    color: #fff
+    transition: background-color .2s, width .1s
+  &.failed .bar
+    background-color: #b44
+
 a
   color: #42b983
 </style>

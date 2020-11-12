@@ -5,6 +5,6 @@ import router from './router'
 import store from './store'
 
 import Api from './plugins/Api'
-import Socket from './plugins/Socket'
+import Objects from './plugins/Objects'
 
-createApp(App).use(store).use(router).use(Api).use(Socket).mount('#app')
+createApp(App).use(store).use(router).use(Api).use(Objects).mount('#app')
