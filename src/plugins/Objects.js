@@ -101,29 +101,36 @@ export default {
       const baseType = data.t.split('.')[0]
       // Do callback for every registered subscription matching first part
       Object.keys(subscriptions)
-        .filter(k => k.split('/')[0] === baseType)
-        .forEach(k => {
-          subscriptions[k].forEach(fn => {
-            fn(data)
-          })
+        .filter(uri => uri.split('/')[0] === baseType)
+        .forEach(uri => {
+          for (const callback of subscriptions[uri]) {
+            callback(data)
+          }
         })
     })
 
     const objects = {
-      subscribe (uri, fn) {
-        subscriptions[uri] = subscriptions[uri] || []
-        if (!subscriptions[uri].length) {
+      subscribe (uri, callback) {
+        if (typeof callback !== 'function') {
+          throw new TypeError(`Expected a \`Function\`, got \`${typeof callback}\``)
+        }
+
+        if (subscriptions[uri] === undefined) {
+          subscriptions[uri] = new Set()
+        }
+        if (!subscriptions[uri].size) {
           send('object.subscribe', uri)
         }
-        subscriptions[uri].push(fn)
+        subscriptions[uri].add(callback)
       },
-      leave (uri, fn) {
-        subscriptions[uri] = subscriptions[uri].filter(v => v !== fn)
-        if (!subscriptions[uri].length) {
+      leave (uri, callback) {
+        subscriptions[uri].delete(callback)
+        if (!subscriptions[uri].size) {
           send('object.leave', uri)
         }
       },
       get (uri) {
+        // Testing code
         return new ProgressPromise((resolve, reject, progress) => {
           const steps = 15
           let count = 0
@@ -144,12 +151,15 @@ export default {
         })
       },
       post (uri) {
+        // TODO
         return new ProgressPromise()
       },
       put (uri) {
+        // TODO
         return new ProgressPromise()
       },
       delete (uri) {
+        // TODO
         return new ProgressPromise()
       }
     }
