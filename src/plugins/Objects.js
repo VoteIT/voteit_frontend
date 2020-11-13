@@ -85,7 +85,6 @@ export default {
     }
 
     socket.addEventListener('open', () => {
-      console.log('socket open')
       Object.keys(subscriptions).forEach(uri => {
         send('object.subscribe', uri)
       })

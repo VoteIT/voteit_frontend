@@ -1,26 +1,12 @@
 <template>
-  <div class="hello">
+  <div id="meeting">
+    <router-link to="/">Hem</router-link>
     <h1>{{ meeting.title || 'Ladda möte' }}</h1>
     <button v-if="buttonProgress === null" @click="getWithProgress">Get with progress</button>
     <div v-else class="progress" :class="{ failed: failed, done: buttonProgress === 1 }"><div class="bar" :style="{ width: `${buttonProgress * 100}%` }">
       {{ progressText }}
     </div></div>
-    <div id="agenda" v-if="meeting.title">
-      <template v-for="group in aiGroups" :key="group.name">
-        <h2>{{ group.title }}</h2>
-        <ul class="ai">
-          <li v-for="ai in aiType(group.name)" :key="ai.pk">{{ ai.title }}</li>
-        </ul>
-      </template>
-    </div>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa" target="_blank" rel="noopener">pwa</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
+    <agenda v-if="agenda.length" />
     <h3>Ecosystem</h3>
     <ul>
       <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
@@ -34,46 +20,27 @@
 
 <script>
 import { mapMutations, mapState } from 'vuex'
-
-const AI_GROUPS = [
-  {
-    name: 'ongoing',
-    title: 'Pågående'
-  },
-  {
-    name: 'upcoming',
-    title: 'Kommande'
-  },
-  {
-    name: 'closed',
-    title: 'Avslutade'
-  },
-  {
-    name: 'private',
-    title: 'Privata'
-  }
-]
+import Agenda from '@/components/meeting/Agenda'
 
 export default {
-  name: 'HelloWorld',
+  name: 'Meeting',
   props: {
     msg: String
   },
+  components: {
+    Agenda
+  },
   data () {
     return {
-      id: 1, // Get from $route, probably
-      aiGroups: AI_GROUPS,
+      id: Number(this.$route.params.id),
       buttonProgress: null,
       failed: false
     }
   },
   methods: {
-    aiType (type) {
-      return this.agenda.filter(ai => ai.state === type)
-    },
     getWithProgress () {
       this.buttonProgress = 0
-      this.$objects.get()
+      this.$objects.get('agenda/1') // Does nothing, but slowly
         .onProgress(value => { this.buttonProgress = value })
         .then(this.loadMeeting)
         .catch(() => {
@@ -87,10 +54,8 @@ export default {
         })
     },
     loadMeeting () {
-      this.$objects.subscribe(`agenda/${this.id}`, this.updateAgenda)
       this.$api.get(`meetings/${this.id}/`)
         .then(({ data }) => {
-          console.log('loaded meeting', data)
           this.updateMeeting(data)
           this.updateAgenda({
             t: 'agenda.changed',
@@ -103,7 +68,7 @@ export default {
           alert('failed loading meeting', err)
         })
     },
-    ...mapMutations(['updateAgenda', 'updateMeeting'])
+    ...mapMutations('meetings', ['updateAgenda', 'updateMeeting'])
   },
   computed: {
     progressText () {
@@ -115,10 +80,16 @@ export default {
       }
       return `${Math.floor(this.buttonProgress * 100)} %`
     },
-    ...mapState(['agenda', 'meeting'])
+    meeting () {
+      return this.meetings[this.id] || {}
+    },
+    agenda () {
+      return this.agendas[this.id] || []
+    },
+    ...mapState('meetings', ['meetings', 'agendas'])
   },
-  beforeUnmount () {
-    this.$objects.leave(`agenda/${this.id}`, this.updateAgenda)
+  created () {
+    this.loadMeeting()
   }
 }
 </script>
@@ -134,14 +105,6 @@ ul
   li
     display: inline-block
     margin: 0 10px
-
-#agenda
-  text-align: left
-  ul
-    li
-      display: list-item
-      margin: 0
-      padding: .3rem
 
 .progress
   width: 400px
