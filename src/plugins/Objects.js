@@ -132,7 +132,7 @@ export default {
       get (uri) {
         // Testing code
         return new ProgressPromise((resolve, reject, progress) => {
-          const steps = 15
+          const steps = 35
           let count = 0
           function tick () {
             count += 1
@@ -141,7 +141,7 @@ export default {
               if (Math.random() < 1 / steps / 2) {
                 reject('nay')
               } else {
-                setTimeout(tick, Math.random() * 300)
+                setTimeout(tick, Math.random() * 100)
               }
             } else {
               resolve('yay')

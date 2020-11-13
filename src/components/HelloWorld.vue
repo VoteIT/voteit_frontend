@@ -2,9 +2,8 @@
   <div class="hello">
     <h1>{{ meeting.title || 'Ladda möte' }}</h1>
     <button v-if="buttonProgress === null" @click="getWithProgress">Get with progress</button>
-    <div v-else class="progress" :class="{ failed: failed }"><div class="bar" :style="{ width: `${buttonProgress * 100}%` }">
-      {{ failed ? 'Failed' : '' }}
-      {{ buttonProgress === 1 ? 'Done' : '' }}
+    <div v-else class="progress" :class="{ failed: failed, done: buttonProgress === 1 }"><div class="bar" :style="{ width: `${buttonProgress * 100}%` }">
+      {{ progressText }}
     </div></div>
     <div id="agenda" v-if="meeting.title">
       <template v-for="group in aiGroups" :key="group.name">
@@ -107,6 +106,15 @@ export default {
     ...mapMutations(['updateAgenda', 'updateMeeting'])
   },
   computed: {
+    progressText () {
+      if (this.failed) {
+        return 'Failed'
+      }
+      if (this.buttonProgress === 1) {
+        return 'Done!'
+      }
+      return `${Math.floor(this.buttonProgress * 100)} %`
+    },
     ...mapState(['agenda', 'meeting'])
   },
   beforeUnmount () {
@@ -141,12 +149,18 @@ ul
   border-radius: 3px
   margin: 0 auto
   .bar
+    box-sizing: border-box
     background-color: #4b4
     height: 1.2em
     color: #fff
     transition: background-color .2s, width .1s
+    text-align: left
+    padding: .1em .4em
   &.failed .bar
     background-color: #b44
+  &.done .bar
+    background-color: #bb4
+    text-align: center
 
 a
   color: #42b983
