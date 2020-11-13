@@ -6,6 +6,8 @@
         <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
       </li>
     </ul>
+    <button @click="getSchemaTest('schema.get')">Schema get</button>
+    <button @click="getSchemaTest('fail.test')">Schema fail</button>
   </div>
 </template>
 
@@ -19,6 +21,11 @@ export default {
     ...mapGetters('meetings', ['orderedMeetings'])
   },
   methods: {
+    getSchemaTest (type) {
+      this.$objects.schema(type)
+        .then(({ p }) => console.log(p))
+        .catch(err => alert(JSON.stringify(err)))
+    },
     ...mapMutations('meetings', ['setMeetings'])
   },
   created () {

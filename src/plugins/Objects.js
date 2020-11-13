@@ -1,4 +1,5 @@
 const subscriptions = {}
+const listeners = {}
 
 function uriToPayload (uri) {
   const path = uri.split('/')
@@ -74,13 +75,28 @@ export default {
 
     function send (type, payloadOrUri) {
       if (socket.readyState === socket.OPEN) {
+        const messageId = sessionStorage.socketMessageCounter || '1'
         const payload = typeof payloadOrUri === 'object'
           ? payloadOrUri
           : uriToPayload(payloadOrUri)
         socket.send(JSON.stringify({
           t: type,
-          p: payload
+          p: payload,
+          i: messageId
         }))
+        sessionStorage.socketMessageCounter = Number(messageId) + 1
+        return new Promise((resolve, reject) => {
+          listeners[messageId] = data => {
+            if (data.i === messageId) {
+              delete listeners[messageId] // TODO Listen more than once on progress
+              if (data.t.startsWith('error')) {
+                reject(data)
+              } else {
+                resolve(data)
+              }
+            }
+          }
+        })
       }
     }
 
@@ -98,6 +114,10 @@ export default {
     socket.addEventListener('message', event => {
       const data = JSON.parse(event.data)
       const baseType = data.t.split('.')[0]
+      if (data.i && data.i in listeners) {
+        // Do callback for message id. Callbacks will have to remove themselves from listeners.
+        listeners[data.i](data)
+      }
       // Do callback for every registered subscription matching first part
       Object.keys(subscriptions)
         .filter(uri => uri.split('/')[0] === baseType)
@@ -160,6 +180,13 @@ export default {
       delete (uri) {
         // TODO
         return new ProgressPromise()
+      },
+      schema (type) {
+        return new Promise((resolve, reject) => {
+          send('schema.get', { message_type: type })
+            .then(resolve)
+            .catch(reject)
+        })
       }
     }
     app.config.globalProperties.$objects = objects
