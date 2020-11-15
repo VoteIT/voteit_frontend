@@ -3,7 +3,7 @@ import meetings from './modules/meetings'
 
 export default createStore({
   state: {
-    socketState: false
+    socketState: true
   },
   mutations: {
     setSocketState (state, value) {

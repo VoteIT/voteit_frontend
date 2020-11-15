@@ -116,7 +116,7 @@ export default class Socket {
         }
       })
     } else {
-      return Promise.reject(new Error('socket closed'))
+      return ProgressPromise.reject(new Error('socket closed'))
     }
   }
 
