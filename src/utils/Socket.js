@@ -1,6 +1,12 @@
 import { uriToPayload, ProgressPromise } from '@/utils'
 
 const DEFAULT_TIMEOT = 5000 // 5s
+const STATE = {
+  SUCCESS: 's',
+  FAILED: 'f',
+  WAITING: 'w',
+  RUNNING: 'r'
+}
 
 export default class Socket {
   constructor (token) {
@@ -73,23 +79,18 @@ export default class Socket {
             if (timeoutId) {
               clearTimeout(timeoutId)
             }
-            switch (data.t.split('.')[0]) {
-              case 'progress':
-                // If we get progress, we reset timeout watcher
-                if (data.p.curr === data.p.total) {
-                  delete this.callbacks[messageId]
-                  progress(data.p)
-                  resolve(data)
-                } else {
-                  setRejectTimeout()
-                  progress(data.p)
-                }
-                break
-              case 'error':
+            switch (data.s) {
+              case STATE.FAILED:
                 delete this.callbacks[messageId]
-                reject(new Error(data))
+                reject(new Error(data.t))
                 break
-              default:
+              case STATE.WAITING:
+              case STATE.RUNNING:
+                // If we get progress, we reset timeout watcher
+                setRejectTimeout()
+                progress(data.p)
+                break
+              default: // Should be STATE.FAILED
                 delete this.callbacks[messageId]
                 resolve(data)
                 break

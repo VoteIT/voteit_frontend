@@ -24,7 +24,7 @@ export default {
     getSchemaTest (type) {
       this.$objects.schema(type)
         .then(({ p }) => console.log(p))
-        .catch(err => alert(JSON.stringify(err)))
+        .catch(alert)
     },
     ...mapMutations('meetings', ['setMeetings'])
   },

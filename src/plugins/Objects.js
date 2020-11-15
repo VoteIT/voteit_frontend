@@ -1,4 +1,4 @@
-import { ProgressPromise, Socket } from '@/utils'
+import { Socket } from '@/utils'
 
 const socket = new Socket('token') // TODO Make this shit reusable somehow
 const subscriptions = {}
@@ -43,31 +43,25 @@ export default {
       },
 
       get (uri) {
-        // Testing code
         return socket.call(uri)
       },
 
-      post (uri) {
-        // TODO
-        return new ProgressPromise()
+      post (uri, data) {
+        return socket.call(uri, data)
       },
 
-      put (uri) {
+      put (uri, data) {
         // TODO
-        return new ProgressPromise()
+        return Promise.reject(new Error('not imlemented'))
       },
 
       delete (uri) {
         // TODO
-        return new ProgressPromise()
+        return Promise.reject(new Error('not imlemented'))
       },
 
       schema (type) {
-        return new Promise((resolve, reject) => {
-          socket.call('schema.get', { message_type: type })
-            .then(resolve)
-            .catch(reject)
-        })
+        return socket.call('schema.get', { message_type: type })
       }
     }
   }

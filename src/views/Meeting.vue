@@ -2,7 +2,10 @@
   <div id="meeting">
     <router-link to="/">Hem</router-link>
     <h1>{{ meeting.title || 'Ladda möte' }}</h1>
-    <button v-if="!progress" @click="countToTen">Count to 10</button>
+    <div v-if="!progress">
+      <button @click="countToTen(true)">Count to 10</button>
+      <button @click="countToTen(false)">Fail at 5</button>
+    </div>
     <div v-else class="progress" :class="{ failed: failed, done: progress.curr === progress.total }"><div class="bar" :style="{ width: `${progress.curr / progress.total * 100}%` }">
       <span>{{ progress.curr }}</span>
     </div></div>
@@ -38,11 +41,15 @@ export default {
     }
   },
   methods: {
-    countToTen () {
+    countToTen (succeed) {
       this.buttonProgress = 0
-      this.$objects.get('testing.count') // Does nothing, but slowly
+      const data = succeed ? undefined : { fail: 5 }
+      this.$objects.post('testing.count', data)
         .onProgress(value => {
           this.progress = value
+        })
+        .then(({ p }) => {
+          this.progress = p
         })
         .catch(() => {
           this.failed = true
@@ -114,7 +121,7 @@ ul
   margin: 0 auto
   .bar
     box-sizing: border-box
-    background-color: #7f7
+    background-color: #ddd
     height: 1.2em
     color: #000
     transition: background-color .2s, width .1s
@@ -123,9 +130,11 @@ ul
       padding: .1em .4em
       display: inline-block
   &.failed .bar
-    background-color: #f77
+    background-color: #b44
+    color: #fff
   &.done .bar
-    background-color: #ff7
+    background-color: #4b4
+    color: #fff
 
 a
   color: #42b983
