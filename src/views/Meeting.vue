@@ -2,9 +2,9 @@
   <div id="meeting">
     <router-link to="/">Hem</router-link>
     <h1>{{ meeting.title || 'Ladda möte' }}</h1>
-    <button v-if="buttonProgress === null" @click="getWithProgress">Get with progress</button>
-    <div v-else class="progress" :class="{ failed: failed, done: buttonProgress === 1 }"><div class="bar" :style="{ width: `${buttonProgress * 100}%` }">
-      {{ progressText }}
+    <button v-if="!progress" @click="countToTen">Count to 10</button>
+    <div v-else class="progress" :class="{ failed: failed, done: progress.curr === progress.total }"><div class="bar" :style="{ width: `${progress.curr / progress.total * 100}%` }">
+      <span>{{ progress.curr }}</span>
     </div></div>
     <agenda v-if="agenda.length" />
     <h3>Ecosystem</h3>
@@ -33,22 +33,23 @@ export default {
   data () {
     return {
       id: Number(this.$route.params.id),
-      buttonProgress: null,
+      progress: null,
       failed: false
     }
   },
   methods: {
-    getWithProgress () {
+    countToTen () {
       this.buttonProgress = 0
-      this.$objects.get('agenda/1') // Does nothing, but slowly
-        .onProgress(value => { this.buttonProgress = value })
-        .then(this.loadMeeting)
+      this.$objects.get('testing.count') // Does nothing, but slowly
+        .onProgress(value => {
+          this.progress = value
+        })
         .catch(() => {
           this.failed = true
         })
         .finally(() => {
           setTimeout(() => {
-            this.buttonProgress = null
+            this.progress = null
             this.failed = false
           }, 2000)
         })
@@ -113,17 +114,18 @@ ul
   margin: 0 auto
   .bar
     box-sizing: border-box
-    background-color: #4b4
+    background-color: #7f7
     height: 1.2em
-    color: #fff
+    color: #000
     transition: background-color .2s, width .1s
     text-align: left
-    padding: .1em .4em
+    span
+      padding: .1em .4em
+      display: inline-block
   &.failed .bar
-    background-color: #b44
+    background-color: #f77
   &.done .bar
-    background-color: #bb4
-    text-align: center
+    background-color: #ff7
 
 a
   color: #42b983
