@@ -5,9 +5,10 @@
     <div v-if="!progress">
       <button @click="countToTen(true)">Count to 10</button>
       <button @click="countToTen(false)">Fail at 5</button>
+      <button @click="countToTen(true, { timeout: 500 })">Short timeout</button>
     </div>
-    <div v-else class="progress" :class="{ failed: failed, done: progress.curr === progress.total }"><div class="bar" :style="{ width: `${progress.curr / progress.total * 100}%` }">
-      <span>{{ progress.curr }}</span>
+    <div v-else class="progress" :class="{ failed: state === false, done: state }"><div class="bar" :style="{ width: `${progress.curr / progress.total * 100}%` }">
+      <span>{{ progressText }}</span>
     </div></div>
     <agenda v-if="agenda.length" />
     <h3>Ecosystem</h3>
@@ -37,27 +38,31 @@ export default {
     return {
       id: Number(this.$route.params.id),
       progress: null,
-      failed: false
+      state: null
     }
   },
   methods: {
-    countToTen (succeed) {
-      this.buttonProgress = 0
+    countToTen (succeed, config) {
       const data = succeed ? undefined : { fail: 5 }
-      this.$objects.post('testing.count', data)
+      this.$objects.post('testing.count', data, config)
         .onProgress(value => {
           this.progress = value
         })
         .then(({ p }) => {
           this.progress = p
+          this.state = true
         })
         .catch(() => {
-          this.failed = true
+          this.state = false
+          this.progress = {
+            curr: 1,
+            total: 1
+          }
         })
         .finally(() => {
           setTimeout(() => {
             this.progress = null
-            this.failed = false
+            this.state = null
           }, 2000)
         })
     },
@@ -80,13 +85,14 @@ export default {
   },
   computed: {
     progressText () {
-      if (this.failed) {
-        return 'Failed'
+      switch (this.state) {
+        case true:
+          return 'Coming to get you!'
+        case false:
+          return 'Failed'
+        default:
+          return this.progress.curr
       }
-      if (this.buttonProgress === 1) {
-        return 'Done!'
-      }
-      return `${Math.floor(this.buttonProgress * 100)} %`
     },
     meeting () {
       return this.meetings[this.id] || {}

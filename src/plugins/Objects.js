@@ -42,20 +42,20 @@ export default {
         }
       },
 
-      get (uri) {
-        return socket.call(uri)
+      get (uri, config) {
+        return socket.call(uri, undefined, config)
       },
 
-      post (uri, data) {
-        return socket.call(uri, data)
+      post (uri, data, config) {
+        return socket.call(uri, data, config)
       },
 
-      put (uri, data) {
+      put (uri, data, config) {
         // TODO
         return Promise.reject(new Error('not imlemented'))
       },
 
-      delete (uri) {
+      delete (uri, config) {
         // TODO
         return Promise.reject(new Error('not imlemented'))
       },

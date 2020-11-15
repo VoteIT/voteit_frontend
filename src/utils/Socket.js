@@ -1,6 +1,8 @@
 import { uriToPayload, ProgressPromise } from '@/utils'
 
-const DEFAULT_TIMEOT = 5000 // 5s
+const DEFAULT_CONFIG = {
+  timeout: 5000 // 5s
+}
 const STATE = {
   SUCCESS: 's',
   FAILED: 'f',
@@ -48,9 +50,10 @@ export default class Socket {
     })
   }
 
-  call (type, payloadOrUri, timeout = DEFAULT_TIMEOT) {
+  call (type, payloadOrUri, config) {
     // Registers a response listener and returns promise that resolves or rejects depeding on subsequent
     // socket data, or times out.
+    config = Object.assign({}, DEFAULT_CONFIG, config || {})
     if (this._ws.readyState === WebSocket.OPEN) {
       const messageId = sessionStorage.socketMessageCounter || '1'
       const payload = typeof payloadOrUri === 'object'
@@ -64,12 +67,12 @@ export default class Socket {
       sessionStorage.socketMessageCounter = Number(messageId) + 1
       return new ProgressPromise((resolve, reject, progress) => {
         let timeoutId = null
-        function setRejectTimeout () {
-          if (timeout) {
+        const setRejectTimeout = () => {
+          if (config.timeout) {
             timeoutId = setTimeout(() => {
               delete this.callbacks[messageId]
               reject(new Error('response timeout'))
-            }, timeout)
+            }, config.timeout)
           }
         }
         setRejectTimeout()
