@@ -3,23 +3,22 @@ import { Socket } from '@/utils'
 const socket = new Socket('token') // TODO Make this shit reusable somehow
 const subscriptions = {}
 
-socket.addEventListener({
-  message (event) {
-    const data = JSON.parse(event.data)
-    const baseType = data.t.split('.')[0]
-    // Do callback for every registered subscription matching first part
-    Object.keys(subscriptions)
-      .filter(uri => uri.split('/')[0] === baseType)
-      .forEach(uri => {
-        for (const callback of subscriptions[uri]) {
-          callback(data)
-        }
-      })
-  }
+socket.addEventListener('message', event => {
+  const data = JSON.parse(event.data)
+  const baseType = data.t.split('.')[0]
+  // Do callback for every registered subscription matching first part
+  Object.keys(subscriptions)
+    .filter(uri => uri.split('/')[0] === baseType)
+    .forEach(uri => {
+      for (const callback of subscriptions[uri]) {
+        callback(data)
+      }
+    })
 })
 
 export default {
   install (app) {
+    app.config.globalProperties.$socket = socket
     app.config.globalProperties.$objects = {
       subscribe (uri, callback) {
         if (typeof callback !== 'function') {

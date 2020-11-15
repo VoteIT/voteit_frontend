@@ -1,26 +1,43 @@
 <template>
-  <router-view/>
+  <div>
+    <online-status/>
+    <router-view/>
+  </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import OnlineStatus from '@/components/OnlineStatus'
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+export default {
+  components: {
+    OnlineStatus
   }
 }
+</script>
+
+<style lang="sass">
+body
+  margin: 10px
+
+#app
+  font-family: Avenir, Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  text-align: center
+  color: #2c3e50
+
+#offline
+  margin: -10px -10px 10px
+  background-color: #000
+  color: #fff
+
+#nav
+  padding: 30px
+
+  a
+    font-weight: bold
+    color: #2c3e50
+
+    &.router-link-exact-active
+      color: #42b983
 </style>

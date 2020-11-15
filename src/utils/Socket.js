@@ -9,45 +9,59 @@ const STATE = {
   WAITING: 'w',
   RUNNING: 'r'
 }
+const EVENTS = ['open', 'close', 'error', 'message']
 
 export default class Socket {
   constructor (token) {
     this.token = token
     this.callbacks = {}
-    this.listeners = new Set()
+    this.listeners = {
+      open: new Set(),
+      close: new Set(),
+      error: new Set(),
+      message: new Set()
+    }
     this.connect()
   }
 
-  createEventListener (type) {
-    return event => {
-      this.listeners.forEach(listener => {
-        listener[type] && listener[type](event)
-      })
+  _createEventListener (event) {
+    return evt => {
+      for (const listener of this.listeners[event]) {
+        listener(evt)
+      }
     }
   }
 
-  addEventListener (listener) {
-    this.listeners.add(listener)
+  addEventListener (event, listener) {
+    this.listeners[event].add(listener)
   }
 
-  removeEventListener (listener) {
-    this.listeners.delete(listener)
+  removeEventListener (event, listener) {
+    this.listeners[event].delete(listener)
   }
 
-  connect (token) {
-    this._ws = new WebSocket(`ws://localhost:8000/ws/${this.token}/`)
+  connect () {
+    return new Promise((resolve, reject) => {
+      this._ws = new WebSocket(`ws://localhost:8000/ws/${this.token}/`)
 
-    this._ws.addEventListener('open', this.createEventListener('open'))
-    this._ws.addEventListener('close', this.createEventListener('close'))
-    this._ws.addEventListener('error', this.createEventListener('error'))
-    this._ws.addEventListener('message', this.createEventListener('message'))
-    this._ws.addEventListener('message', event => {
-      const data = JSON.parse(event.data)
-      if (data.i && data.i in this.callbacks) {
-        // Do callback for message id. Callbacks will have to remove themselves from listeners.
-        this.callbacks[data.i](data)
-      }
+      this._ws.addEventListener('error', reject)
+      this._ws.addEventListener('open', resolve)
+      this._ws.addEventListener('message', event => {
+        const data = JSON.parse(event.data)
+        if (data.i && data.i in this.callbacks) {
+          // Do callback for message id. Callbacks will have to remove themselves from listeners.
+          this.callbacks[data.i](data)
+        }
+      })
+
+      EVENTS.forEach(event => {
+        this._ws.addEventListener(event, this._createEventListener(event))
+      })
     })
+  }
+
+  get isOpen () {
+    return this._ws.readyState === WebSocket.OPEN
   }
 
   call (type, payloadOrUri, config) {
