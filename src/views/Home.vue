@@ -12,7 +12,7 @@
       <h2>{{ schema.title }}</h2>
       <ul>
         <li v-for="key in Object.keys(schema.properties)" :key="key">
-          {{ key }}: {{ schema.properties[key].type }}{{ schema.required.includes(key) ? '*' : '' }}
+          {{ key }}: {{ schema.properties[key].type }}{{ schema.required && schema.required.includes(key) ? '*' : '' }}
         </li>
       </ul>
     </div>
