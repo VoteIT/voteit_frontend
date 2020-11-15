@@ -6,45 +6,26 @@
         <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
       </li>
     </ul>
-    <input type="text" v-model="schemaName" />
-    <button @click="getSchemaTest">Get schema</button>
-    <div v-if="schema">
-      <h2>{{ schema.title }}</h2>
-      <ul>
-        <li v-for="key in Object.keys(schema.properties)" :key="key">
-          {{ key }}: {{ schema.properties[key].type }}{{ schema.required && schema.required.includes(key) ? '*' : '' }}
-        </li>
-      </ul>
-    </div>
+    <counter/>
+    <get-schema/>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-// @ is an alias to /src
+import Counter from '@/components/examples/Counter'
+import getSchema from '@/components/examples/GetSchema'
 
 export default {
   name: 'Home',
-  data () {
-    return {
-      schemaName: 'schema.get',
-      schema: null
-    }
+  components: {
+    Counter,
+    getSchema
   },
   computed: {
     ...mapGetters('meetings', ['orderedMeetings'])
   },
   methods: {
-    getSchemaTest () {
-      this.$objects.schema(this.schemaName)
-        .then(({ p }) => {
-          this.schema = p.message_schema
-        })
-        .catch(err => {
-          this.schema = null
-          alert(err)
-        })
-    },
     ...mapMutations('meetings', ['setMeetings'])
   },
   created () {
