@@ -18,6 +18,15 @@ socket.addEventListener('message', event => {
 
 export default {
   install (app) {
+    // Send all subscription messages on connect
+    socket.addEventListener('open', () => {
+      Object.keys(subscriptions)
+        .filter(uri => subscriptions[uri].size)
+        .forEach(uri => {
+          socket.send('object.subscribe', uri)
+        })
+    })
+
     app.config.globalProperties.$socket = socket
     app.config.globalProperties.$objects = {
       subscribe (uri, callback) {
@@ -28,7 +37,7 @@ export default {
         if (subscriptions[uri] === undefined) {
           subscriptions[uri] = new Set()
         }
-        if (!subscriptions[uri].size) {
+        if (!subscriptions[uri].size && socket.isOpen) {
           socket.send('object.subscribe', uri)
         }
         subscriptions[uri].add(callback)
@@ -36,7 +45,7 @@ export default {
 
       leave (uri, callback) {
         subscriptions[uri].delete(callback)
-        if (!subscriptions[uri].size) {
+        if (!subscriptions[uri].size && socket.isOpen) {
           socket.send('object.leave', uri)
         }
       },

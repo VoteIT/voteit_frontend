@@ -1,8 +1,8 @@
 <template>
   <div id="meeting">
     <router-link to="/">Hem</router-link>
-    <h1>{{ meeting.title || 'Ladda möte' }}</h1>
-    <agenda v-if="agenda.length" />
+    <h1>{{ meeting.title || 'Laddar möte' }}</h1>
+    <agenda />
   </div>
 </template>
 
