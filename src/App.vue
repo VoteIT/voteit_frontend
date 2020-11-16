@@ -16,6 +16,9 @@ export default {
 </script>
 
 <style lang="sass">
+*
+  box-sizing: border-box
+
 body
   margin: 10px
 
