@@ -5,10 +5,10 @@ const subscriptions = {}
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data)
-  const baseType = data.t.split('.')[0]
+  // const baseType = data.t.split('.')[0]
   // Do callback for every registered subscription matching first part
   Object.keys(subscriptions)
-    .filter(uri => uri.split('/')[0] === baseType)
+    // .filter(uri => uri.split('/')[0] === baseType)
     .forEach(uri => {
       for (const callback of subscriptions[uri]) {
         callback(data)
@@ -60,12 +60,12 @@ export default {
 
       put (uri, data, config) {
         // TODO
-        return Promise.reject(new Error('not imlemented'))
+        return Promise.reject(new Error('not implemented'))
       },
 
       delete (uri, config) {
         // TODO
-        return Promise.reject(new Error('not imlemented'))
+        return Promise.reject(new Error('not implemented'))
       },
 
       schema (type) {

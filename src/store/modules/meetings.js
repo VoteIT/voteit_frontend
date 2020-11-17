@@ -1,3 +1,15 @@
+function sortAgenda (items) {
+  items.sort((a, b) => {
+    if (a.order < b.order) {
+      return -1
+    }
+    if (a.order > b.order) {
+      return 1
+    }
+    return 0
+  })
+}
+
 export default {
   namespaced: true,
   state: {
@@ -19,45 +31,45 @@ export default {
     },
     updateMeeting (state, meeting) {
       state.meetings[meeting.pk] = meeting
+      if (meeting.agenda_items) {
+        sortAgenda(meeting.agenda_items)
+        state.agendas[meeting.pk] = meeting.agenda_items
+      }
     },
     updateAgenda (state, { t, p }) {
+      if (!t.startsWith('agenda.')) {
+        return
+      }
       const agendasChanged = new Set() // Order these
+      const item = p.item || p
+      const agenda = state.agendas[item.meeting] || []
+      const index = agenda.findIndex(ai => ai.pk === item.pk)
       switch (t) {
+        case 'agenda.added':
         case 'agenda.changed':
-          p.items.forEach(changed => {
-            agendasChanged.add(changed.meeting)
-            if (!(changed.meeting in state.agendas)) {
-              state.agendas[changed.meeting] = []
-            }
-            const agenda = state.agendas[changed.meeting]
-            const index = agenda.findIndex(ai => ai.pk === changed.pk)
-            if (index === -1) {
-              agenda.push(changed)
-            } else {
-              agenda[index] = changed
-            }
-          })
+          agendasChanged.add(item.meeting)
+          if (!(item.meeting in state.agendas)) {
+            state.agendas[item.meeting] = []
+          }
+          if (index === -1) {
+            agenda.push(item)
+          } else {
+            agenda[index] = item
+          }
           break
         case 'agenda.deleted':
-          p.items.forEach(deleted => {
-            const agenda = state.agendas[deleted.meeting] || []
-            const index = agenda.findIndex(ai => ai.pk === deleted.pk)
-            if (index !== -1) {
-              agenda.splice(index, 1)
-            }
-          })
+          // Probably rewrite using other structure
+          Object.values(state.agendas)
+            .forEach(agenda => {
+              const index = agenda.findIndex(ai => ai.pk === item.pk)
+              if (index !== -1) {
+                agenda.splice(index, 1)
+              }
+            })
           break
       }
       for (const id of agendasChanged) {
-        state.agendas[id].sort((a, b) => {
-          if (a.order < b.order) {
-            return -1
-          }
-          if (a.order > b.order) {
-            return 1
-          }
-          return 0
-        })
+        sortAgenda(state.agendas[id])
       }
     }
   },

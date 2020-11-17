@@ -1,8 +1,13 @@
 <template>
   <div id="meeting">
-    <router-link to="/">Hem</router-link>
-    <h1>{{ meeting.title || 'Laddar möte' }}</h1>
-    <agenda />
+    <nav>
+      <router-link to="/">Hem</router-link>
+      <h1><router-link :to="`/m/${id}/${$slugify(meeting.title)}`">{{ meeting.title || 'Laddar möte' }}</router-link></h1>
+    </nav>
+    <div>
+      <agenda id="meeting-agenda" />
+      <router-view id="main-content" name="main" />
+    </div>
   </div>
 </template>
 
@@ -17,7 +22,7 @@ export default {
   },
   data () {
     return {
-      id: this.$route.params.id
+      id: Number(this.$route.params.id)
     }
   },
   methods: {
@@ -25,12 +30,6 @@ export default {
       this.$api.get(`meetings/${this.id}/`)
         .then(({ data }) => {
           this.updateMeeting(data)
-          this.updateAgenda({
-            t: 'agenda.changed',
-            p: {
-              items: data.agenda_items
-            }
-          })
         })
         .catch(err => {
           alert('failed loading meeting', err)
@@ -53,17 +52,32 @@ export default {
 }
 </script>
 
-<style scoped lang="sass">
-h3
-  margin: 40px 0 0
-ul
-  list-style-type: none
-  padding: 0
+<style lang="sass">
+#meeting
+  display: flex
+  flex-direction: column
+  min-height: 100vh
+  nav
+    padding: 8px
+    background-color: #000
+    color: fff
+    display: flex
+    justify-content: space-between
+    a
+      color: #ddf
+    h1
+      margin: 0
+      flex-grow: 1
+      color: #fff
 
-  li
-    display: inline-block
-    margin: 0 10px
-
-a
-  color: #42b983
+  > div
+    display: flex
+    flex-grow: 1
+    #meeting-agenda
+      padding: 8px
+      width: 280px
+      text-align: left
+      background-color: #eee
+    #main-content
+      flex-grow: 1
 </style>

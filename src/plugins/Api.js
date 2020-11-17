@@ -1,14 +1,23 @@
 import Axios from 'axios'
 
-// TODO Get this somewaysomehow
-const adminToken = '797cd6e0103d0a7e38d0a791e04bf4549347c4b5'
+const BASE_URL = 'http://localhost:8000/api/'
+const token = localStorage.APIAuthToken
+
+// TODO
+if (!token) {
+  Axios.post(`${BASE_URL}dev-login/`)
+    .then(({ data }) => {
+      localStorage.APIAuthToken = data.key
+      location.reload() // TODO Obviously quickfix
+    })
+}
 
 export default {
   install (app) {
     app.config.globalProperties.$api = Axios.create({
       baseURL: 'http://localhost:8000/api/',
       headers: {
-        Authorization: 'Token ' + adminToken
+        Authorization: `Token ${token}`
       }
     })
   }

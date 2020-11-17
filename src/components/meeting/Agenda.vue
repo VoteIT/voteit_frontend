@@ -3,7 +3,7 @@
     <template v-for="group in aiGroups" :key="group.name">
       <h2>{{ group.title }}</h2>
       <ul class="ai">
-        <li v-for="ai in aiType(group.name)" :key="ai.pk">{{ ai.title }}</li>
+        <li v-for="ai in aiType(group.name)" :key="ai.pk"><router-link :to="aiPath(ai)">{{ ai.title }}</router-link></li>
       </ul>
     </template>
   </div>
@@ -40,6 +40,9 @@ export default {
     }
   },
   methods: {
+    aiPath (ai) {
+      return `/m/${this.id}/${this.$route.params.slug}/a/${ai.pk}/${this.$slugify(ai.title)}`
+    },
     aiType (type) {
       return this.agenda.filter(ai => ai.state === type)
     },
@@ -52,10 +55,10 @@ export default {
     ...mapState('meetings', ['agendas'])
   },
   created () {
-    this.$objects.subscribe(`agenda/${this.id}`, this.updateAgenda)
+    this.$objects.subscribe(`meeting/${this.id}`, this.updateAgenda)
   },
   beforeUnmount () {
-    this.$objects.leave(`agenda/${this.id}`, this.updateAgenda)
+    this.$objects.leave(`meeting/${this.id}`, this.updateAgenda)
   }
 }
 </script>
