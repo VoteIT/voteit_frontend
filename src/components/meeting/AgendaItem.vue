@@ -56,6 +56,7 @@ export default {
       this.proposalSubmitting = true
       this.$api.post('proposals/', data)
         .then(() => {
+          this.proposal.title = ''
           this.proposalMode = false
         })
         .catch(alert)
