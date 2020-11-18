@@ -3,6 +3,18 @@
     <nav>
       <router-link to="/">Hem</router-link>
       <h1><router-link :to="`/m/${id}/${$slugify(meeting.title)}`">{{ meeting.title || 'Laddar möte' }}</router-link></h1>
+      <div id="poll-menu" v-show="polls.length">
+        <button @click="pollMenuOpen = !pollMenuOpen"><icon name="star" /> {{ polls.length }}</button>
+        <div id="poll-window" v-if="pollMenuOpen">
+          <h2>Polls</h2>
+          <ul>
+            <li v-for="poll in polls" :key="poll.pk" :class="{ selected: poll.pk === pollSelected }">
+              <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">{{ poll.title }}</a>
+              <progress-bar v-if="poll.pk === pollSelected" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
+            </li>
+          </ul>
+        </div>
+      </div>
     </nav>
     <div>
       <agenda id="meeting-agenda" />
@@ -12,7 +24,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import Agenda from '@/components/meeting/Agenda'
 
 export default {
@@ -22,7 +34,9 @@ export default {
   },
   data () {
     return {
-      id: Number(this.$route.params.id)
+      id: Number(this.$route.params.id),
+      pollMenuOpen: false,
+      pollSelected: null
     }
   },
   methods: {
@@ -34,8 +48,40 @@ export default {
         .catch(err => {
           alert('failed loading meeting', err)
         })
+      this.$api.get('polls/', { params: { agenda_item__meeting: this.id } })
+        .then(({ data }) => {
+          this.setPolls({
+            meeting: this.id,
+            polls: data
+          })
+        })
+        .catch(err => {
+          alert('failed loading polls', err)
+        })
     },
-    ...mapMutations('meetings', ['updateAgenda', 'updateMeeting'])
+    selectPoll (poll) {
+      if (this.pollSelected) {
+        this.$objects.leave(`poll/${this.pollSelected}`, this)
+      }
+      if (this.pollSelected === poll.pk) {
+        this.pollSelected = null
+      } else {
+        this.pollSelected = poll.pk
+        this.$objects.subscribe(`poll/${poll.pk}`, this)
+        this.$api.get(`polls/${poll.pk}/`)
+          .then(({ data }) => {
+            this.updatePoll({
+              t: 'poll.status',
+              p: data
+            })
+          })
+          .catch(err => {
+            alert('failed loading poll', err)
+          })
+      }
+    },
+    ...mapMutations('meetings', ['updateAgenda', 'updateMeeting']),
+    ...mapMutations('polls', ['setPolls', 'updatePoll'])
   },
   computed: {
     meeting () {
@@ -44,10 +90,23 @@ export default {
     agenda () {
       return this.agendas[this.id] || []
     },
-    ...mapState('meetings', ['meetings', 'agendas'])
+    polls () {
+      return this.meetingPolls(this.id)
+    },
+    selectedPollStatus () {
+      return this.pollStatus[this.pollSelected] || {}
+    },
+    ...mapState('meetings', ['meetings', 'agendas']),
+    ...mapState('polls', ['pollStatus']),
+    ...mapGetters('polls', ['meetingPolls'])
   },
   created () {
     this.loadMeeting()
+  },
+  beforeUnmount () {
+    if (this.pollSelected) {
+      this.$objects.leave(`poll/${this.pollSelected}`, this)
+    }
   }
 }
 </script>
@@ -81,4 +140,25 @@ export default {
     #main-content
       flex-grow: 1
       padding: 0 10px
+
+#poll-menu
+  position: relative
+
+#poll-window
+  position: absolute
+  right: 0
+  width: 400px
+  padding: 10px
+  background-color: #fff
+  border: 1px solid #ddd
+  box-shadow: 0 2px 3px rgba(#000, .4)
+  ul
+    padding: 0
+    list-style-type: none
+    li.selected
+      background-color: #fff
+    a
+      color: #000
+      display: block
+      padding: 4px
 </style>

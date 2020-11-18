@@ -7,6 +7,8 @@ import store from './store'
 import Api from './plugins/Api'
 import Objects from './plugins/Objects'
 import Slugify from './plugins/Slugify'
+import Icon from './components/Icon'
+import ProgressBar from './components/ProgressBar'
 
 createApp(App)
   .use(store)
@@ -14,4 +16,6 @@ createApp(App)
   .use(Api)
   .use(Objects)
   .use(Slugify)
+  .component('Icon', Icon)
+  .component('ProgressBar', ProgressBar)
   .mount('#app')

@@ -16,6 +16,9 @@ export default {
 </script>
 
 <style lang="sass">
+$material-icons-font-path: '~material-icons/iconfont/'
+@import '~material-icons/iconfont/material-icons.scss'
+
 *
   box-sizing: border-box
 

@@ -5,9 +5,7 @@
       <button @click="countToTen(false)">Fail at 5</button>
       <button @click="countToTen(true, { timeout: 500 })">Short timeout</button>
     </div>
-    <div v-else class="progress" :class="{ failed: state === false, done: state }"><div class="bar" :style="{ width: `${progress.curr / progress.total * 100}%` }">
-      <span>{{ progressText }}</span>
-    </div></div>
+    <progress-bar id="counter-progress" v-else class="progress" :total="progress.total" :value="progress.curr" :done="state" :failed="state === false" :text="progressText" />
   </div>
 </template>
 
@@ -54,7 +52,7 @@ export default {
         case false:
           return 'Failed'
         default:
-          return this.progress.curr
+          return String(this.progress.curr)
       }
     }
   }
@@ -62,25 +60,6 @@ export default {
 </script>
 
 <style lang="sass">
-.progress
+#counter-progress
   width: 400px
-  border: 1px solid #444
-  border-radius: 3px
-  margin: 0 auto
-  .bar
-    box-sizing: border-box
-    background-color: #ddd
-    height: 1.2em
-    color: #000
-    transition: background-color .2s, width .1s
-    text-align: left
-    span
-      padding: .1em .4em
-      display: inline-block
-  &.failed .bar
-    background-color: #b44
-    color: #fff
-  &.done .bar
-    background-color: #4b4
-    color: #fff
 </style>
