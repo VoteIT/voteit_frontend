@@ -1,31 +1,34 @@
 export default {
   namespaced: true,
   state: {
-    all: {}
+    all: []
   },
   getters: {
     agendaProposals (state) {
-      return ai => Object.values(state.all).filter(p => p.agenda_item === ai)
+      return ai => state.all.filter(p => p.agenda_item === ai)
     }
   },
   mutations: {
-    setProposals (state, proposals) {
-      proposals.forEach(p => {
-        state.all[p.pk] = p
-      })
+    setProposals (state, { ai, proposals }) {
+      state.all = state.all.filter(p => p.agenda_item !== ai)
+      Array.prototype.push.apply(state.all, proposals)
     },
     updateProposal (state, { t, p }) {
-      if (!t.startsWith('proposal.')) {
-        return
-      }
-      const item = p.item
+      const item = p.item || p // Can be only a pk
+      const index = state.all.findIndex(p => p.pk === item.pk)
+      console.log(t, p, index)
       switch (t) {
         case 'proposal.changed':
         case 'proposal.added':
-          state.all[item.pk] = item
+          if (index !== -1) {
+            state.all.splice(index, 1)
+          }
+          state.all.push(item)
           break
         case 'proposal.deleted':
-          delete state.all[p.pk]
+          if (index !== -1) {
+            state.all.splice(index, 1)
+          }
           break
       }
     }

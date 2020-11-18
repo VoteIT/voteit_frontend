@@ -1,19 +1,21 @@
 import { Socket } from '@/utils'
 
-const socket = new Socket('token') // TODO Make this shit reusable somehow
+const socket = new Socket('token') // TODO Make this reusable somehow
 const subscriptions = {}
+let objectUpdateHandler
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data)
+  objectUpdateHandler(data)
   // const baseType = data.t.split('.')[0]
   // Do callback for every registered subscription matching first part
-  Object.keys(subscriptions)
-    // .filter(uri => uri.split('/')[0] === baseType)
-    .forEach(uri => {
-      for (const callback of subscriptions[uri]) {
-        callback(data)
-      }
-    })
+  // Object.keys(subscriptions)
+  //   // .filter(uri => uri.split('/')[0] === baseType)
+  //   .forEach(uri => {
+  //     for (const callback of subscriptions[uri]) {
+  //       callback(data)
+  //     }
+  //   })
 })
 
 export default {
@@ -29,9 +31,13 @@ export default {
 
     app.config.globalProperties.$socket = socket
     app.config.globalProperties.$objects = {
-      subscribe (uri, callback) {
-        if (typeof callback !== 'function') {
-          throw new TypeError(`Expected a \`Function\`, got \`${typeof callback}\``)
+      subscribe (uri, component) {
+        if (!objectUpdateHandler) {
+          // On first subscribe, set up update handler.
+          objectUpdateHandler = payload => { component.$store.dispatch('updateObject', payload) }
+        }
+        if (typeof component !== 'object') {
+          throw new TypeError(`Expected an \`Object\`, got \`${typeof component}\``)
         }
 
         if (subscriptions[uri] === undefined) {
@@ -40,11 +46,11 @@ export default {
         if (!subscriptions[uri].size && socket.isOpen) {
           socket.send('object.subscribe', uri)
         }
-        subscriptions[uri].add(callback)
+        subscriptions[uri].add(component)
       },
 
-      leave (uri, callback) {
-        subscriptions[uri].delete(callback)
+      leave (uri, component) {
+        subscriptions[uri].delete(component)
         if (!subscriptions[uri].size && socket.isOpen) {
           socket.send('object.leave', uri)
         }

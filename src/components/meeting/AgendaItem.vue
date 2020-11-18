@@ -7,6 +7,12 @@
         {{ p.title }}
       </li>
     </ul>
+    <button @click="proposalMode = !proposalMode">{{ proposalMode ? '-' : '+' }} Add proposal</button>
+    <form @submit.prevent="sendProposal" v-show="proposalMode">
+      <label for="p_title">Write your proposal</label>
+      <input id="p_title" name="title" type="text" required v-model="proposal.title" />
+      <input type="submit" value="Submit proposal" :disabled="proposalSubmitting" />
+    </form>
   </div>
 </template>
 
@@ -15,6 +21,15 @@ import { mapGetters, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'AgendaItem',
+  data () {
+    return {
+      proposalMode: false,
+      proposalSubmitting: false,
+      proposal: {
+        title: ''
+      }
+    }
+  },
   computed: {
     id () {
       return Number(this.$route.params.aid)
@@ -33,11 +48,29 @@ export default {
     ...mapGetters('proposals', ['agendaProposals'])
   },
   methods: {
+    sendProposal () {
+      if (this.proposalSubmitting) {
+        return
+      }
+      const data = Object.assign({}, this.proposal, { agenda_item: this.id })
+      this.proposalSubmitting = true
+      this.$api.post('proposals/', data)
+        .then(() => {
+          this.proposalMode = false
+        })
+        .catch(alert)
+        .finally(() => {
+          this.proposalSubmitting = false
+        })
+    },
     fetchProposals () {
       const params = { agenda_item: this.id }
       this.$api.get('proposals/', { params })
         .then(({ data }) => {
-          this.setProposals(data)
+          this.setProposals({
+            ai: this.id,
+            proposals: data
+          })
         })
     },
     ...mapMutations('proposals', ['setProposals', 'updateProposal'])
@@ -45,21 +78,21 @@ export default {
   watch: {
     id (newId, oldId) {
       if (oldId) {
-        this.$objects.leave(`agenda_item/${oldId}`, this.updateProposal)
+        this.$objects.leave(`agenda_item/${oldId}`, this)
       }
       if (newId) {
         this.fetchProposals()
-        this.$objects.subscribe(`agenda_item/${newId}`, this.updateProposal)
+        this.$objects.subscribe(`agenda_item/${newId}`, this)
       }
     }
   },
   created () {
     this.fetchProposals()
-    this.$objects.subscribe(`agenda_item/${this.id}`, this.updateProposal)
+    this.$objects.subscribe(`agenda_item/${this.id}`, this)
   },
   beforeUnmount () {
     if (this.id) {
-      this.$objects.leave(`agenda_item/${this.id}`, this.updateProposal)
+      this.$objects.leave(`agenda_item/${this.id}`, this)
     }
   }
 }

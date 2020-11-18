@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <main class="home">
     <h1>Tillgängliga möten</h1>
     <ul v-if="orderedMeetings.length">
       <li v-for="meeting in orderedMeetings" :key="meeting.pk">
@@ -8,7 +8,7 @@
     </ul>
     <counter/>
     <get-schema/>
-  </div>
+  </main>
 </template>
 
 <script>
@@ -37,3 +37,8 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+main.home
+  text-align: center
+</style>

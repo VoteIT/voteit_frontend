@@ -37,17 +37,12 @@ export default {
       }
     },
     updateAgenda (state, { t, p }) {
-      if (!t.startsWith('agenda.')) {
-        return
-      }
-      const agendasChanged = new Set() // Order these
-      const item = p.item || p
+      const item = p.item || p // Can be only a pk
       const agenda = state.agendas[item.meeting] || []
       const index = agenda.findIndex(ai => ai.pk === item.pk)
       switch (t) {
         case 'agenda.added':
         case 'agenda.changed':
-          agendasChanged.add(item.meeting)
           if (!(item.meeting in state.agendas)) {
             state.agendas[item.meeting] = []
           }
@@ -56,6 +51,7 @@ export default {
           } else {
             agenda[index] = item
           }
+          sortAgenda(agenda)
           break
         case 'agenda.deleted':
           // Probably rewrite using other structure
@@ -67,9 +63,6 @@ export default {
               }
             })
           break
-      }
-      for (const id of agendasChanged) {
-        sortAgenda(state.agendas[id])
       }
     }
   },

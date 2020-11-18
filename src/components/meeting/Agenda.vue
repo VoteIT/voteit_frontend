@@ -55,10 +55,10 @@ export default {
     ...mapState('meetings', ['agendas'])
   },
   created () {
-    this.$objects.subscribe(`meeting/${this.id}`, this.updateAgenda)
+    this.$objects.subscribe(`meeting/${this.id}`, this)
   },
   beforeUnmount () {
-    this.$objects.leave(`meeting/${this.id}`, this.updateAgenda)
+    this.$objects.leave(`meeting/${this.id}`, this)
   }
 }
 </script>

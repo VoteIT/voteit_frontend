@@ -80,4 +80,5 @@ export default {
       background-color: #eee
     #main-content
       flex-grow: 1
+      padding: 0 10px
 </style>
