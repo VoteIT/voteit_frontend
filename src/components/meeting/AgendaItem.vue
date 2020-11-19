@@ -40,7 +40,7 @@ const STATE_ICONS = [
   {
     transition: 'unpublish',
     icon: 'visibility_off',
-    state: 'unpublished'
+    state: 'private'
   },
   {
     transition: 'upcoming',
