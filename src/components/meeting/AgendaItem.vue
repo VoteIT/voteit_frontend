@@ -64,7 +64,7 @@ export default {
           this.proposalSubmitting = false
         })
     },
-    fetchProposals () {
+    initialize () {
       const params = { agenda_item: this.id }
       this.$api.get('proposals/', { params })
         .then(({ data }) => {
@@ -82,13 +82,12 @@ export default {
         this.$objects.leave(`agenda_item/${oldId}`, this)
       }
       if (newId) {
-        this.fetchProposals()
+        this.initialize()
         this.$objects.subscribe(`agenda_item/${newId}`, this)
       }
     }
   },
   created () {
-    this.fetchProposals()
     this.$objects.subscribe(`agenda_item/${this.id}`, this)
   },
   beforeUnmount () {

@@ -8,6 +8,7 @@ import Api from './plugins/Api'
 import Objects from './plugins/Objects'
 import Slugify from './plugins/Slugify'
 import Icon from './components/Icon'
+import Authentication from './components/mixins/Authentication'
 import ProgressBar from './components/ProgressBar'
 
 createApp(App)
@@ -18,4 +19,5 @@ createApp(App)
   .use(Slugify)
   .component('Icon', Icon)
   .component('ProgressBar', ProgressBar)
+  .mixin(Authentication)
   .mount('#app')

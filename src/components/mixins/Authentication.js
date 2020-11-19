@@ -1,8 +1,6 @@
-<script>
 import { mapState } from 'vuex'
 
 export default {
-  name: 'Base view',
   computed: {
     ...mapState(['isAuthenticated'])
   },
@@ -25,4 +23,3 @@ export default {
     }
   }
 }
-</script>

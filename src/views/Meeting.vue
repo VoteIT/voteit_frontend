@@ -26,11 +26,9 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import Agenda from '@/components/meeting/Agenda'
-import BaseView from './BaseView'
 
 export default {
   name: 'Meeting',
-  extends: BaseView,
   components: {
     Agenda
   },

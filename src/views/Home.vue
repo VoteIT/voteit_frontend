@@ -15,11 +15,9 @@
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
-import BaseView from './BaseView'
 
 export default {
   name: 'Home',
-  extends: BaseView,
   components: {
     Counter,
     getSchema
