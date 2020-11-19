@@ -2,7 +2,7 @@
   <button v-if="button" class="btn" :class="{ 'btn-sm': sm, active }">
     <i class="material-icons">{{ name }}</i>
   </button>
-  <i v-else class="material-icons">{{ name }}</i>
+  <i v-else class="material-icons" :class="{ sm }">{{ name }}</i>
 </template>
 
 <script>
@@ -18,6 +18,9 @@ export default {
 </script>
 
 <style lang="sass">
+.material-icons.sm
+  font-size: 1.2rem
+
 .btn
   background-color: #ccc
   color: #333

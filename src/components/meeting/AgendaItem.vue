@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{ ai.title }}</h1>
-    <icon v-for="s in stateIcons" :title="s.transition"
+    <icon v-for="s in agendaStates" :title="s.transition"
       :key="s.state" :name="s.icon" :active="s.state === ai.state" button sm
       @click="$api.post(`agenda-items/${id}/transitions/`, { name: s.transition })" />
     <div class="row">
@@ -33,36 +33,9 @@
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
+import agendaStates from '@/schemas/agendaStates.json'
 
 import AddContent from './AddContent'
-
-const STATE_ICONS = [
-  {
-    transition: 'unpublish',
-    icon: 'visibility_off',
-    state: 'private'
-  },
-  {
-    transition: 'upcoming',
-    icon: 'pause',
-    state: 'upcoming'
-  },
-  {
-    transition: 'ongoing',
-    icon: 'play_arrow',
-    state: 'ongoing'
-  },
-  {
-    transition: 'close',
-    icon: 'close',
-    state: 'closed'
-  },
-  {
-    transition: 'archive',
-    icon: 'archive',
-    state: 'archived'
-  }
-]
 
 export default {
   name: 'AgendaItem',
@@ -70,8 +43,8 @@ export default {
     AddContent
   },
   computed: {
-    stateIcons () {
-      return STATE_ICONS
+    agendaStates () {
+      return agendaStates
     },
     id () {
       return Number(this.$route.params.aid)

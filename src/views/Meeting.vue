@@ -17,7 +17,7 @@
       </div>
     </nav>
     <div>
-      <agenda id="meeting-agenda" />
+      <agenda />
       <router-view id="main-content" name="main" />
     </div>
   </div>
@@ -129,7 +129,7 @@ export default {
   > div
     display: flex
     flex-grow: 1
-    #meeting-agenda
+    #agenda
       padding: 8px
       width: 280px
       text-align: left
