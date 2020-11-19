@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import meetings from './modules/meetings'
 import proposals from './modules/proposals'
 import polls from './modules/polls'
+import { restApi, setAuthToken } from '../utils'
 
 // baseType: mutationPath
 const updateObjectMapping = {
@@ -17,14 +18,30 @@ const updateObjectIngore = new Set([
 
 export default createStore({
   state: {
-    socketState: true
+    socketState: false,
+    isAuthenticated: false
   },
   mutations: {
+    setAuthenticated (state, value) {
+      state.isAuthenticated = value
+    },
     setSocketState (state, value) {
       state.socketState = value
     }
   },
   actions: {
+    authenticate ({ commit }) {
+      restApi.post('dev-login/')
+        .then(({ data }) => {
+          setAuthToken(data.key)
+          commit('setAuthenticated', true)
+        })
+    },
+    logout ({ commit }) {
+      // TODO more for prod
+      setAuthToken()
+      commit('setAuthenticated', false)
+    },
     updateObject ({ commit }, payload) {
       // Handle object updates from websocket connection.
       const baseType = payload.t.split('.')[0]

@@ -12,28 +12,34 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
+import BaseView from './BaseView'
 
 export default {
   name: 'Home',
+  extends: BaseView,
   components: {
     Counter,
     getSchema
   },
   computed: {
-    ...mapGetters('meetings', ['orderedMeetings'])
+    ...mapGetters('meetings', ['orderedMeetings']),
+    ...mapState(['isAuthenticated'])
   },
   methods: {
+    initialize () {
+      this.$api.get('meetings/')
+        .then(({ data }) => {
+          this.setMeetings(data)
+        })
+        .catch(alert)
+    },
+    logout () {
+      this.setMeetings([])
+    },
     ...mapMutations('meetings', ['setMeetings'])
-  },
-  created () {
-    this.$api.get('meetings/')
-      .then(({ data }) => {
-        this.setMeetings(data)
-      })
-      .catch(alert)
   }
 }
 </script>

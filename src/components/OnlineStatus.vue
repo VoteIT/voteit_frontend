@@ -1,11 +1,13 @@
 <template>
-  <div :class="{ online: socketState }" id="socket-info">
+  <div :class="{ isAuthenticated, online: socketState }" id="socket-info">
     <span v-if="socketState">Connected</span>
     <span v-else>Trying to reconnect in {{ reconnectTime }} second{{ reconnectTime === 1 ? '' : 's' }}</span>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data () {
     return {
@@ -28,7 +30,8 @@ export default {
       get () {
         return this.$store.state.socketState
       }
-    }
+    },
+    ...mapState(['isAuthenticated'])
   },
   methods: {
     reconnectTicker (on = true) {
@@ -79,7 +82,8 @@ export default {
   right: 0
   padding: 8px
   transition: top 1s ease-in
-  &.online
+  &.online,
+  &:not(.isAuthenticated)
     top: -36px
     background-color: #4b4
 </style>

@@ -1,5 +1,6 @@
 import ProgressPromise from './ProgressPromise'
 import Socket from './Socket'
+import { setAuthToken, restApi } from './api'
 
 function uriToPayload (uri) {
   // Convert internal resource identifier to subscription payload object
@@ -15,5 +16,7 @@ function uriToPayload (uri) {
 export {
   Socket,
   ProgressPromise,
-  uriToPayload
+  uriToPayload,
+  setAuthToken,
+  restApi
 }

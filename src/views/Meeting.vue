@@ -26,9 +26,11 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import Agenda from '@/components/meeting/Agenda'
+import BaseView from './BaseView'
 
 export default {
   name: 'Meeting',
+  extends: BaseView,
   components: {
     Agenda
   },
@@ -40,7 +42,7 @@ export default {
     }
   },
   methods: {
-    loadMeeting () {
+    initialize () {
       this.$api.get(`meetings/${this.id}/`)
         .then(({ data }) => {
           this.updateMeeting(data)
@@ -99,9 +101,6 @@ export default {
     ...mapState('meetings', ['meetings', 'agendas']),
     ...mapState('polls', ['pollStatus']),
     ...mapGetters('polls', ['meetingPolls'])
-  },
-  created () {
-    this.loadMeeting()
   },
   beforeUnmount () {
     if (this.pollSelected) {

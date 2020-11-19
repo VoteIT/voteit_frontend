@@ -5,17 +5,12 @@ const subscriptions = {}
 let objectUpdateHandler
 
 socket.addEventListener('message', event => {
-  const data = JSON.parse(event.data)
-  objectUpdateHandler(data)
-  // const baseType = data.t.split('.')[0]
-  // Do callback for every registered subscription matching first part
-  // Object.keys(subscriptions)
-  //   // .filter(uri => uri.split('/')[0] === baseType)
-  //   .forEach(uri => {
-  //     for (const callback of subscriptions[uri]) {
-  //       callback(data)
-  //     }
-  //   })
+  if (objectUpdateHandler) {
+    const data = JSON.parse(event.data)
+    objectUpdateHandler(data)
+  } else {
+    console.log('Got socket message before subscribed to channel')
+  }
 })
 
 export default {

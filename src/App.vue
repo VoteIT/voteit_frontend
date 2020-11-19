@@ -7,10 +7,18 @@
 
 <script>
 import OnlineStatus from '@/components/OnlineStatus'
+import { mapActions } from 'vuex'
 
 export default {
   components: {
     OnlineStatus
+  },
+  methods: {
+    ...mapActions(['authenticate'])
+  },
+  created () {
+    // For dev purposes. Should be called on login.
+    this.authenticate()
   }
 }
 </script>
