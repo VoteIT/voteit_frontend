@@ -1,12 +1,16 @@
 <template>
   <div>
     <h1>{{ ai.title }}</h1>
+    <icon v-for="s in stateIcons" :title="s.transition"
+      :key="s.state" :name="s.icon" :active="s.state === ai.state" button sm
+      @click="$api.post(`agenda-items/${id}/transitions/`, { name: s.transition })" />
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
         <ul v-if="sortedProposals.length">
           <li v-for="p in sortedProposals" :key="p.pk">
             {{ p.title }}
+            <icon name="delete" button sm @click="$api.delete(`proposals/${p.pk}/`)" />
           </li>
         </ul>
         <p v-else><em>Nothing to speak</em></p>
@@ -17,6 +21,7 @@
         <ul v-if="sortedDiscussions.length">
           <li v-for="d in sortedDiscussions" :key="d.pk">
             {{ d.title }}
+            <icon name="delete" button sm @click="$api.delete(`discussion-posts/${d.pk}/`)" />
           </li>
         </ul>
         <p v-else><em>Nothing to hear</em></p>
@@ -31,12 +36,43 @@ import { mapGetters, mapMutations, mapState } from 'vuex'
 
 import AddContent from './AddContent'
 
+const STATE_ICONS = [
+  {
+    transition: 'unpublish',
+    icon: 'visibility_off',
+    state: 'unpublished'
+  },
+  {
+    transition: 'upcoming',
+    icon: 'pause',
+    state: 'upcoming'
+  },
+  {
+    transition: 'ongoing',
+    icon: 'play_arrow',
+    state: 'ongoing'
+  },
+  {
+    transition: 'close',
+    icon: 'close',
+    state: 'closed'
+  },
+  {
+    transition: 'archive',
+    icon: 'archive',
+    state: 'archived'
+  }
+]
+
 export default {
   name: 'AgendaItem',
   components: {
     AddContent
   },
   computed: {
+    stateIcons () {
+      return STATE_ICONS
+    },
     id () {
       return Number(this.$route.params.aid)
     },
