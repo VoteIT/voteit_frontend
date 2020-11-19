@@ -10,6 +10,7 @@ import OnlineStatus from '@/components/OnlineStatus'
 import { mapActions } from 'vuex'
 
 export default {
+  emits: ['socket-open'],
   components: {
     OnlineStatus
   },

@@ -9,9 +9,10 @@
     </ul>
     <button @click="proposalMode = !proposalMode">{{ proposalMode ? '-' : '+' }} Add proposal</button>
     <form @submit.prevent="sendProposal" v-show="proposalMode">
-      <label for="p_title">Write your proposal</label>
-      <input id="p_title" name="title" type="text" required v-model="proposal.title" />
-      <input type="submit" value="Submit proposal" :disabled="proposalSubmitting" />
+      <textarea v-model="proposal.title" required></textarea>
+      <div class="buttons">
+        <input type="submit" value="Submit proposal" :disabled="proposalSubmitting" />
+      </div>
     </form>
   </div>
 </template>
@@ -97,3 +98,16 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+form
+  background-color: #eee
+  padding: 10px
+  border: 1px solid #ddd
+  border-radius: 0 10px 10px 10px
+form
+  textarea
+    width: 100%
+  .buttons
+    text-align: right
+</style>
