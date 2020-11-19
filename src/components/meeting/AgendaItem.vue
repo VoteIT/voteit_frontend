@@ -1,35 +1,40 @@
 <template>
   <div>
     <h1>{{ ai.title }}</h1>
-    <h2>Proposals</h2>
-    <ul>
-      <li v-for="p in sortedProposals" :key="p.pk">
-        {{ p.title }}
-      </li>
-    </ul>
-    <button @click="proposalMode = !proposalMode">{{ proposalMode ? '-' : '+' }} Add proposal</button>
-    <form @submit.prevent="sendProposal" v-show="proposalMode">
-      <textarea v-model="proposal.title" required></textarea>
-      <div class="buttons">
-        <input type="submit" value="Submit proposal" :disabled="proposalSubmitting" />
+    <div class="row">
+      <div class="col-sm-6">
+        <h2>Proposals</h2>
+        <ul v-if="sortedProposals.length">
+          <li v-for="p in sortedProposals" :key="p.pk">
+            {{ p.title }}
+          </li>
+        </ul>
+        <p v-else><em>Nothing to speak</em></p>
+        <add-content name="proposal" endpoint="proposals/" :params="{ agenda_item: this.id }" />
       </div>
-    </form>
+      <div class="col-sm-6">
+        <h2>Discussions</h2>
+        <ul v-if="sortedDiscussions.length">
+          <li v-for="d in sortedDiscussions" :key="d.pk">
+            {{ d.title }}
+          </li>
+        </ul>
+        <p v-else><em>Nothing to hear</em></p>
+        <add-content name="discussion post" endpoint="discussion-posts/" :params="{ agenda_item: this.id }" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
 
+import AddContent from './AddContent'
+
 export default {
   name: 'AgendaItem',
-  data () {
-    return {
-      proposalMode: false,
-      proposalSubmitting: false,
-      proposal: {
-        title: ''
-      }
-    }
+  components: {
+    AddContent
   },
   computed: {
     id () {
@@ -44,27 +49,15 @@ export default {
     sortedProposals () {
       return this.agendaProposals(this.id)
     },
+    sortedDiscussions () {
+      return this.agendaDiscussions(this.id)
+    },
     ...mapState('meetings', ['agendas']),
     ...mapState(['proposals']),
-    ...mapGetters('proposals', ['agendaProposals'])
+    ...mapGetters('proposals', ['agendaProposals']),
+    ...mapGetters('discussions', ['agendaDiscussions'])
   },
   methods: {
-    sendProposal () {
-      if (this.proposalSubmitting) {
-        return
-      }
-      const data = Object.assign({}, this.proposal, { agenda_item: this.id })
-      this.proposalSubmitting = true
-      this.$api.post('proposals/', data)
-        .then(() => {
-          this.proposal.title = ''
-          this.proposalMode = false
-        })
-        .catch(alert)
-        .finally(() => {
-          this.proposalSubmitting = false
-        })
-    },
     initialize () {
       const params = { agenda_item: this.id }
       this.$api.get('proposals/', { params })
@@ -74,8 +67,16 @@ export default {
             proposals: data
           })
         })
+      this.$api.get('discussion-posts/', { params })
+        .then(({ data }) => {
+          this.setDiscussions({
+            ai: this.id,
+            discussions: data
+          })
+        })
     },
-    ...mapMutations('proposals', ['setProposals', 'updateProposal'])
+    ...mapMutations('proposals', ['setProposals', 'updateProposal']),
+    ...mapMutations('discussions', ['setDiscussions', 'updateDiscussion'])
   },
   watch: {
     id (newId, oldId) {
@@ -99,15 +100,13 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-form
-  background-color: #eee
-  padding: 10px
-  border: 1px solid #ddd
-  border-radius: 0 10px 10px 10px
-form
-  textarea
-    width: 100%
-  .buttons
-    text-align: right
+<style lang="sass">
+/* Burn after reading */
+.row
+  display: flex
+  flex-direction: row
+  margin: 0 -10px
+.col-sm-6
+  width: calc(50% - 20px)
+  margin: 0 10px
 </style>

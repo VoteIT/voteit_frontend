@@ -18,14 +18,14 @@ export default {
       const item = p.item || p // Can be only a pk
       const index = state.all.findIndex(d => d.pk === item.pk)
       switch (t) {
-        case 'discussion.changed':
-        case 'discussion.added':
+        case 'discussion_post.changed':
+        case 'discussion_post.added':
           if (index !== -1) {
             state.all.splice(index, 1)
           }
           state.all.push(item)
           break
-        case 'discussion.deleted':
+        case 'discussion_post.deleted':
           if (index !== -1) {
             state.all.splice(index, 1)
           }

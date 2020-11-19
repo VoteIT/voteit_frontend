@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import meetings from './modules/meetings'
 import proposals from './modules/proposals'
+import discussions from './modules/discussions'
 import polls from './modules/polls'
 import { restApi, setAuthToken } from '../utils'
 
@@ -8,7 +9,7 @@ import { restApi, setAuthToken } from '../utils'
 const updateObjectMapping = {
   agenda: 'meetings/updateAgenda',
   proposal: 'proposals/updateProposal',
-  discussion: 'discussions/updateDiscussion',
+  discussion_post: 'discussions/updateDiscussion',
   poll: 'polls/updatePoll'
 }
 // If handler for base type is missing that will be logged to console, unless defined here.
@@ -55,6 +56,7 @@ export default createStore({
   modules: {
     meetings,
     proposals,
-    polls
+    polls,
+    discussions
   }
 })
