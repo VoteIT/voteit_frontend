@@ -7,19 +7,23 @@
 
 <script>
 import OnlineStatus from '@/components/OnlineStatus'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   emits: ['socket-open'],
   components: {
     OnlineStatus
   },
+  computed: {
+    ...mapState(['user'])
+  },
   methods: {
     ...mapActions(['authenticate'])
   },
   created () {
-    // For dev purposes. Should be called on login.
-    this.authenticate()
+    if (this.user) {
+      this.authenticate(this.user.username)
+    }
   }
 }
 </script>

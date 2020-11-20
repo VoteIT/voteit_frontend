@@ -1,5 +1,6 @@
 <template>
-  <main class="home">
+  <main class="home" v-if="isAuthenticated">
+    <p>Logged in as {{ user.username }} <button @click="logout">Logout</button></p>
     <h1>Tillgängliga möten</h1>
     <ul v-if="orderedMeetings.length">
       <li v-for="meeting in orderedMeetings" :key="meeting.pk">
@@ -9,21 +10,59 @@
     <counter/>
     <get-schema/>
   </main>
+  <main class="home" v-else>
+    <h1>Välj användare</h1>
+    <ul>
+      <li v-for="user in users" :key="user.username">
+        <button @click="userLogin(user)">
+          <icon v-if="user.is_superuser" name="verified_user" sm />
+          <icon v-else name="face" sm />
+          {{ user.username }}
+        </button>
+      </li>
+      <li>
+        <button @click="addUser = !addUser">
+          <icon name="add" sm />
+          New user
+        </button>
+        <form v-show="addUser" @submit.prevent="createUser">
+          <p>
+            <input type="checkbox" id="is_super" v-model="newUser.is_superuser" /> <label for="is_super">Superanvändare</label>
+          </p>
+          <p class="error" v-show="newUserError">Username not accepted</p>
+          <input type="text" required v-model="newUser.username" /><input type="submit" value="Create">
+        </form>
+      </li>
+    </ul>
+  </main>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
 export default {
   name: 'Home',
+  data () {
+    return {
+      users: [],
+      addUser: false,
+      newUser: {
+        username: '',
+        is_superuser: false
+      },
+      newUserError: false
+    }
+  },
   components: {
     Counter,
     getSchema
   },
   computed: {
-    ...mapGetters('meetings', ['orderedMeetings'])
+    ...mapGetters('meetings', ['orderedMeetings']),
+    ...mapGetters(['isAuthenticated']),
+    ...mapState(['user'])
   },
   methods: {
     initialize () {
@@ -35,8 +74,31 @@ export default {
     },
     logout () {
       this.setMeetings([])
+      this.logout()
     },
-    ...mapMutations('meetings', ['setMeetings'])
+    userLogin (user) {
+      this.setUser(user)
+      this.authenticate(user.username)
+    },
+    createUser () {
+      this.newUserError = false
+      this.$api.post('dev-login/', this.newUser)
+        .then(() => {
+          this.users.push(this.newUser)
+        })
+        .catch(() => {
+          this.newUserError = true
+        })
+    },
+    ...mapMutations('meetings', ['setMeetings']),
+    ...mapMutations(['setUser']),
+    ...mapActions(['authenticate', 'logout'])
+  },
+  created () {
+    this.$api.get('dev-login/')
+      .then(({ data }) => {
+        this.users = data
+      })
   }
 }
 </script>
@@ -44,4 +106,10 @@ export default {
 <style lang="sass">
 main.home
   text-align: center
+  ul
+    padding: 0
+    margin-bottom: 3em
+  li
+    list-style: none
+    padding: 4px
 </style>

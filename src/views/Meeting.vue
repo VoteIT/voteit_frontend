@@ -9,7 +9,7 @@
           <h2>Polls</h2>
           <ul>
             <li v-for="poll in polls" :key="poll.pk" :class="{ selected: poll.pk === pollSelected }">
-              <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)"><icon :name="pollStateIcon(poll)"/> {{ poll.title }}</a>
+              <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)"><icon :name="pollStateIcon(poll)" sm /> {{ poll.title }}</a>
               <progress-bar v-if="poll.pk === pollSelected" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
             </li>
           </ul>
@@ -166,4 +166,6 @@ export default {
       color: #000
       display: block
       padding: 4px
+  .material-icons
+    color: #aaa
 </style>
