@@ -14,7 +14,7 @@ export default {
   },
   mutations: {
     setPolls (state, { meeting, polls }) {
-      state.all = state.all.filter(p => p.agenda_item !== meeting)
+      state.all = state.all.filter(p => p.meeting !== meeting)
       Array.prototype.push.apply(state.all, polls)
     },
     updatePoll (state, { t, p }) {

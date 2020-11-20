@@ -9,7 +9,7 @@
           <h2>Polls</h2>
           <ul>
             <li v-for="poll in polls" :key="poll.pk" :class="{ selected: poll.pk === pollSelected }">
-              <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">{{ poll.title }}</a>
+              <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)"><icon :name="pollStateIcon(poll)"/> {{ poll.title }}</a>
               <progress-bar v-if="poll.pk === pollSelected" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
             </li>
           </ul>
@@ -40,6 +40,14 @@ export default {
     }
   },
   methods: {
+    pollStateIcon (poll) {
+      return {
+        private: 'visibility_off',
+        upcoming: 'pause',
+        ongoing: 'play_arrow',
+        finished: 'done'
+      }[poll.state] || ''
+    },
     initialize () {
       this.$api.get(`meetings/${this.id}/`)
         .then(({ data }) => {
