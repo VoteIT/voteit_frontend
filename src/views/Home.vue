@@ -1,7 +1,7 @@
 <template>
   <main class="home" v-if="isAuthenticated">
     <p>Logged in as {{ user.username }} <button @click="logout">Logout</button></p>
-    <h1>Tillgängliga möten</h1>
+    <h1>Available meetings</h1>
     <ul v-if="orderedMeetings.length">
       <li v-for="meeting in orderedMeetings" :key="meeting.pk">
         <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
@@ -11,7 +11,7 @@
     <get-schema/>
   </main>
   <main class="home" v-else>
-    <h1>Välj användare</h1>
+    <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
         <button @click="userLogin(user)">
@@ -27,7 +27,7 @@
         </button>
         <form v-show="addUser" @submit.prevent="createUser">
           <p>
-            <input type="checkbox" id="is_super" v-model="newUser.is_superuser" /> <label for="is_super">Superanvändare</label>
+            <input type="checkbox" id="is_super" v-model="newUser.is_superuser" /> <label for="is_super">Superuser <icon sm name="verified_user"/></label>
           </p>
           <p class="error" v-show="newUserError">Username not accepted</p>
           <input type="text" required v-model="newUser.username" /><input type="submit" value="Create">
