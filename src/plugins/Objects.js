@@ -1,6 +1,6 @@
 import { Socket } from '@/utils'
 
-const socket = new Socket('token') // TODO Make this reusable somehow
+const socket = new Socket()
 const subscriptions = {}
 let objectUpdateHandler
 
@@ -26,6 +26,14 @@ export default {
 
     app.config.globalProperties.$socket = socket
     app.config.globalProperties.$objects = {
+      connect (token) {
+        return socket.connect(token)
+      },
+
+      disconnect () {
+        socket.close()
+      },
+
       subscribe (uri, component) {
         if (!objectUpdateHandler) {
           // On first subscribe, set up update handler.

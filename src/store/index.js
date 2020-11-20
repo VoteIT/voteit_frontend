@@ -20,11 +20,17 @@ const updateObjectIngore = new Set([
 export default createStore({
   state: {
     socketState: false,
-    isAuthenticated: false
+    authToken: null
+  },
+  getters: {
+    isAuthenticated (state) {
+      return Boolean(state.authToken)
+    }
   },
   mutations: {
-    setAuthenticated (state, value) {
-      state.isAuthenticated = value
+    setAuthToken (state, key) {
+      setAuthToken(key)
+      state.authToken = key
     },
     setSocketState (state, value) {
       state.socketState = value
@@ -34,14 +40,12 @@ export default createStore({
     authenticate ({ commit }) {
       restApi.post('dev-login/')
         .then(({ data }) => {
-          setAuthToken(data.key)
-          commit('setAuthenticated', true)
+          commit('setAuthToken', data.key)
         })
     },
     logout ({ commit }) {
       // TODO more for prod
-      setAuthToken()
-      commit('setAuthenticated', false)
+      commit('setAuthToken')
     },
     updateObject ({ commit }, payload) {
       // Handle object updates from websocket connection.

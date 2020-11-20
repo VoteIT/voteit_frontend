@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
@@ -23,8 +23,7 @@ export default {
     getSchema
   },
   computed: {
-    ...mapGetters('meetings', ['orderedMeetings']),
-    ...mapState(['isAuthenticated'])
+    ...mapGetters('meetings', ['orderedMeetings'])
   },
   methods: {
     initialize () {

@@ -1,22 +1,26 @@
 <template>
   <div :class="{ isAuthenticated, online: socketState }" id="socket-info">
     <span v-if="socketState">Connected</span>
+    <span v-else-if="failedInitialization">Couldn't establish websocket connection. <button @click="initialize">Try again</button></span>
     <span v-else>Trying to reconnect in {{ reconnectTime }} second{{ reconnectTime === 1 ? '' : 's' }}</span>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 
 export default {
   data () {
     return {
       reconnectTime: 1,
       reconnectTries: 1,
-      reconnectIntervalId: null
+      reconnectIntervalId: null,
+      failedInitialization: false
     }
   },
   computed: {
+    ...mapGetters(['isAuthenticated']),
+    ...mapState(['authToken', 'socketState']),
     socketState: {
       set (value) {
         if (value) {
@@ -25,15 +29,15 @@ export default {
           // Only on state change
           this.reconnectTicker()
         }
-        this.$store.commit('setSocketState', value)
+        this.setSocketState(value)
       },
       get () {
         return this.$store.state.socketState
       }
-    },
-    ...mapState(['isAuthenticated'])
+    }
   },
   methods: {
+    ...mapMutations(['setSocketState']),
     reconnectTicker (on = true) {
       if (!on) {
         clearInterval(this.reconnectIntervalId)
@@ -44,7 +48,7 @@ export default {
         this.reconnectIntervalId = setInterval(this.reconnectTicker, 1000)
       }
       if (this.reconnectTime-- <= 1) {
-        this.$socket.connect()
+        this.$socket.connect(this.authToken)
           .then(() => {
             // Reset tries and stop ticker
             this.reconnectTries = 1
@@ -54,6 +58,10 @@ export default {
             this.reconnectTime = this.reconnectTries++ ** 2
           })
       }
+    },
+    initialize () {
+      this.$socket.connect(this.authToken)
+        .catch(() => { this.failedInitialization = true })
     }
   },
   created () {

@@ -12,8 +12,8 @@ const STATE = {
 const EVENTS = ['open', 'close', 'error', 'message']
 
 export default class Socket {
-  constructor (token) {
-    this.token = token
+  constructor () {
+    this.active = false
     this.callbacks = {}
     this.listeners = {
       open: new Set(),
@@ -21,7 +21,6 @@ export default class Socket {
       error: new Set(),
       message: new Set()
     }
-    this.connect()
   }
 
   _createEventListener (event) {
@@ -40,7 +39,14 @@ export default class Socket {
     this.listeners[event].delete(listener)
   }
 
-  connect () {
+  connect (token) {
+    if (token) {
+      this.token = token
+    }
+    if (!this.token) {
+      throw Error('Socket needs a token to connect')
+    }
+    this.active = true
     return new Promise((resolve, reject) => {
       this._ws = new WebSocket(`ws://localhost:8000/ws/${this.token}/`)
 
@@ -60,8 +66,14 @@ export default class Socket {
     })
   }
 
+  close () {
+    delete this.token
+    this._ws.close()
+    this.active = false
+  }
+
   get isOpen () {
-    return this._ws.readyState === WebSocket.OPEN
+    return this.active && this._ws.readyState === WebSocket.OPEN
   }
 
   call (type, payloadOrUri, config) {
