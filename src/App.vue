@@ -2,27 +2,33 @@
   <div>
     <online-status/>
     <router-view/>
+    <loader/>
   </div>
 </template>
 
 <script>
+import { mapActions, mapMutations, mapState } from 'vuex'
 import OnlineStatus from '@/components/OnlineStatus'
-import { mapActions, mapState } from 'vuex'
+import Loader from '@/components/Loader.vue'
 
 export default {
   emits: ['socket-open'],
   components: {
-    OnlineStatus
+    OnlineStatus,
+    Loader
   },
   computed: {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['authenticate'])
+    ...mapActions(['authenticate']),
+    ...mapMutations(['setLoaded'])
   },
   created () {
     if (this.user) {
       this.authenticate(this.user.username)
+    } else {
+      this.setLoaded()
     }
   }
 }

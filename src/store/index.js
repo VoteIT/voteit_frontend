@@ -21,7 +21,8 @@ export default createStore({
   state: {
     socketState: false,
     authToken: null,
-    user: sessionStorage.user ? JSON.parse(sessionStorage.user) : null
+    user: sessionStorage.user ? JSON.parse(sessionStorage.user) : null,
+    loading: true
   },
   getters: {
     isAuthenticated (state) {
@@ -29,6 +30,10 @@ export default createStore({
     }
   },
   mutations: {
+    setLoaded (state) {
+      console.log('loaded')
+      state.loading = false
+    },
     setUser (state, user) {
       state.user = user
       if (user) {
@@ -50,6 +55,9 @@ export default createStore({
       restApi.get(`dev-login/${username}/`)
         .then(({ data }) => {
           commit('setAuthToken', data.key)
+          setTimeout(() => {
+            commit('setLoaded')
+          }, 1500)
         })
     },
     logout ({ commit }) {
