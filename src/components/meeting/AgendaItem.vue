@@ -1,14 +1,13 @@
 <template>
   <div>
     <h1>{{ ai.title }}</h1>
-    <icon v-for="s in agendaStates" :title="s.transition"
-      :key="s.state" :name="s.icon" :active="s.state === ai.state" button sm
-      @click="$api.post(`agenda-items/${id}/transitions/`, { name: s.transition })" />
+    <workflow-state v-if="ai.state" :state="ai.state" :all-states="agendaStates" :admin="hasRole('moderator')" :endpoint="`agenda-items/${id}/transitions/`" />
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
         <ul v-if="sortedProposals.length">
           <li v-for="p in sortedProposals" :key="p.pk">
+            {{ getUser(p.author, meetingId).full_name }}:<br />
             {{ p.title }}
             <icon name="delete" button sm @click="$api.delete(`proposals/${p.pk}/`)" />
           </li>
@@ -20,6 +19,7 @@
         <h2>Discussions</h2>
         <ul v-if="sortedDiscussions.length">
           <li v-for="d in sortedDiscussions" :key="d.pk">
+            {{ getUser(d.author, meetingId).full_name }}:<br />
             {{ d.title }}
             <icon name="delete" button sm @click="$api.delete(`discussion-posts/${d.pk}/`)" />
           </li>
@@ -32,19 +32,27 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import agendaStates from '@/schemas/agendaStates.json'
 
-import AddContent from './AddContent'
+import AddContent from './AddContent.vue'
+import WorkflowState from '../WorkflowState.vue'
 
 export default {
   name: 'AgendaItem',
   components: {
-    AddContent
+    AddContent,
+    WorkflowState
   },
   computed: {
     agendaStates () {
       return agendaStates
+    },
+    meeting () {
+      return this.getMeeting(this.meetingId)
+    },
+    meetingId () {
+      return Number(this.$route.params.id)
     },
     id () {
       return Number(this.$route.params.aid)
@@ -64,9 +72,13 @@ export default {
     ...mapState('meetings', ['agendas']),
     ...mapState(['proposals']),
     ...mapGetters('proposals', ['agendaProposals']),
-    ...mapGetters('discussions', ['agendaDiscussions'])
+    ...mapGetters('discussions', ['agendaDiscussions']),
+    ...mapGetters('meetings', ['getUser', 'getMeeting'])
   },
   methods: {
+    hasRole (roleName) {
+      return this.meeting.current_user_roles.includes(roleName)
+    },
     initialize () {
       const params = { agenda_item: this.id }
       this.$api.get('proposals/', { params })
@@ -75,6 +87,10 @@ export default {
             ai: this.id,
             proposals: data
           })
+          this.fetchMeetingRoles({
+            meetingId: this.meetingId,
+            userIds: data.map(p => p.author)
+          })
         })
       this.$api.get('discussion-posts/', { params })
         .then(({ data }) => {
@@ -82,10 +98,15 @@ export default {
             ai: this.id,
             discussions: data
           })
+          this.fetchMeetingRoles({
+            meetingId: this.meetingId,
+            userIds: data.map(d => d.author)
+          })
         })
     },
     ...mapMutations('proposals', ['setProposals', 'updateProposal']),
-    ...mapMutations('discussions', ['setDiscussions', 'updateDiscussion'])
+    ...mapMutations('discussions', ['setDiscussions', 'updateDiscussion']),
+    ...mapActions('meetings', ['fetchMeetingRoles'])
   },
   watch: {
     id (newId, oldId) {

@@ -1,5 +1,6 @@
 import Meeting from '../views/Meeting'
 import AgendaItem from '@/components/meeting/AgendaItem'
+import Participants from '@/components/meeting/Participants'
 import Start from '@/components/meeting/Start'
 
 export default {
@@ -9,14 +10,21 @@ export default {
   children: [
     {
       path: '',
-      name: 'Index',
+      name: 'index',
       components: {
         main: Start
       }
     },
     {
+      path: 'participants',
+      name: 'participants',
+      components: {
+        main: Participants
+      }
+    },
+    {
       path: 'a/:aid/:aslug',
-      name: 'Agenda item',
+      name: 'agenda-item',
       components: {
         main: AgendaItem
       }

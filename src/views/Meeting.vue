@@ -16,6 +16,9 @@
         </div>
       </div>
     </nav>
+    <nav class="tabs" v-if="hasRole('moderator')">
+      <router-link :to="`/m/${id}/${$slugify(meeting.title)}/participants`">Participants</router-link>
+    </nav>
     <div>
       <agenda />
       <router-view id="main-content" name="main" />
@@ -88,12 +91,18 @@ export default {
           })
       }
     },
+    hasRole (roleName) {
+      return this.userRoles.includes(roleName)
+    },
     ...mapMutations('meetings', ['updateAgenda', 'updateMeeting']),
     ...mapMutations('polls', ['setPolls', 'updatePoll'])
   },
   computed: {
+    userRoles () {
+      return this.meeting.current_user_roles || []
+    },
     meeting () {
-      return this.meetings[this.id] || {}
+      return this.getMeeting(this.id)
     },
     agenda () {
       return this.agendas[this.id] || []
@@ -106,7 +115,8 @@ export default {
     },
     ...mapState('meetings', ['meetings', 'agendas']),
     ...mapState('polls', ['pollStatus']),
-    ...mapGetters('polls', ['meetingPolls'])
+    ...mapGetters('polls', ['meetingPolls']),
+    ...mapGetters('meetings', ['getMeeting'])
   },
   beforeUnmount () {
     if (this.pollSelected) {
@@ -133,6 +143,20 @@ export default {
       margin: 0
       flex-grow: 1
       color: #fff
+    &.tabs
+      padding-bottom: 0
+      justify-content: flex-end
+      a
+        text-decoration: none
+        margin-right: 10px
+        padding: 8px 12px
+        border-radius: 4px 4px 0 0
+        background-color: #333
+        font-weight: 700
+        &.router-link-exact-active
+          background-color: #fff
+          background-color: #fff
+          color: #000
 
   > div
     display: flex
