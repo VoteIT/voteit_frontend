@@ -77,8 +77,11 @@ export default {
         return Promise.reject(new Error('not implemented'))
       },
 
-      schema (type) {
-        return socket.call('schema.get', { message_type: type })
+      outgoing_schema (type) {
+        return socket.call('schema.get_outgoing', { message_type: type })
+      },
+      incoming_schema (type) {
+        return socket.call('schema.get_incoming', { message_type: type })
       }
     }
   }

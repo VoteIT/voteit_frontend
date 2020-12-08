@@ -1,7 +1,8 @@
 <template>
   <div>
     <input type="text" v-model="schemaName" />
-    <button @click="getSchemaTest">Get schema</button>
+    <button @click="getOutgoingSchema">Get outgoing schema</button>
+    <button @click="getIncomingSchema">Get incoming schema</button>
     <div v-if="schema" class="schema-result">
       <h2>{{ schema.title }}</h2>
       <p>{{ schema.description }}</p>
@@ -20,13 +21,23 @@ export default {
   name: 'GetSchema',
   data () {
     return {
-      schemaName: 'schema.get',
+      schemaName: 'schema.get_outgoing',
       schema: null
     }
   },
   methods: {
-    getSchemaTest () {
-      this.$objects.schema(this.schemaName)
+    getOutgoingSchema () {
+      this.$objects.outgoing_schema(this.schemaName)
+        .then(({ p }) => {
+          this.schema = p.message_schema
+        })
+        .catch(err => {
+          this.schema = null
+          alert(err)
+        })
+    },
+    getIncomingSchema () {
+      this.$objects.incoming_schema(this.schemaName)
         .then(({ p }) => {
           this.schema = p.message_schema
         })
