@@ -58,7 +58,7 @@ export default {
       return Number(this.$route.params.aid)
     },
     agenda () {
-      return this.agendas[this.$route.params.id] || []
+      return this.getAgenda(this.meetingId)
     },
     ai () {
       return this.agenda.find(ai => ai.pk === this.id) || {}
@@ -69,11 +69,10 @@ export default {
     sortedDiscussions () {
       return this.agendaDiscussions(this.id)
     },
-    ...mapState('meetings', ['agendas']),
     ...mapState(['proposals']),
     ...mapGetters('proposals', ['agendaProposals']),
     ...mapGetters('discussions', ['agendaDiscussions']),
-    ...mapGetters('meetings', ['getUser', 'getMeeting'])
+    ...mapGetters('meetings', ['getUser', 'getMeeting', 'getAgenda'])
   },
   methods: {
     hasRole (roleName) {

@@ -2,18 +2,22 @@ export default {
   namespaced: true,
   state: {
     all: [],
-    pollStatus: {}
+    pollStatus: new Map()
   },
   getters: {
-    meetingPolls (state) {
+    getMeetingPolls (state) {
       return id => state.all.filter(p => p.meeting === id)
     },
-    agendaPolls (state) {
+    getAgendaPolls (state) {
       return ai => state.all.filter(p => p.agenda_item === ai)
+    },
+    getPollStatus (state) {
+      return pollId => state.pollStatus.get(pollId) || {}
     }
   },
   mutations: {
     setPolls (state, { meeting, polls }) {
+      // Drop all polls for this meeting, then push all
       state.all = state.all.filter(p => p.meeting !== meeting)
       Array.prototype.push.apply(state.all, polls)
     },
@@ -34,7 +38,7 @@ export default {
           }
           break
         case 'poll.status':
-          state.pollStatus[item.pk] = item
+          state.pollStatus.set(item.pk, item)
           break
       }
     }

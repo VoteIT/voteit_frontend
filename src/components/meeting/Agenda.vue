@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import agendaStates from '@/schemas/agendaStates.json'
 
 const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
@@ -36,9 +36,9 @@ export default {
       return AI_ORDER.map(state => agendaStates.find(s => s.state === state))
     },
     agenda () {
-      return this.agendas[this.id] || []
+      return this.getAgenda(this.id)
     },
-    ...mapState('meetings', ['agendas'])
+    ...mapGetters('meetings', ['getAgenda'])
   },
   created () {
     this.$objects.subscribe(`meeting/${this.id}`, this)

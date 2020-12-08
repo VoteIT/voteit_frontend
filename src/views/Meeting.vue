@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import Agenda from '@/components/meeting/Agenda'
 
 export default {
@@ -105,18 +105,16 @@ export default {
       return this.getMeeting(this.id)
     },
     agenda () {
-      return this.agendas[this.id] || []
+      return this.getAgenda(this.id)
     },
     polls () {
-      return this.meetingPolls(this.id)
+      return this.getMeetingPolls(this.id)
     },
     selectedPollStatus () {
-      return this.pollStatus[this.pollSelected] || {}
+      return this.getPollStatus(this.pollSelected)
     },
-    ...mapState('meetings', ['meetings', 'agendas']),
-    ...mapState('polls', ['pollStatus']),
-    ...mapGetters('polls', ['meetingPolls']),
-    ...mapGetters('meetings', ['getMeeting'])
+    ...mapGetters('polls', ['getMeetingPolls', 'getPollStatus']),
+    ...mapGetters('meetings', ['getMeeting', 'getAgenda'])
   },
   beforeUnmount () {
     if (this.pollSelected) {
