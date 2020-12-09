@@ -25,7 +25,7 @@ export default {
     })
 
     app.config.globalProperties.$socket = socket
-    app.config.globalProperties.$objects = {
+    app.config.globalProperties.$channels = {
       connect (token) {
         return socket.connect(token)
       },
@@ -47,7 +47,7 @@ export default {
           subscriptions[uri] = new Set()
         }
         if (!subscriptions[uri].size && socket.isOpen) {
-          socket.send('object.subscribe', uri)
+          socket.send('channel.subscribe', uri)
         }
         subscriptions[uri].add(component)
       },
@@ -55,7 +55,7 @@ export default {
       leave (uri, component) {
         subscriptions[uri].delete(component)
         if (!subscriptions[uri].size && socket.isOpen) {
-          socket.send('object.leave', uri)
+          socket.send('channel.leave', uri)
         }
       },
 

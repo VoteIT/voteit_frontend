@@ -72,13 +72,13 @@ export default {
     },
     selectPoll (poll) {
       if (this.pollSelected) {
-        this.$objects.leave(`poll/${this.pollSelected}`, this)
+        this.$channels.leave(`poll/${this.pollSelected}`, this)
       }
       if (this.pollSelected === poll.pk) {
         this.pollSelected = null
       } else {
         this.pollSelected = poll.pk
-        this.$objects.subscribe(`poll/${poll.pk}`, this)
+        this.$channels.subscribe(`poll/${poll.pk}`, this)
         this.$api.get(`polls/${poll.pk}/`)
           .then(({ data }) => {
             this.updatePoll({
@@ -118,7 +118,7 @@ export default {
   },
   beforeUnmount () {
     if (this.pollSelected) {
-      this.$objects.leave(`poll/${this.pollSelected}`, this)
+      this.$channels.leave(`poll/${this.pollSelected}`, this)
     }
   }
 }

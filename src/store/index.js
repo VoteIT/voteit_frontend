@@ -59,6 +59,9 @@ export default createStore({
             commit('setLoaded')
           }, 1500)
         })
+        .catch(_ => {
+          commit('setLoaded')
+        })
     },
     logout ({ commit }) {
       // TODO more for prod

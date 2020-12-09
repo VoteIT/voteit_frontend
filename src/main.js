@@ -5,7 +5,7 @@ import router from './router'
 import store from './store'
 
 import Api from './plugins/Api'
-import Objects from './plugins/Objects'
+import Channels from './plugins/Channels'
 import Slugify from './plugins/Slugify'
 import Icon from './components/Icon'
 import Authentication from './components/mixins/Authentication'
@@ -15,7 +15,7 @@ createApp(App)
   .use(store)
   .use(router)
   .use(Api)
-  .use(Objects)
+  .use(Channels)
   .use(Slugify)
   .component('Icon', Icon)
   .component('ProgressBar', ProgressBar)

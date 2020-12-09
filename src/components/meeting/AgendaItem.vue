@@ -110,20 +110,20 @@ export default {
   watch: {
     id (newId, oldId) {
       if (oldId) {
-        this.$objects.leave(`agenda_item/${oldId}`, this)
+        this.$channels.leave(`agenda_item/${oldId}`, this)
       }
       if (newId) {
         this.initialize()
-        this.$objects.subscribe(`agenda_item/${newId}`, this)
+        this.$channels.subscribe(`agenda_item/${newId}`, this)
       }
     }
   },
   created () {
-    this.$objects.subscribe(`agenda_item/${this.id}`, this)
+    this.$channels.subscribe(`agenda_item/${this.id}`, this)
   },
   beforeUnmount () {
     if (this.id) {
-      this.$objects.leave(`agenda_item/${this.id}`, this)
+      this.$channels.leave(`agenda_item/${this.id}`, this)
     }
   }
 }

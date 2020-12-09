@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     getOutgoingSchema () {
-      this.$objects.outgoing_schema(this.schemaName)
+      this.$channels.outgoing_schema(this.schemaName)
         .then(({ p }) => {
           this.schema = p.message_schema
         })
@@ -37,7 +37,7 @@ export default {
         })
     },
     getIncomingSchema () {
-      this.$objects.incoming_schema(this.schemaName)
+      this.$channels.incoming_schema(this.schemaName)
         .then(({ p }) => {
           this.schema = p.message_schema
         })

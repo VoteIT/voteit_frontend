@@ -41,10 +41,10 @@ export default {
     ...mapGetters('meetings', ['getAgenda'])
   },
   created () {
-    this.$objects.subscribe(`meeting/${this.id}`, this)
+    this.$channels.subscribe(`meeting/${this.id}`, this)
   },
   beforeUnmount () {
-    this.$objects.leave(`meeting/${this.id}`, this)
+    this.$channels.leave(`meeting/${this.id}`, this)
   }
 }
 </script>

@@ -21,7 +21,7 @@ export default {
   methods: {
     countToTen (succeed, config) {
       const data = succeed ? undefined : { fail: 5 }
-      this.$objects.post('testing.count', data, config)
+      this.$channels.post('testing.count', data, config)
         .onProgress(value => {
           this.progress = value
         })
