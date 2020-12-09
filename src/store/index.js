@@ -22,7 +22,8 @@ export default createStore({
     socketState: false,
     authToken: null,
     user: sessionStorage.user ? JSON.parse(sessionStorage.user) : null,
-    loading: true
+    loading: new Set(),
+    initialized: false
   },
   getters: {
     isAuthenticated (state) {
@@ -30,9 +31,16 @@ export default createStore({
     }
   },
   mutations: {
-    setLoaded (state) {
-      console.log('loaded')
-      state.loading = false
+    setLoading (state, componentName) {
+      state.loading.add(componentName)
+    },
+    setLoaded (state, componentName) {
+      state.loading.delete(componentName)
+      if (state.loading.size === 0) {
+        setTimeout(_ => {
+          state.initialized = true
+        }, 500)
+      }
     },
     setUser (state, user) {
       state.user = user

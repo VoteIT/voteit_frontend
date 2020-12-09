@@ -60,7 +60,7 @@ export default {
       }
     },
     initialize () {
-      this.$socket.connect(this.authToken)
+      return this.$socket.connect(this.authToken)
         .catch(() => { this.failedInitialization = true })
     }
   },

@@ -20,7 +20,7 @@ export default {
       Object.keys(subscriptions)
         .filter(uri => subscriptions[uri].size)
         .forEach(uri => {
-          socket.send('object.subscribe', uri)
+          socket.send('channel.subscribe', uri)
         })
     })
 

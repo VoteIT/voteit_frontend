@@ -66,11 +66,10 @@ export default {
   },
   methods: {
     initialize () {
-      this.$api.get('meetings/')
+      return this.$api.get('meetings/')
         .then(({ data }) => {
           this.setMeetings(data)
         })
-        .catch(alert)
     },
     logout () {
       this.setMeetings([])

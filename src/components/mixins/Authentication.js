@@ -1,4 +1,4 @@
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   computed: {
@@ -6,12 +6,23 @@ export default {
   },
   methods: {
     initialize () {},
-    logout () {}
+    logout () {},
+    callInitialize () {
+      const promise = this.initialize()
+      // If Promise returned, set loaded after.
+      if (promise && typeof promise.then === 'function') {
+        this.setLoading(this.name)
+        promise.then(_ => {
+          this.setLoaded(this.name)
+        })
+      }
+    },
+    ...mapMutations(['setLoading', 'setLoaded'])
   },
   watch: {
     isAuthenticated (value) {
       if (value) {
-        this.initialize()
+        this.callInitialize()
       } else {
         this.logout()
       }
@@ -19,7 +30,7 @@ export default {
   },
   created () {
     if (this.isAuthenticated) {
-      this.initialize()
+      this.callInitialize()
     }
   }
 }

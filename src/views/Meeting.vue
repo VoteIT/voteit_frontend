@@ -52,23 +52,25 @@ export default {
       }[poll.state] || ''
     },
     initialize () {
-      this.$api.get(`meetings/${this.id}/`)
-        .then(({ data }) => {
-          this.updateMeeting(data)
-        })
-        .catch(err => {
-          alert('failed loading meeting', err)
-        })
-      this.$api.get('polls/', { params: { agenda_item__meeting: this.id } })
-        .then(({ data }) => {
-          this.setPolls({
-            meeting: this.id,
-            polls: data
+      return Promise.all([
+        this.$api.get(`meetings/${this.id}/`)
+          .then(({ data }) => {
+            this.updateMeeting(data)
           })
-        })
-        .catch(err => {
-          alert('failed loading polls', err)
-        })
+          .catch(err => {
+            alert('failed loading meeting', err)
+          }),
+        this.$api.get('polls/', { params: { agenda_item__meeting: this.id } })
+          .then(({ data }) => {
+            this.setPolls({
+              meeting: this.id,
+              polls: data
+            })
+          })
+          .catch(err => {
+            alert('failed loading polls', err)
+          })
+      ])
     },
     selectPoll (poll) {
       if (this.pollSelected) {

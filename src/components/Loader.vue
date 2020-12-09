@@ -1,18 +1,45 @@
 <template>
   <transition name="fade">
-    <main v-if="loading">
+    <main v-if="!initialized">
       <img src="https://ca.slack-edge.com/T030AG213-U030AG219-f63b38b74163-512" class="anders" />
       <img src="@/assets/voteit-logo.svg" class="logo" />
+      <h1 v-if="initialized === 'failed'">Failed!</h1>
+      <h1 v-else>Looting{{ dots }}</h1>
     </main>
   </transition>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+
+let timer
+
 export default {
   name: 'Loader',
+  data () {
+    return {
+      dotCount: 0
+    }
+  },
+  methods: {
+    dotUp () {
+      this.dotCount++
+      if (this.dotCount > 3) {
+        this.dotCount = 0
+      }
+    }
+  },
   computed: {
-    ...mapState(['loading'])
+    ...mapState(['initialized']),
+    dots () {
+      return '.'.repeat(this.dotCount)
+    }
+  },
+  mounted () {
+    timer = setInterval(this.dotUp, 250)
+  },
+  unmounted () {
+    clearInterval(timer)
   }
 }
 </script>
@@ -66,4 +93,10 @@ img.logo
   filter: invert(1)
   opacity: .5
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite
+
+h1
+  position: fixed
+  left: 26vw
+  bottom: 12vw
+  font-size: 4vw
 </style>

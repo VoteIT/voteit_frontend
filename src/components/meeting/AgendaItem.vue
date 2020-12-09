@@ -80,28 +80,30 @@ export default {
     },
     initialize () {
       const params = { agenda_item: this.id }
-      this.$api.get('proposals/', { params })
-        .then(({ data }) => {
-          this.setProposals({
-            ai: this.id,
-            proposals: data
+      return Promise.all([
+        this.$api.get('proposals/', { params })
+          .then(({ data }) => {
+            this.setProposals({
+              ai: this.id,
+              proposals: data
+            })
+            this.fetchMeetingRoles({
+              meetingId: this.meetingId,
+              userIds: data.map(p => p.author)
+            })
+          }),
+        this.$api.get('discussion-posts/', { params })
+          .then(({ data }) => {
+            this.setDiscussions({
+              ai: this.id,
+              discussions: data
+            })
+            this.fetchMeetingRoles({
+              meetingId: this.meetingId,
+              userIds: data.map(d => d.author)
+            })
           })
-          this.fetchMeetingRoles({
-            meetingId: this.meetingId,
-            userIds: data.map(p => p.author)
-          })
-        })
-      this.$api.get('discussion-posts/', { params })
-        .then(({ data }) => {
-          this.setDiscussions({
-            ai: this.id,
-            discussions: data
-          })
-          this.fetchMeetingRoles({
-            meetingId: this.meetingId,
-            userIds: data.map(d => d.author)
-          })
-        })
+      ])
     },
     ...mapMutations('proposals', ['setProposals', 'updateProposal']),
     ...mapMutations('discussions', ['setDiscussions', 'updateDiscussion']),
