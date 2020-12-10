@@ -20,19 +20,12 @@ export default {
   },
   computed: {
     ...mapGetters(['isAuthenticated']),
-    ...mapState(['authToken', 'socketState']),
-    socketState: {
-      set (value) {
-        if (value) {
-          this.$root.$emit('socket-open', this.$socket)
-        } else if (this.$store.state.socketState) {
-          // Only on state change
-          this.reconnectTicker()
-        }
-        this.setSocketState(value)
-      },
-      get () {
-        return this.$store.state.socketState
+    ...mapState(['authToken', 'socketState'])
+  },
+  watch: {
+    socketState (value, oldValue) {
+      if (oldValue && !value) {
+        this.reconnectTicker()
       }
     }
   },
@@ -65,11 +58,11 @@ export default {
     }
   },
   created () {
-    this.$socket.addEventListener('open', () => {
-      this.socketState = true
+    this.$socket.addEventListener('open', _ => {
+      this.setSocketState(true)
     })
-    this.$socket.addEventListener('close', () => {
-      this.socketState = false
+    this.$socket.addEventListener('close', _ => {
+      this.setSocketState(false)
     })
     document.addEventListener('visibilitychange', () => {
       if (!this.socketState) {

@@ -14,7 +14,6 @@ import Loader from '@/components/Loader.vue'
 import Alerts from '@/components/Alerts.vue'
 
 export default {
-  emits: ['socket-open'],
   components: {
     OnlineStatus,
     Loader,

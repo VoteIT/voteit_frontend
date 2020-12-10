@@ -3,7 +3,7 @@
     <main v-if="initialized !== true">
       <img src="https://ca.slack-edge.com/T030AG213-U030AG219-f63b38b74163-512" class="anders" />
       <img src="@/assets/voteit-logo.svg" class="logo" />
-      <h1 v-if="initialized === 'failed'">Failed!</h1>
+      <h1 v-if="initialized === 'failed'">No loot!</h1>
       <h1 v-else>Looting{{ dots }}</h1>
     </main>
   </transition>
