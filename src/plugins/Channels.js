@@ -1,12 +1,26 @@
-import { Socket } from '@/utils'
+import { Socket, emitter } from '@/utils'
 
 const socket = new Socket()
 const subscriptions = {}
 let objectUpdateHandler
 
 socket.addEventListener('message', event => {
+  const data = JSON.parse(event.data)
+  if (data.t && data.t.startsWith('error.')) {
+    let msg = data.p.msg
+    if (data.p.errors && data.p.errors.length) {
+      msg = data.p.errors
+        .map(e => e.msg)
+        .join('\n')
+    }
+    emitter.emit('alert-open', {
+      title: data.t,
+      text: msg,
+      level: 'warning'
+    })
+    return
+  }
   if (objectUpdateHandler) {
-    const data = JSON.parse(event.data)
     objectUpdateHandler(data)
   } else {
     console.log('Got socket message before subscribed to channel')

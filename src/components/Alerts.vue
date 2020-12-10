@@ -54,9 +54,9 @@ export default {
 <style lang="sass">
 #alerts
   position: fixed
-  bottom: 2rem
-  right: 2rem
-  width: 100%
+  bottom: 1.5rem
+  right: 1.5rem
+  width: calc(100% - 3rem)
   max-width: 600px
 
   .alert

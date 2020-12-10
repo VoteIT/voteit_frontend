@@ -31,9 +31,8 @@ export default {
         .then(({ p }) => {
           this.schema = p.message_schema
         })
-        .catch(err => {
+        .catch(_ => {
           this.schema = null
-          alert(err)
         })
     },
     getIncomingSchema () {
@@ -41,9 +40,8 @@ export default {
         .then(({ p }) => {
           this.schema = p.message_schema
         })
-        .catch(err => {
+        .catch(_ => {
           this.schema = null
-          alert(err)
         })
     }
   }
