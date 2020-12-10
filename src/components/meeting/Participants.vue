@@ -104,12 +104,12 @@ export default {
     },
     addRole (participant, role) {
       this.$api.post(`meeting-roles/${participant.pk}/add-role/`, { role })
-        .then(() => {
+        .then(({ data }) => {
           // TODO: This will be in sockets
-          participant.assigned.push(role)
+          this.setRoles([data]) // Attention: Array
         })
         .catch(({ response }) => {
-          if (response.status === 400) {
+          if (response && response.status === 400) {
             alert(response.data.role)
           } else {
             alert(`Unknown error ${response.status}`)
@@ -118,12 +118,13 @@ export default {
     },
     removeRole (participant, role) {
       this.$api.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
-        .then(() => {
+        .then(({ data }) => {
           // TODO: This will be in sockets
-          participant.assigned = participant.assigned.filter(r => r !== role)
+          this.setRoles([data]) // Attention: Array
         })
         .catch(({ response }) => {
-          if (response.status === 400) {
+          // TODO default error handler
+          if (response && response.status === 400) {
             alert(response.data.role)
           } else {
             alert(`Unknown error ${response.status}`)
