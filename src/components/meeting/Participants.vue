@@ -1,6 +1,7 @@
 <template>
   <main>
     <h1>Participants</h1>
+    <user-search @submit="addUser" />
     <table v-if="participants.length" :class="{ orderReversed }">
       <tr>
         <th @click="orderParticipants(null)" :class="{ orderBy: !orderBy }">
@@ -27,13 +28,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import UserSearch from '@/components/widgets/UserSearch.vue'
+
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
   { name: 'proposer', icon: 'post_add' },
   { name: 'discusser', icon: 'comment' },
   { name: 'potential_voter', icon: 'star_outline' },
-  { name: 'error', icon: 'delete' }
+  { name: 'error', icon: 'error' }
 ]
 
 export default {
@@ -43,6 +46,9 @@ export default {
       orderReversed: false,
       roles: TEMP_ROLES
     }
+  },
+  components: {
+    UserSearch
   },
   computed: {
     meetingId () {
@@ -84,6 +90,18 @@ export default {
     initialize () {
       this.fetchMeetingRoles({ meetingId: this.meetingId })
     },
+    addUser (user) {
+      this.$api.post('meeting-roles/', {
+        user_id: user.pk,
+        meeting_id: this.meetingId
+      })
+        .then(({ data }) => {
+          this.setRoles([data]) // As array
+        })
+        .catch(_ => {
+          alert('Could not add user to meeting')
+        })
+    },
     addRole (participant, role) {
       this.$api.post(`meeting-roles/${participant.pk}/add-role/`, { role })
         .then(() => {
@@ -115,6 +133,7 @@ export default {
     roleCount (name) {
       return this.participants.filter(p => p.assigned.includes(name)).length
     },
+    ...mapMutations('meetings', ['setRoles']),
     ...mapActions('meetings', ['fetchMeetingRoles'])
   }
 }
