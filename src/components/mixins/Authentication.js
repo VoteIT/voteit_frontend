@@ -12,9 +12,13 @@ export default {
       // If Promise returned, set loaded after.
       if (promise && typeof promise.then === 'function') {
         this.setLoading(this.name)
-        promise.then(_ => {
-          this.setLoaded(this.name)
-        })
+        promise
+          .then(_ => {
+            this.setLoaded(this.name)
+          })
+          .catch(_ => {
+            this.setLoading('failed')
+          })
       }
     },
     ...mapMutations(['setLoading', 'setLoaded'])

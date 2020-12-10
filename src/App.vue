@@ -3,6 +3,7 @@
     <online-status/>
     <router-view/>
     <loader/>
+    <alerts/>
   </div>
 </template>
 
@@ -10,12 +11,14 @@
 import { mapActions, mapMutations, mapState } from 'vuex'
 import OnlineStatus from '@/components/OnlineStatus'
 import Loader from '@/components/Loader.vue'
+import Alerts from '@/components/Alerts.vue'
 
 export default {
   emits: ['socket-open'],
   components: {
     OnlineStatus,
-    Loader
+    Loader,
+    Alerts
   },
   computed: {
     ...mapState(['user'])

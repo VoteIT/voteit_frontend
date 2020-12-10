@@ -1,6 +1,7 @@
 import ProgressPromise from './ProgressPromise'
 import Socket from './Socket'
 import { setAuthToken, restApi } from './api'
+import mitt from 'mitt'
 
 function uriToPayload (uri) {
   // Convert internal resource identifier to subscription payload object
@@ -13,10 +14,13 @@ function uriToPayload (uri) {
   }
 }
 
+const emitter = mitt()
+
 export {
   Socket,
   ProgressPromise,
   uriToPayload,
   setAuthToken,
-  restApi
+  restApi,
+  emitter
 }

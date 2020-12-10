@@ -32,7 +32,11 @@ export default createStore({
   },
   mutations: {
     setLoading (state, componentName) {
-      state.loading.add(componentName)
+      if (componentName === 'failed') {
+        state.initialized = 'failed'
+      } else {
+        state.loading.add(componentName)
+      }
     },
     setLoaded (state, componentName) {
       state.loading.delete(componentName)
@@ -63,12 +67,9 @@ export default createStore({
       restApi.get(`dev-login/${username}/`)
         .then(({ data }) => {
           commit('setAuthToken', data.key)
-          setTimeout(() => {
-            commit('setLoaded')
-          }, 1500)
         })
         .catch(_ => {
-          commit('setLoaded')
+          commit('setLoading', 'failed')
         })
     },
     logout ({ commit }) {
