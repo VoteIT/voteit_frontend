@@ -64,6 +64,7 @@ export default {
     this.$socket.addEventListener('close', _ => {
       this.setSocketState(false)
     })
+    // Don't try to reconnect if not on display
     document.addEventListener('visibilitychange', () => {
       if (!this.socketState) {
         this.reconnectTicker(document.visibilityState === 'visible')

@@ -1,32 +1,36 @@
-import Meeting from '../views/Meeting'
-import AgendaItem from '@/components/meeting/AgendaItem'
-import Participants from '@/components/meeting/Participants'
-import Start from '@/components/meeting/Start'
+import meeting from '../views/meeting'
 
 export default {
   path: '/m/:id/:slug',
   name: 'Meeting',
-  component: Meeting,
+  component: meeting.Main,
   children: [
     {
       path: '',
       name: 'index',
       components: {
-        main: Start
+        main: meeting.Start
       }
     },
     {
       path: 'participants',
       name: 'participants',
       components: {
-        main: Participants
+        main: meeting.Participants
+      }
+    },
+    {
+      path: 'polls',
+      name: 'polls',
+      components: {
+        main: meeting.Polls
       }
     },
     {
       path: 'a/:aid/:aslug',
       name: 'agenda-item',
       components: {
-        main: AgendaItem
+        main: meeting.AgendaItem
       }
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route

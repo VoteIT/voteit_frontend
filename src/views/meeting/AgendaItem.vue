@@ -35,8 +35,8 @@
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import agendaStates from '@/schemas/agendaStates.json'
 
-import AddContent from './AddContent.vue'
-import WorkflowState from '../WorkflowState.vue'
+import AddContent from '@/components/meeting/AddContent.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
 
 export default {
   name: 'AgendaItem',

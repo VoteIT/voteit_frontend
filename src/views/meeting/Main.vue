@@ -16,8 +16,12 @@
         </div>
       </div>
     </nav>
-    <nav class="tabs" v-if="hasRole('moderator')">
-      <router-link :to="`/m/${id}/${$slugify(meeting.title)}/participants`">Participants</router-link>
+    <nav class="tabs" v-if="navigationLinks.length">
+      <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
+        <icon sm :name="link.icon" />
+        {{ link.title }}
+        <span v-if="link.count">({{ count }})</span>
+      </router-link>
     </nav>
     <div>
       <agenda />
@@ -29,6 +33,22 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import Agenda from '@/components/meeting/Agenda'
+
+const NAV_LINKS = [
+  {
+    role: 'potential_voter', // FIXME Permissions
+    title: 'Polls',
+    icon: 'star',
+    path: 'polls',
+    countAttr: 'polls'
+  },
+  {
+    role: 'moderator',
+    title: 'Participants',
+    icon: 'people',
+    path: 'participants'
+  }
+]
 
 export default {
   name: 'Meeting',
@@ -56,9 +76,6 @@ export default {
         this.$api.get(`meetings/${this.id}/`)
           .then(({ data }) => {
             this.updateMeeting(data)
-          })
-          .catch(err => {
-            alert('failed loading meeting', err)
           }),
         this.$api.get('polls/', { params: { agenda_item__meeting: this.id } })
           .then(({ data }) => {
@@ -66,9 +83,6 @@ export default {
               meeting: this.id,
               polls: data
             })
-          })
-          .catch(err => {
-            alert('failed loading polls', err)
           })
       ])
     },
@@ -100,6 +114,22 @@ export default {
     ...mapMutations('polls', ['setPolls', 'updatePoll'])
   },
   computed: {
+    meetingPath () {
+      return `/m/${this.id}/${this.$slugify(this.meeting.title)}`
+    },
+    navigationLinks () {
+      return NAV_LINKS
+        .filter(l => this.hasRole(l.role))
+        .map(l => {
+          // TODO Check this with reactivity
+          if (l.countAttr) {
+            return Object.assign(l, {
+              count: this[l.countAttr].length
+            })
+          }
+          return l
+        })
+    },
     userRoles () {
       return this.meeting.current_user_roles || []
     },
