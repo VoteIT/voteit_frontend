@@ -1,0 +1,133 @@
+<template>
+  <div id="meeting">
+    <nav>
+      <router-link to="/">Hem</router-link>
+      <h1><router-link :to="meetingPath">{{ meeting.title || 'Laddar möte' }}</router-link></h1>
+    </nav>
+    <nav class="tabs" v-if="navigationLinks.length">
+      <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
+        <icon sm :name="link.icon" />
+        {{ link.title }}
+        <span v-if="link.count">({{ count }})</span>
+      </router-link>
+    </nav>
+    <div>
+      <agenda />
+      <router-view id="main-content" name="main" />
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapMutations } from 'vuex'
+import Agenda from '@/components/meeting/Agenda'
+
+import MeetingBase from './MeetingBase.js'
+
+const NAV_LINKS = [
+  {
+    role: 'potential_voter', // FIXME Permissions
+    title: 'Polls',
+    icon: 'star',
+    path: 'polls',
+    countAttr: 'polls'
+  },
+  {
+    role: 'moderator',
+    title: 'Participants',
+    icon: 'people',
+    path: 'participants'
+  }
+]
+
+export default {
+  name: 'Meeting',
+  extends: MeetingBase,
+  components: {
+    Agenda
+  },
+  methods: {
+    initialize () {
+      return Promise.all([
+        this.$api.get(`meetings/${this.meetingId}/`)
+          .then(({ data }) => {
+            this.updateMeeting(data)
+          }),
+        this.$api.get('polls/', { params: { agenda_item__meeting: this.meetingId } })
+          .then(({ data }) => {
+            this.setPolls({
+              meeting: this.meetingId,
+              polls: data
+            })
+          })
+      ])
+    },
+    ...mapMutations('meetings', ['updateMeeting']),
+    ...mapMutations('polls', ['setPolls'])
+  },
+  computed: {
+    navigationLinks () {
+      return NAV_LINKS
+        .filter(l => this.hasRole(l.role))
+        .map(l => {
+          // TODO Check this with reactivity
+          if (l.countAttr) {
+            return Object.assign(l, {
+              count: this[l.countAttr].length
+            })
+          }
+          return l
+        })
+    },
+    agenda () {
+      return this.getAgenda(this.meetingId)
+    },
+    ...mapGetters('meetings', ['getAgenda'])
+  }
+}
+</script>
+
+<style lang="sass">
+#meeting
+  display: flex
+  flex-direction: column
+  min-height: 100vh
+  nav
+    padding: 8px
+    background-color: #000
+    color: fff
+    display: flex
+    justify-content: space-between
+    a
+      color: #ddf
+    h1
+      margin: 0
+      flex-grow: 1
+      color: #fff
+    &.tabs
+      padding-bottom: 0
+      justify-content: flex-end
+      a
+        text-decoration: none
+        margin-right: 10px
+        padding: 8px 12px
+        border-radius: 4px 4px 0 0
+        background-color: #333
+        font-weight: 700
+        &.router-link-exact-active
+          background-color: #fff
+          background-color: #fff
+          color: #000
+
+  > div
+    display: flex
+    flex-grow: 1
+    #agenda
+      padding: 8px
+      width: 280px
+      text-align: left
+      background-color: #eee
+    #main-content
+      flex-grow: 1
+      padding: 0 10px
+</style>

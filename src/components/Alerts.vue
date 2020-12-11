@@ -16,9 +16,36 @@
 import { emitter } from '@/utils'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
+const Level = {
+  info: 'info',
+  warning: 'warning',
+  error: 'error'
+}
 const DEFAULTS = {
   sticky: false,
-  level: 'info'
+  level: Level.info
+}
+
+function alertFromString (text) {
+  let level = DEFAULTS.level
+  let sticky = false
+  switch (text.charAt(0)) {
+    case '*':
+      text = text.substr(1)
+      level = Level.warning
+      break
+    case '^':
+      text = text.substr(1)
+      level = Level.error
+      sticky = true
+      break
+  }
+  return {
+    text,
+    level,
+    title: level,
+    sticky
+  }
 }
 
 export default {
@@ -37,6 +64,9 @@ export default {
       }
     },
     open (alert) {
+      if (typeof alert === 'string') {
+        alert = alertFromString(alert)
+      }
       alert = Object.assign({}, DEFAULTS, alert)
       this.alerts.push(alert)
       if (!alert.sticky) {

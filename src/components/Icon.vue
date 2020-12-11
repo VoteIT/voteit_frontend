@@ -1,6 +1,6 @@
 <template>
   <button v-if="button" class="btn" :class="{ 'btn-sm': sm, active }">
-    <i class="material-icons">{{ name }}</i>
+    <i class="material-icons">{{ name }}</i> <slot/>
   </button>
   <i v-else class="material-icons" :class="{ sm }">{{ name }}</i>
 </template>

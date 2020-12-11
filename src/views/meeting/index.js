@@ -1,12 +1,12 @@
 import AgendaItem from './AgendaItem.vue'
-import Main from './Main.vue'
+import Meeting from './Meeting.vue'
 import Participants from './Participants.vue'
 import Polls from './Polls.vue'
 import Start from './Start.vue'
 
 export default {
   AgendaItem,
-  Main,
+  Meeting,
   Participants,
   Polls,
   Start

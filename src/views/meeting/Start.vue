@@ -1,11 +1,14 @@
 <template>
   <main>
-    <h1>Welcome to ze meeting!</h1>
+    <h1>{{ meeting.title }}</h1>
   </main>
 </template>
 
 <script>
+import MeetingBase from './MeetingBase.js'
+
 export default {
-  name: 'MeetingIndex'
+  name: 'MeetingIndex',
+  extends: MeetingBase
 }
 </script>

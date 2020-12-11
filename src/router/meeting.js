@@ -3,7 +3,7 @@ import meeting from '../views/meeting'
 export default {
   path: '/m/:id/:slug',
   name: 'Meeting',
-  component: meeting.Main,
+  component: meeting.Meeting,
   children: [
     {
       path: '',

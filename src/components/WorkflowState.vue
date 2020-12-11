@@ -30,7 +30,9 @@ export default {
   .btn.btn-sm
     border-radius: 0
   .btn:first-child
-    border-radius: 6px 0 0 6px
+    border-top-left-radius: 6px
+    border-bottom-left-radius: 6px
   .btn:last-child
-    border-radius: 0 6px 6px 0
+    border-top-right-radius: 6px
+    border-bottom-right-radius: 6px
 </style>

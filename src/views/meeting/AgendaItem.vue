@@ -38,21 +38,18 @@ import agendaStates from '@/schemas/agendaStates.json'
 import AddContent from '@/components/meeting/AddContent.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 
+import MeetingBase from './MeetingBase.js'
+
 export default {
   name: 'AgendaItem',
   components: {
     AddContent,
     WorkflowState
   },
+  extends: MeetingBase,
   computed: {
     agendaStates () {
       return agendaStates
-    },
-    meeting () {
-      return this.getMeeting(this.meetingId)
-    },
-    meetingId () {
-      return Number(this.$route.params.id)
     },
     id () {
       return Number(this.$route.params.aid)
@@ -72,12 +69,9 @@ export default {
     ...mapState(['proposals']),
     ...mapGetters('proposals', ['agendaProposals']),
     ...mapGetters('discussions', ['agendaDiscussions']),
-    ...mapGetters('meetings', ['getUser', 'getMeeting', 'getAgenda'])
+    ...mapGetters('meetings', ['getUser', 'getAgenda'])
   },
   methods: {
-    hasRole (roleName) {
-      return this.meeting.current_user_roles.includes(roleName)
-    },
     initialize () {
       const params = { agenda_item: this.id }
       return Promise.all([
