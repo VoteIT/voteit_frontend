@@ -7,8 +7,8 @@
         <progress-bar v-if="poll.pk === pollSelected" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
       </li>
     </ul>
-    <p v-else><em>No polls in meeting</em></p>
-    <div class="btn-group">
+    <p v-else><em>No polls just yet</em></p>
+    <div class="btn-group" v-if="hasRole('moderator')">
       <icon sm button name="add" @click="$alert('^Not implemented')">New poll</icon>
     </div>
   </div>
