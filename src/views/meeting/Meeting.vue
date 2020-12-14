@@ -29,7 +29,7 @@ import usePolls from '@/composables/meeting/usePolls.js'
 
 const NAV_LINKS = [
   {
-    role: 'potential_voter', // FIXME Permissions
+    // role: ['potential_voter', 'moderator'], // FIXME Permissions
     title: 'Polls',
     icon: 'star',
     path: 'polls',

@@ -32,7 +32,13 @@ export default function useMeeting () {
 
   const userRoles = computed(_ => meeting.value.current_user_roles || [])
   function hasRole (roleName) {
-    return userRoles.value.includes(roleName)
+    if (typeof roleName === 'string') {
+      return userRoles.value.includes(roleName)
+    } else if (roleName && typeof roleName.some === 'function') {
+      return roleName.some(r => userRoles.value.includes(r))
+    } else if (roleName === undefined) {
+      return true
+    }
   }
 
   return {
