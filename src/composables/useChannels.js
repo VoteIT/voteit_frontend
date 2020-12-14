@@ -70,7 +70,6 @@ export default function useChannels () {
   }
 
   function leave (uri) {
-    console.log(uri)
     subscriptions.get(uri).delete(this)
     if (!subscriptions.get(uri).size && socket.isOpen) {
       socket.send('channel.leave', uri)

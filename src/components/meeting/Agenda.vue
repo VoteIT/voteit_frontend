@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+
 import agendaStates from '@/schemas/agendaStates.json'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
@@ -21,14 +23,18 @@ export default {
   name: 'Agenda',
   setup () {
     const { getAgenda } = useAgenda()
+    const { meetingId, meetingPath, hasRole } = useMeeting()
+    const agenda = computed(_ => getAgenda(meetingId.value))
     return {
-      ...useMeeting(),
-      getAgenda
+      meetingId,
+      meetingPath,
+      hasRole,
+      agenda
     }
   },
   methods: {
     aiPath (ai) {
-      return `/m/${this.meetingId}/${this.$route.params.slug}/a/${ai.pk}/${this.$slugify(ai.title)}`
+      return `${this.meetingPath}/a/${ai.pk}/${this.$slugify(ai.title)}`
     },
     aiType (type) {
       return this.agenda.filter(ai => ai.state === type)
@@ -39,9 +45,6 @@ export default {
       return AI_ORDER
         .map(state => agendaStates.find(s => s.state === state))
         .filter(s => !s.requiresRole || this.hasRole(s.requiresRole))
-    },
-    agenda () {
-      return this.getAgenda(this.meetingId)
     }
   }
 }
