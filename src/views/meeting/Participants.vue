@@ -28,8 +28,12 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UserSearch from '@/components/widgets/UserSearch.vue'
+
+import useLoader from '@/composables/useLoader.js'
+import useRestApi from '@/composables/useRestApi.js'
+import useMeeting from '@/composables/meeting/useMeeting.js'
+import useMeetingRoles from '@/composables/meeting/useMeetingRoles.js'
 
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
@@ -40,6 +44,17 @@ const TEMP_ROLES = [
 ]
 
 export default {
+  setup () {
+    const { fetch } = useLoader()
+    const { restApi, restError } = useRestApi()
+    return {
+      ...useMeeting(),
+      ...useMeetingRoles(),
+      fetch,
+      restApi,
+      restError
+    }
+  },
   data () {
     return {
       orderBy: null,
@@ -51,34 +66,30 @@ export default {
     UserSearch
   },
   computed: {
-    meetingId () {
-      return Number(this.$route.params.id)
-    },
-    orderMethod () {
-      return (a, b) => {
-        let valA, valB
-        if (this.orderBy) {
-          valA = !a.assigned.includes(this.orderBy)
-          valB = !b.assigned.includes(this.orderBy)
-        } else {
-          valA = a.user.full_name
-          valB = b.user.full_name
-        }
-        if (valA > valB) {
-          return this.orderReversed ? -1 : 1
-        }
-        if (valA < valB) {
-          return this.orderReversed ? 1 : -1
-        }
-        return 0
-      }
-    },
     participants () {
-      return this.getMeetingRoles(this.meetingId)
-    },
-    ...mapGetters('meetings', ['getMeetingRoles'])
+      const participants = this.getMeetingRoles(this.meetingId)
+      participants.sort(this.orderMethod)
+      return participants
+    }
   },
   methods: {
+    orderMethod (a, b) {
+      let valA, valB
+      if (this.orderBy) {
+        valA = !a.assigned.includes(this.orderBy)
+        valB = !b.assigned.includes(this.orderBy)
+      } else {
+        valA = a.user.full_name
+        valB = b.user.full_name
+      }
+      if (valA > valB) {
+        return this.orderReversed ? -1 : 1
+      }
+      if (valA < valB) {
+        return this.orderReversed ? 1 : -1
+      }
+      return 0
+    },
     orderParticipants (role) {
       if (this.orderBy === role) {
         this.orderReversed = !this.orderReversed
@@ -88,41 +99,40 @@ export default {
       this.participants.sort(this.orderMethod)
     },
     initialize () {
-      this.fetchMeetingRoles({ meetingId: this.meetingId })
+      return this.fetchMeetingRoles(this.meetingId)
     },
     addUser (user) {
-      this.$api.post('meeting-roles/', {
+      this.restApi.post('meeting-roles/', {
         user_id: user.pk,
         meeting_id: this.meetingId
       })
         .then(({ data }) => {
           this.setRoles([data]) // As array
         })
-        .catch(_ => {
-          alert('Could not add user to meeting')
-        })
+        .catch(this.restError)
     },
     addRole (participant, role) {
-      this.$api.post(`meeting-roles/${participant.pk}/add-role/`, { role })
+      this.restApi.post(`meeting-roles/${participant.pk}/add-role/`, { role })
         .then(({ data }) => {
           // TODO: This will be in sockets
           this.setRoles([data]) // Attention: Array
         })
-        .catch(this.$apiError)
+        .catch(this.restError)
     },
     removeRole (participant, role) {
-      this.$api.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
+      this.restApi.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
         .then(({ data }) => {
           // TODO: This will be in sockets
           this.setRoles([data]) // Attention: Array
         })
-        .catch(this.$apiError)
+        .catch(this.restError)
     },
     roleCount (name) {
       return this.participants.filter(p => p.assigned.includes(name)).length
-    },
-    ...mapMutations('meetings', ['setRoles']),
-    ...mapActions('meetings', ['fetchMeetingRoles'])
+    }
+  },
+  created () {
+    this.fetch(this.initialize)
   }
 }
 </script>

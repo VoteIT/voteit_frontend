@@ -1,5 +1,7 @@
+import { slugify } from '@/utils'
+
 export default {
   install (app) {
-    app.config.globalProperties.$slugify = text => typeof text === 'string' && text.toLowerCase().replaceAll(/\s+/g, '-')
+    app.config.globalProperties.$slugify = slugify
   }
 }

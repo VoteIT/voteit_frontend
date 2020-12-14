@@ -19,10 +19,13 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
 import Agenda from '@/components/meeting/Agenda'
 
-import MeetingBase from './MeetingBase.js'
+import useLoader from '@/composables/useLoader.js'
+import useRestApi from '@/composables/useRestApi.js'
+import useChannels from '@/composables/useChannels.js'
+import useMeeting from '@/composables/meeting/useMeeting.js'
+import usePolls from '@/composables/meeting/usePolls.js'
 
 const NAV_LINKS = [
   {
@@ -42,28 +45,28 @@ const NAV_LINKS = [
 
 export default {
   name: 'Meeting',
-  extends: MeetingBase,
+  setup () {
+    const { restApi } = useRestApi()
+    const { subscribe, leave } = useChannels()
+    return {
+      ...useLoader(),
+      ...useMeeting(),
+      ...usePolls(),
+      restApi,
+      subscribe,
+      leave
+    }
+  },
   components: {
     Agenda
   },
   methods: {
     initialize () {
       return Promise.all([
-        this.$api.get(`meetings/${this.meetingId}/`)
-          .then(({ data }) => {
-            this.updateMeeting(data)
-          }),
-        this.$api.get('polls/', { params: { agenda_item__meeting: this.meetingId } })
-          .then(({ data }) => {
-            this.setPolls({
-              meeting: this.meetingId,
-              polls: data
-            })
-          })
+        this.fetchMeeting(),
+        this.fetchPolls(this.meetingId)
       ])
-    },
-    ...mapMutations('meetings', ['updateMeeting']),
-    ...mapMutations('polls', ['setPolls'])
+    }
   },
   computed: {
     navigationLinks () {
@@ -79,10 +82,20 @@ export default {
           return l
         })
     },
+    polls () {
+      return this.getPolls(this.meetingId)
+    },
     agenda () {
       return this.getAgenda(this.meetingId)
-    },
-    ...mapGetters('meetings', ['getAgenda'])
+    }
+  },
+  created () {
+    this.subscribe(`meeting/${this.meetingId}`)
+    this.fetch(this.initialize)
+  },
+  beforeRouteLeave (to, from, next) {
+    this.leave(`meeting/${this.meetingId}`)
+    next()
   }
 }
 </script>

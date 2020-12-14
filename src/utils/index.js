@@ -14,6 +14,10 @@ function uriToPayload (uri) {
   }
 }
 
+function slugify (text) {
+  return typeof text === 'string' && text.toLowerCase().replaceAll(/\s+/g, '-')
+}
+
 const emitter = mitt()
 
 export {
@@ -21,6 +25,7 @@ export {
   ProgressPromise,
   uriToPayload,
   setAuthToken,
+  slugify,
   restApi,
   emitter
 }

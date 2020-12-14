@@ -14,7 +14,7 @@
     <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
-        <button @click="userLogin(user)">
+        <button @click="authenticate(user.username)">
           <icon v-if="user.is_superuser" name="verified_user" sm />
           <icon v-else name="face" sm />
           {{ user.username }}
@@ -38,12 +38,28 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+// import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
+import useMeetings from '@/composables/useMeetings.js'
+import useRestApi from '@/composables/useRestApi.js'
+import useAuthentication from '@/composables/useAuthentication.js'
+import useLoader from '@/composables/useLoader.js'
+
 export default {
   name: 'Home',
+  setup () {
+    const { orderedMeetings, fetchMeetings } = useMeetings()
+    const { restApi } = useRestApi()
+    return {
+      orderedMeetings,
+      fetchMeetings,
+      restApi,
+      ...useAuthentication(),
+      ...useLoader()
+    }
+  },
   data () {
     return {
       users: [],
@@ -59,42 +75,21 @@ export default {
     Counter,
     getSchema
   },
-  computed: {
-    ...mapGetters('meetings', ['orderedMeetings']),
-    ...mapGetters(['isAuthenticated']),
-    ...mapState(['user'])
-  },
   methods: {
-    initialize () {
-      return this.$api.get('meetings/')
-        .then(({ data }) => {
-          this.setMeetings(data)
-        })
-    },
-    logout () {
-      this.setMeetings([])
-      this.logout()
-    },
-    userLogin (user) {
-      this.setUser(user)
-      this.authenticate(user.username)
-    },
     createUser () {
       this.newUserError = false
-      this.$api.post('dev-login/', this.newUser)
+      this.restApi.post('dev-login/', this.newUser)
         .then(() => {
           this.users.push(this.newUser)
         })
         .catch(() => {
           this.newUserError = true
         })
-    },
-    ...mapMutations('meetings', ['setMeetings']),
-    ...mapMutations(['setUser']),
-    ...mapActions(['authenticate', 'logout'])
+    }
   },
   created () {
-    this.$api.get('dev-login/')
+    this.fetch(this.fetchMeetings)
+    this.restApi.get('dev-login/')
       .then(({ data }) => {
         this.users = data
       })

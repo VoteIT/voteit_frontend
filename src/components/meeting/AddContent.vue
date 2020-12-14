@@ -11,8 +11,16 @@
 </template>
 
 <script>
+import useRestApi from '@/composables/useRestApi.js'
+
 export default {
   name: 'AddContent',
+  setup () {
+    const { restApi } = useRestApi()
+    return {
+      restApi
+    }
+  },
   props: {
     name: String,
     endpoint: String,
@@ -30,7 +38,7 @@ export default {
       if (!this.submitting) {
         const data = Object.assign({ title: this.title }, this.params)
         this.proposalSubmitting = true
-        this.$api.post(this.endpoint, data)
+        this.restApi.post(this.endpoint, data)
           .then(() => {
             this.title = ''
             this.open = false

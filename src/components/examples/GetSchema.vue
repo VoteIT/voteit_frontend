@@ -16,9 +16,13 @@
 </template>
 
 <script>
+import useChannels from '@/composables/useChannels.js'
 
 export default {
   name: 'GetSchema',
+  setup () {
+    return useChannels()
+  },
   data () {
     return {
       schemaName: 'schema.get_outgoing',
@@ -27,7 +31,7 @@ export default {
   },
   methods: {
     getOutgoingSchema () {
-      this.$channels.outgoing_schema(this.schemaName)
+      this.outgoingSchema(this.schemaName)
         .then(({ p }) => {
           this.schema = p.message_schema
         })
@@ -36,7 +40,7 @@ export default {
         })
     },
     getIncomingSchema () {
-      this.$channels.incoming_schema(this.schemaName)
+      this.incomingSchema(this.schemaName)
         .then(({ p }) => {
           this.schema = p.message_schema
         })

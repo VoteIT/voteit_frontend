@@ -8,10 +8,13 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+// import { mapActions, mapMutations, mapState } from 'vuex'
 import OnlineStatus from '@/components/OnlineStatus'
 import Loader from '@/components/Loader.vue'
 import Alerts from '@/components/Alerts.vue'
+
+import useAuthentication from '@/composables/useAuthentication.js'
+import useLoader from '@/composables/useLoader.js'
 
 export default {
   components: {
@@ -19,12 +22,11 @@ export default {
     Loader,
     Alerts
   },
-  computed: {
-    ...mapState(['user'])
-  },
-  methods: {
-    ...mapActions(['authenticate']),
-    ...mapMutations(['setLoaded'])
+  setup () {
+    return {
+      ...useAuthentication(),
+      ...useLoader()
+    }
   },
   created () {
     if (this.user) {

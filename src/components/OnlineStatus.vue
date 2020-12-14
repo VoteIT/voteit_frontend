@@ -7,9 +7,19 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+// import { mapGetters, mapMutations, mapState } from 'vuex'
+import useChannels from '@/composables/useChannels.js'
+import useLoader from '@/composables/useLoader.js'
+import useAuthentication from '@/composables/useAuthentication.js'
 
 export default {
+  setup () {
+    return {
+      ...useAuthentication(),
+      ...useChannels(),
+      ...useLoader()
+    }
+  },
   data () {
     return {
       reconnectTime: 1,
@@ -18,11 +28,17 @@ export default {
       failedInitialization: false
     }
   },
-  computed: {
-    ...mapGetters(['isAuthenticated']),
-    ...mapState(['authToken', 'socketState'])
-  },
+  // computed: {
+  //   ...mapGetters(['isAuthenticated']),
+  //   ...mapState(['authToken', 'socketState'])
+  // },
   watch: {
+    authToken (value) {
+      if (value) {
+        this.connect(value)
+          .catch(() => { this.failedInitialization = true })
+      }
+    },
     socketState (value, oldValue) {
       if (oldValue && !value) {
         this.reconnectTicker()
@@ -30,7 +46,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setSocketState']),
+    // ...mapMutations(['setSocketState']),
     reconnectTicker (on = true) {
       if (!on) {
         clearInterval(this.reconnectIntervalId)
@@ -41,7 +57,7 @@ export default {
         this.reconnectIntervalId = setInterval(this.reconnectTicker, 1000)
       }
       if (this.reconnectTime-- <= 1) {
-        this.$socket.connect(this.authToken)
+        this.connect(this.authToken)
           .then(() => {
             // Reset tries and stop ticker
             this.reconnectTries = 1
@@ -51,19 +67,9 @@ export default {
             this.reconnectTime = this.reconnectTries++ ** 2
           })
       }
-    },
-    initialize () {
-      return this.$socket.connect(this.authToken)
-        .catch(() => { this.failedInitialization = true })
     }
   },
   created () {
-    this.$socket.addEventListener('open', _ => {
-      this.setSocketState(true)
-    })
-    this.$socket.addEventListener('close', _ => {
-      this.setSocketState(false)
-    })
     // Don't try to reconnect if not on display
     document.addEventListener('visibilitychange', () => {
       if (!this.socketState) {

@@ -2,7 +2,8 @@
   {
     "transition": "unpublish",
     "icon": "visibility_off",
-    "state": "private"
+    "state": "private",
+    "requiresRole": "moderator"
   },
   {
     "transition": "upcoming",

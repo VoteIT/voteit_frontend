@@ -1,7 +1,8 @@
 <template>
   <div>
-    <h1>{{ ai.title }}</h1>
-    <workflow-state v-if="ai.state" :state="ai.state" :all-states="agendaStates" :admin="hasRole('moderator')" :endpoint="`agenda-items/${id}/transitions/`" />
+    <h1>{{ agendaItem.title }}</h1>
+    <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :all-states="agendaStates" :admin="hasRole('moderator')" :endpoint="`agenda-items/${agendaId}/transitions/`" />
+    <icon button sm name="add" @click="$alert('*Not implemented')">New poll</icon>
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
@@ -9,11 +10,11 @@
           <li v-for="p in sortedProposals" :key="p.pk">
             {{ getUser(p.author, meetingId).full_name }}:<br />
             {{ p.title }}
-            <icon name="delete" button sm @click="$api.delete(`proposals/${p.pk}/`)" />
+            <icon name="delete" button sm @click="restApi.delete(`proposals/${p.pk}/`)" />
           </li>
         </ul>
         <p v-else><em>Nothing to speak</em></p>
-        <add-content name="proposal" endpoint="proposals/" :params="{ agenda_item: this.id }" />
+        <add-content v-if="hasRole('proposer')" name="proposal" endpoint="proposals/" :params="{ agenda_item: this.agendaId }" />
       </div>
       <div class="col-sm-6">
         <h2>Discussions</h2>
@@ -21,106 +22,96 @@
           <li v-for="d in sortedDiscussions" :key="d.pk">
             {{ getUser(d.author, meetingId).full_name }}:<br />
             {{ d.title }}
-            <icon name="delete" button sm @click="$api.delete(`discussion-posts/${d.pk}/`)" />
+            <icon name="delete" button sm @click="restApi.delete(`discussion-posts/${d.pk}/`)" />
           </li>
         </ul>
         <p v-else><em>Nothing to hear</em></p>
-        <add-content name="discussion post" endpoint="discussion-posts/" :params="{ agenda_item: this.id }" />
+        <add-content v-if="hasRole('discusser')" name="discussion post" endpoint="discussion-posts/" :params="{ agenda_item: this.agendaId }" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import agendaStates from '@/schemas/agendaStates.json'
 
 import AddContent from '@/components/meeting/AddContent.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 
-import MeetingBase from './MeetingBase.js'
+import useMeeting from '@/composables/meeting/useMeeting.js'
+import useAgenda from '@/composables/meeting/useAgenda.js'
+import useProposals from '@/composables/meeting/useProposals.js'
+import useDiscussions from '@/composables/meeting/useDiscussions.js'
+import useMeetingRoles from '@/composables/meeting/useMeetingRoles.js'
+import useRestApi from '@/composables/useRestApi.js'
+import useLoader from '@/composables/useLoader.js'
+import useChannels from '@/composables/useChannels.js'
 
 export default {
   name: 'AgendaItem',
+  setup () {
+    const { restApi } = useRestApi()
+    const { fetch } = useLoader()
+    return {
+      ...useMeeting(),
+      ...useMeetingRoles(),
+      ...useAgenda(),
+      ...useProposals(),
+      ...useDiscussions(),
+      ...useChannels(),
+      fetch,
+      restApi,
+      agendaStates
+    }
+  },
   components: {
     AddContent,
     WorkflowState
   },
-  extends: MeetingBase,
   computed: {
-    agendaStates () {
-      return agendaStates
-    },
-    id () {
-      return Number(this.$route.params.aid)
-    },
-    agenda () {
-      return this.getAgenda(this.meetingId)
-    },
-    ai () {
-      return this.agenda.find(ai => ai.pk === this.id) || {}
+    agendaItem () {
+      return this.getAgenda(this.meetingId).find(ai => ai.pk === this.agendaId) || {}
     },
     sortedProposals () {
-      return this.agendaProposals(this.id)
+      return this.getAgendaProposals(this.agendaId)
     },
     sortedDiscussions () {
-      return this.agendaDiscussions(this.id)
-    },
-    ...mapState(['proposals']),
-    ...mapGetters('proposals', ['agendaProposals']),
-    ...mapGetters('discussions', ['agendaDiscussions']),
-    ...mapGetters('meetings', ['getUser', 'getAgenda'])
+      return this.getAgendaDiscussions(this.agendaId)
+    }
   },
   methods: {
     initialize () {
-      const params = { agenda_item: this.id }
       return Promise.all([
-        this.$api.get('proposals/', { params })
-          .then(({ data }) => {
-            this.setProposals({
-              ai: this.id,
-              proposals: data
-            })
-            this.fetchMeetingRoles({
-              meetingId: this.meetingId,
-              userIds: data.map(p => p.author)
-            })
-          }),
-        this.$api.get('discussion-posts/', { params })
-          .then(({ data }) => {
-            this.setDiscussions({
-              ai: this.id,
-              discussions: data
-            })
-            this.fetchMeetingRoles({
-              meetingId: this.meetingId,
-              userIds: data.map(d => d.author)
-            })
-          })
+        this.fetchAgendaProposals(this.agendaId),
+        this.fetchAgendaDiscussions(this.agendaId)
       ])
-    },
-    ...mapMutations('proposals', ['setProposals', 'updateProposal']),
-    ...mapMutations('discussions', ['setDiscussions', 'updateDiscussion']),
-    ...mapActions('meetings', ['fetchMeetingRoles'])
+        .then(_ => {
+          const userIds = [
+            ...this.sortedProposals.map(p => p.author),
+            ...this.sortedDiscussions.map(d => d.author)
+          ]
+          this.fetchMeetingRoles(userIds)
+        })
+    }
   },
   watch: {
-    id (newId, oldId) {
+    agendaId (newId, oldId) {
       if (oldId) {
-        this.$channels.leave(`agenda_item/${oldId}`, this)
+        this.leave(`agenda_item/${oldId}`)
       }
       if (newId) {
         this.initialize()
-        this.$channels.subscribe(`agenda_item/${newId}`, this)
+        this.subscribe(`agenda_item/${newId}`)
       }
     }
   },
   created () {
-    this.$channels.subscribe(`agenda_item/${this.id}`, this)
+    this.fetch(this.initialize)
+    this.subscribe(`agenda_item/${this.agendaId}`)
   },
-  beforeUnmount () {
-    if (this.id) {
-      this.$channels.leave(`agenda_item/${this.id}`, this)
-    }
+  beforeRouteLeave (to, from, next) {
+    this.leave(`agenda_item/${this.agendaId}`)
+    next()
   }
 }
 </script>

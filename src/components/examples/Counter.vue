@@ -10,8 +10,16 @@
 </template>
 
 <script>
+import useChannels from '@/composables/useChannels.js'
+
 export default {
   name: 'Counter',
+  setup () {
+    const { post } = useChannels()
+    return {
+      post
+    }
+  },
   data () {
     return {
       progress: null,
@@ -21,7 +29,7 @@ export default {
   methods: {
     countToTen (succeed, config) {
       const data = succeed ? undefined : { fail: 5 }
-      this.$channels.post('testing.count', data, config)
+      this.post('testing.count', data, config)
         .onProgress(value => {
           this.progress = value
         })

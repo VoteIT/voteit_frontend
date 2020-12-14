@@ -1,39 +1,34 @@
-import { mapGetters, mapMutations } from 'vuex'
+// import { mapGetters, mapMutations } from 'vuex'
+import useAuthentication from '@/composables/useAuthentication'
+import { emitter } from '../../utils'
+// import useLoader from '@/composables/useLoader.js'
 
 export default {
-  computed: {
-    ...mapGetters(['isAuthenticated'])
-  },
   methods: {
     initialize () {},
-    logout () {},
     callInitialize () {
       const promise = this.initialize()
       // If Promise returned, set loaded after.
       if (promise && typeof promise.then === 'function') {
-        this.setLoading(this.name)
+        this.setLoading()
         promise
           .then(_ => {
-            this.setLoaded(this.name)
+            this.setLoaded()
           })
           .catch(_ => {
-            this.setLoading('failed')
+            this.setLoadingFailed()
           })
-      }
-    },
-    ...mapMutations(['setLoading', 'setLoaded'])
-  },
-  watch: {
-    isAuthenticated (value) {
-      if (value) {
-        this.callInitialize()
-      } else {
-        this.logout()
       }
     }
   },
   created () {
-    if (this.isAuthenticated) {
+    const { isAuthenticated } = useAuthentication()
+    emitter.on('authenticated', value => {
+      if (value) {
+        this.callInitialize()
+      }
+    })
+    if (isAuthenticated.value) {
       this.callInitialize()
     }
   }

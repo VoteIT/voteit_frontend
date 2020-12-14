@@ -10,41 +10,45 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
 import agendaStates from '@/schemas/agendaStates.json'
+
+import useMeeting from '@/composables/meeting/useMeeting.js'
+import useAgenda from '@/composables/meeting/useAgenda.js'
 
 const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
 
 export default {
   name: 'Agenda',
-  data () {
+  setup () {
+    const { getAgenda } = useAgenda()
     return {
-      id: Number(this.$route.params.id)
+      ...useMeeting(),
+      getAgenda
     }
   },
   methods: {
     aiPath (ai) {
-      return `/m/${this.id}/${this.$route.params.slug}/a/${ai.pk}/${this.$slugify(ai.title)}`
+      return `/m/${this.meetingId}/${this.$route.params.slug}/a/${ai.pk}/${this.$slugify(ai.title)}`
     },
     aiType (type) {
       return this.agenda.filter(ai => ai.state === type)
-    },
-    ...mapMutations('meetings', ['updateAgenda'])
+    }
   },
   computed: {
     aiGroups () {
-      return AI_ORDER.map(state => agendaStates.find(s => s.state === state))
+      return AI_ORDER
+        .map(state => agendaStates.find(s => s.state === state))
+        .filter(s => !s.requiresRole || this.hasRole(s.requiresRole))
     },
     agenda () {
-      return this.getAgenda(this.id)
-    },
-    ...mapGetters('meetings', ['getAgenda'])
+      return this.getAgenda(this.meetingId)
+    }
   },
   created () {
-    this.$channels.subscribe(`meeting/${this.id}`, this)
+    // this.$channels.subscribe(`meeting/${this.meetingId}`, this)
   },
   beforeUnmount () {
-    this.$channels.leave(`meeting/${this.id}`, this)
+    // this.$channels.leave(`meeting/${this.meetingId}`, this)
   }
 }
 </script>

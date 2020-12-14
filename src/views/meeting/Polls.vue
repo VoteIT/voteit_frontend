@@ -15,43 +15,43 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import MeetingBase from './MeetingBase.js'
+import { computed, ref } from 'vue'
+
+import useRestApi from '@/composables/useRestApi.js'
+import useChannels from '@/composables/useChannels.js'
+import useMeeting from '@/composables/meeting/useMeeting.js'
+import usePolls from '@/composables/meeting/usePolls.js'
+
+const PollStateIcon = {
+  private: 'visibility_off',
+  upcoming: 'pause',
+  ongoing: 'play_arrow',
+  finished: 'done'
+}
 
 export default {
   name: 'Polls',
-  extends: MeetingBase,
-  data () {
-    return {
-      pollSelected: null
-    }
-  },
-  computed: {
-    selectedPollStatus () {
-      return this.getPollStatus(this.pollSelected)
-    },
-    ...mapGetters('polls', ['getPollStatus']),
-    ...mapMutations('polls', ['updatePoll'])
-  },
-  methods: {
-    pollStateIcon (poll) {
-      return {
-        private: 'visibility_off',
-        upcoming: 'pause',
-        ongoing: 'play_arrow',
-        finished: 'done'
-      }[poll.state] || ''
-    },
-    selectPoll (poll) {
-      if (this.pollSelected) {
-        this.$channels.leave(`poll/${this.pollSelected}`, this)
+  setup () {
+    const { meetingId, fetchMeeting, hasRole } = useMeeting()
+    const { fetchPolls, getPolls } = usePolls()
+    const { subscribe, leave } = useChannels()
+    const { restApi } = useRestApi()
+
+    const polls = computed(_ => {
+      return getPolls(meetingId.value)
+    })
+
+    const pollSelected = ref(null)
+    function selectPoll (poll) {
+      if (pollSelected.value) {
+        this.$channels.leave(`poll/${pollSelected.value}`, this)
       }
-      if (this.pollSelected === poll.pk) {
-        this.pollSelected = null
+      if (pollSelected.value === poll.pk) {
+        pollSelected.value = null
       } else {
-        this.pollSelected = poll.pk
-        this.$channels.subscribe(`poll/${poll.pk}`, this)
-        this.$api.get(`polls/${poll.pk}/`)
+        pollSelected.value = poll.pk
+        subscribe(`poll/${poll.pk}`, this)
+        restApi.get(`polls/${poll.pk}/`)
           .then(({ data }) => {
             this.updatePoll({
               t: 'poll.status',
@@ -61,10 +61,31 @@ export default {
           .catch(this.$apiError)
       }
     }
+    const selectedPollStatus = computed(_ => {
+      return this.getPollStatus(this.pollSelected)
+    })
+
+    function getPollStateIcon (state) {
+      return PollStateIcon[state] || ''
+    }
+
+    return {
+      hasRole,
+      fetchMeeting,
+      fetchPolls,
+      meetingId,
+      polls,
+      pollSelected,
+      selectedPollStatus,
+      selectPoll,
+      getPollStateIcon,
+      subscribe,
+      leave
+    }
   },
   beforeUnmount () {
     if (this.pollSelected) {
-      this.$channels.leave(`poll/${this.pollSelected}`, this)
+      this.leave(`poll/${this.pollSelected}`, this)
     }
   }
 }

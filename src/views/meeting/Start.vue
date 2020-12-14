@@ -5,10 +5,12 @@
 </template>
 
 <script>
-import MeetingBase from './MeetingBase.js'
+import useMeeting from '@/composables/meeting/useMeeting.js'
 
 export default {
   name: 'MeetingIndex',
-  extends: MeetingBase
+  setup () {
+    return useMeeting()
+  }
 }
 </script>
