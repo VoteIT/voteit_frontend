@@ -43,12 +43,6 @@ export default {
     agenda () {
       return this.getAgenda(this.meetingId)
     }
-  },
-  created () {
-    // this.$channels.subscribe(`meeting/${this.meetingId}`, this)
-  },
-  beforeUnmount () {
-    // this.$channels.leave(`meeting/${this.meetingId}`, this)
   }
 }
 </script>
