@@ -4,7 +4,7 @@
     {{ p.title }}
     <div v-if="hasRole('moderator')">
       <span class="btn-group">
-        <workflow-state admin :state="p.state" :all-states="wfStates" :endpoint="`proposals/${p.pk}/transitions/`" />
+        <workflow-state admin :state="p.state" :all-states="wfStates" :endpoint="`proposals/${p.pk}/`" />
       </span>
       <btn icon="delete" sm @click="$api.delete(`proposals/${p.pk}/`)" />
     </div>

@@ -2,7 +2,7 @@
   <span v-if="admin" class="btn-group">
     <btn v-for="s in allStates" :title="s.transition" :key="s.state" :icon="s.icon"
       :active="s.state === state" sm
-      @click="$api.post(endpoint, { name: s.transition }).catch(restError)" />
+      @click="makeTransition(endpoint, s)" />
   </span>
   <btn v-else :title="state" :icon="currentState.icon" sm disabled />
 </template>
@@ -13,8 +13,16 @@ import useRestApi from '../../composables/useRestApi'
 export default {
   name: 'WorkflowState',
   setup () {
+    const { restApi, restError } = useRestApi()
+
+    function makeTransition (endpoint, s) {
+      restApi.post(endpoint + 'transitions/', {
+        transition: s.transition
+      }).catch(restError)
+    }
+
     return {
-      ...useRestApi()
+      makeTransition
     }
   },
   props: {
