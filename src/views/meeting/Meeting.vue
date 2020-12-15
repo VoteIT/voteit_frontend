@@ -8,7 +8,7 @@
       <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
         <icon sm :name="link.icon" />
         {{ link.title }}
-        <span v-if="link.count">({{ count }})</span>
+        <span v-if="link.count">({{ link.count }})</span>
       </router-link>
     </nav>
     <div>

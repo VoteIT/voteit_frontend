@@ -1,26 +1,18 @@
 <template>
   <div>
-    <button @click="open = !open">{{ open ? '-' : '+' }} Add {{ name }}</button>
+    <btn :class="{ open }" @click="toggleOpen" :icon="open ? 'arrow_drop_up' : 'arrow_drop_down'">Add {{ name }}</btn>
     <form @submit.prevent="submit" v-show="open">
-      <textarea v-model="title" required></textarea>
+      <textarea @keyup.ctrl.enter="submit" v-model="title" required></textarea>
       <div class="buttons">
-        <input type="submit" value="Submit" :disabled="submitting" />
+        <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
     </form>
   </div>
 </template>
 
 <script>
-import useRestApi from '@/composables/useRestApi.js'
-
 export default {
   name: 'AddContent',
-  setup () {
-    const { restApi } = useRestApi()
-    return {
-      restApi
-    }
-  },
   props: {
     name: String,
     endpoint: String,
@@ -34,11 +26,19 @@ export default {
     }
   },
   methods: {
+    toggleOpen () {
+      this.open = !this.open
+      if (this.open) {
+        this.$nextTick(_ => {
+          this.$el.querySelector('textarea').focus()
+        })
+      }
+    },
     submit () {
       if (!this.submitting) {
         const data = Object.assign({ title: this.title }, this.params)
         this.proposalSubmitting = true
-        this.restApi.post(this.endpoint, data)
+        this.$api.post(this.endpoint, data)
           .then(() => {
             this.title = ''
             this.open = false
@@ -62,6 +62,11 @@ form
 
   textarea
     width: 100%
+    height: 6em
   .buttons
     text-align: right
+
+button.open
+  border-bottom-left-radius: 0
+  border-bottom-right-radius: 0
 </style>

@@ -17,10 +17,8 @@
       <div class="col-sm-6">
         <h2>Discussions</h2>
         <ul v-if="sortedDiscussions.length" class="no-list">
-          <li v-for="d in sortedDiscussions" :key="d.pk">
-            {{ getUser(d.author, meetingId).full_name }}:<br />
-            {{ d.title }}
-            <icon name="delete" button sm @click="restApi.delete(`discussion-posts/${d.pk}/`)" />
+          <li v-for="p in sortedDiscussions" :key="p.pk">
+            <discussion-post :p="p"/>
           </li>
         </ul>
         <p v-else><em>Nothing to hear</em></p>
@@ -36,6 +34,7 @@ import agendaStates from '@/schemas/agendaStates.json'
 import AddContent from '@/components/meeting/AddContent.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import Proposal from '@/components/widgets/Proposal.vue'
+import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
@@ -65,8 +64,9 @@ export default {
   },
   components: {
     AddContent,
-    WorkflowState,
-    Proposal
+    DiscussionPost,
+    Proposal,
+    WorkflowState
   },
   computed: {
     agendaItem () {
@@ -140,5 +140,4 @@ ul.no-list
   padding: 0
   li
     list-style: none
-    margin-bottom: .8rem
 </style>

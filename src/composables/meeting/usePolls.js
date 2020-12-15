@@ -1,8 +1,33 @@
 import { ref } from 'vue'
 
-import { restApi } from '@/utils'
+import { restApi, restError } from '@/utils'
+import useChannels from '../useChannels'
 
 const polls = ref([])
+const pollStatuses = ref(new Map())
+
+useChannels().registerUpdateHandler('poll', ({ t, p }) => {
+  const item = p.item || p // Can be only a pk
+  const index = polls.value.findIndex(p => p.pk === item.pk)
+  switch (t) {
+    case 'poll.changed':
+    case 'poll.added':
+      if (index !== -1) {
+        polls.value[index] = item
+      } else {
+        polls.value.push(item)
+      }
+      break
+    case 'poll.deleted':
+      if (index !== -1) {
+        polls.value.splice(index, 1)
+      }
+      break
+    case 'poll.status':
+      pollStatuses.value.set(p.pk, p)
+      break
+  }
+})
 
 export default function usePolls () {
   function getPolls (meetingId) {
@@ -18,8 +43,22 @@ export default function usePolls () {
       })
   }
 
+  async function fetchPollStatus (pk) {
+    return restApi.get(`polls/${pk}/`)
+      .then(({ data }) => {
+        pollStatuses.value.set(data.pk, data)
+      })
+      .catch(restError)
+  }
+
+  function getPollStatus (pk) {
+    return pollStatuses.value.get(pk)
+  }
+
   return {
     fetchPolls,
-    getPolls
+    getPolls,
+    fetchPollStatus,
+    getPollStatus
   }
 }

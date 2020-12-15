@@ -1,23 +1,25 @@
 <template>
-  <div>
+  <main id="polls">
     <h1>Polls</h1>
     <ul v-if="polls.length">
       <li v-for="poll in polls" :key="poll.pk" :class="{ selected: poll.pk === pollSelected }">
-        <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)"><icon :name="pollStateIcon(poll)" sm /> {{ poll.title }}</a>
-        <progress-bar v-if="poll.pk === pollSelected" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
+        <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">
+          {{ poll.title }}
+          <icon :name="getPollStateIcon(poll)" sm :title="poll.state" />
+        </a>
+        <progress-bar v-if="poll.pk === pollSelected && selectedPollStatus" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
       </li>
     </ul>
     <p v-else><em>No polls just yet</em></p>
     <div class="btn-group" v-if="hasRole('moderator')">
-      <icon sm button name="add" @click="$router.push(meetingPath + '/polls/new')">New poll</icon>
+      <btn sm name="add" @click="$router.push(meetingPath + '/polls/new')">New poll</btn>
     </div>
-  </div>
+  </main>
 </template>
 
 <script>
 import { computed, ref } from 'vue'
 
-import useRestApi from '@/composables/useRestApi.js'
 import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
@@ -33,9 +35,8 @@ export default {
   name: 'Polls',
   setup () {
     const { meetingId, fetchMeeting, hasRole, meetingPath } = useMeeting()
-    const { fetchPolls, getPolls } = usePolls()
+    const { fetchPolls, getPolls, getPollStatus, fetchPollStatus } = usePolls()
     const { subscribe, leave } = useChannels()
-    const { restApi, restError } = useRestApi()
 
     const polls = computed(_ => {
       return getPolls(meetingId.value)
@@ -44,29 +45,22 @@ export default {
     const pollSelected = ref(null)
     function selectPoll (poll) {
       if (pollSelected.value) {
-        this.$channels.leave(`poll/${pollSelected.value}`, this)
+        leave(`poll/${pollSelected.value}`)
       }
       if (pollSelected.value === poll.pk) {
         pollSelected.value = null
       } else {
         pollSelected.value = poll.pk
-        subscribe(`poll/${poll.pk}`, this)
-        restApi.get(`polls/${poll.pk}/`)
-          .then(({ data }) => {
-            this.updatePoll({
-              t: 'poll.status',
-              p: data
-            })
-          })
-          .catch(restError)
+        subscribe(`poll/${poll.pk}`)
+        fetchPollStatus(poll.pk)
       }
     }
     const selectedPollStatus = computed(_ => {
-      return this.getPollStatus(this.pollSelected)
+      return getPollStatus(pollSelected.value)
     })
 
-    function getPollStateIcon (state) {
-      return PollStateIcon[state] || ''
+    function getPollStateIcon (p) {
+      return PollStateIcon[p.state] || ''
     }
 
     return {
@@ -92,24 +86,21 @@ export default {
 }
 </script>
 
-<style lang="sass">
-#poll-window
-  position: absolute
-  right: 0
-  width: 400px
-  padding: 10px
-  background-color: #fff
-  border: 1px solid #ddd
-  box-shadow: 0 2px 3px rgba(#000, .4)
+<style lang="sass" scoped>
+main
   ul
     padding: 0
     list-style-type: none
-    li.selected
-      background-color: #fff
-    a
-      color: #000
-      display: block
-      padding: 4px
+    li
+      margin-bottom: .5rem
+      padding: .5rem
+      background-color: #eee
+      a
+        color: #000
+        display: block
+        text-decoration: none
+      &.selected a
+        margin-bottom: .5rem
   .material-icons
-    color: #aaa
+    float: right
 </style>
