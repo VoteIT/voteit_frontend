@@ -1,4 +1,5 @@
 import meeting from '../views/meeting'
+import RouterView from '../views/RouterView.vue'
 
 export default {
   path: '/m/:id/:slug',
@@ -17,18 +18,24 @@ export default {
     },
     {
       path: 'polls',
-      name: 'polls',
-      component: meeting.Polls
-    },
-    {
-      path: 'polls/new',
-      name: 'start-poll',
-      component: meeting.StartPoll
-    },
-    {
-      path: 'polls/new/:aid',
-      name: 'start-poll-ai',
-      component: meeting.StartPoll
+      component: RouterView,
+      children: [
+        {
+          path: '',
+          name: 'polls',
+          component: meeting.Polls
+        },
+        {
+          path: 'new',
+          name: 'start-poll',
+          component: meeting.StartPoll
+        },
+        {
+          path: 'new/:aid',
+          name: 'start-poll-ai',
+          component: meeting.StartPoll
+        }
+      ]
     },
     {
       path: 'a/:aid/:aslug',
