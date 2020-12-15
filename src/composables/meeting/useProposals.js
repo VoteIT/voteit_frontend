@@ -37,8 +37,13 @@ export default function useProposals () {
       })
   }
 
-  function getAgendaProposals (agendaId) {
-    return proposals.value.filter(p => p.agenda_item === agendaId)
+  function getAgendaProposals (agendaId, wfState) {
+    return proposals.value.filter(p => {
+      if (wfState && p.state !== wfState) {
+        return false
+      }
+      return p.agenda_item === agendaId
+    })
   }
 
   return {

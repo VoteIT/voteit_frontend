@@ -27,16 +27,17 @@
         <li :class="{ selected: m.name === methodSelected }" v-for="m in availableMethods" :key="m.name">
           <a href="#" @click.prevent="selectMethod(m)">{{ m.title }}</a>
           <div v-show="m.name === methodSelected" v-if="m.multipleWinners">
+            <!-- TODO Load schema for method, preferably providing proposal count -->
             <h3>Options</h3>
-            <label :for="m.name + _winners">Winners</label>
-            <input :id="m.name + _winners" type="number" :value="m.winnersMin || 1" :min="m.winnersMin || 1" :max="selectedProposals.size - (m.losersMin || 0)">
+            <label :for="m.name + '_winners'">Winners</label>
+            <input :id="m.name + '_winners'" type="number" :value="m.winnersMin || 1" :min="m.winnersMin || 1" :max="selectedProposals.size - (m.losersMin || 0)">
           </div>
         </li>
       </ul>
       <div class="btn-group">
         <btn icon="undo" @click="pickMethod=false">Back</btn>
-        <btn icon="check" :disabled="!methodSelected" @click="$alert('*Not implemented')">Create</btn>
-        <btn icon="play_arrow" :disabled="!methodSelected" @click="$alert('*Not implemented')">Create and start</btn>
+        <btn icon="check" :disabled="!methodSelected" @click="createPoll()">Create</btn>
+        <btn icon="play_arrow" :disabled="!methodSelected" @click="createPoll(true)">Create and start</btn>
       </div>
     </template>
   </div>
@@ -44,6 +45,7 @@
 
 <script>
 import useLoader from '@/composables/useLoader.js'
+import useAlert from '@/composables/useAlert.js'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
@@ -57,9 +59,10 @@ export default {
   setup () {
     const proposals = useProposals()
     const agenda = useAgenda()
+    const { alert } = useAlert()
 
     const selectedProposals = ref(new Set())
-    const availableProposals = computed(_ => proposals.getAgendaProposals(agenda.agendaId.value))
+    const availableProposals = computed(_ => proposals.getAgendaProposals(agenda.agendaId.value, 'published'))
 
     function toggleSelected (p) {
       if (!pickMethod.value) {
@@ -98,6 +101,15 @@ export default {
       methodSelected.value = methodSelected.value === m.name ? null : m.name
     }
 
+    function createPoll (start = false) {
+      const method = pollMethods.find(m => m.name === methodSelected.value)
+      if (method.name === 'combined_simple') {
+        console.log(method)
+      } else {
+        alert(`*${method.title} not implemented`)
+      }
+    }
+
     return {
       selectedProposals,
       availableProposals,
@@ -108,6 +120,7 @@ export default {
       availableMethods,
       methodSelected,
       selectMethod,
+      createPoll,
 
       ...useMeeting(),
       ...useLoader(),

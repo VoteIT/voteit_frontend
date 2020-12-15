@@ -1,21 +1,20 @@
 <template>
-  <div v-if="admin" class="btn-group">
-    <icon v-for="s in allStates" :title="s.transition" :key="s.state" :name="s.icon"
-      :active="s.state === state" button sm
-      @click="restApi.post(endpoint, { name: s.transition })" />
-  </div>
-  <icon v-else :title="state" :name="currentState.icon" button sm />
+  <span v-if="admin" class="btn-group">
+    <btn v-for="s in allStates" :title="s.transition" :key="s.state" :icon="s.icon"
+      :active="s.state === state" sm
+      @click="$api.post(endpoint, { name: s.transition }).catch(restError)" />
+  </span>
+  <btn v-else :title="state" :icon="currentState.icon" sm disabled />
 </template>
 
 <script>
-import useRestApi from '@/composables/useRestApi.js'
+import useRestApi from '../../composables/useRestApi'
 
 export default {
   name: 'WorkflowState',
   setup () {
-    const { restApi } = useRestApi()
     return {
-      restApi
+      ...useRestApi()
     }
   },
   props: {
@@ -43,4 +42,6 @@ export default {
   .btn:last-child
     border-top-right-radius: 6px
     border-bottom-right-radius: 6px
+
+  margin-right: .2rem
 </style>

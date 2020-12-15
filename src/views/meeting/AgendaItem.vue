@@ -2,15 +2,13 @@
   <div>
     <h1>{{ agendaItem.title }}</h1>
     <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :all-states="agendaStates" :admin="hasRole('moderator')" :endpoint="`agenda-items/${agendaId}/transitions/`" />
-    <btn v-if="hasRole('moderator')" icon="add" @click="$router.push(`${meetingPath}/polls/new/${agendaItem.pk}`)">New poll</btn>
+    <btn v-if="hasRole('moderator')" sm icon="add" @click="$router.push(`${meetingPath}/polls/new/${agendaItem.pk}`)">New poll</btn>
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
-        <ul v-if="sortedProposals.length">
+        <ul v-if="sortedProposals.length" class="no-list">
           <li v-for="p in sortedProposals" :key="p.pk">
-            {{ getUser(p.author, meetingId).full_name }}:<br />
-            {{ p.title }}
-            <icon name="delete" button sm @click="restApi.delete(`proposals/${p.pk}/`)" />
+            <proposal :p="p"/>
           </li>
         </ul>
         <p v-else><em>Nothing to speak</em></p>
@@ -18,7 +16,7 @@
       </div>
       <div class="col-sm-6">
         <h2>Discussions</h2>
-        <ul v-if="sortedDiscussions.length">
+        <ul v-if="sortedDiscussions.length" class="no-list">
           <li v-for="d in sortedDiscussions" :key="d.pk">
             {{ getUser(d.author, meetingId).full_name }}:<br />
             {{ d.title }}
@@ -36,7 +34,8 @@
 import agendaStates from '@/schemas/agendaStates.json'
 
 import AddContent from '@/components/meeting/AddContent.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
+import WorkflowState from '@/components/widgets/WorkflowState.vue'
+import Proposal from '@/components/widgets/Proposal.vue'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
@@ -66,14 +65,25 @@ export default {
   },
   components: {
     AddContent,
-    WorkflowState
+    WorkflowState,
+    Proposal
   },
   computed: {
     agendaItem () {
       return this.getAgenda(this.meetingId).find(ai => ai.pk === this.agendaId) || {}
     },
     sortedProposals () {
-      return this.getAgendaProposals(this.agendaId)
+      const proposals = this.getAgendaProposals(this.agendaId)
+      proposals.sort((a, b) => {
+        if (a.pk > b.pk) {
+          return 1
+        }
+        if (a.pk < b.pk) {
+          return -1
+        }
+        return 0
+      })
+      return proposals
     },
     sortedDiscussions () {
       return this.getAgendaDiscussions(this.agendaId)
@@ -125,4 +135,10 @@ export default {
 .col-sm-6
   width: calc(50% - 20px)
   margin: 0 10px
+
+ul.no-list
+  padding: 0
+  li
+    list-style: none
+    margin-bottom: .8rem
 </style>

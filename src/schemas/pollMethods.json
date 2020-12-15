@@ -1,8 +1,18 @@
 [
     {
-        "name": "majority_poll",
-        "title": "Approve or deny",
-        "proposalsMin": 1
+        "name": "simple",
+        "title": "Majority",
+        "proposalsMin": 2,
+        "proposalsMax": 2
+    },
+    {
+        "name": "simple_deny",
+        "title": "Majority, add deny",
+        "proposalsMax": 1
+    },
+    {
+        "name": "combined_simple",
+        "title": "Approve or deny"
     },
     {
         "name": "schultze",
@@ -11,7 +21,7 @@
     },
     {
         "name": "schultze_deny",
-        "title": "Schultze (add deny)",
+        "title": "Schultze, add deny",
         "proposalsMin": 2
     },
     {
