@@ -9,7 +9,7 @@
     </ul>
     <p v-else><em>No polls just yet</em></p>
     <div class="btn-group" v-if="hasRole('moderator')">
-      <icon sm button name="add" @click="$alert('^Not implemented')">New poll</icon>
+      <icon sm button name="add" @click="$router.push(meetingPath + '/polls/new')">New poll</icon>
     </div>
   </div>
 </template>
@@ -32,10 +32,10 @@ const PollStateIcon = {
 export default {
   name: 'Polls',
   setup () {
-    const { meetingId, fetchMeeting, hasRole } = useMeeting()
+    const { meetingId, fetchMeeting, hasRole, meetingPath } = useMeeting()
     const { fetchPolls, getPolls } = usePolls()
     const { subscribe, leave } = useChannels()
-    const { restApi } = useRestApi()
+    const { restApi, restError } = useRestApi()
 
     const polls = computed(_ => {
       return getPolls(meetingId.value)
@@ -58,7 +58,7 @@ export default {
               p: data
             })
           })
-          .catch(this.$apiError)
+          .catch(restError)
       }
     }
     const selectedPollStatus = computed(_ => {
@@ -74,6 +74,7 @@ export default {
       fetchMeeting,
       fetchPolls,
       meetingId,
+      meetingPath,
       polls,
       pollSelected,
       selectedPollStatus,

@@ -8,30 +8,32 @@ export default {
     {
       path: '',
       name: 'index',
-      components: {
-        main: meeting.Start
-      }
+      component: meeting.Start
     },
     {
       path: 'participants',
       name: 'participants',
-      components: {
-        main: meeting.Participants
-      }
+      component: meeting.Participants
     },
     {
       path: 'polls',
       name: 'polls',
-      components: {
-        main: meeting.Polls
-      }
+      component: meeting.Polls
+    },
+    {
+      path: 'polls/new',
+      name: 'start-poll',
+      component: meeting.StartPoll
+    },
+    {
+      path: 'polls/new/:aid',
+      name: 'start-poll-ai',
+      component: meeting.StartPoll
     },
     {
       path: 'a/:aid/:aslug',
       name: 'agenda-item',
-      components: {
-        main: meeting.AgendaItem
-      }
+      component: meeting.AgendaItem
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.

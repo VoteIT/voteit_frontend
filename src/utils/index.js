@@ -1,15 +1,15 @@
 import ProgressPromise from './ProgressPromise'
 import Socket from './Socket'
-import { setAuthToken, restApi } from './api'
+import { restApi } from './api'
 import mitt from 'mitt'
 
 function uriToPayload (uri) {
   // Convert internal resource identifier to subscription payload object
   if (typeof uri === 'string') {
-    const path = uri.split('/')
+    const [ct, pk] = uri.split('/')
     return {
-      channel_type: path[0],
-      pk: path[1]
+      channel_type: ct,
+      pk
     }
   }
 }
@@ -24,7 +24,6 @@ export {
   Socket,
   ProgressPromise,
   uriToPayload,
-  setAuthToken,
   slugify,
   restApi,
   emitter

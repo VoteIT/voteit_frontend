@@ -47,11 +47,23 @@ export default function useAgenda () {
     return agendas.value.get(meetingId) || []
   }
 
+  function getAgendaItem (agendaId) {
+    for (const agenda of agendas.value.values()) {
+      const item = agenda.find(ai => ai.pk === agendaId)
+      if (item) {
+        return item
+      }
+    }
+    return {}
+  }
+
   const agendaId = computed(_ => Number(route.params.aid))
+  const agendaItem = computed(_ => getAgendaItem(agendaId.value))
 
   return {
     setAgenda,
     getAgenda,
-    agendaId
+    agendaId,
+    agendaItem
   }
 }

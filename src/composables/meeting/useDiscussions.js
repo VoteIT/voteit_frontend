@@ -1,6 +1,8 @@
 import { ref } from 'vue'
+
+import { restApi } from '@/utils'
+
 import useChannels from '../useChannels'
-import useRestApi from '../useRestApi'
 
 const discussions = ref([])
 
@@ -24,8 +26,6 @@ useChannels().registerUpdateHandler('discussion_post', ({ t, p }) => {
 })
 
 export default function useDiscussions () {
-  const { restApi } = useRestApi()
-
   async function fetchAgendaDiscussions (agendaId) {
     const params = { agenda_item: agendaId }
     return restApi.get('discussion-posts/', { params })

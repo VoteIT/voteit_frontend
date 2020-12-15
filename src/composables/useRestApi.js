@@ -1,10 +1,5 @@
-import Axios from 'axios'
 import useAlert from './useAlert'
-
-const BASE_URL = 'http://localhost:8000/api/'
-const restApi = Axios.create({
-  baseURL: BASE_URL
-})
+import { restApi } from '@/utils'
 
 export default function useRestApi () {
   const { alert } = useAlert()

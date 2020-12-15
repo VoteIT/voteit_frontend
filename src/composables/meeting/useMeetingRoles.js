@@ -1,6 +1,8 @@
 import { ref } from 'vue'
 import wu from 'wu'
-import useRestApi from '../useRestApi'
+
+import { restApi } from '@/utils'
+
 import useMeeting from './useMeeting'
 
 const FORCE_ROLES_FETCH = false
@@ -9,7 +11,6 @@ const meetingRoles = ref(new Map())
 
 export default function useMeetingRoles () {
   const { meetingId } = useMeeting()
-  const { restApi } = useRestApi()
 
   function getUser (userId) {
     const role = wu(meetingRoles.value.values())

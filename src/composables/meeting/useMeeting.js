@@ -1,15 +1,13 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { slugify } from '@/utils'
+import { slugify, restApi } from '@/utils'
 
-import useRestApi from '../useRestApi.js'
 import useMeetings from '../useMeetings.js'
 import useAgenda from './useAgenda.js'
 
 export default function useMeeting () {
   const route = useRoute()
-  const { restApi } = useRestApi()
   const { meetings } = useMeetings()
   const { setAgenda } = useAgenda()
 

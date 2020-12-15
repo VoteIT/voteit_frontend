@@ -13,7 +13,7 @@
     </nav>
     <div>
       <agenda />
-      <router-view id="main-content" name="main" />
+      <router-view id="main-content" />
     </div>
   </div>
 </template>
@@ -127,7 +127,7 @@ export default {
         border-radius: 4px 4px 0 0
         background-color: #333
         font-weight: 700
-        &.router-link-exact-active
+        &.router-link-active
           background-color: #fff
           background-color: #fff
           color: #000

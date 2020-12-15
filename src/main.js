@@ -2,24 +2,21 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
-// import store from './store'
 
-import Alerts from './plugins/Alerts'
-// import Api from './plugins/Api'
-// import Channels from './plugins/Channels'
-import Slugify from './plugins/Slugify'
-import Icon from './components/Icon'
-// import Authentication from './components/mixins/Authentication'
-import ProgressBar from './components/ProgressBar'
+import Alerts from './plugins/Alerts.js'
+import Api from './plugins/Api.js'
+import Slugify from './plugins/Slugify.js'
+
+import Icon from './components/Icon.vue'
+import Btn from './components/Btn.vue'
+import ProgressBar from './components/ProgressBar.vue'
 
 createApp(App)
-  // .use(store)
   .use(router)
   .use(Alerts)
-  // .use(Api)
-  // .use(Channels)
+  .use(Api)
   .use(Slugify)
   .component('Icon', Icon)
+  .component('Btn', Btn)
   .component('ProgressBar', ProgressBar)
-  // .mixin(Authentication)
   .mount('#app')

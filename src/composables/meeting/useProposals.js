@@ -1,6 +1,8 @@
 import { ref } from 'vue'
+
+import { restApi } from '@/utils'
+
 import useChannels from '../useChannels.js'
-import useRestApi from '../useRestApi.js'
 
 const proposals = ref([])
 
@@ -25,8 +27,6 @@ useChannels()
   })
 
 export default function useProposals () {
-  const { restApi } = useRestApi()
-
   async function fetchAgendaProposals (agendaId) {
     const params = { agenda_item: agendaId }
     return restApi.get('proposals/', { params })
