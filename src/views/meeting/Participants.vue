@@ -50,7 +50,7 @@ export default {
     const { restApi, restError } = useRestApi()
     return {
       ...useMeeting(),
-      ...useContextRoles('Meeting'),
+      meetingRoles: useContextRoles('Meeting'),
       channels: useChannels(),
       fetch,
       restApi,
@@ -122,6 +122,7 @@ export default {
         .then(_ => {
           // Listen to push instead
           participant.assigned.push(role)
+          this.meetingRoles.set(this.meetingId, participant.user.pk, [role])
         })
       // this.restApi.post(`meeting-roles/${participant.pk}/add-role/`, { role })
       //   .then(({ data }) => {
@@ -136,10 +137,11 @@ export default {
         roles: [role],
         userids: [participant.user.pk]
       })
-        .then(
+        .then(_ => {
           // Listen to push instead
           participant.assigned = participant.assigned.filter(r => r !== role)
-        )
+          this.meetingRoles.remove(this.meetingId, participant.user.pk, [role])
+        })
       // this.restApi.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
       //   .then(({ data }) => {
       //     // TODO: This will be in sockets

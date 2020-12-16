@@ -43,14 +43,34 @@ export default function useContextRoles (model) {
     return contextRoles.value.get(key) || new Set()
   }
 
-  function setRoles (pk, userId, roles) {
-    // From meeting, rest data
+  function set (pk, userId, roles) {
+    // Sets or replaces roles completely
     const key = getRoleKey(model, pk, userId)
     contextRoles.value.set(key, new Set(roles))
   }
 
+  function add (pk, userId, roles) {
+    const key = getRoleKey(model, pk, userId)
+    const roleStore = contextRoles.value.get(key)
+    if (roleStore) {
+      roles.forEach(roleStore.set)
+    } else {
+      set(pk, userId, roles)
+    }
+  }
+
+  function remove (pk, userId, roles) {
+    const key = getRoleKey(model, pk, userId)
+    const roleStore = contextRoles.value.get(key)
+    if (roleStore) {
+      roles.forEach(p => roleStore.delete(p))
+    }
+  }
+
   return {
-    setRoles,
+    set,
+    add,
+    remove,
     getUserRoles
   }
 }

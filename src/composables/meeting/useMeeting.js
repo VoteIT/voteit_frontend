@@ -18,7 +18,7 @@ export default function useMeeting () {
   const route = useRoute()
   const { meetings } = useMeetings()
   const { setAgenda } = useAgenda()
-  const contextRoles = useContextRoles('Meeting')
+  const meetingRoles = useContextRoles('Meeting')
   const { user } = useAuthentication()
 
   function setMeeting (meeting) {
@@ -49,7 +49,7 @@ export default function useMeeting () {
     return restApi.get('meeting-roles/', { params })
       .then(({ data }) => {
         data.forEach(p => {
-          contextRoles.setRoles(pk, p.user.pk, p.assigned)
+          meetingRoles.set(pk, p.user.pk, p.assigned)
           participants.value.set(p.pk, p)
         })
       })
@@ -76,7 +76,7 @@ export default function useMeeting () {
     return restApi.get(`meetings/${pk}/`)
       .then(({ data }) => {
         setMeeting(data)
-        contextRoles.setRoles(pk, user.value.pk, data.current_user_roles)
+        meetingRoles.set(pk, user.value.pk, data.current_user_roles)
       })
   }
 
@@ -84,7 +84,7 @@ export default function useMeeting () {
   const meeting = computed(_ => meetings.value.get(meetingId.value) || {})
   const meetingPath = computed(_ => `/m/${meetingId.value}/${slugify(meeting.value.title)}`)
 
-  const userRoles = computed(_ => contextRoles.getUserRoles(meetingId.value))
+  const userRoles = computed(_ => meetingRoles.getUserRoles(meetingId.value))
   function hasRole (roleName) {
     if (typeof roleName === 'string') {
       return userRoles.value.has(roleName)
