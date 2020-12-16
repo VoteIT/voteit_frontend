@@ -119,16 +119,6 @@ export default {
         roles: [role],
         userids: [participant.user.pk]
       })
-        .then(_ => {
-          // Listen to push instead
-          this.meetingRoles.add(this.meetingId, participant.user.pk, [role])
-        })
-      // this.restApi.post(`meeting-roles/${participant.pk}/add-role/`, { role })
-      //   .then(({ data }) => {
-      //     // TODO: This will be in sockets
-      //     this.setRoles([data]) // Attention: Array
-      //   })
-      //   .catch(this.restError)
     },
     removeRole (participant, role) {
       this.channels.post('meeting.roles.remove', {
@@ -136,19 +126,9 @@ export default {
         roles: [role],
         userids: [participant.user.pk]
       })
-        .then(_ => {
-          // Listen to push instead
-          this.meetingRoles.remove(this.meetingId, participant.user.pk, [role])
-        })
-      // this.restApi.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
-      //   .then(({ data }) => {
-      //     // TODO: This will be in sockets
-      //     this.setRoles([data]) // Attention: Array
-      //   })
-      //   .catch(this.restError)
     },
     roleCount (name) {
-      return this.participants.filter(p => p.assigned.includes(name)).length
+      return this.meetingRoles.getRoleCount(this.meetingId, name)
     }
   },
   created () {

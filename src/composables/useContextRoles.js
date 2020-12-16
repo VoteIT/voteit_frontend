@@ -1,3 +1,4 @@
+import wu from 'wu'
 import { ref } from 'vue'
 import useAuthentication from './useAuthentication'
 
@@ -13,25 +14,18 @@ function getRoleKey (...components) {
 
 useChannels()
   .registerUpdateHandler('roles', ({ t, p }) => {
-    // TODO Check that we get userids
-    if (!p.userids) {
-      console.log('Roles changed, still no userids', p)
-    } else {
-      p.userids.forEach(userid => {
-        const key = getRoleKey(p.model, p.pk, userid)
-        if (!contextRoles.value.has(key)) {
-          contextRoles.value.set(key, new Set())
-        }
-        const roleStore = contextRoles.value.get(key)
-        switch (t) {
-          case 'roles.removed':
-            p.roles.forEach(roleStore.delete)
-            break
-          case 'roles.added':
-            p.roles.forEach(roleStore.set)
-            break
-        }
-      })
+    const key = getRoleKey(p.model, p.pk, p.user_pk)
+    if (!contextRoles.value.has(key)) {
+      contextRoles.value.set(key, new Set())
+    }
+    const roleStore = contextRoles.value.get(key)
+    switch (t) {
+      case 'roles.removed':
+        p.roles.forEach(r => roleStore.delete(r))
+        break
+      case 'roles.added':
+        p.roles.forEach(r => roleStore.add(r))
+        break
     }
   })
 
@@ -41,6 +35,15 @@ export default function useContextRoles (model) {
   function getUserRoles (pk, userId) {
     const key = getRoleKey(model, pk, userId || user.value.pk)
     return contextRoles.value.get(key) || new Set()
+  }
+
+  function getRoleCount (pk, roleName) {
+    const key = getRoleKey(model, pk, '')
+    return [...wu(contextRoles.value.entries())
+      .filter(([k, v]) => {
+        // console.log(key, k, v, roleName)
+        return k.startsWith(key) && v.has(roleName)
+      })].length
   }
 
   function set (pk, userId, roles) {
@@ -84,6 +87,7 @@ export default function useContextRoles (model) {
     add,
     remove,
     hasRole,
-    getUserRoles
+    getUserRoles,
+    getRoleCount
   }
 }
