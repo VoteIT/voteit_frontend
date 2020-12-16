@@ -40,7 +40,6 @@ import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
 import useProposals from '@/composables/meeting/useProposals.js'
 import useDiscussions from '@/composables/meeting/useDiscussions.js'
-import useMeetingRoles from '@/composables/meeting/useMeetingRoles.js'
 import useRestApi from '@/composables/useRestApi.js'
 import useLoader from '@/composables/useLoader.js'
 import useChannels from '@/composables/useChannels.js'
@@ -52,7 +51,6 @@ export default {
     const { fetch } = useLoader()
     return {
       ...useMeeting(),
-      ...useMeetingRoles(),
       ...useAgenda(),
       ...useProposals(),
       ...useDiscussions(),
@@ -100,7 +98,7 @@ export default {
             ...this.sortedProposals.map(p => p.author),
             ...this.sortedDiscussions.map(d => d.author)
           ]
-          this.fetchMeetingRoles(userIds)
+          this.fetchParticipants(this.meetingId, userIds)
         })
     }
   },

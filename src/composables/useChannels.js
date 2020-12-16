@@ -5,7 +5,7 @@ const socket = new Socket()
 const socketState = ref(false)
 const subscriptions = new Map()
 const updateHandlers = new Map()
-const ignoreContentTypes = ['testing', 'channel']
+const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data)
@@ -26,7 +26,7 @@ socket.addEventListener('message', event => {
   const [ct] = data.t.split('.')
   if (updateHandlers.has(ct)) {
     updateHandlers.get(ct)(data)
-  } else if (!ignoreContentTypes.includes(ct)) {
+  } else if (!ignoreContentTypes.has(ct)) {
     console.log('No registered update handler for content type', ct)
   }
 })

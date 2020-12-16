@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
-import { restApi, restError } from '@/utils'
 import useChannels from '../useChannels'
+import useRestApi from '../useRestApi'
 
 const polls = ref([])
 const pollStatuses = ref(new Map())
@@ -30,6 +30,8 @@ useChannels().registerUpdateHandler('poll', ({ t, p }) => {
 })
 
 export default function usePolls () {
+  const { restApi, restError } = useRestApi()
+
   function getPolls (meetingId) {
     return polls.value.filter(p => p.meeting === meetingId)
   }
@@ -41,6 +43,7 @@ export default function usePolls () {
         polls.value = polls.value.filter(p => p.meeting !== meetingId)
         Array.prototype.push.apply(polls.value, data)
       })
+      .catch(restError)
   }
 
   async function fetchPollStatus (pk) {

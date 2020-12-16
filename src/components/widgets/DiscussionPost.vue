@@ -1,6 +1,6 @@
 <template>
   <div class="discussion">
-    <div class="author">{{ getUser(p.author, meetingId).full_name }} {{ p.pk }}</div>
+    <div class="author">{{ getUser(meetingId, p.author).full_name }} {{ p.pk }}</div>
     <p>
       {{ p.title }}
     </p>
@@ -12,14 +12,12 @@
 
 <script>
 import useMeeting from '../../composables/meeting/useMeeting.js'
-import useMeetingRoles from '../../composables/meeting/useMeetingRoles.js'
 
 export default {
   name: 'DiscussionPost',
   setup () {
     return {
-      ...useMeeting(),
-      ...useMeetingRoles()
+      ...useMeeting()
     }
   },
   props: {

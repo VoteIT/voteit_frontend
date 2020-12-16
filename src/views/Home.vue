@@ -14,7 +14,7 @@
     <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
-        <button @click="authenticate(user.username)">
+        <button @click="authenticate(user)">
           <icon v-if="user.is_superuser" name="verified_user" sm />
           <icon v-else name="face" sm />
           {{ user.username }}

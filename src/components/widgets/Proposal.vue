@@ -1,6 +1,6 @@
 <template>
   <div class="proposal">
-    <div class="author">{{ getUser(p.author, meetingId).full_name }} {{ p.pk }}</div>
+    <div class="author">{{ getUser(meetingId, p.author).full_name }} {{ p.pk }}</div>
     <p>
       {{ p.title }}
     </p>
@@ -19,7 +19,6 @@ import { computed } from 'vue'
 import WorkflowState from './WorkflowState.vue'
 
 import useMeeting from '../../composables/meeting/useMeeting.js'
-import useMeetingRoles from '../../composables/meeting/useMeetingRoles.js'
 
 import proposalStates from '../../schemas/proposalStates.json'
 
@@ -29,8 +28,7 @@ export default {
     const wfStates = computed(_ => proposalStates)
     return {
       wfStates,
-      ...useMeeting(),
-      ...useMeetingRoles()
+      ...useMeeting()
     }
   },
   props: {

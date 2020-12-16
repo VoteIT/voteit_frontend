@@ -32,8 +32,9 @@ import UserSearch from '@/components/widgets/UserSearch.vue'
 
 import useLoader from '@/composables/useLoader.js'
 import useRestApi from '@/composables/useRestApi.js'
+import useContextRoles from '@/composables/useContextRoles.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
-import useMeetingRoles from '@/composables/meeting/useMeetingRoles.js'
+import useChannels from '../../composables/useChannels'
 
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
@@ -49,7 +50,8 @@ export default {
     const { restApi, restError } = useRestApi()
     return {
       ...useMeeting(),
-      ...useMeetingRoles(),
+      ...useContextRoles('Meeting'),
+      channels: useChannels(),
       fetch,
       restApi,
       restError
@@ -67,7 +69,7 @@ export default {
   },
   computed: {
     participants () {
-      const participants = this.getMeetingRoles(this.meetingId)
+      const participants = this.getParticipants(this.meetingId)
       participants.sort(this.orderMethod)
       return participants
     }
@@ -99,7 +101,7 @@ export default {
       this.participants.sort(this.orderMethod)
     },
     initialize () {
-      return this.fetchMeetingRoles(this.meetingId)
+      return this.fetchParticipants(this.meetingId)
     },
     addUser (user) {
       this.restApi.post('meeting-roles/', {
@@ -107,25 +109,43 @@ export default {
         meeting_id: this.meetingId
       })
         .then(({ data }) => {
-          this.setRoles([data]) // As array
+          this.setRoles(this.meetingId, user.pk, data.assigned)
         })
         .catch(this.restError)
     },
     addRole (participant, role) {
-      this.restApi.post(`meeting-roles/${participant.pk}/add-role/`, { role })
-        .then(({ data }) => {
-          // TODO: This will be in sockets
-          this.setRoles([data]) // Attention: Array
+      this.channels.post('meeting.roles.add', {
+        pk: this.meetingId,
+        roles: [role],
+        userids: [participant.user.pk]
+      })
+        .then(_ => {
+          // Listen to push instead
+          participant.assigned.push(role)
         })
-        .catch(this.restError)
+      // this.restApi.post(`meeting-roles/${participant.pk}/add-role/`, { role })
+      //   .then(({ data }) => {
+      //     // TODO: This will be in sockets
+      //     this.setRoles([data]) // Attention: Array
+      //   })
+      //   .catch(this.restError)
     },
     removeRole (participant, role) {
-      this.restApi.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
-        .then(({ data }) => {
-          // TODO: This will be in sockets
-          this.setRoles([data]) // Attention: Array
-        })
-        .catch(this.restError)
+      this.channels.post('meeting.roles.remove', {
+        pk: this.meetingId,
+        roles: [role],
+        userids: [participant.user.pk]
+      })
+        .then(
+          // Listen to push instead
+          participant.assigned = participant.assigned.filter(r => r !== role)
+        )
+      // this.restApi.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
+      //   .then(({ data }) => {
+      //     // TODO: This will be in sockets
+      //     this.setRoles([data]) // Attention: Array
+      //   })
+      //   .catch(this.restError)
     },
     roleCount (name) {
       return this.participants.filter(p => p.assigned.includes(name)).length

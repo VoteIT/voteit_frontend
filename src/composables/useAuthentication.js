@@ -8,21 +8,24 @@ const authToken = ref(null)
 export default function useAuthentication () {
   const { restApi, setAuthToken } = useRestApi()
 
-  async function authenticate (username) {
-    restApi.get(`dev-login/${username}/`)
+  async function authenticate (_user) {
+    console.log('Authenticating', _user.username)
+    return restApi.get(`dev-login/${_user.username}/`)
       .then(({ data }) => {
-        user.value = { username }
-        sessionStorage.user = JSON.stringify({ username })
+        user.value = _user
+        sessionStorage.user = JSON.stringify(_user)
         setAuthToken(data.key)
         isAuthenticated.value = true
         authToken.value = data.key
       })
       .catch(_ => {
+        // TODO: Maybe no
         logout()
       })
   }
 
   function logout () {
+    console.log('Logging out')
     delete sessionStorage.user
     setAuthToken()
     isAuthenticated.value = false

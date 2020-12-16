@@ -30,7 +30,7 @@ export default {
   },
   created () {
     if (this.user) {
-      this.authenticate(this.user.username)
+      this.authenticate(this.user)
     } else {
       this.setLoaded()
     }

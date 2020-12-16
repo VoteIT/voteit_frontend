@@ -11,14 +11,14 @@
     <template v-if="agendaId">
       <h2>Step 2: Pick proposals</h2>
       <ul v-if="availableProposals.length">
-        <li :class="{ selected: selectedProposals.has(p.pk), locked: pickMethod }" v-for="p in availableProposals" :key="p.pk">
+        <li :class="{ selected: selectedProposalIds.has(p.pk), locked: pickMethod }" v-for="p in availableProposals" :key="p.pk">
           <a href="#" @click.prevent="toggleSelected(p)">{{ p.title }}</a>
         </li>
       </ul>
       <p v-else><em>Inga förslag på denna punkt</em></p>
       <div v-if="!pickMethod" class="btn-group">
         <icon button name="done_all" @click="toggleAll">All</icon>
-        <icon button name="forward" :disabled="!selectedProposals.size" @click="pickMethod=true">Continue</icon>
+        <icon button name="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">Continue</icon>
       </div>
     </template>
     <template v-if="pickMethod">
@@ -61,29 +61,30 @@ export default {
     const agenda = useAgenda()
     const { alert } = useAlert()
 
-    const selectedProposals = ref(new Set())
+    const selectedProposalIds = ref(new Set())
     const availableProposals = computed(_ => proposals.getAgendaProposals(agenda.agendaId.value, 'published'))
+    const selectedProposals = computed(_ => availableProposals.value.filter(p => selectedProposalIds.value.has(p.pk)))
 
     function toggleSelected (p) {
       if (!pickMethod.value) {
-        if (selectedProposals.value.has(p.pk)) {
-          selectedProposals.value.delete(p.pk)
+        if (selectedProposalIds.value.has(p.pk)) {
+          selectedProposalIds.value.delete(p.pk)
         } else {
-          selectedProposals.value.add(p.pk)
+          selectedProposalIds.value.add(p.pk)
         }
       }
     }
     function toggleAll () {
-      if (selectedProposals.value.size === availableProposals.value.length) {
-        selectedProposals.value.clear()
+      if (selectedProposals.value.length === availableProposals.value.length) {
+        selectedProposalIds.value.clear()
       } else {
         availableProposals.value
-          .forEach(p => selectedProposals.value.add(p.pk))
+          .forEach(p => selectedProposalIds.value.add(p.pk))
       }
     }
 
     function methodFilter (m) {
-      const pCount = selectedProposals.value.size
+      const pCount = selectedProposals.value.length
       if (m.proposalsMin && pCount < m.proposalsMin) {
         return false
       }
@@ -111,6 +112,7 @@ export default {
     }
 
     return {
+      selectedProposalIds,
       selectedProposals,
       availableProposals,
       toggleSelected,
