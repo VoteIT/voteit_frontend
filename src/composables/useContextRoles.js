@@ -53,7 +53,7 @@ export default function useContextRoles (model) {
     const key = getRoleKey(model, pk, userId)
     const roleStore = contextRoles.value.get(key)
     if (roleStore) {
-      roles.forEach(roleStore.set)
+      roles.forEach(name => roleStore.add(name))
     } else {
       set(pk, userId, roles)
     }
@@ -63,7 +63,19 @@ export default function useContextRoles (model) {
     const key = getRoleKey(model, pk, userId)
     const roleStore = contextRoles.value.get(key)
     if (roleStore) {
-      roles.forEach(p => roleStore.delete(p))
+      roles.forEach(name => roleStore.delete(name))
+    }
+  }
+
+  function hasRole (pk, roleName, userId) {
+    const userRoles = getUserRoles(pk, userId)
+    if (typeof roleName === 'string') {
+      return userRoles.has(roleName)
+    } else if (roleName && typeof roleName.some === 'function') {
+      // Match any role of list
+      return roleName.some(r => userRoles.value.has(r))
+    } else if (roleName === undefined) {
+      return true
     }
   }
 
@@ -71,6 +83,7 @@ export default function useContextRoles (model) {
     set,
     add,
     remove,
+    hasRole,
     getUserRoles
   }
 }

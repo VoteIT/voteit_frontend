@@ -85,15 +85,8 @@ export default function useMeeting () {
   const meetingPath = computed(_ => `/m/${meetingId.value}/${slugify(meeting.value.title)}`)
 
   const userRoles = computed(_ => meetingRoles.getUserRoles(meetingId.value))
-  function hasRole (roleName) {
-    if (typeof roleName === 'string') {
-      return userRoles.value.has(roleName)
-    } else if (roleName && typeof roleName.some === 'function') {
-      // Match any role of list
-      return roleName.some(r => userRoles.value.has(r))
-    } else if (roleName === undefined) {
-      return true
-    }
+  function hasRole (roleName, userId) {
+    return meetingRoles.hasRole(meetingId.value, roleName, userId)
   }
 
   return {

@@ -136,7 +136,7 @@ export default {
         this.fetchAgendaProposals(value)
       }
       this.pickMethod = false
-      this.selectedProposals.clear()
+      this.selectedProposalIds.clear()
     }
   },
   created () {

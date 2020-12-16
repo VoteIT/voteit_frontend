@@ -14,7 +14,7 @@
       <tr v-for="p in participants" :key="p.user.pk">
         <td>{{ p.user.full_name }}</td>
         <td v-for="role in roles" :key="role">
-          <icon class="active" v-if="p.assigned.includes(role.name)" name="check" @click="removeRole(p, role.name)" />
+          <icon class="active" v-if="meetingRoles.hasRole(meetingId, role.name, p.user.pk)" name="check" @click="removeRole(p, role.name)" />
           <icon v-else name="close" @click="addRole(p, role.name)" />
         </td>
       </tr>
@@ -121,8 +121,7 @@ export default {
       })
         .then(_ => {
           // Listen to push instead
-          participant.assigned.push(role)
-          this.meetingRoles.set(this.meetingId, participant.user.pk, [role])
+          this.meetingRoles.add(this.meetingId, participant.user.pk, [role])
         })
       // this.restApi.post(`meeting-roles/${participant.pk}/add-role/`, { role })
       //   .then(({ data }) => {
@@ -139,7 +138,6 @@ export default {
       })
         .then(_ => {
           // Listen to push instead
-          participant.assigned = participant.assigned.filter(r => r !== role)
           this.meetingRoles.remove(this.meetingId, participant.user.pk, [role])
         })
       // this.restApi.post(`meeting-roles/${participant.pk}/remove-role/`, { role: role })
