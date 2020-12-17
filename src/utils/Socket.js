@@ -1,4 +1,4 @@
-import { uriToPayload, ProgressPromise } from '@/utils'
+import { uriToPayload, ProgressPromise, emitter } from '@/utils'
 
 const DEFAULT_CONFIG = {
   timeout: 5000 // 5s
@@ -73,14 +73,14 @@ export default class Socket {
   }
 
   get isOpen () {
-    return this.active && this._ws.readyState === WebSocket.OPEN
+    return this.active && this._ws && this._ws.readyState === WebSocket.OPEN
   }
 
   call (type, payloadOrUri, config) {
     // Registers a response listener and returns promise that resolves or rejects depeding on subsequent
     // socket data, or times out.
     config = Object.assign({}, DEFAULT_CONFIG, config || {})
-    if (this._ws.readyState === WebSocket.OPEN) {
+    if (this.isOpen) {
       const messageId = sessionStorage.socketMessageCounter || '1'
       const payload = typeof payloadOrUri === 'object'
         ? payloadOrUri
@@ -97,7 +97,15 @@ export default class Socket {
           if (config.timeout) {
             timeoutId = setTimeout(() => {
               delete this.callbacks[messageId]
-              reject(new Error('response timeout'))
+              if (config.alertOnError) {
+                emitter.emit('alert-open', {
+                  title: 'Socket error',
+                  text: 'Request timed out',
+                  level: 'error',
+                  sticky: true
+                })
+              }
+              reject(new Error('Request timed out'))
             }, config.timeout)
           }
         }
@@ -128,7 +136,7 @@ export default class Socket {
         }
       })
     } else {
-      return ProgressPromise.reject(new Error('socket closed'))
+      return Promise.reject(new Error('Socket closed'))
     }
   }
 

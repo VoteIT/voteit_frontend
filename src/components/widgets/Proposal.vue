@@ -8,7 +8,7 @@
       <span class="btn-group">
         <workflow-state admin :state="p.state" :all-states="wfStates" :endpoint="`proposals/${p.pk}/`" />
       </span>
-      <btn icon="delete" sm @click="$api.delete(`proposals/${p.pk}/`)" />
+      <btn sm icon="delete" @click="channels.delete(p.pk)" />
     </div>
   </div>
 </template>
@@ -19,6 +19,7 @@ import { computed } from 'vue'
 import WorkflowState from './WorkflowState.vue'
 
 import useMeeting from '../../composables/meeting/useMeeting.js'
+import useChannels from '../../composables/useChannels'
 
 import proposalStates from '../../schemas/proposalStates.json'
 
@@ -26,8 +27,10 @@ export default {
   name: 'Proposal',
   setup () {
     const wfStates = computed(_ => proposalStates)
+    const channels = useChannels('proposal')
     return {
       wfStates,
+      channels,
       ...useMeeting()
     }
   },

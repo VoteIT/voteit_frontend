@@ -1,6 +1,10 @@
 import { Socket, emitter } from '@/utils'
 import { ref } from 'vue'
 
+const DEFAULT_CONFIG = {
+  alertOnError: true
+}
+
 const socket = new Socket()
 const socketState = ref(false)
 const subscriptions = new Map()
@@ -45,7 +49,8 @@ socket.addEventListener('close', _ => {
   socketState.value = false
 })
 
-export default function useChannels () {
+export default function useChannels (contentType, moduleConfig) {
+  moduleConfig = Object.assign({}, DEFAULT_CONFIG, moduleConfig || {})
   function connect (token) {
     return socket.connect(token)
   }
@@ -76,22 +81,39 @@ export default function useChannels () {
     }
   }
 
-  function get (uri, config) {
-    return socket.call(uri, undefined, config)
-  }
-
-  function post (uri, data, config) {
+  // Wrap call and handle request errors (Timeout only?)
+  function call (uri, data, config) {
+    config = Object.assign({}, moduleConfig, config || {})
     return socket.call(uri, data, config)
   }
 
-  function put (uri, data, config) {
-    // TODO
-    return Promise.reject(new Error('not implemented'))
+  function get (uri, config) {
+    return call(uri, undefined, config)
   }
 
-  function _delete (uri, config) {
-    // TODO
-    return Promise.reject(new Error('not implemented'))
+  function post (uri, data, config) {
+    return call(uri, data, config)
+  }
+
+  function checkCType (methodName) {
+    if (!contentType) {
+      throw new Error(`Instantiate using useChannels(contentType) to use ${methodName}`)
+    }
+  }
+
+  function add (contextPk, kwargs, config) {
+    checkCType('add')
+    return call(`${contentType}.add`, { pk: contextPk, kwargs }, config)
+  }
+
+  function change (pk, kwargs, config) {
+    checkCType('change')
+    return call(`${contentType}.change`, { pk, kwargs }, config)
+  }
+
+  function _delete (pk, config) {
+    checkCType('delete')
+    return call(`${contentType}.delete`, { pk }, config)
   }
 
   function outgoingSchema (type) {
@@ -112,7 +134,8 @@ export default function useChannels () {
     leave,
     get,
     post,
-    put,
+    add,
+    change,
     delete: _delete,
     outgoingSchema,
     incomingSchema

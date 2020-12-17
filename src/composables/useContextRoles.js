@@ -1,4 +1,3 @@
-import wu from 'wu'
 import { ref } from 'vue'
 import useAuthentication from './useAuthentication'
 
@@ -39,11 +38,11 @@ export default function useContextRoles (model) {
 
   function getRoleCount (pk, roleName) {
     const key = getRoleKey(model, pk, '')
-    return [...wu(contextRoles.value.entries())
-      .filter(([k, v]) => {
-        // console.log(key, k, v, roleName)
-        return k.startsWith(key) && v.has(roleName)
-      })].length
+    let count = 0
+    for (const [k, v] of contextRoles.value.entries()) {
+      if (k.startsWith(key) && v.has(roleName)) { count++ }
+    }
+    return count
   }
 
   function set (pk, userId, roles) {

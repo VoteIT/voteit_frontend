@@ -5,19 +5,22 @@
       {{ p.title }}
     </p>
     <div v-if="hasRole('moderator')" class="controls">
-      <btn icon="delete" sm @click="$api.delete(`discussion-posts/${p.pk}/`)" />
+      <btn sm icon="delete" @click="channels.delete(p.pk)" />
     </div>
   </div>
 </template>
 
 <script>
 import useMeeting from '../../composables/meeting/useMeeting.js'
+import useChannels from '../../composables/useChannels.js'
 
 export default {
   name: 'DiscussionPost',
   setup () {
+    const channels = useChannels('discussion_post')
     return {
-      ...useMeeting()
+      ...useMeeting(),
+      channels
     }
   },
   props: {

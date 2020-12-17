@@ -12,7 +12,9 @@
           </li>
         </ul>
         <p v-else><em>Nothing to speak</em></p>
-        <add-content v-if="hasRole('proposer')" name="proposal" endpoint="proposals/" :params="{ agenda_item: this.agendaId }" />
+        <add-content v-if="hasRole('proposer')" name="proposal"
+          :context-pk="agendaId" content-type="proposal"
+          endpoint="proposals/" :params="{ agenda_item: agendaId }"/>
       </div>
       <div class="col-sm-6">
         <h2>Discussions</h2>
@@ -22,7 +24,9 @@
           </li>
         </ul>
         <p v-else><em>Nothing to hear</em></p>
-        <add-content v-if="hasRole('discusser')" name="discussion post" endpoint="discussion-posts/" :params="{ agenda_item: this.agendaId }" />
+        <add-content v-if="hasRole('discusser')" name="discussion post"
+          :context-pk="agendaId" content-type="discussion_post"
+          endpoint="discussion-posts/" :params="{ agenda_item: agendaId }"/>
       </div>
     </div>
   </div>

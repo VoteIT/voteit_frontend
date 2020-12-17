@@ -5,63 +5,63 @@
       <button @click="countToTen(false)">Fail at 5</button>
       <button @click="countToTen(true, { timeout: 500 })">Short timeout</button>
     </div>
-    <progress-bar id="counter-progress" v-else class="progress" :total="progress.total" :value="progress.curr" :done="state" :failed="state === false" :text="progressText" />
+    <progress-bar v-else id="counter-progress" class="progress" :total="progress.total" :value="progress.curr" :done="state" :failed="state === false" :text="progressText" />
   </div>
 </template>
 
 <script>
 import useChannels from '@/composables/useChannels.js'
+import { computed, ref } from 'vue'
 
 export default {
   name: 'Counter',
   setup () {
-    const { post } = useChannels()
-    return {
-      post
-    }
-  },
-  data () {
-    return {
-      progress: null,
-      state: null
-    }
-  },
-  methods: {
-    countToTen (succeed, config) {
+    const { post } = useChannels('testing', { alertOnError: false }) // Handle errors here
+
+    const progress = ref(null)
+    const state = ref(null)
+
+    function countToTen (succeed, config) {
       const data = succeed ? undefined : { fail: 5 }
-      this.post('testing.count', data, config)
+      post('testing.count', data, config)
         .onProgress(value => {
-          this.progress = value
+          progress.value = value
         })
         .then(({ p }) => {
-          this.progress = p
-          this.state = true
+          progress.value = p
+          state.value = true
         })
         .catch(() => {
-          this.state = false
-          this.progress = {
+          state.value = false
+          progress.value = {
             curr: 1,
             total: 1
           }
         })
         .finally(() => {
           setTimeout(() => {
-            this.progress = null
-            this.state = null
+            progress.value = null
+            state.value = null
           }, 2000)
         })
     }
-  },
-  computed: {
-    progressText () {
-      switch (this.state) {
+
+    const progressText = computed(_ => {
+      switch (state.value) {
         case true:
           return 'Coming to get you!'
         case false:
           return 'Failed'
         default:
-          return String(this.progress.curr)
+          return String(progress.value.curr)
       }
+    })
+
+    return {
+      state,
+      progress,
+      countToTen,
+      progressText
     }
   }
 }
