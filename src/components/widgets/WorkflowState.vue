@@ -137,7 +137,7 @@ export default {
       border-radius: 0
       &:hover,
       &:focus
-        background-color: #666
+        background-color: #668
     .btn:first-child
       border-top-left-radius: 6px
       border-top-right-radius: 6px

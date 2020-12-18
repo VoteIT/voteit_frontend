@@ -42,7 +42,7 @@ export default {
   p
     padding-left: .5rem
     margin: .5rem 0
-    white-space: pre
+    white-space: pre-wrap
   .controls
     text-align: right
 </style>
