@@ -12,7 +12,7 @@
     </ul>
     <p v-else><em>No polls just yet</em></p>
     <div class="btn-group" v-if="hasRole('moderator')">
-      <btn sm name="add" @click="$router.push(meetingPath + '/polls/new')">New poll</btn>
+      <btn icon="star" @click="$router.push(meetingPath + '/polls/new')">New poll</btn>
     </div>
   </main>
 </template>

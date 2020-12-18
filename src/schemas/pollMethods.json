@@ -1,17 +1,13 @@
 [
     {
         "name": "simple",
-        "title": "Majority",
-        "proposalsMax": 1
-    },
-    {
-        "name": "simple_deny",
-        "title": "Majority, add deny",
+        "title": "Simple majority",
         "proposalsMax": 1
     },
     {
         "name": "combined_simple",
-        "title": "Approve or deny"
+        "title": "Approve or deny",
+        "proposalsMin": 2
     },
     {
         "name": "schultze",

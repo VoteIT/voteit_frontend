@@ -2,7 +2,7 @@
   <div>
     <h1>{{ agendaItem.title }}</h1>
     <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :all-states="agendaStates" :admin="hasRole('moderator')" :endpoint="`agenda-items/${agendaId}/`" />
-    <btn v-if="hasRole('moderator')" sm icon="add" @click="$router.push(`${meetingPath}/polls/new/${agendaItem.pk}`)">New poll</btn>
+    <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaItem.pk}`)">New poll</btn>
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
