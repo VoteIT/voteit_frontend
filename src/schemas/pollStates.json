@@ -1,0 +1,39 @@
+[
+  {
+    "transition": "unpublish",
+    "icon": "visibility_off",
+    "state": "private"
+  },
+  {
+    "transition": "upcoming",
+    "icon": "pause",
+    "state": "upcoming"
+  },
+  {
+    "transition": "ongoing",
+    "icon": "how_to_vote",
+    "state": "ongoing"
+  },
+  {
+    "transition": "close",
+    "icon": "gavel",
+    "state": "closed"
+  },
+  {
+    "transition": "finish",
+    "icon": "check",
+    "state": "finished",
+    "isFinal": true
+  },
+  {
+    "transition": "cancel",
+    "icon": "block",
+    "state": "canceled",
+    "isFinal": true
+  },
+  {
+    "icon": "report",
+    "state": "failed",
+    "isFinal": true
+  }
+]

@@ -75,11 +75,11 @@ export default {
       color: #000
       position: relative
       &.router-link-active
-        color: #008
+        color: #228
         &::after
           content: '❧'
           position: absolute
           left: -3px
           top: .35em
-          opacity: .4
+          color: #bbc
 </style>

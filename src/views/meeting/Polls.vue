@@ -3,11 +3,15 @@
     <h1>Polls</h1>
     <ul v-if="polls.length">
       <li v-for="poll in polls" :key="poll.pk" :class="{ selected: poll.pk === pollSelected }">
-        <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">
-          {{ poll.title }}
-          <icon :name="getPollStateIcon(poll)" sm :title="poll.state" />
-        </a>
-        <progress-bar v-if="poll.pk === pollSelected && selectedPollStatus" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
+        <div class="head">
+          <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">
+            {{ poll.title }}
+          </a>
+          <workflow-state :state="poll.state" :allStates="wfStates" :admin="hasRole('moderator')" :endpoint="`polls/${poll.pk}/`" />
+        </div>
+        <div class="body" v-if="poll.pk === pollSelected && selectedPollStatus">
+          <progress-bar absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
+        </div>
       </li>
     </ul>
     <p v-else><em>No polls just yet</em></p>
@@ -20,19 +24,19 @@
 <script>
 import { computed, ref } from 'vue'
 
+import WorkflowState from '../../components/widgets/WorkflowState.vue'
+
 import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 
-const PollStateIcon = {
-  private: 'visibility_off',
-  upcoming: 'pause',
-  ongoing: 'play_arrow',
-  finished: 'done'
-}
+import pollStates from '../../schemas/pollStates.json'
 
 export default {
   name: 'Polls',
+  components: {
+    WorkflowState
+  },
   setup () {
     const { meetingId, fetchMeeting, hasRole, meetingPath } = useMeeting()
     const { fetchPolls, getPolls, getPollStatus, fetchPollStatus } = usePolls()
@@ -59,11 +63,10 @@ export default {
       return getPollStatus(pollSelected.value)
     })
 
-    function getPollStateIcon (p) {
-      return PollStateIcon[p.state] || ''
-    }
+    const wfStates = computed(_ => pollStates)
 
     return {
+      wfStates,
       hasRole,
       fetchMeeting,
       fetchPolls,
@@ -73,7 +76,6 @@ export default {
       pollSelected,
       selectedPollStatus,
       selectPoll,
-      getPollStateIcon,
       subscribe,
       leave
     }
@@ -95,12 +97,18 @@ main
       margin-bottom: .5rem
       padding: .5rem
       background-color: #eee
+      .head
+        display: flex
       a
+        flex: 1 0 auto
         color: #000
         display: block
         text-decoration: none
+        font-weight: bold
       &.selected a
         margin-bottom: .5rem
+      .body
+        padding: .5rem
   .material-icons
     float: right
 </style>

@@ -11,6 +11,7 @@
 <script>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import useRestApi from '../../composables/useRestApi'
+import useAlert from '../../composables/useAlert'
 
 export default {
   name: 'WorkflowState',
@@ -24,6 +25,7 @@ export default {
     const restApi = useRestApi()
     const statesAvailable = ref(null)
     const isOpen = ref(false)
+    const { alert } = useAlert()
 
     const uri = computed(_ => props.endpoint + 'transitions/')
     const currentState = computed(
@@ -39,6 +41,10 @@ export default {
     const opts = ref(null)
     function toggle (noFocus) {
       if (props.admin) {
+        if (currentState.value.isFinal) {
+          alert(`*State "${currentState.value.state}" is final and can not be changed`)
+          return
+        }
         isOpen.value = !isOpen.value
         if (isOpen.value) {
           if (!statesAvailable.value) {
@@ -114,6 +120,8 @@ export default {
   position: relative
   margin-right: .25rem
   display: inline-block
+  > .btn
+    background-color: #bbc
 .btn-group
   .btn,
   .btn.btn-sm

@@ -1,6 +1,6 @@
 <template>
   <div class="progress-bar" :class="{ failed, done }">
-    <div class="bar" :style="{ width: `${value / total * 100}%` }">
+    <div class="bar" :style="{ width: percentage + '%' }">
       <span>{{ textDisplay }}</span>
     </div>
   </div>
@@ -31,7 +31,13 @@ export default {
       if (this.absolute) {
         return `${this.value} / ${this.total}`
       }
-      return `${Math.floor(this.value / this.total * 100)} %`
+      return `${Math.floor(this.percentage * 100)} %`
+    },
+    percentage () {
+      if (this.total === 0) {
+        return 0
+      }
+      return this.value / this.total * 100
     }
   }
 }
