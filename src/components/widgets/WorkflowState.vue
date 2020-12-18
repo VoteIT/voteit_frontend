@@ -41,7 +41,7 @@ export default {
     const opts = ref(null)
     function toggle (noFocus) {
       if (props.admin) {
-        if (currentState.value.isFinal) {
+        if (!isOpen.value && currentState.value.isFinal) {
           alert(`*State "${currentState.value.state}" is final and can not be changed`)
           return
         }
