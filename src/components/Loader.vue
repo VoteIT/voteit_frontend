@@ -17,7 +17,7 @@ let timer
 export default {
   name: 'Loader',
   setup () {
-    return useLoader()
+    return useLoader('Loader')
   },
   data () {
     return {

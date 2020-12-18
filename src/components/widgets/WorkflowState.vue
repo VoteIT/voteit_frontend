@@ -13,12 +13,12 @@ import useRestApi from '../../composables/useRestApi'
 export default {
   name: 'WorkflowState',
   setup () {
-    const { restApi, restError } = useRestApi()
+    const restApi = useRestApi()
 
     function makeTransition (endpoint, s) {
       restApi.post(endpoint + 'transitions/', {
         transition: s.transition
-      }).catch(restError)
+      })
     }
 
     return {

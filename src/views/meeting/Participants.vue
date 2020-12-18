@@ -46,15 +46,12 @@ const TEMP_ROLES = [
 
 export default {
   setup () {
-    const { fetch } = useLoader()
-    const { restApi, restError } = useRestApi()
     return {
       ...useMeeting(),
       meetingRoles: useContextRoles('Meeting'),
       channels: useChannels(),
-      fetch,
-      restApi,
-      restError
+      loader: useLoader('Participants'),
+      restApi: useRestApi()
     }
   },
   data () {
@@ -111,7 +108,6 @@ export default {
         .then(({ data }) => {
           this.setRoles(this.meetingId, user.pk, data.assigned)
         })
-        .catch(this.restError)
     },
     addRole (participant, role) {
       this.channels.post('meeting.roles.add', {
@@ -132,7 +128,7 @@ export default {
     }
   },
   created () {
-    this.fetch(this.initialize)
+    this.loader.call(this.initialize)
   }
 }
 </script>

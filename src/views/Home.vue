@@ -51,13 +51,13 @@ export default {
   name: 'Home',
   setup () {
     const { orderedMeetings, fetchMeetings } = useMeetings()
-    const { restApi } = useRestApi()
+    const restApi = useRestApi()
     return {
       orderedMeetings,
       fetchMeetings,
       restApi,
       ...useAuthentication(),
-      ...useLoader()
+      loader: useLoader('Home')
     }
   },
   data () {
@@ -88,7 +88,7 @@ export default {
     }
   },
   created () {
-    this.fetch(this.fetchMeetings)
+    this.loader.call(this.fetchMeetings)
     this.restApi.get('dev-login/')
       .then(({ data }) => {
         this.users = data

@@ -44,19 +44,21 @@
 </template>
 
 <script>
+import { computed, ref } from 'vue'
 import useLoader from '@/composables/useLoader.js'
 import useAlert from '@/composables/useAlert.js'
+import useRestApi from '../../composables/useRestApi'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
 import useProposals from '@/composables/meeting/useProposals.js'
-import { computed, ref } from 'vue'
 
 import pollMethods from '@/schemas/pollMethods.json'
 
 export default {
   name: 'StartPoll',
   setup () {
+    const restApi = useRestApi()
     const proposals = useProposals()
     const agenda = useAgenda()
     const { alert } = useAlert()
@@ -104,8 +106,15 @@ export default {
 
     function createPoll (start = false) {
       const method = pollMethods.find(m => m.name === methodSelected.value)
-      if (method.name === 'combined_simple') {
-        console.log(method)
+      if (method.name === 'simple') {
+        restApi.post('polls/', {
+          agenda_item: agenda.agendaId.value,
+          proposal_pks: [...selectedProposalIds.value].join(','),
+          method: method.name,
+          start
+        })
+          .then(console.log)
+        // console.log(method, restApi)
       } else {
         alert(`*${method.title} not implemented`)
       }
@@ -125,7 +134,7 @@ export default {
       createPoll,
 
       ...useMeeting(),
-      ...useLoader(),
+      loader: useLoader('StartPoll'),
       ...agenda,
       ...proposals
     }
@@ -141,7 +150,7 @@ export default {
   },
   created () {
     if (this.agendaId) {
-      this.fetch(_ => this.fetchAgendaProposals(this.agendaId))
+      this.loader.call(_ => this.fetchAgendaProposals(this.agendaId))
     }
   }
 }

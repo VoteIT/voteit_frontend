@@ -1,18 +1,20 @@
 import { ref, watch } from 'vue'
 
 import useAuthentication from './useAuthentication'
+import useRestApi from './useRestApi'
 
-const loading = new Set() // Set of component names that are loading.
 const initDone = ref(false)
 const initFailed = ref(false)
-const fetchCallbacks = []
+let callbacks = []
 
 const { isAuthenticated } = useAuthentication()
+
+const restApi = useRestApi({ alertOnError: false })
 
 watch(isAuthenticated, value => {
   if (value) {
     Promise.all(
-      fetchCallbacks.map(cb => cb())
+      callbacks.map(cb => cb())
     )
       .then(_ => {
         initDone.value = true
@@ -21,49 +23,56 @@ watch(isAuthenticated, value => {
         console.log(err)
         initFailed.value = true
       })
+      .finally(_ => {
+        callbacks = []
+      })
   }
 })
 
 export default function useLoader (name) {
-  function setLoading () {
-    if (!name || loading.has(name)) {
-      console.log("Use useLoader('Unique name') if using setLoading", name)
-    } else {
-      console.log('Loading', name)
-    }
-    loading.add(name)
+  if (typeof name !== 'string') {
+    console.log('Warning: Instantiate loader using userLoader(<unique name>)')
   }
-
-  function setLoaded () {
-    if (name) {
-      loading.delete(name)
-      console.log('Loaded', name)
-    }
-    if (loading.size === 0) {
+  function setLoaded (success = true) {
+    if (success) {
       initDone.value = true
+    } else {
+      console.log('Loading failed', name)
+      initFailed.value = true
     }
   }
 
-  function setLoadingFailed () {
-    console.log(`Loading ${name} failed`)
-    initFailed.value = true
-  }
-
-  function fetch (cb) {
+  function call (cb) {
     // Queue if not initialized. Need to check that...
     if (isAuthenticated.value) {
       cb()
     } else {
-      fetchCallbacks.push(cb)
+      callbacks.push(cb)
+    }
+  }
+
+  async function get (uri, config) {
+    if (isAuthenticated.value) {
+      return restApi.get(uri, config)
+    } else {
+      return new Promise((resolve, reject) => {
+        callbacks.push(_ => {
+          restApi.get(uri, config)
+            .then(resolve)
+            .catch(err => {
+              console.log('Loading failed', name)
+              reject(err)
+            })
+        })
+      })
     }
   }
 
   return {
     initDone,
     initFailed,
-    setLoading,
     setLoaded,
-    setLoadingFailed,
-    fetch
+    call,
+    get
   }
 }

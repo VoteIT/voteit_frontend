@@ -41,7 +41,7 @@ export default {
 
     // Post (data change picket up from channels)
     // const channels = useChannels(props.contentType)
-    const { restApi } = useRestApi()
+    const restApi = useRestApi()
     const title = ref('')
     const submitting = ref(false)
 

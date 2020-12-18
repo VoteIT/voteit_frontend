@@ -8,7 +8,6 @@
 </template>
 
 <script>
-// import { mapActions, mapMutations, mapState } from 'vuex'
 import OnlineStatus from '@/components/OnlineStatus'
 import Loader from '@/components/Loader.vue'
 import Alerts from '@/components/Alerts.vue'
@@ -25,12 +24,15 @@ export default {
   setup () {
     return {
       ...useAuthentication(),
-      ...useLoader()
+      ...useLoader('App')
     }
   },
   created () {
     if (this.user) {
       this.authenticate(this.user)
+        .catch(_ => {
+          this.setLoaded(false)
+        })
     } else {
       this.setLoaded()
     }

@@ -69,6 +69,17 @@ export default {
       padding: .3rem
       font-size: 1.2rem
     a
+      display: block
       text-decoration: none
       padding: .4rem 1.3rem
+      color: #000
+      position: relative
+      &.router-link-active
+        color: #008
+        &::after
+          content: '❧'
+          position: absolute
+          left: -3px
+          top: .35em
+          opacity: .4
 </style>

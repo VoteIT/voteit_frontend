@@ -6,7 +6,7 @@ const meetings = ref(new Map())
 const meetingList = ref([]) // Sorted meeting id list
 
 export default function useMeetings () {
-  const { restApi } = useRestApi()
+  const restApi = useRestApi()
 
   const orderedMeetings = computed(_ => {
     return meetingList.value.map(id => meetings.value.get(id))

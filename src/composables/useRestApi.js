@@ -1,7 +1,12 @@
 import useAlert from './useAlert'
 import { restApi } from '@/utils'
 
-export default function useRestApi () {
+const DEFAULT_CONFIG = {
+  alertOnError: true
+}
+
+export default function useRestApi (config) {
+  const defaultConfig = Object.assign({}, DEFAULT_CONFIG, config)
   const { alert } = useAlert()
 
   function setAuthToken (token) {
@@ -46,9 +51,47 @@ export default function useRestApi () {
     }
   }
 
+  async function get (uri, config) {
+    config = Object.assign({}, defaultConfig, config)
+    const request = restApi.get(uri)
+    if (config.alertOnError) {
+      request.catch(restError)
+    }
+    return request
+  }
+
+  async function post (uri, data) {
+    config = Object.assign({}, defaultConfig, config)
+    const request = restApi.post(uri, data, config)
+    if (config.alertOnError) {
+      request.catch(restError)
+    }
+    return request
+  }
+
+  async function put (uri, data, config) {
+    config = Object.assign({}, defaultConfig, config)
+    const request = restApi.put(uri, data, config)
+    if (config.alertOnError) {
+      request.catch(restError)
+    }
+    return request
+  }
+
+  async function _delete (uri, config) {
+    config = Object.assign({}, defaultConfig, config)
+    const request = restApi.delete(uri)
+    if (config.alertOnError) {
+      request.catch(restError)
+    }
+    return request
+  }
+
   return {
     setAuthToken,
-    restApi,
-    restError
+    get,
+    post,
+    put,
+    delete: _delete
   }
 }

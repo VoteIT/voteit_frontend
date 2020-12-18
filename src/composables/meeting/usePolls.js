@@ -30,7 +30,7 @@ useChannels().registerUpdateHandler('poll', ({ t, p }) => {
 })
 
 export default function usePolls () {
-  const { restApi, restError } = useRestApi()
+  const restApi = useRestApi()
 
   function getPolls (meetingId) {
     return polls.value.filter(p => p.meeting === meetingId)
@@ -43,7 +43,6 @@ export default function usePolls () {
         polls.value = polls.value.filter(p => p.meeting !== meetingId)
         Array.prototype.push.apply(polls.value, data)
       })
-      .catch(restError)
   }
 
   async function fetchPollStatus (pk) {
@@ -51,7 +50,6 @@ export default function usePolls () {
       .then(({ data }) => {
         pollStatuses.value.set(data.pk, data)
       })
-      .catch(restError)
   }
 
   function getPollStatus (pk) {

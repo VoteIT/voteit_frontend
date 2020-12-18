@@ -51,16 +51,14 @@ import useChannels from '@/composables/useChannels.js'
 export default {
   name: 'AgendaItem',
   setup () {
-    const { restApi } = useRestApi()
-    const { fetch } = useLoader()
     return {
       ...useMeeting(),
       ...useAgenda(),
       ...useProposals(),
       ...useDiscussions(),
       ...useChannels(),
-      fetch,
-      restApi,
+      loader: useLoader('AgendaItem'),
+      restApi: useRestApi(),
       agendaStates
     }
   },
@@ -118,7 +116,7 @@ export default {
     }
   },
   created () {
-    this.fetch(this.initialize)
+    this.loader.call(this.initialize)
     this.subscribe(`agenda_item/${this.agendaId}`)
   },
   beforeRouteLeave (to, from, next) {

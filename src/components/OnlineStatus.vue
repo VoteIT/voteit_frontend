@@ -7,17 +7,16 @@
 </template>
 
 <script>
-// import { mapGetters, mapMutations, mapState } from 'vuex'
 import useChannels from '@/composables/useChannels.js'
-import useLoader from '@/composables/useLoader.js'
+// import useLoader from '@/composables/useLoader.js'
 import useAuthentication from '@/composables/useAuthentication.js'
 
 export default {
   setup () {
     return {
       ...useAuthentication(),
-      ...useChannels(),
-      ...useLoader()
+      ...useChannels()
+      // ...useLoader('OnlineStatus')
     }
   },
   data () {
@@ -28,10 +27,6 @@ export default {
       failedInitialization: false
     }
   },
-  // computed: {
-  //   ...mapGetters(['isAuthenticated']),
-  //   ...mapState(['authToken', 'socketState'])
-  // },
   watch: {
     authToken (value) {
       if (value) {
@@ -46,7 +41,6 @@ export default {
     }
   },
   methods: {
-    // ...mapMutations(['setSocketState']),
     reconnectTicker (on = true) {
       if (!on) {
         clearInterval(this.reconnectIntervalId)

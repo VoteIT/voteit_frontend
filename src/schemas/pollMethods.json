@@ -2,8 +2,7 @@
     {
         "name": "simple",
         "title": "Majority",
-        "proposalsMin": 2,
-        "proposalsMax": 2
+        "proposalsMax": 1
     },
     {
         "name": "simple_deny",
@@ -25,7 +24,7 @@
         "proposalsMin": 2
     },
     {
-        "name": "scottish_stv",
+        "name": "scottishstv",
         "title": "Scottish STV",
         "multipleWinners": true,
         "proposalsMin": 3,

@@ -46,27 +46,18 @@ const NAV_LINKS = [
 export default {
   name: 'Meeting',
   setup () {
-    const { restApi } = useRestApi()
     const { subscribe, leave } = useChannels()
     return {
-      ...useLoader(),
+      loader: useLoader('Meeting'),
+      restApi: useRestApi(),
       ...useMeeting(),
       ...usePolls(),
-      restApi,
       subscribe,
       leave
     }
   },
   components: {
     Agenda
-  },
-  methods: {
-    initialize () {
-      return Promise.all([
-        this.fetchMeeting(),
-        this.fetchPolls(this.meetingId)
-      ])
-    }
   },
   computed: {
     navigationLinks () {
@@ -90,8 +81,9 @@ export default {
     }
   },
   created () {
+    this.loader.call(this.fetchMeeting)
+    this.loader.call(_ => this.fetchPolls(this.meetingId))
     this.subscribe(`meeting/${this.meetingId}`)
-    this.fetch(this.initialize)
   },
   beforeRouteLeave (to, from, next) {
     this.leave(`meeting/${this.meetingId}`)
