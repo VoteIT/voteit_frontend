@@ -33,7 +33,7 @@ export default {
 
     function focusButton (where) {
       nextTick(_ => {
-        where.value.querySelector('.btn').focus()
+        where.value && where.value.querySelector('.btn').focus()
       })
     }
 

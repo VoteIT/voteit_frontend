@@ -1,16 +1,18 @@
 <template>
   <div id="meeting">
-    <nav>
-      <router-link to="/">Hem</router-link>
-      <h1><router-link :to="meetingPath">{{ meeting.title || 'Laddar möte' }}</router-link></h1>
-    </nav>
-    <nav class="tabs" v-if="navigationLinks.length">
-      <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
-        <icon sm :name="link.icon" />
-        {{ link.title }}
-        <span v-if="link.count">({{ link.count }})</span>
-      </router-link>
-    </nav>
+    <header>
+      <nav>
+        <router-link to="/">Hem</router-link>
+        <h1><router-link :to="meetingPath">{{ meeting.title || 'Laddar möte' }}</router-link></h1>
+      </nav>
+      <nav class="tabs" v-if="navigationLinks.length">
+        <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
+          <icon sm :name="link.icon" />
+          {{ link.title }}
+          <span v-if="link.count">({{ link.count }})</span>
+        </router-link>
+      </nav>
+    </header>
     <div>
       <agenda />
       <router-view id="main-content" />
@@ -33,7 +35,7 @@ const NAV_LINKS = [
     title: 'Polls',
     icon: 'star',
     path: 'polls',
-    countAttr: 'polls'
+    countAttr: 'ongoingPollCount'
   },
   {
     role: 'moderator',
@@ -64,17 +66,20 @@ export default {
       return NAV_LINKS
         .filter(l => this.hasRole(l.role))
         .map(l => {
-          // TODO Check this with reactivity
           if (l.countAttr) {
-            return Object.assign(l, {
-              count: this[l.countAttr].length
-            })
+            l.count = this[l.countAttr]
           }
           return l
         })
     },
     polls () {
       return this.getPolls(this.meetingId)
+    },
+    ongoingPollCount () {
+      if (this.hasRole('potential_voter')) {
+        return this.polls.filter(p => p.state === 'ongoing').length
+      }
+      return 0
     },
     agenda () {
       return this.getAgenda(this.meetingId)
@@ -93,10 +98,7 @@ export default {
 </script>
 
 <style lang="sass">
-#meeting
-  display: flex
-  flex-direction: column
-  min-height: 100vh
+header
   nav
     padding: 8px
     background-color: #000
@@ -119,11 +121,20 @@ export default {
         border-radius: 4px 4px 0 0
         background-color: #333
         font-weight: 700
+        > span
+          vertical-align: super
+          font-size: 80%
+        .material-icons
+          color: #779
+          vertical-align: text-bottom
         &.router-link-active
-          background-color: #fff
           background-color: #fff
           color: #000
 
+#meeting
+  display: flex
+  flex-direction: column
+  min-height: 100vh
   > div
     display: flex
     flex-grow: 1

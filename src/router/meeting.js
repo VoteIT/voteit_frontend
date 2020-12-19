@@ -34,6 +34,11 @@ export default {
           path: 'new/:aid',
           name: 'start-poll-ai',
           component: meeting.StartPoll
+        },
+        {
+          path: ':state',
+          name: 'poll-state',
+          component: meeting.Polls
         }
       ]
     },

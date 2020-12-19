@@ -1,4 +1,4 @@
-import pollStates from './pollStates.json'
+import pollStates from './pollStates.js'
 import proposalStates from './proposalStates.json'
 import agendaStates from './agendaStates.json'
 

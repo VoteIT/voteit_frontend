@@ -29,6 +29,7 @@ export default {
   padding: .2rem .6rem
   border-radius: 6px
   .material-icons
+    color: #779
     vertical-align: middle
   &:hover
     background-color: #aaa
