@@ -107,6 +107,7 @@ header
     justify-content: space-between
     a
       color: #fff
+      margin-right: 1rem
     h1
       margin: 0
       flex-grow: 1
