@@ -101,16 +101,15 @@ export default {
 header
   nav
     padding: 8px
-    background-color: #000
+    background-color: #111118
     color: fff
     display: flex
     justify-content: space-between
     a
-      color: #ddf
+      color: #fff
     h1
       margin: 0
       flex-grow: 1
-      color: #fff
     &.tabs
       padding-bottom: 0
       justify-content: flex-end

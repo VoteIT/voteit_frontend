@@ -119,6 +119,8 @@ export default {
   display: inline-block
   > .btn
     background-color: #bbc
+    .material-icons
+      color: #000
 .btn-group
   .btn,
   .btn.btn-sm
@@ -140,6 +142,8 @@ export default {
       background-color: #000
       color: #fff
       border-radius: 0
+      .material-icons
+        color: #fff
       &:hover,
       &:focus
         background-color: #668
