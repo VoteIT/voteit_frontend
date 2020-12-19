@@ -6,28 +6,29 @@ import useRestApi from '../useRestApi'
 const polls = ref([])
 const pollStatuses = ref(new Map())
 
-useChannels().registerUpdateHandler('poll', ({ t, p }) => {
-  const item = p.item || p // Can be only a pk
-  const index = polls.value.findIndex(p => p.pk === item.pk)
-  switch (t) {
-    case 'poll.changed':
-    case 'poll.added':
-      if (index !== -1) {
-        polls.value[index] = item
-      } else {
-        polls.value.push(item)
-      }
-      break
-    case 'poll.deleted':
-      if (index !== -1) {
-        polls.value.splice(index, 1)
-      }
-      break
-    case 'poll.status':
-      pollStatuses.value.set(p.pk, p)
-      break
-  }
-})
+useChannels('poll')
+  .onUpdate(({ t, p }) => {
+    const item = p.item || p // Can be only a pk
+    const index = polls.value.findIndex(p => p.pk === item.pk)
+    switch (t) {
+      case 'poll.changed':
+      case 'poll.added':
+        if (index !== -1) {
+          polls.value[index] = item
+        } else {
+          polls.value.push(item)
+        }
+        break
+      case 'poll.deleted':
+        if (index !== -1) {
+          polls.value.splice(index, 1)
+        }
+        break
+      case 'poll.status':
+        pollStatuses.value.set(p.pk, p)
+        break
+    }
+  })
 
 export default function usePolls () {
   const restApi = useRestApi()

@@ -4,25 +4,26 @@ import useChannels from '../useChannels'
 
 const agendas = ref(new Map())
 
-useChannels().registerUpdateHandler('agenda', ({ t, p }) => {
-  const item = p.item || p // Can be only a pk
-  const agenda = agendas.value.get(item.meeting, item)
-  const index = agenda.findIndex(ai => ai.pk === item.pk)
-  switch (t) {
-    case 'agenda.changed':
-    case 'agenda.added':
-      if (index !== -1) {
-        agenda.splice(index, 1)
-      }
-      agenda.push(item)
-      break
-    case 'agenda.deleted':
-      if (index !== -1) {
-        agenda.splice(index, 1)
-      }
-      break
-  }
-})
+useChannels('agenda')
+  .onUpdate(({ t, p }) => {
+    const item = p.item || p // Can be only a pk
+    const agenda = agendas.value.get(item.meeting, item)
+    const index = agenda.findIndex(ai => ai.pk === item.pk)
+    switch (t) {
+      case 'agenda.changed':
+      case 'agenda.added':
+        if (index !== -1) {
+          agenda.splice(index, 1)
+        }
+        agenda.push(item)
+        break
+      case 'agenda.deleted':
+        if (index !== -1) {
+          agenda.splice(index, 1)
+        }
+        break
+    }
+  })
 
 function sortAgenda (items) {
   items.sort((a, b) => {

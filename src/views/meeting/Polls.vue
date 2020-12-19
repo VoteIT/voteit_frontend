@@ -7,9 +7,9 @@
           <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">
             {{ poll.title }}
           </a>
-          <workflow-state :state="poll.state" :allStates="wfStates" :admin="hasRole('moderator')" :endpoint="`polls/${poll.pk}/`" />
+          <workflow-state :state="poll.state" :allStates="wfStates" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
         </div>
-        <div class="body" v-if="poll.pk === pollSelected && selectedPollStatus">
+        <div class="body" v-if="poll.pk === pollSelected && selectedPollStatus && selectedPollStatus.total">
           <progress-bar absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
         </div>
       </li>

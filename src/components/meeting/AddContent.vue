@@ -12,7 +12,7 @@
 
 <script>
 import { nextTick, ref } from 'vue'
-import useRestApi from '../../composables/useRestApi'
+import useContentApi from '../../composables/useContentApi'
 // import useChannels from '../../composables/useChannels'
 
 export default {
@@ -39,9 +39,9 @@ export default {
       }
     }
 
-    // Post (data change picket up from channels)
+    // Post (data update from channels)
     // const channels = useChannels(props.contentType)
-    const restApi = useRestApi()
+    const contentApi = useContentApi(props.contentType)
     const title = ref('')
     const submitting = ref(false)
 
@@ -52,7 +52,7 @@ export default {
         //   title: title.value
         // })
         const data = Object.assign({ title: this.title }, this.params)
-        restApi.post(this.endpoint, data)
+        contentApi.add(data)
           .then(_ => {
             title.value = ''
             open.value = false

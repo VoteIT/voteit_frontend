@@ -10,26 +10,25 @@
 
 <script>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import useRestApi from '../../composables/useRestApi'
 import useAlert from '../../composables/useAlert'
+import useContentApi from '../../composables/useContentApi'
 
 export default {
   name: 'WorkflowState',
   props: {
     admin: Boolean,
-    allStates: Object,
+    pk: Number,
     state: String,
-    endpoint: String
+    contentType: String
   },
   setup (props) {
-    const restApi = useRestApi()
+    const contentApi = useContentApi(props.contentType)
     const statesAvailable = ref(null)
     const isOpen = ref(false)
     const { alert } = useAlert()
 
-    const uri = computed(_ => props.endpoint + 'transitions/')
     const currentState = computed(
-      _ => props.allStates.find(s => s.state === props.state)
+      _ => contentApi.states.find(s => s.state === props.state)
     )
 
     function focusButton (where) {
@@ -42,17 +41,15 @@ export default {
     function toggle (noFocus) {
       if (props.admin) {
         if (!isOpen.value && currentState.value.isFinal) {
-          alert(`*State "${currentState.value.state}" is final and can not be changed`)
+          alert(`*State "${currentState.value.state}" is final and can't be changed`)
           return
         }
         isOpen.value = !isOpen.value
         if (isOpen.value) {
           if (!statesAvailable.value) {
-            restApi.get(uri.value)
-              .then(({ data }) => {
-                statesAvailable.value = data.available_transitions.map(
-                  name => props.allStates.find(s => s.transition === name)
-                )
+            contentApi.getTransitions(props.pk)
+              .then(states => {
+                statesAvailable.value = states
                 focusButton(opts)
               })
           } else {
@@ -65,7 +62,7 @@ export default {
     }
 
     function makeTransition ({ transition }) {
-      restApi.post(uri.value, { transition })
+      contentApi.transition(props.pk, transition)
         .then(_ => nextTick(toggle))
     }
 

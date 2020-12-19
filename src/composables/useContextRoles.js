@@ -11,8 +11,8 @@ function getRoleKey (...components) {
   return components.join('/')
 }
 
-useChannels()
-  .registerUpdateHandler('roles', ({ t, p }) => {
+useChannels('roles')
+  .onUpdate(({ t, p }) => {
     const key = getRoleKey(p.model, p.pk, p.user_pk)
     if (!contextRoles.value.has(key)) {
       contextRoles.value.set(key, new Set())

@@ -6,30 +6,61 @@
         <li v-for="ai in aiType(s.state)" :key="ai.pk"><router-link :to="aiPath(ai)">{{ ai.title }}</router-link></li>
       </ul>
     </template>
+    <btn-dropdown title="New agenda item" @open="focusInput">
+      <form @submit.prevent="addAgendaItem">
+        <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
+        <input class="btn" type="submit" value="Add"/>
+      </form>
+    </btn-dropdown>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import agendaStates from '@/schemas/agendaStates.json'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
+import useContentApi from '../../composables/useContentApi'
+import BtnDropdown from '../BtnDropdown.vue'
 
 const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
 
 export default {
+  components: { BtnDropdown },
   name: 'Agenda',
   setup () {
     const { getAgenda } = useAgenda()
     const { meetingId, meetingPath, hasRole } = useMeeting()
     const agenda = computed(_ => getAgenda(meetingId.value))
+    const agendaApi = useContentApi('agenda_item')
+
+    // Add AgendaItem
+    const newAgendaTitle = ref('')
+    function addAgendaItem () {
+      agendaApi.add({
+        meeting: meetingId.value,
+        title: newAgendaTitle.value
+      })
+        .then(_ => { newAgendaTitle.value = '' })
+    }
+    // Focus input element
+    const inputEl = ref(null)
+    function focusInput () {
+      inputEl.value.focus()
+    }
+
     return {
       meetingId,
       meetingPath,
       hasRole,
-      agenda
+      agenda,
+
+      newAgendaTitle,
+      addAgendaItem,
+      inputEl,
+      focusInput
     }
   },
   methods: {

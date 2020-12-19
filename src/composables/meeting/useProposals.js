@@ -6,8 +6,8 @@ import useChannels from '../useChannels.js'
 
 const proposals = ref([])
 
-useChannels()
-  .registerUpdateHandler('proposal', ({ p, t }) => {
+useChannels('proposal')
+  .onUpdate(({ p, t }) => {
     const item = p.item || p // Can be only a pk
     const index = proposals.value.findIndex(p => p.pk === item.pk)
     switch (t) {

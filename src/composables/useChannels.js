@@ -59,9 +59,10 @@ export default function useChannels (contentType, moduleConfig) {
     socket.close()
   }
 
-  function registerUpdateHandler (ct, fn) {
-    console.log('registering update handler for', ct)
-    updateHandlers.set(ct, fn)
+  function onUpdate (fn) {
+    checkCType('onUpdate')
+    console.log('registering update handler for', contentType)
+    updateHandlers.set(contentType, fn)
   }
 
   function subscribe (uri) {
@@ -127,7 +128,7 @@ export default function useChannels (contentType, moduleConfig) {
   return {
     socket,
     socketState,
-    registerUpdateHandler,
+    onUpdate,
     connect,
     disconnect,
     subscribe,
