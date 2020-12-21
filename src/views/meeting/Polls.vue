@@ -7,33 +7,17 @@
     <div class="btn-group" v-if="hasRole('moderator')">
       <btn icon="star" @click="$router.push(meetingPath + '/polls/new')">New poll</btn>
     </div>
-    <ul v-if="currentPolls.length">
-      <li v-for="poll in currentPolls" :key="poll.pk" :class="{ selected: poll.pk === pollSelected }">
-        <div class="head">
-          <a :href="'#poll-' + poll.pk" @click="selectPoll(poll)">
-            {{ poll.title }}
-          </a>
-          <workflow-state :state="poll.state" :allStates="wfStates" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
-        </div>
-        <div class="body" v-if="poll.pk === pollSelected && selectedPollStatus && selectedPollStatus.total">
-          <progress-bar v-if="poll.state === 'ongoing'" absolute :value="selectedPollStatus.voted" :total="selectedPollStatus.total" />
-          <p v-else>
-            Other info
-          </p>
-        </div>
-      </li>
-    </ul>
-    <p v-else><em>No polls in this state just yet</em></p>
+    <poll :poll="p" v-for="p in polls" :key="p.pk" />
+    <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
   </main>
 </template>
 
 <script>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed } from 'vue'
 
-import WorkflowState from '../../components/widgets/WorkflowState.vue'
+import Poll from '../../components/widgets/Poll.vue'
 import { useRoute } from 'vue-router'
 
-import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 
@@ -49,72 +33,37 @@ const tabOrder = [
 export default {
   name: 'Polls',
   components: {
-    WorkflowState
+    Poll
   },
   setup () {
     const { meetingId, hasRole, meetingPath } = useMeeting()
-    const { getPolls, getPollStatus, fetchPollStatus } = usePolls()
-    const channels = useChannels()
+    const { getPolls } = usePolls()
     const route = useRoute()
-
-    const polls = computed(_ => {
-      return getPolls(meetingId.value)
-    })
-
-    const pollSelected = ref(null)
-    function selectPoll (poll) {
-      if (pollSelected.value) {
-        channels.leave(`poll/${pollSelected.value}`)
-      }
-      if (pollSelected.value === poll.pk) {
-        pollSelected.value = null
-      } else {
-        pollSelected.value = poll.pk
-        channels.subscribe(`poll/${poll.pk}`)
-        fetchPollStatus(poll.pk)
-      }
-    }
-    const selectedPollStatus = computed(_ => {
-      return getPollStatus(pollSelected.value)
-    })
 
     const currentState = computed(_ => pollStates.find(
       s => s.state === (route.params.state || 'ongoing')
     ) || {})
-    const wfStates = computed(_ => pollStates)
-    function getStatePolls (state) {
-      return polls.value.filter(p => p.state === state)
-    }
+
+    const polls = computed(_ => {
+      return getPolls(meetingId.value, currentState.value.state)
+    })
+
     const tabStates = computed(_ => {
       return tabOrder.map(state => {
         return Object.assign({},
           pollStates.find(s => s.state === state),
-          { polls: getStatePolls(state) }
+          { polls: getPolls(meetingId.value, state) }
         )
       })
     })
-    const currentPolls = computed(
-      _ => getStatePolls(currentState.value.state)
-    )
-
-    onBeforeUnmount(_ => {
-      if (pollSelected.value) {
-        channels.leave(`poll/${pollSelected.value}`)
-      }
-    })
 
     return {
-      wfStates,
       tabStates,
       currentState,
-      currentPolls,
       hasRole,
       meetingId,
       meetingPath,
       polls,
-      pollSelected,
-      selectedPollStatus,
-      selectPoll,
       getStatePath (s) {
         if (s.state === 'ongoing') {
           return `${meetingPath.value}/polls`
@@ -127,27 +76,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-main
-  ul
-    padding: 0
-    list-style-type: none
-    li
-      margin-bottom: .5rem
-      padding: .5rem
-      background-color: #eee
-      .head
-        display: flex
-      a
-        flex: 1 0 auto
-        color: #000
-        display: block
-        text-decoration: none
-        font-weight: bold
-      &.selected a
-        margin-bottom: .5rem
-      .body
-        padding: .5rem
-
 nav.tabs
   display: flex
   margin-top: 20px

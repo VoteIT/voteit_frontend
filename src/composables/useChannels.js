@@ -65,7 +65,21 @@ export default function useChannels (contentType, moduleConfig) {
     updateHandlers.set(contentType, fn)
   }
 
-  function subscribe (uri) {
+  function getUri (uriOrPk) {
+    // Allow channel subscriptions using contentType[/pk]
+    switch (typeof uriOrPk) {
+      case 'undefined':
+        checkCType('subscribe')
+        return contentType
+      case 'number':
+        checkCType('subscribe')
+        return `${contentType}/${uriOrPk}`
+    }
+    return uriOrPk
+  }
+
+  function subscribe (uriOrPk) {
+    const uri = getUri(uriOrPk)
     if (!subscriptions.has(uri)) {
       subscriptions.set(uri, new Set())
     }
@@ -75,7 +89,8 @@ export default function useChannels (contentType, moduleConfig) {
     subscriptions.get(uri).add(this)
   }
 
-  function leave (uri) {
+  function leave (uriOrPk) {
+    const uri = getUri(uriOrPk)
     subscriptions.get(uri).delete(this)
     if (!subscriptions.get(uri).size && socket.isOpen) {
       socket.send('channel.leave', uri)

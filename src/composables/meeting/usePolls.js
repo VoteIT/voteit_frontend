@@ -33,7 +33,10 @@ useChannels('poll')
 export default function usePolls () {
   const restApi = useRestApi()
 
-  function getPolls (meetingId) {
+  function getPolls (meetingId, stateName) {
+    if (stateName) {
+      return polls.value.filter(p => p.meeting === meetingId && p.state === stateName)
+    }
     return polls.value.filter(p => p.meeting === meetingId)
   }
 

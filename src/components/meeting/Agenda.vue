@@ -6,8 +6,8 @@
         <li v-for="ai in aiType(s.state)" :key="ai.pk"><router-link :to="aiPath(ai)">{{ ai.title }}</router-link></li>
       </ul>
     </template>
-    <btn-dropdown title="New agenda item" @open="focusInput">
-      <form @submit.prevent="addAgendaItem">
+    <btn-dropdown dark title="New agenda item" @open="focusInput">
+      <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
         <input class="btn" type="submit" value="Add"/>
       </form>
@@ -113,4 +113,14 @@ export default {
           left: -3px
           top: .35em
           color: #bbc
+
+  .agenda-add-form
+    display: flex
+    input:first-child
+      flex: 1 0 auto
+    input[type="submit"]
+      background-color: #eee
+      border-radius: 0 3px 3px 0
+      border: 1px solid #666
+      border-left: 0
 </style>

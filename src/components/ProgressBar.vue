@@ -55,6 +55,7 @@ export default {
   border: 1px solid #444
   border-radius: 3px
   margin: 0 auto
+  background-color: #fff
   .bar
     box-sizing: border-box
     background-color: #ddd

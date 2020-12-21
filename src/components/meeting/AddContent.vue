@@ -1,22 +1,28 @@
 <template>
-  <div>
-    <btn :class="{ open }" @click="toggleOpen" :icon="open ? 'arrow_drop_up' : 'arrow_drop_down'">Write {{ name }}</btn>
-    <form @submit.prevent="submit" v-show="open">
+  <btn-dropdown :title="'Write ' + name" @open="inputEl.focus()">
+    <form @submit.prevent="submit">
       <textarea ref="inputEl" @keyup.ctrl.enter="submit" v-model="title" required></textarea>
       <div class="buttons">
         <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
     </form>
-  </div>
+  </btn-dropdown>
 </template>
 
 <script>
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import useContentApi from '../../composables/useContentApi'
-// import useChannels from '../../composables/useChannels'
+import useChannels from '../../composables/useChannels'
+
+import BtnDropdown from '../BtnDropdown'
+
+const useSocket = false
 
 export default {
   name: 'AddContent',
+  components: {
+    BtnDropdown
+  },
   props: {
     name: String,
     // For rest
@@ -28,19 +34,10 @@ export default {
   },
   setup (props) {
     // Open and close
-    const open = ref(false)
     const inputEl = ref(null)
-    function toggleOpen () {
-      open.value = !open.value
-      if (open.value) {
-        nextTick(_ => {
-          inputEl.value.focus()
-        })
-      }
-    }
 
     // Post (data update from channels)
-    // const channels = useChannels(props.contentType)
+    const channels = useChannels(props.contentType)
     const contentApi = useContentApi(props.contentType)
     const title = ref('')
     const submitting = ref(false)
@@ -48,18 +45,21 @@ export default {
     function submit () {
       if (!submitting.value) {
         this.submitting = true
-        // channels.add(props.contextPk, {
-        //   title: title.value
-        // })
-        const data = Object.assign({ title: this.title }, this.params)
-        contentApi.add(data)
-          .then(_ => {
-            title.value = ''
-            open.value = false
+        if (useSocket) {
+          channels.add(props.contextPk, {
+            title: title.value
           })
-          .finally(_ => {
-            submitting.value = false
-          })
+        } else {
+          const data = Object.assign({ title: title.value }, props.params)
+          contentApi.add(data)
+            .then(_ => {
+              title.value = ''
+              open.value = false
+            })
+            .finally(_ => {
+              submitting.value = false
+            })
+        }
       }
     }
 
@@ -67,36 +67,20 @@ export default {
       title,
       open,
       submitting,
-      toggleOpen,
       submit,
-      inputEl,
-      ...props
+      inputEl
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-form
-  background-color: #eee
-  padding: 10px
-  border-bottom: 1px solid #ddd
-  border-right: 1px solid #ddd
-  border-radius: 0 10px 10px 10px
-
-  textarea
-    width: 100%
-    height: 8em
-    border: 1px solid #ccc
-    &:focus
-      outline: solid #ccc 1px
-  .buttons
-    text-align: right
-
-button
-  padding-right: 1rem
-  &.open
-    border-bottom-left-radius: 0
-    border-bottom-right-radius: 0
-    background-color: #eee
+textarea
+  width: 100%
+  height: 8em
+  border: 1px solid #ccc
+  &:focus
+    outline: solid #ccc 1px
+.buttons
+  text-align: right
 </style>
