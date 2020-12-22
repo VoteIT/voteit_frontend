@@ -16,8 +16,8 @@ export default function useContentApi (contentType, config) {
     return restApi.post(endpoint.uri + '/', data)
   }
 
-  function list () {
-    return restApi.get(endpoint.uri + '/')
+  function list (params) {
+    return restApi.get(endpoint.uri + '/', { params })
   }
 
   function retrieve (pk) {

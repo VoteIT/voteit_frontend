@@ -1,8 +1,9 @@
 import { ref } from 'vue'
 
-import { restApi } from '@/utils'
+// import { restApi } from '@/utils'
 
 import useChannels from '../useChannels.js'
+import useContentApi from '../useContentApi.js'
 
 const proposals = ref([])
 
@@ -27,9 +28,21 @@ useChannels('proposal')
   })
 
 export default function useProposals () {
+  const pollApi = useContentApi('proposal')
+
+  function setProposals (ps) {
+    ps.forEach(newProp => {
+      const index = proposals.value.findIndex(p => p.pk === newProp.pk)
+      if (index !== -1) {
+        proposals.value[index] = newProp
+      } else {
+        proposals.value.push(newProp)
+      }
+    })
+  }
+
   async function fetchAgendaProposals (agendaId) {
-    const params = { agenda_item: agendaId }
-    return restApi.get('proposals/', { params })
+    return pollApi.list({ agenda_item: agendaId })
       .then(({ data }) => {
         // Clean up any previously set proposals for this agenda item
         proposals.value = proposals.value.filter(p => p.agenda_item !== agendaId)
@@ -46,8 +59,20 @@ export default function useProposals () {
     })
   }
 
+  function getPollProposals (pk) {
+    const props = proposals.value.filter(p => p.polls.includes(pk))
+    if (!props.length) {
+      pollApi.list({ polls: pk })
+        .then(({ data }) => {
+          setProposals(data)
+        })
+    }
+    return props
+  }
+
   return {
     fetchAgendaProposals,
-    getAgendaProposals
+    getAgendaProposals,
+    getPollProposals
   }
 }

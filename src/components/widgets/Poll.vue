@@ -5,8 +5,9 @@
       <workflow-state :state="poll.state" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
     </div>
     <div class="body">
+      <btn @click="vote" icon="ballot" v-if="ongoing && hasRole('potential_voter')">Vote</btn>
       <p>
-        Poll info
+        Other poll info
       </p>
       <btn-dropdown dark class="voting-info" v-if="ongoing" title="Watch voting" @open="active=true" @close="active=false">
         <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
@@ -22,9 +23,11 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import useMeeting from '../../composables/meeting/useMeeting'
 import useChannels from '../../composables/useChannels'
 import usePolls from '../../composables/meeting/usePolls'
+import useModal from '../../composables/useModal'
 
 import WorkflowState from '../../components/widgets/WorkflowState'
 import BtnDropdown from '../../components/BtnDropdown'
+import Voting from '../../components/modals/Voting'
 
 import pollStates from '../../schemas/pollStates'
 
@@ -40,7 +43,16 @@ export default {
   setup (props) {
     const { fetchPollStatus, getPollStatus } = usePolls()
     const channels = useChannels('poll')
+    const { openModal } = useModal()
     const ongoing = computed(_ => props.poll.state === 'ongoing')
+
+    function vote () {
+      openModal({
+        title: 'Voting ' + props.poll.title,
+        component: Voting,
+        data: props.poll
+      })
+    }
 
     // Toggle active listens to ongoing poll statuses
     const active = ref(false)
@@ -66,9 +78,9 @@ export default {
     return {
       ongoing,
       active,
-      // toggleActive,
       pollStates,
       pollStatus,
+      vote,
       ...useMeeting()
     }
   }
@@ -91,4 +103,7 @@ div.poll
 
   .body
     padding-top: 1rem
+
+body.no-scroll
+  overflow: hidden
 </style>

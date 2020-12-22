@@ -2,6 +2,7 @@
   <div>
     <online-status/>
     <router-view/>
+    <modal/>
     <loader/>
     <alerts/>
   </div>
@@ -11,7 +12,7 @@
 import OnlineStatus from '@/components/OnlineStatus'
 import Loader from '@/components/Loader.vue'
 import Alerts from '@/components/Alerts.vue'
-
+import Modal from './components/modals/Modal'
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
 
@@ -19,7 +20,8 @@ export default {
   components: {
     OnlineStatus,
     Loader,
-    Alerts
+    Alerts,
+    Modal
   },
   setup () {
     return {

@@ -53,7 +53,7 @@ export default function useRestApi (config) {
 
   async function get (uri, config) {
     config = Object.assign({}, defaultConfig, config)
-    const request = restApi.get(uri)
+    const request = restApi.get(uri, config)
     if (config.alertOnError) {
       request.catch(restError)
     }
