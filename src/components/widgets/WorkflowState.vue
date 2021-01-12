@@ -1,6 +1,6 @@
 <template>
   <span ref="root" class="dropdown">
-    <btn sm :title="state" :icon="currentState.icon" :disabled="!admin" @click="toggle" />
+    <btn sm :title="state" :icon="currentState.icon" :disabled="!admin || currentState.isFinal" @click="toggle" />
     <div ref="opts" v-if="isOpen && statesAvailable" class="btn-group vertical">
       <btn sm v-for="s in statesAvailable" :title="s.transition" :key="s.state" :icon="s.icon"
         @click="makeTransition(s)" />
