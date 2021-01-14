@@ -7,27 +7,22 @@ const polls = ref([])
 const pollStatuses = ref(new Map())
 
 useChannels('poll')
-  .onUpdate(({ t, p }) => {
-    const item = p.item || p // Can be only a pk
+  .onChange(item => {
     const index = polls.value.findIndex(p => p.pk === item.pk)
-    switch (t) {
-      case 'poll.changed':
-      case 'poll.added':
-        if (index !== -1) {
-          polls.value[index] = item
-        } else {
-          polls.value.push(item)
-        }
-        break
-      case 'poll.deleted':
-        if (index !== -1) {
-          polls.value.splice(index, 1)
-        }
-        break
-      case 'poll.status':
-        pollStatuses.value.set(p.pk, p)
-        break
+    if (index !== -1) {
+      polls.value[index] = item
+    } else {
+      polls.value.push(item)
     }
+  })
+  .onDelete(item => {
+    const index = polls.value.findIndex(p => p.pk === item.pk)
+    if (index !== -1) {
+      polls.value.splice(index, 1)
+    }
+  })
+  .onStatus(item => {
+    pollStatuses.value.set(item.pk, item)
   })
 
 export default function usePolls () {

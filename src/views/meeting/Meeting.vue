@@ -18,16 +18,22 @@
       <router-view id="main-content" />
     </div>
   </div>
+  <bubbles widgets="bubbleWidgets" />
 </template>
 
 <script>
 import Agenda from '@/components/meeting/Agenda'
+import Bubbles from '@/components/meeting/Bubbles'
+import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
 
 import useLoader from '@/composables/useLoader.js'
 import useRestApi from '@/composables/useRestApi.js'
 import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
+import usePresence from '@/composables/meeting/usePresence.js'
+import { computed, watch } from 'vue'
+import { emitter } from '../../utils'
 
 const NAV_LINKS = [
   {
@@ -48,18 +54,50 @@ const NAV_LINKS = [
 export default {
   name: 'Meeting',
   setup () {
-    const { subscribe, leave } = useChannels()
+    const meeting = useMeeting()
+    const channel = useChannels('meeting')
+
+    const presence = usePresence()
+
+    const presenceCheck = computed(_ => {
+      return presence.getOpenPresenceCheck(meeting.meetingId.value)
+    })
+
+    const isPresent = computed(_ => {
+      return presenceCheck.value && presence.getUserPresence(presenceCheck.value.pk)
+    })
+
+    watch(isPresent, value => {
+      // Can be undefined, false, true
+      switch (value) {
+        case false:
+          emitter.emit('bubble_open', {
+            uri: 'presence_check',
+            component: PresenceCheck,
+            icon: 'pan_tool',
+            componentData: {
+              presenceCheck
+            }
+          })
+          break
+        case true:
+        case undefined:
+          emitter.emit('bubble_close', 'presence_check')
+          break
+      }
+    })
+
     return {
       loader: useLoader('Meeting'),
       restApi: useRestApi(),
-      ...useMeeting(),
+      ...meeting,
       ...usePolls(),
-      subscribe,
-      leave
+      channel
     }
   },
   components: {
-    Agenda
+    Agenda,
+    Bubbles
   },
   computed: {
     navigationLinks () {
@@ -88,10 +126,10 @@ export default {
   created () {
     this.loader.call(this.fetchMeeting)
     this.loader.call(_ => this.fetchPolls(this.meetingId))
-    this.subscribe(`meeting/${this.meetingId}`)
+    this.channel.subscribe(this.meetingId)
   },
   beforeRouteLeave (to, from, next) {
-    this.leave(`meeting/${this.meetingId}`)
+    this.channel.leave(this.meetingId)
     next()
   }
 }

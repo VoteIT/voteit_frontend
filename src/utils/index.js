@@ -20,9 +20,23 @@ function slugify (text) {
 
 const emitter = mitt()
 
+// Very untested
+// class DefaultMap extends Map {
+//   get (key) {
+//     if (!this.has(key)) this.set(this.default())
+//     return super.get(key)
+//   }
+
+//   constructor (defaultFunction, entries) {
+//     super(entries)
+//     this.default = defaultFunction
+//   }
+// }
+
 export {
   Socket,
   ProgressPromise,
+  // DefaultMap,
   uriToPayload,
   slugify,
   restApi,

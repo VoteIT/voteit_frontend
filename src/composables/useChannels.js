@@ -9,6 +9,12 @@ const socket = new Socket()
 const socketState = ref(false)
 const subscriptions = new Map()
 const updateHandlers = new Map()
+const methodHanders = {
+  added: {},
+  changed: {},
+  deleted: {},
+  status: {}
+}
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 
 socket.addEventListener('message', event => {
@@ -27,9 +33,13 @@ socket.addEventListener('message', event => {
     })
     return
   }
-  const [ct] = data.t.split('.')
+  const [ct, method] = data.t.split('.')
+  const handler = methodHanders[method] && methodHanders[method][ct]
   if (updateHandlers.has(ct)) {
     updateHandlers.get(ct)(data)
+  } else if (handler) {
+    // Delete method will not have item, only pk
+    handler(data.p)
   } else if (!ignoreContentTypes.has(ct)) {
     console.log('No registered update handler for content type', ct)
   }
@@ -60,9 +70,46 @@ export default function useChannels (contentType, moduleConfig) {
   }
 
   function onUpdate (fn) {
+    // Will take precedence over and block .onChange(), etc
     checkCType('onUpdate')
     console.log('registering update handler for', contentType)
     updateHandlers.set(contentType, fn)
+    return this
+  }
+
+  function onAdd (fn) {
+    checkCType('onAdded')
+    methodHanders.added[contentType] = fn
+    return this
+  }
+
+  function onChange (fn) {
+    // By default, send add events to change method. Register using .onAdd(fn) to handle separately.
+    checkCType('onChanged')
+    methodHanders.changed[contentType] = fn
+    if (!methodHanders.added[contentType]) {
+      onAdd(fn)
+    }
+    return this
+  }
+
+  function onDelete (fn) {
+    checkCType('onDeleted')
+    methodHanders.deleted[contentType] = fn
+    return this
+  }
+
+  function onStatus (fn) {
+    checkCType('onStatus')
+    methodHanders.status[contentType] = fn
+    return this
+  }
+
+  function updateMap (map) {
+    // Convenience method to set onChange and onDelete to update Map object.
+    onChange(item => map.set(item.pk, item))
+    onDelete(item => map.delete(item.pk))
+    return this
   }
 
   function getUri (uriOrPk) {
@@ -144,6 +191,11 @@ export default function useChannels (contentType, moduleConfig) {
     socket,
     socketState,
     onUpdate,
+    onAdd,
+    onChange,
+    onDelete,
+    onStatus,
+    updateMap,
     connect,
     disconnect,
     subscribe,
