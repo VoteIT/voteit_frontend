@@ -1,8 +1,8 @@
 <template>
   <div id="bubbles">
     <div v-for="(bubble, i) in bubbles" :key="i" class="bubble">
-      <btn :icon="bubble.icon" @click="toggle(bubble)" :class="{ open: bubble.open }" />
-      <component class="content" v-show="bubble.open" :is="bubble.component" :data="bubble.componentData" />
+      <btn :icon="bubble.icon" @click="toggle(bubble)" :class="{ open: bubble.uri === openBubble }" />
+      <component class="content" v-show="bubble.uri === openBubble" :is="bubble.component" :data="bubble.componentData" />
     </div>
   </div>
 </template>
@@ -10,6 +10,7 @@
 <script>
 import { markRaw, ref } from 'vue'
 import { emitter } from '../../utils'
+import Chat from './bubbles/Chat'
 
 const DEFAULT_CONFIG = {
   open: true
@@ -18,13 +19,18 @@ const DEFAULT_CONFIG = {
 export default {
   name: 'Bubbles',
   setup () {
-    const bubbles = ref([])
+    const bubbles = ref([{
+      uri: 'chat',
+      icon: 'chat',
+      component: markRaw(Chat)
+    }])
+    const openBubble = ref(null)
 
     emitter.on('bubble_open', data => {
+      data = Object.assign({}, DEFAULT_CONFIG, data)
       data.component = markRaw(data.component)
-      bubbles.value.push(
-        Object.assign({}, DEFAULT_CONFIG, data)
-      )
+      bubbles.value.push(data)
+      if (data.open) openBubble.value = data.uri
     })
 
     emitter.on('bubble_close', uri => {
@@ -33,11 +39,13 @@ export default {
     })
 
     function toggle (bubble) {
-      bubble.open = !bubble.open
+      if (openBubble.value === bubble.uri) openBubble.value = null
+      else openBubble.value = bubble.uri
     }
 
     return {
       bubbles,
+      openBubble,
       toggle
     }
   }
@@ -50,6 +58,8 @@ export default {
   right: 0
   bottom: 0
   padding: 10px
+  display: flex
+  flex-flow: row-reverse
 
   .bubble
     position: relative
@@ -65,7 +75,10 @@ export default {
       &.open
         background-color: #333
         .material-icons
-          color: #ff6
+          color: #bbf
+      margin-left: 10px
+      &:first-child
+        margin-right: 0
     > .content
       position: absolute
       bottom: 65px
