@@ -2,13 +2,15 @@
   <div id="bubbles">
     <div v-for="(bubble, i) in bubbles" :key="i" class="bubble">
       <btn :icon="bubble.icon" @click="toggle(bubble)" :class="{ open: bubble.uri === openBubble }" />
-      <component class="content" v-show="bubble.uri === openBubble" :is="bubble.component" :data="bubble.componentData" />
+      <transition name="bubble-content">
+        <component class="content" v-show="bubble.uri === openBubble" :is="bubble.component" :data="bubble.componentData" />
+      </transition>
     </div>
   </div>
 </template>
 
 <script>
-import { markRaw, ref } from 'vue'
+import { markRaw, nextTick, ref } from 'vue'
 import { emitter } from '../../utils'
 import Chat from './bubbles/Chat'
 
@@ -30,7 +32,9 @@ export default {
       data = Object.assign({}, DEFAULT_CONFIG, data)
       data.component = markRaw(data.component)
       bubbles.value.push(data)
-      if (data.open) openBubble.value = data.uri
+      if (data.open) {
+        nextTick(_ => { openBubble.value = data.uri })
+      }
     })
 
     emitter.on('bubble_close', uri => {
@@ -101,4 +105,15 @@ export default {
         bottom: -10px
       h2
         margin-top: 0
+
+.bubble-content-enter-active,
+.bubble-content-leave-active
+  transition: opacity .2s ease, transform .3s ease
+
+.bubble-content-enter-from
+  opacity: 0
+  transform: rotate(-2deg) scale(.6) translate(20%)
+.bubble-content-leave-to
+  opacity: 0
+  transform: rotate(2deg) scale(1.4) translate(-20%)
 </style>
