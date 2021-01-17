@@ -13,9 +13,32 @@ const methodHanders = {
   added: {},
   changed: {},
   deleted: {},
-  status: {}
+  status: {},
+  subscribed: {
+    channel: p => {
+      if (p.app_state) {
+        p.app_state.forEach(handleMessage)
+      }
+    }
+  }
 }
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
+
+function handleMessage (data) {
+  const [contentType, method] = data.t.split('.')
+  // General update handler takes precedence over other handlers
+  if (updateHandlers.has(contentType)) {
+    updateHandlers.get(contentType)(data)
+    return
+  }
+  const handler = methodHanders[method] && methodHanders[method][contentType]
+  if (handler) {
+    // Method handler only needs payload
+    handler(data.p)
+  } else if (!ignoreContentTypes.has(contentType)) {
+    console.log('No registered update handler for content type', contentType)
+  }
+}
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data)
@@ -33,16 +56,7 @@ socket.addEventListener('message', event => {
     })
     return
   }
-  const [ct, method] = data.t.split('.')
-  const handler = methodHanders[method] && methodHanders[method][ct]
-  if (updateHandlers.has(ct)) {
-    updateHandlers.get(ct)(data)
-  } else if (handler) {
-    // Delete method will not have item, only pk
-    handler(data.p)
-  } else if (!ignoreContentTypes.has(ct)) {
-    console.log('No registered update handler for content type', ct)
-  }
+  handleMessage(data)
 })
 
 // Send all subscription messages on connect
