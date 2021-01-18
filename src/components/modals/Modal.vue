@@ -66,7 +66,7 @@ export default {
 </script>
 <style lang="sass">
 #modal-backdrop
-  position: absolute
+  position: fixed
   left: 0
   top: 0
   bottom: 0
