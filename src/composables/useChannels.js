@@ -13,14 +13,7 @@ const methodHanders = {
   added: {},
   changed: {},
   deleted: {},
-  status: {},
-  subscribed: {
-    channel: p => {
-      if (p.app_state) {
-        p.app_state.forEach(handleMessage)
-      }
-    }
-  }
+  status: {}
 }
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 
@@ -59,12 +52,20 @@ socket.addEventListener('message', event => {
   handleMessage(data)
 })
 
+function subscribeChannel (uri) {
+  socket.call('channel.subscribe', uri)
+    .then(({ p }) => {
+      if (p.app_state) p.app_state.forEach(handleMessage)
+      // console.log(`Subscribed to ${uri}`, p.app_state)
+    })
+}
+
 // Send all subscription messages on connect
 socket.addEventListener('open', _ => {
   socketState.value = true
   for (const [uri, set] of subscriptions.entries()) {
     if (set.size) {
-      socket.send('channel.subscribe', uri)
+      subscribeChannel(uri)
     }
   }
 })
@@ -145,7 +146,7 @@ export default function useChannels (contentType, moduleConfig) {
       subscriptions.set(uri, new Set())
     }
     if (!subscriptions.get(uri).size && socket.isOpen) {
-      socket.send('channel.subscribe', uri)
+      subscribeChannel(uri)
     }
     subscriptions.get(uri).add(this)
   }
