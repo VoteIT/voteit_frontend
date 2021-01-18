@@ -32,8 +32,8 @@ import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
+import useBubbles from '@/composables/meeting/useBubbles.js'
 import { computed, watch } from 'vue'
-import { emitter } from '../../utils'
 
 const NAV_LINKS = [
   {
@@ -56,6 +56,7 @@ export default {
   setup () {
     const meeting = useMeeting()
     const channel = useChannels('meeting')
+    const presenceBubble = useBubbles(PresenceCheck)
 
     const presence = usePresence()
 
@@ -71,18 +72,14 @@ export default {
       // Can be undefined, false, true
       switch (value) {
         case false:
-          emitter.emit('bubble_open', {
-            uri: 'presence_check',
-            component: PresenceCheck,
-            icon: 'pan_tool',
-            componentData: {
-              presenceCheck
-            }
-          })
+          presenceBubble.activate({ presenceCheck })
           break
         case true:
+          presenceBubble.activate({ presenceCheck }, { open: false }) // Make sure bubble is active if presence check active. (app state)
+          presenceBubble.close() // Is user interaction, close bubble window
+          break
         case undefined:
-          emitter.emit('bubble_close', 'presence_check')
+          presenceBubble.remove()
           break
       }
     })

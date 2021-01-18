@@ -1,9 +1,9 @@
 <template>
   <div id="bubbles">
-    <div v-for="(bubble, i) in bubbles" :key="i" class="bubble">
-      <btn :icon="bubble.icon" @click="toggle(bubble)" :class="{ open: bubble.uri === openBubble }" />
+    <div v-for="{ component, data } in bubbles" :key="component.name" class="bubble">
+      <btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
       <transition name="bubble-content">
-        <component class="content" v-show="bubble.uri === openBubble" :is="bubble.component" :data="bubble.componentData" />
+        <component class="content" v-show="component.name === openBubble" :is="component" :data="data" />
       </transition>
     </div>
   </div>
@@ -22,29 +22,43 @@ export default {
   name: 'Bubbles',
   setup () {
     const bubbles = ref([{
-      uri: 'chat',
-      icon: 'chat',
-      component: markRaw(Chat)
+      component: markRaw(Chat),
+      data: {}
     }])
     const openBubble = ref(null)
 
-    emitter.on('bubble_open', data => {
-      data = Object.assign({}, DEFAULT_CONFIG, data)
-      data.component = markRaw(data.component)
-      bubbles.value.push(data)
-      if (data.open) {
-        nextTick(_ => { openBubble.value = data.uri })
+    emitter.on('bubble_activate', ({ component, data, config }) => {
+      config = Object.assign({}, DEFAULT_CONFIG, config)
+      const bubble = bubbles.value.find(b => b.component === component)
+      if (!bubble) {
+        bubbles.value.push({
+          component: markRaw(component),
+          data
+        })
+      }
+      if (config.open) {
+        nextTick(_ => { openBubble.value = component.name })
       }
     })
 
-    emitter.on('bubble_close', uri => {
-      const index = bubbles.value.findIndex(b => b.uri === uri)
+    emitter.on('bubble_remove', component => {
+      const index = bubbles.value.findIndex(b => b.component === component)
       if (index !== -1) bubbles.value.splice(index, 1)
     })
 
-    function toggle (bubble) {
-      if (openBubble.value === bubble.uri) openBubble.value = null
-      else openBubble.value = bubble.uri
+    emitter.on('bubble_open', component => {
+      openBubble.value = component.name
+    })
+
+    emitter.on('bubble_close', component => {
+      if (!name || bubbles.value.find(b => b.component === component)) {
+        openBubble.value = null
+      }
+    })
+
+    function toggle (component) {
+      if (openBubble.value === component.name) openBubble.value = null
+      else openBubble.value = component.name
     }
 
     return {
