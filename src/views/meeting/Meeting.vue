@@ -33,7 +33,7 @@ import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
 import useBubbles from '@/composables/meeting/useBubbles.js'
-import { computed, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 
 const NAV_LINKS = [
   {
@@ -56,33 +56,34 @@ export default {
   setup () {
     const meeting = useMeeting()
     const channel = useChannels('meeting')
-    const presenceBubble = useBubbles(PresenceCheck)
 
     const presence = usePresence()
+    const presenceBubble = useBubbles(PresenceCheck)
 
-    const presenceCheck = computed(_ => {
-      return presence.getOpenPresenceCheck(meeting.meetingId.value)
-    })
+    const presenceCheck = computed(_ => presence.getOpenPresenceCheck(meeting.meetingId.value))
+    const isPresent = computed(_ => presenceCheck.value && !!presence.getUserPresence(presenceCheck.value.pk))
 
-    const isPresent = computed(_ => {
-      return presenceCheck.value && presence.getUserPresence(presenceCheck.value.pk)
-    })
-
-    watch(isPresent, value => {
-      // Can be undefined, false, true
+    function checkIsPresent (value) {
+      // Can be false, true or undefined.
       switch (value) {
         case false:
+          // Presence check, user not present
           presenceBubble.activate({ presenceCheck })
           break
         case true:
-          presenceBubble.activate({ presenceCheck }, { open: false }) // Make sure bubble is active if presence check active. (app state)
-          presenceBubble.close() // Is user interaction, close bubble window
+          // Presence check, user present
+          presenceBubble.activate({ presenceCheck }, { open: false }) // Make sure bubble is active when presence check active. (app state)
+          presenceBubble.close() // If user interaction, close bubble window
           break
         case undefined:
+          // No presence check
           presenceBubble.remove()
           break
       }
-    })
+    }
+
+    onMounted(_ => checkIsPresent(isPresent.value))
+    watch(isPresent, checkIsPresent)
 
     return {
       loader: useLoader('Meeting'),

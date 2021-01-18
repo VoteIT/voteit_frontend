@@ -1,13 +1,16 @@
 <template>
   <div>
     <h2>Presence check</h2>
-    <template v-if="!isPresent">
+    <template v-if="!userPresence">
       <p>
         U there, bruh?
       </p>
       <btn @click="presence.channel.add(data.presenceCheck.pk)" icon="pets">Represent!</btn>
     </template>
-    <p v-else>You have stated your presence</p>
+    <template v-else>
+      <p>Your presence has been noted.</p>
+      <btn @click="presence.channel.delete(userPresence.pk)" icon="undo">Undo</btn>
+    </template>
   </div>
 </template>
 
@@ -24,14 +27,13 @@ export default {
   setup (props) {
     const presence = usePresence()
 
-    const isPresent = computed(_ => {
-      console.log('presence', presence.getUserPresence(props.data.presenceCheck.pk))
+    const userPresence = computed(_ => {
       return presence.getUserPresence(props.data.presenceCheck.pk)
     })
 
     return {
       presence,
-      isPresent
+      userPresence
     }
   }
 }
