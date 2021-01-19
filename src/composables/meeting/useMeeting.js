@@ -8,7 +8,7 @@ import useContextRoles from '../useContextRoles.js'
 import useAuthentication from '../useAuthentication.js'
 import useMeetings from '../useMeetings.js'
 
-import useAgenda from './useAgenda.js'
+// import useAgenda from './useAgenda.js'
 
 const FORCE_ROLES_FETCH = false
 
@@ -20,15 +20,15 @@ let pFetchTimeout = null
 export default function useMeeting () {
   const route = useRoute()
   const { meetings } = useMeetings()
-  const { setAgenda } = useAgenda()
+  // const { setAgenda } = useAgenda()
   const meetingRoles = useContextRoles('Meeting')
   const { user } = useAuthentication()
 
   function setMeeting (meeting) {
     meetings.value.set(meeting.pk, meeting)
-    if (meeting.agenda_items) {
-      setAgenda(meeting.pk, meeting.agenda_items)
-    }
+    // if (meeting.agenda_items) {
+    //   setAgenda(meeting.pk, meeting.agenda_items)
+    // }
   }
 
   async function fetchParticipants (pk, userIds) {
