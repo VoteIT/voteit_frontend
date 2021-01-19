@@ -46,17 +46,29 @@ import useMeetings from '@/composables/useMeetings.js'
 import useRestApi from '@/composables/useRestApi.js'
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
+import { watch } from 'vue'
 
 export default {
   name: 'Home',
   setup () {
     const { orderedMeetings, fetchMeetings } = useMeetings()
     const restApi = useRestApi()
+    const { authenticate, logout, isAuthenticated, user } = useAuthentication()
+
+    watch(isAuthenticated, value => {
+      if (value) {
+        fetchMeetings()
+      }
+    })
+
     return {
       orderedMeetings,
       fetchMeetings,
       restApi,
-      ...useAuthentication(),
+      authenticate,
+      logout,
+      isAuthenticated,
+      user,
       loader: useLoader('Home')
     }
   },
@@ -88,7 +100,7 @@ export default {
     }
   },
   created () {
-    this.loader.call(this.fetchMeetings)
+    if (this.isAuthenticated) this.loader.call(this.fetchMeetings)
     this.restApi.get('dev-login/')
       .then(({ data }) => {
         this.users = data

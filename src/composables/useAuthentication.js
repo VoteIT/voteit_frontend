@@ -24,8 +24,9 @@ export default function useAuthentication () {
     console.log('Logging out')
     delete sessionStorage.user
     restApi.setAuthToken()
-    isAuthenticated.value = false
-    user.value = null
+    location.reload()
+    // isAuthenticated.value = false
+    // user.value = null
   }
 
   return {
