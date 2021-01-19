@@ -1,9 +1,9 @@
 import { ref } from 'vue'
+import { DefaultMap } from '../utils'
 import useAuthentication from './useAuthentication'
-
 import useChannels from './useChannels'
 
-const contextRoles = ref(new Map())
+const contextRoles = ref(new DefaultMap(_ => new Set()))
 
 function getRoleKey (...components) {
   // Default context model = Meeting
@@ -14,9 +14,6 @@ function getRoleKey (...components) {
 useChannels('roles')
   .onUpdate(({ t, p }) => {
     const key = getRoleKey(p.model, p.pk, p.user_pk)
-    if (!contextRoles.value.has(key)) {
-      contextRoles.value.set(key, new Set())
-    }
     const roleStore = contextRoles.value.get(key)
     switch (t) {
       case 'roles.removed':

@@ -1,6 +1,7 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import useAuthentication from './useAuthentication'
+import useChannels from './useChannels'
 import useRestApi from './useRestApi'
 
 const initDone = ref(false)
@@ -8,10 +9,15 @@ const initFailed = ref(false)
 let callbacks = []
 
 const { isAuthenticated } = useAuthentication()
+const { socketState } = useChannels()
 
 const restApi = useRestApi({ alertOnError: false })
 
-watch(isAuthenticated, value => {
+const isReady = computed(_ => {
+  return isAuthenticated.value && socketState.value
+})
+
+watch(isReady, value => {
   if (value) {
     Promise.all(
       callbacks.map(cb => cb())
@@ -43,16 +49,33 @@ export default function useLoader (name) {
   }
 
   function call (cb) {
-    // Queue if not initialized. Need to check that...
-    if (isAuthenticated.value) {
+    // Queue if not initialized.
+    if (initDone.value) {
       cb()
     } else {
       callbacks.push(cb)
     }
   }
 
+  function subscribe (channel, uriOrPk) {
+    if (initDone.value) {
+      return channel.subscribe(uriOrPk)
+    } else {
+      return new Promise((resolve, reject) => {
+        callbacks.push(_ => {
+          channel.subscribe(uriOrPk, true)
+            .then(resolve)
+            .catch(err => {
+              console.log('Loading failed', name)
+              reject(err)
+            })
+        })
+      })
+    }
+  }
+
   async function get (uri, config) {
-    if (isAuthenticated.value) {
+    if (initDone.value) {
       return restApi.get(uri, config)
     } else {
       return new Promise((resolve, reject) => {
@@ -73,6 +96,7 @@ export default function useLoader (name) {
     initFailed,
     setLoaded,
     call,
-    get
+    get,
+    subscribe
   }
 }

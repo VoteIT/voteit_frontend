@@ -7,23 +7,14 @@ import useChannels from '../useChannels'
 const discussions = ref([])
 
 useChannels('discussion_post')
-  .onUpdate(({ t, p }) => {
-    const item = p.item || p // Can be only a pk
+  .onChange(item => {
     const index = discussions.value.findIndex(d => d.pk === item.pk)
-    switch (t) {
-      case 'discussion_post.changed':
-      case 'discussion_post.added':
-        if (index !== -1) {
-          discussions.value.splice(index, 1)
-        }
-        discussions.value.push(item)
-        break
-      case 'discussion_post.deleted':
-        if (index !== -1) {
-          discussions.value.splice(index, 1)
-        }
-        break
-    }
+    if (index !== -1) discussions.value[index] = item
+    else discussions.value.push(item)
+  })
+  .onDelete(item => {
+    const index = discussions.value.findIndex(d => d.pk === item.pk)
+    if (index !== -1) discussions.value.splice(index, 1)
   })
 
 export default function useDiscussions () {

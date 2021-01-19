@@ -1,4 +1,4 @@
-import { Socket, emitter } from '@/utils'
+import { Socket, emitter, DefaultMap } from '@/utils'
 import { ref } from 'vue'
 
 const DEFAULT_CONFIG = {
@@ -7,7 +7,7 @@ const DEFAULT_CONFIG = {
 
 const socket = new Socket()
 const socketState = ref(false)
-const subscriptions = new Map()
+const subscriptions = new DefaultMap(_ => new Set())
 const updateHandlers = new Map()
 const methodHanders = {
   added: {},
@@ -53,10 +53,9 @@ socket.addEventListener('message', event => {
 })
 
 function subscribeChannel (uri) {
-  socket.call('channel.subscribe', uri)
+  return socket.call('channel.subscribe', uri)
     .then(({ p }) => {
       if (p.app_state) p.app_state.forEach(handleMessage)
-      // console.log(`Subscribed to ${uri}`, p.app_state)
     })
 }
 
@@ -140,20 +139,23 @@ export default function useChannels (contentType, moduleConfig) {
     return uriOrPk
   }
 
-  function subscribe (uriOrPk) {
+  function subscribe (uriOrPk, promise = false) {
     const uri = getUri(uriOrPk)
-    if (!subscriptions.has(uri)) {
-      subscriptions.set(uri, new Set())
+    const uriSet = subscriptions.get(uri)
+    if (!uriSet.has(uri)) {
+      uriSet.add(uri)
+      if (socket.isOpen) {
+        return subscribeChannel(uri)
+      } else if (promise) {
+        return Promise.reject(new Error('Socket closed. Cannot subscribe.'))
+      }
     }
-    if (!subscriptions.get(uri).size && socket.isOpen) {
-      subscribeChannel(uri)
-    }
-    subscriptions.get(uri).add(this)
+    return Promise.resolve()
   }
 
   function leave (uriOrPk) {
     const uri = getUri(uriOrPk)
-    subscriptions.get(uri).delete(this)
+    subscriptions.get(uri).delete(uri)
     if (!subscriptions.get(uri).size && socket.isOpen) {
       socket.send('channel.leave', uri)
     }

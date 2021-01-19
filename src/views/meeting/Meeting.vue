@@ -124,7 +124,8 @@ export default {
   created () {
     this.loader.call(this.fetchMeeting)
     this.loader.call(_ => this.fetchPolls(this.meetingId))
-    this.channel.subscribe(this.meetingId)
+    this.loader.subscribe(this.channel, this.meetingId)
+    // this.channel.subscribe(this.meetingId)
   },
   beforeRouteLeave (to, from, next) {
     this.channel.leave(this.meetingId)

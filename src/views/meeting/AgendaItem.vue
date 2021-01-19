@@ -56,7 +56,7 @@ export default {
       ...useAgenda(),
       ...useProposals(),
       ...useDiscussions(),
-      ...useChannels(),
+      channel: useChannels('agenda_item'),
       loader: useLoader('AgendaItem'),
       restApi: useRestApi(),
       agendaStates
@@ -89,38 +89,21 @@ export default {
       return this.getAgendaDiscussions(this.agendaId)
     }
   },
-  methods: {
-    initialize () {
-      return Promise.all([
-        this.fetchAgendaProposals(this.agendaId),
-        this.fetchAgendaDiscussions(this.agendaId)
-      ])
-        .then(_ => {
-          const userIds = [
-            ...this.sortedProposals.map(p => p.author),
-            ...this.sortedDiscussions.map(d => d.author)
-          ]
-          this.fetchParticipants(this.meetingId, userIds)
-        })
-    }
-  },
   watch: {
     agendaId (newId, oldId) {
       if (oldId) {
-        this.leave(`agenda_item/${oldId}`)
+        this.channel.leave(oldId)
       }
       if (newId) {
-        this.initialize()
-        this.subscribe(`agenda_item/${newId}`)
+        this.channel.subscribe(newId)
       }
     }
   },
   created () {
-    this.loader.call(this.initialize)
-    this.subscribe(`agenda_item/${this.agendaId}`)
+    this.loader.subscribe(this.channel, this.agendaId)
   },
   beforeRouteLeave (to, from, next) {
-    this.leave(`agenda_item/${this.agendaId}`)
+    this.channel.leave(this.agendaId)
     next()
   }
 }

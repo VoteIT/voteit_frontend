@@ -1,30 +1,18 @@
 import { ref } from 'vue'
-
-// import { restApi } from '@/utils'
-
 import useChannels from '../useChannels.js'
 import useContentApi from '../useContentApi.js'
 
 const proposals = ref([])
 
 useChannels('proposal')
-  .onUpdate(({ p, t }) => {
-    const item = p.item || p // Can be only a pk
+  .onChange(item => {
     const index = proposals.value.findIndex(p => p.pk === item.pk)
-    switch (t) {
-      case 'proposal.changed':
-      case 'proposal.added':
-        if (index !== -1) {
-          proposals.value.splice(index, 1)
-        }
-        proposals.value.push(item)
-        break
-      case 'proposal.deleted':
-        if (index !== -1) {
-          proposals.value.splice(index, 1)
-        }
-        break
-    }
+    if (index !== -1) proposals.value[index] = item
+    else proposals.value.push(item)
+  })
+  .onDelete(item => {
+    const index = proposals.value.findIndex(p => p.pk === item.pk)
+    if (index !== -1) proposals.value.splice(index, 1)
   })
 
 export default function useProposals () {

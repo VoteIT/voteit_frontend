@@ -14,6 +14,9 @@ const FORCE_ROLES_FETCH = false
 
 const participants = ref(new Map())
 
+const pFetchQueue = new Set()
+let pFetchTimeout = null
+
 export default function useMeeting () {
   const route = useRoute()
   const { meetings } = useMeetings()
@@ -30,7 +33,7 @@ export default function useMeeting () {
 
   async function fetchParticipants (pk, userIds) {
     // Fetch all or specified participants (rest)
-    // Is specific, checks of already fetched
+    // If specific, checks if already fetched
     const params = { context: pk }
     if (userIds) {
       userIds = [...new Set(userIds)] // Reduce to unique values
@@ -41,7 +44,7 @@ export default function useMeeting () {
           .map(p => p.user.pk))
         userIds = userIds.filter(pk => !existingUserIds.has(pk))
         if (userIds.length === 0) {
-          return
+          return Promise.resolve()
         }
         params.user_id_in = userIds.join(',')
       }
@@ -55,13 +58,28 @@ export default function useMeeting () {
       })
   }
 
-  function getUser (pk, userId) {
+  function fetchParticipant (userPk, meetingPk, timeout = 50) {
+    // Avoid getting participants in several requests by queing, and setting a short timeout.
+    if (!pFetchQueue.has(userPk)) {
+      pFetchQueue.add(userPk)
+      clearTimeout(pFetchTimeout)
+      pFetchTimeout = setTimeout(_ => {
+        fetchParticipants(meetingPk, pFetchQueue)
+        pFetchQueue.clear()
+      }, timeout)
+    }
+  }
+
+  function getUser (contextPk, userPk) {
     // Return user object if found in meeting participants
+    // Otherwise queue for fetch
     const role = wu(participants.value.values())
-      .find(r => r.user.pk === userId && r.meeting === pk)
+      .find(r => r.user.pk === userPk && r.meeting === contextPk)
     if (role) {
       return role.user
     }
+    // No data, queue participant for fetch and return empty object for now
+    fetchParticipant(userPk, contextPk)
     return {}
   }
 
