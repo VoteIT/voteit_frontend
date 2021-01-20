@@ -85,11 +85,17 @@ export default {
     onMounted(_ => checkIsPresent(isPresent.value))
     watch(isPresent, checkIsPresent)
 
+    const { getPolls, fetchPolls } = usePolls()
+    const polls = computed(_ => getPolls(meeting.meetingId.value))
+    const ongoingPollCount = computed(_ => getPolls(meeting.meetingId.value, 'ongoing').length)
+
     return {
       loader: useLoader('Meeting'),
       restApi: useRestApi(),
       ...meeting,
-      ...usePolls(),
+      polls,
+      ongoingPollCount,
+      fetchPolls,
       channel
     }
   },
@@ -107,15 +113,6 @@ export default {
           }
           return l
         })
-    },
-    polls () {
-      return this.getPolls(this.meetingId)
-    },
-    ongoingPollCount () {
-      if (this.hasRole('potential_voter')) {
-        return this.polls.filter(p => p.state === 'ongoing').length
-      }
-      return 0
     },
     agenda () {
       return this.getAgenda(this.meetingId)

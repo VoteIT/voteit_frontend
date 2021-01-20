@@ -1,65 +1,49 @@
+import wu from 'wu'
 import { ref } from 'vue'
 
 import useChannels from '../useChannels'
 import useRestApi from '../useRestApi'
 
-const polls = ref([])
-const pollStatuses = ref(new Map())
+const polls = ref(new Map())
 
 useChannels('poll')
-  .onChange(item => {
-    const index = polls.value.findIndex(p => p.pk === item.pk)
-    if (index !== -1) {
-      polls.value[index] = item
-    } else {
-      polls.value.push(item)
-    }
-  })
-  .onDelete(item => {
-    const index = polls.value.findIndex(p => p.pk === item.pk)
-    if (index !== -1) {
-      polls.value.splice(index, 1)
-    }
-  })
+  .updateMap(polls.value)
   .onStatus(item => {
-    pollStatuses.value.set(item.pk, item)
+    // Just update existing poll object
+    const poll = polls.value.get(item.pk)
+    if (poll && poll.voted <= item.voted) { // Throw away statuses with less votes - in case async order wrong
+      Object.assign(poll, item)
+    }
   })
 
 export default function usePolls () {
   const restApi = useRestApi()
 
   function getPolls (meetingId, stateName) {
-    if (stateName) {
-      return polls.value.filter(p => p.meeting === meetingId && p.state === stateName)
-    }
-    return polls.value.filter(p => p.meeting === meetingId)
+    const meetingPolls = wu(polls.value.values()).filter(
+      p => p.meeting === meetingId && (!stateName || p.state === stateName)
+    )
+    return [...meetingPolls]
   }
 
   async function fetchPolls (meetingId) {
     return restApi.get('polls/', { params: { agenda_item__meeting: meetingId } })
       .then(({ data }) => {
-        // Drop all polls for this meeting, then push all
-        polls.value = polls.value.filter(p => p.meeting !== meetingId)
-        Array.prototype.push.apply(polls.value, data)
+        // Drop all polls, then push all
+        polls.value.clear()
+        data.forEach(p => {
+          polls.value.set(p.pk, p)
+        })
       })
   }
 
-  // Channels will handle this
-  // async function fetchPollStatus (pk) {
-  //   return restApi.get(`polls/${pk}/`)
-  //     .then(({ data }) => {
-  //       pollStatuses.value.set(data.pk, data)
-  //     })
-  // }
-
-  function getPollStatus (pk) {
-    return pollStatuses.value.get(pk)
+  function getPoll (pk) {
+    return polls.value.get(pk)
   }
 
   return {
     fetchPolls,
     getPolls,
-    // fetchPollStatus,
-    getPollStatus
+    getPoll
   }
 }

@@ -5,12 +5,12 @@
       <workflow-state :state="poll.state" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
     </div>
     <div class="body">
-      <btn @click="vote" icon="ballot" v-if="ongoing && hasRole('potential_voter')">Vote</btn>
+      <btn @click="vote" icon="ballot" v-if="isOngoing && hasRole('potential_voter')">Vote</btn>
       <p>
         Other poll info
       </p>
-      <btn-dropdown dark class="voting-info" v-if="ongoing" title="Watch voting" @open="active=true" @close="active=false">
-        <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
+      <btn-dropdown dark class="voting-info" v-if="isOngoing" title="Watch voting" @open="active=true" @close="active=false">
+        <progress-bar v-if="poll" absolute :value="poll.voted" :total="poll.total" />
         <p v-else>Loading...</p>
       </btn-dropdown>
     </div>
@@ -22,7 +22,6 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 import useMeeting from '../../composables/meeting/useMeeting'
 import useChannels from '../../composables/useChannels'
-import usePolls from '../../composables/meeting/usePolls'
 import useModal from '../../composables/useModal'
 
 import WorkflowState from '../../components/widgets/WorkflowState'
@@ -41,10 +40,9 @@ export default {
     BtnDropdown
   },
   setup (props) {
-    const { getPollStatus } = usePolls()
     const channels = useChannels('poll')
     const { openModal } = useModal()
-    const ongoing = computed(_ => props.poll.state === 'ongoing')
+    const isOngoing = computed(_ => props.poll.state === 'ongoing')
 
     function vote () {
       openModal({
@@ -58,15 +56,10 @@ export default {
     const active = ref(false)
     watch(active, value => {
       if (value) {
-        // fetchPollStatus(props.poll.pk)
         channels.subscribe(props.poll.pk)
       } else {
         channels.leave(props.poll.pk)
       }
-    })
-
-    const pollStatus = computed(_ => {
-      return getPollStatus(props.poll.pk)
     })
 
     onBeforeUnmount(_ => {
@@ -76,10 +69,9 @@ export default {
     })
 
     return {
-      ongoing,
+      isOngoing,
       active,
       pollStates,
-      pollStatus,
       vote,
       ...useMeeting()
     }

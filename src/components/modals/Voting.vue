@@ -28,7 +28,8 @@ export default {
     })
 
     const methodComponent = computed(_ => {
-      return pollMethods[props.data.method]
+      console.log(props.data)
+      return pollMethods[props.data.method_name]
     })
 
     const authors = computed(_ => {
