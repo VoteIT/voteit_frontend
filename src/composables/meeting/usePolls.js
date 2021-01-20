@@ -44,12 +44,13 @@ export default function usePolls () {
       })
   }
 
-  async function fetchPollStatus (pk) {
-    return restApi.get(`polls/${pk}/`)
-      .then(({ data }) => {
-        pollStatuses.value.set(data.pk, data)
-      })
-  }
+  // Channels will handle this
+  // async function fetchPollStatus (pk) {
+  //   return restApi.get(`polls/${pk}/`)
+  //     .then(({ data }) => {
+  //       pollStatuses.value.set(data.pk, data)
+  //     })
+  // }
 
   function getPollStatus (pk) {
     return pollStatuses.value.get(pk)
@@ -58,7 +59,7 @@ export default function usePolls () {
   return {
     fetchPolls,
     getPolls,
-    fetchPollStatus,
+    // fetchPollStatus,
     getPollStatus
   }
 }

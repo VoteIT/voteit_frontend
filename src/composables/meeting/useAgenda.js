@@ -4,6 +4,10 @@ import useChannels from '../useChannels'
 
 const agendas = ref(new Map()) // Map meeting pk to list of agenda items
 
+/*
+** TODO Rewrite to clear agenda when leaving meeting.
+*/
+
 useChannels('agenda')
   .onChange(item => {
     if (!agendas.value.has(item.meeting)) agendas.value.set(item.meeting, [])

@@ -41,7 +41,7 @@ export default {
     BtnDropdown
   },
   setup (props) {
-    const { fetchPollStatus, getPollStatus } = usePolls()
+    const { getPollStatus } = usePolls()
     const channels = useChannels('poll')
     const { openModal } = useModal()
     const ongoing = computed(_ => props.poll.state === 'ongoing')
@@ -58,7 +58,7 @@ export default {
     const active = ref(false)
     watch(active, value => {
       if (value) {
-        fetchPollStatus(props.poll.pk)
+        // fetchPollStatus(props.poll.pk)
         channels.subscribe(props.poll.pk)
       } else {
         channels.leave(props.poll.pk)
