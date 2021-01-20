@@ -50,9 +50,10 @@ export default function useAgenda () {
     return agendas.value.get(meetingId) || []
   }
 
-  function getAgendaItem (agendaId) {
+  function getAgendaItem (agendaPk) {
+    agendaPk = agendaPk || agendaId.value
     for (const agenda of agendas.value.values()) {
-      const item = agenda.find(ai => ai.pk === agendaId)
+      const item = agenda.find(ai => ai.pk === agendaPk)
       if (item) {
         return item
       }

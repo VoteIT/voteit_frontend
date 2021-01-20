@@ -2,7 +2,7 @@
   <div>
     <h1>{{ agendaItem.title }}</h1>
     <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
-    <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaItem.pk}`)">New poll</btn>
+    <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
@@ -19,8 +19,8 @@
       <div class="col-sm-6">
         <h2>Discussions</h2>
         <ul v-if="sortedDiscussions.length" class="no-list">
-          <li v-for="p in sortedDiscussions" :key="p.pk">
-            <discussion-post :p="p"/>
+          <li v-for="d in sortedDiscussions" :key="d.pk">
+            <discussion-post :p="d"/>
           </li>
         </ul>
         <p v-else><em>Nothing to hear</em></p>
@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import agendaStates from '@/schemas/agendaStates.json'
-
 import AddContent from '@/components/meeting/AddContent.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import Proposal from '@/components/widgets/Proposal.vue'
@@ -44,37 +42,29 @@ import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
 import useProposals from '@/composables/meeting/useProposals.js'
 import useDiscussions from '@/composables/meeting/useDiscussions.js'
-import useRestApi from '@/composables/useRestApi.js'
 import useLoader from '@/composables/useLoader.js'
 import useChannels from '@/composables/useChannels.js'
+import { computed, onBeforeMount, watch } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
   name: 'AgendaItem',
   setup () {
-    return {
-      ...useMeeting(),
-      ...useAgenda(),
-      ...useProposals(),
-      ...useDiscussions(),
-      channel: useChannels('agenda_item'),
-      loader: useLoader('AgendaItem'),
-      restApi: useRestApi(),
-      agendaStates
-    }
-  },
-  components: {
-    AddContent,
-    DiscussionPost,
-    Proposal,
-    WorkflowState
-  },
-  computed: {
-    agendaItem () {
-      return this.getAgenda(this.meetingId).find(ai => ai.pk === this.agendaId) || {}
-    },
-    sortedProposals () {
-      const proposals = this.getAgendaProposals(this.agendaId)
-      proposals.sort((a, b) => {
+    const loader = useLoader('AgendaItem')
+    const discussions = useDiscussions()
+    const proposals = useProposals()
+    const { hasRole } = useMeeting()
+    const channel = useChannels('agenda_item')
+      .onLeave(pk => {
+        proposals.clearAgenda(pk)
+        discussions.clearAgenda(pk)
+      })
+
+    const { agendaId, agendaItem } = useAgenda()
+
+    const sortedProposals = computed(_ => {
+      const ps = proposals.getAgendaProposals(agendaId.value)
+      ps.sort((a, b) => {
         if (a.pk > b.pk) {
           return 1
         }
@@ -83,28 +73,42 @@ export default {
         }
         return 0
       })
-      return proposals
-    },
-    sortedDiscussions () {
-      return this.getAgendaDiscussions(this.agendaId)
+      return ps
+    })
+
+    const sortedDiscussions = computed(_ => discussions.getAgendaDiscussions(agendaId.value))
+
+    watch(agendaId, (pk, oldPk) => {
+      if (pk) {
+        channel.subscribe(pk)
+      }
+      if (oldPk) {
+        channel.leave(oldPk)
+      }
+    })
+
+    onBeforeMount(_ => {
+      loader.subscribe(channel, agendaId.value)
+    })
+
+    onBeforeRouteLeave((to, from, next) => {
+      channel.leave(agendaId.value)
+      next()
+    })
+
+    return {
+      hasRole,
+      agendaId,
+      agendaItem,
+      sortedProposals,
+      sortedDiscussions
     }
   },
-  watch: {
-    agendaId (newId, oldId) {
-      if (oldId) {
-        this.channel.leave(oldId)
-      }
-      if (newId) {
-        this.channel.subscribe(newId)
-      }
-    }
-  },
-  created () {
-    this.loader.subscribe(this.channel, this.agendaId)
-  },
-  beforeRouteLeave (to, from, next) {
-    this.channel.leave(this.agendaId)
-    next()
+  components: {
+    AddContent,
+    DiscussionPost,
+    Proposal,
+    WorkflowState
   }
 }
 </script>

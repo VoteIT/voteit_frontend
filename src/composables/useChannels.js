@@ -1,14 +1,19 @@
-import { Socket, emitter, DefaultMap } from '@/utils'
+import { Socket, emitter } from '@/utils'
 import { ref } from 'vue'
 
 const DEFAULT_CONFIG = {
-  alertOnError: true
+  alertOnError: true,
+  leaveDelay: 10000 // Delay before leaving channel in ms
 }
 
 const socket = new Socket()
 const socketState = ref(false)
-const subscriptions = new DefaultMap(_ => new Set())
+// Map version code does nothing sane. Remove
+// const subscriptions = new DefaultMap(_ => new Set())
+const subscriptions = new Set()
+const leaveTimeouts = {}
 const updateHandlers = new Map()
+const leaveHandlers = new Map()
 const methodHanders = {
   added: {},
   changed: {},
@@ -62,10 +67,8 @@ function subscribeChannel (uri) {
 // Send all subscription messages on connect
 socket.addEventListener('open', _ => {
   socketState.value = true
-  for (const [uri, set] of subscriptions.entries()) {
-    if (set.size) {
-      subscribeChannel(uri)
-    }
+  for (const uri of subscriptions.values()) {
+    subscribeChannel(uri)
   }
 })
 
@@ -88,6 +91,12 @@ export default function useChannels (contentType, moduleConfig) {
     checkCType('onUpdate')
     console.log('registering update handler for', contentType)
     updateHandlers.set(contentType, fn)
+    return this
+  }
+
+  function onLeave (fn) {
+    checkCType('onLeave')
+    leaveHandlers.set(contentType, fn)
     return this
   }
 
@@ -141,23 +150,32 @@ export default function useChannels (contentType, moduleConfig) {
 
   function subscribe (uriOrPk, promise = false) {
     const uri = getUri(uriOrPk)
-    const uriSet = subscriptions.get(uri)
-    if (!uriSet.has(uri)) {
-      uriSet.add(uri)
+    clearTimeout(leaveTimeouts[uri])
+    if (!subscriptions.has(uri)) {
+      subscriptions.add(uri)
       if (socket.isOpen) {
         return subscribeChannel(uri)
-      } else if (promise) {
-        return Promise.reject(new Error('Socket closed. Cannot subscribe.'))
       }
+    }
+    if (promise) {
+      return Promise.reject(new Error('Socket closed. Cannot subscribe.'))
     }
     return Promise.resolve()
   }
 
-  function leave (uriOrPk) {
+  function leave (uriOrPk, config) {
+    config = Object.assign({}, moduleConfig, config || {})
     const uri = getUri(uriOrPk)
-    subscriptions.get(uri).delete(uri)
-    if (!subscriptions.get(uri).size && socket.isOpen) {
-      socket.send('channel.leave', uri)
+    if (subscriptions.has(uri)) {
+      leaveTimeouts[uri] = setTimeout(_ => {
+        subscriptions.delete(uri)
+        if (socket.isOpen) {
+          socket.send('channel.leave', uri)
+        }
+        if (leaveHandlers.has(contentType)) {
+          leaveHandlers.get(contentType)(uriOrPk)
+        }
+      }, config.leaveDelay)
     }
   }
 
@@ -208,6 +226,7 @@ export default function useChannels (contentType, moduleConfig) {
     socket,
     socketState,
     onUpdate,
+    onLeave,
     onAdd,
     onChange,
     onDelete,

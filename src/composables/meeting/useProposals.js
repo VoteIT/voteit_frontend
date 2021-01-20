@@ -58,9 +58,15 @@ export default function useProposals () {
     return props
   }
 
+  function clearAgenda (agendaPk) {
+    proposals.value = proposals.value.filter(
+      p => p.agenda_item !== agendaPk)
+  }
+
   return {
     fetchAgendaProposals,
     getAgendaProposals,
-    getPollProposals
+    getPollProposals,
+    clearAgenda
   }
 }
