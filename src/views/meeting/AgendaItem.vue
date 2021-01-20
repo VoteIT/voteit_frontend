@@ -53,7 +53,7 @@ export default {
     const loader = useLoader('AgendaItem')
     const discussions = useDiscussions()
     const proposals = useProposals()
-    const { hasRole } = useMeeting()
+    const { hasRole, meetingPath } = useMeeting()
     const channel = useChannels('agenda_item')
       .onLeave(pk => {
         proposals.clearAgenda(pk)
@@ -98,6 +98,7 @@ export default {
 
     return {
       hasRole,
+      meetingPath,
       agendaId,
       agendaItem,
       sortedProposals,
