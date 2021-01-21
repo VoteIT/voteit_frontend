@@ -1,6 +1,6 @@
 <template>
   <div class="proposal">
-    <div class="author">{{ getUser(meetingId, p.author).full_name }} {{ p.pk }}</div>
+    <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
     <p>
       {{ p.title }}
     </p>

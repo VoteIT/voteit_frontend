@@ -1,18 +1,24 @@
 <template>
   <main>
-    <component :is="methodComponent" :proposals="proposals" :authors="authors" @valid="setValid" />
-    <div class="buttons">
-      <btn icon="how_to_vote" :disabled="!validVote" @click="$alert(`*not implemented (value: ${validVote})`)">Cast vote</btn>
-    </div>
+    <h2 v-if="abstained">You have abstained from this vote</h2>
+    <h2 v-else-if="done">Your vote has been registered</h2>
+    <template v-else>
+      <component :is="methodComponent" :proposals="proposals" @valid="setValid" />
+      <div class="buttons btn-group">
+        <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote(validVote)">Cast vote</btn>
+        <btn icon="block" :disable="waiting" @click="abstainVote()">Abstain</btn>
+      </div>
+    </template>
   </main>
 </template>
 
 <script>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
-import useProposals from '../../composables/meeting/useProposals'
+import useProposals from '@/composables/meeting/useProposals'
 import pollMethods from '../pollmethods'
-import useMeeting from '../../composables/meeting/useMeeting'
+import useAlert from '../../composables/useAlert'
+import useChannels from '../../composables/useChannels'
 
 export default {
   name: 'VotingModal',
@@ -21,27 +27,18 @@ export default {
   },
   setup (props) {
     const { getPollProposals } = useProposals()
-    const { meetingId, getParticipants, fetchParticipants } = useMeeting()
+    const { alert } = useAlert()
+    const channels = useChannels('vote')
+
+    const waiting = ref(false)
+    const abstained = ref(false)
+    const done = ref(false)
 
     const proposals = computed(_ => {
       return getPollProposals(props.data.pk)
     })
 
-    const methodComponent = computed(_ => {
-      console.log(props.data)
-      return pollMethods[props.data.method_name]
-    })
-
-    const authors = computed(_ => {
-      return new Map(getParticipants(meetingId.value).map(p => [p.user.pk, p.user]))
-    })
-
-    onMounted(_ => {
-      fetchParticipants(meetingId.value, proposals.value.map(p => p.author))
-    })
-    watch(proposals, _ => {
-      fetchParticipants(meetingId.value, proposals.value.map(p => p.author))
-    })
+    const methodComponent = computed(_ => pollMethods[props.data.method_name])
 
     // Valid vote value emitted from method
     const validVote = ref(null)
@@ -49,12 +46,51 @@ export default {
       validVote.value = vote
     }
 
+    function castVote (vote) {
+      if (vote) {
+        waiting.value = true
+        // Hopefully
+        // const msg = {
+        //   vote,
+        //   method_name: props.data.method_name
+        // }
+        // channels.add(props.data.pk, msg)
+        const msg = {
+          pk: props.data.pk,
+          vote
+        }
+        channels.post(`${props.data.method_name}_vote.add`, msg)
+          .then(_ => {
+            done.value = true
+          })
+          .catch(_ => {
+            waiting.value = false
+          })
+      } else {
+        alert(`*not implemented (value: ${vote})`)
+      }
+    }
+
+    function abstainVote () {
+      channels.post('vote.abstain', { pk: props.data.pk })
+        .then(_ => {
+          abstained.value = true
+        })
+        .catch(_ => {
+          waiting.value = false
+        })
+    }
+
     return {
       proposals,
-      authors,
       methodComponent,
+      waiting,
+      abstained,
+      done,
       validVote,
-      setValid
+      setValid,
+      castVote,
+      abstainVote
     }
   }
 }

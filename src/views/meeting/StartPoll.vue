@@ -110,7 +110,7 @@ export default {
         restApi.post('polls/', {
           agenda_item: agenda.agendaId.value,
           proposal_pks: [...selectedProposalIds.value].join(','),
-          method: method.name,
+          method_name: method.name,
           start
         })
           .then(console.log)

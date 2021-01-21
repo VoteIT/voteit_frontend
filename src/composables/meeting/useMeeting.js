@@ -70,16 +70,17 @@ export default function useMeeting () {
     }
   }
 
-  function getUser (contextPk, userPk) {
+  function getUser (pk, meetingPk) {
     // Return user object if found in meeting participants
     // Otherwise queue for fetch
+    meetingPk = meetingPk || meetingId.value
     const role = wu(participants.value.values())
-      .find(r => r.user.pk === userPk && r.meeting === contextPk)
+      .find(r => r.user.pk === pk && r.meeting === meetingPk)
     if (role) {
       return role.user
     }
     // No data, queue participant for fetch and return empty object for now
-    fetchParticipant(userPk, contextPk)
+    fetchParticipant(pk, meetingPk)
     return {}
   }
 

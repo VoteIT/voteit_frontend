@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent>
     <div v-for="p in proposals" :key="p.pk">
-      <p>Proposal {{ p.pk }} from {{ (authors.get(p.author) || {}).full_name }}:</p>
+      <p>Proposal {{ p.pk }} from {{ getUser(p.author).full_name }}:</p>
       <p>{{ p.title }}</p>
       <div class="simple-options">
         <p class="vote-option" :style="{ backgroundColor: opt.value === value ? opt.color : undefined }" :class="{ active: opt.value === value }" v-for="opt in options" :key="opt.value">
@@ -18,16 +18,17 @@
 
 <script>
 import { ref } from 'vue'
+import useMeeting from '@/composables/meeting/useMeeting'
 
 const options = [
   {
-    value: 'approve',
+    value: 'y',
     title: 'Approve',
     icon: 'thumb_up',
     color: '#cdc'
   },
   {
-    value: 'deny',
+    value: 'n',
     title: 'Deny',
     icon: 'thumb_down',
     color: '#dcc'
@@ -38,21 +39,22 @@ export default {
   name: 'SimplePoll',
   emits: ['valid'],
   props: {
-    proposals: Array,
-    authors: Map
+    proposals: Array
   },
   setup (props, { emit }) {
+    const { getUser } = useMeeting()
     const value = ref(null)
 
     function change (opt) {
       value.value = opt.value
-      emit('valid', opt.value)
+      emit('valid', { choice: opt.value })
     }
 
     return {
       change,
       value,
-      options
+      options,
+      getUser
     }
   }
 }
