@@ -6,7 +6,10 @@
     </div>
     <div class="body">
       <btn @click="vote" icon="ballot" v-if="isOngoing && hasRole('potential_voter')">Vote</btn>
-      <p>
+      <p v-if="poll.state === 'finished'">
+        {{ poll.result_data }}
+      </p>
+      <p v-else>
         Other poll info
       </p>
       <btn-dropdown dark class="voting-info" v-if="isOngoing" title="Watch voting" @open="active=true" @close="active=false">
