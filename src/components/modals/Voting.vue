@@ -3,17 +3,17 @@
     <h2 v-if="abstained">You have abstained from this vote</h2>
     <h2 v-else-if="done">Your vote has been registered</h2>
     <template v-else>
-      <component :is="methodComponent" :proposals="proposals" @valid="setValid" />
+      <component ref="method" :is="methodComponent" :proposals="proposals" @valid="setValid" />
       <div class="buttons btn-group">
         <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote(validVote)">Cast vote</btn>
-        <btn icon="block" :disable="waiting" @click="abstainVote()">Abstain</btn>
+        <btn icon="block" :class="{ active: currentAbstained && !validVote }" :disable="waiting" @click="abstainVote()">Abstain</btn>
       </div>
     </template>
   </main>
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 
 import useProposals from '@/composables/meeting/useProposals'
 import pollMethods from '../pollmethods'
@@ -28,7 +28,8 @@ export default {
   setup (props) {
     const { getPollProposals } = useProposals()
     const { alert } = useAlert()
-    const channels = useChannels('vote')
+    const channels = useChannels('vote', { alertOnError: false })
+    const method = ref(null)
 
     const waiting = ref(false)
     const abstained = ref(false)
@@ -41,6 +42,7 @@ export default {
     const methodComponent = computed(_ => pollMethods[props.data.method_name])
 
     // Valid vote value emitted from method
+    const currentAbstained = ref(false)
     const validVote = ref(null)
     function setValid (vote) {
       validVote.value = vote
@@ -81,6 +83,14 @@ export default {
         })
     }
 
+    onBeforeMount(_ => {
+      channels.get(props.data.pk)
+        .then(({ p }) => {
+          if (p.vote) method.value.setCurrent(p.vote)
+          currentAbstained.value = p.abstain
+        })
+    })
+
     return {
       proposals,
       methodComponent,
@@ -90,6 +100,8 @@ export default {
       validVote,
       setValid,
       castVote,
+      method,
+      currentAbstained,
       abstainVote
     }
   }

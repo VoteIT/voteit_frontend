@@ -185,9 +185,9 @@ export default function useChannels (contentType, moduleConfig) {
     return socket.call(uri, data, config)
   }
 
-  function get (uri, config) {
-    return call(uri, undefined, config)
-  }
+  // function get (uri, config) {
+  //   return call(uri, undefined, config)
+  // }
 
   function post (uri, data, config) {
     return call(uri, data, config)
@@ -197,6 +197,11 @@ export default function useChannels (contentType, moduleConfig) {
     if (!contentType) {
       throw new Error(`Instantiate using useChannels(contentType) to use ${methodName}`)
     }
+  }
+
+  function get (pk, config) {
+    checkCType('retrieve')
+    return call(`${contentType}.get`, { pk }, config)
   }
 
   function add (contextPk, kwargs, config) {

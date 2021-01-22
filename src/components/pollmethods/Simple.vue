@@ -5,7 +5,7 @@
       <p>{{ p.title }}</p>
       <div class="simple-options">
         <p class="vote-option" :style="{ backgroundColor: opt.value === value ? opt.color : undefined }" :class="{ active: opt.value === value }" v-for="opt in options" :key="opt.value">
-            <label :for="opt.value" tabindex="0" @click="change(opt)" @keyup.enter="change(opt)">
+            <label :for="opt.value" tabindex="0" @click="change(opt.value)" @keyup.enter="change(opt.value)">
             <input :checked="opt.value === value" type="radio" name="vote" :value="opt.value" :id="opt.value" />
             <icon sm :name="opt.icon" />
             {{ opt.title }}
@@ -39,22 +39,28 @@ export default {
   name: 'SimplePoll',
   emits: ['valid'],
   props: {
-    proposals: Array
+    proposals: Array,
+    vote: Object
   },
   setup (props, { emit }) {
     const { getUser } = useMeeting()
     const value = ref(null)
 
     function change (opt) {
-      value.value = opt.value
-      emit('valid', { choice: opt.value })
+      value.value = opt
+      emit('valid', { choice: opt })
+    }
+
+    function setCurrent (vote) {
+      change(vote.choice)
     }
 
     return {
       change,
       value,
       options,
-      getUser
+      getUser,
+      setCurrent
     }
   }
 }
