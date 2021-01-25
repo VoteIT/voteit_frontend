@@ -4,9 +4,9 @@
       <p>Proposal {{ p.pk }} from {{ getUser(p.author).full_name }}:</p>
       <p>{{ p.title }}</p>
       <div class="simple-options">
-        <p class="vote-option" :style="{ backgroundColor: opt.value === value ? opt.color : undefined }" :class="{ active: opt.value === value }" v-for="opt in options" :key="opt.value">
+        <p class="vote-option" :style="{ backgroundColor: opt.value === selected ? opt.color : undefined }" :class="{ active: opt.value === selected }" v-for="opt in options" :key="opt.value">
             <label :for="opt.value" tabindex="0" @click="change(opt.value)" @keyup.enter="change(opt.value)">
-            <input :checked="opt.value === value" type="radio" name="vote" :value="opt.value" :id="opt.value" />
+            <input :checked="opt.value === selected" type="radio" name="vote" :value="opt.value" :id="opt.value" />
             <icon sm :name="opt.icon" />
             {{ opt.title }}
             </label>
@@ -39,15 +39,14 @@ export default {
   name: 'SimplePoll',
   emits: ['valid'],
   props: {
-    proposals: Array,
-    vote: Object
+    proposals: Array
   },
   setup (props, { emit }) {
     const { getUser } = useMeeting()
-    const value = ref(null)
+    const selected = ref(null)
 
     function change (opt) {
-      value.value = opt
+      selected.value = opt
       emit('valid', { choice: opt })
     }
 
@@ -57,7 +56,7 @@ export default {
 
     return {
       change,
-      value,
+      selected,
       options,
       getUser,
       setCurrent

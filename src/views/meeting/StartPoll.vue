@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div v-if="createdPoll">
+    <h1>Poll created</h1>
+    <poll :poll="createdPoll"/>
+  </div>
+  <div v-else>
     <h1>Start poll</h1>
     <h2>Step 1: Select Agenda Item</h2>
     <btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <icon name="close"/></btn>
@@ -36,8 +40,8 @@
       </ul>
       <div class="btn-group">
         <btn icon="undo" @click="pickMethod=false">Back</btn>
-        <btn icon="check" :disabled="!methodSelected" @click="createPoll()">Create</btn>
-        <btn icon="play_arrow" :disabled="!methodSelected" @click="createPoll(true)">Create and start</btn>
+        <btn icon="check" :disabled="!readyToCreate" @click="createPoll()">Create</btn>
+        <btn icon="play_arrow" :disabled="!readyToCreate" @click="createPoll(true)">Create and start</btn>
       </div>
     </template>
   </div>
@@ -52,15 +56,22 @@ import useRestApi from '../../composables/useRestApi'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'
 import useProposals from '@/composables/meeting/useProposals.js'
+import usePolls from '@/composables/meeting/usePolls.js'
 
 import pollMethods from '@/schemas/pollMethods.json'
 
+import Poll from '@/components/widgets/Poll'
+
 export default {
   name: 'StartPoll',
+  components: {
+    Poll
+  },
   setup () {
     const restApi = useRestApi()
     const proposals = useProposals()
     const agenda = useAgenda()
+    const { getPoll } = usePolls()
     const { alert } = useAlert()
 
     const selectedProposalIds = ref(new Set())
@@ -104,16 +115,29 @@ export default {
       methodSelected.value = methodSelected.value === m.name ? null : m.name
     }
 
+    const working = ref(false)
+    const createdPollPk = ref(null)
+    const createdPoll = computed(_ => getPoll(createdPollPk.value))
+    const readyToCreate = computed(_ => {
+      return methodSelected.value && !working.value && !createdPollPk.value
+    })
+
     function createPoll (start = false) {
       const method = pollMethods.find(m => m.name === methodSelected.value)
       if (method.name === 'simple') {
+        working.value = true
         restApi.post('polls/', {
           agenda_item: agenda.agendaId.value,
           proposal_pks: [...selectedProposalIds.value].join(','),
           method_name: method.name,
           start
         })
-          .then(console.log)
+          .then(({ data }) => {
+            createdPollPk.value = data.pk
+          })
+          .finally(_ => {
+            working.value = false
+          })
         // console.log(method, restApi)
       } else {
         alert(`*${method.title} not implemented`)
@@ -131,7 +155,9 @@ export default {
       availableMethods,
       methodSelected,
       selectMethod,
+      readyToCreate,
       createPoll,
+      createdPoll,
 
       ...useMeeting(),
       loader: useLoader('StartPoll'),
