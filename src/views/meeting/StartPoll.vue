@@ -138,7 +138,6 @@ export default {
           .finally(_ => {
             working.value = false
           })
-        // console.log(method, restApi)
       } else {
         alert(`*${method.title} not implemented`)
       }

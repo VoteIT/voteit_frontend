@@ -22,13 +22,13 @@ import useMeeting from '@/composables/meeting/useMeeting'
 
 const options = [
   {
-    value: 'y',
+    value: 'yes',
     title: 'Approve',
     icon: 'thumb_up',
     color: '#cdc'
   },
   {
-    value: 'n',
+    value: 'no',
     title: 'Deny',
     icon: 'thumb_down',
     color: '#dcc'
