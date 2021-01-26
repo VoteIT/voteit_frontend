@@ -1,10 +1,6 @@
 import Axios from 'axios'
 
 const BASE_URL = 'http://localhost:8000/api/'
-const restApi = Axios.create({
+export default Axios.create({
   baseURL: BASE_URL
 })
-
-export {
-  restApi
-}

@@ -9,7 +9,7 @@ const agendas = ref(new Map()) // Map meeting pk to list of agenda items
 */
 
 useChannels('agenda')
-  .onChange(item => {
+  .onChanged(item => {
     if (!agendas.value.has(item.meeting)) agendas.value.set(item.meeting, [])
     const agenda = agendas.value.get(item.meeting)
     const index = agenda.findIndex(ai => ai.pk === item.pk)
@@ -17,7 +17,7 @@ useChannels('agenda')
     else agenda.push(item)
     sortAgenda(agenda)
   })
-  .onDelete(item => {
+  .onDeleted(item => {
     for (const agenda of agendas.value.values()) {
       const index = agenda.findIndex(ai => ai.pk === item.pk)
       if (index !== -1) {

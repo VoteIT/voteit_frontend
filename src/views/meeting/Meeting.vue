@@ -33,6 +33,7 @@ import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
 import useBubbles from '@/composables/meeting/useBubbles.js'
+import useSpeakerLists from '@/composables/meeting/useSpeakerLists.js'
 import { computed, onMounted, watch } from 'vue'
 
 const NAV_LINKS = [
@@ -59,6 +60,8 @@ export default {
 
     const presence = usePresence()
     const presenceBubble = useBubbles(PresenceCheck)
+
+    const speakers = useSpeakerLists()
 
     const presenceCheck = computed(_ => presence.getOpenPresenceCheck(meeting.meetingId.value))
     const isPresent = computed(_ => presenceCheck.value && !!presence.getUserPresence(presenceCheck.value.pk))
@@ -96,7 +99,8 @@ export default {
       polls,
       ongoingPollCount,
       fetchPolls,
-      channel
+      channel,
+      speakers
     }
   },
   components: {

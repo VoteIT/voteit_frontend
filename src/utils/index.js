@@ -1,6 +1,6 @@
 import ProgressPromise from './ProgressPromise'
 import Socket from './Socket'
-import { restApi } from './api'
+import restApi from './restApi.ts'
 import mitt from 'mitt'
 
 function uriToPayload (uri) {

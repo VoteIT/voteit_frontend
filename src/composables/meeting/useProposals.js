@@ -5,12 +5,12 @@ import useContentApi from '../useContentApi.js'
 const proposals = ref([])
 
 useChannels('proposal')
-  .onChange(item => {
+  .onChanged(item => {
     const index = proposals.value.findIndex(p => p.pk === item.pk)
     if (index !== -1) proposals.value[index] = item
     else proposals.value.push(item)
   })
-  .onDelete(item => {
+  .onDeleted(item => {
     const index = proposals.value.findIndex(p => p.pk === item.pk)
     if (index !== -1) proposals.value.splice(index, 1)
   })

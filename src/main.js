@@ -7,8 +7,9 @@ import Alerts from './plugins/Alerts.js'
 import Api from './plugins/Api.js'
 import Slugify from './plugins/Slugify.js'
 
-import Icon from './components/Icon.vue'
-import Btn from './components/Btn.vue'
+import Icon from './components/Icon'
+import Btn from './components/Btn'
+import User from './components/User'
 import ProgressBar from './components/ProgressBar.vue'
 
 createApp(App)
@@ -18,5 +19,6 @@ createApp(App)
   .use(Slugify)
   .component('Icon', Icon)
   .component('Btn', Btn)
+  .component('User', User)
   .component('ProgressBar', ProgressBar)
   .mount('#app')

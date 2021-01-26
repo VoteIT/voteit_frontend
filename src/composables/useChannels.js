@@ -14,12 +14,7 @@ const subscriptions = new Set()
 const leaveTimeouts = {}
 const updateHandlers = new Map()
 const leaveHandlers = new Map()
-const methodHanders = {
-  added: {},
-  changed: {},
-  deleted: {},
-  status: {}
-}
+const methodHanders = {}
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 
 function handleMessage (data) {
@@ -87,7 +82,7 @@ export default function useChannels (contentType, moduleConfig) {
   }
 
   function onUpdate (fn) {
-    // Will take precedence over and block .onChange(), etc
+    // Will take precedence over and block .onChanged(), etc
     checkCType('onUpdate')
     console.log('registering update handler for', contentType)
     updateHandlers.set(contentType, fn)
@@ -100,38 +95,30 @@ export default function useChannels (contentType, moduleConfig) {
     return this
   }
 
-  function onAdd (fn) {
-    checkCType('onAdded')
-    methodHanders.added[contentType] = fn
+  function on (method, fn) {
+    checkCType('on' + method[0].toUpperCase() + method.slice(1))
+    if (!methodHanders[method]) methodHanders[method] = {}
+    methodHanders[method][contentType] = fn
     return this
   }
 
-  function onChange (fn) {
-    // By default, send add events to change method. Register using .onAdd(fn) to handle separately.
-    checkCType('onChanged')
-    methodHanders.changed[contentType] = fn
-    if (!methodHanders.added[contentType]) {
-      onAdd(fn)
+  const onAdded = fn => on('added', fn)
+  const onDeleted = fn => on('deleted', fn)
+  const onStatus = fn => on('status', fn)
+
+  function onChanged (fn) {
+    // By default, send add events to change method. Register using .onAdded(fn) to handle separately.
+    on('changed', fn)
+    if (!methodHanders.added || !methodHanders.added[contentType]) {
+      onAdded(fn)
     }
-    return this
-  }
-
-  function onDelete (fn) {
-    checkCType('onDeleted')
-    methodHanders.deleted[contentType] = fn
-    return this
-  }
-
-  function onStatus (fn) {
-    checkCType('onStatus')
-    methodHanders.status[contentType] = fn
     return this
   }
 
   function updateMap (map) {
     // Convenience method to set onChange and onDelete to update Map object.
-    onChange(item => map.set(item.pk, item))
-    onDelete(item => map.delete(item.pk))
+    onChanged(item => map.set(item.pk, item))
+    onDeleted(item => map.delete(item.pk))
     return this
   }
 
@@ -199,25 +186,15 @@ export default function useChannels (contentType, moduleConfig) {
     }
   }
 
-  function get (pk, config) {
-    checkCType('retrieve')
-    return call(`${contentType}.get`, { pk }, config)
+  function methodCall (method, data, config) {
+    checkCType(method)
+    return call(`${contentType}.${method}`, data, config)
   }
 
-  function add (contextPk, kwargs, config) {
-    checkCType('add')
-    return call(`${contentType}.add`, { pk: contextPk, kwargs }, config)
-  }
-
-  function change (pk, kwargs, config) {
-    checkCType('change')
-    return call(`${contentType}.change`, { pk, kwargs }, config)
-  }
-
-  function _delete (pk, config) {
-    checkCType('delete')
-    return call(`${contentType}.delete`, { pk }, config)
-  }
+  const get = (pk, config) => methodCall('get', { pk }, config)
+  const add = (contextPk, kwargs, config) => methodCall('add', { pk: contextPk, kwargs }, config)
+  const change = (pk, kwargs, config) => methodCall('change', { pk, kwargs }, config)
+  const _delete = (pk, config) => methodCall('delete', { pk }, config)
 
   function outgoingSchema (type) {
     return post('schema.get_outgoing', { message_type: type })
@@ -232,15 +209,17 @@ export default function useChannels (contentType, moduleConfig) {
     socketState,
     onUpdate,
     onLeave,
-    onAdd,
-    onChange,
-    onDelete,
+    on,
+    onAdded,
+    onChanged,
+    onDeleted,
     onStatus,
     updateMap,
     connect,
     disconnect,
     subscribe,
     leave,
+    methodCall,
     get,
     post,
     add,

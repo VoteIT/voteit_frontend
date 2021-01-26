@@ -7,12 +7,12 @@ import useChannels from '../useChannels'
 const discussions = ref([])
 
 useChannels('discussion_post')
-  .onChange(item => {
+  .onChanged(item => {
     const index = discussions.value.findIndex(d => d.pk === item.pk)
     if (index !== -1) discussions.value[index] = item
     else discussions.value.push(item)
   })
-  .onDelete(item => {
+  .onDeleted(item => {
     const index = discussions.value.findIndex(d => d.pk === item.pk)
     if (index !== -1) discussions.value.splice(index, 1)
   })

@@ -3,6 +3,24 @@
     <h1>{{ agendaItem.title }}</h1>
     <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
     <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
+    <div v-if="speakerLists.length">
+      <h2>Speaker lists</h2>
+      <div v-for="{ title, state, pk } in speakerLists" :key="pk">
+        <h3>{{ title }}</h3>
+        <p>{{ state }}</p>
+        <div v-if="speakers.currentlySpeaking.value.get(pk)">
+          Speaking: <user :pk="speakers.currentlySpeaking.value.get(pk)" />
+        </div>
+        <ol v-if="speakers.speakerQueues.value.get(pk)">
+          <li v-for="userPk in speakers.speakerQueues.value.get(pk)" :key="userPk"><user :pk="userPk"/></li>
+        </ol>
+        <btn v-if="!speakers.userInList(pk)" icon="speaker_notes" @click="speakers.enterList(pk)">Enter list</btn>
+        <btn v-else icon="speaker_notes_off" @click="speakers.leaveList(pk)">Leave list</btn>
+      </div>
+    </div>
+    <div v-else>
+      No speaker lists
+    </div>
     <div class="row">
       <div class="col-sm-6">
         <h2>Proposals</h2>
@@ -38,12 +56,13 @@ import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import Proposal from '@/components/widgets/Proposal.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
 
-import useMeeting from '@/composables/meeting/useMeeting.js'
-import useAgenda from '@/composables/meeting/useAgenda.js'
-import useProposals from '@/composables/meeting/useProposals.js'
-import useDiscussions from '@/composables/meeting/useDiscussions.js'
-import useLoader from '@/composables/useLoader.js'
-import useChannels from '@/composables/useChannels.js'
+import useMeeting from '@/composables/meeting/useMeeting'
+import useAgenda from '@/composables/meeting/useAgenda'
+import useProposals from '@/composables/meeting/useProposals'
+import useDiscussions from '@/composables/meeting/useDiscussions'
+import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
+import useLoader from '@/composables/useLoader'
+import useChannels from '@/composables/useChannels'
 import { computed, onBeforeMount, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
@@ -96,13 +115,18 @@ export default {
       next()
     })
 
+    const speakers = useSpeakerLists()
+    const speakerLists = computed(_ => speakers.getAgendaSpeakerLists(agendaId.value))
+
     return {
       hasRole,
       meetingPath,
       agendaId,
       agendaItem,
       sortedProposals,
-      sortedDiscussions
+      sortedDiscussions,
+      speakerLists,
+      speakers
     }
   },
   components: {
