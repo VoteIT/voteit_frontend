@@ -1,6 +1,7 @@
 import pollStates from './pollStates.js'
 import proposalStates from './proposalStates.json'
 import agendaStates from './agendaStates.json'
+import speakerListStates from './speakerListStates.js'
 
 export default {
   poll: {
@@ -20,5 +21,9 @@ export default {
   proposal: {
     uri: 'proposals',
     states: proposalStates
+  },
+  speaker_list: {
+    uri: 'speaker-lists',
+    states: speakerListStates
   }
 }

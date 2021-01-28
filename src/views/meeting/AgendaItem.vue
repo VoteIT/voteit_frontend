@@ -5,18 +5,7 @@
     <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
     <div v-if="speakerLists.length">
       <h2>Speaker lists</h2>
-      <div v-for="{ title, state, pk } in speakerLists" :key="pk">
-        <h3>{{ title }}</h3>
-        <p>{{ state }}</p>
-        <div v-if="speakers.currentlySpeaking.value.get(pk)">
-          Speaking: <user :pk="speakers.currentlySpeaking.value.get(pk)" />
-        </div>
-        <ol v-if="speakers.speakerQueues.value.get(pk)">
-          <li v-for="userPk in speakers.speakerQueues.value.get(pk)" :key="userPk"><user :pk="userPk"/></li>
-        </ol>
-        <btn v-if="!speakers.userInList(pk)" icon="speaker_notes" @click="speakers.enterList(pk)">Enter list</btn>
-        <btn v-else icon="speaker_notes_off" @click="speakers.leaveList(pk)">Leave list</btn>
-      </div>
+      <speaker-list :pk="pk" v-for="{ pk } in speakerLists" :key="pk" />
     </div>
     <div v-else>
       No speaker lists
@@ -55,6 +44,7 @@ import AddContent from '@/components/meeting/AddContent.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import Proposal from '@/components/widgets/Proposal.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
+import SpeakerList from '@/components/widgets/SpeakerList.vue'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 import useAgenda from '@/composables/meeting/useAgenda'
@@ -115,8 +105,8 @@ export default {
       next()
     })
 
-    const speakers = useSpeakerLists()
-    const speakerLists = computed(_ => speakers.getAgendaSpeakerLists(agendaId.value))
+    const { getAgendaSpeakerLists } = useSpeakerLists()
+    const speakerLists = computed(_ => getAgendaSpeakerLists(agendaId.value))
 
     return {
       hasRole,
@@ -125,15 +115,15 @@ export default {
       agendaItem,
       sortedProposals,
       sortedDiscussions,
-      speakerLists,
-      speakers
+      speakerLists
     }
   },
   components: {
     AddContent,
     DiscussionPost,
     Proposal,
-    WorkflowState
+    WorkflowState,
+    SpeakerList
   }
 }
 </script>

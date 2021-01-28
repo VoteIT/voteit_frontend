@@ -27,6 +27,19 @@ export default function useSpeakerLists () {
     return [...wu(speakerLists.value.values()).filter(l => l.agenda_item === agendaPk)]
   }
 
+  function getSystem (pk) {
+    return speakerSystems.value.get(pk)
+  }
+  function getList (pk) {
+    return speakerLists.value.get(pk)
+  }
+  function getQueue (pk) {
+    return speakerQueues.value.get(pk) || []
+  }
+  function getCurrent (pk) {
+    return currentlySpeaking.value.get(pk)
+  }
+
   function enterList (pk) {
     return listChannel.methodCall('enter', { pk })
   }
@@ -38,14 +51,36 @@ export default function useSpeakerLists () {
     return queue && queue.includes(user.value.pk)
   }
 
+  function startSpeaker (pk, userid) {
+    userid = userid || getQueue(pk)[0]
+    listChannel.methodCall('start_user', {
+      pk,
+      userid
+    })
+  }
+
+  function stopSpeaker (pk) {
+    listChannel.methodCall('stop_user', {
+      pk,
+      userid: getCurrent(pk)
+    })
+  }
+
+  function setActiveList (pk) {
+    listChannel.methodCall('set_active', { pk })
+  }
+
   return {
-    speakerSystems,
-    speakerLists,
-    speakerQueues,
-    currentlySpeaking,
+    getSystem,
+    getList,
+    getQueue,
+    getCurrent,
     getAgendaSpeakerLists,
     enterList,
     leaveList,
-    userInList
+    startSpeaker,
+    stopSpeaker,
+    userInList,
+    setActiveList
   }
 }
