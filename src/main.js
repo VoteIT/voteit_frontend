@@ -13,8 +13,6 @@ import Btn from './components/Btn'
 import User from './components/User'
 import ProgressBar from './components/ProgressBar.vue'
 
-console.log(VueShowdownPlugin)
-
 createApp(App)
   .use(router)
   .use(VueShowdownPlugin)
