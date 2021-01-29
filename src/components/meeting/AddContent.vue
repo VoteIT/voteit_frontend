@@ -25,7 +25,12 @@ const useSocket = false
 const QUILL_CONFIG = {
   theme: 'snow',
   modules: {
-    toolbar: null
+    toolbar: null,
+    keyboard: {
+      bindings: {
+        tab: null // Disable default tab behaviour
+      }
+    }
   }
 }
 
@@ -76,7 +81,13 @@ export default {
     let editor = null
     const editorElement = ref(null)
     onMounted(_ => {
-      editor = new Quill(editorElement.value, QUILL_CONFIG)
+      const config = Object.assign({}, QUILL_CONFIG)
+      config.modules.keyboard.bindings.submit = {
+        key: 'Enter',
+        ctrlKey: true,
+        handler: submit
+      }
+      editor = new Quill(editorElement.value, config)
     })
 
     function focus () {
