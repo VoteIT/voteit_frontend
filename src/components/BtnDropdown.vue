@@ -2,7 +2,7 @@
   <div class="btn-dropdown" :class="{ dark }">
     <btn :class="{ isOpen }" @click="isOpen = !isOpen" icon="arrow_drop_down">{{ title }}</btn>
     <div v-show="isOpen">
-      <slot/>
+      <slot />
     </div>
   </div>
 </template>

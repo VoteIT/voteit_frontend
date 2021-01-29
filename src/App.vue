@@ -15,6 +15,7 @@ import Alerts from '@/components/Alerts.vue'
 import Modal from './components/modals/Modal'
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
+import { onBeforeMount } from 'vue'
 
 export default {
   components: {
@@ -24,20 +25,13 @@ export default {
     Modal
   },
   setup () {
-    return {
-      ...useAuthentication(),
-      ...useLoader('App')
-    }
-  },
-  created () {
-    if (this.user) {
-      this.authenticate(this.user)
-        .catch(_ => {
-          this.setLoaded(false)
-        })
-    } else {
-      this.setLoaded()
-    }
+    const loader = useLoader('App')
+    const { user, authenticate } = useAuthentication()
+
+    onBeforeMount(_ => {
+      if (user.value) authenticate(user.value)
+      else loader.setLoaded()
+    })
   }
 }
 </script>
@@ -45,6 +39,8 @@ export default {
 <style lang="sass">
 $material-icons-font-path: '~material-icons/iconfont/'
 @import '~material-icons/iconfont/material-icons.scss'
+@import '~quill/dist/quill.core.css'
+@import '~quill/dist/quill.snow.css'
 
 *
   box-sizing: border-box

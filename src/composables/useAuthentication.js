@@ -18,6 +18,9 @@ export default function useAuthentication () {
         isAuthenticated.value = true
         authToken.value = data.key
       })
+      .catch(_ => {
+        delete sessionStorage.user
+      })
   }
 
   function logout () {

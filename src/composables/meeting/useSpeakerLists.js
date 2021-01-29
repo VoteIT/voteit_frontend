@@ -15,7 +15,6 @@ useChannels('speaker_system')
 const listChannel = useChannels('speaker_list')
   .updateMap(speakerLists.value)
   .on('order', ({ pk, queue, current }) => { // pk == Speaker list pk
-    console.log('updated speaker list order', pk, current, queue)
     speakerQueues.value.set(pk, queue)
     currentlySpeaking.value.set(pk, current)
   })

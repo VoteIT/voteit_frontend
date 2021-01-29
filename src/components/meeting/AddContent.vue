@@ -1,7 +1,7 @@
 <template>
-  <btn-dropdown :title="'Write ' + name" @open="inputEl.focus()">
+  <btn-dropdown ref="dropdownElement" :title="'Write ' + name" @open="focus()">
     <form @submit.prevent="submit">
-      <textarea ref="inputEl" @keyup.ctrl.enter="submit" v-model="title" required></textarea>
+      <div ref="editorElement" />
       <div class="buttons">
         <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
@@ -10,13 +10,24 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import Quill from 'quill'
+import { onMounted, ref } from 'vue'
+
+import { MDConverter } from '@/utils'
+
 import useContentApi from '../../composables/useContentApi'
 import useChannels from '../../composables/useChannels'
 
 import BtnDropdown from '../BtnDropdown'
 
 const useSocket = false
+
+const QUILL_CONFIG = {
+  theme: 'snow',
+  modules: {
+    toolbar: null
+  }
+}
 
 export default {
   name: 'AddContent',
@@ -33,28 +44,27 @@ export default {
     contentType: String
   },
   setup (props) {
-    // Open and close
-    const inputEl = ref(null)
-
     // Post (data update from channels)
     const channels = useChannels(props.contentType)
     const contentApi = useContentApi(props.contentType)
-    const title = ref('')
     const submitting = ref(false)
 
     function submit () {
       if (!submitting.value) {
+        const title = editor.getText().split('\n')[0] // TODO: NO!
+        const html = editor.container.firstChild.innerHTML
+        const body = MDConverter.makeMarkdown(html)
         this.submitting = true
         if (useSocket) {
           channels.add(props.contextPk, {
-            title: title.value
+            body
           })
         } else {
-          const data = Object.assign({ title: title.value }, props.params)
+          const data = Object.assign({ title, body }, props.params)
           contentApi.add(data)
             .then(_ => {
-              title.value = ''
-              open.value = false
+              editor.setContents('')
+              dropdownElement.value.isOpen = false
             })
             .finally(_ => {
               submitting.value = false
@@ -63,12 +73,25 @@ export default {
       }
     }
 
+    let editor = null
+    const editorElement = ref(null)
+    onMounted(_ => {
+      editor = new Quill(editorElement.value, QUILL_CONFIG)
+    })
+
+    function focus () {
+      editor.focus()
+    }
+
+    const dropdownElement = ref(null)
+
     return {
-      title,
       open,
+      focus,
       submitting,
       submit,
-      inputEl
+      editorElement,
+      dropdownElement
     }
   }
 }
@@ -83,4 +106,7 @@ textarea
     outline: solid #ccc 1px
 .buttons
   text-align: right
+
+.ql-container
+  background-color: #fff
 </style>

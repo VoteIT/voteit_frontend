@@ -1,9 +1,7 @@
 <template>
   <div class="proposal">
     <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
-    <p>
-      {{ p.title }}
-    </p>
+    <VueShowdown :markdown="p.body" />
     <div v-if="hasRole('moderator')" class="controls">
       <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
       <btn sm icon="delete" @click="channels.delete(p.pk)" />

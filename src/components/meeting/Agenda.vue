@@ -6,7 +6,7 @@
         <li v-for="ai in aiType(s.state)" :key="ai.pk"><router-link :to="aiPath(ai)">{{ ai.title }}</router-link></li>
       </ul>
     </template>
-    <btn-dropdown dark title="New agenda item" @open="focusInput">
+    <btn-dropdown dark title="New agenda item" @open="focusInput" v-if="hasRole('moderator')">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
         <input class="btn" type="submit" value="Add"/>
