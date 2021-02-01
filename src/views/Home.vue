@@ -38,7 +38,6 @@
 </template>
 
 <script>
-// import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
@@ -46,14 +45,17 @@ import useMeetings from '@/composables/useMeetings.js'
 import useRestApi from '@/composables/useRestApi.js'
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
-import { watch } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 
 export default {
   name: 'Home',
   setup () {
     const { orderedMeetings, fetchMeetings } = useMeetings()
-    const restApi = useRestApi()
+    const restApi = useRestApi('meeting')
     const { authenticate, logout, isAuthenticated, user } = useAuthentication()
+    const loader = useLoader('Home')
+
+    const users = ref([])
 
     watch(isAuthenticated, value => {
       if (value) {
@@ -61,50 +63,49 @@ export default {
       }
     })
 
+    onBeforeMount(_ => {
+      if (isAuthenticated.value) loader.call(fetchMeetings)
+      restApi.get('dev-login/')
+        .then(({ data }) => {
+          users.value = data
+        })
+    })
+
+    const addUser = ref(false)
+    const newUser = ref({
+      username: '',
+      is_superuser: false
+    })
+    const newUserError = ref(false)
+
+    function createUser () {
+      newUserError.value = false
+      restApi.post('dev-login/', newUser.value)
+        .then(_ => {
+          users.value.push(newUser.value)
+        })
+        .catch(_ => {
+          newUserError.value = true
+        })
+    }
+
     return {
       orderedMeetings,
-      fetchMeetings,
-      restApi,
       authenticate,
       logout,
       isAuthenticated,
       user,
-      loader: useLoader('Home')
-    }
-  },
-  data () {
-    return {
-      users: [],
-      addUser: false,
-      newUser: {
-        username: '',
-        is_superuser: false
-      },
-      newUserError: false
+      users,
+
+      addUser,
+      newUser,
+      newUserError,
+      createUser
     }
   },
   components: {
     Counter,
     getSchema
-  },
-  methods: {
-    createUser () {
-      this.newUserError = false
-      this.restApi.post('dev-login/', this.newUser)
-        .then(() => {
-          this.users.push(this.newUser)
-        })
-        .catch(() => {
-          this.newUserError = true
-        })
-    }
-  },
-  created () {
-    if (this.isAuthenticated) this.loader.call(this.fetchMeetings)
-    this.restApi.get('dev-login/')
-      .then(({ data }) => {
-        this.users = data
-      })
   }
 }
 </script>
