@@ -1,7 +1,7 @@
 <template>
   <btn-dropdown ref="dropdownElement" :title="'Write ' + name" @open="focus()">
     <form @submit.prevent="submit">
-      <div ref="editorElement" />
+      <div ref="editorElement"/>
       <div class="buttons">
         <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
@@ -23,9 +23,8 @@ import BtnDropdown from '../BtnDropdown'
 const useSocket = false
 
 const QUILL_CONFIG = {
-  theme: 'snow',
+  theme: 'bubble',
   modules: {
-    toolbar: null,
     keyboard: {
       bindings: {
         tab: null // Disable default tab behaviour
@@ -59,6 +58,7 @@ export default {
         const title = editor.getText().split('\n')[0] // TODO: NO!
         const html = editor.container.firstChild.innerHTML
         const body = MDConverter.makeMarkdown(html)
+        console.log('posting', html, body)
         this.submitting = true
         if (useSocket) {
           channels.add(props.contextPk, {

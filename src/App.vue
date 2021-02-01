@@ -40,7 +40,7 @@ export default {
 $material-icons-font-path: '~material-icons/iconfont/'
 @import '~material-icons/iconfont/material-icons.scss'
 @import '~quill/dist/quill.core.css'
-@import '~quill/dist/quill.snow.css'
+@import '~quill/dist/quill.bubble.css'
 
 *
   box-sizing: border-box

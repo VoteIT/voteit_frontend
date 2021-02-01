@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import useLoader from '@/composables/useLoader.js'
 import useAlert from '@/composables/useAlert.js'
 import useRestApi from '../../composables/useRestApi'
@@ -61,6 +61,8 @@ import usePolls from '@/composables/meeting/usePolls.js'
 import pollMethods from '@/schemas/pollMethods.json'
 
 import Poll from '@/components/widgets/Poll'
+import { onBeforeRouteLeave } from 'vue-router'
+import useChannels from '../../composables/useChannels'
 
 export default {
   name: 'StartPoll',
@@ -68,14 +70,16 @@ export default {
     Poll
   },
   setup () {
+    const loader = useLoader('StartPoll')
+    const agendaChannel = useChannels('agenda_item')
     const restApi = useRestApi()
     const proposals = useProposals()
-    const agenda = useAgenda()
+    const { agendaId, agendaItem, getAgenda } = useAgenda()
     const { getPoll } = usePolls()
     const { alert } = useAlert()
 
     const selectedProposalIds = ref(new Set())
-    const availableProposals = computed(_ => proposals.getAgendaProposals(agenda.agendaId.value, 'published'))
+    const availableProposals = computed(_ => proposals.getAgendaProposals(agendaId.value, 'published'))
     const selectedProposals = computed(_ => availableProposals.value.filter(p => selectedProposalIds.value.has(p.pk)))
 
     function toggleSelected (p) {
@@ -127,7 +131,7 @@ export default {
       if (method.name === 'simple') {
         working.value = true
         restApi.post('polls/', {
-          agenda_item: agenda.agendaId.value,
+          agenda_item: agendaId.value,
           proposal_pks: [...selectedProposalIds.value].join(','),
           method_name: method.name,
           start
@@ -142,6 +146,21 @@ export default {
         alert(`*${method.title} not implemented`)
       }
     }
+
+    onBeforeMount(_ => {
+      loader.subscribe(agendaChannel, agendaId.value)
+    })
+
+    onBeforeRouteLeave(_ => {
+      agendaChannel.leave(agendaId.value)
+    })
+
+    watch(agendaId, (value, oldValue) => {
+      agendaChannel.subscribe(value)
+      agendaChannel.leave(oldValue)
+      pickMethod.value = false
+      selectedProposalIds.value.clear()
+    })
 
     return {
       selectedProposalIds,
@@ -158,24 +177,12 @@ export default {
       createPoll,
       createdPoll,
 
+      agendaId,
+      agendaItem,
+      getAgenda,
+
       ...useMeeting(),
-      loader: useLoader('StartPoll'),
-      ...agenda,
       ...proposals
-    }
-  },
-  watch: {
-    agendaId (value) {
-      if (value) {
-        this.fetchAgendaProposals(value)
-      }
-      this.pickMethod = false
-      this.selectedProposalIds.clear()
-    }
-  },
-  created () {
-    if (this.agendaId) {
-      this.loader.call(_ => this.fetchAgendaProposals(this.agendaId))
     }
   }
 }

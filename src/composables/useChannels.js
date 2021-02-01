@@ -136,6 +136,7 @@ export default function useChannels (contentType, moduleConfig) {
   }
 
   function subscribe (uriOrPk, promise = false) {
+    if (!uriOrPk) return
     const uri = getUri(uriOrPk)
     clearTimeout(leaveTimeouts[uri])
     if (!subscriptions.has(uri)) {
@@ -151,11 +152,12 @@ export default function useChannels (contentType, moduleConfig) {
   }
 
   function leave (uriOrPk, config) {
+    if (!uriOrPk) return
     config = Object.assign({}, moduleConfig, config || {})
     const uri = getUri(uriOrPk)
     if (subscriptions.has(uri)) {
+      subscriptions.delete(uri)
       leaveTimeouts[uri] = setTimeout(_ => {
-        subscriptions.delete(uri)
         if (socket.isOpen) {
           socket.send('channel.leave', uri)
         }
