@@ -15,6 +15,13 @@ useChannels('proposal')
     if (index !== -1) proposals.value.splice(index, 1)
   })
 
+// Automatically clear proposals for agenda item when unsubscribed
+useChannels('agenda_item').onLeave(agendaPk => {
+  proposals.value = proposals.value.filter(
+    d => d.agenda_item !== agendaPk
+  )
+})
+
 export default function useProposals () {
   const pollApi = useContentApi('proposal')
 
@@ -58,15 +65,9 @@ export default function useProposals () {
     return props
   }
 
-  function clearAgenda (agendaPk) {
-    proposals.value = proposals.value.filter(
-      p => p.agenda_item !== agendaPk)
-  }
-
   return {
     fetchAgendaProposals,
     getAgendaProposals,
-    getPollProposals,
-    clearAgenda
+    getPollProposals
   }
 }

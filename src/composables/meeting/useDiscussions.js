@@ -17,6 +17,13 @@ useChannels('discussion_post')
     if (index !== -1) discussions.value.splice(index, 1)
   })
 
+// Automatically clear proposals for agenda item when unsubscribed
+useChannels('agenda_item').onLeave(agendaPk => {
+  discussions.value = discussions.value.filter(
+    d => d.agenda_item !== agendaPk
+  )
+})
+
 export default function useDiscussions () {
   async function fetchAgendaDiscussions (agendaPk) {
     const params = { agenda_item: agendaPk }
@@ -31,14 +38,8 @@ export default function useDiscussions () {
     return discussions.value.filter(d => d.agenda_item === agendaPk)
   }
 
-  function clearAgenda (agendaPk) {
-    discussions.value = discussions.value.filter(
-      d => d.agenda_item !== agendaPk)
-  }
-
   return {
     fetchAgendaDiscussions,
-    getAgendaDiscussions,
-    clearAgenda
+    getAgendaDiscussions
   }
 }

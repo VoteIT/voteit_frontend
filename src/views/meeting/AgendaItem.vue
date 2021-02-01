@@ -51,24 +51,14 @@ import useAgenda from '@/composables/meeting/useAgenda'
 import useProposals from '@/composables/meeting/useProposals'
 import useDiscussions from '@/composables/meeting/useDiscussions'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
-import useLoader from '@/composables/useLoader'
-import useChannels from '@/composables/useChannels'
-import { computed, onBeforeMount, watch } from 'vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   name: 'AgendaItem',
   setup () {
-    const loader = useLoader('AgendaItem')
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { hasRole, meetingPath } = useMeeting()
-    const channel = useChannels('agenda_item')
-      .onLeave(pk => {
-        proposals.clearAgenda(pk)
-        discussions.clearAgenda(pk)
-      })
-
     const { agendaId, agendaItem } = useAgenda()
 
     const sortedProposals = computed(_ => {
@@ -86,25 +76,6 @@ export default {
     })
 
     const sortedDiscussions = computed(_ => discussions.getAgendaDiscussions(agendaId.value))
-
-    watch(agendaId, (pk, oldPk) => {
-      if (pk) {
-        channel.subscribe(pk)
-      }
-      if (oldPk) {
-        channel.leave(oldPk)
-      }
-    })
-
-    onBeforeMount(_ => {
-      loader.subscribe(channel, agendaId.value)
-    })
-
-    onBeforeRouteLeave((to, from, next) => {
-      channel.leave(agendaId.value)
-      next()
-    })
-
     const { getAgendaSpeakerLists } = useSpeakerLists()
     const speakerLists = computed(_ => getAgendaSpeakerLists(agendaId.value))
 

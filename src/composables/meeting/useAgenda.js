@@ -1,6 +1,7 @@
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onBeforeMount, ref, watch } from 'vue'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import useChannels from '../useChannels'
+import useLoader from '../useLoader'
 
 const agendas = ref(new Map()) // Map meeting pk to list of agenda items
 
@@ -63,6 +64,19 @@ export default function useAgenda () {
 
   const agendaId = computed(_ => Number(route.params.aid))
   const agendaItem = computed(_ => getAgendaItem(agendaId.value))
+
+  const loader = useLoader('useAgenda')
+  const agendaChannel = useChannels('agenda_item')
+  onBeforeMount(_ => {
+    loader.subscribe(agendaChannel, agendaId.value)
+  })
+  onBeforeRouteLeave(_ => {
+    agendaChannel.leave(agendaId.value)
+  })
+  watch(agendaId, (value, oldValue) => {
+    agendaChannel.subscribe(value)
+    agendaChannel.leave(oldValue)
+  })
 
   return {
     setAgenda,

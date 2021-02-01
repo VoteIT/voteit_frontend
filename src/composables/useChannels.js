@@ -1,4 +1,4 @@
-import { Socket, emitter } from '@/utils'
+import { DefaultMap, Socket, emitter } from '@/utils'
 import { ref } from 'vue'
 
 const DEFAULT_CONFIG = {
@@ -13,7 +13,7 @@ const socketState = ref(false)
 const subscriptions = new Set()
 const leaveTimeouts = {}
 const updateHandlers = new Map()
-const leaveHandlers = new Map()
+const leaveHandlers = new DefaultMap(_ => [])
 const methodHanders = {}
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 
@@ -91,7 +91,7 @@ export default function useChannels (contentType, moduleConfig) {
 
   function onLeave (fn) {
     checkCType('onLeave')
-    leaveHandlers.set(contentType, fn)
+    leaveHandlers.get(contentType).push(fn)
     return this
   }
 
@@ -135,36 +135,39 @@ export default function useChannels (contentType, moduleConfig) {
     return uriOrPk
   }
 
-  function subscribe (uriOrPk, promise = false) {
-    if (!uriOrPk) return
-    const uri = getUri(uriOrPk)
-    clearTimeout(leaveTimeouts[uri])
-    if (!subscriptions.has(uri)) {
-      subscriptions.add(uri)
-      if (socket.isOpen) {
-        return subscribeChannel(uri)
+  async function subscribe (uriOrPk, fail = false) {
+    if (uriOrPk) {
+      const uri = getUri(uriOrPk)
+      clearTimeout(leaveTimeouts[uri])
+      if (!subscriptions.has(uri)) {
+        subscriptions.add(uri)
+        if (socket.isOpen) {
+          return subscribeChannel(uri)
+        } else if (fail) {
+          return Promise.reject(new Error('Socket closed. Cannot subscribe.'))
+        }
       }
-    }
-    if (promise) {
-      return Promise.reject(new Error('Socket closed. Cannot subscribe.'))
     }
     return Promise.resolve()
   }
 
   function leave (uriOrPk, config) {
-    if (!uriOrPk) return
-    config = Object.assign({}, moduleConfig, config || {})
-    const uri = getUri(uriOrPk)
-    if (subscriptions.has(uri)) {
-      subscriptions.delete(uri)
-      leaveTimeouts[uri] = setTimeout(_ => {
-        if (socket.isOpen) {
-          socket.send('channel.leave', uri)
-        }
-        if (leaveHandlers.has(contentType)) {
-          leaveHandlers.get(contentType)(uriOrPk)
-        }
-      }, config.leaveDelay)
+    if (uriOrPk) {
+      const uri = getUri(uriOrPk)
+      clearTimeout(leaveTimeouts[uri])
+      if (subscriptions.has(uri)) {
+        config = Object.assign({}, moduleConfig, config || {})
+        leaveTimeouts[uri] = setTimeout(_ => {
+          // Delete from subscriptions when sending unsubscribe request.
+          // New subscribtions will clear this timeout.
+          subscriptions.delete(uri)
+          if (socket.isOpen) {
+            socket.send('channel.leave', uri)
+          }
+          // Call onLeave handlers...
+          leaveHandlers.get(contentType).forEach(cb => cb(uriOrPk))
+        }, config.leaveDelay)
+      }
     }
   }
 

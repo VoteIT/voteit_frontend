@@ -48,8 +48,7 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, ref, watch } from 'vue'
-import useLoader from '@/composables/useLoader.js'
+import { computed, ref, watch } from 'vue'
 import useAlert from '@/composables/useAlert.js'
 import useRestApi from '../../composables/useRestApi'
 
@@ -61,8 +60,6 @@ import usePolls from '@/composables/meeting/usePolls.js'
 import pollMethods from '@/schemas/pollMethods.json'
 
 import Poll from '@/components/widgets/Poll'
-import { onBeforeRouteLeave } from 'vue-router'
-import useChannels from '../../composables/useChannels'
 
 export default {
   name: 'StartPoll',
@@ -70,8 +67,6 @@ export default {
     Poll
   },
   setup () {
-    const loader = useLoader('StartPoll')
-    const agendaChannel = useChannels('agenda_item')
     const restApi = useRestApi()
     const proposals = useProposals()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
@@ -147,17 +142,7 @@ export default {
       }
     }
 
-    onBeforeMount(_ => {
-      loader.subscribe(agendaChannel, agendaId.value)
-    })
-
-    onBeforeRouteLeave(_ => {
-      agendaChannel.leave(agendaId.value)
-    })
-
-    watch(agendaId, (value, oldValue) => {
-      agendaChannel.subscribe(value)
-      agendaChannel.leave(oldValue)
+    watch(agendaId, _ => {
       pickMethod.value = false
       selectedProposalIds.value.clear()
     })

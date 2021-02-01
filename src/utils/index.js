@@ -1,7 +1,7 @@
-import ProgressPromise from './ProgressPromise'
-import Socket from './Socket'
-import MDConverter from './MDConverter'
-import restApi from './restApi.ts'
+import ProgressPromise from './ProgressPromise.js'
+import Socket from './Socket.js'
+import MDConverter from './MDConverter.js'
+import restApi from './restApi.js'
 import mitt from 'mitt'
 
 function uriToPayload (uri) {
