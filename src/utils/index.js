@@ -1,6 +1,5 @@
 import ProgressPromise from './ProgressPromise.js'
 import Socket from './Socket.js'
-import MDConverter from './MDConverter.js'
 import restApi from './restApi.js'
 import mitt from 'mitt'
 
@@ -39,7 +38,6 @@ export {
   DefaultMap,
   uriToPayload,
   slugify,
-  MDConverter,
   restApi,
   emitter
 }

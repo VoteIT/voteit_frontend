@@ -13,8 +13,6 @@
 import Quill from 'quill'
 import { onMounted, ref } from 'vue'
 
-import { MDConverter } from '@/utils'
-
 import useContentApi from '../../composables/useContentApi'
 import useChannels from '../../composables/useChannels'
 
@@ -56,9 +54,8 @@ export default {
     function submit () {
       if (!submitting.value) {
         const title = editor.getText().split('\n')[0] // TODO: NO!
-        const html = editor.container.firstChild.innerHTML
-        const body = MDConverter.makeMarkdown(html)
-        console.log('posting', html, body)
+        const body = editor.container.firstChild.innerHTML
+        console.log('posting', body)
         this.submitting = true
         if (useSocket) {
           channels.add(props.contextPk, {
