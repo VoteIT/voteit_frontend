@@ -7,15 +7,15 @@
         <th @click="orderParticipants(null)" :class="{ orderBy: !orderBy }">
           Name
         </th>
-        <th v-for="role in roles" :key="role.name" @click="orderParticipants(role.name)" :class="{ orderBy: role.name === orderBy }">
-          <icon :name="role.icon" :title="role.name" /> {{ roleCount(role.name) }}
+        <th v-for="{ name, icon } in roles" :key="name" @click="orderParticipants(name)" :class="{ orderBy: name === orderBy }">
+          <icon :name="icon" :title="name" /> {{ roleCount(name) }}
         </th>
       </tr>
-      <tr v-for="p in participants" :key="p.user.pk">
-        <td>{{ p.user.full_name }}</td>
-        <td v-for="role in roles" :key="role">
-          <icon class="active" v-if="meetingRoles.hasRole(meetingId, role.name, p.user.pk)" name="check" @click="removeRole(p, role.name)" />
-          <icon v-else name="close" @click="addRole(p, role.name)" />
+      <tr v-for="{ userPk } in participants" :key="userPk">
+        <td><user :pk="userPk" /></td>
+        <td v-for="{ name } in roles" :key="name">
+          <icon class="active" v-if="hasRole(name, userPk)" name="check" @click="removeRole(userPk, name)" />
+          <icon v-else name="close" @click="addRole(userPk, name)" />
         </td>
       </tr>
     </table>
@@ -31,10 +31,10 @@
 import UserSearch from '@/components/widgets/UserSearch.vue'
 
 import useLoader from '@/composables/useLoader.js'
-import useRestApi from '@/composables/useRestApi.js'
 import useContextRoles from '@/composables/useContextRoles.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useChannels from '../../composables/useChannels'
+import { computed, onBeforeMount, ref } from 'vue'
 
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
@@ -46,89 +46,91 @@ const TEMP_ROLES = [
 
 export default {
   setup () {
-    return {
-      ...useMeeting(),
-      meetingRoles: useContextRoles('Meeting'),
-      channels: useChannels(),
-      loader: useLoader('Participants'),
-      restApi: useRestApi()
+    const channels = useChannels()
+    const { meetingId, fetchParticipants, getUser, hasRole } = useMeeting()
+    const meetingRoles = useContextRoles('Meeting')
+    const loader = useLoader('Participants')
+
+    onBeforeMount(_ => {
+      loader.call(fetchParticipants)
+    })
+
+    function addRole (userPk, role) {
+      channels.post('meeting.roles.add', {
+        pk: meetingId.value,
+        roles: [role],
+        userids: [userPk]
+      })
     }
-  },
-  data () {
+    function removeRole (userPk, role) {
+      channels.post('meeting.roles.remove', {
+        pk: meetingId.value,
+        roles: [role],
+        userids: [userPk]
+      })
+    }
+
+    const orderBy = ref(null)
+    const orderReversed = ref(false)
+
+    function orderMethod (a, b) {
+      let valA, valB
+      if (orderBy.value) {
+        valA = !a.assigned.has(orderBy.value)
+        valB = !b.assigned.has(orderBy.value)
+      } else {
+        valA = getUser(a.userPk).full_name
+        valB = getUser(b.userPk).full_name
+      }
+      if (valA > valB) {
+        return orderReversed.value ? -1 : 1
+      }
+      if (valA < valB) {
+        return orderReversed.value ? 1 : -1
+      }
+      return 0
+    }
+
+    function orderParticipants (role) {
+      if (orderBy.value === role) {
+        orderReversed.value = !orderReversed.value
+      } else {
+        orderBy.value = role
+      }
+      participants.value.sort(orderMethod)
+    }
+
+    function addUser (user) {
+      addRole(user.pk, 'participant')
+    }
+
+    function roleCount (name) {
+      return meetingRoles.getRoleCount(meetingId.value, name)
+    }
+
+    const participants = computed(_ => {
+      const ps = meetingRoles.getAll(meetingId.value)
+      ps.sort(orderMethod)
+      return ps
+    })
+
     return {
-      orderBy: null,
-      orderReversed: false,
-      roles: TEMP_ROLES
+      meetingId,
+      hasRole,
+      addRole,
+      removeRole,
+      addUser,
+      roleCount,
+      roles: TEMP_ROLES,
+
+      participants,
+      orderParticipants,
+      orderBy,
+      orderReversed
     }
   },
   components: {
     UserSearch
-  },
-  computed: {
-    participants () {
-      const participants = this.getParticipants(this.meetingId)
-      participants.sort(this.orderMethod)
-      return participants
-    }
-  },
-  methods: {
-    orderMethod (a, b) {
-      let valA, valB
-      if (this.orderBy) {
-        valA = !a.assigned.includes(this.orderBy)
-        valB = !b.assigned.includes(this.orderBy)
-      } else {
-        valA = a.user.full_name
-        valB = b.user.full_name
-      }
-      if (valA > valB) {
-        return this.orderReversed ? -1 : 1
-      }
-      if (valA < valB) {
-        return this.orderReversed ? 1 : -1
-      }
-      return 0
-    },
-    orderParticipants (role) {
-      if (this.orderBy === role) {
-        this.orderReversed = !this.orderReversed
-      } else {
-        this.orderBy = role
-      }
-      this.participants.sort(this.orderMethod)
-    },
-    initialize () {
-      return this.fetchParticipants(this.meetingId)
-    },
-    addUser (user) {
-      this.restApi.post('meeting-roles/', {
-        user_id: user.pk,
-        meeting_id: this.meetingId
-      })
-        .then(({ data }) => {
-          this.setRoles(this.meetingId, user.pk, data.assigned)
-        })
-    },
-    addRole (participant, role) {
-      this.channels.post('meeting.roles.add', {
-        pk: this.meetingId,
-        roles: [role],
-        userids: [participant.user.pk]
-      })
-    },
-    removeRole (participant, role) {
-      this.channels.post('meeting.roles.remove', {
-        pk: this.meetingId,
-        roles: [role],
-        userids: [participant.user.pk]
-      })
-    },
-    roleCount (name) {
-      return this.meetingRoles.getRoleCount(this.meetingId, name)
-    }
-  },
-  created () {
-    this.loader.call(this.initialize)
   }
 }
 </script>

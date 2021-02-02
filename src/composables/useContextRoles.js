@@ -1,9 +1,8 @@
 import { ref } from 'vue'
-import { DefaultMap } from '../utils'
 import useAuthentication from './useAuthentication'
 import useChannels from './useChannels'
 
-const contextRoles = ref(new DefaultMap(_ => new Set()))
+const contextRoles = ref(new Map())
 
 function getRoleKey (...components) {
   // Default context model = Meeting
@@ -14,6 +13,7 @@ function getRoleKey (...components) {
 useChannels('roles')
   .onUpdate(({ t, p }) => {
     const key = getRoleKey(p.model, p.pk, p.user_pk)
+    if (!contextRoles.value.has(key)) contextRoles.value.set(key, new Set())
     const roleStore = contextRoles.value.get(key)
     switch (t) {
       case 'roles.removed':
@@ -48,24 +48,6 @@ export default function useContextRoles (model) {
     contextRoles.value.set(key, new Set(roles))
   }
 
-  function add (pk, userId, roles) {
-    const key = getRoleKey(model, pk, userId)
-    const roleStore = contextRoles.value.get(key)
-    if (roleStore) {
-      roles.forEach(name => roleStore.add(name))
-    } else {
-      set(pk, userId, roles)
-    }
-  }
-
-  function remove (pk, userId, roles) {
-    const key = getRoleKey(model, pk, userId)
-    const roleStore = contextRoles.value.get(key)
-    if (roleStore) {
-      roles.forEach(name => roleStore.delete(name))
-    }
-  }
-
   function hasRole (pk, roleName, userId) {
     const userRoles = getUserRoles(pk, userId)
     if (typeof roleName === 'string') {
@@ -78,12 +60,26 @@ export default function useContextRoles (model) {
     }
   }
 
+  function getAll (pk) {
+    const contextKey = getRoleKey(model, pk) + '/'
+    const results = []
+    for (const [key, assigned] of contextRoles.value.entries()) {
+      if (key.startsWith(contextKey)) {
+        const userPk = Number(key.split('/')[2])
+        results.push({
+          userPk,
+          assigned
+        })
+      }
+    }
+    return results
+  }
+
   return {
     set,
-    add,
-    remove,
     hasRole,
     getUserRoles,
+    getAll,
     getRoleCount
   }
 }

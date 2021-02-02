@@ -34,6 +34,7 @@ export default function useMeeting () {
   async function fetchParticipants (pk, userIds) {
     // Fetch all or specified participants (rest)
     // If specific, checks if already fetched
+    pk = pk || meetingId.value
     const params = { context: pk }
     if (userIds) {
       userIds = [...new Set(userIds)] // Reduce to unique values
