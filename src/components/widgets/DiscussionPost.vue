@@ -2,6 +2,7 @@
   <div class="discussion">
     <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
     <div v-html="p.body" />
+    {{ p.body }}
     <div v-if="hasRole('moderator')" class="controls">
       <btn sm icon="delete" @click="channels.delete(p.pk)" />
     </div>

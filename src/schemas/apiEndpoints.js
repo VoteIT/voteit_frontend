@@ -28,5 +28,8 @@ export default {
   speaker_list: {
     uri: 'speaker-lists',
     states: speakerListStates
+  },
+  meeting_roles: {
+    uri: 'meeting-roles'
   }
 }

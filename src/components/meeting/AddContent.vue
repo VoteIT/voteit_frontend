@@ -1,7 +1,7 @@
 <template>
-  <btn-dropdown ref="dropdownElement" :title="'Write ' + name" @open="focus()">
+  <btn-dropdown ref="dropdownComponent" :title="'Write ' + name" @open="editorComponent.focus()">
     <form @submit.prevent="submit">
-      <div ref="editorElement"/>
+      <richtext ref="editorComponent" v-model="text" @submit="submit()" />
       <div class="buttons">
         <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
@@ -10,31 +10,21 @@
 </template>
 
 <script>
-import Quill from 'quill'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 import useContentApi from '../../composables/useContentApi'
 import useChannels from '../../composables/useChannels'
 
 import BtnDropdown from '../BtnDropdown'
+import Richtext from '../widgets/Richtext.vue'
 
 const useSocket = false
-
-const QUILL_CONFIG = {
-  theme: 'bubble',
-  modules: {
-    keyboard: {
-      bindings: {
-        tab: null // Disable default tab behaviour
-      }
-    }
-  }
-}
 
 export default {
   name: 'AddContent',
   components: {
-    BtnDropdown
+    BtnDropdown,
+    Richtext
   },
   props: {
     name: String,
@@ -50,23 +40,22 @@ export default {
     const channels = useChannels(props.contentType)
     const contentApi = useContentApi(props.contentType)
     const submitting = ref(false)
+    const text = ref('')
 
     function submit () {
       if (!submitting.value) {
-        const title = editor.getText().split('\n')[0] // TODO: NO!
-        const body = editor.container.firstChild.innerHTML
-        console.log('posting', body)
+        const body = text.value
         this.submitting = true
         if (useSocket) {
           channels.add(props.contextPk, {
             body
           })
         } else {
-          const data = Object.assign({ title, body }, props.params)
+          const data = Object.assign({ body }, props.params)
           contentApi.add(data)
             .then(_ => {
-              editor.setContents('')
-              dropdownElement.value.isOpen = false
+              editorComponent.value.clear()
+              dropdownComponent.value.isOpen = false
             })
             .finally(_ => {
               submitting.value = false
@@ -75,31 +64,17 @@ export default {
       }
     }
 
-    let editor = null
-    const editorElement = ref(null)
-    onMounted(_ => {
-      const config = Object.assign({}, QUILL_CONFIG)
-      config.modules.keyboard.bindings.submit = {
-        key: 'Enter',
-        ctrlKey: true,
-        handler: submit
-      }
-      editor = new Quill(editorElement.value, config)
-    })
-
-    function focus () {
-      editor.focus()
-    }
-
-    const dropdownElement = ref(null)
+    const editorComponent = ref(null)
+    const dropdownComponent = ref(null)
 
     return {
       open,
       focus,
       submitting,
       submit,
-      editorElement,
-      dropdownElement
+      text,
+      editorComponent,
+      dropdownComponent
     }
   }
 }
@@ -114,7 +89,4 @@ textarea
     outline: solid #ccc 1px
 .buttons
   text-align: right
-
-.ql-container
-  background-color: #fff
 </style>
