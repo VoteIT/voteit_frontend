@@ -4,6 +4,9 @@ import agendaStates from './agendaStates.json'
 import speakerListStates from './speakerListStates.js'
 
 export default {
+  dev_login: {
+    uri: 'dev-login'
+  },
   poll: {
     uri: 'polls',
     states: pollStates

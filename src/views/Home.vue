@@ -42,7 +42,7 @@ import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
 import useMeetings from '@/composables/useMeetings.js'
-import useRestApi from '@/composables/useRestApi.js'
+import useContentApi from '@/composables/useContentApi.js'
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
 import { onBeforeMount, ref, watch } from 'vue'
@@ -50,25 +50,27 @@ import { onBeforeMount, ref, watch } from 'vue'
 export default {
   name: 'Home',
   setup () {
-    const { orderedMeetings, fetchMeetings } = useMeetings()
-    const restApi = useRestApi('meeting')
+    const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
+    const devApi = useContentApi('dev_login')
     const { authenticate, logout, isAuthenticated, user } = useAuthentication()
-    const loader = useLoader('Home')
-
     const users = ref([])
+    const loader = useLoader('Home')
 
     watch(isAuthenticated, value => {
       if (value) {
         fetchMeetings()
+      } else {
+        clearMeetings()
       }
     })
 
     onBeforeMount(_ => {
-      if (isAuthenticated.value) loader.call(fetchMeetings)
-      restApi.get('dev-login/')
-        .then(({ data }) => {
-          users.value = data
-        })
+      loader.call(_ => {
+        return devApi.list()
+          .then(({ data }) => {
+            users.value = data
+          })
+      })
     })
 
     const addUser = ref(false)
@@ -80,7 +82,7 @@ export default {
 
     function createUser () {
       newUserError.value = false
-      restApi.post('dev-login/', newUser.value)
+      devApi.add(newUser.value)
         .then(_ => {
           users.value.push(newUser.value)
         })
