@@ -1,6 +1,6 @@
 <template>
   <div class="discussion">
-    <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
+    <div class="author">{{ getUser(p.author).full_name }}</div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="hasRole('moderator')" class="btn-controls">
       <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />

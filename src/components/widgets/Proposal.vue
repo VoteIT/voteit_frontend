@@ -1,6 +1,6 @@
 <template>
   <div class="proposal">
-    <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
+    <div class="author">{{ getUser(p.author).full_name }} <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="hasRole('moderator')" class="btn-controls">
       <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
@@ -45,7 +45,7 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .proposal
   margin-bottom: 1rem
   border: 1px solid #ddd
@@ -61,4 +61,11 @@ export default {
     white-space: pre-wrap
   .btn-controls
     text-align: right
+
+a.tag
+  color: #333
+  font-size: 10pt
+  text-decoration: none
+  font-weight: 500
+  margin-left: .5em
 </style>
