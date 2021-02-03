@@ -2,7 +2,7 @@
   <div class="discussion">
     <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
-    <div v-if="hasRole('moderator')" class="controls">
+    <div v-if="hasRole('moderator')" class="btn-controls">
       <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn sm icon="delete" @click="channel.delete(p.pk)" />
     </div>
@@ -52,10 +52,6 @@ export default {
     padding-left: .5rem
     margin: .5rem 0
     white-space: pre-wrap
-  .controls
+  .btn-controls
     text-align: right
-    .btn
-      margin-right: .2rem
-      &:last-child
-        margin-right: 0
 </style>

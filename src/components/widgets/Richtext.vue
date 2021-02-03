@@ -1,10 +1,10 @@
 <template>
   <richtext-editor v-if="editing" v-model="content" @submit="submit()" set-focus />
-  <div v-else v-html="content" />
+  <div v-else v-html="object[contentAttribute]" />
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import RichtextEditor from './RichtextEditor.vue'
 
 export default {
@@ -23,7 +23,6 @@ export default {
   },
   emits: ['edit-done'],
   setup (props, { emit }) {
-    console.log(props)
     const content = ref(props.object[props.contentAttribute])
 
     function submit () {
@@ -38,6 +37,10 @@ export default {
         emit('edit-done')
       }
     }
+
+    watch(_ => props.editing, value => {
+      if (!value) submit()
+    })
 
     return {
       content,

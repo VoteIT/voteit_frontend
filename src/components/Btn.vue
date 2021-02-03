@@ -48,4 +48,10 @@ export default {
 
   &:disabled
     opacity: .5
+
+.btn-controls
+  > .btn
+    margin-right: .2rem
+    &:last-child
+      margin-right: 0
 </style>

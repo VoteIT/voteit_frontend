@@ -1,8 +1,12 @@
 <template>
   <div>
     <h1>{{ agendaItem.title }}</h1>
-    <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
-    <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
+    <div class="btn-controls">
+      <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
+      <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
+      <btn v-if="hasRole('moderator')" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">Edit</btn>
+    </div>
+    <richtext :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div v-if="speakerLists.length">
       <h2>Speaker lists</h2>
       <speaker-list :pk="pk" v-for="{ pk } in speakerLists" :key="pk" />
@@ -40,18 +44,21 @@
 </template>
 
 <script>
-import AddContent from '@/components/meeting/AddContent.vue'
-import WorkflowState from '@/components/widgets/WorkflowState.vue'
-import Proposal from '@/components/widgets/Proposal.vue'
-import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
-import SpeakerList from '@/components/widgets/SpeakerList.vue'
+import { computed, ref } from 'vue'
 
-import useMeeting from '@/composables/meeting/useMeeting'
+import AddContent from '@/components/meeting/AddContent.vue'
+import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
+import Proposal from '@/components/widgets/Proposal.vue'
+import Richtext from '@/components/widgets/Richtext.vue'
+import SpeakerList from '@/components/widgets/SpeakerList.vue'
+import WorkflowState from '@/components/widgets/WorkflowState.vue'
+
 import useAgenda from '@/composables/meeting/useAgenda'
-import useProposals from '@/composables/meeting/useProposals'
+import useChannels from '@/composables/useChannels'
 import useDiscussions from '@/composables/meeting/useDiscussions'
+import useMeeting from '@/composables/meeting/useMeeting'
+import useProposals from '@/composables/meeting/useProposals'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
-import { computed } from 'vue'
 
 export default {
   name: 'AgendaItem',
@@ -60,6 +67,7 @@ export default {
     const proposals = useProposals()
     const { hasRole, meetingPath } = useMeeting()
     const { agendaId, agendaItem } = useAgenda()
+    const channel = useChannels('agenda')
 
     const sortedProposals = computed(_ => {
       const ps = proposals.getAgendaProposals(agendaId.value)
@@ -79,6 +87,8 @@ export default {
     const { getAgendaSpeakerLists } = useSpeakerLists()
     const speakerLists = computed(_ => getAgendaSpeakerLists(agendaId.value))
 
+    const editingBody = ref(false)
+
     return {
       hasRole,
       meetingPath,
@@ -86,7 +96,9 @@ export default {
       agendaItem,
       sortedProposals,
       sortedDiscussions,
-      speakerLists
+      speakerLists,
+      channel,
+      editingBody
     }
   },
   components: {
@@ -94,7 +106,8 @@ export default {
     DiscussionPost,
     Proposal,
     WorkflowState,
-    SpeakerList
+    SpeakerList,
+    Richtext
   }
 }
 </script>
