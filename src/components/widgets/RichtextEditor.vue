@@ -104,6 +104,7 @@ export default {
 
     function focus () {
       editor.focus()
+      editor.setSelection(editor.getLength())
     }
 
     function clear () {
