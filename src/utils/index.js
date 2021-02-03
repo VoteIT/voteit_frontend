@@ -18,6 +18,23 @@ function slugify (text) {
   return typeof text === 'string' && text.toLowerCase().replaceAll(/\s+/g, '-')
 }
 
+function dateify (object, attributes) {
+  if (typeof attributes === 'string') attributes = [attributes]
+  attributes = attributes || ['created']
+  attributes.forEach(attrName => {
+    object[attrName] = new Date(object[attrName])
+  })
+  return object
+}
+
+function orderBy (objects, attribute = 'created') {
+  objects.sort((objA, objB) => {
+    if (objA[attribute] > objB[attribute]) return 1
+    if (objA[attribute] < objB[attribute]) return -1
+    return 0
+  })
+}
+
 const emitter = mitt()
 
 class DefaultMap extends Map {
@@ -38,6 +55,8 @@ export {
   DefaultMap,
   uriToPayload,
   slugify,
+  dateify,
+  orderBy,
   restApi,
   emitter
 }

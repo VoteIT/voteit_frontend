@@ -1,6 +1,7 @@
 <template>
   <div class="discussion">
-    <div class="author">{{ getUser(p.author).full_name }}</div>
+    <div class="author"><user :pk="p.author" /></div>
+    <div><moment :date="p.created" /></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="hasRole('moderator')" class="btn-controls">
       <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
@@ -12,6 +13,7 @@
 <script>
 import { ref } from 'vue'
 
+import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 
 import useMeeting from '../../composables/meeting/useMeeting.js'
@@ -19,8 +21,12 @@ import useChannels from '../../composables/useChannels.js'
 
 export default {
   name: 'DiscussionPost',
+  props: {
+    p: Object
+  },
   components: {
-    Richtext
+    Richtext,
+    Moment
   },
   setup () {
     const channel = useChannels('discussion_post')
@@ -31,9 +37,6 @@ export default {
       channel,
       editing
     }
-  },
-  props: {
-    p: Object
   }
 }
 </script>

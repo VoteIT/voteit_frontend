@@ -1,6 +1,7 @@
 <template>
   <div class="proposal">
-    <div class="author">{{ getUser(p.author).full_name }} <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
+    <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
+    <div><moment :date="p.created" /></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="hasRole('moderator')" class="btn-controls">
       <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
@@ -13,8 +14,9 @@
 <script>
 import { computed, ref } from 'vue'
 
-import WorkflowState from './WorkflowState.vue'
+import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
+import WorkflowState from './WorkflowState.vue'
 
 import useMeeting from '../../composables/meeting/useMeeting.js'
 import useChannels from '../../composables/useChannels'
@@ -23,6 +25,14 @@ import proposalStates from '../../schemas/proposalStates.json'
 
 export default {
   name: 'Proposal',
+  props: {
+    p: Object
+  },
+  components: {
+    WorkflowState,
+    Richtext,
+    Moment
+  },
   setup () {
     const wfStates = computed(_ => proposalStates)
     const channel = useChannels('proposal')
@@ -34,13 +44,6 @@ export default {
       editing,
       ...useMeeting()
     }
-  },
-  props: {
-    p: Object
-  },
-  components: {
-    WorkflowState,
-    Richtext
   }
 }
 </script>

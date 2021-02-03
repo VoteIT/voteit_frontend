@@ -1,4 +1,7 @@
 import { ref } from 'vue'
+
+import { dateify, orderBy } from '../../utils/index.js'
+
 import useChannels from '../useChannels.js'
 import useContentApi from '../useContentApi.js'
 
@@ -6,9 +9,11 @@ const proposals = ref([])
 
 useChannels('proposal')
   .onChanged(item => {
+    dateify(item)
     const index = proposals.value.findIndex(p => p.pk === item.pk)
     if (index !== -1) proposals.value[index] = item
     else proposals.value.push(item)
+    orderBy(proposals.value)
   })
   .onDeleted(item => {
     const index = proposals.value.findIndex(p => p.pk === item.pk)
