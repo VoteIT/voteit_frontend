@@ -16,10 +16,10 @@
       <h2>Step 2: Pick proposals</h2>
       <ul v-if="availableProposals.length">
         <li :class="{ selected: selectedProposalIds.has(p.pk), locked: pickMethod }" v-for="p in availableProposals" :key="p.pk">
-          <a href="#" @click.prevent="toggleSelected(p)">{{ p.title }}</a>
+          <a href="#" @click.prevent="toggleSelected(p)">{{ p.prop_id }}</a>
         </li>
       </ul>
-      <p v-else><em>Inga förslag på denna punkt</em></p>
+      <p v-else><em>No published proposals on this agenda item</em></p>
       <div v-if="!pickMethod" class="btn-group">
         <icon button name="done_all" @click="toggleAll">All</icon>
         <icon button name="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">Continue</icon>
