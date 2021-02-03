@@ -20,28 +20,8 @@ const QUILL_CONFIG = {
       }
     },
     mention: {
-      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      allowedChars: /^[0-9A-Za-z\-\sÅÄÖåäö]*$/,
       mentionDenotationChars: ['@', '#']
-      /*
-      source: (searchTerm, renderList, mentionChar) => {
-        let values
-
-        if (mentionChar === '@') {
-          values = atValues
-        } else {
-          values = hashValues
-        }
-
-        if (searchTerm.length === 0) {
-          renderList(values, searchTerm)
-        } else {
-          const matches = values.filter(v => {
-            return ~v.value.toLowerCase().indexOf(searchTerm.toLowerCase())
-          })
-          renderList(matches, searchTerm)
-        }
-      }
-      */
     }
   }
 }
@@ -67,17 +47,19 @@ export default {
     const rolesApi = useContentApi('meeting_roles')
     const { meetingId } = useMeeting()
 
+    function tagObject (tagName) {
+      return { id: tagName, value: tagName }
+    }
+
     async function mentionSource (searchTerm, renderList, mentionChar) {
       switch (mentionChar) {
         case '#':
-          console.log(props.tags, searchTerm)
-          if (props.tags) {
-            renderList(props.tags.filter(
-              t => t.startsWith(searchTerm)
-            ).map(t => {
-              return { id: t, value: t }
-            }))
-          }
+          renderList(
+            [tagObject(searchTerm)].concat(
+              props.tags
+                .filter(t => t !== searchTerm && t.startsWith(searchTerm))
+                .map(tagObject))
+          )
           break
         case '@':
           if (!searchTerm.length) {

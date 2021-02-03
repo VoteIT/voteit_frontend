@@ -68,7 +68,7 @@ export default {
     const dropdownComponent = ref(null)
 
     const availableTags = computed(_ => {
-      return [`${props.contentType}-${props.contextPk}`]
+      return [`${props.contentType}-${props.contextPk}`, 'test', 'remove-this-example'] // TODO
     })
 
     return {
