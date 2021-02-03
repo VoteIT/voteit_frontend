@@ -13,7 +13,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 
 const QUILL_CONFIG = {
   theme: 'bubble',
-  formats: ['bold', 'italic', 'link', 'code', 'blockquote', 'list'],
+  // formats: ['bold', 'italic', 'link', 'code', 'blockquote', 'list'],
   modules: {
     toolbar: ['bold', 'italic', 'link', 'code', 'blockquote'],
     keyboard: {
