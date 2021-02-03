@@ -111,6 +111,6 @@ export default {
 
 ul.no-list
   padding: 0
-  li
+  > li
     list-style: none
 </style>
