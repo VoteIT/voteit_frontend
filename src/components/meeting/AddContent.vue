@@ -1,7 +1,7 @@
 <template>
   <btn-dropdown ref="dropdownComponent" :title="'Write ' + name" @open="editorComponent.focus()">
     <form @submit.prevent="submit">
-      <richtext ref="editorComponent" v-model="text" @submit="submit()" />
+      <richtext ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
       <div class="buttons">
         <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import useContentApi from '../../composables/useContentApi'
 import useChannels from '../../composables/useChannels'
@@ -67,6 +67,10 @@ export default {
     const editorComponent = ref(null)
     const dropdownComponent = ref(null)
 
+    const availableTags = computed(_ => {
+      return [`${props.contentType}-${props.contextPk}`]
+    })
+
     return {
       open,
       focus,
@@ -74,7 +78,8 @@ export default {
       submit,
       text,
       editorComponent,
-      dropdownComponent
+      dropdownComponent,
+      availableTags
     }
   }
 }

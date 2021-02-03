@@ -1,20 +1,15 @@
 <template>
   <div class="richtext-editor">
     <div ref="editorElement"/>
-    <div ref="completionsElement" class="ql-completions" />
   </div>
 </template>
 
 <script>
 import Quill from 'quill'
-import getPlaceholderModule from 'quill-placeholder-module'
-import getAutocompleteModule from 'quill-placeholder-autocomplete-module'
+import 'quill-mention'
 import { onMounted, ref } from 'vue'
 import useContentApi from '@/composables/useContentApi'
 import useMeeting from '@/composables/meeting/useMeeting'
-
-Quill.register('modules/placeholder', getPlaceholderModule(Quill))
-Quill.register('modules/autocomplete', getAutocompleteModule(Quill))
 
 const QUILL_CONFIG = {
   theme: 'bubble',
@@ -24,18 +19,29 @@ const QUILL_CONFIG = {
         tab: null // Disable default tab behaviour
       }
     },
-    placeholder: {
-      delimiters: ['@', ' '] // default
-    },
-    autocomplete: {
-      getPlaceholders: _ => [], // factory
-      triggerKey: '@', // default
-      // endKey: '#', // optional
-      debounceTime: 0 // 0: disabled (default)
-      // onOpen: _ => console.log('opened'), // optional
-      // onClose: placeholder => console.log('user chose:', placeholder), // optional
-      // onFetchStarted: query => console.log('user searching for:', query),     // optional
-      // onFetchFinished: results => console.log('possible results:', results),  // optional
+    mention: {
+      allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+      mentionDenotationChars: ['@', '#']
+      /*
+      source: (searchTerm, renderList, mentionChar) => {
+        let values
+
+        if (mentionChar === '@') {
+          values = atValues
+        } else {
+          values = hashValues
+        }
+
+        if (searchTerm.length === 0) {
+          renderList(values, searchTerm)
+        } else {
+          const matches = values.filter(v => {
+            return ~v.value.toLowerCase().indexOf(searchTerm.toLowerCase())
+          })
+          renderList(matches, searchTerm)
+        }
+      }
+      */
     }
   }
 }
@@ -47,6 +53,10 @@ export default {
     modelValue: {
       type: String,
       default: ''
+    },
+    tags: {
+      type: Array,
+      required: false
     }
   },
   setup (props, { emit }) {
@@ -57,24 +67,35 @@ export default {
     const rolesApi = useContentApi('meeting_roles')
     const { meetingId } = useMeeting()
 
-    async function fetchPlaceholders (query) {
-      if (query.length) {
-        const params = {
-          search: query.toLowerCase(),
-          context: meetingId.value
-        }
-        return new Promise((resolve, reject) => {
-          rolesApi.list(params)
+    async function mentionSource (searchTerm, renderList, mentionChar) {
+      switch (mentionChar) {
+        case '#':
+          console.log(props.tags, searchTerm)
+          if (props.tags) {
+            renderList(props.tags.filter(
+              t => t.startsWith(searchTerm)
+            ).map(t => {
+              return { id: t, value: t }
+            }))
+          }
+          break
+        case '@':
+          if (!searchTerm.length) {
+            return renderList([])
+          }
+          rolesApi.list({
+            search: searchTerm.toLowerCase(),
+            context: meetingId.value
+          })
             .then(({ data }) => {
-              resolve(data.map(({ user }) => {
+              renderList(data.map(({ user }) => {
                 return {
                   id: user.pk,
-                  label: user.full_name
+                  value: user.full_name
                 }
               }))
             })
-            .catch(reject)
-        })
+          break
       }
     }
 
@@ -86,8 +107,7 @@ export default {
         ctrlKey: true,
         handler: _ => emit('submit')
       }
-      config.modules.autocomplete.container = completionsElement.value
-      config.modules.autocomplete.fetchPlaceholders = fetchPlaceholders
+      config.modules.mention.source = mentionSource
       editor = new Quill(editorElement.value, config)
       editor.on('text-change', _ => {
         emit('update:modelValue', editor.root.innerHTML)
@@ -115,7 +135,7 @@ export default {
 <style lang="sass">
 @import '~quill/dist/quill.core.css'
 @import '~quill/dist/quill.bubble.css'
-@import '~quill-placeholder-autocomplete-module/dist/quill-placeholder-autocomplete.css'
+@import '~quill-mention/dist/quill.mention.css'
 .richtext-editor
   position: relative
 
