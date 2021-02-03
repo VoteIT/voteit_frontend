@@ -6,7 +6,7 @@
       <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
       <btn v-if="hasRole('moderator')" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">Edit</btn>
     </div>
-    <richtext :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
+    <richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div v-if="speakerLists.length">
       <h2>Speaker lists</h2>
       <speaker-list :pk="pk" v-for="{ pk } in speakerLists" :key="pk" />
