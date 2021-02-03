@@ -1,12 +1,11 @@
 <template>
   <div class="proposal">
     <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
-    <richtext v-if="editing" v-model="body" @submit="setEditing(false)" set-focus />
-    <div v-else v-html="p.body" />
+    <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="hasRole('moderator')" class="controls">
       <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
-      <btn sm icon="edit" :class="{ active: editing }" @click="setEditing(!editing)" />
-      <btn sm icon="delete" @click="channels.delete(p.pk)" />
+      <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
+      <btn sm icon="delete" @click="channel.delete(p.pk)" />
     </div>
   </div>
 </template>
@@ -24,32 +23,15 @@ import proposalStates from '../../schemas/proposalStates.json'
 
 export default {
   name: 'Proposal',
-  setup (props) {
+  setup () {
     const wfStates = computed(_ => proposalStates)
-    const channels = useChannels('proposal')
-    const body = ref(props.p.body)
+    const channel = useChannels('proposal')
     const editing = ref(false)
-
-    function submit () {
-      channels.change(props.p.pk, { body: body.value })
-        .then(_ => {
-          editing.value = false
-        })
-    }
-
-    function setEditing (value) {
-      if (!value && body.value !== props.p.body) {
-        return submit()
-      }
-      editing.value = value
-    }
 
     return {
       wfStates,
-      channels,
-      body,
+      channel,
       editing,
-      setEditing,
       ...useMeeting()
     }
   },

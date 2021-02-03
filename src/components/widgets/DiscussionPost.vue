@@ -1,11 +1,10 @@
 <template>
   <div class="discussion">
     <div class="author">{{ getUser(p.author).full_name }} {{ p.pk }}</div>
-    <richtext v-if="editing" v-model="body" @submit="setEditing(false)" set-focus />
-    <div v-else v-html="p.body" />
+    <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="hasRole('moderator')" class="controls">
-      <btn sm icon="edit" :class="{ active: editing }" @click="setEditing(!editing)" />
-      <btn sm icon="delete" @click="channels.delete(p.pk)" />
+      <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
+      <btn sm icon="delete" @click="channel.delete(p.pk)" />
     </div>
   </div>
 </template>
@@ -23,31 +22,14 @@ export default {
   components: {
     Richtext
   },
-  setup (props) {
-    const channels = useChannels('discussion_post')
-    const body = ref(props.p.body)
+  setup () {
+    const channel = useChannels('discussion_post')
     const editing = ref(false)
-
-    function submit () {
-      channels.change(props.p.pk, { body: body.value })
-        .then(_ => {
-          editing.value = false
-        })
-    }
-
-    function setEditing (value) {
-      if (!value && body.value !== props.p.body) {
-        return submit()
-      }
-      editing.value = value
-    }
 
     return {
       ...useMeeting(),
-      channels,
-      body,
-      editing,
-      setEditing
+      channel,
+      editing
     }
   },
   props: {

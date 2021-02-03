@@ -1,7 +1,7 @@
 <template>
   <btn-dropdown ref="dropdownComponent" :title="'Write ' + name" @open="editorComponent.focus()">
     <form @submit.prevent="submit">
-      <richtext ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
+      <richtext-editor ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
       <div class="buttons">
         <input class="btn" type="submit" value="Submit" :disabled="submitting" />
       </div>
@@ -16,13 +16,13 @@ import useContentApi from '../../composables/useContentApi'
 import useChannels from '../../composables/useChannels'
 
 import BtnDropdown from '../BtnDropdown'
-import Richtext from '../widgets/Richtext.vue'
+import RichtextEditor from '../widgets/RichtextEditor.vue'
 
 export default {
   name: 'AddContent',
   components: {
     BtnDropdown,
-    Richtext
+    RichtextEditor
   },
   props: {
     name: String,
