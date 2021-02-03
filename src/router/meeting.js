@@ -1,5 +1,5 @@
+import { RouterView } from 'vue-router'
 import meeting from '../views/meeting'
-import RouterView from '../views/RouterView.vue'
 
 export default {
   path: '/m/:id/:slug',
