@@ -59,7 +59,7 @@ export default {
         case '#':
           renderList(
             [tagObject(searchTerm)].concat(
-              props.tags
+              (props.tags || [])
                 .filter(t => t !== searchTerm && t.startsWith(searchTerm))
                 .map(tagObject))
           )
