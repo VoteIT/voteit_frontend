@@ -18,8 +18,6 @@ import useChannels from '../../composables/useChannels'
 import BtnDropdown from '../BtnDropdown'
 import Richtext from '../widgets/Richtext.vue'
 
-const useSocket = false
-
 export default {
   name: 'AddContent',
   components: {
@@ -33,7 +31,8 @@ export default {
     params: Object,
     // For channels:
     contextPk: Number,
-    contentType: String
+    contentType: String,
+    useRest: Boolean
   },
   setup (props) {
     // Post (data update from channels)
@@ -46,21 +45,23 @@ export default {
       if (!submitting.value) {
         const body = text.value
         this.submitting = true
-        if (useSocket) {
-          channels.add(props.contextPk, {
+        let request
+        if (props.useRest) {
+          const data = Object.assign({ body }, props.params)
+          request = contentApi.add(data)
+        } else {
+          request = channels.add(props.contextPk, {
             body
           })
-        } else {
-          const data = Object.assign({ body }, props.params)
-          contentApi.add(data)
-            .then(_ => {
-              editorComponent.value.clear()
-              dropdownComponent.value.isOpen = false
-            })
-            .finally(_ => {
-              submitting.value = false
-            })
         }
+        request
+          .then(_ => {
+            editorComponent.value.clear()
+            dropdownComponent.value.isOpen = false
+          })
+          .finally(_ => {
+            submitting.value = false
+          })
       }
     }
 

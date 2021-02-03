@@ -39,7 +39,8 @@ export default {
     tags: {
       type: Array,
       required: false
-    }
+    },
+    setFocus: Boolean
   },
   setup (props, { emit }) {
     let editor = null
@@ -96,6 +97,9 @@ export default {
       editor.on('text-change', _ => {
         emit('update:modelValue', editor.root.innerHTML)
       })
+      if (props.setFocus) {
+        focus()
+      }
     })
 
     function focus () {
