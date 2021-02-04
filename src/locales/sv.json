@@ -1,0 +1,9 @@
+{
+  "auth": {
+    "logout": "Logga ut",
+    "loggedInAs": "Inloggad som {username}"
+  },
+  "home": {
+    "availableMeetings": "Tillgängliga möten"
+  }
+}

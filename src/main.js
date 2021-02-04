@@ -15,19 +15,17 @@ import Btn from './components/Btn'
 import User from './components/User'
 import ProgressBar from './components/ProgressBar.vue'
 
-import en from './locales/en'
+import en from './locales/en.json'
 
 const locale = document.documentElement.lang
 
 moment.locale(locale)
 
 async function loadLocaleMessages (i18n, locale) {
-  console.log(locale)
   const messages = await import(
-    /* webpackChunkName: "locale-[request]" */ `./locales/${locale}/auth.json`
+    /* webpackChunkName: "locale-[request]" */ `./locales/${locale}.json`
   )
-  // console.log(messages)
-  i18n.global.setLocaleMessage(locale, en)
+  i18n.global.setLocaleMessage(locale, messages)
   return nextTick()
 }
 
