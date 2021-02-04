@@ -1,0 +1,9 @@
+{
+  "auth": {
+    "logout": "Logout",
+    "loggedInAs": "Logged in as {username}"
+  },
+  "home": {
+    "availableMeetings": "Available meetings"
+  }
+}
