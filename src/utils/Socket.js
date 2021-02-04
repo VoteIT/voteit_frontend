@@ -1,4 +1,5 @@
 import { uriToPayload, ProgressPromise, emitter } from '@/utils'
+import hostname from '@/utils/hostname'
 
 const DEFAULT_CONFIG = {
   timeout: 5000 // 5s
@@ -48,7 +49,7 @@ export default class Socket {
     }
     this.active = true
     return new Promise((resolve, reject) => {
-      this._ws = new WebSocket(`ws://localhost:8000/ws/${this.token}/`)
+      this._ws = new WebSocket(`ws://${hostname}/ws/${this.token}/`)
 
       this._ws.addEventListener('error', reject)
       this._ws.addEventListener('open', resolve)

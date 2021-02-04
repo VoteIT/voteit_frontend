@@ -18,8 +18,6 @@ import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import useContentApi from '@/composables/useContentApi'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 
-import meetingStates from '@/schemas/meetingStates'
-
 export default {
   name: 'MeetingIndex',
   components: {
@@ -32,11 +30,10 @@ export default {
     const { meeting, hasRole } = useMeeting()
 
     return {
+      hasRole,
       meeting,
       editingBody,
-      api,
-      hasRole,
-      meetingStates
+      api
     }
   }
 }
