@@ -49,7 +49,7 @@ export default class Socket {
     }
     this.active = true
     return new Promise((resolve, reject) => {
-      this._ws = new WebSocket(`ws://${hostname}/ws/${this.token}/`)
+      this._ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${hostname}/ws/${this.token}/`)
 
       this._ws.addEventListener('error', reject)
       this._ws.addEventListener('open', resolve)
