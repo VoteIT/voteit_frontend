@@ -78,6 +78,15 @@ export default function useRestApi (config) {
     return request
   }
 
+  async function patch (uri, data, config) {
+    config = Object.assign({}, defaultConfig, config)
+    const request = restApi.patch(uri, data, config)
+    if (config.alertOnError) {
+      request.catch(restError)
+    }
+    return request
+  }
+
   async function _delete (uri, config) {
     config = Object.assign({}, defaultConfig, config)
     const request = restApi.delete(uri)
@@ -92,6 +101,7 @@ export default function useRestApi (config) {
     get,
     post,
     put,
+    patch,
     delete: _delete
   }
 }

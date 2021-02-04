@@ -1,9 +1,13 @@
 import { computed, ref } from 'vue'
 
-import useContentApi from './useContentApi.js'
+import useContentApi from './useContentApi'
+import useChannels from './useChannels'
 
 const meetings = ref(new Map())
 const meetingList = ref([]) // Sorted meeting id list
+
+useChannels('meeting')
+  .updateMap(meetings.value)
 
 export default function useMeetings () {
   const contentApi = useContentApi('meeting')

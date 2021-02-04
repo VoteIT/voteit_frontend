@@ -3,8 +3,10 @@
     <h1>{{ agendaItem.title }}</h1>
     <div class="btn-controls">
       <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
-      <btn v-if="hasRole('moderator')" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
-      <btn v-if="hasRole('moderator')" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">Edit</btn>
+      <template v-if="hasRole('moderator')">
+        <btn sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
+        <btn sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">Edit</btn>
+      </template>
     </div>
     <richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div v-if="speakerLists.length">

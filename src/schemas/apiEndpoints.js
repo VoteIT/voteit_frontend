@@ -1,3 +1,4 @@
+import meetingStates from './meetingStates.js'
 import pollStates from './pollStates.js'
 import proposalStates from './proposalStates.json'
 import agendaStates from './agendaStates.json'
@@ -19,7 +20,8 @@ export default {
     states: agendaStates
   },
   meeting: {
-    uri: 'meetings'
+    uri: 'meetings',
+    states: meetingStates
   },
   proposal: {
     uri: 'proposals',

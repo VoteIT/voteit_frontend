@@ -8,8 +8,6 @@ import useContextRoles from '../useContextRoles.js'
 import useAuthentication from '../useAuthentication.js'
 import useMeetings from '../useMeetings.js'
 
-// import useAgenda from './useAgenda.js'
-
 const FORCE_ROLES_FETCH = false
 
 const participants = ref(new Map())

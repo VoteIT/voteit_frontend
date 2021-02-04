@@ -28,6 +28,10 @@ export default function useContentApi (contentType, config) {
     return restApi.put(`${endpoint.uri}/${pk}/`, data)
   }
 
+  function patch (pk, data) {
+    return restApi.patch(`${endpoint.uri}/${pk}/`, data)
+  }
+
   function _delete (pk) {
     return restApi.delete(`${endpoint.uri}/${pk}/`)
   }
@@ -56,6 +60,7 @@ export default function useContentApi (contentType, config) {
     list,
     retrieve,
     put,
+    patch,
     delete: _delete,
 
     states: endpoint.states,
