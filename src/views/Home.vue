@@ -1,7 +1,10 @@
 <template>
   <main class="home" v-if="isAuthenticated">
-    <p>Logged in as {{ user.username }} <button @click="logout">Logout</button></p>
-    <h1>Available meetings</h1>
+    <p>
+      {{ $t('auth.loggedInAs', user) }}
+      <btn @click="logout">{{ $t('auth.logout') }}</btn>
+    </p>
+    <h1>{{ $t('home.availableMeetings') }}</h1>
     <ul v-if="orderedMeetings.length">
       <li v-for="meeting in orderedMeetings" :key="meeting.pk">
         <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
