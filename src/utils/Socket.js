@@ -29,10 +29,10 @@ export default class Socket {
     }
   }
 
-  _createEventListener (event) {
-    return evt => {
-      for (const listener of this.listeners[event]) {
-        listener(evt)
+  _createEventListener (name) {
+    return event => {
+      for (const listener of this.listeners[name]) {
+        listener(event)
       }
     }
   }
@@ -99,10 +99,10 @@ export default class Socket {
       }))
       sessionStorage.socketMessageCounter = Number(messageId) + 1
       return new ProgressPromise((resolve, reject, progress) => {
-        let timeoutId = null
-        const setRejectTimeout = () => {
+        let timeoutId
+        function setRejectTimeout () {
           if (config.timeout) {
-            timeoutId = setTimeout(() => {
+            timeoutId = setTimeout(_ => {
               delete this.callbacks[messageId]
               if (config.alertOnError) {
                 emitter.emit('alert-open', {
@@ -132,7 +132,7 @@ export default class Socket {
                     sticky: true
                   })
                 }
-                reject(new Error(data.t))
+                reject(new Error(data.p.msg))
                 break
               case STATE.WAITING:
               case STATE.RUNNING:
