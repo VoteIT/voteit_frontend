@@ -1,9 +1,34 @@
 {
+  "step": "Step {step}",
+  "stop": "Stop",
+  "start": "Start",
+  "yes": "Yes",
+  "no": "No",
+  "continue": "Continue",
+  "all": "All",
+  "back": "Back",
+  "create": "Create",
   "auth": {
     "logout": "Logout",
     "loggedInAs": "Logged in as {username}"
   },
   "home": {
     "availableMeetings": "Available meetings"
+  },
+  "poll": {
+    "new": "New poll",
+    "approve": "Approve",
+    "deny": "Deny",
+    "abstain": "Abstain",
+    "castVote": "Cast Vote",
+    "votingTitle": "Voting {title}",
+    "abstainRegistered": "You have chosen to abstain from this vote",
+    "voteRegistered": "Your vote has been registered",
+    "selectAgendaItem": "Select Agenda Item",
+    "pickProposals": "Pick Proposals",
+    "chooseMethod": "Choose voting method",
+    "createAndStart": "Create and start",
+    "noAiPublishedProposals": "This Agenda Item has no published Proposals",
+    "start": "Start poll"
   }
 }

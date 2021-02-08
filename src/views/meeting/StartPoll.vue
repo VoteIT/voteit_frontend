@@ -1,11 +1,11 @@
 <template>
   <div v-if="createdPoll">
-    <h1>Poll created</h1>
+    <h1>{{ t('poll.Created') }}</h1>
     <poll :poll="createdPoll"/>
   </div>
   <div v-else>
     <h1>Start poll</h1>
-    <h2>Step 1: Select Agenda Item</h2>
+    <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
     <btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <icon name="close"/></btn>
     <ul v-else>
       <li v-for="ai in getAgenda(meetingId)" :key="ai.pk">
@@ -13,35 +13,40 @@
       </li>
     </ul>
     <template v-if="agendaId">
-      <h2>Step 2: Pick proposals</h2>
-      <ul v-if="availableProposals.length">
-        <li :class="{ selected: selectedProposalIds.has(p.pk), locked: pickMethod }" v-for="p in availableProposals" :key="p.pk">
-          <a href="#" @click.prevent="toggleSelected(p)">{{ p.prop_id }}</a>
-        </li>
-      </ul>
-      <p v-else><em>No published proposals on this agenda item</em></p>
+      <h2>{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
+      <div v-if="pickMethod">
+        <proposal read-only
+          v-for="p in selectedProposals" :key="p.pk"
+          :p="p" selected />
+      </div>
+      <div v-else-if="availableProposals.length">
+        <proposal read-only
+          v-for="p in availableProposals" :key="p.pk"
+          :p="p" @click="toggleSelected(p)" :selected="selectedProposalIds.has(p.pk)" />
+      </div>
+      <p v-else><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
       <div v-if="!pickMethod" class="btn-group">
-        <icon button name="done_all" @click="toggleAll">All</icon>
-        <icon button name="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">Continue</icon>
+        <icon button name="done_all" @click="toggleAll">{{ t('all') }}</icon>
+        <icon button name="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</icon>
       </div>
     </template>
     <template v-if="pickMethod">
-      <h2>Step 3: Method to the madness</h2>
+      <h2>{{ t('step', { step: 3 }) }}: {{ t('poll.chooseMethod') }}</h2>
       <ul>
         <li :class="{ selected: m.name === methodSelected }" v-for="m in availableMethods" :key="m.name">
           <a href="#" @click.prevent="selectMethod(m)">{{ m.title }}</a>
           <div v-show="m.name === methodSelected" v-if="m.multipleWinners">
             <!-- TODO Load schema for method, preferably providing proposal count -->
-            <h3>Options</h3>
-            <label :for="m.name + '_winners'">Winners</label>
+            <h3>{{ t('options') }}</h3>
+            <label :for="m.name + '_winners'">{{ t('winners') }}</label>
             <input :id="m.name + '_winners'" type="number" :value="m.winnersMin || 1" :min="m.winnersMin || 1" :max="selectedProposals.size - (m.losersMin || 0)">
           </div>
         </li>
       </ul>
       <div class="btn-group">
-        <btn icon="undo" @click="pickMethod=false">Back</btn>
-        <btn icon="check" :disabled="!readyToCreate" @click="createPoll()">Create</btn>
-        <btn icon="play_arrow" :disabled="!readyToCreate" @click="createPoll(true)">Create and start</btn>
+        <btn icon="undo" @click="pickMethod=false">{{ t('back') }}</btn>
+        <btn icon="check" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</btn>
+        <btn icon="play_arrow" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</btn>
       </div>
     </template>
   </div>
@@ -60,11 +65,14 @@ import usePolls from '@/composables/meeting/usePolls.js'
 import pollMethods from '@/schemas/pollMethods.json'
 
 import Poll from '@/components/widgets/Poll'
+import Proposal from '@/components/widgets/Proposal'
 
 export default {
   name: 'StartPoll',
+  inject: ['t'],
   components: {
-    Poll
+    Poll,
+    Proposal
   },
   setup () {
     const restApi = useRestApi()
@@ -198,7 +206,7 @@ li
       display: inline-block
       line-height: 1
   &.selected
-    background-color: #dfd
+    background-color: #ded
     a:before
       content: '✔'
   &.selected.locked

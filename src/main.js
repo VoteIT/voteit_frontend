@@ -30,6 +30,7 @@ async function loadLocaleMessages (i18n, locale) {
 }
 
 const i18n = createI18n({
+  legacy: false,
   locale,
   fallbackLocale: 'en',
   messages: {

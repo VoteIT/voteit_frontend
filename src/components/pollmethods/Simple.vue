@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent>
     <div v-for="p in proposals" :key="p.pk">
-      <p>Proposal {{ p.pk }} from {{ getUser(p.author).full_name }}:</p>
+      <proposal read-only :p="p"/>
       <p>{{ p.title }}</p>
       <div class="simple-options">
         <p class="vote-option" :style="{ backgroundColor: opt.value === selected ? opt.color : undefined }" :class="{ active: opt.value === selected }" v-for="opt in options" :key="opt.value">
@@ -18,7 +18,10 @@
 
 <script>
 import { ref } from 'vue'
+
 import useMeeting from '@/composables/meeting/useMeeting'
+
+import Proposal from '../widgets/Proposal'
 
 const options = [
   {
@@ -40,6 +43,9 @@ export default {
   emits: ['valid'],
   props: {
     proposals: Array
+  },
+  components: {
+    Proposal
   },
   setup (props, { emit }) {
     const { getUser } = useMeeting()

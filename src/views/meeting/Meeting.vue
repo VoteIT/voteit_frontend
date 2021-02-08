@@ -181,6 +181,7 @@ header
       width: 280px
       text-align: left
       background-color: #eee
+      flex-shrink: 0
     #main-content
       flex-grow: 1
       padding: 0 10px 80px

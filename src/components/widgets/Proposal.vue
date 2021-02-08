@@ -1,9 +1,9 @@
 <template>
-  <div class="proposal">
+  <div class="proposal" :class="{ selected }">
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><moment :date="p.created" /></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
-    <div v-if="hasRole('moderator')" class="btn-controls">
+    <div v-if="!readOnly && hasRole('moderator')" class="btn-controls">
       <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
       <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn sm icon="delete" @click="channel.delete(p.pk)" />
@@ -26,7 +26,9 @@ import proposalStates from '../../schemas/proposalStates.json'
 export default {
   name: 'Proposal',
   props: {
-    p: Object
+    p: Object,
+    readOnly: Boolean,
+    selected: Boolean
   },
   components: {
     WorkflowState,
@@ -64,6 +66,9 @@ export default {
     white-space: pre-wrap
   .btn-controls
     text-align: right
+
+  &.selected
+    background-color: #ded
 
 a.tag
   color: #333

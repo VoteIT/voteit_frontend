@@ -1,10 +1,10 @@
 <template>
   <main class="home" v-if="isAuthenticated">
     <p>
-      {{ $t('auth.loggedInAs', user) }}
-      <btn @click="logout">{{ $t('auth.logout') }}</btn>
+      {{ t('auth.loggedInAs', user) }}
+      <btn @click="logout">{{ t('auth.logout') }}</btn>
     </p>
-    <h1>{{ $t('home.availableMeetings') }}</h1>
+    <h1>{{ t('home.availableMeetings') }}</h1>
     <ul v-if="orderedMeetings.length">
       <li v-for="meeting in orderedMeetings" :key="meeting.pk">
         <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
@@ -30,7 +30,8 @@
         </button>
         <form v-show="addUser" @submit.prevent="createUser">
           <p>
-            <input type="checkbox" id="is_super" v-model="newUser.is_superuser" /> <label for="is_super">Superuser <icon sm name="verified_user"/></label>
+            <input type="checkbox" id="is_super" v-model="newUser.is_superuser" />
+            <label for="is_super">Superuser <icon sm name="verified_user"/></label>
           </p>
           <p class="error" v-show="newUserError">Username not accepted</p>
           <input type="text" required v-model="newUser.username" /><input type="submit" value="Create">
@@ -52,6 +53,7 @@ import { onBeforeMount, ref, watch } from 'vue'
 
 export default {
   name: 'Home',
+  inject: ['t'],
   setup () {
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const devApi = useContentApi('dev_login')
@@ -74,6 +76,9 @@ export default {
             users.value = data
           })
       })
+      if (isAuthenticated.value) {
+        loader.call(fetchMeetings)
+      }
     })
 
     const addUser = ref(false)

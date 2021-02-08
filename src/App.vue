@@ -9,13 +9,16 @@
 </template>
 
 <script>
-import OnlineStatus from '@/components/OnlineStatus'
-import Loader from '@/components/Loader.vue'
-import Alerts from '@/components/Alerts.vue'
-import Modal from './components/modals/Modal'
+import { onBeforeMount, provide } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
-import { onBeforeMount } from 'vue'
+
+import Alerts from '@/components/Alerts.vue'
+import Loader from '@/components/Loader.vue'
+import Modal from './components/modals/Modal'
+import OnlineStatus from '@/components/OnlineStatus'
 
 export default {
   components: {
@@ -25,6 +28,7 @@ export default {
     Modal
   },
   setup () {
+    const { t } = useI18n()
     const loader = useLoader('App')
     const { user, authenticate } = useAuthentication()
 
@@ -32,6 +36,7 @@ export default {
       if (user.value) authenticate(user.value)
       else loader.setLoaded()
     })
+    provide('t', t)
   }
 }
 </script>

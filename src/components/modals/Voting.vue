@@ -1,12 +1,12 @@
 <template>
   <main>
-    <h2 v-if="abstained">You have abstained from this vote</h2>
-    <h2 v-else-if="done">Your vote has been registered</h2>
+    <h2 v-if="abstained">{{ t('poll.abstainRegistered') }}</h2>
+    <h2 v-else-if="done">{{ t('poll.voteRegistered') }}</h2>
     <template v-else>
       <component ref="method" :is="methodComponent" :proposals="proposals" @valid="setValid" />
       <div class="buttons btn-group">
-        <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote(validVote)">Cast vote</btn>
-        <btn icon="block" :class="{ active: currentAbstained && !validVote }" :disable="waiting" @click="abstainVote()">Abstain</btn>
+        <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote(validVote)">{{ t('poll.castVote') }}</btn>
+        <btn icon="block" :class="{ active: currentAbstained && !validVote }" :disable="waiting" @click="abstainVote()">{{ t('poll.abstain') }}</btn>
       </div>
     </template>
   </main>
@@ -22,6 +22,7 @@ import useChannels from '../../composables/useChannels'
 
 export default {
   name: 'VotingModal',
+  inject: ['t'],
   props: {
     data: Object
   },

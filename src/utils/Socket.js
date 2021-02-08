@@ -1,6 +1,11 @@
 import { uriToPayload, ProgressPromise, emitter } from '@/utils'
 import hostname from '@/utils/hostname'
 
+const wsProtocol = {
+  'http:': 'ws:',
+  'https:': 'wss:'
+}[location.protocol] || 'ws:'
+
 const DEFAULT_CONFIG = {
   timeout: 5000 // 5s
 }
@@ -41,6 +46,7 @@ export default class Socket {
   }
 
   connect (token) {
+    // Save token is supplied (usually first call)
     if (token) {
       this.token = token
     }
@@ -49,7 +55,7 @@ export default class Socket {
     }
     this.active = true
     return new Promise((resolve, reject) => {
-      this._ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${hostname}/ws/${this.token}/`)
+      this._ws = new WebSocket(`${wsProtocol}//${hostname}/ws/${this.token}/`)
 
       this._ws.addEventListener('error', reject)
       this._ws.addEventListener('open', resolve)
@@ -114,12 +120,18 @@ export default class Socket {
 
         this.callbacks[messageId] = data => {
           if (data.i === messageId) {
-            if (timeoutId) {
-              clearTimeout(timeoutId)
-            }
+            clearTimeout(timeoutId)
             switch (data.s) {
               case STATE.FAILED:
                 delete this.callbacks[messageId]
+                if (config.alertOnError) {
+                  emitter.emit('alert-open', {
+                    title: 'Socket error',
+                    text: data.p.msg,
+                    level: 'error',
+                    sticky: true
+                  })
+                }
                 reject(new Error(data.t))
                 break
               case STATE.WAITING:

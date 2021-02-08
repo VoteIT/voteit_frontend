@@ -5,7 +5,7 @@
     </nav>
     <h1>{{ currentState.name }} polls</h1>
     <div class="btn-group" v-if="hasRole('moderator')">
-      <btn icon="star" @click="$router.push(meetingPath + '/polls/new')">New poll</btn>
+      <btn icon="star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</btn>
     </div>
     <poll :poll="p" v-for="p in polls" :key="p.pk" />
     <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
@@ -32,6 +32,7 @@ const tabOrder = [
 
 export default {
   name: 'Polls',
+  inject: ['t'],
   components: {
     Poll
   },

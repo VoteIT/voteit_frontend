@@ -1,4 +1,4 @@
-import { DefaultMap, Socket, emitter } from '@/utils'
+import { DefaultMap, Socket } from '@/utils'
 import { ref } from 'vue'
 
 const DEFAULT_CONFIG = {
@@ -35,20 +35,21 @@ function handleMessage (data) {
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data)
-  if (data.t && data.t.startsWith('error.')) {
-    let msg = data.p.msg
-    if (data.p.errors && data.p.errors.length) {
-      msg = data.p.errors
-        .map(e => e.msg)
-        .join('\n')
-    }
-    emitter.emit('alert-open', {
-      title: data.t,
-      text: msg,
-      level: 'warning'
-    })
-    return
-  }
+  // Moved to utils Socket for now
+  // if (data.t && data.t.startsWith('error.')) {
+  //   let msg = data.p.msg
+  //   if (data.p.errors && data.p.errors.length) {
+  //     msg = data.p.errors
+  //       .map(e => e.msg)
+  //       .join('\n')
+  //   }
+  //   emitter.emit('alert-open', {
+  //     title: data.t,
+  //     text: msg,
+  //     level: 'warning'
+  //   })
+  //   return
+  // }
   handleMessage(data)
 })
 
