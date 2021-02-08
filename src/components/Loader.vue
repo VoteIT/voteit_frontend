@@ -3,8 +3,8 @@
     <main v-if="!initDone">
       <img src="https://ca.slack-edge.com/T030AG213-U030AG219-f63b38b74163-512" class="anders" />
       <img src="@/assets/voteit-logo.svg" class="logo" />
-      <h1 v-if="initFailed">No loot!</h1>
-      <h1 v-else>Looting{{ dots }}</h1>
+      <h1 v-if="initFailed">{{ t('loader.failed') }}</h1>
+      <h1 v-else>{{ t('loader.loading') }}{{ dots }}</h1>
     </main>
   </transition>
 </template>
@@ -16,6 +16,7 @@ let timer
 
 export default {
   name: 'Loader',
+  inject: ['t'],
   setup () {
     return useLoader('Loader')
   },

@@ -5,23 +5,23 @@
       <workflow-state :state="poll.state" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
     </div>
     <div class="body">
-      <btn @click="vote" icon="ballot" v-if="isOngoing && hasRole('potential_voter')">Vote</btn>
+      <btn @click="vote" icon="ballot" v-if="isOngoing && hasRole('potential_voter')">{{ t('poll.vote') }}</btn>
       <p v-if="poll.state === 'finished'">
         {{ poll.result_data }}
       </p>
       <p v-else>
-        Other poll info
+        Other poll info ...
       </p>
       <btn-dropdown dark class="voting-info" v-if="isOngoing" title="Watch voting" @open="active=true" @close="active=false">
         <progress-bar v-if="poll" absolute :value="poll.voted" :total="poll.total" />
-        <p v-else>Loading...</p>
+        <p v-else>{{ t('loader.loading') }}...</p>
       </btn-dropdown>
     </div>
   </div>
 </template>
 
 <script>
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, ref, watch } from 'vue'
 
 import useMeeting from '../../composables/meeting/useMeeting'
 import useChannels from '../../composables/useChannels'
@@ -47,9 +47,11 @@ export default {
     const { openModal } = useModal()
     const isOngoing = computed(_ => props.poll.state === 'ongoing')
 
+    const t = inject('t')
+
     function vote () {
       openModal({
-        title: 'Voting ' + props.poll.title,
+        title: t('poll.votingTitle', props.poll),
         component: Voting,
         data: props.poll
       })
@@ -76,6 +78,7 @@ export default {
       active,
       pollStates,
       vote,
+      t,
       ...useMeeting()
     }
   }

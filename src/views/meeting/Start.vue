@@ -3,7 +3,7 @@
     <h1>{{ meeting.title }}</h1>
     <div class="btn-controls" v-if="meeting.pk">
       <workflow-state :admin="hasRole('moderator')" :state="meeting.state" contentType="meeting" :pk="meeting.pk" />
-      <btn sm icon="edit" :active="editingBody" @click="editingBody = !editingBody" />
+      <btn sm icon="edit" :active="editingBody" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
     </div>
     <richtext :key="`meeting/${meeting.pk}`" :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
   </main>
@@ -20,6 +20,7 @@ import useMeeting from '@/composables/meeting/useMeeting.js'
 
 export default {
   name: 'MeetingIndex',
+  inject: ['t'],
   components: {
     Richtext,
     WorkflowState

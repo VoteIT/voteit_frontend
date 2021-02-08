@@ -3,13 +3,13 @@
     <header>
       <nav>
         <router-link to="/">Hem</router-link>
-        <h1><router-link :to="meetingPath">{{ meeting.title || 'Laddar möte' }}</router-link></h1>
+        <h1><router-link :to="meetingPath">{{ meeting.title || t('loader.loading') }}</router-link></h1>
       </nav>
       <nav class="tabs" v-if="navigationLinks.length">
         <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
           <icon sm :name="link.icon" />
           {{ link.title }}
-          <span v-if="link.count">({{ link.count }})</span>
+          <span v-if="link.count">({{ link.count.value }})</span>
         </router-link>
       </nav>
     </header>
@@ -27,35 +27,41 @@ import Bubbles from '@/components/meeting/Bubbles'
 import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
 
 import useLoader from '@/composables/useLoader.js'
-import useRestApi from '@/composables/useRestApi.js'
 import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
 import useBubbles from '@/composables/meeting/useBubbles.js'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists.js'
-import { computed, onMounted, watch } from 'vue'
-
-const NAV_LINKS = [
-  {
-    // role: ['potential_voter', 'moderator'], // FIXME Permissions
-    title: 'Polls',
-    icon: 'star',
-    path: 'polls',
-    countAttr: 'ongoingPollCount'
-  },
-  {
-    role: 'moderator',
-    title: 'Participants',
-    icon: 'people',
-    path: 'participants'
-  }
-]
+import { computed, inject, onBeforeMount, onMounted, watch } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
   name: 'Meeting',
   setup () {
-    const meeting = useMeeting()
+    const t = inject('t')
+    const navLinks = [
+      {
+        // role: ['potential_voter', 'moderator'], // FIXME Permissions
+        title: t('poll.polls'),
+        icon: 'star',
+        path: 'polls',
+        count: computed(_ => getPolls(meetingId.value, 'ongoing').length)
+      },
+      {
+        role: 'moderator',
+        title: t('meeting.participants'),
+        icon: 'people',
+        path: 'participants'
+      }
+    ]
+    const navigationLinks = computed(_ => {
+      return navLinks
+        .filter(l => hasRole(l.role))
+    })
+
+    const loader = useLoader('Meeting')
+    const { meeting, meetingId, meetingPath, fetchMeeting, hasRole } = useMeeting()
     const channel = useChannels('meeting')
 
     const presence = usePresence()
@@ -63,7 +69,7 @@ export default {
 
     const speakers = useSpeakerLists()
 
-    const presenceCheck = computed(_ => presence.getOpenPresenceCheck(meeting.meetingId.value))
+    const presenceCheck = computed(_ => presence.getOpenPresenceCheck(meetingId.value))
     const isPresent = computed(_ => presenceCheck.value && !!presence.getUserPresence(presenceCheck.value.pk))
 
     function checkIsPresent (value) {
@@ -89,48 +95,33 @@ export default {
     watch(isPresent, checkIsPresent)
 
     const { getPolls, fetchPolls } = usePolls()
-    const polls = computed(_ => getPolls(meeting.meetingId.value))
-    const ongoingPollCount = computed(_ => getPolls(meeting.meetingId.value, 'ongoing').length)
+    const polls = computed(_ => getPolls(meetingId.value))
+    const ongoingPollCount = computed(_ => getPolls(meetingId.value, 'ongoing').length)
+
+    onBeforeMount(_ => {
+      loader.call(fetchMeeting)
+      loader.subscribe(channel, meetingId.value)
+    })
+    onBeforeRouteLeave(_ => {
+      channel.leave(meetingId.value)
+    })
 
     return {
-      loader: useLoader('Meeting'),
-      restApi: useRestApi(),
-      ...meeting,
+      navigationLinks,
+      meeting,
+      meetingId,
+      meetingPath,
       polls,
       ongoingPollCount,
       fetchPolls,
       channel,
-      speakers
+      speakers,
+      t
     }
   },
   components: {
     Agenda,
     Bubbles
-  },
-  computed: {
-    navigationLinks () {
-      return NAV_LINKS
-        .filter(l => this.hasRole(l.role))
-        .map(l => {
-          if (l.countAttr) {
-            l.count = this[l.countAttr]
-          }
-          return l
-        })
-    },
-    agenda () {
-      return this.getAgenda(this.meetingId)
-    }
-  },
-  created () {
-    this.loader.call(this.fetchMeeting)
-    // this.loader.call(_ => this.fetchPolls(this.meetingId))
-    this.loader.subscribe(this.channel, this.meetingId)
-    // this.channel.subscribe(this.meetingId)
-  },
-  beforeRouteLeave (to, from, next) {
-    this.channel.leave(this.meetingId)
-    next()
   }
 }
 </script>

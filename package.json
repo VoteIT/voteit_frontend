@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "extractLocales": "vue-i18n-extract report -v './src/**/*.?(js|vue)' -l './src/locales/*.json'"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -40,6 +41,7 @@
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^7.5.0",
     "sass": "^1.32.6",
-    "sass-loader": "^8.0.2"
+    "sass-loader": "^8.0.2",
+    "vue-i18n-extract": "^1.1.11"
   }
 }

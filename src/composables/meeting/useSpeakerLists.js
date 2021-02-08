@@ -29,6 +29,19 @@ export default function useSpeakerLists () {
   function getSystem (pk) {
     return speakerSystems.value.get(pk)
   }
+
+  function getSystems (pk, all = false) {
+    // For meeting pk
+    // By default only active systems
+    const systems = []
+    for (const s of speakerSystems.value.values()) {
+      if (s.meeting === pk && (all || s.active)) {
+        systems.push(s)
+      }
+    }
+    return systems
+  }
+
   function getList (pk) {
     return speakerLists.value.get(pk)
   }
@@ -71,6 +84,7 @@ export default function useSpeakerLists () {
 
   return {
     getSystem,
+    getSystems,
     getList,
     getQueue,
     getCurrent,

@@ -1,75 +1,96 @@
 <template>
   <div :class="{ isAuthenticated, online: socketState }" id="socket-info">
-    <span v-if="socketState">Connected</span>
-    <span v-else-if="failedInitialization">Couldn't establish websocket connection. <button @click="initialize">Try again</button></span>
-    <span v-else>Trying to reconnect in {{ reconnectTime }} second{{ reconnectTime === 1 ? '' : 's' }}</span>
+    <span v-if="socketState">{{ t('socket.connected') }}</span>
+    <span v-else-if="failedInitialization">{{ t('socket.reconnectingFailed') }} <button @click="tryAgain()">{{ t('tryAgain') }}</button></span>
+    <span v-else>{{ t('socket.reconnecting', {s: reconnectTime}, reconnectTime) }}</span>
   </div>
 </template>
 
 <script>
+import { onBeforeMount, ref, watch } from 'vue'
+
 import useChannels from '@/composables/useChannels.js'
-// import useLoader from '@/composables/useLoader.js'
 import useAuthentication from '@/composables/useAuthentication.js'
 
+const MAX_RETRIES = 5
+
 export default {
+  inject: ['t'],
   setup () {
-    return {
-      ...useAuthentication(),
-      ...useChannels()
-      // ...useLoader('OnlineStatus')
+    const reconnectTime = ref(1)
+    const reconnectTries = ref(1)
+    const failedInitialization = ref(false)
+    const { authToken, isAuthenticated } = useAuthentication()
+    const { connect, socketState } = useChannels()
+
+    let reconnectIntervalId
+
+    function reconnectTicker (on = true) {
+      // Always cancel existing interval
+      clearInterval(reconnectIntervalId)
+      if (on) {
+        reconnectIntervalId = setInterval(reconnectTicker, 1000)
+        if (reconnectTime.value < 1) {
+          connect(authToken.value)
+            .then(_ => {
+              // Reset tries and stop ticker
+              reconnectTries.value = 1
+              reconnectTicker(false)
+            })
+            .catch(_ => {
+              if (reconnectTries.value > MAX_RETRIES) {
+                failedInitialization.value = true
+                reconnectTicker(false)
+              } else {
+                // Double reconnect timeout with every try
+                reconnectTime.value = 2 ** reconnectTries.value++
+              }
+            })
+        } else {
+          reconnectTime.value--
+        }
+      }
     }
-  },
-  data () {
-    return {
-      reconnectTime: 1,
-      reconnectTries: 1,
-      reconnectIntervalId: null,
-      failedInitialization: false
+
+    function tryAgain () {
+      failedInitialization.value = false
+      connect()
+        .catch(_ => {
+          failedInitialization.value = true
+        })
     }
-  },
-  watch: {
-    authToken (value) {
+
+    watch(authToken, value => {
       if (value) {
-        this.connect(value)
-          .catch(() => { this.failedInitialization = true })
-      }
-    },
-    socketState (value, oldValue) {
-      if (oldValue && !value) {
-        this.reconnectTicker()
-      }
-    }
-  },
-  methods: {
-    reconnectTicker (on = true) {
-      if (!on) {
-        clearInterval(this.reconnectIntervalId)
-        this.reconnectIntervalId = null
-        return
-      }
-      if (!this.reconnectIntervalId) {
-        this.reconnectIntervalId = setInterval(this.reconnectTicker, 1000)
-      }
-      if (this.reconnectTime-- <= 1) {
-        this.connect(this.authToken)
-          .then(() => {
-            // Reset tries and stop ticker
-            this.reconnectTries = 1
-            this.reconnectTicker(false)
+        connect(value)
+          .catch(_ => {
+            failedInitialization.value = true
           })
-          .catch(() => {
-            this.reconnectTime = this.reconnectTries++ ** 2
-          })
-      }
-    }
-  },
-  created () {
-    // Don't try to reconnect if not on display
-    document.addEventListener('visibilitychange', () => {
-      if (!this.socketState) {
-        this.reconnectTicker(document.visibilityState === 'visible')
       }
     })
+
+    watch(socketState, (value, oldValue) => {
+      if (oldValue && !value) {
+        reconnectTicker()
+      }
+    })
+
+    onBeforeMount(_ => {
+      document.addEventListener('visibilitychange', _ => {
+        if (!socketState.value) {
+          reconnectTicker(document.visibilityState === 'visible')
+        }
+      })
+    })
+
+    return {
+      reconnectTime,
+      reconnectTries,
+      failedInitialization,
+      socketState,
+      isAuthenticated,
+      tryAgain
+    }
   }
 }
 </script>

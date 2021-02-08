@@ -5,30 +5,66 @@
   "yes": "Yes",
   "no": "No",
   "continue": "Continue",
+  "options": "Options",
+  "winners": "Winners",
+  "add": "Add",
   "all": "All",
+  "edit": "Edit",
   "back": "Back",
   "create": "Create",
+  "post": "Post",
+  "tryAgain": "Try again",
   "auth": {
     "logout": "Logout",
     "loggedInAs": "Logged in as {username}"
   },
+  "content": {
+    "addName": "Add {name}"
+  },
+  "discussion": {
+    "discussion": "Discussion post",
+    "discussions": "Discussions",
+    "noDiscussions": "Nothing to hear..."
+  },
   "home": {
     "availableMeetings": "Available meetings"
   },
+  "loader": {
+    "loading": "Looting",
+    "failed": "No loot!"
+  },
+  "meeting": {
+    "participants": "Participants"
+  },
   "poll": {
-    "new": "New poll",
-    "approve": "Approve",
-    "deny": "Deny",
     "abstain": "Abstain",
-    "castVote": "Cast Vote",
+    "approve": "Approve",
+    "castVote": "Cast vote",
+    "created": "Created poll {title}",
+    "deny": "Deny",
+    "new": "New poll",
+    "polls": "Polls",
     "votingTitle": "Voting {title}",
+    "vote": "Vote",
     "abstainRegistered": "You have chosen to abstain from this vote",
     "voteRegistered": "Your vote has been registered",
     "selectAgendaItem": "Select Agenda Item",
     "pickProposals": "Pick Proposals",
     "chooseMethod": "Choose voting method",
     "createAndStart": "Create and start",
-    "noAiPublishedProposals": "This Agenda Item has no published Proposals",
-    "start": "Start poll"
+    "noAiPublishedProposals": "This agenda item has no published proposals"
+  },
+  "proposal": {
+    "proposal": "Proposal",
+    "proposals": "Proposals",
+    "noProposals": "Nothing to say..."
+  },
+  "socket": {
+    "connected": "Connected",
+    "reconnecting": "Trying to reconnect... | Trying to reconnect in {s} second | Trying to reconnect in {s} seconds",
+    "reconnectingFailed": "Couldn't establish websocket connection"
+  },
+  "speaker": {
+    "lists": "No speaker lists | Speaker list | Speaker lists"
   }
 }

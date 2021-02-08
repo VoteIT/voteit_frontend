@@ -1,9 +1,9 @@
 <template>
-  <btn-dropdown ref="dropdownComponent" :title="'Write ' + name" @open="editorComponent.focus()">
+  <btn-dropdown ref="dropdownComponent" :title="t('content.addName', { name })" @open="editorComponent.focus()">
     <form @submit.prevent="submit">
       <richtext-editor ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
       <div class="buttons">
-        <input class="btn" type="submit" value="Submit" :disabled="submitting" />
+        <btn sm icon="send" :disabled="submitDisabled">{{ t('post') }}</btn>
       </div>
     </form>
   </btn-dropdown>
@@ -20,6 +20,7 @@ import RichtextEditor from '../widgets/RichtextEditor.vue'
 
 export default {
   name: 'AddContent',
+  inject: ['t'],
   components: {
     BtnDropdown,
     RichtextEditor
@@ -32,7 +33,11 @@ export default {
     // For channels:
     contextPk: Number,
     contentType: String,
-    useRest: Boolean
+    useRest: Boolean,
+    minLength: {
+      type: Number,
+      default: 10
+    }
   },
   setup (props) {
     // Post (data update from channels)
@@ -41,8 +46,16 @@ export default {
     const submitting = ref(false)
     const text = ref('')
 
+    function textContent (html) {
+      const tmp = document.createElement('div')
+      tmp.innerHTML = html
+      return tmp.textContent || tmp.innerText || ''
+    }
+
+    const submitDisabled = computed(_ => submitting.value || textContent(text.value).length < props.minLength)
+
     function submit () {
-      if (!submitting.value) {
+      if (!submitDisabled.value) {
         const body = text.value
         this.submitting = true
         let request
@@ -80,7 +93,8 @@ export default {
       text,
       editorComponent,
       dropdownComponent,
-      availableTags
+      availableTags,
+      submitDisabled
     }
   }
 }

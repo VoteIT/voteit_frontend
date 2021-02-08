@@ -1,6 +1,6 @@
 <template>
   <div v-if="createdPoll">
-    <h1>{{ t('poll.Created') }}</h1>
+    <h1>{{ t('poll.created', createdPoll) }}</h1>
     <poll :poll="createdPoll"/>
   </div>
   <div v-else>

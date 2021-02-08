@@ -4,40 +4,37 @@
     <div class="btn-controls">
       <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
       <template v-if="hasRole('moderator')">
-        <btn sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">New poll</btn>
-        <btn sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">Edit</btn>
+        <btn sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
+        <btn sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
       </template>
     </div>
     <richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
-    <div v-if="speakerLists.length">
-      <h2>Speaker lists</h2>
+    <div class="spaker-lists" v-if="hasSpeakerSystems">
+      <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
       <speaker-list :pk="pk" v-for="{ pk } in speakerLists" :key="pk" />
-    </div>
-    <div v-else>
-      No speaker lists
     </div>
     <div class="row">
       <div class="col-sm-6">
-        <h2>Proposals</h2>
+        <h2>{{ t('proposal.proposals') }}</h2>
         <ul v-if="sortedProposals.length" class="no-list">
           <li v-for="p in sortedProposals" :key="p.pk">
             <proposal :p="p"/>
           </li>
         </ul>
-        <p v-else><em>Nothing to speak</em></p>
-        <add-content v-if="hasRole('proposer')" name="proposal"
+        <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
+        <add-content v-if="hasRole('proposer')" :name="t('proposal.proposal')"
           :context-pk="agendaId" content-type="proposal"
           endpoint="proposals/" :params="{ agenda_item: agendaId }"/>
       </div>
       <div class="col-sm-6">
-        <h2>Discussions</h2>
+        <h2>{{ t('discussion.discussions') }}</h2>
         <ul v-if="sortedDiscussions.length" class="no-list">
           <li v-for="d in sortedDiscussions" :key="d.pk">
             <discussion-post :p="d"/>
           </li>
         </ul>
-        <p v-else><em>Nothing to hear</em></p>
-        <add-content v-if="hasRole('discusser')" name="discussion post"
+        <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
+        <add-content v-if="hasRole('discusser')" :name="t('discussion.discussion')"
           :context-pk="agendaId" content-type="discussion_post"
           endpoint="discussion-posts/" :params="{ agenda_item: agendaId }"/>
       </div>
@@ -64,10 +61,11 @@ import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 export default {
   name: 'AgendaItem',
+  inject: ['t'],
   setup () {
     const discussions = useDiscussions()
     const proposals = useProposals()
-    const { hasRole, meetingPath } = useMeeting()
+    const { hasRole, meetingPath, meetingId } = useMeeting()
     const { agendaId, agendaItem } = useAgenda()
     const channel = useChannels('agenda')
 
@@ -86,8 +84,12 @@ export default {
     })
 
     const sortedDiscussions = computed(_ => discussions.getAgendaDiscussions(agendaId.value))
-    const { getAgendaSpeakerLists } = useSpeakerLists()
+    const { getAgendaSpeakerLists, getSystems } = useSpeakerLists()
     const speakerLists = computed(_ => getAgendaSpeakerLists(agendaId.value))
+
+    const hasSpeakerSystems = computed(_ => {
+      return !!getSystems(meetingId.value).length
+    })
 
     const editingBody = ref(false)
 
@@ -98,6 +100,7 @@ export default {
       agendaItem,
       sortedProposals,
       sortedDiscussions,
+      hasSpeakerSystems,
       speakerLists,
       channel,
       editingBody

@@ -17,26 +17,11 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 
 import Proposal from '../widgets/Proposal'
-
-const options = [
-  {
-    value: 'yes',
-    title: 'Approve',
-    icon: 'thumb_up',
-    color: '#cdc'
-  },
-  {
-    value: 'no',
-    title: 'Deny',
-    icon: 'thumb_down',
-    color: '#dcc'
-  }
-]
 
 export default {
   name: 'SimplePoll',
@@ -48,8 +33,24 @@ export default {
     Proposal
   },
   setup (props, { emit }) {
+    const t = inject('t')
     const { getUser } = useMeeting()
     const selected = ref(null)
+
+    const options = [
+      {
+        value: 'yes',
+        title: t('poll.approve'),
+        icon: 'thumb_up',
+        color: '#cdc'
+      },
+      {
+        value: 'no',
+        title: t('poll.deny'),
+        icon: 'thumb_down',
+        color: '#dcc'
+      }
+    ]
 
     function change (opt) {
       selected.value = opt
