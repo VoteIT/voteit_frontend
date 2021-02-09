@@ -1,10 +1,7 @@
 import { uriToPayload, ProgressPromise, emitter } from '@/utils'
 import hostname from '@/utils/hostname'
 
-const wsProtocol = {
-  'http:': 'ws:',
-  'https:': 'wss:'
-}[location.protocol] || 'ws:'
+const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 
 const DEFAULT_CONFIG = {
   timeout: 5000 // 5s
