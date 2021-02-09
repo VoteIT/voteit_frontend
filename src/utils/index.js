@@ -49,6 +49,18 @@ class DefaultMap extends Map {
   }
 }
 
+async function dialogQuery (dialogOrText) {
+  return new Promise(resolve => {
+    if (typeof dialogOrText === 'string') {
+      dialogOrText = {
+        title: dialogOrText,
+        resolve
+      }
+    }
+    emitter.emit('dialog-open', dialogOrText)
+  })
+}
+
 export {
   Socket,
   ProgressPromise,
@@ -58,5 +70,6 @@ export {
   dateify,
   orderBy,
   restApi,
-  emitter
+  emitter,
+  dialogQuery
 }

@@ -3,6 +3,7 @@
     <online-status/>
     <router-view/>
     <modal/>
+    <dialogs/>
     <loader/>
     <alerts/>
   </div>
@@ -12,20 +13,22 @@
 import { onBeforeMount, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useAuthentication from '@/composables/useAuthentication.js'
-import useLoader from '@/composables/useLoader.js'
+import useAuthentication from './composables/useAuthentication.js'
+import useLoader from './composables/useLoader.js'
 
-import Alerts from '@/components/Alerts.vue'
-import Loader from '@/components/Loader.vue'
+import Alerts from './components/Alerts'
+import Dialogs from './components/Dialogs'
+import Loader from './components/Loader'
 import Modal from './components/modals/Modal'
-import OnlineStatus from '@/components/OnlineStatus'
+import OnlineStatus from './components/OnlineStatus'
 
 export default {
   components: {
     OnlineStatus,
     Loader,
     Alerts,
-    Modal
+    Modal,
+    Dialogs
   },
   setup () {
     const { t } = useI18n()

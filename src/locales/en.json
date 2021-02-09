@@ -22,6 +22,7 @@
     "addName": "Add {name}"
   },
   "discussion": {
+    "deletePrompt": "You are about to delete a discussion post permanently.\nAre you sure?",
     "discussion": "Discussion post",
     "discussions": "Discussions",
     "noDiscussions": "Nothing to hear..."
@@ -55,6 +56,7 @@
     "noAiPublishedProposals": "This agenda item has no published proposals"
   },
   "proposal": {
+    "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
     "proposals": "Proposals",
     "noProposals": "Nothing to say..."

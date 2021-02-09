@@ -6,13 +6,14 @@
     <div v-if="!readOnly && hasRole('moderator')" class="btn-controls">
       <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
       <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
-      <btn sm icon="delete" @click="channel.delete(p.pk)" />
+      <btn sm icon="delete" @click="queryDelete" />
     </div>
   </div>
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
+import { dialogQuery } from '@/utils'
 
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
@@ -35,15 +36,24 @@ export default {
     Richtext,
     Moment
   },
-  setup () {
+  setup (props) {
     const wfStates = computed(_ => proposalStates)
     const channel = useChannels('proposal')
     const editing = ref(false)
+    const t = inject('t')
+
+    function queryDelete () {
+      dialogQuery(t('proposal.deletePrompt'))
+        .then(_ => {
+          channel.delete(props.p.pk)
+        })
+    }
 
     return {
       wfStates,
-      channel,
       editing,
+      queryDelete,
+      channel,
       ...useMeeting()
     }
   }
