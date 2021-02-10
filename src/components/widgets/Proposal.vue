@@ -19,13 +19,13 @@ import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 import WorkflowState from './WorkflowState.vue'
 
-import useMeeting from '../../composables/meeting/useMeeting.js'
 import useChannels from '../../composables/useChannels'
 
 import proposalStates from '../../schemas/proposalStates.json'
 
 export default {
   name: 'Proposal',
+  inject: ['hasRole'],
   props: {
     p: Object,
     readOnly: Boolean,
@@ -53,8 +53,7 @@ export default {
       wfStates,
       editing,
       queryDelete,
-      channel,
-      ...useMeeting()
+      channel
     }
   }
 }

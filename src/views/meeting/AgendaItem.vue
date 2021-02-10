@@ -61,11 +61,11 @@ import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 export default {
   name: 'AgendaItem',
-  inject: ['t'],
+  inject: ['t', 'hasRole'],
   setup () {
     const discussions = useDiscussions()
     const proposals = useProposals()
-    const { hasRole, meetingPath, meetingId } = useMeeting()
+    const { meetingPath, meetingId } = useMeeting()
     const { agendaId, agendaItem } = useAgenda()
     const channel = useChannels('agenda')
 
@@ -94,7 +94,6 @@ export default {
     const editingBody = ref(false)
 
     return {
-      hasRole,
       meetingPath,
       agendaId,
       agendaItem,

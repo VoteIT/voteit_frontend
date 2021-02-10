@@ -33,7 +33,7 @@ import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
 import useBubbles from '@/composables/meeting/useBubbles.js'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists.js'
-import { computed, inject, onBeforeMount, onMounted, watch } from 'vue'
+import { computed, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
 export default {
@@ -105,6 +105,8 @@ export default {
     onBeforeRouteLeave(_ => {
       channel.leave(meetingId.value)
     })
+
+    provide('hasRole', hasRole)
 
     return {
       navigationLinks,

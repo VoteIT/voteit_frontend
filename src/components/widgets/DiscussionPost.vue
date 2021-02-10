@@ -16,12 +16,12 @@ import { inject, ref } from 'vue'
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 
-import useMeeting from '../../composables/meeting/useMeeting.js'
 import useChannels from '../../composables/useChannels.js'
 import { dialogQuery } from '@/utils'
 
 export default {
   name: 'DiscussionPost',
+  inject: ['hasRole'],
   props: {
     p: Object
   },
@@ -42,7 +42,6 @@ export default {
     }
 
     return {
-      ...useMeeting(),
       channel,
       editing,
       queryDelete

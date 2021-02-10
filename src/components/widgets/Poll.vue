@@ -23,7 +23,6 @@
 <script>
 import { computed, inject, onBeforeUnmount, ref, watch } from 'vue'
 
-import useMeeting from '../../composables/meeting/useMeeting'
 import useChannels from '../../composables/useChannels'
 import useModal from '../../composables/useModal'
 
@@ -35,6 +34,7 @@ import pollStates from '../../schemas/pollStates'
 
 export default {
   name: 'Poll',
+  inject: ['hasRole'],
   props: {
     poll: Object
   },
@@ -78,8 +78,7 @@ export default {
       active,
       pollStates,
       vote,
-      t,
-      ...useMeeting()
+      t
     }
   }
 }

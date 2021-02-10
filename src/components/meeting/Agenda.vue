@@ -28,8 +28,9 @@ import BtnDropdown from '../BtnDropdown.vue'
 const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
 
 export default {
-  components: { BtnDropdown },
   name: 'Agenda',
+  inject: ['hasRole'],
+  components: { BtnDropdown },
   setup () {
     const { getAgenda } = useAgenda()
     const { meetingId, meetingPath, hasRole } = useMeeting()
@@ -54,8 +55,8 @@ export default {
     return {
       meetingId,
       meetingPath,
-      hasRole,
       agenda,
+      hasRole,
 
       newAgendaTitle,
       addAgendaItem,

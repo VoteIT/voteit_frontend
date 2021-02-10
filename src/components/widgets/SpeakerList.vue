@@ -24,9 +24,8 @@
 
 <script>
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
-import useMeeting from '../../composables/meeting/useMeeting'
 import WorkflowState from './WorkflowState'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
 export default {
   name: 'SpeakerList',
@@ -37,7 +36,7 @@ export default {
     WorkflowState
   },
   setup (props) {
-    const { hasRole } = useMeeting()
+    const hasRole = inject('hasRole')
     const speakers = useSpeakerLists()
 
     const list = computed(_ => speakers.getList(props.pk))
