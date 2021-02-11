@@ -2,7 +2,7 @@
   <div id="meeting">
     <header>
       <nav>
-        <router-link to="/">Hem</router-link>
+        <router-link to="/">{{ t('home.home') }}</router-link>
         <h1><router-link :to="meetingPath">{{ meeting.title || t('loader.loading') }}</router-link></h1>
       </nav>
       <nav class="tabs" v-if="navigationLinks.length">
@@ -22,19 +22,21 @@
 </template>
 
 <script>
+import { computed, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
+
 import Agenda from '@/components/meeting/Agenda'
 import Bubbles from '@/components/meeting/Bubbles'
 import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
 
+import useBubbles from '@/composables/meeting/useBubbles.js'
 import useLoader from '@/composables/useLoader.js'
 import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
-import useBubbles from '@/composables/meeting/useBubbles.js'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists.js'
-import { computed, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
-import { onBeforeRouteLeave } from 'vue-router'
+import { slugify } from '@/utils'
 
 export default {
   name: 'Meeting',
@@ -61,7 +63,8 @@ export default {
     })
 
     const loader = useLoader('Meeting')
-    const { meeting, meetingId, meetingPath, fetchMeeting, hasRole } = useMeeting()
+    const router = useRouter()
+    const { meeting, meetingId, meetingPath, setMeeting, meetingApi, hasRole } = useMeeting()
     const channel = useChannels('meeting')
 
     const presence = usePresence()
@@ -99,7 +102,18 @@ export default {
     const ongoingPollCount = computed(_ => getPolls(meetingId.value, 'ongoing').length)
 
     onBeforeMount(_ => {
-      loader.call(fetchMeeting)
+      loader.call(_ => {
+        meetingApi.retrieve(meetingId.value)
+          .then(({ data }) => {
+            if (!data.current_user_roles) {
+              router.push(`/join/${meeting.value.pk}/${slugify(meeting.value.title)}`)
+            }
+            setMeeting(data)
+          })
+          .catch(_ => {
+            router.push('/')
+          })
+      })
       loader.subscribe(channel, meetingId.value)
     })
     onBeforeRouteLeave(_ => {

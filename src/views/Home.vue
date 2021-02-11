@@ -4,14 +4,25 @@
       {{ t('auth.loggedInAs', user) }}
       <btn @click="logout">{{ t('auth.logout') }}</btn>
     </p>
-    <h1>{{ t('home.availableMeetings') }}</h1>
-    <ul v-if="orderedMeetings.length">
-      <li v-for="meeting in orderedMeetings" :key="meeting.pk">
+    <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
+    <ul v-if="participatingMeetings.length">
+      <li v-for="meeting in participatingMeetings" :key="meeting.pk">
         <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
       </li>
     </ul>
-    <counter/>
-    <get-schema/>
+    <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
+    <template v-if="otherMeetings.length">
+      <h1>{{ t('join.joinAMeeting', otherMeetings.length) }}</h1>
+      <ul>
+        <li v-for="meeting in otherMeetings" :key="meeting.pk">
+          <router-link :to="`/join/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
+        </li>
+      </ul>
+    </template>
+    <template v-if="debug">
+      <counter/>
+      <get-schema/>
+    </template>
   </main>
   <main class="home" v-else>
     <h1>Pick a user</h1>
@@ -49,11 +60,11 @@ import useMeetings from '@/composables/useMeetings.js'
 import useContentApi from '@/composables/useContentApi.js'
 import useAuthentication from '@/composables/useAuthentication.js'
 import useLoader from '@/composables/useLoader.js'
-import { onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 
 export default {
   name: 'Home',
-  inject: ['t'],
+  inject: ['t', 'debug'],
   setup () {
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const devApi = useContentApi('dev_login')
@@ -99,8 +110,17 @@ export default {
         })
     }
 
+    const participatingMeetings = computed(_ => {
+      return orderedMeetings.value.filter(m => m.current_user_roles)
+    })
+
+    const otherMeetings = computed(_ => {
+      return orderedMeetings.value.filter(m => !m.current_user_roles)
+    })
+
     return {
-      orderedMeetings,
+      participatingMeetings,
+      otherMeetings,
       authenticate,
       logout,
       isAuthenticated,

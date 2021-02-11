@@ -33,5 +33,8 @@ export default {
   },
   meeting_roles: {
     uri: 'meeting-roles'
+  },
+  access_policy: {
+    uri: 'access-policies'
   }
 }

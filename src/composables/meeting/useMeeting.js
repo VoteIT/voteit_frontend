@@ -7,6 +7,7 @@ import { slugify, restApi } from '@/utils'
 import useContextRoles from '../useContextRoles.js'
 import useAuthentication from '../useAuthentication.js'
 import useMeetings from '../useMeetings.js'
+import useContentApi from '../useContentApi.js'
 
 const FORCE_ROLES_FETCH = false
 
@@ -19,10 +20,14 @@ export default function useMeeting () {
   const route = useRoute()
   const { meetings } = useMeetings()
   const meetingRoles = useContextRoles('Meeting')
+  const meetingApi = useContentApi('meeting')
   const { user } = useAuthentication()
 
   function setMeeting (meeting) {
     meetings.value.set(meeting.pk, meeting)
+    if (meeting.current_user_roles) {
+      meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
+    }
   }
 
   async function fetchParticipants (pk, userIds) {
@@ -85,15 +90,6 @@ export default function useMeeting () {
       .filter(r => r.meeting === pk)]
   }
 
-  async function fetchMeeting (pk) {
-    pk = pk || meetingId.value
-    return restApi.get(`meetings/${pk}/`)
-      .then(({ data }) => {
-        setMeeting(data)
-        meetingRoles.set(pk, user.value.pk, data.current_user_roles)
-      })
-  }
-
   const meetingId = computed(_ => Number(route.params.id))
   const meeting = computed(_ => meetings.value.get(meetingId.value) || {})
   const meetingPath = computed(_ => `/m/${meetingId.value}/${slugify(meeting.value.title)}`)
@@ -107,10 +103,11 @@ export default function useMeeting () {
     meetingId,
     meeting,
     meetingPath,
+    meetingApi,
     userRoles,
     getUser,
     hasRole,
-    fetchMeeting,
+    setMeeting,
     fetchParticipants,
     getParticipants
   }

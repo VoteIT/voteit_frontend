@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import JoinMeeting from '../views/JoinMeeting.vue'
 import meeting from './meeting'
 
 const routes = [
@@ -8,7 +9,12 @@ const routes = [
     name: 'Home',
     component: Home
   },
-  meeting
+  meeting,
+  {
+    path: '/join/:id/:slug',
+    name: 'JoinMeeting',
+    component: JoinMeeting
+  }
 ]
 
 const router = createRouter({

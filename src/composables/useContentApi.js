@@ -36,6 +36,16 @@ export default function useContentApi (contentType, config) {
     return restApi.delete(`${endpoint.uri}/${pk}/`)
   }
 
+  function action (...args) {
+    if (typeof args[0] === 'number') {
+      const [pk, action, data] = args
+      return restApi.post(`${endpoint.uri}/${pk}/${action}/`, data)
+    } else {
+      const [action, data] = args
+      return restApi.post(`${endpoint.uri}/${action}/`, data)
+    }
+  }
+
   function transition (pk, name) {
     if (endpoint.states) {
       return restApi.post(`${endpoint.uri}/${pk}/transitions/`, {
@@ -61,6 +71,7 @@ export default function useContentApi (contentType, config) {
     retrieve,
     put,
     patch,
+    action,
     delete: _delete,
 
     states: endpoint.states,

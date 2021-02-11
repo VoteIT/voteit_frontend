@@ -1,19 +1,19 @@
 {
-  "step": "Step {step}",
-  "stop": "Stop",
-  "start": "Start",
-  "yes": "Yes",
-  "no": "No",
-  "continue": "Continue",
-  "options": "Options",
-  "winners": "Winners",
   "add": "Add",
   "all": "All",
-  "edit": "Edit",
   "back": "Back",
+  "continue": "Continue",
   "create": "Create",
+  "edit": "Edit",
+  "no": "No",
+  "options": "Options",
   "post": "Post",
+  "start": "Start",
+  "step": "Step {step}",
+  "stop": "Stop",
   "tryAgain": "Try again",
+  "winners": "Winners",
+  "yes": "Yes",
   "auth": {
     "logout": "Logout",
     "loggedInAs": "Logged in as {username}"
@@ -28,7 +28,14 @@
     "noDiscussions": "Nothing to hear..."
   },
   "home": {
-    "availableMeetings": "Available meetings"
+    "home": "Home",
+    "noCurrentMeetings": "You have no meetings.",
+    "yourMeetings": "Your meeting | Your meetings"
+  },
+  "join": {
+    "joinAMeeting": "Join a meeting",
+    "meeting": "Join meeting: {title}",
+    "now": "Join now!"
   },
   "loader": {
     "loading": "Looting",

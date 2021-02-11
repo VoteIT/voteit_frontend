@@ -40,6 +40,7 @@ export default {
       else loader.setLoaded()
     })
     provide('t', t)
+    provide('debug', process.env.NODE_ENV === 'development')
   }
 }
 </script>
