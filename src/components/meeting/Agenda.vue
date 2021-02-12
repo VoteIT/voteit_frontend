@@ -18,7 +18,7 @@
 <script>
 import { computed, ref } from 'vue'
 
-import agendaStates from '@/schemas/agendaStates.json'
+import agendaStates from '@/workflows/agendaStates.json'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import useAgenda from '@/composables/meeting/useAgenda.js'

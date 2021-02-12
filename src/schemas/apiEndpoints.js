@@ -1,8 +1,8 @@
-import meetingStates from './meetingStates.js'
-import pollStates from './pollStates.js'
-import proposalStates from './proposalStates.json'
-import agendaStates from './agendaStates.json'
-import speakerListStates from './speakerListStates.js'
+import meetingStates from '../workflows/meetingStates.js'
+import pollStates from '../workflows/pollStates.js'
+import proposalStates from '../workflows/proposalStates.json'
+import agendaStates from '../workflows/agendaStates.json'
+import speakerListStates from '../workflows/speakerListStates.js'
 
 export default {
   dev_login: {

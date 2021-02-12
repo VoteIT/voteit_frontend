@@ -21,7 +21,7 @@ import { useRoute } from 'vue-router'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 
-import pollStates from '../../schemas/pollStates.js'
+import pollStates from '@/workflows/pollStates.js'
 
 const tabOrder = [
   'ongoing',

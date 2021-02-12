@@ -21,12 +21,14 @@ export default [
     transition: 'request_archiving',
     icon: 'archive',
     state: 'archiving',
-    name: 'Archiving'
+    name: 'Archiving',
+    isFinal: true
   },
   {
     transition: 'archive',
     icon: 'archive',
     state: 'archived',
-    name: 'Archived'
+    name: 'Archived',
+    isFinal: true
   }
 ]

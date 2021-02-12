@@ -19,8 +19,11 @@
         </li>
       </ul>
     </template>
+    <div v-if="hasPerm('add')">
+      <btn icon="add" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
+    </div>
     <template v-if="debug">
-      <counter/>
+      <counter :style="{ marginTop: '1.5em' }" />
       <get-schema/>
     </template>
   </main>
@@ -53,24 +56,29 @@
 </template>
 
 <script>
+import { computed, inject, onBeforeMount, ref, watch } from 'vue'
+
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
-import useMeetings from '@/composables/useMeetings.js'
-import useContentApi from '@/composables/useContentApi.js'
 import useAuthentication from '@/composables/useAuthentication.js'
+import useContentApi from '@/composables/useContentApi.js'
 import useLoader from '@/composables/useLoader.js'
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import useMeetings from '@/composables/useMeetings.js'
+import usePermissions from '@/rules/usePermissions'
+import useModal from '@/composables/useModal'
+import AddMeetingVue from '@/components/modals/AddMeeting.vue'
 
 export default {
   name: 'Home',
-  inject: ['t', 'debug'],
+  inject: ['debug'],
   setup () {
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const devApi = useContentApi('dev_login')
     const { authenticate, logout, isAuthenticated, user } = useAuthentication()
     const users = ref([])
     const loader = useLoader('Home')
+    const t = inject('t')
 
     watch(isAuthenticated, value => {
       if (value) {
@@ -118,7 +126,19 @@ export default {
       return orderedMeetings.value.filter(m => !m.current_user_roles)
     })
 
+    // Add meeting
+    const { hasPerm } = usePermissions('Meeting')
+    const { openModal } = useModal()
+
+    function startNewMeeting () {
+      openModal({
+        title: t('meeting.new'),
+        component: AddMeetingVue
+      })
+    }
+
     return {
+      t,
       participatingMeetings,
       otherMeetings,
       authenticate,
@@ -130,7 +150,10 @@ export default {
       addUser,
       newUser,
       newUserError,
-      createUser
+      createUser,
+
+      hasPerm,
+      startNewMeeting
     }
   },
   components: {

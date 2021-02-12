@@ -30,8 +30,6 @@ import WorkflowState from '../../components/widgets/WorkflowState'
 import BtnDropdown from '../../components/BtnDropdown'
 import Voting from '../../components/modals/Voting'
 
-import pollStates from '../../schemas/pollStates'
-
 export default {
   name: 'Poll',
   inject: ['hasRole'],
@@ -76,7 +74,6 @@ export default {
     return {
       isOngoing,
       active,
-      pollStates,
       vote,
       t
     }

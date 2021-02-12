@@ -11,6 +11,7 @@
   "start": "Start",
   "step": "Step {step}",
   "stop": "Stop",
+  "title": "Title",
   "tryAgain": "Try again",
   "winners": "Winners",
   "yes": "Yes",
@@ -42,7 +43,9 @@
     "failed": "No loot!"
   },
   "meeting": {
-    "participants": "Participants"
+    "participants": "Participants",
+    "new": "New meeting",
+    "public": "Make meeting visible to everyone"
   },
   "poll": {
     "abstain": "Abstain",

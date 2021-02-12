@@ -12,16 +12,14 @@
 </template>
 
 <script>
-import { computed, inject, ref } from 'vue'
+import { inject, ref } from 'vue'
 import { dialogQuery } from '@/utils'
 
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 import WorkflowState from './WorkflowState.vue'
 
-import useChannels from '../../composables/useChannels'
-
-import proposalStates from '../../schemas/proposalStates.json'
+import useChannels from '@/composables/useChannels'
 
 export default {
   name: 'Proposal',
@@ -37,7 +35,6 @@ export default {
     Moment
   },
   setup (props) {
-    const wfStates = computed(_ => proposalStates)
     const channel = useChannels('proposal')
     const editing = ref(false)
     const t = inject('t')
@@ -50,7 +47,6 @@ export default {
     }
 
     return {
-      wfStates,
       editing,
       queryDelete,
       channel
