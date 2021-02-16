@@ -1,7 +1,9 @@
 <template>
   <div id="scottish-stv-voting">
-    <h2>{{ t('step', currentStep) }}: {{ currentStep.title }}</h2>
-    <p>{{ currentStep.description }}</p>
+    <div class="header">
+      <h2>{{ t('step', currentStep) }}: {{ currentStep.title }}</h2>
+      <p>{{ currentStep.description }}</p>
+    </div>
     <template v-if="currentStep.step === 1">
       <proposal :selected="ranking.includes(p.pk)" read-only :p="p" v-for="p in proposals" :key="p.pk" @click="toggleSelected(p)">
         <template v-slot:top>
@@ -138,22 +140,28 @@ export default {
 #scottish-stv-voting
   margin-bottom: 1em
 
+  .header p
+    white-space: pre-wrap
+
   .proposal
     position: relative
     cursor: pointer
+    &[data-draggable]
+      cursor: grab
   .ranking-position
     position: absolute
-    top: -3px
-    right: 8px
+    top: 5px
+    right: 5px
     width: 30px
     height: 30px
-    background-color: #eee
+    background-color: #f7f7f7
     color: #000
     display: flex
     justify-content: center
     align-items: center
     border-radius: 50%
-    box-shadow: 1px 1px 4px rgba(#000, .5)
+    box-shadow: 1px 2px 3px inset rgba(#000, .4)
+    font-size: 14pt
 
   .btn-controls
     display: flex
