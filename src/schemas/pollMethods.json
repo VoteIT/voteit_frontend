@@ -1,37 +1,32 @@
 [
-    {
-        "name": "simple",
-        "title": "Simple majority",
-        "proposalsMax": 1
-    },
-    {
-        "name": "combined_simple",
-        "title": "Approve or deny",
-        "proposalsMin": 2
-    },
-    {
-        "name": "schulze",
-        "title": "Schulze",
-        "proposalsMin": 3
-    },
-    {
-        "name": "repeated_schulze",
-        "title": "Repeated Schulze",
-        "multipleWinners": true,
-        "proposalsMin": 3,
-        "winnersMin": 2
-    },
-    {
-        "name": "schulze_deny",
-        "title": "Schulze, add deny",
-        "proposalsMin": 2
-    },
-    {
-        "name": "scottish_stv",
-        "title": "Scottish STV",
-        "multipleWinners": true,
-        "proposalsMin": 3,
-        "winnersMin": 2,
-        "losersMin": 1
-    }
+  {
+    "name": "simple",
+    "title": "Simple majority",
+    "proposalsMax": 1
+  },
+  {
+    "name": "combined_simple",
+    "title": "Approve or deny",
+    "proposalsMin": 2
+  },
+  {
+    "name": "schulze",
+    "title": "Schulze",
+    "proposalsMin": 3
+  },
+  {
+    "name": "repeated_schulze",
+    "title": "Repeated Schulze",
+    "multipleWinners": true,
+    "proposalsMin": 3,
+    "winnersMin": 2
+  },
+  {
+    "name": "scottish_stv",
+    "title": "Scottish STV",
+    "multipleWinners": true,
+    "proposalsMin": 3,
+    "winnersMin": 2,
+    "losersMin": 1
+  }
 ]

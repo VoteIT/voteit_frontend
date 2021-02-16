@@ -56,6 +56,7 @@
     "new": "New poll",
     "orderProposals": "Order proposals",
     "orderProposalsDescription": "Drag and drop proposals to adjust order.",
+    "orderAll": "Order all proposals",
     "polls": "Polls",
     "selectProposals": "Select proposals",
     "selectProposalsDescription": "Click to select the proposals you want to vote for.\nIn the next step you will be able to adjust the order.",

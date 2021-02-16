@@ -38,8 +38,14 @@
           <div v-if="methodSettings && m.name === methodSelected">
             <!-- TODO Load schema for method, preferably providing proposal count -->
             <h3>{{ t('options') }}</h3>
-            <label :for="m.name + '_winners'">{{ t('winners') }}</label>
-            <input v-model="methodSettings.winners" :id="m.name + '_winners'" type="number" :min="m.winnersMin || 1" :max="selectedProposals.length - (m.losersMin || 0)">
+            <p v-if="!m.losersMin" class="checkbox">
+              <input :id="m.name + '-order-all'" type="checkbox" v-model="methodSettings.orderAll">
+              <label :for="m.name + '-order-all'">{{ t('poll.orderAll') }}</label>
+            </p>
+            <p class="number">
+              <label :for="m.name + '-winners'">{{ t('winners') }}</label>
+              <input :id="m.name + '-winners'" v-model="methodSettings.winners" type="number" :min="m.winnersMin || 1" :max="selectedProposals.length - (m.losersMin || 0)" :disabled="methodSettings.orderAll">
+            </p>
           </div>
         </li>
       </ul>
@@ -128,7 +134,8 @@ export default {
         methodSelected.value = method.name
         // Initialize settings TODO
         methodSettings.value = method.multipleWinners ? {
-          winners: method.winnersMin || 2
+          winners: method.winnersMin || 2,
+          orderAll: false
         } : null
       }
     }
@@ -144,13 +151,22 @@ export default {
       const method = pollMethods.find(m => m.name === methodSelected.value)
       if (method.name in implementedMethods) {
         working.value = true
-        restApi.post('polls/', {
+        const pollData = {
           agenda_item: agendaId.value,
           proposal_pks: [...selectedProposalIds.value].join(','),
           method_name: method.name,
           start,
           settings: methodSettings.value
-        })
+        }
+        // TODO: Decide what the interface for this should look like.
+        if (methodSettings.value) {
+          pollData.settings = {
+            winners: methodSettings.value.orderAll ? null : methodSettings.value.winners
+          }
+        } else {
+          pollData.settings = null
+        }
+        restApi.post('polls/', pollData)
           .then(({ data }) => {
             createdPollPk.value = data.pk
           })
@@ -204,9 +220,9 @@ li
     border-bottom: 1px solid #eee
   h3
     margin-top: 0
-  div
+  > div
     padding: .5rem 1rem 1rem
-  label
+  .number label
     display: block
   a
     text-decoration: none
