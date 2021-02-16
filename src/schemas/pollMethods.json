@@ -10,20 +10,28 @@
         "proposalsMin": 2
     },
     {
-        "name": "schultze",
-        "title": "Schultze",
+        "name": "schulze",
+        "title": "Schulze",
         "proposalsMin": 3
     },
     {
-        "name": "schultze_deny",
-        "title": "Schultze, add deny",
+        "name": "repeated_schulze",
+        "title": "Repeated Schulze",
+        "multipleWinners": true,
+        "proposalsMin": 3,
+        "winnersMin": 2
+    },
+    {
+        "name": "schulze_deny",
+        "title": "Schulze, add deny",
         "proposalsMin": 2
     },
     {
-        "name": "scottishstv",
+        "name": "scottish_stv",
         "title": "Scottish STV",
         "multipleWinners": true,
         "proposalsMin": 3,
+        "winnersMin": 2,
         "losersMin": 1
     }
 ]

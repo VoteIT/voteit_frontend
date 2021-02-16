@@ -1,23 +1,23 @@
 <template>
   <form @submit.prevent>
-    <div v-for="p in proposals" :key="p.pk">
-      <proposal read-only :p="p"/>
-      <p>{{ p.title }}</p>
-      <div class="simple-options">
-        <p class="vote-option" :style="{ backgroundColor: opt.value === selected ? opt.color : undefined }" :class="{ active: opt.value === selected }" v-for="opt in options" :key="opt.value">
+    <proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
+      <template v-slot:bottom>
+        <div class="simple-options">
+          <span class="vote-option" :style="{ backgroundColor: opt.value === selected ? opt.color : undefined }" :class="{ active: opt.value === selected }" v-for="opt in options" :key="opt.value">
             <label :for="opt.value" tabindex="0" @click="change(opt.value)" @keyup.enter="change(opt.value)">
-            <input :checked="opt.value === selected" type="radio" name="vote" :value="opt.value" :id="opt.value" />
-            <icon sm :name="opt.icon" />
-            {{ opt.title }}
+              <input :checked="opt.value === selected" type="radio" name="vote" :value="opt.value" :id="opt.value" />
+              <icon sm :name="opt.icon" />
+              {{ opt.title }}
             </label>
-        </p>
-      </div>
-    </div>
+          </span>
+        </div>
+      </template>
+    </proposal>
   </form>
 </template>
 
 <script>
-import { inject, ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 
@@ -25,9 +25,9 @@ import Proposal from '../widgets/Proposal'
 
 export default {
   name: 'SimplePoll',
-  emits: ['valid'],
   props: {
-    proposals: Array
+    proposals: Array,
+    modelValue: Object
   },
   components: {
     Proposal
@@ -54,19 +54,18 @@ export default {
 
     function change (opt) {
       selected.value = opt
-      emit('valid', { choice: opt })
+      emit('update:modelValue', { choice: opt })
     }
 
-    function setCurrent (vote) {
-      change(vote.choice)
-    }
+    watch(_ => props.modelValue, vote => {
+      selected.value = vote && vote.choice
+    })
 
     return {
       change,
       selected,
       options,
-      getUser,
-      setCurrent
+      getUser
     }
   }
 }

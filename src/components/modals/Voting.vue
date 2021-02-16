@@ -3,9 +3,9 @@
     <h2 v-if="abstained">{{ t('poll.abstainRegistered') }}</h2>
     <h2 v-else-if="done">{{ t('poll.voteRegistered') }}</h2>
     <template v-else>
-      <component ref="method" :is="methodComponent" :proposals="proposals" @valid="setValid" />
+      <component ref="method" :is="methodComponent" :proposals="proposals" v-model="validVote" />
       <div class="buttons btn-group">
-        <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote(validVote)">{{ t('poll.castVote') }}</btn>
+        <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote()">{{ t('poll.castVote') }}</btn>
         <btn icon="block" :class="{ active: currentAbstained && !validVote }" :disable="waiting" @click="abstainVote()">{{ t('poll.abstain') }}</btn>
       </div>
     </template>
@@ -13,12 +13,13 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, provide, ref } from 'vue'
 
 import useProposals from '@/composables/meeting/useProposals'
 import pollMethods from '../pollmethods'
 import useAlert from '../../composables/useAlert'
 import useChannels from '../../composables/useChannels'
+import useMeeting from '@/composables/meeting/useMeeting'
 
 export default {
   name: 'VotingModal',
@@ -30,8 +31,9 @@ export default {
     const { getPollProposals } = useProposals()
     const { alert } = useAlert()
     const channels = useChannels('vote', { alertOnError: false })
-    const method = ref(null)
+    const { hasRole } = useMeeting()
 
+    const method = ref(null)
     const waiting = ref(false)
     const abstained = ref(false)
     const done = ref(false)
@@ -45,12 +47,9 @@ export default {
     // Valid vote value emitted from method
     const currentAbstained = ref(false)
     const validVote = ref(null)
-    function setValid (vote) {
-      validVote.value = vote
-    }
 
-    function castVote (vote) {
-      if (vote) {
+    function castVote () {
+      if (validVote.value) {
         waiting.value = true
         // Hopefully
         // const msg = {
@@ -60,7 +59,7 @@ export default {
         // channels.add(props.data.pk, msg)
         const msg = {
           pk: props.data.pk,
-          vote
+          vote: validVote.value
         }
         channels.post(`${props.data.method_name}_vote.add`, msg)
           .then(_ => {
@@ -70,7 +69,7 @@ export default {
             waiting.value = false
           })
       } else {
-        alert(`*not implemented (value: ${vote})`)
+        alert(`*not implemented (value: ${validVote.value})`)
       }
     }
 
@@ -87,22 +86,24 @@ export default {
     onBeforeMount(_ => {
       channels.get(props.data.pk)
         .then(({ p }) => {
-          if (p.vote) method.value.setCurrent(p.vote)
+          if (p.vote) validVote.value = p.vote
           currentAbstained.value = p.abstain
         })
+        .catch(_ => {}) // Should mean no previous vote
     })
+
+    provide('hasRole', hasRole)
 
     return {
       proposals,
       methodComponent,
+      method,
       waiting,
       abstained,
       done,
       validVote,
-      setValid,
-      castVote,
-      method,
       currentAbstained,
+      castVote,
       abstainVote
     }
   }

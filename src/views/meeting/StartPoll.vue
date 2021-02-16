@@ -35,11 +35,11 @@
       <ul>
         <li :class="{ selected: m.name === methodSelected }" v-for="m in availableMethods" :key="m.name">
           <a href="#" @click.prevent="selectMethod(m)">{{ m.title }}</a>
-          <div v-show="m.name === methodSelected" v-if="m.multipleWinners">
+          <div v-if="methodSettings && m.name === methodSelected">
             <!-- TODO Load schema for method, preferably providing proposal count -->
             <h3>{{ t('options') }}</h3>
             <label :for="m.name + '_winners'">{{ t('winners') }}</label>
-            <input :id="m.name + '_winners'" type="number" :value="m.winnersMin || 1" :min="m.winnersMin || 1" :max="selectedProposals.size - (m.losersMin || 0)">
+            <input v-model="methodSettings.winners" :id="m.name + '_winners'" type="number" :min="m.winnersMin || 1" :max="selectedProposals.length - (m.losersMin || 0)">
           </div>
         </li>
       </ul>
@@ -63,6 +63,7 @@ import useProposals from '@/composables/meeting/useProposals.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 
 import pollMethods from '@/schemas/pollMethods.json'
+import implementedMethods from '@/components/pollmethods'
 
 import Poll from '@/components/widgets/Poll'
 import Proposal from '@/components/widgets/Proposal'
@@ -118,8 +119,18 @@ export default {
       return pollMethods.filter(methodFilter)
     })
     const methodSelected = ref(null)
-    function selectMethod (m) {
-      methodSelected.value = methodSelected.value === m.name ? null : m.name
+    const methodSettings = ref(null)
+    function selectMethod (method) {
+      // If same, deselect
+      if (methodSelected.value === method.name) {
+        methodSelected.value = null
+      } else {
+        methodSelected.value = method.name
+        // Initialize settings TODO
+        methodSettings.value = method.multipleWinners ? {
+          winners: method.winnersMin || 2
+        } : null
+      }
     }
 
     const working = ref(false)
@@ -131,13 +142,14 @@ export default {
 
     function createPoll (start = false) {
       const method = pollMethods.find(m => m.name === methodSelected.value)
-      if (method.name === 'simple') {
+      if (method.name in implementedMethods) {
         working.value = true
         restApi.post('polls/', {
           agenda_item: agendaId.value,
           proposal_pks: [...selectedProposalIds.value].join(','),
           method_name: method.name,
-          start
+          start,
+          settings: methodSettings.value
         })
           .then(({ data }) => {
             createdPollPk.value = data.pk
@@ -165,6 +177,7 @@ export default {
       pickMethod,
       availableMethods,
       methodSelected,
+      methodSettings,
       selectMethod,
       readyToCreate,
       createPoll,

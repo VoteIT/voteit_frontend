@@ -1,5 +1,6 @@
 <template>
   <div class="proposal" :class="{ selected }">
+    <slot name="top"/>
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><moment :date="p.created" /></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
@@ -8,6 +9,7 @@
       <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn sm icon="delete" @click="queryDelete" />
     </div>
+    <slot name="bottom"/>
   </div>
 </template>
 
