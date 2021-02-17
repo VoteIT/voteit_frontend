@@ -20,7 +20,8 @@
     "loggedInAs": "Logged in as {username}"
   },
   "content": {
-    "addName": "Add {name}"
+    "addName": "Add {name}",
+    "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
   },
   "discussion": {
     "deletePrompt": "You are about to delete a discussion post permanently.\nAre you sure?",
