@@ -1,9 +1,11 @@
 import useAuthentication from '../composables/useAuthentication'
-import Meeting from './meeting'
+import meeting from './meeting'
+import poll from './poll'
 
 const { isAuthenticated } = useAuthentication()
 const RULES = {
-  Meeting
+  'meeting.meeting': meeting,
+  'poll.poll': poll
 }
 
 export default function usePermissions (contentType) {

@@ -6,11 +6,11 @@ const meetingRoles = useContextRoles('Meeting')
 const { getState } = useWorkflows('Meeting')
 const { user } = useAuthentication()
 
-/*
 function isParticipant (meeting) {
   return meetingRoles.hasRole(meeting.pk, 'participant')
 }
 
+/*
 function isProposer (meeting) {
   return meetingRoles.hasRole(meeting.pk, 'proposer')
 }
@@ -45,6 +45,7 @@ function canDelete (meeting) {
 }
 
 export default {
+  isParticipant,
   canAdd,
   canChange,
   canDelete

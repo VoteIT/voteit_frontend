@@ -5,7 +5,7 @@
       <workflow-state :state="poll.state" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
     </div>
     <div class="body">
-      <btn @click="vote" icon="ballot" v-if="isOngoing && hasRole('potential_voter')">{{ t('poll.vote') }}</btn>
+      <btn @click="vote" icon="ballot" v-if="hasPerm('vote', poll)">{{ t('poll.vote') }}</btn>
       <p v-if="poll.state === 'finished'">
         {{ poll.result_data }}
       </p>
@@ -29,6 +29,7 @@ import useModal from '../../composables/useModal'
 import WorkflowState from '../../components/widgets/WorkflowState'
 import BtnDropdown from '../../components/BtnDropdown'
 import Voting from '../../components/modals/Voting'
+import usePermissions from '@/rules/usePermissions'
 
 export default {
   name: 'Poll',
@@ -44,6 +45,7 @@ export default {
     const channels = useChannels('poll')
     const { openModal } = useModal()
     const isOngoing = computed(_ => props.poll.state === 'ongoing')
+    const { hasPerm } = usePermissions('poll.poll')
 
     const t = inject('t')
 
@@ -72,6 +74,7 @@ export default {
     })
 
     return {
+      hasPerm,
       isOngoing,
       active,
       vote,

@@ -127,7 +127,7 @@ export default {
     })
 
     // Add meeting
-    const { hasPerm } = usePermissions('Meeting')
+    const { hasPerm } = usePermissions('meeting.meeting')
     const { openModal } = useModal()
 
     function startNewMeeting () {

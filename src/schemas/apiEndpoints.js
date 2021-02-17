@@ -36,5 +36,9 @@ export default {
   },
   access_policy: {
     uri: 'access-policies'
+  },
+  // New format, like Django natural_key. TODO: Use this everywhere or nowhere.
+  'poll.electoralregister': {
+    uri: 'electoral-registers'
   }
 }
