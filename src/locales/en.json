@@ -54,6 +54,7 @@
     "castVote": "Cast vote",
     "created": "Created poll {title}",
     "deny": "Deny",
+    "details": "Poll details",
     "new": "New poll",
     "orderProposals": "Order proposals",
     "orderProposalsDescription": "Drag and drop proposals to adjust order.",

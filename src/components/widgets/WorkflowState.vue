@@ -10,25 +10,39 @@
 
 <script>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import useAlert from '../../composables/useAlert'
-import useContentApi from '../../composables/useContentApi'
+import useAlert from '@/composables/useAlert'
+import contentTypes from '@/contentTypes'
 
 export default {
   name: 'WorkflowState',
   props: {
     admin: Boolean,
-    pk: Number,
-    state: String,
-    contentType: String
+    pk: {
+      type: Number,
+      required: true
+    },
+    state: {
+      type: String,
+      required: true
+    },
+    contentType: {
+      type: String,
+      required: true
+    }
   },
   setup (props) {
-    const contentApi = useContentApi(props.contentType)
+    const contentType = contentTypes[props.contentType]
+    if (!contentType) {
+      throw new Error(`${props.contentType} has no registered Content Type`)
+    }
+    const contentApi = contentType.useContentApi()
+    const { getState } = contentType.useWorkflows()
     const statesAvailable = ref(null)
     const isOpen = ref(false)
     const { alert } = useAlert()
 
     const currentState = computed(
-      _ => contentApi.states.find(s => s.state === props.state)
+      _ => getState(props.state)
     )
 
     function focusButton (where) {

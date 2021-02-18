@@ -2,11 +2,9 @@
   <div>
     <h1>{{ agendaItem.title }}</h1>
     <div class="btn-controls">
-      <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="hasRole('moderator')" content-type="agenda_item" :pk="agendaId" />
-      <template v-if="hasRole('moderator')">
-        <btn sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
-        <btn sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
-      </template>
+      <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaRules.canChange(agendaItem)" content-type="agendaItem" :pk="agendaId" />
+      <btn v-if="pollRules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
+      <btn v-if="agendaRules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
     </div>
     <richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div class="spaker-lists" v-if="hasSpeakerSystems">
@@ -22,9 +20,8 @@
           </li>
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
-        <add-content v-if="hasProposalPerm('add', agendaItem)" :name="t('proposal.proposal')"
-          :context-pk="agendaId" content-type="proposal"
-          endpoint="proposals/" :params="{ agenda_item: agendaId }"/>
+        <add-content v-if="proposalRules.canAdd(agendaItem)" :name="t('proposal.proposal')"
+          :context-pk="agendaId" content-type="proposal"/>
       </div>
       <div class="col-sm-6">
         <h2>{{ t('discussion.discussions') }}</h2>
@@ -34,9 +31,8 @@
           </li>
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
-        <add-content v-if="hasRole('discusser')" :name="t('discussion.discussion')"
-          :context-pk="agendaId" content-type="discussion_post"
-          endpoint="discussion-posts/" :params="{ agenda_item: agendaId }"/>
+        <add-content v-if="discussionRules.canAdd(agendaItem)" :name="t('discussion.discussion')"
+          :context-pk="agendaId" content-type="discussion_post"/>
       </div>
     </div>
   </div>
@@ -58,11 +54,15 @@ import useDiscussions from '@/composables/meeting/useDiscussions'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
-import usePermissions from '@/rules/usePermissions'
+
+import agendaRules from '@/contentTypes/agendaItem/rules'
+import discussionRules from '@/contentTypes/discussionPost/rules'
+import pollRules from '@/contentTypes/poll/rules'
+import proposalRules from '@/contentTypes/proposal/rules'
 
 export default {
   name: 'AgendaItem',
-  inject: ['t', 'hasRole'],
+  inject: ['t'],
   setup () {
     const discussions = useDiscussions()
     const proposals = useProposals()
@@ -104,7 +104,11 @@ export default {
       speakerLists,
       channel,
       editingBody,
-      hasProposalPerm: usePermissions('proposal.proposal').hasPerm
+
+      proposalRules,
+      discussionRules,
+      pollRules,
+      agendaRules
     }
   },
   components: {

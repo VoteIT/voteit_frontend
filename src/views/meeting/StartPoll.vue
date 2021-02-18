@@ -1,16 +1,14 @@
 <template>
-  <div v-if="createdPoll">
-    <h1>{{ t('poll.created', createdPoll) }}</h1>
-    <poll :poll="createdPoll"/>
-  </div>
-  <div v-else>
+  <div>
     <h1>Start poll</h1>
     <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
     <btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <icon name="close"/></btn>
     <ul v-else>
-      <li v-for="ai in getAgenda(meetingId)" :key="ai.pk">
-        <router-link :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }}</router-link>
-      </li>
+      <template v-for="ai in getAgenda(meetingId)" :key="ai.pk">
+        <li v-if="canAdd(ai)">
+          <router-link :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }}</router-link>
+        </li>
+      </template>
     </ul>
     <template v-if="agendaId">
       <h2>{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
@@ -59,54 +57,56 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
-import useAlert from '@/composables/useAlert.js'
-import useRestApi from '../../composables/useRestApi'
+import { computed, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
-import useMeeting from '@/composables/meeting/useMeeting.js'
-import useAgenda from '@/composables/meeting/useAgenda.js'
-import useProposals from '@/composables/meeting/useProposals.js'
-import usePolls from '@/composables/meeting/usePolls.js'
+import useAgenda from '@/composables/meeting/useAgenda'
+import useAlert from '@/composables/useAlert'
+import useRestApi from '@/composables/useRestApi'
+import useMeeting from '@/composables/meeting/useMeeting'
+import useProposals from '@/composables/meeting/useProposals'
 
 import pollMethods from '@/schemas/pollMethods.json'
-import implementedMethods from '@/components/pollmethods'
 
-import Poll from '@/components/widgets/Poll'
+import implementedMethods from '@/components/pollmethods'
 import Proposal from '@/components/widgets/Proposal'
+
+import rules from '@/contentTypes/poll/rules'
+import { slugify } from '@/utils'
 
 export default {
   name: 'StartPoll',
   inject: ['t'],
   components: {
-    Poll,
     Proposal
   },
   setup () {
+    const router = useRouter()
     const restApi = useRestApi()
     const proposals = useProposals()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
-    const { getPoll } = usePolls()
+    const { meetingPath } = useMeeting()
     const { alert } = useAlert()
 
-    const selectedProposalIds = ref(new Set())
+    const selectedProposalIds = reactive(new Set())
     const availableProposals = computed(_ => proposals.getAgendaProposals(agendaId.value, 'published'))
-    const selectedProposals = computed(_ => availableProposals.value.filter(p => selectedProposalIds.value.has(p.pk)))
+    const selectedProposals = computed(_ => availableProposals.value.filter(p => selectedProposalIds.has(p.pk)))
 
     function toggleSelected (p) {
       if (!pickMethod.value) {
-        if (selectedProposalIds.value.has(p.pk)) {
-          selectedProposalIds.value.delete(p.pk)
+        if (selectedProposalIds.has(p.pk)) {
+          selectedProposalIds.delete(p.pk)
         } else {
-          selectedProposalIds.value.add(p.pk)
+          selectedProposalIds.add(p.pk)
         }
       }
     }
     function toggleAll () {
       if (selectedProposals.value.length === availableProposals.value.length) {
-        selectedProposalIds.value.clear()
+        selectedProposalIds.clear()
       } else {
         availableProposals.value
-          .forEach(p => selectedProposalIds.value.add(p.pk))
+          .forEach(p => selectedProposalIds.add(p.pk))
       }
     }
 
@@ -142,7 +142,7 @@ export default {
 
     const working = ref(false)
     const createdPollPk = ref(null)
-    const createdPoll = computed(_ => getPoll(createdPollPk.value))
+    // const createdPoll = computed(_ => getPoll(createdPollPk.value))
     const readyToCreate = computed(_ => {
       return methodSelected.value && !working.value && !createdPollPk.value
     })
@@ -153,7 +153,7 @@ export default {
         working.value = true
         const pollData = {
           agenda_item: agendaId.value,
-          proposal_pks: [...selectedProposalIds.value].join(','),
+          proposal_pks: [...selectedProposalIds].join(','),
           method_name: method.name,
           start,
           settings: methodSettings.value
@@ -168,7 +168,7 @@ export default {
         }
         restApi.post('polls/', pollData)
           .then(({ data }) => {
-            createdPollPk.value = data.pk
+            router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
           })
           .finally(_ => {
             working.value = false
@@ -180,7 +180,7 @@ export default {
 
     watch(agendaId, _ => {
       pickMethod.value = false
-      selectedProposalIds.value.clear()
+      selectedProposalIds.clear()
     })
 
     return {
@@ -197,14 +197,14 @@ export default {
       selectMethod,
       readyToCreate,
       createPoll,
-      createdPoll,
 
       agendaId,
       agendaItem,
       getAgenda,
 
       ...useMeeting(),
-      ...proposals
+      ...proposals,
+      ...rules
     }
   }
 }

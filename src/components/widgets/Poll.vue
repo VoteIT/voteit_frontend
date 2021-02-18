@@ -2,10 +2,10 @@
   <div class="poll">
     <div class="head">
       <h2>{{ poll.title }}</h2>
-      <workflow-state :state="poll.state" :admin="hasRole('moderator')" content-type="poll" :pk="poll.pk" />
+      <workflow-state :state="poll.state" :admin="canChange(poll)" content-type="poll" :pk="poll.pk" />
     </div>
     <div class="body">
-      <btn @click="vote" icon="ballot" v-if="hasPerm('vote', poll)">{{ t('poll.vote') }}</btn>
+      <btn @click="vote" icon="ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
       <p v-if="poll.state === 'finished'">
         {{ poll.result_data }}
       </p>
@@ -26,14 +26,14 @@ import { computed, inject, onBeforeUnmount, ref, watch } from 'vue'
 import useChannels from '../../composables/useChannels'
 import useModal from '../../composables/useModal'
 
-import WorkflowState from '../../components/widgets/WorkflowState'
-import BtnDropdown from '../../components/BtnDropdown'
-import Voting from '../../components/modals/Voting'
-import usePermissions from '@/rules/usePermissions'
+import WorkflowState from '@/components/widgets/WorkflowState'
+import BtnDropdown from '@/components/BtnDropdown'
+import Voting from '@/components/modals/Voting'
+
+import rules from '@/contentTypes/poll/rules'
 
 export default {
   name: 'Poll',
-  inject: ['hasRole'],
   props: {
     poll: Object
   },
@@ -45,7 +45,6 @@ export default {
     const channels = useChannels('poll')
     const { openModal } = useModal()
     const isOngoing = computed(_ => props.poll.state === 'ongoing')
-    const { hasPerm } = usePermissions('poll.poll')
 
     const t = inject('t')
 
@@ -74,7 +73,7 @@ export default {
     })
 
     return {
-      hasPerm,
+      ...rules,
       isOngoing,
       active,
       vote,

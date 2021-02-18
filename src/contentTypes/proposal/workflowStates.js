@@ -1,0 +1,32 @@
+export default [
+  {
+    transition: 'publish',
+    icon: 'visibility',
+    state: 'published'
+  },
+  {
+    transition: 'retract',
+    icon: 'visibility_off',
+    state: 'retracted'
+  },
+  {
+    transition: 'lock_for_vote',
+    icon: 'how_to_vote',
+    state: 'voting'
+  },
+  {
+    transition: 'approved',
+    icon: 'check',
+    state: 'approved'
+  },
+  {
+    transition: 'denied',
+    icon: 'close',
+    state: 'denied'
+  },
+  {
+    transition: 'unhandled',
+    icon: 'block',
+    state: 'unhandled'
+  }
+]

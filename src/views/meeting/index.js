@@ -1,14 +1,16 @@
-import AgendaItem from './AgendaItem.vue'
-import Meeting from './Meeting.vue'
-import Participants from './Participants.vue'
-import Polls from './Polls.vue'
-import Start from './Start.vue'
-import StartPoll from './StartPoll.vue'
+import AgendaItem from './AgendaItem'
+import Meeting from './Meeting'
+import Participants from './Participants'
+import Poll from './Poll'
+import Polls from './Polls'
+import Start from './Start'
+import StartPoll from './StartPoll'
 
 export default {
   AgendaItem,
   Meeting,
   Participants,
+  Poll,
   Polls,
   Start,
   StartPoll

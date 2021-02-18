@@ -1,11 +1,11 @@
 import { reactive } from 'vue'
-import useContentApi from '../useContentApi'
+import electoralRegisterType from '@/contentTypes/electoralRegister'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive(new Map())
+const registerApi = electoralRegisterType.useContentApi()
 
 export default function useElectoralRegisters () {
-  const registerApi = useContentApi('poll.electoralregister')
   function getRegister (pk) {
     if (registers.has(pk)) {
       return registers.get(pk)

@@ -6,7 +6,7 @@
         <li v-for="ai in getAiType(s.state)" :key="ai.pk"><router-link :to="getAiPath(ai)">{{ ai.title }}</router-link></li>
       </ul>
     </template>
-    <btn-dropdown dark title="New agenda item" @open="focusInput" v-if="hasPerm('add', meeting)">
+    <btn-dropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
         <input class="btn" type="submit" value="Add"/>
@@ -18,12 +18,9 @@
 <script>
 import { computed, ref } from 'vue'
 
-import agendaStates from '@/workflows/agendaStates.json'
-
 import useAgenda from '@/composables/meeting/useAgenda'
-import useContentApi from '@/composables/useContentApi'
 import useMeeting from '@/composables/meeting/useMeeting'
-import usePermissions from '@/rules/usePermissions'
+import agendaItemType from '@/contentTypes/agendaItem'
 
 import BtnDropdown from '../BtnDropdown.vue'
 import { slugify } from '@/utils'
@@ -37,8 +34,7 @@ export default {
     const { getAgenda } = useAgenda()
     const { meeting, meetingPath, hasRole } = useMeeting()
     const agenda = computed(_ => getAgenda(meeting.value.pk))
-    const agendaApi = useContentApi('agenda_item')
-    const { hasPerm } = usePermissions('agenda.agendaitem')
+    const agendaApi = agendaItemType.useContentApi()
 
     // Add AgendaItem
     const newAgendaTitle = ref('')
@@ -65,7 +61,7 @@ export default {
 
     const aiGroups = computed(_ => {
       return AI_ORDER
-        .map(state => agendaStates.find(s => s.state === state))
+        .map(state => agendaItemType.workflowStates.find(s => s.state === state))
         .filter(s => !s.requiresRole || hasRole(s.requiresRole))
     })
 
@@ -74,7 +70,7 @@ export default {
       getAiPath,
       getAiType,
       aiGroups,
-      hasPerm,
+      ...agendaItemType.rules,
 
       newAgendaTitle,
       addAgendaItem,

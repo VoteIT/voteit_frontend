@@ -1,18 +1,12 @@
-import { meetings } from '../composables/useMeetings'
-import { agendaItems } from '../composables/meeting/useAgenda'
-import useAuthentication from '../composables/useAuthentication'
+import { meetings } from '@/composables/useMeetings'
+import { agendaItems } from '@/composables/meeting/useAgenda'
 
-import meetingRules from './meeting'
-import agendaRules from './agenda'
-
-const { user } = useAuthentication()
+import meetingRules from '../meeting/rules'
+import agendaRules from '../agendaItem/rules'
+import { isAuthor } from '../rules'
 
 function isPublished (proposal) {
   return proposal.state === 'published'
-}
-
-function isAuthor (proposal) {
-  return proposal.author === user.value.pk
 }
 
 function isUsedInPoll (proposal) {

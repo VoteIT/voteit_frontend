@@ -8,7 +8,7 @@
 import Quill from 'quill'
 import 'quill-mention'
 import { onMounted, ref } from 'vue'
-import useContentApi from '@/composables/useContentApi'
+import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/composables/meeting/useMeeting'
 
 const QUILL_CONFIG = {
@@ -47,7 +47,7 @@ export default {
     const editorElement = ref(null)
     const completionsElement = ref(null)
 
-    const rolesApi = useContentApi('meeting_roles')
+    const rolesApi = meetingRoleType.useContentApi()
     const { meetingId } = useMeeting()
 
     function tagObject (tagName) {

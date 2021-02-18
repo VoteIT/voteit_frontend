@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue'
 
-import useContentApi from './useContentApi'
+import meetingType from '@/contentTypes/meeting'
 import useChannels from './useChannels'
 
 export const meetings = reactive(new Map())
@@ -10,7 +10,7 @@ useChannels('meeting')
   .updateMap(meetings)
 
 export default function useMeetings () {
-  const meetingApi = useContentApi('meeting')
+  const meetingApi = meetingType.useContentApi()
 
   const orderedMeetings = computed(_ => {
     return meetingList.value.map(id => meetings.get(id))

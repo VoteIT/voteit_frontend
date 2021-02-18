@@ -1,9 +1,12 @@
-import useAuthentication from '../composables/useAuthentication'
-import useContextRoles from '../composables/useContextRoles'
-import useWorkflows from '../workflows/useWorkflows'
+import useAuthentication from '@/composables/useAuthentication'
+import useContextRoles from '@/composables/useContextRoles'
+
+import useWorkflows from '../useWorkflows'
+import workflowStates from './workflowStates'
 
 const { hasRole } = useContextRoles('Meeting')
-const { getState } = useWorkflows('Meeting')
+// Import this a bit differently, to avoid cirkular imports
+const { getState } = useWorkflows(workflowStates)
 const { user } = useAuthentication()
 
 const FINISHED_STATES = ['closed', 'archiving', 'archived']
@@ -29,23 +32,24 @@ function isModerator (meeting) {
 }
 
 function isArchived (meeting) {
-  return !meeting.state || !getState(meeting.state).isFinal
+  return !meeting.state || getState(meeting.state).isFinal
 }
 
 function isFinished (meeting) {
   return FINISHED_STATES.includes(meeting.state)
 }
 
+function canView (meeting) {
+  return isParticipant(meeting)
+}
+
 function canAdd () {
+  // TODO organization meeting creator role
   return user.value.is_superuser
 }
 
 function canChange (meeting) {
-  return isModerator(meeting)
-}
-
-function canDelete (meeting) {
-  return isModerator(meeting) && !isArchived(meeting)
+  return !isArchived(meeting) && isModerator(meeting)
 }
 
 export default {
@@ -56,7 +60,8 @@ export default {
   isProposer,
   isDiscusser,
   isPotentialVoter,
+  canView,
   canAdd,
   canChange,
-  canDelete
+  canDelete: canChange
 }

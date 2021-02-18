@@ -1,9 +1,9 @@
 import { ref } from 'vue'
 
-import { dateify, orderBy } from '../../utils/index.js'
+import { dateify, orderBy } from '@/utils'
 
-import useChannels from '../useChannels.js'
-import useContentApi from '../useContentApi.js'
+import useChannels from '../useChannels'
+import proposalType from '@/contentTypes/proposal'
 
 const proposals = ref([])
 
@@ -27,9 +27,9 @@ useChannels('agenda_item').onLeave(agendaPk => {
   )
 })
 
-export default function useProposals () {
-  const pollApi = useContentApi('proposal')
+const proposalApi = proposalType.useContentApi()
 
+export default function useProposals () {
   function setProposals (ps) {
     ps.forEach(newProp => {
       const index = proposals.value.findIndex(p => p.pk === newProp.pk)
@@ -42,7 +42,7 @@ export default function useProposals () {
   }
 
   async function fetchAgendaProposals (agendaId) {
-    return pollApi.list({ agenda_item: agendaId })
+    return proposalApi.list({ agenda_item: agendaId })
       .then(({ data }) => {
         // Clean up any previously set proposals for this agenda item
         proposals.value = proposals.value.filter(p => p.agenda_item !== agendaId)
@@ -62,7 +62,7 @@ export default function useProposals () {
   function getPollProposals (pk) {
     const props = proposals.value.filter(p => p.polls.includes(pk))
     if (!props.length) {
-      pollApi.list({ polls: pk })
+      proposalApi.list({ polls: pk })
         .then(({ data }) => {
           setProposals(data)
         })

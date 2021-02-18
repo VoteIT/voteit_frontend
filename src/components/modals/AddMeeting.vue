@@ -15,14 +15,14 @@ import { useRouter } from 'vue-router'
 
 import { emitter, slugify } from '@/utils'
 
-import useContentApi from '@/composables/useContentApi'
+import meetingType from '@/contentTypes/meeting'
 
 export default {
   name: 'AddMeetingModal',
   inject: ['t'],
   setup () {
     const router = useRouter()
-    const meetingApi = useContentApi('meeting')
+    const meetingApi = meetingType.useContentApi()
     const formData = ref({
       title: '',
       public: false

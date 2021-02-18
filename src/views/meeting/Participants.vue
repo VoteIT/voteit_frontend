@@ -14,7 +14,7 @@
       <tr v-for="{ userPk } in participants" :key="userPk">
         <td><user :pk="userPk" /></td>
         <td v-for="{ name } in roles" :key="name">
-          <icon class="active" v-if="hasRole(name, userPk)" name="check" @click="removeRole(userPk, name)" />
+          <icon v-if="hasRole(name, userPk)" class="active" name="check" @click="removeRole(userPk, name)" />
           <icon v-else name="close" @click="addRole(userPk, name)" />
         </td>
       </tr>

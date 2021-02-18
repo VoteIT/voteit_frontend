@@ -48,6 +48,10 @@ export default {
       }
     }
 
+    watch(_ => props.object, value => {
+      content.value = value[props.contentAttribute]
+    })
+
     watch(_ => props.editing, value => {
       if (!value) submit()
     })

@@ -2,9 +2,9 @@
   <div>
     <h3>
       {{ list.title }}
-      <workflow-state :state="list.state" content-type="speaker_list" :pk="pk" :admin="isModerator" />
+      <workflow-state :state="list.state" content-type="speakerList" :pk="pk" :admin="canChange(list)" />
     </h3>
-    <div v-if="isModerator" class="btn-group">
+    <div v-if="canStart(list)" class="btn-group">
       <btn icon="play_arrow" :disabled="!listIsActive || !queue.length" @click="speakers.startSpeaker(pk)" />
       <btn icon="stop" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(pk)" />
       <btn :disabled="listIsActive" :icon="listIsActive ? 'toggle_on' : 'toggle_off'" :title="listIsActive ? 'List is active' : 'Set active'" @click="speakers.setActiveList(pk)" />
@@ -23,9 +23,12 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
+import rules from '@/contentTypes/speakerList/rules'
+
 import WorkflowState from './WorkflowState'
-import { computed, inject } from 'vue'
 
 export default {
   name: 'SpeakerList',
@@ -36,7 +39,6 @@ export default {
     WorkflowState
   },
   setup (props) {
-    const hasRole = inject('hasRole')
     const speakers = useSpeakerLists()
 
     const list = computed(_ => speakers.getList(props.pk))
@@ -44,7 +46,6 @@ export default {
     const queue = computed(_ => speakers.getQueue(props.pk))
     const currentSpeaker = computed(_ => speakers.getCurrent(props.pk))
     const inList = computed(_ => speakers.userInList(props.pk))
-    const isModerator = computed(_ => hasRole('moderator'))
     const listIsActive = computed(_ => listSystem.value && listSystem.value.active_list === props.pk)
 
     return {
@@ -53,7 +54,7 @@ export default {
       queue,
       currentSpeaker,
       inList,
-      isModerator,
+      ...rules,
       speakers
     }
   }

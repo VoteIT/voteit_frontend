@@ -18,7 +18,7 @@ import useLoader from '@/composables/useLoader'
 import useMeeting from '@/composables/meeting/useMeeting'
 
 import Richtext from '@/components/widgets/Richtext.vue'
-import useContentApi from '@/composables/useContentApi'
+import accessPolicyType from '@/contentTypes/accessPolicy'
 
 export default {
   components: { Richtext },
@@ -28,7 +28,7 @@ export default {
     const { meeting, meetingId, meetingPath, meetingApi, setMeeting } = useMeeting()
     const loader = useLoader('JoinMeeting')
     const router = useRouter()
-    const policyApi = useContentApi('access_policy')
+    const policyApi = accessPolicyType.useContentApi()
     const policies = ref([])
     const working = ref(false)
 

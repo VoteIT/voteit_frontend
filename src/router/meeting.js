@@ -26,6 +26,11 @@ export default {
           component: meeting.Polls
         },
         {
+          path: ':pid/:pslug',
+          name: 'poll',
+          component: meeting.Poll
+        },
+        {
           path: 'new',
           name: 'start-poll',
           component: meeting.StartPoll

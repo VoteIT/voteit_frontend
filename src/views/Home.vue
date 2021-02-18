@@ -19,7 +19,7 @@
         </li>
       </ul>
     </template>
-    <div v-if="hasPerm('add')">
+    <div v-if="canAdd()">
       <btn icon="add" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
     </div>
     <template v-if="debug">
@@ -58,23 +58,23 @@
 <script>
 import { computed, inject, onBeforeMount, ref, watch } from 'vue'
 
+import AddMeetingVue from '@/components/modals/AddMeeting'
 import Counter from '@/components/examples/Counter'
 import getSchema from '@/components/examples/GetSchema'
 
-import useAuthentication from '@/composables/useAuthentication.js'
-import useContentApi from '@/composables/useContentApi.js'
-import useLoader from '@/composables/useLoader.js'
-import useMeetings from '@/composables/useMeetings.js'
-import usePermissions from '@/rules/usePermissions'
+import devLogin from '@/contentTypes/devLogin'
+import rules from '@/contentTypes/meeting/rules'
+import useAuthentication from '@/composables/useAuthentication'
+import useLoader from '@/composables/useLoader'
+import useMeetings from '@/composables/useMeetings'
 import useModal from '@/composables/useModal'
-import AddMeetingVue from '@/components/modals/AddMeeting.vue'
 
 export default {
   name: 'Home',
   inject: ['debug'],
   setup () {
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
-    const devApi = useContentApi('dev_login')
+    const devApi = devLogin.useContentApi()
     const { authenticate, logout, isAuthenticated, user } = useAuthentication()
     const users = ref([])
     const loader = useLoader('Home')
@@ -127,7 +127,6 @@ export default {
     })
 
     // Add meeting
-    const { hasPerm } = usePermissions('meeting.meeting')
     const { openModal } = useModal()
 
     function startNewMeeting () {
@@ -152,7 +151,7 @@ export default {
       newUserError,
       createUser,
 
-      hasPerm,
+      ...rules,
       startNewMeeting
     }
   },

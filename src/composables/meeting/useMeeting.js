@@ -7,7 +7,7 @@ import { slugify, restApi } from '@/utils'
 import useContextRoles from '../useContextRoles.js'
 import useAuthentication from '../useAuthentication.js'
 import { meetings } from '../useMeetings.js'
-import useContentApi from '../useContentApi.js'
+import meetingType from '@/contentTypes/meeting'
 
 const FORCE_ROLES_FETCH = false
 
@@ -19,7 +19,7 @@ let pFetchTimeout = null
 export default function useMeeting () {
   const route = useRoute()
   const meetingRoles = useContextRoles('Meeting')
-  const meetingApi = useContentApi('meeting')
+  const meetingApi = meetingType.useContentApi()
   const { user } = useAuthentication()
 
   function setMeeting (meeting) {

@@ -12,7 +12,6 @@
 <script>
 import { computed, inject, ref } from 'vue'
 
-import useContentApi from '../../composables/useContentApi'
 import useChannels from '../../composables/useChannels'
 
 import BtnDropdown from '../BtnDropdown'
@@ -28,13 +27,9 @@ export default {
   },
   props: {
     name: String,
-    // For rest
-    endpoint: String,
-    params: Object,
     // For channels:
     contextPk: Number,
     contentType: String,
-    useRest: Boolean,
     minLength: {
       type: Number,
       default: 1
@@ -48,7 +43,6 @@ export default {
     const t = inject('t')
     // Post (data update from channels)
     const channels = useChannels(props.contentType)
-    const contentApi = useContentApi(props.contentType)
     const submitting = ref(false)
     const text = ref('')
 
@@ -66,16 +60,9 @@ export default {
       if (override || textLength.value >= props.warnLength) {
         const body = text.value
         submitting.value = true
-        let request
-        if (props.useRest) {
-          const data = Object.assign({ body }, props.params)
-          request = contentApi.add(data)
-        } else {
-          request = channels.add(props.contextPk, {
-            body
-          })
-        }
-        request
+        channels.add(props.contextPk, {
+          body
+        })
           .then(_ => {
             editorComponent.value.clear()
             dropdownComponent.value.isOpen = false

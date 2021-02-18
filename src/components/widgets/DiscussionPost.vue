@@ -3,9 +3,9 @@
     <div class="author"><user :pk="p.author" /></div>
     <div><moment :date="p.created" /></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
-    <div v-if="hasRole('moderator')" class="btn-controls">
-      <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
-      <btn sm icon="delete" @click="queryDelete()" />
+    <div v-if="!readOnly" class="btn-controls">
+      <btn v-if="canChange(p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
+      <btn v-if="canDelete(p)" sm icon="delete" @click="queryDelete()" />
     </div>
   </div>
 </template>
@@ -18,12 +18,13 @@ import Richtext from './Richtext.vue'
 
 import useChannels from '../../composables/useChannels.js'
 import { dialogQuery } from '@/utils'
+import rules from '@/contentTypes/discussionPost/rules'
 
 export default {
   name: 'DiscussionPost',
-  inject: ['hasRole'],
   props: {
-    p: Object
+    p: Object,
+    readOnly: Boolean
   },
   components: {
     Richtext,
@@ -44,7 +45,8 @@ export default {
     return {
       channel,
       editing,
-      queryDelete
+      queryDelete,
+      ...rules
     }
   }
 }

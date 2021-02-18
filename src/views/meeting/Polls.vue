@@ -4,9 +4,7 @@
       <router-link v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></router-link>
     </nav>
     <h1>{{ currentState.name }} polls</h1>
-    <div class="btn-group" v-if="hasRole('moderator')">
-      <btn icon="star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</btn>
-    </div>
+    <btn v-if="canAdd(meeting)" icon="star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</btn>
     <poll :poll="p" v-for="p in polls" :key="p.pk" />
     <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
   </main>
@@ -21,9 +19,9 @@ import { useRoute } from 'vue-router'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 
-import pollStates from '@/workflows/pollStates.js'
+import pollType from '@/contentTypes/poll'
 
-const tabOrder = [
+const TAB_ORDER = [
   'ongoing',
   'upcoming',
   'finished',
@@ -37,23 +35,24 @@ export default {
     Poll
   },
   setup () {
-    const { meetingId, hasRole, meetingPath } = useMeeting()
+    const { meeting, meetingPath } = useMeeting()
     const { getPolls } = usePolls()
     const route = useRoute()
+    const { getState } = pollType.useWorkflows()
 
-    const currentState = computed(_ => pollStates.find(
-      s => s.state === (route.params.state || 'ongoing')
+    const currentState = computed(_ => getState(
+      route.params.state || 'ongoing'
     ) || {})
 
     const polls = computed(_ => {
-      return getPolls(meetingId.value, currentState.value.state)
+      return getPolls(meeting.value.pk, currentState.value.state)
     })
 
     const tabStates = computed(_ => {
-      return tabOrder.map(state => {
+      return TAB_ORDER.map(state => {
         return Object.assign({},
-          pollStates.find(s => s.state === state),
-          { polls: getPolls(meetingId.value, state) }
+          getState(state),
+          { polls: getPolls(meeting.value.pk, state) }
         )
       })
     })
@@ -61,10 +60,10 @@ export default {
     return {
       tabStates,
       currentState,
-      hasRole,
-      meetingId,
+      meeting,
       meetingPath,
       polls,
+      ...pollType.rules,
       getStatePath (s) {
         if (s.state === 'ongoing') {
           return `${meetingPath.value}/polls`
