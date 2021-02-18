@@ -1,26 +1,26 @@
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 import useContentApi from './useContentApi'
 import useChannels from './useChannels'
 
-const meetings = ref(new Map())
+export const meetings = reactive(new Map())
 const meetingList = ref([]) // Sorted meeting id list
 
 useChannels('meeting')
-  .updateMap(meetings.value)
+  .updateMap(meetings)
 
 export default function useMeetings () {
   const meetingApi = useContentApi('meeting')
 
   const orderedMeetings = computed(_ => {
-    return meetingList.value.map(id => meetings.value.get(id))
+    return meetingList.value.map(id => meetings.get(id))
   })
 
   async function fetchMeetings () {
     return meetingApi.list()
       .then(({ data }) => {
         data.forEach(m => {
-          meetings.value.set(m.pk, m)
+          meetings.set(m.pk, m)
         })
         meetingList.value = data.map(m => m.pk)
       })
@@ -28,7 +28,7 @@ export default function useMeetings () {
 
   function clearMeetings () {
     meetingList.value = []
-    meetings.value.clear()
+    meetings.clear()
   }
 
   return {

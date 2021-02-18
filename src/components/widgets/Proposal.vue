@@ -4,10 +4,10 @@
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><moment :date="p.created" /></div>
     <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
-    <div v-if="!readOnly && hasRole('moderator')" class="btn-controls">
-      <workflow-state admin :state="p.state" content-type="proposal" :pk="p.pk" />
-      <btn sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
-      <btn sm icon="delete" @click="queryDelete" />
+    <div class="btn-controls" v-if="!readOnly">
+      <workflow-state :admin="hasPerm('change', p) || hasPerm('retract', p)" :state="p.state" content-type="proposal" :pk="p.pk" />
+      <btn v-if="hasPerm('change', p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
+      <btn v-if="hasPerm('change', p)" :disabled="!hasPerm('delete', p)" sm icon="delete" @click="queryDelete" />
     </div>
     <slot name="bottom"/>
   </div>
@@ -22,10 +22,10 @@ import Richtext from './Richtext.vue'
 import WorkflowState from './WorkflowState.vue'
 
 import useChannels from '@/composables/useChannels'
+import usePermissions from '@/rules/usePermissions'
 
 export default {
   name: 'Proposal',
-  inject: ['hasRole'],
   props: {
     p: Object,
     readOnly: Boolean,
@@ -40,6 +40,7 @@ export default {
     const channel = useChannels('proposal')
     const editing = ref(false)
     const t = inject('t')
+    const { hasPerm } = usePermissions('proposal.proposal')
 
     function queryDelete () {
       dialogQuery(t('proposal.deletePrompt'))
@@ -51,7 +52,8 @@ export default {
     return {
       editing,
       queryDelete,
-      channel
+      channel,
+      hasPerm
     }
   }
 }

@@ -1,16 +1,16 @@
 import wu from 'wu'
-import { ref } from 'vue'
+import { reactive } from 'vue'
 
 import useChannels from '../useChannels'
 import useRestApi from '../useRestApi'
 
-const polls = ref(new Map())
+const polls = reactive(new Map())
 
 useChannels('poll')
-  .updateMap(polls.value)
+  .updateMap(polls)
   .onStatus(item => {
     // Just update existing poll object
-    const poll = polls.value.get(item.pk)
+    const poll = polls.get(item.pk)
     if (poll && poll.voted <= item.voted) { // Throw away statuses with less votes - in case async order wrong
       Object.assign(poll, item)
     }
@@ -20,7 +20,7 @@ export default function usePolls () {
   const restApi = useRestApi()
 
   function getPolls (meetingId, stateName) {
-    const meetingPolls = wu(polls.value.values()).filter(
+    const meetingPolls = wu(polls.values()).filter(
       p => p.meeting === meetingId && (!stateName || p.state === stateName)
     )
     return [...meetingPolls]
@@ -30,15 +30,15 @@ export default function usePolls () {
     return restApi.get('polls/', { params: { agenda_item__meeting: meetingId } })
       .then(({ data }) => {
         // Drop all polls, then push all
-        polls.value.clear()
+        polls.clear()
         data.forEach(p => {
-          polls.value.set(p.pk, p)
+          polls.set(p.pk, p)
         })
       })
   }
 
   function getPoll (pk) {
-    return polls.value.get(pk)
+    return polls.get(pk)
   }
 
   return {

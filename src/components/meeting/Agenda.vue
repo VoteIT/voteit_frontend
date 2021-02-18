@@ -3,10 +3,10 @@
     <template v-for="s in aiGroups" :key="s.state">
       <h2><icon sm :name="s.icon" /> {{ s.state }}</h2>
       <ul class="ai">
-        <li v-for="ai in aiType(s.state)" :key="ai.pk"><router-link :to="aiPath(ai)">{{ ai.title }}</router-link></li>
+        <li v-for="ai in getAiType(s.state)" :key="ai.pk"><router-link :to="getAiPath(ai)">{{ ai.title }}</router-link></li>
       </ul>
     </template>
-    <btn-dropdown dark title="New agenda item" @open="focusInput" v-if="hasRole('moderator')">
+    <btn-dropdown dark title="New agenda item" @open="focusInput" v-if="hasPerm('add', meeting)">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
         <input class="btn" type="submit" value="Add"/>
@@ -20,28 +20,31 @@ import { computed, ref } from 'vue'
 
 import agendaStates from '@/workflows/agendaStates.json'
 
-import useMeeting from '@/composables/meeting/useMeeting.js'
-import useAgenda from '@/composables/meeting/useAgenda.js'
-import useContentApi from '../../composables/useContentApi'
+import useAgenda from '@/composables/meeting/useAgenda'
+import useContentApi from '@/composables/useContentApi'
+import useMeeting from '@/composables/meeting/useMeeting'
+import usePermissions from '@/rules/usePermissions'
+
 import BtnDropdown from '../BtnDropdown.vue'
+import { slugify } from '@/utils'
 
 const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
 
 export default {
   name: 'Agenda',
-  inject: ['hasRole'],
   components: { BtnDropdown },
   setup () {
     const { getAgenda } = useAgenda()
-    const { meetingId, meetingPath, hasRole } = useMeeting()
-    const agenda = computed(_ => getAgenda(meetingId.value))
+    const { meeting, meetingPath, hasRole } = useMeeting()
+    const agenda = computed(_ => getAgenda(meeting.value.pk))
     const agendaApi = useContentApi('agenda_item')
+    const { hasPerm } = usePermissions('agenda.agendaitem')
 
     // Add AgendaItem
     const newAgendaTitle = ref('')
     function addAgendaItem () {
       agendaApi.add({
-        meeting: meetingId.value,
+        meeting: meeting.value.pk,
         title: newAgendaTitle.value
       })
         .then(_ => { newAgendaTitle.value = '' })
@@ -52,31 +55,31 @@ export default {
       inputEl.value.focus()
     }
 
+    function getAiPath (ai) {
+      return `${meetingPath.value}/a/${ai.pk}/${slugify(ai.title)}`
+    }
+
+    function getAiType (type) {
+      return agenda.value.filter(ai => ai.state === type)
+    }
+
+    const aiGroups = computed(_ => {
+      return AI_ORDER
+        .map(state => agendaStates.find(s => s.state === state))
+        .filter(s => !s.requiresRole || hasRole(s.requiresRole))
+    })
+
     return {
-      meetingId,
-      meetingPath,
-      agenda,
-      hasRole,
+      meeting,
+      getAiPath,
+      getAiType,
+      aiGroups,
+      hasPerm,
 
       newAgendaTitle,
       addAgendaItem,
       inputEl,
       focusInput
-    }
-  },
-  methods: {
-    aiPath (ai) {
-      return `${this.meetingPath}/a/${ai.pk}/${this.$slugify(ai.title)}`
-    },
-    aiType (type) {
-      return this.agenda.filter(ai => ai.state === type)
-    }
-  },
-  computed: {
-    aiGroups () {
-      return AI_ORDER
-        .map(state => agendaStates.find(s => s.state === state))
-        .filter(s => !s.requiresRole || this.hasRole(s.requiresRole))
     }
   }
 }

@@ -22,7 +22,7 @@
           </li>
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
-        <add-content v-if="hasRole('proposer')" :name="t('proposal.proposal')"
+        <add-content v-if="hasProposalPerm('add', agendaItem)" :name="t('proposal.proposal')"
           :context-pk="agendaId" content-type="proposal"
           endpoint="proposals/" :params="{ agenda_item: agendaId }"/>
       </div>
@@ -58,6 +58,7 @@ import useDiscussions from '@/composables/meeting/useDiscussions'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
+import usePermissions from '@/rules/usePermissions'
 
 export default {
   name: 'AgendaItem',
@@ -102,7 +103,8 @@ export default {
       hasSpeakerSystems,
       speakerLists,
       channel,
-      editingBody
+      editingBody,
+      hasProposalPerm: usePermissions('proposal.proposal').hasPerm
     }
   },
   components: {

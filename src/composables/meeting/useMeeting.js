@@ -6,7 +6,7 @@ import { slugify, restApi } from '@/utils'
 
 import useContextRoles from '../useContextRoles.js'
 import useAuthentication from '../useAuthentication.js'
-import useMeetings from '../useMeetings.js'
+import { meetings } from '../useMeetings.js'
 import useContentApi from '../useContentApi.js'
 
 const FORCE_ROLES_FETCH = false
@@ -18,13 +18,12 @@ let pFetchTimeout = null
 
 export default function useMeeting () {
   const route = useRoute()
-  const { meetings } = useMeetings()
   const meetingRoles = useContextRoles('Meeting')
   const meetingApi = useContentApi('meeting')
   const { user } = useAuthentication()
 
   function setMeeting (meeting) {
-    meetings.value.set(meeting.pk, meeting)
+    meetings.set(meeting.pk, meeting)
     if (meeting.current_user_roles) {
       meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
     }
@@ -91,7 +90,7 @@ export default function useMeeting () {
   }
 
   const meetingId = computed(_ => Number(route.params.id))
-  const meeting = computed(_ => meetings.value.get(meetingId.value) || {})
+  const meeting = computed(_ => meetings.get(meetingId.value) || {})
   const meetingPath = computed(_ => `/m/${meetingId.value}/${slugify(meeting.value.title)}`)
 
   const userRoles = computed(_ => meetingRoles.getUserRoles(meetingId.value))

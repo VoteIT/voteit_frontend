@@ -13,13 +13,12 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, provide, ref } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 
 import useProposals from '@/composables/meeting/useProposals'
 import pollMethods from '../pollmethods'
 import useAlert from '../../composables/useAlert'
 import useChannels from '../../composables/useChannels'
-import useMeeting from '@/composables/meeting/useMeeting'
 
 export default {
   name: 'VotingModal',
@@ -31,7 +30,6 @@ export default {
     const { getPollProposals } = useProposals()
     const { alert } = useAlert()
     const channels = useChannels('vote', { alertOnError: false })
-    const { hasRole } = useMeeting()
 
     const method = ref(null)
     const waiting = ref(false)
@@ -51,7 +49,7 @@ export default {
     function castVote () {
       if (validVote.value) {
         waiting.value = true
-        // Hopefully
+        // Hopefully, some day
         // const msg = {
         //   vote,
         //   method_name: props.data.method_name
@@ -91,8 +89,6 @@ export default {
         })
         .catch(_ => {}) // Should mean no previous vote
     })
-
-    provide('hasRole', hasRole)
 
     return {
       proposals,

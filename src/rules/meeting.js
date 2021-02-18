@@ -2,34 +2,38 @@ import useAuthentication from '../composables/useAuthentication'
 import useContextRoles from '../composables/useContextRoles'
 import useWorkflows from '../workflows/useWorkflows'
 
-const meetingRoles = useContextRoles('Meeting')
+const { hasRole } = useContextRoles('Meeting')
 const { getState } = useWorkflows('Meeting')
 const { user } = useAuthentication()
 
+const FINISHED_STATES = ['closed', 'archiving', 'archived']
+
 function isParticipant (meeting) {
-  return meetingRoles.hasRole(meeting.pk, 'participant')
+  return meeting && hasRole(meeting.pk, 'participant')
 }
 
-/*
 function isProposer (meeting) {
-  return meetingRoles.hasRole(meeting.pk, 'proposer')
+  return meeting && hasRole(meeting.pk, 'proposer')
 }
 
 function isDiscusser (meeting) {
-  return meetingRoles.hasRole(meeting.pk, 'discusser')
+  return meeting && hasRole(meeting.pk, 'discusser')
 }
 
 function isPotentialVoter (meeting) {
-  return meetingRoles.hasRole(meeting.pk, 'potential_voter')
+  return meeting && hasRole(meeting.pk, 'potential_voter')
 }
-*/
 
 function isModerator (meeting) {
-  return meetingRoles.hasRole(meeting.pk, 'moderator')
+  return meeting && hasRole(meeting.pk, 'moderator')
 }
 
-function isNotArchived (meeting) {
-  return !getState(meeting.state).isFinal
+function isArchived (meeting) {
+  return !meeting.state || !getState(meeting.state).isFinal
+}
+
+function isFinished (meeting) {
+  return FINISHED_STATES.includes(meeting.state)
 }
 
 function canAdd () {
@@ -41,11 +45,17 @@ function canChange (meeting) {
 }
 
 function canDelete (meeting) {
-  return isModerator(meeting) && isNotArchived(meeting)
+  return isModerator(meeting) && !isArchived(meeting)
 }
 
 export default {
   isParticipant,
+  isModerator,
+  isArchived,
+  isFinished,
+  isProposer,
+  isDiscusser,
+  isPotentialVoter,
   canAdd,
   canChange,
   canDelete
