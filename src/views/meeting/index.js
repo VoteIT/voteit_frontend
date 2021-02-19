@@ -1,4 +1,5 @@
 import AgendaItem from './AgendaItem'
+import ControlPanel from './ControlPanel'
 import Meeting from './Meeting'
 import Participants from './Participants'
 import Poll from './Poll'
@@ -8,6 +9,7 @@ import StartPoll from './StartPoll'
 
 export default {
   AgendaItem,
+  ControlPanel,
   Meeting,
   Participants,
   Poll,

@@ -8,6 +8,7 @@
   "no": "No",
   "options": "Options",
   "post": "Post",
+  "settings": "Settings",
   "start": "Start",
   "step": "Step {step}",
   "stop": "Stop",
@@ -15,6 +16,9 @@
   "tryAgain": "Try again",
   "winners": "Winners",
   "yes": "Yes",
+  "accessPolicy": {
+    "settings": "Access Policy settings"
+  },
   "auth": {
     "logout": "Logout",
     "loggedInAs": "Logged in as {username}"
@@ -46,7 +50,8 @@
   "meeting": {
     "participants": "Participants",
     "new": "New meeting",
-    "public": "Make meeting visible to everyone"
+    "public": "Make meeting visible to everyone",
+    "settingsFor": "Settings for {title}"
   },
   "poll": {
     "abstain": "Abstain",
@@ -78,12 +83,16 @@
     "proposals": "Proposals",
     "noProposals": "Nothing to say..."
   },
+  "reaction": {
+    "settings": "Reaction Button settings"
+  },
   "socket": {
     "connected": "Connected",
     "reconnecting": "Trying to reconnect... | Trying to reconnect in {s} second | Trying to reconnect in {s} seconds",
     "reconnectingFailed": "Couldn't establish websocket connection"
   },
   "speaker": {
-    "lists": "No speaker lists | Speaker list | Speaker lists"
+    "lists": "No speaker lists | Speaker list | Speaker lists",
+    "settings": "Speaker List settings"
   }
 }

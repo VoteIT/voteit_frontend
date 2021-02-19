@@ -12,6 +12,16 @@ export default {
       component: meeting.Start
     },
     {
+      path: 'settings',
+      name: 'settings',
+      component: meeting.ControlPanel,
+      children: [{
+        path: ':panel',
+        name: 'settings-tab',
+        component: meeting.ControlPanel
+      }]
+    },
+    {
       path: 'participants',
       name: 'participants',
       component: meeting.Participants

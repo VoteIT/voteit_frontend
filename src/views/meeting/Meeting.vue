@@ -4,8 +4,12 @@
       <nav>
         <router-link to="/">{{ t('home.home') }}</router-link>
         <h1><router-link :to="meetingPath">{{ meeting.title || t('loader.loading') }}</router-link></h1>
+        <span class="user" title="Your username">
+          <icon :name="hasRole('moderator') ? 'gavel' : 'face' "/>
+          {{ user.username }}
+        </span>
       </nav>
-      <nav class="tabs" v-if="navigationLinks.length">
+      <nav class="tabs">
         <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
           <icon sm :name="link.icon" />
           {{ link.title }}
@@ -31,6 +35,7 @@ import Agenda from '@/components/meeting/Agenda'
 import Bubbles from '@/components/meeting/Bubbles'
 import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
 
+import useAuthentication from '@/composables/useAuthentication'
 import useBubbles from '@/composables/meeting/useBubbles.js'
 import useLoader from '@/composables/useLoader.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
@@ -45,6 +50,12 @@ export default {
   setup () {
     const t = inject('t')
     const navLinks = [
+      {
+        role: 'moderator',
+        title: t('settings'),
+        icon: 'settings',
+        path: 'settings'
+      },
       {
         // role: ['potential_voter', 'moderator'], // FIXME Permissions
         title: t('poll.polls'),
@@ -68,6 +79,7 @@ export default {
     const router = useRouter()
     const { meeting, meetingId, meetingPath, setMeeting, meetingApi, hasRole } = useMeeting()
     const channel = meetingType.useChannels()
+    const { user } = useAuthentication()
 
     const presence = usePresence()
     const presenceBubble = useBubbles(PresenceCheck)
@@ -133,7 +145,9 @@ export default {
       ongoingPollCount,
       channel,
       speakers,
-      t
+      t,
+      user,
+      hasRole
     }
   },
   components: {
@@ -151,6 +165,14 @@ header
     color: fff
     display: flex
     justify-content: space-between
+    .user
+      color: #779
+      padding: 0 3px
+      font-weight: bold
+      transform: rotate(3deg)
+      .material-icons
+        color: #557
+        vertical-align: bottom
     a
       color: #fff
       margin-right: 1rem
