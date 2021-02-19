@@ -1,12 +1,12 @@
 import wu from 'wu'
 import { reactive } from 'vue'
 
-import useChannels from '../useChannels'
-import useRestApi from '../useRestApi'
+import meetingType from '@/contentTypes/meeting'
+import pollType from '@/contentTypes/poll'
 
 const polls = reactive(new Map())
 
-useChannels('poll')
+pollType.useChannels()
   .updateMap(polls)
   .onStatus(item => {
     // Just update existing poll object
@@ -16,9 +16,16 @@ useChannels('poll')
     }
   })
 
-export default function usePolls () {
-  const restApi = useRestApi()
+meetingType.useChannels()
+  .onLeave(pk => {
+    for (const poll of polls.values()) {
+      if (poll.meeting === pk) {
+        polls.delete(poll.pk)
+      }
+    }
+  })
 
+export default function usePolls () {
   function getPolls (meetingId, stateName) {
     const meetingPolls = wu(polls.values()).filter(
       p => p.meeting === meetingId && (!stateName || p.state === stateName)
@@ -26,23 +33,11 @@ export default function usePolls () {
     return [...meetingPolls]
   }
 
-  async function fetchPolls (meetingId) {
-    return restApi.get('polls/', { params: { agenda_item__meeting: meetingId } })
-      .then(({ data }) => {
-        // Drop all polls, then push all
-        polls.clear()
-        data.forEach(p => {
-          polls.set(p.pk, p)
-        })
-      })
-  }
-
   function getPoll (pk) {
     return polls.get(pk)
   }
 
   return {
-    fetchPolls,
     getPolls,
     getPoll
   }

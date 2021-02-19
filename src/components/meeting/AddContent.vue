@@ -12,11 +12,12 @@
 <script>
 import { computed, inject, ref } from 'vue'
 
-import useChannels from '../../composables/useChannels'
+import { dialogQuery } from '@/utils'
+
+import contentTypes from '@/contentTypes'
 
 import BtnDropdown from '../BtnDropdown'
 import RichtextEditor from '../widgets/RichtextEditor.vue'
-import { dialogQuery } from '@/utils'
 
 export default {
   name: 'AddContent',
@@ -29,7 +30,10 @@ export default {
     name: String,
     // For channels:
     contextPk: Number,
-    contentType: String,
+    contentType: {
+      type: String,
+      required: true
+    },
     minLength: {
       type: Number,
       default: 1
@@ -42,7 +46,11 @@ export default {
   setup (props) {
     const t = inject('t')
     // Post (data update from channels)
-    const channels = useChannels(props.contentType)
+    const contentType = contentTypes[props.contentType]
+    if (!contentType) {
+      throw new Error(`"${props.contentType}" has no registered Content Type`)
+    }
+    const channel = contentType.useChannels()
     const submitting = ref(false)
     const text = ref('')
 
@@ -60,7 +68,7 @@ export default {
       if (override || textLength.value >= props.warnLength) {
         const body = text.value
         submitting.value = true
-        channels.add(props.contextPk, {
+        channel.add(props.contextPk, {
           body
         })
           .then(_ => {

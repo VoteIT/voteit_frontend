@@ -23,14 +23,13 @@
 <script>
 import { computed, inject, onBeforeUnmount, ref, watch } from 'vue'
 
-import useChannels from '../../composables/useChannels'
-import useModal from '../../composables/useModal'
+import useModal from '@/composables/useModal'
 
 import WorkflowState from '@/components/widgets/WorkflowState'
 import BtnDropdown from '@/components/BtnDropdown'
 import Voting from '@/components/modals/Voting'
 
-import rules from '@/contentTypes/poll/rules'
+import pollType from '@/contentTypes/poll'
 
 export default {
   name: 'Poll',
@@ -42,7 +41,7 @@ export default {
     BtnDropdown
   },
   setup (props) {
-    const channels = useChannels('poll')
+    const channels = pollType.useChannels()
     const { openModal } = useModal()
     const isOngoing = computed(_ => props.poll.state === 'ongoing')
 
@@ -73,7 +72,7 @@ export default {
     })
 
     return {
-      ...rules,
+      ...pollType.rules,
       isOngoing,
       active,
       vote,

@@ -1,8 +1,8 @@
-import { ref } from 'vue'
+import { reactive } from 'vue'
 import useAuthentication from './useAuthentication'
 import useChannels from './useChannels'
 
-const contextRoles = ref(new Map())
+const contextRoles = reactive(new Map())
 
 function getRoleKey (...components) {
   // Default context model = Meeting
@@ -13,8 +13,8 @@ function getRoleKey (...components) {
 useChannels('roles')
   .onUpdate(({ t, p }) => {
     const key = getRoleKey(p.model, p.pk, p.user_pk)
-    if (!contextRoles.value.has(key)) contextRoles.value.set(key, new Set())
-    const roleStore = contextRoles.value.get(key)
+    if (!contextRoles.has(key)) contextRoles.set(key, new Set())
+    const roleStore = contextRoles.get(key)
     switch (t) {
       case 'roles.removed':
         p.roles.forEach(r => roleStore.delete(r))
@@ -30,13 +30,13 @@ export default function useContextRoles (model) {
 
   function getUserRoles (pk, userId) {
     const key = getRoleKey(model, pk, userId || user.value.pk)
-    return contextRoles.value.get(key) || new Set()
+    return contextRoles.get(key) || new Set()
   }
 
   function getRoleCount (pk, roleName) {
     const key = getRoleKey(model, pk, '')
     let count = 0
-    for (const [k, v] of contextRoles.value.entries()) {
+    for (const [k, v] of contextRoles.entries()) {
       if (k.startsWith(key) && v.has(roleName)) { count++ }
     }
     return count
@@ -45,7 +45,7 @@ export default function useContextRoles (model) {
   function set (pk, userId, roles) {
     // Sets or replaces roles completely
     const key = getRoleKey(model, pk, userId)
-    contextRoles.value.set(key, new Set(roles))
+    contextRoles.set(key, new Set(roles))
   }
 
   function hasRole (pk, roleName, userId) {
@@ -54,7 +54,7 @@ export default function useContextRoles (model) {
       return userRoles.has(roleName)
     } else if (roleName && typeof roleName.some === 'function') {
       // Match any role of list
-      return roleName.some(r => userRoles.value.has(r))
+      return roleName.some(r => userRoles.has(r))
     } else if (roleName === undefined) {
       return true
     }
@@ -63,7 +63,7 @@ export default function useContextRoles (model) {
   function getAll (pk) {
     const contextKey = getRoleKey(model, pk) + '/'
     const results = []
-    for (const [key, assigned] of contextRoles.value.entries()) {
+    for (const [key, assigned] of contextRoles.entries()) {
       if (key.startsWith(contextKey)) {
         const userPk = Number(key.split('/')[2])
         results.push({

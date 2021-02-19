@@ -32,7 +32,7 @@
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <add-content v-if="discussionRules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-          :context-pk="agendaId" content-type="discussion_post"/>
+          :context-pk="agendaId" content-type="discussionPost"/>
       </div>
     </div>
   </div>
@@ -49,13 +49,12 @@ import SpeakerList from '@/components/widgets/SpeakerList.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 import useAgenda from '@/composables/meeting/useAgenda'
-import useChannels from '@/composables/useChannels'
 import useDiscussions from '@/composables/meeting/useDiscussions'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
-import agendaRules from '@/contentTypes/agendaItem/rules'
+import agendaType from '@/contentTypes/agendaItem'
 import discussionRules from '@/contentTypes/discussionPost/rules'
 import pollRules from '@/contentTypes/poll/rules'
 import proposalRules from '@/contentTypes/proposal/rules'
@@ -68,7 +67,7 @@ export default {
     const proposals = useProposals()
     const { meetingPath, meetingId } = useMeeting()
     const { agendaId, agendaItem } = useAgenda()
-    const channel = useChannels('agenda')
+    const channel = agendaType.useChannels()
 
     const sortedProposals = computed(_ => {
       const ps = proposals.getAgendaProposals(agendaId.value)
@@ -108,7 +107,7 @@ export default {
       proposalRules,
       discussionRules,
       pollRules,
-      agendaRules
+      agendaRules: agendaType.rules
     }
   },
   components: {

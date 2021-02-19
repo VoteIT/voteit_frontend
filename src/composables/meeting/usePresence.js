@@ -1,21 +1,24 @@
-import { ref } from 'vue'
-import useChannels from '../useChannels'
+import { reactive } from 'vue'
+
+import presenceType from '@/contentTypes/presence'
+import presenceCheckType from '@/contentTypes/presenceCheck'
+
 import useAuthentication from '../useAuthentication'
 
-const presenceChecks = ref(new Map())
-const presence = ref(new Map())
+const presenceChecks = reactive(new Map())
+const presence = reactive(new Map())
 
-useChannels('presence_check')
-  .updateMap(presenceChecks.value)
+presenceCheckType.useChannels()
+  .updateMap(presenceChecks)
 
-const channel = useChannels('presence')
-  .updateMap(presence.value)
+const channel = presenceType.useChannels()
+  .updateMap(presence)
 
 export default function usePresence () {
   const { user } = useAuthentication()
 
   function getOpenPresenceCheck (meeting) {
-    for (const pc of presenceChecks.value.values()) {
+    for (const pc of presenceChecks.values()) {
       if (pc.meeting === meeting && pc.state === 'open') {
         return pc
       }
@@ -24,7 +27,7 @@ export default function usePresence () {
 
   function getUserPresence (checkId, userId) {
     userId = userId || user.value.pk
-    for (const p of presence.value.values()) {
+    for (const p of presence.values()) {
       if (p.presence_check === checkId && p.user === userId) return p
     }
   }

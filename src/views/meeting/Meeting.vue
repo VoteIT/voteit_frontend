@@ -9,7 +9,7 @@
         <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
           <icon sm :name="link.icon" />
           {{ link.title }}
-          <span v-if="link.count">({{ link.count.value }})</span>
+          <span v-if="link.count">({{ link.count() }})</span>
         </router-link>
       </nav>
     </header>
@@ -25,18 +25,20 @@
 import { computed, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
+import { slugify } from '@/utils'
+
 import Agenda from '@/components/meeting/Agenda'
 import Bubbles from '@/components/meeting/Bubbles'
 import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
 
 import useBubbles from '@/composables/meeting/useBubbles.js'
 import useLoader from '@/composables/useLoader.js'
-import useChannels from '@/composables/useChannels.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 import usePresence from '@/composables/meeting/usePresence.js'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists.js'
-import { slugify } from '@/utils'
+
+import meetingType from '@/contentTypes/meeting'
 
 export default {
   name: 'Meeting',
@@ -48,7 +50,7 @@ export default {
         title: t('poll.polls'),
         icon: 'star',
         path: 'polls',
-        count: computed(_ => getPolls(meetingId.value, 'ongoing').length)
+        count: _ => getPolls(meetingId.value, 'ongoing').length
       },
       {
         role: 'moderator',
@@ -65,7 +67,7 @@ export default {
     const loader = useLoader('Meeting')
     const router = useRouter()
     const { meeting, meetingId, meetingPath, setMeeting, meetingApi, hasRole } = useMeeting()
-    const channel = useChannels('meeting')
+    const channel = meetingType.useChannels()
 
     const presence = usePresence()
     const presenceBubble = useBubbles(PresenceCheck)
@@ -97,7 +99,7 @@ export default {
     onMounted(_ => checkIsPresent(isPresent.value))
     watch(isPresent, checkIsPresent)
 
-    const { getPolls, fetchPolls } = usePolls()
+    const { getPolls } = usePolls()
     const polls = computed(_ => getPolls(meetingId.value))
     const ongoingPollCount = computed(_ => getPolls(meetingId.value, 'ongoing').length)
 
@@ -129,7 +131,6 @@ export default {
       meetingPath,
       polls,
       ongoingPollCount,
-      fetchPolls,
       channel,
       speakers,
       t

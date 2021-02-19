@@ -1,12 +1,13 @@
 import { ref } from 'vue'
 
-import { restApi, dateify, orderBy } from '@/utils'
+import { dateify, orderBy } from '@/utils'
 
-import useChannels from '../useChannels'
+import agendaItemType from '@/contentTypes/agendaItem'
+import discussionPostType from '@/contentTypes/discussionPost'
 
 const discussions = ref([])
 
-useChannels('discussion_post')
+discussionPostType.useChannels()
   .onChanged(item => {
     dateify(item)
     const index = discussions.value.findIndex(d => d.pk === item.pk)
@@ -20,28 +21,18 @@ useChannels('discussion_post')
   })
 
 // Automatically clear proposals for agenda item when unsubscribed
-useChannels('agenda_item').onLeave(agendaPk => {
+agendaItemType.useChannels().onLeave(agendaPk => {
   discussions.value = discussions.value.filter(
     d => d.agenda_item !== agendaPk
   )
 })
 
 export default function useDiscussions () {
-  async function fetchAgendaDiscussions (agendaPk) {
-    const params = { agenda_item: agendaPk }
-    return restApi.get('discussion-posts/', { params })
-      .then(({ data }) => {
-        discussions.value = discussions.value.filter(d => d.agenda_item !== agendaPk)
-        Array.prototype.push.apply(discussions.value, data)
-      })
-  }
-
   function getAgendaDiscussions (agendaPk) {
     return discussions.value.filter(d => d.agenda_item === agendaPk)
   }
 
   return {
-    fetchAgendaDiscussions,
     getAgendaDiscussions
   }
 }

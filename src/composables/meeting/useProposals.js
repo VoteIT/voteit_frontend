@@ -2,12 +2,12 @@ import { ref } from 'vue'
 
 import { dateify, orderBy } from '@/utils'
 
-import useChannels from '../useChannels'
+import agendaItemType from '@/contentTypes/agendaItem'
 import proposalType from '@/contentTypes/proposal'
 
 const proposals = ref([])
 
-useChannels('proposal')
+proposalType.useChannels()
   .onChanged(item => {
     dateify(item)
     const index = proposals.value.findIndex(p => p.pk === item.pk)
@@ -21,11 +21,12 @@ useChannels('proposal')
   })
 
 // Automatically clear proposals for agenda item when unsubscribed
-useChannels('agenda_item').onLeave(agendaPk => {
-  proposals.value = proposals.value.filter(
-    d => d.agenda_item !== agendaPk
-  )
-})
+agendaItemType.useChannels()
+  .onLeave(agendaPk => {
+    proposals.value = proposals.value.filter(
+      d => d.agenda_item !== agendaPk
+    )
+  })
 
 const proposalApi = proposalType.useContentApi()
 

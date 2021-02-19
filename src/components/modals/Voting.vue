@@ -15,10 +15,11 @@
 <script>
 import { computed, onBeforeMount, ref } from 'vue'
 
+import useAlert from '@/composables/useAlert'
+import useChannels from '@/composables/useChannels'
 import useProposals from '@/composables/meeting/useProposals'
+
 import pollMethods from '../pollmethods'
-import useAlert from '../../composables/useAlert'
-import useChannels from '../../composables/useChannels'
 
 export default {
   name: 'VotingModal',

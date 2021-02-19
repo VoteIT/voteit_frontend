@@ -37,13 +37,13 @@ watch(isReady, value => {
 
 export default function useLoader (name) {
   if (typeof name !== 'string') {
-    console.log('Warning: Instantiate loader using userLoader(<unique name>)')
+    console.error('Warning: Instantiate loader using userLoader(<unique name>)')
   }
   function setLoaded (success = true) {
     if (success) {
       initDone.value = true
     } else {
-      console.log('Loading failed', name)
+      console.error('Loading failed', name)
       initFailed.value = true
     }
   }
@@ -83,7 +83,7 @@ export default function useLoader (name) {
           restApi.get(uri, config)
             .then(resolve)
             .catch(err => {
-              console.log('Loading failed', name)
+              console.error('Loading failed', name)
               reject(err)
             })
         })

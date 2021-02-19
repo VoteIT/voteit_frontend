@@ -19,22 +19,18 @@
         </td>
       </tr>
     </table>
-    <p v-else>... loading
-      <icon name="face"/>
-      <icon name="face"/>
-      <icon name="face"/>
-    </p>
   </main>
 </template>
 
 <script>
+import { computed, onBeforeMount, ref } from 'vue'
+
 import UserSearch from '@/components/widgets/UserSearch.vue'
 
-import useLoader from '@/composables/useLoader.js'
+import useChannels from '@/composables/useChannels'
 import useContextRoles from '@/composables/useContextRoles.js'
+import useLoader from '@/composables/useLoader.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
-import useChannels from '../../composables/useChannels'
-import { computed, onBeforeMount, ref } from 'vue'
 
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
@@ -43,10 +39,10 @@ const TEMP_ROLES = [
   { name: 'potential_voter', icon: 'star_outline' },
   { name: 'error', icon: 'error' }
 ]
+const channels = useChannels()
 
 export default {
   setup () {
-    const channels = useChannels()
     const { meetingId, fetchParticipants, getUser, hasRole } = useMeeting()
     const meetingRoles = useContextRoles('Meeting')
     const loader = useLoader('Participants')

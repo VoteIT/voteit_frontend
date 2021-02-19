@@ -16,9 +16,8 @@ import { inject, ref } from 'vue'
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 
-import useChannels from '../../composables/useChannels.js'
 import { dialogQuery } from '@/utils'
-import rules from '@/contentTypes/discussionPost/rules'
+import discussionPostType from '@/contentTypes/discussionPost'
 
 export default {
   name: 'DiscussionPost',
@@ -31,7 +30,7 @@ export default {
     Moment
   },
   setup (props) {
-    const channel = useChannels('discussion_post')
+    const channel = discussionPostType.useChannels()
     const editing = ref(false)
     const t = inject('t')
 
@@ -46,7 +45,7 @@ export default {
       channel,
       editing,
       queryDelete,
-      ...rules
+      ...discussionPostType.rules
     }
   }
 }

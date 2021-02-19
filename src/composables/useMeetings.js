@@ -1,12 +1,11 @@
 import { computed, reactive, ref } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
-import useChannels from './useChannels'
 
 export const meetings = reactive(new Map())
 const meetingList = ref([]) // Sorted meeting id list
 
-useChannels('meeting')
+meetingType.useChannels()
   .updateMap(meetings)
 
 export default function useMeetings () {

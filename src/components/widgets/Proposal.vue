@@ -21,8 +21,7 @@ import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 import WorkflowState from './WorkflowState.vue'
 
-import useChannels from '@/composables/useChannels'
-import rules from '@/contentTypes/proposal/rules'
+import proposalType from '@/contentTypes/proposal'
 
 export default {
   name: 'Proposal',
@@ -37,7 +36,7 @@ export default {
     Moment
   },
   setup (props) {
-    const channel = useChannels('proposal')
+    const channel = proposalType.useChannels()
     const editing = ref(false)
     const t = inject('t')
 
@@ -52,7 +51,7 @@ export default {
       editing,
       queryDelete,
       channel,
-      ...rules
+      ...proposalType.rules
     }
   }
 }
