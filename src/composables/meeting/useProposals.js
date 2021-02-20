@@ -1,78 +1,58 @@
-import { ref } from 'vue'
+import { reactive } from 'vue'
+import wu from 'wu'
 
 import { dateify, orderBy } from '@/utils'
 
 import agendaItemType from '@/contentTypes/agendaItem'
 import proposalType from '@/contentTypes/proposal'
 
-const proposals = ref([])
+const proposals = reactive(new Map())
 
 proposalType.useChannels()
-  .onChanged(item => {
-    dateify(item)
-    const index = proposals.value.findIndex(p => p.pk === item.pk)
-    if (index !== -1) proposals.value[index] = item
-    else proposals.value.push(item)
-    orderBy(proposals.value)
-  })
-  .onDeleted(item => {
-    const index = proposals.value.findIndex(p => p.pk === item.pk)
-    if (index !== -1) proposals.value.splice(index, 1)
-  })
+  .updateMap(proposals, dateify)
 
-// Automatically clear proposals for agenda item when unsubscribed
+// Automatically clear proposals for agenda item when unsubscribed,
+// unless they have polls. (!)
 agendaItemType.useChannels()
   .onLeave(agendaPk => {
-    proposals.value = proposals.value.filter(
-      d => d.agenda_item !== agendaPk
-    )
+    for (const p of proposals.values()) {
+      if (p.agenda_item === agendaPk && !p.polls.length) {
+        proposals.delete(p.pk)
+      }
+    }
   })
 
 const proposalApi = proposalType.useContentApi()
 
 export default function useProposals () {
-  function setProposals (ps) {
-    ps.forEach(newProp => {
-      const index = proposals.value.findIndex(p => p.pk === newProp.pk)
-      if (index !== -1) {
-        proposals.value[index] = newProp
-      } else {
-        proposals.value.push(newProp)
-      }
+  function setProposals (props) {
+    props.forEach(p => {
+      proposals.set(p.pk, dateify(p))
     })
   }
 
-  async function fetchAgendaProposals (agendaId) {
-    return proposalApi.list({ agenda_item: agendaId })
-      .then(({ data }) => {
-        // Clean up any previously set proposals for this agenda item
-        proposals.value = proposals.value.filter(p => p.agenda_item !== agendaId)
-        Array.prototype.push.apply(proposals.value, data)
-      })
-  }
-
-  function getAgendaProposals (agendaId, wfState) {
-    return proposals.value.filter(p => {
-      if (wfState && p.state !== wfState) {
-        return false
-      }
-      return p.agenda_item === agendaId
-    })
+  function getAgendaProposals (agendaPk, wfState) {
+    const props = [...wu(proposals.values()).filter(
+      p => p.agenda_item === agendaPk && (!wfState || p.state === wfState)
+    )]
+    return orderBy(props)
   }
 
   function getPollProposals (pk) {
-    const props = proposals.value.filter(p => p.polls.includes(pk))
+    // TODO Rewrite this. Should probably ensure all proposals are returned.
+    const props = [...wu(proposals.values()).filter(
+      p => p.polls.includes(pk)
+    )]
     if (!props.length) {
       proposalApi.list({ polls: pk })
         .then(({ data }) => {
           setProposals(data)
         })
     }
-    return props
+    return orderBy(props)
   }
 
   return {
-    fetchAgendaProposals,
     getAgendaProposals,
     getPollProposals
   }

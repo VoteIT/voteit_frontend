@@ -116,9 +116,9 @@ export default function useChannels (contentType, moduleConfig) {
     return this
   }
 
-  function updateMap (map) {
+  function updateMap (map, transform = value => value) {
     // Convenience method to set onChanged and onDeleted to update Map object.
-    onChanged(item => map.set(item.pk, item))
+    onChanged(item => map.set(item.pk, transform(item)))
     onDeleted(item => map.delete(item.pk))
     return this
   }

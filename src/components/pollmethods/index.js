@@ -7,6 +7,7 @@ import scottish_stv from './ScottishSTV'
 
 export default {
   simple,
+  combined_simple: simple,
   schulze,
   repeated_schulze: schulze,
   scottish_stv

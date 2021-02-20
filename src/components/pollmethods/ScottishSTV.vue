@@ -44,7 +44,14 @@ import Proposal from '../widgets/Proposal'
 export default {
   name: 'ScottishSTVPoll',
   props: {
-    proposals: Array,
+    poll: {
+      type: Object,
+      required: true
+    },
+    proposals: {
+      type: Array,
+      required: true
+    },
     modelValue: Object,
     settings: {
       type: Object,

@@ -6,11 +6,12 @@
 </template>
 
 <script>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-import PollDetail from '@/components/widgets/Poll'
 import usePolls from '@/composables/meeting/usePolls'
-import { computed } from 'vue'
+
+import PollDetail from '@/components/widgets/Poll'
 
 export default {
   name: 'PollView',

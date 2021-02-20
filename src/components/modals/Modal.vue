@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { computed, markRaw, nextTick, onMounted, ref } from 'vue'
+import { computed, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
 
 import { emitter } from '../../utils'
 
@@ -23,22 +23,30 @@ const defaults = {
 export default {
   name: 'Modal',
   setup () {
-    const modalQueue = ref([])
+    const modalQueue = reactive([])
+    let savedFocusEl
     const windowEl = ref(null)
-    const isOpen = computed(_ => !!modalQueue.value.length)
-    const modal = computed(_ => modalQueue.value[0])
+    const isOpen = computed(_ => !!modalQueue.length)
+    const modal = computed(_ => modalQueue[0])
 
     function open (modal) {
+      if (!modalQueue.length) {
+        savedFocusEl = document.querySelector(':focus')
+      }
       document.body.classList.add('no-scroll')
-      modalQueue.value.push(markRaw(Object.assign({}, defaults, modal)))
+      modalQueue.push(markRaw(Object.assign({}, defaults, modal)))
       nextTick(_ => {
         const focusEl = windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]')
         focusEl && focusEl.focus()
       })
     }
     function close (modal) {
-      modalQueue.value.shift()
-      if (!modalQueue.value.length) {
+      modalQueue.shift()
+      if (!modalQueue.length) {
+        if (savedFocusEl) {
+          savedFocusEl.focus()
+          savedFocusEl = null
+        }
         document.body.classList.remove('no-scroll')
       }
     }
@@ -67,6 +75,10 @@ export default {
 <style lang="sass">
 #modal-backdrop
   position: fixed
+  display: flex
+  justify-content: center
+  align-items: flex-start
+  padding-top: 10px
   left: 0
   top: 0
   bottom: 0
@@ -77,14 +89,14 @@ export default {
     background-color: rgba(#000, .45)
 
 #modal-window
-  position: relative
-  top: 10px
   width: calc(100vw - 20px)
   max-width: 780px
-  margin: 0 auto
   background-color: #fff
-  height: calc(100vh - 20px)
+  min-height: calc(50vh)
+  max-height: calc(100vh - 20px)
   box-shadow: 2px 2px 8px rgba(#000, .5)
+  overflow-y: auto
+  border-radius: 3px
 
   header,
   main

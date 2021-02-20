@@ -1,35 +1,29 @@
-import { ref } from 'vue'
+import { reactive } from 'vue'
+import wu from 'wu'
 
 import { dateify, orderBy } from '@/utils'
 
 import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
 
-const discussions = ref([])
+const discussions = reactive(new Map())
 
 discussionPostType.useChannels()
-  .onChanged(item => {
-    dateify(item)
-    const index = discussions.value.findIndex(d => d.pk === item.pk)
-    if (index !== -1) discussions.value[index] = item
-    else discussions.value.push(item)
-    orderBy(discussions.value)
-  })
-  .onDeleted(item => {
-    const index = discussions.value.findIndex(d => d.pk === item.pk)
-    if (index !== -1) discussions.value.splice(index, 1)
-  })
+  .updateMap(discussions, dateify)
 
 // Automatically clear proposals for agenda item when unsubscribed
 agendaItemType.useChannels().onLeave(agendaPk => {
-  discussions.value = discussions.value.filter(
-    d => d.agenda_item !== agendaPk
-  )
+  for (const post of discussions.values()) {
+    if (post.agenda_item === agendaPk) {
+      discussions.delete(post.pk)
+    }
+  }
 })
 
 export default function useDiscussions () {
   function getAgendaDiscussions (agendaPk) {
-    return discussions.value.filter(d => d.agenda_item === agendaPk)
+    const posts = [...wu(discussions.values()).filter(post => post.agenda_item === agendaPk)]
+    return orderBy(posts)
   }
 
   return {

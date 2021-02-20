@@ -1,7 +1,7 @@
 <template>
   <transition name="dialog">
     <div id="dialog-backdrop" v-show="active" @click.self="close()">
-      <div id="dialog" v-if="active">
+      <div id="dialog" ref="windowEl" v-if="active" @keyup.esc="close()">
         <btn icon="close" class="closer" @click="close()" />
         <p>{{ active.title }}</p>
         <div class="btn-controls">
@@ -15,16 +15,22 @@
 
 <script>
 import { emitter } from '@/utils'
-import { computed, defineComponent, inject, onBeforeMount, ref } from 'vue'
+import { computed, defineComponent, inject, nextTick, onBeforeMount, reactive, ref } from 'vue'
 
 export default defineComponent({
   setup () {
     const t = inject('t')
-    const queue = ref([])
-    const active = computed(_ => queue.value[0])
+    const windowEl = ref(null)
+    let savedFocusEl
+    const queue = reactive([])
+    const active = computed(_ => queue[0])
 
     function close () {
-      queue.value.shift()
+      queue.shift()
+      if (!queue.length && savedFocusEl) {
+        savedFocusEl.focus()
+        savedFocusEl = null
+      }
     }
 
     function resolve () {
@@ -38,14 +44,22 @@ export default defineComponent({
       emitter.on('dialog-open', dialog => {
         dialog.no = dialog.no || t('no')
         dialog.yes = dialog.yes || t('yes')
-        queue.value.push(dialog)
+        if (!queue.length) {
+          savedFocusEl = document.querySelector(':focus')
+        }
+        queue.push(dialog)
+        nextTick(_ => {
+          const focusEl = windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]')
+          focusEl && focusEl.focus()
+        })
       })
     })
 
     return {
       active,
       close,
-      resolve
+      resolve,
+      windowEl
     }
   }
 })
@@ -80,6 +94,7 @@ export default defineComponent({
   width: 600px
   max-width: calc(100vw - 40px)
   font-size: 1.2rem
+  border-radius: 3px
   p
     white-space: pre-line
   .btn-controls

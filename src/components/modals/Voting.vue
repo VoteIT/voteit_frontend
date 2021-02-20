@@ -3,7 +3,7 @@
     <h2 v-if="abstained">{{ t('poll.abstainRegistered') }}</h2>
     <h2 v-else-if="done">{{ t('poll.voteRegistered') }}</h2>
     <template v-else>
-      <component ref="method" :is="methodComponent" :proposals="proposals" v-model="validVote" />
+      <component ref="method" :is="methodComponent" :poll="data" :proposals="proposals" v-model="validVote" />
       <div class="buttons btn-group">
         <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote()">{{ t('poll.castVote') }}</btn>
         <btn icon="block" :class="{ active: currentAbstained && !validVote }" :disable="waiting" @click="abstainVote()">{{ t('poll.abstain') }}</btn>

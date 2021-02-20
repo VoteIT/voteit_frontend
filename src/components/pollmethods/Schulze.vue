@@ -21,7 +21,14 @@ const GRADES = [1, 2, 3, 4, 5]
 export default {
   name: 'SchulzePoll',
   props: {
-    proposals: Array,
+    poll: {
+      type: Object,
+      required: true
+    },
+    proposals: {
+      type: Array,
+      required: true
+    },
     modelValue: Object
   },
   components: {

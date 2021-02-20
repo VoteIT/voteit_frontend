@@ -33,6 +33,7 @@ function orderBy (objects, attribute = 'created') {
     if (objA[attribute] < objB[attribute]) return -1
     return 0
   })
+  return objects
 }
 
 const emitter = mitt()
