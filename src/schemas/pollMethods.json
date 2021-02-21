@@ -28,5 +28,10 @@
     "proposalsMin": 3,
     "winnersMin": 2,
     "losersMin": 1
+  },
+  {
+    "name": "irv",
+    "title": "Instant-Runoff Voting",
+    "proposalsMin": 3
   }
 ]

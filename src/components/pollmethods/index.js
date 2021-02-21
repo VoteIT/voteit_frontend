@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import simple from './Simple'
 import schulze from './Schulze'
-import scottish_stv from './ScottishSTV'
+import RankedVoting from './RankedVoting'
 
 // Use lowercase component names, to match method_name from api
 
@@ -10,5 +10,6 @@ export default {
   combined_simple: simple,
   schulze,
   repeated_schulze: schulze,
-  scottish_stv
+  scottish_stv: RankedVoting,
+  irv: RankedVoting
 }
