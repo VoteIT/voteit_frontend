@@ -152,23 +152,30 @@ export default function useChannels (contentType, moduleConfig) {
     return Promise.resolve()
   }
 
-  function leave (uriOrPk, config) {
+  async function leave (uriOrPk, config) {
     if (uriOrPk) {
       const uri = getUri(uriOrPk)
       clearTimeout(leaveTimeouts[uri])
       if (subscriptions.has(uri)) {
         config = Object.assign({}, moduleConfig, config || {})
-        leaveTimeouts[uri] = setTimeout(_ => {
-          // Delete from subscriptions when sending unsubscribe request.
-          // New subscribtions will clear this timeout.
-          subscriptions.delete(uri)
-          if (socket.isOpen) {
-            socket.send('channel.leave', uri)
-          }
-          // Call onLeave handlers...
-          leaveHandlers.get(contentType).forEach(cb => cb(uriOrPk))
-        }, config.leaveDelay)
+        return new Promise(resolve => {
+          // Will not resolve if canceled...
+          leaveTimeouts[uri] = setTimeout(_ => {
+            // Delete from subscriptions when sending unsubscribe request.
+            // New subscribtions will clear this timeout.
+            subscriptions.delete(uri)
+            if (socket.isOpen) {
+              socket.send('channel.leave', uri)
+            }
+            // Call onLeave handlers... (Does not wait for response...)
+            leaveHandlers.get(uri.split('/')[0]).forEach(cb => cb(uriOrPk))
+            resolve()
+          }, config.leaveDelay)
+        })
       }
+    } else {
+      console.error(uriOrPk, config)
+      throw new Error('Channel leave function requires channel name or primary key')
     }
   }
 

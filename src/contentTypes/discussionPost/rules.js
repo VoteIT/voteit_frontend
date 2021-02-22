@@ -15,13 +15,13 @@ function canAdd (agendaItem) {
 
 function canChange (post) {
   const agendaItem = agendaItems.get(post.agenda_item)
-  const meeting = meetings.get(agendaItem.meeting)
+  const meeting = agendaItem && meetings.get(agendaItem.meeting)
   return !meetingRules.isArchived(meeting) && meetingRules.isModerator(meeting)
 }
 
 function canDelete (post) {
   const agendaItem = agendaItems.get(post.agenda_item)
-  const meeting = meetings.get(agendaItem.meeting)
+  const meeting = agendaItem && meetings.get(agendaItem.meeting)
   return !meetingRules.isArchived(meeting) && (meetingRules.isModerator(meeting) || isAuthor(post))
 }
 

@@ -41,6 +41,8 @@
 <script>
 import { computed, ref } from 'vue'
 
+import { orderBy } from '@/utils'
+
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
 import Proposal from '@/components/widgets/Proposal.vue'
@@ -71,16 +73,7 @@ export default {
 
     const sortedProposals = computed(_ => {
       const ps = proposals.getAgendaProposals(agendaId.value)
-      ps.sort((a, b) => {
-        if (a.pk > b.pk) {
-          return 1
-        }
-        if (a.pk < b.pk) {
-          return -1
-        }
-        return 0
-      })
-      return ps
+      return orderBy(ps)
     })
 
     const sortedDiscussions = computed(_ => discussions.getAgendaDiscussions(agendaId.value))

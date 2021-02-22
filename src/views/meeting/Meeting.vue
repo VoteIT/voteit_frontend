@@ -37,6 +37,7 @@ import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useBubbles from '@/composables/meeting/useBubbles.js'
+import useChannels from '@/composables/useChannels'
 import useLoader from '@/composables/useLoader.js'
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
@@ -115,6 +116,30 @@ export default {
     const polls = computed(_ => getPolls(meetingId.value))
     const ongoingPollCount = computed(_ => getPolls(meetingId.value, 'ongoing').length)
 
+    const channels = useChannels() // For dynamic usage
+    const isModerator = computed(_ => hasRole('moderator'))
+    let currentRoleChannel = null
+    async function leaveRoleChannel () {
+      if (currentRoleChannel) {
+        return channels.leave(currentRoleChannel, { leaveDelay: 0 })
+          .then(_ => {
+            currentRoleChannel = null
+          })
+      }
+      return Promise.resolve()
+    }
+    function enterRoleChannel () {
+      const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
+      if (currentRoleChannel !== channelName) {
+        leaveRoleChannel()
+          .then(_ => {
+            currentRoleChannel = channelName
+            channels.subscribe(channelName)
+          })
+      }
+    }
+    watch(isModerator, enterRoleChannel)
+
     onBeforeMount(_ => {
       loader.call(_ => {
         meetingApi.retrieve(meetingId.value)
@@ -123,6 +148,7 @@ export default {
               router.push(`/join/${meeting.value.pk}/${slugify(meeting.value.title)}`)
             }
             setMeeting(data)
+            enterRoleChannel()
           })
           .catch(_ => {
             router.push('/')
@@ -132,6 +158,7 @@ export default {
     })
     onBeforeRouteLeave(_ => {
       channel.leave(meetingId.value)
+      leaveRoleChannel()
     })
 
     provide('hasRole', hasRole)

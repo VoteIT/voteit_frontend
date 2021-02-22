@@ -2,38 +2,49 @@ import wu from 'wu'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
+import { orderBy } from '@/utils'
+
 import agendaItemType from '@/contentTypes/agendaItem'
+import meetingType from '@/contentTypes/meeting'
+import useChannels from '../useChannels'
 
 import useLoader from '../useLoader'
 
 export const agendaItems = reactive(new Map()) // Map meeting pk to list of agenda items
 
-/*
-** TODO Rewrite to clear agenda when leaving meeting.
-*/
-
 const channel = agendaItemType.useChannels()
   .updateMap(agendaItems)
 
-function keySort (items, key) {
-  items.sort((a, b) => {
-    if (a[key] < b[key]) {
-      return -1
+/*
+** Clear agenda when leaving meeting.
+*/
+meetingType.useChannels()
+  .onLeave(pk => {
+    for (const agendaItem of agendaItems.values()) {
+      if (agendaItem.meeting === pk) {
+        agendaItems.delete(agendaItem.pk)
+      }
     }
-    if (a[key] > b[key]) {
-      return 1
-    }
-    return 0
   })
-}
+
+/*
+** Clear private agenda items when leaving moderators channel.
+*/
+useChannels('moderators')
+  .onLeave(pk => {
+    for (const agendaItem of agendaItems.values()) {
+      if (agendaItem.meeting === pk && agendaItem.state === 'private') {
+        agendaItems.delete(agendaItem.pk)
+      }
+    }
+  })
 
 export default function useAgenda () {
   const route = useRoute()
 
   function getAgenda (meetingPk) {
     const ais = [...wu(agendaItems.values()).filter(ai => ai.meeting === meetingPk)]
-    keySort(ais, 'order')
-    return ais
+    return orderBy(ais, 'order')
   }
 
   function getAgendaItem (agendaPk) {
@@ -45,14 +56,14 @@ export default function useAgenda () {
 
   const loader = useLoader('useAgenda')
   onBeforeMount(_ => {
-    loader.subscribe(channel, agendaId.value)
+    agendaId.value && loader.subscribe(channel, agendaId.value)
   })
   onBeforeRouteLeave(_ => {
-    channel.leave(agendaId.value)
+    agendaId.value && channel.leave(agendaId.value)
   })
   watch(agendaId, (value, oldValue) => {
-    channel.subscribe(value)
-    channel.leave(oldValue)
+    value && channel.subscribe(value)
+    oldValue && channel.leave(oldValue)
   })
 
   return {

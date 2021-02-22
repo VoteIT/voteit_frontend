@@ -32,11 +32,11 @@ function isModerator (meeting) {
 }
 
 function isArchived (meeting) {
-  return !meeting.state || getState(meeting.state).isFinal
+  return meeting && (!meeting.state || getState(meeting.state).isFinal)
 }
 
 function isFinished (meeting) {
-  return FINISHED_STATES.includes(meeting.state)
+  return meeting && FINISHED_STATES.includes(meeting.state)
 }
 
 function canView (meeting) {
