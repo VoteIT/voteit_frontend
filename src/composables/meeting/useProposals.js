@@ -11,8 +11,7 @@ const proposals = reactive(new Map())
 proposalType.useChannels()
   .updateMap(proposals, dateify)
 
-// Automatically clear proposals for agenda item when unsubscribed,
-// unless they have polls. (!)
+// Automatically clear proposals for agenda item when unsubscribed.
 agendaItemType.useChannels()
   .onLeave(agendaPk => {
     for (const p of proposals.values()) {
@@ -21,8 +20,6 @@ agendaItemType.useChannels()
       }
     }
   })
-
-// const proposalApi = proposalType.useContentApi()
 
 export default function useProposals () {
   function getAgendaProposals (agendaPk, wfState) {
