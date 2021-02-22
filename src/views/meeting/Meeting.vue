@@ -134,7 +134,6 @@ export default {
         if (channelName !== currentRoleChannel) {
           leaveRoleChannel()
             .then(_ => {
-              console.log(channelName)
               currentRoleChannel = channelName
               channels.subscribe(channelName)
             })
