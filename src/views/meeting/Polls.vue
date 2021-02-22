@@ -11,14 +11,16 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import wu from 'wu'
 
 import Poll from '../../components/widgets/Poll.vue'
-import { useRoute } from 'vue-router'
 
 import useMeeting from '@/composables/meeting/useMeeting.js'
 import usePolls from '@/composables/meeting/usePolls.js'
 
+import agendaItemType from '@/contentTypes/agendaItem'
 import pollType from '@/contentTypes/poll'
 
 const TAB_ORDER = [
@@ -55,6 +57,26 @@ export default {
           { polls: getPolls(meeting.value.pk, state) }
         )
       })
+    })
+
+    function setDifference (a, b) {
+      return new Set(wu(a).filter(item => !b.has(item)))
+    }
+    const agendaChannels = agendaItemType.useChannels()
+    function subscribeHook (newIds, oldIds) {
+      const enter = setDifference(newIds, oldIds)
+      const leave = setDifference(oldIds, newIds)
+      for (const id of enter) agendaChannels.subscribe(id)
+      for (const id of leave) agendaChannels.leave(id)
+    }
+
+    const agendaIds = computed(_ => new Set(getPolls(meeting.value.pk).map(p => p.agenda_item)))
+    watch(agendaIds, subscribeHook)
+    onBeforeMount(_ => {
+      subscribeHook(agendaIds.value, new Set())
+    })
+    onBeforeUnmount(_ => {
+      subscribeHook(new Set(), agendaIds.value)
     })
 
     return {

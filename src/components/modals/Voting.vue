@@ -38,7 +38,7 @@ export default {
     const done = ref(false)
 
     const proposals = computed(_ => {
-      return getPollProposals(props.data.pk)
+      return getPollProposals(props.data)
     })
 
     const methodComponent = computed(_ => pollMethods[props.data.method_name])

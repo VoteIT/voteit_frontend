@@ -16,21 +16,15 @@ proposalType.useChannels()
 agendaItemType.useChannels()
   .onLeave(agendaPk => {
     for (const p of proposals.values()) {
-      if (p.agenda_item === agendaPk && !p.polls.length) {
+      if (p.agenda_item === agendaPk) {
         proposals.delete(p.pk)
       }
     }
   })
 
-const proposalApi = proposalType.useContentApi()
+// const proposalApi = proposalType.useContentApi()
 
 export default function useProposals () {
-  function setProposals (props) {
-    props.forEach(p => {
-      proposals.set(p.pk, dateify(p))
-    })
-  }
-
   function getAgendaProposals (agendaPk, wfState) {
     const props = [...wu(proposals.values()).filter(
       p => p.agenda_item === agendaPk && (!wfState || p.state === wfState)
@@ -38,17 +32,11 @@ export default function useProposals () {
     return orderBy(props)
   }
 
-  function getPollProposals (pk) {
-    // TODO Rewrite this. Should probably ensure all proposals are returned.
+  function getPollProposals (poll) {
+    // TODO: Send proposal ids with poll data and do poll.proposals.map() instead.
     const props = [...wu(proposals.values()).filter(
-      p => p.polls.includes(pk)
+      p => p.polls.includes(poll.pk)
     )]
-    if (!props.length) {
-      proposalApi.list({ polls: pk })
-        .then(({ data }) => {
-          setProposals(data)
-        })
-    }
     return orderBy(props)
   }
 
