@@ -129,13 +129,16 @@ export default {
       return Promise.resolve()
     }
     function enterRoleChannel () {
-      const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
-      if (currentRoleChannel !== channelName) {
-        leaveRoleChannel()
-          .then(_ => {
-            currentRoleChannel = channelName
-            channels.subscribe(channelName)
-          })
+      if (meetingId.value) {
+        const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
+        if (channelName !== currentRoleChannel) {
+          leaveRoleChannel()
+            .then(_ => {
+              console.log(channelName)
+              currentRoleChannel = channelName
+              channels.subscribe(channelName)
+            })
+        }
       }
     }
     watch(isModerator, enterRoleChannel)
