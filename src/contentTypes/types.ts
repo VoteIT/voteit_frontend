@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import { Payload } from '@/utils/types'
+import accessPolicy from './accessPolicy'
 
 export interface WorkflowState {
   state: string
@@ -74,4 +75,17 @@ export interface ElectoralRegister {
 export interface Vote {
   abstain: boolean
   vote: Object
+}
+
+export interface AccessPolicy {
+  pk: number
+  meeting: number
+  active: boolean
+  name: string
+  roles_given: string[]
+}
+
+export interface MeetingAccessPolicy {
+  pk: number // Meeting id
+  policies: AccessPolicy[]
 }

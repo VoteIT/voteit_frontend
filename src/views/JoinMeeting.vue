@@ -5,7 +5,7 @@
     <richtext :object="meeting" />
     <p/>
     <div class="btn-controls" v-if="policies.length">
-      <btn v-if="policies.includes('automatic')" :disabled="working" icon="meeting_room" @click="joinNow()">{{ t('join.now') }}</btn>
+      <btn v-if="hasActive('automatic')" :disabled="working" icon="meeting_room" @click="joinNow()">{{ t('join.now') }}</btn>
     </div>
   </main>
 </template>
@@ -19,6 +19,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 
 import Richtext from '@/components/widgets/Richtext.vue'
 import accessPolicyType from '@/contentTypes/accessPolicy'
+import { AccessPolicy, MeetingAccessPolicy } from '@/contentTypes/types'
 
 export default defineComponent({
   components: { Richtext },
@@ -29,7 +30,7 @@ export default defineComponent({
     const loader = useLoader('JoinMeeting')
     const router = useRouter()
     const policyApi = accessPolicyType.useContentApi()
-    const policies = ref([])
+    const policies = ref<AccessPolicy[]>([])
     const working = ref(false)
 
     function joinNow () {
@@ -41,6 +42,12 @@ export default defineComponent({
         .finally(() => {
           working.value = false
         })
+    }
+
+    function hasActive (name: string): boolean {
+      return !!policies.value.filter(
+        policy => policy.name === name && policy.active
+      )
     }
 
     onBeforeMount(() => {
@@ -55,10 +62,8 @@ export default defineComponent({
       })
       loader.call(() => {
         policyApi.retrieve(meetingId.value)
-          .then(({ data }) => {
+          .then(({ data }: { data: MeetingAccessPolicy }) => {
             policies.value = data.policies
-              .filter(p => p.active)
-              .map(p => p.name)
           })
       })
     })
@@ -67,7 +72,8 @@ export default defineComponent({
       meeting,
       policies,
       joinNow,
-      working
+      working,
+      hasActive
     }
   }
 })
