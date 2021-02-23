@@ -88,7 +88,7 @@ export default {
           if (p.vote) validVote.value = p.vote
           currentAbstained.value = p.abstain
         })
-        .catch(_ => {}) // Should mean no previous vote
+        .catch(_ => {}) // Should mean no previous vote, but should be sanity checked.
     })
 
     return {

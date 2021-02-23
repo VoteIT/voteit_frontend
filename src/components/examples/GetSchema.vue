@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import useChannels from '@/composables/useChannels.js'
+import useChannels from '@/composables/useChannels'
 
 export default {
   name: 'GetSchema',

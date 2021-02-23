@@ -7,7 +7,7 @@
     <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
     <ul v-if="participatingMeetings.length">
       <li v-for="meeting in participatingMeetings" :key="meeting.pk">
-        <router-link :to="`/m/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
+        <router-link :to="`/m/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</router-link>
       </li>
     </ul>
     <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
@@ -15,7 +15,7 @@
       <h1>{{ t('join.joinAMeeting', otherMeetings.length) }}</h1>
       <ul>
         <li v-for="meeting in otherMeetings" :key="meeting.pk">
-          <router-link :to="`/join/${meeting.pk}/${$slugify(meeting.title)}`">{{ meeting.title }}</router-link>
+          <router-link :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</router-link>
         </li>
       </ul>
     </template>
@@ -57,6 +57,8 @@
 
 <script>
 import { computed, inject, onBeforeMount, ref, watch } from 'vue'
+
+import { slugify } from '@/utils'
 
 import AddMeetingVue from '@/components/modals/AddMeeting'
 import Counter from '@/components/examples/Counter'
@@ -152,7 +154,8 @@ export default {
       createUser,
 
       ...rules,
-      startNewMeeting
+      startNewMeeting,
+      slugify
     }
   },
   components: {

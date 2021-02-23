@@ -6,15 +6,15 @@
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
-    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
-      "node"
+      "webpack-env"
     ],
     "paths": {
       "@/*": [

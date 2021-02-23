@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import useLoader from '@/composables/useLoader.js'
+import useLoader from '@/composables/useLoader'
 
 let timer
 

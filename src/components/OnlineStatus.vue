@@ -9,8 +9,8 @@
 <script>
 import { onBeforeMount, ref, watch } from 'vue'
 
-import useChannels from '@/composables/useChannels.js'
-import useAuthentication from '@/composables/useAuthentication.js'
+import useChannels from '@/composables/useChannels'
+import useAuthentication from '@/composables/useAuthentication'
 
 const MAX_RETRIES = 5
 

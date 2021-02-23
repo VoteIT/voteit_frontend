@@ -16,8 +16,8 @@ import { useRoute } from 'vue-router'
 
 import Poll from '../../components/widgets/Poll.vue'
 
-import useMeeting from '@/composables/meeting/useMeeting.js'
-import usePolls from '@/composables/meeting/usePolls.js'
+import useMeeting from '@/composables/meeting/useMeeting'
+import usePolls from '@/composables/meeting/usePolls'
 
 import pollType from '@/contentTypes/poll'
 

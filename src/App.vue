@@ -13,8 +13,8 @@
 import { onBeforeMount, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useAuthentication from './composables/useAuthentication.js'
-import useLoader from './composables/useLoader.js'
+import useAuthentication from './composables/useAuthentication'
+import useLoader from './composables/useLoader'
 
 import Alerts from './components/Alerts'
 import Dialogs from './components/Dialogs'

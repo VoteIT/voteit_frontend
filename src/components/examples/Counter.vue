@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import useChannels from '@/composables/useChannels.js'
+import useChannels from '@/composables/useChannels'
 import { computed, ref } from 'vue'
 
 export default {

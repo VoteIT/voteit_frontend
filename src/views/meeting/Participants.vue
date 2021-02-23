@@ -28,9 +28,9 @@ import { computed, onBeforeMount, ref } from 'vue'
 import UserSearch from '@/components/widgets/UserSearch.vue'
 
 import useChannels from '@/composables/useChannels'
-import useContextRoles from '@/composables/useContextRoles.js'
-import useLoader from '@/composables/useLoader.js'
-import useMeeting from '@/composables/meeting/useMeeting.js'
+import useContextRoles from '@/composables/useContextRoles'
+import useLoader from '@/composables/useLoader'
+import useMeeting from '@/composables/meeting/useMeeting'
 
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
