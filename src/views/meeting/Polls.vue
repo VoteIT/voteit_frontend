@@ -10,8 +10,8 @@
   </main>
 </template>
 
-<script>
-import { computed } from 'vue'
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 
 import Poll from '../../components/widgets/Poll.vue'
@@ -20,6 +20,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 import usePolls from '@/composables/meeting/usePolls'
 
 import pollType from '@/contentTypes/poll'
+import { WorkflowState } from '@/contentTypes/types'
 
 const TAB_ORDER = [
   'ongoing',
@@ -28,32 +29,32 @@ const TAB_ORDER = [
   'private'
 ]
 
-export default {
+export default defineComponent({
   name: 'Polls',
   inject: ['t'],
   components: {
     Poll
   },
   setup () {
-    const { meeting, meetingPath } = useMeeting()
+    const { meeting, meetingPath, meetingId } = useMeeting()
     const { getPolls } = usePolls()
     const route = useRoute()
     const { getState } = pollType.useWorkflows()
 
-    const currentState = computed(_ => getState(
-      route.params.state || 'ongoing'
-    ) || {})
+    const currentState = computed(() => getState(
+      route.params.state as string || 'ongoing'
+    ))
 
-    const polls = computed(_ => {
-      return getPolls(meeting.value.pk, currentState.value.state)
+    const polls = computed(() => {
+      return getPolls(meetingId.value, currentState.value && currentState.value.state)
     })
 
-    const tabStates = computed(_ => {
+    const tabStates = computed(() => {
       return TAB_ORDER.map(state => {
-        return Object.assign({},
-          getState(state),
-          { polls: getPolls(meeting.value.pk, state) }
-        )
+        return {
+          ...getState(state),
+          polls: getPolls(meetingId.value, state)
+        }
       })
     })
 
@@ -64,7 +65,7 @@ export default {
       meetingPath,
       polls,
       ...pollType.rules,
-      getStatePath (s) {
+      getStatePath (s: WorkflowState) {
         if (s.state === 'ongoing') {
           return `${meetingPath.value}/polls`
         }
@@ -72,7 +73,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

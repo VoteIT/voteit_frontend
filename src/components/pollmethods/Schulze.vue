@@ -12,33 +12,37 @@
   </div>
 </template>
 
-<script>
-import Proposal from '@/components/widgets/Proposal'
-import { reactive, watch } from 'vue'
+<script lang="ts">
+import { defineComponent, PropType, reactive, watch } from 'vue'
 
-const GRADES = [1, 2, 3, 4, 5]
+import ProposalComponent from '@/components/widgets/Proposal.vue'
 
-export default {
+import { Poll, Proposal } from '@/contentTypes/types'
+import { SchulzeVote } from './types'
+
+const GRADES: number[] = [1, 2, 3, 4, 5]
+
+export default defineComponent({
   name: 'SchulzePoll',
   props: {
     poll: {
-      type: Object,
+      type: Object as PropType<Poll>,
       required: true
     },
     proposals: {
-      type: Array,
+      type: Array as PropType<Proposal[]>,
       required: true
     },
-    modelValue: Object
+    modelValue: Object as PropType<SchulzeVote>
   },
   components: {
-    Proposal
+    Proposal: ProposalComponent
   },
   setup (props, { emit }) {
-    const proposalGrades = reactive(new Map())
+    const proposalGrades = reactive<Map<number, number>>(new Map())
 
     // Watch existing vote value from Vote modal
-    watch(_ => props.modelValue, vote => {
+    watch(() => props.modelValue, (vote?: SchulzeVote) => {
       if (vote && vote.ranking) {
         vote.ranking.forEach(([key, value]) => {
           proposalGrades.set(key, value)
@@ -46,7 +50,7 @@ export default {
       }
     })
 
-    function setGrade (proposal, grade) {
+    function setGrade (proposal: Proposal, grade: number) {
       proposalGrades.set(proposal.pk, grade)
       emit('update:modelValue', {
         ranking: props.proposals.map(p => [p.pk, proposalGrades.get(p.pk) || 0])
@@ -59,7 +63,7 @@ export default {
       proposalGrades
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

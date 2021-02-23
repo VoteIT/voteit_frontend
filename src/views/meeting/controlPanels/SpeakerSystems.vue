@@ -4,17 +4,18 @@
   </div>
 </template>
 
-<script>
-import { computed, inject } from 'vue'
-export default {
+<script lang="ts">
+import { computed, defineComponent, inject } from 'vue'
+
+export default defineComponent({
   name: 'SpeakerSystems',
   path: 'speakers',
   icon: 'volume_up',
   setup () {
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
     return {
-      title: computed(_ => t('speaker.settings'))
+      title: computed(() => t('speaker.settings'))
     }
   }
-}
+})
 </script>

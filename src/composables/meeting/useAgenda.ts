@@ -51,8 +51,8 @@ export default function useAgenda () {
     return agendaItems.get(agendaItem) || {}
   }
 
-  const agendaId = computed(_ => route && Number(route.params.aid))
-  const agendaItem = computed(_ => getAgendaItem(agendaId.value))
+  const agendaId = computed(() => route && Number(route.params.aid))
+  const agendaItem = computed(() => getAgendaItem(agendaId.value))
 
   const loader = useLoader('useAgenda')
   onBeforeMount(() => {

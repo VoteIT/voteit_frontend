@@ -6,9 +6,10 @@
   </div>
 </template>
 
-<script>
-import { computed } from 'vue'
-export default {
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'Progress bar',
   props: {
     text: String,
@@ -25,13 +26,13 @@ export default {
     }
   },
   setup (props) {
-    const percentage = computed(_ => {
+    const percentage = computed(() => {
       if (props.total === 0) {
         return 0
       }
       return props.value / props.total * 100
     })
-    const textDisplay = computed(_ => {
+    const textDisplay = computed(() => {
       if (props.text) {
         return props.text
       }
@@ -46,7 +47,7 @@ export default {
       textDisplay
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

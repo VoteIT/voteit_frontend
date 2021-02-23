@@ -22,18 +22,21 @@
   </div>
 </template>
 
-<script>
-import { computed } from 'vue'
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
 
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
 import rules from '@/contentTypes/speakerList/rules'
 
-import WorkflowState from './WorkflowState'
+import WorkflowState from './WorkflowState.vue'
 
-export default {
+export default defineComponent({
   name: 'SpeakerList',
   props: {
-    pk: Number
+    pk: {
+      type: Number,
+      required: true
+    }
   },
   components: {
     WorkflowState
@@ -41,12 +44,12 @@ export default {
   setup (props) {
     const speakers = useSpeakerLists()
 
-    const list = computed(_ => speakers.getList(props.pk))
-    const listSystem = computed(_ => list.value && speakers.getSystem(list.value.list_system))
-    const queue = computed(_ => speakers.getQueue(props.pk))
-    const currentSpeaker = computed(_ => speakers.getCurrent(props.pk))
-    const inList = computed(_ => speakers.userInList(props.pk))
-    const listIsActive = computed(_ => listSystem.value && listSystem.value.active_list === props.pk)
+    const list = computed(() => speakers.getList(props.pk))
+    const listSystem = computed(() => list.value && speakers.getSystem(list.value.list_system))
+    const queue = computed(() => speakers.getQueue(props.pk))
+    const currentSpeaker = computed(() => speakers.getCurrent(props.pk))
+    const inList = computed(() => speakers.userInList(props.pk))
+    const listIsActive = computed(() => listSystem.value && listSystem.value.active_list === props.pk)
 
     return {
       list,
@@ -58,5 +61,5 @@ export default {
       speakers
     }
   }
-}
+})
 </script>

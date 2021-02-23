@@ -26,7 +26,7 @@ function dateify (obj: Payload, attributes: string | string[] = 'created') {
   return obj
 }
 
-function orderBy (objects: BaseContent[], attribute = 'created') {
+function orderBy (objects: BaseContent[], attribute = 'created'): BaseContent[] {
   objects.sort((objA, objB) => {
     if (objA[attribute] > objB[attribute]) return 1
     if (objA[attribute] < objB[attribute]) return -1

@@ -44,7 +44,7 @@ useChannels('moderators')
   })
 
 export default function usePolls () {
-  function getPolls (meeting: number, state: string) {
+  function getPolls (meeting: number, state?: string) {
     const meetingPolls = wu(polls.values()).filter(
       p => p.meeting === meeting && (!state || p.state === state)
     )

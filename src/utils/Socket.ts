@@ -47,7 +47,7 @@ export default class Socket {
     this.listeners.get(eventName).delete(listener)
   }
 
-  connect (token: string) {
+  connect (token?: string) {
     // Save token is supplied (usually first call)
     if (token) {
       this.token = token
@@ -82,15 +82,15 @@ export default class Socket {
     return this.active && this._ws && this._ws.readyState === WebSocket.OPEN
   }
 
-  call (type: string, payloadOrUri: string | object, config?: ChannelsConfig): ProgressPromise<ChannelsMessage> {
+  call (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<ChannelsMessage> {
     // Registers a response listener and returns promise that resolves or rejects depeding on subsequent
     // socket data, or times out.
     const myConfig: ChannelsConfig = { ...DEFAULT_CONFIG, ...(config || {}) }
     if (this.isOpen) {
       const messageId = sessionStorage.socketMessageCounter || '1'
-      const payload = typeof payloadOrUri === 'object'
+      const payload = payloadOrUri && (typeof payloadOrUri === 'object'
         ? payloadOrUri
-        : uriToPayload(payloadOrUri)
+        : uriToPayload(payloadOrUri))
       this._ws && this._ws.send(JSON.stringify({
         t: type,
         p: payload,

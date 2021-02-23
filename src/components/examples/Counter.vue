@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!progress">
+    <div v-if="!counting">
       <button @click="countToTen(true)">Count to 10</button>
       <button @click="countToTen(false)">Fail at 5</button>
       <button @click="countToTen(true, { timeout: 500 })">Short timeout</button>
@@ -9,26 +9,34 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import useChannels from '@/composables/useChannels'
-import { computed, ref } from 'vue'
+import { Progress } from '@/utils/types'
+import { computed, defineComponent, ref } from 'vue'
 
-export default {
+const PROGRESS_DEFAULT: Progress = {
+  curr: 0,
+  total: 1
+}
+
+export default defineComponent({
   name: 'Counter',
   setup () {
     const { post } = useChannels('testing', { alertOnError: false }) // Handle errors here
 
-    const progress = ref(null)
-    const state = ref(null)
+    const progress = ref<Progress>(PROGRESS_DEFAULT)
+    const state = ref<boolean | null>(null)
+    const counting = ref(false)
 
-    function countToTen (succeed, config) {
+    function countToTen (succeed: boolean, config: Object) {
       const data = succeed ? undefined : { fail: 5 }
+      counting.value = true
       post('testing.count', data, config)
-        .onProgress(value => {
+        .onProgress((value: Progress) => {
           progress.value = value
         })
         .then(({ p }) => {
-          progress.value = p
+          progress.value = p as Progress
           state.value = true
         })
         .catch(() => {
@@ -40,13 +48,14 @@ export default {
         })
         .finally(() => {
           setTimeout(() => {
-            progress.value = null
+            progress.value = PROGRESS_DEFAULT
             state.value = null
+            counting.value = false
           }, 2000)
         })
     }
 
-    const progressText = computed(_ => {
+    const progressText = computed(() => {
       switch (state.value) {
         case true:
           return 'Coming to get you!'
@@ -61,10 +70,11 @@ export default {
       state,
       progress,
       countToTen,
-      progressText
+      progressText,
+      counting
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

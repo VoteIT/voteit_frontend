@@ -6,7 +6,7 @@ import { DevUser } from '@/utils/types'
 
 const user = ref(sessionStorage.user ? JSON.parse(sessionStorage.user) : null)
 const isAuthenticated = ref(false)
-const authToken = ref(null)
+const authToken = ref<string | null>(null)
 
 export default function useAuthentication () {
   const restApi = useRestApi()
@@ -21,7 +21,7 @@ export default function useAuthentication () {
         isAuthenticated.value = true
         authToken.value = data.key
       })
-      .catch(_ => {
+      .catch(() => {
         delete sessionStorage.user
       })
   }

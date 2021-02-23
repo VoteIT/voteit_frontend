@@ -1,6 +1,6 @@
 <template>
   <div id="alerts">
-    <div class="alert" :class="alert.level" v-for="(alert, id) in alerts" :key="id">
+    <div class="alert" :class="alert.level" v-for="(alert, index) in alerts" :key="index">
       <icon sm name="close" class="close" @click="dismiss(alert)" />
       <span v-if="alert.html" v-html="alert.html" />
       <span v-else>
@@ -12,8 +12,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, onBeforeMount, reactive } from 'vue'
+
 import { emitter } from '@/utils'
+import { Alert } from '@/composables/types'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
 const Level = {
@@ -26,59 +29,66 @@ const DEFAULTS = {
   level: Level.info
 }
 
-function alertFromString (text) {
-  let level = DEFAULTS.level
-  let sticky = false
-  switch (text.charAt(0)) {
-    case '*':
-      text = text.substr(1)
-      level = Level.warning
-      break
-    case '^':
-      text = text.substr(1)
-      level = Level.error
-      sticky = true
-      break
-  }
-  return {
-    text,
-    level,
-    title: level,
-    sticky
-  }
-}
-
-export default {
+export default defineComponent({
   name: 'Alerts',
-  data () {
-    return {
-      alerts: []
-    }
-  },
-  methods: {
-    dismiss (alert) {
+  setup () {
+    const alerts = reactive<Alert[]>([])
+
+    function dismiss (alert?: Alert) {
       if (alert) {
-        this.alerts = this.alerts.filter(a => a !== alert)
+        const index = alerts.indexOf(alert)
+        if (index !== -1) {
+          alerts.splice(index, 1)
+        }
       } else {
-        this.alerts = []
-      }
-    },
-    open (alert) {
-      if (typeof alert === 'string') {
-        alert = alertFromString(alert)
-      }
-      alert = Object.assign({}, DEFAULTS, alert)
-      this.alerts.push(alert)
-      if (!alert.sticky) {
-        alert = this.alerts[this.alerts.length - 1]
-        setTimeout(_ => this.dismiss(alert), AUTO_DISMISS_DELAY)
+        alerts.length = 0
       }
     }
-  },
-  created () {
-    emitter.on('alert-open', this.open)
+
+    function textToAlert (text: string): Alert {
+      let level = DEFAULTS.level
+      let sticky = false
+      switch (text.charAt(0)) {
+        case '*':
+          text = text.substr(1)
+          level = Level.warning
+          break
+        case '^':
+          text = text.substr(1)
+          level = Level.error
+          sticky = true
+          break
+      }
+      return {
+        text,
+        level,
+        title: level,
+        sticky
+      }
+    }
+
+    function open (data: string | Alert) {
+      if (typeof data === 'string') {
+        alerts.push({ ...DEFAULTS, ...textToAlert(data) })
+      } else {
+        alerts.push({ ...DEFAULTS, ...data })
+      }
+      const alert = alerts[alerts.length - 1]
+      if (!alert.sticky) {
+        setTimeout(() => dismiss(alert), AUTO_DISMISS_DELAY)
+      }
+    }
+
+    onBeforeMount(() => {
+      emitter.on('alert-open', (alert) => open(alert as string | Alert))
+    })
+
+    return {
+      alerts,
+      dismiss
+    }
   }
-}
+})
 </script>
 
 <style lang="sass">

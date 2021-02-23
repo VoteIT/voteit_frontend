@@ -14,20 +14,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import usePresence from '@/composables/meeting/usePresence'
-import { computed } from 'vue'
+import { computed, defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'PresenceCheck',
   icon: 'pan_tool',
   props: {
-    data: Object
+    data: {
+      type: Object,
+      required: true
+    }
   },
   setup (props) {
     const presence = usePresence()
 
-    const userPresence = computed(_ => {
+    const userPresence = computed(() => {
       return presence.getUserPresence(props.data.presenceCheck.pk)
     })
 
@@ -36,5 +39,5 @@ export default {
       userPresence
     }
   }
-}
+})
 </script>

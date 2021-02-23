@@ -2,29 +2,32 @@
   <span class="time">{{ fromNow }}</span>
 </template>
 
-<script>
-import { onBeforeUnmount, onBeforeMount, ref } from 'vue'
+<script lang="ts">
+import { onBeforeUnmount, onBeforeMount, ref, defineComponent } from 'vue'
 import moment from 'moment'
 
-export default {
+export default defineComponent({
   name: 'Moment',
   props: {
-    date: Date
+    date: {
+      type: Date,
+      required: true
+    }
   },
   setup (props) {
-    let intervalId
+    let intervalId: number
     const fromNow = ref('')
 
     function updateFromNow () {
       fromNow.value = moment(props.date).fromNow()
     }
 
-    onBeforeMount(_ => {
+    onBeforeMount(() => {
       updateFromNow()
       intervalId = setInterval(updateFromNow, 60000)
     })
 
-    onBeforeUnmount(_ => {
+    onBeforeUnmount(() => {
       clearInterval(intervalId)
     })
 
@@ -32,7 +35,7 @@ export default {
       fromNow
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

@@ -6,15 +6,15 @@
   </div>
 </template>
 
-<script>
-import { onBeforeMount, ref, watch } from 'vue'
+<script lang="ts">
+import { defineComponent, onBeforeMount, ref, watch } from 'vue'
 
 import useChannels from '@/composables/useChannels'
 import useAuthentication from '@/composables/useAuthentication'
 
 const MAX_RETRIES = 5
 
-export default {
+export default defineComponent({
   inject: ['t'],
   setup () {
     const reconnectTime = ref(1)
@@ -23,7 +23,7 @@ export default {
     const { authToken, isAuthenticated } = useAuthentication()
     const { connect, socketState } = useChannels()
 
-    let reconnectIntervalId
+    let reconnectIntervalId: number
 
     function reconnectTicker (on = true) {
       // Always cancel existing interval
@@ -31,13 +31,13 @@ export default {
       if (on) {
         reconnectIntervalId = setInterval(reconnectTicker, 1000)
         if (reconnectTime.value < 1) {
-          connect(authToken.value)
-            .then(_ => {
+          connect()
+            .then(() => {
               // Reset tries and stop ticker
               reconnectTries.value = 1
               reconnectTicker(false)
             })
-            .catch(_ => {
+            .catch(() => {
               if (reconnectTries.value > MAX_RETRIES) {
                 failedInitialization.value = true
                 reconnectTicker(false)
@@ -55,7 +55,7 @@ export default {
     function tryAgain () {
       failedInitialization.value = false
       connect()
-        .catch(_ => {
+        .catch(() => {
           failedInitialization.value = true
         })
     }
@@ -63,7 +63,7 @@ export default {
     watch(authToken, value => {
       if (value) {
         connect(value)
-          .catch(_ => {
+          .catch(() => {
             failedInitialization.value = true
           })
       }
@@ -75,8 +75,8 @@ export default {
       }
     })
 
-    onBeforeMount(_ => {
-      document.addEventListener('visibilitychange', _ => {
+    onBeforeMount(() => {
+      document.addEventListener('visibilitychange', () => {
         if (!socketState.value) {
           reconnectTicker(document.visibilityState === 'visible')
         }
@@ -92,7 +92,7 @@ export default {
       tryAgain
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

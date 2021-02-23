@@ -1,8 +1,7 @@
 import { RestApiConfig } from '@/composables/types'
-
 import useContentApi from '../useContentApi'
 
 export default {
   naturalKey: 'auth.user',
-  useContentApi: (config?: RestApiConfig) => useContentApi('dev-login/', undefined, config)
+  useContentApi: (config?: RestApiConfig) => useContentApi('users/', undefined, config)
 }

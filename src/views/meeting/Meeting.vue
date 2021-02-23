@@ -25,15 +25,15 @@
   <bubbles widgets="bubbleWidgets" />
 </template>
 
-<script>
-import { computed, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
 
-import Agenda from '@/components/meeting/Agenda'
-import Bubbles from '@/components/meeting/Bubbles'
-import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck'
+import Agenda from '@/components/meeting/Agenda.vue'
+import Bubbles from '@/components/meeting/Bubbles.vue'
+import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck.vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useBubbles from '@/composables/meeting/useBubbles'
@@ -46,11 +46,19 @@ import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 import meetingType from '@/contentTypes/meeting'
 
-export default {
+interface NavLink {
+  title: string
+  icon: string
+  path: string
+  role?: string
+  count?: () => number
+}
+
+export default defineComponent({
   name: 'Meeting',
   setup () {
-    const t = inject('t')
-    const navLinks = [
+    const t = inject('t') as CallableFunction
+    const navLinks: NavLink[] = [
       {
         role: 'moderator',
         title: t('settings'),
@@ -62,7 +70,7 @@ export default {
         title: t('poll.polls'),
         icon: 'star',
         path: 'polls',
-        count: _ => getPolls(meetingId.value, 'ongoing').length
+        count: () => getPolls(meetingId.value, 'ongoing').length
       },
       {
         role: 'moderator',
@@ -71,9 +79,9 @@ export default {
         path: 'participants'
       }
     ]
-    const navigationLinks = computed(_ => {
+    const navigationLinks = computed(() => {
       return navLinks
-        .filter(l => hasRole(l.role))
+        .filter(l => l.role && hasRole(l.role))
     })
 
     const loader = useLoader('Meeting')
@@ -87,10 +95,10 @@ export default {
 
     const speakers = useSpeakerLists()
 
-    const presenceCheck = computed(_ => presence.getOpenPresenceCheck(meetingId.value))
-    const isPresent = computed(_ => presenceCheck.value && !!presence.getUserPresence(presenceCheck.value.pk))
+    const presenceCheck = computed(() => presence.getOpenPresenceCheck(meetingId.value))
+    const isPresent = computed(() => presenceCheck.value && !!presence.getUserPresence(presenceCheck.value.pk))
 
-    function checkIsPresent (value) {
+    function checkIsPresent (value?: boolean) {
       // Can be false, true or undefined.
       switch (value) {
         case false:
@@ -109,20 +117,20 @@ export default {
       }
     }
 
-    onMounted(_ => checkIsPresent(isPresent.value))
+    onMounted(() => checkIsPresent(isPresent.value))
     watch(isPresent, checkIsPresent)
 
     const { getPolls } = usePolls()
-    const polls = computed(_ => getPolls(meetingId.value))
-    const ongoingPollCount = computed(_ => getPolls(meetingId.value, 'ongoing').length)
+    const polls = computed(() => getPolls(meetingId.value))
+    const ongoingPollCount = computed(() => getPolls(meetingId.value, 'ongoing').length)
 
     const channels = useChannels() // For dynamic usage
-    const isModerator = computed(_ => hasRole('moderator'))
-    let currentRoleChannel = null
+    const isModerator = computed(() => hasRole('moderator'))
+    let currentRoleChannel: string | null = null
     async function leaveRoleChannel () {
       if (currentRoleChannel) {
         return channels.leave(currentRoleChannel, { leaveDelay: 0 })
-          .then(_ => {
+          .then(() => {
             currentRoleChannel = null
           })
       }
@@ -133,7 +141,7 @@ export default {
         const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
         if (channelName !== currentRoleChannel) {
           leaveRoleChannel()
-            .then(_ => {
+            .then(() => {
               currentRoleChannel = channelName
               channels.subscribe(channelName)
             })
@@ -142,23 +150,23 @@ export default {
     }
     watch(isModerator, enterRoleChannel)
 
-    onBeforeMount(_ => {
-      loader.call(_ => {
+    onBeforeMount(() => {
+      loader.call(() => {
         meetingApi.retrieve(meetingId.value)
           .then(({ data }) => {
             if (!data.current_user_roles) {
-              router.push(`/join/${meeting.value.pk}/${slugify(meeting.value.title)}`)
+              router.push(`/join/${meetingId.value}/${slugify('title' in meeting.value ? meeting.value.title : '-')}`)
             }
             setMeeting(data)
             enterRoleChannel()
           })
-          .catch(_ => {
+          .catch(() => {
             router.push('/')
           })
       })
       loader.subscribe(channel, meetingId.value)
     })
-    onBeforeRouteLeave(_ => {
+    onBeforeRouteLeave(() => {
       channel.leave(meetingId.value)
       leaveRoleChannel()
     })
@@ -183,7 +191,7 @@ export default {
     Agenda,
     Bubbles
   }
-}
+})
 </script>
 
 <style lang="sass">

@@ -9,6 +9,7 @@
     "extractLocales": "vue-i18n-extract report -v './src/**/*.?(js|vue)' -l './src/locales/*.json'"
   },
   "dependencies": {
+    "@types/quill": "^2.0.5",
     "axios": "^0.21.1",
     "core-js": "^3.8.3",
     "material-icons": "^0.3.1",

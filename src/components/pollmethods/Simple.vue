@@ -16,45 +16,57 @@
   </form>
 </template>
 
-<script>
-import { inject, reactive, watch } from 'vue'
+<script lang="ts">
+import { defineComponent, inject, PropType, reactive, watch } from 'vue'
+import { DefaultMap } from '@/utils'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 
-import Proposal from '../widgets/Proposal'
-import { DefaultMap } from '@/utils'
+import ProposalComponent from '../widgets/Proposal.vue'
 
-export default {
+import { CombinedSimpleVote, SimpleChoice, SimpleVote, SingleSimpleVote } from './types'
+import { Poll, Proposal } from '@/contentTypes/types'
+
+export default defineComponent({
   name: 'SimplePoll',
   props: {
     poll: {
-      type: Object,
+      type: Object as PropType<Poll>,
       required: true
     },
     proposals: {
-      type: Array,
+      type: Array as PropType<Proposal[]>,
       required: true
     },
-    modelValue: Object
+    modelValue: {
+      type: Object as PropType<SimpleVote>
+    }
   },
   components: {
-    Proposal
+    Proposal: ProposalComponent
   },
   setup (props, { emit }) {
-    const t = inject('t')
+    const t = inject('t') as CallableFunction // TODO What?
     const { getUser } = useMeeting()
-    const votes = reactive(new Map())
+    const votes = reactive<Map<number, SimpleChoice>>(new Map())
     const isCombined = props.poll.method_name === 'combined_simple'
+
+    interface Option {
+      value: SimpleChoice
+      title: string
+      icon: string
+      color: string
+    }
 
     const options = [
       {
-        value: 'yes',
+        value: SimpleChoice.Yes,
         title: t('poll.approve'),
         icon: 'thumb_up',
         color: '#cdc'
       },
       {
-        value: 'no',
+        value: SimpleChoice.No,
         title: t('poll.deny'),
         icon: 'thumb_down',
         color: '#dcc'
@@ -63,35 +75,39 @@ export default {
 
     if (isCombined) {
       options.push({
-        value: 'abstain',
+        value: SimpleChoice.Abstain,
         title: t('poll.abstain'),
         icon: 'block',
         color: '#999'
       })
     }
 
-    function change (proposal, opt) {
+    function change (proposal: Proposal, opt: Option) {
       votes.set(proposal.pk, opt.value)
       if (isCombined) {
-        const map = new DefaultMap(_ => [])
+        const map = new DefaultMap<SimpleChoice, number[]>(() => [])
         for (const [pk, choice] of votes.entries()) {
           map.get(choice).push(pk)
         }
-        emit('update:modelValue', Object.fromEntries(map)) // TODO
+        emit('update:modelValue', Object.fromEntries(map))
       } else {
         emit('update:modelValue', { choice: opt.value })
       }
     }
 
-    watch(_ => props.modelValue, vote => {
+    function setSingle (vote: SingleSimpleVote) {
+      votes.set(props.proposals[0].pk, vote.choice)
+    }
+
+    watch(() => props.modelValue, (vote?: SimpleVote) => {
       if (isCombined) {
-        for (const [choice, pks] of Object.entries(vote)) {
-          pks.forEach(pk => {
-            votes.set(pk, choice)
+        for (const [choice, pks] of Object.entries(vote as CombinedSimpleVote)) {
+          pks.forEach((pk: number) => {
+            votes.set(pk, choice as SimpleChoice)
           })
         }
       } else {
-        votes.set(props.proposals[0].pk, vote && vote.choice)
+        setSingle(vote as SingleSimpleVote)
       }
     })
 
@@ -102,7 +118,7 @@ export default {
       getUser
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

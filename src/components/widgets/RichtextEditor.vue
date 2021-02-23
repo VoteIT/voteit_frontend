@@ -4,14 +4,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Quill from 'quill'
 import 'quill-mention'
-import { onMounted, ref } from 'vue'
+import { defineComponent, onMounted, PropType, ref } from 'vue'
 import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/composables/meeting/useMeeting'
+import { ContextRoles } from '@/composables/types'
 
-const QUILL_CONFIG = {
+const QUILL_CONFIG: any = {
   theme: 'bubble',
   formats: ['bold', 'italic', 'link', 'code', 'blockquote', 'list', 'mention'],
   modules: {
@@ -28,7 +29,7 @@ const QUILL_CONFIG = {
   }
 }
 
-export default {
+export default defineComponent({
   name: 'RichtextEditor',
   emits: ['submit', 'update:modelValue'],
   props: {
@@ -37,30 +38,30 @@ export default {
       default: ''
     },
     tags: {
-      type: Array,
-      required: false
+      type: Array as PropType<string[]>,
+      default: () => []
     },
     setFocus: Boolean
   },
   setup (props, { emit }) {
-    let editor = null
-    const editorElement = ref(null)
+    let editor: Quill | null = null
+    const editorElement = ref<HTMLElement | null>(null)
     const completionsElement = ref(null)
 
     const rolesApi = meetingRoleType.useContentApi()
     const { meetingId } = useMeeting()
 
-    function tagObject (tagName) {
+    function tagObject (tagName: string) {
       return { id: tagName, value: tagName }
     }
 
-    async function mentionSource (searchTerm, renderList, mentionChar) {
+    async function mentionSource (searchTerm: string, renderList: CallableFunction, mentionChar: string) {
       switch (mentionChar) {
         case '#':
           renderList(
             [tagObject(searchTerm)].concat(
               (props.tags || [])
-                .filter(t => t !== searchTerm && t.startsWith(searchTerm))
+                .filter(tag => tag !== searchTerm && tag.startsWith(searchTerm))
                 .map(tagObject))
           )
           break
@@ -72,7 +73,7 @@ export default {
             search: searchTerm.toLowerCase(),
             context: meetingId.value
           })
-            .then(({ data }) => {
+            .then(({ data }: { data: ContextRoles[] }) => {
               renderList(data.map(({ user }) => {
                 return {
                   id: user.pk,
@@ -84,31 +85,35 @@ export default {
       }
     }
 
-    onMounted(_ => {
-      editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
-      const config = Object.assign({}, QUILL_CONFIG)
-      config.modules.keyboard.bindings.submit = {
-        key: 'Enter',
-        ctrlKey: true,
-        handler: _ => emit('submit')
-      }
-      config.modules.mention.source = mentionSource
-      editor = new Quill(editorElement.value, config)
-      editor.on('text-change', _ => {
-        emit('update:modelValue', editor.root.innerHTML)
-      })
-      if (props.setFocus) {
-        focus()
+    onMounted(() => {
+      if (editorElement.value) {
+        editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
+        const config = Object.assign({}, QUILL_CONFIG)
+        config.modules.keyboard.bindings.submit = {
+          key: 'Enter',
+          ctrlKey: true,
+          handler: () => emit('submit')
+        }
+        config.modules.mention.source = mentionSource
+        editor = new Quill(editorElement.value, config)
+        editor.on('text-change', () => {
+          emit('update:modelValue', editor && editor.root.innerHTML)
+        })
+        if (props.setFocus) {
+          focus()
+        }
       }
     })
 
     function focus () {
-      editor.focus()
-      editor.setSelection(editor.getLength())
+      if (editor) {
+        editor.focus()
+        editor.setSelection(editor.getLength(), editor.getLength())
+      }
     }
 
     function clear () {
-      editor.setContents('')
+      editor && editor.setText('')
     }
 
     return {
@@ -118,7 +123,7 @@ export default {
       clear
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

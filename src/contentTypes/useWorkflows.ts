@@ -1,7 +1,7 @@
 import { WorkflowState } from './types'
 
 export default function useWorkflows (states: WorkflowState[]) {
-  function getState (state: string) {
+  function getState (state: string): WorkflowState | undefined {
     return states.find(s => s.state === state)
   }
 

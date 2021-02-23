@@ -5,15 +5,17 @@
   </button>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'Icon button',
   props: {
     icon: String,
     sm: Boolean,
     active: Boolean
   }
-}
+})
 </script>
 
 <style lang="sass">

@@ -1,8 +1,8 @@
 <template>
   <span class="user-search">
-    <input type="search" :class="{ selected: !!selected }" name="search" autocomplete="off" v-model="text" @keyup="delayedSearch" />
+    <input type="search" :class="{ selected: !!selected }" name="search" autocomplete="off" v-model="query" @keyup="delayedSearch" />
     <button type="submit" :disabled="!selected" @click="$emit('submit', selected)"><icon sm :name="buttonIcon"/> {{ buttonText }}</button>
-    <div class="selector" v-show="active">
+    <div class="selector" v-show="results.length">
       <ul>
         <li v-for="result in results" :key="result.pk" @click="select(result)">
           {{ result.full_name }}
@@ -12,11 +12,15 @@
   </span>
 </template>
 
-<script>
-const TYPE_DELAY = 250 // delay in ms
-let typeTimeout
+<script lang="ts">
+import userType from '@/contentTypes/user'
+import { User } from '@/utils/types'
+import { defineComponent, ref } from 'vue'
 
-export default {
+const TYPE_DELAY = 250 // delay in ms
+let typeTimeout: number
+
+export default defineComponent({
   name: 'SearchUser',
   props: {
     buttonIcon: {
@@ -28,37 +32,45 @@ export default {
       default: 'Add'
     }
   },
-  data () {
-    return {
-      text: '',
-      results: [],
-      active: false,
-      selected: null
-    }
-  },
-  methods: {
-    search () {
-      this.$api.get('users/', { params: { search: this.text } })
-        .then(({ data }) => {
-          this.active = true
-          this.results = data
-        })
-    },
-    select (user) {
-      this.selected = user
-      this.text = user.username
-      this.active = false
-    },
-    delayedSearch () {
-      this.selected = null
-      if (this.text.length === 0) {
-        this.active = false
+  emits: ['submit'],
+  setup () {
+    const contentApi = userType.useContentApi()
+    const query = ref('')
+    const results = ref<User[]>([])
+    const selected = ref<User | null>(null)
+
+    function search () {
+      if (query.value) {
+        contentApi.list({ search: query.value })
+          .then(({ data }: { data: User[] }) => {
+            results.value = data
+          })
+      } else {
+        results.value = []
       }
+    }
+
+    function select (user: User) {
+      selected.value = user
+      results.value = []
+      query.value = user.full_name
+    }
+
+    function delayedSearch () {
+      selected.value = null
       clearTimeout(typeTimeout)
-      typeTimeout = setTimeout(_ => {
-        this.search()
+      typeTimeout = setTimeout(() => {
+        search()
       }, TYPE_DELAY)
     }
+
+    return {
+      selected,
+      select,
+      results,
+      query,
+      delayedSearch
+    }
   }
-}
+})
 </script>

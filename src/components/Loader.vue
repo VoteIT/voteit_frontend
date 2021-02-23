@@ -9,42 +9,43 @@
   </transition>
 </template>
 
-<script>
+<script lang="ts">
+import { computed, defineComponent, onMounted, ref, watch } from 'vue'
+
 import useLoader from '@/composables/useLoader'
 
-let timer
+let timer: number
 
-export default {
+export default defineComponent({
   name: 'Loader',
   inject: ['t'],
   setup () {
-    return useLoader('Loader')
-  },
-  data () {
+    const dotCount = ref(0)
+    const loader = useLoader('Loader')
+
+    function dotUp () {
+      dotCount.value = (dotCount.value + 1) % 4
+    }
+
+    onMounted(() => {
+      timer = setInterval(dotUp, 333)
+    })
+
+    function doneOrFailed (value: boolean) {
+      value && clearInterval(timer)
+    }
+    watch(loader.initDone, doneOrFailed)
+    watch(loader.initFailed, doneOrFailed)
+
+    const dots = computed(() => '.'.repeat(dotCount.value))
+
     return {
-      dotCount: 0
+      dotCount,
+      dots,
+      ...loader
     }
-  },
-  methods: {
-    dotUp () {
-      this.dotCount++
-      if (this.dotCount > 3) {
-        this.dotCount = 0
-      }
-    }
-  },
-  computed: {
-    dots () {
-      return '.'.repeat(this.dotCount)
-    }
-  },
-  mounted () {
-    timer = setInterval(this.dotUp, 250)
-  },
-  unmounted () {
-    clearInterval(timer)
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

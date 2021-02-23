@@ -12,20 +12,26 @@
   </main>
 </template>
 
-<script>
-import { computed, onBeforeMount, ref } from 'vue'
+<script lang="ts">
+import { Component, computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 
 import useAlert from '@/composables/useAlert'
 import useChannels from '@/composables/useChannels'
 import useProposals from '@/composables/meeting/useProposals'
 
-import pollMethods from '../pollmethods'
+import { pollMethods } from '../pollmethods'
 
-export default {
+import { Poll, Proposal, Vote } from '@/contentTypes/types'
+import { ChannelsMessage } from '@/utils/types'
+
+export default defineComponent({
   name: 'VotingModal',
   inject: ['t'],
   props: {
-    data: Object
+    data: {
+      type: Object as PropType<Poll>,
+      required: true
+    }
   },
   setup (props) {
     const { getPollProposals } = useProposals()
@@ -37,15 +43,13 @@ export default {
     const abstained = ref(false)
     const done = ref(false)
 
-    const proposals = computed(_ => {
-      return getPollProposals(props.data)
-    })
+    const proposals = computed<Proposal[]>(() => getPollProposals(props.data))
 
-    const methodComponent = computed(_ => pollMethods[props.data.method_name])
+    const methodComponent = computed<Component | undefined>(() => pollMethods[props.data.method_name])
 
     // Valid vote value emitted from method
     const currentAbstained = ref(false)
-    const validVote = ref(null)
+    const validVote = ref<Object | null>(null)
 
     function castVote () {
       if (validVote.value) {
@@ -61,10 +65,10 @@ export default {
           vote: validVote.value
         }
         channels.post(`${props.data.method_name}_vote.add`, msg)
-          .then(_ => {
+          .then(() => {
             done.value = true
           })
-          .catch(_ => {
+          .catch(() => {
             waiting.value = false
           })
       } else {
@@ -74,21 +78,22 @@ export default {
 
     function abstainVote () {
       channels.post('vote.abstain', { pk: props.data.pk })
-        .then(_ => {
+        .then(() => {
           abstained.value = true
         })
-        .catch(_ => {
+        .catch(() => {
           waiting.value = false
         })
     }
 
-    onBeforeMount(_ => {
+    onBeforeMount(() => {
       channels.get(props.data.pk)
-        .then(({ p }) => {
+        .then((msg: ChannelsMessage) => {
+          const p = msg.p as Vote
           if (p.vote) validVote.value = p.vote
           currentAbstained.value = p.abstain
         })
-        .catch(_ => {}) // Should mean no previous vote, but should be sanity checked.
+        .catch(() => {}) // Should mean no previous vote, but should be sanity checked.
     })
 
     return {
@@ -104,7 +109,7 @@ export default {
       abstainVote
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

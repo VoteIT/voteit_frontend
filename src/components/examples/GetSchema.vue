@@ -1,55 +1,52 @@
 <template>
   <div>
     <input type="text" v-model="schemaName" />
-    <button @click="getOutgoingSchema">Get outgoing schema</button>
-    <button @click="getIncomingSchema">Get incoming schema</button>
+    <button @click="getSchema(SchemaType.Outgoing)">Get outgoing schema</button>
+    <button @click="getSchema()">Get incoming schema</button>
     <div v-if="schema" class="schema-result">
       <h2>{{ schema.title }}</h2>
       <p>{{ schema.description }}</p>
       <ul>
-        <li v-for="key in Object.keys(schema.properties)" :key="key">
-          {{ key }}: {{ schema.properties[key].type }}{{ schema.required && schema.required.includes(key) ? '*' : '' }}
+        <li v-for="[key, property] in Object.entries(schema.properties)" :key="key">
+          {{ key }}: {{ property.type }}{{ schema.required && schema.required.includes(key) ? '*' : '' }}
         </li>
       </ul>
     </div>
   </div>
 </template>
 
-<script>
-import useChannels from '@/composables/useChannels'
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
 
-export default {
+import useChannels from '@/composables/useChannels'
+import { SchemaType } from '@/composables/types'
+
+export default defineComponent({
   name: 'GetSchema',
   setup () {
-    return useChannels()
-  },
-  data () {
-    return {
-      schemaName: 'schema.get_outgoing',
-      schema: null
+    const channels = useChannels()
+
+    const schemaName = ref('schema.get_outgoing')
+    const schema = ref<Object | null>(null)
+
+    function getSchema (type: SchemaType) {
+      channels.getSchema(schemaName.value, type)
+        .then(({ p }: { p: any }) => {
+          schema.value = p.message_schema
+        })
+        .catch(() => {
+          schema.value = null
+        })
     }
-  },
-  methods: {
-    getOutgoingSchema () {
-      this.outgoingSchema(this.schemaName)
-        .then(({ p }) => {
-          this.schema = p.message_schema
-        })
-        .catch(_ => {
-          this.schema = null
-        })
-    },
-    getIncomingSchema () {
-      this.incomingSchema(this.schemaName)
-        .then(({ p }) => {
-          this.schema = p.message_schema
-        })
-        .catch(_ => {
-          this.schema = null
-        })
+
+    return {
+      getSchema,
+      schema,
+      schemaName,
+      SchemaType
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

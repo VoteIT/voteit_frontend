@@ -15,7 +15,7 @@ const { socketState } = useChannels()
 
 const restApi = useRestApi({ alertOnError: false })
 
-const isReady = computed(_ => {
+const isReady = computed(() => {
   return isAuthenticated.value && socketState.value
 })
 
@@ -24,7 +24,7 @@ watch(isReady, value => {
     Promise.all(
       callbacks.map(cb => cb())
     )
-      .then(_ => {
+      .then(() => {
         initDone.value = true
       })
       .catch(err => {

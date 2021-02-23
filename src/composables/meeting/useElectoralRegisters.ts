@@ -17,7 +17,7 @@ export default function useElectoralRegisters () {
         .then(({ data }: { data: ElectoralRegister }) => {
           registers.set(pk, new Set(data.voters))
         })
-        .catch(_ => {
+        .catch(() => {
           registers.delete(pk) // Enables trying again.
         })
     }

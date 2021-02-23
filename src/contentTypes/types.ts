@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { Payload } from "@/utils/types";
+import { Payload } from '@/utils/types'
 
 export interface WorkflowState {
   state: string
@@ -53,6 +53,7 @@ export interface SpeakerSystem {
   pk: number
   meeting: number
   active: boolean
+  active_list: number | null
 }
 
 export interface PresenceCheck extends StateContent {
@@ -68,4 +69,9 @@ export interface Presence {
 export interface ElectoralRegister {
   pk: number
   voters: number[]
+}
+
+export interface Vote {
+  abstain: boolean
+  vote: Object
 }

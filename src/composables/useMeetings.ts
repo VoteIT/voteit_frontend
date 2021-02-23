@@ -2,9 +2,9 @@ import { computed, reactive, ref } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
 import { Meeting } from '@/contentTypes/types'
+import { orderBy } from '@/utils'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
-const meetingList = ref<number[]>([]) // Sorted meeting id list
 
 meetingType.useChannels()
   .updateMap(meetings)
@@ -12,8 +12,8 @@ meetingType.useChannels()
 export default function useMeetings () {
   const meetingApi = meetingType.useContentApi()
 
-  const orderedMeetings = computed(_ => {
-    return meetingList.value.map(id => meetings.get(id))
+  const orderedMeetings = computed(() => {
+    return orderBy([...meetings.values()], 'title')
   })
 
   async function fetchMeetings () {
@@ -22,12 +22,10 @@ export default function useMeetings () {
         data.forEach(m => {
           meetings.set(m.pk, m)
         })
-        meetingList.value = data.map(m => m.pk)
       })
   }
 
   function clearMeetings () {
-    meetingList.value = []
     meetings.clear()
   }
 

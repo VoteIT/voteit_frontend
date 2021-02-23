@@ -10,19 +10,23 @@
   </div>
 </template>
 
-<script>
-import { inject, ref } from 'vue'
+<script lang="ts">
+import { defineComponent, inject, PropType, ref } from 'vue'
 
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 
 import { dialogQuery } from '@/utils'
 import discussionPostType from '@/contentTypes/discussionPost'
+import { DiscussionPost } from '@/contentTypes/types'
 
-export default {
+export default defineComponent({
   name: 'DiscussionPost',
   props: {
-    p: Object,
+    p: {
+      type: Object as PropType<DiscussionPost>,
+      required: true
+    },
     readOnly: Boolean
   },
   components: {
@@ -32,11 +36,11 @@ export default {
   setup (props) {
     const channel = discussionPostType.useChannels()
     const editing = ref(false)
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
 
     function queryDelete () {
       dialogQuery(t('discussion.deletePrompt'))
-        .then(_ => {
+        .then(() => {
           channel.delete(props.p.pk)
         })
     }
@@ -48,7 +52,7 @@ export default {
       ...discussionPostType.rules
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

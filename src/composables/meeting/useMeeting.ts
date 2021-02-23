@@ -72,7 +72,7 @@ export default function useMeeting () {
     }
   }
 
-  function getUser (pk: number, meeting: number) {
+  function getUser (pk: number, meeting?: number) {
     // Return user object if found in meeting participants
     // Otherwise queue for fetch
     meeting = meeting || meetingId.value
@@ -92,12 +92,12 @@ export default function useMeeting () {
       .filter(r => r.meeting === meeting)]
   }
 
-  const meetingId = computed<number>(() => Number(route.params.id))
+  const meetingId = computed(() => Number(route.params.id))
   const meeting = computed<Meeting | object>(() => meetings.get(meetingId.value) || {})
-  const meetingPath = computed<string>(_ => `/m/${meetingId.value}/${slugify('title' in meeting.value ? meeting.value.title : '-')}`)
+  const meetingPath = computed(() => `/m/${meetingId.value}/${slugify('title' in meeting.value ? meeting.value.title : '-')}`)
 
-  const userRoles = computed(_ => meetingRoles.getUserRoles(meetingId.value))
-  function hasRole (role: string, user: number) {
+  const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value))
+  function hasRole (role: string, user?: number) {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
 

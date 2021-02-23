@@ -13,17 +13,20 @@
   </transition>
 </template>
 
-<script>
-import { emitter } from '@/utils'
+<script lang="ts">
 import { computed, defineComponent, inject, nextTick, onBeforeMount, reactive, ref } from 'vue'
+
+import { emitter } from '@/utils'
+
+import { Dialog } from '@/composables/types'
 
 export default defineComponent({
   setup () {
-    const t = inject('t')
-    const windowEl = ref(null)
-    let savedFocusEl
-    const queue = reactive([])
-    const active = computed(_ => queue[0])
+    const t = inject('t') as CallableFunction
+    const windowEl = ref<HTMLElement | null>(null)
+    let savedFocusEl: HTMLElement | null
+    const queue = reactive<Dialog[]>([])
+    const active = computed(() => queue[0])
 
     function close () {
       queue.shift()
@@ -34,7 +37,7 @@ export default defineComponent({
     }
 
     function resolve () {
-      if (active.value.resolve) {
+      if (active.value && active.value.resolve) {
         active.value.resolve()
       }
       close()
@@ -48,8 +51,8 @@ export default defineComponent({
           savedFocusEl = document.querySelector(':focus')
         }
         queue.push(dialog)
-        nextTick(_ => {
-          const focusEl = windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]')
+        nextTick(() => {
+          const focusEl = windowEl.value && windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]') as HTMLElement | null
           focusEl && focusEl.focus()
         })
       })

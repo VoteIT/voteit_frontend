@@ -4,17 +4,18 @@
   </div>
 </template>
 
-<script>
-import { computed, inject } from 'vue'
-export default {
+<script lang="ts">
+import { computed, defineComponent, inject } from 'vue'
+
+export default defineComponent({
   name: 'ReactionButtons',
   path: 'reactions',
   icon: 'thumb_up',
   setup () {
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
     return {
-      title: computed(_ => t('reaction.settings'))
+      title: computed(() => t('reaction.settings'))
     }
   }
-}
+})
 </script>

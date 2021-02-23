@@ -14,24 +14,24 @@
   </div>
 </template>
 
-<script>
-import { computed } from 'vue'
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 
 import controlPanels from './controlPanels'
 
-export default {
+export default defineComponent({
   name: 'ControlPanel',
   inject: ['t'],
   setup () {
     const route = useRoute()
     const { meeting, meetingPath } = useMeeting()
-    const panels = computed(_ => {
+    const panels = computed(() => {
       return Object.values(controlPanels)
     })
-    const currentPanel = computed(_ => route.params.panel)
+    const currentPanel = computed(() => route.params.panel)
     return {
       meeting,
       meetingPath,
@@ -39,7 +39,7 @@ export default {
       currentPanel
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

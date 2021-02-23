@@ -22,8 +22,8 @@
   </main>
 </template>
 
-<script>
-import { computed, onBeforeMount, ref } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, onBeforeMount, ref } from 'vue'
 
 import UserSearch from '@/components/widgets/UserSearch.vue'
 
@@ -31,6 +31,8 @@ import useChannels from '@/composables/useChannels'
 import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/composables/meeting/useMeeting'
+
+import { ContextRoles } from '@/composables/types'
 
 const TEMP_ROLES = [
   { name: 'moderator', icon: 'gavel' },
@@ -41,35 +43,35 @@ const TEMP_ROLES = [
 ]
 const channels = useChannels()
 
-export default {
+export default defineComponent({
   setup () {
     const { meetingId, fetchParticipants, getUser, hasRole } = useMeeting()
     const meetingRoles = useContextRoles('Meeting')
     const loader = useLoader('Participants')
 
-    onBeforeMount(_ => {
+    onBeforeMount(() => {
       loader.call(fetchParticipants)
     })
 
-    function addRole (userPk, role) {
+    function addRole (user: number, role: string) {
       channels.post('meeting.roles.add', {
         pk: meetingId.value,
         roles: [role],
-        userids: [userPk]
+        userids: [user]
       })
     }
-    function removeRole (userPk, role) {
+    function removeRole (user: number, role: string) {
       channels.post('meeting.roles.remove', {
         pk: meetingId.value,
         roles: [role],
-        userids: [userPk]
+        userids: [user]
       })
     }
 
-    const orderBy = ref(null)
+    const orderBy = ref<string | null>(null)
     const orderReversed = ref(false)
 
-    function orderMethod (a, b) {
+    function orderMethod (a: any, b: any) { // TODO Types
       let valA, valB
       if (orderBy.value) {
         valA = !a.assigned.has(orderBy.value)
@@ -87,7 +89,7 @@ export default {
       return 0
     }
 
-    function orderParticipants (role) {
+    function orderParticipants (role: string) {
       if (orderBy.value === role) {
         orderReversed.value = !orderReversed.value
       } else {
@@ -96,15 +98,15 @@ export default {
       participants.value.sort(orderMethod)
     }
 
-    function addUser (user) {
+    function addUser (user: ContextRoles) {
       addRole(user.pk, 'participant')
     }
 
-    function roleCount (name) {
-      return meetingRoles.getRoleCount(meetingId.value, name)
+    function roleCount (role: string) {
+      return meetingRoles.getRoleCount(meetingId.value, role)
     }
 
-    const participants = computed(_ => {
+    const participants = computed(() => {
       const ps = meetingRoles.getAll(meetingId.value)
       ps.sort(orderMethod)
       return ps
@@ -128,7 +130,7 @@ export default {
   components: {
     UserSearch
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

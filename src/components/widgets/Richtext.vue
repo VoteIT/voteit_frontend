@@ -3,11 +3,11 @@
   <div v-else v-html="object[contentAttribute]" />
 </template>
 
-<script>
-import { ref, watch } from 'vue'
+<script lang="ts">
+import { defineComponent, ref, watch } from 'vue'
 import RichtextEditor from './RichtextEditor.vue'
 
-export default {
+export default defineComponent({
   name: 'Richtext',
   components: {
     RichtextEditor
@@ -19,14 +19,17 @@ export default {
       type: String,
       default: 'body'
     },
-    object: Object,
+    object: {
+      type: Object,
+      required: true
+    },
     editing: Boolean
   },
   emits: ['edit-done'],
   setup (props, { emit }) {
     const content = ref(props.object[props.contentAttribute])
 
-    async function submitRequest (pk, data) {
+    async function submitRequest (pk: number, data: Object) {
       if (props.channel) {
         return props.channel.change(pk, data)
       } else if (props.api) {
@@ -37,7 +40,7 @@ export default {
 
     function submit () {
       if (content.value !== props.object[props.contentAttribute]) {
-        const data = {}
+        const data = {} as any // Huh?
         data[props.contentAttribute] = content.value
         submitRequest(props.object.pk, data)
           .then(response => {
@@ -48,11 +51,11 @@ export default {
       }
     }
 
-    watch(_ => props.object, value => {
+    watch(() => props.object, value => {
       content.value = value[props.contentAttribute]
     })
 
-    watch(_ => props.editing, value => {
+    watch(() => props.editing, value => {
       if (!value) submit()
     })
 
@@ -61,5 +64,5 @@ export default {
       submit
     }
   }
-}
+})
 </script>

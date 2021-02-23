@@ -9,26 +9,34 @@
   </div>
 </template>
 
-<script>
-import { markRaw, nextTick, ref } from 'vue'
+<script lang="ts">
+import { defineComponent, markRaw, nextTick, ref } from 'vue'
+
 import { emitter } from '../../utils'
-import Chat from './bubbles/Chat'
+
+import Chat from './bubbles/Chat.vue'
+import { BubbleComponent } from './bubbles/types'
 
 const DEFAULT_CONFIG = {
   open: true
 }
 
-export default {
+interface BubbleInfo {
+  component: BubbleComponent
+  data: Object
+}
+
+export default defineComponent({
   name: 'Bubbles',
   setup () {
-    const bubbles = ref([{
+    const bubbles = ref<BubbleInfo[]>([{
       component: markRaw(Chat),
       data: {}
     }])
-    const openBubble = ref(null)
+    const openBubble = ref<string | null>(null)
 
     emitter.on('bubble_activate', ({ component, data, config }) => {
-      config = Object.assign({}, DEFAULT_CONFIG, config)
+      config = { ...DEFAULT_CONFIG, ...config }
       const bubble = bubbles.value.find(b => b.component === component)
       if (!bubble) {
         bubbles.value.push({
@@ -37,7 +45,7 @@ export default {
         })
       }
       if (config.open) {
-        nextTick(_ => { openBubble.value = component.name })
+        nextTick(() => { openBubble.value = component.name })
       }
     })
 
@@ -51,12 +59,12 @@ export default {
     })
 
     emitter.on('bubble_close', component => {
-      if (!name || bubbles.value.find(b => b.component === component)) {
+      if (bubbles.value.find(b => b.component === component)) {
         openBubble.value = null
       }
     })
 
-    function toggle (component) {
+    function toggle (component: BubbleComponent) {
       if (openBubble.value === component.name) openBubble.value = null
       else openBubble.value = component.name
     }
@@ -67,7 +75,7 @@ export default {
       toggle
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

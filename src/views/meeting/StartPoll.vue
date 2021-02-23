@@ -56,9 +56,11 @@
   </div>
 </template>
 
-<script>
-import { computed, reactive, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+
+import { slugify } from '@/utils'
 
 import useAgenda from '@/composables/meeting/useAgenda'
 import useAlert from '@/composables/useAlert'
@@ -66,19 +68,18 @@ import useRestApi from '@/composables/useRestApi'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 
-import pollMethods from '@/schemas/pollMethods.json'
-
-import implementedMethods from '@/components/pollmethods'
-import Proposal from '@/components/widgets/Proposal'
+import { pollMethods as implementedMethods } from '@/components/pollmethods'
+import ProposalComponent from '@/components/widgets/Proposal.vue'
 
 import rules from '@/contentTypes/poll/rules'
-import { slugify } from '@/utils'
+import { Poll } from '@/contentTypes/types'
+import { PollData, PollMethod, pollMethods, PollMethodSettings } from '@/components/pollmethods/types'
 
-export default {
+export default defineComponent({
   name: 'StartPoll',
   inject: ['t'],
   components: {
-    Proposal
+    Proposal: ProposalComponent
   },
   setup () {
     const router = useRouter()
@@ -88,11 +89,11 @@ export default {
     const { meetingPath } = useMeeting()
     const { alert } = useAlert()
 
-    const selectedProposalIds = reactive(new Set())
-    const availableProposals = computed(_ => proposals.getAgendaProposals(agendaId.value, 'published'))
-    const selectedProposals = computed(_ => availableProposals.value.filter(p => selectedProposalIds.has(p.pk)))
+    const selectedProposalIds = reactive<Set<number>>(new Set())
+    const availableProposals = computed(() => proposals.getAgendaProposals(agendaId.value, 'published'))
+    const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.has(p.pk)))
 
-    function toggleSelected (p) {
+    function toggleSelected (p: Poll) {
       if (!pickMethod.value) {
         if (selectedProposalIds.has(p.pk)) {
           selectedProposalIds.delete(p.pk)
@@ -110,67 +111,57 @@ export default {
       }
     }
 
-    function methodFilter (m) {
+    function methodFilter (method: PollMethod): boolean {
       const pCount = selectedProposals.value.length
-      if (m.proposalsMin && pCount < m.proposalsMin) {
+      if (method.proposalsMin && pCount < method.proposalsMin) {
         return false
       }
-      if (m.proposalsMax && pCount > m.proposalsMax) {
+      if (method.proposalsMax && pCount > method.proposalsMax) {
         return false
       }
       return true
     }
     const pickMethod = ref(false)
-    const availableMethods = computed(_ => {
+    const availableMethods = computed(() => {
       return pollMethods.filter(methodFilter)
     })
-    const methodSelected = ref(null)
-    const methodSettings = ref(null)
-    function selectMethod (method) {
+    const methodSelected = ref<string | null>(null)
+    const methodSettings = ref<PollMethodSettings | null>(null)
+    function selectMethod (method: PollMethod) {
       // If same, deselect
       if (methodSelected.value === method.name) {
         methodSelected.value = null
       } else {
         methodSelected.value = method.name
-        // Initialize settings TODO
-        methodSettings.value = method.multipleWinners ? {
-          winners: method.winnersMin || 2,
-          orderAll: false
-        } : null
+        // TODO Proper settings schema
+        methodSettings.value = method.initialSettings || null
       }
     }
 
     const working = ref(false)
     const createdPollPk = ref(null)
-    // const createdPoll = computed(_ => getPoll(createdPollPk.value))
-    const readyToCreate = computed(_ => {
+    const readyToCreate = computed(() => {
       return methodSelected.value && !working.value && !createdPollPk.value
     })
 
     function createPoll (start = false) {
       const method = pollMethods.find(m => m.name === methodSelected.value)
+      if (!method) return
       if (method.name in implementedMethods) {
         working.value = true
-        const pollData = {
+        const pollData: PollData = {
           agenda_item: agendaId.value,
           proposal_pks: [...selectedProposalIds].join(','),
           method_name: method.name,
           start,
-          settings: methodSettings.value
+          settings: methodSettings.value ? { ...methodSettings.value } : null // Copy settings
         }
-        // TODO: Decide what the interface for this should look like.
-        if (methodSettings.value) {
-          pollData.settings = {
-            winners: methodSettings.value.orderAll ? null : methodSettings.value.winners
-          }
-        } else {
-          pollData.settings = null
-        }
+        if (pollData.settings && pollData.settings.orderAll) pollData.settings.winners = null // Special orderAll case...
         restApi.post('polls/', pollData)
           .then(({ data }) => {
             router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
           })
-          .finally(_ => {
+          .finally(() => {
             working.value = false
           })
       } else {
@@ -178,7 +169,7 @@ export default {
       }
     }
 
-    watch(agendaId, _ => {
+    watch(agendaId, () => {
       pickMethod.value = false
       selectedProposalIds.clear()
     })
@@ -207,7 +198,7 @@ export default {
       ...rules
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

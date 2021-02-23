@@ -9,20 +9,20 @@
   </div>
 </template>
 
-<script>
-import { onBeforeMount, provide } from 'vue'
+<script lang="ts">
+import { defineComponent, onBeforeMount, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAuthentication from './composables/useAuthentication'
 import useLoader from './composables/useLoader'
 
-import Alerts from './components/Alerts'
-import Dialogs from './components/Dialogs'
-import Loader from './components/Loader'
-import Modal from './components/modals/Modal'
-import OnlineStatus from './components/OnlineStatus'
+import Alerts from './components/Alerts.vue'
+import Dialogs from './components/Dialogs.vue'
+import Loader from './components/Loader.vue'
+import Modal from './components/modals/Modal.vue'
+import OnlineStatus from './components/OnlineStatus.vue'
 
-export default {
+export default defineComponent({
   components: {
     OnlineStatus,
     Loader,
@@ -35,14 +35,14 @@ export default {
     const loader = useLoader('App')
     const { user, authenticate } = useAuthentication()
 
-    onBeforeMount(_ => {
+    onBeforeMount(() => {
       if (user.value) authenticate(user.value)
       else loader.setLoaded()
     })
     provide('t', t)
     provide('debug', process.env.NODE_ENV === 'development')
   }
-}
+})
 </script>
 
 <style lang="sass">

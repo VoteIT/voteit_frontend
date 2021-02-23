@@ -8,12 +8,14 @@
   </span>
 </template>
 
-<script>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
 import useAlert from '@/composables/useAlert'
 import contentTypes from '@/contentTypes'
+import { WorkflowState } from '@/contentTypes/types'
 
-export default {
+export default defineComponent({
   name: 'WorkflowState',
   props: {
     admin: Boolean,
@@ -37,22 +39,24 @@ export default {
     }
     const contentApi = contentType.useContentApi()
     const { getState } = contentType.useWorkflows()
-    const statesAvailable = ref(null)
+    const statesAvailable = ref<WorkflowState[] | null>(null)
     const isOpen = ref(false)
     const { alert } = useAlert()
 
     const currentState = computed(
-      _ => getState(props.state)
+      () => getState(props.state)
     )
 
-    function focusButton (where) {
-      nextTick(_ => {
-        where.value && where.value.querySelector('.btn').focus()
+    function focusButton (where: HTMLElement | null) {
+      nextTick(() => {
+        const btn = where && where.querySelector('.btn') as HTMLElement
+        btn && btn.focus()
       })
     }
 
-    const opts = ref(null)
-    function toggle (noFocus) {
+    const root = ref<HTMLElement | null>(null)
+    const opts = ref<HTMLElement | null>(null)
+    function toggle (noFocus: boolean = false) {
       if (props.admin) {
         if (!isOpen.value && currentState.value.isFinal) {
           alert(`*State "${currentState.value.state}" is final and can't be changed`)
@@ -62,55 +66,58 @@ export default {
         if (isOpen.value) {
           if (!statesAvailable.value) {
             contentApi.getTransitions(props.pk)
-              .then(states => {
+              .then((states: WorkflowState[]) => {
                 statesAvailable.value = states
-                focusButton(opts)
+                focusButton(opts.value)
               })
           } else {
-            focusButton(opts)
+            focusButton(opts.value)
           }
         } else if (!noFocus) { // If clicked out, don't shift that focus
-          focusButton(root)
+          focusButton(root.value)
         }
       }
     }
 
-    function makeTransition ({ transition }) {
-      contentApi.transition(props.pk, transition)
-        .then(_ => nextTick(toggle))
+    function makeTransition (state: WorkflowState) {
+      contentApi.transition(props.pk, state.transition)
+        .then(() => nextTick(toggle))
     }
 
-    watch(_ => props.state, _ => { statesAvailable.value = null })
+    watch(() => props.state, () => { statesAvailable.value = null })
 
-    const root = ref(null)
-    function clickWatch (event) {
-      if (isOpen.value && !event.path.includes(root.value)) {
+    function clickWatch (event: MouseEvent) {
+      if (isOpen.value && root.value && !event.composedPath().includes(root.value)) {
         toggle(true)
       }
     }
-    function keyWatch ({ key }) {
+    function keyWatch ({ key }: { key: string }) {
       if (isOpen.value) {
-        const focusedEl = opts.value.querySelector(':focus')
-        switch (key) {
-          case 'Escape':
-            toggle()
-            break
-          case 'ArrowUp':
-            focusedEl.previousElementSibling && focusedEl.previousElementSibling.focus()
-            break
-          case 'ArrowDown':
-            focusedEl.nextElementSibling && focusedEl.nextElementSibling.focus()
-            break
+        const focusedEl = opts.value && opts.value.querySelector(':focus')
+        if (focusedEl) {
+          const prev = focusedEl.previousElementSibling as HTMLElement
+          const next = focusedEl.nextElementSibling as HTMLElement
+          switch (key) {
+            case 'Escape':
+              toggle()
+              break
+            case 'ArrowUp':
+              prev && prev.focus()
+              break
+            case 'ArrowDown':
+              next && next.focus()
+              break
+          }
         }
       }
     }
-    onMounted(_ => {
+    onMounted(() => {
       document.addEventListener('click', clickWatch)
-      root.value.addEventListener('keyup', keyWatch)
+      root.value && root.value.addEventListener('keyup', keyWatch)
     })
-    onBeforeUnmount(_ => {
+    onBeforeUnmount(() => {
       document.removeEventListener('click', clickWatch)
-      root.value.removeEventListener('keyup', keyWatch)
+      root.value && root.value.removeEventListener('keyup', keyWatch)
     })
 
     return {
@@ -123,7 +130,7 @@ export default {
       makeTransition
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

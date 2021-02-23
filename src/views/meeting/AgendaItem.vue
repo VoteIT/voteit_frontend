@@ -38,8 +38,8 @@
   </div>
 </template>
 
-<script>
-import { computed, ref } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, ref } from 'vue'
 
 import { orderBy } from '@/utils'
 
@@ -61,7 +61,7 @@ import discussionRules from '@/contentTypes/discussionPost/rules'
 import pollRules from '@/contentTypes/poll/rules'
 import proposalRules from '@/contentTypes/proposal/rules'
 
-export default {
+export default defineComponent({
   name: 'AgendaItem',
   inject: ['t'],
   setup () {
@@ -71,16 +71,16 @@ export default {
     const { agendaId, agendaItem } = useAgenda()
     const channel = agendaType.useChannels()
 
-    const sortedProposals = computed(_ => {
+    const sortedProposals = computed(() => {
       const ps = proposals.getAgendaProposals(agendaId.value)
       return orderBy(ps)
     })
 
-    const sortedDiscussions = computed(_ => discussions.getAgendaDiscussions(agendaId.value))
+    const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value))
     const { getAgendaSpeakerLists, getSystems } = useSpeakerLists()
-    const speakerLists = computed(_ => getAgendaSpeakerLists(agendaId.value))
+    const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value))
 
-    const hasSpeakerSystems = computed(_ => {
+    const hasSpeakerSystems = computed(() => {
       return !!getSystems(meetingId.value).length
     })
 
@@ -111,7 +111,7 @@ export default {
     SpeakerList,
     Richtext
   }
-}
+})
 </script>
 
 <style lang="sass">

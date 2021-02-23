@@ -3,8 +3,7 @@ import { ref } from 'vue'
 import { DefaultMap, Socket } from '@/utils'
 import { Payload, SuccessMessage } from '@/utils/types'
 
-import { ChannelConfig } from './types'
-import { BaseContent } from '@/contentTypes/types'
+import { ChannelConfig, SchemaType } from './types'
 
 type LeaveHandler = (uriOrPk: string | number) => void
 type UpdateHandler = (message: SuccessMessage) => void
@@ -17,8 +16,6 @@ const DEFAULT_CONFIG: ChannelConfig = {
 
 const socket = new Socket()
 const socketState = ref(false)
-// Map version code does nothing sane. Remove
-// const subscriptions = new DefaultMap(_ => new Set())
 const subscriptions = new Set<string>()
 const leaveTimeouts = new Map<string, number>()
 const updateHandlers = new Map<string, UpdateHandler>()
@@ -73,20 +70,20 @@ async function subscribeChannel (uri: string) {
 }
 
 // Send all subscription messages on connect
-socket.addEventListener('open', _ => {
+socket.addEventListener('open', () => {
   socketState.value = true
   for (const uri of subscriptions.values()) {
     subscribeChannel(uri)
   }
 })
 
-socket.addEventListener('close', _ => {
+socket.addEventListener('close', () => {
   socketState.value = false
 })
 
 export default function useChannels (contentType?: string, moduleConfig?: ChannelConfig) {
   moduleConfig = { ...DEFAULT_CONFIG, ...(moduleConfig || {}) }
-  function connect (token: string) {
+  function connect (token?: string) {
     return socket.connect(token)
   }
 
@@ -190,7 +187,7 @@ export default function useChannels (contentType?: string, moduleConfig?: Channe
   }
 
   // Wrap call and handle request errors (Timeout only?)
-  function call (uri: string, data: object, config?: ChannelConfig) {
+  function call (uri: string, data?: object, config?: ChannelConfig) {
     config = Object.assign({}, moduleConfig, config || {})
     return socket.call(uri, data, config)
   }
@@ -199,7 +196,7 @@ export default function useChannels (contentType?: string, moduleConfig?: Channe
   //   return call(uri, undefined, config)
   // }
 
-  function post (uri: string, data: object, config?: ChannelConfig) {
+  function post (uri: string, data?: object, config?: ChannelConfig) {
     return call(uri, data, config)
   }
 
@@ -219,12 +216,8 @@ export default function useChannels (contentType?: string, moduleConfig?: Channe
   const change = (pk: number, kwargs: object, config?: ChannelConfig) => methodCall('change', { pk, kwargs }, config)
   const _delete = (pk: number, config?: ChannelConfig) => methodCall('delete', { pk }, config)
 
-  function outgoingSchema (type: string) {
-    return post('schema.get_outgoing', { message_type: type })
-  }
-
-  function incomingSchema (type: string) {
-    return post('schema.get_incoming', { message_type: type })
+  function getSchema (name: string, type = SchemaType.Incoming) {
+    return post('schema.get_' + type, { message_type: name })
   }
 
   return {
@@ -248,7 +241,6 @@ export default function useChannels (contentType?: string, moduleConfig?: Channe
     add,
     change,
     delete: _delete,
-    outgoingSchema,
-    incomingSchema
+    getSchema
   }
 }

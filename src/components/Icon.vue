@@ -6,8 +6,10 @@
   <i v-else class="material-icons" :class="{ sm }"><slot/></i>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'Material icon',
   props: {
     name: String,
@@ -15,7 +17,7 @@ export default {
     sm: Boolean,
     active: Boolean
   }
-}
+})
 </script>
 
 <style lang="sass">

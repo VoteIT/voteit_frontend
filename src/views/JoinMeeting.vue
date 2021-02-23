@@ -10,8 +10,8 @@
   </main>
 </template>
 
-<script>
-import { onBeforeMount, ref } from 'vue'
+<script lang="ts">
+import { defineComponent, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import useLoader from '@/composables/useLoader'
@@ -20,7 +20,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 import Richtext from '@/components/widgets/Richtext.vue'
 import accessPolicyType from '@/contentTypes/accessPolicy'
 
-export default {
+export default defineComponent({
   components: { Richtext },
   name: 'JoinMeeting',
   inject: ['t'],
@@ -35,25 +35,25 @@ export default {
     function joinNow () {
       working.value = true
       policyApi.action(meetingId.value, 'join')
-        .then(_ => {
+        .then(() => {
           router.push(meetingPath.value)
         })
-        .finally(_ => {
+        .finally(() => {
           working.value = false
         })
     }
 
-    onBeforeMount(_ => {
-      loader.call(_ => {
+    onBeforeMount(() => {
+      loader.call(() => {
         meetingApi.retrieve(meetingId.value)
           .then(({ data }) => {
             setMeeting(data)
           })
-          .catch(_ => {
+          .catch(() => {
             router.push('/')
           })
       })
-      loader.call(_ => {
+      loader.call(() => {
         policyApi.retrieve(meetingId.value)
           .then(({ data }) => {
             policies.value = data.policies
@@ -70,7 +70,7 @@ export default {
       working
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

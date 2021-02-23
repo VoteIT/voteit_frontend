@@ -55,14 +55,14 @@
   </main>
 </template>
 
-<script>
-import { computed, inject, onBeforeMount, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, inject, onBeforeMount, reactive, ref, watch } from 'vue'
 
 import { slugify } from '@/utils'
 
-import AddMeetingVue from '@/components/modals/AddMeeting'
-import Counter from '@/components/examples/Counter'
-import getSchema from '@/components/examples/GetSchema'
+import AddMeetingVue from '@/components/modals/AddMeeting.vue'
+import Counter from '@/components/examples/Counter.vue'
+import getSchema from '@/components/examples/GetSchema.vue'
 
 import devLogin from '@/contentTypes/devLogin'
 import rules from '@/contentTypes/meeting/rules'
@@ -70,17 +70,18 @@ import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/composables/useMeetings'
 import useModal from '@/composables/useModal'
+import { NewDevUser, DevUser } from '@/utils/types'
 
-export default {
+export default defineComponent({
   name: 'Home',
   inject: ['debug'],
   setup () {
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const devApi = devLogin.useContentApi()
     const { authenticate, logout, isAuthenticated, user } = useAuthentication()
-    const users = ref([])
+    const users = ref<DevUser[]>([])
     const loader = useLoader('Home')
-    const t = inject('t')
+    const t: CallableFunction = inject('t') as CallableFunction
 
     watch(isAuthenticated, value => {
       if (value) {
@@ -90,8 +91,8 @@ export default {
       }
     })
 
-    onBeforeMount(_ => {
-      loader.call(_ => {
+    onBeforeMount(() => {
+      loader.call(async () => {
         return devApi.list()
           .then(({ data }) => {
             users.value = data
@@ -103,7 +104,7 @@ export default {
     })
 
     const addUser = ref(false)
-    const newUser = ref({
+    const newUser = reactive<NewDevUser>({
       username: '',
       is_superuser: false
     })
@@ -111,20 +112,24 @@ export default {
 
     function createUser () {
       newUserError.value = false
-      devApi.add(newUser.value)
-        .then(_ => {
-          users.value.push(newUser.value)
+      devApi.add(newUser)
+        .then(() => {
+          users.value.push({ ...newUser } as DevUser)
         })
-        .catch(_ => {
+        .catch(() => {
           newUserError.value = true
+        })
+        .finally(() => {
+          newUser.username = ''
+          newUser.is_superuser = false
         })
     }
 
-    const participatingMeetings = computed(_ => {
+    const participatingMeetings = computed(() => {
       return orderedMeetings.value.filter(m => m.current_user_roles)
     })
 
-    const otherMeetings = computed(_ => {
+    const otherMeetings = computed(() => {
       return orderedMeetings.value.filter(m => !m.current_user_roles)
     })
 
@@ -162,7 +167,7 @@ export default {
     Counter,
     getSchema
   }
-}
+})
 </script>
 
 <style lang="sass">

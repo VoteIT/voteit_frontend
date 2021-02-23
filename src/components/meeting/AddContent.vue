@@ -9,19 +9,18 @@
   </btn-dropdown>
 </template>
 
-<script>
-import { computed, inject, ref } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, inject, ref } from 'vue'
 
 import { dialogQuery } from '@/utils'
 
 import contentTypes from '@/contentTypes'
 
-import BtnDropdown from '../BtnDropdown'
+import BtnDropdown from '../BtnDropdown.vue'
 import RichtextEditor from '../widgets/RichtextEditor.vue'
 
-export default {
+export default defineComponent({
   name: 'AddContent',
-  inject: ['t'],
   components: {
     BtnDropdown,
     RichtextEditor
@@ -44,7 +43,7 @@ export default {
     }
   },
   setup (props) {
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
     // Post (data update from channels)
     const contentType = contentTypes[props.contentType]
     if (!contentType) {
@@ -54,16 +53,16 @@ export default {
     const submitting = ref(false)
     const text = ref('')
 
-    function textContent (html) {
+    function textContent (html: string) {
       const tmp = document.createElement('div')
       tmp.innerHTML = html
       return tmp.textContent || tmp.innerText || ''
     }
 
-    const textLength = computed(_ => textContent(text.value).length)
-    const submitDisabled = computed(_ => submitting.value || textLength.value < props.minLength)
+    const textLength = computed(() => textContent(text.value).length)
+    const submitDisabled = computed(() => submitting.value || textLength.value < props.minLength)
 
-    function submit (override) {
+    function submit (override?: boolean) {
       if (submitDisabled.value) return
       if (override || textLength.value >= props.warnLength) {
         const body = text.value
@@ -71,27 +70,28 @@ export default {
         channel.add(props.contextPk, {
           body
         })
-          .then(_ => {
+          .then(() => {
             editorComponent.value.clear()
             dropdownComponent.value.isOpen = false
           })
-          .finally(_ => {
+          .finally(() => {
             submitting.value = false
           })
       } else {
         dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))
-          .then(_ => submit(true))
+          .then(() => submit(true))
       }
     }
 
-    const editorComponent = ref(null)
-    const dropdownComponent = ref(null)
+    const editorComponent = ref<any>(null)
+    const dropdownComponent = ref<any>(null)
 
-    const availableTags = computed(_ => {
+    const availableTags = computed(() => {
       return [`${props.contentType}-${props.contextPk}`, 'test', 'remove-this-example'] // TODO
     })
 
     return {
+      t,
       open,
       focus,
       submitting,
@@ -103,7 +103,7 @@ export default {
       submitDisabled
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

@@ -2,7 +2,7 @@
   <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @click.self="dismiss">
     <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
       <header v-if="modal.title">
-        <btn icon="close" class="closer" @click="dismiss" v-show="modal.dismissable" :data="modal.data" />
+        <btn icon="close" class="closer" @click="dismiss" v-show="modal.dismissable" />
         <h1>{{ modal.title }}</h1>
       </header>
       <component v-if="modal.component" :is="modal.component" :data="modal.data" />
@@ -11,36 +11,38 @@
   </div>
 </template>
 
-<script>
-import { computed, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
 
 import { emitter } from '../../utils'
 
-const defaults = {
+import { Modal } from '@/composables/types'
+
+const defaults: Modal = {
   dismissable: true
 }
 
-export default {
+export default defineComponent({
   name: 'Modal',
   setup () {
-    const modalQueue = reactive([])
-    let savedFocusEl
-    const windowEl = ref(null)
-    const isOpen = computed(_ => !!modalQueue.length)
-    const modal = computed(_ => modalQueue[0])
+    const modalQueue = reactive<Modal[]>([])
+    let savedFocusEl: HTMLElement | null = null
+    const windowEl = ref<HTMLElement | null>(null)
+    const isOpen = computed(() => !!modalQueue.length)
+    const modal = computed(() => modalQueue[0])
 
-    function open (modal) {
+    function open (modal: Modal) {
       if (!modalQueue.length) {
         savedFocusEl = document.querySelector(':focus')
       }
       document.body.classList.add('no-scroll')
-      modalQueue.push(markRaw(Object.assign({}, defaults, modal)))
-      nextTick(_ => {
-        const focusEl = windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]')
+      modalQueue.push(markRaw({ ...defaults, ...modal }))
+      nextTick(() => {
+        const focusEl: HTMLElement | null = windowEl.value && windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]')
         focusEl && focusEl.focus()
       })
     }
-    function close (modal) {
+    function close () {
       modalQueue.shift()
       if (!modalQueue.length) {
         if (savedFocusEl) {
@@ -57,8 +59,8 @@ export default {
       }
     }
 
-    onMounted(_ => {
-      emitter.on('modal-open', open)
+    onMounted(() => {
+      emitter.on('modal-open', (modal) => open(modal as Modal))
       emitter.on('modal-close', close)
     })
 
@@ -69,9 +71,9 @@ export default {
       dismiss
     }
   }
-}
-
+})
 </script>
+
 <style lang="sass">
 #modal-backdrop
   position: fixed

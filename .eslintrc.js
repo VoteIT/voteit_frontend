@@ -20,5 +20,16 @@ module.exports = {
     'plugin:vue/vue3-essential',
     '@vue/standard',
     '@vue/typescript'
+  ],
+
+  overrides: [
+    // Fix no-used-vars when importing ts types in .vue files
+    {
+      files: ["*.vue"],
+      rules: {
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': 'error'
+      }
+    }
   ]
 }

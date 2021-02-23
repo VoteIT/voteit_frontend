@@ -20,21 +20,25 @@
   </div>
 </template>
 
-<script>
-import { computed, inject, onBeforeUnmount, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, inject, onBeforeUnmount, PropType, ref, watch } from 'vue'
 
 import useModal from '@/composables/useModal'
 
-import WorkflowState from '@/components/widgets/WorkflowState'
-import BtnDropdown from '@/components/BtnDropdown'
-import Voting from '@/components/modals/Voting'
+import WorkflowState from '@/components/widgets/WorkflowState.vue'
+import BtnDropdown from '@/components/BtnDropdown.vue'
+import Voting from '@/components/modals/Voting.vue'
 
 import pollType from '@/contentTypes/poll'
+import { Poll } from '@/contentTypes/types'
 
-export default {
+export default defineComponent({
   name: 'Poll',
   props: {
-    poll: Object
+    poll: {
+      type: Object as PropType<Poll>,
+      required: true
+    }
   },
   components: {
     WorkflowState,
@@ -43,9 +47,9 @@ export default {
   setup (props) {
     const channels = pollType.useChannels()
     const { openModal } = useModal()
-    const isOngoing = computed(_ => props.poll.state === 'ongoing')
+    const isOngoing = computed(() => props.poll.state === 'ongoing')
 
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
 
     function vote () {
       openModal({
@@ -65,7 +69,7 @@ export default {
       }
     })
 
-    onBeforeUnmount(_ => {
+    onBeforeUnmount(() => {
       if (active.value) {
         channels.leave(props.poll.pk)
       }
@@ -79,7 +83,7 @@ export default {
       t
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

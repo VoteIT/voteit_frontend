@@ -12,7 +12,22 @@ import proposal from './proposal'
 import speakerList from './speakerList'
 import speakerSystem from './speakerSystem'
 
-export default {
+import { WorkflowState } from './types'
+
+interface ContentType {
+  naturalKey: string
+  workflowState?: WorkflowState[]
+  rules?: any
+  useWorkflows?: any
+  useChannels?: any
+  useContentApi?: any
+}
+
+type ContentTypes = {
+  [ key: string ] : ContentType
+}
+
+const contentTypes: ContentTypes = {
   accessPolicy,
   agendaItem,
   devLogin,
@@ -27,3 +42,5 @@ export default {
   speakerList,
   speakerSystem
 }
+
+export default contentTypes

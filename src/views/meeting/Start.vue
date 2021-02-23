@@ -9,8 +9,8 @@
   </main>
 </template>
 
-<script>
-import { ref } from 'vue'
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
 
 import Richtext from '@/components/widgets/Richtext.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
@@ -18,7 +18,7 @@ import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import useMeeting from '@/composables/meeting/useMeeting'
 import meetingType from '@/contentTypes/meeting'
 
-export default {
+export default defineComponent({
   name: 'MeetingIndex',
   inject: ['t'],
   components: {
@@ -37,5 +37,5 @@ export default {
       api
     }
   }
-}
+})
 </script>

@@ -4,23 +4,25 @@
   </span>
 </template>
 
-<script>
-import { computed } from 'vue'
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
+
 import useMeeting from '../composables/meeting/useMeeting'
 
-export default {
+export default defineComponent({
   name: 'User',
   props: {
-    pk: Number
+    pk: {
+      type: Number,
+      required: true
+    }
   },
   setup (props) {
     const { getUser } = useMeeting()
-    const user = computed(_ => {
-      return getUser(props.pk)
-    })
+    const user = computed(() => getUser(props.pk))
     return {
       user
     }
   }
-}
+})
 </script>

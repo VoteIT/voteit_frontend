@@ -26,7 +26,7 @@ export default function usePresence () {
     }
   }
 
-  function getUserPresence (checkPk: number, userPk: number) {
+  function getUserPresence (checkPk: number, userPk?: number) {
     userPk = userPk || user.value.pk
     for (const p of presence.values()) {
       if (p.presence_check === checkPk && p.user === userPk) return p

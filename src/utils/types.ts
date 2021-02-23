@@ -22,7 +22,7 @@ export interface SuccessMessage extends BaseChannelsMessage {
 
 export interface ProgressMessage extends BaseChannelsMessage {
   s: State.Running | State.Waiting
-  p: ProgressObject
+  p: Progress
 }
 
 interface MessageObject {
@@ -36,12 +36,11 @@ export interface FailedMessage extends BaseChannelsMessage {
 
 export type ChannelsMessage = SuccessMessage | ProgressMessage | FailedMessage
 
-export interface ProgressObject {
+export interface Progress {
   curr: number
   total: number
+  msg?: string
 }
-
-export type Progress = ProgressObject | number
 
 export type ProgressHandler = (progress: Progress) => void
 
@@ -50,8 +49,19 @@ export interface ChannelsConfig {
   alertOnError?: boolean
 }
 
-export interface DevUser {
-  pk: number
+export interface NewDevUser {
   username: string
   is_superuser: boolean
+}
+
+export interface DevUser extends NewDevUser {
+  pk: number
+}
+
+export interface User {
+  pk: number
+  username: string
+  full_name: string
+  first_name: string
+  last_name: string
 }

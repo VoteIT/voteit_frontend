@@ -13,8 +13,8 @@
   </div>
 </template>
 
-<script>
-import { inject, ref } from 'vue'
+<script lang="ts">
+import { defineComponent, inject, PropType, ref } from 'vue'
 import { dialogQuery } from '@/utils'
 
 import Moment from './Moment.vue'
@@ -22,11 +22,15 @@ import Richtext from './Richtext.vue'
 import WorkflowState from './WorkflowState.vue'
 
 import proposalType from '@/contentTypes/proposal'
+import { Proposal } from '@/contentTypes/types'
 
-export default {
+export default defineComponent({
   name: 'Proposal',
   props: {
-    p: Object,
+    p: {
+      type: Object as PropType<Proposal>,
+      required: true
+    },
     readOnly: Boolean,
     selected: Boolean
   },
@@ -38,11 +42,11 @@ export default {
   setup (props) {
     const channel = proposalType.useChannels()
     const editing = ref(false)
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
 
     function queryDelete () {
       dialogQuery(t('proposal.deletePrompt'))
-        .then(_ => {
+        .then(() => {
           channel.delete(props.p.pk)
         })
     }
@@ -54,7 +58,7 @@ export default {
       ...proposalType.rules
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

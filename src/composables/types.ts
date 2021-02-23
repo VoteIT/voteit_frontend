@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 import { ChannelsConfig, Payload } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
+import { Component } from 'vue'
 
 export interface ChannelConfig extends ChannelsConfig {
-  alertOnError: boolean
-  leaveDelay: number
+  leaveDelay?: number
 }
 
 export interface RestApiConfig extends AxiosRequestConfig {
@@ -12,9 +12,22 @@ export interface RestApiConfig extends AxiosRequestConfig {
 }
 
 export interface Modal {
+  title?: string
+  dismissable?: boolean
+  component?: Component
+  data?: Object
+  html?: string
 }
 
 export interface Alert {
+  level: string
+  title: string
+  text: string
+  sticky?: boolean
+}
+
+export interface Dialog {
+  resolve?: CallableFunction
 }
 
 export interface ContextRoles extends Payload {
@@ -22,4 +35,9 @@ export interface ContextRoles extends Payload {
   pk: number
   user_pk: number
   roles: string[]
+}
+
+export enum SchemaType {
+  Incoming = 'incoming',
+  Outgoing = 'outgoing',
 }

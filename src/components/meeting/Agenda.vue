@@ -15,8 +15,8 @@
   </div>
 </template>
 
-<script>
-import { computed, ref } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, ref } from 'vue'
 
 import useAgenda from '@/composables/meeting/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
@@ -24,45 +24,49 @@ import agendaItemType from '@/contentTypes/agendaItem'
 
 import BtnDropdown from '../BtnDropdown.vue'
 import { slugify } from '@/utils'
+import { AgendaItem } from '@/contentTypes/types'
 
 const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
 
-export default {
+export default defineComponent({
   name: 'Agenda',
-  components: { BtnDropdown },
+  components: {
+    BtnDropdown
+  },
   setup () {
     const { getAgenda } = useAgenda()
-    const { meeting, meetingPath, hasRole } = useMeeting()
-    const agenda = computed(_ => getAgenda(meeting.value.pk))
+    const { meeting, meetingId, meetingPath, hasRole } = useMeeting()
+    const agenda = computed(() => getAgenda(meetingId.value))
     const agendaApi = agendaItemType.useContentApi()
+    const { getState } = agendaItemType.useWorkflows()
 
     // Add AgendaItem
     const newAgendaTitle = ref('')
     function addAgendaItem () {
       agendaApi.add({
-        meeting: meeting.value.pk,
+        meeting: meetingId.value,
         title: newAgendaTitle.value
       })
-        .then(_ => { newAgendaTitle.value = '' })
+        .then(() => { newAgendaTitle.value = '' })
     }
     // Focus input element
-    const inputEl = ref(null)
+    const inputEl = ref<HTMLElement | null>(null)
     function focusInput () {
-      inputEl.value.focus()
+      inputEl.value && inputEl.value.focus()
     }
 
-    function getAiPath (ai) {
+    function getAiPath (ai: AgendaItem) {
       return `${meetingPath.value}/a/${ai.pk}/${slugify(ai.title)}`
     }
 
-    function getAiType (type) {
-      return agenda.value.filter(ai => ai.state === type)
+    function getAiType (state: string) {
+      return agenda.value.filter(ai => ai.state === state)
     }
 
-    const aiGroups = computed(_ => {
+    const aiGroups = computed(() => {
       return AI_ORDER
-        .map(state => agendaItemType.workflowStates.find(s => s.state === state))
-        .filter(s => !s.requiresRole || hasRole(s.requiresRole))
+        .map(getState)
+        .filter(s => s && (!s.requiresRole || hasRole(s.requiresRole)))
     })
 
     return {
@@ -78,7 +82,7 @@ export default {
       focusInput
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

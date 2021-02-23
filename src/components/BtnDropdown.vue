@@ -7,9 +7,10 @@
   </div>
 </template>
 
-<script>
-import { nextTick, ref, watch } from 'vue'
-export default {
+<script lang="ts">
+import { defineComponent, nextTick, ref, watch } from 'vue'
+
+export default defineComponent({
   name: 'BtnDropdown',
   emits: ['open', 'close'],
   props: {
@@ -19,14 +20,14 @@ export default {
   setup (props, { emit }) {
     const isOpen = ref(false)
     watch(isOpen, value => {
-      nextTick(_ => emit(value ? 'open' : 'close'))
+      nextTick(() => emit(value ? 'open' : 'close'))
     })
 
     return {
       isOpen
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

@@ -35,35 +35,38 @@
   </div>
 </template>
 
-<script>
-import { computed, inject, reactive, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, inject, PropType, reactive, ref, watch } from 'vue'
 import Draggable from 'vuedraggable'
 
-import Proposal from '../widgets/Proposal'
+import ProposalComponent from '../widgets/Proposal.vue'
 
-export default {
+import { RankedVote } from './types'
+import { Poll, Proposal } from '@/contentTypes/types'
+
+export default defineComponent({
   name: 'ScottishSTVPoll',
   props: {
     poll: {
-      type: Object,
+      type: Object as PropType<Poll>,
       required: true
     },
     proposals: {
-      type: Array,
+      type: Array as PropType<Proposal[]>,
       required: true
     },
-    modelValue: Object,
+    modelValue: Object as PropType<RankedVote>,
     settings: {
       type: Object,
-      default: _ => ({ minRanked: 2 })
+      default: () => ({ minRanked: 2 })
     }
   },
   components: {
-    Proposal,
+    Proposal: ProposalComponent,
     Draggable
   },
   setup (props, { emit }) {
-    const t = inject('t')
+    const t = inject('t') as CallableFunction
     const steps = reactive([
       {
         step: 1,
@@ -78,27 +81,27 @@ export default {
       }
     ])
 
-    const ranking = ref([])
+    const ranking = ref<number[]>([])
     const step = ref(0)
-    const previousStep = computed(_ => steps[step.value - 1])
-    const currentStep = computed(_ => steps[step.value])
-    const nextStep = computed(_ => steps[step.value + 1])
+    const previousStep = computed(() => steps[step.value - 1])
+    const currentStep = computed(() => steps[step.value])
+    const nextStep = computed(() => steps[step.value + 1])
 
-    watch(_ => props.modelValue, vote => {
+    watch(() => props.modelValue, (vote) => {
       if (vote) {
         ranking.value = vote.ranking
         steps[0].ready = true
       }
     })
 
-    function setOrder (order) {
+    function setOrder (order?: number[]) {
       if (order) {
         ranking.value = order
       }
       emit('update:modelValue', { ranking: ranking.value })
     }
 
-    function toggleSelected (proposal) {
+    function toggleSelected (proposal: Proposal) {
       if (ranking.value.includes(proposal.pk)) {
         ranking.value = ranking.value.filter(p => p !== proposal.pk)
       } else {
@@ -122,8 +125,8 @@ export default {
     }
 
     const orderedProposals = computed({
-      get: _ => ranking.value.map(pk => props.proposals.find(p => p.pk === pk)),
-      set: proposals => setOrder(proposals.map(p => p.pk))
+      get: () => ranking.value.map((pk: number) => props.proposals.find(p => p.pk === pk)) as Proposal[],
+      set: (proposals: Proposal[]) => setOrder(proposals.map(p => p.pk))
     })
 
     return {
@@ -140,7 +143,7 @@ export default {
       next
     }
   }
-}
+})
 </script>
 
 <style lang="sass">

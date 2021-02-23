@@ -1,5 +1,10 @@
 import { Progress, ProgressHandler } from './types'
 
+const PROGRESS_INITIAL: Progress = {
+  curr: 0,
+  total: 1
+}
+
 export default class ProgressPromise<T> extends Promise<T> {
   _progress: Progress
   _listeners: Set<ProgressHandler>
@@ -19,16 +24,11 @@ export default class ProgressPromise<T> extends Promise<T> {
         // Note: we don't really have guarantees over
         // the order in which async operations are evaluated,
         // so if we get an out-of-order progress, we'll just discard it.
-        if (typeof progress === 'number' && progress <= this._progress) {
-          return
-        } else if (typeof progress === 'object' && typeof this._progress === 'object' && progress.curr <= this._progress.curr) {
-          return
-        }
-
-        this._progress = progress
-
-        for (const listener of this._listeners) {
-          listener(progress)
+        if (progress.curr >= this._progress.curr) {
+          this._progress = progress
+          for (const listener of this._listeners) {
+            listener(progress)
+          }
         }
       })()
     }
@@ -46,7 +46,7 @@ export default class ProgressPromise<T> extends Promise<T> {
 
     this._listeners = new Set()
     this._setProgress = setProgress
-    this._progress = 0
+    this._progress = PROGRESS_INITIAL
   }
 
   get progress () {
