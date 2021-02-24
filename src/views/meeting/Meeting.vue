@@ -81,7 +81,7 @@ export default defineComponent({
     ]
     const navigationLinks = computed(() => {
       return navLinks
-        .filter(l => l.role && hasRole(l.role))
+        .filter(l => !l.role || hasRole(l.role))
     })
 
     const loader = useLoader('Meeting')
