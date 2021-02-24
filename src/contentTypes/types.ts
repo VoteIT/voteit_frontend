@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
+import { PollMethodName } from '@/components/pollmethods/types'
 import { Payload } from '@/utils/types'
-import accessPolicy from './accessPolicy'
 
 export interface WorkflowState {
   state: string
@@ -39,11 +39,13 @@ export interface Proposal extends StateContent {
   body: string
   agenda_item: number
   polls: number[]
+  prop_id: string
 }
 
 export interface Poll extends StateContent {
   agenda_item: number
   meeting: number
+  method_name: PollMethodName
 }
 
 export interface DiscussionPost extends BaseContent {

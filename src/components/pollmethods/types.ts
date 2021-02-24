@@ -1,4 +1,19 @@
 /* eslint-disable camelcase */
+
+export enum PollMethodName {
+  CombinedSimple = 'combined_simple',
+  InstantRunoff = 'irv',
+  RepeatedSchulze = 'repeated_schulze',
+  Simple = 'simple',
+  Schulze = 'schulze',
+  ScottishSTV = 'scottish_stv'
+}
+
+interface VoteResult {
+  approved: number[]
+  denied: number[]
+}
+
 export interface RankedVote {
   ranking: number[]
 }
@@ -13,8 +28,67 @@ export enum SimpleChoice {
   No = 'no'
 }
 
+type SimpleIconMap = {
+  [ key in SimpleChoice ]: string
+}
+
+export const simpleIcons: SimpleIconMap = {
+  abstain: 'block',
+  yes: 'thumb_up',
+  no: 'thumb_down'
+}
+
 export interface SingleSimpleVote {
   choice: SimpleChoice
+}
+
+export interface SimpleVoteResult extends VoteResult {
+  yes: number
+  no: number
+}
+
+export type CombinedSimpleProposalResult = {
+  [ key in SimpleChoice ]: number
+}
+
+type CombinedSimpleResultMap = {
+  [ key: string ]: CombinedSimpleProposalResult
+}
+
+export interface CombinedSimpleResult extends VoteResult {
+  results: CombinedSimpleResultMap
+}
+
+type SchulzePair = [[number, number], number]
+
+export interface SchulzeResult extends VoteResult {
+  winner: number
+  candidates: number[]
+  tied_winners: number[] | null
+  pairs: SchulzePair[]
+  strong_pairs: SchulzePair[]
+}
+
+export interface RepeatedSchulzeResult extends VoteResult {
+  rounds: SchulzeResult[]
+  candidates: number[]
+}
+
+type ScottishSTVVoteCount = [number, string]
+
+interface ScottishSTVRound {
+  status: string
+  selected: number[]
+  method: string
+  vote_count: ScottishSTVVoteCount[]
+}
+
+export interface ScottishSTVResult extends VoteResult {
+  quota: number
+  complete: boolean
+  randomized: boolean
+  rounds: ScottishSTVRound[]
+  runtime: number
 }
 
 export type CombinedSimpleVote = {
@@ -24,7 +98,7 @@ export type CombinedSimpleVote = {
 export type SimpleVote = SingleSimpleVote | CombinedSimpleVote
 
 export interface PollMethod {
-  name: string
+  name: PollMethodName
   title: string
   multipleWinners?: boolean
   proposalsMax?: number
@@ -32,65 +106,73 @@ export interface PollMethod {
   winnersMin?: number
   losersMin?: number
   initialSettings?: PollMethodSettings
+  settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings
 }
 
 export const pollMethods: PollMethod[] = [
   {
-    name: 'simple',
+    name: PollMethodName.Simple,
     title: 'Simple majority',
     proposalsMax: 1
   },
   {
-    name: 'combined_simple',
+    name: PollMethodName.CombinedSimple,
     title: 'Approve or deny',
     proposalsMin: 2
   },
   {
-    name: 'schulze',
+    name: PollMethodName.Schulze,
     title: 'Schulze',
     proposalsMin: 3
   },
   {
-    name: 'repeated_schulze',
+    name: PollMethodName.RepeatedSchulze,
     title: 'Repeated Schulze',
     multipleWinners: true,
     proposalsMin: 3,
     winnersMin: 2,
     initialSettings: {
-      winners: 2,
-      orderAll: false
+      winners: 2
     }
   },
   {
-    name: 'scottish_stv',
+    name: PollMethodName.ScottishSTV,
     title: 'Scottish STV',
     multipleWinners: true,
     proposalsMin: 3,
     winnersMin: 2,
     losersMin: 1,
     initialSettings: {
-      winners: 2
+      winners: 2,
+      allow_random: true
     }
   },
   {
-    name: 'irv',
+    name: PollMethodName.InstantRunoff,
     title: 'Instant-Runoff Voting',
     proposalsMin: 3
   }
 ]
 
-export interface PollMethodSettings {
+export interface RepeatedSchulzeSettings {
   winners: number | null
-  orderAll?: boolean
 }
+
+export interface ScottishSTVSettings {
+  winners: number
+  allow_random: boolean
+}
+
+export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings
 
 /*
  * Post data sent to API
  */
 export interface PollData {
   settings: PollMethodSettings | null
+  meeting: number
   agenda_item: number
-  proposal_pks: string // FIXME Really
+  proposals: number[]
   method_name: string
   start: boolean
 }

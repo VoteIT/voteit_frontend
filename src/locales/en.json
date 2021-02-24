@@ -55,11 +55,14 @@
   },
   "poll": {
     "abstain": "Abstain",
+    "allowRandomTiebreaker": "Allow random in tiebreaker",
     "approve": "Approve",
     "castVote": "Cast vote",
     "created": "Created poll {title}",
     "deny": "Deny",
     "details": "Poll details",
+    "numApproved": "Approved proposal | Approved proposals",
+    "numDenied": "Denied proposal | Denied proposals",
     "new": "New poll",
     "orderProposals": "Order proposals",
     "orderProposalsDescription": "Drag and drop proposals to adjust order.",
@@ -75,7 +78,22 @@
     "pickProposals": "Pick Proposals",
     "chooseMethod": "Choose voting method",
     "createAndStart": "Create and start",
-    "noAiPublishedProposals": "This agenda item has no published proposals"
+    "noAiPublishedProposals": "This agenda item has no published proposals",
+    "IRV": {
+      "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
+    },
+    "result": {
+      "runtime": "Calculation time",
+      "quota": "Quota",
+      "complete": "Complete result",
+      "randomized": "Random tiebreaker used"
+    },
+    "schulze": {
+      "numTiedWinners": "There are no tied winners | One ring to rule them all, and in the darkness bind them | There are { count } tied winners"
+    },
+    "STV": {
+      "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds"
+    }
   },
   "proposal": {
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",

@@ -31,19 +31,11 @@
     <template v-if="pickMethod">
       <h2>{{ t('step', { step: 3 }) }}: {{ t('poll.chooseMethod') }}</h2>
       <ul>
-        <li :class="{ selected: m.name === methodSelected }" v-for="m in availableMethods" :key="m.name">
+        <li :class="{ selected: methodSelected && m.name === methodSelected.name }" v-for="m in availableMethods" :key="m.name">
           <a href="#" @click.prevent="selectMethod(m)">{{ m.title }}</a>
-          <div v-if="methodSettings && m.name === methodSelected">
-            <!-- TODO Load schema for method, preferably providing proposal count -->
+          <div v-if="methodSettingsComponent && m.name === methodSelected.name">
             <h3>{{ t('options') }}</h3>
-            <p v-if="!m.losersMin" class="checkbox">
-              <input :id="m.name + '-order-all'" type="checkbox" v-model="methodSettings.orderAll">
-              <label :for="m.name + '-order-all'">{{ t('poll.orderAll') }}</label>
-            </p>
-            <p class="number">
-              <label :for="m.name + '-winners'">{{ t('winners') }}</label>
-              <input :id="m.name + '-winners'" v-model="methodSettings.winners" type="number" :min="m.winnersMin || 1" :max="selectedProposals.length - (m.losersMin || 0)" :disabled="methodSettings.orderAll">
-            </p>
+            <component :is="methodSettingsComponent" v-model="methodSettings" :method="m" :proposals="selectedProposals.length" />
           </div>
         </li>
       </ul>
@@ -68,7 +60,7 @@ import useRestApi from '@/composables/useRestApi'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 
-import { pollMethods as implementedMethods } from '@/components/pollmethods'
+import { pollMethods as implementedMethods, pollSettings } from '@/components/pollmethods'
 import ProposalComponent from '@/components/widgets/Proposal.vue'
 
 import rules from '@/contentTypes/poll/rules'
@@ -86,7 +78,7 @@ export default defineComponent({
     const restApi = useRestApi()
     const proposals = useProposals()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
-    const { meetingPath } = useMeeting()
+    const { meetingPath, meetingId } = useMeeting()
     const { alert } = useAlert()
 
     const selectedProposalIds = reactive<Set<number>>(new Set())
@@ -125,16 +117,19 @@ export default defineComponent({
     const availableMethods = computed(() => {
       return pollMethods.filter(methodFilter)
     })
-    const methodSelected = ref<string | null>(null)
+
+    const methodSelected = ref<PollMethod | null>(null)
     const methodSettings = ref<PollMethodSettings | null>(null)
+    const methodSettingsComponent = computed(
+      () => methodSelected.value && pollSettings[methodSelected.value.name]
+    )
     function selectMethod (method: PollMethod) {
-      // If same, deselect
-      if (methodSelected.value === method.name) {
+      // Toggle
+      if (methodSelected.value && methodSelected.value.name === method.name) {
         methodSelected.value = null
       } else {
-        methodSelected.value = method.name
-        // TODO Proper settings schema
         methodSettings.value = method.initialSettings || null
+        methodSelected.value = method
       }
     }
 
@@ -145,27 +140,27 @@ export default defineComponent({
     })
 
     function createPoll (start = false) {
-      const method = pollMethods.find(m => m.name === methodSelected.value)
-      if (!method) return
-      if (method.name in implementedMethods) {
-        working.value = true
-        const pollData: PollData = {
-          agenda_item: agendaId.value,
-          proposal_pks: [...selectedProposalIds].join(','),
-          method_name: method.name,
-          start,
-          settings: methodSettings.value ? { ...methodSettings.value } : null // Copy settings
+      if (methodSelected.value) {
+        if (methodSelected.value.name in implementedMethods) {
+          working.value = true
+          const pollData: PollData = {
+            agenda_item: agendaId.value,
+            meeting: meetingId.value,
+            proposals: [...selectedProposalIds],
+            method_name: methodSelected.value.name,
+            start,
+            settings: methodSettings.value
+          }
+          restApi.post('polls/', pollData)
+            .then(({ data }) => {
+              router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
+            })
+            .finally(() => {
+              working.value = false
+            })
+        } else {
+          alert(`*${methodSelected.value.title} not implemented`)
         }
-        if (pollData.settings && pollData.settings.orderAll) pollData.settings.winners = null // Special orderAll case...
-        restApi.post('polls/', pollData)
-          .then(({ data }) => {
-            router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
-          })
-          .finally(() => {
-            working.value = false
-          })
-      } else {
-        alert(`*${method.title} not implemented`)
       }
     }
 
@@ -185,6 +180,7 @@ export default defineComponent({
       availableMethods,
       methodSelected,
       methodSettings,
+      methodSettingsComponent,
       selectMethod,
       readyToCreate,
       createPoll,

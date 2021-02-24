@@ -6,13 +6,25 @@
     </div>
     <div class="body">
       <btn @click="vote" icon="ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
-      <p v-if="poll.state === 'finished'">
-        {{ poll.result_data }}
-      </p>
+      <template v-if="poll.state === 'finished'">
+        <component v-if="resultComponent" :is="resultComponent" :data="poll.result_data">
+          <template v-if="poll.result_data.approved.length">
+            <h3>{{ t('poll.numApproved', poll.result_data.approved.length )}}</h3>
+            <div class="proposals approved">
+              <proposal v-for="pk in poll.result_data.approved" :key="pk" :p="getProposal(pk)" read-only selected />
+            </div>
+          </template>
+          <btn-dropdown v-if="poll.result_data.denied.length" :title="t('poll.numDenied', poll.result_data.denied.length )" :style="{ marginTop: '1em' }">
+            <div class="proposals denied">
+              <proposal v-for="pk in poll.result_data.denied" :key="pk" :p="getProposal(pk)" read-only />
+            </div>
+          </btn-dropdown>
+        </component>
+      </template>
       <p v-else>
-        Other poll info ...
+        {{ poll }}
       </p>
-      <btn-dropdown dark class="voting-info" v-if="isOngoing" title="Watch voting" @open="active=true" @close="active=false">
+      <btn-dropdown dark class="voting-info" v-if="poll.state === 'ongoing'" title="Watch voting" @open="active=true" @close="active=false">
         <progress-bar v-if="poll" absolute :value="poll.voted" :total="poll.total" />
         <p v-else>{{ t('loader.loading') }}...</p>
       </btn-dropdown>
@@ -25,9 +37,13 @@ import { computed, defineComponent, inject, onBeforeUnmount, PropType, ref, watc
 
 import useModal from '@/composables/useModal'
 
+import useProposals from '@/composables/meeting/useProposals'
+
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import BtnDropdown from '@/components/BtnDropdown.vue'
 import Voting from '@/components/modals/Voting.vue'
+import Proposal from './Proposal.vue'
+import { pollResults } from '../pollmethods'
 
 import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
@@ -42,12 +58,13 @@ export default defineComponent({
   },
   components: {
     WorkflowState,
-    BtnDropdown
+    BtnDropdown,
+    Proposal
   },
   setup (props) {
     const channels = pollType.useChannels()
     const { openModal } = useModal()
-    const isOngoing = computed(() => props.poll.state === 'ongoing')
+    const { getProposal } = useProposals()
 
     const t = inject('t') as CallableFunction
 
@@ -58,6 +75,8 @@ export default defineComponent({
         data: props.poll
       })
     }
+
+    const resultComponent = computed(() => props.poll.state === 'finished' && pollResults[props.poll.method_name])
 
     // Toggle active listens to ongoing poll statuses
     const active = ref(false)
@@ -77,10 +96,11 @@ export default defineComponent({
 
     return {
       ...pollType.rules,
-      isOngoing,
       active,
       vote,
-      t
+      t,
+      resultComponent,
+      getProposal
     }
   }
 })
@@ -89,7 +109,7 @@ export default defineComponent({
 <style lang="sass">
 div.poll
   background-color: #eee
-  padding: .5rem
+  padding: 1rem
   border-radius: 6px
   margin: 1rem 0
 
@@ -102,6 +122,14 @@ div.poll
 
   .body
     padding-top: 1rem
+
+  .proposals
+    display: flex
+    margin: -10px
+    flex-flow: wrap
+  .proposal
+    margin: 10px
+    flex: 0 1 calc(50% - 20px)
 
 body.no-scroll
   overflow: hidden

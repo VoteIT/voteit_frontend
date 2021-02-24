@@ -30,7 +30,7 @@ export default function useContentApi (endpoint: string, states?: WorkflowState[
   }
 
   function action (pk: number, action: string, data?: object): AxiosPromise
-  function action (action: string, data: object, _?: undefined): AxiosPromise
+  function action (action: string, data: object): AxiosPromise
   function action (pkOrAction: number | string, actionOrData: string | object, data?: object) {
     if (typeof pkOrAction === 'number') {
       return restApi.post(`${endpoint}${pkOrAction}/${actionOrData}/`, data || {})

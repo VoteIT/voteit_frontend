@@ -1,5 +1,5 @@
 <template>
-  <div class="proposal" :class="{ selected }">
+  <div v-if="p" class="proposal" :class="{ selected }">
     <slot name="top"/>
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><moment :date="p.created" /></div>
@@ -10,6 +10,9 @@
       <btn v-if="canChange(p)" :disabled="!canDelete(p)" sm icon="delete" @click="queryDelete" />
     </div>
     <slot name="bottom"/>
+  </div>
+  <div v-else class="proposal">
+    <em>{{ t('proposal.notFound') }}</em>
   </div>
 </template>
 
@@ -26,6 +29,7 @@ import { Proposal } from '@/contentTypes/types'
 
 export default defineComponent({
   name: 'Proposal',
+  inject: ['t'],
   props: {
     p: {
       type: Object as PropType<Proposal>,

@@ -38,8 +38,13 @@ export default function useProposals () {
     return orderBy(props) as Proposal[]
   }
 
+  function getProposal (pk: number) {
+    return proposals.get(pk)
+  }
+
   return {
     getAgendaProposals,
-    getPollProposals
+    getPollProposals,
+    getProposal
   }
 }

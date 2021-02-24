@@ -24,7 +24,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 
 import ProposalComponent from '../widgets/Proposal.vue'
 
-import { CombinedSimpleVote, SimpleChoice, SimpleVote, SingleSimpleVote } from './types'
+import { CombinedSimpleVote, SimpleChoice, simpleIcons, SimpleVote, SingleSimpleVote } from './types'
 import { Poll, Proposal } from '@/contentTypes/types'
 
 export default defineComponent({
@@ -62,13 +62,13 @@ export default defineComponent({
       {
         value: SimpleChoice.Yes,
         title: t('poll.approve'),
-        icon: 'thumb_up',
+        icon: simpleIcons.yes,
         color: '#cdc'
       },
       {
         value: SimpleChoice.No,
         title: t('poll.deny'),
-        icon: 'thumb_down',
+        icon: simpleIcons.no,
         color: '#dcc'
       }
     ]
