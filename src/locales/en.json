@@ -19,6 +19,9 @@
   "accessPolicy": {
     "settings": "Access Policy settings"
   },
+  "agenda": {
+    "order": "Order Agenda Items"
+  },
   "auth": {
     "logout": "Logout",
     "loggedInAs": "Logged in as {username}"
