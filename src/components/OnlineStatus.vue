@@ -9,8 +9,8 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount, ref, watch } from 'vue'
 
-import useChannels from '@/composables/useChannels'
 import useAuthentication from '@/composables/useAuthentication'
+import Channel from '@/contentTypes/Channel'
 
 const MAX_RETRIES = 5
 
@@ -21,7 +21,7 @@ export default defineComponent({
     const reconnectTries = ref(1)
     const failedInitialization = ref(false)
     const { authToken, isAuthenticated } = useAuthentication()
-    const { connect, socketState } = useChannels()
+    const { connect, socketState } = new Channel()
 
     let reconnectIntervalId: number
 

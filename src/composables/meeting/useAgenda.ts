@@ -6,15 +6,18 @@ import { orderBy } from '@/utils'
 
 import agendaItemType from '@/contentTypes/agendaItem'
 import meetingType from '@/contentTypes/meeting'
-import useChannels from '../useChannels'
 
 import useLoader from '../useLoader'
 import { AgendaItem } from '@/contentTypes/types'
+import Channel from '@/contentTypes/Channel'
 
-export const agendaItems = reactive<Map<number, AgendaItem>>(new Map()) // Map meeting pk to list of agenda items
+export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 
 const channel = agendaItemType.useChannels()
   .updateMap(agendaItems)
+  .onDeleted(agendaItem => {
+    agendaItems.delete(agendaItem.pk)
+  })
 
 /*
 ** Clear agenda when leaving meeting.
@@ -31,7 +34,7 @@ meetingType.useChannels()
 /*
 ** Clear private agenda items when leaving moderators channel.
 */
-useChannels('moderators')
+new Channel('moderators')
   .onLeave(pk => {
     for (const agendaItem of agendaItems.values()) {
       if (agendaItem.meeting === pk && agendaItem.state === 'private') {

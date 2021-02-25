@@ -1,7 +1,8 @@
-import { ChannelConfig, RestApiConfig } from '@/composables/types'
-import useChannels from '@/composables/useChannels'
+import { RestApiConfig } from '@/composables/types'
+import Channel from '../Channel'
+import ContentAPI from '../ContentAPI'
+import { ChannelConfig, Meeting } from '../types'
 
-import useContentApi from '../useContentApi'
 import useWorkflows from '../useWorkflows'
 
 import rules from './rules'
@@ -11,7 +12,7 @@ export default {
   naturalKey: 'meeting.meeting',
   rules,
   workflowStates,
-  useChannels: (config?: ChannelConfig) => useChannels('meeting', config),
-  useContentApi: (config?: RestApiConfig) => useContentApi('meetings/', workflowStates, config),
+  useChannels: (config?: ChannelConfig) => new Channel<Meeting>('meeting', config),
+  useContentApi: (config?: RestApiConfig) => new ContentAPI<Meeting>('meetings/', workflowStates, config),
   useWorkflows: () => useWorkflows(workflowStates)
 }

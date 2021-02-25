@@ -1,23 +1,24 @@
 import { ref } from 'vue'
 
-import useRestApi from './useRestApi'
+import devLoginType from '@/contentTypes/devLogin'
 
 import { DevUser } from '@/utils/types'
+import { setAuthToken } from '@/utils/restApi'
 
 const user = ref(sessionStorage.user ? JSON.parse(sessionStorage.user) : null)
 const isAuthenticated = ref(false)
 const authToken = ref<string | null>(null)
 
 export default function useAuthentication () {
-  const restApi = useRestApi()
+  const contentApi = devLoginType.useContentApi()
 
   async function authenticate (usr: DevUser) {
     console.log('Authenticating', usr.username)
-    return restApi.get(`dev-login/${usr.username}/`)
-      .then(({ data }) => {
+    return contentApi.retrieve(usr.username)
+      .then(({ data }: { data: any }) => {
         user.value = usr
         sessionStorage.user = JSON.stringify(usr)
-        restApi.setAuthToken(data.key)
+        setAuthToken(data.key)
         isAuthenticated.value = true
         authToken.value = data.key
       })
@@ -29,7 +30,7 @@ export default function useAuthentication () {
   function logout () {
     console.log('Logging out')
     delete sessionStorage.user
-    restApi.setAuthToken()
+    setAuthToken()
     isAuthenticated.value = false
     user.value = null
   }

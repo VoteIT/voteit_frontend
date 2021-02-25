@@ -19,7 +19,7 @@ export default defineComponent({
   },
   setup (props) {
     const { getUser } = useMeeting()
-    const user = computed(() => getUser(props.pk))
+    const user = computed(() => getUser(props.pk) || {})
     return {
       user
     }

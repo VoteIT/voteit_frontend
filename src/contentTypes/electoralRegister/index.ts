@@ -1,7 +1,9 @@
-import { ChannelConfig } from '@/composables/types'
-import useContentApi from '../useContentApi'
+import { RestApiConfig } from '@/composables/types'
+
+import ContentAPI from '../ContentAPI'
+import { ElectoralRegister } from '../types'
 
 export default {
   naturalKey: 'poll.electoralregister',
-  useContentApi: (config?: ChannelConfig) => useContentApi('electoral-registers/', undefined, config)
+  useContentApi: (config?: RestApiConfig) => new ContentAPI<ElectoralRegister>('electoral-registers/', undefined, config)
 }

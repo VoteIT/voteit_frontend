@@ -1,7 +1,8 @@
 import { RestApiConfig } from '@/composables/types'
-import useContentApi from '../useContentApi'
+import ContentAPI from '../ContentAPI'
+import { MeetingAccessPolicy } from '../types'
 
 export default {
   naturalKey: 'access_policy.accesspolicy',
-  useContentApi: (config?: RestApiConfig) => useContentApi('access-policies/', undefined, config)
+  useContentApi: (config?: RestApiConfig) => new ContentAPI<MeetingAccessPolicy>('access-policies/', undefined, config)
 }

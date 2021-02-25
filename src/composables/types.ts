@@ -1,11 +1,8 @@
 /* eslint-disable camelcase */
-import { ChannelsConfig, Payload } from '@/utils/types'
+import { MeetingRole } from '@/contentTypes/types'
+import { User } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'
-
-export interface ChannelConfig extends ChannelsConfig {
-  leaveDelay?: number
-}
 
 export interface RestApiConfig extends AxiosRequestConfig {
   alertOnError?: boolean
@@ -33,14 +30,23 @@ export interface Dialog {
   no?: string
 }
 
-export interface ContextRoles extends Payload {
-  model: string
+export interface MeetingRoles {
   pk: number
-  user_pk: number
-  roles: string[]
+  user: User
+  meeting: number
+  assigned: MeetingRole[]
 }
 
-export enum SchemaType {
-  Incoming = 'incoming',
-  Outgoing = 'outgoing',
+export interface UserMeetingRoles {
+  user: number
+  assigned: Set<MeetingRole>
+}
+
+// Internal representation. Maybe change this
+// FIXME
+export interface ContextRoles {
+  model: string
+  pk: number
+  roles: string[]
+  user_pk: number
 }

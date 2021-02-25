@@ -1,10 +1,12 @@
+import { MeetingRole } from '../types'
+
 export default [
   {
     transition: 'unpublish',
     icon: 'visibility_off',
     state: 'private',
     name: 'Private',
-    requiresRole: 'moderator'
+    requiresRole: MeetingRole.Moderator
   },
   {
     transition: 'upcoming',

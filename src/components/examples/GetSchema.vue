@@ -18,13 +18,13 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 
-import useChannels from '@/composables/useChannels'
-import { SchemaType } from '@/composables/types'
+import Channel from '@/contentTypes/Channel'
+import { SchemaType } from '@/contentTypes/types'
 
 export default defineComponent({
   name: 'GetSchema',
   setup () {
-    const channels = useChannels()
+    const channels = new Channel()
 
     const schemaName = ref('schema.get_outgoing')
     const schema = ref<Object | null>(null)

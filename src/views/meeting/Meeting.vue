@@ -37,7 +37,7 @@ import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck.vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useBubbles from '@/composables/meeting/useBubbles'
-import useChannels from '@/composables/useChannels'
+import Channel from '@/contentTypes/Channel'
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/composables/meeting/useMeeting'
 import usePolls from '@/composables/meeting/usePolls'
@@ -46,12 +46,13 @@ import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 import meetingType from '@/contentTypes/meeting'
 import { BubbleComponent } from '@/components/meeting/bubbles/types'
+import { MeetingRole } from '@/contentTypes/types'
 
 interface NavLink {
   title: string
   icon: string
   path: string
-  role?: string
+  role?: MeetingRole
   count?: () => number
 }
 
@@ -61,7 +62,7 @@ export default defineComponent({
     const t = inject('t') as CallableFunction
     const navLinks: NavLink[] = [
       {
-        role: 'moderator',
+        role: MeetingRole.Moderator,
         title: t('settings'),
         icon: 'settings',
         path: 'settings'
@@ -74,7 +75,7 @@ export default defineComponent({
         count: () => getPolls(meetingId.value, 'ongoing').length
       },
       {
-        role: 'moderator',
+        role: MeetingRole.Moderator,
         title: t('meeting.participants'),
         icon: 'people',
         path: 'participants'
@@ -125,8 +126,8 @@ export default defineComponent({
     const polls = computed(() => getPolls(meetingId.value))
     const ongoingPollCount = computed(() => getPolls(meetingId.value, 'ongoing').length)
 
-    const channels = useChannels() // For dynamic usage
-    const isModerator = computed(() => hasRole('moderator'))
+    const channels = new Channel() // For dynamic usage
+    const isModerator = computed(() => hasRole(MeetingRole.Moderator))
     let currentRoleChannel: string | null = null
     async function leaveRoleChannel () {
       if (currentRoleChannel) {

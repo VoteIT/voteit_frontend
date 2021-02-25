@@ -1,18 +1,18 @@
 import wu from 'wu'
 import { reactive } from 'vue'
 
-import useChannels from '../useChannels'
-
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
 import { Poll, PollStatus } from '@/contentTypes/types'
+import Channel from '@/contentTypes/Channel'
 
 const polls = reactive<Map<number, Poll>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType.useChannels()
   .updateMap(polls)
-  .onStatus((item: PollStatus) => {
+  .onStatus((_: any) => {
+    const item = _ as PollStatus
     const existing = pollStatuses.get(item.pk)
     // Throw away statuses with less votes - in case async order wrong
     if (!existing || existing.voted < item.voted) {
@@ -35,7 +35,7 @@ meetingType.useChannels()
 /*
 ** Clear private polls when leaving moderators channel.
 */
-useChannels('moderators')
+new Channel('moderators')
   .onLeave(pk => {
     for (const poll of polls.values()) {
       if (poll.meeting === pk && poll.state === 'private') {

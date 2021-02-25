@@ -10,7 +10,7 @@ import 'quill-mention'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
 import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/composables/meeting/useMeeting'
-import { ContextRoles } from '@/composables/types'
+import { MeetingRoles } from '@/composables/types'
 
 const QUILL_CONFIG: any = {
   theme: 'bubble',
@@ -73,7 +73,7 @@ export default defineComponent({
             search: searchTerm.toLowerCase(),
             context: meetingId.value
           })
-            .then(({ data }: { data: ContextRoles[] }) => {
+            .then(({ data }: { data: MeetingRoles[] }) => {
               renderList(data.map(({ user }) => {
                 return {
                   id: user.pk,

@@ -6,7 +6,7 @@ import speakerSystemType from '@/contentTypes/speakerSystem'
 
 import useAuthentication from '../useAuthentication'
 
-import { SpeakerList, SpeakerSystem } from '@/contentTypes/types'
+import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem } from '@/contentTypes/types'
 
 const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -18,7 +18,8 @@ speakerSystemType.useChannels()
 
 const listChannel = speakerListType.useChannels()
   .updateMap(speakerLists)
-  .on('order', ({ pk, queue, current }: { pk: number, queue: number[], current: number }) => { // pk == Speaker list pk
+  .on('order', (order: any) => {
+    const { pk, queue, current } = order as SpeakerOrderUpdate
     speakerQueues.set(pk, queue)
     currentlySpeaking.set(pk, current)
   })

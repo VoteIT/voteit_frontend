@@ -1,7 +1,7 @@
-import { ChannelConfig } from '@/composables/types'
-import useChannels from '@/composables/useChannels'
+import Channel from '../Channel'
+import { ChannelConfig } from '../types'
 
 export default {
   naturalKey: 'presence.presencecheck',
-  useChannels: (config?: ChannelConfig) => useChannels('presence_system', config)
+  useChannels: (config?: ChannelConfig) => new Channel('presence_system', config)
 }

@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 
+import { Poll } from '@/contentTypes/types'
+
 export enum PollMethodName {
   CombinedSimple = 'combined_simple',
   InstantRunoff = 'irv',
@@ -168,11 +170,11 @@ export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings
 /*
  * Post data sent to API
  */
-export interface PollData {
-  settings: PollMethodSettings | null
-  meeting: number
+export interface PollStartData {
   agenda_item: number
+  meeting: number
   proposals: number[]
-  method_name: string
+  method_name: PollMethodName
   start: boolean
+  settings: PollMethodSettings | null
 }

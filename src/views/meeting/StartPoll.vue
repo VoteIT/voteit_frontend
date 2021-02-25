@@ -56,16 +56,15 @@ import { slugify } from '@/utils'
 
 import useAgenda from '@/composables/meeting/useAgenda'
 import useAlert from '@/composables/useAlert'
-import useRestApi from '@/composables/useRestApi'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 
 import { pollMethods as implementedMethods, pollSettings } from '@/components/pollmethods'
 import ProposalComponent from '@/components/widgets/Proposal.vue'
 
-import rules from '@/contentTypes/poll/rules'
+import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
-import { PollData, PollMethod, pollMethods, PollMethodSettings } from '@/components/pollmethods/types'
+import { PollStartData, PollMethod, pollMethods, PollMethodSettings } from '@/components/pollmethods/types'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -75,7 +74,8 @@ export default defineComponent({
   },
   setup () {
     const router = useRouter()
-    const restApi = useRestApi()
+    const pollAPI = pollType.useContentApi()
+    // const restApi = useRestApi()
     const proposals = useProposals()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
     const { meetingPath, meetingId } = useMeeting()
@@ -143,7 +143,7 @@ export default defineComponent({
       if (methodSelected.value) {
         if (methodSelected.value.name in implementedMethods) {
           working.value = true
-          const pollData: PollData = {
+          const pollData: PollStartData = {
             agenda_item: agendaId.value,
             meeting: meetingId.value,
             proposals: [...selectedProposalIds],
@@ -151,7 +151,7 @@ export default defineComponent({
             start,
             settings: methodSettings.value
           }
-          restApi.post('polls/', pollData)
+          pollAPI.add(pollData)
             .then(({ data }) => {
               router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
             })
@@ -191,7 +191,7 @@ export default defineComponent({
 
       ...useMeeting(),
       ...proposals,
-      ...rules
+      ...pollType.rules
     }
   }
 })

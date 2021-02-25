@@ -9,12 +9,13 @@ import useAuthentication from '../useAuthentication'
 import { meetings } from '../useMeetings'
 
 import meetingType from '@/contentTypes/meeting'
-import { Meeting } from '@/contentTypes/types'
-import { ContextRoles } from '../types'
+import { Meeting, MeetingRole } from '@/contentTypes/types'
+import { MeetingRoles } from '../types'
+import { User } from '@/utils/types'
 
 const FORCE_ROLES_FETCH = false
 
-const participants = ref<Map<number, ContextRoles>>(new Map())
+const participants = ref<Map<number, MeetingRoles>>(new Map())
 
 const pFetchQueue = new Set<number>()
 let pFetchTimeout: number
@@ -32,11 +33,17 @@ export default function useMeeting () {
     }
   }
 
+  interface UserListParams {
+    context: number
+    // eslint-disable-next-line camelcase
+    user_id_in?: string
+  }
+
   async function fetchParticipants (meeting: number, userIds: Set<number> | number[]) {
     // Fetch all or specified participants (rest)
     // If specific, checks if already fetched
     meeting = meeting || meetingId.value
-    const params = { context: meeting, user_id_in: '' }
+    const params: UserListParams = { context: meeting }
     if (userIds) {
       userIds = [...new Set(userIds)] // Reduce to unique values
       if (!FORCE_ROLES_FETCH) {
@@ -52,7 +59,7 @@ export default function useMeeting () {
       }
     }
     return restApi.get('meeting-roles/', { params })
-      .then(({ data }: { data: ContextRoles[] }) => {
+      .then(({ data }: { data: MeetingRoles[] }) => {
         data.forEach(p => {
           meetingRoles.set(meeting, p.user.pk, p.assigned)
           participants.value.set(p.pk, p)
@@ -72,7 +79,7 @@ export default function useMeeting () {
     }
   }
 
-  function getUser (pk: number, meeting?: number) {
+  function getUser (pk: number, meeting?: number): User | undefined {
     // Return user object if found in meeting participants
     // Otherwise queue for fetch
     meeting = meeting || meetingId.value
@@ -81,9 +88,8 @@ export default function useMeeting () {
     if (role) {
       return role.user
     }
-    // No data, queue participant for fetch and return empty object for now
+    // No data, queue participant for fetch and return nothing for now
     fetchParticipant(pk, meeting)
-    return {}
   }
 
   function getParticipants (meeting: number) {
@@ -97,7 +103,7 @@ export default function useMeeting () {
   const meetingPath = computed(() => `/m/${meetingId.value}/${slugify('title' in meeting.value ? meeting.value.title : '-')}`)
 
   const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value))
-  function hasRole (role: string, user?: number) {
+  function hasRole (role: MeetingRole, user?: number) {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
 

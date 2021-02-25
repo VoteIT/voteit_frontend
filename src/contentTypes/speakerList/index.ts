@@ -1,6 +1,5 @@
-import { ChannelConfig } from '@/composables/types'
-import useChannels from '@/composables/useChannels'
-
+import Channel from '../Channel'
+import { ChannelConfig, SpeakerList } from '../types'
 import useWorkflows from '../useWorkflows'
 
 import rules from './rules'
@@ -10,6 +9,6 @@ export default {
   naturalKey: 'speaker.speakerlist',
   workflowStates,
   rules,
-  useChannels: (config?: ChannelConfig) => useChannels('speaker_list', config),
+  useChannels: (config?: ChannelConfig) => new Channel<SpeakerList>('speaker_list', config),
   useWorkflows: () => useWorkflows(workflowStates)
 }

@@ -16,13 +16,13 @@
 import { Component, computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 
 import useAlert from '@/composables/useAlert'
-import useChannels from '@/composables/useChannels'
 import useProposals from '@/composables/meeting/useProposals'
 
 import { pollMethods } from '../pollmethods'
 
 import { Poll, Proposal, Vote } from '@/contentTypes/types'
 import { ChannelsMessage } from '@/utils/types'
+import Channel from '@/contentTypes/Channel'
 
 export default defineComponent({
   name: 'VotingModal',
@@ -36,7 +36,7 @@ export default defineComponent({
   setup (props) {
     const { getPollProposals } = useProposals()
     const { alert } = useAlert()
-    const channels = useChannels('vote', { alertOnError: false })
+    const channels = new Channel('vote', { alertOnError: false })
 
     const method = ref(null)
     const waiting = ref(false)

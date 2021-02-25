@@ -1,7 +1,8 @@
-import { ChannelConfig, RestApiConfig } from '@/composables/types'
-import useChannels from '@/composables/useChannels'
+import { RestApiConfig } from '@/composables/types'
+import Channel from '../Channel'
+import ContentAPI from '../ContentAPI'
+import { ChannelConfig, Proposal } from '../types'
 
-import useContentApi from '../useContentApi'
 import useWorkflows from '../useWorkflows'
 
 import rules from './rules'
@@ -11,7 +12,7 @@ export default {
   naturalKey: 'proposal.proposal',
   workflowStates,
   rules,
-  useChannels: (config?: ChannelConfig) => useChannels('proposal', config),
-  useContentApi: (config?: RestApiConfig) => useContentApi('proposals/', workflowStates, config),
+  useChannels: (config?: ChannelConfig) => new Channel<Proposal>('proposal', config),
+  useContentApi: (config?: RestApiConfig) => new ContentAPI<Proposal>('proposals/', workflowStates, config),
   useWorkflows: () => useWorkflows(workflowStates)
 }

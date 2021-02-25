@@ -1,5 +1,6 @@
 import accessPolicy from './accessPolicy'
 import agendaItem from './agendaItem'
+import Channel from './Channel'
 import devLogin from './devLogin'
 import discussionPost from './discussionPost'
 import electoralRegister from './electoralRegister'

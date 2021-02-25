@@ -1,6 +1,6 @@
 import useAuthentication from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
-import { Meeting } from '../types'
+import { Meeting, MeetingRole } from '../types'
 
 import useWorkflows from '../useWorkflows'
 import workflowStates from './workflowStates'
@@ -13,23 +13,23 @@ const { user } = useAuthentication()
 const FINISHED_STATES = ['closed', 'archiving', 'archived']
 
 function isParticipant (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, 'participant')
+  return meeting && hasRole(meeting.pk, MeetingRole.Participant)
 }
 
 function isProposer (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, 'proposer')
+  return meeting && hasRole(meeting.pk, MeetingRole.Proposer)
 }
 
 function isDiscusser (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, 'discusser')
+  return meeting && hasRole(meeting.pk, MeetingRole.Discusser)
 }
 
 function isPotentialVoter (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, 'potential_voter')
+  return meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
 }
 
 function isModerator (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, 'moderator')
+  return meeting && hasRole(meeting.pk, MeetingRole.Moderator)
 }
 
 function isArchived (meeting?: Meeting) {

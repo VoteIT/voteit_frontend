@@ -11,11 +11,11 @@
           <icon :name="icon" :title="name" /> {{ roleCount(name) }}
         </th>
       </tr>
-      <tr v-for="{ userPk } in participants" :key="userPk">
-        <td><user :pk="userPk" /></td>
+      <tr v-for="{ user } in participants" :key="user">
+        <td><user :pk="user" /></td>
         <td v-for="{ name } in roles" :key="name">
-          <icon v-if="hasRole(name, userPk)" class="active" name="check" @click="removeRole(userPk, name)" />
-          <icon v-else name="close" @click="addRole(userPk, name)" />
+          <icon v-if="hasRole(name, user)" class="active" name="check" @click="removeRole(user, name)" />
+          <icon v-else name="close" @click="addRole(user, name)" />
         </td>
       </tr>
     </table>
@@ -27,21 +27,26 @@ import { computed, defineComponent, onBeforeMount, ref } from 'vue'
 
 import UserSearch from '@/components/widgets/UserSearch.vue'
 
-import useChannels from '@/composables/useChannels'
 import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/composables/meeting/useMeeting'
 
-import { ContextRoles } from '@/composables/types'
+import { ContextRoles, UserMeetingRoles } from '@/composables/types'
+import Channel from '@/contentTypes/Channel'
+import { MeetingRole } from '@/contentTypes/types'
 
-const TEMP_ROLES = [
-  { name: 'moderator', icon: 'gavel' },
-  { name: 'proposer', icon: 'post_add' },
-  { name: 'discusser', icon: 'comment' },
-  { name: 'potential_voter', icon: 'star_outline' },
-  { name: 'error', icon: 'error' }
+interface RoleIcon {
+  name: MeetingRole
+  icon: string
+}
+
+const TEMP_ROLES: RoleIcon[] = [
+  { name: MeetingRole.Moderator, icon: 'gavel' },
+  { name: MeetingRole.Proposer, icon: 'post_add' },
+  { name: MeetingRole.Discusser, icon: 'comment' },
+  { name: MeetingRole.PotentialVoter, icon: 'star_outline' }
 ]
-const channels = useChannels()
+const channels = new Channel()
 
 export default defineComponent({
   setup () {
@@ -68,17 +73,20 @@ export default defineComponent({
       })
     }
 
-    const orderBy = ref<string | null>(null)
+    const orderBy = ref<MeetingRole | null>(null)
     const orderReversed = ref(false)
 
-    function orderMethod (a: any, b: any) { // TODO Types
+    function orderMethod (a: UserMeetingRoles, b: UserMeetingRoles) { // TODO Types
       let valA, valB
       if (orderBy.value) {
         valA = !a.assigned.has(orderBy.value)
         valB = !b.assigned.has(orderBy.value)
       } else {
-        valA = getUser(a.userPk).full_name
-        valB = getUser(b.userPk).full_name
+        valA = getUser(a.user)
+        valB = getUser(b.user)
+        if (!valA || !valB) return 0
+        valA = valA.full_name
+        valB = valB.full_name
       }
       if (valA > valB) {
         return orderReversed.value ? -1 : 1
@@ -89,7 +97,7 @@ export default defineComponent({
       return 0
     }
 
-    function orderParticipants (role: string) {
+    function orderParticipants (role: MeetingRole) {
       if (orderBy.value === role) {
         orderReversed.value = !orderReversed.value
       } else {
@@ -99,10 +107,10 @@ export default defineComponent({
     }
 
     function addUser (user: ContextRoles) {
-      addRole(user.pk, 'participant')
+      addRole(user.pk, MeetingRole.Participant)
     }
 
-    function roleCount (role: string) {
+    function roleCount (role: MeetingRole) {
       return meetingRoles.getRoleCount(meetingId.value, role)
     }
 

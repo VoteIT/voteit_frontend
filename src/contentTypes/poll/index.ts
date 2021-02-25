@@ -1,7 +1,8 @@
-import { ChannelConfig, RestApiConfig } from '@/composables/types'
-import useChannels from '@/composables/useChannels'
+import { RestApiConfig } from '@/composables/types'
+import Channel from '../Channel'
+import ContentAPI from '../ContentAPI'
+import { ChannelConfig, Poll } from '../types'
 
-import useContentApi from '../useContentApi'
 import useWorkflows from '../useWorkflows'
 
 import rules from './rules'
@@ -11,7 +12,7 @@ export default {
   naturalKey: 'poll.poll',
   workflowStates,
   rules,
-  useChannels: (config?: ChannelConfig) => useChannels('poll', config),
-  useContentApi: (config?: RestApiConfig) => useContentApi('polls/', workflowStates, config),
+  useChannels: (config?: ChannelConfig) => new Channel<Poll>('poll', config),
+  useContentApi: (config?: RestApiConfig) => new ContentAPI<Poll>('polls/', workflowStates, config),
   useWorkflows: () => useWorkflows(workflowStates)
 }

@@ -1,13 +1,13 @@
 import { ref } from 'vue'
 
 import { DefaultMap, Socket } from '@/utils'
-import { Payload, SuccessMessage } from '@/utils/types'
+import { SuccessMessage } from '@/utils/types'
 
 import { ChannelConfig, SchemaType } from './types'
 
 type LeaveHandler = (uriOrPk: string | number) => void
-type UpdateHandler = (message: SuccessMessage) => void
-type MethodHandler = (payload: Payload) => void // FIXME Payload?
+type UpdateHandler<T> = (message: SuccessMessage) => void
+type MethodHandler<T> = (item: T) => void
 
 const DEFAULT_CONFIG: ChannelConfig = {
   alertOnError: true,
@@ -15,12 +15,12 @@ const DEFAULT_CONFIG: ChannelConfig = {
 }
 
 const socket = new Socket()
-const socketState = ref(false)
+export const socketState = ref(false)
 const subscriptions = new Set<string>()
 const leaveTimeouts = new Map<string, number>()
-const updateHandlers = new Map<string, UpdateHandler>()
+const updateHandlers = new Map<string, UpdateHandler<any>>()
 const leaveHandlers = new DefaultMap<string, LeaveHandler[]>(() => [])
-const methodHanders = new DefaultMap<string, Map<string, MethodHandler>>(() => new Map())
+const methodHanders = new DefaultMap<string, Map<string, MethodHandler<any>>>(() => new Map())
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 
 function handleMessage (data: SuccessMessage) {
@@ -48,7 +48,7 @@ socket.addEventListener('message', event => {
 
 async function subscribeChannel (uri: string) {
   return socket.call('channel.subscribe', uri)
-    .then(({ p }: { p: Payload }) => {
+    .then(({ p }: { p: any }) => {
       if (p.app_state) p.app_state.forEach(handleMessage)
     })
 }
@@ -65,68 +65,82 @@ socket.addEventListener('close', () => {
   socketState.value = false
 })
 
-export default function useChannels (contentType?: string, moduleConfig?: ChannelConfig) {
-  moduleConfig = { ...DEFAULT_CONFIG, ...(moduleConfig || {}) }
-  function connect (token?: string) {
+export default class Channel<T> {
+  private _contentType?: string
+  private config: ChannelConfig
+
+  get contentType (): string {
+    if (typeof this._contentType === 'string') return this._contentType
+    throw new Error('Instantiate using useChannels(contentType) to use this method')
+  }
+
+  get socketState () {
+    return socketState
+  }
+
+  constructor (contentType?: string, config?: ChannelConfig) {
+    this._contentType = contentType
+    this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
+  }
+
+  connect (token?: string) {
     return socket.connect(token)
   }
 
-  function disconnect () {
+  disconnect () {
     socket.close()
   }
 
-  function onUpdate (this: any, fn: UpdateHandler) {
+  onUpdate (fn: UpdateHandler<T>) {
     // Will take precedence over and block .onChanged(), etc
-    console.log('registering update handler for', contentType)
-    updateHandlers.set(getCType('onUpdate'), fn)
+    console.log('registering update handler for', this.contentType)
+    updateHandlers.set(this.contentType, fn)
     return this
   }
 
-  function onLeave (this: any, fn: LeaveHandler) {
-    leaveHandlers.get(getCType('onLeave')).push(fn)
+  onLeave (fn: LeaveHandler) {
+    leaveHandlers.get(this.contentType).push(fn)
     return this
   }
 
-  function on (this: any, method: string, fn: MethodHandler, override = true) {
-    const contentType = getCType('on' + method[0].toUpperCase() + method.slice(1))
+  on (this: any, method: string, fn: MethodHandler<T>, override = true): Channel<T> {
     const ctHandlers = methodHanders.get(method)
-    if (override || !ctHandlers.has(contentType)) {
-      methodHanders.get(method).set(contentType, fn)
+    if (override || !ctHandlers.has(this.contentType)) {
+      methodHanders.get(method).set(this.contentType, fn)
     }
     return this
   }
 
-  const onAdded = (fn: MethodHandler) => on('added', fn)
-  const onDeleted = (fn: MethodHandler) => on('deleted', fn)
-  const onStatus = (fn: MethodHandler) => on('status', fn)
+  onAdded = (fn: MethodHandler<T>) => this.on('added', fn)
+  onDeleted = (fn: MethodHandler<T>) => this.on('deleted', fn)
+  onStatus = (fn: MethodHandler<T>) => this.on('status', fn)
 
-  function onChanged (fn: MethodHandler) {
+  onChanged (fn: MethodHandler<T>) {
     // By default, send add events to change method. Register using .onAdded(fn) to handle separately.
-    on('added', fn, false)
-    return on('changed', fn)
+    return this.on('added', fn, false)
+      .on('changed', fn)
   }
 
-  function updateMap (this: any, map: Map<number, Payload>, transform = (value: Payload) => value) {
+  updateMap (this: any, map: Map<number, T>, transform = (value: T) => value): Channel<T> {
     // Convenience method to set onChanged and onDeleted to update Map object.
-    onChanged((item: Payload) => map.set(item.pk, transform(item)))
-    onDeleted((item: Payload) => map.delete(item.pk))
-    return this
+    return this.onChanged((item: any) => map.set(item.pk, transform(item as T)))
+      .onDeleted((item: any) => map.delete(item.pk))
   }
 
-  function getUri (uriOrPk: string | number): string {
+  private getUri (uriOrPk?: string | number): string {
     // Allow channel subscriptions using contentType[/pk]
     switch (typeof uriOrPk) {
       case 'undefined':
-        return getCType('subscribe')
+        return this.contentType
       case 'number':
-        return `${getCType('subscribe')}/${uriOrPk}`
+        return `${this.contentType}/${uriOrPk}`
     }
     return uriOrPk
   }
 
-  async function subscribe (uriOrPk: string | number, fail = false) {
+  async subscribe (uriOrPk: string | number, fail = false) {
     if (uriOrPk) {
-      const uri = getUri(uriOrPk)
+      const uri = this.getUri(uriOrPk)
       clearTimeout(leaveTimeouts.get(uri))
       if (!subscriptions.has(uri)) {
         subscriptions.add(uri)
@@ -140,9 +154,9 @@ export default function useChannels (contentType?: string, moduleConfig?: Channe
     return Promise.resolve()
   }
 
-  async function leave (uriOrPk: string | number, config?: ChannelConfig) {
+  async leave (uriOrPk: string | number, config?: ChannelConfig) {
     if (uriOrPk) {
-      const uri = getUri(uriOrPk)
+      const uri = this.getUri(uriOrPk)
       clearTimeout(leaveTimeouts.get(uri))
       if (subscriptions.has(uri)) {
         const myConfig: ChannelConfig = { ...DEFAULT_CONFIG, ...(config || {}) }
@@ -171,60 +185,25 @@ export default function useChannels (contentType?: string, moduleConfig?: Channe
   }
 
   // Wrap call and handle request errors (Timeout only?)
-  function call (uri: string, data?: object, config?: ChannelConfig) {
-    config = Object.assign({}, moduleConfig, config || {})
+  call (uri: string, data?: object, config?: ChannelConfig) {
+    config = { ...this.config, ...(config || {}) }
     return socket.call(uri, data, config)
   }
 
-  // function get (uri, config) {
-  //   return call(uri, undefined, config)
-  // }
-
-  function post (uri: string, data?: object, config?: ChannelConfig) {
-    return call(uri, data, config)
+  post (uri: string, data?: object, config?: ChannelConfig) {
+    return this.call(uri, data, config)
   }
 
-  function getCType (methodName?: string): string {
-    if (typeof contentType !== 'string') {
-      throw new Error(`Instantiate using useChannels(contentType) to use ${methodName || 'channels'}`)
-    }
-    return contentType
+  methodCall (method: string, data: object, config?: ChannelConfig) {
+    return this.call(`${this.contentType}.${method}`, data, config)
   }
 
-  function methodCall (method: string, data: object, config?: ChannelConfig) {
-    return call(`${getCType()}.${method}`, data, config)
-  }
+  get = (pk: number, config?: ChannelConfig) => this.methodCall('get', { pk }, config)
+  add = (contextPk: number, kwargs: object, config?: ChannelConfig) => this.methodCall('add', { pk: contextPk, kwargs }, config)
+  change = (pk: number, kwargs: object, config?: ChannelConfig) => this.methodCall('change', { pk, kwargs }, config)
+  delete = (pk: number, config?: ChannelConfig) => this.methodCall('delete', { pk }, config)
 
-  const get = (pk: number, config?: ChannelConfig) => methodCall('get', { pk }, config)
-  const add = (contextPk: number, kwargs: object, config?: ChannelConfig) => methodCall('add', { pk: contextPk, kwargs }, config)
-  const change = (pk: number, kwargs: object, config?: ChannelConfig) => methodCall('change', { pk, kwargs }, config)
-  const _delete = (pk: number, config?: ChannelConfig) => methodCall('delete', { pk }, config)
-
-  function getSchema (name: string, type = SchemaType.Incoming) {
-    return post('schema.get_' + type, { message_type: name })
-  }
-
-  return {
-    socket,
-    socketState,
-    onUpdate,
-    onLeave,
-    on,
-    onAdded,
-    onChanged,
-    onDeleted,
-    onStatus,
-    updateMap,
-    connect,
-    disconnect,
-    subscribe,
-    leave,
-    methodCall,
-    get,
-    post,
-    add,
-    change,
-    delete: _delete,
-    getSchema
+  getSchema (name: string, type = SchemaType.Incoming) {
+    return this.post('schema.get_' + type, { message_type: name })
   }
 }

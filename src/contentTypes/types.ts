@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import { PollMethodName, PollMethodSettings } from '@/components/pollmethods/types'
+import { ChannelsConfig } from '@/utils/types'
 
 export enum MeetingRole {
   Participant = 'participant',
@@ -15,7 +16,7 @@ export interface WorkflowState {
   icon: string
   transition?: string
   name?: string
-  requiresRole?: string
+  requiresRole?: MeetingRole
   isFinal?: boolean
 }
 
@@ -56,9 +57,9 @@ export interface Poll extends StateContent {
   agenda_item: number
   meeting: number
   method_name: PollMethodName
-  body: string
-  electoral_register: number
-  initial_electoral_register: number
+  body: string | null
+  electoral_register?: number
+  initial_electoral_register?: number
   proposals: number[]
   result_data: object | null // TODO
   settings_data: PollMethodSettings | null
@@ -82,6 +83,12 @@ export interface DiscussionPost {
 export interface SpeakerList extends StateContent {
   list_system: number
   agenda_item: number
+}
+
+export interface SpeakerOrderUpdate {
+  pk: number // Speaker list
+  queue: number[] // Current order
+  current: number // Current speaker
 }
 
 export interface SpeakerSystem extends BaseContent {
@@ -131,3 +138,12 @@ export interface MeetingAccessPolicy {
 }
 
 export type AuthoredContent = DiscussionPost | Proposal
+
+export enum SchemaType {
+  Incoming = 'incoming',
+  Outgoing = 'outgoing',
+}
+
+export interface ChannelConfig extends ChannelsConfig {
+  leaveDelay?: number
+}

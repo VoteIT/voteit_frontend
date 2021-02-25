@@ -1,10 +1,13 @@
-import { SuccessMessage } from '@/utils/types'
 import { reactive } from 'vue'
-import { ContextRoles } from './types'
-import useAuthentication from './useAuthentication'
-import useChannels from './useChannels'
 
-const contextRoles = reactive<Map<string, Set<string>>>(new Map())
+import Channel from '@/contentTypes/Channel'
+import { SuccessMessage } from '@/utils/types'
+
+import useAuthentication from './useAuthentication'
+import { ContextRoles, UserMeetingRoles } from './types'
+import { MeetingRole } from '@/contentTypes/types'
+
+const contextRoles = reactive<Map<string, Set<MeetingRole>>>(new Map())
 
 type keyComponent = string | number
 function getRoleKey (...components: keyComponent[]) {
@@ -13,7 +16,7 @@ function getRoleKey (...components: keyComponent[]) {
   return components.join('/')
 }
 
-useChannels('roles')
+new Channel('roles')
   .onUpdate((message: SuccessMessage) => {
     const t = message.t
     const p = message.p as ContextRoles
@@ -38,7 +41,7 @@ export default function useContextRoles (model: string) {
     return contextRoles.get(key) || new Set()
   }
 
-  function getRoleCount (pk: number, roleName: string) {
+  function getRoleCount (pk: number, roleName: MeetingRole) {
     const key = getRoleKey(model, pk, '')
     let count = 0
     for (const [k, v] of contextRoles.entries()) {
@@ -50,11 +53,11 @@ export default function useContextRoles (model: string) {
   function set (pk: number, userId: number, roles: string[]) {
     // Sets or replaces roles completely
     const key = getRoleKey(model, pk, userId)
-    contextRoles.set(key, new Set(roles))
+    contextRoles.set(key, new Set(roles as MeetingRole[]))
   }
 
-  function hasRole (pk: number, roleName: string | string[], userId?: number) {
-    const userRoles = getUserRoles(pk, userId)
+  function hasRole (pk: number, roleName: MeetingRole | MeetingRole[], user?: number) {
+    const userRoles = getUserRoles(pk, user)
     if (typeof roleName === 'string') {
       return userRoles.has(roleName)
     } else if (roleName && typeof roleName.some === 'function') {
@@ -67,12 +70,12 @@ export default function useContextRoles (model: string) {
 
   function getAll (pk: number) {
     const contextKey = getRoleKey(model, pk) + '/'
-    const results = []
+    const results: UserMeetingRoles[] = []
     for (const [key, assigned] of contextRoles.entries()) {
       if (key.startsWith(contextKey)) {
-        const userPk = Number(key.split('/')[2])
+        const user = Number(key.split('/')[2])
         results.push({
-          userPk,
+          user,
           assigned
         })
       }

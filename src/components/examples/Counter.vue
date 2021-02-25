@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import useChannels from '@/composables/useChannels'
+import Channel from '@/contentTypes/Channel'
 import { Progress } from '@/utils/types'
 import { computed, defineComponent, ref } from 'vue'
 
@@ -22,7 +22,7 @@ const PROGRESS_DEFAULT: Progress = {
 export default defineComponent({
   name: 'Counter',
   setup () {
-    const { post } = useChannels('testing', { alertOnError: false }) // Handle errors here
+    const { post } = new Channel('testing', { alertOnError: false }) // Handle errors here
 
     const progress = ref<Progress>(PROGRESS_DEFAULT)
     const state = ref<boolean | null>(null)

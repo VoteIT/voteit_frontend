@@ -1,19 +1,13 @@
+import { socketState } from '@/contentTypes/Channel'
 import { computed, ref, watch } from 'vue'
 
-import { RestApiConfig } from './types'
-
 import useAuthentication from './useAuthentication'
-import useChannels from './useChannels'
-import useRestApi from './useRestApi'
 
 const initDone = ref(false)
 const initFailed = ref(false)
 let callbacks: CallableFunction[] = []
 
 const { isAuthenticated } = useAuthentication()
-const { socketState } = useChannels()
-
-const restApi = useRestApi({ alertOnError: false })
 
 const isReady = computed(() => {
   return isAuthenticated.value && socketState.value
@@ -77,29 +71,11 @@ export default function useLoader (name: string) {
     }
   }
 
-  async function get (uri: string, config: RestApiConfig) {
-    if (initDone.value) {
-      return restApi.get(uri, config)
-    } else {
-      return new Promise((resolve, reject) => {
-        callbacks.push(() => {
-          restApi.get(uri, config)
-            .then(resolve)
-            .catch(err => {
-              console.error('Loading failed', name)
-              reject(err)
-            })
-        })
-      })
-    }
-  }
-
   return {
     initDone,
     initFailed,
     setLoaded,
     call,
-    get,
     subscribe
   }
 }
