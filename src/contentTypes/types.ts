@@ -1,7 +1,14 @@
 /* eslint-disable camelcase */
 
 import { PollMethodName, PollMethodSettings } from '@/components/pollmethods/types'
-import { Payload } from '@/utils/types'
+
+export enum MeetingRole {
+  Participant = 'participant',
+  Proposer = 'proposer',
+  Discusser = 'discusser',
+  PotentialVoter = 'potential_voter',
+  Moderator = 'moderator'
+}
 
 export interface WorkflowState {
   state: string
@@ -12,34 +19,37 @@ export interface WorkflowState {
   isFinal?: boolean
 }
 
-export interface BaseContent extends Payload {
-  [ index: string ]: any
+export interface BaseContent {
   pk: number
-  created: string | Date
   title: string
-  author: number
 }
 
 export interface StateContent extends BaseContent {
   state: string
 }
 
-export interface SpeakerList extends StateContent {
-}
-
 export interface Meeting extends StateContent {
   body: string
+  current_user_roles?: MeetingRole[]
+  end_time: string | Date
+  public: boolean
+  start_time: string | Date
 }
 
 export interface AgendaItem extends StateContent {
+  meeting: number
+  order: number
   body: string
 }
 
 export interface Proposal extends StateContent {
-  body: string
   agenda_item: number
+  author: number
+  body: string
+  created: string | Date
   polls: number[]
   prop_id: string
+  tags: string[]
 }
 
 export interface Poll extends StateContent {
@@ -60,19 +70,35 @@ export interface PollStatus {
   total: number
 }
 
-export interface DiscussionPost extends BaseContent {
+export interface DiscussionPost {
+  pk: number
+  agenda_item: number
+  author: number
+  created: string | Date
   body: string
+  tags: string[]
 }
 
-export interface SpeakerSystem {
+export interface SpeakerList extends StateContent {
+  list_system: number
+  agenda_item: number
+}
+
+export interface SpeakerSystem extends BaseContent {
+  active: boolean
+  active_list?: number
+  archived: boolean
+  meeting: number
+  method_name: string
+  safe_positions?: number
+  settings: object // TODO
+}
+
+export interface PresenceCheck {
   pk: number
   meeting: number
-  active: boolean
-  active_list: number | null
-}
-
-export interface PresenceCheck extends StateContent {
-  // Probably not Statecontent
+  presence_system: number
+  state: string
 }
 
 export interface Presence {
@@ -103,3 +129,5 @@ export interface MeetingAccessPolicy {
   pk: number // Meeting id
   policies: AccessPolicy[]
 }
+
+export type AuthoredContent = DiscussionPost | Proposal

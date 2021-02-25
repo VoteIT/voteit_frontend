@@ -9,8 +9,9 @@ import meetingType from '@/contentTypes/meeting'
 import useChannels from '../useChannels'
 
 import useLoader from '../useLoader'
+import { AgendaItem } from '@/contentTypes/types'
 
-export const agendaItems = reactive(new Map()) // Map meeting pk to list of agenda items
+export const agendaItems = reactive<Map<number, AgendaItem>>(new Map()) // Map meeting pk to list of agenda items
 
 const channel = agendaItemType.useChannels()
   .updateMap(agendaItems)

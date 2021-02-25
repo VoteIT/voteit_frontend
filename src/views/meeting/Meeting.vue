@@ -45,6 +45,7 @@ import usePresence from '@/composables/meeting/usePresence'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 import meetingType from '@/contentTypes/meeting'
+import { BubbleComponent } from '@/components/meeting/bubbles/types'
 
 interface NavLink {
   title: string
@@ -91,7 +92,7 @@ export default defineComponent({
     const { user } = useAuthentication()
 
     const presence = usePresence()
-    const presenceBubble = useBubbles(PresenceCheck)
+    const presenceBubble = useBubbles(PresenceCheck as BubbleComponent)
 
     const speakers = useSpeakerLists()
 

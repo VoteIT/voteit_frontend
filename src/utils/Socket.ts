@@ -1,5 +1,4 @@
-import { BaseContent } from '@/contentTypes/types'
-import { uriToPayload, ProgressPromise, emitter, DefaultMap } from '@/utils'
+import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
 import { ChannelsConfig, ChannelsMessage, State } from './types'
 
@@ -104,7 +103,7 @@ export default class Socket {
             timeoutId = setTimeout(() => {
               this.callbacks.delete(messageId)
               if (myConfig.alertOnError) {
-                emitter.emit('alert-open', {
+                openAlertEvent.emit({
                   title: 'Socket error',
                   text: 'Request timed out',
                   level: 'error',
@@ -124,7 +123,7 @@ export default class Socket {
               case State.Failed:
                 this.callbacks.delete(messageId)
                 if (myConfig.alertOnError) {
-                  emitter.emit('alert-open', {
+                  openAlertEvent.emit({
                     title: 'Socket error',
                     text: data.p.msg,
                     level: 'error',

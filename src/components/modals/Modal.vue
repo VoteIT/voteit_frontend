@@ -14,7 +14,7 @@
 <script lang="ts">
 import { computed, defineComponent, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
 
-import { emitter } from '../../utils'
+import { openModalEvent, closeModalEvent } from '@/utils'
 
 import { Modal } from '@/composables/types'
 
@@ -42,6 +42,7 @@ export default defineComponent({
         focusEl && focusEl.focus()
       })
     }
+
     function close () {
       modalQueue.shift()
       if (!modalQueue.length) {
@@ -60,8 +61,8 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      emitter.on('modal-open', (modal) => open(modal as Modal))
-      emitter.on('modal-close', close)
+      openModalEvent.on(open)
+      closeModalEvent.on(close)
     })
 
     return {

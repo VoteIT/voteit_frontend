@@ -6,6 +6,7 @@ import { dateify, orderBy } from '@/utils'
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
 import { Poll, Proposal } from '@/contentTypes/types'
+import { agendaItems } from './useAgenda'
 
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
@@ -16,7 +17,8 @@ proposalType.useChannels()
 meetingType.useChannels()
   .onLeave(meeting => {
     for (const p of proposals.values()) {
-      if (p.meeting === meeting) {
+      const ai = agendaItems.get(p.agenda_item)
+      if (ai && ai.meeting === meeting) {
         proposals.delete(p.pk)
       }
     }

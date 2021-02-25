@@ -16,7 +16,7 @@
 <script lang="ts">
 import { computed, defineComponent, inject, nextTick, onBeforeMount, reactive, ref } from 'vue'
 
-import { emitter } from '@/utils'
+import { openDialogEvent } from '@/utils'
 
 import { Dialog } from '@/composables/types'
 
@@ -37,24 +37,26 @@ export default defineComponent({
     }
 
     function resolve () {
-      if (active.value && active.value.resolve) {
+      if (active.value) {
         active.value.resolve()
+        close()
       }
-      close()
     }
 
     onBeforeMount(() => {
-      emitter.on('dialog-open', dialog => {
-        dialog.no = dialog.no || t('no')
-        dialog.yes = dialog.yes || t('yes')
-        if (!queue.length) {
-          savedFocusEl = document.querySelector(':focus')
+      openDialogEvent.on(dialog => {
+        if (dialog) {
+          dialog.no = dialog.no || t('no')
+          dialog.yes = dialog.yes || t('yes')
+          if (!queue.length) {
+            savedFocusEl = document.querySelector(':focus')
+          }
+          queue.push(dialog as Dialog)
+          nextTick(() => {
+            const focusEl = windowEl.value && windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]') as HTMLElement | null
+            focusEl && focusEl.focus()
+          })
         }
-        queue.push(dialog)
-        nextTick(() => {
-          const focusEl = windowEl.value && windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]') as HTMLElement | null
-          focusEl && focusEl.focus()
-        })
       })
     })
 

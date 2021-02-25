@@ -24,6 +24,7 @@ function canAdd (agendaItem: AgendaItem) {
 
 function canChange (proposal: Proposal) {
   const agendaItem = agendaItems.get(proposal.agenda_item)
+  if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
   return !meetingRules.isFinished(meeting) && meetingRules.isModerator(meeting)
 }
@@ -34,6 +35,7 @@ function canDelete (proposal: Proposal) {
 
 function canRetract (proposal: Proposal) {
   const agendaItem = agendaItems.get(proposal.agenda_item)
+  if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
   if (meetingRules.isModerator(meeting)) {
     return !meetingRules.isFinished(meeting)

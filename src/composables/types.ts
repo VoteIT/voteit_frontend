@@ -27,7 +27,10 @@ export interface Alert {
 }
 
 export interface Dialog {
-  resolve?: CallableFunction
+  title: string
+  resolve: CallableFunction
+  yes?: string
+  no?: string
 }
 
 export interface ContextRoles extends Payload {

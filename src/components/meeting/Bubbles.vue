@@ -12,53 +12,47 @@
 <script lang="ts">
 import { defineComponent, markRaw, nextTick, ref } from 'vue'
 
-import { emitter } from '../../utils'
-
 import Chat from './bubbles/Chat.vue'
-import { BubbleComponent } from './bubbles/types'
+import { BubbleComponent, BubbleConfig, BubbleInfo } from './bubbles/types'
+import { activateBubbleEvent, openBubbleEvent, closeBubbleEvent, removeBubbleEvent } from './bubbles/events'
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG: BubbleConfig = {
   open: true
-}
-
-interface BubbleInfo {
-  component: BubbleComponent
-  data: Object
 }
 
 export default defineComponent({
   name: 'Bubbles',
   setup () {
     const bubbles = ref<BubbleInfo[]>([{
-      component: markRaw(Chat),
+      component: markRaw(Chat as BubbleComponent),
       data: {}
     }])
     const openBubble = ref<string | null>(null)
 
-    emitter.on('bubble_activate', ({ component, data, config }) => {
-      config = { ...DEFAULT_CONFIG, ...config }
-      const bubble = bubbles.value.find(b => b.component === component)
+    activateBubbleEvent.on(evt => {
+      const config = { ...DEFAULT_CONFIG, ...evt.config }
+      const bubble = bubbles.value.find(b => b.component === evt.component)
       if (!bubble) {
         bubbles.value.push({
-          component: markRaw(component),
-          data
+          component: markRaw(evt.component),
+          data: evt.data
         })
       }
       if (config.open) {
-        nextTick(() => { openBubble.value = component.name })
+        nextTick(() => { openBubble.value = evt.component.name })
       }
     })
 
-    emitter.on('bubble_remove', component => {
+    removeBubbleEvent.on(component => {
       const index = bubbles.value.findIndex(b => b.component === component)
       if (index !== -1) bubbles.value.splice(index, 1)
     })
 
-    emitter.on('bubble_open', component => {
+    openBubbleEvent.on(component => {
       openBubble.value = component.name
     })
 
-    emitter.on('bubble_close', component => {
+    closeBubbleEvent.on(component => {
       if (bubbles.value.find(b => b.component === component)) {
         openBubble.value = null
       }

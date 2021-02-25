@@ -1,14 +1,13 @@
-import { emitter } from '../utils'
-
+import { openModalEvent, closeModalEvent } from '@/utils'
 import { Modal } from './types'
 
 export default function useModal () {
   function openModal (modal: Modal) {
-    emitter.emit('modal-open', modal)
+    openModalEvent.emit(modal)
   }
 
   function closeModal () {
-    emitter.emit('modal-close')
+    closeModalEvent.emit(undefined)
   }
 
   return {

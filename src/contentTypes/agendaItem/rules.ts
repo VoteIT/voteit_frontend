@@ -18,11 +18,15 @@ function isPrivate (agendaItem: AgendaItem) {
 }
 
 function isProposalBlocked (agendaItem: AgendaItem) {
-  return agendaItem.block_discussion
+  // TODO
+  return false
+  // return agendaItem.block_discussion
 }
 
 function isDiscussionBlocked (agendaItem: AgendaItem) {
-  return agendaItem.block_proposals
+  // TODO
+  return false
+  // return agendaItem.block_proposals
 }
 
 function canAdd (meeting: Meeting) {

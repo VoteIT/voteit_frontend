@@ -1,3 +1,5 @@
+import { Component } from 'vue'
+
 /* eslint-disable camelcase */
 export interface Payload {
   [ index: string ]: any

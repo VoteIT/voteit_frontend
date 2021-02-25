@@ -32,7 +32,7 @@ function isPermissiveState (poll: Poll) {
 
 function canAdd (context: Meeting | AgendaItem) {
   // TODO Adding to different contexts needs better architecture
-  if (context.meeting) {
+  if ('meeting' in context) {
     // Assume agenda item
     return !agendaRules.isArchived(context) && meetingRules.isModerator(meetings.get(context.meeting))
   }
@@ -42,11 +42,13 @@ function canAdd (context: Meeting | AgendaItem) {
 
 function canChange (poll: Poll) {
   const agendaItem = agendaItems.get(poll.agenda_item)
+  if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
   return isPermissiveState(poll) && meetingRules.isModerator(meeting)
 }
 function canDelete (poll: Poll) {
   const agendaItem = agendaItems.get(poll.agenda_item)
+  if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
   return meetingRules.isModerator(meeting)
 }

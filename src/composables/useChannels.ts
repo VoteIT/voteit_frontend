@@ -42,23 +42,7 @@ function handleMessage (data: SuccessMessage) {
 
 socket.addEventListener('message', event => {
   if ('data' in event) {
-    const data = JSON.parse(event.data)
-    // Moved to utils Socket for now
-    // if (data.t && data.t.startsWith('error.')) {
-    //   let msg = data.p.msg
-    //   if (data.p.errors && data.p.errors.length) {
-    //     msg = data.p.errors
-    //       .map(e => e.msg)
-    //       .join('\n')
-    //   }
-    //   emitter.emit('alert-open', {
-    //     title: data.t,
-    //     text: msg,
-    //     level: 'warning'
-    //   })
-    //   return
-    // }
-    handleMessage(data)
+    handleMessage(JSON.parse(event.data))
   }
 })
 

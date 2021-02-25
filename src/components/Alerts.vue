@@ -15,7 +15,8 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount, reactive } from 'vue'
 
-import { emitter } from '@/utils'
+import { openAlertEvent } from '@/utils'
+
 import { Alert } from '@/composables/types'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
@@ -80,7 +81,7 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      emitter.on('alert-open', (alert) => open(alert as string | Alert))
+      openAlertEvent.on(open)
     })
 
     return {

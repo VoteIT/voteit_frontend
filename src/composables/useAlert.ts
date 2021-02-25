@@ -1,9 +1,9 @@
-import { emitter } from '@/utils'
+import { openAlertEvent } from '@/utils'
 import { Alert } from './types'
 
 export default function useAlert () {
   function alert (options: Alert | string) {
-    emitter.emit('alert-open', options)
+    openAlertEvent.emit(options)
   }
 
   return {

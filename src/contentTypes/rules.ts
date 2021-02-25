@@ -1,8 +1,8 @@
 import useAuthentication from '../composables/useAuthentication'
-import { BaseContent } from './types'
+import { AuthoredContent } from './types'
 
 const { user } = useAuthentication()
 
-export function isAuthor (content: BaseContent) {
+export function isAuthor (content: AuthoredContent) {
   return user.value.pk === content.author
 }

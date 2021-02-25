@@ -1,9 +1,10 @@
-import { emitter } from '../../utils'
+import { activateBubbleEvent, closeBubbleEvent, openBubbleEvent, removeBubbleEvent } from '@/components/meeting/bubbles/events'
+import { BubbleComponent } from '@/components/meeting/bubbles/types'
 
-export default function useBubble (component: any) {
+export default function useBubble (component: BubbleComponent) {
   function activate (data: object, config?: object) {
     config = config || {}
-    emitter.emit('bubble_activate', {
+    activateBubbleEvent.emit({
       component,
       data,
       config
@@ -11,15 +12,15 @@ export default function useBubble (component: any) {
   }
 
   function remove () {
-    emitter.emit('bubble_remove', component)
+    removeBubbleEvent.emit(component)
   }
 
   function open () {
-    emitter.emit('bubble_open', component)
+    openBubbleEvent.emit(component)
   }
 
   function close () {
-    emitter.emit('bubble_close', component)
+    closeBubbleEvent.emit(component)
   }
 
   return {

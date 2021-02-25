@@ -5,8 +5,9 @@ import { dateify, orderBy } from '@/utils'
 
 import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
+import { DiscussionPost } from '@/contentTypes/types'
 
-const discussions = reactive(new Map())
+const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 
 discussionPostType.useChannels()
   .updateMap(discussions, dateify)
