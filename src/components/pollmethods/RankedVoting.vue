@@ -58,7 +58,7 @@ export default defineComponent({
     modelValue: Object as PropType<RankedVote>,
     settings: {
       type: Object,
-      default: () => ({ minRanked: 2 })
+      default: () => ({ minRanked: 1 })
     }
   },
   components: {

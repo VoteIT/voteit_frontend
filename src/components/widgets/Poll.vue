@@ -24,8 +24,8 @@
       <p v-else>
         {{ poll }}
       </p>
-      <btn-dropdown dark class="voting-info" v-if="poll.state === 'ongoing'" title="Watch voting" @open="active=true" @close="active=false">
-        <progress-bar v-if="poll" absolute :value="poll.voted" :total="poll.total" />
+      <btn-dropdown dark class="voting-info" v-if="poll.state === 'ongoing'" :title="t('poll.watchVoting')" @open="active=true" @close="active=false">
+        <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
         <p v-else>{{ t('loader.loading') }}...</p>
       </btn-dropdown>
     </div>
@@ -37,14 +37,15 @@ import { computed, defineComponent, inject, onBeforeUnmount, PropType, ref, watc
 
 import useModal from '@/composables/useModal'
 
+import usePolls from '@/composables/meeting/usePolls'
 import useProposals from '@/composables/meeting/useProposals'
 
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import BtnDropdown from '@/components/BtnDropdown.vue'
 import Voting from '@/components/modals/Voting.vue'
 import Proposal from './Proposal.vue'
-import { pollResults } from '../pollmethods'
 
+import { pollResults } from '../pollmethods'
 import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
 
@@ -65,6 +66,7 @@ export default defineComponent({
     const channels = pollType.useChannels()
     const { openModal } = useModal()
     const { getProposal } = useProposals()
+    const { getPollStatus } = usePolls()
 
     const t = inject('t') as CallableFunction
 
@@ -94,13 +96,18 @@ export default defineComponent({
       }
     })
 
+    const pollStatus = computed(() => {
+      return getPollStatus(props.poll.pk)
+    })
+
     return {
       ...pollType.rules,
       active,
       vote,
       t,
       resultComponent,
-      getProposal
+      getProposal,
+      pollStatus
     }
   }
 })

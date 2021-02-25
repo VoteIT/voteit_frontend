@@ -79,6 +79,7 @@
     "chooseMethod": "Choose voting method",
     "createAndStart": "Create and start",
     "noAiPublishedProposals": "This agenda item has no published proposals",
+    "watchVoting": "Watch voting",
     "IRV": {
       "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
     },

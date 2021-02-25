@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { PollMethodName } from '@/components/pollmethods/types'
+import { PollMethodName, PollMethodSettings } from '@/components/pollmethods/types'
 import { Payload } from '@/utils/types'
 
 export interface WorkflowState {
@@ -46,6 +46,18 @@ export interface Poll extends StateContent {
   agenda_item: number
   meeting: number
   method_name: PollMethodName
+  body: string
+  electoral_register: number
+  initial_electoral_register: number
+  proposals: number[]
+  result_data: object | null // TODO
+  settings_data: PollMethodSettings | null
+}
+
+export interface PollStatus {
+  pk: number
+  voted: number
+  total: number
 }
 
 export interface DiscussionPost extends BaseContent {

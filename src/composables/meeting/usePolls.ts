@@ -5,17 +5,18 @@ import useChannels from '../useChannels'
 
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
-import { Payload } from '@/utils/types'
+import { Poll, PollStatus } from '@/contentTypes/types'
 
-const polls = reactive(new Map())
+const polls = reactive<Map<number, Poll>>(new Map())
+const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType.useChannels()
   .updateMap(polls)
-  .onStatus((item: Payload) => {
-    // Just update existing poll object
-    const poll = polls.get(item.pk)
-    if (poll && poll.voted <= item.voted) { // Throw away statuses with less votes - in case async order wrong
-      Object.assign(poll, item)
+  .onStatus((item: PollStatus) => {
+    const existing = pollStatuses.get(item.pk)
+    // Throw away statuses with less votes - in case async order wrong
+    if (!existing || existing.voted < item.voted) {
+      pollStatuses.set(item.pk, item)
     }
   })
 
@@ -55,8 +56,13 @@ export default function usePolls () {
     return polls.get(pk)
   }
 
+  function getPollStatus (pk: number) {
+    return pollStatuses.get(pk)
+  }
+
   return {
     getPolls,
-    getPoll
+    getPoll,
+    getPollStatus
   }
 }

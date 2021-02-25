@@ -5,7 +5,7 @@
       {{ t('poll.schulze.numTiedWinners', tiedWinners.length, { count: tiedWinners.length }) }}
     </p>
     <p v-if="tiedWinners.length">
-      #{{ tiedWinners.join(', ') }}
+      {{ tiedWinners.join(', ') }}
     </p>
     <slot/>
   </div>
