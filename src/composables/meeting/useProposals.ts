@@ -6,7 +6,7 @@ import { dateify, orderBy } from '@/utils'
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
 import { Poll, Proposal } from '@/contentTypes/types'
-import { agendaItems } from './useAgenda'
+import { agendaDeletedEvent, agendaItems } from './useAgenda'
 
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
@@ -23,6 +23,13 @@ meetingType.useChannels()
       }
     }
   })
+
+/* Make sure proposals for agenda item are cleaned up on "deletion" (private). */
+agendaDeletedEvent.on(pk => {
+  for (const proposal of proposals.values()) {
+    if (proposal.agenda_item === pk) proposals.delete(proposal.pk)
+  }
+})
 
 export default function useProposals () {
   function getAgendaProposals (agendaPk: number, state?: string): Proposal[] {

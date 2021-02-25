@@ -1,3 +1,4 @@
+import TypedEvent from '@/utils/TypedEvent'
 import accessPolicy from './accessPolicy'
 import agendaItem from './agendaItem'
 import Channel from './Channel'

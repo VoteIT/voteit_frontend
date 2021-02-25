@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="agendaItem">
     <h1>{{ agendaItem.title }}</h1>
     <div class="btn-controls">
       <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaRules.canChange(agendaItem)" content-type="agendaItem" :pk="agendaId" />

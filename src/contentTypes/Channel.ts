@@ -154,29 +154,38 @@ export default class Channel<T> {
     return Promise.resolve()
   }
 
+  private performLeave (uri: string) {
+    // Delete from subscriptions when sending unsubscribe request.
+    subscriptions.delete(uri)
+    if (socket.isOpen) {
+      socket.send('channel.leave', uri)
+    }
+    // Call onLeave handlers... (Does not wait for response...)
+    const [contentType] = uri.split('/')
+    for (const cb of leaveHandlers.get(contentType) || []) {
+      cb(uri)
+    }
+}
+
   async leave (uriOrPk: string | number, config?: ChannelConfig) {
     if (uriOrPk) {
       const uri = this.getUri(uriOrPk)
       clearTimeout(leaveTimeouts.get(uri))
       if (subscriptions.has(uri)) {
         const myConfig: ChannelConfig = { ...DEFAULT_CONFIG, ...(config || {}) }
-        return new Promise(resolve => {
-          // Will not resolve if canceled...
-          leaveTimeouts.set(uri, setTimeout(() => {
-            // Delete from subscriptions when sending unsubscribe request.
-            // New subscribtions will clear this timeout.
-            subscriptions.delete(uri)
-            if (socket.isOpen) {
-              socket.send('channel.leave', uri)
-            }
-            // Call onLeave handlers... (Does not wait for response...)
-            const [contentType] = uri.split('/')
-            for (const cb of leaveHandlers.get(contentType) || []) {
-              cb(uriOrPk)
-            }
-            resolve(true)
-          }, myConfig.leaveDelay))
-        })
+        if (myConfig.leaveDelay) {
+          return new Promise(resolve => {
+            // Will not resolve if canceled...
+            leaveTimeouts.set(uri, setTimeout(() => {
+              // New subscribtions will clear this timeout.
+              this.performLeave(uri)
+              resolve(true)
+            }, myConfig.leaveDelay))
+          })
+        } else {
+          // Just leave now
+          this.performLeave(uri)
+        }
       }
     } else {
       console.error(uriOrPk, config)

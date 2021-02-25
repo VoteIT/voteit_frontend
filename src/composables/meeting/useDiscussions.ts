@@ -6,20 +6,25 @@ import { dateify, orderBy } from '@/utils'
 import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
 import { DiscussionPost } from '@/contentTypes/types'
+import { agendaDeletedEvent } from './useAgenda'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 
 discussionPostType.useChannels()
   .updateMap(discussions, dateify)
 
-// Automatically clear proposals for agenda item when unsubscribed
-agendaItemType.useChannels().onLeave(agendaItem => {
+function deleteForAgendaItem (uriOrPk: number | string) {
+  const pk = typeof uriOrPk === 'string' ? Number(uriOrPk.split('/')[1]) : uriOrPk
   for (const post of discussions.values()) {
-    if (post.agenda_item === agendaItem) {
+    if (post.agenda_item === pk) {
       discussions.delete(post.pk)
     }
   }
-})
+}
+// Automatically clear proposals for deleted (or made private) agenda_items
+agendaDeletedEvent.on(deleteForAgendaItem)
+// Automatically clear proposals for agenda item when unsubscribed
+agendaItemType.useChannels().onLeave(deleteForAgendaItem)
 
 export default function useDiscussions () {
   function getAgendaDiscussions (agendaItem: number) {

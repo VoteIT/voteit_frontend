@@ -5,6 +5,7 @@ import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
 import { Poll, PollStatus } from '@/contentTypes/types'
 import Channel from '@/contentTypes/Channel'
+import { agendaDeletedEvent } from './useAgenda'
 
 const polls = reactive<Map<number, Poll>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
@@ -33,16 +34,15 @@ meetingType.useChannels()
   })
 
 /*
-** Clear private polls when leaving moderators channel.
+** Clear private polls when agenda item deleted.
 */
-new Channel('moderators')
-  .onLeave(pk => {
-    for (const poll of polls.values()) {
-      if (poll.meeting === pk && poll.state === 'private') {
-        polls.delete(poll.pk)
-      }
+agendaDeletedEvent.on(pk => {
+  for (const poll of polls.values()) {
+    if (poll.agenda_item === pk) {
+      polls.delete(poll.pk)
     }
-  })
+  }
+})
 
 export default function usePolls () {
   function getPolls (meeting: number, state?: string) {
