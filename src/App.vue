@@ -48,31 +48,34 @@ export default defineComponent({
 <style lang="sass">
 $material-icons-font-path: '~material-icons/iconfont/'
 @import '~material-icons/iconfont/material-icons.scss'
+@import './theme/dark.sass'
+@import './theme/light.sass'
+
+:root
+  @include light-theme
+  @media (prefers-color-scheme: dark)
+    @include dark-theme
 
 *
   box-sizing: border-box
 
 body
   margin: 0
+  background-color: var(--bg)
+  color: var(--text)
+
+a
+  color: var(--link)
+  &:active
+    color: var(--link-active)
 
 #app
   font-family: Avenir, Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  color: #2c3e50
 
 #offline
   margin: -10px -10px 10px
-  background-color: #000
-  color: #fff
-
-#nav
-  padding: 30px
-
-  a
-    font-weight: bold
-    color: #2c3e50
-
-    &.router-link-exact-active
-      color: #42b983
+  background-color: var(--inverted-bg)
+  color: var(--inverted-text)
 </style>

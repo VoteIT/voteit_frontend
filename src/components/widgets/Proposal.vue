@@ -68,10 +68,10 @@ export default defineComponent({
 <style lang="sass">
 .proposal
   margin-bottom: 1rem
-  border: 1px solid #ddd
-  border-left: 6px solid #dde
+  background-color: var(--widget-bg)
+  border: var(--widget-border)
+  border-left: 6px solid var(--proposal)
   border-radius: 6px
-  background-color: #eee
   padding: 10px
   .author
     font-weight: bold
@@ -83,7 +83,7 @@ export default defineComponent({
     text-align: right
 
   &.selected
-    background-color: #ded
+    background-color: var(--proposal-selected)
 
 a.tag
   color: #333

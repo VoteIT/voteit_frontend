@@ -110,9 +110,9 @@ export default defineComponent({
 textarea
   width: 100%
   height: 8em
-  border: 1px solid #ccc
+  border: var(--widget-border)
   &:focus
-    outline: solid #ccc 1px
+    outline: var(--widget-border)
 .buttons
   text-align: right
 </style>

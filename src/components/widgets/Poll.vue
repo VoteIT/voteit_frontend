@@ -115,7 +115,7 @@ export default defineComponent({
 
 <style lang="sass">
 div.poll
-  background-color: #eee
+  background-color: var(--widget-bg)
   padding: 1rem
   border-radius: 6px
   margin: 1rem 0

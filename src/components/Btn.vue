@@ -24,22 +24,22 @@ export default defineComponent({
 
 .btn
   border: none
-  background-color: #ccc
-  color: #333
-  transition: background-color .3s
+  background-color: var(--btn-bg)
+  color: var(--btn-text)
+  transition: background .3s
   cursor: pointer
   padding: .2rem .6rem
   border-radius: 6px
   .material-icons
-    color: #779
+    color: var(--discrete-icon)
     vertical-align: middle
   &:hover
-    background-color: #aaa
+    background: var(--btn-hover-bg)
   &.active
-    background-color: #000
-    color: #eee
+    background: var(--btn-active-bg)
+    color: var(--btn-active-text)
     &:hover
-      background-color: #333
+      background: var(--btn-active-hover-bg)
   &.btn-sm
     border: 0
     padding: 4px 6px

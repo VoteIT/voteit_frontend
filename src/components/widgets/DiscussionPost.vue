@@ -58,10 +58,10 @@ export default defineComponent({
 <style lang="sass" scoped>
 .discussion
   margin-bottom: 1rem
-  border: 1px solid #ddd
-  border-left: 6px solid #edd
+  background-color: var(--widget-bg)
+  border: var(--widget-border)
+  border-left: 6px solid var(--discussion)
   border-radius: 6px
-  background-color: #eee
   padding: 10px
   .author
     font-weight: bold

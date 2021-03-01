@@ -81,7 +81,7 @@ export default defineComponent({
   opacity: 0
 
 #dialog-backdrop
-  background-color: rgba(#013, .333333)
+  background-color: var(--overlay-bg)
   position: fixed
   left: 0
   right: 0
@@ -93,7 +93,7 @@ export default defineComponent({
 
 #dialog
   position: relative
-  background-color: #f5f4ef
+  background-color: var(--alt-bg)
   box-shadow: 4px 4px 14px rgba(#000, .4)
   padding: 20px 40px
   width: 600px

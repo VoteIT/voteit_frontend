@@ -134,11 +134,15 @@ export default defineComponent({
   position: relative
 
 .ql-container
-  background-color: #fff
+  background-color: var(--bg)
   border-radius: 2px
 
-.ql-placeholder-content
-  background-color: #eef
-  padding-left: .2em
-  border-bottom: 1px solid #cce
+// .ql-placeholder-content
+//   background-color: #eef
+//   padding-left: .2em
+//   border-bottom: 1px solid #cce
+
+.mention
+  background-color: var(--mention)
+  padding: .3em .1em .1em
 </style>

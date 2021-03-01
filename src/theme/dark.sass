@@ -1,0 +1,43 @@
+@import './variables.sass'
+  
+@mixin dark-theme
+  $background: #111
+
+  --bg: #{$background}
+  --alt-bg: #1e1e1e
+  --text: #fff
+  --inverted-bg: #000
+  --inverted-text: #fff
+  --nav-bg: #{darken($base-theme-color, 20%)}
+  --nav-text: #fff
+  --nav-tab-bg: #{$base-theme-color}
+  --nav-tab-active-bg: #{$background}
+  --nav-tab-active-text: #fff
+
+  --agenda-bg: #222
+  --agenda-separator: 1px solid #444
+  --agenda-link: #ddd
+  --agenda-link-active: #{lighten($base-theme-color, 30%)}
+  --agenda-link-active-bg: #333
+
+  --widget-bg: #222
+  --widget-border: 1px solid #333
+  --widget-alt-bg: #333
+  --widget-alt-border: 1px solid #444
+
+  --btn-bg: #333
+  --btn-hover-bg: #666
+  --btn-text: #ddd
+  --btn-active-bg: #fff
+  --btn-active-hover-bg: #ddd
+  --btn-active-text: #000
+
+  --proposal: #{darken($proposal-color, 60%)}
+  --proposal-selected: #{darken($proposal-selected-color, 45%)}
+  --discussion: #{darken($discussion-color, 60%)}
+  --mention: #{darken($mention-color, 55%)}
+
+  --link: #{lighten($saturated-theme-color, 30%)}
+  --link-active: #{lighten($base-theme-color, 50%)}
+
+  --overlay-bg: #{rgba(#666, .333333)}

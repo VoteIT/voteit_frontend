@@ -89,42 +89,47 @@ export default defineComponent({
 #agenda
   h2
     font-size: 1.2rem
-    margin: .6em 0
-    border-top: 1px solid #ddd
+    margin: 0 0 .3em
+    padding-top: .3em
+    border-top: var(--agenda-separator)
+    &:first-child
+      border-top: none
     line-height: 2
     text-transform: capitalize
     .material-icons
       color: #999
-      vertical-align: text-bottom
+      vertical-align: -2px
   ul
     margin: 0
     padding: 0
     li
       margin: 0
-      padding: .3rem
       font-size: 1.2rem
     a
       display: block
       text-decoration: none
-      padding: .4rem 1.3rem
-      color: #000
+      padding: .4rem .2rem .4rem 1.6rem
+      color: var(--agenda-link)
       position: relative
       &.router-link-active
-        color: #228
+        background-color: var(--agenda-link-active-bg)
+        color: var(--agenda-link-active)
         &::after
           content: '❧'
           position: absolute
-          left: -3px
-          top: .35em
-          color: #bbc
+          left: 3px
+          top: .25em
+          color: var(--discrete-icon)
 
   .agenda-add-form
     display: flex
-    input:first-child
-      flex: 1 0 auto
+    input[type=text]
+      flex: 1 1 auto
+      min-width: 0
     input[type="submit"]
-      background-color: #eee
+      background-color: var(--btn-active-bg)
+      color: var(--btn-active-text)
       border-radius: 0 3px 3px 0
-      border: 1px solid #666
+      border: 0
       border-left: 0
 </style>

@@ -200,17 +200,17 @@ export default defineComponent({
 header
   nav
     padding: 8px
-    background-color: #111118
+    background-color: var(--nav-bg)
     color: fff
     display: flex
     justify-content: space-between
     .user
-      color: #779
+      color: var(--discrete-icon)
       padding: 0 3px
       font-weight: bold
       transform: rotate(3deg)
       .material-icons
-        color: #557
+        color: var(--discrete-icon)
         vertical-align: bottom
     a
       color: #fff
@@ -226,17 +226,17 @@ header
         margin-right: 10px
         padding: 8px 12px
         border-radius: 4px 4px 0 0
-        background-color: #333
+        background-color: var(--nav-tab-bg)
         font-weight: 700
         > span
           vertical-align: super
           font-size: 80%
         .material-icons
-          color: #779
+          color: var(--discrete-icon)
           vertical-align: text-bottom
         &.router-link-active
-          background-color: #fff
-          color: #000
+          background-color: var(--nav-tab-active-bg)
+          color: var(--nav-tab-active-text)
 
 #meeting
   display: flex
@@ -246,10 +246,10 @@ header
     display: flex
     flex-grow: 1
     #agenda
-      padding: 8px
       width: 280px
+      padding-top: .5em
       text-align: left
-      background-color: #eee
+      background-color: var(--agenda-bg)
       flex-shrink: 0
     #main-content
       flex-grow: 1

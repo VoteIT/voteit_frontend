@@ -1,7 +1,9 @@
 <template>
   <main>
     <h1>Participants</h1>
-    <user-search @submit="addUser" />
+    <div class="search">
+      <user-search @submit="addUser" />
+    </div>
     <table v-if="participants.length" :class="{ orderReversed }">
       <tr>
         <th @click="orderParticipants(null)" :class="{ orderBy: !orderBy }">
@@ -142,15 +144,18 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
+.search
+  margin-bottom: 1.5em
+
 table
   width: 100%
   border-spacing: 0
   tr:nth-child(even)
-    background-color: #eee
+    background-color: var(--alt-bg)
   th
     position: relative
     cursor: pointer
-    color: #666
+    color: var(--btn-text)
     i
       vertical-align: text-bottom
     &.orderBy::after
@@ -173,5 +178,4 @@ table
   td:first-child,
   th:first-child
     text-align: left
-    color: #000
 </style>

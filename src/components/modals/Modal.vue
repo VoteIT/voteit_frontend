@@ -89,12 +89,12 @@ export default defineComponent({
   transition: background-color .2s
   background-color: rgba(#000, 0)
   &.isOpen
-    background-color: rgba(#000, .45)
+    background-color: var(--overlay-bg)
 
 #modal-window
   width: calc(100vw - 20px)
   max-width: 780px
-  background-color: #fff
+  background-color: var(--alt-bg)
   min-height: calc(50vh)
   max-height: calc(100vh - 20px)
   box-shadow: 2px 2px 8px rgba(#000, .5)

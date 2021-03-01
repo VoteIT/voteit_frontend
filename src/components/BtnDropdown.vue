@@ -41,16 +41,16 @@ export default defineComponent({
     &.isOpen
       border-bottom-left-radius: 0
       border-bottom-right-radius: 0
-      background-color: #eee
+      background-color: var(--widget-bg)
       .material-icons
         transform: rotate(180deg)
   > div
     border-radius: 0 6px 6px 6px
-    background-color: #eee
+    background-color: var(--widget-bg)
     border-radius: 0 10px 10px 10px
     padding: .5rem
   &.dark
     > button.isOpen,
     > div
-      background-color: #ccc
+      background-color: var(--widget-alt-bg)
 </style>
