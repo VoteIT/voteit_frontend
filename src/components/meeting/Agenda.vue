@@ -97,8 +97,9 @@ export default defineComponent({
     line-height: 2
     text-transform: capitalize
     .material-icons
-      color: #999
+      color: var(--discrete-icon)
       vertical-align: -2px
+      margin-left: .2rem
   ul
     margin: 0
     padding: 0
@@ -132,4 +133,7 @@ export default defineComponent({
       border-radius: 0 3px 3px 0
       border: 0
       border-left: 0
+
+  .btn-dropdown
+    margin: 1rem .5rem
 </style>

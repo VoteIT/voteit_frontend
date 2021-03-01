@@ -1,30 +1,38 @@
 import { MeetingRole } from '../types'
 
+export enum AgendaState {
+  Private = 'private',
+  Upcoming = 'upcoming',
+  Ongoing = 'ongoing',
+  Closed = 'closed',
+  Archived = 'archived'
+}
+
 export default [
   {
     transition: 'unpublish',
     icon: 'visibility_off',
-    state: 'private',
+    state: AgendaState.Private,
     requiresRole: MeetingRole.Moderator
   },
   {
     transition: 'upcoming',
     icon: 'pause',
-    state: 'upcoming'
+    state: AgendaState.Upcoming
   },
   {
     transition: 'ongoing',
     icon: 'play_arrow',
-    state: 'ongoing'
+    state: AgendaState.Ongoing
   },
   {
     transition: 'close',
     icon: 'close',
-    state: 'closed'
+    state: AgendaState.Closed
   },
   {
     transition: 'archive',
     icon: 'archive',
-    state: 'archived'
+    state: AgendaState.Archived
   }
 ]

@@ -5,6 +5,7 @@ import { dateify, orderBy } from '@/utils'
 
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
+import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import { Poll, Proposal } from '@/contentTypes/types'
 import { agendaDeletedEvent, agendaItems } from './useAgenda'
 
@@ -32,7 +33,7 @@ agendaDeletedEvent.on(pk => {
 })
 
 export default function useProposals () {
-  function getAgendaProposals (agendaPk: number, state?: string): Proposal[] {
+  function getAgendaProposals (agendaPk: number, state?: ProposalState): Proposal[] {
     const props = [...wu(proposals.values()).filter(
       p => p.agenda_item === agendaPk && (!state || p.state === state)
     )]

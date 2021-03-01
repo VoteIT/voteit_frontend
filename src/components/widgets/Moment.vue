@@ -41,5 +41,5 @@ export default defineComponent({
 <style lang="sass">
 span.time
   font-size: 12px
-  color: #666
+  color: var(--disabled-text)
 </style>

@@ -1,32 +1,41 @@
+export enum ProposalState {
+  Published = 'published',
+  Retracted = 'retracted',
+  Voting = 'voting',
+  Approved = 'approved',
+  Denied = 'denied',
+  Unhandled = 'unhandled'
+}
+
 export default [
   {
     transition: 'publish',
     icon: 'visibility',
-    state: 'published'
+    state: ProposalState.Published
   },
   {
     transition: 'retract',
     icon: 'visibility_off',
-    state: 'retracted'
+    state: ProposalState.Retracted
   },
   {
     transition: 'lock_for_vote',
     icon: 'how_to_vote',
-    state: 'voting'
+    state: ProposalState.Voting
   },
   {
     transition: 'approved',
     icon: 'check',
-    state: 'approved'
+    state: ProposalState.Approved
   },
   {
     transition: 'denied',
     icon: 'close',
-    state: 'denied'
+    state: ProposalState.Denied
   },
   {
     transition: 'unhandled',
     icon: 'block',
-    state: 'unhandled'
+    state: ProposalState.Unhandled
   }
 ]

@@ -86,7 +86,6 @@ export default defineComponent({
     background-color: var(--proposal-selected)
 
 a.tag
-  color: #333
   font-size: 10pt
   text-decoration: none
   font-weight: 500

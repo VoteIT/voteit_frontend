@@ -5,8 +5,11 @@
     <btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <icon name="close"/></btn>
     <ul v-else>
       <template v-for="ai in getAgenda(meetingId)" :key="ai.pk">
-        <li v-if="canAdd(ai)">
-          <router-link :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }}</router-link>
+        <li v-if="canAdd(ai) && getPublishedProposals(ai.pk).length">
+          <router-link :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }} ({{ getPublishedProposals(ai.pk).length }})</router-link>
+        </li>
+        <li v-else class="disabled">
+          <span>{{ ai.title }} (-)</span>
         </li>
       </template>
     </ul>
@@ -65,6 +68,7 @@ import ProposalComponent from '@/components/widgets/Proposal.vue'
 import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
 import { PollStartData, PollMethod, pollMethods, PollMethodSettings } from '@/components/pollmethods/types'
+import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -82,7 +86,10 @@ export default defineComponent({
     const { alert } = useAlert()
 
     const selectedProposalIds = reactive<Set<number>>(new Set())
-    const availableProposals = computed(() => proposals.getAgendaProposals(agendaId.value, 'published'))
+    function getPublishedProposals (agendaItem: number) {
+      return proposals.getAgendaProposals(agendaItem, ProposalState.Published)
+    }
+    const availableProposals = computed(() => getPublishedProposals(agendaId.value))
     const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.has(p.pk)))
 
     function toggleSelected (p: Poll) {
@@ -172,6 +179,7 @@ export default defineComponent({
     return {
       selectedProposalIds,
       selectedProposals,
+      getPublishedProposals,
       availableProposals,
       toggleSelected,
       toggleAll,
@@ -201,10 +209,12 @@ export default defineComponent({
 ul
   padding: 0
 li
+  &.disabled
+    color: var(--disabled-text)
   list-style: none
-  border-top: 1px solid #eee
+  border-top: var(--agenda-separator)
   &:last-child
-    border-bottom: 1px solid #eee
+    border-bottom: var(--agenda-separator)
   h3
     margin-top: 0
   > div
@@ -212,19 +222,22 @@ li
   .number label
     display: block
   a
+    display: block
     text-decoration: none
     padding: 6px
-    color: #000
-    display: block
+    color: var(--text)
     &:before
       content: ''
       width: 1.2rem
       display: inline-block
       line-height: 1
   &.selected
-    background-color: #ded
+    background-color: var(--proposal-selected)
     a:before
       content: '✔'
   &.selected.locked
     background-color: #ddd
+  span
+    display: block
+    padding: 6px 6px 6px calc(6px + 1.2em)
 </style>
