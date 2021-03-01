@@ -1,5 +1,5 @@
 <template>
-  <richtext-editor v-if="editing" v-model="content" @submit="submit()" set-focus />
+  <RichtextEditor v-if="editing" v-model="content" @submit="submit()" set-focus />
   <div v-else v-html="object[contentAttribute]" />
 </template>
 

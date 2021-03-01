@@ -5,26 +5,26 @@
       <p>{{ currentStep.description }}</p>
     </div>
     <template v-if="currentStep.step === 1">
-      <proposal :selected="ranking.includes(p.pk)" read-only :p="p" v-for="p in proposals" :key="p.pk" @click="toggleSelected(p)">
+      <Proposal :selected="ranking.includes(p.pk)" read-only :p="p" v-for="p in proposals" :key="p.pk" @click="toggleSelected(p)">
         <template v-slot:top>
           <div class="ranking-position" v-if="ranking.includes(p.pk)">
             <span>{{ (ranking.indexOf(p.pk) + 1) }}</span>
           </div>
         </template>
-      </proposal>
+      </Proposal>
     </template>
     <template v-if="currentStep.step === 2">
-      <draggable v-model="orderedProposals" item-key="pk">
+      <Draggable v-model="orderedProposals" item-key="pk">
         <template #item="{ element }">
-          <proposal read-only selected :p="element">
+          <Proposal read-only selected :p="element">
             <template v-slot:top>
               <div class="ranking-position">
                 <span>{{ (ranking.indexOf(element.pk) + 1) }}</span>
               </div>
             </template>
-          </proposal>
+          </Proposal>
         </template>
-      </draggable>
+      </Draggable>
     </template>
     <div class="btn-controls">
       <btn v-if="previousStep" icon="undo" @click="previous()">{{ previousStep.title }}</btn>

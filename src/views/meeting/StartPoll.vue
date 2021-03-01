@@ -2,11 +2,11 @@
   <div>
     <h1>Start poll</h1>
     <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
-    <btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <icon name="close"/></btn>
+    <Btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <Icon>close</Icon></Btn>
     <ul v-else>
       <template v-for="ai in getAgenda(meetingId)" :key="ai.pk">
         <li v-if="canAdd(ai) && getPublishedProposals(ai.pk).length">
-          <router-link :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }} ({{ getPublishedProposals(ai.pk).length }})</router-link>
+          <RouterLink :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }} ({{ getPublishedProposals(ai.pk).length }})</RouterLink>
         </li>
         <li v-else class="disabled">
           <span>{{ ai.title }} (-)</span>
@@ -16,19 +16,19 @@
     <template v-if="agendaId">
       <h2>{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
       <div v-if="pickMethod">
-        <proposal read-only
+        <Proposal read-only
           v-for="p in selectedProposals" :key="p.pk"
           :p="p" selected />
       </div>
       <div v-else-if="availableProposals.length">
-        <proposal read-only
+        <Proposal read-only
           v-for="p in availableProposals" :key="p.pk"
           :p="p" @click="toggleSelected(p)" :selected="selectedProposalIds.has(p.pk)" />
       </div>
       <p v-else><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
       <div v-if="!pickMethod" class="btn-group">
-        <icon button name="done_all" @click="toggleAll">{{ t('all') }}</icon>
-        <icon button name="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</icon>
+        <Btn icon="done_all" @click="toggleAll">{{ t('all') }}</Btn>
+        <Btn icon="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</Btn>
       </div>
     </template>
     <template v-if="pickMethod">
@@ -43,9 +43,9 @@
         </li>
       </ul>
       <div class="btn-group">
-        <btn icon="undo" @click="pickMethod=false">{{ t('back') }}</btn>
-        <btn icon="check" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</btn>
-        <btn icon="play_arrow" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</btn>
+        <Btn icon="undo" @click="pickMethod=false">{{ t('back') }}</Btn>
+        <Btn icon="check" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</Btn>
+        <Btn icon="play_arrow" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</Btn>
       </div>
     </template>
   </div>

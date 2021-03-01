@@ -1,11 +1,11 @@
 <template>
   <main id="polls">
     <nav class="tabs">
-      <router-link v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></router-link>
+      <RouterLink v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><Icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></RouterLink>
     </nav>
     <h1>{{ currentState.name }} polls</h1>
-    <btn v-if="canAdd(meeting)" icon="star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</btn>
-    <poll :poll="p" v-for="p in polls" :key="p.pk" />
+    <Btn v-if="canAdd(meeting)" icon="star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</Btn>
+    <Poll :poll="p" v-for="p in polls" :key="p.pk" />
     <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
   </main>
 </template>

@@ -7,7 +7,7 @@
     <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
     <ul v-if="participatingMeetings.length">
       <li v-for="meeting in participatingMeetings" :key="meeting.pk">
-        <router-link :to="`/m/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</router-link>
+        <RouterLink :to="`/m/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
       </li>
     </ul>
     <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
@@ -15,7 +15,7 @@
       <h1>{{ t('join.joinAMeeting', otherMeetings.length) }}</h1>
       <ul>
         <li v-for="meeting in otherMeetings" :key="meeting.pk">
-          <router-link :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</router-link>
+          <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
         </li>
       </ul>
     </template>
@@ -31,24 +31,21 @@
     <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
-        <button @click="authenticate(user)">
-          <icon v-if="user.is_superuser" name="verified_user" sm />
-          <icon v-else name="face" sm />
+        <Btn @click="authenticate(user)" :icon="user.is_superuser ? 'verified_user' : 'face'">
           {{ user.username }}
-        </button>
+        </Btn>
       </li>
       <li>
-        <button @click="addUser = !addUser">
-          <icon name="add" sm />
+        <Btn icon="add" @click="addUser = !addUser">
           New user
-        </button>
+        </Btn>
         <form v-show="addUser" @submit.prevent="createUser">
           <p>
             <input type="checkbox" id="is_super" v-model="newUser.is_superuser" />
-            <label for="is_super">Superuser <icon sm name="verified_user"/></label>
+            <label for="is_super">Superuser <Icon sm>verified_user</Icon></label>
           </p>
           <p class="error" v-show="newUserError">Username not accepted</p>
-          <input type="text" required v-model="newUser.username" /><input type="submit" value="Create">
+          <input type="text" required v-model="newUser.username" /><input class="btn" type="submit" value="Create">
         </form>
       </li>
     </ul>

@@ -1,18 +1,18 @@
 <template>
   <form @submit.prevent>
-    <proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
+    <Proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
       <template v-slot:bottom>
         <div class="simple-options">
           <span class="vote-option" :style="{ backgroundColor: opt.value === votes.get(p.pk) ? opt.color : undefined }" :class="{ active: opt.value === votes.get(p.pk) }" v-for="opt in options" :key="opt.value">
             <label :for="`${p.pk}-${opt.value}`" tabindex="0" @click="change(p, opt)" @keyup.space.enter="change(p, opt)">
               <input :checked="opt.value === votes.get(p.pk)" type="radio" name="vote" :value="opt.value" :id="`${p.pk}-${opt.value}`" />
-              <icon sm :name="opt.icon" />
+              <Icon sm :name="opt.icon" />
               {{ opt.title }}
             </label>
           </span>
         </div>
       </template>
-    </proposal>
+    </Proposal>
   </form>
 </template>
 

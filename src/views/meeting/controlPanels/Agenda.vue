@@ -4,9 +4,9 @@
     <Draggable v-model="agendaItems" item-key="pk" >
       <template #item="{ element }">
         <div>
-          <icon sm :name="getState(element.state).icon" />
+          <Icon sm :name="getState(element.state).icon" />
           <span>{{ element.title }}</span>
-          <icon sm>drag_handle</icon>
+          <Icon sm>drag_handle</Icon>
         </div>
       </template>
     </Draggable>

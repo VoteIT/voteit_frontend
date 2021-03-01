@@ -1,7 +1,7 @@
 <template>
   <span class="user-search">
     <input type="search" :class="{ selected: !!selected }" name="search" autocomplete="off" v-model="query" @keyup="delayedSearch" />
-    <button type="submit" :disabled="!selected" @click="$emit('submit', selected)"><icon sm :name="buttonIcon"/> {{ buttonText }}</button>
+    <Btn type="submit" :icon="buttonIcon" :disabled="!selected" @click="$emit('submit', selected)">{{ buttonText }}</Btn>
     <div class="selector" v-show="results.length">
       <ul>
         <li v-for="result in results" :key="result.pk" @click="select(result)">

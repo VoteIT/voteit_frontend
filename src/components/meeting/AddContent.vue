@@ -1,12 +1,12 @@
 <template>
-  <btn-dropdown ref="dropdownComponent" :title="t('content.addName', { name })" @open="editorComponent.focus()">
+  <BtnDropdown ref="dropdownComponent" :title="t('content.addName', { name })" @open="editorComponent.focus()">
     <form @submit.prevent="submit()">
-      <richtext-editor ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
+      <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
       <div class="buttons">
-        <btn sm icon="send" :disabled="submitDisabled">{{ t('post') }}</btn>
+        <Btn sm icon="send" :disabled="submitDisabled">{{ t('post') }}</Btn>
       </div>
     </form>
-  </btn-dropdown>
+  </BtnDropdown>
 </template>
 
 <script lang="ts">

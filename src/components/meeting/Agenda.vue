@@ -1,17 +1,17 @@
 <template>
   <div id="agenda">
     <template v-for="s in aiGroups" :key="s.state">
-      <h2><icon sm :name="s.icon" /> {{ s.state }}</h2>
+      <h2><Icon sm :name="s.icon" /> {{ s.state }}</h2>
       <ul class="ai">
-        <li v-for="ai in getAiType(s.state)" :key="ai.pk"><router-link :to="getAiPath(ai)">{{ ai.title }}</router-link></li>
+        <li v-for="ai in getAiType(s.state)" :key="ai.pk"><RouterLink :to="getAiPath(ai)">{{ ai.title }}</RouterLink></li>
       </ul>
     </template>
-    <btn-dropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
+    <BtnDropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
         <input class="btn" type="submit" value="Add"/>
       </form>
-    </btn-dropdown>
+    </BtnDropdown>
   </div>
 </template>
 

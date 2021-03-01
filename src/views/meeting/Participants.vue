@@ -2,7 +2,7 @@
   <main>
     <h1>Participants</h1>
     <div class="search">
-      <user-search @submit="addUser" />
+      <UserSearch @submit="addUser" />
     </div>
     <table v-if="participants.length" :class="{ orderReversed }">
       <tr>
@@ -10,14 +10,14 @@
           Name
         </th>
         <th v-for="{ name, icon } in roles" :key="name" @click="orderParticipants(name)" :class="{ orderBy: name === orderBy }">
-          <icon :name="icon" :title="name" /> {{ roleCount(name) }}
+          <Icon :name="icon" :title="name" /> {{ roleCount(name) }}
         </th>
       </tr>
       <tr v-for="{ user } in participants" :key="user">
-        <td><user :pk="user" /></td>
+        <td><User :pk="user" /></td>
         <td v-for="{ name } in roles" :key="name">
-          <icon v-if="hasRole(name, user)" class="active" name="check" @click="removeRole(user, name)" />
-          <icon v-else name="close" @click="addRole(user, name)" />
+          <Icon v-if="hasRole(name, user)" class="active" @click="removeRole(user, name)">check</Icon>
+          <Icon v-else @click="addRole(user, name)">close</Icon>
         </td>
       </tr>
     </table>

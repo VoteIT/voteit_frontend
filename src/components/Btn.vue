@@ -1,6 +1,6 @@
 <template>
   <button class="btn" :class="{ 'btn-sm': sm, active }">
-    <icon v-if="icon" :sm="sm" :name="icon" />
+    <Icon v-if="icon" :sm="sm" :name="icon" />
     <span><slot/></span>
   </button>
 </template>

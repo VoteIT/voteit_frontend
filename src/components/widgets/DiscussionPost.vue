@@ -1,8 +1,8 @@
 <template>
   <div class="discussion">
     <div class="author"><user :pk="p.author" /></div>
-    <div><moment :date="p.created" /></div>
-    <richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
+    <div><Moment :date="p.created" /></div>
+    <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="!readOnly" class="btn-controls">
       <btn v-if="canChange(p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn v-if="canDelete(p)" sm icon="delete" @click="queryDelete()" />

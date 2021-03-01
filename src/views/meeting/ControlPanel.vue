@@ -2,15 +2,15 @@
   <div>
     <h1>{{ t('meeting.settingsFor', meeting) }}</h1>
     <nav class="tabs">
-      <router-link v-for="p in panels" :key="p.name" :to="`${meetingPath}/settings/${p.path}`">
-        <icon c-if="p.icon" sm :name="p.icon"/>
+      <RouterLink v-for="p in panels" :key="p.name" :to="`${meetingPath}/settings/${p.path}`">
+        <Icon c-if="p.icon" sm :name="p.icon"/>
         {{ p.name }}
-      </router-link>
+      </RouterLink>
     </nav>
     <keep-alive>
       <component ref="panelComponents" v-for="p in panels" :key="p.name" :is="p" v-show="currentPanel === p.path"/>
     </keep-alive>
-    <p v-if="!currentPanel">Select a tab... <icon>arrow_upward</icon></p>
+    <p v-if="!currentPanel">Select a tab... <Icon>arrow_upward</Icon></p>
   </div>
 </template>
 

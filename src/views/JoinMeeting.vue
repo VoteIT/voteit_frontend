@@ -1,11 +1,11 @@
 <template>
   <main id="join-meeting">
-    <p><router-link to="/">{{ t('home.home') }}</router-link></p>
+    <p><RouterLink to="/">{{ t('home.home') }}</RouterLink></p>
     <h1>{{ t('join.meeting', meeting) }}</h1>
-    <richtext :object="meeting" />
+    <Richtext :object="meeting" />
     <p/>
     <div class="btn-controls" v-if="policies.length">
-      <btn v-if="hasActive('automatic')" :disabled="working" icon="meeting_room" @click="joinNow()">{{ t('join.now') }}</btn>
+      <Btn v-if="hasActive('automatic')" :disabled="working" icon="meeting_room" @click="joinNow()">{{ t('join.now') }}</Btn>
     </div>
   </main>
 </template>

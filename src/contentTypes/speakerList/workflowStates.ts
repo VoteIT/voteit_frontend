@@ -1,12 +1,17 @@
+export enum SpeakerListState {
+  Open = 'open',
+  Closed = 'closed',
+}
+
 export default [
   {
     transition: 'open',
     icon: 'check',
-    state: 'open'
+    state: SpeakerListState.Open
   },
   {
     transition: 'close',
     icon: 'close',
-    state: 'closed'
+    state: SpeakerListState.Closed
   }
 ]

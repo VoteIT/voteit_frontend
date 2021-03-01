@@ -2,27 +2,27 @@
   <div id="meeting">
     <header>
       <nav>
-        <router-link to="/">{{ t('home.home') }}</router-link>
-        <h1><router-link :to="meetingPath">{{ meeting.title || t('loader.loading') }}</router-link></h1>
+        <RouterLink to="/">{{ t('home.home') }}</RouterLink>
+        <h1><RouterLink :to="meetingPath">{{ meeting.title || t('loader.loading') }}</RouterLink></h1>
         <span class="user" title="Your username">
-          <icon :name="hasRole('moderator') ? 'gavel' : 'face' "/>
+          <Icon :name="hasRole('moderator') ? 'gavel' : 'face' "/>
           {{ user.username }}
         </span>
       </nav>
       <nav class="tabs">
-        <router-link v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
-          <icon sm :name="link.icon" />
+        <RouterLink v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
+          <Icon sm :name="link.icon" />
           {{ link.title }}
           <span v-if="link.count">({{ link.count() }})</span>
-        </router-link>
+        </RouterLink>
       </nav>
     </header>
     <div>
-      <agenda />
-      <router-view id="main-content" />
+      <Agenda />
+      <RouterView id="main-content" />
     </div>
   </div>
-  <bubbles widgets="bubbleWidgets" />
+  <Bubbles widgets="bubbleWidgets" />
 </template>
 
 <script lang="ts">

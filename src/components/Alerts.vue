@@ -1,14 +1,14 @@
 <template>
   <div id="alerts">
     <div class="alert" :class="alert.level" v-for="(alert, index) in alerts" :key="index">
-      <icon sm name="close" class="close" @click="dismiss(alert)" />
+      <Icon sm name="close" class="close" @click="dismiss(alert)" />
       <span v-if="alert.html" v-html="alert.html" />
       <span v-else>
         <strong v-if="alert.title">{{ alert.title }}:</strong>
         {{ alert.text }}
       </span>
     </div>
-    <button class="dismiss-all" v-if="alerts.length > 1" @click="dismiss()"><icon sm name="clear_all" />Dismiss all</button>
+    <button class="dismiss-all" v-if="alerts.length > 1" @click="dismiss()"><Icon sm>clear_all</Icon> Dismiss all</button>
   </div>
 </template>
 

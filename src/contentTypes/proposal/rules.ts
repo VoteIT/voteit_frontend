@@ -5,9 +5,10 @@ import meetingRules from '../meeting/rules'
 import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
 import { AgendaItem, Proposal } from '../types'
+import { ProposalState } from './workflowStates'
 
 function isPublished (proposal: Proposal) {
-  return proposal.state === 'published'
+  return proposal.state === ProposalState.Published
 }
 
 function isUsedInPoll (proposal: Proposal) {

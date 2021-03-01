@@ -2,32 +2,32 @@
   <div class="poll">
     <div class="head">
       <h2>{{ poll.title }}</h2>
-      <workflow-state :state="poll.state" :admin="canChange(poll)" content-type="poll" :pk="poll.pk" />
+      <WorkflowState :state="poll.state" :admin="canChange(poll)" content-type="poll" :pk="poll.pk" />
     </div>
     <div class="body">
       <btn @click="vote" icon="ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
-      <template v-if="poll.state === 'finished'">
+      <template v-if="isFinished">
         <component v-if="resultComponent" :is="resultComponent" :data="poll.result_data">
           <template v-if="poll.result_data.approved.length">
             <h3>{{ t('poll.numApproved', poll.result_data.approved.length )}}</h3>
             <div class="proposals approved">
-              <proposal v-for="pk in poll.result_data.approved" :key="pk" :p="getProposal(pk)" read-only selected />
+              <Proposal v-for="pk in poll.result_data.approved" :key="pk" :p="getProposal(pk)" read-only selected />
             </div>
           </template>
-          <btn-dropdown v-if="poll.result_data.denied.length" :title="t('poll.numDenied', poll.result_data.denied.length )" :style="{ marginTop: '1em' }">
+          <BtnDropdown v-if="poll.result_data.denied.length" :title="t('poll.numDenied', poll.result_data.denied.length )" :style="{ marginTop: '1em' }">
             <div class="proposals denied">
-              <proposal v-for="pk in poll.result_data.denied" :key="pk" :p="getProposal(pk)" read-only />
+              <Proposal v-for="pk in poll.result_data.denied" :key="pk" :p="getProposal(pk)" read-only />
             </div>
-          </btn-dropdown>
+          </BtnDropdown>
         </component>
       </template>
       <p v-else>
         {{ poll }}
       </p>
-      <btn-dropdown dark class="voting-info" v-if="poll.state === 'ongoing'" :title="t('poll.watchVoting')" @open="active=true" @close="active=false">
+      <BtnDropdown dark class="voting-info" v-if="isOngoing" :title="t('poll.watchVoting')" @open="active=true" @close="active=false">
         <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
         <p v-else>{{ t('loader.loading') }}...</p>
-      </btn-dropdown>
+      </BtnDropdown>
     </div>
   </div>
 </template>
@@ -48,6 +48,7 @@ import Proposal from './Proposal.vue'
 import { pollResults } from '../pollmethods'
 import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
+import { PollState } from '@/contentTypes/poll/workflowStates'
 
 export default defineComponent({
   name: 'Poll',
@@ -78,7 +79,10 @@ export default defineComponent({
       })
     }
 
-    const resultComponent = computed(() => props.poll.state === 'finished' && pollResults[props.poll.method_name])
+    const isFinished = computed(() => props.poll.state === PollState.Finished)
+    const isOngoing = computed(() => props.poll.state === PollState.Ongoing)
+
+    const resultComponent = computed(() => isFinished.value && pollResults[props.poll.method_name])
 
     // Toggle active listens to ongoing poll statuses
     const active = ref(false)
@@ -107,7 +111,9 @@ export default defineComponent({
       t,
       resultComponent,
       getProposal,
-      pollStatus
+      pollStatus,
+      isFinished,
+      isOngoing
     }
   }
 })

@@ -2,36 +2,36 @@
   <div v-if="agendaItem">
     <h1>{{ agendaItem.title }}</h1>
     <div class="btn-controls">
-      <workflow-state v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaRules.canChange(agendaItem)" content-type="agendaItem" :pk="agendaId" />
+      <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaRules.canChange(agendaItem)" content-type="agendaItem" :pk="agendaId" />
       <btn v-if="pollRules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
       <btn v-if="agendaRules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
     </div>
-    <richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
+    <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div class="spaker-lists" v-if="hasSpeakerSystems">
       <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
-      <speaker-list :pk="pk" v-for="{ pk } in speakerLists" :key="pk" />
+      <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
     </div>
     <div class="row">
       <div class="col-sm-6">
         <h2>{{ t('proposal.proposals') }}</h2>
         <ul v-if="sortedProposals.length" class="no-list">
           <li v-for="p in sortedProposals" :key="p.pk">
-            <proposal :p="p"/>
+            <Proposal :p="p"/>
           </li>
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
-        <add-content v-if="proposalRules.canAdd(agendaItem)" :name="t('proposal.proposal')"
+        <AddContent v-if="proposalRules.canAdd(agendaItem)" :name="t('proposal.proposal')"
           :context-pk="agendaId" content-type="proposal"/>
       </div>
       <div class="col-sm-6">
         <h2>{{ t('discussion.discussions') }}</h2>
         <ul v-if="sortedDiscussions.length" class="no-list">
           <li v-for="d in sortedDiscussions" :key="d.pk">
-            <discussion-post :p="d"/>
+            <DiscussionPost :p="d"/>
           </li>
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
-        <add-content v-if="discussionRules.canAdd(agendaItem)" :name="t('discussion.discussion')"
+        <AddContent v-if="discussionRules.canAdd(agendaItem)" :name="t('discussion.discussion')"
           :context-pk="agendaId" content-type="discussionPost"/>
       </div>
     </div>
