@@ -84,18 +84,17 @@ export default defineComponent({
   .bubble
     position: relative
     > button
-      background-color: #000
+      background-color: var(--inverted-bg)
       .material-icons
-        color: #fff
+        color: var(--inverted-text)
       height: 50px
       width: 50px
       border-radius: 50%
       &:focus
         outline: none
       &.open
-        background-color: #333
         .material-icons
-          color: #bbf
+          color: var(--active-icon)
       margin-left: 10px
       &:first-child
         margin-right: 0
@@ -106,12 +105,12 @@ export default defineComponent({
       min-width: 300px
       right: 20px
       padding: 1rem
-      background-color: #eee
+      background-color: var(--alt-bg)
       border-radius: 5px 5px 0 5px
       filter: drop-shadow(1px 1px 2px rgba(#000, .4))
       &::after
         content: ""
-        border: 5px solid #eee
+        border: 5px solid var(--alt-bg)
         border-bottom: 5px solid transparent
         border-left: 5px solid transparent
         position: absolute
