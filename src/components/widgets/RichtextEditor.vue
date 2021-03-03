@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts">
+import wu from 'wu'
 import Quill from 'quill'
 import 'quill-mention'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
@@ -38,8 +39,8 @@ export default defineComponent({
       default: ''
     },
     tags: {
-      type: Array as PropType<string[]>,
-      default: () => []
+      type: Set as PropType<Set<string>>,
+      default: () => new Set()
     },
     setFocus: Boolean
   },
@@ -58,12 +59,12 @@ export default defineComponent({
     async function mentionSource (searchTerm: string, renderList: CallableFunction, mentionChar: string) {
       switch (mentionChar) {
         case '#':
-          renderList(
-            [tagObject(searchTerm)].concat(
-              (props.tags || [])
-                .filter(tag => tag !== searchTerm && tag.startsWith(searchTerm))
-                .map(tagObject))
-          )
+          renderList([
+            tagObject(searchTerm),
+            ...wu(props.tags)
+              .filter(tag => tag !== searchTerm && tag.startsWith(searchTerm))
+              .map(tagObject)
+          ])
           break
         case '@':
           if (!searchTerm.length) {
@@ -97,7 +98,7 @@ export default defineComponent({
         config.modules.mention.source = mentionSource
         editor = new Quill(editorElement.value, config)
         editor.on('text-change', () => {
-          emit('update:modelValue', editor && editor.root.innerHTML)
+          emit('update:modelValue', editor?.root.innerHTML)
         })
         if (props.setFocus) {
           focus()

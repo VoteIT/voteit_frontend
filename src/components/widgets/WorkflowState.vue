@@ -9,6 +9,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable no-unused-expressions */
 import { computed, defineComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import useAlert from '@/composables/useAlert'
@@ -45,8 +46,7 @@ export default defineComponent({
 
     function focusButton (where: HTMLElement | null) {
       nextTick(() => {
-        const btn = where && where.querySelector('.btn') as HTMLElement
-        btn && btn.focus()
+        where?.querySelector<HTMLElement>('.btn')?.focus()
       })
     }
 
@@ -64,10 +64,10 @@ export default defineComponent({
             contentApi.getTransitions(props.pk)
               .then((states: WorkflowState[]) => {
                 statesAvailable.value = states
-                focusButton(opts.value)
+                nextTick(() => focusButton(opts.value))
               })
           } else {
-            focusButton(opts.value)
+            nextTick(() => focusButton(opts.value))
           }
         } else if (!noFocus) { // If clicked out, don't shift that focus
           focusButton(root.value)
@@ -79,8 +79,9 @@ export default defineComponent({
       if (state.transition) {
         contentApi.transition(props.pk, state.transition)
           .then(() => nextTick(toggle))
+      } else {
+        throw new Error(`Transition not found to state ${state.state}`)
       }
-      throw new Error(`Transition not found to state ${state.state}`)
     }
 
     watch(() => props.state, () => { statesAvailable.value = null })
@@ -92,19 +93,17 @@ export default defineComponent({
     }
     function keyWatch ({ key }: { key: string }) {
       if (isOpen.value) {
-        const focusedEl = opts.value && opts.value.querySelector(':focus')
+        const focusedEl = opts.value?.querySelector(':focus')
         if (focusedEl) {
-          const prev = focusedEl.previousElementSibling as HTMLElement
-          const next = focusedEl.nextElementSibling as HTMLElement
           switch (key) {
             case 'Escape':
               toggle()
               break
             case 'ArrowUp':
-              prev && prev.focus()
+              (focusedEl.previousElementSibling as HTMLElement)?.focus()
               break
             case 'ArrowDown':
-              next && next.focus()
+              (focusedEl.nextElementSibling as HTMLElement)?.focus()
               break
           }
         }
@@ -112,11 +111,11 @@ export default defineComponent({
     }
     onMounted(() => {
       document.addEventListener('click', clickWatch)
-      root.value && root.value.addEventListener('keyup', keyWatch)
+      root.value?.addEventListener('keyup', keyWatch)
     })
     onBeforeUnmount(() => {
       document.removeEventListener('click', clickWatch)
-      root.value && root.value.removeEventListener('keyup', keyWatch)
+      root.value?.removeEventListener('keyup', keyWatch)
     })
 
     return {

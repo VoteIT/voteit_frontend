@@ -2,7 +2,7 @@
   <div>
     <h3>Combined Simple result</h3>
     <ul>
-      <li v-for="[proposal, voteCount] in results" :key="proposal && proposal.pk">
+      <li v-for="[proposal, voteCount] in results" :key="proposal?.pk">
         #{{ proposal ? proposal.prop_id : t('proposal.unknown') }}:
         <span class="btn-group">
           <btn v-for="[icon, value] in voteCount" :key="icon" sm :icon="icon" disabled>{{ value }}</btn>

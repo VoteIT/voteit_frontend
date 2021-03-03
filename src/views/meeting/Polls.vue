@@ -46,7 +46,7 @@ export default defineComponent({
     ))
 
     const polls = computed(() => {
-      return getPolls(meetingId.value, currentState.value && currentState.value.state)
+      return getPolls(meetingId.value, currentState.value?.state)
     })
 
     const tabStates = computed(() => {

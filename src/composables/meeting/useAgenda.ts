@@ -79,7 +79,6 @@ export default function useAgenda () {
   })
 
   return {
-    // setAgenda,
     getAgenda,
     getAgendaItem,
     agendaId,

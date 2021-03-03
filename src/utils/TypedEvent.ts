@@ -8,31 +8,30 @@ export interface Disposable {
 
 /** passes through events as they happen. You will not get events from before you start listening */
 export default class TypedEvent<T> {
-  private listeners: Listener<T>[] = []
-  private listenersOnce: Listener<T>[] = []
+  private listeners: Set<Listener<T>> = new Set()
+  private listenerOnces: Set<Listener<T>> = new Set()
 
   on = (listener: Listener<T>): Disposable => {
-    this.listeners.push(listener)
+    this.listeners.add(listener)
     return {
       dispose: () => this.off(listener)
     }
   }
 
   once = (listener: Listener<T>): void => {
-    this.listenersOnce.push(listener)
+    this.listenerOnces.add(listener)
   }
 
   off = (listener: Listener<T>) => {
-    var callbackIndex = this.listeners.indexOf(listener)
-    if (callbackIndex > -1) this.listeners.splice(callbackIndex, 1)
+    this.listeners.delete(listener)
   }
 
   emit = (evt: T) => {
-    /** Update any general listeners */
-    this.listeners.forEach(listener => listener(evt))
+    /** Update any listeners */
+    for (const listener of this.listeners) listener(evt)
+    for (const listener of this.listenerOnces) listener(evt)
     /** Clear the `once` queue */
-    this.listenersOnce.forEach(listener => listener(evt))
-    this.listenersOnce.length = 0
+    this.listenerOnces.clear()
   }
 
   pipe = (te: TypedEvent<T>): Disposable => {

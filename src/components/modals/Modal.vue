@@ -38,8 +38,8 @@ export default defineComponent({
       document.body.classList.add('no-scroll')
       modalQueue.push(markRaw({ ...defaults, ...modal }))
       nextTick(() => {
-        const focusEl: HTMLElement | null = windowEl.value && windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]')
-        focusEl && focusEl.focus()
+        // eslint-disable-next-line no-unused-expressions
+        windowEl.value?.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
       })
     }
 

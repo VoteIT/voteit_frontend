@@ -8,7 +8,7 @@
       <p>{{ schema.description }}</p>
       <ul>
         <li v-for="[key, property] in Object.entries(schema.properties)" :key="key">
-          {{ key }}: {{ property.type }}{{ schema.required && schema.required.includes(key) ? '*' : '' }}
+          {{ key }}: {{ property.type }}{{ schema.required?.includes(key) ? '*' : '' }}
         </li>
       </ul>
     </div>

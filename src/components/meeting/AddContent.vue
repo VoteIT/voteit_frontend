@@ -1,7 +1,7 @@
 <template>
   <BtnDropdown ref="dropdownComponent" :title="t('content.addName', { name })" @open="editorComponent.focus()">
     <form @submit.prevent="submit()">
-      <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="availableTags" />
+      <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="tags" />
       <div class="buttons">
         <Btn sm icon="send" :disabled="submitDisabled">{{ t('post') }}</Btn>
       </div>
@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, ref } from 'vue'
+import { computed, defineComponent, inject, PropType, ref } from 'vue'
 
 import { dialogQuery } from '@/utils'
 
@@ -42,7 +42,8 @@ export default defineComponent({
     warnLength: {
       type: Number,
       default: 10
-    }
+    },
+    tags: Set as PropType<Set<string>>
   },
   setup (props) {
     const t = inject('t') as CallableFunction
@@ -84,10 +85,6 @@ export default defineComponent({
     const editorComponent = ref<any>(null)
     const dropdownComponent = ref<any>(null)
 
-    const availableTags = computed(() => {
-      return [`${props.contentType}-${props.contextPk}`, 'test', 'remove-this-example'] // TODO
-    })
-
     return {
       t,
       open,
@@ -97,7 +94,6 @@ export default defineComponent({
       text,
       editorComponent,
       dropdownComponent,
-      availableTags,
       submitDisabled
     }
   }

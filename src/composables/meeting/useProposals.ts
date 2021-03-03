@@ -19,7 +19,7 @@ meetingType.getChannel()
   .onLeave(meeting => {
     for (const p of proposals.values()) {
       const ai = agendaItems.get(p.agenda_item)
-      if (ai && ai.meeting === meeting) {
+      if (ai?.meeting === meeting) {
         proposals.delete(p.pk)
       }
     }

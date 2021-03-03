@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
 import { ChannelsConfig, ChannelsMessage, State } from './types'
@@ -62,8 +63,7 @@ export default class Socket {
       this._ws.addEventListener('open', resolve)
       this._ws.addEventListener('message', event => {
         const data: ChannelsMessage = JSON.parse(event.data)
-        const cb = this.callbacks.get(data.i)
-        cb && cb(data)
+        this.callbacks.get(data.i)?.(data)
       })
       for (const event of EVENTS) {
         this._ws.addEventListener(event, this._createEventListener(event))
@@ -73,12 +73,12 @@ export default class Socket {
 
   close () {
     delete this.token
-    this._ws && this._ws.close()
+    this._ws?.close()
     this.active = false
   }
 
   get isOpen () {
-    return this.active && this._ws && this._ws.readyState === WebSocket.OPEN
+    return this.active && this._ws?.readyState === WebSocket.OPEN
   }
 
   call (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<ChannelsMessage> {
@@ -90,7 +90,7 @@ export default class Socket {
       const payload = payloadOrUri && (typeof payloadOrUri === 'object'
         ? payloadOrUri
         : uriToPayload(payloadOrUri))
-      this._ws && this._ws.send(JSON.stringify({
+      this._ws?.send(JSON.stringify({
         t: type,
         p: payload,
         i: messageId
@@ -157,7 +157,7 @@ export default class Socket {
   send (type: string, payloadOrUri: string | object) {
     // Does not register a response listener
     // Returns a Promise that resolves or rejects immediately
-    if (this._ws && this._ws.readyState === WebSocket.OPEN) {
+    if (this._ws?.readyState === WebSocket.OPEN) {
       const payload = typeof payloadOrUri === 'object'
         ? payloadOrUri
         : uriToPayload(payloadOrUri)

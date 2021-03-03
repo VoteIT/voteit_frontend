@@ -51,10 +51,10 @@ export default defineComponent({
           if (!queue.length) {
             savedFocusEl = document.querySelector(':focus')
           }
-          queue.push(dialog as Dialog)
+          queue.push(dialog)
           nextTick(() => {
-            const focusEl = windowEl.value && windowEl.value.querySelector('input,button:not(.closer),a[href],textarea,[tabindex]') as HTMLElement | null
-            focusEl && focusEl.focus()
+            // eslint-disable-next-line no-unused-expressions
+            windowEl.value?.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
           })
         }
       })

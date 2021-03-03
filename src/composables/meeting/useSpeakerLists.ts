@@ -65,7 +65,7 @@ export default function useSpeakerLists () {
   }
   function userInList (pk: number) {
     const queue = speakerQueues.get(pk)
-    return queue && queue.includes(user.value.pk)
+    return queue?.includes(user.value.pk)
   }
 
   function startSpeaker (pk: number, userid: number) {

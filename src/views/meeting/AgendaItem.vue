@@ -21,7 +21,7 @@
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
-          :context-pk="agendaId" :content-type="proposalType"/>
+          :context-pk="agendaId" :content-type="proposalType" :tags="allTags" />
       </div>
       <div class="col-sm-6">
         <h2>{{ t('discussion.discussions') }}</h2>
@@ -32,7 +32,7 @@
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-          :context-pk="agendaId" :content-type="discussionPostType"/>
+          :context-pk="agendaId" :content-type="discussionPostType" :tags="allTags" />
       </div>
     </div>
   </div>
@@ -86,6 +86,17 @@ export default defineComponent({
 
     const editingBody = ref(false)
 
+    const allTags = computed<Set<string>>(() => {
+      const tags = new Set<string>()
+      for (const p of sortedProposals.value) {
+        p.tags.forEach(t => tags.add(t))
+      }
+      for (const d of sortedDiscussions.value) {
+        d.tags.forEach(d => tags.add(d))
+      }
+      return tags
+    })
+
     return {
       meetingPath,
       agendaId,
@@ -100,7 +111,8 @@ export default defineComponent({
       proposalType,
       discussionPostType,
       pollType,
-      agendaItemType
+      agendaItemType,
+      allTags
     }
   },
   components: {

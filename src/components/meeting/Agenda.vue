@@ -52,7 +52,8 @@ export default defineComponent({
     // Focus input element
     const inputEl = ref<HTMLElement | null>(null)
     function focusInput () {
-      inputEl.value && inputEl.value.focus()
+      // eslint-disable-next-line no-unused-expressions
+      inputEl.value?.focus()
     }
 
     function getAiPath (ai: AgendaItem) {

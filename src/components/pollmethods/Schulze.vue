@@ -43,10 +43,8 @@ export default defineComponent({
 
     // Watch existing vote value from Vote modal
     watch(() => props.modelValue, (vote?: SchulzeVote) => {
-      if (vote && vote.ranking) {
-        vote.ranking.forEach(([key, value]) => {
-          proposalGrades.set(key, value)
-        })
+      for (const [key, value] of vote?.ranking || []) {
+        proposalGrades.set(key, value)
       }
     })
 

@@ -51,7 +51,8 @@ export default defineComponent({
     const queue = computed(() => speakers.getQueue(props.list.pk))
     const currentSpeaker = computed(() => speakers.getCurrent(props.list.pk))
     const inList = computed(() => speakers.userInList(props.list.pk))
-    const isActive = computed(() => listSystem.value && listSystem.value.active_list === props.list.pk)
+    // eslint-disable-next-line camelcase
+    const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 
     return {

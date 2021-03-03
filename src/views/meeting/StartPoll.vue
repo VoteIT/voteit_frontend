@@ -34,7 +34,7 @@
     <template v-if="pickMethod">
       <h2>{{ t('step', { step: 3 }) }}: {{ t('poll.chooseMethod') }}</h2>
       <ul>
-        <li :class="{ selected: methodSelected && m.name === methodSelected.name }" v-for="m in availableMethods" :key="m.name">
+        <li :class="{ selected: methodSelected?.name === m.name }" v-for="m in availableMethods" :key="m.name">
           <a href="#" @click.prevent="selectMethod(m)">{{ m.title }}</a>
           <div v-if="methodSettingsComponent && m.name === methodSelected.name">
             <h3>{{ t('options') }}</h3>
@@ -132,7 +132,7 @@ export default defineComponent({
     )
     function selectMethod (method: PollMethod) {
       // Toggle
-      if (methodSelected.value && methodSelected.value.name === method.name) {
+      if (methodSelected.value?.name === method.name) {
         methodSelected.value = null
       } else {
         methodSettings.value = method.initialSettings || null
