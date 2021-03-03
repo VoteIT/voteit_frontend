@@ -1,8 +1,7 @@
 import { RestApiConfig } from '@/composables/types'
 import { User } from '@/utils/types'
-import ContentAPI from '../ContentAPI'
+import ContentType from '../ContentType'
 
-export default {
-  naturalKey: 'auth.user',
-  useContentApi: (config?: RestApiConfig) => new ContentAPI<User>('users/', undefined, config)
-}
+export default new ContentType<User>({
+  restEndpoint: 'users/'
+})

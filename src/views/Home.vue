@@ -74,7 +74,7 @@ export default defineComponent({
   inject: ['debug'],
   setup () {
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
-    const devApi = devLogin.useContentApi()
+    const devApi = devLogin.getContentApi()
     const { authenticate, logout, isAuthenticated, user } = useAuthentication()
     const users = ref<DevUser[]>([])
     const loader = useLoader('Home')

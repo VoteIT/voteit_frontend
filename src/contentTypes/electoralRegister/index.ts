@@ -1,9 +1,6 @@
-import { RestApiConfig } from '@/composables/types'
-
-import ContentAPI from '../ContentAPI'
+import ContentType from '../ContentType'
 import { ElectoralRegister } from '../types'
 
-export default {
-  naturalKey: 'poll.electoralregister',
-  useContentApi: (config?: RestApiConfig) => new ContentAPI<ElectoralRegister>('electoral-registers/', undefined, config)
-}
+export default new ContentType<ElectoralRegister>({
+  restEndpoint: 'electoral-registers/'
+})

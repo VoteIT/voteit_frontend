@@ -1,18 +1,13 @@
-import { RestApiConfig } from '@/composables/types'
-import Channel from '../Channel'
-import ContentAPI from '../ContentAPI'
-import { ChannelConfig, Meeting } from '../types'
-
-import useWorkflows from '../useWorkflows'
+import ContentType from '../ContentType'
+import { Meeting } from '../types'
 
 import rules from './rules'
-import workflowStates from './workflowStates'
+import states from './workflowStates'
 
-export default {
-  naturalKey: 'meeting.meeting',
+export default new ContentType<Meeting>({
   rules,
-  workflowStates,
-  useChannels: (config?: ChannelConfig) => new Channel<Meeting>('meeting', config),
-  useContentApi: (config?: RestApiConfig) => new ContentAPI<Meeting>('meetings/', workflowStates, config),
-  useWorkflows: () => useWorkflows(workflowStates)
-}
+  states,
+  channelName: 'meeting',
+  restEndpoint: 'meetings/',
+  hasRoles: true
+})

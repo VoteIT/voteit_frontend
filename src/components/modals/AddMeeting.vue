@@ -23,7 +23,7 @@ export default defineComponent({
   inject: ['t'],
   setup () {
     const router = useRouter()
-    const meetingApi = meetingType.useContentApi()
+    const meetingApi = meetingType.getContentApi()
     const modal = useModal()
 
     const formData = reactive({

@@ -12,6 +12,7 @@ import Icon from './components/Icon.vue'
 import Btn from './components/Btn.vue'
 import User from './components/User.vue'
 import ProgressBar from './components/ProgressBar.vue'
+import Widget from './components/widgets/Widget.vue'
 
 import en from './locales/en.json'
 
@@ -46,4 +47,5 @@ createApp(App)
   .component('Btn', Btn)
   .component('User', User)
   .component('ProgressBar', ProgressBar)
+  .component('Widget', Widget)
   .mount('#app')

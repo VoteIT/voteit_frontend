@@ -1,19 +1,19 @@
 <template>
-  <div v-if="p" class="proposal" :class="{ selected }">
+  <Widget v-if="p" class="proposal" :class="{ selected }">
     <slot name="top"/>
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><Moment :date="p.created" /></div>
     <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div class="btn-controls" v-if="!readOnly">
-      <WorkflowState :admin="canChange(p) || canRetract(p)" :state="p.state" content-type="proposal" :pk="p.pk" />
+      <WorkflowState :admin="canChange(p) || canRetract(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
       <btn v-if="canChange(p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn v-if="canChange(p)" :disabled="!canDelete(p)" sm icon="delete" @click="queryDelete" />
     </div>
     <slot name="bottom"/>
-  </div>
-  <div v-else class="proposal">
+  </Widget>
+  <Widget v-else class="proposal">
     <em>{{ t('proposal.notFound') }}</em>
-  </div>
+  </Widget>
 </template>
 
 <script lang="ts">
@@ -44,7 +44,7 @@ export default defineComponent({
     Moment
   },
   setup (props) {
-    const channel = proposalType.useChannels()
+    const channel = proposalType.getChannel()
     const editing = ref(false)
     const t = inject('t') as CallableFunction
 
@@ -56,6 +56,7 @@ export default defineComponent({
     }
 
     return {
+      proposalType,
       editing,
       queryDelete,
       channel,
@@ -67,12 +68,7 @@ export default defineComponent({
 
 <style lang="sass">
 .proposal
-  margin-bottom: 1rem
-  background-color: var(--widget-bg)
-  border: var(--widget-border)
   border-left: 6px solid var(--proposal)
-  border-radius: 6px
-  padding: 10px
   .author
     font-weight: bold
   p

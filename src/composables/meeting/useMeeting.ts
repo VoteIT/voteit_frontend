@@ -22,8 +22,8 @@ let pFetchTimeout: number
 
 export default function useMeeting () {
   const route = useRoute()
-  const meetingRoles = useContextRoles('Meeting')
-  const meetingApi = meetingType.useContentApi()
+  const meetingRoles = useContextRoles('meeting')
+  const meetingApi = meetingType.getContentApi()
   const { user } = useAuthentication()
 
   function setMeeting (meeting: Meeting) {
@@ -99,8 +99,8 @@ export default function useMeeting () {
   }
 
   const meetingId = computed(() => Number(route.params.id))
-  const meeting = computed<Meeting | object>(() => meetings.get(meetingId.value) || {})
-  const meetingPath = computed(() => `/m/${meetingId.value}/${slugify('title' in meeting.value ? meeting.value.title : '-')}`)
+  const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value)) // Disable fallback || {})
+  const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
 
   const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value))
   function hasRole (role: MeetingRole, user?: number) {

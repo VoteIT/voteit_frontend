@@ -2,7 +2,7 @@
   <div>
     <h3>
       {{ list.title }}
-      <WorkflowState :state="list.state" content-type="speakerList" :pk="pk" :admin="canChange(list)" />
+      <WorkflowState :state="list.state" :content-type="speakerListType" :pk="pk" :admin="canChange(list)" />
     </h3>
     <div v-if="canStart(list)" class="btn-group">
       <btn icon="play_arrow" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(pk)" />
@@ -29,8 +29,9 @@ import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
 import rules from '@/contentTypes/speakerList/rules'
 
 import WorkflowState from './WorkflowState.vue'
-import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
+import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerList } from '@/contentTypes/types'
+import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 
 export default defineComponent({
   name: 'SpeakerList',
@@ -54,6 +55,7 @@ export default defineComponent({
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 
     return {
+      speakerListType,
       isActive,
       isOpen,
       queue,

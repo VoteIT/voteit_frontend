@@ -1,5 +1,5 @@
 <template>
-  <div class="discussion">
+  <Widget class="discussion">
     <div class="author"><user :pk="p.author" /></div>
     <div><Moment :date="p.created" /></div>
     <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
@@ -7,7 +7,7 @@
       <btn v-if="canChange(p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn v-if="canDelete(p)" sm icon="delete" @click="queryDelete()" />
     </div>
-  </div>
+  </Widget>
 </template>
 
 <script lang="ts">
@@ -34,7 +34,7 @@ export default defineComponent({
     Moment
   },
   setup (props) {
-    const channel = discussionPostType.useChannels()
+    const channel = discussionPostType.getChannel()
     const editing = ref(false)
     const t = inject('t') as CallableFunction
 
@@ -57,18 +57,11 @@ export default defineComponent({
 
 <style lang="sass" scoped>
 .discussion
-  margin-bottom: 1rem
-  background-color: var(--widget-bg)
-  border: var(--widget-border)
   border-left: 6px solid var(--discussion)
-  border-radius: 6px
-  padding: 10px
   .author
     font-weight: bold
   p
     padding-left: .5rem
     margin: .5rem 0
     white-space: pre-wrap
-  .btn-controls
-    text-align: right
 </style>

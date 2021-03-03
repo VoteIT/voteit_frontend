@@ -14,10 +14,9 @@ import { computed, defineComponent, inject, ref } from 'vue'
 
 import { dialogQuery } from '@/utils'
 
-import contentTypes from '@/contentTypes'
-
 import BtnDropdown from '../BtnDropdown.vue'
 import RichtextEditor from '../widgets/RichtextEditor.vue'
+import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
   name: 'AddContent',
@@ -28,9 +27,12 @@ export default defineComponent({
   props: {
     name: String,
     // For channels:
-    contextPk: Number,
+    contextPk: {
+      type: Number,
+      required: true
+    },
     contentType: {
-      type: String,
+      type: ContentType,
       required: true
     },
     minLength: {
@@ -45,11 +47,7 @@ export default defineComponent({
   setup (props) {
     const t = inject('t') as CallableFunction
     // Post (data update from channels)
-    const contentType = contentTypes[props.contentType]
-    if (!contentType) {
-      throw new Error(`"${props.contentType}" has no registered Content Type`)
-    }
-    const channel = contentType.useChannels()
+    const channel = props.contentType.getChannel()
     const submitting = ref(false)
     const text = ref('')
 

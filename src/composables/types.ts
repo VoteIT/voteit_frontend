@@ -42,6 +42,11 @@ export interface UserMeetingRoles {
   assigned: Set<MeetingRole>
 }
 
+export interface UserContextRoles<T=string> {
+  user: number,
+  assigned: Set<T>
+}
+
 // Internal representation. Maybe change this
 // FIXME
 export interface ContextRoles {
@@ -49,4 +54,13 @@ export interface ContextRoles {
   pk: number
   roles: string[]
   user_pk: number
+}
+
+export interface ContextRole {
+  model_natural_key: string
+  name: string
+  title: string
+  description: string
+  require_names?: string[]
+  predicate_info?: any
 }

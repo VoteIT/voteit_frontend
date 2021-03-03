@@ -1,18 +1,12 @@
-import { RestApiConfig } from '@/composables/types'
-import Channel from '../Channel'
-import ContentAPI from '../ContentAPI'
-import { ChannelConfig, Poll } from '../types'
-
-import useWorkflows from '../useWorkflows'
+import ContentType from '../ContentType'
+import { Poll } from '../types'
 
 import rules from './rules'
 import workflowStates from './workflowStates'
 
-export default {
-  naturalKey: 'poll.poll',
-  workflowStates,
+export default new ContentType<Poll>({
+  states: workflowStates,
   rules,
-  useChannels: (config?: ChannelConfig) => new Channel<Poll>('poll', config),
-  useContentApi: (config?: RestApiConfig) => new ContentAPI<Poll>('polls/', workflowStates, config),
-  useWorkflows: () => useWorkflows(workflowStates)
-}
+  channelName: 'poll',
+  restEndpoint: 'polls/'
+})

@@ -13,10 +13,10 @@ const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
 const currentlySpeaking = reactive<Map<number, number>>(new Map()) // Map list pk to a user pk
 const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
 
-speakerSystemType.useChannels()
+speakerSystemType.getChannel()
   .updateMap(speakerSystems)
 
-const listChannel = speakerListType.useChannels()
+const listChannel = speakerListType.getChannel()
   .updateMap(speakerLists)
   .on('order', (order: any) => {
     const { pk, queue, current } = order as SpeakerOrderUpdate

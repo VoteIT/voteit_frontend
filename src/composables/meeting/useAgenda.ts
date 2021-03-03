@@ -15,7 +15,7 @@ import TypedEvent from '@/utils/TypedEvent'
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaDeletedEvent = new TypedEvent<number>()
 
-const channel = agendaItemType.useChannels()
+const channel = agendaItemType.getChannel()
   .onChanged(agendaItem => agendaItems.set(agendaItem.pk, agendaItem))
   .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
 
@@ -28,7 +28,7 @@ agendaDeletedEvent.on(pk => {
 /*
 ** Clear agenda when leaving meeting.
 */
-meetingType.useChannels()
+meetingType.getChannel()
   .onLeave(pk => {
     for (const agendaItem of agendaItems.values()) {
       if (agendaItem.meeting === pk) {

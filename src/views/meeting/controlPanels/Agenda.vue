@@ -35,7 +35,7 @@ export default {
   setup () {
     const { getAgenda } = useAgenda()
     const { meetingId } = useMeeting()
-    const meetingAPI = meetingType.useContentApi()
+    const meetingAPI = meetingType.getContentApi()
     const { getState } = agendaItemType.useWorkflows()
 
     const agendaItems = computed({

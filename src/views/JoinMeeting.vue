@@ -29,7 +29,7 @@ export default defineComponent({
     const { meeting, meetingId, meetingPath, meetingApi, setMeeting } = useMeeting()
     const loader = useLoader('JoinMeeting')
     const router = useRouter()
-    const policyApi = accessPolicyType.useContentApi()
+    const policyApi = accessPolicyType.getContentApi()
     const policies = ref<AccessPolicy[]>([])
     const working = ref(false)
 

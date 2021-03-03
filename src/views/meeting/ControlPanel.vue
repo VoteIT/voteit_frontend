@@ -7,9 +7,9 @@
         {{ p.name }}
       </RouterLink>
     </nav>
-    <keep-alive>
-      <component ref="panelComponents" v-for="p in panels" :key="p.name" :is="p" v-show="currentPanel === p.path"/>
-    </keep-alive>
+    <div v-for="p in panels" :key="p.name">
+      <component ref="panelComponents" :is="p" v-if="currentPanel === p.path"/>
+    </div>
     <p v-if="!currentPanel">Select a tab... <Icon>arrow_upward</Icon></p>
   </div>
 </template>

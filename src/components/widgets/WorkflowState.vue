@@ -12,8 +12,8 @@
 import { computed, defineComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import useAlert from '@/composables/useAlert'
-import contentTypes from '@/contentTypes'
 import { WorkflowState } from '@/contentTypes/types'
+import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
   name: 'WorkflowState',
@@ -28,23 +28,19 @@ export default defineComponent({
       required: true
     },
     contentType: {
-      type: String,
+      type: ContentType,
       required: true
     }
   },
   setup (props) {
-    const contentType = contentTypes[props.contentType]
-    if (!contentType) {
-      throw new Error(`${props.contentType} has no registered Content Type`)
-    }
-    const contentApi = contentType.useContentApi()
-    const { getState } = contentType.useWorkflows()
+    const contentApi = props.contentType.getContentApi()
+    const { getState } = props.contentType.useWorkflows()
     const statesAvailable = ref<WorkflowState[] | null>(null)
     const isOpen = ref(false)
     const { alert } = useAlert()
 
     const currentState = computed(
-      () => getState(props.state)
+      () => getState(props.state) as WorkflowState // Coersion might not work?
     )
 
     function focusButton (where: HTMLElement | null) {
@@ -80,8 +76,11 @@ export default defineComponent({
     }
 
     function makeTransition (state: WorkflowState) {
-      contentApi.transition(props.pk, state.transition)
-        .then(() => nextTick(toggle))
+      if (state.transition) {
+        contentApi.transition(props.pk, state.transition)
+          .then(() => nextTick(toggle))
+      }
+      throw new Error(`Transition not found to state ${state.state}`)
     }
 
     watch(() => props.state, () => { statesAvailable.value = null })

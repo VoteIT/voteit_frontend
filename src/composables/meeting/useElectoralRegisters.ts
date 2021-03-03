@@ -5,7 +5,7 @@ import { ElectoralRegister } from '@/contentTypes/types'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive<Map<number, Set<number> | null>>(new Map())
-const registerApi = electoralRegisterType.useContentApi()
+const registerApi = electoralRegisterType.getContentApi()
 
 export default function useElectoralRegisters () {
   function getRegister (pk: number) {

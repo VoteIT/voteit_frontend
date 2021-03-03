@@ -9,10 +9,10 @@ import { Presence, PresenceCheck } from '@/contentTypes/types'
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
 
-presenceCheckType.useChannels()
+presenceCheckType.getChannel()
   .updateMap(presenceChecks)
 
-const channel = presenceType.useChannels()
+const channel = presenceType.getChannel()
   .updateMap(presence)
 
 export default function usePresence () {

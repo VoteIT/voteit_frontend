@@ -2,7 +2,7 @@
   <div class="poll">
     <div class="head">
       <h2>{{ poll.title }}</h2>
-      <WorkflowState :state="poll.state" :admin="canChange(poll)" content-type="poll" :pk="poll.pk" />
+      <WorkflowState :state="poll.state" :admin="canChange(poll)" :content-type="pollType" :pk="poll.pk" />
     </div>
     <div class="body">
       <btn @click="vote" icon="ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
@@ -64,7 +64,7 @@ export default defineComponent({
     Proposal
   },
   setup (props) {
-    const channels = pollType.useChannels()
+    const channels = pollType.getChannel()
     const { openModal } = useModal()
     const { getProposal } = useProposals()
     const { getPollStatus } = usePolls()
@@ -105,6 +105,7 @@ export default defineComponent({
     })
 
     return {
+      pollType,
       ...pollType.rules,
       active,
       vote,

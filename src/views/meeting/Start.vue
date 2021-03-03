@@ -2,7 +2,7 @@
   <main v-if="meeting.pk">
     <h1>{{ meeting.title }}</h1>
     <div class="btn-controls">
-      <WorkflowState :admin="canChange(meeting)" :state="meeting.state" contentType="meeting" :pk="meeting.pk" />
+      <WorkflowState :admin="canChange(meeting)" :state="meeting.state" :contentType="meetingType" :pk="meeting.pk" />
       <btn v-if="canChange(meeting)" sm icon="edit" :active="editingBody" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
     </div>
     <Richtext :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
@@ -27,10 +27,11 @@ export default defineComponent({
   },
   setup () {
     const editingBody = ref(false)
-    const api = meetingType.useContentApi()
+    const api = meetingType.getContentApi()
     const { meeting } = useMeeting()
 
     return {
+      meetingType,
       ...meetingType.rules,
       meeting,
       editingBody,

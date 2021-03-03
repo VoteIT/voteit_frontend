@@ -1,7 +1,6 @@
-import { MeetingRoles, RestApiConfig } from '@/composables/types'
-import ContentAPI from '../ContentAPI'
+import { MeetingRoles } from '@/composables/types'
+import ContentType from '../ContentType'
 
-export default {
-  naturalKey: 'auth.user',
-  useContentApi: (config?: RestApiConfig) => new ContentAPI<MeetingRoles>('meeting-roles/', undefined, config)
-}
+export default new ContentType<MeetingRoles>({
+  restEndpoint: 'meeting-roles/'
+})

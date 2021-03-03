@@ -6,11 +6,11 @@ import { orderBy } from '@/utils'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
-meetingType.useChannels()
+meetingType.getChannel()
   .updateMap(meetings)
 
 export default function useMeetings () {
-  const meetingApi = meetingType.useContentApi()
+  const meetingApi = meetingType.getContentApi()
 
   const orderedMeetings = computed(() => {
     return orderBy([...meetings.values()], 'title')

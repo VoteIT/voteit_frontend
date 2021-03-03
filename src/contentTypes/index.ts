@@ -1,7 +1,5 @@
-import TypedEvent from '@/utils/TypedEvent'
 import accessPolicy from './accessPolicy'
 import agendaItem from './agendaItem'
-import Channel from './Channel'
 import devLogin from './devLogin'
 import discussionPost from './discussionPost'
 import electoralRegister from './electoralRegister'
@@ -14,22 +12,7 @@ import proposal from './proposal'
 import speakerList from './speakerList'
 import speakerSystem from './speakerSystem'
 
-import { WorkflowState } from './types'
-
-interface ContentType {
-  naturalKey: string
-  workflowState?: WorkflowState[]
-  rules?: any
-  useWorkflows?: any
-  useChannels?: any
-  useContentApi?: any
-}
-
-type ContentTypes = {
-  [ key: string ] : ContentType
-}
-
-const contentTypes: ContentTypes = {
+export default {
   accessPolicy,
   agendaItem,
   devLogin,
@@ -44,5 +27,3 @@ const contentTypes: ContentTypes = {
   speakerList,
   speakerSystem
 }
-
-export default contentTypes

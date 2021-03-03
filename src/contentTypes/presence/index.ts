@@ -1,7 +1,7 @@
 import Channel from '../Channel'
-import { ChannelConfig } from '../types'
+import ContentType from '../ContentType'
+import { Presence } from '../types'
 
-export default {
-  naturalKey: 'presence.presence',
-  useChannels: (config?: ChannelConfig) => new Channel('presence', config)
-}
+export default new ContentType<Presence>({
+  channelName: 'presence'
+})

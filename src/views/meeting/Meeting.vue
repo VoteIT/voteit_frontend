@@ -1,5 +1,5 @@
 <template>
-  <div id="meeting">
+  <div id="meeting" v-if="meeting">
     <header>
       <nav>
         <RouterLink to="/">{{ t('home.home') }}</RouterLink>
@@ -89,7 +89,7 @@ export default defineComponent({
     const loader = useLoader('Meeting')
     const router = useRouter()
     const { meeting, meetingId, meetingPath, setMeeting, meetingApi, hasRole } = useMeeting()
-    const channel = meetingType.useChannels()
+    const channel = meetingType.getChannel()
     const { user } = useAuthentication()
 
     const presence = usePresence()
@@ -157,7 +157,7 @@ export default defineComponent({
         meetingApi.retrieve(meetingId.value)
           .then(({ data }) => {
             if (!data.current_user_roles) {
-              router.push(`/join/${meetingId.value}/${slugify('title' in meeting.value ? meeting.value.title : '-')}`)
+              router.push(`/join/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
             }
             setMeeting(data)
             enterRoleChannel()

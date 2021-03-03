@@ -48,7 +48,7 @@ export default defineComponent({
     const editorElement = ref<HTMLElement | null>(null)
     const completionsElement = ref(null)
 
-    const rolesApi = meetingRoleType.useContentApi()
+    const rolesApi = meetingRoleType.getContentApi()
     const { meetingId } = useMeeting()
 
     function tagObject (tagName: string) {

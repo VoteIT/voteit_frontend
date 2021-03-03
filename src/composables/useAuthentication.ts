@@ -10,7 +10,7 @@ const isAuthenticated = ref(false)
 const authToken = ref<string | null>(null)
 
 export default function useAuthentication () {
-  const contentApi = devLoginType.useContentApi()
+  const contentApi = devLoginType.getContentApi()
 
   async function authenticate (usr: DevUser) {
     console.log('Authenticating', usr.username)

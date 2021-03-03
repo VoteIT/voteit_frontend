@@ -10,7 +10,7 @@ import { agendaDeletedEvent } from './useAgenda'
 const polls = reactive<Map<number, Poll>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
-pollType.useChannels()
+pollType.getChannel()
   .updateMap(polls)
   .onStatus((_: any) => {
     const item = _ as PollStatus
@@ -24,7 +24,7 @@ pollType.useChannels()
 /*
 ** Clear polls when leaving meeting.
 */
-meetingType.useChannels()
+meetingType.getChannel()
   .onLeave(pk => {
     for (const poll of polls.values()) {
       if (poll.meeting === pk) {

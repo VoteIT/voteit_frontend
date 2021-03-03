@@ -10,7 +10,7 @@ import { agendaDeletedEvent } from './useAgenda'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 
-discussionPostType.useChannels()
+discussionPostType.getChannel()
   .updateMap(discussions, dateify)
 
 function deleteForAgendaItem (uriOrPk: number | string) {
@@ -24,7 +24,7 @@ function deleteForAgendaItem (uriOrPk: number | string) {
 // Automatically clear proposals for deleted (or made private) agenda_items
 agendaDeletedEvent.on(deleteForAgendaItem)
 // Automatically clear proposals for agenda item when unsubscribed
-agendaItemType.useChannels().onLeave(deleteForAgendaItem)
+agendaItemType.getChannel().onLeave(deleteForAgendaItem)
 
 export default function useDiscussions () {
   function getAgendaDiscussions (agendaItem: number) {

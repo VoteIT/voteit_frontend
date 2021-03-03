@@ -34,7 +34,7 @@ export default defineComponent({
   },
   emits: ['submit'],
   setup () {
-    const contentApi = userType.useContentApi()
+    const contentApi = userType.getContentApi()
     const query = ref('')
     const results = ref<User[]>([])
     const selected = ref<User | null>(null)

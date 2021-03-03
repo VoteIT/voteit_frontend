@@ -1,7 +1,7 @@
 import Channel from '../Channel'
-import { ChannelConfig } from '../types'
+import ContentType from '../ContentType'
+import { PresenceCheck } from '../types'
 
-export default {
-  naturalKey: 'presence.presencecheck',
-  useChannels: (config?: ChannelConfig) => new Channel('presence_system', config)
-}
+export default new ContentType<PresenceCheck>({
+  channelName: 'presence_system'
+})

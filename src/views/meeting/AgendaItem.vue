@@ -2,9 +2,9 @@
   <div v-if="agendaItem">
     <h1>{{ agendaItem.title }}</h1>
     <div class="btn-controls">
-      <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaRules.canChange(agendaItem)" content-type="agendaItem" :pk="agendaId" />
-      <btn v-if="pollRules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
-      <btn v-if="agendaRules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
+      <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :pk="agendaId" />
+      <btn v-if="pollType.rules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
+      <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
     </div>
     <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div class="spaker-lists" v-if="hasSpeakerSystems">
@@ -20,8 +20,8 @@
           </li>
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
-        <AddContent v-if="proposalRules.canAdd(agendaItem)" :name="t('proposal.proposal')"
-          :context-pk="agendaId" content-type="proposal"/>
+        <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
+          :context-pk="agendaId" :content-type="proposalType"/>
       </div>
       <div class="col-sm-6">
         <h2>{{ t('discussion.discussions') }}</h2>
@@ -31,8 +31,8 @@
           </li>
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
-        <AddContent v-if="discussionRules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-          :context-pk="agendaId" content-type="discussionPost"/>
+        <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
+          :context-pk="agendaId" :content-type="discussionPostType"/>
       </div>
     </div>
   </div>
@@ -56,10 +56,10 @@ import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
-import agendaType from '@/contentTypes/agendaItem'
-import discussionRules from '@/contentTypes/discussionPost/rules'
-import pollRules from '@/contentTypes/poll/rules'
-import proposalRules from '@/contentTypes/proposal/rules'
+import agendaItemType from '@/contentTypes/agendaItem'
+import discussionPostType from '@/contentTypes/discussionPost'
+import pollType from '@/contentTypes/poll'
+import proposalType from '@/contentTypes/proposal'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -69,7 +69,7 @@ export default defineComponent({
     const proposals = useProposals()
     const { meetingPath, meetingId } = useMeeting()
     const { agendaId, agendaItem } = useAgenda()
-    const channel = agendaType.useChannels()
+    const channel = agendaItemType.getChannel()
 
     const sortedProposals = computed(() => {
       const ps = proposals.getAgendaProposals(agendaId.value)
@@ -97,10 +97,10 @@ export default defineComponent({
       channel,
       editingBody,
 
-      proposalRules,
-      discussionRules,
-      pollRules,
-      agendaRules: agendaType.rules
+      proposalType,
+      discussionPostType,
+      pollType,
+      agendaItemType
     }
   },
   components: {

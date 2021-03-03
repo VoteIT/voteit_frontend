@@ -1,14 +1,12 @@
 import Channel from '../Channel'
-import { ChannelConfig, SpeakerList } from '../types'
-import useWorkflows from '../useWorkflows'
+import ContentType from '../ContentType'
+import { SpeakerList } from '../types'
 
 import rules from './rules'
-import workflowStates from './workflowStates'
+import states from './workflowStates'
 
-export default {
-  naturalKey: 'speaker.speakerlist',
-  workflowStates,
+export default new ContentType<SpeakerList>({
+  states,
   rules,
-  useChannels: (config?: ChannelConfig) => new Channel<SpeakerList>('speaker_list', config),
-  useWorkflows: () => useWorkflows(workflowStates)
-}
+  channelName: 'speaker_list'
+})

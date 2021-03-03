@@ -1,33 +1,41 @@
+export enum MeetingState {
+  Upcoming = 'upcoming',
+  Ongoing = 'ongoing',
+  Closed = 'closed',
+  Archiving = 'archiving',
+  Archived = 'archived'
+}
+
 export default [
   {
     transition: 'upcoming',
     icon: 'pause',
-    state: 'upcoming',
+    state: MeetingState.Upcoming,
     name: 'Upcoming'
   },
   {
     transition: 'ongoing',
     icon: 'play_arrow',
-    state: 'ongoing',
+    state: MeetingState.Ongoing,
     name: 'Ongoing'
   },
   {
     transition: 'close',
     icon: 'close',
-    state: 'closed',
+    state: MeetingState.Closed,
     name: 'Upcoming'
   },
   {
     transition: 'request_archiving',
     icon: 'archive',
-    state: 'archiving',
+    state: MeetingState.Archiving,
     name: 'Archiving',
     isFinal: true
   },
   {
     transition: 'archive',
     icon: 'archive',
-    state: 'archived',
+    state: MeetingState.Archived,
     name: 'Archived',
     isFinal: true
   }

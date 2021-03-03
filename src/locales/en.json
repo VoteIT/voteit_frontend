@@ -5,6 +5,7 @@
   "continue": "Continue",
   "create": "Create",
   "edit": "Edit",
+  "name": "Name",
   "no": "No",
   "options": "Options",
   "post": "Post",
@@ -115,6 +116,11 @@
   },
   "speaker": {
     "lists": "No speaker lists | Speaker list | Speaker lists",
-    "settings": "Speaker List settings"
+    "safePositions": "Safe positions",
+    "settings": "Speaker List settings",
+    "systemAdd": "Add List System",
+    "systemManage": "Manage List System",
+    "systemMethod": "Priority method",
+    "visible": "Visible to all participants"
   }
 }

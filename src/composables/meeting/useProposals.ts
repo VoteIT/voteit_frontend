@@ -11,11 +11,11 @@ import { agendaDeletedEvent, agendaItems } from './useAgenda'
 
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
-proposalType.useChannels()
+proposalType.getChannel()
   .updateMap(proposals, dateify)
 
 // Automatically clear proposals for meeting when leaving.
-meetingType.useChannels()
+meetingType.getChannel()
   .onLeave(meeting => {
     for (const p of proposals.values()) {
       const ai = agendaItems.get(p.agenda_item)

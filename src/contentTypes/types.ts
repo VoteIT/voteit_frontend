@@ -11,6 +11,11 @@ export enum MeetingRole {
   Moderator = 'moderator'
 }
 
+export enum SpeakerSystemRole {
+  Speaker = 'speaker',
+  ListModerator = 'list_moderator'
+}
+
 export interface WorkflowState {
   state: string
   icon: string
@@ -91,12 +96,17 @@ export interface SpeakerOrderUpdate {
   current: number // Current speaker
 }
 
+export enum SpeakerSystemMethod {
+  Simple = 'simple',
+  Priority = 'priority',
+}
+
 export interface SpeakerSystem extends BaseContent {
   active: boolean
   active_list?: number
   archived: boolean
   meeting: number
-  method_name: string
+  method_name: SpeakerSystemMethod
   safe_positions?: number
   settings: object // TODO
 }

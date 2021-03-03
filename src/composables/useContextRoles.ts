@@ -4,10 +4,9 @@ import Channel from '@/contentTypes/Channel'
 import { SuccessMessage } from '@/utils/types'
 
 import useAuthentication from './useAuthentication'
-import { ContextRoles, UserMeetingRoles } from './types'
-import { MeetingRole } from '@/contentTypes/types'
+import { ContextRoles, UserContextRoles } from './types'
 
-const contextRoles = reactive<Map<string, Set<MeetingRole>>>(new Map())
+const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
 type keyComponent = string | number
 function getRoleKey (...components: keyComponent[]) {
@@ -16,33 +15,34 @@ function getRoleKey (...components: keyComponent[]) {
   return components.join('/')
 }
 
-new Channel('roles')
+new Channel<ContextRoles>('roles')
   .onUpdate((message: SuccessMessage) => {
-    const t = message.t
-    const p = message.p as ContextRoles
-    const key = getRoleKey(p.model, p.pk, p.user_pk)
-    if (!contextRoles.has(key)) contextRoles.set(key, new Set())
-    const roleStore = contextRoles.get(key) as Set<string>
-    switch (t) {
-      case 'roles.removed':
-        p.roles.forEach(r => roleStore.delete(r))
-        break
-      case 'roles.added':
-        p.roles.forEach(r => roleStore.add(r))
-        break
+    if (['roles.removed', 'roles.added'].includes(message.t)) {
+      const p = message.p as ContextRoles
+      const key = getRoleKey(p.model.toLowerCase(), p.pk, p.user_pk)
+      if (!contextRoles.has(key)) contextRoles.set(key, new Set())
+      const roleStore = contextRoles.get(key) as Set<string>
+      switch (message.t) {
+        case 'roles.removed':
+          p.roles.forEach(r => roleStore.delete(r))
+          break
+        case 'roles.added':
+          p.roles.forEach(r => roleStore.add(r))
+          break
+      }
     }
   })
 
-export default function useContextRoles (model: string) {
+export default function useContextRoles (contentType: string) {
   const { user } = useAuthentication()
 
   function getUserRoles (pk: number, userId?: number) {
-    const key = getRoleKey(model, pk, userId || user.value.pk)
+    const key = getRoleKey(contentType, pk, userId || user.value.pk)
     return contextRoles.get(key) || new Set()
   }
 
-  function getRoleCount (pk: number, roleName: MeetingRole) {
-    const key = getRoleKey(model, pk, '')
+  function getRoleCount (pk: number, roleName: string) {
+    const key = getRoleKey(contentType, pk, '')
     let count = 0
     for (const [k, v] of contextRoles.entries()) {
       if (k.startsWith(key) && v.has(roleName)) { count++ }
@@ -52,11 +52,11 @@ export default function useContextRoles (model: string) {
 
   function set (pk: number, userId: number, roles: string[]) {
     // Sets or replaces roles completely
-    const key = getRoleKey(model, pk, userId)
-    contextRoles.set(key, new Set(roles as MeetingRole[]))
+    const key = getRoleKey(contentType, pk, userId)
+    contextRoles.set(key, new Set(roles))
   }
 
-  function hasRole (pk: number, roleName: MeetingRole | MeetingRole[], user?: number) {
+  function hasRole (pk: number, roleName: string | string[], user?: number) {
     const userRoles = getUserRoles(pk, user)
     if (typeof roleName === 'string') {
       return userRoles.has(roleName)
@@ -68,15 +68,15 @@ export default function useContextRoles (model: string) {
     }
   }
 
-  function getAll (pk: number) {
-    const contextKey = getRoleKey(model, pk) + '/'
-    const results: UserMeetingRoles[] = []
+  function getAll<T> (pk: number): UserContextRoles<T>[] {
+    const contextKey = getRoleKey(contentType, pk) + '/'
+    const results: UserContextRoles<T>[] = []
     for (const [key, assigned] of contextRoles.entries()) {
       if (key.startsWith(contextKey)) {
         const user = Number(key.split('/')[2])
         results.push({
           user,
-          assigned
+          assigned: assigned as any as Set<T>
         })
       }
     }

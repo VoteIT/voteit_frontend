@@ -4,6 +4,8 @@ import { DefaultMap, Socket } from '@/utils'
 import { SuccessMessage } from '@/utils/types'
 
 import { ChannelConfig, SchemaType } from './types'
+import { ContextRole } from '@/composables/types'
+import { AvailableRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
 
 type LeaveHandler = (uriOrPk: string | number) => void
 type UpdateHandler<T> = (message: SuccessMessage) => void
@@ -22,6 +24,7 @@ const updateHandlers = new Map<string, UpdateHandler<any>>()
 const leaveHandlers = new DefaultMap<string, LeaveHandler[]>(() => [])
 const methodHanders = new DefaultMap<string, Map<string, MethodHandler<any>>>(() => new Map())
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
+const rolesAvailable = new Map<string, ContextRole[]>()
 
 function handleMessage (data: SuccessMessage) {
   const [contentType, method] = data.t.split('.')
@@ -67,10 +70,14 @@ socket.addEventListener('close', () => {
 
 export default class Channel<T> {
   private _contentType?: string
+  private hasRoles?: boolean
   private config: ChannelConfig
+  private contextRoles: any
 
   get contentType (): string {
-    if (typeof this._contentType === 'string') return this._contentType
+    if (this._contentType) {
+      return this._contentType
+    }
     throw new Error('Instantiate using useChannels(contentType) to use this method')
   }
 
@@ -78,8 +85,9 @@ export default class Channel<T> {
     return socketState
   }
 
-  constructor (contentType?: string, config?: ChannelConfig) {
+  constructor (contentType?: string, config?: ChannelConfig, hasRoles?: boolean) {
     this._contentType = contentType
+    this.hasRoles = hasRoles
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
   }
 
@@ -165,7 +173,7 @@ export default class Channel<T> {
     for (const cb of leaveHandlers.get(contentType) || []) {
       cb(uri)
     }
-}
+  }
 
   async leave (uriOrPk: string | number, config?: ChannelConfig) {
     if (uriOrPk) {
@@ -211,6 +219,54 @@ export default class Channel<T> {
   add = (contextPk: number, kwargs: object, config?: ChannelConfig) => this.methodCall('add', { pk: contextPk, kwargs }, config)
   change = (pk: number, kwargs: object, config?: ChannelConfig) => this.methodCall('change', { pk, kwargs }, config)
   delete = (pk: number, config?: ChannelConfig) => this.methodCall('delete', { pk }, config)
+
+  checkHasRoles (): void {
+    if (!this.hasRoles) {
+      throw new Error(`Content Type ${this._contentType} is not configured to have context roles.`)
+    }
+  }
+
+  async getAvailableRoles (): Promise<ContextRole[]> {
+    this.checkHasRoles()
+    let roles = rolesAvailable.get(this.contentType)
+    if (!roles) {
+      const message: RolesAvailableMessage = { model: this.contentType }
+      const response = await this.call('roles.available', message)
+      const payload = response.p as AvailableRolesPayload
+      roles = payload.roles
+      rolesAvailable.set(this.contentType, payload.roles)
+    }
+    return roles
+  }
+
+  async fetchRoles (pk: number, users?: number[]) {
+    this.checkHasRoles()
+    const message: RolesGetMessage = {
+      model: this.contentType,
+      pk,
+      filter_userids: users
+    }
+    return this.call('roles.get', message)
+  }
+
+  private changeRoles (method: string, pk: number, user: number, roles: string[]) {
+    this.checkHasRoles()
+    const message: RoleChangeMessage = {
+      model: this.contentType,
+      pk,
+      userids: [user],
+      roles
+    }
+    this.call(method, message)
+  }
+
+  addRoles (pk: number, user: number, ...roles: string[]) {
+    this.changeRoles('roles.add', pk, user, roles)
+  }
+
+  removeRoles (pk: number, user: number, ...roles: string[]) {
+    this.changeRoles('roles.remove', pk, user, roles)
+  }
 
   getSchema (name: string, type = SchemaType.Incoming) {
     return this.post('schema.get_' + type, { message_type: name })

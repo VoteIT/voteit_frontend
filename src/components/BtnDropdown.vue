@@ -2,7 +2,7 @@
   <div class="btn-dropdown" :class="{ dark }">
     <btn :class="{ isOpen }" @click="isOpen = !isOpen" icon="arrow_drop_down">{{ title }}</btn>
     <div v-show="isOpen">
-      <slot />
+      <slot v-if="!lazy || isOpen" />
     </div>
   </div>
 </template>
@@ -15,7 +15,8 @@ export default defineComponent({
   emits: ['open', 'close'],
   props: {
     title: String,
-    dark: Boolean
+    dark: Boolean,
+    lazy: Boolean
   },
   setup (props, { emit }) {
     const isOpen = ref(false)

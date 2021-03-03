@@ -78,7 +78,7 @@ export default defineComponent({
   },
   setup () {
     const router = useRouter()
-    const pollAPI = pollType.useContentApi()
+    const pollAPI = pollType.getContentApi()
     // const restApi = useRestApi()
     const proposals = useProposals()
     const { agendaId, agendaItem, getAgenda } = useAgenda()

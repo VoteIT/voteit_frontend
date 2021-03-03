@@ -37,7 +37,7 @@ export default defineComponent({
     const { getAgenda } = useAgenda()
     const { meeting, meetingId, meetingPath, hasRole } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
-    const agendaApi = agendaItemType.useContentApi()
+    const agendaApi = agendaItemType.getContentApi()
     const { getState } = agendaItemType.useWorkflows()
 
     // Add AgendaItem
