@@ -2,22 +2,22 @@
   <div>
     <h3>
       {{ list.title }}
-      <WorkflowState :state="list.state" :content-type="speakerListType" :pk="pk" :admin="canChange(list)" />
+      <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
+      <Btn sm :disabled="isActive" :icon="isActive ? 'toggle_on' : 'toggle_off'" :title="isActive ? 'List is active' : 'Set active'" @click="speakers.setActiveList(list)" />
     </h3>
     <div v-if="canStart(list)" class="btn-group">
-      <btn icon="play_arrow" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(pk)" />
-      <btn icon="stop" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(pk)" />
-      <btn :disabled="isActive" :icon="isActive ? 'toggle_on' : 'toggle_off'" :title="isActive ? 'List is active' : 'Set active'" @click="speakers.setActiveList(pk)" />
+      <Btn icon="play_arrow" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)" />
+      <Btn icon="stop" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)" />
     </div>
     <div v-if="isOpen">
-      <btn v-if="inList" icon="undo" @click="speakers.leaveList(pk)">Leave list</btn>
-      <btn v-else icon="add" @click="speakers.enterList(pk)">Enter list</btn>
+      <Btn v-if="inList" icon="undo" @click="speakers.leaveList(list)">Leave list</Btn>
+      <Btn v-else icon="add" @click="speakers.enterList(list)">Enter list</Btn>
     </div>
     <div v-if="currentSpeaker">
-      Speaking: <user :pk="currentSpeaker" />
+      Speaking: <User :pk="currentSpeaker.userid" /> <Moment in-seconds :date="currentSpeaker.started" />
     </div>
     <ol v-if="queue.length">
-      <li v-for="userPk in queue" :key="userPk"><user :pk="userPk"/></li>
+      <li v-for="userPk in queue" :key="userPk"><User :pk="userPk"/></li>
     </ol>
   </div>
 </template>
@@ -32,6 +32,7 @@ import WorkflowState from './WorkflowState.vue'
 import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerList } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
+import Moment from './Moment.vue'
 
 export default defineComponent({
   name: 'SpeakerList',
@@ -42,15 +43,16 @@ export default defineComponent({
     }
   },
   components: {
-    WorkflowState
+    WorkflowState,
+    Moment
   },
   setup (props) {
     const speakers = useSpeakerLists()
 
-    const listSystem = computed(() => props.list && speakers.getSystem(props.list.list_system))
-    const queue = computed(() => speakers.getQueue(props.list.pk))
-    const currentSpeaker = computed(() => speakers.getCurrent(props.list.pk))
-    const inList = computed(() => speakers.userInList(props.list.pk))
+    const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
+    const queue = computed(() => speakers.getQueue(props.list))
+    const currentSpeaker = computed(() => speakers.getCurrent(props.list))
+    const inList = computed(() => speakers.userInList(props.list))
     // eslint-disable-next-line camelcase
     const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)

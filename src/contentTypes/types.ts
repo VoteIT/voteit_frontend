@@ -86,7 +86,7 @@ export interface DiscussionPost {
 }
 
 export interface SpeakerList extends StateContent {
-  list_system: number
+  speaker_system: number
   agenda_item: number
 }
 

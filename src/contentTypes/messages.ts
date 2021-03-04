@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { ContextRole } from '@/composables/types'
 
 export interface RoleChangeMessage {
@@ -24,4 +25,18 @@ export interface ContextRolesPayload {
 
 export interface AvailableRolesPayload {
   roles: ContextRole[]
+}
+
+export interface SpeakerListAddMessage {
+  title: string
+  speaker_system: number
+  agenda_item: number
+}
+
+export interface SpeakerStartStopMessage {
+  pk: number
+  seconds?: number
+  speaker_list: number
+  started: string | Date
+  userid: number
 }

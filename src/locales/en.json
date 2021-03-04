@@ -115,6 +115,7 @@
     "reconnectingFailed": "Couldn't establish websocket connection"
   },
   "speaker": {
+    "addListToSystem": "New list ({title})",
     "lists": "No speaker lists | Speaker list | Speaker lists",
     "safePositions": "Safe positions",
     "settings": "Speaker List settings",

@@ -3,28 +3,40 @@
 </template>
 
 <script lang="ts">
-import { onBeforeUnmount, onBeforeMount, ref, defineComponent } from 'vue'
+import { onBeforeUnmount, onBeforeMount, ref, defineComponent, PropType } from 'vue'
 import moment from 'moment'
 
 export default defineComponent({
   name: 'Moment',
   props: {
     date: {
-      type: Date,
+      type: Date as PropType<Date>,
       required: true
-    }
+    },
+    inSeconds: Boolean
   },
   setup (props) {
     let intervalId: number
     const fromNow = ref('')
 
+    const digits = (n: number) => n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
+
     function updateFromNow () {
-      fromNow.value = moment(props.date).fromNow()
+      if (props.inSeconds) {
+        const duration = moment.duration(new Date().getTime() - props.date.getTime())
+        if (duration.hours()) {
+          fromNow.value = `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
+        } else {
+          fromNow.value = `${duration.minutes()}:${digits(duration.seconds())}`
+        }
+      } else {
+        fromNow.value = moment(props.date).fromNow()
+      }
     }
 
     onBeforeMount(() => {
       updateFromNow()
-      intervalId = setInterval(updateFromNow, 60000)
+      intervalId = setInterval(updateFromNow, props.inSeconds ? 1000 : 60000)
     })
 
     onBeforeUnmount(() => {

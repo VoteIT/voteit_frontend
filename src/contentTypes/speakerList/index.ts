@@ -8,5 +8,6 @@ import states from './workflowStates'
 export default new ContentType<SpeakerList>({
   states,
   rules,
-  channelName: 'speaker_list'
+  channelName: 'speaker_list',
+  restEndpoint: 'speaker-lists/'
 })

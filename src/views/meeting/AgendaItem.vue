@@ -7,8 +7,13 @@
       <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
     </div>
     <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
-    <div class="spaker-lists" v-if="hasSpeakerSystems">
+    <div class="speaker-lists" v-if="speakerSystems.length">
       <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
+      <div class="btn-controls">
+        <template v-for="system in speakerSystems" :key="system.pk">
+          <Btn v-if="speakerListType.rules.canAdd(system)" @click="addSpeakerList(system)" icon="add">{{ t('speaker.addListToSystem', system) }}</Btn>
+        </template>
+      </div>
       <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
     </div>
     <div class="row">
@@ -41,7 +46,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 
-import { orderBy } from '@/utils'
+import { openAlertEvent, orderBy } from '@/utils'
 
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
@@ -60,6 +65,9 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
 import pollType from '@/contentTypes/poll'
 import proposalType from '@/contentTypes/proposal'
+import speakerListType from '@/contentTypes/speakerList'
+import { SpeakerSystem } from '@/contentTypes/types'
+import { SpeakerListAddMessage } from '@/contentTypes/messages'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -79,10 +87,7 @@ export default defineComponent({
     const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value))
     const { getAgendaSpeakerLists, getSystems } = useSpeakerLists()
     const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value))
-
-    const hasSpeakerSystems = computed(() => {
-      return !!getSystems(meetingId.value).length
-    })
+    const speakerSystems = computed(() => getSystems(meetingId.value))
 
     const editingBody = ref(false)
 
@@ -97,22 +102,34 @@ export default defineComponent({
       return tags
     })
 
+    function addSpeakerList (system: SpeakerSystem) {
+      openAlertEvent.emit('Not Implemented')
+      const listData: SpeakerListAddMessage = {
+        title: agendaItem.value?.title ?? '---',
+        speaker_system: system.pk,
+        agenda_item: agendaId.value
+      }
+      speakerListType.getContentApi().add(listData)
+    }
+
     return {
-      meetingPath,
       agendaId,
       agendaItem,
-      sortedProposals,
-      sortedDiscussions,
-      hasSpeakerSystems,
-      speakerLists,
+      allTags,
       channel,
       editingBody,
+      meetingPath,
+      sortedProposals,
+      sortedDiscussions,
+      speakerLists,
+      speakerSystems,
+      addSpeakerList,
 
-      proposalType,
+      agendaItemType,
       discussionPostType,
       pollType,
-      agendaItemType,
-      allTags
+      proposalType,
+      speakerListType
     }
   },
   components: {

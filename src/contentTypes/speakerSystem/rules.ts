@@ -20,6 +20,10 @@ function isArchived (system: SpeakerSystem) {
   return system.state === SpeakerSystemState.Archived
 }
 
+function isActive (system: SpeakerSystem) {
+  return system.state === SpeakerSystemState.Active
+}
+
 function canAdd (meeting: Meeting) {
   return meetingRules.isModerator(meeting) && meetingRules.isActive(meeting)
 }
@@ -30,6 +34,11 @@ function canDelete (system: SpeakerSystem) {
 }
 
 export default {
+  isActive,
+  isArchived,
+  isModerator,
+  isSpeaker,
+
   canAdd,
   canDelete
 }

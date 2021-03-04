@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import wu from 'wu'
 
+import { dateify } from '@/utils'
 import speakerListType from '@/contentTypes/speakerList'
 import speakerSystemType from '@/contentTypes/speakerSystem'
 
@@ -8,11 +9,13 @@ import useAuthentication from '../useAuthentication'
 
 import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem } from '@/contentTypes/types'
 import { SpeakerSystemState } from '@/contentTypes/speakerSystem/workflowStates'
+import Channel from '@/contentTypes/Channel'
+import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 
-const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
-const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
-const currentlySpeaking = reactive<Map<number, number>>(new Map()) // Map list pk to a user pk
-const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
+export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
+export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
+export const currentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map list pk to current speaker messages
+export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
 
 speakerSystemType.getChannel()
   .updateMap(speakerSystems)
@@ -22,7 +25,15 @@ const listChannel = speakerListType.getChannel()
   .on('order', (order: any) => {
     const { pk, queue, current } = order as SpeakerOrderUpdate
     speakerQueues.set(pk, queue)
-    currentlySpeaking.set(pk, current)
+    // currentlySpeaking.set(pk, current)
+  })
+
+new Channel<SpeakerStartStopMessage>('speaker')
+  .on('started', speaking => {
+    currentlySpeaking.set(speaking.speaker_list, dateify(speaking, 'started'))
+  })
+  .on('stopped', stopped => {
+    currentlySpeaking.delete(stopped.speaker_list)
   })
 
 export default function useSpeakerLists () {
@@ -51,43 +62,46 @@ export default function useSpeakerLists () {
   function getList (pk: number) {
     return speakerLists.get(pk)
   }
-  function getQueue (pk: number) {
-    return speakerQueues.get(pk) || []
+  function getQueue (list: SpeakerList) {
+    return speakerQueues.get(list.pk) || []
   }
-  function getCurrent (pk: number) {
-    return currentlySpeaking.get(pk)
+  function getCurrent (list: SpeakerList) {
+    return currentlySpeaking.get(list.pk)
   }
 
-  function enterList (pk: number) {
-    return listChannel.methodCall('enter', { pk })
+  function enterList (list: SpeakerList) {
+    return listChannel.methodCall('enter', { pk: list.pk })
   }
-  function leaveList (pk: number) {
-    return listChannel.methodCall('leave', { pk })
+  function leaveList (list: SpeakerList) {
+    return listChannel.methodCall('leave', { pk: list.pk })
   }
-  function userInList (pk: number) {
-    const queue = speakerQueues.get(pk)
+  function userInList (list: SpeakerList) {
+    const queue = speakerQueues.get(list.pk)
     if (user.value) {
       return queue?.includes(user.value.pk)
     }
   }
 
-  function startSpeaker (pk: number, userid: number) {
-    userid = userid || getQueue(pk)[0]
+  function startSpeaker (list: SpeakerList, userid: number) {
+    userid = userid || getQueue(list)[0]
     listChannel.methodCall('start_user', {
-      pk,
+      pk: list.pk,
       userid
     })
   }
 
-  function stopSpeaker (pk: number) {
-    listChannel.methodCall('stop_user', {
-      pk,
-      userid: getCurrent(pk)
-    })
+  function stopSpeaker (list: SpeakerList) {
+    const current = getCurrent(list)
+    if (current) {
+      listChannel.methodCall('stop_user', {
+        pk: list.pk,
+        userid: current.userid
+      })
+    }
   }
 
-  function setActiveList (pk: number) {
-    listChannel.methodCall('set_active', { pk })
+  function setActiveList (list: SpeakerList) {
+    listChannel.methodCall('set_active', { pk: list.pk })
   }
 
   return {
