@@ -1,20 +1,23 @@
-import { Meeting, SpeakerSystem } from '../types'
+import { Meeting, SpeakerSystem, SpeakerSystemRole } from '../types'
 import meetingRules from '../meeting/rules'
 import useContextRoles from '@/composables/useContextRoles'
 import { meetings } from '@/composables/useMeetings'
+import { SpeakerSystemState } from './workflowStates'
+import useAuthentication from '@/composables/useAuthentication'
 
 const { hasRole } = useContextRoles('speaker_system')
+const { user } = useAuthentication()
 
 function isSpeaker (system: SpeakerSystem) {
-  return false
+  return hasRole(system.pk, SpeakerSystemRole.Speaker)
 }
 
 function isModerator (system: SpeakerSystem) {
-  return false
+  return hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 
 function isArchived (system: SpeakerSystem) {
-  return system.archived
+  return system.state === SpeakerSystemState.Archived
 }
 
 function canAdd (meeting: Meeting) {

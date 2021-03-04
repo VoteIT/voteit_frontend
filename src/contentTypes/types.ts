@@ -66,8 +66,8 @@ export interface Poll extends StateContent {
   electoral_register?: number
   initial_electoral_register?: number
   proposals: number[]
-  result_data: object | null // TODO
-  settings_data: PollMethodSettings | null
+  result: object | null // TODO
+  settings: PollMethodSettings | null
 }
 
 export interface PollStatus {
@@ -101,10 +101,8 @@ export enum SpeakerSystemMethod {
   Priority = 'priority',
 }
 
-export interface SpeakerSystem extends BaseContent {
-  active: boolean
+export interface SpeakerSystem extends StateContent {
   active_list?: number
-  archived: boolean
   meeting: number
   method_name: SpeakerSystemMethod
   safe_positions?: number

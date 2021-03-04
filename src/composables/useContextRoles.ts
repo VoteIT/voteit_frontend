@@ -37,8 +37,11 @@ export default function useContextRoles (contentType: string) {
   const { user } = useAuthentication()
 
   function getUserRoles (pk: number, userId?: number) {
-    const key = getRoleKey(contentType, pk, userId || user.value.pk)
-    return contextRoles.get(key) || new Set()
+    userId = userId ?? user.value?.pk
+    if (userId) {
+      const key = getRoleKey(contentType, pk, userId)
+      return contextRoles.get(key) || new Set()
+    }
   }
 
   function getRoleCount (pk: number, roleName: string) {
@@ -59,10 +62,10 @@ export default function useContextRoles (contentType: string) {
   function hasRole (pk: number, roleName: string | string[], user?: number) {
     const userRoles = getUserRoles(pk, user)
     if (typeof roleName === 'string') {
-      return userRoles.has(roleName)
+      return userRoles?.has(roleName)
     } else if (roleName && typeof roleName.some === 'function') {
       // Match any role of list
-      return roleName.some(r => userRoles.has(r))
+      return roleName.some(r => userRoles?.has(r))
     } else if (roleName === undefined) {
       return true
     }

@@ -4,5 +4,8 @@ import { AuthoredContent } from './types'
 const { user } = useAuthentication()
 
 export function isAuthor (content: AuthoredContent) {
-  return user.value.pk === content.author
+  if (user.value) {
+    return user.value.pk === content.author
+  }
+  return false
 }

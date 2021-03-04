@@ -28,7 +28,7 @@ export default function useMeeting () {
 
   function setMeeting (meeting: Meeting) {
     meetings.set(meeting.pk, meeting)
-    if (meeting.current_user_roles) {
+    if (meeting.current_user_roles && user.value) {
       meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
     }
   }

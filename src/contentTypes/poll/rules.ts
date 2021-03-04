@@ -17,7 +17,7 @@ const PERMISSIVE_STATES = ['private', 'upcoming', 'ongoing'] // States where mod
 function isVoter (poll: Poll) {
   if (!poll.electoral_register) return false
   const register = getRegister(poll.electoral_register)
-  if (register) {
+  if (register && user.value) {
     return register.has(user.value.pk)
   }
 }

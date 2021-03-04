@@ -7,16 +7,16 @@
     <div class="body">
       <btn @click="vote" icon="ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
       <template v-if="isFinished">
-        <component v-if="resultComponent" :is="resultComponent" :data="poll.result_data">
-          <template v-if="poll.result_data.approved.length">
-            <h3>{{ t('poll.numApproved', poll.result_data.approved.length )}}</h3>
+        <component v-if="resultComponent" :is="resultComponent" :data="poll.result">
+          <template v-if="poll.result.approved.length">
+            <h3>{{ t('poll.numApproved', poll.result.approved.length )}}</h3>
             <div class="proposals approved">
-              <Proposal v-for="pk in poll.result_data.approved" :key="pk" :p="getProposal(pk)" read-only selected />
+              <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
             </div>
           </template>
-          <BtnDropdown v-if="poll.result_data.denied.length" :title="t('poll.numDenied', poll.result_data.denied.length )" :style="{ marginTop: '1em' }">
+          <BtnDropdown v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )" :style="{ marginTop: '1em' }">
             <div class="proposals denied">
-              <Proposal v-for="pk in poll.result_data.denied" :key="pk" :p="getProposal(pk)" read-only />
+              <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
             </div>
           </BtnDropdown>
         </component>

@@ -52,7 +52,10 @@ function canView (meeting?: Meeting) {
 
 function canAdd () {
   // TODO organization meeting creator role
-  return user.value.is_superuser
+  if (user.value) {
+    return user.value.is_superuser
+  }
+  return false
 }
 
 function canChange (meeting?: Meeting) {

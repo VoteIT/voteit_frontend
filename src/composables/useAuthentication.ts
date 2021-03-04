@@ -5,7 +5,7 @@ import devLoginType from '@/contentTypes/devLogin'
 import { DevUser } from '@/utils/types'
 import { setAuthToken } from '@/utils/restApi'
 
-const user = ref(sessionStorage.user ? JSON.parse(sessionStorage.user) : null)
+const user = ref<DevUser | null>(sessionStorage.user ? JSON.parse(sessionStorage.user) : null)
 const isAuthenticated = ref(false)
 const authToken = ref<string | null>(null)
 

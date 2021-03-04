@@ -7,6 +7,7 @@ import speakerSystemType from '@/contentTypes/speakerSystem'
 import useAuthentication from '../useAuthentication'
 
 import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem } from '@/contentTypes/types'
+import { SpeakerSystemState } from '@/contentTypes/speakerSystem/workflowStates'
 
 const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -40,7 +41,7 @@ export default function useSpeakerLists () {
     // By default only active systems
     const systems = []
     for (const s of speakerSystems.values()) {
-      if (s.meeting === pk && (all || s.active)) {
+      if (s.meeting === pk && (all || s.state === SpeakerSystemState.Active)) {
         systems.push(s)
       }
     }
@@ -65,7 +66,9 @@ export default function useSpeakerLists () {
   }
   function userInList (pk: number) {
     const queue = speakerQueues.get(pk)
-    return queue?.includes(user.value.pk)
+    if (user.value) {
+      return queue?.includes(user.value.pk)
+    }
   }
 
   function startSpeaker (pk: number, userid: number) {

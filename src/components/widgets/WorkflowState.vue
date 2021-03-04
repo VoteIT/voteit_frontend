@@ -63,7 +63,7 @@ export default defineComponent({
           if (!statesAvailable.value) {
             contentApi.getTransitions(props.pk)
               .then((states: WorkflowState[]) => {
-                statesAvailable.value = states
+                statesAvailable.value = states.filter(s => s.state !== props.state) // Filter out current state
                 nextTick(() => focusButton(opts.value))
               })
           } else {

@@ -3,8 +3,8 @@
     <h2>{{ t('speaker.settings') }}</h2>
     <div class="widget speaker-system" v-for="system in systems" :key="system.pk">
       <div class="btn-controls float">
-        <btn :active="system.active" :icon="system.active ? 'visibility' : 'visibility_off'" :title="t('speaker.visible')" @click="toggleActive(system)" />
-        <btn :disabled="!systemRules.canDelete(system)" icon="delete" @click="deleteSystem(system)"/>
+        <WorkflowState admin :contentType="speakerSystemType" :pk="system.pk" :state="system.state" />
+        <btn sm v-if="systemRules.canDelete(system)" icon="delete" @click="deleteSystem(system)"/>
       </div>
       <h2>{{ system.title }}</h2>
       <dl>
@@ -62,6 +62,7 @@ import { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/types'
 import useLoader from '@/composables/useLoader'
 import { ContextRole } from '@/composables/types'
 import { User } from '@/utils/types'
+import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 const systemIcons = {
   speaker: 'chat',
@@ -69,7 +70,7 @@ const systemIcons = {
 }
 
 export default defineComponent({
-  components: { BtnDropdown, UserSearch, RoleMatrix },
+  components: { BtnDropdown, UserSearch, RoleMatrix, WorkflowState },
   name: 'SpeakerSystems',
   path: 'speakers',
   icon: 'volume_up',
@@ -111,10 +112,6 @@ export default defineComponent({
         .then(() => systemAPI.delete(system.pk))
     }
 
-    function toggleActive (system: SpeakerSystem) {
-      systemAPI.patch(system.pk, { active: !system.active })
-    }
-
     function addUser (system: SpeakerSystem, user: User) {
       systemChannel.addRoles(system.pk, user.pk, 'speaker') // TODO enumerate speaker system roles
     }
@@ -128,11 +125,11 @@ export default defineComponent({
       createSystem,
       deleteSystem,
       systemChannel,
-      toggleActive,
       addUser,
       systemRoles,
       meeting,
       systemRules: speakerSystemType.rules,
+      speakerSystemType,
       systemIcons
     }
   }
