@@ -66,7 +66,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .proposal
   border-left: 6px solid var(--proposal)
   .author
