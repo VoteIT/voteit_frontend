@@ -1,7 +1,7 @@
 <template>
   <button class="btn" :class="{ 'btn-sm': sm, active }">
     <Icon v-if="icon" :sm="sm" :name="icon" />
-    <span><slot/></span>
+    <span v-if="$slots.default"><slot/></span>
   </button>
 </template>
 
@@ -45,8 +45,8 @@ export default defineComponent({
     padding: 4px 6px
     .material-icons
       font-size: 1.2rem
-  .span
-    margin-right: .3rem
+  span
+    margin: 0 .2em
 
   &:disabled
     opacity: .5
