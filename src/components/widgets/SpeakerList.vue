@@ -1,25 +1,30 @@
 <template>
-  <div>
-    <h3>
-      {{ list.title }}
+  <Widget>
+    <div class="btn-controls">
       <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
       <Btn sm :disabled="isActive" :icon="isActive ? 'toggle_on' : 'toggle_off'" :title="isActive ? 'List is active' : 'Set active'" @click="speakers.setActiveList(list)" />
+    </div>
+    <h3>
+      {{ list.title }}
+      <Btn sm v-if="inList && canLeave(list)" icon="undo" @click="speakers.leaveList(list)">Leave list</Btn>
+      <Btn sm v-else-if="canEnter(list)" icon="add" @click="speakers.enterList(list)">Enter list</Btn>
     </h3>
     <div v-if="canStart(list)" class="btn-group">
       <Btn icon="play_arrow" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)" />
       <Btn icon="stop" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)" />
     </div>
-    <div v-if="isOpen">
-      <Btn v-if="inList" icon="undo" @click="speakers.leaveList(list)">Leave list</Btn>
-      <Btn v-else icon="add" @click="speakers.enterList(list)">Enter list</Btn>
-    </div>
-    <div v-if="currentSpeaker">
-      Speaking: <User :pk="currentSpeaker.userid" /> <Moment in-seconds :date="currentSpeaker.started" />
-    </div>
+    <p v-if="currentSpeaker">
+      {{ t('speaker.currentlySpeaking') }}:
+      <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
+    </p>
+    <h4>{{ t('speaker.queue') }}</h4>
     <ol v-if="queue.length">
       <li v-for="userPk in queue" :key="userPk"><User :pk="userPk"/></li>
     </ol>
-  </div>
+    <p v-else>
+      <em>{{ t('speaker.queueEmpty') }}</em>
+    </p>
+  </Widget>
 </template>
 
 <script lang="ts">
@@ -36,6 +41,7 @@ import Moment from './Moment.vue'
 
 export default defineComponent({
   name: 'SpeakerList',
+  inject: ['t'],
   props: {
     list: {
       type: Object as PropType<SpeakerList>,
@@ -70,3 +76,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass" scoped>
+.btn-controls
+  float: right
+
+h3
+  margin-top: 0
+  button
+    margin-left: 1em
+</style>

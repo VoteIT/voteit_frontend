@@ -9,7 +9,7 @@
     <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
     <div class="speaker-lists" v-if="speakerSystems.length">
       <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
-      <div class="btn-controls">
+      <div class="btn-controls mb-1">
         <template v-for="system in speakerSystems" :key="system.pk">
           <Btn v-if="speakerListType.rules.canAdd(system)" @click="addSpeakerList(system)" icon="add">{{ t('speaker.addListToSystem', system) }}</Btn>
         </template>
@@ -157,4 +157,7 @@ ul.no-list
   padding: 0
   > li
     list-style: none
+
+.mb-1
+  margin-bottom: 1em
 </style>

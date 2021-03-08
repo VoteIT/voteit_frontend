@@ -116,7 +116,10 @@
   },
   "speaker": {
     "addListToSystem": "New list ({title})",
+    "currentlySpeaking": "Now speaking",
     "lists": "No speaker lists | Speaker list | Speaker lists",
+    "queue": "Speaker queue",
+    "queueEmpty": "No speakers in queue",
     "safePositions": "Safe positions",
     "settings": "Speaker List settings",
     "systemAdd": "Add List System",
