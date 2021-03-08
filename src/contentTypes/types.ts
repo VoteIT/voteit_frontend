@@ -132,11 +132,16 @@ export interface Vote {
   vote: Object
 }
 
+export enum AccessPolicyType {
+  Automatic = 'automatic',
+  ModeratorApproved = 'moderator_approved'
+}
+
 export interface AccessPolicy {
   pk: number
   meeting: number
   active: boolean
-  name: string
+  name: AccessPolicyType
   roles_given: string[]
 }
 

@@ -45,6 +45,7 @@
   "join": {
     "joinAMeeting": "Join a meeting",
     "meeting": "Join meeting: {title}",
+    "noAccess": "You can not join this meeting at this time",
     "now": "Join now!"
   },
   "loader": {
