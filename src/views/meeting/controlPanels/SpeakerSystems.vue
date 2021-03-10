@@ -95,7 +95,7 @@ export default defineComponent({
     const systems = computed(() => speakerLists.getSystems(meetingId.value, true))
     const systemData = reactive({
       title: meeting.value ? slugify(meeting.value.title) : '',
-      method_name: '',
+      method_name: undefined,
       safe_positions: 1,
       active: true
     })

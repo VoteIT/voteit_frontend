@@ -4,9 +4,19 @@ import useContextRoles from '@/composables/useContextRoles'
 import { meetings } from '@/composables/useMeetings'
 import { SpeakerSystemState } from './workflowStates'
 import useAuthentication from '@/composables/useAuthentication'
+import { currentlySpeaking, speakerLists } from '@/composables/meeting/useSpeakerLists'
 
 const { hasRole } = useContextRoles('speaker_system')
 const { user } = useAuthentication()
+
+function getActiveList (system: SpeakerSystem) {
+  return system.active_list && speakerLists.get(system.active_list)
+}
+
+function hasActiveSpeaker (system: SpeakerSystem) {
+  const active = getActiveList(system)
+  return !!(active && currentlySpeaking.get(active.pk))
+}
 
 function isSpeaker (system: SpeakerSystem) {
   return hasRole(system.pk, SpeakerSystemRole.Speaker)
@@ -34,6 +44,8 @@ function canDelete (system: SpeakerSystem) {
 }
 
 export default {
+  hasActiveSpeaker,
+
   isActive,
   isArchived,
   isModerator,

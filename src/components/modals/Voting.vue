@@ -59,7 +59,7 @@ export default defineComponent({
         //   vote,
         //   method_name: props.data.method_name
         // }
-        // channels.add(props.data.pk, msg)
+        // channels.contextAdd(props.data.pk, msg)
         const msg = {
           pk: props.data.pk,
           vote: validVote.value

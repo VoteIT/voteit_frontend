@@ -5,7 +5,7 @@
       <p>
         U there, bruh?
       </p>
-      <btn @click="presence.channel.add(data.presenceCheck.pk)" icon="pets">Represent!</btn>
+      <btn @click="presence.channel.contextAdd(data.presenceCheck.pk)" icon="pets">Represent!</btn>
     </template>
     <template v-else>
       <p>Your presence has been noted.</p>

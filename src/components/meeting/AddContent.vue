@@ -66,7 +66,7 @@ export default defineComponent({
       if (override || textLength.value >= props.warnLength) {
         const body = text.value
         submitting.value = true
-        channel.add(props.contextPk, {
+        channel.contextAdd(props.contextPk, {
           body
         })
           .then(() => {

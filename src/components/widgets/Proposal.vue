@@ -1,10 +1,11 @@
 <template>
-  <Widget v-if="p" class="proposal" :class="{ selected }">
+  <Widget v-if="p" class="proposal" :selected="selected">
     <slot name="top"/>
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><Moment :date="p.created" /></div>
     <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div class="btn-controls" v-if="!readOnly">
+      <slot name="buttons"/>
       <WorkflowState :admin="canChange(p) || canRetract(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
       <btn v-if="canChange(p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
       <btn v-if="canDelete(p)" sm icon="delete" @click="queryDelete" />
@@ -77,9 +78,6 @@ export default defineComponent({
     white-space: pre-wrap
   .btn-controls
     text-align: right
-
-  &.selected
-    background-color: var(--proposal-selected)
 
 a.tag
   font-size: 10pt

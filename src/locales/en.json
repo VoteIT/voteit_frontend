@@ -118,10 +118,12 @@
   "speaker": {
     "addListToSystem": "New list ({title})",
     "currentlySpeaking": "Now speaking",
+    "isActiveList": "List is active",
     "lists": "No speaker lists | Speaker list | Speaker lists",
     "queue": "Speaker queue",
     "queueEmpty": "No speakers in queue",
     "safePositions": "Safe positions",
+    "setActiveList": "Set as active list",
     "settings": "Speaker List settings",
     "systemAdd": "Add List System",
     "systemManage": "Manage List System",

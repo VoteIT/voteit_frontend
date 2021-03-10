@@ -72,7 +72,6 @@ export default class Channel<T> {
   private _contentType?: string
   private hasRoles?: boolean
   private config: ChannelConfig
-  private contextRoles: any
 
   get contentType (): string {
     if (this._contentType) {
@@ -216,8 +215,10 @@ export default class Channel<T> {
   }
 
   get = (pk: number, config?: ChannelConfig) => this.methodCall('get', { pk }, config)
-  add = (contextPk: number, kwargs: object, config?: ChannelConfig) => this.methodCall('add', { pk: contextPk, kwargs }, config)
-  change = (pk: number, kwargs: object, config?: ChannelConfig) => this.methodCall('change', { pk, kwargs }, config)
+  add = (data: Partial<T>, config?: ChannelConfig) => this.methodCall('add', data, config)
+  // TODO Deprecate this:
+  contextAdd = (contextPk: number, kwargs: Partial<T>, config?: ChannelConfig) => this.methodCall('add', { pk: contextPk, kwargs }, config)
+  change = (pk: number, kwargs: Partial<T>, config?: ChannelConfig) => this.methodCall('change', { pk, kwargs }, config)
   delete = (pk: number, config?: ChannelConfig) => this.methodCall('delete', { pk }, config)
 
   checkHasRoles (): void {
@@ -268,7 +269,8 @@ export default class Channel<T> {
     this.changeRoles('roles.remove', pk, user, roles)
   }
 
-  getSchema (name: string, type = SchemaType.Incoming) {
-    return this.post('schema.get_' + type, { message_type: name })
+  // eslint-disable-next-line camelcase
+  getSchema (message_type: string, type = SchemaType.Incoming) {
+    return this.post('schema.get_' + type, { message_type })
   }
 }

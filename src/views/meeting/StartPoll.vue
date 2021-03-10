@@ -232,7 +232,6 @@ li
       display: inline-block
       line-height: 1
   &.selected
-    background-color: var(--proposal-selected)
     a:before
       content: '✔'
   &.selected.locked

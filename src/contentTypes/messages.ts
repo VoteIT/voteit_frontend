@@ -5,7 +5,7 @@ export interface RoleChangeMessage {
   model: string // Context model
   pk: number // Context primary key
   userids: number[]
-  roles: string[]
+  roles: any[]
 }
 
 export interface RolesGetMessage {

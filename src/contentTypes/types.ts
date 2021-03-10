@@ -160,3 +160,5 @@ export enum SchemaType {
 export interface ChannelConfig extends ChannelsConfig {
   leaveDelay?: number
 }
+
+export type predicate = (obj: any) => boolean

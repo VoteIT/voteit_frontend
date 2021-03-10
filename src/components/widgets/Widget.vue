@@ -1,8 +1,17 @@
 <template>
-  <div class="widget">
+  <div class="widget" :class="{ selected }">
     <slot/>
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+export default defineComponent({
+  props: {
+    selected: Boolean
+  }
+})
+</script>
 
 <style lang="sass">
 .widget
@@ -15,4 +24,6 @@
     margin-top: 0
   .btn-controls
     text-align: right
+  &.selected
+    background-color: var(--widget-selected-bg)
 </style>

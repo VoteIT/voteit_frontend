@@ -23,6 +23,10 @@ function isOpen (list: SpeakerList) {
   return list.state === SpeakerListState.Open
 }
 
+function canActivate (list: SpeakerList) {
+  const system = getSystem(list)
+  return system && canAdd(system) && system.active_list !== list.pk && !speakerSystemRules.hasActiveSpeaker(system)
+}
 function canAdd (system: SpeakerSystem) {
   return speakerSystemRules.isModerator(system) && !speakerSystemRules.isArchived(system)
 }
@@ -53,6 +57,7 @@ function canLeave (list: SpeakerList) {
 }
 
 export default {
+  canActivate,
   canAdd,
   canChange,
   canDelete: canChange,

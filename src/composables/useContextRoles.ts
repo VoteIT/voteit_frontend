@@ -59,16 +59,17 @@ export default function useContextRoles (contentType: string) {
     contextRoles.set(key, new Set(roles))
   }
 
-  function hasRole (pk: number, roleName: string | string[], user?: number) {
+  function hasRole (pk: number, roleName: string | string[], user?: number): boolean {
     const userRoles = getUserRoles(pk, user)
-    if (typeof roleName === 'string') {
-      return userRoles?.has(roleName)
-    } else if (roleName && typeof roleName.some === 'function') {
-      // Match any role of list
-      return roleName.some(r => userRoles?.has(r))
-    } else if (roleName === undefined) {
-      return true
+    if (userRoles) {
+      if (typeof roleName === 'string') {
+        return userRoles.has(roleName)
+      } else if (roleName && typeof roleName.some === 'function') {
+        // Match any role of list
+        return roleName.some(r => userRoles.has(r))
+      }
     }
+    return false
   }
 
   function getAll<T> (pk: number): UserContextRoles<T>[] {

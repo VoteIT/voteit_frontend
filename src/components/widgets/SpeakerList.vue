@@ -1,13 +1,14 @@
 <template>
-  <Widget>
+  <Widget :selected="isActive">
     <div class="btn-controls">
+      <Btn sm v-if="inList && canLeave(list)" icon="undo" @click="speakers.leaveList(list)">Leave list</Btn>
+      <Btn sm v-else-if="canEnter(list)" icon="add" @click="speakers.enterList(list)">Enter list</Btn>
       <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
-      <Btn sm :disabled="isActive" :icon="isActive ? 'toggle_on' : 'toggle_off'" :title="isActive ? 'List is active' : 'Set active'" @click="speakers.setActiveList(list)" />
+      <Btn sm v-if="isActive" icon="toggle_on" :title="t('speaker.isActiveList')" active />
+      <Btn sm v-if="canActivate(list)" icon="toggle_off" :title="t('speaker.setActiveList')" @click="speakers.setActiveList(list)" />
     </div>
     <h3>
       {{ list.title }}
-      <Btn sm v-if="inList && canLeave(list)" icon="undo" @click="speakers.leaveList(list)">Leave list</Btn>
-      <Btn sm v-else-if="canEnter(list)" icon="add" @click="speakers.enterList(list)">Enter list</Btn>
     </h3>
     <div v-if="canStart(list)" class="btn-group">
       <Btn icon="play_arrow" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)" />

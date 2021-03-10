@@ -76,7 +76,7 @@ export default class ContentAPI<T, K=number> {
     return request
   }
 
-  add (data: object): AxiosPromise<T> { // No type, because readonly-fields and such are incompat w post data
+  add (data: Partial<T>): AxiosPromise<T> { // No type, because readonly-fields and such are incompat w post data
     return this.call(HTTPMethod.Post, this.endpoint, { data })
   }
 
@@ -88,11 +88,11 @@ export default class ContentAPI<T, K=number> {
     return this.call(HTTPMethod.Get, `${this.endpoint}${pk}/`)
   }
 
-  put (pk: K, data: object): AxiosPromise<T> {
+  put (pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
     return this.call(HTTPMethod.Put, `${this.endpoint}${pk}/`, { data })
   }
 
-  patch (pk: K, data: object): AxiosPromise<T> {
+  patch (pk: K, data: Partial<T>): AxiosPromise<T> {
     return this.call(HTTPMethod.Patch, `${this.endpoint}${pk}/`, { data })
   }
 

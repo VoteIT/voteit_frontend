@@ -21,7 +21,11 @@
         <h2>{{ t('proposal.proposals') }}</h2>
         <ul v-if="sortedProposals.length" class="no-list">
           <li v-for="p in sortedProposals" :key="p.pk">
-            <Proposal :p="p"/>
+            <Proposal :p="p">
+              <template v-slot:buttons>
+                <ReactionButton v-for="btn in proposalReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
+              </template>
+            </Proposal>
           </li>
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
@@ -32,7 +36,11 @@
         <h2>{{ t('discussion.discussions') }}</h2>
         <ul v-if="sortedDiscussions.length" class="no-list">
           <li v-for="d in sortedDiscussions" :key="d.pk">
-            <DiscussionPost :p="d"/>
+            <DiscussionPost :p="d">
+              <template v-slot:buttons>
+                <ReactionButton v-for="btn in discussionReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: d.pk }">{{ btn.title }}</ReactionButton>
+              </template>
+            </DiscussionPost>
           </li>
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
@@ -59,6 +67,7 @@ import useAgenda from '@/composables/meeting/useAgenda'
 import useDiscussions from '@/composables/meeting/useDiscussions'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
+import useReactions from '@/composables/meeting/useReactions'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 import agendaItemType from '@/contentTypes/agendaItem'
@@ -68,6 +77,7 @@ import proposalType from '@/contentTypes/proposal'
 import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerSystem } from '@/contentTypes/types'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
+import ReactionButton from '@/components/meeting/ReactionButton.vue'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -77,6 +87,7 @@ export default defineComponent({
     const proposals = useProposals()
     const { meetingPath, meetingId } = useMeeting()
     const { agendaId, agendaItem } = useAgenda()
+    const { getMeetingButtons } = useReactions()
     const channel = agendaItemType.getChannel()
 
     const sortedProposals = computed(() => {
@@ -102,6 +113,9 @@ export default defineComponent({
       return tags
     })
 
+    const proposalReactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
+    const discussionReactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
+
     function addSpeakerList (system: SpeakerSystem) {
       openAlertEvent.emit('Not Implemented')
       const listData: SpeakerListAddMessage = {
@@ -119,6 +133,8 @@ export default defineComponent({
       channel,
       editingBody,
       meetingPath,
+      proposalReactions,
+      discussionReactions,
       sortedProposals,
       sortedDiscussions,
       speakerLists,
@@ -138,7 +154,8 @@ export default defineComponent({
     Proposal,
     WorkflowState,
     SpeakerList,
-    Richtext
+    Richtext,
+    ReactionButton
   }
 })
 </script>

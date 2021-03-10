@@ -1,11 +1,11 @@
 /* eslint-disable camelcase */
-import { DefineComponent } from 'vue'
+import { Component } from 'vue'
 import { AccessPolicyType } from '@/contentTypes/types'
 import Automatic from './Automatic.vue'
 import ModeratorApproved from './ModeratorApproved.vue'
 
 type APMapping = {
-  [ key in AccessPolicyType ]: DefineComponent
+  [ key in AccessPolicyType ]: Component
 }
 
 export default {
