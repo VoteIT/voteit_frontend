@@ -1,7 +1,7 @@
 import useAuthentication from '@/composables/useAuthentication'
 import { speakerSystems, currentlySpeaking } from '@/composables/meeting/useSpeakerLists'
 
-import { SpeakerList, SpeakerSystem } from '../types'
+import { predicate, SpeakerList, SpeakerSystem } from '../types'
 import speakerSystemRules from '../speakerSystem/rules'
 
 import { SpeakerListState } from './workflowStates'
@@ -34,6 +34,7 @@ function canChange (list: SpeakerList) {
   const system = getSystem(list)
   return system && canAdd(system)
 }
+
 function canStart (list: SpeakerList) {
   const system = getSystem(list)
   return system && isActive(list) && speakerSystemRules.isModerator(system) && speakerSystemRules.isActive(system)

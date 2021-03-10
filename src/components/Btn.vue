@@ -1,12 +1,12 @@
 <template>
-  <button class="btn" :class="{ 'btn-sm': sm, active }">
-    <Icon v-if="icon" :sm="sm" :name="icon" />
+  <v-btn :size="size">
+    <v-icon :left="!!$slots.default" v-if="icon" :size="size" :icon="'mdi-' + icon.replace('_', '-')" />
     <span v-if="$slots.default"><slot/></span>
-  </button>
+  </v-btn>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'Icon button',
@@ -14,6 +14,11 @@ export default defineComponent({
     icon: String,
     sm: Boolean,
     active: Boolean
+  },
+  setup (props) {
+    return {
+      size: computed(() => props.sm ? 'small' : undefined)
+    }
   }
 })
 </script>

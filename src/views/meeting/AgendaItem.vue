@@ -1,23 +1,23 @@
 <template>
-  <div v-if="agendaItem">
-    <h1>{{ agendaItem.title }}</h1>
-    <div class="btn-controls">
-      <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :pk="agendaId" />
-      <btn v-if="pollType.rules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
-      <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
-    </div>
-    <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
-    <div class="speaker-lists" v-if="speakerSystems.length">
-      <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
-      <div class="btn-controls mb-1">
-        <template v-for="system in speakerSystems" :key="system.pk">
-          <Btn v-if="speakerListType.rules.canAdd(system)" @click="addSpeakerList(system)" icon="add">{{ t('speaker.addListToSystem', system) }}</Btn>
-        </template>
-      </div>
-      <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
-    </div>
-    <div class="row">
-      <div class="col-sm-6">
+  <v-container v-if="agendaItem">
+    <v-row>
+      <v-col>
+        <h1>{{ agendaItem.title }}</h1>
+        <div class="btn-controls">
+          <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :pk="agendaId" />
+          <btn v-if="pollType.rules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
+          <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
+        </div>
+        <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
+        <div class="speaker-lists" v-if="speakerSystems.length">
+          <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
+          <v-btn style="margin-right: .5em; margin-bottom: .5em;" size="small" v-for="system in addSpeakerSystems" :key="system.pk" @click="addSpeakerList(system)"><v-icon left icon="mdi-plus"/>{{ t('speaker.addListToSystem', system) }}</v-btn>
+          <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
+        </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <h2>{{ t('proposal.proposals') }}</h2>
         <ul v-if="sortedProposals.length" class="no-list">
           <li v-for="p in sortedProposals" :key="p.pk">
@@ -31,8 +31,8 @@
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
           :context-pk="agendaId" :content-type="proposalType" :tags="allTags" />
-      </div>
-      <div class="col-sm-6">
+      </v-col>
+      <v-col>
         <h2>{{ t('discussion.discussions') }}</h2>
         <ul v-if="sortedDiscussions.length" class="no-list">
           <li v-for="d in sortedDiscussions" :key="d.pk">
@@ -46,9 +46,9 @@
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
           :context-pk="agendaId" :content-type="discussionPostType" :tags="allTags" />
-      </div>
-    </div>
-  </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -126,7 +126,10 @@ export default defineComponent({
       speakerListType.getContentApi().add(listData)
     }
 
+    const addSpeakerSystems = computed(() => speakerSystems.value.filter(system => speakerListType.rules.canAdd(system)))
+
     return {
+      addSpeakerSystems,
       agendaId,
       agendaItem,
       allTags,
@@ -161,20 +164,8 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-/* Burn after reading */
-.row
-  display: flex
-  flex-direction: row
-  margin: 0 -10px
-.col-sm-6
-  width: calc(50% - 20px)
-  margin: 0 10px
-
 ul.no-list
   padding: 0
   > li
     list-style: none
-
-.mb-1
-  margin-bottom: 1em
 </style>

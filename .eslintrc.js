@@ -25,7 +25,7 @@ module.exports = {
   overrides: [
     // Fix no-used-vars when importing ts types in .vue files
     {
-      files: ["*.vue"],
+      files: ['*.vue'],
       rules: {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'error'

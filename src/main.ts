@@ -7,6 +7,7 @@ import router from './router'
 import moment from 'moment'
 
 import Api from './plugins/Api'
+import vuetify from './plugins/vuetify'
 
 import Icon from './components/Icon.vue'
 import Btn from './components/Btn.vue'
@@ -40,8 +41,9 @@ const i18n = createI18n({
 if (locale !== 'en') loadLocaleMessages(i18n, locale)
 
 createApp(App)
-  .use(router)
   .use(i18n)
+  .use(router)
+  .use(vuetify)
   .use(Api)
   .component('Icon', Icon)
   .component('Btn', Btn)
