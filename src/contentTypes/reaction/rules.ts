@@ -17,7 +17,12 @@ const canDelete: predicate = (reaction: Reaction) => {
   return button ? canAdd(button) : false
 }
 
+const canList: predicate = (button: ReactionButton) => {
+  return hasRole(button.meeting, button.list_roles)
+}
+
 export default {
   canAdd,
-  canDelete
+  canDelete,
+  canList
 }
