@@ -57,6 +57,7 @@ export default defineComponent({
   setup (props) {
     const t = inject('t') as (text: string) => string
     const speakers = useSpeakerLists()
+    const t = inject('t') as CallableFunction
     const api = speakerListType.getContentApi()
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
@@ -68,7 +69,7 @@ export default defineComponent({
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 
     function deleteList (list: SpeakerList) {
-      dialogQuery(t('speaker.deleteListQuery'))
+      dialogQuery(t('speaker.deleteListConfirmation'))
         .then(() => api.delete(list.pk))
     }
 

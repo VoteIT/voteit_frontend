@@ -1,10 +1,12 @@
-import { Meeting, SpeakerSystem, SpeakerSystemRole } from '../types'
-import meetingRules from '../meeting/rules'
+import useAuthentication from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 import { meetings } from '@/composables/useMeetings'
-import { SpeakerSystemState } from './workflowStates'
-import useAuthentication from '@/composables/useAuthentication'
 import { currentlySpeaking, speakerLists } from '@/composables/meeting/useSpeakerLists'
+
+import { Meeting, SpeakerSystem, SpeakerSystemRole } from '../types'
+import meetingRules from '../meeting/rules'
+
+import { SpeakerSystemState } from './workflowStates'
 
 const { hasRole } = useContextRoles('speaker_system')
 const { user } = useAuthentication()
@@ -40,7 +42,7 @@ function canAdd (meeting: Meeting) {
 
 function canDelete (system: SpeakerSystem) {
   const meeting = meetings.get(system.meeting)
-  return isModerator(system) && meetingRules.isActive(meeting) && !isArchived(system)
+  return meetingRules.isModerator(meeting) && meetingRules.isActive(meeting) && !isArchived(system)
 }
 
 export default {

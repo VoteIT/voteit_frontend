@@ -30,7 +30,7 @@
         </ul>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
-          :context-pk="agendaId" :content-type="proposalType" :tags="allTags" />
+                    :tags="allTags" :handler="addProposal" />
       </v-col>
       <v-col>
         <h2>{{ t('discussion.discussions') }}</h2>
@@ -45,7 +45,7 @@
         </ul>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-          :context-pk="agendaId" :content-type="discussionPostType" :tags="allTags" />
+                    :tags="allTags" :handler="addDiscussionPost" />
       </v-col>
     </v-row>
   </v-container>
@@ -112,6 +112,18 @@ export default defineComponent({
       }
       return tags
     })
+    function addProposal (body: string) {
+      return proposalType.getContentApi().add({
+        agenda_item: agendaId.value,
+        body
+      })
+    }
+    function addDiscussionPost (body: string) {
+      return discussionPostType.getContentApi().add({
+        agenda_item: agendaId.value,
+        body
+      })
+    }
 
     const proposalReactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
     const discussionReactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
@@ -133,6 +145,8 @@ export default defineComponent({
       agendaId,
       agendaItem,
       allTags,
+      addProposal,
+      addDiscussionPost,
       channel,
       editingBody,
       meetingPath,

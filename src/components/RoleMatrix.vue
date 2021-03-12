@@ -28,8 +28,8 @@ import { computed, defineComponent, onBeforeMount, ref } from 'vue'
 import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/composables/meeting/useMeeting'
-
 import { ContextRole, UserContextRoles } from '@/composables/types'
+
 import Channel from '@/contentTypes/Channel'
 import { ContextRolesPayload } from '@/contentTypes/messages'
 

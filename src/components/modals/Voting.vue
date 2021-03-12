@@ -61,7 +61,7 @@ export default defineComponent({
         // }
         // channels.contextAdd(props.data.pk, msg)
         const msg = {
-          pk: props.data.pk,
+          poll: props.data.pk,
           vote: validVote.value
         }
         channels.post(`${props.data.method_name}_vote.add`, msg)
@@ -77,7 +77,7 @@ export default defineComponent({
     }
 
     function abstainVote () {
-      channels.post('vote.abstain', { pk: props.data.pk })
+      channels.post('vote.abstain', { poll: props.data.pk })
         .then(() => {
           abstained.value = true
         })
