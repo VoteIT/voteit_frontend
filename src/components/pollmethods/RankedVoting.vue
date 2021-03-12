@@ -27,9 +27,9 @@
       </Draggable>
     </template>
     <div class="btn-controls">
-      <btn v-if="previousStep" icon="undo" @click="previous()">{{ previousStep.title }}</btn>
+      <v-btn color="secondary" v-if="previousStep" @click="previous()"><v-icon left icon="mdi-arrow-left-bold"/>{{ previousStep.title }}</v-btn>
       <span v-else/>
-      <btn v-if="nextStep" icon="forward" :disabled="!currentStep.ready" @click="next()">{{ nextStep.title }}</btn>
+      <v-btn color="secondary" v-if="nextStep" :disabled="!currentStep.ready" @click="next()">{{ nextStep.title }}<v-icon right icon="mdi-arrow-right-bold"/></v-btn>
       <span v-else/>
     </div>
   </div>

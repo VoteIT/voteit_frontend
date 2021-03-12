@@ -13,26 +13,26 @@ export enum PollState {
 export default [
   {
     transition: 'unpublish',
-    icon: 'visibility_off',
+    icon: 'mdi-eye-off',
     state: PollState.Private,
     name: 'Private',
     requiresRole: MeetingRole.Moderator
   },
   {
     transition: 'upcoming',
-    icon: 'pause',
+    icon: 'mdi-pause',
     state: PollState.Upcoming,
     name: 'Upcoming'
   },
   {
     transition: 'ongoing',
-    icon: 'how_to_vote',
+    icon: 'mdi-vote',
     state: PollState.Ongoing,
     name: 'Ongoing'
   },
   {
     transition: 'close',
-    icon: 'gavel',
+    icon: 'mdi-gavel',
     state: PollState.Closed,
     name: 'Closed'
   },
@@ -45,13 +45,13 @@ export default [
   },
   {
     transition: 'cancel',
-    icon: 'block',
+    icon: 'mdi-cancel',
     state: PollState.Canceled,
     name: 'Canceled',
     isFinal: true
   },
   {
-    icon: 'report',
+    icon: 'mdi-alert',
     state: PollState.Failed,
     name: 'Failed',
     isFinal: true

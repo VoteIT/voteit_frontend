@@ -9,7 +9,7 @@
     <BtnDropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
-        <input class="btn" type="submit" value="Add"/>
+        <v-btn :disabled="!newAgendaTitle" size="small" @click="addAgendaItem">{{ t('add') }}</v-btn>
       </form>
     </BtnDropdown>
   </div>
@@ -30,6 +30,7 @@ const AI_ORDER = ['ongoing', 'upcoming', 'closed', 'private']
 
 export default defineComponent({
   name: 'Agenda',
+  inject: ['t'],
   components: {
     BtnDropdown
   },
@@ -128,12 +129,11 @@ export default defineComponent({
     input[type=text]
       flex: 1 1 auto
       min-width: 0
-    input[type="submit"]
-      background-color: var(--btn-active-bg)
-      color: var(--btn-active-text)
+      background-color: var(--bg)
+      padding: 0 .4em
+      border-radius: 3px 0 0 3px
+    .v-btn
       border-radius: 0 3px 3px 0
-      border: 0
-      border-left: 0
 
   .btn-dropdown
     margin: 1rem .5rem

@@ -7,8 +7,8 @@
     <div class="btn-controls" v-if="!readOnly">
       <slot name="buttons"/>
       <WorkflowState :admin="canChange(p) || canRetract(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
-      <btn v-if="canChange(p)" sm icon="edit" :class="{ active: editing }" @click="editing = !editing" />
-      <btn v-if="canDelete(p)" sm icon="delete" @click="queryDelete" />
+      <Btn v-if="canChange(p)" sm icon="mdi-pencil" :active="editing" @click="editing = !editing" />
+      <Btn v-if="canDelete(p)" sm color="warning" icon="mdi-delete" @click="queryDelete" />
     </div>
     <slot name="bottom"/>
   </Widget>

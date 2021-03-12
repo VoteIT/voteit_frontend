@@ -10,32 +10,32 @@ export enum ProposalState {
 export default [
   {
     transition: 'publish',
-    icon: 'visibility',
+    icon: 'mdi-eye',
     state: ProposalState.Published
   },
   {
     transition: 'retract',
-    icon: 'visibility_off',
+    icon: 'mdi-eye-off',
     state: ProposalState.Retracted
   },
   {
     transition: 'lock_for_vote',
-    icon: 'how_to_vote',
+    icon: 'mdi-vote',
     state: ProposalState.Voting
   },
   {
     transition: 'approved',
-    icon: 'check',
+    icon: 'mdi-check',
     state: ProposalState.Approved
   },
   {
     transition: 'denied',
-    icon: 'close',
+    icon: 'mdi-close',
     state: ProposalState.Denied
   },
   {
     transition: 'unhandled',
-    icon: 'block',
+    icon: 'mdi-cancel',
     state: ProposalState.Unhandled
   }
 ]

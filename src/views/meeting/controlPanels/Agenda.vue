@@ -27,7 +27,7 @@ import { AgendaItem } from '@/contentTypes/types'
 export default {
   name: 'Agenda',
   path: 'agenda',
-  icon: 'list',
+  icon: 'mdi-clipboard-list',
   inject: ['t'],
   components: {
     Draggable

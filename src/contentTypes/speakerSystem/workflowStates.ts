@@ -7,17 +7,17 @@ export enum SpeakerSystemState {
 export default [
   {
     transition: 'inactivate',
-    icon: 'visibility_off',
+    icon: 'mdi-eye-off',
     state: SpeakerSystemState.Inactive
   },
   {
     transition: 'activate',
-    icon: 'visibility',
+    icon: 'mdi-eye',
     state: SpeakerSystemState.Active
   },
   {
     transition: 'archive',
-    icon: 'archive',
+    icon: 'mdi-archive',
     state: SpeakerSystemState.Archived
   }
 ]

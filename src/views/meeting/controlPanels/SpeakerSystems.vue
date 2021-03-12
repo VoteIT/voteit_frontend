@@ -4,7 +4,7 @@
     <div class="widget speaker-system" v-for="system in systems" :key="system.pk">
       <div class="btn-controls float">
         <WorkflowState admin :contentType="speakerSystemType" :pk="system.pk" :state="system.state" />
-        <btn sm v-if="systemRules.canDelete(system)" icon="delete" @click="deleteSystem(system)"/>
+        <btn sm color="warning" v-if="systemRules.canDelete(system)" icon="delete" @click="deleteSystem(system)"/>
       </div>
       <h2>{{ system.title }}</h2>
       <dl>
@@ -38,7 +38,7 @@
           <input id="speakersystem-active" type="checkbox" v-model="systemData.active">
           <label for="speakersystem-active">{{ t('speaker.visible') }}</label>
         </p>
-        <Btn icon="add" :disabled="!systemDataReady">{{ t('add') }}</Btn>
+        <Btn icon="plus" :disabled="!systemDataReady">{{ t('add') }}</Btn>
       </form>
     </BtnDropdown>
   </div>
@@ -63,15 +63,15 @@ import { User } from '@/utils/types'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 const systemIcons = {
-  speaker: 'chat',
-  list_moderator: 'gavel'
+  speaker: 'mdi-chat',
+  list_moderator: 'mdi-gavel'
 }
 
 export default defineComponent({
   components: { BtnDropdown, UserSearch, RoleMatrix, WorkflowState },
   name: 'SpeakerSystems',
   path: 'speakers',
-  icon: 'volume_up',
+  icon: 'mdi-account-voice',
   setup () {
     const t = inject('t') as CallableFunction
     const systemAPI = speakerSystemType.getContentApi()

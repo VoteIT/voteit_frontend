@@ -1,26 +1,28 @@
 <template>
-  <button v-if="button" class="btn" :class="{ 'btn-sm': sm, active }">
-    <i class="material-icons">{{ name }}</i> <slot/>
-  </button>
-  <i v-else-if="name" class="material-icons" :class="{ sm }">{{ name }}</i>
-  <i v-else class="material-icons" :class="{ sm }"><slot/></i>
+  <v-icon :small="sm" :icon="icon" />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'Material icon',
   props: {
     name: String,
-    button: Boolean,
     sm: Boolean,
     active: Boolean
+  },
+  setup (props, { slots }) {
+    const icon = computed(() => {
+      const name = props.name || String(slots.default)
+      if (name.startsWith('mdi-')) {
+        return name
+      }
+      return 'mdi-' + name.replaceAll('_', '-')
+    })
+    return {
+      icon
+    }
   }
 })
 </script>
-
-<style lang="sass">
-.material-icons.sm
-  font-size: 1.2rem
-</style>

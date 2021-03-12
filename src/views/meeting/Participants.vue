@@ -27,11 +27,11 @@ type RoleIcon = {
 }
 
 const meetingIcons: RoleIcon = {
-  participant: 'face',
-  moderator: 'gavel',
-  proposer: 'post_add',
-  discusser: 'comment',
-  potential_voter: 'star_outline'
+  participant: 'mdi-eye',
+  moderator: 'mdi-gavel',
+  proposer: 'mdi-note-plus',
+  discusser: 'mdi-comment-outline',
+  potential_voter: 'mdi-star-outline'
 }
 
 export default defineComponent({

@@ -9,6 +9,6 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'ChatBubble',
-  icon: 'chat'
+  icon: 'mdi-chat'
 })
 </script>

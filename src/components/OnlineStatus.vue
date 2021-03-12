@@ -107,6 +107,6 @@ export default defineComponent({
   transition: top 1s ease-in
   &.online,
   &:not(.isAuthenticated)
-    top: -36px
+    top: -40px
     background-color: #4b4
 </style>

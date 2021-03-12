@@ -1,7 +1,7 @@
 <template>
   <div id="bubbles">
     <div v-for="{ component, data } in bubbles" :key="component.name" class="bubble">
-      <btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
+      <v-btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
       <transition name="bubble-content">
         <component class="content" v-show="component.name === openBubble" :is="component" :data="data" />
       </transition>
@@ -85,25 +85,24 @@ export default defineComponent({
     position: relative
     > button
       background-color: var(--inverted-bg)
-      .material-icons
+      .mdi
         color: var(--inverted-text)
-      height: 50px
-      width: 50px
+      height: 64px
+      width: 64px
       border-radius: 50%
       &:focus
         outline: none
-      &.open
-        .material-icons
-          color: var(--active-icon)
+      &.open .mdi
+        color: var(--active-icon)
       margin-left: 10px
       &:first-child
         margin-right: 0
     > .content
       position: absolute
-      bottom: 65px
+      bottom: 75px
       width: 20vw
       min-width: 300px
-      right: 20px
+      right: 32px
       padding: 1rem
       background-color: var(--alt-bg)
       border-radius: 5px 5px 0 5px

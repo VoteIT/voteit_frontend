@@ -141,13 +141,12 @@ export default defineComponent({
     .material-icons
       color: #000
 .btn-group
-  .btn,
-  .btn.btn-sm
+  .v-btn
     border-radius: 0
-  .btn:first-child
+  .v-btn:first-child
     border-top-left-radius: 6px
     border-bottom-left-radius: 6px
-  .btn:last-child
+  .v-btn:last-child
     border-top-right-radius: 6px
     border-bottom-right-radius: 6px
 
@@ -157,7 +156,7 @@ export default defineComponent({
     display: flex
     flex-flow: column
     margin-top: .25rem
-    .btn
+    .v-btn
       background-color: #000
       color: #fff
       border-radius: 0
@@ -166,10 +165,10 @@ export default defineComponent({
       &:hover,
       &:focus
         background-color: #668
-    .btn:first-child
+    .v-btn:first-child
       border-top-left-radius: 6px
       border-top-right-radius: 6px
-    .btn:last-child
+    .v-btn:last-child
       border-bottom-left-radius: 6px
       border-bottom-right-radius: 6px
 

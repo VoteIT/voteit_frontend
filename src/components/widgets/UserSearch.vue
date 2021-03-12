@@ -25,7 +25,7 @@ export default defineComponent({
   props: {
     buttonIcon: {
       type: String,
-      default: 'add'
+      default: 'plus'
     },
     buttonText: {
       type: String,

@@ -6,7 +6,7 @@
         <div class="btn-controls">
           <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :pk="agendaId" />
           <btn v-if="pollType.rules.canAdd(agendaItem)" sm icon="star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
-          <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="edit" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
+          <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="mdi-pencil" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
         </div>
         <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
         <div class="speaker-lists" v-if="speakerSystems.length">

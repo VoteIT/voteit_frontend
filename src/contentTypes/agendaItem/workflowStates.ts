@@ -11,28 +11,28 @@ export enum AgendaState {
 export default [
   {
     transition: 'unpublish',
-    icon: 'visibility_off',
+    icon: 'mdi-eye-off',
     state: AgendaState.Private,
     requiresRole: MeetingRole.Moderator
   },
   {
     transition: 'upcoming',
-    icon: 'pause',
+    icon: 'mdi-pause',
     state: AgendaState.Upcoming
   },
   {
     transition: 'ongoing',
-    icon: 'play_arrow',
+    icon: 'mdi-play',
     state: AgendaState.Ongoing
   },
   {
     transition: 'close',
-    icon: 'close',
+    icon: 'mdi-close',
     state: AgendaState.Closed
   },
   {
     transition: 'archive',
-    icon: 'archive',
+    icon: 'mdi-archive',
     state: AgendaState.Archived
   }
 ]

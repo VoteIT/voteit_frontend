@@ -9,32 +9,32 @@ export enum MeetingState {
 export default [
   {
     transition: 'upcoming',
-    icon: 'pause',
+    icon: 'mdi-pause',
     state: MeetingState.Upcoming,
     name: 'Upcoming'
   },
   {
     transition: 'ongoing',
-    icon: 'play_arrow',
+    icon: 'mdi-play',
     state: MeetingState.Ongoing,
     name: 'Ongoing'
   },
   {
     transition: 'close',
-    icon: 'close',
+    icon: 'mdi-close',
     state: MeetingState.Closed,
     name: 'Upcoming'
   },
   {
     transition: 'request_archiving',
-    icon: 'archive',
+    icon: 'mdi-archive',
     state: MeetingState.Archiving,
     name: 'Archiving',
     isFinal: true
   },
   {
     transition: 'archive',
-    icon: 'archive',
+    icon: 'mdi-archive',
     state: MeetingState.Archived,
     name: 'Archived',
     isFinal: true

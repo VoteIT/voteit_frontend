@@ -4,9 +4,11 @@
     <h2 v-else-if="done">{{ t('poll.voteRegistered') }}</h2>
     <template v-else>
       <component ref="method" :is="methodComponent" :poll="data" :proposals="proposals" v-model="validVote" />
-      <div class="buttons btn-group">
-        <btn icon="how_to_vote" :disabled="!validVote || waiting" @click="castVote()">{{ t('poll.castVote') }}</btn>
-        <btn icon="block" :class="{ active: currentAbstained && !validVote }" :disable="waiting" @click="abstainVote()">{{ t('poll.abstain') }}</btn>
+      <div class="buttons btn-controls">
+        <btn icon="mdi-vote" :disabled="!validVote || waiting" @click="castVote()">{{ t('poll.castVote') }}</btn>
+        <v-btn color="warning" :disabled="waiting" @click="abstainVote()">
+          <v-icon left icon="mdi-cancel"/>{{ t('poll.abstain') }}
+        </v-btn>
       </div>
     </template>
   </main>

@@ -5,11 +5,11 @@
       <p>
         U there, bruh?
       </p>
-      <btn @click="presence.channel.add({ presence_check: data.presenceCheck.pk })" icon="pets">Represent!</btn>
+      <btn @click="presence.channel.add({ presence_check: data.presenceCheck.pk })" icon="mdi-hand">Represent!</btn>
     </template>
     <template v-else>
       <p>Your presence has been noted.</p>
-      <btn @click="presence.channel.delete(userPresence.pk)" icon="undo">Undo</btn>
+      <btn @click="presence.channel.delete(userPresence.pk)" icon="mdi-undo-variant">Undo</btn>
     </template>
   </div>
 </template>
@@ -20,7 +20,7 @@ import { computed, defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'PresenceCheck',
-  icon: 'pan_tool',
+  icon: 'mdi-hand',
   props: {
     data: {
       type: Object,

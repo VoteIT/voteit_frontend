@@ -11,7 +11,7 @@
       </nav>
       <nav class="tabs">
         <RouterLink v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
-          <Icon sm :name="link.icon" />
+          <v-icon small left :icon="link.icon" />
           {{ link.title }}
           <span v-if="link.count">({{ link.count() }})</span>
         </RouterLink>
@@ -64,20 +64,20 @@ export default defineComponent({
       {
         role: MeetingRole.Moderator,
         title: t('settings'),
-        icon: 'settings',
+        icon: 'mdi-cog',
         path: 'settings'
       },
       {
         // role: ['potential_voter', 'moderator'], // FIXME Permissions
         title: t('poll.polls'),
-        icon: 'star',
+        icon: 'mdi-star',
         path: 'polls',
         count: () => getPolls(meetingId.value, 'ongoing').length
       },
       {
         role: MeetingRole.Moderator,
         title: t('meeting.participants'),
-        icon: 'people',
+        icon: 'mdi-account-multiple',
         path: 'participants'
       }
     ]

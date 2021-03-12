@@ -2,7 +2,7 @@
   <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @click.self="dismiss">
     <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
       <header v-if="modal.title">
-        <btn icon="close" class="closer" @click="dismiss" v-show="modal.dismissable" />
+        <v-btn icon="mdi-close" plain @click="dismiss" v-show="modal.dismissable" />
         <h1>{{ modal.title }}</h1>
       </header>
       <component v-if="modal.component" :is="modal.component" :data="modal.data" />
@@ -106,9 +106,9 @@ export default defineComponent({
     padding: 1rem
   header
     button
-      background-color: transparent
-      padding: 0
       float: right
+      margin-top: -8px
+      margin-right: -10px
     h1
       margin: 0
 </style>

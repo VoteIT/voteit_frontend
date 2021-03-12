@@ -1,6 +1,6 @@
 <template>
   <RichtextEditor v-if="editing" v-model="content" @submit="submit()" set-focus />
-  <div v-else v-html="object[contentAttribute]" />
+  <div v-else v-html="object[contentAttribute]" class="richtext" />
 </template>
 
 <script lang="ts">
@@ -66,3 +66,15 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass">
+.richtext
+  margin: .4em 0
+  ol, ul
+    padding-left: 1.2em
+  blockquote
+    border-left: 3px solid var(--widget-alt-bg)
+    padding-left: .6em
+  ol, ul, p, blockquote
+    margin-bottom: .2em
+</style>

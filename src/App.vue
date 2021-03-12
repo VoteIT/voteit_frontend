@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <v-app>
     <online-status/>
     <router-view/>
     <modal/>
     <dialogs/>
     <loader/>
     <alerts/>
-  </div>
+  </v-app>
 </template>
 
 <script lang="ts">
@@ -43,11 +43,13 @@ export default defineComponent({
     provide('debug', process.env.NODE_ENV === 'development')
   }
 })
+/* Disabled from style below
+$material-icons-font-path: '~material-icons/iconfont/'
+@import '~material-icons/iconfont/material-icons.scss'
+*/
 </script>
 
 <style lang="sass">
-$material-icons-font-path: '~material-icons/iconfont/'
-@import '~material-icons/iconfont/material-icons.scss'
 @import './theme/dark.sass'
 @import './theme/light.sass'
 

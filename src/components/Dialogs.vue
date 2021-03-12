@@ -2,11 +2,11 @@
   <transition name="dialog">
     <div id="dialog-backdrop" v-show="active" @click.self="close()">
       <div id="dialog" ref="windowEl" v-if="active" @keyup.esc="close()">
-        <btn icon="close" class="closer" @click="close()" />
+        <v-btn plain icon="mdi-close" class="closer" @click="close()" />
         <p>{{ active.title }}</p>
         <div class="btn-controls">
-          <btn @click="close()">{{ active.no }}</btn>
-          <btn primary @click="resolve()">{{ active.yes }}</btn>
+          <v-btn color="secondary" @click="close()">{{ active.no }}</v-btn>
+          <v-btn @click="resolve()">{{ active.yes }}</v-btn>
         </div>
       </div>
     </div>
@@ -98,23 +98,15 @@ export default defineComponent({
   padding: 20px 40px
   width: 600px
   max-width: calc(100vw - 40px)
-  font-size: 1.2rem
   border-radius: 3px
   p
+    font-size: 1.2rem
     white-space: pre-line
+    margin: 1em 0
   .btn-controls
-    text-align: right
-    margin: 0 -20px
+    text-align: center
   .closer
     position: absolute
-    padding: 0
     right: 10px
     top: 10px
-    background-color: transparent
-    .material-icons
-      font-size: 2rem
-      color: #ccc
-      transition: color .2s
-    &:hover .material-icons
-      color: #999
 </style>

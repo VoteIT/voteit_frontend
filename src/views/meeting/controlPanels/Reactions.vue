@@ -10,7 +10,7 @@ import { computed, defineComponent, inject } from 'vue'
 export default defineComponent({
   name: 'ReactionButtons',
   path: 'reactions',
-  icon: 'thumb_up',
+  icon: 'mdi-thumb-up',
   setup () {
     const t = inject('t') as CallableFunction
     return {

@@ -1,6 +1,6 @@
 <template>
-  <v-btn :size="size">
-    <v-icon :left="!!$slots.default" v-if="icon" :size="size" :icon="'mdi-' + icon.replace('_', '-')" />
+  <v-btn :color="cColor" :size="sm ? 'small' : 'default'">
+    <v-icon :left="!!$slots.default" v-if="icon" :icon="mdIcon" />
     <span v-if="$slots.default"><slot/></span>
   </v-btn>
 </template>
@@ -13,11 +13,16 @@ export default defineComponent({
   props: {
     icon: String,
     sm: Boolean,
-    active: Boolean
+    active: Boolean,
+    color: {
+      type: String,
+      default: 'primary'
+    }
   },
   setup (props) {
     return {
-      size: computed(() => props.sm ? 'small' : undefined)
+      mdIcon: computed(() => props.icon && (props.icon.startsWith('mdi-') ? props.icon : 'mdi-' + props.icon.replaceAll('_', '-'))),
+      cColor: computed(() => props.active ? 'accent' : props.color)
     }
   }
 })
@@ -57,7 +62,7 @@ export default defineComponent({
     opacity: .5
 
 .btn-controls
-  > .btn
+  > .v-btn
     margin-right: .2rem
     &:last-child
       margin-right: 0

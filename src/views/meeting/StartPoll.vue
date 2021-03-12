@@ -2,7 +2,9 @@
   <div>
     <h1>Start poll</h1>
     <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
-    <Btn class="selected" v-if="agendaId" @click="$router.push(`${meetingPath}/polls/new`)">{{ agendaItem.title }} <Icon>close</Icon></Btn>
+    <v-btn v-if="agendaId && agendaItem" @click="$router.push(`${meetingPath}/polls/new`)">
+      {{ agendaItem.title }}<v-icon right icon="mdi-close" />
+    </v-btn>
     <ul v-else>
       <template v-for="ai in getAgenda(meetingId)" :key="ai.pk">
         <li v-if="canAdd(ai) && getPublishedProposals(ai.pk).length">
@@ -27,8 +29,8 @@
       </div>
       <p v-else><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
       <div v-if="!pickMethod" class="btn-group">
-        <Btn icon="done_all" @click="toggleAll">{{ t('all') }}</Btn>
-        <Btn icon="forward" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</Btn>
+        <Btn icon="mdi-check-all" @click="toggleAll">{{ t('all') }}</Btn>
+        <Btn icon="mdi-arrow-right-bold" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</Btn>
       </div>
     </template>
     <template v-if="pickMethod">
@@ -232,6 +234,7 @@ li
       display: inline-block
       line-height: 1
   &.selected
+    background-color: var(--widget-selected-bg)
     a:before
       content: '✔'
   &.selected.locked

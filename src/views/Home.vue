@@ -1,9 +1,9 @@
 <template>
-  <main class="home" v-if="isAuthenticated">
-    <p>
+  <v-main class="home" v-if="isAuthenticated">
+    <div>
       {{ t('auth.loggedInAs', user) }}
       <btn @click="logout">{{ t('auth.logout') }}</btn>
-    </p>
+    </div>
     <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
     <ul v-if="participatingMeetings.length">
       <li v-for="meeting in participatingMeetings" :key="meeting.pk">
@@ -20,14 +20,14 @@
       </ul>
     </template>
     <div v-if="canAdd()">
-      <btn icon="add" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
+      <btn icon="plus" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
     </div>
     <template v-if="debug">
       <counter :style="{ marginTop: '1.5em' }" />
       <get-schema/>
     </template>
-  </main>
-  <main class="home" v-else>
+  </v-main>
+  <v-main class="home" v-else>
     <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
@@ -36,7 +36,7 @@
         </Btn>
       </li>
       <li>
-        <Btn icon="add" @click="addUser = !addUser">
+        <Btn icon="plus" @click="addUser = !addUser">
           New user
         </Btn>
         <form v-show="addUser" @submit.prevent="createUser">
@@ -49,7 +49,7 @@
         </form>
       </li>
     </ul>
-  </main>
+  </v-main>
 </template>
 
 <script lang="ts">

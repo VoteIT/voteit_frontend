@@ -9,7 +9,7 @@ import { computed, defineComponent, inject } from 'vue'
 export default defineComponent({
   name: 'AccessPolicies',
   path: 'access-policies',
-  icon: 'vpn_key',
+  icon: 'mdi-key',
   setup () {
     const t = inject('t') as CallableFunction
     return {

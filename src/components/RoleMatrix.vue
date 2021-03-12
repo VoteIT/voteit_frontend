@@ -14,8 +14,8 @@
       <tr v-for="{ user, assigned } in users" :key="user">
         <td><User :pk="user" /></td>
         <td v-for="{ name } in roles" :key="name">
-          <Icon v-if="assigned.has(name)" class="active" @click="removeRole(user, name)">check</Icon>
-          <Icon v-else @click="addRole(user, name)">close</Icon>
+          <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/>
+          <v-icon v-else @click="addRole(user, name)" icon="mdi-close" />
         </td>
       </tr>
     </tbody>
@@ -152,8 +152,6 @@ table
     position: relative
     cursor: pointer
     color: var(--btn-text)
-    i
-      vertical-align: text-bottom
     &.orderBy::after
       content: "↓"
       font-size: 1.4em
@@ -166,11 +164,11 @@ table
       transform: rotate(180deg)
   td
     text-align: center
-    i
+    .mdi
+      color: var(--warning, red)
       cursor: pointer
-      color: red
-      &.active
-        color: green
+      &.success
+        color: var(--success, green)
   td:first-child,
   th:first-child
     text-align: left

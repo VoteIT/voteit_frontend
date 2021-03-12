@@ -1,21 +1,27 @@
 <template>
   <Widget :selected="isActive">
     <div class="btn-controls">
-      <Btn sm v-if="inList && canLeave(list)" icon="undo" @click="speakers.leaveList(list)">Leave list</Btn>
-      <Btn sm v-else-if="canEnter(list)" icon="add" @click="speakers.enterList(list)">Enter list</Btn>
+      <v-btn size="small" color="warning" v-if="inList && canLeave(list)" @click="speakers.leaveList(list)">
+        <v-icon left icon="mdi-playlist-remove"/>
+        Leave list
+      </v-btn>
+      <v-btn size="small" v-else-if="canEnter(list)" @click="speakers.enterList(list)">
+        <v-icon left icon="mdi-playlist-plus" />
+        Enter list
+      </v-btn>
       <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
-      <Btn sm v-if="isActive" icon="toggle_on" :title="t('speaker.isActiveList')" active />
-      <Btn sm v-if="canActivate(list)" icon="toggle_off" :title="t('speaker.setActiveList')" @click="speakers.setActiveList(list)" />
-      <Btn sm v-if="canDelete(list)" icon="delete" :title="t('delete')" @click="deleteList(list)" />
+      <Btn sm v-if="canDelete(list)" icon="mdi-delete" color="warning" :title="t('delete')" @click="deleteList(list)" />
     </div>
     <h3>
       {{ list.title }}
+      <v-icon v-if="isActive" icon="mdi-toggle-switch" :title="t('speaker.isActiveList')"/>
+      <v-icon v-if="canActivate(list)" icon="mdi-toggle-switch-off" :title="t('speaker.setActiveList')" @click="speakers.setActiveList(list)" />
     </h3>
     <div v-if="canStart(list)" class="btn-group">
-      <Btn icon="play_arrow" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)" />
-      <Btn icon="stop" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)" />
+      <v-btn :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)"><v-icon icon="mdi-play"/></v-btn>
+      <v-btn :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)"><v-icon icon="mdi-stop"/></v-btn>
     </div>
-    <p v-if="currentSpeaker">
+    <p v-if="currentSpeaker" class="mb-2">
       {{ t('speaker.currentlySpeaking') }}:
       <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
     </p>
@@ -57,7 +63,6 @@ export default defineComponent({
   setup (props) {
     const t = inject('t') as (text: string) => string
     const speakers = useSpeakerLists()
-    const t = inject('t') as CallableFunction
     const api = speakerListType.getContentApi()
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
@@ -93,8 +98,9 @@ export default defineComponent({
 .btn-controls
   float: right
 
-h3
-  margin-top: 0
-  button
-    margin-left: 1em
+h3 .mdi
+  cursor: pointer
+
+ol
+  padding-left: 1.5em
 </style>

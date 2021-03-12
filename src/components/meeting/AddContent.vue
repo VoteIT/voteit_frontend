@@ -3,7 +3,7 @@
     <form @submit.prevent="submit()">
       <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="tags" />
       <div class="buttons">
-        <Btn sm icon="send" :disabled="disabled">{{ t('post') }}</Btn>
+        <Btn sm icon="send" :disabled="disabled" @click="submit()">{{ t('post') }}</Btn>
       </div>
     </form>
   </BtnDropdown>
