@@ -22,7 +22,7 @@ let pFetchTimeout: number
 
 export default function useMeeting () {
   const route = useRoute()
-  const meetingRoles = useContextRoles('meeting')
+  const meetingRoles = meetingType.useContextRoles()
   const meetingApi = meetingType.getContentApi()
   const { user } = useAuthentication()
 

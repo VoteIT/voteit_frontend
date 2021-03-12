@@ -8,8 +8,6 @@
       </div>
       <h2>{{ system.title }}</h2>
       <dl>
-        <dt>{{ t('speaker.visible') }}</dt>
-        <dd>{{ system.active }}</dd>
         <dt>{{ t('speaker.systemMethod') }}</dt>
         <dd>{{ system.method_name }}</dd>
         <dt>{{ t('speaker.safePositions') }}</dt>
@@ -108,7 +106,7 @@ export default defineComponent({
     }
 
     function deleteSystem (system: SpeakerSystem) {
-      dialogQuery(t('speakerList.confirmSystemDeletion'))
+      dialogQuery(t('speaker.confirmSystemDeletion'))
         .then(() => systemAPI.delete(system.pk))
     }
 
@@ -139,4 +137,18 @@ export default defineComponent({
 <style lang="sass" scoped>
 .btn-controls.float
   float: right
+
+dl
+  display: flex
+  flex-flow: row wrap
+dt
+  flex: 0 0 20%
+  font-weight: bold
+  text-align: right
+  &::after
+    content: ':'
+dd
+  flex: 1 0 80%
+  margin: 0
+  padding-left: .5em
 </style>

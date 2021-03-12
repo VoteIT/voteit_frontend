@@ -50,7 +50,7 @@ export default function useReactions () {
 
   function setUserReacted (button: ReactionButton, relation: ReactionRelation) {
     return reactionChannel.add({
-      pk: button.pk, // FIXME Should be button!
+      button: button.pk, // FIXME Should be button!
       ...relation,
       user: user.value?.pk
     })

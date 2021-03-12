@@ -1,12 +1,12 @@
-import useContextRoles from '@/composables/useContextRoles'
 import { reactionButtons } from '@/composables/meeting/useReactions'
 
 import { predicate } from '../types'
 import { ReactionButton } from '../reactionButton'
+import meeting from '../meeting'
 
 import { Reaction } from '.'
 
-const { hasRole } = useContextRoles('meeting')
+const { hasRole } = meeting.useContextRoles()
 
 const canAdd: predicate = (button: ReactionButton) => {
   return button.active && hasRole(button.meeting, button.change_roles)

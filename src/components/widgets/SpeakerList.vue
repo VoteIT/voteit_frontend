@@ -6,6 +6,7 @@
       <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
       <Btn sm v-if="isActive" icon="toggle_on" :title="t('speaker.isActiveList')" active />
       <Btn sm v-if="canActivate(list)" icon="toggle_off" :title="t('speaker.setActiveList')" @click="speakers.setActiveList(list)" />
+      <Btn sm v-if="canDelete(list)" icon="delete" :title="t('delete')" @click="deleteList(list)" />
     </div>
     <h3>
       {{ list.title }}
@@ -29,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, inject, PropType } from 'vue'
 
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
 import rules from '@/contentTypes/speakerList/rules'
@@ -39,6 +40,7 @@ import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerList } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import Moment from './Moment.vue'
+import { dialogQuery } from '@/utils'
 
 export default defineComponent({
   name: 'SpeakerList',
@@ -55,6 +57,8 @@ export default defineComponent({
   },
   setup (props) {
     const speakers = useSpeakerLists()
+    const t = inject('t') as CallableFunction
+    const api = speakerListType.getContentApi()
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
     const queue = computed(() => speakers.getQueue(props.list))
@@ -64,7 +68,13 @@ export default defineComponent({
     const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 
+    function deleteList (list: SpeakerList) {
+      dialogQuery(t('speaker.deleteListConfirmation'))
+        .then(() => api.delete(list.pk))
+    }
+
     return {
+      deleteList,
       speakerListType,
       isActive,
       isOpen,

@@ -3,7 +3,7 @@
     <form @submit.prevent="submit()">
       <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="tags" />
       <div class="buttons">
-        <Btn sm icon="send" :disabled="submitDisabled">{{ t('post') }}</Btn>
+        <Btn sm icon="send" :disabled="disabled">{{ t('post') }}</Btn>
       </div>
     </form>
   </BtnDropdown>
@@ -16,7 +16,6 @@ import { dialogQuery } from '@/utils'
 
 import BtnDropdown from '../BtnDropdown.vue'
 import RichtextEditor from '../widgets/RichtextEditor.vue'
-import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
   name: 'AddContent',
@@ -26,13 +25,8 @@ export default defineComponent({
   },
   props: {
     name: String,
-    // For channels:
-    contextPk: {
-      type: Number,
-      required: true
-    },
-    contentType: {
-      type: ContentType,
+    handler: {
+      type: Function as PropType<(body: string) => Promise<any>>,
       required: true
     },
     minLength: {
@@ -47,34 +41,27 @@ export default defineComponent({
   },
   setup (props) {
     const t = inject('t') as CallableFunction
-    // Post (data update from channels)
-    const channel = props.contentType.getChannel()
-    const submitting = ref(false)
     const text = ref('')
+    const disabled = ref(false)
 
     function textContent (html: string) {
       const tmp = document.createElement('div')
       tmp.innerHTML = html
       return tmp.textContent || tmp.innerText || ''
     }
-
     const textLength = computed(() => textContent(text.value).length)
-    const submitDisabled = computed(() => submitting.value || textLength.value < props.minLength)
 
-    function submit (override?: boolean) {
-      if (submitDisabled.value) return
+    function submit (override = false) {
+      if (disabled.value) return
       if (override || textLength.value >= props.warnLength) {
-        const body = text.value
-        submitting.value = true
-        channel.contextAdd(props.contextPk, {
-          body
-        })
+        disabled.value = true
+        props.handler(text.value)
           .then(() => {
             editorComponent.value.clear()
             dropdownComponent.value.isOpen = false
           })
           .finally(() => {
-            submitting.value = false
+            disabled.value = false
           })
       } else {
         dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))
@@ -87,14 +74,13 @@ export default defineComponent({
 
     return {
       t,
+      disabled,
       open,
       focus,
-      submitting,
       submit,
       text,
       editorComponent,
-      dropdownComponent,
-      submitDisabled
+      dropdownComponent
     }
   }
 })

@@ -4,6 +4,7 @@
   "back": "Back",
   "continue": "Continue",
   "create": "Create",
+  "delete": "Delete",
   "edit": "Edit",
   "name": "Name",
   "no": "No",
@@ -117,6 +118,7 @@
   },
   "speaker": {
     "addListToSystem": "New list ({title})",
+    "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
     "currentlySpeaking": "Now speaking",
     "isActiveList": "List is active",
     "lists": "No speaker lists | Speaker list | Speaker lists",

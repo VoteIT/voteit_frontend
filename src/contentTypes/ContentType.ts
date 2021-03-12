@@ -1,4 +1,5 @@
 import { RestApiConfig } from '@/composables/types'
+import useContextRoles from '@/composables/useContextRoles'
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
 import { ChannelConfig, WorkflowState } from './types'
@@ -50,5 +51,12 @@ export default class ContentType<T, K=number> {
       return useWorkflows(this.contentType.states)
     }
     throw new Error(`Workflow States not configured for Content Type ${this.name}`)
+  }
+
+  useContextRoles () {
+    if (this.contentType.hasRoles && this.contentType.channelName) {
+      return useContextRoles(this.contentType.channelName)
+    }
+    throw new Error(`Context Roles not configured for Content Type ${this.name}`)
   }
 }

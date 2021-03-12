@@ -6,5 +6,6 @@ import rules from './rules'
 
 export default new ContentType<DiscussionPost>({
   rules,
-  channelName: 'discussion_post'
+  channelName: 'discussion_post',
+  restEndpoint: 'discussion-posts/'
 })
