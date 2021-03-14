@@ -5,7 +5,7 @@
     <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
     <div v-if="!readOnly" class="btn-controls">
       <slot name="buttons"/>
-      <Btn v-if="canChange(p)" sm icon="mdi-pencil" :active="editing" @click="editing = !editing" />
+      <Btn v-if="canChange(p)" sm icon="mdi-pencil" color="secondary" :active="editing" @click="editing = !editing" />
       <Btn v-if="canDelete(p)" sm icon="mdi-delete" color="warning" @click="queryDelete()" />
     </div>
   </Widget>

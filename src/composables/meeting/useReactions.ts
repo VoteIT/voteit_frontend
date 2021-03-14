@@ -27,6 +27,7 @@ export const reactionChannel = reactionType.getChannel()
 
 export default function useReactions () {
   function getMeetingButtons (meeting: number, contentType: string) {
+    console.log(reactionButtons)
     const buttons = [...wu(reactionButtons.values()).filter(
       b => b.meeting === meeting && b.allowed_models.includes(contentType)
     )]

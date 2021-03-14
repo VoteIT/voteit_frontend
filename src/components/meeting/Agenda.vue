@@ -98,7 +98,7 @@ export default defineComponent({
       border-top: none
     line-height: 2
     text-transform: capitalize
-    .material-icons
+    .mdi
       color: var(--discrete-icon)
       vertical-align: -2px
       margin-left: .2rem
@@ -111,7 +111,7 @@ export default defineComponent({
     a
       display: block
       text-decoration: none
-      padding: .4rem .2rem .4rem 1.6rem
+      padding: .4rem .2rem .4rem 1.7em
       color: var(--agenda-link)
       position: relative
       &.router-link-active
@@ -120,8 +120,8 @@ export default defineComponent({
         &::after
           content: '❧'
           position: absolute
-          left: 3px
-          top: .25em
+          left: .5em
+          top: .35em
           color: var(--discrete-icon)
 
   .agenda-add-form

@@ -156,7 +156,7 @@ table
       content: "↓"
       font-size: 1.4em
       position: absolute
-      top: 0
+      top: -6px
       padding: 0 4px
       transition: transform .1s
   &.orderReversed

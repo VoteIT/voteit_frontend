@@ -2,13 +2,12 @@
   <span class="user-search">
     <input type="search" :class="{ selected: !!selected }" name="search" autocomplete="off" v-model="query" @keyup="delayedSearch" />
     <Btn type="submit" :icon="buttonIcon" :disabled="!selected" @click="$emit('submit', selected)">{{ buttonText }}</Btn>
-    <div class="selector" v-show="results.length">
-      <ul>
-        <li v-for="result in results" :key="result.pk" @click="select(result)">
-          {{ result.full_name }}
-        </li>
-      </ul>
-    </div>
+    <v-sheet rounded elevation="4" class="selector" v-show="results.length">
+      <v-btn block plain v-for="result in results" :key="result.pk" @click="select(result)">
+        <span v-if="result.full_name">{{ result.full_name }}</span>
+        <em v-else>-- unknown --</em>
+      </v-btn>
+    </v-sheet>
   </span>
 </template>
 
@@ -74,3 +73,18 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass">
+.user-search
+  display: flex
+  position: relative
+  input[type=search]
+    padding: 0 .4em
+  .selector
+    position: absolute
+    top: 38px
+    left: 2px
+    background-color: var(--alt-bg)
+    min-width: 210px
+    z-index: 100
+</style>

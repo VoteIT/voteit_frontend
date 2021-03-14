@@ -1,9 +1,12 @@
 <template>
   <span ref="root" class="dropdown">
-    <btn sm :title="state" :icon="currentState.icon" :disabled="!admin || currentState.isFinal" @click="toggle" />
+    <v-btn size="small" color="secondary" :title="state" :disabled="!admin || currentState.isFinal" @click="toggle">
+      <v-icon :icon="currentState.icon"/>
+    </v-btn>
     <div ref="opts" v-if="isOpen && statesAvailable" class="btn-group vertical">
-      <btn sm v-for="s in statesAvailable" :title="s.transition" :key="s.state" :icon="s.icon"
-        @click="makeTransition(s)" />
+      <v-btn size="small" v-for="s in statesAvailable" :title="s.transition" :key="s.state" @click="makeTransition(s)">
+        <v-icon :icon="s.icon"/>
+      </v-btn>
     </div>
   </span>
 </template>
@@ -134,7 +137,7 @@ export default defineComponent({
 <style lang="sass">
 .dropdown
   position: relative
-  margin-right: .25rem
+  margin-right: .2rem
   display: inline-block
   > .btn
     background-color: #bbc
@@ -171,6 +174,4 @@ export default defineComponent({
     .v-btn:last-child
       border-bottom-left-radius: 6px
       border-bottom-right-radius: 6px
-
-  margin-right: .2rem
 </style>

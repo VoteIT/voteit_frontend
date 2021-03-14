@@ -179,7 +179,7 @@ export default defineComponent({
 
 <style lang="sass">
 ul.no-list
-  padding: 0
+  padding: 0 !important
   > li
     list-style: none
 </style>

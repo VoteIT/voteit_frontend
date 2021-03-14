@@ -14,7 +14,7 @@
               <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
             </div>
           </template>
-          <BtnDropdown v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )" :style="{ marginTop: '1em' }">
+          <BtnDropdown dark v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )" :style="{ marginTop: '1em' }">
             <div class="proposals denied">
               <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
             </div>
