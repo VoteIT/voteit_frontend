@@ -1,6 +1,6 @@
 <template>
   <span ref="root" class="dropdown">
-    <v-btn size="small" color="secondary" :title="state" :disabled="!admin || currentState.isFinal" @click="toggle">
+    <v-btn size="small" color="secondary" :disabled="!admin || currentState.isFinal" :title="state" @click="toggle">
       <v-icon :icon="currentState.icon"/>
     </v-btn>
     <div ref="opts" v-if="isOpen && statesAvailable" class="btn-group vertical">

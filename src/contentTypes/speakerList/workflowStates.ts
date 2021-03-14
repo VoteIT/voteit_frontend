@@ -6,12 +6,12 @@ export enum SpeakerListState {
 export default [
   {
     transition: 'open',
-    icon: 'check',
+    icon: 'mdi-check',
     state: SpeakerListState.Open
   },
   {
     transition: 'close',
-    icon: 'close',
+    icon: 'mdi-close',
     state: SpeakerListState.Closed
   }
 ]
