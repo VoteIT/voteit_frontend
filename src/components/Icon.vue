@@ -1,27 +1,23 @@
 <template>
-  <v-icon :small="sm" :icon="icon" />
+  <v-icon :small="sm" :icon="name" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'Material icon',
   props: {
-    name: String,
+    name: {
+      type: String,
+      required: true
+    },
     sm: Boolean,
     active: Boolean
   },
-  setup (props, { slots }) {
-    const icon = computed(() => {
-      const name = props.name || String(slots.default)
-      if (name.startsWith('mdi-')) {
-        return name
-      }
-      return 'mdi-' + name.replaceAll('_', '-')
-    })
-    return {
-      icon
+  setup (props) {
+    if (!props.name.startsWith('mdi-')) {
+      console.error(`Icon ${props.name} is not MDI`)
     }
   }
 })

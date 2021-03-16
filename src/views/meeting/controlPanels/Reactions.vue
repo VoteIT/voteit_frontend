@@ -13,7 +13,7 @@
         <Btn icon="mdi-pencil" @click="editReaction(button)">{{ t('edit') }}</Btn>
       </div>
     </Widget>
-    <Btn icon="plus" @click="editReaction()">{{ t('reaction.addButton') }}</Btn>
+    <Btn icon="mdi-plus" @click="editReaction()">{{ t('reaction.addButton') }}</Btn>
   </div>
 </template>
 

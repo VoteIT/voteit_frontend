@@ -20,7 +20,7 @@
       </ul>
     </template>
     <div v-if="canAdd()">
-      <btn icon="plus" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
+      <btn icon="mdi-plus" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
     </div>
     <template v-if="debug">
       <counter :style="{ marginTop: '1.5em' }" />
@@ -31,18 +31,18 @@
     <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
-        <Btn @click="authenticate(user)" :icon="user.is_superuser ? 'verified_user' : 'face'">
+        <Btn @click="authenticate(user)" :icon="user.is_superuser ? 'mdi-account-cowboy-hat' : 'mdi-account'">
           {{ user.username }}
         </Btn>
       </li>
       <li>
-        <Btn icon="plus" @click="addUser = !addUser">
+        <Btn icon="mdi-plus" @click="addUser = !addUser">
           New user
         </Btn>
         <form v-show="addUser" @submit.prevent="createUser">
           <p>
             <input type="checkbox" id="is_super" v-model="newUser.is_superuser" />
-            <label for="is_super">Superuser <Icon sm>verified_user</Icon></label>
+            <label for="is_super">Superuser <Icon sm name="mdi-account-cowboy-hat" /></label>
           </p>
           <p class="error" v-show="newUserError">Username not accepted</p>
           <input type="text" required v-model="newUser.username" /><input class="btn" type="submit" value="Create">

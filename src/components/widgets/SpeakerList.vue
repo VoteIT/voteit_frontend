@@ -76,9 +76,9 @@ export default defineComponent({
     const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 
-    function deleteList (list: SpeakerList) {
-      dialogQuery(t('speaker.deleteListConfirmation'))
-        .then(() => api.delete(list.pk))
+    async function deleteList (list: SpeakerList) {
+      if (!await dialogQuery(t('speaker.deleteListConfirmation'))) return
+      api.delete(list.pk)
     }
 
     const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {

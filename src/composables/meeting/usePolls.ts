@@ -4,10 +4,9 @@ import { reactive } from 'vue'
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
 import { Poll, PollStatus } from '@/contentTypes/types'
-import Channel from '@/contentTypes/Channel'
 import { agendaDeletedEvent } from './useAgenda'
 
-const polls = reactive<Map<number, Poll>>(new Map())
+export const polls = reactive<Map<number, Poll>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType.getChannel()

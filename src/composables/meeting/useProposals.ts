@@ -42,10 +42,11 @@ export default function useProposals () {
 
   function getPollProposals (poll: Poll): Proposal[] {
     // TODO: Send proposal ids with poll data and do poll.proposals.map() instead.
-    const props = [...wu(proposals.values()).filter(
-      p => p.polls.includes(poll.pk)
-    )]
-    return orderBy(props) as Proposal[]
+    return orderBy(
+      poll.proposals
+        .map(prop => proposals.get(prop))
+        .filter(p => p) as Proposal[]
+    )
   }
 
   function getProposal (pk: number) {

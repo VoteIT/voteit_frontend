@@ -1,5 +1,5 @@
 <template>
-  <Btn :disabled="submitting" icon="meeting_room" @click="joinNow()">{{ t('join.now') }}</Btn>
+  <Btn :disabled="submitting" icon="mdi-door-open" @click="joinNow()">{{ t('join.now') }}</Btn>
 </template>
 
 <script lang="ts">

@@ -1,12 +1,12 @@
 <template>
   <transition name="dialog">
-    <div id="dialog-backdrop" v-show="active" @mousedown.self="close()">
-      <div id="dialog" ref="windowEl" v-if="active" @keyup.esc="close()">
-        <v-btn plain icon="mdi-close" class="closer" @click="close()" />
+    <div id="dialog-backdrop" v-show="active" @mousedown.self="deny()">
+      <div id="dialog" ref="windowEl" v-if="active" @keyup.esc="deny()">
+        <v-btn plain icon="mdi-close" class="closer" @click="deny()" />
         <p>{{ active.title }}</p>
         <div class="btn-controls">
-          <v-btn color="secondary" @click="close()">{{ active.no }}</v-btn>
-          <v-btn @click="resolve()">{{ active.yes }}</v-btn>
+          <v-btn color="secondary" @click="deny()">{{ active.no }}</v-btn>
+          <v-btn @click="accept()">{{ active.yes }}</v-btn>
         </div>
       </div>
     </div>
@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable no-unused-expressions */
 import { computed, defineComponent, inject, nextTick, onBeforeMount, reactive, ref } from 'vue'
 
 import { openDialogEvent } from '@/utils'
@@ -26,7 +27,7 @@ export default defineComponent({
     const windowEl = ref<HTMLElement | null>(null)
     let savedFocusEl: HTMLElement | null
     const queue = reactive<Dialog[]>([])
-    const active = computed(() => queue[0])
+    const active = computed<Dialog | undefined>(() => queue[0])
 
     function close () {
       queue.shift()
@@ -36,11 +37,14 @@ export default defineComponent({
       }
     }
 
-    function resolve () {
-      if (active.value) {
-        active.value.resolve()
-        close()
-      }
+    function deny () {
+      active.value?.resolve(false)
+      close()
+    }
+
+    function accept () {
+      active.value?.resolve(true)
+      close()
     }
 
     onBeforeMount(() => {
@@ -63,7 +67,8 @@ export default defineComponent({
     return {
       active,
       close,
-      resolve,
+      accept,
+      deny,
       windowEl
     }
   }

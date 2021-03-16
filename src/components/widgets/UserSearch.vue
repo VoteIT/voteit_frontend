@@ -24,7 +24,7 @@ export default defineComponent({
   props: {
     buttonIcon: {
       type: String,
-      default: 'plus'
+      default: 'mdi-plus'
     },
     buttonText: {
       type: String,

@@ -77,7 +77,7 @@ export default defineComponent({
       options.push({
         value: SimpleChoice.Abstain,
         title: t('poll.abstain'),
-        icon: 'block',
+        icon: simpleIcons.abstain,
         color: '#999'
       })
     }

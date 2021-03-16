@@ -1,6 +1,6 @@
 <template>
   <div class="btn-dropdown" :class="{ dark }">
-    <btn :active="isOpen" @click="isOpen = !isOpen" icon="menu-down">{{ title }}</btn>
+    <Btn :active="isOpen" @click="isOpen = !isOpen" icon="mdi-menu-down">{{ title }}</Btn>
     <Widget v-show="isOpen">
       <slot v-if="!lazy || isOpen" />
     </Widget>

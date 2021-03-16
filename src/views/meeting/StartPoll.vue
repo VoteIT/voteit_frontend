@@ -45,9 +45,9 @@
         </li>
       </ul>
       <div class="btn-group">
-        <Btn icon="undo" @click="pickMethod=false">{{ t('back') }}</Btn>
-        <Btn icon="check" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</Btn>
-        <Btn icon="play_arrow" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</Btn>
+        <Btn icon="mdi-undo-alt" @click="pickMethod=false">{{ t('back') }}</Btn>
+        <Btn icon="mdi-check" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</Btn>
+        <Btn icon="mdi-play" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</Btn>
       </div>
     </template>
   </div>

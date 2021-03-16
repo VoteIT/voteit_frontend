@@ -120,7 +120,7 @@ export default defineComponent({
 
     async function deleteButton () {
       if (!formData.pk) return
-      await dialogQuery(t('reaction.deleteButtonConfirmation'))
+      if (!await dialogQuery(t('reaction.deleteButtonConfirmation'))) return
       submitting.value = true
       try {
         await api.delete(formData.pk)

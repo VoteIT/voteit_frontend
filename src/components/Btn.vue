@@ -1,6 +1,6 @@
 <template>
   <v-btn :color="cColor" :size="sm ? 'small' : 'default'">
-    <v-icon :left="!!$slots.default" v-if="icon" :icon="mdIcon" />
+    <v-icon :left="!!$slots.default" v-if="icon" :icon="icon" />
     <span v-if="$slots.default"><slot/></span>
   </v-btn>
 </template>
@@ -20,8 +20,10 @@ export default defineComponent({
     }
   },
   setup (props) {
+    if (props.icon && !props.icon.startsWith('mdi')) {
+      console.error(`Icon ${props.icon} is not MDI`)
+    }
     return {
-      mdIcon: computed(() => props.icon && (props.icon.startsWith('mdi-') ? props.icon : 'mdi-' + props.icon.replaceAll('_', '-'))),
       cColor: computed(() => props.active ? 'accent' : props.color)
     }
   }

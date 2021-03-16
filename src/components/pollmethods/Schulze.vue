@@ -3,8 +3,8 @@
     <Proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
       <template v-slot:bottom>
         <div class="grade">
-          <Icon @click="setGrade(p, 0)" :class="{ active: !proposalGrades.get(p.pk) }">close</Icon>
-          <Icon :name="n <= proposalGrades.get(p.pk) ? 'star' : 'star_outline'" v-for="n in grades" :key="n" @click="setGrade(p, n)"
+          <Icon @click="setGrade(p, 0)" :class="{ active: !proposalGrades.get(p.pk) }" name="mdi-close"/>
+          <Icon :name="n <= proposalGrades.get(p.pk) ? 'mdi-star' : 'mdi-star-outline'" v-for="n in grades" :key="n" @click="setGrade(p, n)"
                 :class="{ active: n <= proposalGrades.get(p.pk) }" />
         </div>
       </template>

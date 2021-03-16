@@ -6,7 +6,7 @@
         <div>
           <Icon sm :name="getState(element.state).icon" />
           <span>{{ element.title }}</span>
-          <Icon sm>drag_handle</Icon>
+          <Icon sm name="mdi-drag-horizontal"/>
         </div>
       </template>
     </Draggable>

@@ -39,11 +39,9 @@ export default defineComponent({
     const editing = ref(false)
     const t = inject('t') as CallableFunction
 
-    function queryDelete () {
-      dialogQuery(t('discussion.deletePrompt'))
-        .then(() => {
-          channel.delete(props.p.pk)
-        })
+    async function queryDelete () {
+      if (!await dialogQuery(t('discussion.deletePrompt'))) return
+      channel.delete(props.p.pk)
     }
 
     return {

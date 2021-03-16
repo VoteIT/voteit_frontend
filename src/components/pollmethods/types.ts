@@ -31,7 +31,7 @@ export enum SimpleChoice {
 }
 
 export const simpleIcons: Record<SimpleChoice, string> = {
-  abstain: 'mdi-block',
+  abstain: 'mdi-cancel',
   yes: 'mdi-thumb-up',
   no: 'mdi-thumb-down'
 }

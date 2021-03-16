@@ -1,11 +1,11 @@
 <template>
-  <Widget>
+  <Widget class="poll">
     <div class="head">
       <h2>{{ poll.title }}</h2>
       <WorkflowState :state="poll.state" :admin="canChange(poll)" :content-type="pollType" :pk="poll.pk" />
     </div>
     <div class="body">
-      <btn @click="vote" icon="ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
+      <btn @click="vote" icon="mdi-ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
       <template v-if="isFinished">
         <component v-if="resultComponent" :is="resultComponent" :data="poll.result">
           <template v-if="poll.result.approved.length">

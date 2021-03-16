@@ -10,7 +10,7 @@
     <div v-for="p in panels" :key="p.name">
       <component ref="panelComponents" :is="p" v-if="currentPanel === p.path"/>
     </div>
-    <p v-if="!currentPanel">Select a tab... <Icon>arrow_upward</Icon></p>
+    <p v-if="!currentPanel">Select a tab... <Icon name="mdi-arrow-up-bold"/></p>
   </div>
 </template>
 

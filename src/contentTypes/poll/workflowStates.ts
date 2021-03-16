@@ -38,7 +38,7 @@ export default [
   },
   {
     transition: 'finish',
-    icon: 'check',
+    icon: 'mdi-check',
     state: PollState.Finished,
     name: 'Finished',
     isFinal: true

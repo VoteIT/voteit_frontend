@@ -6,13 +6,17 @@ import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
 import { AgendaItem, Proposal } from '../types'
 import { ProposalState } from './workflowStates'
+import { polls } from '@/composables/meeting/usePolls'
 
 function isPublished (proposal: Proposal) {
   return proposal.state === ProposalState.Published
 }
 
 function isUsedInPoll (proposal: Proposal) {
-  return proposal.polls && proposal.polls.length
+  for (const poll of polls.values()) {
+    if (proposal.pk in poll.proposals) return true
+  }
+  return false
 }
 
 function canAdd (agendaItem: AgendaItem) {

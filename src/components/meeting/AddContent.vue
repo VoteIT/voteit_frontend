@@ -3,7 +3,7 @@
     <form @submit.prevent="submit()">
       <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="tags" />
       <div class="buttons">
-        <Btn sm icon="send" :disabled="disabled" @click="submit()">{{ t('post') }}</Btn>
+        <Btn sm icon="mdi-send" :disabled="disabled" @click="submit()">{{ t('post') }}</Btn>
       </div>
     </form>
   </BtnDropdown>
@@ -51,21 +51,20 @@ export default defineComponent({
     }
     const textLength = computed(() => textContent(text.value).length)
 
-    function submit (override = false) {
+    async function submit (override = false) {
       if (disabled.value) return
       if (override || textLength.value >= props.warnLength) {
         disabled.value = true
-        props.handler(text.value)
-          .then(() => {
-            editorComponent.value.clear()
-            dropdownComponent.value.isOpen = false
-          })
-          .finally(() => {
-            disabled.value = false
-          })
+        try {
+          await props.handler(text.value)
+          editorComponent.value.clear()
+          dropdownComponent.value.isOpen = false
+        } catch (err) {
+          console.error(err)
+        }
+        disabled.value = false
       } else {
-        dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))
-          .then(() => submit(true))
+        if (await dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))) submit(true)
       }
     }
 

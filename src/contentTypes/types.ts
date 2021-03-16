@@ -53,7 +53,6 @@ export interface Proposal extends StateContent {
   author: number
   body: string
   created: string | Date
-  polls: number[]
   prop_id: string
   tags: string[]
 }

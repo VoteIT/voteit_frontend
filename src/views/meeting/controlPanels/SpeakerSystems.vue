@@ -4,7 +4,7 @@
     <Widget class="speaker-system" v-for="system in systems" :key="system.pk">
       <div class="btn-controls float">
         <WorkflowState admin :contentType="speakerSystemType" :pk="system.pk" :state="system.state" />
-        <btn sm color="warning" v-if="systemRules.canDelete(system)" icon="delete" @click="deleteSystem(system)"/>
+        <btn sm color="warning" v-if="systemRules.canDelete(system)" icon="mdi-delete" @click="deleteSystem(system)"/>
       </div>
       <h2>{{ system.title }}</h2>
       <dl>
@@ -36,7 +36,7 @@
           <input id="speakersystem-active" type="checkbox" v-model="systemData.active">
           <label for="speakersystem-active">{{ t('speaker.visible') }}</label>
         </p>
-        <Btn icon="plus" :disabled="!systemDataReady">{{ t('add') }}</Btn>
+        <Btn icon="mdi-plus" :disabled="!systemDataReady">{{ t('add') }}</Btn>
       </form>
     </BtnDropdown>
   </div>
@@ -105,9 +105,9 @@ export default defineComponent({
       }
     }
 
-    function deleteSystem (system: SpeakerSystem) {
-      dialogQuery(t('speaker.confirmSystemDeletion'))
-        .then(() => systemAPI.delete(system.pk))
+    async function deleteSystem (system: SpeakerSystem) {
+      if (!await dialogQuery(t('speaker.confirmSystemDeletion'))) return
+      systemAPI.delete(system.pk)
     }
 
     function addUser (system: SpeakerSystem, user: User) {

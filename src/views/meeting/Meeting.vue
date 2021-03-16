@@ -5,7 +5,7 @@
         <RouterLink to="/">{{ t('home.home') }}</RouterLink>
         <h1><RouterLink :to="meetingPath">{{ meeting.title || t('loader.loading') }}</RouterLink></h1>
         <span class="user" title="Your username">
-          <Icon :name="hasRole('moderator') ? 'gavel' : 'face' "/>
+          <Icon :name="hasRole('moderator') ? 'mdi-gavel' : 'mdi-account' "/>
           {{ user.username }}
         </span>
       </nav>
