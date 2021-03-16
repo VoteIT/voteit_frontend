@@ -13,6 +13,16 @@ export interface ReactionButton extends BaseContent {
   allowed_models: string[]
 }
 
+export enum ReactionIcon {
+  ThumbUp = 'mdi-thumb-up',
+  ThumbDown = 'mdi-thumb-down',
+  CheckMark = 'mdi-check',
+  Cancel = 'mdi-cancel',
+  Star = 'mdi-star',
+  Accessible = 'mdi-wheelchair-accessibility',
+}
+
 export default new ContentType<ReactionButton>({
-  channelName: 'reaction_button'
+  channelName: 'reaction_button',
+  restEndpoint: 'reaction-buttons/'
 })

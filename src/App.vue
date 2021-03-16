@@ -80,4 +80,27 @@ a
   margin: -10px -10px 10px
   background-color: var(--inverted-bg)
   color: var(--inverted-text)
+
+form
+  > div
+    margin-bottom: 1em
+  label
+    font-weight: bold
+    font-size: 10pt
+  select,
+  input[type=text],
+  input[type=number]
+    border-radius: 3px
+    min-height: 2em
+    padding: 0 .4em
+    border-bottom: var(--agenda-separator)
+    background-color: var(--bg)
+    &:focus
+      border-bottom: 1px solid var(--link)
+      outline: none
+  select,
+  input[type=text]
+    width: 100%
+  input[type=checkbox]
+    margin-right: .4em
 </style>

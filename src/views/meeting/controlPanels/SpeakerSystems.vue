@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>{{ t('speaker.settings') }}</h2>
-    <div class="widget speaker-system" v-for="system in systems" :key="system.pk">
+    <Widget class="speaker-system" v-for="system in systems" :key="system.pk">
       <div class="btn-controls float">
         <WorkflowState admin :contentType="speakerSystemType" :pk="system.pk" :state="system.state" />
         <btn sm color="warning" v-if="systemRules.canDelete(system)" icon="delete" @click="deleteSystem(system)"/>
@@ -17,7 +17,7 @@
         <RoleMatrix :channel="systemChannel" :pk="system.pk" :icons="systemIcons" />
         <UserSearch @submit="addUser(system, $event)"/>
       </BtnDropdown>
-    </div>
+    </Widget>
     <BtnDropdown :title="t('speaker.systemAdd')">
       <form @submit.prevent="createSystem()">
         <p>
@@ -26,9 +26,7 @@
         </p>
         <p>
           <label for="speakersystem-method">{{ t('speaker.systemMethod') }}</label><br/>
-          <select id="speakersystem-method" v-model="systemData.method_name">
-            <option v-for="[name, value] in Object.entries(SpeakerSystemMethod)" :key="value" :value="value">{{ name }}</option>
-          </select>
+          <SelectVue required v-model="systemData.method_name" :options="SpeakerSystemMethod" />
         </p>
         <p>
           <label for="speakersystem-safepos">{{ t('speaker.safePositions') }}</label><br/>
@@ -60,7 +58,9 @@ import { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/types'
 import useLoader from '@/composables/useLoader'
 import { ContextRole } from '@/composables/types'
 import { User } from '@/utils/types'
+
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
+import SelectVue from '@/components/inputs/Select.vue'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -68,7 +68,7 @@ const systemIcons = {
 }
 
 export default defineComponent({
-  components: { BtnDropdown, UserSearch, RoleMatrix, WorkflowState },
+  components: { BtnDropdown, UserSearch, RoleMatrix, WorkflowState, SelectVue },
   name: 'SpeakerSystems',
   path: 'speakers',
   icon: 'mdi-account-voice',

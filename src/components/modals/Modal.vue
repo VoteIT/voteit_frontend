@@ -1,5 +1,5 @@
 <template>
-  <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @click.self="dismiss">
+  <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @mousedown.self="dismiss">
     <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
       <header v-if="modal.title">
         <v-btn icon="mdi-close" plain @click="dismiss" v-show="modal.dismissable" />

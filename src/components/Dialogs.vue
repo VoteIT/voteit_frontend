@@ -1,6 +1,6 @@
 <template>
   <transition name="dialog">
-    <div id="dialog-backdrop" v-show="active" @click.self="close()">
+    <div id="dialog-backdrop" v-show="active" @mousedown.self="close()">
       <div id="dialog" ref="windowEl" v-if="active" @keyup.esc="close()">
         <v-btn plain icon="mdi-close" class="closer" @click="close()" />
         <p>{{ active.title }}</p>

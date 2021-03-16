@@ -26,10 +26,9 @@ export const reactionChannel = reactionType.getChannel()
   })
 
 export default function useReactions () {
-  function getMeetingButtons (meeting: number, contentType: string) {
-    console.log(reactionButtons)
+  function getMeetingButtons (meeting: number, contentType?: string) {
     const buttons = [...wu(reactionButtons.values()).filter(
-      b => b.meeting === meeting && b.allowed_models.includes(contentType)
+      b => b.meeting === meeting && (!contentType || b.allowed_models.includes(contentType))
     )]
     return orderBy(buttons, 'order')
   }

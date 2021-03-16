@@ -1,6 +1,6 @@
 <template>
   <v-btn size="small" :plain="!reaction || disabled" :color="button.color" :disabled="disabled" :title="button.title" @click="toggle">
-    <icon left :icon="icon"/> {{ count }}
+    <icon left :icon="button.icon"/> {{ count }}
   </v-btn>
 </template>
 
@@ -39,7 +39,6 @@ export default defineComponent({
       count,
       toggle,
       disabled: computed(() => reaction.value ? !rules.canDelete(reaction.value) : !rules.canAdd(props.button)),
-      icon: computed(() => 'mdi-' + props.button.icon.replaceAll('_', '-')), // FIXME
       ...rules
     }
   }

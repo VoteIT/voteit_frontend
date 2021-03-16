@@ -67,3 +67,12 @@ export interface User {
   first_name: string
   last_name: string
 }
+
+export enum ThemeColor {
+  Primary = 'primary',
+  Secondary = 'secondary',
+  Error = 'error',
+  Info = 'info',
+  Warning = 'warning',
+  Success = 'success',
+}

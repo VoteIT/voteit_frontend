@@ -7,7 +7,7 @@ export interface Disposable {
 }
 
 /** passes through events as they happen. You will not get events from before you start listening */
-export default class TypedEvent<T> {
+export default class TypedEvent<T=void> {
   private listeners: Set<Listener<T>> = new Set()
   private listenerOnces: Set<Listener<T>> = new Set()
 

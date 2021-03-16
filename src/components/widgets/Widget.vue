@@ -1,7 +1,7 @@
 <template>
-  <div class="widget" :class="{ selected }">
+  <v-sheet elevation="2" class="widget" rounded :class="{ selected }">
     <slot/>
-  </div>
+  </v-sheet>
 </template>
 
 <script lang="ts">
@@ -17,11 +17,7 @@ export default defineComponent({
 .widget
   margin-bottom: 1rem
   background-color: var(--widget-bg)
-  border: var(--widget-border)
-  border-radius: 6px
   padding: 10px
-  h2
-    margin-top: 0
   .btn-controls
     text-align: right
   &.selected

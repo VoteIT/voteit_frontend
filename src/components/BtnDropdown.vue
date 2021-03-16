@@ -1,9 +1,9 @@
 <template>
   <div class="btn-dropdown" :class="{ dark }">
     <btn :active="isOpen" @click="isOpen = !isOpen" icon="menu-down">{{ title }}</btn>
-    <div v-show="isOpen">
+    <Widget v-show="isOpen">
       <slot v-if="!lazy || isOpen" />
-    </div>
+    </Widget>
   </div>
 </template>
 
@@ -44,12 +44,6 @@ export default defineComponent({
       border-bottom-right-radius: 0
       .mdi
         transform: rotate(180deg)
-  > div
-    border-radius: 0 6px 6px 6px
-    background-color: var(--widget-bg)
-    border-radius: 0 10px 10px 10px
-    padding: .5rem
-  &.dark
-    > div
-      background-color: var(--widget-alt-bg)
+  &.dark .widget
+    background-color: var(--widget-alt-bg)
 </style>

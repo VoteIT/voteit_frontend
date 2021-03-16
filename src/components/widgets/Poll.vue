@@ -1,5 +1,5 @@
 <template>
-  <div class="poll">
+  <Widget>
     <div class="head">
       <h2>{{ poll.title }}</h2>
       <WorkflowState :state="poll.state" :admin="canChange(poll)" :content-type="pollType" :pk="poll.pk" />
@@ -29,7 +29,7 @@
         <p v-else>{{ t('loader.loading') }}...</p>
       </BtnDropdown>
     </div>
-  </div>
+  </Widget>
 </template>
 
 <script lang="ts">
@@ -122,11 +122,6 @@ export default defineComponent({
 
 <style lang="sass">
 div.poll
-  background-color: var(--widget-bg)
-  padding: 1rem
-  border-radius: 6px
-  margin: 1rem 0
-
   .head
     display: flex
     h2
