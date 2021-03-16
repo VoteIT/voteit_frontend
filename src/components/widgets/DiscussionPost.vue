@@ -2,7 +2,7 @@
   <Widget class="discussion">
     <div class="author"><user :pk="p.author" /></div>
     <div><Moment :date="p.created" /></div>
-    <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
+    <Richtext :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <div v-if="!readOnly" class="btn-controls">
       <slot name="buttons"/>
       <Btn v-if="canChange(p)" sm icon="mdi-pencil" color="secondary" :active="editing" @click="editing = !editing" />
@@ -35,17 +35,17 @@ export default defineComponent({
     Moment
   },
   setup (props) {
-    const channel = discussionPostType.getChannel()
+    const api = discussionPostType.getContentApi()
     const editing = ref(false)
     const t = inject('t') as CallableFunction
 
     async function queryDelete () {
       if (!await dialogQuery(t('discussion.deletePrompt'))) return
-      channel.delete(props.p.pk)
+      api.delete(props.p.pk)
     }
 
     return {
-      channel,
+      api,
       editing,
       queryDelete,
       ...discussionPostType.rules

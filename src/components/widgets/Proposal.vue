@@ -3,7 +3,7 @@
     <slot name="top"/>
     <div class="author"><user :pk="p.author" /> <a :href="'#' + p.prop_id" class="tag">#{{ p.prop_id }}</a></div>
     <div><Moment :date="p.created" /></div>
-    <Richtext :editing="editing" :channel="channel" :object="p" @edit-done="editing = false" />
+    <Richtext :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <div class="btn-controls" v-if="!readOnly">
       <slot name="buttons"/>
       <WorkflowState :admin="canChange(p) || canRetract(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
@@ -45,20 +45,21 @@ export default defineComponent({
     Moment
   },
   setup (props) {
-    const channel = proposalType.getChannel()
+    // const channel = proposalType.getChannel()
+    const api = proposalType.getContentApi()
     const editing = ref(false)
     const t = inject('t') as CallableFunction
 
     async function queryDelete () {
       if (!await dialogQuery(t('proposal.deletePrompt'))) return
-      channel.delete(props.p.pk)
+      api.delete(props.p.pk)
     }
 
     return {
       proposalType,
       editing,
       queryDelete,
-      channel,
+      api,
       ...proposalType.rules
     }
   }

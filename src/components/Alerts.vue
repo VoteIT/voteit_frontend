@@ -1,7 +1,7 @@
 <template>
   <div id="alerts">
     <div class="alert" :class="alert.level" v-for="(alert, index) in alerts" :key="index">
-      <Icon sm name="close" class="close" @click="dismiss(alert)" />
+      <Icon sm name="mdi-close" class="close" @click="dismiss(alert)" />
       <span v-if="alert.html" v-html="alert.html" />
       <span v-else>
         <strong v-if="alert.title">{{ alert.title }}:</strong>

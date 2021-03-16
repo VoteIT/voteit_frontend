@@ -141,8 +141,6 @@ export default defineComponent({
   display: inline-block
   > .btn
     background-color: #bbc
-    .material-icons
-      color: #000
 .btn-group
   .v-btn
     border-radius: 0
@@ -163,8 +161,6 @@ export default defineComponent({
       background-color: #000
       color: #fff
       border-radius: 0
-      .material-icons
-        color: #fff
       &:hover,
       &:focus
         background-color: #668
