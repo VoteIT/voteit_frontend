@@ -4,11 +4,9 @@ import { AccessPolicyType } from '@/contentTypes/types'
 import Automatic from './Automatic.vue'
 import ModeratorApproved from './ModeratorApproved.vue'
 
-type APMapping = {
-  [ key in AccessPolicyType ]: Component
-}
-
-export default {
+const mapping: Record<AccessPolicyType, Component> = {
   automatic: Automatic,
   moderator_approved: ModeratorApproved
-} as APMapping
+}
+
+export default mapping

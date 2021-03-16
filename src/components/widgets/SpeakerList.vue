@@ -1,13 +1,9 @@
 <template>
   <Widget :selected="isActive">
     <div class="btn-controls">
-      <v-btn size="small" color="warning" v-if="inList && canLeave(list)" @click="speakers.leaveList(list)">
-        <v-icon left icon="mdi-playlist-remove"/>
-        Leave list
-      </v-btn>
-      <v-btn size="small" v-else-if="canEnter(list)" @click="speakers.enterList(list)">
-        <v-icon left icon="mdi-playlist-plus" />
-        Enter list
+      <v-btn v-if="enterLeaveBtn" :color="enterLeaveBtn.color" size="small" @click="enterLeaveBtn.action()">
+        <v-icon left :icon="enterLeaveBtn.icon" />
+        {{ enterLeaveBtn.title }}
       </v-btn>
       <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
       <Btn sm v-if="canDelete(list)" icon="mdi-delete" color="warning" :title="t('delete')" @click="deleteList(list)" />
@@ -48,6 +44,13 @@ import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import Moment from './Moment.vue'
 import { dialogQuery } from '@/utils'
 
+interface EnterLeaveBtn {
+  icon: string
+  title: string
+  color?: string
+  action: () => void
+}
+
 export default defineComponent({
   name: 'SpeakerList',
   props: {
@@ -78,6 +81,25 @@ export default defineComponent({
         .then(() => api.delete(list.pk))
     }
 
+    const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
+      if (!inList.value && rules.canEnter(props.list)) {
+        return {
+          icon: 'mdi-playlist-plus',
+          title: t('speaker.enterList'),
+          action: () => speakers.enterList(props.list)
+        }
+      }
+      if (inList.value && rules.canLeave(props.list)) {
+        return {
+          icon: 'mdi-playlist-remove',
+          title: t('speaker.leaveList'),
+          color: 'warning',
+          action: () => speakers.leaveList(props.list)
+        }
+      }
+      return null
+    })
+
     return {
       deleteList,
       speakerListType,
@@ -86,6 +108,7 @@ export default defineComponent({
       queue,
       currentSpeaker,
       inList,
+      enterLeaveBtn,
       ...rules,
       speakers,
       t

@@ -30,14 +30,10 @@ export enum SimpleChoice {
   No = 'no'
 }
 
-type SimpleIconMap = {
-  [ key in SimpleChoice ]: string
-}
-
-export const simpleIcons: SimpleIconMap = {
-  abstain: 'block',
-  yes: 'thumb_up',
-  no: 'thumb_down'
+export const simpleIcons: Record<SimpleChoice, string> = {
+  abstain: 'mdi-block',
+  yes: 'mdi-thumb-up',
+  no: 'mdi-thumb-down'
 }
 
 export interface SingleSimpleVote {

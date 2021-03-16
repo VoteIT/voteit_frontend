@@ -22,11 +22,7 @@ import { MeetingRole } from '@/contentTypes/types'
 
 const meetingChannel = meetingType.getChannel()
 
-type RoleIcon = {
-  [ key in MeetingRole ]: string
-}
-
-const meetingIcons: RoleIcon = {
+const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
   moderator: 'mdi-gavel',
   proposer: 'mdi-note-plus',

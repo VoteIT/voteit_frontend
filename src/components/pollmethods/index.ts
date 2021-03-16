@@ -19,14 +19,7 @@ import { PollMethodName } from './types'
 
 // Use lowercase component names, to match method_name from api
 
-type ComponentMapping = {
-  [ key in PollMethodName ]: Component
-}
-type RelaxedComponentMapping = {
-  [ key in PollMethodName ]?: Component
-}
-
-export const pollMethods: ComponentMapping = {
+export const pollMethods: Record<PollMethodName, Component> = {
   combined_simple: Simple,
   irv: RankedVoting,
   repeated_schulze: Schulze,
@@ -35,7 +28,7 @@ export const pollMethods: ComponentMapping = {
   scottish_stv: RankedVoting
 }
 
-export const pollResults: ComponentMapping = {
+export const pollResults: Record<PollMethodName, Component> = {
   irv: IRVResult,
   simple: SimpleResult,
   scottish_stv: ScottishSTVResult,
@@ -44,7 +37,7 @@ export const pollResults: ComponentMapping = {
   repeated_schulze: RepeatedSchulzeResult
 }
 
-export const pollSettings: RelaxedComponentMapping = {
+export const pollSettings: Partial<Record<PollMethodName, Component>> = {
   repeated_schulze: RepeatedSchulzeSettings,
   scottish_stv: ScottishSTVSettings
 }
