@@ -3,8 +3,10 @@
     <nav class="tabs">
       <RouterLink v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><Icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></RouterLink>
     </nav>
-    <h1>{{ currentState.name }} polls</h1>
-    <Btn v-if="canAdd(meeting)" icon="mdi-star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</Btn>
+    <header>
+      <h1>{{ currentState.name }} polls</h1>
+      <Btn v-if="canAdd(meeting)" icon="mdi-star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</Btn>
+    </header>
     <Poll :poll="p" v-for="p in polls" :key="p.pk" />
     <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
   </main>
@@ -102,4 +104,7 @@ nav.tabs
       background-color: #fff
       color: #000
       border-color: #bbb
+
+header
+  margin-bottom: 1em
 </style>

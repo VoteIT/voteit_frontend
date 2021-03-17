@@ -3,7 +3,7 @@
     <h3>{{ t('poll.STV.numRounds', { count: data.rounds.length }, data.rounds.length) }}</h3>
     <ol>
       <li v-for="(round, i) in data.rounds" :key="i">
-        {{ round.status }} {{ round.selected.map(pk => '#' + getProposal(pk).prop_id).join(', ') }} ({{ round.method }})
+        {{ round.status }} {{ round.selected.map(pk => '#' + (getProposal(pk)?.prop_id ?? t('proposal.notFound'))).join(', ') }} ({{ round.method }})
       </li>
     </ol>
     <template v-for="([key, value], i) in metadata" :key="i">

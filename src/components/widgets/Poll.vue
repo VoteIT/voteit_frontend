@@ -1,11 +1,11 @@
 <template>
   <Widget class="poll">
-    <div class="head">
-      <h2>{{ poll.title }}</h2>
+    <header>
       <WorkflowState :state="poll.state" :admin="canChange(poll)" :content-type="pollType" :pk="poll.pk" />
-    </div>
+      <h2>{{ poll.title }}</h2>
+      <p v-if="!isFinished">{{ t(`poll.method.${poll.method_name}`) }}</p>
+    </header>
     <div class="body">
-      <btn @click="vote" icon="mdi-ballot" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
       <template v-if="isFinished">
         <component v-if="resultComponent" :is="resultComponent" :data="poll.result">
           <template v-if="poll.result.approved.length">
@@ -21,9 +21,7 @@
           </BtnDropdown>
         </component>
       </template>
-      <p v-else>
-        {{ poll }}
-      </p>
+      <btn @click="vote" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
       <BtnDropdown dark class="voting-info" v-if="isOngoing" :title="t('poll.watchVoting')" @open="active=true" @close="active=false">
         <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
         <p v-else>{{ t('loader.loading') }}...</p>
@@ -122,15 +120,12 @@ export default defineComponent({
 
 <style lang="sass">
 div.poll
-  .head
-    display: flex
-    h2
-      margin: 0
-      flex: 1 0 auto
-      text-decoration: none
+  header
+    .dropdown
+      float: right
 
-  .body
-    padding-top: 1rem
+  .voting-info
+    margin-top: 1em
 
   .proposals
     display: flex

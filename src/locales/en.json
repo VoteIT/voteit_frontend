@@ -96,6 +96,14 @@
     "IRV": {
       "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
     },
+    "method": {
+      "combined_simple": "Combined simple",
+      "repeated_schulze": "Repeated Schulze",
+      "schulze": "Schulze",
+      "scottish_stv": "Combined simple",
+      "simple": "Simple majority",
+      "irv": "Instant Runoff-Voting"
+    },
     "result": {
       "runtime": "Calculation time",
       "quota": "Quota",
@@ -113,7 +121,8 @@
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
     "proposals": "Proposals",
-    "noProposals": "Nothing to say..."
+    "noProposals": "Nothing to say...",
+    "notFound": "Proposal not found"
   },
   "reaction": {
     "addButton": "New Reaction Button",

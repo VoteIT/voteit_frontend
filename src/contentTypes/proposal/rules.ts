@@ -14,7 +14,7 @@ function isPublished (proposal: Proposal) {
 
 function isUsedInPoll (proposal: Proposal) {
   for (const poll of polls.values()) {
-    if (proposal.pk in poll.proposals) return true
+    if (poll.proposals.includes(proposal.pk)) return true
   }
   return false
 }
