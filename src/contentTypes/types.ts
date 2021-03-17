@@ -2,6 +2,7 @@
 
 import { PollMethodName, PollMethodSettings } from '@/components/pollmethods/types'
 import { ChannelsConfig } from '@/utils/types'
+import { PresenceCheckState } from './presenceCheck/workflowStates'
 
 export enum MeetingRole {
   Participant = 'participant',
@@ -112,7 +113,9 @@ export interface PresenceCheck {
   pk: number
   meeting: number
   presence_system: number
-  state: string
+  state: PresenceCheckState
+  opened: string | Date
+  closed: string | Date
 }
 
 export interface Presence {

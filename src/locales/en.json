@@ -117,6 +117,17 @@
       "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds"
     }
   },
+  "presence": {
+    "closeCheck": "Close presence check",
+    "closedAt": "Presence check closed",
+    "manage": "Manage presence checks",
+    "newCheck": "New presence check",
+    "noRecentlyClosedChecks": "No recently closed checks",
+    "ongoingCheck": "Ongoing presence check",
+    "openedAt": "Opened",
+    "presentCount": "No users present yet | There is currently one present user | There are currently {count} present users",
+    "recentlyClosedChecks": "Recently closed presence checks"
+  },
   "proposal": {
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",

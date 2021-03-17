@@ -1,5 +1,5 @@
 <template>
-  <span class="time">{{ fromNow }}</span>
+  <span :class="{ time: !ordinary }">{{ prepend }} {{ fromNow }}</span>
 </template>
 
 <script lang="ts">
@@ -13,6 +13,8 @@ export default defineComponent({
       type: Date as PropType<Date>,
       required: true
     },
+    ordinary: Boolean,
+    prepend: String,
     inSeconds: Boolean
   },
   setup (props) {

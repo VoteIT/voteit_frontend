@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { computed } from 'vue'
+import { computed, defineComponent } from 'vue'
 import Draggable from 'vuedraggable'
 
 import useAgenda from '@/composables/meeting/useAgenda'
@@ -24,7 +24,7 @@ import meetingType from '@/contentTypes/meeting'
 import agendaItemType from '@/contentTypes/agendaItem'
 import { AgendaItem } from '@/contentTypes/types'
 
-export default {
+export default defineComponent({
   name: 'Agenda',
   path: 'agenda',
   icon: 'mdi-clipboard-list',
@@ -49,7 +49,7 @@ export default {
       getState
     }
   }
-}
+})
 </script>
 
 <style lang="sass" scoped>

@@ -11,14 +11,22 @@
       <p>Your presence has been noted.</p>
       <btn @click="presence.channel.delete(userPresence.pk)" icon="mdi-undo-variant">Undo</btn>
     </template>
+    <template v-if="canChange(data.presenceCheck)">
+      <v-divider class="mt-2" />
+      <PresenceCheckControl :check="data.presenceCheck" subscribe />
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import usePresence from '@/composables/meeting/usePresence'
 import { computed, defineComponent } from 'vue'
 
+import presenceCheckType from '@/contentTypes/presenceCheck'
+import usePresence from '@/composables/meeting/usePresence'
+import PresenceCheckControl from '../PresenceCheckControl.vue'
+
 export default defineComponent({
+  components: { PresenceCheckControl },
   name: 'PresenceCheck',
   icon: 'mdi-hand',
   props: {
@@ -35,6 +43,7 @@ export default defineComponent({
     })
 
     return {
+      ...presenceCheckType.rules,
       presence,
       userPresence
     }
