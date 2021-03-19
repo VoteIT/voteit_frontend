@@ -16,10 +16,16 @@ export interface ReactionButton extends BaseContent {
 export enum ReactionIcon {
   ThumbUp = 'mdi-thumb-up',
   ThumbDown = 'mdi-thumb-down',
+  Star = 'mdi-star',
+  Heart = 'mdi-heart',
+  Forum = 'mdi-forum',
   CheckMark = 'mdi-check',
   Cancel = 'mdi-cancel',
-  Star = 'mdi-star',
   Accessible = 'mdi-wheelchair-accessibility',
+  Alert = 'mdi-alert',
+  Attachment = 'mdi-attachment',
+  Pencil = 'mdi-pencil',
+  Currency = 'mdi-currency-eur',
 }
 
 export default new ContentType<ReactionButton>({

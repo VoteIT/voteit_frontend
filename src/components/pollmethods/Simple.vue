@@ -3,13 +3,9 @@
     <Proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
       <template v-slot:bottom>
         <div class="simple-options">
-          <span class="vote-option" :style="{ backgroundColor: opt.value === votes.get(p.pk) ? opt.color : undefined }" :class="{ active: opt.value === votes.get(p.pk) }" v-for="opt in options" :key="opt.value">
-            <label :for="`${p.pk}-${opt.value}`" tabindex="0" @click="change(p, opt)" @keyup.space.enter="change(p, opt)">
-              <input :checked="opt.value === votes.get(p.pk)" type="radio" name="vote" :value="opt.value" :id="`${p.pk}-${opt.value}`" />
-              <Icon sm :name="opt.icon" />
-              {{ opt.title }}
-            </label>
-          </span>
+          <Btn v-for="opt in options" :key="opt.value" :color="opt.color" :border="opt.value !== votes.get(p.pk)" :icon="opt.icon" @click="change(p, opt)">
+            {{ opt.title }}
+          </Btn>
         </div>
       </template>
     </Proposal>
@@ -63,13 +59,13 @@ export default defineComponent({
         value: SimpleChoice.Yes,
         title: t('poll.approve'),
         icon: simpleIcons.yes,
-        color: '#cdc'
+        color: 'success'
       },
       {
         value: SimpleChoice.No,
         title: t('poll.deny'),
         icon: simpleIcons.no,
-        color: '#dcc'
+        color: 'warning'
       }
     ]
 
@@ -78,7 +74,7 @@ export default defineComponent({
         value: SimpleChoice.Abstain,
         title: t('poll.abstain'),
         icon: simpleIcons.abstain,
-        color: '#999'
+        color: 'secondary'
       })
     }
 
@@ -124,25 +120,8 @@ export default defineComponent({
 <style lang="sass">
 .simple-options
   text-align: center
-
-.vote-option
-  text-align: center
-  margin-right: .5rem
-  border: 1px solid #666
-  border-radius: 6px
-  background-color: #eee
-  display: inline-block
-  label
-    padding: .5rem .5rem .4rem
-    display: inline-block
-    cursor: pointer
-    .material-icons
-      vertical-align: text-bottom
-      margin-right: .2rem
-  input
-    display: none
-  &.active
-    box-shadow: 1px 1px 3px inset rgba(#000, .6)
-  &:last-child
-    margin-right: 0
+  button
+    margin-right: .4rem
+    &:last-child
+      margin-right: 0
 </style>

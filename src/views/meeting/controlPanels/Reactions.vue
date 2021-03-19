@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, inject } from 'vue'
 
 import { openModalEvent } from '@/utils'
 import useMeeting from '@/composables/meeting/useMeeting'
@@ -31,8 +31,8 @@ export default defineComponent({
   name: 'ReactionButtons',
   path: 'reactions',
   icon: 'mdi-thumb-up',
-  inject: ['t'],
   setup () {
+    const t = inject('t') as (text: string) => string
     const reactions = useReactions()
     const { meetingId } = useMeeting()
     const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
@@ -40,11 +40,13 @@ export default defineComponent({
     function editReaction (button?: ReactionButton) {
       openModalEvent.emit({
         component: ReactionEditModalVue,
-        data: button
+        data: button,
+        title: button ? t('reaction.editButton') : t('reaction.addButton')
       })
     }
 
     return {
+      t,
       editReaction,
       meetingButtons
     }

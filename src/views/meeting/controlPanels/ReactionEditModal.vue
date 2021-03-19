@@ -1,9 +1,5 @@
 <template>
   <div>
-    <header>
-      <h1 v-if="data">{{ t('reaction.editButton') }}</h1>
-      <h1 v-else>{{ t('reaction.addButton') }}</h1>
-    </header>
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
@@ -20,7 +16,7 @@
         <div>
           <label>{{ t('color') }}</label>
           <div class="btn-controls">
-            <v-btn :border="formData.color === name" v-for="[value, name] in Object.entries(ThemeColor)" :key="value" :color="name" @click="formData.color = name">
+            <v-btn :border="formData.color !== name" v-for="[value, name] in Object.entries(ThemeColor)" :key="value" :color="name" @click="formData.color = name">
               {{ value }}
             </v-btn>
           </div>
@@ -28,7 +24,7 @@
         <div>
           <label>{{ t('icon') }}</label>
           <div class="btn-controls">
-            <v-btn :color="formData.color" :border="formData.icon === name" v-for="[value, name] in Object.entries(ReactionIcon)" :key="value" :icon="name" @click="formData.icon = name">
+            <v-btn :elevation="formData.icon === name ? 2 : 0" :border="formData.icon === name" v-for="[value, name] in Object.entries(ReactionIcon)" :key="value" :icon="name" @click="formData.icon = name">
             </v-btn>
           </div>
         </div>

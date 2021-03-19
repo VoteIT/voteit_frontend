@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <online-status/>
     <router-view/>
+    <online-status/>
     <modal/>
     <dialogs/>
     <loader/>
@@ -55,8 +55,8 @@ $material-icons-font-path: '~material-icons/iconfont/'
 
 :root
   @include light-theme
-  @media (prefers-color-scheme: dark)
-    @include dark-theme
+//  @media (prefers-color-scheme: dark)
+//    @include dark-theme
 
 *
   box-sizing: border-box
@@ -70,11 +70,6 @@ a
   color: var(--link)
   &:active
     color: var(--link-active)
-
-#app
-  font-family: Avenir, Helvetica, Arial, sans-serif
-  -webkit-font-smoothing: antialiased
-  -moz-osx-font-smoothing: grayscale
 
 #offline
   margin: -10px -10px 10px
