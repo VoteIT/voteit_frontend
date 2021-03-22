@@ -60,12 +60,12 @@ export default defineComponent({
   .bar
     box-sizing: border-box
     background-color: #ddd
-    height: 1.2em
+    height: 1.4em
     color: #000
     transition: background-color .2s, width .1s
     text-align: left
     span
-      padding: .1em .4em
+      padding: 0 .4em
       display: inline-block
       white-space: nowrap
   &.failed .bar

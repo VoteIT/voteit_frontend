@@ -1,8 +1,8 @@
 <template>
   <div>
     <input type="text" v-model="schemaName" />
-    <button @click="getSchema(SchemaType.Outgoing)">Get outgoing schema</button>
-    <button @click="getSchema()">Get incoming schema</button>
+    <v-btn @click="getSchema(SchemaType.Outgoing)">Get outgoing schema</v-btn>
+    <v-btn @click="getSchema()">Get incoming schema</v-btn>
     <div v-if="schema" class="schema-result">
       <h2>{{ schema.title }}</h2>
       <p>{{ schema.description }}</p>

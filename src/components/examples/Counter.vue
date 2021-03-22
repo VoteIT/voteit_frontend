@@ -1,9 +1,9 @@
 <template>
   <div>
     <div v-if="!counting">
-      <button @click="countToTen(true)">Count to 10</button>
-      <button @click="countToTen(false)">Fail at 5</button>
-      <button @click="countToTen(true, { timeout: 500 })">Short timeout</button>
+      <v-btn @click="countToTen(true)">Count to 10</v-btn>
+      <v-btn @click="countToTen(false)">Fail at 5</v-btn>
+      <v-btn @click="countToTen(true, { timeout: 500 })">Short timeout</v-btn>
     </div>
     <progress-bar v-else id="counter-progress" class="progress" :total="progress.total" :value="progress.curr" :done="state" :failed="state === false" :text="progressText" />
   </div>
@@ -22,7 +22,7 @@ const PROGRESS_DEFAULT: Progress = {
 export default defineComponent({
   name: 'Counter',
   setup () {
-    const { post } = new Channel('testing', { alertOnError: false }) // Handle errors here
+    const channel = new Channel('testing', { alertOnError: false }) // Handle errors here
 
     const progress = ref<Progress>(PROGRESS_DEFAULT)
     const state = ref<boolean | null>(null)
@@ -31,7 +31,7 @@ export default defineComponent({
     function countToTen (succeed: boolean, config: Object) {
       const data = succeed ? undefined : { fail: 5 }
       counting.value = true
-      post('testing.count', data, config)
+      channel.post('testing.count', data, config)
         .onProgress((value: Progress) => {
           progress.value = value
         })
