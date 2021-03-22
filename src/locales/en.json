@@ -133,7 +133,9 @@
     "proposal": "Proposal",
     "proposals": "Proposals",
     "noProposals": "Nothing to say...",
-    "notFound": "Proposal not found"
+    "notFound": "Proposal not found",
+    "retract": "Retract",
+    "retractPrompt": "Are you sure you want to retract this proposal?"
   },
   "reaction": {
     "addButton": "New Reaction Button",

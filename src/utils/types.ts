@@ -1,10 +1,6 @@
 import { Component } from 'vue'
 
 /* eslint-disable camelcase */
-export interface Payload {
-  [ index: string ]: any
-}
-
 export enum State {
   Success = 's',
   Failed = 'f',
@@ -19,7 +15,7 @@ export interface BaseChannelsMessage {
 
 export interface SuccessMessage extends BaseChannelsMessage {
   s: State.Success
-  p: Payload
+  p: object
 }
 
 export interface ProgressMessage extends BaseChannelsMessage {

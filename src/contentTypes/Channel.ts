@@ -98,8 +98,8 @@ export default class Channel<T> {
     socket.close()
   }
 
-  onUpdate (fn: UpdateHandler<T>) {
-    // Will take precedence over and block .onChanged(), etc
+  onUpdate (fn: UpdateHandler<SuccessMessage>) {
+    // If this is registered, no other callbacks will be used (onChanged, etc...)
     console.log('registering update handler for', this.contentType)
     updateHandlers.set(this.contentType, fn)
     return this
@@ -110,7 +110,7 @@ export default class Channel<T> {
     return this
   }
 
-  on (this: any, method: string, fn: MethodHandler<T>, override = true): Channel<T> {
+  on (this: Channel<T>, method: string, fn: MethodHandler<object>, override = true): Channel<T> {
     const ctHandlers = methodHanders.get(method)
     if (override || !ctHandlers.has(this.contentType)) {
       methodHanders.get(method).set(this.contentType, fn)
@@ -118,14 +118,22 @@ export default class Channel<T> {
     return this
   }
 
-  onAdded = (fn: MethodHandler<T>) => this.on('added', fn)
-  onDeleted = (fn: MethodHandler<T>) => this.on('deleted', fn)
-  onStatus = (fn: MethodHandler<T>) => this.on('status', fn)
+  private registerTypeHandler (this: Channel<T>, method: string, fn: MethodHandler<T>, override = true) {
+    const ctHandlers = methodHanders.get(method)
+    if (override || !ctHandlers.has(this.contentType)) {
+      methodHanders.get(method).set(this.contentType, fn)
+    }
+    return this
+  }
+
+  onAdded = (fn: MethodHandler<T>) => this.registerTypeHandler('added', fn)
+  onDeleted = (fn: MethodHandler<T>) => this.registerTypeHandler('deleted', fn)
+  onStatus = (fn: MethodHandler<T>) => this.registerTypeHandler('status', fn)
 
   onChanged (fn: MethodHandler<T>) {
     // By default, send add events to change method. Register using .onAdded(fn) to handle separately.
-    return this.on('added', fn, false)
-      .on('changed', fn)
+    return this.registerTypeHandler('added', fn, false)
+      .registerTypeHandler('changed', fn)
   }
 
   updateMap (this: any, map: Map<number, T>, transform = (value: T) => value): Channel<T> {

@@ -41,10 +41,6 @@ function canDelete (proposal: Proposal) {
 function canRetract (proposal: Proposal) {
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
-  const meeting = meetings.get(agendaItem.meeting)
-  if (meetingRules.isModerator(meeting)) {
-    return !meetingRules.isFinished(meeting)
-  }
   return isAuthor(proposal) && isPublished(proposal) && !agendaRules.isProposalBlocked(agendaItem) && !agendaRules.isFinished(agendaItem) && !agendaRules.isPrivate(agendaItem)
 }
 

@@ -20,7 +20,7 @@ reactionButtonType.getChannel()
 export const reactionChannel = reactionType.getChannel()
   .updateMap(reactions)
   .on('count', payload => {
-    const message = payload as any as ReactionCountMessage
+    const message = payload as ReactionCountMessage
     const key = getCountKey(message.content_type, message.object_id, message.button)
     reactionCounts.set(key, message.count)
   })

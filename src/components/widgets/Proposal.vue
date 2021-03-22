@@ -6,7 +6,8 @@
     <Richtext :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <div class="btn-controls" v-if="!readOnly">
       <slot name="buttons"/>
-      <WorkflowState :admin="canChange(p) || canRetract(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
+      <Btn v-if="canRetract(p)" sm color="warning" icon="mdi-undo" @click="retract(p)">{{ t('proposal.retract') }}</Btn>
+      <WorkflowState :admin="canChange(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
       <Btn v-if="canChange(p)" sm color="secondary" icon="mdi-pencil" :active="editing" @click="editing = !editing" />
       <Btn v-if="canDelete(p)" sm color="warning" icon="mdi-delete" @click="queryDelete" />
     </div>
@@ -55,10 +56,16 @@ export default defineComponent({
       api.delete(props.p.pk)
     }
 
+    async function retract (prop: Proposal) {
+      if (!await dialogQuery(t('proposal.retractPrompt'))) return
+      api.transition(prop.pk, 'retract')
+    }
+
     return {
       proposalType,
       editing,
       queryDelete,
+      retract,
       api,
       ...proposalType.rules
     }

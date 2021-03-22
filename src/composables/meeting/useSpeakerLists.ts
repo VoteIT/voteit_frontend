@@ -29,10 +29,12 @@ const listChannel = speakerListType.getChannel()
   })
 
 new Channel<SpeakerStartStopMessage>('speaker')
-  .on('started', speaking => {
+  .on('started', payload => {
+    const speaking = payload as SpeakerStartStopMessage
     currentlySpeaking.set(speaking.speaker_list, dateify(speaking, 'started'))
   })
-  .on('stopped', stopped => {
+  .on('stopped', payload => {
+    const stopped = payload as SpeakerStartStopMessage
     currentlySpeaking.delete(stopped.speaker_list)
   })
 

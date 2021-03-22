@@ -1,6 +1,6 @@
 <template>
   <span ref="root" class="dropdown">
-    <v-btn size="small" color="secondary" :disabled="!admin || currentState.isFinal" :title="state" @click="toggle">
+    <v-btn size="small" color="secondary" :border="!admin || currentState.isFinal" :title="state" @click="toggle()">
       <v-icon :icon="currentState.icon"/>
     </v-btn>
     <div ref="opts" v-if="isOpen && statesAvailable" class="btn-group vertical">
@@ -49,32 +49,31 @@ export default defineComponent({
 
     function focusButton (where: HTMLElement | null) {
       nextTick(() => {
-        where?.querySelector<HTMLElement>('.btn')?.focus()
+        where?.querySelector<HTMLElement>('button')?.focus()
       })
     }
 
     const root = ref<HTMLElement | null>(null)
     const opts = ref<HTMLElement | null>(null)
-    function toggle (noFocus: boolean = false) {
-      if (props.admin) {
-        if (!isOpen.value && currentState.value.isFinal) {
-          alert(`*State "${currentState.value.state}" is final and can't be changed`)
-          return
+    function toggle (focus = true) {
+      if (!props.admin) return
+      if (!isOpen.value && currentState.value.isFinal) {
+        alert(`*State "${currentState.value.state}" is final and can't be changed`)
+        return
+      }
+      isOpen.value = !isOpen.value
+      if (isOpen.value) {
+        if (!statesAvailable.value) {
+          contentApi.getTransitions(props.pk)
+            .then((states: WorkflowState[]) => {
+              statesAvailable.value = states.filter(s => s.state !== props.state) // Filter out current state
+              nextTick(() => focusButton(opts.value))
+            })
+        } else {
+          nextTick(() => focusButton(opts.value))
         }
-        isOpen.value = !isOpen.value
-        if (isOpen.value) {
-          if (!statesAvailable.value) {
-            contentApi.getTransitions(props.pk)
-              .then((states: WorkflowState[]) => {
-                statesAvailable.value = states.filter(s => s.state !== props.state) // Filter out current state
-                nextTick(() => focusButton(opts.value))
-              })
-          } else {
-            nextTick(() => focusButton(opts.value))
-          }
-        } else if (!noFocus) { // If clicked out, don't shift that focus
-          focusButton(root.value)
-        }
+      } else if (focus) { // If clicked out, don't shift that focus
+        focusButton(root.value)
       }
     }
 
@@ -91,7 +90,7 @@ export default defineComponent({
 
     function clickWatch (event: MouseEvent) {
       if (isOpen.value && root.value && !event.composedPath().includes(root.value)) {
-        toggle(true)
+        toggle(false)
       }
     }
     function keyWatch ({ key }: { key: string }) {
