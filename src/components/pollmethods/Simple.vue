@@ -20,8 +20,15 @@ import useMeeting from '@/composables/meeting/useMeeting'
 
 import ProposalComponent from '../widgets/Proposal.vue'
 
-import { CombinedSimpleVote, SimpleChoice, simpleIcons, SimpleVote, SingleSimpleVote } from './types'
+import { CombinedSimpleVote, SimpleChoice, simpleIcons } from './types'
 import { Poll, Proposal } from '@/contentTypes/types'
+
+interface Option {
+  value: SimpleChoice
+  title: string
+  icon: string
+  color: string
+}
 
 export default defineComponent({
   name: 'SimplePoll',
@@ -35,7 +42,7 @@ export default defineComponent({
       required: true
     },
     modelValue: {
-      type: Object as PropType<SimpleVote>
+      type: Object as PropType<CombinedSimpleVote>
     }
   },
   components: {
@@ -45,14 +52,7 @@ export default defineComponent({
     const t = inject('t') as CallableFunction // TODO What?
     const { getUser } = useMeeting()
     const votes = reactive<Map<number, SimpleChoice>>(new Map())
-    const isCombined = props.poll.method_name === 'combined_simple'
-
-    interface Option {
-      value: SimpleChoice
-      title: string
-      icon: string
-      color: string
-    }
+    // const isCombined = props.proposals.length > 1
 
     const options = [
       {
@@ -69,7 +69,7 @@ export default defineComponent({
       }
     ]
 
-    if (isCombined) {
+    if (props.proposals.length > 1) {
       options.push({
         value: SimpleChoice.Abstain,
         title: t('poll.abstain'),
@@ -80,30 +80,19 @@ export default defineComponent({
 
     function change (proposal: Proposal, opt: Option) {
       votes.set(proposal.pk, opt.value)
-      if (isCombined) {
-        const map = new DefaultMap<SimpleChoice, number[]>(() => [])
-        for (const [pk, choice] of votes.entries()) {
-          map.get(choice).push(pk)
-        }
-        emit('update:modelValue', Object.fromEntries(map))
-      } else {
-        emit('update:modelValue', { choice: opt.value })
+      const map = new DefaultMap<SimpleChoice, number[]>(() => [])
+      for (const prop of props.proposals) {
+        map.get(votes.get(prop.pk) ?? SimpleChoice.Abstain).push(prop.pk)
       }
+      emit('update:modelValue', Object.fromEntries(map))
     }
 
-    function setSingle (vote: SingleSimpleVote) {
-      votes.set(props.proposals[0].pk, vote.choice)
-    }
-
-    watch(() => props.modelValue, (vote?: SimpleVote) => {
-      if (isCombined) {
-        for (const [choice, pks] of Object.entries(vote as CombinedSimpleVote)) {
-          pks.forEach((pk: number) => {
-            votes.set(pk, choice as SimpleChoice)
-          })
+    watch(() => props.modelValue, (vote?: CombinedSimpleVote) => {
+      if (!vote) return
+      for (const [choice, pks] of Object.entries(vote)) {
+        for (const pk of pks) {
+          votes.set(pk, choice as SimpleChoice)
         }
-      } else {
-        setSingle(vote as SingleSimpleVote)
       }
     })
 

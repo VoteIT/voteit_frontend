@@ -97,7 +97,7 @@
       "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
     },
     "method": {
-      "combined_simple": "Combined simple",
+      "combined_simple": "Simple majority",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
       "scottish_stv": "Scottish STV",

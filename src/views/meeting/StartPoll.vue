@@ -35,9 +35,9 @@
     </template>
     <template v-if="pickMethod">
       <h2>{{ t('step', { step: 3 }) }}: {{ t('poll.chooseMethod') }}</h2>
-      <ul>
+      <ul class="method-list">
         <li :class="{ selected: methodSelected?.name === m.name }" v-for="m in availableMethods" :key="m.name">
-          <a href="#" @click.prevent="selectMethod(m)">{{ m.title }}</a>
+          <a href="#" @click.prevent="selectMethod(m)">{{ t(`poll.method.${m.name}`) }}</a>
           <div v-if="methodSettingsComponent && m.name === methodSelected.name">
             <h3>{{ t('options') }}</h3>
             <component :is="methodSettingsComponent" v-model="methodSettings" :method="m" :proposals="selectedProposals.length" />
@@ -45,7 +45,7 @@
         </li>
       </ul>
       <div class="btn-group">
-        <Btn icon="mdi-undo-alt" @click="pickMethod=false">{{ t('back') }}</Btn>
+        <Btn icon="mdi-undo-variant" @click="pickMethod=false">{{ t('back') }}</Btn>
         <Btn icon="mdi-check" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</Btn>
         <Btn icon="mdi-play" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</Btn>
       </div>
@@ -208,8 +208,9 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
-ul
+ul.method-list
   padding: 0
+  margin-bottom: 1em
 li
   &.disabled
     color: var(--disabled-text)

@@ -6,7 +6,7 @@ export enum PollMethodName {
   CombinedSimple = 'combined_simple',
   InstantRunoff = 'irv',
   RepeatedSchulze = 'repeated_schulze',
-  Simple = 'simple',
+  // Simple = 'simple',
   Schulze = 'schulze',
   ScottishSTV = 'scottish_stv'
 }
@@ -89,9 +89,7 @@ export interface ScottishSTVResult extends VoteResult {
   runtime: number
 }
 
-export type CombinedSimpleVote = {
-  [ key in SimpleChoice ]: number[]
-}
+export type CombinedSimpleVote = Record<SimpleChoice, number[]>
 
 export type SimpleVote = SingleSimpleVote | CombinedSimpleVote
 
@@ -109,14 +107,9 @@ export interface PollMethod {
 
 export const pollMethods: PollMethod[] = [
   {
-    name: PollMethodName.Simple,
-    title: 'Simple majority',
-    proposalsMax: 1
-  },
-  {
     name: PollMethodName.CombinedSimple,
-    title: 'Approve or deny',
-    proposalsMin: 2
+    title: 'Simple majority',
+    proposalsMin: 1
   },
   {
     name: PollMethodName.Schulze,
