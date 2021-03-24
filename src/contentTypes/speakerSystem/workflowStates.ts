@@ -1,10 +1,12 @@
+import { WorkflowState } from '../types'
+
 export enum SpeakerSystemState {
   Inactive = 'inactive',
   Active = 'active',
   Archived = 'archived'
 }
 
-export default [
+const workflowStates: WorkflowState[] = [
   {
     transition: 'inactivate',
     icon: 'mdi-eye-off',
@@ -21,3 +23,5 @@ export default [
     state: SpeakerSystemState.Archived
   }
 ]
+
+export default workflowStates

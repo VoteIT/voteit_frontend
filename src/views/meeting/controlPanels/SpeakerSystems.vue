@@ -32,11 +32,7 @@
           <label for="speakersystem-safepos">{{ t('speaker.safePositions') }}</label><br/>
           <input id="speakersystem-safepos" type="number" min="0" max="2" v-model="systemData.safe_positions">
         </p>
-        <p>
-          <input id="speakersystem-active" type="checkbox" v-model="systemData.active">
-          <label for="speakersystem-active">{{ t('speaker.visible') }}</label>
-        </p>
-        <Btn icon="mdi-plus" :disabled="!systemDataReady">{{ t('add') }}</Btn>
+        <Btn icon="mdi-plus" @click="createSystem()" :disabled="!systemDataReady">{{ t('add') }}</Btn>
       </form>
     </BtnDropdown>
   </div>
@@ -53,8 +49,7 @@ import BtnDropdown from '@/components/BtnDropdown.vue'
 import UserSearch from '@/components/widgets/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 
-import speakerSystemType from '@/contentTypes/speakerSystem'
-import { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/types'
+import speakerSystemType, { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/speakerSystem'
 import useLoader from '@/composables/useLoader'
 import { ContextRole } from '@/composables/types'
 import { User } from '@/utils/types'
@@ -91,13 +86,12 @@ export default defineComponent({
     })
 
     const systems = computed(() => speakerLists.getSystems(meetingId.value, true))
-    const systemData = reactive({
+    const systemData = reactive<Partial<SpeakerSystem>>({
       title: meeting.value ? slugify(meeting.value.title) : '',
-      method_name: undefined,
-      safe_positions: 1,
-      active: true
+      safe_positions: 1
     })
     const systemDataReady = computed(() => systemData.title && systemData.method_name)
+
     function createSystem () {
       if (systemDataReady.value) {
         systemAPI.add({ ...systemData, meeting: meetingId.value })

@@ -1,17 +1,17 @@
-import { Meeting, predicate, PresenceCheck } from '../types'
+import { Meeting, Predicate, PresenceCheck } from '../types'
 import meetingRules from '../meeting/rules'
 import { meetings } from '@/composables/useMeetings'
 import { PresenceCheckState } from './workflowStates'
 
-const isOpen: predicate = (check: PresenceCheck) => {
+const isOpen: Predicate = (check: PresenceCheck) => {
   return check.state === PresenceCheckState.Open
 }
 
-const canAdd: predicate = (meeting: Meeting) => {
+const canAdd: Predicate = (meeting: Meeting) => {
   return meetingRules.isModerator(meeting) && meetingRules.isActive(meeting)
 }
 
-const canChange: predicate = (check: PresenceCheck) => {
+const canChange: Predicate = (check: PresenceCheck) => {
   const meeting = meetings.get(check.meeting)
   return !!meeting && meetingRules.isModerator(meeting) && isOpen(check)
 }

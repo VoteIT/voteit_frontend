@@ -96,19 +96,6 @@ export interface SpeakerOrderUpdate {
   current: number // Current speaker
 }
 
-export enum SpeakerSystemMethod {
-  Simple = 'simple',
-  Priority = 'priority',
-}
-
-export interface SpeakerSystem extends StateContent {
-  active_list?: number
-  meeting: number
-  method_name: SpeakerSystemMethod
-  safe_positions?: number
-  settings: object // TODO
-}
-
 export interface PresenceCheck {
   pk: number
   meeting: number
@@ -163,4 +150,4 @@ export interface ChannelConfig extends ChannelsConfig {
   leaveDelay?: number
 }
 
-export type predicate = (obj: any) => boolean
+export type Predicate = (obj: any) => boolean

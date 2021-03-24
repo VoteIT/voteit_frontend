@@ -3,10 +3,11 @@ import useContextRoles from '@/composables/useContextRoles'
 import { meetings } from '@/composables/useMeetings'
 import { currentlySpeaking, speakerLists } from '@/composables/meeting/useSpeakerLists'
 
-import { Meeting, SpeakerSystem, SpeakerSystemRole } from '../types'
+import { Meeting, SpeakerSystemRole } from '../types'
 import meetingRules from '../meeting/rules'
 
 import { SpeakerSystemState } from './workflowStates'
+import { SpeakerSystem } from '.'
 
 const { hasRole } = useContextRoles('speaker_system')
 const { user } = useAuthentication()

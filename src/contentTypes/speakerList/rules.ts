@@ -1,60 +1,60 @@
 import useAuthentication from '@/composables/useAuthentication'
 import { speakerSystems, currentlySpeaking } from '@/composables/meeting/useSpeakerLists'
 
-import { predicate, SpeakerList, SpeakerSystem } from '../types'
+import { Predicate, SpeakerList } from '../types'
 import speakerSystemRules from '../speakerSystem/rules'
 
 import { SpeakerListState } from './workflowStates'
+import { SpeakerSystem } from '../speakerSystem'
 
 const { user } = useAuthentication()
 
 function getSystem (list: SpeakerList) {
   return speakerSystems.get(list.speaker_system)
 }
-function isActive (list: SpeakerList) {
+
+const isActive: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
   // eslint-disable-next-line camelcase
   return system?.active_list === list.pk
 }
-function isCurrentlySpeaking (list: SpeakerList) {
+const isCurrentlySpeaking: Predicate = (list: SpeakerList) => {
   return currentlySpeaking.get(list.pk) === user.value?.pk
 }
-function isOpen (list: SpeakerList) {
+const isOpen: Predicate = (list: SpeakerList) => {
   return list.state === SpeakerListState.Open
 }
 
-function canActivate (list: SpeakerList) {
+const canActivate = (list: SpeakerList) => {
   const system = getSystem(list)
   return system && canAdd(system) && system.active_list !== list.pk && !speakerSystemRules.hasActiveSpeaker(system)
 }
-function canAdd (system: SpeakerSystem) {
+const canAdd: Predicate = (system: SpeakerSystem) => {
   return speakerSystemRules.isModerator(system) && !speakerSystemRules.isArchived(system)
 }
-function canChange (list: SpeakerList) {
+const canChange: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
-  return system && canAdd(system)
+  return !!system && canAdd(system)
 }
 
-function canStart (list: SpeakerList) {
+const canStart: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
-  return system && isActive(list) && speakerSystemRules.isModerator(system) && speakerSystemRules.isActive(system)
+  return !!system && isActive(list) && speakerSystemRules.isModerator(system) && speakerSystemRules.isActive(system)
 }
-function canStop (list: SpeakerList) {
+const canStop: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
-  return system && isActive(list) && speakerSystemRules.isModerator(system)
+  return !!system && isActive(list) && speakerSystemRules.isModerator(system)
 }
-function canEnter (list: SpeakerList) {
+const canEnter = (list: SpeakerList) => {
   const system = getSystem(list)
-  if (system) {
-    return (speakerSystemRules.isSpeaker(system) && isOpen(list) && speakerSystemRules.isActive(system)) ||
-           (speakerSystemRules.isModerator(system) && !speakerSystemRules.isArchived(system))
-  }
+  return !!system && (
+    (speakerSystemRules.isSpeaker(system) && isOpen(list) && speakerSystemRules.isActive(system)) ||
+    (speakerSystemRules.isModerator(system) && !speakerSystemRules.isArchived(system))
+  )
 }
-function canLeave (list: SpeakerList) {
+const canLeave: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
-  if (system) {
-    return (speakerSystemRules.isModerator(system) || speakerSystemRules.isSpeaker(system)) && !isCurrentlySpeaking(list)
-  }
+  return !!system && (speakerSystemRules.isModerator(system) || speakerSystemRules.isSpeaker(system)) && !isCurrentlySpeaking(list)
 }
 
 export default {

@@ -90,7 +90,6 @@ export interface ScottishSTVResult extends VoteResult {
 }
 
 export type CombinedSimpleVote = Record<SimpleChoice, number[]>
-
 export type SimpleVote = SingleSimpleVote | CombinedSimpleVote
 
 export interface PollMethod {

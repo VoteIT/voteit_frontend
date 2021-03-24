@@ -1,6 +1,6 @@
 import useAuthentication from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
-import { Meeting, MeetingRole, predicate } from '../types'
+import { Meeting, MeetingRole, Predicate } from '../types'
 
 import useWorkflows from '../useWorkflows'
 import workflowStates, { MeetingState } from './workflowStates'
@@ -29,11 +29,11 @@ function isPotentialVoter (meeting?: Meeting) {
   return meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
 }
 
-const isModerator: predicate = (meeting?: Meeting) => {
+const isModerator: Predicate = (meeting?: Meeting) => {
   return !!meeting && hasRole(meeting.pk, MeetingRole.Moderator)
 }
 
-const isActive: predicate = (meeting?: Meeting) => {
+const isActive: Predicate = (meeting?: Meeting) => {
   return !!meeting && ACTIVE_STATES.includes(meeting.state as MeetingState)
 }
 

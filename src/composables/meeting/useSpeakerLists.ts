@@ -3,11 +3,11 @@ import wu from 'wu'
 
 import { dateify } from '@/utils'
 import speakerListType from '@/contentTypes/speakerList'
-import speakerSystemType from '@/contentTypes/speakerSystem'
+import speakerSystemType, { SpeakerSystem } from '@/contentTypes/speakerSystem'
 
 import useAuthentication from '../useAuthentication'
 
-import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem } from '@/contentTypes/types'
+import { SpeakerList, SpeakerOrderUpdate } from '@/contentTypes/types'
 import { SpeakerSystemState } from '@/contentTypes/speakerSystem/workflowStates'
 import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'

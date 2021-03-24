@@ -54,11 +54,12 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 
-import { openAlertEvent, orderBy } from '@/utils'
+import { orderBy } from '@/utils'
 
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
 import Proposal from '@/components/widgets/Proposal.vue'
+import ReactionButton from '@/components/meeting/ReactionButton.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import SpeakerList from '@/components/widgets/SpeakerList.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
@@ -74,10 +75,9 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
 import pollType from '@/contentTypes/poll'
 import proposalType from '@/contentTypes/proposal'
+import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import speakerListType from '@/contentTypes/speakerList'
-import { SpeakerSystem } from '@/contentTypes/types'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
-import ReactionButton from '@/components/meeting/ReactionButton.vue'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -129,7 +129,6 @@ export default defineComponent({
     const discussionReactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
 
     function addSpeakerList (system: SpeakerSystem) {
-      openAlertEvent.emit('Not Implemented')
       const listData: SpeakerListAddMessage = {
         title: agendaItem.value?.title ?? '---',
         speaker_system: system.pk,
