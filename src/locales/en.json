@@ -29,11 +29,13 @@
     "settings": "Access Policy settings"
   },
   "agenda": {
+    "agenda": "Agenda",
     "order": "Order Agenda Items"
   },
   "auth": {
+    "loggedInAs": "Logged in as {username}",
     "logout": "Logout",
-    "loggedInAs": "Logged in as {username}"
+    "logoutPrompt": "You're about to log out.\nAre you sure?"
   },
   "content": {
     "addName": "Add {name}",
@@ -127,6 +129,10 @@
     "openedAt": "Opened",
     "presentCount": "No users present yet | There is currently one present user | There are currently {count} present users",
     "recentlyClosedChecks": "Recently closed presence checks"
+  },
+  "profile": {
+    "profile": "Profile",
+    "verifyEmail": "Verify email"
   },
   "proposal": {
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",

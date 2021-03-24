@@ -10,8 +10,11 @@ const light = {
   dark: false,
   variables: {},
   colors: {
-    background: '#ffffff',
-    surface: '#f5f4ef',
+    background: '#f8f4f2',
+    'app-bar': '#563661',
+    'menu-active': '#9C8afa',
+    surface: '#ffffff',
+    divider: '#dfcfc8',
     primary: colors.indigo.base,
     secondary: colors.grey.lighten1,
     accent: colors.indigo.darken4,
@@ -22,6 +25,7 @@ const light = {
   }
 }
 
+/* Some day
 const dark = {
   dark: true,
   variables: {},
@@ -37,6 +41,7 @@ const dark = {
     warning: colors.red.darken4
   }
 }
+*/
 
 export default createVuetify({
   components,
@@ -44,8 +49,8 @@ export default createVuetify({
   theme: {
     defaultTheme: 'light',
     themes: {
-      light,
-      dark
+      light
+      // dark
     }
   }
 })

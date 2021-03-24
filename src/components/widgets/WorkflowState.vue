@@ -112,11 +112,11 @@ export default defineComponent({
       }
     }
     onMounted(() => {
-      document.addEventListener('click', clickWatch)
+      document.addEventListener('mousedown', clickWatch)
       root.value?.addEventListener('keyup', keyWatch)
     })
     onBeforeUnmount(() => {
-      document.removeEventListener('click', clickWatch)
+      document.removeEventListener('mousedown', clickWatch)
       root.value?.removeEventListener('keyup', keyWatch)
     })
 

@@ -1,33 +1,31 @@
 <template>
-  <v-main class="home" v-if="isAuthenticated">
-    <div>
-      {{ t('auth.loggedInAs', user) }}
-      <btn @click="logout">{{ t('auth.logout') }}</btn>
-    </div>
-    <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
-    <ul v-if="participatingMeetings.length">
-      <li v-for="meeting in participatingMeetings" :key="meeting.pk">
-        <RouterLink :to="`/m/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
-      </li>
-    </ul>
-    <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
-    <template v-if="otherMeetings.length">
-      <h1>{{ t('join.joinAMeeting', otherMeetings.length) }}</h1>
-      <ul>
-        <li v-for="meeting in otherMeetings" :key="meeting.pk">
-          <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
+  <div class="home" v-if="isAuthenticated">
+    <v-container fluid>
+      <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
+      <ul v-if="participatingMeetings.length">
+        <li v-for="meeting in participatingMeetings" :key="meeting.pk">
+          <RouterLink :to="`/m/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
         </li>
       </ul>
-    </template>
-    <div v-if="canAdd()">
-      <btn icon="mdi-plus" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
-    </div>
-    <template v-if="debug">
-      <counter :style="{ marginTop: '1.5em' }" />
-      <get-schema/>
-    </template>
-  </v-main>
-  <v-main class="home" v-else>
+      <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
+      <template v-if="otherMeetings.length">
+        <h1>{{ t('join.joinAMeeting', otherMeetings.length) }}</h1>
+        <ul>
+          <li v-for="meeting in otherMeetings" :key="meeting.pk">
+            <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
+          </li>
+        </ul>
+      </template>
+      <div v-if="canAdd()">
+        <btn icon="mdi-plus" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
+      </div>
+      <template v-if="debug">
+        <counter :style="{ marginTop: '1.5em' }" />
+        <get-schema/>
+      </template>
+    </v-container>
+  </div>
+  <div class="home" v-else>
     <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
@@ -49,7 +47,7 @@
         </form>
       </li>
     </ul>
-  </v-main>
+  </div>
 </template>
 
 <script lang="ts">
@@ -168,7 +166,7 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-main.home
+div.home
   text-align: center
   ul
     padding: 0

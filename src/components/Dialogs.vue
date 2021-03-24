@@ -5,7 +5,7 @@
         <v-btn plain icon="mdi-close" class="closer" @click="deny()" />
         <p>{{ active.title }}</p>
         <div class="btn-controls">
-          <v-btn color="secondary" @click="deny()">{{ active.no }}</v-btn>
+          <v-btn plain @click="deny()">{{ active.no }}</v-btn>
           <v-btn @click="accept()">{{ active.yes }}</v-btn>
         </div>
       </div>

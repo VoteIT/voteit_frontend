@@ -2,16 +2,11 @@
   <div id="meeting" v-if="meeting">
     <header>
       <nav>
-        <RouterLink to="/">{{ t('home.home') }}</RouterLink>
         <h1><RouterLink :to="meetingPath">{{ meeting.title || t('loader.loading') }}</RouterLink></h1>
-        <span class="user" title="Your username">
-          <Icon :name="hasRole('moderator') ? 'mdi-gavel' : 'mdi-account' "/>
-          {{ user.username }}
-        </span>
       </nav>
       <nav class="tabs">
         <RouterLink v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
-          <v-icon small left :icon="link.icon" />
+          <v-icon :icon="link.icon" />
           {{ link.title }}
           <span v-if="link.count">({{ link.count() }})</span>
         </RouterLink>
@@ -197,46 +192,41 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-header
+#meeting > header
+  display: flex
+  justify-content: space-between
+  background-color: rgb(var(--v-theme-app-bar))
   nav
     padding: 8px
-    background-color: var(--nav-bg)
     color: fff
     display: flex
     justify-content: space-between
-    .user
-      color: var(--discrete-icon)
-      padding: 0 3px
-      font-weight: bold
-      transform: rotate(3deg)
-      .material-icons
-        color: var(--discrete-icon)
-        vertical-align: bottom
     a
       color: #fff
       margin-right: 1rem
+      text-decoration: none
     h1
-      margin: 0
+      margin: 0 8px
       flex-grow: 1
     &.tabs
       padding-bottom: 0
       justify-content: flex-end
       a
-        text-decoration: none
-        margin-right: 10px
-        padding: 8px 12px
-        border-radius: 4px 4px 0 0
-        background-color: var(--nav-tab-bg)
-        font-weight: 700
+        margin-right: 2em
+        padding-bottom: 14px
+        border-bottom: 5px solid transparent
+        font-size: 12pt
+        &:last-child
+          margin-right: 1em
         > span
-          vertical-align: super
-          font-size: 80%
-        .material-icons
+          vertical-align: 4px
+          font-size: 10pt
+        .mdi
+          display: none
           color: var(--discrete-icon)
-          vertical-align: text-bottom
+          vertical-align: -3px
         &.router-link-active
-          background-color: var(--nav-tab-active-bg)
-          color: var(--nav-tab-active-text)
+          border-color: rgb(var(--v-theme-menu-active))
 
 #meeting
   display: flex
@@ -246,10 +236,9 @@ header
     display: flex
     flex-grow: 1
     #agenda
-      width: 280px
-      padding-top: .5em
+      width: 360px
+      padding: 3em 2em
       text-align: left
-      background-color: var(--agenda-bg)
       flex-shrink: 0
     #main-content
       flex-grow: 1

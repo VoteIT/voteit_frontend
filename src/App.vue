@@ -1,11 +1,12 @@
 <template>
   <v-app>
+    <SystemBar/>
     <router-view/>
-    <online-status/>
-    <modal/>
-    <dialogs/>
-    <loader/>
-    <alerts/>
+    <OnlineStatus/>
+    <Modal/>
+    <Dialogs/>
+    <Loader/>
+    <Alerts/>
   </v-app>
 </template>
 
@@ -21,6 +22,7 @@ import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/modals/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
+import SystemBar from './components/SystemBar.vue'
 
 export default defineComponent({
   components: {
@@ -28,7 +30,8 @@ export default defineComponent({
     Loader,
     Alerts,
     Modal,
-    Dialogs
+    Dialogs,
+    SystemBar
   },
   setup () {
     const { t } = useI18n()

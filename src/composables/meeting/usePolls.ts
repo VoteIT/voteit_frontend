@@ -45,10 +45,15 @@ agendaDeletedEvent.on(pk => {
 
 export default function usePolls () {
   function getPolls (meeting: number, state?: string) {
-    const meetingPolls = wu(polls.values()).filter(
+    return [...wu(polls.values()).filter(
       p => p.meeting === meeting && (!state || p.state === state)
-    )
-    return [...meetingPolls]
+    )]
+  }
+
+  function getAiPolls (agendaItem: number, state?: string) {
+    return [...wu(polls.values()).filter(
+      p => p.agenda_item === agendaItem && (!state || p.state === state)
+    )]
   }
 
   function getPoll (pk: number) {
@@ -61,6 +66,7 @@ export default function usePolls () {
 
   return {
     getPolls,
+    getAiPolls,
     getPoll,
     getPollStatus
   }
