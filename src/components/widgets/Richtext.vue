@@ -1,5 +1,5 @@
 <template>
-  <RichtextEditor v-if="editing" v-model="content" @submit="submit()" set-focus />
+  <RichtextEditor v-if="editing" v-model="content" @submit="submit()" set-focus class="richtext" />
   <div v-else v-html="object[contentAttribute]" class="richtext" />
 </template>
 
@@ -25,7 +25,7 @@ export default defineComponent({
     },
     editing: Boolean
   },
-  emits: ['edit-done'],
+  emits: ['edit-done', 'updated'],
   setup (props, { emit }) {
     const content = ref(props.object[props.contentAttribute])
 
@@ -63,6 +63,12 @@ export default defineComponent({
       content,
       submit
     }
+  },
+  mounted () {
+    this.$emit('updated', this.$el)
+  },
+  updated () {
+    this.$emit('updated', this.$el)
   }
 })
 </script>
@@ -70,6 +76,9 @@ export default defineComponent({
 <style lang="sass">
 .richtext
   margin: .4em 0
+  p
+    margin-bottom: .5em !important
+    line-height: 1.3em
   ol, ul
     padding-left: 1.2em
   blockquote

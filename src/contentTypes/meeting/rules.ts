@@ -13,20 +13,20 @@ const { user } = useAuthentication()
 const FINISHED_STATES = [MeetingState.Closed, MeetingState.Archiving, MeetingState.Archived]
 const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
-function isParticipant (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, MeetingRole.Participant)
+const isParticipant: Predicate = (meeting?: Meeting) => {
+  return !!meeting && hasRole(meeting.pk, MeetingRole.Participant)
 }
 
-function isProposer (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, MeetingRole.Proposer)
+const isProposer: Predicate = (meeting?: Meeting) => {
+  return !!meeting && hasRole(meeting.pk, MeetingRole.Proposer)
 }
 
-function isDiscusser (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, MeetingRole.Discusser)
+const isDiscusser: Predicate = (meeting?: Meeting) => {
+  return !!meeting && hasRole(meeting.pk, MeetingRole.Discusser)
 }
 
-function isPotentialVoter (meeting?: Meeting) {
-  return meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
+const isPotentialVoter: Predicate = (meeting?: Meeting) => {
+  return !!meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
 }
 
 const isModerator: Predicate = (meeting?: Meeting) => {
@@ -37,28 +37,26 @@ const isActive: Predicate = (meeting?: Meeting) => {
   return !!meeting && ACTIVE_STATES.includes(meeting.state as MeetingState)
 }
 
-function isArchived (meeting?: Meeting) {
+const isArchived: Predicate = (meeting?: Meeting) => {
   const state = meeting && getState(meeting.state)
-  return typeof state !== 'object' || state.isFinal
+  return !!state?.isFinal
 }
 
-function isFinished (meeting?: Meeting) {
-  return meeting && FINISHED_STATES.includes(meeting.state as MeetingState)
+const isFinished: Predicate = (meeting?: Meeting) => {
+  return !!meeting && FINISHED_STATES.includes(meeting.state as MeetingState)
 }
 
-function canView (meeting?: Meeting) {
+const canView: Predicate = (meeting?: Meeting) => {
   return isParticipant(meeting)
 }
 
-function canAdd () {
+const canAdd: Predicate = () => {
   // TODO organization meeting creator role
-  if (user.value) {
-    return user.value.is_superuser
-  }
-  return false
+  // eslint-disable-next-line camelcase
+  return !!user.value?.is_superuser
 }
 
-function canChange (meeting?: Meeting) {
+const canChange: Predicate = (meeting?: Meeting) => {
   return !isArchived(meeting) && isModerator(meeting)
 }
 

@@ -1,33 +1,47 @@
 <template>
   <Widget class="discussion">
-    <div class="author"><user :pk="p.author" /></div>
-    <div><Moment :date="p.created" /></div>
-    <Richtext :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
-    <div v-if="!readOnly" class="btn-controls">
-      <slot name="buttons"/>
-      <Btn v-if="canChange(p)" sm icon="mdi-pencil" color="secondary" :active="editing" @click="editing = !editing" />
-      <Btn v-if="canDelete(p)" sm icon="mdi-delete" color="warning" @click="queryDelete()" />
+    <div class="meta">
+      <div>
+        <UserAvatar :pk="p.author" />
+      </div>
+      <div class="fill">
+        <user :pk="p.author" /><br/>
+        <Moment :date="p.created" />
+      </div>
+      <div class="tags" v-if="false">
+        <Tag v-for="tag in p.tags" :key="tag" :name="tag" />
+      </div>
     </div>
+    <Richtext @updated="setTagColors" submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)">
+      <div>
+        <slot name="buttons"/>
+      </div>
+      <Menu :items="menuItems"/>
+    </footer>
   </Widget>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 
 import { dialogQuery } from '@/utils'
+import stringToHSL from '@/utils/stringToHSL'
 import discussionPostType from '@/contentTypes/discussionPost'
 import { DiscussionPost } from '@/contentTypes/types'
+import { useI18n } from 'vue-i18n'
+import { MenuItem, ThemeColor } from '@/utils/types'
 
 export default defineComponent({
-  name: 'DiscussionPost',
   props: {
     p: {
       type: Object as PropType<DiscussionPost>,
       required: true
     },
+    allTags: Set as PropType<Set<string>>,
     readOnly: Boolean
   },
   components: {
@@ -35,32 +49,92 @@ export default defineComponent({
     Moment
   },
   setup (props) {
+    const { t } = useI18n()
     const api = discussionPostType.getContentApi()
+    const { canDelete, canChange } = discussionPostType.rules
+
     const editing = ref(false)
-    const t = inject('t') as CallableFunction
 
     async function queryDelete () {
-      if (!await dialogQuery(t('discussion.deletePrompt'))) return
-      api.delete(props.p.pk)
+      if (await dialogQuery({
+        title: t('discussion.deletePrompt'),
+        theme: ThemeColor.Warning
+      })) api.delete(props.p.pk)
     }
+
+    function setTagColors (containerElem: HTMLElement) {
+      for (const elem of containerElem.querySelectorAll('.mention[data-denotation-char="#"]')) {
+        const tagElem = elem as HTMLElement
+        tagElem.style.backgroundColor = stringToHSL(tagElem.dataset.value as string)
+      }
+    }
+
+    const menuItems = computed<MenuItem[]>(() => {
+      const menu: MenuItem[] = []
+      if (canChange(props.p)) {
+        menu.push({
+          text: t('edit'),
+          icon: 'mdi-pencil',
+          onClick: async () => { editing.value = true }
+        })
+      }
+      if (canDelete(props.p)) {
+        menu.push({
+          text: t('delete'),
+          icon: 'mdi-delete',
+          color: ThemeColor.Warning,
+          onClick: queryDelete
+        })
+      }
+      return menu
+    })
 
     return {
       api,
       editing,
-      queryDelete,
-      ...discussionPostType.rules
+      menuItems,
+      setTagColors
     }
   }
 })
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .discussion
-  border-left: 6px solid var(--discussion)
-  .author
-    font-weight: bold
+  footer
+    border-top: 1px solid rgb(var(--v-theme-divider))
+    margin: 0 -10px
+    padding: 10px 10px 0
+    display: flex
+    justify-content: space-between
+
+    .context-menu
+      margin: -10px
+
+  .meta
+    display: flex
+    margin-bottom: .5em
+    > div
+      flex: 0 1 auto
+      // &:last-child
+      //   text-align: right
+    .fill
+      margin: 0 .5em
+      flex: 1 0 auto
   p
-    padding-left: .5rem
     margin: .5rem 0
     white-space: pre-wrap
+
+  .tags
+    .tag
+      margin-left: .2em
+      &:first-child
+        margin-left: 0
+
+.richtext
+  .mention
+    white-space: nowrap
+    padding: .2em .6em
+    border-radius: 4px
+    font-size: 10pt
 </style>

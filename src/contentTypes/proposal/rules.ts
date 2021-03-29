@@ -2,9 +2,10 @@ import { meetings } from '@/composables/useMeetings'
 import { agendaItems } from '@/composables/meeting/useAgenda'
 
 import meetingRules from '../meeting/rules'
+import discussionRules from '../discussionPost/rules'
 import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
-import { AgendaItem, Proposal } from '../types'
+import { AgendaItem, Predicate, Proposal } from '../types'
 import { ProposalState } from './workflowStates'
 import { polls } from '@/composables/meeting/usePolls'
 
@@ -44,9 +45,16 @@ function canRetract (proposal: Proposal) {
   return isAuthor(proposal) && isPublished(proposal) && !agendaRules.isProposalBlocked(agendaItem) && !agendaRules.isFinished(agendaItem) && !agendaRules.isPrivate(agendaItem)
 }
 
+const canComment: Predicate = (proposal: Proposal) => {
+  const agendaItem = agendaItems.get(proposal.agenda_item)
+  if (!agendaItem) return false
+  return discussionRules.canAdd(agendaItem)
+}
+
 export default {
   canAdd,
   canChange,
+  canComment,
   canDelete,
   canRetract
 }

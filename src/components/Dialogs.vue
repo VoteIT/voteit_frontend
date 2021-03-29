@@ -6,7 +6,7 @@
         <p>{{ active.title }}</p>
         <div class="btn-controls">
           <v-btn plain @click="deny()">{{ active.no }}</v-btn>
-          <v-btn @click="accept()">{{ active.yes }}</v-btn>
+          <v-btn plain :color="active.theme" @click="accept()">{{ active.yes }}</v-btn>
         </div>
       </div>
     </div>
@@ -15,15 +15,16 @@
 
 <script lang="ts">
 /* eslint-disable no-unused-expressions */
-import { computed, defineComponent, inject, nextTick, onBeforeMount, reactive, ref } from 'vue'
+import { computed, defineComponent, nextTick, onBeforeMount, reactive, ref } from 'vue'
 
 import { openDialogEvent } from '@/utils'
 
 import { Dialog } from '@/composables/types'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   setup () {
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
     const windowEl = ref<HTMLElement | null>(null)
     let savedFocusEl: HTMLElement | null
     const queue = reactive<Dialog[]>([])
@@ -87,6 +88,7 @@ export default defineComponent({
 
 #dialog-backdrop
   background-color: var(--overlay-bg)
+  z-index: 100
   position: fixed
   left: 0
   right: 0

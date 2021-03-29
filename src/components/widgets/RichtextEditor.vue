@@ -1,6 +1,12 @@
 <template>
   <div class="richtext-editor">
     <div ref="editorElement"/>
+    <div class="btn-controls" v-if="submit">
+      <v-btn :disabled="disabled" size="small" @click="$emit('submit')">
+        <v-icon left :icon="submitIcon"/>
+        {{ submitText || t('save') }}
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -31,7 +37,7 @@ const QUILL_CONFIG: any = {
 }
 
 export default defineComponent({
-  name: 'RichtextEditor',
+  inject: ['t'],
   emits: ['submit', 'update:modelValue'],
   props: {
     modelValue: {
@@ -42,7 +48,14 @@ export default defineComponent({
       type: Set as PropType<Set<string>>,
       default: () => new Set()
     },
-    setFocus: Boolean
+    setFocus: Boolean,
+    submit: Boolean,
+    disabled: Boolean,
+    submitText: String,
+    submitIcon: {
+      type: String,
+      default: 'mdi-check'
+    }
   },
   setup (props, { emit }) {
     let editor: Quill | null = null
@@ -90,10 +103,12 @@ export default defineComponent({
       if (editorElement.value) {
         editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
         const config = Object.assign({}, QUILL_CONFIG)
-        config.modules.keyboard.bindings.submit = {
-          key: 'Enter',
-          ctrlKey: true,
-          handler: () => emit('submit')
+        if (props.submit) {
+          config.modules.keyboard.bindings.submit = {
+            key: 'Enter',
+            ctrlKey: true,
+            handler: () => emit('submit')
+          }
         }
         config.modules.mention.source = mentionSource
         editor = new Quill(editorElement.value, config)
@@ -117,11 +132,16 @@ export default defineComponent({
       editor && editor.setText('')
     }
 
+    function setText (value: string) {
+      editor && (editor.root.innerHTML = value)
+    }
+
     return {
       editorElement,
       completionsElement,
       focus,
-      clear
+      clear,
+      setText
     }
   }
 })
@@ -132,18 +152,32 @@ export default defineComponent({
 @import '~quill/dist/quill.bubble.css'
 @import '~quill-mention/dist/quill.mention.css'
 .richtext-editor
-  position: relative
+  .btn-controls
+    text-align: right
+    margin-top: -3px
+    margin-right: 6px
 
 .ql-container
   background-color: var(--bg)
+  border: 1px solid rgb(var(--v-theme-divider))
   border-radius: 2px
+  font-size: inherit
+  height: auto
+
+.ql-editor p
+  margin-bottom: .5em !important
+  &:last-child
+    margin-bottom: 0 !important
 
 // .ql-placeholder-content
 //   background-color: #eef
 //   padding-left: .2em
 //   border-bottom: 1px solid #cce
 
+ul.ql-mention-list
+  padding: 0 !important
+
 .mention
-  background-color: var(--mention)
+  background-color: rgba(var(--v-theme-primary), .3)
   padding: .3em .1em .1em
 </style>

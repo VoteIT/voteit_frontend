@@ -2,14 +2,17 @@ import { Ref } from '@vue/reactivity'
 import { ComponentPublicInstance, onBeforeMount, onBeforeUnmount } from '@vue/runtime-core'
 
 interface ElementCallback {
-  element: Ref<ComponentPublicInstance | null>
+  element: Ref<ComponentPublicInstance | HTMLElement | null>
   callback: () => void
 }
 const clickedOutsideCallbacks: Set<ElementCallback> = new Set()
 
 document.addEventListener('mousedown', evt => {
   for (const { element, callback } of clickedOutsideCallbacks) {
-    if (element.value && !evt.composedPath().includes(element.value.$el)) callback()
+    if (element.value) {
+      const elem = ('$el' in element.value) ? element.value.$el : element.value
+      if (!evt.composedPath().includes(elem)) callback()
+    }
   }
 })
 

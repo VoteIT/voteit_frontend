@@ -5,7 +5,7 @@ import { dateify, orderBy } from '@/utils'
 
 import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
-import { DiscussionPost } from '@/contentTypes/types'
+import { DiscussionPost, Proposal } from '@/contentTypes/types'
 import { agendaDeletedEvent } from './useAgenda'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
@@ -26,13 +26,25 @@ agendaDeletedEvent.on(deleteForAgendaItem)
 // Automatically clear proposals for agenda item when unsubscribed
 agendaItemType.getChannel().onLeave(deleteForAgendaItem)
 
+function orderedDiscussions (filter: (d: DiscussionPost) => boolean) {
+  return orderBy([...wu(discussions.values()).filter(filter)])
+}
+
 export default function useDiscussions () {
   function getAgendaDiscussions (agendaItem: number) {
-    const posts = [...wu(discussions.values()).filter(post => post.agenda_item === agendaItem)]
-    return orderBy(posts)
+    return orderedDiscussions(
+      post => post.agenda_item === agendaItem
+    )
+  }
+
+  function getProposalDiscussions (proposal: Proposal) {
+    return orderedDiscussions(
+      post => post.tags.includes(proposal.prop_id)
+    )
   }
 
   return {
-    getAgendaDiscussions
+    getAgendaDiscussions,
+    getProposalDiscussions
   }
 }

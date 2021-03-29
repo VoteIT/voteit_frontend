@@ -1,21 +1,17 @@
 <template>
   <BtnDropdown ref="dropdownComponent" :title="t('content.addName', { name })" @open="editorComponent.focus()">
-    <form @submit.prevent="submit()">
-      <RichtextEditor ref="editorComponent" v-model="text" @submit="submit()" :tags="tags" />
-      <div class="buttons">
-        <Btn sm icon="mdi-send" :disabled="disabled" @click="submit()">{{ t('post') }}</Btn>
-      </div>
-    </form>
+    <RichtextEditor ref="editorComponent" submit :disabled="disabled" v-model="text" @submit="submit()" :tags="tags" />
   </BtnDropdown>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 
-import { dialogQuery } from '@/utils'
+import { dialogQuery, stripHTML } from '@/utils'
 
 import BtnDropdown from '../BtnDropdown.vue'
 import RichtextEditor from '../widgets/RichtextEditor.vue'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   name: 'AddContent',
@@ -40,21 +36,17 @@ export default defineComponent({
     tags: Set as PropType<Set<string>>
   },
   setup (props) {
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
     const text = ref('')
-    const disabled = ref(false)
+    const submitting = ref(false)
 
-    function textContent (html: string) {
-      const tmp = document.createElement('div')
-      tmp.innerHTML = html
-      return tmp.textContent || tmp.innerText || ''
-    }
-    const textLength = computed(() => textContent(text.value).length)
+    const textLength = computed(() => stripHTML(text.value).length)
+    const disabled = computed(() => submitting.value || textLength.value < props.minLength)
 
     async function submit (override = false) {
       if (disabled.value) return
       if (override || textLength.value >= props.warnLength) {
-        disabled.value = true
+        submitting.value = true
         try {
           await props.handler(text.value)
           editorComponent.value.clear()
@@ -62,12 +54,13 @@ export default defineComponent({
         } catch (err) {
           console.error(err)
         }
-        disabled.value = false
+        submitting.value = false
       } else {
         if (await dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))) submit(true)
       }
     }
 
+    // FIXME Don't know how to type there correctly
     const editorComponent = ref<any>(null)
     const dropdownComponent = ref<any>(null)
 
@@ -89,9 +82,9 @@ export default defineComponent({
 textarea
   width: 100%
   height: 8em
-  border: var(--widget-border)
+  border: var(--v-theme-divider)
   &:focus
-    outline: var(--widget-border)
+    outline: var(--v-theme-divider)
 .buttons
   text-align: right
 </style>

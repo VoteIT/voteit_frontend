@@ -136,7 +136,6 @@ export default defineComponent({
 <style lang="sass">
 .dropdown
   position: relative
-  margin-right: .2rem
   display: inline-block
   > .btn
     background-color: #bbc

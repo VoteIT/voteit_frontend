@@ -79,10 +79,12 @@ export default function useMeeting () {
     }
   }
 
-  function getUser (pk: number, meeting?: number): User | undefined {
+  function getUser (pk?: number, meeting?: number): User | undefined {
     // Return user object if found in meeting participants
     // Otherwise queue for fetch
-    meeting = meeting || meetingId.value
+    meeting = meeting ?? meetingId.value
+    pk = pk ?? user.value?.pk
+    if (typeof pk !== 'number') return
     const role = wu(participants.value.values())
       .find(r => r.user.pk === pk && r.meeting === meeting)
     if (role) {

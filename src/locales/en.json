@@ -2,6 +2,7 @@
   "add": "Add",
   "all": "All",
   "back": "Back",
+  "by": "by",
   "cancel": "Cancel",
   "color": "Color",
   "continue": "Continue",
@@ -30,7 +31,10 @@
   },
   "agenda": {
     "agenda": "Agenda",
-    "order": "Order Agenda Items"
+    "columns": "Columns",
+    "nested": "Nested",
+    "order": "Order Agenda Items",
+    "showAs": "Show as"
   },
   "auth": {
     "loggedInAs": "Logged in as {username}",
@@ -42,9 +46,12 @@
     "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
   },
   "discussion": {
+    "comment": "Comment",
+    "comments": "No comments | 1 comment | {count} comments",
     "deletePrompt": "You are about to delete a discussion post permanently.\nAre you sure?",
     "discussion": "Discussion post",
     "discussions": "Discussions",
+    "hideComments": "Hide comments",
     "noDiscussions": "Nothing to hear..."
   },
   "home": {
@@ -138,6 +145,7 @@
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
     "proposals": "Proposals",
+    "proposalsAndComments": "Proposals and comments",
     "noProposals": "Nothing to say...",
     "notFound": "Proposal not found",
     "retract": "Retract",
@@ -160,6 +168,7 @@
   "speaker": {
     "addListToSystem": "New list ({title})",
     "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
+    "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
     "currentlySpeaking": "Now speaking",
     "enterList": "Enter list",
     "isActiveList": "List is active",

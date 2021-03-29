@@ -1,7 +1,13 @@
 <template>
-  <v-container v-if="agendaItem">
+  <v-container v-if="agendaItem" :class="displayMode">
     <v-row>
       <v-col>
+        <div id="agenda-display-mode">
+          <span class="text-secondary">{{ t('agenda.showAs') }}</span>
+          <v-btn plain :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
+            <img :src="require(`@/assets/agenda-display-${mode}.svg`)"/>
+          </v-btn>
+        </div>
         <h1>{{ agendaItem.title }}</h1>
         <div class="btn-controls">
           <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :pk="agendaId" />
@@ -17,32 +23,31 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
-        <h2>{{ t('proposal.proposals') }}</h2>
-        <ul v-if="sortedProposals.length" class="no-list">
-          <li v-for="p in sortedProposals" :key="p.pk">
-            <Proposal :p="p">
+      <v-col cols="12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
+        <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
+        <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
+        <div v-if="sortedProposals.length">
+          <div v-for="p in sortedProposals" :key="p.pk">
+            <Proposal :p="p" :all-tags="allTags" :comments="getProposalDiscussions(p)">
               <template v-slot:buttons>
                 <ReactionButton v-for="btn in proposalReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
               </template>
             </Proposal>
-          </li>
-        </ul>
+          </div>
+        </div>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
                     :tags="allTags" :handler="addProposal" />
       </v-col>
-      <v-col>
+      <v-col v-if="displayMode === 'columns'" cols="12" lg="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
-        <ul v-if="sortedDiscussions.length" class="no-list">
-          <li v-for="d in sortedDiscussions" :key="d.pk">
-            <DiscussionPost :p="d">
-              <template v-slot:buttons>
-                <ReactionButton v-for="btn in discussionReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: d.pk }">{{ btn.title }}</ReactionButton>
-              </template>
-            </DiscussionPost>
-          </li>
-        </ul>
+        <div v-if="sortedDiscussions.length" class="no-list">
+          <DiscussionPost :p="d" :all-tags="allTags" v-for="d in sortedDiscussions" :key="d.pk">
+            <template v-slot:buttons>
+              <ReactionButton v-for="btn in discussionReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: d.pk }">{{ btn.title }}</ReactionButton>
+            </template>
+          </DiscussionPost>
+        </div>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :tags="allTags" :handler="addDiscussionPost" />
@@ -52,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 
 import { orderBy } from '@/utils'
 
@@ -101,6 +106,10 @@ export default defineComponent({
     const speakerSystems = computed(() => getSystems(meetingId.value))
 
     const editingBody = ref(false)
+    const displayMode = ref(localStorage.agendaDisplayMode ?? 'columns')
+    watch(displayMode, value => {
+      localStorage.agendaDisplayMode = value
+    })
 
     const allTags = computed<Set<string>>(() => {
       const tags = new Set<string>()
@@ -147,6 +156,8 @@ export default defineComponent({
       addProposal,
       addDiscussionPost,
       channel,
+      ...discussions,
+      displayMode,
       editingBody,
       meetingPath,
       proposalReactions,
@@ -177,8 +188,26 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-ul.no-list
-  padding: 0 !important
-  > li
-    list-style: none
+.agenda-proposals .proposal
+  border-top: 1px solid rgb(var(--v-theme-divider))
+  margin-top: 1em
+  padding-top: 1em
+
+#agenda-display-mode
+  margin-top: .5em
+  text-align: right
+  button
+    border-radius: 0
+    min-width: 40px
+    padding: 0
+    opacity: .5
+    margin-left: .5em
+    &.active
+      opacity: 1
+      border-bottom: 1px solid #000
+  span
+    font-size: 14pt
+  img
+    width: 24px
+    height: auto
 </style>

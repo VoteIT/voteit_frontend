@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { MeetingRole } from '@/contentTypes/types'
-import { User } from '@/utils/types'
+import { ThemeColor, User } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'
 
@@ -25,9 +25,10 @@ export interface Alert {
 
 export interface Dialog {
   title: string
-  resolve: CallableFunction
+  resolve: (value: unknown) => void
   yes?: string
   no?: string
+  theme?: ThemeColor
 }
 
 export interface MeetingRoles {

@@ -11,7 +11,7 @@
         <v-sheet ref="userMenuComponent" absolute top="59" right="6" rounded min-width="200" elevation="2" v-if="userMenuOpen">
           <div>
             <v-avatar color="primary">{{ initials }}</v-avatar>
-            <h2>{{ user.username }}</h2>
+            <h2>{{ user.username }} {{ user.username }}</h2>
             <p>{{ user.username }}</p>
           </div>
           <div>

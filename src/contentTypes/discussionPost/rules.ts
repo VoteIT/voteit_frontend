@@ -5,9 +5,9 @@ import { isAuthor } from '../rules'
 import agendaRules from '../agendaItem/rules'
 import meetingRules from '../meeting/rules'
 
-import { AgendaItem, DiscussionPost } from '../types'
+import { AgendaItem, DiscussionPost, Predicate } from '../types'
 
-function canAdd (agendaItem: AgendaItem) {
+const canAdd: Predicate = (agendaItem: AgendaItem) => {
   const meeting = meetings.get(agendaItem.meeting)
   return !agendaRules.isArchived(agendaItem) && (
     meetingRules.isModerator(meeting) || (
@@ -15,13 +15,13 @@ function canAdd (agendaItem: AgendaItem) {
   ))
 }
 
-function canChange (post: DiscussionPost) {
+const canChange: Predicate = (post: DiscussionPost) => {
   const agendaItem = agendaItems.get(post.agenda_item)
   const meeting = agendaItem && meetings.get(agendaItem.meeting)
   return !meetingRules.isArchived(meeting) && meetingRules.isModerator(meeting)
 }
 
-function canDelete (post: DiscussionPost) {
+const canDelete: Predicate = (post: DiscussionPost) => {
   const agendaItem = agendaItems.get(post.agenda_item)
   const meeting = agendaItem && meetings.get(agendaItem.meeting)
   return !meetingRules.isArchived(meeting) && (meetingRules.isModerator(meeting) || isAuthor(post))

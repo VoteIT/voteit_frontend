@@ -1,3 +1,4 @@
+import { Predicate } from '@/contentTypes/types'
 import { Component } from 'vue'
 
 /* eslint-disable camelcase */
@@ -72,3 +73,13 @@ export enum ThemeColor {
   Warning = 'warning',
   Success = 'success',
 }
+
+export interface MenuDescriptor {
+  text: string
+  icon?: string
+  onClick: () => Promise<any>
+  disabled?: boolean
+  color?: ThemeColor
+}
+
+export type MenuItem = '---' | MenuDescriptor

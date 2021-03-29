@@ -6,12 +6,10 @@
         {{ enterLeaveBtn.title }}
       </v-btn>
       <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
-      <Btn sm v-if="canDelete(list)" icon="mdi-delete" color="warning" :title="t('delete')" @click="deleteList(list)" />
+      <Menu :items="menuItems"/>
     </div>
     <h3>
       {{ list.title }}
-      <v-icon v-if="isActive" icon="mdi-toggle-switch" :title="t('speaker.isActiveList')"/>
-      <v-icon v-if="canActivate(list)" icon="mdi-toggle-switch-off" :title="t('speaker.setActiveList')" @click="speakers.setActiveList(list)" />
     </h3>
     <div v-if="canStart(list)" class="btn-group">
       <v-btn :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)"><v-icon icon="mdi-play"/></v-btn>
@@ -32,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, PropType } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
 import rules from '@/contentTypes/speakerList/rules'
@@ -43,6 +41,8 @@ import { SpeakerList } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import Moment from './Moment.vue'
 import { dialogQuery } from '@/utils'
+import { MenuItem, ThemeColor } from '@/utils/types'
+import { useI18n } from 'vue-i18n'
 
 interface EnterLeaveBtn {
   icon: string
@@ -64,7 +64,7 @@ export default defineComponent({
     Moment
   },
   setup (props) {
-    const t = inject('t') as (text: string) => string
+    const { t } = useI18n()
     const speakers = useSpeakerLists()
     const api = speakerListType.getContentApi()
 
@@ -76,9 +76,11 @@ export default defineComponent({
     const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 
-    async function deleteList (list: SpeakerList) {
-      if (!await dialogQuery(t('speaker.deleteListConfirmation'))) return
-      api.delete(list.pk)
+    async function deleteList () {
+      if (await dialogQuery({
+        title: t('speaker.confirmListDeletion'),
+        theme: ThemeColor.Warning
+      })) return api.delete(props.list.pk)
     }
 
     const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
@@ -100,6 +102,26 @@ export default defineComponent({
       return null
     })
 
+    const menuItems = computed<MenuItem[]>(() => {
+      const menu: MenuItem[] = []
+      if (rules.canActivate(props.list)) {
+        menu.push({
+          text: t('speaker.setActiveList'),
+          icon: 'mdi-toggle-switch-off',
+          onClick: async () => speakers.setActiveList(props.list)
+        })
+      }
+      if (rules.canDelete(props.list)) {
+        menu.push({
+          text: t('delete'),
+          icon: 'mdi-delete',
+          onClick: deleteList,
+          color: ThemeColor.Warning
+        })
+      }
+      return menu
+    })
+
     return {
       deleteList,
       speakerListType,
@@ -109,6 +131,7 @@ export default defineComponent({
       currentSpeaker,
       inList,
       enterLeaveBtn,
+      menuItems,
       ...rules,
       speakers,
       t

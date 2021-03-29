@@ -40,9 +40,15 @@ const openDialogEvent = new TypedEvent<Dialog>()
 const openModalEvent = new TypedEvent<Modal>()
 const closeModalEvent = new TypedEvent()
 
+function stripHTML (html: string) {
+  const tmp = document.createElement('div')
+  tmp.innerHTML = html
+  return tmp.textContent || tmp.innerText || ''
+}
+
 async function dialogQuery (text: string): Promise<undefined>
-async function dialogQuery (dialog: Dialog): Promise<undefined>
-async function dialogQuery (dialogOrText: Dialog | string) {
+async function dialogQuery (dialog: Omit<Dialog, 'resolve'>): Promise<undefined>
+async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | string) {
   return new Promise(resolve => {
     if (typeof dialogOrText === 'string') {
       openDialogEvent.emit({
@@ -66,6 +72,7 @@ export {
   dialogQuery,
   orderBy,
   slugify,
+  stripHTML,
   uriToPayload,
   openAlertEvent,
   openDialogEvent,

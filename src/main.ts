@@ -9,10 +9,13 @@ import moment from 'moment'
 import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 
-import Icon from './components/Icon.vue'
 import Btn from './components/Btn.vue'
-import User from './components/User.vue'
+import Icon from './components/Icon.vue'
+import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
+import Tag from './components/Tag.vue'
+import User from './components/User.vue'
+import UserAvatar from './components/UserAvatar.vue'
 import Widget from './components/widgets/Widget.vue'
 
 import en from './locales/en.json'
@@ -45,9 +48,12 @@ createApp(App)
   .use(router)
   .use(vuetify)
   .use(Api)
-  .component('Icon', Icon)
   .component('Btn', Btn)
-  .component('User', User)
+  .component('Icon', Icon)
+  .component('Menu', Menu)
   .component('ProgressBar', ProgressBar)
+  .component('Tag', Tag)
+  .component('User', User)
+  .component('UserAvatar', UserAvatar)
   .component('Widget', Widget)
   .mount('#app')
