@@ -31,7 +31,7 @@
       <Menu :items="menuItems" />
     </footer>
     <slot name="bottom"/>
-    <Comments ref="commentsComponent" v-show="showComments" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
+    <Comments v-if="!readOnly" ref="commentsComponent" v-show="showComments" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
   </div>
   <div v-else class="proposal">
     <em>{{ t('proposal.notFound') }}</em>

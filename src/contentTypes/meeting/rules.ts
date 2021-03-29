@@ -38,8 +38,7 @@ const isActive: Predicate = (meeting?: Meeting) => {
 }
 
 const isArchived: Predicate = (meeting?: Meeting) => {
-  const state = meeting && getState(meeting.state)
-  return !!state?.isFinal
+  return !!meeting && !!getState(meeting.state)?.isFinal
 }
 
 const isFinished: Predicate = (meeting?: Meeting) => {

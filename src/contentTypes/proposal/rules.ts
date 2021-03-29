@@ -47,8 +47,7 @@ function canRetract (proposal: Proposal) {
 
 const canComment: Predicate = (proposal: Proposal) => {
   const agendaItem = agendaItems.get(proposal.agenda_item)
-  if (!agendaItem) return false
-  return discussionRules.canAdd(agendaItem)
+  return !!agendaItem && discussionRules.canAdd(agendaItem)
 }
 
 export default {
