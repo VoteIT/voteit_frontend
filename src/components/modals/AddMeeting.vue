@@ -4,7 +4,7 @@
       <label for="meeting_title">{{ t('title') }}:</label><br/>
       <input id="meeting_title" type="text" v-model="formData.title" placeholder="Meeting title (at least 5 characters)" /><br/>
       <input type="checkbox" id="meeting_public" v-model="formData.public" /> <label for="meeting_public">{{ t('meeting.public') }}</label><br/>
-      <Btn icon="mdi-send" :disabled="disabled">{{ t('create') }}</Btn>
+      <Btn icon="mdi-send" :disabled="disabled" @click="addMeeting()">{{ t('create') }}</Btn>
     </form>
   </main>
 </template>
