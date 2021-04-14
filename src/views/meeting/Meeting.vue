@@ -1,7 +1,9 @@
 <template>
   <div id="meeting" v-if="meeting">
     <Agenda />
-    <RouterView id="main-content" />
+    <v-container id="main-content">
+      <RouterView />
+    </v-container>
   </div>
   <Bubbles widgets="bubbleWidgets" />
 </template>

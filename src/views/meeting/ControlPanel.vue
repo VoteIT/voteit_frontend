@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <main>
     <h1>{{ t('meeting.settingsFor', meeting) }}</h1>
     <nav class="tabs">
       <RouterLink v-for="p in panels" :key="p.name" :to="`${meetingPath}/settings/${p.path}`">
@@ -11,7 +11,7 @@
       <component ref="panelComponents" :is="p" v-if="currentPanel === p.path"/>
     </div>
     <p v-if="!currentPanel">Select a tab... <Icon name="mdi-arrow-up-bold"/></p>
-  </div>
+  </main>
 </template>
 
 <script lang="ts">

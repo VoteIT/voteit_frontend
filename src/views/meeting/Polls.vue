@@ -1,5 +1,5 @@
 <template>
-  <v-container id="polls">
+  <main id="polls">
     <nav class="tabs">
       <RouterLink v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><Icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></RouterLink>
     </nav>
@@ -9,7 +9,7 @@
     </header>
     <Poll :poll="p" v-for="p in polls" :key="p.pk" />
     <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
-  </v-container>
+  </main>
 </template>
 
 <script lang="ts">

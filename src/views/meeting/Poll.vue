@@ -1,8 +1,8 @@
 <template>
-  <v-container v-if="poll">
+  <main v-if="poll">
     <h1>{{ t('poll.details') }}</h1>
     <poll-detail :poll="poll"/>
-  </v-container>
+  </main>
 </template>
 
 <script lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="agendaItem" :class="displayMode">
+  <template v-if="agendaItem">
     <v-row>
       <v-col>
         <div id="agenda-display-mode">
@@ -49,7 +49,7 @@
                     :tags="allTags" :handler="addDiscussionPost" />
       </v-col>
     </v-row>
-  </v-container>
+  </template>
 </template>
 
 <script lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <main id="start-poll">
     <h1>Start poll</h1>
     <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
     <v-btn v-if="agendaId && agendaItem" @click="$router.push(`${meetingPath}/polls/new`)">
@@ -50,7 +50,7 @@
         <Btn icon="mdi-play" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</Btn>
       </div>
     </template>
-  </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -207,40 +207,41 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass" scoped>
-ul.method-list
-  padding: 0
-  margin-bottom: 1em
-li
-  &.disabled
-    color: var(--disabled-text)
-  list-style: none
-  border-top: var(--agenda-separator)
-  &:last-child
-    border-bottom: var(--agenda-separator)
-  h3
-    margin-top: 0
-  > div
-    padding: .5rem 1rem 1rem
-  .number label
-    display: block
-  a
-    display: block
-    text-decoration: none
-    padding: 6px
-    color: var(--text)
-    &:before
-      content: ''
-      width: 1.2rem
-      display: inline-block
-      line-height: 1
-  &.selected
-    background-color: var(--widget-selected-bg)
-    a:before
-      content: '✔'
-  &.selected.locked
-    background-color: #ddd
-  span
-    display: block
-    padding: 6px 6px 6px calc(6px + 1.2em)
+<style lang="sass">
+#start-poll
+  ul.method-list
+    padding: 0
+    margin-bottom: 1em
+  li
+    &.disabled
+      color: rgb(var(--v-theme-secondary))
+    list-style: none
+    border-top: var(--v-border-color)
+    &:last-child
+      border-bottom: var(--agenda-separator)
+    h3
+      margin-top: 0
+    > div
+      padding: .5rem 1rem 1rem
+    .number label
+      display: block
+    a
+      display: block
+      text-decoration: none
+      padding: 6px
+      color: var(--text)
+      &:before
+        content: ''
+        width: 1.2rem
+        display: inline-block
+        line-height: 1
+    &.selected
+      background-color: var(--widget-selected-bg)
+      a:before
+        content: '✔'
+    &.selected.locked
+      background-color: #ddd
+    span
+      display: block
+      padding: 6px 6px 6px calc(6px + 1.2em)
 </style>
