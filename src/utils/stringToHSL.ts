@@ -1,8 +1,10 @@
+function hasher (acc: number, chr: string): number {
+  // (| 0) converts to 32bit integer
+  return ((acc << 5) - acc + chr.charCodeAt(0)) | 0
+}
+
 export default function stringToHSL (text: string): string {
-  let hash = 0
-  for (const chr of text + '-') { // Add '-' to do an extra step, because tag ending -1, -2, etc makes hash results too close
-    hash = ((hash << 5) - hash) + chr.charCodeAt(0)
-    hash |= 0 // Convert to 32bit integer
-  }
+  // '-' adds an extra iteration. Similar tags ending in -1, -2, etc makes hash results too close.
+  const hash = [...text + '-'].reduce(hasher, 0)
   return `hsl(${Math.abs(hash) % 360}, 40%, 80%)`
 }

@@ -8,17 +8,21 @@
   "continue": "Continue",
   "create": "Create",
   "delete": "Delete",
+  "dismissAll": "Dismiss all",
   "edit": "Edit",
   "icon": "Icon",
+  "login": "Log in",
   "name": "Name",
   "no": "No",
   "options": "Options",
+  "organizations": "Organizations",
   "post": "Post",
   "preview": "Preview",
   "save": "Save",
   "select": "Select",
   "settings": "Settings",
   "start": "Start",
+  "state": "State",
   "step": "Step {step}",
   "stop": "Stop",
   "title": "Title",
@@ -38,7 +42,7 @@
   },
   "auth": {
     "loggedInAs": "Logged in as {username}",
-    "logout": "Logout",
+    "logout": "Log out",
     "logoutPrompt": "You're about to log out.\nAre you sure?"
   },
   "content": {
@@ -70,13 +74,22 @@
     "failed": "No loot!"
   },
   "meeting": {
+    "agenda": "Agenda",
+    "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
+    "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
     "participants": "Participants",
     "new": "New meeting",
+    "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
     "settingsFor": "Settings for {title}"
   },
+  "organization": {
+    "loginTo": "Log in to {title}",
+    "noLogin": "No login available"
+  },
   "poll": {
     "abstain": "Abstain",
+    "all": "All polls",
     "allowRandomTiebreaker": "Allow random in tiebreaker",
     "approve": "Approve",
     "castVote": "Cast vote",
@@ -183,5 +196,24 @@
     "systemManage": "Manage List System",
     "systemMethod": "Priority method",
     "visible": "Visible to all participants"
+  },
+  "workflowState": {
+    "approved": "Approved",
+    "archived": "Archived",
+    "archiving": "Archiving",
+    "canceling": "Canceling",
+    "canceled": "Canceled",
+    "closed": "Closed",
+    "closing": "Closing",
+    "denied": "Denied",
+    "finished": "Finished",
+    "ongoing": "Ongoing",
+    "open": "Open",
+    "private": "Private",
+    "published": "Published",
+    "retracted": "Retracted",
+    "unhandled": "Unhandled",
+    "upcoming": "Upcoming",
+    "voting": "Voting"
   }
 }

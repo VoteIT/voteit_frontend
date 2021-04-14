@@ -20,7 +20,7 @@ export default defineComponent({
     const reconnectTime = ref(1)
     const reconnectTries = ref(1)
     const failedInitialization = ref(false)
-    const { authToken, isAuthenticated } = useAuthentication()
+    const { isAuthenticated } = useAuthentication()
     const { connect, socketState } = new Channel()
 
     let reconnectIntervalId: number
@@ -60,13 +60,12 @@ export default defineComponent({
         })
     }
 
-    watch(authToken, value => {
-      if (value) {
-        connect(value)
-          .catch(() => {
-            failedInitialization.value = true
-          })
-      }
+    watch(isAuthenticated, value => {
+      if (!value) return
+      connect()
+        .catch(() => {
+          failedInitialization.value = true
+        })
     })
 
     watch(socketState, (value, oldValue) => {

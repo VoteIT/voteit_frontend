@@ -1,9 +1,10 @@
 <template>
-  <RichtextEditor v-if="editing" v-model="content" @submit="submit()" set-focus class="richtext" />
-  <div v-else v-html="object[contentAttribute]" class="richtext" />
+  <RichtextEditor v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
+  <div v-else ref="el" v-html="object[contentAttribute]" class="richtext" />
 </template>
 
 <script lang="ts">
+import useTags from '@/composables/meeting/useTags'
 import { defineComponent, ref, watch } from 'vue'
 import RichtextEditor from './RichtextEditor.vue'
 
@@ -59,9 +60,13 @@ export default defineComponent({
       if (!value) submit()
     })
 
+    const el = ref<HTMLElement | null>(null)
+    useTags(el)
+
     return {
       content,
-      submit
+      submit,
+      el
     }
   },
   mounted () {

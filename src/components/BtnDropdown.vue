@@ -44,6 +44,4 @@ export default defineComponent({
       border-bottom-right-radius: 0
       .mdi
         transform: rotate(180deg)
-  &.dark .widget
-    background-color: var(--widget-alt-bg)
 </style>

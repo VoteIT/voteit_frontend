@@ -22,7 +22,7 @@ export default class Socket {
   active: boolean
   callbacks: Map<string, (data: ChannelsMessage) => void>
   listeners: DefaultMap<string, Set<SocketEventHandler>>
-  token?: string
+  // token?: string
   _ws?: WebSocket
 
   constructor () {
@@ -47,17 +47,17 @@ export default class Socket {
     this.listeners.get(eventName).delete(listener)
   }
 
-  connect (token?: string) {
+  connect () {
     // Save token is supplied (usually first call)
-    if (token) {
-      this.token = token
-    }
-    if (!this.token) {
-      throw Error('Socket needs a token to connect')
-    }
+    // if (token) {
+    //   this.token = token
+    // }
+    // if (!this.token) {
+    //   throw Error('Socket needs a token to connect')
+    // }
     this.active = true
     return new Promise((resolve, reject) => {
-      this._ws = new WebSocket(`${wsProtocol}//${hostname}/ws/${this.token}/`)
+      this._ws = new WebSocket(`${wsProtocol}//${hostname}/ws/`)
 
       this._ws.addEventListener('error', reject)
       this._ws.addEventListener('open', resolve)
@@ -72,7 +72,7 @@ export default class Socket {
   }
 
   close () {
-    delete this.token
+    // delete this.token
     this._ws?.close()
     this.active = false
   }

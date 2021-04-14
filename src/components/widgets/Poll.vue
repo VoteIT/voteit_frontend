@@ -1,7 +1,7 @@
 <template>
   <Widget class="poll">
     <header>
-      <WorkflowState :state="poll.state" :admin="canChange(poll)" :content-type="pollType" :pk="poll.pk" />
+      <Menu float :show-transitions="canChange(poll)" :content-type="pollType" :content-pk="poll.pk" />
       <h2>{{ poll.title }}</h2>
       <p v-if="!isFinished">{{ t(`poll.method.${poll.method_name}`) }}</p>
     </header>

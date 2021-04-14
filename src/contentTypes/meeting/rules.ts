@@ -51,8 +51,9 @@ const canView: Predicate = (meeting?: Meeting) => {
 
 const canAdd: Predicate = () => {
   // TODO organization meeting creator role
+  return false
   // eslint-disable-next-line camelcase
-  return !!user.value?.is_superuser
+  // return !!user.value?.is_superuser
 }
 
 const canChange: Predicate = (meeting?: Meeting) => {

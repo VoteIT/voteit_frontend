@@ -82,9 +82,9 @@ export default defineComponent({
 textarea
   width: 100%
   height: 8em
-  border: var(--v-theme-divider)
+  border: rgb(var(--v-border-color))
   &:focus
-    outline: var(--v-theme-divider)
+    outline: rgb(var(--v-border-color))
 .buttons
   text-align: right
 </style>

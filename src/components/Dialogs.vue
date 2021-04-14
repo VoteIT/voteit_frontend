@@ -1,21 +1,21 @@
 <template>
   <transition name="dialog">
     <div id="dialog-backdrop" v-show="active" @mousedown.self="deny()">
-      <div id="dialog" ref="windowEl" v-if="active" @keyup.esc="deny()">
+      <v-sheet id="dialog" rounded elevation="16" ref="window" v-if="active" @keyup.esc="deny()">
         <v-btn plain icon="mdi-close" class="closer" @click="deny()" />
         <p>{{ active.title }}</p>
         <div class="btn-controls">
-          <v-btn plain @click="deny()">{{ active.no }}</v-btn>
-          <v-btn plain :color="active.theme" @click="accept()">{{ active.yes }}</v-btn>
+          <v-btn outlined @click="deny()">{{ active.no }}</v-btn>
+          <v-btn :color="active.theme" @click="accept()">{{ active.yes }}</v-btn>
         </div>
-      </div>
+      </v-sheet>
     </div>
   </transition>
 </template>
 
 <script lang="ts">
 /* eslint-disable no-unused-expressions */
-import { computed, defineComponent, nextTick, onBeforeMount, reactive, ref } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeMount, reactive, ref } from 'vue'
 
 import { openDialogEvent } from '@/utils'
 
@@ -25,7 +25,7 @@ import { useI18n } from 'vue-i18n'
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const windowEl = ref<HTMLElement | null>(null)
+    const window = ref<ComponentPublicInstance | null>(null)
     let savedFocusEl: HTMLElement | null
     const queue = reactive<Dialog[]>([])
     const active = computed<Dialog | undefined>(() => queue[0])
@@ -58,8 +58,10 @@ export default defineComponent({
           }
           queue.push(dialog)
           nextTick(() => {
-            // eslint-disable-next-line no-unused-expressions
-            windowEl.value?.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
+            console.log(window.value)
+            if (!window.value) return
+            const el = window.value.$el as HTMLElement
+            el.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
           })
         }
       })
@@ -70,7 +72,7 @@ export default defineComponent({
       close,
       accept,
       deny,
-      windowEl
+      window
     }
   }
 })
@@ -87,7 +89,7 @@ export default defineComponent({
   opacity: 0
 
 #dialog-backdrop
-  background-color: var(--overlay-bg)
+  background-color: rgba(#000, .3)
   z-index: 100
   position: fixed
   left: 0
@@ -100,12 +102,10 @@ export default defineComponent({
 
 #dialog
   position: relative
-  background-color: var(--alt-bg)
-  box-shadow: 4px 4px 14px rgba(#000, .4)
+  background-color: rgb(var(--v-theme-background))
   padding: 20px 40px
   width: 600px
   max-width: calc(100vw - 40px)
-  border-radius: 3px
   p
     font-size: 1.2rem
     white-space: pre-line

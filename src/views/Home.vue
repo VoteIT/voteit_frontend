@@ -1,6 +1,6 @@
 <template>
-  <div class="home" v-if="isAuthenticated">
-    <v-container fluid>
+  <main class="home" v-if="isAuthenticated">
+    <v-container class="text-center">
       <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
       <ul v-if="participatingMeetings.length">
         <li v-for="meeting in participatingMeetings" :key="meeting.pk">
@@ -13,6 +13,7 @@
         <ul>
           <li v-for="meeting in otherMeetings" :key="meeting.pk">
             <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
+            <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
           </li>
         </ul>
       </template>
@@ -24,9 +25,27 @@
         <get-schema/>
       </template>
     </v-container>
-  </div>
-  <div class="home" v-else>
-    <h1>Pick a user</h1>
+  </main>
+  <v-main class="home" v-else>
+    <v-container>
+      <v-row>
+        <v-col>
+          <h1>{{ t('organizations') }}</h1>
+        </v-col>
+      </v-row>
+      <v-row class="organizations">
+        <v-col cols="4" v-for="o in organizations" :key="o.pk">
+          <v-sheet rounded>
+            <h2>
+              {{ o.title }}
+            </h2>
+            <Btn v-if="o.login_url" icon="mdi-login" @click="startOrganizationLogin(o)">{{ t('organization.loginTo', o) }}</Btn>
+            <p v-else><em>{{ t('organization.noLogin') }}</em></p>
+          </v-sheet>
+        </v-col>
+      </v-row>
+    </v-container>
+    <!-- <h1>Pick a user</h1>
     <ul>
       <li v-for="user in users" :key="user.username">
         <Btn @click="authenticate(user)" :icon="user.is_superuser ? 'mdi-account-cowboy-hat' : 'mdi-account'">
@@ -46,14 +65,16 @@
           <input type="text" required v-model="newUser.username" /><input class="btn" type="submit" value="Create">
         </form>
       </li>
-    </ul>
-  </div>
+    </ul> -->
+  </v-main>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onBeforeMount, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, onBeforeMount, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
+import { NewDevUser, DevUser } from '@/utils/types'
 
 import AddMeetingVue from '@/components/modals/AddMeeting.vue'
 import Counter from '@/components/examples/Counter.vue'
@@ -65,37 +86,28 @@ import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/composables/useMeetings'
 import useModal from '@/composables/useModal'
-import { NewDevUser, DevUser } from '@/utils/types'
+import useOrganizations, { organizations } from '@/composables/useOrganizations'
 
 export default defineComponent({
   name: 'Home',
   inject: ['debug'],
   setup () {
+    const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const devApi = devLogin.getContentApi()
-    const { authenticate, logout, isAuthenticated, user } = useAuthentication()
+    const { logout, isAuthenticated, user, startOrganizationLogin } = useAuthentication()
+    const { fetchOrganizations } = useOrganizations()
     const users = ref<DevUser[]>([])
     const loader = useLoader('Home')
-    const t: CallableFunction = inject('t') as CallableFunction
 
     watch(isAuthenticated, value => {
-      if (value) {
-        fetchMeetings()
-      } else {
-        clearMeetings()
-      }
+      if (value) fetchMeetings()
+      else clearMeetings()
     })
 
     onBeforeMount(() => {
-      loader.call(async () => {
-        return devApi.list()
-          .then(({ data }) => {
-            users.value = data
-          })
-      })
-      if (isAuthenticated.value) {
-        loader.call(fetchMeetings)
-      }
+      fetchOrganizations()
+      if (isAuthenticated.value) loader.call(fetchMeetings)
     })
 
     const addUser = ref(false)
@@ -105,19 +117,16 @@ export default defineComponent({
     })
     const newUserError = ref(false)
 
-    function createUser () {
+    async function createUser () {
       newUserError.value = false
-      devApi.add(newUser)
-        .then(() => {
-          users.value.push({ ...newUser } as DevUser)
-        })
-        .catch(() => {
-          newUserError.value = true
-        })
-        .finally(() => {
-          newUser.username = ''
-          newUser.is_superuser = false
-        })
+      try {
+        await devApi.add(newUser)
+        users.value.push({ ...newUser } as DevUser)
+        newUser.username = ''
+        newUser.is_superuser = false
+      } catch {
+        newUserError.value = true
+      }
     }
 
     const participatingMeetings = computed(() => {
@@ -142,7 +151,8 @@ export default defineComponent({
       t,
       participatingMeetings,
       otherMeetings,
-      authenticate,
+      organizations,
+      startOrganizationLogin,
       logout,
       isAuthenticated,
       user,
@@ -166,12 +176,15 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-div.home
-  text-align: center
+main.home
   ul
     padding: 0
     margin-bottom: 3em
   li
     list-style: none
     padding: 4px
+  .organizations
+    .v-sheet
+      padding: .5em 1em
+      background-color: rgb(var(--v-theme-surface))
 </style>

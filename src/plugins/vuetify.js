@@ -8,13 +8,18 @@ import colors from 'vuetify/lib/util/colors'
 
 const light = {
   dark: false,
-  variables: {},
+  variables: {
+    'border-color': '223,207,200',
+    'border-opacity': 1
+  },
   colors: {
     background: '#f8f4f2',
     'app-bar': '#563661',
+    'app-bar-divider': '#765681',
+    'app-bar-active': '#7976B7',
     'menu-active': '#9C8afa',
     surface: '#ffffff',
-    divider: '#dfcfc8',
+    'surface-active': colors.green.lighten5,
     primary: colors.indigo.base,
     secondary: colors.grey.lighten1,
     accent: colors.indigo.darken4,

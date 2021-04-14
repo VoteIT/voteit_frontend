@@ -84,19 +84,20 @@ export default defineComponent({
   .bubble
     position: relative
     > button
-      background-color: var(--inverted-bg)
-      .mdi
-        color: var(--inverted-text)
+      background-color: rgb(var(--v-theme-surface))
+      border: 1px solid rgba(var(--v-theme-on-surface), .4)
+      color: rgb(var(--v-theme-on-surface))
       height: 64px
       width: 64px
       border-radius: 50%
       &:focus
         outline: none
-      &.open .mdi
-        color: var(--active-icon)
+      &.open
+        background-color: rgb(var(--v-theme-on-surface))
+        color: rgb(var(--v-theme-surface))
       margin-left: 10px
       &:first-child
-        margin-right: 0
+        margin-left: 0
     > .content
       position: absolute
       bottom: 75px
@@ -104,12 +105,12 @@ export default defineComponent({
       min-width: 300px
       right: 32px
       padding: 1rem
-      background-color: var(--alt-bg)
+      background-color: rgb(var(--v-theme-surface))
       border-radius: 5px 5px 0 5px
       filter: drop-shadow(1px 1px 2px rgba(#000, .4))
       &::after
         content: ""
-        border: 5px solid var(--alt-bg)
+        border: 5px solid rgb(var(--v-theme-surface))
         border-bottom: 5px solid transparent
         border-left: 5px solid transparent
         position: absolute

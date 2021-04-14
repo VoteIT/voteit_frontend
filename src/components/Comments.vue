@@ -28,7 +28,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 import useReactions from '@/composables/meeting/useReactions'
 
 function getTagHTML (tagName?: string): string {
-  return tagName ? `<p><span class="mention" data-index="0" data-denotation-char="#" data-id="${tagName}" data-value="${tagName}"><span contenteditable="false"><span class="ql-mention-denotation-char">#</span>${tagName}</span></span> </p>` : ''
+  return tagName ? `<p><span class="mention" data-index="0" data-denotation-char="#" data-id="${tagName}" data-value="${tagName}"><span contenteditable="false"><span class="ql-mention-denotation-char">#</span>${tagName}</span></span>&nbsp;</p>` : ''
 }
 
 export default defineComponent({

@@ -5,8 +5,7 @@
         <v-icon left :icon="enterLeaveBtn.icon" />
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <WorkflowState :state="list.state" :content-type="speakerListType" :pk="list.pk" :admin="canChange(list)" />
-      <Menu :items="menuItems"/>
+      <Menu :items="menuItems" :show-transitions="canChange(list)" :content-type="speakerListType" :content-pk="list.pk" />
     </div>
     <h3>
       {{ list.title }}
@@ -35,7 +34,6 @@ import { computed, defineComponent, PropType } from 'vue'
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
 import rules from '@/contentTypes/speakerList/rules'
 
-import WorkflowState from './WorkflowState.vue'
 import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerList } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
@@ -60,7 +58,6 @@ export default defineComponent({
     }
   },
   components: {
-    WorkflowState,
     Moment
   },
   setup (props) {

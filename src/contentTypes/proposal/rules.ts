@@ -9,18 +9,18 @@ import { AgendaItem, Predicate, Proposal } from '../types'
 import { ProposalState } from './workflowStates'
 import { polls } from '@/composables/meeting/usePolls'
 
-function isPublished (proposal: Proposal) {
+const isPublished: Predicate = (proposal: Proposal) => {
   return proposal.state === ProposalState.Published
 }
 
-function isUsedInPoll (proposal: Proposal) {
+const isUsedInPoll: Predicate = (proposal: Proposal) => {
   for (const poll of polls.values()) {
     if (poll.proposals.includes(proposal.pk)) return true
   }
   return false
 }
 
-function canAdd (agendaItem: AgendaItem) {
+const canAdd: Predicate = (agendaItem: AgendaItem) => {
   const meeting = meetings.get(agendaItem.meeting)
   return !agendaRules.isFinished(agendaItem) && (
     meetingRules.isModerator(meeting) || (
@@ -28,18 +28,18 @@ function canAdd (agendaItem: AgendaItem) {
     ))
 }
 
-function canChange (proposal: Proposal) {
+const canChange: Predicate = (proposal: Proposal) => {
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
   return !meetingRules.isFinished(meeting) && meetingRules.isModerator(meeting)
 }
 
-function canDelete (proposal: Proposal) {
+const canDelete: Predicate = (proposal: Proposal) => {
   return canChange(proposal) && !isUsedInPoll(proposal)
 }
 
-function canRetract (proposal: Proposal) {
+const canRetract: Predicate = (proposal: Proposal) => {
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
   return isAuthor(proposal) && isPublished(proposal) && !agendaRules.isProposalBlocked(agendaItem) && !agendaRules.isFinished(agendaItem) && !agendaRules.isPrivate(agendaItem)

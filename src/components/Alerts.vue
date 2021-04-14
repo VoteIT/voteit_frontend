@@ -8,7 +8,10 @@
         {{ alert.text }}
       </span>
     </div>
-    <button class="dismiss-all" v-if="alerts.length > 1" @click="dismiss()"><Icon sm name="mdi-clear-all"/> Dismiss all</button>
+    <v-btn class="dismiss-all" v-if="alerts.length > 1" @click="dismiss()">
+      <v-icon left icon="mdi-notification-clear-all" />
+      {{ t('dismissAll') }}
+    </v-btn>
   </div>
 </template>
 
@@ -32,6 +35,7 @@ const DEFAULTS = {
 
 export default defineComponent({
   name: 'Alerts',
+  inject: ['t'],
   setup () {
     const alerts = reactive<Alert[]>([])
 

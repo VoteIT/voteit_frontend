@@ -1,39 +1,47 @@
 <template>
   <main v-if="meeting.pk">
+    <Menu float :items="menuItems" :show-transitions="canChange(meeting)" :content-type="meetingType" :content-pk="meeting.pk" />
     <h1>{{ meeting.title }}</h1>
-    <div class="btn-controls">
-      <WorkflowState :admin="canChange(meeting)" :state="meeting.state" :contentType="meetingType" :pk="meeting.pk" />
-      <btn v-if="canChange(meeting)" sm icon="mdi-pencil" :active="editingBody" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
-    </div>
     <Richtext :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
   </main>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 
 import Richtext from '@/components/widgets/Richtext.vue'
-import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 import meetingType from '@/contentTypes/meeting'
+import { useI18n } from 'vue-i18n'
+import { MenuItem } from '@/utils/types'
 
 export default defineComponent({
   name: 'MeetingIndex',
   inject: ['t'],
   components: {
-    Richtext,
-    WorkflowState
+    Richtext
   },
   setup () {
+    const { t } = useI18n()
     const editingBody = ref(false)
     const api = meetingType.getContentApi()
     const { meeting } = useMeeting()
+
+    const menuItems = computed<MenuItem[]>(() => {
+      if (!meetingType.rules.canChange(meeting.value)) return []
+      return [{
+        text: t('edit'),
+        icon: 'mdi-pencil',
+        onClick: async () => { editingBody.value = true }
+      }]
+    })
 
     return {
       meetingType,
       ...meetingType.rules,
       meeting,
+      menuItems,
       editingBody,
       api
     }

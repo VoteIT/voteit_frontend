@@ -1,24 +1,28 @@
 <template>
   <main>
-    <h1>Participants</h1>
-    <div class="search">
+    <h1>{{ t('meeting.participants') }}</h1>
+    <div v-if="canChange" class="search">
       <UserSearch @submit="addUser" />
     </div>
-    <RoleMatrix :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
+    <RoleMatrix :remove-confirm="removeConfirm" :admin="canChange" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
   </main>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { dialogQuery, openAlertEvent } from '@/utils'
 
 import UserSearch from '@/components/widgets/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 
 import useMeeting from '@/composables/meeting/useMeeting'
-
 import { ContextRoles } from '@/composables/types'
+
 import meetingType from '@/contentTypes/meeting'
 import { MeetingRole } from '@/contentTypes/types'
+import { ThemeColor } from '@/utils/types'
 
 const meetingChannel = meetingType.getChannel()
 
@@ -33,7 +37,8 @@ const meetingIcons: Record<MeetingRole, string> = {
 export default defineComponent({
   inject: ['t'],
   setup () {
-    const { meetingId } = useMeeting()
+    const { t } = useI18n()
+    const { meetingId, meeting, getUser } = useMeeting()
 
     function addRole (user: number, role: string) {
       meetingChannel.addRoles(meetingId.value, user, role)
@@ -43,8 +48,26 @@ export default defineComponent({
       addRole(user.pk, MeetingRole.Participant)
     }
 
+    async function removeConfirm (user: number, role: string) {
+      if (user === getUser()?.pk && ['moderator', 'participant'].includes(role)) {
+        openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
+        return false
+      }
+      if (role === 'participant' && !await dialogQuery({
+        title: t('meeting.confirmRemoveParticipant'),
+        theme: ThemeColor.Warning
+      })) return false
+      return true
+    }
+
+    const canChange = computed(() => {
+      return meetingType.rules.canChange(meeting.value)
+    })
+
     return {
       addUser,
+      canChange,
+      removeConfirm,
       meetingChannel,
       meetingIcons,
       meetingId

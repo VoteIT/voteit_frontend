@@ -8,12 +8,8 @@
             <img :src="require(`@/assets/agenda-display-${mode}.svg`)"/>
           </v-btn>
         </div>
+        <Menu float :items="menuItems" :show-transitions="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :content-pk="agendaId" />
         <h1>{{ agendaItem.title }}</h1>
-        <div class="btn-controls">
-          <WorkflowState v-if="agendaItem.state" :state="agendaItem.state" :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :pk="agendaId" />
-          <btn v-if="pollType.rules.canAdd(agendaItem)" sm icon="mdi-star" @click="$router.push(`${meetingPath}/polls/new/${agendaId}`)">{{ t('poll.new') }}</btn>
-          <btn v-if="agendaItemType.rules.canChange(agendaItem)" sm :active="editingBody" icon="mdi-pencil" @click="editingBody = !editingBody">{{ t('edit') }}</btn>
-        </div>
         <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
         <div class="speaker-lists" v-if="speakerSystems.length">
           <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
@@ -58,6 +54,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 import { orderBy } from '@/utils'
 
@@ -67,7 +65,6 @@ import Proposal from '@/components/widgets/Proposal.vue'
 import ReactionButton from '@/components/meeting/ReactionButton.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import SpeakerList from '@/components/widgets/SpeakerList.vue'
-import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 import useAgenda from '@/composables/meeting/useAgenda'
 import useDiscussions from '@/composables/meeting/useDiscussions'
@@ -83,11 +80,13 @@ import proposalType from '@/contentTypes/proposal'
 import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
+import { MenuItem } from '@/utils/types'
 
 export default defineComponent({
   name: 'AgendaItem',
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
+    const router = useRouter()
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { meetingPath, meetingId } = useMeeting()
@@ -148,7 +147,27 @@ export default defineComponent({
 
     const addSpeakerSystems = computed(() => speakerSystems.value.filter(system => speakerListType.rules.canAdd(system)))
 
+    const menuItems = computed<MenuItem[]>(() => {
+      const items: MenuItem[] = []
+      if (pollType.rules.canAdd(agendaItem.value)) {
+        items.push({
+          text: t('poll.new'),
+          icon: 'mdi-star',
+          onClick: async () => { router.push(`${meetingPath.value}/polls/new/${agendaId.value}`) }
+        })
+      }
+      if (agendaItemType.rules.canChange(agendaItem.value)) {
+        items.push({
+          text: t('edit'),
+          icon: 'mdi-pencil',
+          onClick: async () => { editingBody.value = !editingBody.value }
+        })
+      }
+      return items
+    })
+
     return {
+      t,
       addSpeakerSystems,
       agendaId,
       agendaItem,
@@ -160,6 +179,7 @@ export default defineComponent({
       displayMode,
       editingBody,
       meetingPath,
+      menuItems,
       proposalReactions,
       discussionReactions,
       sortedProposals,
@@ -179,7 +199,6 @@ export default defineComponent({
     AddContent,
     DiscussionPost,
     Proposal,
-    WorkflowState,
     SpeakerList,
     Richtext,
     ReactionButton
@@ -189,7 +208,7 @@ export default defineComponent({
 
 <style lang="sass">
 .agenda-proposals .proposal
-  border-top: 1px solid rgb(var(--v-theme-divider))
+  border-top: 1px solid rgb(var(--v-border-color))
   margin-top: 1em
   padding-top: 1em
 

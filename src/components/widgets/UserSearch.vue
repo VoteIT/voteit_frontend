@@ -80,11 +80,12 @@ export default defineComponent({
   position: relative
   input[type=search]
     padding: 0 .4em
+    background-color: rgb(var(--v-theme-surface))
   .selector
     position: absolute
     top: 38px
     left: 2px
-    background-color: var(--alt-bg)
+    background-color: rgb(var(--v-theme-surface))
     min-width: 210px
     z-index: 100
 </style>

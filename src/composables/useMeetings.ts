@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
 import { Meeting } from '@/contentTypes/types'
@@ -17,12 +17,10 @@ export default function useMeetings () {
   })
 
   async function fetchMeetings () {
-    return meetingApi.list()
-      .then(({ data }: { data: Meeting[] }) => {
-        data.forEach(m => {
-          meetings.set(m.pk, m)
-        })
-      })
+    const { data } = await meetingApi.list()
+    for (const m of data) {
+      meetings.set(m.pk, m)
+    }
   }
 
   function clearMeetings () {

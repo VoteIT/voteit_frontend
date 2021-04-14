@@ -18,6 +18,7 @@ import { defineComponent, onMounted, PropType, ref } from 'vue'
 import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/composables/meeting/useMeeting'
 import { MeetingRoles } from '@/composables/types'
+import useTags from '@/composables/meeting/useTags'
 
 const QUILL_CONFIG: any = {
   theme: 'bubble',
@@ -60,7 +61,6 @@ export default defineComponent({
   setup (props, { emit }) {
     let editor: Quill | null = null
     const editorElement = ref<HTMLElement | null>(null)
-    const completionsElement = ref(null)
 
     const rolesApi = meetingRoleType.getContentApi()
     const { meetingId } = useMeeting()
@@ -136,9 +136,10 @@ export default defineComponent({
       editor && (editor.root.innerHTML = value)
     }
 
+    useTags(editorElement)
+
     return {
       editorElement,
-      completionsElement,
       focus,
       clear,
       setText
@@ -158,8 +159,8 @@ export default defineComponent({
     margin-right: 6px
 
 .ql-container
-  background-color: var(--bg)
-  border: 1px solid rgb(var(--v-theme-divider))
+  background-color: rgb(var(--v-theme-surface))
+  border: 1px solid rgb(var(--v-border-color))
   border-radius: 2px
   font-size: inherit
   height: auto

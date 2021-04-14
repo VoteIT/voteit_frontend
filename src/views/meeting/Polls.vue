@@ -1,5 +1,5 @@
 <template>
-  <main id="polls">
+  <v-container id="polls">
     <nav class="tabs">
       <RouterLink v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><Icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></RouterLink>
     </nav>
@@ -9,7 +9,7 @@
     </header>
     <Poll :poll="p" v-for="p in polls" :key="p.pk" />
     <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
-  </main>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -24,13 +24,6 @@ import usePolls from '@/composables/meeting/usePolls'
 import pollType from '@/contentTypes/poll'
 import { WorkflowState } from '@/contentTypes/types'
 
-const TAB_ORDER = [
-  'ongoing',
-  'upcoming',
-  'finished',
-  'private'
-]
-
 export default defineComponent({
   name: 'Polls',
   inject: ['t'],
@@ -41,7 +34,7 @@ export default defineComponent({
     const { meeting, meetingPath, meetingId } = useMeeting()
     const { getPolls } = usePolls()
     const route = useRoute()
-    const { getState } = pollType.useWorkflows()
+    const { getState, getPriorityStates } = pollType.useWorkflows()
 
     const currentState = computed(() => getState(
       route.params.state as string || 'ongoing'
@@ -52,10 +45,10 @@ export default defineComponent({
     })
 
     const tabStates = computed(() => {
-      return TAB_ORDER.map(state => {
+      return getPriorityStates().map(s => {
         return {
-          ...getState(state),
-          polls: getPolls(meetingId.value, state)
+          ...s,
+          polls: getPolls(meetingId.value, s.state)
         }
       })
     })

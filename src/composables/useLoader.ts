@@ -38,10 +38,10 @@ export default function useLoader (name: string) {
   function setLoaded (success = true) {
     if (success) {
       initDone.value = true
-    } else {
-      console.error('Loading failed', name)
-      initFailed.value = true
+      return
     }
+    console.error('Loading failed', name)
+    initFailed.value = true
   }
 
   function call (cb: CallableFunction) {

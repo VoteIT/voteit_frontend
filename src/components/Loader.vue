@@ -2,7 +2,7 @@
   <transition name="fade">
     <main v-if="!initDone">
       <img src="https://ca.slack-edge.com/T030AG213-U030AG219-f63b38b74163-512" class="anders" />
-      <img src="@/assets/voteit-logo.svg" class="logo" />
+      <img :src="require('@/assets/voteit-logo.svg')" class="logo" />
       <h1 v-if="initFailed">{{ t('loader.failed') }}</h1>
       <h1 v-else>{{ t('loader.loading') }}{{ dots }}</h1>
     </main>

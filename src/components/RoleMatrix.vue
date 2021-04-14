@@ -1,5 +1,5 @@
 <template>
-  <table class="context-roles" v-if="users.length" :class="{ orderReversed }">
+  <table class="context-roles" v-if="users.length" :class="{ orderReversed, admin }">
     <thead>
       <tr>
         <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, ref } from 'vue'
+import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 
 import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
@@ -34,7 +34,6 @@ import Channel from '@/contentTypes/Channel'
 import { ContextRolesPayload } from '@/contentTypes/messages'
 
 export default defineComponent({
-  inject: ['t'],
   props: {
     channel: {
       type: Channel,
@@ -47,8 +46,12 @@ export default defineComponent({
     pk: {
       type: Number,
       required: true
-    }
+    },
+    admin: Boolean,
+    removeConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
+    addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>
   },
+  inject: ['t'],
   setup (props) {
     const { getUser } = useMeeting()
     const loader = useLoader('RoleMatrix')
@@ -73,10 +76,14 @@ export default defineComponent({
       })
     })
 
-    function addRole (user: number, role: string) {
+    async function addRole (user: number, role: string) {
+      if (!props.admin) return
+      if (props.addConfirm && !await props.addConfirm(user, role)) return
       props.channel.addRoles(props.pk, user, role)
     }
-    function removeRole (user: number, role: string) {
+    async function removeRole (user: number, role: string) {
+      if (!props.admin) return
+      if (props.removeConfirm && !await props.removeConfirm(user, role)) return
       props.channel.removeRoles(props.pk, user, role)
     }
 
@@ -166,10 +173,12 @@ table
     text-align: center
     .mdi
       color: var(--warning, red)
-      cursor: pointer
       &.success
         color: var(--success, green)
   td:first-child,
   th:first-child
     text-align: left
+
+  &.admin td .mdi
+    cursor: pointer
 </style>

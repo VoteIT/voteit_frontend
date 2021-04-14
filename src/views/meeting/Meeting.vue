@@ -1,27 +1,13 @@
 <template>
   <div id="meeting" v-if="meeting">
-    <header>
-      <nav>
-        <h1><RouterLink :to="meetingPath">{{ meeting.title || t('loader.loading') }}</RouterLink></h1>
-      </nav>
-      <nav class="tabs">
-        <RouterLink v-for="link in navigationLinks" :key="link.path" :to="`${meetingPath}/${link.path}`">
-          <v-icon :icon="link.icon" />
-          {{ link.title }}
-          <span v-if="link.count">({{ link.count() }})</span>
-        </RouterLink>
-      </nav>
-    </header>
-    <div>
-      <Agenda />
-      <RouterView id="main-content" />
-    </div>
+    <Agenda />
+    <RouterView id="main-content" />
   </div>
   <Bubbles widgets="bubbleWidgets" />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onBeforeMount, onMounted, provide, watch } from 'vue'
+import { computed, defineComponent, onBeforeMount, onMounted, provide, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
@@ -42,6 +28,7 @@ import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 import meetingType from '@/contentTypes/meeting'
 import { BubbleComponent } from '@/components/meeting/bubbles/types'
 import { MeetingRole } from '@/contentTypes/types'
+import { useI18n } from 'vue-i18n'
 
 interface NavLink {
   title: string
@@ -54,7 +41,7 @@ interface NavLink {
 export default defineComponent({
   name: 'Meeting',
   setup () {
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
     const navLinks: NavLink[] = [
       {
         role: MeetingRole.Moderator,
@@ -192,55 +179,14 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-#meeting > header
-  display: flex
-  justify-content: space-between
-  background-color: rgb(var(--v-theme-app-bar))
-  nav
-    padding: 8px
-    color: fff
-    display: flex
-    justify-content: space-between
-    a
-      color: #fff
-      margin-right: 1rem
-      text-decoration: none
-    h1
-      margin: 0 8px
-      flex-grow: 1
-    &.tabs
-      padding-bottom: 0
-      justify-content: flex-end
-      a
-        margin-right: 2em
-        padding-bottom: 14px
-        border-bottom: 5px solid transparent
-        font-size: 12pt
-        &:last-child
-          margin-right: 1em
-        > span
-          vertical-align: 4px
-          font-size: 10pt
-        .mdi
-          display: none
-          color: var(--discrete-icon)
-          vertical-align: -3px
-        &.router-link-active
-          border-color: rgb(var(--v-theme-menu-active))
-
 #meeting
   display: flex
-  flex-direction: column
-  min-height: 100vh
-  > div
-    display: flex
+  flex-grow: 1
+  #agenda
+    width: 348px
+    text-align: left
+    flex-shrink: 0
+  #main-content
     flex-grow: 1
-    #agenda
-      width: 360px
-      padding: 3em 2em
-      text-align: left
-      flex-shrink: 0
-    #main-content
-      flex-grow: 1
-      padding: 0 10px 80px
+    padding: 0 10px 80px
 </style>

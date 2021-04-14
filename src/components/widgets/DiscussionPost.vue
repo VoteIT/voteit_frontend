@@ -12,7 +12,7 @@
         <Tag v-for="tag in p.tags" :key="tag" :name="tag" />
       </div>
     </div>
-    <Richtext @updated="setTagColors" submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <footer v-if="!readOnly && ($slots.buttons || menuItems.length)">
       <div>
         <slot name="buttons"/>
@@ -29,7 +29,6 @@ import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 
 import { dialogQuery } from '@/utils'
-import stringToHSL from '@/utils/stringToHSL'
 import discussionPostType from '@/contentTypes/discussionPost'
 import { DiscussionPost } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
@@ -62,13 +61,6 @@ export default defineComponent({
       })) api.delete(props.p.pk)
     }
 
-    function setTagColors (containerElem: HTMLElement) {
-      for (const elem of containerElem.querySelectorAll('.mention[data-denotation-char="#"]')) {
-        const tagElem = elem as HTMLElement
-        tagElem.style.backgroundColor = stringToHSL(tagElem.dataset.value as string)
-      }
-    }
-
     const menuItems = computed<MenuItem[]>(() => {
       const menu: MenuItem[] = []
       if (canChange(props.p)) {
@@ -92,8 +84,7 @@ export default defineComponent({
     return {
       api,
       editing,
-      menuItems,
-      setTagColors
+      menuItems
     }
   }
 })
@@ -102,7 +93,7 @@ export default defineComponent({
 <style lang="sass">
 .discussion
   footer
-    border-top: 1px solid rgb(var(--v-theme-divider))
+    border-top: 1px solid rgb(var(--v-border-color))
     margin: 0 -10px
     padding: 10px 10px 0
     display: flex
@@ -131,7 +122,8 @@ export default defineComponent({
       &:first-child
         margin-left: 0
 
-.richtext
+.richtext,
+.ql-editor
   .mention
     white-space: nowrap
     padding: .2em .6em

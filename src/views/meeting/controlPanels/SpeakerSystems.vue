@@ -2,12 +2,11 @@
   <div>
     <h2>{{ t('speaker.settings') }}</h2>
     <Widget class="speaker-system" v-for="system in systems" :key="system.pk">
-      <div class="btn-controls float">
-        <WorkflowState admin :contentType="speakerSystemType" :pk="system.pk" :state="system.state" />
-        <btn sm color="warning" v-if="systemRules.canDelete(system)" icon="mdi-delete" @click="deleteSystem(system)"/>
-      </div>
+      <Menu float :items="getSystemMenu(system)" show-transitions :content-type="speakerSystemType" :content-pk="system.pk"/>
       <h2>{{ system.title }}</h2>
       <dl>
+        <dt>{{ t('state') }}</dt>
+        <dd>{{ system.state }}</dd>
         <dt>{{ t('speaker.systemMethod') }}</dt>
         <dd>{{ system.method_name }}</dd>
         <dt>{{ t('speaker.safePositions') }}</dt>
@@ -39,9 +38,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onBeforeMount, reactive, ref } from 'vue'
+import { computed, defineComponent, onBeforeMount, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, slugify } from '@/utils'
+
 import useMeeting from '@/composables/meeting/useMeeting'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
@@ -52,9 +53,8 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import speakerSystemType, { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/speakerSystem'
 import useLoader from '@/composables/useLoader'
 import { ContextRole } from '@/composables/types'
-import { User } from '@/utils/types'
+import { MenuItem, ThemeColor, User } from '@/utils/types'
 
-import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import SelectVue from '@/components/inputs/Select.vue'
 
 const systemIcons = {
@@ -63,12 +63,12 @@ const systemIcons = {
 }
 
 export default defineComponent({
-  components: { BtnDropdown, UserSearch, RoleMatrix, WorkflowState, SelectVue },
+  components: { BtnDropdown, UserSearch, RoleMatrix, SelectVue },
   name: 'SpeakerSystems',
   path: 'speakers',
   icon: 'mdi-account-voice',
   setup () {
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
     const systemAPI = speakerSystemType.getContentApi()
     const systemChannel = speakerSystemType.getChannel()
     const { meetingId, meeting } = useMeeting()
@@ -100,12 +100,26 @@ export default defineComponent({
     }
 
     async function deleteSystem (system: SpeakerSystem) {
-      if (!await dialogQuery(t('speaker.confirmSystemDeletion'))) return
-      systemAPI.delete(system.pk)
+      if (await dialogQuery({
+        title: t('speaker.confirmSystemDeletion'),
+        theme: ThemeColor.Warning
+      })) systemAPI.delete(system.pk)
     }
 
     function addUser (system: SpeakerSystem, user: User) {
       systemChannel.addRoles(system.pk, user.pk, 'speaker') // TODO enumerate speaker system roles
+    }
+
+    function getSystemMenu (s: SpeakerSystem): MenuItem[] {
+      if (speakerSystemType.rules.canDelete(s)) {
+        return [{
+          text: t('delete'),
+          icon: 'mdi-pencil',
+          onClick: async () => { deleteSystem(s) },
+          color: ThemeColor.Warning
+        }]
+      }
+      return []
     }
 
     return {
@@ -116,6 +130,7 @@ export default defineComponent({
       systemDataReady,
       createSystem,
       deleteSystem,
+      getSystemMenu,
       systemChannel,
       addUser,
       systemRoles,

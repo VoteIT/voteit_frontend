@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <SystemBar/>
+    <div>
+      <SystemBar/>
+    </div>
     <router-view/>
     <OnlineStatus/>
     <Modal/>
@@ -36,11 +38,12 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const loader = useLoader('App')
-    const { user, authenticate } = useAuthentication()
+    const { fetchAuthenticatedUser } = useAuthentication()
 
-    onBeforeMount(() => {
-      if (user.value) authenticate(user.value)
-      else loader.setLoaded()
+    onBeforeMount(async () => {
+      // if (user.value) authenticate(user.value)
+      // else loader.setLoaded()
+      if (!await fetchAuthenticatedUser()) loader.setLoaded()
     })
     provide('t', t)
     provide('debug', process.env.NODE_ENV === 'development')
@@ -53,31 +56,20 @@ $material-icons-font-path: '~material-icons/iconfont/'
 </script>
 
 <style lang="sass">
-@import './theme/dark.sass'
-@import './theme/light.sass'
+// @import './theme/dark.sass'
+// @import './theme/light.sass'
 
-:root
-  @include light-theme
+// :root
+//   @include light-theme
 //  @media (prefers-color-scheme: dark)
 //    @include dark-theme
 
 *
   box-sizing: border-box
 
-body
-  margin: 0
-  background-color: var(--bg)
-  color: var(--text)
-
-a
-  color: var(--link)
-  &:active
-    color: var(--link-active)
-
-#offline
-  margin: -10px -10px 10px
-  background-color: var(--inverted-bg)
-  color: var(--inverted-text)
+.v-btn
+  text-transform: none !important
+  letter-spacing: .04em !important
 
 form
   > div
@@ -91,10 +83,10 @@ form
     border-radius: 3px
     min-height: 2em
     padding: 0 .4em
-    border-bottom: var(--agenda-separator)
-    background-color: var(--bg)
+    border-bottom: rgb(var(--v-border-color))
+    background-color: var(--v-theme-background)
     &:focus
-      border-bottom: 1px solid var(--link)
+      border-bottom: 1px solid rgb(var(--v-theme-on-background))
       outline: none
   select,
   input[type=text]

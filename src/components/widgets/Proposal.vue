@@ -9,6 +9,7 @@
       <div>
         <span>{{ t('by') }} <User :pk="p.author" /></span>
         <Moment :date="p.created" />
+        <v-icon v-if="!readOnly" :icon="wfState.icon" color="secondary" size="small" :title="wfState.state" />
       </div>
     </div>
     <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
@@ -26,9 +27,8 @@
           {{ t('discussion.comments', { count: comments.length }) }}
         </v-btn>
         <slot name="buttons"/>
-        <WorkflowState :admin="canChange(p)" :state="p.state" :content-type="proposalType" :pk="p.pk" />
       </div>
-      <Menu :items="menuItems" />
+      <Menu :items="menuItems" :show-transitions="canChange(p)" :content-type="proposalType" :content-pk="p.pk" />
     </footer>
     <slot name="bottom"/>
     <Comments v-if="!readOnly" ref="commentsComponent" v-show="showComments" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
@@ -46,7 +46,6 @@ import { dialogQuery } from '@/utils'
 
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
-import WorkflowState from './WorkflowState.vue'
 import Comments from '../Comments.vue'
 
 import useAgenda from '@/composables/meeting/useAgenda'
@@ -70,7 +69,6 @@ export default defineComponent({
     selected: Boolean
   },
   components: {
-    WorkflowState,
     Richtext,
     Moment,
     Comments
@@ -81,6 +79,10 @@ export default defineComponent({
     const { agendaItem } = useAgenda()
     const editing = ref(false)
     const showComments = ref(false)
+
+    const wfState = computed(() => {
+      return proposalType.useWorkflows().getState(props.p.state)
+    })
 
     async function queryDelete () {
       if (await dialogQuery({
@@ -104,16 +106,16 @@ export default defineComponent({
     }
 
     const menuItems = computed<MenuItem[]>(() => {
-      const extras: MenuItem[] = []
+      const items: MenuItem[] = []
       if (proposalType.rules.canChange(props.p)) {
-        extras.push({
+        items.push({
           text: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
       if (proposalType.rules.canRetract(props.p)) {
-        extras.push({
+        items.push({
           text: t('proposal.retract'),
           icon: 'mdi-undo',
           onClick: retract,
@@ -121,27 +123,14 @@ export default defineComponent({
         })
       }
       if (proposalType.rules.canDelete(props.p)) {
-        extras.push({
+        items.push({
           text: t('delete'),
           icon: 'mdi-delete',
           onClick: queryDelete,
           color: ThemeColor.Warning
         })
       }
-      if (extras.length) extras.unshift('---')
-      return [
-        {
-          text: 'Test slow',
-          icon: 'mdi-timer-sand',
-          onClick: () => new Promise(resolve => { setTimeout(resolve, 7000) })
-        },
-        {
-          text: 'Test instant',
-          icon: 'mdi-clock-fast',
-          onClick: async () => { console.log('test 2 click') }
-        },
-        ...extras
-      ]
+      return items
     })
 
     return {
@@ -156,6 +145,7 @@ export default defineComponent({
       showComments,
       menuItems,
       api,
+      wfState,
       ...proposalType.rules
     }
   }
@@ -188,7 +178,7 @@ export default defineComponent({
       margin-top: -6px
 
   .comments
-    border-left: 2px solid rgb(var(--v-theme-divider))
+    border-left: 2px solid rgb(var(--v-border-color))
     padding-left: 2em
     padding-right: 4em
 

@@ -24,6 +24,7 @@ export interface WorkflowState {
   name?: string
   requiresRole?: MeetingRole
   isFinal?: boolean
+  priority?: number // Determines order in navigation, i.e. ongoing first
 }
 
 export interface BaseContent {
@@ -151,3 +152,10 @@ export interface ChannelConfig extends ChannelsConfig {
 }
 
 export type Predicate = (obj: any) => boolean
+
+export interface Organization {
+  pk: number
+  title: string
+  body: string
+  login_url: string | null
+}

@@ -90,8 +90,8 @@ export default class Channel<T> {
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
   }
 
-  connect (token?: string) {
-    return socket.connect(token)
+  connect () {
+    return socket.connect()
   }
 
   disconnect () {

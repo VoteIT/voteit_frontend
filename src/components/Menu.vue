@@ -1,13 +1,20 @@
 <template>
-  <span class="context-menu" ref="elem" v-if="items.length || $slots.top || $slots.bottom">
-    <v-btn :outlined="isOpen" :color="working === null ? color : 'secondary'" :icon="working === null ? 'mdi-dots-horizontal' : 'mdi-loading'" @click="isOpen = !isOpen"/>
+  <span class="context-menu" :class="{ float }" ref="elem" v-if="items.length || $slots.top || $slots.bottom || showTransitions">
+    <v-btn :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
       <slot name="top"/>
       <template v-for="(item, i) in items" :key="i">
         <v-divider v-if="item === '---'" />
-        <v-btn v-else :color="item.color" plain block :disabled="item.disabled || working !== null" @click="clickItem(item)">
+        <v-btn v-else :color="item.color || 'accent'" plain block :disabled="item.disabled || working" @click="clickItem(item)">
           <v-icon v-if="item.icon" left :icon="item.icon"/>
           {{ item.text }}
+        </v-btn>
+      </template>
+      <template v-if="statesAvailable">
+        <v-divider v-if="items.length || $slots.top" />
+        <v-btn plain block color="accent" :disabled="working" v-for="s in statesAvailable" :key="s.state" @click="makeTransition(s)">
+          <v-icon left :icon="s.icon" />
+          {{ t(`workflowState.${s.state}`) }}
         </v-btn>
       </template>
       <slot name="bottom"/>
@@ -17,10 +24,13 @@
 
 <script lang="ts">
 import useClickControl from '@/composables/useClickControl'
+import ContentType from '@/contentTypes/ContentType'
+import { WorkflowState } from '@/contentTypes/types'
 import { MenuItem, MenuDescriptor } from '@/utils/types'
 import { ComponentPublicInstance, defineComponent, nextTick, PropType, ref, watch } from 'vue'
 
 export default defineComponent({
+  inject: ['t'],
   props: {
     items: {
       type: Array as PropType<MenuItem[]>,
@@ -29,13 +39,18 @@ export default defineComponent({
     color: {
       type: String,
       default: 'primary'
-    }
+    },
+    showTransitions: Boolean,
+    contentType: Object as PropType<ContentType<any>>,
+    contentPk: Number,
+    float: Boolean
   },
   setup (props) {
     const isOpen = ref(false)
     const onTop = ref(false)
     const elem = ref<HTMLElement | null>(null)
-    const working = ref<number | null>(null)
+    const working = ref(false)
+    const statesAvailable = ref<WorkflowState[] | null>(null)
 
     useClickControl({
       element: elem,
@@ -45,22 +60,37 @@ export default defineComponent({
     })
 
     const overlay = ref<ComponentPublicInstance | null>(null)
-    watch(isOpen, value => {
+    watch(isOpen, async (value) => {
       if (!value) return
+      if (props.showTransitions && props.contentType && props.contentPk && !statesAvailable.value) {
+        const api = props.contentType.getContentApi()
+        working.value = true
+        statesAvailable.value = await api.getTransitions(props.contentPk)
+        working.value = false
+      }
+      onTop.value = false
       nextTick(() => {
         if (!overlay.value) return
         const elem = overlay.value.$el as HTMLElement
         const rect = elem.getBoundingClientRect()
-        if (rect.bottom > window.innerHeight) {
-          onTop.value = true
-        }
+        onTop.value = rect.bottom > window.innerHeight
       })
     })
 
     async function clickItem (item: MenuDescriptor) {
-      working.value = props.items.indexOf(item)
+      working.value = true
       await item.onClick()
-      working.value = null
+      working.value = false
+      isOpen.value = false
+    }
+
+    async function makeTransition (s: WorkflowState) {
+      if (!props.contentType || !props.contentPk || !s.transition) return
+      const api = props.contentType.getContentApi()
+      working.value = true
+      await api.transition(props.contentPk, s.transition)
+      statesAvailable.value = null
+      working.value = false
       isOpen.value = false
     }
 
@@ -69,7 +99,9 @@ export default defineComponent({
       clickItem,
       elem,
       isOpen,
+      makeTransition,
       overlay,
+      statesAvailable,
       working
     }
   }
@@ -85,6 +117,8 @@ export default defineComponent({
 
 .context-menu
   position: relative
+  &.float
+    float: right
   display: inline-block
   .v-sheet
     z-index: 99

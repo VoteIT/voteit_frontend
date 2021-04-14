@@ -21,5 +21,5 @@ export default defineComponent({
   .btn-controls
     text-align: right
   &.selected
-    background-color: var(--widget-selected-bg)
+    background-color: rgb(var(--v-theme-surface-active))
 </style>

@@ -48,11 +48,13 @@ export interface ChannelsConfig {
   alertOnError?: boolean
 }
 
+// Deprecated
 export interface NewDevUser {
   username: string
   is_superuser: boolean
 }
 
+// Deprecated
 export interface DevUser extends NewDevUser {
   pk: number
 }

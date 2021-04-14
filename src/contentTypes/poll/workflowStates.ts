@@ -1,4 +1,4 @@
-import { MeetingRole } from '../types'
+import { MeetingRole, WorkflowState } from '../types'
 
 export enum PollState {
   Private = 'private',
@@ -10,25 +10,28 @@ export enum PollState {
   Failed = 'failed'
 }
 
-export default [
+const states: WorkflowState[] = [
   {
     transition: 'unpublish',
     icon: 'mdi-eye-off',
     state: PollState.Private,
     name: 'Private',
-    requiresRole: MeetingRole.Moderator
+    requiresRole: MeetingRole.Moderator,
+    priority: 4
   },
   {
     transition: 'upcoming',
     icon: 'mdi-pause',
     state: PollState.Upcoming,
-    name: 'Upcoming'
+    name: 'Upcoming',
+    priority: 2
   },
   {
     transition: 'ongoing',
     icon: 'mdi-vote',
     state: PollState.Ongoing,
-    name: 'Ongoing'
+    name: 'Ongoing',
+    priority: 1
   },
   {
     transition: 'close',
@@ -41,7 +44,8 @@ export default [
     icon: 'mdi-check',
     state: PollState.Finished,
     name: 'Finished',
-    isFinal: true
+    isFinal: true,
+    priority: 3
   },
   {
     transition: 'cancel',
@@ -57,3 +61,5 @@ export default [
     isFinal: true
   }
 ]
+
+export default states
