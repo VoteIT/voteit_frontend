@@ -1,4 +1,4 @@
-<template>
+git<template>
   <main>
     <h1>{{ t('meeting.participants') }}</h1>
     <div v-if="canChange" class="search">
@@ -13,6 +13,7 @@ import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, openAlertEvent } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 
 import UserSearch from '@/components/widgets/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
@@ -22,7 +23,6 @@ import { ContextRoles } from '@/composables/types'
 
 import meetingType from '@/contentTypes/meeting'
 import { MeetingRole } from '@/contentTypes/types'
-import { ThemeColor } from '@/utils/types'
 
 const meetingChannel = meetingType.getChannel()
 

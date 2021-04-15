@@ -61,6 +61,7 @@ export default defineComponent({
 
     const overlay = ref<ComponentPublicInstance | null>(null)
     watch(isOpen, async (value) => {
+      statesAvailable.value = null
       if (!value) return
       if (props.showTransitions && props.contentType && props.contentPk && !statesAvailable.value) {
         const api = props.contentType.getContentApi()
@@ -89,7 +90,6 @@ export default defineComponent({
       const api = props.contentType.getContentApi()
       working.value = true
       await api.transition(props.contentPk, s.transition)
-      statesAvailable.value = null
       working.value = false
       isOpen.value = false
     }
