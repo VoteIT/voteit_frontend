@@ -1,7 +1,7 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
     <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">
-      <router-link class="menu-item" v-if="item.to" :to="item.to">
+      <router-link class="menu-item" v-if="item.to" :to="item.to" v-ripple>
         <div>
           {{ item.title }}
         </div>
