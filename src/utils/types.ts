@@ -85,3 +85,20 @@ export interface MenuDescriptor {
 }
 
 export type MenuItem = '---' | MenuDescriptor
+
+export interface TreeMenuLink {
+  title: string
+  to: string
+  icons?: string[]
+  count?: number
+}
+
+export interface TreeMenu {
+  title: string
+  items: TreeMenuItem[]
+  defaultOpen?: boolean
+  showCount?: boolean
+  icon?: string
+}
+
+export type TreeMenuItem = TreeMenuLink | TreeMenu

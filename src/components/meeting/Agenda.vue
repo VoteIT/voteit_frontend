@@ -27,22 +27,7 @@ import { AgendaItem, WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/composables/meeting/usePolls'
 import useProposals from '@/composables/meeting/useProposals'
 import MenuTree from '../MenuTree.vue'
-
-interface MenuItem {
-  title: string
-  to: string
-  icons?: string[]
-  count?: number
-}
-
-interface Menu {
-  title: string
-  items: (MenuItem | Menu)[]
-  defaultOpen?: boolean
-  showCount?: boolean
-}
-
-type MenuMix = MenuItem | Menu
+import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 
 export default defineComponent({
   name: 'Agenda',
@@ -88,7 +73,7 @@ export default defineComponent({
     const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
       s => s && (!s.requiresRole || hasRole(s.requiresRole))
     ))
-    const aiMenus = computed<Menu[]>(() => {
+    const aiMenus = computed<TreeMenu[]>(() => {
       return aiGroups.value.map(s => ({
         title: s.state,
         showCount: true,
@@ -101,7 +86,7 @@ export default defineComponent({
         s => !s.requiresRole || hasRole(s.requiresRole)
       )
     })
-    const pollMenus = computed<MenuMix[]>(() => {
+    const pollMenus = computed<TreeMenuItem[]>(() => {
       return [{
         title: t('poll.all'),
         to: `${meetingPath.value}/polls`
@@ -112,7 +97,7 @@ export default defineComponent({
       }))]
     })
 
-    function getAIMenuItems (s: WorkflowState): MenuItem[] {
+    function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
       return getAiType(s.state).map(ai => ({
           title: ai.title,
           to: getAiPath(ai),
@@ -122,7 +107,7 @@ export default defineComponent({
       )
     }
 
-    function getPollMenuItems (s: WorkflowState): MenuItem[] {
+    function getPollMenuItems (s: WorkflowState): TreeMenuLink[] {
       return getPolls(meetingId.value, s.state).map(p => ({
         title: p.title,
         to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`
@@ -130,8 +115,8 @@ export default defineComponent({
     }
 
     const openMenus = reactive<Set<number>>(new Set())
-    const menu = computed<Menu[]>(() => {
-      const items: Menu[] = [{
+    const menu = computed<TreeMenu[]>(() => {
+      const items: TreeMenu[] = [{
         title: t('meeting.meeting'),
         items: [{
           title: t('start'),
@@ -139,16 +124,19 @@ export default defineComponent({
         }, {
           title: t('meeting.participants'),
           to: `${meetingPath.value}/participants`
-        }]
+        }],
+        icon: 'mdi-home-variant-outline'
       },
       {
         title: t('poll.polls'),
-        items: pollMenus.value
+        items: pollMenus.value,
+        icon: 'mdi-star-outline'
       },
       {
         title: t('meeting.agenda'),
         items: aiMenus.value,
-        defaultOpen: true
+        defaultOpen: true,
+        icon: 'mdi-format-list-bulleted'
       }]
       if (meetingRules.canChange(meeting.value)) {
         items[0].items.push({

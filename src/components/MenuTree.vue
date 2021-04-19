@@ -1,6 +1,6 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
-    <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i) }">
+    <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">
       <router-link class="menu-item" v-if="item.to" :to="item.to">
         <div>
           {{ item.title }}
@@ -19,6 +19,7 @@
           <template v-if="item.showCount">({{ item.items.length }})</template>
         </div>
         <span v-if="item.count">{{ item.count }}</span>
+        <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <transition name="slide-down">
         <MenuTree v-if="item.items" :level="level + 1" :items="item.items" v-show="openMenus.has(i)" />
@@ -29,25 +30,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive } from 'vue'
-
-interface MenuItem {
-  title: string
-  to: string
-  icons?: string[]
-  count?: number
-}
-
-interface Menu {
-  title: string
-  items: (MenuItem | Menu)[]
-  defaultOpen?: boolean
-  showCount?: boolean
-}
+import { TreeMenuItem } from '@/utils/types'
 
 export default defineComponent({
   props: {
     items: {
-      type: Array as PropType<(MenuItem | Menu)[]>,
+      type: Array as PropType<TreeMenuItem[]>,
       required: true
     },
     level: {
@@ -90,8 +78,12 @@ ul.menu-tree
   padding: 0 0 .8em !important
   .mdi
     transition: transform .2s
-  li.open > a .mdi
+  li.open > a .mdi-chevron-right
     transform: rotate(90deg)
+  li.link
+    margin-bottom: 6px
+    &:last-child
+      margin-bottom: 0
 
   a
     color: rgb(var(--v-theme-on-app-bar))
@@ -104,13 +96,15 @@ ul.menu-tree
       flex: 1 0 auto
     span
       font-size: 10.5pt
-    &.router-link-exact-active
-      background-color: rgb(var(--v-theme-app-bar-active))
 
   .menu-item
+    background-color: rgba(var(--v-theme-surface), .08)
     margin: 0 6px 0 32px
     display: flex
     font-size: 10.5pt !important
+    transition: background-color .2s
+    &.router-link-exact-active
+      background-color: rgb(var(--v-theme-app-bar-active))
     :first-child
       flex: 1 0 auto
     span
