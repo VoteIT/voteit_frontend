@@ -1,7 +1,7 @@
 <template>
   <main v-if="poll">
     <h1>{{ t('poll.details') }}</h1>
-    <poll-detail :poll="poll"/>
+    <PollWidget :poll="poll" detail />
   </main>
 </template>
 
@@ -11,13 +11,13 @@ import { useRoute } from 'vue-router'
 
 import usePolls from '@/composables/meeting/usePolls'
 
-import PollDetail from '@/components/widgets/Poll.vue'
+import PollWidget from '@/components/widgets/Poll.vue'
 
 export default defineComponent({
   name: 'PollView',
   inject: ['t'],
   components: {
-    PollDetail
+    PollWidget
   },
   setup () {
     const route = useRoute()

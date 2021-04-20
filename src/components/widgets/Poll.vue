@@ -3,7 +3,9 @@
     <header>
       <Menu float :show-transitions="canChange(poll)" :content-type="pollType" :content-pk="poll.pk" />
       <h2>{{ poll.title }}</h2>
-      <p v-if="!isFinished">{{ t(`poll.method.${poll.method_name}`) }}</p>
+      <p v-if="isOngoing && poll.started"><Moment :prepend="t('started')" :date="poll.started" /></p>
+      <p v-else-if="isFinished && poll.closed"><Moment :prepend="t('finished')" :date="poll.closed" /></p>
+      <p v-else>{{ t(`poll.method.${poll.method_name}`) }}</p>
     </header>
     <div class="body">
       <template v-if="isFinished">
@@ -22,22 +24,20 @@
         </component>
       </template>
       <btn @click="vote" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
-      <BtnDropdown dark class="voting-info" v-if="isOngoing" :title="t('poll.watchVoting')" @open="active=true" @close="active=false">
-        <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
-        <p v-else>{{ t('loader.loading') }}...</p>
-      </BtnDropdown>
+      <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
     </div>
   </Widget>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, onBeforeUnmount, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, onBeforeMount, onBeforeUnmount, PropType, watch } from 'vue'
 
 import useModal from '@/composables/useModal'
 
 import usePolls from '@/composables/meeting/usePolls'
 import useProposals from '@/composables/meeting/useProposals'
 
+import Moment from '@/components/widgets/Moment.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import BtnDropdown from '@/components/BtnDropdown.vue'
 import Voting from '@/components/modals/Voting.vue'
@@ -47,6 +47,7 @@ import { pollResults } from '../pollmethods'
 import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
 import { PollState } from '@/contentTypes/poll/workflowStates'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   name: 'Poll',
@@ -54,12 +55,14 @@ export default defineComponent({
     poll: {
       type: Object as PropType<Poll>,
       required: true
-    }
+    },
+    detail: Boolean
   },
   components: {
     WorkflowState,
     BtnDropdown,
-    Proposal
+    Proposal,
+    Moment
   },
   setup (props) {
     const channels = pollType.getChannel()
@@ -67,11 +70,11 @@ export default defineComponent({
     const { getProposal } = useProposals()
     const { getPollStatus } = usePolls()
 
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
 
     function vote () {
       openModal({
-        title: t('poll.votingTitle', props.poll),
+        title: t('poll.votingTitle', props.poll as Record<string, any>),
         component: Voting,
         data: props.poll
       })
@@ -82,21 +85,18 @@ export default defineComponent({
 
     const resultComponent = computed(() => isFinished.value && pollResults[props.poll.method_name])
 
-    // Toggle active listens to ongoing poll statuses
-    const active = ref(false)
-    watch(active, value => {
-      if (value) {
-        channels.subscribe(props.poll.pk)
-      } else {
+    if (props.detail) {
+      watch(isOngoing, value => {
+        if (value) return channels.subscribe(props.poll.pk)
         channels.leave(props.poll.pk)
-      }
-    })
-
-    onBeforeUnmount(() => {
-      if (active.value) {
-        channels.leave(props.poll.pk)
-      }
-    })
+      })
+      onBeforeMount(() => {
+        if (isOngoing.value) channels.subscribe(props.poll.pk)
+      })
+      onBeforeUnmount(() => {
+        if (isOngoing.value) channels.leave(props.poll.pk)
+      })
+    }
 
     const pollStatus = computed(() => {
       return getPollStatus(props.poll.pk)
@@ -105,7 +105,6 @@ export default defineComponent({
     return {
       pollType,
       ...pollType.rules,
-      active,
       vote,
       t,
       resultComponent,

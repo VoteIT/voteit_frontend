@@ -5,12 +5,13 @@ import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
 import { Poll, PollStatus } from '@/contentTypes/types'
 import { agendaDeletedEvent } from './useAgenda'
+import { dateify } from '@/utils'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType.getChannel()
-  .updateMap(polls)
+  .updateMap(polls, p => dateify(p, ['started', 'closed']))
   .onStatus((_: any) => {
     const item = _ as PollStatus
     const existing = pollStatuses.get(item.pk)

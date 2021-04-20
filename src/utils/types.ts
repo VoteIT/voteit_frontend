@@ -1,6 +1,3 @@
-import { Predicate } from '@/contentTypes/types'
-import { Component } from 'vue'
-
 /* eslint-disable camelcase */
 export enum State {
   Success = 's',
