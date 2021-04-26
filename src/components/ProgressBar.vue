@@ -1,7 +1,11 @@
 <template>
   <div class="progress-bar" :class="{ failed, done }">
-    <div class="bar" :style="{ width: percentage + '%' }">
+    <div class="bar">
+      <div class="progress" :style="{ width: percentage + '%' }" />
+    </div>
+    <div v-if="$slots.default || textDisplay" class="meta">
       <span>{{ textDisplay }}</span>
+      <slot/>
     </div>
   </div>
 </template>
@@ -52,26 +56,28 @@ export default defineComponent({
 
 <style lang="sass">
 .progress-bar
-  width: 100%
-  border: 1px solid #444
-  border-radius: 3px
   margin: 0 auto
-  background-color: #fff
   .bar
+    margin: .5em 0
+    background-color: rgb(var(--v-theme-on-background))
+  .progress
     box-sizing: border-box
-    background-color: #ddd
-    height: 1.4em
-    color: #000
+    background-color: rgb(var(--v-theme-success))
+    height: 3px
     transition: background-color .2s, width .1s
-    text-align: left
-    span
-      padding: 0 .4em
-      display: inline-block
-      white-space: nowrap
-  &.failed .bar
-    background-color: #b44
-    color: #fff
-  &.done .bar
-    background-color: #4b4
-    color: #fff
+  .meta
+    display: flex
+    justify-content: space-between
+    color: rgb(var(--v-theme-secondary))
+    font-size: 10.5pt
+  &.failed
+    .progress
+      background-color: rgb(var(--v-theme-error))
+    .progress-text
+      color: rgb(var(--v-theme-error))
+  &.done
+    .progress
+      background-color: rgb(var(--v-theme-primary))
+    .progress-text
+      color: rgb(var(--v-theme-primary))
 </style>

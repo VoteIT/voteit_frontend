@@ -1,4 +1,3 @@
-import { RestApiConfig } from '@/composables/types'
 import ContentType from '../ContentType'
 import { AgendaItem } from '../types'
 

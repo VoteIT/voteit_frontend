@@ -1,5 +1,10 @@
 <template>
-  <main>
+  <header>
+    <h1>{{ data.title }}</h1>
+    <p class="meta">{{ t('poll.method.name') }}: {{ t(`poll.method.${data.method_name}`) }}</p>
+    <template v-if="data.body" v-html="data.body"/>
+  </header>
+  <main id="voting-proposals">
     <h2 v-if="abstained">{{ t('poll.abstainRegistered') }}</h2>
     <h2 v-else-if="done">{{ t('poll.voteRegistered') }}</h2>
     <template v-else>
@@ -22,9 +27,10 @@ import useProposals from '@/composables/meeting/useProposals'
 
 import { pollMethods } from '../pollmethods'
 
-import { Poll, Proposal, Vote } from '@/contentTypes/types'
-import { ChannelsMessage } from '@/utils/types'
+import { Poll, Proposal } from '@/contentTypes/types'
+// import { ChannelsMessage } from '@/utils/types'
 import Channel from '@/contentTypes/Channel'
+import usePolls from '@/composables/meeting/usePolls'
 
 export default defineComponent({
   name: 'VotingModal',
@@ -37,6 +43,7 @@ export default defineComponent({
   },
   setup (props) {
     const { getPollProposals } = useProposals()
+    const { getUserVote } = usePolls()
     const { alert } = useAlert()
     const channels = new Channel('vote', { alertOnError: false })
 
@@ -49,11 +56,11 @@ export default defineComponent({
 
     const methodComponent = computed<Component | undefined>(() => pollMethods[props.data.method_name])
 
-    // Valid vote value emitted from method
-    const currentAbstained = ref(false)
-    const validVote = ref<Object | null>(null)
+    const userVote = getUserVote(props.data)
+    const currentAbstained = ref(userVote?.abstain)
+    const validVote = ref(userVote?.vote)
 
-    function castVote () {
+    async function castVote () {
       if (validVote.value) {
         waiting.value = true
         // Hopefully, some day
@@ -66,36 +73,34 @@ export default defineComponent({
           poll: props.data.pk,
           vote: validVote.value
         }
-        channels.post(`${props.data.method_name}_vote.add`, msg)
-          .then(() => {
-            done.value = true
-          })
-          .catch(() => {
-            waiting.value = false
-          })
+        try {
+          await channels.post(`${props.data.method_name}_vote.add`, msg)
+          done.value = true
+        } catch {
+          waiting.value = false
+        }
       } else {
         alert(`*not implemented (value: ${validVote.value})`)
       }
     }
 
     function abstainVote () {
-      channels.post('vote.abstain', { poll: props.data.pk })
-        .then(() => {
-          abstained.value = true
-        })
-        .catch(() => {
-          waiting.value = false
-        })
+      try {
+        channels.post('vote.abstain', { poll: props.data.pk })
+        abstained.value = true
+      } catch {
+        waiting.value = false
+      }
     }
 
     onBeforeMount(() => {
-      channels.get(props.data.pk)
-        .then((msg: ChannelsMessage) => {
-          const p = msg.p as Vote
-          if (p.vote) validVote.value = p.vote
-          currentAbstained.value = p.abstain
-        })
-        .catch(() => {}) // Should mean no previous vote, but should be sanity checked.
+      // channels.get(props.data.pk)
+      //   .then((msg: ChannelsMessage) => {
+      //     const p = msg.p as Vote
+      //     if (p.vote) validVote.value = p.vote
+      //     currentAbstained.value = p.abstain
+      //   })
+      //   .catch(() => {}) // Should mean no previous vote, but should be sanity checked.
     })
 
     return {
@@ -114,7 +119,14 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass" scoped>
-.buttons
-  text-align: center
+<style lang="sass">
+#voting-proposals
+  .proposal
+    padding: 1em
+    margin-left: -1em
+    margin-right: -1em
+    border-bottom: 2px solid rgb(var(--v-border-color))
+  .buttons
+    margin-top: 1em
+    text-align: center
 </style>

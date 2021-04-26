@@ -16,6 +16,7 @@ export default defineComponent({
 <style lang="sass">
 .widget
   margin-bottom: 1rem
+  // border: 1px solid rgb(var(--v-border-color))
   background-color: rgb(var(--v-theme-surface))
   padding: 10px
   .btn-controls

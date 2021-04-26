@@ -3,11 +3,13 @@ import { reactive } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
-import { Poll, PollStatus } from '@/contentTypes/types'
+import { Poll, PollStatus, Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from './useAgenda'
 import { dateify } from '@/utils'
+import Channel from '@/contentTypes/Channel'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
+const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType.getChannel()
@@ -20,6 +22,15 @@ pollType.getChannel()
       pollStatuses.set(item.pk, item)
     }
   })
+  .onLeave(uri => {
+    // Assume uri 'poll/<pk>'
+    const pk = Number((uri as string).split('/')[1])
+    pollStatuses.delete(pk)
+  })
+
+// This is not really a channel
+new Channel<Vote>('vote')
+  .updateMap(userVotes)
 
 /*
 ** Clear polls when leaving meeting.
@@ -65,10 +76,17 @@ export default function usePolls () {
     return pollStatuses.get(pk)
   }
 
+  function getUserVote (poll: Poll): Vote | undefined {
+    for (const vote of userVotes.values()) {
+      if (vote.poll === poll.pk) return vote
+    }
+  }
+
   return {
     getPolls,
     getAiPolls,
     getPoll,
-    getPollStatus
+    getPollStatus,
+    getUserVote
   }
 }

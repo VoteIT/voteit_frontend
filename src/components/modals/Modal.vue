@@ -1,8 +1,8 @@
 <template>
   <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @mousedown.self="dismiss">
     <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
+      <v-btn icon="mdi-close" size="large" class="closer" plain @click="dismiss" v-show="modal.dismissable" />
       <header v-if="modal.title">
-        <v-btn icon="mdi-close" plain @click="dismiss" v-show="modal.dismissable" />
         <h1>{{ modal.title }}</h1>
       </header>
       <component v-if="modal.component" :is="modal.component" :data="modal.data" />
@@ -92,23 +92,26 @@ export default defineComponent({
     background-color: rgba(#000, .3)
 
 #modal-window
+  position: relative
   width: calc(100vw - 20px)
   max-width: 780px
-  background-color: rgb(var(--v-theme-surface))
+  background-color: rgb(var(--v-theme-background))
   min-height: calc(50vh)
   max-height: calc(100vh - 20px)
   box-shadow: 2px 2px 8px rgba(#000, .5)
   overflow-y: auto
   border-radius: 3px
 
+  .closer
+    position: absolute
+    top: 0
+    right: 0
+
   header,
   main
     padding: 1rem
   header
-    button
-      float: right
-      margin-top: -8px
-      margin-right: -10px
-    h1
-      margin: 0
+    border-bottom: 2px solid rgb(var(--v-border-color))
+    .meta
+      color: rgb(var(--v-theme-secondary))
 </style>

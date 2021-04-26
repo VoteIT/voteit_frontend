@@ -94,6 +94,7 @@ export interface TreeMenu {
   title: string
   items: TreeMenuItem[]
   defaultOpen?: boolean
+  openFirstNonEmpty?: boolean
   showCount?: boolean
   icon?: string
 }

@@ -1,14 +1,11 @@
 <template>
   <div id="scottish-stv-voting">
-    <div class="header">
-      <h2>{{ t('step', currentStep) }}: {{ currentStep.title }}</h2>
-      <p>{{ currentStep.description }}</p>
-    </div>
     <template v-if="currentStep.step === 1">
       <Proposal :selected="ranking.includes(p.pk)" read-only :p="p" v-for="p in proposals" :key="p.pk" @click="toggleSelected(p)">
-        <template v-slot:top>
-          <div class="ranking-position" v-if="ranking.includes(p.pk)">
-            <span>{{ (ranking.indexOf(p.pk) + 1) }}</span>
+        <template v-slot:vote>
+          <div class="ranking-position">
+            {{ ranking.includes(p.pk) ? t('poll.rankingSelectedAs') : t('poll.rankingSelectAs') }}
+            <span class="number" :class="{ active: ranking.includes(p.pk) }">{{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}</span>
           </div>
         </template>
       </Proposal>
@@ -26,23 +23,24 @@
         </template>
       </Draggable>
     </template>
-    <div class="btn-controls">
+    <!-- <div class="btn-controls">
       <v-btn color="secondary" v-if="previousStep" @click="previous()"><v-icon left icon="mdi-arrow-left-bold"/>{{ previousStep.title }}</v-btn>
       <span v-else/>
       <v-btn color="secondary" v-if="nextStep" :disabled="!currentStep.ready" @click="next()">{{ nextStep.title }}<v-icon right icon="mdi-arrow-right-bold"/></v-btn>
       <span v-else/>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, PropType, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, reactive, ref } from 'vue'
 import Draggable from 'vuedraggable'
 
 import ProposalComponent from '../widgets/Proposal.vue'
 
 import { RankedVote } from './types'
 import { Poll, Proposal } from '@/contentTypes/types'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   name: 'ScottishSTVPoll',
@@ -66,7 +64,7 @@ export default defineComponent({
     Draggable
   },
   setup (props, { emit }) {
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
     const steps = reactive([
       {
         step: 1,
@@ -81,18 +79,18 @@ export default defineComponent({
       }
     ])
 
-    const ranking = ref<number[]>([])
+    const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
     const step = ref(0)
     const previousStep = computed(() => steps[step.value - 1])
     const currentStep = computed(() => steps[step.value])
     const nextStep = computed(() => steps[step.value + 1])
 
-    watch(() => props.modelValue, (vote) => {
-      if (vote) {
-        ranking.value = vote.ranking
-        steps[0].ready = true
-      }
-    })
+    // watch(() => props.modelValue, (vote) => {
+    //   if (vote) {
+    //     ranking.value = vote.ranking
+    //     steps[0].ready = true
+    //   }
+    // })
 
     function setOrder (order?: number[]) {
       if (order) {
@@ -147,9 +145,23 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-#scottish-stv-voting
-  margin-bottom: 1em
+@keyframes bounce-in
+  0%
+    transform: scale(1) rotate(0)
+  50%
+    transform: scale(1.5) rotate(6deg)
+  100%
+    transform: scale(1) rotate(0)
 
+@keyframes sink-in
+  0%
+    transform: scale(1)
+  50%
+    transform: scale(.8)
+  100%
+    transform: scale(1)
+
+#scottish-stv-voting
   .header p
     white-space: pre-wrap
 
@@ -158,22 +170,22 @@ export default defineComponent({
     cursor: pointer
     &[data-draggable]
       cursor: grab
-  .ranking-position
-    position: absolute
-    top: 5px
-    right: 5px
-    width: 30px
-    height: 30px
-    background-color: #f7f7f7
-    color: #000
-    display: flex
-    justify-content: center
-    align-items: center
-    border-radius: 50%
-    box-shadow: 1px 2px 3px inset rgba(#000, .4)
-    font-size: 14pt
 
   .btn-controls
     display: flex
     justify-content: space-between
+
+  .ranking-position
+    text-align: center
+    .number
+      display: inline-block
+      border-radius: 50%
+      width: 23px
+      height: 23px
+      transition: background-color .4s
+      background-color: rgba(var(--v-theme-secondary), .3)
+      animation: sink-in .4s
+      &.active
+        background-color: rgb(var(--v-theme-success))
+        animation: bounce-in .4s
 </style>

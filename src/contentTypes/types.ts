@@ -27,6 +27,16 @@ export interface WorkflowState {
   priority?: number // Determines order in navigation, i.e. ongoing first
 }
 
+// Transitions from backend
+export interface Transition {
+  name: string
+  permission: string
+  source: string
+  target: string
+  title: string,
+  icon?: string
+}
+
 export interface BaseContent {
   pk: number
   title: string
@@ -120,6 +130,7 @@ export interface ElectoralRegister {
 export interface Vote {
   abstain: boolean
   vote: Object
+  poll: number
 }
 
 export enum AccessPolicyType {

@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent>
     <Proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
-      <template v-slot:bottom>
+      <template v-slot:vote>
         <div class="simple-options">
           <Btn v-for="opt in options" :key="opt.value" :color="opt.color" :border="opt.value !== votes.get(p.pk)" :icon="opt.icon" @click="change(p, opt)">
             {{ opt.title }}
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, PropType, reactive, watch } from 'vue'
+import { defineComponent, inject, PropType, reactive } from 'vue'
 import { DefaultMap } from '@/utils'
 
 import useMeeting from '@/composables/meeting/useMeeting'
@@ -52,7 +52,14 @@ export default defineComponent({
     const t = inject('t') as CallableFunction // TODO What?
     const { getUser } = useMeeting()
     const votes = reactive<Map<number, SimpleChoice>>(new Map())
-    // const isCombined = props.proposals.length > 1
+
+    if (props.modelValue) {
+      for (const [choice, pks] of Object.entries(props.modelValue)) {
+        for (const pk of pks) {
+          votes.set(pk, choice as SimpleChoice)
+        }
+      }
+    }
 
     const options = [
       {
@@ -87,14 +94,14 @@ export default defineComponent({
       emit('update:modelValue', Object.fromEntries(map))
     }
 
-    watch(() => props.modelValue, (vote?: CombinedSimpleVote) => {
-      if (!vote) return
-      for (const [choice, pks] of Object.entries(vote)) {
-        for (const pk of pks) {
-          votes.set(pk, choice as SimpleChoice)
-        }
-      }
-    })
+    // watch(() => props.modelValue, (vote?: CombinedSimpleVote) => {
+    //   if (!vote) return
+    //   for (const [choice, pks] of Object.entries(vote)) {
+    //     for (const pk of pks) {
+    //       votes.set(pk, choice as SimpleChoice)
+    //     }
+    //   }
+    // })
 
     return {
       change,

@@ -73,12 +73,12 @@ export default defineComponent({
     const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
       s => s && (!s.requiresRole || hasRole(s.requiresRole))
     ))
+
     const aiMenus = computed<TreeMenu[]>(() => {
       return aiGroups.value.map(s => ({
         title: s.state,
         showCount: true,
-        items: getAIMenuItems(s),
-        defaultOpen: s.state === 'ongoing'
+        items: getAIMenuItems(s)
       }))
     })
     const pollGroups = computed<WorkflowState[]>(() => {
@@ -130,13 +130,15 @@ export default defineComponent({
       {
         title: t('poll.polls'),
         items: pollMenus.value,
-        icon: 'mdi-star-outline'
+        icon: 'mdi-star-outline',
+        openFirstNonEmpty: true
       },
       {
         title: t('meeting.agenda'),
         items: aiMenus.value,
         defaultOpen: true,
-        icon: 'mdi-format-list-bulleted'
+        icon: 'mdi-format-list-bulleted',
+        openFirstNonEmpty: true
       }]
       if (meetingRules.canChange(meeting.value)) {
         items[0].items.push({

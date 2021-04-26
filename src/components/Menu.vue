@@ -10,11 +10,11 @@
           {{ item.text }}
         </v-btn>
       </template>
-      <template v-if="statesAvailable">
+      <template v-if="transitionsAvailable">
         <v-divider v-if="items.length || $slots.top" />
-        <v-btn plain block color="accent" :disabled="working" v-for="s in statesAvailable" :key="s.state" @click="makeTransition(s)">
-          <v-icon left :icon="s.icon" />
-          {{ t(`workflowState.${s.state}`) }}
+        <v-btn plain block color="accent" :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
+          <v-icon v-if="t.icon" left :icon="t.icon" />
+          {{ t.title }}
         </v-btn>
       </template>
       <slot name="bottom"/>
@@ -25,7 +25,7 @@
 <script lang="ts">
 import useClickControl from '@/composables/useClickControl'
 import ContentType from '@/contentTypes/ContentType'
-import { WorkflowState } from '@/contentTypes/types'
+import { Transition } from '@/contentTypes/types'
 import { MenuItem, MenuDescriptor } from '@/utils/types'
 import { ComponentPublicInstance, defineComponent, nextTick, PropType, ref, watch } from 'vue'
 
@@ -50,7 +50,8 @@ export default defineComponent({
     const onTop = ref(false)
     const elem = ref<HTMLElement | null>(null)
     const working = ref(false)
-    const statesAvailable = ref<WorkflowState[] | null>(null)
+    // const statesAvailable = ref<WorkflowState[] | null>(null)
+    const transitionsAvailable = ref<Transition[] | null>(null)
 
     useClickControl({
       element: elem,
@@ -61,12 +62,12 @@ export default defineComponent({
 
     const overlay = ref<ComponentPublicInstance | null>(null)
     watch(isOpen, async (value) => {
-      statesAvailable.value = null
+      transitionsAvailable.value = null
       if (!value) return
-      if (props.showTransitions && props.contentType && props.contentPk && !statesAvailable.value) {
+      if (props.showTransitions && props.contentType && props.contentPk) {
         const api = props.contentType.getContentApi()
         working.value = true
-        statesAvailable.value = await api.getTransitions(props.contentPk)
+        transitionsAvailable.value = await api.getTransitions(props.contentPk)
         working.value = false
       }
       onTop.value = false
@@ -85,14 +86,41 @@ export default defineComponent({
       isOpen.value = false
     }
 
-    async function makeTransition (s: WorkflowState) {
-      if (!props.contentType || !props.contentPk || !s.transition) return
+    async function makeTransition (t: Transition) {
+      if (!props.contentType || !props.contentPk || !t.name) return
       const api = props.contentType.getContentApi()
       working.value = true
-      await api.transition(props.contentPk, s.transition)
+      await api.transition(props.contentPk, t.name)
       working.value = false
       isOpen.value = false
     }
+
+    // function keyWatch ({ key }: { key: string }) {
+    //   if (isOpen.value) {
+    //     const focusedEl = opts.value?.querySelector(':focus')
+    //     if (focusedEl) {
+    //       switch (key) {
+    //         case 'Escape':
+    //           toggle()
+    //           break
+    //         case 'ArrowUp':
+    //           (focusedEl.previousElementSibling as HTMLElement)?.focus()
+    //           break
+    //         case 'ArrowDown':
+    //           (focusedEl.nextElementSibling as HTMLElement)?.focus()
+    //           break
+    //       }
+    //     }
+    //   }
+    // }
+    // onMounted(() => {
+    //   document.addEventListener('mousedown', clickWatch)
+    //   root.value?.addEventListener('keyup', keyWatch)
+    // })
+    // onBeforeUnmount(() => {
+    //   document.removeEventListener('mousedown', clickWatch)
+    //   root.value?.removeEventListener('keyup', keyWatch)
+    // })
 
     return {
       onTop,
@@ -101,7 +129,8 @@ export default defineComponent({
       isOpen,
       makeTransition,
       overlay,
-      statesAvailable,
+      // statesAvailable,
+      transitionsAvailable,
       working
     }
   }

@@ -2,7 +2,7 @@ import { RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils'
 import restApi from '@/utils/restApi'
 import { AxiosError, AxiosPromise } from 'axios'
-import { WorkflowState } from './types'
+import { Transition, WorkflowState } from './types'
 
 const DEFAULT_CONFIG: RestApiConfig = {
   alertOnError: true
@@ -122,15 +122,12 @@ export default class ContentAPI<T, K=number> {
     }
   }
 
-  async getTransitions (pk: number): Promise<WorkflowState[]> {
+  async getTransitions (pk: number): Promise<Transition[]> {
     // Cannot handle K = string
-    if (this.workflowStates) {
-      const { data } = await this.call(HTTPMethod.Get, `${this.endpoint}${pk}/transitions/`)
-      return this.workflowStates.filter(
-        s => data.available_transitions.includes(s.transition)
-      )
-    } else {
-      throw new Error(`No Workflow States defined for ${this.endpoint}`)
-    }
+    const { data }: { data: Transition[] } = await this.call(HTTPMethod.Get, `${this.endpoint}${pk}/transitions/`)
+    return data.map(t => {
+      t.icon = this.workflowStates?.find(s => s.transition === t.name)?.icon
+      return t
+    })
   }
 }

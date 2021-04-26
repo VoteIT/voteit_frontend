@@ -13,6 +13,9 @@
       </div>
     </div>
     <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <v-sheet v-if="$slots.vote" class="vote-slot">
+      <slot name="vote"/>
+    </v-sheet>
     <footer v-if="!readOnly">
       <div>
         <v-btn plain v-if="canComment(p)" @click="comment()">
@@ -181,6 +184,12 @@ export default defineComponent({
     border-left: 2px solid rgb(var(--v-border-color))
     padding-left: 2em
     padding-right: 4em
+
+  .vote-slot
+    border: 1px solid rgb(var(--v-border-color))
+    background-color: rgb(var(--v-theme-surface))
+    padding: .35em .6em
+    border-radius: 5px
 
 a.tag
   font-size: 10pt

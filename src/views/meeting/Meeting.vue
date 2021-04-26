@@ -122,33 +122,31 @@ export default defineComponent({
       }
       return Promise.resolve()
     }
-    function enterRoleChannel () {
-      if (meetingId.value) {
-        const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
-        if (channelName !== currentRoleChannel) {
-          leaveRoleChannel()
-            .then(() => {
-              currentRoleChannel = channelName
-              channels.subscribe(channelName)
-            })
-        }
-      }
+    async function enterRoleChannel (): Promise<void> {
+      if (!meetingId.value) return Promise.resolve()
+      const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
+      if (channelName === currentRoleChannel) return Promise.resolve()
+      return leaveRoleChannel()
+        .then(() => {
+          currentRoleChannel = channelName
+          channels.subscribe(channelName)
+        })
     }
     watch(isModerator, enterRoleChannel)
 
     onBeforeMount(() => {
-      loader.call(() => {
-        meetingApi.retrieve(meetingId.value)
-          .then(({ data }) => {
-            if (!data.current_user_roles) {
-              router.push(`/join/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
-            }
-            setMeeting(data)
-            enterRoleChannel()
-          })
-          .catch(() => {
-            router.push('/')
-          })
+      loader.call(async () => {
+        try {
+          const { data } = await meetingApi.retrieve(meetingId.value)
+          if (!data.current_user_roles) {
+            router.push(`/join/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
+            return
+          }
+          setMeeting(data)
+          await enterRoleChannel()
+        } catch {
+          router.push('/')
+        }
       })
       loader.subscribe(channel, meetingId.value)
     })

@@ -22,15 +22,15 @@
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <transition name="slide-down">
-        <MenuTree v-if="item.items" :level="level + 1" :items="item.items" v-show="openMenus.has(i)" />
+        <MenuTree v-if="item.items" :level="level + 1" :parent="item" :items="item.items" v-show="openMenus.has(i)" />
       </transition>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive } from 'vue'
-import { TreeMenuItem } from '@/utils/types'
+import { defineComponent, PropType, reactive, watch } from 'vue'
+import { TreeMenu, TreeMenuItem } from '@/utils/types'
 
 export default defineComponent({
   props: {
@@ -41,10 +41,13 @@ export default defineComponent({
     level: {
       type: Number,
       default: 0
-    }
+    },
+    parent: Object as PropType<TreeMenu>
   },
   setup (props) {
     const openMenus = reactive<Set<number>>(new Set())
+
+    // Menus can be set to open by default
     props.items.forEach((item, index) => {
       if ('defaultOpen' in item && item.defaultOpen) openMenus.add(index)
     })
@@ -52,6 +55,19 @@ export default defineComponent({
       if (openMenus.has(index)) return openMenus.delete(index)
       openMenus.add(index)
     }
+
+    // Open first non-empty submenu dynamically once (data is loaded async)
+    let initialized = false
+    watch(() => props.items, items => {
+      if (initialized || !props.parent?.openFirstNonEmpty || openMenus.size) return // If user has a submenu open, don't meddle
+      initialized = true
+      items.some((item, index) => {
+        if ('items' in item && item.items.length) {
+          openMenus.add(index)
+          return true
+        }
+      })
+    })
 
     return {
       openMenus,

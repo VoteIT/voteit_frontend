@@ -1,11 +1,20 @@
 <template>
   <Widget class="poll">
     <header>
-      <Menu float :show-transitions="canChange(poll)" :content-type="pollType" :content-pk="poll.pk" />
-      <h2>{{ poll.title }}</h2>
-      <p v-if="isOngoing && poll.started"><Moment :prepend="t('started')" :date="poll.started" /></p>
-      <p v-else-if="isFinished && poll.closed"><Moment :prepend="t('finished')" :date="poll.closed" /></p>
-      <p v-else>{{ t(`poll.method.${poll.method_name}`) }}</p>
+      <div v-if="detail">
+        <Menu float :show-transitions="canChange(poll)" :content-type="pollType" :content-pk="poll.pk" />
+        <h3>{{ poll.title }}</h3>
+        <p v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></p>
+        <p v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></p>
+        <p v-else>{{ t(`poll.method.${poll.method_name}`) }}</p>
+      </div>
+      <router-link v-else :to="pollPath">
+        <v-icon icon="mdi-chevron-right"/>
+        <h3>{{ poll.title }}</h3>
+        <p v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></p>
+        <p v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></p>
+        <p v-else>{{ t(`poll.method.${poll.method_name}`) }}</p>
+      </router-link>
     </header>
     <div class="body">
       <template v-if="isFinished">
@@ -23,8 +32,11 @@
           </BtnDropdown>
         </component>
       </template>
-      <btn @click="vote" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ t('poll.vote') }}</btn>
-      <progress-bar v-if="pollStatus" absolute :value="pollStatus.voted" :total="pollStatus.total" />
+      <Btn @click="vote" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ userVote ? t('poll.changeVote') : t('poll.vote') }}</Btn>
+      <ProgressBar v-if="detail && pollStatus" :text="t('poll.votedProgress', pollStatus, pollStatus.voted)" :value="pollStatus.voted" :total="pollStatus.total">
+          <span v-if="userVote" class="active">{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
+          <span v-else-if="canVote(poll)">{{ t('poll.youHaveNotVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
+      </ProgressBar>
     </div>
   </Widget>
 </template>
@@ -48,6 +60,8 @@ import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
 import { PollState } from '@/contentTypes/poll/workflowStates'
 import { useI18n } from 'vue-i18n'
+import useMeeting from '@/composables/meeting/useMeeting'
+import { slugify } from '@/utils'
 
 export default defineComponent({
   name: 'Poll',
@@ -65,16 +79,15 @@ export default defineComponent({
     Moment
   },
   setup (props) {
+    const { t } = useI18n()
     const channels = pollType.getChannel()
+    const { meetingPath } = useMeeting()
     const { openModal } = useModal()
     const { getProposal } = useProposals()
-    const { getPollStatus } = usePolls()
-
-    const { t } = useI18n()
+    const { getPollStatus, getUserVote } = usePolls()
 
     function vote () {
       openModal({
-        title: t('poll.votingTitle', props.poll as Record<string, any>),
         component: Voting,
         data: props.poll
       })
@@ -88,7 +101,7 @@ export default defineComponent({
     if (props.detail) {
       watch(isOngoing, value => {
         if (value) return channels.subscribe(props.poll.pk)
-        channels.leave(props.poll.pk)
+        channels.leave(props.poll.pk, { leaveDelay: 0 })
       })
       onBeforeMount(() => {
         if (isOngoing.value) channels.subscribe(props.poll.pk)
@@ -99,10 +112,19 @@ export default defineComponent({
     }
 
     const pollStatus = computed(() => {
-      return getPollStatus(props.poll.pk)
+      const status = getPollStatus(props.poll.pk)
+      if (!status) return
+      return {
+        percentage: Math.round(status.voted / status.total * 100),
+        ...status
+      }
     })
 
+    const pollPath = computed(() => `${meetingPath.value}/polls/${props.poll.pk}/${slugify(props.poll.title)}`)
+    const userVote = computed(() => getUserVote(props.poll))
+
     return {
+      pollPath,
       pollType,
       ...pollType.rules,
       vote,
@@ -111,7 +133,8 @@ export default defineComponent({
       getProposal,
       pollStatus,
       isFinished,
-      isOngoing
+      isOngoing,
+      userVote
     }
   }
 })
@@ -120,9 +143,15 @@ export default defineComponent({
 <style lang="sass">
 div.poll
   header
-    .dropdown
-      float: right
-
+    a
+      text-decoration: none
+      color: rgb(var(--v-theme-on-surface))
+      .mdi
+        float: right
+        font-size: 40pt
+        margin-top: 14px
+    p
+      color: rgb(var(--v-theme-secondary))
   .voting-info
     margin-top: 1em
 
@@ -133,6 +162,16 @@ div.poll
   .proposal
     margin: 10px
     flex: 0 1 calc(50% - 20px)
+
+  .progress-bar .active
+    color: rgb(var(--v-theme-on-surface))
+    .mdi
+      display: inline-block
+      background-color: rgb(var(--v-theme-success))
+      border-radius: 4px
+      text-align: center
+      width: 18px
+      height: 18px
 
 body.no-scroll
   overflow: hidden

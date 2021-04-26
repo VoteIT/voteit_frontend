@@ -21,11 +21,12 @@ const light = {
     surface: '#ffffff',
     'surface-active': colors.green.lighten5,
     primary: colors.indigo.base,
-    secondary: colors.grey.lighten1,
+    secondary: colors.grey.darken1,
     accent: colors.indigo.darken4,
     error: colors.deepOrange.base,
     info: colors.lightBlue.base,
-    success: colors.green.lighten1,
+    success: '#6ce498',
+    'success-darken-2': '#1da475',
     warning: colors.red.darken2
   }
 }

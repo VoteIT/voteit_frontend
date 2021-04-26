@@ -1,7 +1,7 @@
 <template>
   <main v-if="poll">
     <h1>{{ t('poll.details') }}</h1>
-    <PollWidget :poll="poll" detail />
+    <PollWidget :key="poll.pk" :poll="poll" detail />
   </main>
 </template>
 

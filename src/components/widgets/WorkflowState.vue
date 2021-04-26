@@ -4,7 +4,7 @@
       <v-icon :icon="currentState.icon"/>
     </v-btn>
     <div ref="opts" v-if="isOpen && statesAvailable" class="btn-group vertical">
-      <v-btn size="small" v-for="s in statesAvailable" :title="s.transition" :key="s.state" @click="makeTransition(s)">
+      <v-btn size="small" v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">
         <v-icon :icon="s.icon"/>
       </v-btn>
     </div>
@@ -16,7 +16,7 @@
 import { computed, defineComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import useAlert from '@/composables/useAlert'
-import { WorkflowState } from '@/contentTypes/types'
+import { Transition, WorkflowState } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
@@ -39,7 +39,7 @@ export default defineComponent({
   setup (props) {
     const contentApi = props.contentType.getContentApi()
     const { getState } = props.contentType.useWorkflows()
-    const statesAvailable = ref<WorkflowState[] | null>(null)
+    const transitionsAvailable = ref<Transition[] | null>(null)
     const isOpen = ref(false)
     const { alert } = useAlert()
 
@@ -55,7 +55,7 @@ export default defineComponent({
 
     const root = ref<HTMLElement | null>(null)
     const opts = ref<HTMLElement | null>(null)
-    function toggle (focus = true) {
+    async function toggle (focus = true) {
       if (!props.admin) return
       if (!isOpen.value && currentState.value.isFinal) {
         alert(`*State "${currentState.value.state}" is final and can't be changed`)
@@ -63,12 +63,9 @@ export default defineComponent({
       }
       isOpen.value = !isOpen.value
       if (isOpen.value) {
-        if (!statesAvailable.value) {
-          contentApi.getTransitions(props.pk)
-            .then((states: WorkflowState[]) => {
-              statesAvailable.value = states.filter(s => s.state !== props.state) // Filter out current state
-              nextTick(() => focusButton(opts.value))
-            })
+        if (!transitionsAvailable.value) {
+          transitionsAvailable.value = await contentApi.getTransitions(props.pk)
+          nextTick(() => focusButton(opts.value))
         } else {
           nextTick(() => focusButton(opts.value))
         }
@@ -77,16 +74,12 @@ export default defineComponent({
       }
     }
 
-    function makeTransition (state: WorkflowState) {
-      if (state.transition) {
-        contentApi.transition(props.pk, state.transition)
-          .then(() => nextTick(toggle))
-      } else {
-        throw new Error(`Transition not found to state ${state.state}`)
-      }
+    async function makeTransition (t: Transition) {
+      await contentApi.transition(props.pk, t.name)
+      nextTick(toggle)
     }
 
-    watch(() => props.state, () => { statesAvailable.value = null })
+    watch(() => props.state, () => { transitionsAvailable.value = null })
 
     function clickWatch (event: MouseEvent) {
       if (isOpen.value && root.value && !event.composedPath().includes(root.value)) {
@@ -124,7 +117,7 @@ export default defineComponent({
       root,
       opts,
       currentState,
-      statesAvailable,
+      transitionsAvailable,
       isOpen,
       toggle,
       makeTransition
