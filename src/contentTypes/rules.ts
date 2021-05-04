@@ -1,11 +1,9 @@
 import useAuthentication from '../composables/useAuthentication'
-import { AuthoredContent } from './types'
+import { AuthoredContent, Predicate } from './types'
 
 const { user } = useAuthentication()
 
-export function isAuthor (content: AuthoredContent) {
-  if (user.value) {
-    return user.value.pk === content.author
-  }
-  return false
+export const isAuthor: Predicate = (content: AuthoredContent) => {
+  if (!user.value) return false
+  return user.value.pk === content.author
 }

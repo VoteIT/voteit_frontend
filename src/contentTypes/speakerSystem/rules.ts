@@ -3,7 +3,7 @@ import useContextRoles from '@/composables/useContextRoles'
 import { meetings } from '@/composables/useMeetings'
 import { currentlySpeaking, speakerLists } from '@/composables/meeting/useSpeakerLists'
 
-import { Meeting, SpeakerSystemRole } from '../types'
+import { Meeting, Predicate, SpeakerSystemRole } from '../types'
 import meetingRules from '../meeting/rules'
 
 import { SpeakerSystemState } from './workflowStates'
@@ -21,27 +21,27 @@ function hasActiveSpeaker (system: SpeakerSystem) {
   return !!(active && currentlySpeaking.get(active.pk))
 }
 
-function isSpeaker (system: SpeakerSystem) {
+const isSpeaker: Predicate = (system: SpeakerSystem) => {
   return hasRole(system.pk, SpeakerSystemRole.Speaker)
 }
 
-function isModerator (system: SpeakerSystem) {
+const isModerator: Predicate = (system: SpeakerSystem) => {
   return hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 
-function isArchived (system: SpeakerSystem) {
+const isArchived: Predicate = (system: SpeakerSystem) => {
   return system.state === SpeakerSystemState.Archived
 }
 
-function isActive (system: SpeakerSystem) {
+const isActive: Predicate = (system: SpeakerSystem) => {
   return system.state === SpeakerSystemState.Active
 }
 
-function canAdd (meeting: Meeting) {
+const canAdd: Predicate = (meeting: Meeting) => {
   return meetingRules.isModerator(meeting) && meetingRules.isActive(meeting)
 }
 
-function canDelete (system: SpeakerSystem) {
+const canDelete: Predicate = (system: SpeakerSystem) => {
   const meeting = meetings.get(system.meeting)
   return meetingRules.isModerator(meeting) && meetingRules.isActive(meeting) && !isArchived(system)
 }

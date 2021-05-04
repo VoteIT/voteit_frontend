@@ -1,40 +1,40 @@
 import { meetings } from '@/composables/useMeetings'
 
 import meetingRules from '../meeting/rules'
-import { AgendaItem, Meeting } from '../types'
+import { AgendaItem, Meeting, Predicate } from '../types'
 
 const FINISHED_STATES = ['closed', 'archived']
 
-function isFinished (agendaItem: AgendaItem) {
+const isFinished: Predicate = (agendaItem: AgendaItem) => {
   return FINISHED_STATES.includes(agendaItem.state)
 }
 
-function isArchived (agendaItem: AgendaItem) {
+const isArchived: Predicate = (agendaItem: AgendaItem) => {
   return agendaItem.state === 'archived'
 }
 
-function isPrivate (agendaItem: AgendaItem) {
+const isPrivate: Predicate = (agendaItem: AgendaItem) => {
   return agendaItem.state === 'private'
 }
 
-function isProposalBlocked (agendaItem: AgendaItem) {
+const isProposalBlocked: Predicate = (agendaItem: AgendaItem) => {
   // TODO
   return false
   // return agendaItem.block_discussion
 }
 
-function isDiscussionBlocked (agendaItem: AgendaItem) {
+const isDiscussionBlocked: Predicate = (agendaItem: AgendaItem) => {
   // TODO
   return false
   // return agendaItem.block_proposals
 }
 
-function canAdd (meeting: Meeting) {
+const canAdd: Predicate = (meeting: Meeting) => {
   // Can add agenda item to meeting
   return !meetingRules.isArchived(meeting) && meetingRules.isModerator(meeting)
 }
 
-function canChange (agendaItem: AgendaItem) {
+const canChange: Predicate = (agendaItem: AgendaItem) => {
   const meeting = meetings.get(agendaItem.meeting)
   return !isArchived(agendaItem) && meetingRules.isModerator(meeting)
 }
