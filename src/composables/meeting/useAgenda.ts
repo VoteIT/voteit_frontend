@@ -90,9 +90,9 @@ export default function useAgenda () {
   onBeforeRouteLeave(() => {
     agendaId.value && channel.leave(agendaId.value)
   })
-  watch(agendaItem, (value, oldValue) => {
-    value && channel.subscribe(value.pk)
-    oldValue && channel.leave(oldValue.pk)
+  watch(agendaId, (value, oldValue) => {
+    value && channel.subscribe(value)
+    oldValue && channel.leave(oldValue)
   })
 
   return {
