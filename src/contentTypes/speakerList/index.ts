@@ -1,4 +1,3 @@
-import Channel from '../Channel'
 import ContentType from '../ContentType'
 import { SpeakerList } from '../types'
 

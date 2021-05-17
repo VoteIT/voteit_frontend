@@ -88,6 +88,7 @@ export interface TreeMenuLink {
   to: string
   icons?: string[]
   count?: number
+  hasNewItems?: boolean
 }
 
 export interface TreeMenu {
@@ -100,3 +101,8 @@ export interface TreeMenu {
 }
 
 export type TreeMenuItem = TreeMenuLink | TreeMenu
+
+export interface LastRead {
+  timestamp: string
+  agenda_item: number
+}

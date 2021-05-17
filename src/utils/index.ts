@@ -21,7 +21,8 @@ function slugify (text: string) {
 function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {
   if (typeof attributes === 'string') attributes = [attributes]
   attributes.forEach(attrName => {
-    obj[attrName] = new Date(obj[attrName])
+    // Respect null dates
+    obj[attrName] = obj[attrName] && new Date(obj[attrName])
   })
   return obj
 }

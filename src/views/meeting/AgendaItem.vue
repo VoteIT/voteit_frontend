@@ -24,7 +24,10 @@
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
-            <Proposal :p="p" :all-tags="allTags" :comments="getProposalDiscussions(p)">
+            <Proposal :p="p" :all-tags="allTags" :comments="getProposalDiscussions(p)" :unread="p.created > agendaItemLastRead" v-intersect="{
+                handler: proposalIntersect(p),
+                options: { threshold: 1 }
+              }">
               <template v-slot:buttons>
                 <ReactionButton v-for="btn in proposalReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
               </template>
@@ -53,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -61,12 +64,12 @@ import { orderBy } from '@/utils'
 
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
-import Proposal from '@/components/widgets/Proposal.vue'
+import ProposalVue from '@/components/widgets/Proposal.vue'
 import ReactionButton from '@/components/meeting/ReactionButton.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import SpeakerList from '@/components/widgets/SpeakerList.vue'
 
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda, { agendaItemsLastRead } from '@/composables/meeting/useAgenda'
 import useDiscussions from '@/composables/meeting/useDiscussions'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
@@ -81,6 +84,7 @@ import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem } from '@/utils/types'
+import { AgendaItem, Proposal } from '@/contentTypes/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -90,7 +94,7 @@ export default defineComponent({
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { meetingPath, meetingId } = useMeeting()
-    const { agendaId, agendaItem } = useAgenda()
+    const { agendaId, agendaItem, hasNewItems, agendaItemLastRead } = useAgenda()
     const { getMeetingButtons } = useReactions()
     const channel = agendaItemType.getChannel()
 
@@ -166,6 +170,30 @@ export default defineComponent({
       return items
     })
 
+    // Register whether all proposals has been read
+    const proposalsRead = reactive<Set<number>>(new Set())
+    function proposalIntersect (p: Proposal) {
+      return (isIntersecting: boolean) => {
+        if (isIntersecting) proposalsRead.add(p.pk)
+      }
+    }
+    function setLastRead (agendaItem: AgendaItem) {
+      // Return if there is no new content
+      if (!hasNewItems(agendaItem)) return
+      // Return if any unread proposals are unseen
+      const lastRead = agendaItemsLastRead.get(agendaItem.pk) ?? new Date(0) // Default to epoch
+      for (const p of proposals.getAgendaProposals(agendaItem.pk)) {
+        if (p.created > lastRead && !proposalsRead.has(p.pk)) return
+      }
+      channel.send('last_read.change', {
+        agenda_item: agendaItem.pk
+      })
+    }
+    watch(agendaItem, (value, oldValue) => {
+      // When leaving agenda item
+      if (oldValue) setLastRead(oldValue)
+    })
+
     return {
       t,
       addSpeakerSystems,
@@ -192,13 +220,16 @@ export default defineComponent({
       discussionPostType,
       pollType,
       proposalType,
-      speakerListType
+      speakerListType,
+
+      proposalIntersect,
+      agendaItemLastRead
     }
   },
   components: {
     AddContent,
     DiscussionPost,
-    Proposal,
+    Proposal: ProposalVue,
     SpeakerList,
     Richtext,
     ReactionButton

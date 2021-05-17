@@ -218,6 +218,10 @@ export default class Channel<T> {
     return this.call(uri, data, config)
   }
 
+  send (type: string, payloadOrUri: string | object) {
+    return socket.send(type, payloadOrUri)
+  }
+
   methodCall (method: string, data: object, config?: ChannelConfig) {
     return this.call(`${this.contentType}.${method}`, data, config)
   }

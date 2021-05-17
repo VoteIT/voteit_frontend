@@ -37,7 +37,7 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { getAgenda } = useAgenda()
+    const { getAgenda, hasNewItems } = useAgenda()
     const { meeting, meetingId, meetingPath, hasRole } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
     const agendaApi = agendaItemType.getContentApi()
@@ -102,7 +102,8 @@ export default defineComponent({
           title: ai.title,
           to: getAiPath(ai),
           icons: getAiPolls(ai.pk, 'ongoing').length ? ['mdi-star-outline'] : [],
-          count: getAgendaProposals(ai.pk).length || undefined
+          count: getAgendaProposals(ai.pk).length || undefined,
+          hasNewItems: hasNewItems(ai)
         })
       )
     }

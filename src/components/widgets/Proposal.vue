@@ -1,5 +1,5 @@
 <template>
-  <div v-if="p" class="proposal" :selected="selected">
+  <div v-if="p" class="proposal" :class="{ selected, unread }">
     <slot name="top"/>
     <div class="meta">
       <div>
@@ -69,7 +69,8 @@ export default defineComponent({
     allTags: Set as PropType<Set<string>>,
     comments: Array as PropType<DiscussionPost[]>,
     readOnly: Boolean,
-    selected: Boolean
+    selected: Boolean,
+    unread: Boolean
   },
   components: {
     Richtext,
@@ -172,6 +173,9 @@ export default defineComponent({
       margin-right: 1em
       &:last-child
         margin-right: 0
+
+  &.unread
+    border: 2px solid red
 
   footer
     margin-bottom: .5em
