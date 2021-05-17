@@ -60,9 +60,9 @@ export default defineComponent({
     let initialized = false
     watch(() => props.items, items => {
       if (initialized || !props.parent?.openFirstNonEmpty || openMenus.size) return // If user has a submenu open, don't meddle
-      initialized = true
       items.some((item, index) => {
         if ('items' in item && item.items.length) {
+          initialized = true
           openMenus.add(index)
           return true
         }
