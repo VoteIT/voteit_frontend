@@ -13,7 +13,6 @@
         <ul>
           <li v-for="meeting in otherMeetings" :key="meeting.pk">
             <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
-            <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
           </li>
         </ul>
       </template>
