@@ -71,8 +71,9 @@ $material-icons-font-path: '~material-icons/iconfont/'
   box-sizing: border-box
 
 // TODO: Revisit how Vuetify should handle scroll
+html,
 .v-main__wrap
-  overflow-y: auto
+  overflow-y: auto !important
 
 .v-btn
   text-transform: none !important
