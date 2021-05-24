@@ -1,10 +1,14 @@
 import { RouterView } from 'vue-router'
-import meeting from '../views/meeting'
+import meeting from '@/views/meeting'
+import Agenda from '@/components/meeting/Agenda.vue'
 
 export default {
   path: '/m/:id/:slug',
   name: 'Meeting',
-  component: meeting.Meeting,
+  components: {
+    default: meeting.Meeting,
+    navigationDrawer: Agenda
+  },
   children: [
     {
       path: '',

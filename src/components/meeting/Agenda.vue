@@ -1,20 +1,20 @@
 <template>
-  <div id="agenda">
-    <MenuTree :items="menu"/>
+  <v-navigation-drawer app id="agenda" v-model="isOpen" width="348">
+    <MenuTree :items="menu" @navigation="toggleDrawer" />
     <BtnDropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
         <v-btn :disabled="!newAgendaTitle" size="small" @click="addAgendaItem">{{ t('add') }}</v-btn>
       </form>
     </BtnDropdown>
-  </div>
+  </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { slugify } from '@/utils'
+import { slugify, toggleNavDrawerEvent } from '@/utils'
 
 import useAgenda from '@/composables/meeting/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
@@ -165,8 +165,16 @@ export default defineComponent({
       openMenus.add(index)
     }
 
+    const isOpen = ref(window.innerWidth >= 1280)
+    function toggleDrawer () {
+      if (window.innerWidth < 1280) isOpen.value = !isOpen.value
+    }
+    toggleNavDrawerEvent.on(toggleDrawer)
+
     return {
       t,
+      isOpen,
+      toggleDrawer,
       meeting,
       openMenus,
       menu,

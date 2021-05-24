@@ -40,6 +40,7 @@ const openAlertEvent = new TypedEvent<Alert | string>()
 const openDialogEvent = new TypedEvent<Dialog>()
 const openModalEvent = new TypedEvent<Modal>()
 const closeModalEvent = new TypedEvent()
+const toggleNavDrawerEvent = new TypedEvent()
 
 function stripHTML (html: string) {
   const tmp = document.createElement('div')
@@ -79,5 +80,6 @@ export {
   openDialogEvent,
   openModalEvent,
   closeModalEvent,
+  toggleNavDrawerEvent,
   restApi
 }

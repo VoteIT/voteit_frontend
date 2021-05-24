@@ -1,16 +1,18 @@
 <template>
-  <main id="join-meeting" v-if="meeting">
-    <p><RouterLink to="/">{{ t('home.home') }}</RouterLink></p>
-    <h1>{{ t('join.meeting', meeting) }}</h1>
-    <Richtext :object="meeting" />
-    <p/>
-    <div class="btn-controls" v-if="policyComponents.length">
-      <component v-for="(c, i) in policyComponents" :is="c" :key="i" />
-    </div>
-    <p v-else>
-      <em>{{ t('join.noAccess') }}</em>
-    </p>
-  </main>
+  <v-row id="join-meeting" v-if="meeting">
+    <v-col>
+      <p><RouterLink to="/">{{ t('home.home') }}</RouterLink></p>
+      <h1>{{ t('join.meeting', meeting) }}</h1>
+      <Richtext :object="meeting" />
+      <p/>
+      <div class="btn-controls" v-if="policyComponents.length">
+        <component v-for="(c, i) in policyComponents" :is="c" :key="i" />
+      </div>
+      <p v-else>
+        <em>{{ t('join.noAccess') }}</em>
+      </p>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">

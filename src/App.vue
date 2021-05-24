@@ -1,9 +1,12 @@
 <template>
   <v-app>
-    <div>
-      <SystemBar/>
-    </div>
-    <router-view/>
+    <router-view name="navigationDrawer"/>
+    <SystemBar/>
+    <v-main>
+      <v-container>
+        <router-view/>
+      </v-container>
+    </v-main>
     <OnlineStatus/>
     <Modal/>
     <Dialogs/>

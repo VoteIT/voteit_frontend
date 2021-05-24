@@ -1,7 +1,7 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
     <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">
-      <router-link class="menu-item" :class="{ 'has-new': item.hasNewItems }" v-if="item.to" :to="item.to" v-ripple>
+      <router-link @click="$emit('navigation')" class="menu-item" :class="{ 'has-new': item.hasNewItems }" v-if="item.to" :to="item.to" v-ripple>
         <div>
           {{ item.title }}
         </div>
@@ -22,7 +22,7 @@
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <transition name="slide-down">
-        <MenuTree v-if="item.items" :level="level + 1" :parent="item" :items="item.items" v-show="openMenus.has(i)" />
+        <MenuTree @navigation="$emit('navigation')" v-if="item.items" :level="level + 1" :parent="item" :items="item.items" v-show="openMenus.has(i)" />
       </transition>
     </li>
   </ul>
@@ -33,6 +33,7 @@ import { defineComponent, PropType, reactive, watch } from 'vue'
 import { TreeMenu, TreeMenuItem } from '@/utils/types'
 
 export default defineComponent({
+  emits: ['navigation'],
   props: {
     items: {
       type: Array as PropType<TreeMenuItem[]>,
@@ -129,10 +130,8 @@ ul.menu-tree
       font-weight: bold
 
   &.level-0 > li
-    border-top: 1px solid rgb(var(--v-theme-app-bar-divider))
+    border-bottom: 1px solid rgb(var(--v-theme-app-bar-divider))
     font-size: 12pt
-    &:last-child
-      border-bottom: 1px solid rgb(var(--v-theme-app-bar-divider))
     > a
       padding-top: 7px
       padding-bottom: 7px

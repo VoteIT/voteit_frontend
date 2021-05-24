@@ -1,10 +1,5 @@
 <template>
-  <div id="meeting" v-if="meeting">
-    <Agenda />
-    <v-container id="main-content">
-      <RouterView />
-    </v-container>
-  </div>
+  <router-view />
   <Bubbles widgets="bubbleWidgets" />
 </template>
 
@@ -14,7 +9,6 @@ import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
 
-import Agenda from '@/components/meeting/Agenda.vue'
 import Bubbles from '@/components/meeting/Bubbles.vue'
 import PresenceCheck from '@/components/meeting/bubbles/PresenceCheck.vue'
 
@@ -172,21 +166,7 @@ export default defineComponent({
     }
   },
   components: {
-    Agenda,
     Bubbles
   }
 })
 </script>
-
-<style lang="sass">
-#meeting
-  display: flex
-  flex-grow: 1
-  #agenda
-    width: 348px
-    text-align: left
-    flex-shrink: 0
-  #main-content
-    flex-grow: 1
-    padding: 0 10px 80px
-</style>

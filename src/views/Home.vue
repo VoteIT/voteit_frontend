@@ -1,6 +1,6 @@
 <template>
-  <main class="home" v-if="isAuthenticated">
-    <v-container class="text-center">
+  <v-row class="home" v-if="isAuthenticated">
+    <v-col class="text-center">
       <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
       <ul v-if="participatingMeetings.length">
         <li v-for="meeting in participatingMeetings" :key="meeting.pk">
@@ -23,49 +23,26 @@
         <counter :style="{ marginTop: '1.5em' }" />
         <get-schema/>
       </template>
-    </v-container>
-  </main>
-  <v-main class="home" v-else>
-    <v-container>
-      <v-row>
-        <v-col>
-          <h1>{{ t('organizations') }}</h1>
-        </v-col>
-      </v-row>
-      <v-row class="organizations">
-        <v-col cols="4" v-for="o in organizations" :key="o.pk">
-          <v-sheet rounded>
-            <h2>
-              {{ o.title }}
-            </h2>
-            <Btn v-if="o.login_url" icon="mdi-login" @click="startOrganizationLogin(o)">{{ t('organization.loginTo', o) }}</Btn>
-            <p v-else><em>{{ t('organization.noLogin') }}</em></p>
-          </v-sheet>
-        </v-col>
-      </v-row>
-    </v-container>
-    <!-- <h1>Pick a user</h1>
-    <ul>
-      <li v-for="user in users" :key="user.username">
-        <Btn @click="authenticate(user)" :icon="user.is_superuser ? 'mdi-account-cowboy-hat' : 'mdi-account'">
-          {{ user.username }}
-        </Btn>
-      </li>
-      <li>
-        <Btn icon="mdi-plus" @click="addUser = !addUser">
-          New user
-        </Btn>
-        <form v-show="addUser" @submit.prevent="createUser">
-          <p>
-            <input type="checkbox" id="is_super" v-model="newUser.is_superuser" />
-            <label for="is_super">Superuser <Icon sm name="mdi-account-cowboy-hat" /></label>
-          </p>
-          <p class="error" v-show="newUserError">Username not accepted</p>
-          <input type="text" required v-model="newUser.username" /><input class="btn" type="submit" value="Create">
-        </form>
-      </li>
-    </ul> -->
-  </v-main>
+    </v-col>
+  </v-row>
+  <template v-else>
+    <v-row class="home">
+      <v-col>
+        <h1>{{ t('organizations') }}</h1>
+      </v-col>
+    </v-row>
+    <v-row class="organizations">
+      <v-col cols="4" v-for="o in organizations" :key="o.pk">
+        <v-sheet rounded>
+          <h2>
+            {{ o.title }}
+          </h2>
+          <Btn v-if="o.login_url" icon="mdi-login" @click="startOrganizationLogin(o)">{{ t('organization.loginTo', o) }}</Btn>
+          <p v-else><em>{{ t('organization.noLogin') }}</em></p>
+        </v-sheet>
+      </v-col>
+    </v-row>
+  </template>
 </template>
 
 <script lang="ts">
@@ -175,7 +152,7 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-main.home
+div.home
   ul
     padding: 0
     margin-bottom: 3em
