@@ -1,4 +1,5 @@
 <template>
+  <div style="height: 64px"/>
   <div id="bubbles">
     <div v-for="{ component, data } in bubbles" :key="component.name" class="bubble">
       <v-btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
