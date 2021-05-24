@@ -5,7 +5,7 @@
         <v-icon left :icon="enterLeaveBtn.icon" />
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <Menu :items="menuItems" :show-transitions="canChange(list)" :content-type="speakerListType" :content-pk="list.pk" />
+      <Menu :items="menuItems" :show-transitions="canChange(list)" :content-type="speakerListType" :object="list" />
     </div>
     <h3>
       {{ list.title }}

@@ -8,8 +8,9 @@
             <img :src="require(`@/assets/agenda-display-${mode}.svg`)"/>
           </v-btn>
         </div>
-        <Menu float :items="menuItems" :show-transitions="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :content-pk="agendaId" />
+        <Menu float :items="menuItems" />
         <h1>{{ agendaItem.title }}</h1>
+        <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
         <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
         <div class="speaker-lists" v-if="speakerSystems.length">
           <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
@@ -68,6 +69,7 @@ import ProposalVue from '@/components/widgets/Proposal.vue'
 import ReactionButton from '@/components/meeting/ReactionButton.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import SpeakerList from '@/components/widgets/SpeakerList.vue'
+import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 import useAgenda, { agendaItemsLastRead } from '@/composables/meeting/useAgenda'
 import useDiscussions from '@/composables/meeting/useDiscussions'
@@ -232,7 +234,8 @@ export default defineComponent({
     Proposal: ProposalVue,
     SpeakerList,
     Richtext,
-    ReactionButton
+    ReactionButton,
+    WorkflowState
   }
 })
 </script>

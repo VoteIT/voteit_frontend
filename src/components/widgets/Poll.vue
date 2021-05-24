@@ -2,18 +2,22 @@
   <Widget class="poll">
     <header>
       <div v-if="detail">
-        <Menu float :show-transitions="canChange(poll)" :content-type="pollType" :content-pk="poll.pk" />
         <h3>{{ poll.title }}</h3>
-        <p v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></p>
-        <p v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></p>
-        <p v-else>{{ t(`poll.method.${poll.method_name}`) }}</p>
+        <div class="meta">
+          <WorkflowState :admin="canChange(poll)" :content-type="pollType" :object="poll" />
+          <span v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></span>
+          <span v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></span>
+          <span v-else>{{ t(`poll.method.${poll.method_name}`) }}</span>
+        </div>
       </div>
       <router-link v-else :to="pollPath">
         <v-icon icon="mdi-chevron-right"/>
         <h3>{{ poll.title }}</h3>
-        <p v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></p>
-        <p v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></p>
-        <p v-else>{{ t(`poll.method.${poll.method_name}`) }}</p>
+        <div class="meta">
+          <span v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></span>
+          <span v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></span>
+          <span v-else>{{ t(`poll.method.${poll.method_name}`) }}</span>
+        </div>
       </router-link>
     </header>
     <div class="body">
@@ -150,8 +154,11 @@ div.poll
         float: right
         font-size: 40pt
         margin-top: 14px
-    p
+    .meta
       color: rgb(var(--v-theme-secondary))
+      margin-bottom: 1em
+      > *
+        margin-right: 1em
   .voting-info
     margin-top: 1em
 

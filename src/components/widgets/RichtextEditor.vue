@@ -2,7 +2,7 @@
   <div class="richtext-editor">
     <div ref="editorElement"/>
     <div class="btn-controls" v-if="submit">
-      <v-btn :disabled="disabled" size="small" @click="$emit('submit')">
+      <v-btn color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
         <v-icon left :icon="submitIcon"/>
         {{ submitText || t('save') }}
       </v-btn>

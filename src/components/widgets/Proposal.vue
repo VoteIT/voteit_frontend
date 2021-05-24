@@ -7,12 +7,14 @@
         <Tag :name="p.prop_id"/>
       </div>
       <div>
-        <span>{{ t('by') }} <User :pk="p.author" /></span>
-        <Moment :date="p.created" />
-        <v-icon v-if="!readOnly" :icon="wfState.icon" color="secondary" size="small" :title="wfState.state" />
+        <WorkflowState right v-if="!readOnly || isModerator" :admin="isModerator" :object="p" :content-type="proposalType" />
       </div>
     </div>
     <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <div class="author">
+      <span>{{ t('by') }} <User :pk="p.author" /></span>
+      <Moment :date="p.created" />
+    </div>
     <v-sheet v-if="$slots.vote" class="vote-slot">
       <slot name="vote"/>
     </v-sheet>
@@ -31,7 +33,7 @@
         </v-btn>
         <slot name="buttons"/>
       </div>
-      <Menu :items="menuItems" :show-transitions="canChange(p)" :content-type="proposalType" :content-pk="p.pk" />
+      <Menu :items="menuItems" />
     </footer>
     <slot name="bottom"/>
     <Comments v-if="!readOnly" ref="commentsComponent" v-show="showComments" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
@@ -50,12 +52,14 @@ import { dialogQuery } from '@/utils'
 import Moment from './Moment.vue'
 import Richtext from './Richtext.vue'
 import Comments from '../Comments.vue'
+import WorkflowState from './WorkflowState.vue'
 
 import useAgenda from '@/composables/meeting/useAgenda'
+import useMeeting from '@/composables/meeting/useMeeting'
 
 import proposalType from '@/contentTypes/proposal'
 import discussionRules from '@/contentTypes/discussionPost/rules'
-import { DiscussionPost, Proposal } from '@/contentTypes/types'
+import { DiscussionPost, MeetingRole, Proposal } from '@/contentTypes/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
 
 export default defineComponent({
@@ -75,12 +79,14 @@ export default defineComponent({
   components: {
     Richtext,
     Moment,
-    Comments
+    Comments,
+    WorkflowState
   },
   setup (props) {
     const { t } = useI18n()
     const api = proposalType.getContentApi()
     const { agendaItem } = useAgenda()
+    const { hasRole } = useMeeting()
     const editing = ref(false)
     const showComments = ref(false)
 
@@ -137,13 +143,18 @@ export default defineComponent({
       return items
     })
 
+    const isModerator = computed<boolean>(() => {
+      return hasRole(MeetingRole.Moderator)
+    })
+
     return {
       agendaItem,
       comment,
       commentsComponent,
       discussionRules,
-      proposalType,
       editing,
+      isModerator,
+      proposalType,
       queryDelete,
       retract,
       showComments,
@@ -173,6 +184,12 @@ export default defineComponent({
       margin-right: 1em
       &:last-child
         margin-right: 0
+
+  .author
+    color: rgb(var(--v-theme-secondary))
+    font-size: 10.5pt
+    > *
+      margin-right: 1.5em
 
   &.unread
     border: 2px solid red

@@ -1,18 +1,21 @@
 <template>
   <span class="context-menu" :class="{ float }" ref="elem" v-if="items.length || $slots.top || $slots.bottom || showTransitions">
-    <v-btn :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
+    <v-badge v-if="currentState?.icon" color="secondary" :icon="currentState.icon">
+      <v-btn flat :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
+    </v-badge>
+    <v-btn v-else flat :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
       <slot name="top"/>
       <template v-for="(item, i) in items" :key="i">
         <v-divider v-if="item === '---'" />
-        <v-btn v-else :color="item.color || 'accent'" plain block :disabled="item.disabled || working" @click="clickItem(item)">
+        <v-btn v-else :color="item.color" plain block :disabled="item.disabled || working" @click="clickItem(item)">
           <v-icon v-if="item.icon" left :icon="item.icon"/>
           {{ item.text }}
         </v-btn>
       </template>
       <template v-if="transitionsAvailable">
         <v-divider v-if="items.length || $slots.top" />
-        <v-btn plain block color="accent" :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
+        <v-btn plain block :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
           <v-icon v-if="t.icon" left :icon="t.icon" />
           {{ t.title }}
         </v-btn>
@@ -23,11 +26,12 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable no-unused-expressions */
 import useClickControl from '@/composables/useClickControl'
 import ContentType from '@/contentTypes/ContentType'
-import { Transition } from '@/contentTypes/types'
+import { StateContent, Transition } from '@/contentTypes/types'
 import { MenuItem, MenuDescriptor } from '@/utils/types'
-import { ComponentPublicInstance, defineComponent, nextTick, PropType, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
 
 export default defineComponent({
   inject: ['t'],
@@ -36,13 +40,10 @@ export default defineComponent({
       type: Array as PropType<MenuItem[]>,
       default: () => []
     },
-    color: {
-      type: String,
-      default: 'primary'
-    },
+    color: String,
     showTransitions: Boolean,
+    object: Object as PropType<StateContent>,
     contentType: Object as PropType<ContentType<any>>,
-    contentPk: Number,
     float: Boolean
   },
   setup (props) {
@@ -50,8 +51,10 @@ export default defineComponent({
     const onTop = ref(false)
     const elem = ref<HTMLElement | null>(null)
     const working = ref(false)
-    // const statesAvailable = ref<WorkflowState[] | null>(null)
     const transitionsAvailable = ref<Transition[] | null>(null)
+    if (props.showTransitions && (!props.object || !props.contentType)) {
+      console.warn('Menu component needs object and contentType to show transitions.')
+    }
 
     useClickControl({
       element: elem,
@@ -60,14 +63,20 @@ export default defineComponent({
       }
     })
 
+    function focusButton (where: HTMLElement | null) {
+      nextTick(() => {
+        where?.querySelector<HTMLElement>('button')?.focus()
+      })
+    }
+
     const overlay = ref<ComponentPublicInstance | null>(null)
     watch(isOpen, async (value) => {
       transitionsAvailable.value = null
       if (!value) return
-      if (props.showTransitions && props.contentType && props.contentPk) {
+      if (props.showTransitions && props.contentType && props.object) {
         const api = props.contentType.getContentApi()
         working.value = true
-        transitionsAvailable.value = await api.getTransitions(props.contentPk)
+        transitionsAvailable.value = await api.getTransitions(props.object.pk)
         working.value = false
       }
       onTop.value = false
@@ -77,6 +86,7 @@ export default defineComponent({
         const rect = elem.getBoundingClientRect()
         onTop.value = rect.bottom > window.innerHeight
       })
+      focusButton(overlay.value?.$el)
     })
 
     async function clickItem (item: MenuDescriptor) {
@@ -86,50 +96,57 @@ export default defineComponent({
       isOpen.value = false
     }
 
+    const currentState = computed(() => {
+      if (!props.contentType || !props.object) return
+      return props.contentType.useWorkflows().getState(props.object.state)
+    })
+
     async function makeTransition (t: Transition) {
-      if (!props.contentType || !props.contentPk || !t.name) return
+      if (!props.contentType || !props.object || !t.name) return
       const api = props.contentType.getContentApi()
       working.value = true
-      await api.transition(props.contentPk, t.name)
+      await api.transition(props.object.pk, t.name)
       working.value = false
       isOpen.value = false
+      focusButton(elem.value)
     }
 
-    // function keyWatch ({ key }: { key: string }) {
-    //   if (isOpen.value) {
-    //     const focusedEl = opts.value?.querySelector(':focus')
-    //     if (focusedEl) {
-    //       switch (key) {
-    //         case 'Escape':
-    //           toggle()
-    //           break
-    //         case 'ArrowUp':
-    //           (focusedEl.previousElementSibling as HTMLElement)?.focus()
-    //           break
-    //         case 'ArrowDown':
-    //           (focusedEl.nextElementSibling as HTMLElement)?.focus()
-    //           break
-    //       }
-    //     }
-    //   }
-    // }
-    // onMounted(() => {
-    //   document.addEventListener('mousedown', clickWatch)
-    //   root.value?.addEventListener('keyup', keyWatch)
-    // })
-    // onBeforeUnmount(() => {
-    //   document.removeEventListener('mousedown', clickWatch)
-    //   root.value?.removeEventListener('keyup', keyWatch)
-    // })
+    function keyWatch (evt: KeyboardEvent) {
+      if (isOpen.value) {
+        const focusedEl = overlay.value?.$el.querySelector(':focus')
+        if (focusedEl) {
+          switch (evt.key) {
+            case 'Escape':
+              isOpen.value = false
+              focusButton(elem.value)
+              break
+            case 'ArrowUp':
+              (focusedEl.previousElementSibling as HTMLElement)?.focus()
+              evt.preventDefault()
+              break
+            case 'ArrowDown':
+              (focusedEl.nextElementSibling as HTMLElement)?.focus()
+              evt.preventDefault()
+              break
+          }
+        }
+      }
+    }
+    onMounted(() => {
+      elem.value?.addEventListener('keydown', keyWatch)
+    })
+    onBeforeUnmount(() => {
+      elem.value?.removeEventListener('keydown', keyWatch)
+    })
 
     return {
       onTop,
       clickItem,
+      currentState,
       elem,
       isOpen,
       makeTransition,
       overlay,
-      // statesAvailable,
       transitionsAvailable,
       working
     }
@@ -150,18 +167,20 @@ export default defineComponent({
     float: right
   display: inline-block
   .v-sheet
-    z-index: 99
+    background-color: rgb(var(--v-theme-surface))
+    z-index: 100
     position: absolute
     min-width: 200px
-    top: 50px
+    margin-top: .1em
     right: 0
-    background-color: rgb(var(--v-theme-surface))
     &.onTop
-      top: unset
       bottom: 50px
-    button
+    .v-btn
       justify-content: left
       white-space: nowrap
+      border-radius: 0
+      &:focus
+        background-color: rgba(var(--v-theme-primary), .08)
   .mdi-loading
     animation: rotate 2s ease-in-out infinite
 </style>

@@ -37,6 +37,7 @@
   "agenda": {
     "agenda": "Agenda",
     "columns": "Columns",
+    "edit": "Edit agenda",
     "nested": "Nested",
     "order": "Order Agenda Items",
     "showAs": "Show as"

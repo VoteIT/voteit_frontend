@@ -1,40 +1,40 @@
 <template>
-  <span ref="root" class="dropdown">
-    <v-btn size="small" color="secondary" :border="!admin || currentState.isFinal" :title="state" @click="toggle()">
-      <v-icon :icon="currentState.icon"/>
+  <span ref="root" class="dropdown" :class="{ isOpen, right }">
+    <v-btn size="x-small" flat :border="!admin || currentState.isFinal" @click="toggle()">
+      <v-icon left :icon="currentState.icon"/>
+      {{ currentState.name || currentState.state }}
+      <v-icon v-if="admin" right icon="mdi-chevron-down"/>
     </v-btn>
-    <div ref="opts" v-if="isOpen && statesAvailable" class="btn-group vertical">
-      <v-btn size="small" v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">
-        <v-icon :icon="s.icon"/>
+    <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
+      <v-btn plain block v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">
+        <v-icon left :icon="t.icon"/>
+        {{ t.title }}
       </v-btn>
-    </div>
+    </v-sheet>
   </span>
 </template>
 
 <script lang="ts">
 /* eslint-disable no-unused-expressions */
-import { computed, defineComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
 
 import useAlert from '@/composables/useAlert'
-import { Transition, WorkflowState } from '@/contentTypes/types'
+import { StateContent, Transition, WorkflowState } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
   name: 'WorkflowState',
   props: {
     admin: Boolean,
-    pk: {
-      type: Number,
-      required: true
-    },
-    state: {
-      type: String,
+    object: {
+      type: Object as PropType<StateContent>,
       required: true
     },
     contentType: {
       type: ContentType,
       required: true
-    }
+    },
+    right: Boolean
   },
   setup (props) {
     const contentApi = props.contentType.getContentApi()
@@ -43,8 +43,8 @@ export default defineComponent({
     const isOpen = ref(false)
     const { alert } = useAlert()
 
-    const currentState = computed(
-      () => getState(props.state) as WorkflowState // Coersion might not work?
+    const currentState = computed<WorkflowState>(
+      () => getState(props.object.state) as WorkflowState
     )
 
     function focusButton (where: HTMLElement | null) {
@@ -54,20 +54,19 @@ export default defineComponent({
     }
 
     const root = ref<HTMLElement | null>(null)
-    const opts = ref<HTMLElement | null>(null)
+    const menu = ref<ComponentPublicInstance | null>(null)
     async function toggle (focus = true) {
       if (!props.admin) return
       if (!isOpen.value && currentState.value.isFinal) {
-        alert(`*State "${currentState.value.state}" is final and can't be changed`)
-        return
+        return alert(`*State "${currentState.value.state}" is final and can't be changed`)
       }
       isOpen.value = !isOpen.value
       if (isOpen.value) {
         if (!transitionsAvailable.value) {
-          transitionsAvailable.value = await contentApi.getTransitions(props.pk)
-          nextTick(() => focusButton(opts.value))
+          transitionsAvailable.value = await contentApi.getTransitions(props.object.pk, props.object.state)
+          nextTick(() => focusButton(menu.value?.$el))
         } else {
-          nextTick(() => focusButton(opts.value))
+          nextTick(() => focusButton(menu.value?.$el))
         }
       } else if (focus) { // If clicked out, don't shift that focus
         focusButton(root.value)
@@ -75,30 +74,32 @@ export default defineComponent({
     }
 
     async function makeTransition (t: Transition) {
-      await contentApi.transition(props.pk, t.name)
+      await contentApi.transition(props.object.pk, t.name)
       nextTick(toggle)
     }
 
-    watch(() => props.state, () => { transitionsAvailable.value = null })
+    watch(() => props.object.state, () => { transitionsAvailable.value = null })
 
     function clickWatch (event: MouseEvent) {
       if (isOpen.value && root.value && !event.composedPath().includes(root.value)) {
         toggle(false)
       }
     }
-    function keyWatch ({ key }: { key: string }) {
+    function keyWatch (evt: KeyboardEvent) {
       if (isOpen.value) {
-        const focusedEl = opts.value?.querySelector(':focus')
+        const focusedEl = menu.value?.$el.querySelector(':focus')
         if (focusedEl) {
-          switch (key) {
+          switch (evt.key) {
             case 'Escape':
               toggle()
               break
             case 'ArrowUp':
               (focusedEl.previousElementSibling as HTMLElement)?.focus()
+              evt.preventDefault()
               break
             case 'ArrowDown':
               (focusedEl.nextElementSibling as HTMLElement)?.focus()
+              evt.preventDefault()
               break
           }
         }
@@ -106,16 +107,16 @@ export default defineComponent({
     }
     onMounted(() => {
       document.addEventListener('mousedown', clickWatch)
-      root.value?.addEventListener('keyup', keyWatch)
+      root.value?.addEventListener('keydown', keyWatch)
     })
     onBeforeUnmount(() => {
       document.removeEventListener('mousedown', clickWatch)
-      root.value?.removeEventListener('keyup', keyWatch)
+      root.value?.removeEventListener('keydown', keyWatch)
     })
 
     return {
       root,
-      opts,
+      menu,
       currentState,
       transitionsAvailable,
       isOpen,
@@ -130,35 +131,24 @@ export default defineComponent({
 .dropdown
   position: relative
   display: inline-block
-  > .btn
-    background-color: #bbc
-.btn-group
-  .v-btn
-    border-radius: 0
-  .v-btn:first-child
-    border-top-left-radius: 6px
-    border-bottom-left-radius: 6px
-  .v-btn:last-child
-    border-top-right-radius: 6px
-    border-bottom-right-radius: 6px
+  > .v-btn
+    background-color: rgba(var(--v-theme-secondary), .3)
+    color: rgb(var(--v-theme-on-background))
+  &.isOpen > .v-btn
+    background-color: rgba(var(--v-theme-primary), .2)
 
-  &.vertical
+  .v-sheet
+    background-color: rgb(var(--v-theme-surface))
     z-index: 100
     position: absolute
-    display: flex
-    flex-flow: column
-    margin-top: .25rem
+    margin-top: .1em
     .v-btn
-      background-color: #000
-      color: #fff
+      justify-content: left
+      white-space: nowrap
       border-radius: 0
-      &:hover,
       &:focus
-        background-color: #668
-    .v-btn:first-child
-      border-top-left-radius: 6px
-      border-top-right-radius: 6px
-    .v-btn:last-child
-      border-bottom-left-radius: 6px
-      border-bottom-right-radius: 6px
+        background-color: rgba(var(--v-theme-primary), .08)
+
+  &.right .v-sheet
+    right: 0
 </style>

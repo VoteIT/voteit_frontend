@@ -1,8 +1,8 @@
 <template>
   <div>
     <input type="text" v-model="schemaName" />
-    <v-btn @click="getSchema(SchemaType.Outgoing)">Get outgoing schema</v-btn>
-    <v-btn @click="getSchema()">Get incoming schema</v-btn>
+    <v-btn color="primary" @click="getSchema(SchemaType.Outgoing)">Get outgoing schema</v-btn>
+    <v-btn color="primary" @click="getSchema()">Get incoming schema</v-btn>
     <div v-if="schema" class="schema-result">
       <h2>{{ schema.title }}</h2>
       <p>{{ schema.description }}</p>
@@ -51,7 +51,7 @@ export default defineComponent({
 
 <style lang="sass">
 .schema-result
-  background-color: #eee
+  background-color: rgb(var(--v-theme-surface))
   padding: 10px 30px
   margin-top: 20px
   text-align: left
@@ -64,5 +64,5 @@ export default defineComponent({
     left: 50%
     transform: translateX(-50%)
     border: 15px solid transparent
-    border-bottom: 15px solid #eee
+    border-bottom: 15px solid rgb(var(--v-theme-surface))
 </style>

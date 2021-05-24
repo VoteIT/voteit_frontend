@@ -122,7 +122,7 @@ export default class ContentAPI<T, K=number> {
     }
   }
 
-  async getTransitions (pk: number): Promise<Transition[]> {
+  async getTransitions (pk: number, exclude?: string): Promise<Transition[]> {
     // Cannot handle K = string
     const { data }: { data: Transition[] } = await this.call(HTTPMethod.Get, `${this.endpoint}${pk}/transitions/`)
     return data.map(t => {

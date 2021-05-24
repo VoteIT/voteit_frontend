@@ -1,7 +1,8 @@
 <template>
   <main v-if="meeting.pk">
-    <Menu float :items="menuItems" :show-transitions="canChange(meeting)" :content-type="meetingType" :content-pk="meeting.pk" />
+    <Menu float :items="menuItems" />
     <h1>{{ meeting.title }}</h1>
+    <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
     <Richtext :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
   </main>
 </template>
@@ -10,6 +11,7 @@
 import { computed, defineComponent, ref } from 'vue'
 
 import Richtext from '@/components/widgets/Richtext.vue'
+import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 import meetingType from '@/contentTypes/meeting'
@@ -20,7 +22,8 @@ export default defineComponent({
   name: 'MeetingIndex',
   inject: ['t'],
   components: {
-    Richtext
+    Richtext,
+    WorkflowState
   },
   setup () {
     const { t } = useI18n()

@@ -23,7 +23,7 @@ import meetingRules from '@/contentTypes/meeting/rules'
 import pollType from '@/contentTypes/poll'
 
 import BtnDropdown from '../BtnDropdown.vue'
-import { AgendaItem, WorkflowState } from '@/contentTypes/types'
+import { AgendaItem, MeetingRole, WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/composables/meeting/usePolls'
 import useProposals from '@/composables/meeting/useProposals'
 import MenuTree from '../MenuTree.vue'
@@ -74,12 +74,23 @@ export default defineComponent({
       s => s && (!s.requiresRole || hasRole(s.requiresRole))
     ))
 
-    const aiMenus = computed<TreeMenu[]>(() => {
-      return aiGroups.value.map(s => ({
-        title: s.state,
-        showCount: true,
-        items: getAIMenuItems(s)
-      }))
+    const aiMenus = computed<TreeMenuItem[]>(() => {
+      const menus: TreeMenuItem[] = []
+      if (hasRole(MeetingRole.Moderator)) {
+        menus.push({
+          title: t('agenda.edit'),
+          to: meetingPath.value + '/settings/agenda',
+          icons: ['mdi-pencil']
+        })
+      }
+      for (const s of aiGroups.value) {
+        menus.push({
+          title: s.state,
+          showCount: true,
+          items: getAIMenuItems(s)
+        })
+      }
+      return menus
     })
     const pollGroups = computed<WorkflowState[]>(() => {
       return pollWorkflows.getPriorityStates(

@@ -2,7 +2,7 @@
   <div>
     <h2>{{ t('speaker.settings') }}</h2>
     <Widget class="speaker-system" v-for="system in systems" :key="system.pk">
-      <Menu float :items="getSystemMenu(system)" show-transitions :content-type="speakerSystemType" :content-pk="system.pk"/>
+      <Menu float :items="getSystemMenu(system)" show-transitions :content-type="speakerSystemType" :object="system"/>
       <h2>{{ system.title }}</h2>
       <dl>
         <dt>{{ t('state') }}</dt>
