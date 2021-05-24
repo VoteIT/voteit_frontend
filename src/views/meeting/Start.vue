@@ -1,5 +1,5 @@
 <template>
-  <main v-if="meeting.pk">
+  <main v-if="meeting">
     <Menu float :items="menuItems" />
     <h1>{{ meeting.title }}</h1>
     <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
