@@ -7,7 +7,7 @@
         <Tag :name="p.prop_id"/>
       </div>
       <div>
-        <WorkflowState right v-if="!readOnly || isModerator" :admin="isModerator" :object="p" :content-type="proposalType" />
+        <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
       </div>
     </div>
     <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
