@@ -1,9 +1,11 @@
 import useAuthentication from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
-import { Meeting, MeetingRole, Predicate } from '../types'
+
+import { Meeting, MeetingRole, Organization, Predicate } from '../types'
+import workflowStates, { MeetingState } from './workflowStates'
 
 import useWorkflows from '../useWorkflows'
-import workflowStates, { MeetingState } from './workflowStates'
+import organizationRules from '../organization/rules'
 
 const { hasRole } = useContextRoles('meeting')
 // Import this a bit differently, to avoid cirkular imports
@@ -49,11 +51,9 @@ const canView: Predicate = (meeting?: Meeting) => {
   return isParticipant(meeting)
 }
 
-const canAdd: Predicate = () => {
-  // TODO organization meeting creator role
-  return false
-  // eslint-disable-next-line camelcase
-  // return !!user.value?.is_superuser
+// Special rule case: Check organisation by pk. We won't always have organization data.
+const canAdd: Predicate = (org?: number) => {
+  return organizationRules.isMeetingCreator(org)
 }
 
 const canChange: Predicate = (meeting?: Meeting) => {

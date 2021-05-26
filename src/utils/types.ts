@@ -1,3 +1,5 @@
+import { OrganizationRole } from '@/contentTypes/types'
+
 /* eslint-disable camelcase */
 export enum State {
   Success = 's',
@@ -62,6 +64,8 @@ export interface User {
   full_name: string
   first_name: string
   last_name: string
+  organisation: number
+  organisation_roles: OrganizationRole[]
 }
 
 export enum ThemeColor {

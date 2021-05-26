@@ -88,7 +88,6 @@ form
   select,
   input[type=text],
   input[type=number]
-    border-radius: 3px
     min-height: 2em
     padding: 0 .4em
     border-bottom: rgb(var(--v-border-color))

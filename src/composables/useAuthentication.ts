@@ -5,10 +5,11 @@ import restApi, { setAuthToken } from '@/utils/restApi'
 
 import devLoginType from '@/contentTypes/devLogin'
 import { Organization } from '@/contentTypes/types'
+import useContextRoles from './useContextRoles'
 
 const user = ref<User | null>(null)
 const isAuthenticated = ref(false)
-const authToken = ref<string | null>(null) // TODO Remove
+const organizationRoles = useContextRoles('organisation') // Avoid circular import
 
 export default function useAuthentication () {
   const contentApi = devLoginType.getContentApi()
@@ -19,6 +20,7 @@ export default function useAuthentication () {
       console.log('User authenticated', data.username)
       user.value = data
       isAuthenticated.value = true
+      organizationRoles.set(data.organisation, data.pk, data.organisation_roles)
       return data
     } catch (err) {
       switch (err.response?.status) {
@@ -46,7 +48,6 @@ export default function useAuthentication () {
         sessionStorage.user = JSON.stringify(usr)
         setAuthToken(data.key)
         isAuthenticated.value = true
-        authToken.value = data.key
       })
       .catch(() => {
         delete sessionStorage.user
@@ -64,7 +65,6 @@ export default function useAuthentication () {
   return {
     user,
     isAuthenticated,
-    authToken,
     authenticate,
     fetchAuthenticatedUser,
     startOrganizationLogin,

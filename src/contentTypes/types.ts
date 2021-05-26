@@ -165,6 +165,11 @@ export interface ChannelConfig extends ChannelsConfig {
 
 export type Predicate = (obj: any) => boolean
 
+export enum OrganizationRole {
+  Manager = 'org_manager',
+  MeetingCreator = 'meeting_creator',
+}
+
 export interface Organization {
   pk: number
   title: string

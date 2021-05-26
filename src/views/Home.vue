@@ -17,7 +17,7 @@
         </ul>
       </template>
       <div v-if="canAdd()">
-        <btn icon="mdi-plus" @click="startNewMeeting()">{{ t('meeting.new') }}</btn>
+        <btn icon="mdi-plus" @click="createMeeting()">{{ t('meeting.create') }}</btn>
       </div>
       <template v-if="debug">
         <counter :style="{ marginTop: '1.5em' }" />
@@ -116,9 +116,9 @@ export default defineComponent({
     // Add meeting
     const { openModal } = useModal()
 
-    function startNewMeeting () {
+    function createMeeting () {
       openModal({
-        title: t('meeting.new'),
+        title: t('meeting.create'),
         component: AddMeetingVue
       })
     }
@@ -140,7 +140,7 @@ export default defineComponent({
       createUser,
 
       ...rules,
-      startNewMeeting,
+      createMeeting,
       slugify
     }
   },

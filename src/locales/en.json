@@ -80,7 +80,7 @@
     "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
     "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
     "participants": "Participants",
-    "new": "New meeting",
+    "create": "Start a new meeting",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
     "settingsFor": "Settings for {title}"

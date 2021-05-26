@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { BaseContent } from '../types'
 import ContentType from '../ContentType'
 
 import rules from './rules'
@@ -10,7 +9,9 @@ export enum SpeakerSystemMethod {
   Priority = 'priority',
 }
 
-export interface SpeakerSystem extends BaseContent {
+export interface SpeakerSystem {
+  pk: number
+  title: string
   state: SpeakerSystemState
   active_list?: number
   meeting: number
