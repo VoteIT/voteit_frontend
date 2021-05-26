@@ -1,8 +1,9 @@
-FROM node:lts-alpine
+FROM scratch
 WORKDIR /app
-COPY package.json .
+COPY ./dist ./dist
+# COPY package.json .
 # install project dependencies first
-RUN npm i
+# RUN npm i
 # Lastly build app
-COPY . .
-RUN npm run build
+# COPY . .
+# RUN npm run build
