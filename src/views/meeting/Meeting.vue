@@ -108,23 +108,17 @@ export default defineComponent({
     const isModerator = computed(() => hasRole(MeetingRole.Moderator))
     let currentRoleChannel: string | null = null
     async function leaveRoleChannel () {
-      if (currentRoleChannel) {
-        return channels.leave(currentRoleChannel, { leaveDelay: 0 })
-          .then(() => {
-            currentRoleChannel = null
-          })
-      }
-      return Promise.resolve()
+      if (!currentRoleChannel) return
+      await channels.leave(currentRoleChannel, { leaveDelay: 0 })
+      currentRoleChannel = null
     }
-    async function enterRoleChannel (): Promise<void> {
-      if (!meetingId.value) return Promise.resolve()
+    async function enterRoleChannel () {
+      if (!meetingId.value) return
       const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
-      if (channelName === currentRoleChannel) return Promise.resolve()
-      return leaveRoleChannel()
-        .then(() => {
-          currentRoleChannel = channelName
-          channels.subscribe(channelName)
-        })
+      if (channelName === currentRoleChannel) return
+      await leaveRoleChannel()
+      currentRoleChannel = channelName
+      await channels.subscribe(channelName)
     }
     watch(isModerator, enterRoleChannel)
 

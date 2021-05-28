@@ -32,7 +32,7 @@ export default defineComponent({
     })
 
     function doneOrFailed (value: boolean) {
-      value && clearInterval(timer)
+      if (value) clearInterval(timer)
     }
     watch(loader.initDone, doneOrFailed)
     watch(loader.initFailed, doneOrFailed)
@@ -74,6 +74,7 @@ main
   width: 100vw
   height: 100vh
   background-color: #fff
+  z-index: 100
 
 .fade-leave-active
   transition: opacity 0.5s ease

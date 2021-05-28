@@ -94,6 +94,7 @@
     "all": "All polls",
     "allowRandomTiebreaker": "Allow random in tiebreaker",
     "approve": "Approve",
+    "cantVote": "Not a voter",
     "castVote": "Cast vote",
     "changeVote": "Change vote",
     "created": "Created poll {title}",
@@ -111,6 +112,7 @@
     "rankingSelectedAs": "Selected as",
     "selectProposals": "Select proposals",
     "selectProposalsDescription": "Click to select the proposals you want to vote for.\nIn the next step you will be able to adjust the order.",
+    "showProgress": "Show progress",
     "started": "Started",
     "votingTitle": "Voting {title}",
     "vote": "Vote",
@@ -120,8 +122,11 @@
     "pickProposals": "Pick Proposals",
     "chooseMethod": "Choose voting method",
     "createAndStart": "Create and start",
+    "noPublishedPolls": "There are no polls in this meeting yet.",
     "noAiPublishedProposals": "This agenda item has no published proposals",
+    "viewAndChangeVote": "View and change vote",
     "votedProgress": "Noone has voted | {percentage} % has voted ({voted} / {total}) | {percentage} % has voted ({voted} / {total})",
+    "voteAddedInfo": "Your vote has been accepted.\nYou can change your vote at any time until the poll is closed.",
     "watchVoting": "Watch voting",
     "youHaveVoted": "You have voted",
     "youHaveNotVoted": "You have not voted",
@@ -135,7 +140,12 @@
       "schulze": "Schulze",
       "scottish_stv": "Scottish STV",
       "simple": "Simple majority",
-      "irv": "Instant Runoff-Voting"
+      "irv": "Instant Runoff-Voting",
+      "help": {
+        "scottish_stv": "Select the proposals you want to vote for in order of preference.",
+        "schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
+        "combined_simple": "Vote approve or deny for each proposal."
+      }
     },
     "result": {
       "runtime": "Calculation time",

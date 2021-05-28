@@ -59,6 +59,7 @@ $material-icons-font-path: '~material-icons/iconfont/'
 </script>
 
 <style lang="sass">
+@import './theme/fonts.sass'
 // @import './theme/dark.sass'
 // @import './theme/light.sass'
 

@@ -26,6 +26,7 @@ const light = {
     error: colors.deepOrange.base,
     info: colors.lightBlue.base,
     success: '#6ce498',
+    'success-lighten-2': '#cbf6db',
     'success-darken-2': '#1da475',
     warning: colors.red.darken2
   }

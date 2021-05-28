@@ -1,20 +1,24 @@
 <template>
-  <main id="polls">
-    <nav class="tabs">
-      <RouterLink v-for="s in tabStates" :key="s.state" :to="getStatePath(s)"><Icon sm :name="s.icon"/> {{ s.name }} <span v-if="s.polls.length">({{ s.polls.length }})</span></RouterLink>
-    </nav>
-    <header>
-      <h1>{{ currentState.name }} polls</h1>
-      <Btn v-if="canAdd(meeting)" icon="mdi-star" @click="$router.push(meetingPath + '/polls/new')">{{ t('poll.new') }}</Btn>
-    </header>
-    <Poll :poll="p" v-for="p in polls" :key="p.pk" />
-    <p v-if="!polls.length"><em>No polls in this state just yet</em></p>
-  </main>
+  <v-row>
+    <v-col offset-lg="2" lg="8">
+      <header>
+        <Menu float :items="menuItems" />
+        <h1>{{ t('poll.all') }}</h1>
+      </header>
+      <v-divider />
+      <Dropdown v-for="s in tabStates" :key="s.state" :title="`${s.name} (${s.polls.length})`" :open="s.state==='ongoing'">
+        <Poll :poll="p" v-for="p in s.polls" :key="p.pk" />
+      </Dropdown>
+      <p v-if="tabStates.length === 0">
+        <em>{{ t('poll.noPublishedPolls') }}</em>
+      </p>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 import Poll from '../../components/widgets/Poll.vue'
 
@@ -23,43 +27,48 @@ import usePolls from '@/composables/meeting/usePolls'
 
 import pollType from '@/contentTypes/poll'
 import { WorkflowState } from '@/contentTypes/types'
+import { MenuItem } from '@/utils/types'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   name: 'Polls',
-  inject: ['t'],
   components: {
     Poll
   },
   setup () {
+    const { t } = useI18n()
     const { meeting, meetingPath, meetingId } = useMeeting()
     const { getPolls } = usePolls()
-    const route = useRoute()
-    const { getState, getPriorityStates } = pollType.useWorkflows()
-
-    const currentState = computed(() => getState(
-      route.params.state as string || 'ongoing'
-    ))
-
-    const polls = computed(() => {
-      return getPolls(meetingId.value, currentState.value?.state)
-    })
+    const router = useRouter()
+    const { getPriorityStates } = pollType.useWorkflows()
 
     const tabStates = computed(() => {
-      return getPriorityStates().map(s => {
-        return {
-          ...s,
-          polls: getPolls(meetingId.value, s.state)
-        }
-      })
+      return getPriorityStates()
+        .map(s => {
+          return {
+            ...s,
+            polls: getPolls(meetingId.value, s.state)
+          }
+        })
+        .filter(s => s.polls.length)
+    })
+
+    const menuItems = computed<MenuItem[]>(() => {
+      if (!meeting.value) return []
+      if (pollType.rules.canAdd(meeting.value)) {
+        return [{
+          icon: 'mdi-star',
+          text: t('poll.new'),
+          onClick: async () => router.push(meetingPath.value + '/polls/new')
+        }]
+      }
+      return []
     })
 
     return {
+      t,
       tabStates,
-      currentState,
-      meeting,
-      meetingPath,
-      polls,
-      ...pollType.rules,
+      menuItems,
       getStatePath (s: WorkflowState) {
         if (s.state === 'ongoing') {
           return `${meetingPath.value}/polls`

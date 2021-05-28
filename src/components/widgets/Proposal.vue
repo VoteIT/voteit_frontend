@@ -176,7 +176,7 @@ export default defineComponent({
       font-size: 8pt
       font-weight: 700
       text-transform: uppercase
-      letter-spacing: .08em
+      letter-spacing: .03em
     display: flex
     justify-content: space-between
     color: var(--disabled-text)
@@ -207,9 +207,10 @@ export default defineComponent({
     padding-right: 4em
 
   .vote-slot
+    margin-top: .8em
     border: 1px solid rgb(var(--v-border-color))
     background-color: rgb(var(--v-theme-surface))
-    padding: .35em .6em
+    padding: .6em 1.2em
     border-radius: 5px
 
 a.tag

@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
 import { DefaultMap, Socket } from '@/utils'
-import { SuccessMessage } from '@/utils/types'
+import { SubscribedMessage, SuccessMessage } from '@/utils/types'
 
 import { ChannelConfig, SchemaType } from './types'
 import { ContextRole } from '@/composables/types'
@@ -31,15 +31,14 @@ function handleMessage (data: SuccessMessage) {
   const updateHandler = updateHandlers.get(contentType)
   // General update handler takes precedence over other handlers
   if (updateHandler) {
-    updateHandler(data)
-    return
+    return updateHandler(data)
   }
   const handler = methodHanders.get(method).get(contentType)
   if (handler) {
     // Method handler only needs payload
     handler(data.p)
   } else if (!ignoreContentTypes.has(contentType)) {
-    console.log('No registered update handler for content type', contentType)
+    console.info('No registered update handler for content type', contentType)
   }
 }
 
@@ -50,18 +49,16 @@ socket.addEventListener('message', event => {
 })
 
 async function subscribeChannel (uri: string) {
-  return socket.call('channel.subscribe', uri)
-    .then(({ p }: { p: any }) => {
-      if (p.app_state) p.app_state.forEach(handleMessage)
-    })
+  const response = await socket.call('channel.subscribe', uri) as SubscribedMessage
+  const appState = response.p.app_state
+  if (appState) appState.forEach(handleMessage)
+  return response
 }
 
 // Send all subscription messages on connect
 socket.addEventListener('open', () => {
   socketState.value = true
-  for (const uri of subscriptions.values()) {
-    subscribeChannel(uri)
-  }
+  subscriptions.forEach(subscribeChannel)
 })
 
 socket.addEventListener('close', () => {
@@ -157,16 +154,11 @@ export default class Channel<T> {
     if (uriOrPk) {
       const uri = this.getUri(uriOrPk)
       clearTimeout(leaveTimeouts.get(uri))
-      if (!subscriptions.has(uri)) {
-        subscriptions.add(uri)
-        if (socket.isOpen) {
-          return subscribeChannel(uri)
-        } else if (fail) {
-          return Promise.reject(new Error('Socket closed. Cannot subscribe.'))
-        }
-      }
+      if (subscriptions.has(uri)) return
+      subscriptions.add(uri)
+      if (socket.isOpen) return subscribeChannel(uri)
+      if (fail) throw new Error('Socket closed. Cannot subscribe.')
     }
-    return Promise.resolve()
   }
 
   private performLeave (uri: string) {
@@ -187,7 +179,7 @@ export default class Channel<T> {
       const uri = this.getUri(uriOrPk)
       clearTimeout(leaveTimeouts.get(uri))
       if (subscriptions.has(uri)) {
-        const myConfig: ChannelConfig = { ...DEFAULT_CONFIG, ...(config || {}) }
+        const myConfig: ChannelConfig = { ...this.config, ...(config || {}) }
         if (myConfig.leaveDelay) {
           return new Promise(resolve => {
             // Will not resolve if canceled...

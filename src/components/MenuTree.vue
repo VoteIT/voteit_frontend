@@ -22,18 +22,19 @@
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <transition name="slide-down">
-        <MenuTree @navigation="$emit('navigation')" v-if="item.items" :level="level + 1" :parent="item" :items="item.items" v-show="openMenus.has(i)" />
+        <MenuTree @hasActive="$emit('hasActive'); openMenus.add(i)" @navigation="$emit('navigation')" v-if="item.items" :level="level + 1" :parent="item" :items="item.items" v-show="openMenus.has(i)" />
       </transition>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, watch } from 'vue'
+import { defineComponent, onMounted, PropType, reactive } from 'vue'
 import { TreeMenu, TreeMenuItem } from '@/utils/types'
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
-  emits: ['navigation'],
+  emits: ['navigation', 'hasActive'],
   props: {
     items: {
       type: Array as PropType<TreeMenuItem[]>,
@@ -45,8 +46,9 @@ export default defineComponent({
     },
     parent: Object as PropType<TreeMenu>
   },
-  setup (props) {
+  setup (props, { emit }) {
     const openMenus = reactive<Set<number>>(new Set())
+    const route = useRoute()
 
     // Menus can be set to open by default
     props.items.forEach((item, index) => {
@@ -57,13 +59,13 @@ export default defineComponent({
       openMenus.add(index)
     }
 
-    // Open first non-empty submenu dynamically once (data is loaded async)
-    let initialized = false
-    watch(() => props.items, items => {
-      if (initialized || !props.parent?.openFirstNonEmpty || openMenus.size) return // If user has a submenu open, don't meddle
-      items.some((item, index) => {
+    onMounted(() => {
+      // Emit 'hasActive' if any item is current active path at mount
+      if (props.items.some(item => 'to' in item && item.to === route.path)) emit('hasActive')
+      // Open first non-empty submenu
+      if (!props.parent?.openFirstNonEmpty || openMenus.size) return // If user has a submenu open, don't meddle
+      props.items.some((item, index) => {
         if ('items' in item && item.items.length) {
-          initialized = true
           openMenus.add(index)
           return true
         }

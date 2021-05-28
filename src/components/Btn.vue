@@ -64,6 +64,8 @@ export default defineComponent({
     opacity: .5
 
 .btn-controls
+  display: flex
+  align-items: flex-end
   > .v-btn
     margin-right: .2rem
     &:last-child

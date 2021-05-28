@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Proposal read-only :p="p" v-for="p in proposals" :key="p.pk">
+    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk">
       <template v-slot:vote>
         <div class="grade">
           <div/>
@@ -18,9 +18,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive } from 'vue'
+import { computed, defineComponent, PropType, reactive } from 'vue'
 
 import ProposalComponent from '@/components/widgets/Proposal.vue'
+
+import useProposals from '@/composables/meeting/useProposals'
 
 import { Poll, Proposal } from '@/contentTypes/types'
 import { SchulzeVote } from './types'
@@ -35,16 +37,14 @@ export default defineComponent({
       type: Object as PropType<Poll>,
       required: true
     },
-    proposals: {
-      type: Array as PropType<Proposal[]>,
-      required: true
-    },
-    modelValue: Object as PropType<SchulzeVote>
+    modelValue: Object as PropType<SchulzeVote>,
+    disabled: Boolean
   },
   components: {
     Proposal: ProposalComponent
   },
   setup (props, { emit }) {
+    const { getProposal } = useProposals()
     const proposalGrades = reactive<Map<number, number>>(new Map())
     if (props.modelValue) {
       for (const [key, value] of props.modelValue.ranking) {
@@ -58,20 +58,23 @@ export default defineComponent({
     //     proposalGrades.set(key, value)
     //   }
     // })
+    const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
 
     function setGrade (proposal: Proposal, grade: number) {
+      if (props.disabled) return
       proposalGrades.set(proposal.pk, grade)
       const valid = [...proposalGrades.values()].some(n => n) // Any grade set?
       if (!valid) return emit('update:modelValue') // Clear vote on unvalid
       emit('update:modelValue', {
-        ranking: props.proposals.map(p => [p.pk, proposalGrades.get(p.pk) || 0])
+        ranking: proposals.value.map(p => [p.pk, proposalGrades.get(p.pk) || 0])
       })
     }
 
     return {
       grades: GRADES,
       setGrade,
-      proposalGrades
+      proposalGrades,
+      proposals
     }
   }
 })

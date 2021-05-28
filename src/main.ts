@@ -15,6 +15,7 @@ import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import Tag from './components/Tag.vue'
 import User from './components/User.vue'
+import Dropdown from './components/Dropdown.vue'
 import UserAvatar from './components/UserAvatar.vue'
 import Widget from './components/widgets/Widget.vue'
 
@@ -54,6 +55,7 @@ createApp(App)
   .component('ProgressBar', ProgressBar)
   .component('Tag', Tag)
   .component('User', User)
+  .component('Dropdown', Dropdown)
   .component('UserAvatar', UserAvatar)
   .component('Widget', Widget)
   .mount('#app')

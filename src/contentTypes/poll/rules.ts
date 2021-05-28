@@ -20,7 +20,7 @@ const isVoter: Predicate = (poll: Poll) => {
   return register.has(user.value.pk)
 }
 
-const isPollOngoing: Predicate = (poll: Poll) => {
+const isOngoing: Predicate = (poll: Poll) => {
   return poll.state === 'ongoing'
 }
 
@@ -53,12 +53,13 @@ const canDelete: Predicate = (poll: Poll) => {
 }
 
 const canVote: Predicate = (poll: Poll) => {
-  return isPollOngoing(poll) && isVoter(poll)
+  return isOngoing(poll) && isVoter(poll)
 }
 
 export default {
   canAdd,
   canChange,
   canDelete,
-  canVote
+  canVote,
+  isOngoing
 }

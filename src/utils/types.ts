@@ -14,7 +14,7 @@ export interface BaseChannelsMessage {
 }
 
 export interface SuccessMessage extends BaseChannelsMessage {
-  s: State.Success
+  s?: State.Success
   p: object
 }
 
@@ -32,7 +32,19 @@ export interface FailedMessage extends BaseChannelsMessage {
   p: MessageObject
 }
 
-export type ChannelsMessage = SuccessMessage | ProgressMessage | FailedMessage
+interface SubscribedPayload {
+  app_state: SuccessMessage[] | null
+  channel_name: string
+  channel_type: string
+  pk: number
+}
+
+export interface SubscribedMessage extends SuccessMessage {
+  t: 'channel.subscribed'
+  p: SubscribedPayload
+}
+
+export type ChannelsMessage = SuccessMessage | ProgressMessage | FailedMessage | SubscribedMessage
 
 export interface Progress {
   curr: number
