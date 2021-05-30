@@ -10,33 +10,28 @@ export default [
   {
     transition: 'upcoming',
     icon: 'mdi-pause',
-    state: MeetingState.Upcoming,
-    name: 'Upcoming'
+    state: MeetingState.Upcoming
   },
   {
     transition: 'ongoing',
     icon: 'mdi-play',
-    state: MeetingState.Ongoing,
-    name: 'Ongoing'
+    state: MeetingState.Ongoing
   },
   {
     transition: 'close',
     icon: 'mdi-close',
-    state: MeetingState.Closed,
-    name: 'Upcoming'
+    state: MeetingState.Closed
   },
   {
     transition: 'request_archiving',
     icon: 'mdi-archive',
     state: MeetingState.Archiving,
-    name: 'Archiving',
     isFinal: true
   },
   {
     transition: 'archive',
     icon: 'mdi-archive',
     state: MeetingState.Archived,
-    name: 'Archived',
     isFinal: true
   }
 ]

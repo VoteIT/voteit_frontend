@@ -22,6 +22,7 @@ const light = {
     'surface-active': colors.green.lighten5,
     primary: colors.indigo.base,
     secondary: colors.grey.darken1,
+    'secondary-lighten-2': colors.grey.lighten2,
     accent: colors.indigo.darken4,
     error: colors.deepOrange.base,
     info: colors.lightBlue.base,

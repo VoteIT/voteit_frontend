@@ -73,6 +73,7 @@ export default function useAgenda () {
 
   function hasNewItems (agendaItem: AgendaItem): boolean {
     // If no content, there are no new items
+    console.log('hasNew', agendaItem)
     if (!agendaItem.related_modified) return false
     const lastRead = agendaItemsLastRead.get(agendaItem.pk)
     // Else, if no lastRead or set to earlier time, there are new items

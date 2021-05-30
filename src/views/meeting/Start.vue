@@ -1,10 +1,14 @@
 <template>
-  <main v-if="meeting">
-    <Menu float :items="menuItems" />
-    <h1>{{ meeting.title }}</h1>
-    <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
-    <Richtext :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
-  </main>
+  <v-row v-if="meeting">
+    <v-col lg="8" offset-lg="2">
+      <header>
+        <Menu float :items="menuItems" />
+        <h1>{{ meeting.title }}</h1>
+      </header>
+      <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
+      <Richtext :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -20,7 +24,6 @@ import { MenuItem } from '@/utils/types'
 
 export default defineComponent({
   name: 'MeetingIndex',
-  inject: ['t'],
   components: {
     Richtext,
     WorkflowState

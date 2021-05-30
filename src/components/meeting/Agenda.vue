@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer v-if="initDone" app id="agenda" v-model="isOpen" width="348">
-    <MenuTree ref="menuComponent" :items="menu" @navigation="toggleDrawer" />
+    <MenuTree :items="menu" @navigation="toggleDrawer" />
     <BtnDropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
       <form @submit.prevent="addAgendaItem" class="agenda-add-form">
         <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
@@ -12,7 +12,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { slugify, toggleNavDrawerEvent } from '@/utils'
@@ -25,7 +24,7 @@ import meetingRules from '@/contentTypes/meeting/rules'
 import pollType from '@/contentTypes/poll'
 
 import BtnDropdown from '../BtnDropdown.vue'
-import { AgendaItem, MeetingRole, WorkflowState } from '@/contentTypes/types'
+import { AgendaItem, WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/composables/meeting/usePolls'
 import useProposals from '@/composables/meeting/useProposals'
 import MenuTree from '../MenuTree.vue'
@@ -39,7 +38,6 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const route = useRoute()
     const { getAgenda, hasNewItems } = useAgenda()
     const { meeting, meetingId, meetingPath, hasRole } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
@@ -80,7 +78,7 @@ export default defineComponent({
 
     const aiMenus = computed<TreeMenuItem[]>(() => {
       const menus: TreeMenuItem[] = []
-      if (hasRole(MeetingRole.Moderator)) {
+      if (agendaItemType.rules.canChange(meeting.value)) {
         menus.push({
           title: t('agenda.edit'),
           to: meetingPath.value + '/settings/agenda',
@@ -102,14 +100,23 @@ export default defineComponent({
       )
     })
     const pollMenus = computed<TreeMenuItem[]>(() => {
-      return [{
+      const menus: TreeMenuLink[] = [{
         title: t('poll.all'),
         to: `${meetingPath.value}/polls`
-      }, ...pollGroups.value.map(s => ({
+      }]
+      if (pollType.rules.canAdd(meeting.value)) {
+        menus.push({
+          title: t('poll.new'),
+          to: `${meetingPath.value}/polls/new`,
+          icons: ['mdi-star']
+        })
+      }
+      const groups: TreeMenu[] = pollGroups.value.map(s => ({
         title: s.state,
         items: getPollMenuItems(s),
         showCount: true
-      }))]
+      }))
+      return [...menus, ...groups]
     })
 
     function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
@@ -161,25 +168,8 @@ export default defineComponent({
           to: `${meetingPath.value}/settings`
         })
       }
-      if (!initDone.value) checkOpen(items, true)
       return items
     })
-    const menuComponent = ref<typeof MenuTree | null>(null)
-    function checkOpen (items: TreeMenuItem[], rootLevel = false): boolean {
-      return items.some((item, index) => {
-        if ('items' in item) {
-          if (checkOpen(item.items)) {
-            // eslint-disable-next-line no-unused-expressions
-            if (rootLevel) menuComponent.value?.openMenus.add(index)
-            return true
-          }
-        } else {
-          if (item.to === route.path) {
-            return true
-          }
-        }
-      })
-    }
 
     const isOpen = ref(window.innerWidth >= 1280)
     function toggleDrawer () {
@@ -204,7 +194,6 @@ export default defineComponent({
       addAgendaItem,
       inputEl,
       focusInput,
-      menuComponent,
       initDone
     }
   }

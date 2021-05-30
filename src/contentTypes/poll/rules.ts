@@ -32,10 +32,10 @@ const canAdd: Predicate = (context: Meeting | AgendaItem) => {
   // TODO Adding to different contexts needs better architecture
   if ('meeting' in context) {
     // Is agenda item
-    return !agendaRules.isArchived(context) && meetingRules.isModerator(meetings.get(context.meeting))
+    return !agendaRules.isFinished(context) && meetingRules.isModerator(meetings.get(context.meeting))
   }
   // Else meeting
-  return meetingRules.isModerator(context)
+  return !meetingRules.isFinished(context) && meetingRules.isModerator(context)
 }
 
 const canChange: Predicate = (poll: Poll) => {

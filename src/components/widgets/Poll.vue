@@ -29,7 +29,7 @@
         </component>
       </template>
 
-      <Btn @click="vote()" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ userVote ? t('poll.changeVote') : t('poll.vote') }}</Btn>
+      <!-- <Btn @click="vote()" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ userVote ? t('poll.changeVote') : t('poll.vote') }}</Btn> -->
 
       <ProgressBar v-if="isOngoing" :value="pollStatus?.voted" :total="pollStatus?.total">
         <span v-if="pollStatus">{{ t('poll.votedProgress', {

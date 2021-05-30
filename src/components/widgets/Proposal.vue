@@ -1,5 +1,5 @@
 <template>
-  <div v-if="p" class="proposal" :class="{ selected, unread }">
+  <div v-if="p" class="proposal" :class="{ unread }">
     <slot name="top"/>
     <div class="meta">
       <div>
@@ -20,12 +20,10 @@
     </v-sheet>
     <footer v-if="!readOnly">
       <div>
-        <v-btn plain v-if="canComment(p)" @click="comment()">
-          <v-icon left icon="mdi-comment-outline"/>
+        <v-btn prepend-icon="mdi-comment-outline" plain v-if="canComment(p)" @click="comment()">
           {{ t('discussion.comment') }}
         </v-btn>
-        <v-btn plain v-if="showComments" @click="showComments = false">
-          <v-icon left icon="mdi-chevron-up"/>
+        <v-btn prepend-icon="mdi-chevron-up" plain v-if="showComments" @click="showComments = false">
           {{ t('discussion.hideComments') }}
         </v-btn>
         <v-btn plain v-else-if="comments?.length" @click="showComments = true">
@@ -73,7 +71,6 @@ export default defineComponent({
     allTags: Set as PropType<Set<string>>,
     comments: Array as PropType<DiscussionPost[]>,
     readOnly: Boolean,
-    selected: Boolean,
     unread: Boolean
   },
   components: {

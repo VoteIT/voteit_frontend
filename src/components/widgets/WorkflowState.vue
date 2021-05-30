@@ -1,13 +1,11 @@
 <template>
   <span ref="root" class="dropdown" :class="{ isOpen, right }">
-    <v-btn size="x-small" flat :border="!admin || currentState.isFinal" @click="toggle()">
-      <v-icon left :icon="currentState.icon"/>
-      {{ currentState.name || currentState.state }}
+    <v-btn :prepend-icon="currentState.icon" size="x-small" flat :border="!admin || currentState.isFinal" @click="toggle()">
+      {{ t(`workflowState.${currentState.state}`) }}
       <v-icon v-if="admin" right icon="mdi-chevron-down"/>
     </v-btn>
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
-      <v-btn plain block v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">
-        <v-icon left :icon="t.icon"/>
+      <v-btn :prepend-icon="t.icon" plain block v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">
         {{ t.title }}
       </v-btn>
     </v-sheet>
@@ -24,6 +22,7 @@ import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
   name: 'WorkflowState',
+  inject: ['t'],
   props: {
     admin: Boolean,
     object: {
