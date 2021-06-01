@@ -25,14 +25,16 @@ import presenceCheckType from '@/contentTypes/presenceCheck'
 
 import Moment from '@/components/widgets/Moment.vue'
 import PresenceCheckControl from '@/components/meeting/PresenceCheckControl.vue'
+import { useI18n } from 'vue-i18n'
+import { ControlPanelComponent } from './types'
 
 export default defineComponent({
   components: { Moment, PresenceCheckControl },
   name: 'PresenceChecks',
   path: 'presence',
   icon: 'mdi-hand',
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
     const { getOpenPresenceCheck, getClosedPresenceChecks, openCheck } = usePresence()
     const { meetingId, meeting } = useMeeting()
     const submitting = ref(false)
@@ -52,6 +54,8 @@ export default defineComponent({
     }
 
     return {
+      t,
+      title: computed(() => t('presenceCheck')),
       ...presenceCheckType.rules,
       currentCheck,
       submitting,
@@ -60,7 +64,7 @@ export default defineComponent({
       startCheck
     }
   }
-})
+}) as ControlPanelComponent
 </script>
 
 <style lang="sass" scoped>

@@ -1,17 +1,27 @@
 <template>
-  <main>
-    <h1>{{ t('meeting.settingsFor', meeting) }}</h1>
-    <nav class="tabs">
-      <RouterLink v-for="p in panels" :key="p.name" :to="`${meetingPath}/settings/${p.path}`">
-        <Icon c-if="p.icon" sm :name="p.icon"/>
-        {{ p.name }}
-      </RouterLink>
-    </nav>
-    <div v-for="p in panels" :key="p.name">
-      <component ref="panelComponents" :is="p" v-if="currentPanel === p.path"/>
-    </div>
-    <p v-if="!currentPanel">Select a tab... <Icon name="mdi-arrow-up-bold"/></p>
-  </main>
+  <v-row>
+    <v-col>
+      <header>
+        <h1>{{ t('meeting.settings.for', meeting) }}</h1>
+        <v-btn color="primary" v-if="currentComponent" prepend-icon="mdi-chevron-left" @click="$router.push(`${meetingPath}/settings`)">
+          {{ t('meeting.settings.all') }}
+        </v-btn>
+      </header>
+    </v-col>
+  </v-row>
+  <v-row id="setting-panels">
+    <v-col v-if="currentComponent">
+      <component :is="currentComponent"/>
+    </v-col>
+    <v-col v-else v-for="p in panels" :key="p.name" sm="6" md="4" lg="3" cols="12">
+      <router-link :to="`${meetingPath}/settings/${p.path}`">
+        <v-sheet color="surface" elevation="2" rounded outlined class="panel">
+          <v-icon v-if="p.icon" sm :icon="p.icon"/>
+          {{ p.name }}
+        </v-sheet>
+      </router-link>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -31,41 +41,26 @@ export default defineComponent({
     const panels = computed(() => {
       return Object.values(controlPanels)
     })
-    const currentPanel = computed(() => route.params.panel)
+    const currentPanel = computed(() => route.params.panel as string)
+    const currentComponent = computed(() => Object.values(controlPanels).find(p => p.path === route.params.panel))
     return {
       meeting,
       meetingPath,
       panels,
-      currentPanel
+      currentPanel,
+      currentComponent
     }
   }
 })
 </script>
 
-<style lang="sass" scoped>
-nav.tabs
-  display: flex
-  margin-top: 20px
-  border-bottom: 1px solid #bbb
-  padding-bottom: 0
+<style lang="sass">
+#setting-panels
   a
     text-decoration: none
-    margin: 0 5px -1px
-    padding: 8px 12px
-    border: 1px solid #000
-    border-bottom: 0
-    border-radius: 4px 4px 0 0
-    background-color: #333
-    font-weight: 700
-    color: #ddf
-    > span
-      vertical-align: super
-      font-size: 80%
-    .material-icons
-      color: #779
-      vertical-align: text-bottom
-    &.router-link-exact-active
-      background-color: #fff
-      color: #000
-      border-color: #bbb
+  .panel
+    padding: 1em
+    transition: transform .5s
+    &:hover
+      transform: scale(1.03)
 </style>

@@ -4,9 +4,9 @@
     <Draggable v-model="agendaItems" item-key="pk" >
       <template #item="{ element }">
         <div>
-          <Icon sm :name="getState(element.state).icon" />
+          <v-icon size="small" :icon="getState(element.state).icon" />
           <span>{{ element.title }}</span>
-          <Icon sm name="mdi-drag-horizontal"/>
+          <v-icon size="small" icon="mdi-drag-horizontal"/>
         </div>
       </template>
     </Draggable>
@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
 import useAgenda from '@/composables/meeting/useAgenda'
@@ -28,11 +29,11 @@ export default defineComponent({
   name: 'Agenda',
   path: 'agenda',
   icon: 'mdi-clipboard-list',
-  inject: ['t'],
   components: {
     Draggable
   },
   setup () {
+    const { t } = useI18n()
     const { getAgenda } = useAgenda()
     const { meetingId } = useMeeting()
     const meetingAPI = meetingType.getContentApi()
@@ -45,6 +46,8 @@ export default defineComponent({
       }
     })
     return {
+      t,
+      title: computed(() => t('agenda')),
       agendaItems,
       getState
     }

@@ -3,8 +3,7 @@
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
-        <v-btn size="small" :title="formData.title" @click="previewActive = !previewActive" :plain="!previewActive" :color="formData.color">
-          <v-icon left v-if="formData.icon" :icon="formData.icon" />
+        <v-btn :prepend-icon="formData.icon" size="small" :title="formData.title" @click="previewActive = !previewActive" :plain="!previewActive" :color="formData.color">
           {{ previewActive ? 100 : 99 }}
         </v-btn>
       </Widget>
@@ -30,15 +29,15 @@
         </div>
         <div>
           <label>{{ t('reaction.modelsAllowed') }}</label>
-          <CheckboxMultipleSelect name="allowedModels" v-model="formData.allowed_models" :options="ReactionContentType" />
+          <CheckboxMultipleSelect name="allowedModels" v-model="formData.allowed_models" :settings="{ options: ReactionContentType }" />
         </div>
         <div>
           <label>{{ t('reaction.rolesRequired') }}</label>
-          <CheckboxMultipleSelect name="changeRoles" v-model="formData.change_roles" :options="MeetingRole" />
+          <CheckboxMultipleSelect name="changeRoles" v-model="formData.change_roles" :settings="{ options: MeetingRole }" />
         </div>
         <div>
           <label>{{ t('reaction.listRolesRequired') }}</label>
-          <CheckboxMultipleSelect name="listRoles" v-model="formData.list_roles" :options="MeetingRole" />
+          <CheckboxMultipleSelect name="listRoles" v-model="formData.list_roles" :settings="{ options: MeetingRole }" />
         </div>
         <div class="btn-controls submit">
           <Btn icon="mdi-cancel" color="secondary" @click="close()">
@@ -62,7 +61,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, PropType, reactive, ref } from 'vue'
+import { computed, defineComponent, PropType, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 
@@ -86,7 +86,7 @@ export default defineComponent({
     data: Object as PropType<ReactionButton>
   },
   setup (props) {
-    const t = inject('t') as (text: string) => string
+    const { t } = useI18n()
     const { meetingId } = useMeeting()
     const formData = reactive<Partial<ReactionButton>>({ ...(props.data || { color: 'primary', meeting: meetingId.value }) })
     const previewActive = ref(true)

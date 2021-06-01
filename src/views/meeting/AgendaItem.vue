@@ -14,7 +14,7 @@
         <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
         <div class="speaker-lists" v-if="speakerSystems.length">
           <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
-          <v-btn style="margin-right: .5em; margin-bottom: .5em;" size="small" v-for="system in addSpeakerSystems" :key="system.pk" @click="addSpeakerList(system)"><v-icon left icon="mdi-plus"/>{{ t('speaker.addListToSystem', system) }}</v-btn>
+          <v-btn color="primary" style="margin-right: .5em; margin-bottom: .5em;" size="small" v-for="system in addSpeakerSystems" :key="system.pk" @click="addSpeakerList(system)" prepend-icon="mdi-plus">{{ t('speaker.addListToSystem', system) }}</v-btn>
           <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
         </div>
       </v-col>

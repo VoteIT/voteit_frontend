@@ -1,8 +1,7 @@
 <template>
   <span ref="root" class="dropdown" :class="{ isOpen, right }">
-    <v-btn :prepend-icon="currentState.icon" size="x-small" flat :border="!admin || currentState.isFinal" @click="toggle()">
+    <v-btn :prepend-icon="currentState.icon" :append-icon="admin && 'mdi-chevron-down'" size="x-small" flat :border="!admin || currentState.isFinal" @click="toggle()">
       {{ t(`workflowState.${currentState.state}`) }}
-      <v-icon v-if="admin" right icon="mdi-chevron-down"/>
     </v-btn>
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
       <v-btn :prepend-icon="t.icon" plain block v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">

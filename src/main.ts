@@ -10,7 +10,6 @@ import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 
 import Btn from './components/Btn.vue'
-import Icon from './components/Icon.vue'
 import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import Tag from './components/Tag.vue'
@@ -50,7 +49,6 @@ createApp(App)
   .use(vuetify)
   .use(Api)
   .component('Btn', Btn)
-  .component('Icon', Icon)
   .component('Menu', Menu)
   .component('ProgressBar', ProgressBar)
   .component('Tag', Tag)

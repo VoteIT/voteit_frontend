@@ -31,38 +31,6 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.material-icons.sm
-  font-size: 1.2rem
-
-.btn
-  border: none
-  background-color: var(--btn-bg)
-  color: var(--btn-text)
-  transition: background .3s
-  cursor: pointer
-  padding: .2rem .6rem
-  border-radius: 6px
-  .material-icons
-    color: var(--discrete-icon)
-    vertical-align: middle
-  &:hover
-    background: var(--btn-hover-bg)
-  &.active
-    background: var(--btn-active-bg)
-    color: var(--btn-active-text)
-    &:hover
-      background: var(--btn-active-hover-bg)
-  &.btn-sm
-    border: 0
-    padding: 4px 6px
-    .material-icons
-      font-size: 1.2rem
-  span
-    margin: 0 .2em
-
-  &:disabled
-    opacity: .5
-
 .btn-controls
   display: flex
   align-items: flex-end
@@ -70,4 +38,12 @@ export default defineComponent({
     margin-right: .2rem
     &:last-child
       margin-right: 0
+
+.btn-group
+  .v-btn:not(:first-child)
+    border-top-left-radius: 0
+    border-bottom-left-radius: 0
+  .v-btn:not(:last-child)
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
 </style>

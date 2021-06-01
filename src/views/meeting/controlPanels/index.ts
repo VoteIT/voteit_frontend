@@ -1,3 +1,4 @@
+import { ControlPanelComponent } from './types'
 import AccessPolicies from './AccessPolicies.vue'
 import Agenda from './Agenda.vue'
 import PresenceChecks from './PresenceChecks.vue'
@@ -10,4 +11,4 @@ export default {
   PresenceChecks,
   Reactions,
   SpeakerSystems
-}
+} as Record<string, ControlPanelComponent>

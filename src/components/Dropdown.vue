@@ -1,7 +1,6 @@
 <template>
   <div class="page-dropdown">
-    <v-btn flat block @click="isOpen = !isOpen" class="collapse" :class="{ isOpen }">
-      <v-icon left icon="mdi-chevron-right"/>
+    <v-btn prepend-icon="mdi-chevron-right" flat block @click="isOpen = !isOpen" class="collapse" :class="{ isOpen }">
       {{ title }}
     </v-btn>
     <div class="dropdown-content" v-show="isOpen">

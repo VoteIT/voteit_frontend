@@ -11,8 +11,8 @@
       <component ref="method" :is="methodComponent" :poll="data" :proposals="proposals" v-model="validVote" />
       <div class="buttons btn-controls">
         <btn icon="mdi-vote" :disabled="!validVote || waiting" @click="castVote()">{{ t('poll.castVote') }}</btn>
-        <v-btn color="warning" :disabled="waiting" @click="abstainVote()">
-          <v-icon left icon="mdi-cancel"/>{{ t('poll.abstain') }}
+        <v-btn prepend-icon="mdi-cancel" color="warning" :disabled="waiting" @click="abstainVote()">
+          {{ t('poll.abstain') }}
         </v-btn>
       </div>
     </template>

@@ -77,11 +77,8 @@ export default defineComponent({
     const systemRoles = ref<ContextRole[]>([])
 
     onBeforeMount(() => {
-      loader.call(() => {
-        return systemChannel.getAvailableRoles()
-          .then(roles => {
-            systemRoles.value = roles
-          })
+      loader.call(async () => {
+        systemRoles.value = await systemChannel.getAvailableRoles()
       })
     })
 
@@ -128,6 +125,7 @@ export default defineComponent({
       SpeakerSystemMethod,
       systemData,
       systemDataReady,
+      title: computed(() => t('speakerSystems')),
       createSystem,
       deleteSystem,
       getSystemMenu,

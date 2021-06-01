@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span v-for="[title, value] in Object.entries(options)" :key="value">
+    <span v-for="[title, value] in Object.entries(settings.options)" :key="value">
       <input :id="`${name}-choice-${value}`" type="checkbox" v-model="val[value]">
       <label :for="`${name}-choice-${value}`">{{ title }}</label>
     </span>
@@ -9,6 +9,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive, watch } from 'vue'
+import { InputComponent } from './types'
 
 type ChoiceRecord = Record<string, boolean>
 
@@ -27,21 +28,19 @@ function toOutputValue (obj: ChoiceRecord): string[] {
 }
 
 export default defineComponent({
-  inject: ['t'],
   props: {
-    required: Boolean,
     name: {
       type: String,
       required: true
     },
     modelValue: Array as PropType<string[]>,
-    options: {
-      type: Object as PropType<Record<string, string>>,
+    settings: {
+      type: Object,
       required: true
     }
   },
   setup (props, { emit }) {
-    const val = reactive(createInitialOptions(props.options, props.modelValue || []))
+    const val = reactive(createInitialOptions(props.settings.options, props.modelValue || []))
     watch(val, value => {
       emit('update:modelValue', toOutputValue(value))
     })
@@ -49,7 +48,7 @@ export default defineComponent({
       val
     }
   }
-})
+}) as InputComponent
 </script>
 
 <style lang="sass" scoped>
@@ -59,4 +58,5 @@ span
 label
   font-size: 12pt
   font-weight: normal
+  display: inline
 </style>

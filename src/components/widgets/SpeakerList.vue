@@ -1,8 +1,7 @@
 <template>
   <Widget :selected="isActive">
     <div class="btn-controls">
-      <v-btn v-if="enterLeaveBtn" :color="enterLeaveBtn.color" size="small" @click="enterLeaveBtn.action()">
-        <v-icon left :icon="enterLeaveBtn.icon" />
+      <v-btn :prepend-icon="enterLeaveBtn.icon" v-if="enterLeaveBtn" :color="enterLeaveBtn.color" size="small" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
       <Menu :items="menuItems" :show-transitions="canChange(list)" :content-type="speakerListType" :object="list" />
@@ -11,8 +10,8 @@
       {{ list.title }}
     </h3>
     <div v-if="canStart(list)" class="btn-group">
-      <v-btn :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)"><v-icon icon="mdi-play"/></v-btn>
-      <v-btn :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)"><v-icon icon="mdi-stop"/></v-btn>
+      <v-btn color="primary" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)"><v-icon icon="mdi-play"/></v-btn>
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)"><v-icon icon="mdi-stop"/></v-btn>
     </div>
     <p v-if="currentSpeaker" class="mb-2">
       {{ t('speaker.currentlySpeaking') }}:
@@ -85,6 +84,7 @@ export default defineComponent({
         return {
           icon: 'mdi-playlist-plus',
           title: t('speaker.enterList'),
+          color: 'primary',
           action: () => speakers.enterList(props.list)
         }
       }

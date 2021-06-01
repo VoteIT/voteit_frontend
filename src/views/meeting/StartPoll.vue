@@ -41,9 +41,10 @@
         <ul class="method-list">
           <li :class="{ selected: methodSelected?.name === m.name }" v-for="m in availableMethods" :key="m.name">
             <a href="#" @click.prevent="selectMethod(m)">{{ t(`poll.method.${m.name}`) }}</a>
-            <div v-if="methodSettingsComponent && m.name === methodSelected.name">
+            <div v-if="methodSelected && m.name === methodSelected.name" @submit.prevent>
               <h3>{{ t('options') }}</h3>
-              <component :is="methodSettingsComponent" v-model="methodSettings" :method="m" :proposals="selectedProposals.length" />
+              <SchemaForm :schema="methodSchema" v-model="methodSettings" />
+              <!-- <component v-if="methodSettingsComponent" :is="methodSettingsComponent" v-model="methodSettings" :method="m" :proposals="selectedProposals.length" /> -->
             </div>
           </li>
         </ul>
@@ -60,6 +61,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
@@ -70,22 +72,26 @@ import useProposals from '@/composables/meeting/useProposals'
 
 import { pollMethods as implementedMethods, pollSettings } from '@/components/pollmethods'
 import ProposalComponent from '@/components/widgets/Proposal.vue'
+import SchemaForm from '@/components/inputs/SchemaForm.vue'
 
 import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
 import { PollStartData, PollMethod, pollMethods, PollMethodSettings } from '@/components/pollmethods/types'
 import { ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { polls } from '@/composables/meeting/usePolls'
+import methodSchemas from '@/components/pollmethods/schemas'
+import { InputType, SchemaInput } from '@/components/inputs/types'
 
 export default defineComponent({
   name: 'StartPoll',
-  inject: ['t'],
   components: {
-    Proposal: ProposalComponent
+    Proposal: ProposalComponent,
+    SchemaForm
   },
   setup () {
+    const { t } = useI18n()
     const router = useRouter()
     const pollAPI = pollType.getContentApi()
-    // const restApi = useRestApi()
     const proposals = useProposals()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
     const { meetingPath, meetingId } = useMeeting()
@@ -141,7 +147,7 @@ export default defineComponent({
       if (methodSelected.value?.name === method.name) {
         methodSelected.value = null
       } else {
-        methodSettings.value = method.initialSettings || null
+        methodSettings.value = { ...(method.initialSettings || {}), title: nextTitle.value }
         methodSelected.value = method
       }
     }
@@ -152,30 +158,57 @@ export default defineComponent({
       return methodSelected.value && !working.value && !createdPollPk.value
     })
 
-    function createPoll (start = false) {
+    async function createPoll (start = false) {
       if (methodSelected.value) {
         if (methodSelected.value.name in implementedMethods) {
           working.value = true
+          let settings: PollMethodSettings | null = { ...methodSettings.value }
+          delete settings.title
+          if (Object.keys(settings).length === 0) settings = null
           const pollData: PollStartData = {
             agenda_item: agendaId.value,
             meeting: meetingId.value,
+            title: methodSettings.value?.title,
             proposals: [...selectedProposalIds],
             method_name: methodSelected.value.name,
             start,
-            settings: methodSettings.value
+            settings
           }
-          pollAPI.add(pollData)
-            .then(({ data }) => {
-              router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
-            })
-            .finally(() => {
-              working.value = false
-            })
+          try {
+            const { data } = await pollAPI.add(pollData)
+            router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
+          } catch {
+            working.value = false
+          }
         } else {
           alert(`*${methodSelected.value.title} not implemented`)
         }
       }
     }
+
+    const methodSchema = computed<SchemaInput[] | undefined>(() => {
+      if (!methodSelected.value) return
+      const getter = methodSchemas[methodSelected.value.name]
+      const specifics = getter?.(t, selectedProposalIds.size) || []
+      return [{
+        type: InputType.Text,
+        name: 'title',
+        label: t('title')
+      }, ...specifics]
+    })
+
+    const nextTitle = computed(() => {
+      if (!agendaItem.value) return
+      // eslint-disable-next-line no-labels
+      outer: for (let n = 1; true; n++) {
+        const title = `${agendaItem.value?.title} ${n}`
+        for (const poll of polls.values()) {
+          // eslint-disable-next-line no-labels
+          if (poll.title === title) continue outer
+        }
+        return title
+      }
+    })
 
     watch(agendaId, () => {
       pickMethod.value = false
@@ -183,6 +216,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       selectedProposalIds,
       selectedProposals,
       getPublishedProposals,
@@ -192,12 +226,14 @@ export default defineComponent({
 
       pickMethod,
       availableMethods,
+      methodSchema,
       methodSelected,
       methodSettings,
       methodSettingsComponent,
       selectMethod,
       readyToCreate,
       createPoll,
+      nextTitle,
 
       agendaId,
       agendaItem,

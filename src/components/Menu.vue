@@ -8,15 +8,13 @@
       <slot name="top"/>
       <template v-for="(item, i) in items" :key="i">
         <v-divider v-if="item === '---'" />
-        <v-btn v-else :color="item.color" plain block :disabled="item.disabled || working" @click="clickItem(item)">
-          <v-icon v-if="item.icon" left :icon="item.icon"/>
+        <v-btn :prepend-icon="item.icon" v-else :color="item.color" plain block :disabled="item.disabled || working" @click="clickItem(item)">
           {{ item.text }}
         </v-btn>
       </template>
       <template v-if="transitionsAvailable">
         <v-divider v-if="items.length || $slots.top" />
-        <v-btn plain block :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
-          <v-icon v-if="t.icon" left :icon="t.icon" />
+        <v-btn :prepend-icon="t.icon" plain block :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
           {{ t.title }}
         </v-btn>
       </template>

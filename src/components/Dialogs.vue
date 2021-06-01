@@ -6,7 +6,7 @@
         <p>{{ active.title }}</p>
         <div class="btn-controls">
           <v-btn outlined @click="deny()">{{ active.no }}</v-btn>
-          <v-btn :color="active.theme" @click="accept()">{{ active.yes }}</v-btn>
+          <v-btn :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
         </div>
       </v-sheet>
     </div>
@@ -111,7 +111,7 @@ export default defineComponent({
     white-space: pre-line
     margin: 1em 0
   .btn-controls
-    text-align: center
+    justify-content: center
   .closer
     position: absolute
     right: 10px

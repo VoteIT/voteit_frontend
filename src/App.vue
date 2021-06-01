@@ -79,26 +79,4 @@ html,
 .v-btn
   text-transform: none !important
   letter-spacing: .04em !important
-
-form
-  > div
-    margin-bottom: 1em
-  label
-    font-weight: bold
-    font-size: 10pt
-  select,
-  input[type=text],
-  input[type=number]
-    min-height: 2em
-    padding: 0 .4em
-    border-bottom: rgb(var(--v-border-color))
-    background-color: var(--v-theme-background)
-    &:focus
-      border-bottom: 1px solid rgb(var(--v-theme-on-background))
-      outline: none
-  select,
-  input[type=text]
-    width: 100%
-  input[type=checkbox]
-    margin-right: .4em
 </style>

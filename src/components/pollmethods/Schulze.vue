@@ -5,8 +5,8 @@
         <div class="grade">
           <div/>
           <div class="rating">
-            <Icon :name="n <= proposalGrades.get(p.pk) ? 'mdi-star' : 'mdi-star-outline'" v-for="n in grades" :key="n" @click="setGrade(p, n)"
-                  :class="{ active: n <= proposalGrades.get(p.pk) }" />
+            <v-icon :icon="n <= proposalGrades.get(p.pk) ? 'mdi-star' : 'mdi-star-outline'" v-for="n in grades" :key="n" @click="setGrade(p, n)"
+                    :class="{ active: n <= proposalGrades.get(p.pk) }" />
           </div>
           <div>
             <v-btn size="small" border v-show="proposalGrades.get(p.pk)" @click="setGrade(p, 0)">{{ t('clear') }}</v-btn>

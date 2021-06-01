@@ -83,7 +83,10 @@
     "create": "Start a new meeting",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
-    "settingsFor": "Settings for {title}"
+    "settings": {
+      "all": "All settings",
+      "for": "Settings for {title}"
+    }
   },
   "organization": {
     "loginTo": "Log in to {title}",

@@ -13,13 +13,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref, watch } from 'vue'
-import { PollMethod, PollMethodSettings } from './types'
+import { PollMethod, RepeatedSchulzeSettings } from './types'
 
 export default defineComponent({
   inject: ['t'],
   props: {
     modelValue: {
-      type: Object as PropType<PollMethodSettings>,
+      type: Object as PropType<RepeatedSchulzeSettings>,
       required: true
     },
     proposals: {

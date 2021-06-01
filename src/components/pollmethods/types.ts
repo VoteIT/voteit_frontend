@@ -140,20 +140,31 @@ export const pollMethods: PollMethod[] = [
   {
     name: PollMethodName.InstantRunoff,
     title: 'Instant-Runoff Voting',
-    proposalsMin: 3
+    proposalsMin: 3,
+    initialSettings: {
+      allow_random: true
+    }
   }
 ]
 
-export interface RepeatedSchulzeSettings {
+interface BasePollMethodSettings {
+  title?: string
+}
+
+export interface RepeatedSchulzeSettings extends BasePollMethodSettings {
   winners: number | null
 }
 
-export interface ScottishSTVSettings {
+export interface ScottishSTVSettings extends BasePollMethodSettings {
   winners: number
   allow_random: boolean
 }
 
-export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings
+interface InstantRunoffSettings extends BasePollMethodSettings {
+  allow_random: boolean
+}
+
+export type PollMethodSettings = BasePollMethodSettings | RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings
 
 /*
  * Post data sent to API
@@ -161,6 +172,7 @@ export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings
 export interface PollStartData {
   agenda_item: number
   meeting: number
+  title?: string
   proposals: number[]
   method_name: PollMethodName
   start: boolean

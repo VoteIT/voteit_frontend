@@ -6,8 +6,7 @@
         {{ button.title }}
       </h2>
       <div class="btn-controls">
-        <v-btn :color="button.color">
-          <v-icon left :icon="button.icon" />
+        <v-btn :prepend-icon="button.icon" :color="button.color">
           {n}
         </v-btn>
         <Btn icon="mdi-pencil" @click="editReaction(button)">{{ t('edit') }}</Btn>
@@ -47,6 +46,7 @@ export default defineComponent({
 
     return {
       t,
+      title: computed(() => t('reactions')),
       editReaction,
       meetingButtons
     }

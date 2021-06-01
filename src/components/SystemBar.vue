@@ -5,10 +5,9 @@
       <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" /></RouterLink>
     </v-app-bar-title>
     <div>
-      <v-btn class="user-menu" color="surface" :class="{ open: userMenuOpen }" plain @mousedown.stop @click="userMenuOpen = !userMenuOpen">
+      <v-btn append-icon="mdi-chevron-down" class="user-menu" color="surface" :class="{ open: userMenuOpen }" plain @mousedown.stop @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
         <span class="ml-2">{{ user.first_name || user.username }}</span>
-        <v-icon right icon="mdi-chevron-down" />
       </v-btn>
       <v-sheet ref="userMenuComponent" absolute top="59" right="6" rounded min-width="240" elevation="4" v-if="userMenuOpen">
         <div>
@@ -17,18 +16,15 @@
           <p>{{ user.username }}</p>
         </div>
         <div>
-          <v-btn plain block disabled>
-            <v-icon icon="mdi-account" left />
+          <v-btn prepend-icon="mdi-account" plain block disabled>
             {{ t('profile.profile') }}
           </v-btn>
-          <v-btn plain block disabled>
-            <v-icon icon="mdi-at" left />
+          <v-btn prepend-icon="mdi-at" plain block disabled>
             {{ t('profile.verifyEmail') }}
           </v-btn>
         </div>
         <div>
-          <v-btn plain block @click="logout()">
-            <v-icon icon="mdi-logout" left />
+          <v-btn prepend-icon="mdi-logout" plain block @click="logout()">
             {{ t('auth.logout') }}
           </v-btn>
         </div>
