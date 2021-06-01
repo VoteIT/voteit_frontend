@@ -1,22 +1,25 @@
 <template>
-  <BtnDropdown ref="dropdownComponent" :title="t('content.addName', { name })" @open="editorComponent.focus()">
-    <RichtextEditor ref="editorComponent" submit :disabled="disabled" v-model="text" @submit="submit()" :tags="tags" />
-  </BtnDropdown>
+  <div class="add-content">
+    <UserAvatar size="small" class="mr-1" />
+    <RichtextEditor ref="editorComponent" submit
+      :placeholder="placeholder"
+      :disabled="disabled" v-model="text" @submit="submit()" :tags="tags"
+      :submitText="submitText" :submitIcon="submitIcon" />
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, stripHTML } from '@/utils'
 
-import BtnDropdown from '../BtnDropdown.vue'
 import RichtextEditor from '../widgets/RichtextEditor.vue'
-import { useI18n } from 'vue-i18n'
+import { EditorComponent } from '../widgets/types'
 
 export default defineComponent({
   name: 'AddContent',
   components: {
-    BtnDropdown,
     RichtextEditor
   },
   props: {
@@ -25,6 +28,13 @@ export default defineComponent({
       type: Function as PropType<(body: string) => Promise<any>>,
       required: true
     },
+    modelValue: {
+      type: String,
+      default: ''
+    },
+    submitText: String,
+    submitIcon: String,
+    placeholder: String,
     minLength: {
       type: Number,
       default: 1
@@ -35,9 +45,9 @@ export default defineComponent({
     },
     tags: Set as PropType<Set<string>>
   },
-  setup (props) {
+  setup (props, { emit }) {
     const { t } = useI18n()
-    const text = ref('')
+    const text = ref(props.modelValue)
     const submitting = ref(false)
 
     const textLength = computed(() => stripHTML(text.value).length)
@@ -49,8 +59,7 @@ export default defineComponent({
         submitting.value = true
         try {
           await props.handler(text.value)
-          editorComponent.value.clear()
-          dropdownComponent.value.isOpen = false
+          if (editorComponent.value) editorComponent.value.clear()
         } catch (err) {
           console.error(err)
         }
@@ -60,31 +69,35 @@ export default defineComponent({
       }
     }
 
-    // FIXME Don't know how to type there correctly
-    const editorComponent = ref<any>(null)
-    const dropdownComponent = ref<any>(null)
+    function focus () {
+      // eslint-disable-next-line no-unused-expressions
+      if (editorComponent.value) editorComponent.value.focus()
+    }
+
+    const editorComponent = ref<null | EditorComponent>(null)
+    watch(() => props.modelValue, value => {
+      text.value = value
+    })
+    watch(text, value => {
+      emit('update:modelValue', value)
+    })
 
     return {
       t,
       disabled,
-      open,
       focus,
+      open,
       submit,
       text,
-      editorComponent,
-      dropdownComponent
+      editorComponent
     }
   }
 })
 </script>
 
-<style lang="sass" scoped>
-textarea
-  width: 100%
-  height: 8em
-  border: rgb(var(--v-border-color))
-  &:focus
-    outline: rgb(var(--v-border-color))
-.buttons
-  text-align: right
+<style lang="sass">
+.add-content
+  display: flex
+  .richtext-editor
+    flex: 1 1 auto
 </style>

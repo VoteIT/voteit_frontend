@@ -1,31 +1,31 @@
 <template>
-  <div class="comments">
-    <div class="post-comment" v-if="commentInput">
-      <UserAvatar class="mr-2" size="small" />
-      <RichtextEditor ref="editorComponent" @submit="submit()" submit :disabled="disabled" :tags="allTags" v-model="comment" :submit-text="t('post')" submit-icon="mdi-send" />
-    </div>
+  <div class="comments mb-2">
     <DiscussionPost :all-tags="allTags" v-for="c in comments" :key="c.pk" :p="c">
       <template v-slot:buttons>
         <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: c.pk }">{{ btn.title }}</ReactionButton>
       </template>
     </DiscussionPost>
+    <AddContent ref="addContentComponent" v-if="commentInput" :name="t('discussion.discussion')"
+                :tags="allTags" :handler="submit" :placeholder="t('discussion.postPlaceholder')"
+                :submitText="t('post')" submitIcon="mdi-send" v-model="comment" />
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, PropType, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+import { dialogQuery, stripHTML } from '@/utils'
+import AddContent from './meeting/AddContent.vue'
 import ReactionButton from './meeting/ReactionButton.vue'
-import RichtextEditor from './widgets/RichtextEditor.vue'
 import DiscussionPostVue from './widgets/DiscussionPost.vue'
 
-import { DiscussionPost } from '@/contentTypes/types'
-import discussionPostType from '@/contentTypes/discussionPost'
-import { useI18n } from 'vue-i18n'
-import { dialogQuery, stripHTML } from '@/utils'
 import useAgenda from '@/composables/meeting/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useReactions from '@/composables/meeting/useReactions'
+
+import { DiscussionPost } from '@/contentTypes/types'
+import discussionPostType from '@/contentTypes/discussionPost'
 
 function getTagHTML (tagName?: string): string {
   return tagName ? `<p><span class="mention" data-index="0" data-denotation-char="#" data-id="${tagName}" data-value="${tagName}"><span contenteditable="false"><span class="ql-mention-denotation-char">#</span>${tagName}</span></span>&nbsp;</p>` : ''
@@ -34,9 +34,9 @@ function getTagHTML (tagName?: string): string {
 export default defineComponent({
   inject: ['t'],
   components: {
+    AddContent,
     DiscussionPost: DiscussionPostVue,
-    ReactionButton,
-    RichtextEditor
+    ReactionButton
   },
   props: {
     comments: {
@@ -81,7 +81,8 @@ export default defineComponent({
             body: comment.value,
             agenda_item: agendaId.value
           })
-          editorComponent.value.setText(getTagHTML(props.setTag))
+          // eslint-disable-next-line no-unused-expressions
+          comment.value = getTagHTML(props.setTag)
         } catch (err) {
           console.error(err)
         }
@@ -91,14 +92,19 @@ export default defineComponent({
       }
     }
 
-    const editorComponent = ref<any>(null)
+    function focus () {
+      if (addContentComponent.value) addContentComponent.value.focus()
+    }
+
+    const addContentComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     const reactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
 
     return {
       comment,
       disabled,
+      focus,
       reactions,
-      editorComponent,
+      addContentComponent,
       submit
     }
   }

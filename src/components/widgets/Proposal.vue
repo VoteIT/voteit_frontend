@@ -34,7 +34,7 @@
       <Menu :items="menuItems" />
     </footer>
     <slot name="bottom"/>
-    <Comments v-if="!readOnly" ref="commentsComponent" v-show="showComments" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
+    <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
   </div>
   <div v-else class="proposal">
     <em>{{ t('proposal.notFound') }}</em>
@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, nextTick, PropType, ref } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, nextTick, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -105,11 +105,12 @@ export default defineComponent({
       })) api.transition(props.p.pk, 'retract')
     }
 
-    const commentsComponent = ref<any>(null)
+    const commentsComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     async function comment () {
       showComments.value = true
       await nextTick()
-      commentsComponent.value.editorComponent.focus()
+      // eslint-disable-next-line no-unused-expressions
+      commentsComponent.value?.focus()
     }
 
     const menuItems = computed<MenuItem[]>(() => {

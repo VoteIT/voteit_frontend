@@ -19,6 +19,7 @@
   "organizations": "Organizations",
   "post": "Post",
   "preview": "Preview",
+  "publish": "Publish",
   "save": "Save",
   "select": "Select",
   "settings": "Settings",
@@ -58,7 +59,8 @@
     "discussion": "Discussion post",
     "discussions": "Discussions",
     "hideComments": "Hide comments",
-    "noDiscussions": "Nothing to hear..."
+    "noDiscussions": "Nothing to hear...",
+    "postPlaceholder": "Write a comment"
   },
   "home": {
     "home": "Home",
@@ -179,12 +181,14 @@
     "verifyEmail": "Verify email"
   },
   "proposal": {
+    "add": "Add proposal",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
     "proposals": "Proposals",
     "proposalsAndComments": "Proposals and comments",
     "noProposals": "Nothing to say...",
     "notFound": "Proposal not found",
+    "postPlaceholder": "Write your proposal",
     "retract": "Retract",
     "retractPrompt": "Are you sure you want to retract this proposal?"
   },

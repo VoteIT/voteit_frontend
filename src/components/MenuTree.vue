@@ -112,7 +112,7 @@ ul.menu-tree
     padding-right: 1em
     border-radius: 5px
     div
-      flex: 1 0 auto
+      flex: 1 1 auto
     span
       font-size: 10.5pt
 
@@ -125,7 +125,7 @@ ul.menu-tree
     &.router-link-exact-active
       background-color: rgb(var(--v-theme-app-bar-active))
     :first-child
-      flex: 1 0 auto
+      flex: 1 1 auto
     span
       margin-left: .5em
     &.has-new

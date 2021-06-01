@@ -23,6 +23,11 @@
       <v-col cols="12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
+        <div>
+          <v-btn @click="addProposalComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
+            {{ t('proposal.add') }}
+          </v-btn>
+        </div>
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
             <Proposal :p="p" :all-tags="allTags" :comments="getProposalDiscussions(p)" :unread="p.created > agendaItemLastRead" v-intersect="{
@@ -37,7 +42,9 @@
         </div>
         <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
-                    :tags="allTags" :handler="addProposal" />
+                    :tags="allTags" :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
+                    :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
+                    ref="addProposalComponent" />
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" lg="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
@@ -50,14 +57,15 @@
         </div>
         <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-                    :tags="allTags" :handler="addDiscussionPost" />
+                    :tags="allTags" :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
+                    :submitText="t('post')" submitIcon="mdi-send" />
       </v-col>
     </v-row>
   </template>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -126,14 +134,15 @@ export default defineComponent({
       }
       return tags
     })
-    function addProposal (body: string) {
-      return proposalType.getContentApi().add({
+    const addProposalComponent = ref<null | ComponentPublicInstance>(null)
+    async function addProposal (body: string) {
+      await proposalType.getContentApi().add({
         agenda_item: agendaId.value,
         body
       })
     }
-    function addDiscussionPost (body: string) {
-      return discussionPostType.getContentApi().add({
+    async function addDiscussionPost (body: string) {
+      await discussionPostType.getContentApi().add({
         agenda_item: agendaId.value,
         body
       })
@@ -203,6 +212,7 @@ export default defineComponent({
       agendaItem,
       allTags,
       addProposal,
+      addProposalComponent,
       addDiscussionPost,
       channel,
       ...discussions,

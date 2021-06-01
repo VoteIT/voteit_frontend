@@ -1,5 +1,5 @@
 <template>
-  <div class="richtext-editor">
+  <div class="richtext-editor" ref="rootElement">
     <div ref="editorElement"/>
     <div class="btn-controls" v-if="submit">
       <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
@@ -55,11 +55,13 @@ export default defineComponent({
     submitIcon: {
       type: String,
       default: 'mdi-check'
-    }
+    },
+    placeholder: String
   },
   setup (props, { emit }) {
     let editor: Quill | null = null
     const editorElement = ref<HTMLElement | null>(null)
+    const rootElement = ref<HTMLElement | null>(null)
 
     const rolesApi = meetingRoleType.getContentApi()
     const { meetingId } = useMeeting()
@@ -101,7 +103,10 @@ export default defineComponent({
     onMounted(() => {
       if (editorElement.value) {
         editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
-        const config = Object.assign({}, QUILL_CONFIG)
+        const config = {
+          ...QUILL_CONFIG,
+          placeholder: props.placeholder
+        }
         if (props.submit) {
           config.modules.keyboard.bindings.submit = {
             key: 'Enter',
@@ -124,6 +129,8 @@ export default defineComponent({
       if (editor) {
         editor.focus()
         editor.setSelection(editor.getLength(), editor.getLength())
+        // eslint-disable-next-line no-unused-expressions
+        rootElement.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
       }
     }
 
@@ -139,6 +146,7 @@ export default defineComponent({
 
     return {
       editorElement,
+      rootElement,
       focus,
       clear,
       setText
