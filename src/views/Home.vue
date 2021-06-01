@@ -37,6 +37,9 @@
           <h2>
             {{ o.title }}
           </h2>
+          <p>
+            Requires: {{ o.scopes.join(", ")}}
+          </p>
           <Btn v-if="o.login_url" icon="mdi-login" @click="startOrganizationLogin(o)">{{ t('organization.loginTo', o) }}</Btn>
           <p v-else><em>{{ t('organization.noLogin') }}</em></p>
         </v-sheet>

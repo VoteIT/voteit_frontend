@@ -175,4 +175,5 @@ export interface Organization {
   title: string
   body: string
   login_url: string | null
+  scopes: string[]
 }
