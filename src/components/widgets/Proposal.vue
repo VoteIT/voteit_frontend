@@ -188,8 +188,18 @@ export default defineComponent({
     > *
       margin-right: 1.5em
 
-  &.unread
-    border: 2px solid red
+  &.unread .richtext
+    position: relative
+    ::after
+      content: ''
+      display: block
+      position: absolute
+      left: -1.2em
+      top: .5em
+      background-color: rgba(var(--v-theme-primary), .5)
+      height: 6px
+      width: 6px
+      border-radius: 50%
 
   footer
     margin-bottom: .5em

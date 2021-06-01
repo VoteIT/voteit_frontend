@@ -20,7 +20,7 @@ const light = {
     'menu-active': '#9C8afa',
     surface: '#ffffff',
     'surface-active': colors.green.lighten5,
-    primary: colors.indigo.base,
+    primary: '#3729d8',
     secondary: colors.grey.darken1,
     'secondary-lighten-2': colors.grey.lighten2,
     accent: colors.indigo.darken4,

@@ -153,7 +153,7 @@ export default defineComponent({
 @import '~quill-mention/dist/quill.mention.css'
 .richtext-editor
   .btn-controls
-    text-align: right
+    justify-content: flex-end
     margin-top: -3px
     margin-right: 6px
 
