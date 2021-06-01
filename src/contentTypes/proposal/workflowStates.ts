@@ -15,7 +15,7 @@ export default [
   },
   {
     transition: 'retract',
-    icon: 'mdi-eye-off',
+    icon: 'mdi-undo-variant',
     state: ProposalState.Retracted
   },
   {
@@ -25,17 +25,17 @@ export default [
   },
   {
     transition: 'approved',
-    icon: 'mdi-check',
+    icon: 'mdi-check-circle-outline',
     state: ProposalState.Approved
   },
   {
     transition: 'denied',
-    icon: 'mdi-close',
+    icon: 'mdi-close-circle-outline',
     state: ProposalState.Denied
   },
   {
     transition: 'unhandled',
-    icon: 'mdi-cancel',
+    icon: 'mdi-help-circle-outline',
     state: ProposalState.Unhandled
   }
 ]

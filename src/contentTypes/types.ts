@@ -21,7 +21,6 @@ export interface WorkflowState {
   state: string
   icon: string
   transition?: string
-  name?: string
   requiresRole?: MeetingRole
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first

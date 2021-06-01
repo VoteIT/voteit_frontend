@@ -1,3 +1,5 @@
+import { WorkflowState } from '../types'
+
 export enum MeetingState {
   Upcoming = 'upcoming',
   Ongoing = 'ongoing',
@@ -9,17 +11,17 @@ export enum MeetingState {
 export default [
   {
     transition: 'upcoming',
-    icon: 'mdi-pause',
+    icon: 'mdi-progress-clock',
     state: MeetingState.Upcoming
   },
   {
     transition: 'ongoing',
-    icon: 'mdi-play',
+    icon: 'mdi-play-circle',
     state: MeetingState.Ongoing
   },
   {
     transition: 'close',
-    icon: 'mdi-close',
+    icon: 'mdi-close-circle-outline',
     state: MeetingState.Closed
   },
   {
@@ -34,4 +36,4 @@ export default [
     state: MeetingState.Archived,
     isFinal: true
   }
-]
+] as WorkflowState[]

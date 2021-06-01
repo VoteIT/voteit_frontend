@@ -8,7 +8,7 @@ export enum AgendaState {
   Archived = 'archived'
 }
 
-const states: WorkflowState[] = [
+export default [
   {
     transition: 'unpublish',
     icon: 'mdi-eye-off',
@@ -18,19 +18,19 @@ const states: WorkflowState[] = [
   },
   {
     transition: 'upcoming',
-    icon: 'mdi-pause',
+    icon: 'mdi-progress-clock',
     state: AgendaState.Upcoming,
     priority: 2
   },
   {
     transition: 'ongoing',
-    icon: 'mdi-play',
+    icon: 'mdi-play-circle',
     state: AgendaState.Ongoing,
     priority: 1
   },
   {
     transition: 'close',
-    icon: 'mdi-close',
+    icon: 'mdi-close-circle-outline',
     state: AgendaState.Closed,
     priority: 3
   },
@@ -39,6 +39,4 @@ const states: WorkflowState[] = [
     icon: 'mdi-archive',
     state: AgendaState.Archived
   }
-]
-
-export default states
+] as WorkflowState[]

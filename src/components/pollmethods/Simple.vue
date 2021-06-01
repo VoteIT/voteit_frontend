@@ -54,7 +54,6 @@ export default defineComponent({
     const votes = reactive<Map<number, SimpleChoice>>(new Map())
 
     if (props.modelValue) {
-      console.log(props.modelValue)
       for (const [choice, pks] of Object.entries(props.modelValue)) {
         for (const pk of pks) {
           votes.set(pk, choice as SimpleChoice)
@@ -62,7 +61,7 @@ export default defineComponent({
       }
     }
 
-    const options = [
+    const options: Option[] = [
       {
         value: SimpleChoice.Yes,
         title: t('poll.approve'),

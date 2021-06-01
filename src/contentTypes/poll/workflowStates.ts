@@ -10,40 +10,35 @@ export enum PollState {
   Failed = 'failed'
 }
 
-const states: WorkflowState[] = [
+export default [
   {
     transition: 'unpublish',
     icon: 'mdi-eye-off',
     state: PollState.Private,
-    name: 'Private',
     requiresRole: MeetingRole.Moderator,
     priority: 4
   },
   {
     transition: 'upcoming',
-    icon: 'mdi-pause',
+    icon: 'mdi-progress-clock',
     state: PollState.Upcoming,
-    name: 'Upcoming',
     priority: 2
   },
   {
     transition: 'ongoing',
-    icon: 'mdi-vote',
+    icon: 'mdi-play-circle',
     state: PollState.Ongoing,
-    name: 'Ongoing',
     priority: 1
   },
   {
     transition: 'close',
     icon: 'mdi-gavel',
-    state: PollState.Closed,
-    name: 'Closed'
+    state: PollState.Closed
   },
   {
     transition: 'finish',
     icon: 'mdi-check',
     state: PollState.Finished,
-    name: 'Finished',
     isFinal: true,
     priority: 3
   },
@@ -51,15 +46,11 @@ const states: WorkflowState[] = [
     transition: 'cancel',
     icon: 'mdi-cancel',
     state: PollState.Canceled,
-    name: 'Canceled',
     isFinal: true
   },
   {
     icon: 'mdi-alert',
     state: PollState.Failed,
-    name: 'Failed',
     isFinal: true
   }
-]
-
-export default states
+] as WorkflowState[]
