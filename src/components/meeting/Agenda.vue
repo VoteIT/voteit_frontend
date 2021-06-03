@@ -1,12 +1,6 @@
 <template>
   <v-navigation-drawer v-if="initDone" app id="agenda" v-model="isOpen" width="348">
     <MenuTree :items="menu" @navigation="toggleDrawer" />
-    <BtnDropdown dark title="New agenda item" @open="focusInput" v-if="canAdd(meeting)">
-      <form @submit.prevent="addAgendaItem" class="agenda-add-form">
-        <input ref="inputEl" type="text" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
-        <v-btn :disabled="!newAgendaTitle" size="small" @click="addAgendaItem">{{ t('add') }}</v-btn>
-      </form>
-    </BtnDropdown>
   </v-navigation-drawer>
 </template>
 
@@ -23,7 +17,6 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import meetingRules from '@/contentTypes/meeting/rules'
 import pollType from '@/contentTypes/poll'
 
-import BtnDropdown from '../BtnDropdown.vue'
 import { AgendaItem, WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/composables/meeting/usePolls'
 import useProposals from '@/composables/meeting/useProposals'
@@ -33,7 +26,6 @@ import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 export default defineComponent({
   name: 'Agenda',
   components: {
-    BtnDropdown,
     MenuTree
   },
   setup () {
@@ -41,28 +33,11 @@ export default defineComponent({
     const { getAgenda, hasNewItems } = useAgenda()
     const { meeting, meetingId, meetingPath, hasRole } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
-    const agendaApi = agendaItemType.getContentApi()
     const agendaWorkflows = agendaItemType.useWorkflows()
     const pollWorkflows = pollType.useWorkflows()
     const { getAiPolls, getPolls } = usePolls()
     const { getAgendaProposals } = useProposals()
     const { initDone } = useLoader('Agenda')
-
-    // Add AgendaItem
-    const newAgendaTitle = ref('')
-    function addAgendaItem () {
-      agendaApi.add({
-        meeting: meetingId.value,
-        title: newAgendaTitle.value
-      })
-        .then(() => { newAgendaTitle.value = '' })
-    }
-    // Focus input element
-    const inputEl = ref<HTMLElement | null>(null)
-    function focusInput () {
-      // eslint-disable-next-line no-unused-expressions
-      inputEl.value?.focus()
-    }
 
     function getAiPath (ai: AgendaItem) {
       return `${meetingPath.value}/a/${ai.pk}/${slugify(ai.title)}`
@@ -167,6 +142,10 @@ export default defineComponent({
           title: t('settings'),
           to: `${meetingPath.value}/settings`
         })
+        items[2].items.unshift({
+          title: t('agenda.edit'),
+          to: `${meetingPath.value}/settings/agenda`
+        })
       }
       return items
     })
@@ -180,6 +159,7 @@ export default defineComponent({
     return {
       t,
       isOpen,
+      initDone,
       toggleDrawer,
       meeting,
       menu,
@@ -187,14 +167,7 @@ export default defineComponent({
       getAiType,
       aiGroups,
       getAiPolls,
-      getAgendaProposals,
-      ...agendaItemType.rules,
-
-      newAgendaTitle,
-      addAgendaItem,
-      inputEl,
-      focusInput,
-      initDone
+      getAgendaProposals
     }
   }
 })
@@ -204,18 +177,4 @@ export default defineComponent({
 #agenda
   background-color: rgb(var(--v-theme-app-bar))
   color: rgb(var(--v-theme-on-app-bar))
-
-  .agenda-add-form
-    display: flex
-    input[type=text]
-      flex: 1 1 auto
-      min-width: 0
-      background-color: rgb(var(--v-theme-background))
-      padding: 0 .4em
-      border-radius: 3px 0 0 3px
-    .v-btn
-      border-radius: 0 3px 3px 0
-
-  .btn-dropdown
-    margin: 1rem .5rem
 </style>

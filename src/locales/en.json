@@ -39,7 +39,9 @@
     "agenda": "Agenda",
     "columns": "Columns",
     "edit": "Edit agenda",
+    "deleteItemConfirm": "You are about to delete an Agenda Item premanently.\nAre you sure?",
     "nested": "Nested",
+    "newItem": "New Agenda Item",
     "order": "Order Agenda Items",
     "showAs": "Show as"
   },

@@ -26,6 +26,7 @@
         <div>
           <v-btn @click="addProposalComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
             {{ t('proposal.add') }}
+            {{ t('proposal.add') }}
           </v-btn>
         </div>
         <div v-if="sortedProposals.length">

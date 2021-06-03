@@ -50,20 +50,18 @@ export default defineComponent({
 
     onBeforeMount(() => {
       openDialogEvent.on(dialog => {
-        if (dialog) {
-          dialog.no = dialog.no || t('no')
-          dialog.yes = dialog.yes || t('yes')
-          if (!queue.length) {
-            savedFocusEl = document.querySelector(':focus')
-          }
-          queue.push(dialog)
-          nextTick(() => {
-            console.log(window.value)
-            if (!window.value) return
-            const el = window.value.$el as HTMLElement
-            el.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
-          })
+        if (!dialog) return
+        dialog.no = dialog.no || t('no')
+        dialog.yes = dialog.yes || t('yes')
+        if (!queue.length) {
+          savedFocusEl = document.querySelector(':focus')
         }
+        queue.push(dialog)
+        nextTick(() => {
+          if (!window.value) return
+          const el = window.value.$el as HTMLElement
+          el.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
+        })
       })
     })
 
