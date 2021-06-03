@@ -9,10 +9,6 @@
     <h3>
       {{ list.title }}
     </h3>
-    <div v-if="canStart(list)" class="btn-group">
-      <v-btn color="primary" :disabled="!isActive || !queue.length" @click="speakers.startSpeaker(list)"><v-icon icon="mdi-play"/></v-btn>
-      <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(list)"><v-icon icon="mdi-stop"/></v-btn>
-    </div>
     <p v-if="currentSpeaker" class="mb-2">
       {{ t('speaker.currentlySpeaking') }}:
       <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />

@@ -71,6 +71,17 @@ export default function useAgenda () {
     return agendaItems.get(agendaItem)
   }
 
+  function getPreviousAgendaItem (agendaItem: AgendaItem) {
+    const agenda = getAgenda(agendaItem.meeting)
+    const index = agenda.indexOf(agendaItem)
+    return agenda[index - 1]
+  }
+  function getNextAgendaItem (agendaItem: AgendaItem) {
+    const agenda = getAgenda(agendaItem.meeting)
+    const index = agenda.indexOf(agendaItem)
+    return agenda[index + 1]
+  }
+
   function hasNewItems (agendaItem: AgendaItem): boolean {
     // If no content, there are no new items
     if (!agendaItem.related_modified) return false
@@ -98,6 +109,8 @@ export default function useAgenda () {
   return {
     getAgenda,
     getAgendaItem,
+    getPreviousAgendaItem,
+    getNextAgendaItem,
     hasNewItems,
     agendaId,
     agendaItem,

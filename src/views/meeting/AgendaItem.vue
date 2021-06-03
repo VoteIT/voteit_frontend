@@ -14,7 +14,6 @@
         <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
         <div class="speaker-lists" v-if="speakerSystems.length">
           <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
-          <v-btn color="primary" style="margin-right: .5em; margin-bottom: .5em;" size="small" v-for="system in addSpeakerSystems" :key="system.pk" @click="addSpeakerList(system)" prepend-icon="mdi-plus">{{ t('speaker.addListToSystem', system) }}</v-btn>
           <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
         </div>
       </v-col>
@@ -25,7 +24,6 @@
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
         <div>
           <v-btn @click="addProposalComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
-            {{ t('proposal.add') }}
             {{ t('proposal.add') }}
           </v-btn>
         </div>
@@ -91,9 +89,7 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
 import pollType from '@/contentTypes/poll'
 import proposalType from '@/contentTypes/proposal'
-import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import speakerListType from '@/contentTypes/speakerList'
-import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem } from '@/utils/types'
 import { AgendaItem, Proposal } from '@/contentTypes/types'
 
@@ -152,17 +148,6 @@ export default defineComponent({
     const proposalReactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
     const discussionReactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
 
-    function addSpeakerList (system: SpeakerSystem) {
-      const listData: SpeakerListAddMessage = {
-        title: agendaItem.value?.title ?? '---',
-        speaker_system: system.pk,
-        agenda_item: agendaId.value
-      }
-      speakerListType.getContentApi().add(listData)
-    }
-
-    const addSpeakerSystems = computed(() => speakerSystems.value.filter(system => speakerListType.rules.canAdd(system)))
-
     const menuItems = computed<MenuItem[]>(() => {
       const items: MenuItem[] = []
       if (pollType.rules.canAdd(agendaItem.value)) {
@@ -178,6 +163,17 @@ export default defineComponent({
           icon: 'mdi-pencil',
           onClick: async () => { editingBody.value = !editingBody.value }
         })
+      }
+      const speakerSystems = getSystems(meetingId.value, false, true)
+      if (speakerSystems.length) {
+        items.push('---')
+        for (const system of speakerSystems) {
+          items.push({
+            text: t('speaker.manageSystem', system as any),
+            icon: 'mdi-bullhorn',
+            onClick: () => router.push(`${meetingPath.value}/lists/${system.pk}/${agendaId.value}`)
+          })
+        }
       }
       return items
     })
@@ -208,7 +204,6 @@ export default defineComponent({
 
     return {
       t,
-      addSpeakerSystems,
       agendaId,
       agendaItem,
       allTags,
@@ -227,7 +222,6 @@ export default defineComponent({
       sortedDiscussions,
       speakerLists,
       speakerSystems,
-      addSpeakerList,
 
       agendaItemType,
       discussionPostType,

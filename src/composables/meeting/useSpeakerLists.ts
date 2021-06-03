@@ -7,7 +7,7 @@ import speakerSystemType, { SpeakerSystem } from '@/contentTypes/speakerSystem'
 
 import useAuthentication from '../useAuthentication'
 
-import { SpeakerList, SpeakerOrderUpdate } from '@/contentTypes/types'
+import { AgendaItem, SpeakerList, SpeakerOrderUpdate, SpeakerSystemRole } from '@/contentTypes/types'
 import { SpeakerSystemState } from '@/contentTypes/speakerSystem/workflowStates'
 import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
@@ -19,6 +19,8 @@ export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map l
 
 speakerSystemType.getChannel()
   .updateMap(speakerSystems)
+
+const { hasRole } = speakerSystemType.useContextRoles()
 
 const listChannel = speakerListType.getChannel()
   .updateMap(speakerLists)
@@ -41,24 +43,43 @@ new Channel<SpeakerStartStopMessage>('speaker')
 export default function useSpeakerLists () {
   const { user } = useAuthentication()
 
-  function getAgendaSpeakerLists (agendaPk: number) {
-    return [...wu(speakerLists.values()).filter(l => l.agenda_item === agendaPk)]
+  function getAgendaSpeakerLists (agendaItem: number, isSpeaker = false): SpeakerList[] {
+    const lists = [...wu(speakerLists.values()).filter(l => l.agenda_item === agendaItem)]
+    if (isSpeaker) return lists.filter(l => hasRole(l.speaker_system, SpeakerSystemRole.Speaker))
+    return lists
+  }
+
+  function getSystemSpeakerLists (system: SpeakerSystem, agendaItem?: AgendaItem) {
+    return [
+      ...wu(speakerLists.values())
+        .filter(
+          l => l.speaker_system === system.pk &&
+               (!agendaItem || l.agenda_item === agendaItem.pk)
+        )
+    ]
   }
 
   function getSystem (pk: number) {
     return speakerSystems.get(pk)
   }
 
-  function getSystems (pk: number, all = false) {
+  function getSystems (meeting: number, nonActive = false, isModerator = false) {
     // For meeting pk
     // By default only active systems
-    const systems = []
-    for (const s of speakerSystems.values()) {
-      if (s.meeting === pk && (all || s.state === SpeakerSystemState.Active)) {
-        systems.push(s)
-      }
-    }
-    return systems
+    return [
+      ...wu(speakerSystems.values())
+        .filter(s => (s.meeting === meeting) &&
+          (nonActive || s.state === SpeakerSystemState.Active) &&
+          (!isModerator || hasRole(s.pk, SpeakerSystemRole.ListModerator))
+        )
+    ]
+    // const systems = []
+    // for (const s of speakerSystems.values()) {
+    //   if (s.meeting === meeting && (all || s.state === SpeakerSystemState.Active)) {
+    //     systems.push(s)
+    //   }
+    // }
+    // return systems
   }
 
   function getList (pk: number) {
@@ -69,6 +90,18 @@ export default function useSpeakerLists () {
   }
   function getCurrent (list: SpeakerList) {
     return currentlySpeaking.get(list.pk)
+  }
+
+  function makeUniqueListName (title: string): string {
+    const checkDuplicate = (title: string) => {
+      for (const list of speakerLists.values()) {
+        if (list.title === title) return true
+      }
+    }
+    for (let i = 1; true; i++) {
+      const newTitle = `${title} - ${i}`
+      if (!checkDuplicate(newTitle)) return newTitle
+    }
   }
 
   function enterList (list: SpeakerList) {
@@ -109,6 +142,7 @@ export default function useSpeakerLists () {
   return {
     getSystem,
     getSystems,
+    getSystemSpeakerLists,
     getList,
     getQueue,
     getCurrent,
@@ -118,6 +152,7 @@ export default function useSpeakerLists () {
     startSpeaker,
     stopSpeaker,
     userInList,
-    setActiveList
+    setActiveList,
+    makeUniqueListName
   }
 }

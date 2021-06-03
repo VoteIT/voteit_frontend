@@ -16,6 +16,11 @@ export default {
       component: meeting.Start
     },
     {
+      path: 'lists/:system/:aid',
+      name: 'spakerLists',
+      component: meeting.SpeakerLists
+    },
+    {
       path: 'settings',
       name: 'settings',
       component: meeting.ControlPanel,

@@ -1,0 +1,174 @@
+<template>
+  <v-row>
+    <v-col cols="12" md="10" lg="8" offset-md="1" offset-lg="2" v-if="agendaItem">
+      <header>
+        <div class="btn-group">
+          <v-btn v-for="nav in navigation" :key="nav.icon"
+                :disabled="nav.disabled" color="secondary" flat size="x-small" :icon="nav.icon"
+                @click="nav.action()" />
+        </div>
+        <h1>
+          {{ agendaItem.title }}
+        </h1>
+      </header>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col cols="12" order-sm="1" sm="5" md="4" lg="3">
+      <h2>List choices</h2>
+      <ul class="speaker-lists">
+        <li v-for="list in speakerLists" :key="list.pk" block :class="{ active: speakerSystem.active_list === list.pk }">
+          <a :href="`#activate:${list.pk}`" @click.prevent="speakers.setActiveList(list)">
+            {{ list.title }}
+          </a>
+        </li>
+      </ul>
+      <v-btn v-for="system in systems" :key="system.pk" prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
+             @click="addSpeakerList(system)" :disabled="system.state !== 'active'">
+        {{ t('speaker.addListToSystem', system) }}
+      </v-btn>
+    </v-col>
+    <v-col cols="12" order-sm="0" sm="7" md="6" lg="5" offset-md="1" offset-lg="2">
+      <template v-if="currentList">
+        <div v-if="canStart(currentList)" class="btn-group">
+          <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+          <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
+          <v-btn color="primary" :disabled="!currentSpeaker"><v-icon icon="mdi-undo"/></v-btn><!-- TODO -->
+          <v-btn color="primary" disabled><v-icon icon="mdi-shuffle"/></v-btn><!-- TODO -->
+        </div>
+        <p v-else>
+          <em>{{ t('speaker.cantManageList') }}</em>
+        </p>
+        <p v-if="currentSpeaker" class="mt-4">
+          {{ t('speaker.currentlySpeaking') }}:
+          <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
+        </p>
+        <h3 class="mt-4">{{ t('speaker.queue') }}</h3>
+        <ol v-if="currentQueue.length" class="speaker-queue">
+          <li v-for="user in currentQueue" :key="user" :class="{ self: isSelf(user) }"><User :pk="user"/></li>
+        </ol>
+        <p v-else>
+          <em>{{ t('speaker.queueEmpty') }}</em>
+        </p>
+      </template>
+      <p v-else>
+        <em>{{ t('speaker.lists', 0) }}</em>
+      </p>
+    </v-col>
+  </v-row>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+
+import useAuthentication from '@/composables/useAuthentication'
+import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
+import useAgenda from '@/composables/meeting/useAgenda'
+
+import Moment from '@/components/widgets/Moment.vue'
+
+import speakerListType from '@/contentTypes/speakerList'
+import useMeeting from '@/composables/meeting/useMeeting'
+import { AgendaItem } from '@/contentTypes/types'
+import { SpeakerSystem } from '@/contentTypes/speakerSystem'
+import { SpeakerListAddMessage } from '@/contentTypes/messages'
+
+interface AgendaNav {
+  icon: string
+  action: () => void
+  disabled: boolean
+}
+
+export default defineComponent({
+  components: {
+    Moment
+  },
+  setup () {
+    const { t } = useI18n()
+    const route = useRoute()
+    const router = useRouter()
+    const { user } = useAuthentication()
+    const speakers = useSpeakerLists()
+    const { agendaItem, getPreviousAgendaItem, getNextAgendaItem, getAgenda } = useAgenda()
+    const { meetingId, meetingPath } = useMeeting()
+    const systemId = computed(() => Number(route.params.system))
+    const speakerSystem = computed(() => speakers.getSystem(systemId.value))
+    const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
+    const systems = computed(() => agendaItem.value && speakers.getSystems(agendaItem.value.meeting, true, true))
+    // eslint-disable-next-line camelcase
+    const currentList = computed(() => speakerSystem.value?.active_list && speakers.getList(speakerSystem.value.active_list))
+    const currentSpeaker = computed(() => currentList.value && speakers.getCurrent(currentList.value))
+    const currentQueue = computed(() => currentList.value && speakers.getQueue(currentList.value))
+    function isSelf (userId: number) {
+      return user.value?.pk === userId
+    }
+
+    function makeNavigation (icon: string, toAgendaItem?: AgendaItem): AgendaNav {
+      return {
+        icon,
+        action () { toAgendaItem && router.push(`${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}`) },
+        disabled: !toAgendaItem || toAgendaItem === agendaItem.value
+      }
+    }
+
+    const navigation = computed<AgendaNav[]>(() => {
+      if (!agendaItem.value) return []
+      const agenda = getAgenda(meetingId.value)
+      return [
+        makeNavigation('mdi-page-first', agenda[0]),
+        makeNavigation('mdi-chevron-left', getPreviousAgendaItem(agendaItem.value)),
+        makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value)),
+        makeNavigation('mdi-page-last', agenda[agenda.length - 1])
+      ]
+    })
+
+    function addSpeakerList (system: SpeakerSystem) {
+      if (!agendaItem.value) return
+      const listData: SpeakerListAddMessage = {
+        title: speakers.makeUniqueListName(agendaItem.value.title),
+        speaker_system: system.pk,
+        agenda_item: agendaItem.value.pk
+      }
+      speakerListType.getContentApi().add(listData)
+    }
+
+    return {
+      t,
+      agendaItem,
+      currentList,
+      currentSpeaker,
+      currentQueue,
+      speakers,
+      speakerSystem,
+      speakerLists,
+      systems,
+      ...speakerListType.rules,
+      isSelf,
+      navigation,
+      addSpeakerList
+    }
+  }
+})
+</script>
+
+<style lang="sass">
+ul.speaker-lists
+  li
+    list-style: none
+    a
+      display: block
+      color: rgb(var(--v-theme-on-background))
+      padding: .4em .8em
+      border-radius: 5px
+    &.active a
+      background-color: rgb(var(--v-theme-primary))
+      color: rgb(var(--v-theme-on-primary))
+
+ol.speaker-queue
+  margin-left: 1.2em
+  li
+    &.self
+      font-weight: 700
+</style>

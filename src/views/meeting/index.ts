@@ -6,6 +6,7 @@ import Poll from './Poll.vue'
 import Polls from './Polls.vue'
 import Start from './Start.vue'
 import StartPoll from './StartPoll.vue'
+import SpeakerLists from './SpeakerLists.vue'
 
 export default {
   AgendaItem,
@@ -14,6 +15,7 @@ export default {
   Participants,
   Poll,
   Polls,
+  SpeakerLists,
   Start,
   StartPoll
 }

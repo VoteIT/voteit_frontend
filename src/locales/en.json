@@ -210,6 +210,7 @@
   },
   "speaker": {
     "addListToSystem": "New list ({title})",
+    "cantManageList": "You can't manage this list.",
     "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
     "currentlySpeaking": "Now speaking",
@@ -217,6 +218,7 @@
     "isActiveList": "List is active",
     "leaveList": "Leave list",
     "lists": "No speaker lists | Speaker list | Speaker lists",
+    "manageSystem": "Manage speakers ({title})",
     "queue": "Speaker queue",
     "queueEmpty": "No speakers in queue",
     "safePositions": "Safe positions",
