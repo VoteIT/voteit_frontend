@@ -117,6 +117,20 @@ export default function useSpeakerLists () {
     }
   }
 
+  function moderatorEnterList (list: SpeakerList, userid: number) {
+    return listChannel.methodCall('mod_enter', {
+      pk: list.pk,
+      userid
+    })
+  }
+  function moderatorLeaveList (list: SpeakerList, userid: number) {
+    return listChannel.methodCall('mod_leave', {
+      pk: list.pk,
+      userid
+    })
+  }
+
+  // Start by userid, or first in queue
   function startSpeaker (list: SpeakerList, userid: number) {
     userid = userid || getQueue(list)[0]
     listChannel.methodCall('start_user', {
@@ -135,6 +149,12 @@ export default function useSpeakerLists () {
     }
   }
 
+  function undoSpeaker (list: SpeakerList) {
+    listChannel.methodCall('mod_undo', {
+      pk: list.pk
+    })
+  }
+
   function setActiveList (list: SpeakerList) {
     listChannel.methodCall('set_active', { pk: list.pk })
   }
@@ -149,8 +169,11 @@ export default function useSpeakerLists () {
     getAgendaSpeakerLists,
     enterList,
     leaveList,
+    moderatorEnterList,
+    moderatorLeaveList,
     startSpeaker,
     stopSpeaker,
+    undoSpeaker,
     userInList,
     setActiveList,
     makeUniqueListName

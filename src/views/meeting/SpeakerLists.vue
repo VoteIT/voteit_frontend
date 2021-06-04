@@ -33,8 +33,7 @@
         <div v-if="canStart(currentList)" class="btn-group">
           <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
           <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
-          <v-btn color="primary" :disabled="!currentSpeaker"><v-icon icon="mdi-undo"/></v-btn><!-- TODO -->
-          <v-btn color="primary" disabled><v-icon icon="mdi-shuffle"/></v-btn><!-- TODO -->
+          <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
         </div>
         <p v-else>
           <em>{{ t('speaker.cantManageList') }}</em>
@@ -45,7 +44,13 @@
         </p>
         <h3 class="mt-4">{{ t('speaker.queue') }}</h3>
         <ol v-if="currentQueue.length" class="speaker-queue">
-          <li v-for="user in currentQueue" :key="user" :class="{ self: isSelf(user) }"><User :pk="user"/></li>
+          <li v-for="user in currentQueue" :key="user" :class="{ self: isSelf(user) }">
+            <User :pk="user"/>
+            <span class="btn-group ml-2">
+              <v-btn color="primary" @click="speakers.startSpeaker(currentList, user)" size="x-small"><v-icon icon="mdi-play"/></v-btn>
+              <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small"><v-icon icon="mdi-delete"/></v-btn>
+            </span>
+          </li>
         </ol>
         <p v-else>
           <em>{{ t('speaker.queueEmpty') }}</em>
