@@ -57,7 +57,7 @@
         </p>
       </template>
       <p v-else>
-        <em>{{ t('speaker.lists', 0) }}</em>
+        <em>{{ t('speaker.selectAIList') }}</em>
       </p>
     </v-col>
   </v-row>
@@ -96,14 +96,20 @@ export default defineComponent({
     const router = useRouter()
     const { user } = useAuthentication()
     const speakers = useSpeakerLists()
-    const { agendaItem, getPreviousAgendaItem, getNextAgendaItem, getAgenda } = useAgenda()
+    const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, getAgenda } = useAgenda()
     const { meetingId, meetingPath } = useMeeting()
     const systemId = computed(() => Number(route.params.system))
     const speakerSystem = computed(() => speakers.getSystem(systemId.value))
     const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
     const systems = computed(() => agendaItem.value && speakers.getSystems(agendaItem.value.meeting, true, true))
-    // eslint-disable-next-line camelcase
-    const currentList = computed(() => speakerSystem.value?.active_list && speakers.getList(speakerSystem.value.active_list))
+    // eslint-disable-next-line vue/return-in-computed-property
+    const currentList = computed(() => {
+      // eslint-disable-next-line camelcase
+      if (!speakerSystem.value?.active_list) return
+      const list = speakers.getList(speakerSystem.value.active_list)
+      // eslint-disable-next-line camelcase
+      if (list?.agenda_item === agendaId.value) return list
+    })
     const currentSpeaker = computed(() => currentList.value && speakers.getCurrent(currentList.value))
     const currentQueue = computed(() => currentList.value && speakers.getQueue(currentList.value))
     function isSelf (userId: number) {

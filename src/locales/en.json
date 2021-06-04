@@ -222,6 +222,7 @@
     "queue": "Speaker queue",
     "queueEmpty": "No speakers in queue",
     "safePositions": "Safe positions",
+    "selectAIList": "Select list to manage",
     "setActiveList": "Set as active list",
     "settings": "Speaker List settings",
     "systemAdd": "Add List System",
