@@ -1,6 +1,6 @@
 <template>
   <router-view />
-  <Bubbles widgets="bubbleWidgets" />
+  <Bubbles />
 </template>
 
 <script lang="ts">
@@ -26,44 +26,10 @@ import { BubbleComponent } from '@/components/meeting/bubbles/types'
 import { MeetingRole } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
 
-interface NavLink {
-  title: string
-  icon: string
-  path: string
-  role?: MeetingRole
-  count?: () => number
-}
-
 export default defineComponent({
   name: 'Meeting',
   setup () {
     const { t } = useI18n()
-    const navLinks: NavLink[] = [
-      {
-        role: MeetingRole.Moderator,
-        title: t('settings'),
-        icon: 'mdi-cog',
-        path: 'settings'
-      },
-      {
-        // role: ['potential_voter', 'moderator'], // FIXME Permissions
-        title: t('poll.polls'),
-        icon: 'mdi-star',
-        path: 'polls',
-        count: () => getPolls(meetingId.value, 'ongoing').length
-      },
-      {
-        role: MeetingRole.Moderator,
-        title: t('meeting.participants'),
-        icon: 'mdi-account-multiple',
-        path: 'participants'
-      }
-    ]
-    const navigationLinks = computed(() => {
-      return navLinks
-        .filter(l => !l.role || hasRole(l.role))
-    })
-
     const loader = useLoader('Meeting')
     const router = useRouter()
     const { meeting, meetingId, meetingPath, setMeeting, meetingApi, hasRole } = useMeeting()
@@ -146,7 +112,6 @@ export default defineComponent({
     provide('hasRole', hasRole)
 
     return {
-      navigationLinks,
       meeting,
       meetingId,
       meetingPath,

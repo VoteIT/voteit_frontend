@@ -129,7 +129,7 @@ export interface ElectoralRegister {
 
 export interface Vote {
   abstain: boolean
-  vote: Object
+  vote: object
   poll: number
 }
 

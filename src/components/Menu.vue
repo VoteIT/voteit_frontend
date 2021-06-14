@@ -49,6 +49,7 @@ export default defineComponent({
     const onTop = ref(false)
     const elem = ref<HTMLElement | null>(null)
     const working = ref(false)
+    const workflows = props.contentType?.useWorkflows()
     const transitionsAvailable = ref<Transition[] | null>(null)
     if (props.showTransitions && (!props.object || !props.contentType)) {
       console.warn('Menu component needs object and contentType to show transitions.')
@@ -95,8 +96,8 @@ export default defineComponent({
     }
 
     const currentState = computed(() => {
-      if (!props.contentType || !props.object) return
-      return props.contentType.useWorkflows().getState(props.object.state)
+      if (!workflows || !props.object) return
+      return workflows.getState(props.object.state)
     })
 
     async function makeTransition (t: Transition) {

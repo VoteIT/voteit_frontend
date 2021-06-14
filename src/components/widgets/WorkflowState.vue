@@ -1,6 +1,6 @@
 <template>
   <span ref="root" class="dropdown" :class="{ isOpen, right }">
-    <v-btn :prepend-icon="currentState.icon" :append-icon="admin && 'mdi-chevron-down'" size="x-small" flat :border="!admin || currentState.isFinal" @click="toggle()">
+    <v-btn :prepend-icon="currentState.icon" :append-icon="isUserModifiable ? 'mdi-chevron-down' : undefined" size="x-small" flat :border="isUserModifiable" @click="toggle()">
       {{ t(`workflowState.${currentState.state}`) }}
     </v-btn>
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
@@ -41,9 +41,12 @@ export default defineComponent({
     const isOpen = ref(false)
     const { alert } = useAlert()
 
-    const currentState = computed<WorkflowState>(
-      () => getState(props.object.state) as WorkflowState
+    const currentState = computed<WorkflowState | undefined>(
+      () => getState(props.object.state)
     )
+    const isUserModifiable = computed<boolean>(() => {
+      return props.admin && !currentState.value?.isFinal
+    })
 
     function focusButton (where: HTMLElement | null) {
       nextTick(() => {
@@ -54,18 +57,14 @@ export default defineComponent({
     const root = ref<HTMLElement | null>(null)
     const menu = ref<ComponentPublicInstance | null>(null)
     async function toggle (focus = true) {
-      if (!props.admin) return
-      if (!isOpen.value && currentState.value.isFinal) {
+      if (!isUserModifiable.value) return
+      if (!isOpen.value && currentState.value?.isFinal) {
         return alert(`*State "${currentState.value.state}" is final and can't be changed`)
       }
       isOpen.value = !isOpen.value
       if (isOpen.value) {
-        if (!transitionsAvailable.value) {
-          transitionsAvailable.value = await contentApi.getTransitions(props.object.pk, props.object.state)
-          nextTick(() => focusButton(menu.value?.$el))
-        } else {
-          nextTick(() => focusButton(menu.value?.$el))
-        }
+        if (!transitionsAvailable.value) transitionsAvailable.value = await contentApi.getTransitions(props.object.pk, props.object.state)
+        nextTick(() => focusButton(menu.value?.$el))
       } else if (focus) { // If clicked out, don't shift that focus
         focusButton(root.value)
       }
@@ -118,6 +117,7 @@ export default defineComponent({
       currentState,
       transitionsAvailable,
       isOpen,
+      isUserModifiable,
       toggle,
       makeTransition
     }
