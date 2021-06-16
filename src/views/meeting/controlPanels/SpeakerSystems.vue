@@ -12,23 +12,21 @@
         <dt>{{ t('speaker.safePositions') }}</dt>
         <dd>{{ system.safe_positions || t('speaker.noSafePositions') }}</dd>
       </dl>
-      <BtnDropdown dark :title="t('speaker.systemManage')" lazy>
-        <RoleMatrix :channel="systemChannel" :pk="system.pk" :icons="systemIcons" />
-        <UserSearch @submit="addUser(system, $event)"/>
-      </BtnDropdown>
+      <UserSearch class="mt-4" @submit="addUser(system, $event)" :omitIds="getUserIds(system.pk)" />
+      <RoleMatrix class="mt-2" admin :channel="systemChannel" :pk="system.pk" :icons="systemIcons" />
     </Widget>
     <BtnDropdown :title="t('speaker.systemAdd')">
       <form @submit.prevent="createSystem()">
         <p>
-          <label for="speakersystem-title">{{ t('title') }}</label><br/>
+          <label for="speakersystem-title">{{ t('title') }}</label>
           <input id="speakersystem-title" type="text" v-model="systemData.title">
         </p>
         <p>
-          <label for="speakersystem-method">{{ t('speaker.systemMethod') }}</label><br/>
+          <label for="speakersystem-method">{{ t('speaker.systemMethod') }}</label>
           <SelectVue required v-model="systemData.method_name" :options="SpeakerSystemMethod" />
         </p>
         <p>
-          <label for="speakersystem-safepos">{{ t('speaker.safePositions') }}</label><br/>
+          <label for="speakersystem-safepos">{{ t('speaker.safePositions') }}</label>
           <input id="speakersystem-safepos" type="number" min="0" max="2" v-model="systemData.safe_positions">
         </p>
         <Btn icon="mdi-plus" @click="createSystem()" :disabled="!systemDataReady">{{ t('add') }}</Btn>
@@ -41,8 +39,9 @@
 import { computed, defineComponent, onBeforeMount, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, slugify } from '@/utils'
+import { dialogQuery } from '@/utils'
 
+import useLoader from '@/composables/useLoader'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
@@ -51,7 +50,6 @@ import UserSearch from '@/components/widgets/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 
 import speakerSystemType, { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/speakerSystem'
-import useLoader from '@/composables/useLoader'
 import { ContextRole } from '@/composables/types'
 import { MenuItem, ThemeColor, User } from '@/utils/types'
 
@@ -75,6 +73,7 @@ export default defineComponent({
     const speakerLists = useSpeakerLists()
     const loader = useLoader('SpeakerSystems panel')
     const systemRoles = ref<ContextRole[]>([])
+    const { getUserIds } = speakerSystemType.useContextRoles()
 
     onBeforeMount(() => {
       loader.call(async () => {
@@ -84,7 +83,7 @@ export default defineComponent({
 
     const systems = computed(() => speakerLists.getSystems(meetingId.value, true))
     const systemData = reactive<Partial<SpeakerSystem>>({
-      title: meeting.value ? slugify(meeting.value.title) : '',
+      title: t('speaker.system'),
       safe_positions: 1
     })
     const systemDataReady = computed(() => systemData.title && systemData.method_name)
@@ -129,6 +128,7 @@ export default defineComponent({
       createSystem,
       deleteSystem,
       getSystemMenu,
+      getUserIds,
       systemChannel,
       addUser,
       systemRoles,

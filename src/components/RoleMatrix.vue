@@ -154,12 +154,15 @@ export default defineComponent({
 table
   width: 100%
   border-spacing: 0
-  tr:nth-child(even)
-    background-color: var(--alt-bg)
+  tbody
+    tr
+      background-color: rgb(var(--v-theme-surface))
+      &:nth-child(even)
+        background-color: rgb(var(--v-theme-background))
   th
     position: relative
     cursor: pointer
-    color: var(--btn-text)
+    color: rgb(var(--v-theme-on-background))
     &.orderBy::after
       content: "↓"
       font-size: 1.4em
@@ -173,9 +176,9 @@ table
   td
     text-align: center
     .mdi
-      color: var(--warning, red)
+      color: rgb(var(--v-theme-warning))
       &.success
-        color: var(--success, green)
+        color: rgb(var(--v-theme-success-darken-2))
   td:first-child,
   th:first-child
     text-align: left

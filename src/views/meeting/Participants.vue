@@ -2,7 +2,7 @@ git<template>
   <main>
     <h1>{{ t('meeting.participants') }}</h1>
     <div v-if="canChange" class="search">
-      <UserSearch @submit="addUser" />
+      <UserSearch @submit="addUser" :omitIds="getUserIds(meetingId)" />
     </div>
     <RoleMatrix :remove-confirm="removeConfirm" :admin="canChange" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
   </main>
@@ -39,6 +39,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { meetingId, meeting, getUser } = useMeeting()
+    const { getUserIds } = meetingType.useContextRoles()
 
     function addRole (user: number, role: string) {
       meetingChannel.addRoles(meetingId.value, user, role)
@@ -67,6 +68,7 @@ export default defineComponent({
     return {
       addUser,
       canChange,
+      getUserIds,
       removeConfirm,
       meetingChannel,
       meetingIcons,

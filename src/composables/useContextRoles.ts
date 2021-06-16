@@ -25,6 +25,7 @@ new Channel<ContextRoles>('roles')
       switch (message.t) {
         case 'roles.removed':
           p.roles.forEach(r => roleStore.delete(r))
+          if (!roleStore.size) contextRoles.delete(key)
           break
         case 'roles.added':
           p.roles.forEach(r => roleStore.add(r))
@@ -54,9 +55,10 @@ export default function useContextRoles (contentType: string) {
   }
 
   function set (pk: number, userId: number, roles: string[]) {
-    // Sets or replaces roles completely
+    // Sets or deletes roles
     const key = getRoleKey(contentType, pk, userId)
-    contextRoles.set(key, new Set(roles))
+    if (roles.length) contextRoles.set(key, new Set(roles))
+    else contextRoles.delete(key)
   }
 
   function hasRole (pk: number, roleName: string | string[], user?: number): boolean {
@@ -72,19 +74,25 @@ export default function useContextRoles (contentType: string) {
     return false
   }
 
-  function getAll<T> (pk: number): UserContextRoles<T>[] {
+  function * iterAll (pk: number) {
     const contextKey = getRoleKey(contentType, pk) + '/'
-    const results: UserContextRoles<T>[] = []
     for (const [key, assigned] of contextRoles.entries()) {
       if (key.startsWith(contextKey)) {
         const user = Number(key.split('/')[2])
-        results.push({
+        yield {
           user,
-          assigned: assigned as any as Set<T>
-        })
+          assigned
+        }
       }
     }
-    return results
+  }
+
+  function getAll<T extends string> (pk: number) {
+    return [...iterAll(pk)] as UserContextRoles<T>[]
+  }
+
+  function getUserIds (pk: number): number[] {
+    return [...iterAll(pk)].map(v => v.user)
   }
 
   return {
@@ -92,6 +100,7 @@ export default function useContextRoles (contentType: string) {
     hasRole,
     getUserRoles,
     getAll,
-    getRoleCount
+    getRoleCount,
+    getUserIds
   }
 }
