@@ -22,10 +22,11 @@
       <v-col cols="12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
-        <div>
+        <div class="btn-actions space-between">
           <v-btn @click="addProposalComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
             {{ t('proposal.add') }}
           </v-btn>
+          <ProposalFilters v-model="activeFilter" :tags="allTags" :key="agendaId" />
         </div>
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
@@ -73,6 +74,7 @@ import { orderBy } from '@/utils'
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
 import ProposalVue from '@/components/widgets/Proposal.vue'
+import ProposalFilters, { Filter, DEFAULT_FILTER_STATES } from '@/components/widgets/ProposalFilters.vue'
 import ReactionButton from '@/components/meeting/ReactionButton.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import SpeakerList from '@/components/widgets/SpeakerList.vue'
@@ -93,6 +95,8 @@ import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
 import { AgendaItem, Proposal } from '@/contentTypes/types'
 
+const AgendaFilters = reactive<Map<number, Filter>>(new Map())
+
 export default defineComponent({
   name: 'AgendaItem',
   setup () {
@@ -105,9 +109,27 @@ export default defineComponent({
     const { getMeetingButtons } = useReactions()
     const channel = agendaItemType.getChannel()
 
+    const activeFilter = computed<Filter>({
+      get: () => AgendaFilters.get(agendaId.value) ?? {
+        order: 'created',
+        states: DEFAULT_FILTER_STATES,
+        tags: []
+      },
+      set: (value) => AgendaFilters.set(agendaId.value, value)
+    })
+    function proposalFilter (p: Proposal): boolean {
+      const { tags, states } = activeFilter.value
+      if (tags.length) {
+        if (p.tags.every(t => !tags.includes(t))) return false
+      }
+      return states.includes(p.state)
+    }
     const sortedProposals = computed(() => {
-      const ps = proposals.getAgendaProposals(agendaId.value)
-      return orderBy(ps)
+      const ps = proposals.getAgendaProposals(agendaId.value, proposalFilter)
+      let order = activeFilter.value.order
+      const reversed = order.startsWith('-')
+      if (reversed) order = order.slice(1)
+      return orderBy(ps, order, reversed)
     })
 
     const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value))
@@ -204,6 +226,7 @@ export default defineComponent({
 
     return {
       t,
+      activeFilter,
       agendaId,
       agendaItem,
       allTags,
@@ -237,6 +260,7 @@ export default defineComponent({
     AddContent,
     DiscussionPost,
     Proposal: ProposalVue,
+    ProposalFilters,
     SpeakerList,
     Richtext,
     ReactionButton,
@@ -250,6 +274,10 @@ export default defineComponent({
   border-top: 1px solid rgb(var(--v-border-color))
   margin-top: 1em
   padding-top: 1em
+
+.btn-actions.space-between
+  display: flex
+  justify-content: space-between
 
 #agenda-display-mode
   margin-top: .5em

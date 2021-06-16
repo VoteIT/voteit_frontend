@@ -1,5 +1,5 @@
 <template>
-  <span class="tag" :style="style">
+  <span class="tag" :class="{ 'select-all': !selectable }" :style="style">
     <v-icon size="x-small" icon="mdi-tag-outline"/>
     #{{ name }}
   </span>
@@ -15,7 +15,8 @@ export default defineComponent({
     name: {
       type: String,
       required: true
-    }
+    },
+    selectable: Boolean
   },
   setup (props) {
     return {
@@ -34,5 +35,6 @@ export default defineComponent({
   border-radius: 4px
   color: #000
   font-size: 10pt
-  user-select: all
+  &.select-all
+    user-select: all
 </style>

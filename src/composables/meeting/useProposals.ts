@@ -33,15 +33,14 @@ agendaDeletedEvent.on(pk => {
 })
 
 export default function useProposals () {
-  function getAgendaProposals (agendaPk: number, state?: ProposalState): Proposal[] {
+  function getAgendaProposals (agendaPk: number, filter?: (p: Proposal) => boolean): Proposal[] {
     const props = [...wu(proposals.values()).filter(
-      p => p.agenda_item === agendaPk && (!state || p.state === state)
+      p => p.agenda_item === agendaPk && (!filter || filter(p))
     )]
-    return orderBy(props) as Proposal[]
+    return orderBy(props)
   }
 
   function getPollProposals (poll: Poll): Proposal[] {
-    // TODO: Send proposal ids with poll data and do poll.proposals.map() instead.
     return orderBy(
       poll.proposals
         .map(prop => proposals.get(prop))

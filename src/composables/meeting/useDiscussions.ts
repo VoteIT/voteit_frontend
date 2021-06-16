@@ -31,9 +31,9 @@ function orderedDiscussions (filter: (d: DiscussionPost) => boolean) {
 }
 
 export default function useDiscussions () {
-  function getAgendaDiscussions (agendaItem: number) {
+  function getAgendaDiscussions (agendaItem: number, filter?: (d: DiscussionPost) => boolean) {
     return orderedDiscussions(
-      post => post.agenda_item === agendaItem
+      post => post.agenda_item === agendaItem && (!filter || filter(post))
     )
   }
 

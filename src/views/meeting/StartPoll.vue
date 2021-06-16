@@ -99,7 +99,7 @@ export default defineComponent({
 
     const selectedProposalIds = reactive<Set<number>>(new Set())
     function getPublishedProposals (agendaItem: number) {
-      return proposals.getAgendaProposals(agendaItem, ProposalState.Published)
+      return proposals.getAgendaProposals(agendaItem, p => p.state === ProposalState.Published)
     }
     const availableProposals = computed(() => getPublishedProposals(agendaId.value))
     const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.has(p.pk)))

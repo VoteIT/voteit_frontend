@@ -1,0 +1,160 @@
+<template>
+  <BtnDropdown ref="root" right>
+    <template v-slot:activator="{ toggle }">
+      <v-btn :color="isModified ? 'warning' : undefined" plain @click="toggle()" append-icon="mdi-chevron-down">
+        {{ t('sortAndFilter') }}
+      </v-btn>
+    </template>
+    <template v-slot>
+      <div class="proposal-filters">
+        <h3>{{ t('orderBy')}}</h3>
+        <div class="option" v-for="f in orders" :key="f.id">
+          <input type="radio" name="order-by" :id="`proposal-order-filter-${f.id}`" :value="f.id" v-model="filter.order">
+          <label :for="`proposal-order-filter-${f.id}`">{{ f.label }}</label>
+        </div>
+        <v-divider/>
+        <h3>{{ t('state') }}</h3>
+        <div class="option" v-for="f in states" :key="f.id">
+          <input type="checkbox" :id="`proposal-state-filter-${f.id}`" v-model="f.active">
+          <label :for="`proposal-state-filter-${f.id}`">{{ f.label }}</label>
+        </div>
+        <v-divider/>
+        <template v-if="tagFilters.length">
+          <h3>{{ t('tags') }}</h3>
+          <div class="option" v-for="f in tagFilters" :key="f.id">
+            <input type="checkbox" :id="`proposal-filter-${f.id}`" v-model="f.active">
+            <label :for="`proposal-filter-${f.id}`">
+              <Tag :name="f.id" selectable />
+            </label>
+          </div>
+          <v-divider/>
+        </template>
+        <h3>{{ t('reset') }}</h3>
+        <v-btn block plain :disabled="!isModified" @click="clearFilters()" prepend-icon="mdi-undo-variant">
+          {{ t('defaultFilters') }}
+        </v-btn>
+      </div>
+    </template>
+  </BtnDropdown>
+</template>
+
+<script lang="ts">
+import { ComponentPublicInstance, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+
+import BtnDropdown from '@/components/BtnDropdown.vue'
+
+import workflowStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { useI18n } from 'vue-i18n'
+import useClickControl from '@/composables/useClickControl'
+
+interface FilterDescription {
+  id: string
+  label: string
+  active?: boolean
+}
+
+export interface Filter {
+  order: string
+  states: ProposalState[]
+  tags: string[]
+}
+
+export const DEFAULT_FILTER_STATES = [ProposalState.Published, ProposalState.Voting, ProposalState.Approved]
+
+function equalArrays (a: string[], b: string[]): boolean {
+  if (!a.every(v => b.includes(v))) return false
+  return b.every(v => a.includes(v))
+}
+
+export default defineComponent({
+  props: {
+    modelValue: {
+      type: Object as PropType<Filter>,
+      required: true
+    },
+    tags: {
+      type: Set as PropType<Set<string>>,
+      required: true
+    }
+  },
+  setup (props, { emit }) {
+    const { t } = useI18n()
+    const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
+    const filter = reactive<Filter>(props.modelValue)
+    const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.length || !equalArrays(props.modelValue.states, DEFAULT_FILTER_STATES))
+    useClickControl({ element: root, callback: () => { root.value && root.value.close() } })
+
+    const orders = ref<FilterDescription[]>([
+      {
+        id: 'created',
+        label: t('oldestFirst')
+      },
+      {
+        id: '-created',
+        label: t('newestFirst')
+      }
+    ])
+    const states = reactive<FilterDescription[]>(workflowStates.map(state => ({
+      id: state.state,
+      label: t(`workflowState.${state.state}`),
+      active: props.modelValue.states.includes(state.state)
+    })))
+    const tagFilters = reactive<FilterDescription[]>([...props.tags].map(tag => ({
+      id: tag,
+      label: tag,
+      active: props.modelValue.tags.includes(tag)
+    })))
+
+    function clearFilters () {
+      filter.order = 'created'
+      for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
+      for (const t of tagFilters) t.active = false
+    }
+    watch(filter, value => {
+      emit('update:modelValue', value)
+    })
+    watch(states, (value: FilterDescription[]) => {
+      filter.states = value.filter(f => f.active).map(f => f.id) as ProposalState[]
+    })
+    watch(tagFilters, (value: FilterDescription[]) => {
+      filter.tags = value.filter(tf => tf.active).map(tf => tf.id)
+    })
+
+    return {
+      t,
+      clearFilters,
+      filter,
+      isModified,
+      orders,
+      root,
+      states,
+      tagFilters
+    }
+  },
+  components: {
+    BtnDropdown
+  }
+})
+</script>
+
+<style lang="sass">
+.proposal-filters
+  min-width: 280px
+  h3
+    font-size: 9pt
+    font-weight: 500
+    color: rgb(var(--v-theme-secondary))
+    margin: .5em
+  hr
+    margin: 10px -10px
+  .option
+    display: flex
+    input
+      margin: 5px
+    label
+      flex: 1 1 auto
+      margin: 2px
+
+  .v-btn--block
+    justify-content: start
+</style>

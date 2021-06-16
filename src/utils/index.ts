@@ -27,10 +27,16 @@ function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {
   return obj
 }
 
-function orderBy<T> (objects: T[], attribute = 'created'): T[] {
-  objects.sort((objA: any, objB: any) => {
-    if (objA[attribute] > objB[attribute]) return 1
-    if (objA[attribute] < objB[attribute]) return -1
+function orderBy<T> (objects: T[], getter: (object: T) => any, reversed?: boolean): T[]
+function orderBy<T> (objects: T[], attribute?: string, reversed?: boolean): T[]
+function orderBy<T> (objects: T[], attributeOrGetter: ((object: T) => any) | string = 'created', reversed?: boolean): T[] {
+  const direction = reversed ? -1 : 1
+  const getter = typeof attributeOrGetter === 'string' ? (object: any) => object[attributeOrGetter] : attributeOrGetter
+  objects.sort((objA: T, objB: T) => {
+    const valA = getter(objA)
+    const valB = getter(objB)
+    if (valA > valB) return direction
+    if (valA < valB) return -direction
     return 0
   })
   return objects

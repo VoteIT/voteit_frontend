@@ -1,10 +1,11 @@
 <template>
-  <div class="btn-dropdown" :class="{ dark }">
-    <Btn :active="isOpen" @click="isOpen = !isOpen" icon="mdi-menu-down">{{ title }}</Btn>
+  <span class="btn-dropdown" :class="{ dark, isOpen, right }">
+    <slot name="activator" :toggle="toggle"/>
+    <v-btn v-if="title && !$slots.activator" plain @click="isOpen = !isOpen" append-icon="mdi-chevron-down">{{ title }}</v-btn>
     <Widget v-show="isOpen">
       <slot v-if="!lazy || isOpen" />
     </Widget>
-  </div>
+  </span>
 </template>
 
 <script lang="ts">
@@ -16,16 +17,25 @@ export default defineComponent({
   props: {
     title: String,
     dark: Boolean,
-    lazy: Boolean
+    lazy: Boolean,
+    right: Boolean
   },
   setup (props, { emit }) {
     const isOpen = ref(false)
     watch(isOpen, value => {
       nextTick(() => emit(value ? 'open' : 'close'))
     })
+    function toggle () {
+      isOpen.value = !isOpen.value
+    }
+    function close () {
+      isOpen.value = false
+    }
 
     return {
-      isOpen
+      isOpen,
+      close,
+      toggle
     }
   }
 })
@@ -33,15 +43,22 @@ export default defineComponent({
 
 <style lang="sass">
 .btn-dropdown
+  position: relative
   > button
     padding-right: 1rem
     &:focus
       outline: none
-    .material-icons
+    .mdi
       transition: transform .2s
-    &.bg-accent
-      border-bottom-left-radius: 0
-      border-bottom-right-radius: 0
-      .mdi
-        transform: rotate(180deg)
+  > .widget
+    position: absolute
+    left: 0
+    min-width: 200px
+    z-index: 100
+  &.right > .widget
+    right: 0
+    left: initial
+  &.isOpen
+    > button .mdi
+      transform: rotate(180deg)
 </style>

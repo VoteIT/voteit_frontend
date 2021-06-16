@@ -2,7 +2,9 @@
 
 import { PollMethodName, PollMethodSettings } from '@/components/pollmethods/types'
 import { ChannelsConfig } from '@/utils/types'
+import { PollState } from './poll/workflowStates'
 import { PresenceCheckState } from './presenceCheck/workflowStates'
+import { ProposalState } from './proposal/workflowStates'
 
 export enum MeetingRole {
   Participant = 'participant',
@@ -60,7 +62,8 @@ export interface AgendaItem extends StateContent {
   related_modified: string | Date | null
 }
 
-export interface Proposal extends StateContent {
+export interface Proposal extends BaseContent {
+  state: ProposalState
   agenda_item: number
   author: number
   body: string
@@ -69,7 +72,8 @@ export interface Proposal extends StateContent {
   tags: string[]
 }
 
-export interface Poll extends StateContent {
+export interface Poll extends BaseContent {
+  state: PollState
   agenda_item: number
   meeting: number
   method_name: PollMethodName
