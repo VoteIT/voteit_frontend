@@ -76,33 +76,33 @@ export default class ContentAPI<T, K=number> {
     return request
   }
 
-  add (data: Partial<T>): AxiosPromise<T> { // No type, because readonly-fields and such are incompat w post data
+  public add (data: Partial<T>): AxiosPromise<T> {
     return this.call(HTTPMethod.Post, this.endpoint, { data })
   }
 
-  list (params?: object): AxiosPromise<T[]> {
+  public list (params?: object): AxiosPromise<T[]> {
     return this.call(HTTPMethod.Get, this.endpoint, { params })
   }
 
-  retrieve (pk: K): AxiosPromise<T> {
+  public retrieve (pk: K): AxiosPromise<T> {
     return this.call(HTTPMethod.Get, `${this.endpoint}${pk}/`)
   }
 
-  put (pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
+  public put (pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
     return this.call(HTTPMethod.Put, `${this.endpoint}${pk}/`, { data })
   }
 
-  patch (pk: K, data: Partial<T>): AxiosPromise<T> {
+  public patch (pk: K, data: Partial<T>): AxiosPromise<T> {
     return this.call(HTTPMethod.Patch, `${this.endpoint}${pk}/`, { data })
   }
 
-  delete (pk: K): AxiosPromise {
+  public delete (pk: K): AxiosPromise {
     return this.call(HTTPMethod.Delete, `${this.endpoint}${pk}/`)
   }
 
-  action (pk: number, action: string, data?: object): AxiosPromise<T>
-  action (action: string, data: object): AxiosPromise<T>
-  action (pkOrAction: number | string, actionOrData: string | object, data?: object) {
+  public action (pk: number, action: string, data?: object): AxiosPromise<T>
+  public action (action: string, data: object): AxiosPromise<T>
+  public action (pkOrAction: number | string, actionOrData: string | object, data?: object) {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
       return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/${actionOrData}/`, { data })
@@ -111,7 +111,7 @@ export default class ContentAPI<T, K=number> {
     }
   }
 
-  transition (pk: number, name: string): AxiosPromise {
+  public transition (pk: number, name: string): AxiosPromise {
     // Cannot handle K = string
     if (this.workflowStates) {
       return this.action(pk, 'transitions', {
@@ -122,7 +122,7 @@ export default class ContentAPI<T, K=number> {
     }
   }
 
-  async getTransitions (pk: number, exclude?: string): Promise<Transition[]> {
+  public async getTransitions (pk: number, exclude?: string): Promise<Transition[]> {
     // Cannot handle K = string
     const { data }: { data: Transition[] } = await this.call(HTTPMethod.Get, `${this.endpoint}${pk}/transitions/`)
     return data.map(t => {

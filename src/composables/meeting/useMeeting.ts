@@ -58,8 +58,8 @@ export default function useMeeting () {
         params.user_id_in = userIds.join(',')
       }
     }
-    return restApi.get('meeting-roles/', { params })
-      .then(({ data }: { data: MeetingRoles[] }) => {
+    return restApi.get<MeetingRoles[]>('meeting-roles/', { params })
+      .then(({ data }) => {
         data.forEach(p => {
           meetingRoles.set(meeting, p.user.pk, p.assigned)
           participants.value.set(p.pk, p)
