@@ -104,6 +104,18 @@ export default defineComponent({
       label: tag,
       active: props.modelValue.tags.includes(tag)
     })))
+    watch(() => props.tags, value => {
+      // add missing
+      for (const tag of value) {
+        if (!tagFilters.find(tf => tf.id === tag)) {
+          tagFilters.push({
+            id: tag,
+            label: tag,
+            active: false
+          })
+        }
+      }
+    })
 
     function clearFilters () {
       filter.order = 'created'
