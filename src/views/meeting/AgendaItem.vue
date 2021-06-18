@@ -23,7 +23,7 @@
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
         <div class="btn-actions space-between">
-          <v-btn @click="addProposalComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
+          <v-btn @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
             {{ t('proposal.add') }}
           </v-btn>
           <ProposalFilters ref="filterComponent" v-model="activeFilter" :tags="allTags" :key="agendaId" />
@@ -40,7 +40,6 @@
             </Proposal>
           </div>
         </div>
-        <p v-else><em>{{ t('proposal.noProposals') }}</em></p>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
                     :tags="allTags" :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
                     :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
@@ -48,6 +47,11 @@
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" lg="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
+        <div class="btn-actions space-between">
+          <v-btn @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
+            {{ t('discussion.add') }}
+          </v-btn>
+        </div>
         <div v-if="sortedDiscussions.length" class="no-list">
           <DiscussionPost :p="d" :all-tags="allTags" v-for="d in sortedDiscussions" :key="d.pk">
             <template v-slot:buttons>
@@ -55,10 +59,9 @@
             </template>
           </DiscussionPost>
         </div>
-        <p v-else><em>{{ t('discussion.noDiscussions') }}</em></p>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :tags="allTags" :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
-                    :submitText="t('post')" submitIcon="mdi-send" />
+                    :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent" />
       </v-col>
     </v-row>
   </template>
@@ -146,7 +149,8 @@ export default defineComponent({
       const transform = (getter: (id: number) => { tags: string[] }[]) => Array.prototype.concat.apply([], getter(agendaId.value).map(i => i.tags))
       return new Set<string>([...transform(proposals.getAgendaProposals), ...transform(discussions.getAgendaDiscussions)])
     })
-    const addProposalComponent = ref<null | ComponentPublicInstance>(null)
+    const addProposalComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
+    const addDiscussionComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     async function addProposal (body: string) {
       await proposalType.getContentApi().add({
         agenda_item: agendaId.value,
@@ -237,6 +241,7 @@ export default defineComponent({
       agendaItem,
       allTags,
       addProposal,
+      addDiscussionComponent,
       addProposalComponent,
       addDiscussionPost,
       channel,

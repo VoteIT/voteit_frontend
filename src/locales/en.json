@@ -64,6 +64,7 @@
     "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
   },
   "discussion": {
+    "add": "Start discussion",
     "comment": "Comment",
     "comments": "No comments | 1 comment | {count} comments",
     "deletePrompt": "You are about to delete a discussion post permanently.\nAre you sure?",
@@ -71,7 +72,7 @@
     "discussions": "Discussions",
     "hideComments": "Hide comments",
     "noDiscussions": "Nothing to hear...",
-    "postPlaceholder": "Write a comment"
+    "postPlaceholder": "Write your comment"
   },
   "home": {
     "home": "Home",
