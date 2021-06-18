@@ -19,7 +19,7 @@ enum HTTPMethod {
 export default class ContentAPI<T, K=number> {
   private endpoint: string
   private workflowStates?: WorkflowState[]
-  config: RestApiConfig
+  private config: RestApiConfig
 
   constructor (endpoint: string, workflowStates?: WorkflowState[], config?: RestApiConfig) {
     this.endpoint = endpoint
