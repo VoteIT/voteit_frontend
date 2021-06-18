@@ -24,7 +24,7 @@
           <div class="option" v-for="f in tagFilters" :key="f.id">
             <input type="checkbox" :id="`proposal-filter-${f.id}`" v-model="f.active">
             <label :for="`proposal-filter-${f.id}`">
-              <Tag :name="f.id" selectable />
+              <Tag :name="f.id" disabled />
             </label>
           </div>
           <v-divider/>
@@ -55,15 +55,16 @@ interface FilterDescription {
 
 export interface Filter {
   order: string
-  states: ProposalState[]
-  tags: string[]
+  states: Set<ProposalState>
+  tags: Set<string>
 }
 
-export const DEFAULT_FILTER_STATES = [ProposalState.Published, ProposalState.Voting, ProposalState.Approved]
+export const DEFAULT_FILTER_STATES = new Set([ProposalState.Published, ProposalState.Voting, ProposalState.Approved])
 
-function equalArrays (a: string[], b: string[]): boolean {
-  if (!a.every(v => b.includes(v))) return false
-  return b.every(v => a.includes(v))
+function setEqual (a: Set<string>, b: Set<string>): boolean {
+  if (a.size !== b.size) return false
+  for (const v of a) if (!b.has(v)) return false
+  return true
 }
 
 export default defineComponent({
@@ -81,7 +82,7 @@ export default defineComponent({
     const { t } = useI18n()
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
     const filter = reactive<Filter>(props.modelValue)
-    const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.length || !equalArrays(props.modelValue.states, DEFAULT_FILTER_STATES))
+    const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, DEFAULT_FILTER_STATES))
     useClickControl({ element: root, callback: () => { root.value && root.value.close() } })
 
     const orders = ref<FilterDescription[]>([
@@ -97,12 +98,12 @@ export default defineComponent({
     const states = reactive<FilterDescription[]>(workflowStates.map(state => ({
       id: state.state,
       label: t(`workflowState.${state.state}`),
-      active: props.modelValue.states.includes(state.state)
+      active: props.modelValue.states.has(state.state)
     })))
     const tagFilters = reactive<FilterDescription[]>([...props.tags].map(tag => ({
       id: tag,
       label: tag,
-      active: props.modelValue.tags.includes(tag)
+      active: props.modelValue.tags.has(tag)
     })))
     watch(() => props.tags, value => {
       // add missing
@@ -119,18 +120,23 @@ export default defineComponent({
 
     function clearFilters () {
       filter.order = 'created'
-      for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
+      for (const s of states) s.active = DEFAULT_FILTER_STATES.has(s.id as ProposalState)
       for (const t of tagFilters) t.active = false
     }
     watch(filter, value => {
       emit('update:modelValue', value)
     })
     watch(states, (value: FilterDescription[]) => {
-      filter.states = value.filter(f => f.active).map(f => f.id) as ProposalState[]
+      filter.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
     })
     watch(tagFilters, (value: FilterDescription[]) => {
-      filter.tags = value.filter(tf => tf.active).map(tf => tf.id)
+      filter.tags = new Set(value.filter(tf => tf.active).map(tf => tf.id))
     })
+    function setTag (tag: string) {
+      for (const tf of tagFilters) {
+        if (tf.id === tag) tf.active = true
+      }
+    }
 
     return {
       t,
@@ -139,6 +145,7 @@ export default defineComponent({
       isModified,
       orders,
       root,
+      setTag,
       states,
       tagFilters
     }

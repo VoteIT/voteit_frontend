@@ -1,5 +1,5 @@
 <template>
-  <span class="tag" :class="{ 'select-all': !selectable }" :style="style">
+  <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name">
     <v-icon size="x-small" icon="mdi-tag-outline"/>
     #{{ name }}
   </span>
@@ -16,7 +16,7 @@ export default defineComponent({
       type: String,
       required: true
     },
-    selectable: Boolean
+    disabled: Boolean
   },
   setup (props) {
     return {
@@ -28,13 +28,15 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass" scoped>
-.tag
+<style lang="sass">
+.voteit-tag
   white-space: nowrap
   padding: .2em .6em
   border-radius: 4px
   color: #000
   font-size: 10pt
-  &.select-all
-    user-select: all
+
+span[data-denotation-char="#"]:not(.disabled)
+  user-select: unset
+  cursor: pointer
 </style>

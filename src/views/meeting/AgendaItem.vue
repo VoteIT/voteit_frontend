@@ -26,7 +26,7 @@
           <v-btn @click="addProposalComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
             {{ t('proposal.add') }}
           </v-btn>
-          <ProposalFilters v-model="activeFilter" :tags="allTags" :key="agendaId" />
+          <ProposalFilters ref="filterComponent" v-model="activeFilter" :tags="allTags" :key="agendaId" />
         </div>
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -113,16 +113,14 @@ export default defineComponent({
       get: () => AgendaFilters.get(agendaId.value) ?? {
         order: 'created',
         states: DEFAULT_FILTER_STATES,
-        tags: []
+        tags: new Set()
       },
       set: (value) => AgendaFilters.set(agendaId.value, value)
     })
     function proposalFilter (p: Proposal): boolean {
       const { tags, states } = activeFilter.value
-      if (tags.length) {
-        if (p.tags.every(t => !tags.includes(t))) return false
-      }
-      return states.includes(p.state)
+      if (tags.size && p.tags.every(t => !tags.has(t))) return false
+      return states.has(p.state)
     }
     const sortedProposals = computed(() => {
       const ps = proposals.getAgendaProposals(agendaId.value, proposalFilter)
@@ -144,14 +142,9 @@ export default defineComponent({
     })
 
     const allTags = computed<Set<string>>(() => {
-      const tags = new Set<string>()
-      for (const p of sortedProposals.value) {
-        p.tags.forEach(t => tags.add(t))
-      }
-      for (const d of sortedDiscussions.value) {
-        d.tags.forEach(d => tags.add(d))
-      }
-      return tags
+      // Perl achievment unlocked (sry)
+      const transform = (getter: (id: number) => { tags: string[] }[]) => Array.prototype.concat.apply([], getter(agendaId.value).map(i => i.tags))
+      return new Set<string>([...transform(proposals.getAgendaProposals), ...transform(discussions.getAgendaDiscussions)])
     })
     const addProposalComponent = ref<null | ComponentPublicInstance>(null)
     async function addProposal (body: string) {
@@ -224,6 +217,19 @@ export default defineComponent({
       if (oldValue) setLastRead(oldValue)
     })
 
+    const filterComponent = ref<ComponentPublicInstance<{ setTag:(tag: string) => void }> | null>(null)
+    function clickHandler (evt: MouseEvent) {
+      const tagElem = evt.composedPath().find(elem => (elem as HTMLElement).dataset?.denotationChar === '#') as HTMLElement | null
+      // eslint-disable-next-line no-unused-expressions
+      if (tagElem?.dataset.value && !tagElem.classList.contains('disabled')) filterComponent.value?.setTag(tagElem.dataset.value)
+    }
+    onMounted(() => {
+      document.addEventListener('click', clickHandler)
+    })
+    onUnmounted(() => {
+      document.removeEventListener('click', clickHandler)
+    })
+
     return {
       t,
       activeFilter,
@@ -235,12 +241,13 @@ export default defineComponent({
       addDiscussionPost,
       channel,
       ...discussions,
+      discussionReactions,
       displayMode,
       editingBody,
+      filterComponent,
       meetingPath,
       menuItems,
       proposalReactions,
-      discussionReactions,
       sortedProposals,
       sortedDiscussions,
       speakerLists,
