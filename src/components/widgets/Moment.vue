@@ -9,13 +9,14 @@ import { AxiosResponse } from 'axios'
 
 import { restApi } from '@/utils'
 
-let msServerAhead = 0
+let serverAhead = 0 // In Seconds
 let interceptorId: number | null = null
 
 function interceptTime (response: AxiosResponse): AxiosResponse {
   if (response.headers.date) {
-    msServerAhead = new Date(response.headers.date).getTime() - new Date().getTime()
-    if (interceptorId) restApi.interceptors.response.eject(interceptorId)
+    serverAhead = Math.floor(new Date(response.headers.date).getTime() / 1000) - Math.floor(new Date().getTime() / 1000)
+    if (serverAhead !== 0) console.log(`Server is ${Math.abs(serverAhead)} second(s) ${serverAhead > 0 ? 'ahead of' : 'behind'} you`)
+    if (typeof interceptorId === 'number') restApi.interceptors.response.eject(interceptorId)
   }
   return response
 }
@@ -40,8 +41,8 @@ export default defineComponent({
 
     function updateFromNow () {
       // Can not be computed(), because it has to trigger reactivity
-      const serverDate = moment().add(msServerAhead, 'ms')
-      const date = moment(props.date)
+      const date = moment(props.date).set('ms', 0)
+      const serverDate = moment().add(serverAhead, 's').set('ms', 0)
       if (props.inSeconds) {
         const duration = moment.duration(serverDate.diff(date))
         if (duration.hours()) {

@@ -100,8 +100,8 @@ export default class ContentAPI<T, K=number> {
     return this.call(HTTPMethod.Delete, `${this.endpoint}${pk}/`)
   }
 
-  public action (pk: number, action: string, data?: object): AxiosPromise<T>
-  public action (action: string, data: object): AxiosPromise<T>
+  public action<Type> (pk: number, action: string, data?: object): AxiosPromise<Type>
+  public action<Type> (action: string, data: object): AxiosPromise<Type>
   public action (pkOrAction: number | string, actionOrData: string | object, data?: object) {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
