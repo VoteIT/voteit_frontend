@@ -30,7 +30,7 @@ import Richtext from './Richtext.vue'
 
 import { dialogQuery } from '@/utils'
 import discussionPostType from '@/contentTypes/discussionPost'
-import { DiscussionPost } from '@/contentTypes/types'
+import { DiscussionPost, Predicate } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
 import { MenuItem, ThemeColor } from '@/utils/types'
 
@@ -50,7 +50,7 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const api = discussionPostType.getContentApi()
-    const { canDelete, canChange } = discussionPostType.rules
+    const { canDelete, canChange } = discussionPostType.rules as Record<string, Predicate>
 
     const editing = ref(false)
 

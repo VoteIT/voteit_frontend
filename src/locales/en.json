@@ -80,6 +80,8 @@
     "yourMeetings": "Your meeting | Your meetings"
   },
   "join": {
+    "asModerator": "Manage meeting",
+    "asModeratorDescription": "As organization manager, you can join any meeting as moderator. This will make you a visible participant in the meeting.\nDo you want to join as moderator?",
     "joinAMeeting": "Join a meeting",
     "meeting": "Join meeting: {title}",
     "noAccess": "You can not join this meeting at this time",

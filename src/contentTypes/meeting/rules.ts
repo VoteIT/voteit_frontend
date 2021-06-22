@@ -1,7 +1,7 @@
-import useAuthentication from '@/composables/useAuthentication'
+import { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 
-import { Meeting, MeetingRole, Organization, Predicate } from '../types'
+import { Meeting, MeetingRole, Predicate } from '../types'
 import workflowStates, { MeetingState } from './workflowStates'
 
 import useWorkflows from '../useWorkflows'
@@ -10,7 +10,6 @@ import organizationRules from '../organization/rules'
 const { hasRole } = useContextRoles('meeting')
 // Import this a bit differently, to avoid cirkular imports
 const { getState } = useWorkflows(workflowStates)
-const { user } = useAuthentication()
 
 const FINISHED_STATES = [MeetingState.Closed, MeetingState.Archiving, MeetingState.Archived]
 const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
@@ -60,6 +59,10 @@ const canChange: Predicate = (meeting?: Meeting) => {
   return !isArchived(meeting) && isModerator(meeting)
 }
 
+const canBecomeModerator: Predicate = (meeting: Meeting) => {
+  return organizationRules.isManager(user.value?.organisation)
+}
+
 export default {
   isParticipant,
   isModerator,
@@ -71,6 +74,7 @@ export default {
   isPotentialVoter,
   canView,
   canAdd,
+  canBecomeModerator,
   canChange,
   canDelete: canChange
 }

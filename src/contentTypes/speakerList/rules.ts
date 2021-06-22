@@ -25,9 +25,9 @@ const isOpen: Predicate = (list: SpeakerList) => {
   return list.state === SpeakerListState.Open
 }
 
-const canActivate = (list: SpeakerList) => {
+const canActivate: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
-  return system && canAdd(system) && system.active_list !== list.pk && !speakerSystemRules.hasActiveSpeaker(system)
+  return !!system && canAdd(system) && system.active_list !== list.pk && !speakerSystemRules.hasActiveSpeaker(system)
 }
 const canAdd: Predicate = (system: SpeakerSystem) => {
   return speakerSystemRules.isModerator(system) && !speakerSystemRules.isArchived(system)

@@ -1,5 +1,5 @@
 <template>
-  <Btn :disabled="submitting" icon="mdi-door-open" @click="joinNow()">{{ t('join.now') }}</Btn>
+  <v-btn color="primary" :disabled="submitting" prepend-icon="mdi-door-open" @click="joinNow()">{{ t('join.now') }}</v-btn>
 </template>
 
 <script lang="ts">

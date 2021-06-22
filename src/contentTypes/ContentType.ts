@@ -2,12 +2,12 @@ import { RestApiConfig } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
-import { ChannelConfig, WorkflowState } from './types'
+import { ChannelConfig, Predicate, WorkflowState } from './types'
 import useWorkflows from './useWorkflows'
 
 interface CType {
   states?: WorkflowState[]
-  rules?: any
+  rules?: Record<string, Predicate>
   channelName?: string
   restEndpoint?: string
   hasRoles?: boolean
@@ -20,16 +20,16 @@ export default class ContentType<T, K=number> {
     this.contentType = contentType
   }
 
-  get name () {
+  public get name () {
     return this.contentType.channelName || this.contentType.restEndpoint
   }
 
-  get workflowStates () {
+  public get workflowStates () {
     return this.contentType.states
   }
 
-  get rules () {
-    return this.contentType.rules
+  public get rules () {
+    return this.contentType.rules || {}
   }
 
   getChannel (config?: ChannelConfig): Channel<T> {

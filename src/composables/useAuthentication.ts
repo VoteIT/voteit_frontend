@@ -6,7 +6,7 @@ import { Organization, User } from '@/contentTypes/types'
 import useContextRoles from './useContextRoles'
 import { UserState } from '@/contentTypes/user/workflowStates'
 
-const user = ref<User | null>(null)
+export const user = ref<User | null>(null)
 const isAuthenticated = ref(false)
 const organizationRoles = useContextRoles('organisation') // Avoid circular import
 

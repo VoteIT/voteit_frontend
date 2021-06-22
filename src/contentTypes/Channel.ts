@@ -197,7 +197,7 @@ export default class Channel<T> {
   }
 
   // Wrap call and handle request errors (Timeout only?)
-  public call (uri: string, data?: object, config?: ChannelConfig) {
+  private call (uri: string, data?: object, config?: ChannelConfig) {
     config = { ...this.config, ...(config || {}) }
     return socket.call(uri, data, config)
   }
@@ -256,15 +256,15 @@ export default class Channel<T> {
       userids: [user],
       roles
     }
-    this.call(method, message)
+    return this.call(method, message)
   }
 
   public addRoles (pk: number, user: number, ...roles: string[]) {
-    this.changeRoles('roles.add', pk, user, roles)
+    return this.changeRoles('roles.add', pk, user, roles)
   }
 
   public removeRoles (pk: number, user: number, ...roles: string[]) {
-    this.changeRoles('roles.remove', pk, user, roles)
+    return this.changeRoles('roles.remove', pk, user, roles)
   }
 
   // eslint-disable-next-line camelcase
