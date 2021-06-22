@@ -53,10 +53,9 @@ new Channel('moderators')
     }
   })
 
-new Channel('last_read')
-  .onChanged(item => {
-    const lastRead = item as LastRead
-    agendaItemsLastRead.set(lastRead.agenda_item, new Date(lastRead.timestamp))
+new Channel<LastRead>('last_read')
+  .onChanged(payload => {
+    agendaItemsLastRead.set(payload.agenda_item, new Date(payload.timestamp))
   })
 
 export default function useAgenda () {
