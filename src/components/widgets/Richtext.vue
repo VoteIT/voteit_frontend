@@ -1,6 +1,6 @@
 <template>
   <RichtextEditor v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
-  <div v-else ref="el" v-html="object[contentAttribute]" class="richtext" />
+  <div v-else ref="el" v-html="content" class="richtext" />
 </template>
 
 <script lang="ts">
@@ -14,50 +14,51 @@ export default defineComponent({
     RichtextEditor
   },
   props: {
+    modelValue: String,
     channel: Object,
     api: Object,
     contentAttribute: {
       type: String,
       default: 'body'
     },
-    object: {
-      type: Object,
-      required: true
-    },
+    object: Object,
     editing: Boolean
   },
-  emits: ['edit-done', 'updated'],
+  emits: ['edit-done', 'updated', 'update:modelValue'],
   setup (props, { emit }) {
-    const content = ref(props.object[props.contentAttribute])
+    function getContent (): string {
+      if (props.object) return props.object[props.contentAttribute]
+      if (props.modelValue) return props.modelValue
+      throw new Error('RichText needs :object=<object> or v-model=<string>')
+    }
+    const content = ref(getContent())
 
     async function submitRequest (pk: number, data: Object) {
-      if (props.channel) {
-        return props.channel.change(pk, data)
-      } else if (props.api) {
-        return props.api.patch(pk, data)
-      }
-      throw new Error('Richtext needs "api" or "channel" property to submit changes.')
+      if (props.channel) await props.channel.change(pk, data)
+      if (props.api) await props.api.patch(pk, data)
     }
 
-    function submit () {
-      if (content.value !== props.object[props.contentAttribute]) {
-        const data = {} as any // Huh?
+    async function submit () {
+      if (props.modelValue) emit('edit-done')
+      if (props.object && content.value !== getContent()) {
+        const data: Record<string, string> = {}
         data[props.contentAttribute] = content.value
-        submitRequest(props.object.pk, data)
-          .then(response => {
-            emit('edit-done', response)
-          })
+        const response = await submitRequest(props.object.pk, data)
+        emit('edit-done', response)
       } else {
         emit('edit-done')
       }
     }
 
-    watch(() => props.object, value => {
-      content.value = value[props.contentAttribute]
+    watch(props, () => {
+      if (props.editing) return
+      content.value = getContent()
     })
-
     watch(() => props.editing, value => {
       if (!value) submit()
+    })
+    watch(content, value => {
+      emit('update:modelValue', value)
     })
 
     const el = ref<HTMLElement | null>(null)
@@ -68,13 +69,13 @@ export default defineComponent({
       submit,
       el
     }
-  },
-  mounted () {
-    this.$emit('updated', this.$el)
-  },
-  updated () {
-    this.$emit('updated', this.$el)
   }
+  // mounted () {
+  //   this.$emit('updated', this.$el)
+  // },
+  // updated () {
+  //   this.$emit('updated', this.$el)
+  // }
 })
 </script>
 

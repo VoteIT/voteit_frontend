@@ -9,9 +9,9 @@
           </v-btn>
         </div>
         <Menu float :items="menuItems" />
-        <h1>{{ agendaItem.title }}</h1>
+        <Headline :editing="editing" v-model="content.title" @edit-done="submit()"></Headline>
         <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
-        <Richtext :key="agendaId" :editing="editingBody" :object="agendaItem" :channel="channel" @edit-done="editingBody = false" />
+        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" />
         <div class="speaker-lists" v-if="speakerSystems.length">
           <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
           <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
@@ -76,6 +76,7 @@ import { orderBy } from '@/utils'
 
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
+import Headline from '@/components/widgets/Headline.vue'
 import ProposalVue from '@/components/widgets/Proposal.vue'
 import ProposalFilters, { Filter, DEFAULT_FILTER_STATES } from '@/components/widgets/ProposalFilters.vue'
 import ReactionButton from '@/components/meeting/ReactionButton.vue'
@@ -138,7 +139,6 @@ export default defineComponent({
     const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value))
     const speakerSystems = computed(() => getSystems(meetingId.value))
 
-    const editingBody = ref(false)
     const displayMode = ref(localStorage.agendaDisplayMode ?? 'columns')
     watch(displayMode, value => {
       localStorage.agendaDisplayMode = value
@@ -180,7 +180,7 @@ export default defineComponent({
         items.push({
           text: t('edit'),
           icon: 'mdi-pencil',
-          onClick: async () => { editingBody.value = !editingBody.value }
+          onClick: async () => { editing.value = true }
         })
       }
       const speakerSystems = getSystems(meetingId.value, false, true)
@@ -219,6 +219,10 @@ export default defineComponent({
     watch(agendaItem, (value, oldValue) => {
       // When leaving agenda item
       if (oldValue) setLastRead(oldValue)
+      if (value) {
+        content.title = value.title
+        content.body = value.body
+      }
     })
 
     const filterComponent = ref<ComponentPublicInstance<{ setTag:(tag: string) => void }> | null>(null)
@@ -234,6 +238,17 @@ export default defineComponent({
       document.removeEventListener('click', clickHandler)
     })
 
+    const editing = ref(false)
+    const content = reactive({
+      title: agendaItem.value?.title,
+      body: agendaItem.value?.body
+    })
+    function submit () {
+      editing.value = false
+      if (content.title === agendaItem.value?.title && content.body === agendaItem.value?.body) return
+      channel.change(agendaId.value, { ...content })
+    }
+
     return {
       t,
       activeFilter,
@@ -244,11 +259,12 @@ export default defineComponent({
       addDiscussionComponent,
       addProposalComponent,
       addDiscussionPost,
-      channel,
+      content,
+      submit,
       ...discussions,
       discussionReactions,
       displayMode,
-      editingBody,
+      editing,
       filterComponent,
       meetingPath,
       menuItems,
@@ -271,6 +287,7 @@ export default defineComponent({
   components: {
     AddContent,
     DiscussionPost,
+    Headline,
     Proposal: ProposalVue,
     ProposalFilters,
     SpeakerList,

@@ -3,17 +3,18 @@
     <v-col lg="8" offset-lg="2">
       <header>
         <Menu float :items="menuItems" />
-        <h1>{{ meeting.title }}</h1>
+        <Headline v-model="content.title" :editing="editing" @edit-done="submit()" />
       </header>
       <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
-      <Richtext :object="meeting" :editing="editingBody" :api="api" @edit-done="editingBody = false" />
+      <Richtext v-model="content.body" :editing="editing" @edit-done="submit()" />
     </v-col>
   </v-row>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, reactive, ref, watch } from 'vue'
 
+import Headline from '@/components/widgets/Headline.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
@@ -26,30 +27,47 @@ export default defineComponent({
   name: 'MeetingIndex',
   components: {
     Richtext,
-    WorkflowState
+    WorkflowState,
+    Headline
   },
   setup () {
     const { t } = useI18n()
-    const editingBody = ref(false)
+    const editing = ref(false)
     const api = meetingType.getContentApi()
-    const { meeting } = useMeeting()
+    const { meeting, meetingId } = useMeeting()
+    const content = reactive({
+      title: meeting.value?.title,
+      body: meeting.value?.body
+    })
+    watch(meeting, value => {
+      if (editing.value) return
+      content.title = value?.title
+      content.body = value?.body
+    })
 
     const menuItems = computed<MenuItem[]>(() => {
       if (!meetingType.rules.canChange(meeting.value)) return []
       return [{
         text: t('edit'),
         icon: 'mdi-pencil',
-        onClick: async () => { editingBody.value = true }
+        onClick: async () => { editing.value = true }
       }]
     })
 
+    function submit () {
+      editing.value = false
+      if (content.title === meeting.value?.title && content.body === meeting.value?.body) return
+      api.patch(meetingId.value, { ...content })
+    }
+
     return {
+      content,
       meetingType,
       ...meetingType.rules,
       meeting,
       menuItems,
-      editingBody,
-      api
+      editing,
+      submit
     }
   }
 })
