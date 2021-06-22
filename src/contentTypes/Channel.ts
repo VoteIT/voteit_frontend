@@ -8,7 +8,7 @@ import { ContextRole } from '@/composables/types'
 import { AvailableRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
 
 type LeaveHandler = (uriOrPk: string | number) => void
-type UpdateHandler<T> = (message: SuccessMessage) => void
+type UpdateHandler<T> = (message: SuccessMessage<T>) => void
 type MethodHandler<T> = (item: T) => void
 
 const DEFAULT_CONFIG: ChannelConfig = {
@@ -26,13 +26,12 @@ const methodHanders = new DefaultMap<string, Map<string, MethodHandler<any>>>(()
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 const rolesAvailable = new Map<string, ContextRole[]>()
 
-function handleMessage (data: SuccessMessage) {
+function handleMessage (data: SuccessMessage<object>) {
   const [contentType, method] = data.t.split('.')
   const updateHandler = updateHandlers.get(contentType)
-  // General update handler takes precedence over other handlers
-  if (updateHandler) {
-    return updateHandler(data)
-  }
+  // General update handler takes overrides other handlers
+  if (updateHandler) return updateHandler(data)
+
   const handler = methodHanders.get(method).get(contentType)
   if (handler) {
     // Method handler only needs payload
@@ -95,22 +94,22 @@ export default class Channel<T> {
     socket.close()
   }
 
-  onUpdate (fn: UpdateHandler<SuccessMessage>) {
+  public onUpdate (fn: UpdateHandler<T>) {
     // If this is registered, no other callbacks will be used (onChanged, etc...)
     console.log('registering update handler for', this.contentType)
     updateHandlers.set(this.contentType, fn)
     return this
   }
 
-  onLeave (fn: LeaveHandler) {
+  public onLeave (fn: LeaveHandler) {
     leaveHandlers.get(this.contentType).push(fn)
     return this
   }
 
-  on (this: Channel<T>, method: string, fn: MethodHandler<object>, override = true): Channel<T> {
+  public on<Type> (this: Channel<T>, method: string, fn: MethodHandler<Type>, override = true): Channel<T> {
     const ctHandlers = methodHanders.get(method)
     if (override || !ctHandlers.has(this.contentType)) {
-      methodHanders.get(method).set(this.contentType, fn)
+      ctHandlers.set(this.contentType, fn)
     }
     return this
   }
@@ -123,17 +122,17 @@ export default class Channel<T> {
     return this
   }
 
-  onAdded = (fn: MethodHandler<T>) => this.registerTypeHandler('added', fn)
-  onDeleted = (fn: MethodHandler<T>) => this.registerTypeHandler('deleted', fn)
-  onStatus = (fn: MethodHandler<T>) => this.registerTypeHandler('status', fn)
+  public onAdded = (fn: MethodHandler<T>) => this.registerTypeHandler('added', fn)
+  public onDeleted = (fn: MethodHandler<T>) => this.registerTypeHandler('deleted', fn)
+  public onStatus = (fn: MethodHandler<T>) => this.registerTypeHandler('status', fn)
 
-  onChanged (fn: MethodHandler<T>) {
+  public onChanged (fn: MethodHandler<T>) {
     // By default, send add events to change method. Register using .onAdded(fn) to handle separately.
     return this.registerTypeHandler('added', fn, false)
       .registerTypeHandler('changed', fn)
   }
 
-  updateMap (this: any, map: Map<number, T>, transform = (value: T) => value): Channel<T> {
+  public updateMap (this: any, map: Map<number, T>, transform = (value: T) => value): Channel<T> {
     // Convenience method to set onChanged and onDeleted to update Map object.
     return this.onChanged((item: any) => map.set(item.pk, transform(item as T)))
       .onDeleted((item: any) => map.delete(item.pk))
@@ -150,7 +149,7 @@ export default class Channel<T> {
     return uriOrPk
   }
 
-  async subscribe (uriOrPk: string | number, fail = false) {
+  public async subscribe (uriOrPk: string | number, fail = false) {
     if (uriOrPk) {
       const uri = this.getUri(uriOrPk)
       clearTimeout(leaveTimeouts.get(uri))
@@ -161,7 +160,7 @@ export default class Channel<T> {
     }
   }
 
-  private performLeave (uri: string) {
+  private performLeave (uri: string): void {
     // Delete from subscriptions when sending unsubscribe request.
     subscriptions.delete(uri)
     if (socket.isOpen) {
@@ -174,64 +173,59 @@ export default class Channel<T> {
     }
   }
 
-  async leave (uriOrPk: string | number, config?: ChannelConfig) {
-    if (uriOrPk) {
-      const uri = this.getUri(uriOrPk)
-      clearTimeout(leaveTimeouts.get(uri))
-      if (subscriptions.has(uri)) {
-        const myConfig: ChannelConfig = { ...this.config, ...(config || {}) }
-        if (myConfig.leaveDelay) {
-          return new Promise(resolve => {
-            // Will not resolve if canceled...
-            leaveTimeouts.set(uri, setTimeout(() => {
-              // New subscribtions will clear this timeout.
-              this.performLeave(uri)
-              resolve(true)
-            }, myConfig.leaveDelay))
-          })
-        } else {
-          // Just leave now
-          this.performLeave(uri)
-        }
-      }
-    } else {
+  public async leave (uri: string, config?: ChannelConfig): Promise<void>
+  public async leave (pk: number, config?: ChannelConfig): Promise<void>
+  public async leave (uriOrPk: string | number, config?: ChannelConfig): Promise<void> {
+    if (!uriOrPk) {
       console.error(uriOrPk, config)
       throw new Error('Channel leave function requires channel name or primary key')
     }
+    const myConfig: ChannelConfig = { ...this.config, ...(config || {}) }
+    const uri = this.getUri(uriOrPk)
+    clearTimeout(leaveTimeouts.get(uri))
+    if (!subscriptions.has(uri)) return
+    if (!myConfig.leaveDelay) return this.performLeave(uri)
+
+    return new Promise(resolve => {
+      // Will not resolve if canceled...
+      leaveTimeouts.set(uri, setTimeout(() => {
+        // New subscribtions will clear this timeout.
+        this.performLeave(uri)
+        resolve()
+      }, myConfig.leaveDelay))
+    })
   }
 
   // Wrap call and handle request errors (Timeout only?)
-  call (uri: string, data?: object, config?: ChannelConfig) {
+  public call (uri: string, data?: object, config?: ChannelConfig) {
     config = { ...this.config, ...(config || {}) }
     return socket.call(uri, data, config)
   }
 
-  post (uri: string, data?: object, config?: ChannelConfig) {
+  public post (uri: string, data?: object, config?: ChannelConfig) {
     return this.call(uri, data, config)
   }
 
-  send (type: string, payloadOrUri: string | object) {
+  public send (type: string, payloadOrUri: string | object) {
     return socket.send(type, payloadOrUri)
   }
 
-  methodCall (method: string, data: object, config?: ChannelConfig) {
+  public methodCall (method: string, data: object, config?: ChannelConfig) {
     return this.call(`${this.contentType}.${method}`, data, config)
   }
 
-  get = (pk: number, config?: ChannelConfig) => this.methodCall('get', { pk }, config)
-  add = (data: Partial<T>, config?: ChannelConfig) => this.methodCall('add', data, config)
+  public get = (pk: number, config?: ChannelConfig) => this.methodCall('get', { pk }, config)
+  public add = (data: Partial<T>, config?: ChannelConfig) => this.methodCall('add', data, config)
   // TODO Deprecate this:
   contextAdd = (contextPk: number, kwargs: Partial<T>, config?: ChannelConfig) => this.methodCall('add', { pk: contextPk, kwargs }, config)
-  change = (pk: number, kwargs: Partial<T>, config?: ChannelConfig) => this.methodCall('change', { pk, kwargs }, config)
-  delete = (pk: number, config?: ChannelConfig) => this.methodCall('delete', { pk }, config)
+  public change = (pk: number, kwargs: Partial<T>, config?: ChannelConfig) => this.methodCall('change', { pk, kwargs }, config)
+  public delete = (pk: number, config?: ChannelConfig) => this.methodCall('delete', { pk }, config)
 
-  checkHasRoles (): void {
-    if (!this.hasRoles) {
-      throw new Error(`Content Type ${this._contentType} is not configured to have context roles.`)
-    }
+  private checkHasRoles (): void {
+    if (!this.hasRoles) throw new Error(`Content Type ${this._contentType} is not configured to have context roles.`)
   }
 
-  async getAvailableRoles (): Promise<ContextRole[]> {
+  public async getAvailableRoles (): Promise<ContextRole[]> {
     this.checkHasRoles()
     let roles = rolesAvailable.get(this.contentType)
     if (!roles) {
@@ -244,7 +238,7 @@ export default class Channel<T> {
     return roles
   }
 
-  async fetchRoles (pk: number, users?: number[]) {
+  public async fetchRoles (pk: number, users?: number[]) {
     this.checkHasRoles()
     const message: RolesGetMessage = {
       model: this.contentType,
@@ -265,16 +259,16 @@ export default class Channel<T> {
     this.call(method, message)
   }
 
-  addRoles (pk: number, user: number, ...roles: string[]) {
+  public addRoles (pk: number, user: number, ...roles: string[]) {
     this.changeRoles('roles.add', pk, user, roles)
   }
 
-  removeRoles (pk: number, user: number, ...roles: string[]) {
+  public removeRoles (pk: number, user: number, ...roles: string[]) {
     this.changeRoles('roles.remove', pk, user, roles)
   }
 
   // eslint-disable-next-line camelcase
-  getSchema (message_type: string, type = SchemaType.Incoming) {
+  public getSchema (message_type: string, type: SchemaType = SchemaType.Incoming) {
     return this.post('schema.get_' + type, { message_type })
   }
 }

@@ -4,13 +4,14 @@ import ProgressPromise from './ProgressPromise'
 import Socket from './Socket'
 import restApi from './restApi'
 import { Alert, Dialog, Modal } from '@/composables/types'
+import { SubscribePayload } from './types'
 
-function uriToPayload (uri: string) {
+function uriToPayload (uri: string): SubscribePayload {
   // Convert internal resource identifier to subscription payload object
   const [ct, pk] = uri.split('/')
   return {
     channel_type: ct,
-    pk
+    pk: Number(pk)
   }
 }
 

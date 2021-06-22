@@ -24,20 +24,17 @@ const { hasRole } = speakerSystemType.useContextRoles()
 
 const listChannel = speakerListType.getChannel()
   .updateMap(speakerLists)
-  .on('order', (order: any) => {
-    const { pk, queue, current } = order as SpeakerOrderUpdate
+  .on<SpeakerOrderUpdate>('order', ({ pk, queue, current }) => {
     speakerQueues.set(pk, queue)
     // currentlySpeaking.set(pk, current)
   })
 
 new Channel<SpeakerStartStopMessage>('speaker')
-  .on('started', payload => {
-    const speaking = payload as SpeakerStartStopMessage
-    currentlySpeaking.set(speaking.speaker_list, dateify(speaking, 'started'))
+  .on<SpeakerStartStopMessage>('started', payload => {
+    currentlySpeaking.set(payload.speaker_list, dateify(payload, 'started'))
   })
-  .on('stopped', payload => {
-    const stopped = payload as SpeakerStartStopMessage
-    currentlySpeaking.delete(stopped.speaker_list)
+  .on<SpeakerStartStopMessage>('stopped', payload => {
+    currentlySpeaking.delete(payload.speaker_list)
   })
 
 export default function useSpeakerLists () {

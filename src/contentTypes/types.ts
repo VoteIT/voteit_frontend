@@ -162,6 +162,7 @@ export enum SchemaType {
   Outgoing = 'outgoing',
 }
 
+// For Channel.ts
 export interface ChannelConfig extends ChannelsConfig {
   leaveDelay?: number
 }

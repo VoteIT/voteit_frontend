@@ -10,12 +10,12 @@ export enum State {
 
 export interface BaseChannelsMessage {
   t: string
-  i: string
+  i: string | null
 }
 
-export interface SuccessMessage extends BaseChannelsMessage {
+export interface SuccessMessage<T> extends BaseChannelsMessage {
   s?: State.Success
-  p: object
+  p: T
 }
 
 export interface ProgressMessage extends BaseChannelsMessage {
@@ -32,19 +32,26 @@ export interface FailedMessage extends BaseChannelsMessage {
   p: MessageObject
 }
 
+export interface SubscribePayload {
+  channel_type: string
+  pk: number
+}
+
 interface SubscribedPayload {
-  app_state: SuccessMessage[] | null
+  app_state: SuccessMessage<object>[] | null
   channel_name: string
   channel_type: string
   pk: number
 }
 
-export interface SubscribedMessage extends SuccessMessage {
+export interface SubscribedMessage {
+  i: string
+  s: State.Success
   t: 'channel.subscribed'
   p: SubscribedPayload
 }
 
-export type ChannelsMessage = SuccessMessage | ProgressMessage | FailedMessage | SubscribedMessage
+export type ChannelsMessage = SuccessMessage<object> | ProgressMessage | FailedMessage | SubscribedMessage
 
 export interface Progress {
   curr: number
@@ -54,6 +61,7 @@ export interface Progress {
 
 export type ProgressHandler = (progress: Progress) => void
 
+// For Socket.ts
 export interface ChannelsConfig {
   timeout?: number
   alertOnError?: boolean

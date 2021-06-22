@@ -20,9 +20,8 @@ interface PresenceCheckStatusMessage {
 
 presenceCheckType.getChannel()
   .updateMap(presenceChecks, pc => dateify(pc, ['opened', 'closed']))
-  .on('status', (payload: any) => {
-    const status = payload as PresenceCheckStatusMessage
-    presenceCount.set(status.pk, status.present)
+  .on<PresenceCheckStatusMessage>('status', ({ pk, present }) => {
+    presenceCount.set(pk, present)
   })
 
 const channel = presenceType.getChannel()

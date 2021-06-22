@@ -15,23 +15,24 @@ function getRoleKey (...components: keyComponent[]) {
   return components.join('/')
 }
 
-new Channel<ContextRoles>('roles')
-  .onUpdate((message: SuccessMessage) => {
-    if (['roles.removed', 'roles.added'].includes(message.t)) {
-      const p = message.p as ContextRoles
-      const key = getRoleKey(p.model.toLowerCase(), p.pk, p.user_pk)
-      if (!contextRoles.has(key)) contextRoles.set(key, new Set())
-      const roleStore = contextRoles.get(key) as Set<string>
-      switch (message.t) {
-        case 'roles.removed':
-          p.roles.forEach(r => roleStore.delete(r))
-          if (!roleStore.size) contextRoles.delete(key)
-          break
-        case 'roles.added':
-          p.roles.forEach(r => roleStore.add(r))
-          break
-      }
-    }
+function getRoleStore (p: ContextRoles): { key: string, store: Set<string> } {
+  const key = getRoleKey(p.model.toLowerCase(), p.pk, p.user_pk)
+  if (!contextRoles.has(key)) contextRoles.set(key, new Set())
+  return {
+    key,
+    store: contextRoles.get(key) as Set<string>
+  }
+}
+
+new Channel('roles')
+  .on<ContextRoles>('removed', payload => {
+    const { store, key } = getRoleStore(payload)
+    payload.roles.forEach(r => store.delete(r))
+    if (!store.size) contextRoles.delete(key)
+  })
+  .on<ContextRoles>('added', payload => {
+    const { store } = getRoleStore(payload)
+    payload.roles.forEach(r => store.add(r))
   })
 
 export default function useContextRoles (contentType: string) {

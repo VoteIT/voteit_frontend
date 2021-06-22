@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
-import { ChannelsConfig, ChannelsMessage, State } from './types'
+import { ChannelsConfig, ChannelsMessage, State, SubscribePayload } from './types'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 
@@ -10,20 +10,19 @@ type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
 const DEFAULT_CONFIG: ChannelsConfig = {
   timeout: 5000 // 5s
 }
-const STATE = {
-  SUCCESS: 's',
-  FAILED: 'f',
-  WAITING: 'w',
-  RUNNING: 'r'
+enum SocketEvent {
+  Open = 'open',
+  Close = 'close',
+  Error = 'error',
+  Message = 'message'
 }
-const EVENTS = ['open', 'close', 'error', 'message']
+const EVENTS = [SocketEvent.Open, SocketEvent.Close, SocketEvent.Error, SocketEvent.Message]
 
 export default class Socket {
-  active: boolean
-  callbacks: Map<string, (data: ChannelsMessage) => void>
-  listeners: DefaultMap<string, Set<SocketEventHandler>>
-  // token?: string
-  _ws?: WebSocket
+  public active: boolean
+  private callbacks: Map<string, (data: ChannelsMessage) => void>
+  private listeners: DefaultMap<string, Set<SocketEventHandler>>
+  private ws?: WebSocket
 
   constructor () {
     this.active = false
@@ -31,143 +30,135 @@ export default class Socket {
     this.listeners = new DefaultMap(() => new Set())
   }
 
-  _createEventListener (name: string): SocketEventHandler {
+  private createEventListener (eventName: SocketEvent): SocketEventHandler {
     return (event) => {
-      for (const listener of this.listeners.get(name)) {
+      for (const listener of this.listeners.get(eventName)) {
         listener(event)
       }
     }
   }
 
-  addEventListener (eventName: string, listener: SocketEventHandler) {
+  public addEventListener (eventName: string, listener: SocketEventHandler) {
     this.listeners.get(eventName).add(listener)
   }
 
-  removeEventListener (eventName: string, listener: SocketEventHandler) {
+  public removeEventListener (eventName: string, listener: SocketEventHandler) {
     this.listeners.get(eventName).delete(listener)
   }
 
-  connect () {
-    // Save token is supplied (usually first call)
-    // if (token) {
-    //   this.token = token
-    // }
-    // if (!this.token) {
-    //   throw Error('Socket needs a token to connect')
-    // }
+  public connect () {
     this.active = true
     return new Promise((resolve, reject) => {
-      this._ws = new WebSocket(`${wsProtocol}//${hostname}/ws/`)
+      this.ws = new WebSocket(`${wsProtocol}//${hostname}/ws/`)
 
-      this._ws.addEventListener('error', reject)
-      this._ws.addEventListener('open', resolve)
-      this._ws.addEventListener('message', event => {
+      this.ws.addEventListener(SocketEvent.Error, reject)
+      this.ws.addEventListener(SocketEvent.Open, resolve)
+      this.ws.addEventListener(SocketEvent.Message, event => {
         const data: ChannelsMessage = JSON.parse(event.data)
-        this.callbacks.get(data.i)?.(data)
+        if (data.i) this.callbacks.get(data.i)?.(data)
       })
       for (const event of EVENTS) {
-        this._ws.addEventListener(event, this._createEventListener(event))
+        this.ws.addEventListener(event, this.createEventListener(event as SocketEvent))
       }
     })
   }
 
-  close () {
+  public close () {
     // delete this.token
-    this._ws?.close()
+    this.ws?.close()
     this.active = false
   }
 
-  get isOpen () {
-    return this.active && this._ws?.readyState === WebSocket.OPEN
+  public get isOpen () {
+    return this.active && this.ws?.readyState === WebSocket.OPEN
   }
 
-  call (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<ChannelsMessage> {
+  private assertOpen () {
+    if (!this.active) throw new Error('Socket not activated')
+    if (this.ws?.readyState !== WebSocket.OPEN) throw new Error('Socket closed')
+  }
+
+  public call<Type> (type: string, payload: Type, config?: ChannelsConfig): ProgressPromise<ChannelsMessage>
+  public call (type: string, uri: string, config?: ChannelsConfig): ProgressPromise<ChannelsMessage>
+  public call (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<ChannelsMessage> {
     // Registers a response listener and returns promise that resolves or rejects depeding on subsequent
     // socket data, or times out.
+    this.assertOpen()
     const myConfig: ChannelsConfig = { ...DEFAULT_CONFIG, ...(config || {}) }
-    if (this.isOpen) {
-      const messageId = sessionStorage.socketMessageCounter || '1'
-      const payload = payloadOrUri && (typeof payloadOrUri === 'object'
-        ? payloadOrUri
-        : uriToPayload(payloadOrUri))
-      this._ws?.send(JSON.stringify({
-        t: type,
-        p: payload,
-        i: messageId
-      }))
-      sessionStorage.socketMessageCounter = Number(messageId) + 1
-      return new ProgressPromise((resolve, reject, progress) => {
-        let timeoutId: number
-        const setRejectTimeout = () => {
-          if (myConfig.timeout) {
-            timeoutId = setTimeout(() => {
+    const messageId: string = sessionStorage.socketMessageCounter || '1'
+    const payload = payloadOrUri && (typeof payloadOrUri === 'object'
+      ? payloadOrUri
+      : uriToPayload(payloadOrUri))
+    this.ws?.send(JSON.stringify({
+      t: type,
+      p: payload,
+      i: messageId
+    }))
+    sessionStorage.socketMessageCounter = Number(messageId) + 1
+    return new ProgressPromise((resolve, reject, progress) => {
+      let timeoutId: number
+      const setRejectTimeout = () => {
+        if (myConfig.timeout) {
+          timeoutId = setTimeout(() => {
+            this.callbacks.delete(messageId)
+            if (myConfig.alertOnError) {
+              openAlertEvent.emit({
+                title: 'Socket error',
+                text: 'Request timed out',
+                level: 'error',
+                sticky: true
+              })
+            }
+            reject(new Error('Request timed out'))
+          }, myConfig.timeout)
+        }
+      }
+      setRejectTimeout()
+
+      this.callbacks.set(messageId, data => {
+        if (data.i === messageId) {
+          clearTimeout(timeoutId)
+          switch (data.s) {
+            case State.Failed:
               this.callbacks.delete(messageId)
               if (myConfig.alertOnError) {
                 openAlertEvent.emit({
                   title: 'Socket error',
-                  text: 'Request timed out',
+                  text: data.p.msg,
                   level: 'error',
                   sticky: true
                 })
               }
-              reject(new Error('Request timed out'))
-            }, myConfig.timeout)
+              reject(new Error(data.p.msg))
+              break
+            case State.Waiting:
+            case State.Running:
+              // If we get progress, we reset timeout watcher
+              setRejectTimeout()
+              progress(data.p)
+              break
+            case State.Success:
+              this.callbacks.delete(messageId)
+              resolve(data)
+              break
+            default: // Should never happen
+              this.callbacks.delete(messageId)
+              reject(new Error(`Unknown socket state: ${data}`))
           }
         }
-        setRejectTimeout()
-
-        this.callbacks.set(messageId, data => {
-          if (data.i === messageId) {
-            clearTimeout(timeoutId)
-            switch (data.s) {
-              case State.Failed:
-                this.callbacks.delete(messageId)
-                if (myConfig.alertOnError) {
-                  openAlertEvent.emit({
-                    title: 'Socket error',
-                    text: data.p.msg,
-                    level: 'error',
-                    sticky: true
-                  })
-                }
-                reject(new Error(data.p.msg))
-                break
-              case State.Waiting:
-              case State.Running:
-                // If we get progress, we reset timeout watcher
-                setRejectTimeout()
-                progress(data.p)
-                break
-              case State.Success:
-                this.callbacks.delete(messageId)
-                resolve(data)
-                break
-              default: // Should never happen
-                this.callbacks.delete(messageId)
-                reject(new Error(`Unknown socket state: ${data}`))
-            }
-          }
-        })
       })
-    } else {
-      return ProgressPromise.reject(new Error('Socket closed')) as ProgressPromise<ChannelsMessage>
-    }
+    })
   }
 
-  send (type: string, payloadOrUri: string | object) {
+  public send (type: string, payloadOrUri: string | object) {
     // Does not register a response listener
-    // Returns a Promise that resolves or rejects immediately
-    if (this._ws?.readyState === WebSocket.OPEN) {
-      const payload = typeof payloadOrUri === 'object'
-        ? payloadOrUri
-        : uriToPayload(payloadOrUri)
-      this._ws.send(JSON.stringify({
-        t: type,
-        p: payload
-      }))
-      return Promise.resolve()
-    } else {
-      return Promise.reject(new Error('socket closed'))
-    }
+    this.assertOpen()
+    const payload = typeof payloadOrUri === 'object'
+      ? payloadOrUri
+      : uriToPayload(payloadOrUri)
+    this.ws?.send(JSON.stringify({
+      t: type,
+      p: payload
+    }))
   }
 }
