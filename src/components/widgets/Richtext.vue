@@ -28,7 +28,7 @@ export default defineComponent({
   setup (props, { emit }) {
     function getContent (): string {
       if (props.object) return props.object[props.contentAttribute]
-      if (props.modelValue) return props.modelValue
+      if (typeof props.modelValue === 'string') return props.modelValue
       throw new Error('RichText needs :object=<object> or v-model=<string>')
     }
     const content = ref(getContent())

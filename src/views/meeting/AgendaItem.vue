@@ -9,7 +9,7 @@
           </v-btn>
         </div>
         <Menu float :items="menuItems" />
-        <Headline :editing="editing" v-model="content.title" @edit-done="submit()"></Headline>
+        <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
         <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" />
         <div class="speaker-lists" v-if="speakerSystems.length">
