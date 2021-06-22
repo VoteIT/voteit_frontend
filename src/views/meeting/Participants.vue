@@ -1,10 +1,10 @@
 git<template>
   <main>
     <h1>{{ t('meeting.participants') }}</h1>
-    <div v-if="canChange" class="search">
+    <div v-if="canChangeRoles" class="search">
       <UserSearch @submit="addUser" :omitIds="getUserIds(meetingId)" />
     </div>
-    <RoleMatrix :remove-confirm="removeConfirm" :admin="canChange" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
+    <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
   </main>
 </template>
 
@@ -61,13 +61,13 @@ export default defineComponent({
       return true
     }
 
-    const canChange = computed(() => {
-      return meetingType.rules.canChange(meeting.value)
+    const canChangeRoles = computed(() => {
+      return meetingType.rules.canChangeRoles(meeting.value)
     })
 
     return {
       addUser,
-      canChange,
+      canChangeRoles,
       getUserIds,
       removeConfirm,
       meetingChannel,

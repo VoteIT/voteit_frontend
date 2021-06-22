@@ -59,6 +59,10 @@ const canChange: Predicate = (meeting?: Meeting) => {
   return !isArchived(meeting) && isModerator(meeting)
 }
 
+const canChangeRoles: Predicate = (meeting: Meeting) => {
+  return !isArchived(meeting) && (isModerator(meeting) || organizationRules.isManager(user.value?.organisation))
+}
+
 const canBecomeModerator: Predicate = (meeting: Meeting) => {
   return organizationRules.isManager(user.value?.organisation)
 }
@@ -76,5 +80,6 @@ export default {
   canAdd,
   canBecomeModerator,
   canChange,
+  canChangeRoles,
   canDelete: canChange
 }
