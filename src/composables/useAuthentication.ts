@@ -1,11 +1,10 @@
 import { ref } from 'vue'
 
-import { User } from '@/utils/types'
 import restApi from '@/utils/restApi'
 
-import devLoginType from '@/contentTypes/devLogin'
-import { Organization } from '@/contentTypes/types'
+import { Organization, User } from '@/contentTypes/types'
 import useContextRoles from './useContextRoles'
+import { UserState } from '@/contentTypes/user/workflowStates'
 
 const user = ref<User | null>(null)
 const isAuthenticated = ref(false)
@@ -14,12 +13,12 @@ const organizationRoles = useContextRoles('organisation') // Avoid circular impo
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 export default function useAuthentication () {
-  const contentApi = devLoginType.getContentApi()
-
   async function fetchAuthenticatedUser (tries = 3): Promise<User | null> {
     try {
       const { data } = await restApi.get<User>('user/')
-      console.log('User authenticated', data.username)
+      console.log('User authenticated', data.userid)
+      // TODO
+      if (data.state === UserState.Incomplete) console.warn('User is incomplete')
       user.value = data
       isAuthenticated.value = true
       organizationRoles.set(data.organisation, data.pk, data.organisation_roles)
@@ -41,19 +40,6 @@ export default function useAuthentication () {
     if (!organization.login_url) throw new Error(`Organization ${organization.title} has no login information`)
     location.assign(organization.login_url)
   }
-
-  // async function authenticate (usr: DevUser) {
-  //   console.log('Authenticating', usr.username)
-  //   return contentApi.retrieve(usr.username)
-  //     .then(({ data }: { data: any }) => {
-  //       // user.value = usr
-  //       sessionStorage.user = JSON.stringify(usr)
-  //       isAuthenticated.value = true
-  //     })
-  //     .catch(() => {
-  //       delete sessionStorage.user
-  //     })
-  // }
 
   async function logout () {
     if (!isAuthenticated.value) return

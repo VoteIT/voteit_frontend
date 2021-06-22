@@ -75,7 +75,7 @@ export default function useContextRoles (contentType: string) {
     return false
   }
 
-  function * iterAll (pk: number) {
+  function * iterAll (pk: number): Generator<UserContextRoles> {
     const contextKey = getRoleKey(contentType, pk) + '/'
     for (const [key, assigned] of contextRoles.entries()) {
       if (key.startsWith(contextKey)) {

@@ -51,9 +51,10 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 
 import speakerSystemType, { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/speakerSystem'
 import { ContextRole } from '@/composables/types'
-import { MenuItem, ThemeColor, User } from '@/utils/types'
+import { MenuItem, ThemeColor } from '@/utils/types'
 
 import SelectVue from '@/components/inputs/Select.vue'
+import { User } from '@/contentTypes/types'
 
 const systemIcons = {
   speaker: 'mdi-chat',

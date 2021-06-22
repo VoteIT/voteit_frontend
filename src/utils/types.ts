@@ -1,6 +1,7 @@
+/* eslint-disable camelcase */
 import { OrganizationRole } from '@/contentTypes/types'
 
-/* eslint-disable camelcase */
+// For Channels
 export enum State {
   Success = 's',
   Failed = 'f',
@@ -65,27 +66,6 @@ export type ProgressHandler = (progress: Progress) => void
 export interface ChannelsConfig {
   timeout?: number
   alertOnError?: boolean
-}
-
-// Deprecated
-export interface NewDevUser {
-  username: string
-  is_superuser: boolean
-}
-
-// Deprecated
-export interface DevUser extends NewDevUser {
-  pk: number
-}
-
-export interface User {
-  pk: number
-  username: string
-  full_name: string
-  first_name: string
-  last_name: string
-  organisation: number
-  organisation_roles: OrganizationRole[]
 }
 
 export enum ThemeColor {

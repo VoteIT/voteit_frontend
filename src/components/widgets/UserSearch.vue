@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts">
+import { User } from '@/contentTypes/types'
 import userType from '@/contentTypes/user'
-import { User } from '@/utils/types'
 import { defineComponent, PropType, ref } from 'vue'
 
 const TYPE_DELAY = 250 // delay in ms

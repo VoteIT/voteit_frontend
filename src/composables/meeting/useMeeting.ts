@@ -4,14 +4,12 @@ import { useRoute } from 'vue-router'
 
 import { slugify, restApi } from '@/utils'
 
-import useContextRoles from '../useContextRoles'
 import useAuthentication from '../useAuthentication'
 import { meetings } from '../useMeetings'
 
 import meetingType from '@/contentTypes/meeting'
-import { Meeting, MeetingRole } from '@/contentTypes/types'
+import { Meeting, MeetingRole, User } from '@/contentTypes/types'
 import { MeetingRoles } from '../types'
-import { User } from '@/utils/types'
 
 const FORCE_ROLES_FETCH = false
 

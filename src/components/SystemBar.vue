@@ -62,14 +62,6 @@ export default defineComponent({
       }
     })
 
-    const initials = computed(() => {
-      if (auth.user.value) {
-        const name = auth.user.value.username
-        return name.slice(0, 2).toUpperCase()
-      }
-      return null
-    })
-
     async function logout () {
       userMenuOpen.value = false
       if (!await dialogQuery({
@@ -86,7 +78,6 @@ export default defineComponent({
 
     return {
       ...auth,
-      initials,
       userMenuOpen,
       logout,
       userMenuComponent,

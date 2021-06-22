@@ -49,17 +49,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, onBeforeMount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
-import { NewDevUser, DevUser } from '@/utils/types'
 
 import AddMeetingVue from '@/components/modals/AddMeeting.vue'
 import Counter from '@/components/examples/Counter.vue'
 import getSchema from '@/components/examples/GetSchema.vue'
 
-import devLogin from '@/contentTypes/devLogin'
 import rules from '@/contentTypes/meeting/rules'
 import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
@@ -73,10 +71,8 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
-    const devApi = devLogin.getContentApi()
     const { logout, isAuthenticated, user, startOrganizationLogin } = useAuthentication()
     const { fetchOrganizations } = useOrganizations()
-    const users = ref<DevUser[]>([])
     const loader = useLoader('Home')
 
     watch(isAuthenticated, value => {
@@ -88,25 +84,6 @@ export default defineComponent({
       fetchOrganizations()
       if (isAuthenticated.value) loader.call(fetchMeetings)
     })
-
-    const addUser = ref(false)
-    const newUser = reactive<NewDevUser>({
-      username: '',
-      is_superuser: false
-    })
-    const newUserError = ref(false)
-
-    async function createUser () {
-      newUserError.value = false
-      try {
-        await devApi.add(newUser)
-        users.value.push({ ...newUser } as DevUser)
-        newUser.username = ''
-        newUser.is_superuser = false
-      } catch {
-        newUserError.value = true
-      }
-    }
 
     const participatingMeetings = computed(() => {
       return orderedMeetings.value.filter(m => m.current_user_roles)
@@ -135,12 +112,6 @@ export default defineComponent({
       logout,
       isAuthenticated,
       user,
-      users,
-
-      addUser,
-      newUser,
-      newUserError,
-      createUser,
 
       ...rules,
       createMeeting,

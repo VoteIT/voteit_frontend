@@ -61,9 +61,15 @@ new Channel<LastRead>('last_read')
 export default function useAgenda () {
   const route = useRoute()
 
+  function * iterAgenda (filter: (ai: AgendaItem) => boolean): Generator<AgendaItem> {
+    for (const ai of agendaItems.values()) if (filter(ai)) yield ai
+  }
+
   function getAgenda (meeting: number) {
-    const ais = [...wu(agendaItems.values()).filter(ai => ai.meeting === meeting)]
-    return orderBy(ais, 'order')
+    return orderBy(
+      [...iterAgenda(ai => ai.meeting === meeting)],
+      'order'
+    )
   }
 
   function getAgendaItem (agendaItem: number) {
@@ -90,7 +96,7 @@ export default function useAgenda () {
   }
 
   const agendaId = computed(() => route && Number(route.params.aid))
-  const agendaItem = computed(() => getAgendaItem(agendaId.value))
+  const agendaItem = computed(() => agendaItems.get(agendaId.value))
   const agendaItemLastRead = computed(() => agendaItemsLastRead.get(agendaId.value))
 
   const loader = useLoader('useAgenda')

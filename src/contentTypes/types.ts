@@ -5,6 +5,7 @@ import { ChannelsConfig } from '@/utils/types'
 import { PollState } from './poll/workflowStates'
 import { PresenceCheckState } from './presenceCheck/workflowStates'
 import { ProposalState } from './proposal/workflowStates'
+import { UserState } from './user/workflowStates'
 
 export enum MeetingRole {
   Participant = 'participant',
@@ -180,4 +181,15 @@ export interface Organization {
   body: string
   login_url: string | null
   scopes: string[]
+}
+
+export interface User {
+  pk: number
+  state: UserState
+  userid: string | null
+  full_name: string
+  first_name: string
+  last_name: string
+  organisation: number
+  organisation_roles: OrganizationRole[]
 }
