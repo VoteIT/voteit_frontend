@@ -4,12 +4,9 @@
       <template v-slot:vote>
         <div class="grade">
           <div/>
-          <div class="rating">
-            <v-icon :icon="n <= proposalGrades.get(p.pk) ? 'mdi-star' : 'mdi-star-outline'" v-for="n in grades" :key="n" @click="setGrade(p, n)"
-                    :class="{ active: n <= proposalGrades.get(p.pk) }" />
-          </div>
+          <v-rating length="5" v-model="grades[p.pk]" active-color="success-darken-2" size="small" :disabled="disabled" />
           <div>
-            <v-btn size="small" border v-show="proposalGrades.get(p.pk)" @click="setGrade(p, 0)">{{ t('clear') }}</v-btn>
+            <v-btn size="small" border v-show="!!grades[p.pk]" @click="grades[p.pk] = 0">{{ t('clear') }}</v-btn>
           </div>
         </div>
       </template>
@@ -18,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive } from 'vue'
+import { computed, defineComponent, PropType, reactive, watch } from 'vue'
 
 import ProposalComponent from '@/components/widgets/Proposal.vue'
 
@@ -26,8 +23,6 @@ import useProposals from '@/composables/meeting/useProposals'
 
 import { Poll, Proposal } from '@/contentTypes/types'
 import { SchulzeVote } from './types'
-
-const GRADES: number[] = [1, 2, 3, 4, 5]
 
 export default defineComponent({
   name: 'SchulzePoll',
@@ -45,35 +40,25 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const { getProposal } = useProposals()
-    const proposalGrades = reactive<Map<number, number>>(new Map())
+    const grades = reactive<Record<number, number>>({})
     if (props.modelValue) {
       for (const [key, value] of props.modelValue.ranking) {
-        proposalGrades.set(key, value)
+        grades[key] = value
       }
     }
 
-    // Watch existing vote value from Vote modal
-    // watch(() => props.modelValue, (vote?: SchulzeVote) => {
-    //   for (const [key, value] of vote?.ranking || []) {
-    //     proposalGrades.set(key, value)
-    //   }
-    // })
     const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
 
-    function setGrade (proposal: Proposal, grade: number) {
-      if (props.disabled) return
-      proposalGrades.set(proposal.pk, grade)
-      const valid = [...proposalGrades.values()].some(n => n) // Any grade set?
-      if (!valid) return emit('update:modelValue') // Clear vote on unvalid
+    watch(grades, value => {
+      const valid = Object.values(value).some(n => n) // Any grade set to non-zero?
+      if (!valid) return emit('update:modelValue') // Clear vote on invalid
       emit('update:modelValue', {
-        ranking: proposals.value.map(p => [p.pk, proposalGrades.get(p.pk) || 0])
+        ranking: proposals.value.map(p => [p.pk, grades[p.pk] ?? 0])
       })
-    }
+    })
 
     return {
-      grades: GRADES,
-      setGrade,
-      proposalGrades,
+      grades,
       proposals
     }
   }
@@ -88,13 +73,7 @@ export default defineComponent({
     flex: 0 1 100px
   :last-child
     text-align: right
-  .rating
+  .v-rating
     flex: 1 0 auto
-    .mdi
-      cursor: pointer
-      margin-right: .4em
-      &:last-child
-        margin-right: 0
-    .active
-      color: rgb(var(--v-theme-success-darken-2))
+    justify-content: center
 </style>
