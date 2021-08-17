@@ -5,7 +5,7 @@
       {{ buttonText || t('add') }}
     </v-btn>
     <v-sheet rounded elevation="4" class="selector" v-show="results.length">
-      <v-btn block plain v-for="result in results" :key="result.pk" @click="select(result)">
+      <v-btn block v-for="result in results" :key="result.pk" @click="select(result)">
         <span v-if="result.full_name">{{ result.full_name }} ({{ result.userid }})</span>
         <em v-else>-- unknown --</em>
       </v-btn>

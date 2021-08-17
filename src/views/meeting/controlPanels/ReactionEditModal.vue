@@ -3,7 +3,7 @@
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
-        <v-btn :prepend-icon="formData.icon" size="small" :title="formData.title" @click="previewActive = !previewActive" :plain="!previewActive" :color="formData.color">
+        <v-btn :prepend-icon="formData.icon" size="small" :title="formData.title" @click="previewActive = !previewActive" :variant="previewActive ? 'contained' : 'text'" :color="formData.color">
           {{ previewActive ? 100 : 99 }}
         </v-btn>
       </Widget>
@@ -14,18 +14,21 @@
         </div>
         <div>
           <label>{{ t('color') }}</label>
-          <div class="btn-controls">
-            <v-btn :border="formData.color !== name" v-for="[value, name] in Object.entries(ThemeColor)" :key="value" :color="name" @click="formData.color = name">
-              {{ value }}
-            </v-btn>
-          </div>
+          <v-item-group class="btn-controls" mandatory v-model="formData.color">
+            <v-item v-for="[name, value] in Object.entries(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
+              <v-btn :variant="isSelected ? 'contained' : 'text'" :color="value" @click="toggle()">
+                {{ name }}
+              </v-btn>
+            </v-item>
+          </v-item-group>
         </div>
         <div>
           <label>{{ t('icon') }}</label>
-          <div class="btn-controls">
-            <v-btn :elevation="formData.icon === name ? 2 : 0" :border="formData.icon === name" v-for="[value, name] in Object.entries(ReactionIcon)" :key="value" :icon="name" @click="formData.icon = name">
-            </v-btn>
-          </div>
+          <v-item-group class="btn-controls" mandatory v-model="formData.icon">
+            <v-item v-for="value in Object.values(ReactionIcon)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
+              <v-btn :variant="isSelected ? 'contained' : 'text'" :color="formData.color" :icon="value" @click="toggle()" />
+            </v-item>
+          </v-item-group>
         </div>
         <div>
           <label>{{ t('reaction.modelsAllowed') }}</label>
@@ -116,7 +119,10 @@ export default defineComponent({
 
     async function deleteButton () {
       if (!formData.pk) return
-      if (!await dialogQuery(t('reaction.deleteButtonConfirmation'))) return
+      if (!await dialogQuery({
+        title: t('reaction.deleteButtonConfirmation'),
+        theme: ThemeColor.Warning
+      })) return
       submitting.value = true
       try {
         await api.delete(formData.pk)

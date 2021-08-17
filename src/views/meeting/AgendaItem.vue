@@ -4,7 +4,7 @@
       <v-col>
         <div id="agenda-display-mode">
           <span class="text-secondary">{{ t('agenda.showAs') }}</span>
-          <v-btn plain :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
+          <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
             <img :src="require(`@/assets/agenda-display-${mode}.svg`)"/>
           </v-btn>
         </div>
@@ -23,9 +23,11 @@
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
         <div class="btn-actions space-between">
-          <v-btn @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
-            {{ t('proposal.add') }}
-          </v-btn>
+          <span>
+            <v-btn @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary">
+              {{ t('proposal.add') }}
+            </v-btn>
+          </span>
           <ProposalFilters ref="filterComponent" v-model="activeFilter" :tags="allTags" :key="agendaId" />
         </div>
         <div v-if="sortedProposals.length">
@@ -48,7 +50,7 @@
       <v-col v-if="displayMode === 'columns'" cols="12" lg="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
         <div class="btn-actions space-between">
-          <v-btn @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary" plain>
+          <v-btn @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary">
             {{ t('discussion.add') }}
           </v-btn>
         </div>

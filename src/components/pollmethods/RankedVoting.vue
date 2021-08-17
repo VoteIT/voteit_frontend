@@ -10,7 +10,7 @@
             </span>
           </div>
           <div class="center">
-            <v-btn flat size="small" @click="toggleSelected(p)">
+            <v-btn variant="text" size="small" @click="toggleSelected(p)">
               {{ t('poll.rankingSelectedAs') }}
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>

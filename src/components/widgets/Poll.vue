@@ -36,7 +36,7 @@
           ...pollStatus,
           percentage: Math.round(pollStatus.voted / pollStatus.total * 100)
         }, pollStatus.voted) }}</span>
-        <v-btn prepend-icon="mdi-reload" v-else flat size="small" @click="follow()">
+        <v-btn prepend-icon="mdi-reload" v-else variant="text" size="small" @click="follow()">
           {{ t('poll.showProgress') }}
         </v-btn>
         <span v-if="userVote" class="active">{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>

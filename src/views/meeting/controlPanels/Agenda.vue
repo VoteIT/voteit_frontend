@@ -1,20 +1,30 @@
 <template>
-  <h2>{{ t('agenda.newItem') }}</h2>
-  <form @submit.prevent="addAgendaItem" class="agenda-add-form mb-2">
-    <input ref="inputEl" type="text" :placeholder="t('title')" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
-    <v-btn :disabled="!newAgendaTitle" color="primary" @click="addAgendaItem">{{ t('add') }}</v-btn>
-  </form>
-  <div class="btn-controls">
-    <v-btn v-for="tab in editModes" :key="tab.name" color="primary" :plain="editMode.name !== tab.name" :outlined="editMode.name !== tab.name" @click="editMode = tab">{{ tab.title }}</v-btn>
+  <v-item-group class="btn-controls mb-4" v-model="editMode">
+    <v-item v-for="tab in editModes" :key="tab.name" :value="tab" v-slot="{ isSelected, toggle }">
+      <v-btn color="accent" :variant="isSelected ? 'contained' : 'outlined'" @click="toggle()">{{ tab.title }}</v-btn>
+    </v-item>
+  </v-item-group>
+  <div v-if="editMode.name === 'default'">
+    <v-item-group tag="ul" class="agenda-edit" multiple v-model="editSelected">
+      <li class="d-none"><!-- TODO change many -->
+        <input type="checkbox" v-model="editIsAllSelected">
+      </li>
+      <v-item v-for="ai in agendaItems" :key="ai.pk" v-slot="{ toggle, isSelected }" :value="ai.pk">
+        <li>
+          <input type="checkbox" :checked="isSelected" @change.prevent="toggle()" class="mr-2 d-none">
+          <v-icon size="small" :icon="getState(ai.state).icon" />
+          <span>{{ ai.title }}</span>
+          <v-btn v-if="canDelete(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
+        </li>
+      </v-item>
+    </v-item-group>
+    <v-divider class="mt-6 mb-2" />
+    <h2>{{ t('agenda.newItem') }}</h2>
+    <form @submit.prevent="addAgendaItem" class="agenda-add-form mb-2">
+      <input ref="inputEl" type="text" :placeholder="t('title')" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
+      <v-btn :disabled="!newAgendaTitle" color="primary" @click="addAgendaItem">{{ t('add') }}</v-btn>
+    </form>
   </div>
-  <h2>{{ editMode.title }}</h2>
-  <ul v-if="editMode.name === 'default'" class="agenda-edit">
-    <li v-for="ai in agendaItems" :key="ai.pk">
-      <v-icon size="small" :icon="getState(ai.state).icon" />
-      <span>{{ ai.title }}</span>
-      <v-btn v-if="canDelete(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
-    </li>
-  </ul>
   <div v-if="editMode.name === 'order'">
     <Draggable v-model="agendaItems" item-key="pk" >
       <template #item="{ element }">
@@ -98,6 +108,18 @@ export default defineComponent({
       })) agendaApi.delete(ai.pk)
     }
 
+    const editSelected = ref<number[]>([])
+    const editIsAllSelected = computed({
+      get: () => agendaItems.value.length === editSelected.value.length,
+      set: (value: boolean) => {
+        if (value) {
+          editSelected.value = agendaItems.value.map(ai => ai.pk)
+        } else {
+          editSelected.value = []
+        }
+      }
+    })
+
     return {
       t,
       title: computed(() => t('agenda')),
@@ -108,6 +130,8 @@ export default defineComponent({
       getState,
       addAgendaItem,
       newAgendaTitle,
+      editIsAllSelected,
+      editSelected,
       ...agendaItemType.rules
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <v-btn :prepend-icon="button.icon" size="small" :plain="!reaction || disabled" :color="button.color" :disabled="disabled" :title="button.title" @click="toggle">
+  <v-btn :prepend-icon="button.icon" size="small" :variant="reaction ? 'contained' : 'text'" :color="button.color" :disabled="disabled" :title="button.title" @click="toggle">
     {{ count }}
   </v-btn>
 </template>

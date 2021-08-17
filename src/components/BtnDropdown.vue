@@ -1,7 +1,7 @@
 <template>
   <span class="btn-dropdown" :class="{ dark, isOpen, right }">
     <slot name="activator" :toggle="toggle"/>
-    <v-btn v-if="title && !$slots.activator" plain @click="isOpen = !isOpen" append-icon="mdi-chevron-down">{{ title }}</v-btn>
+    <v-btn v-if="title && !$slots.activator" @click="isOpen = !isOpen" append-icon="mdi-chevron-down">{{ title }}</v-btn>
     <Widget v-show="isOpen">
       <slot v-if="!lazy || isOpen" />
     </Widget>

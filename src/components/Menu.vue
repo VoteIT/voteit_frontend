@@ -1,20 +1,20 @@
 <template>
   <span class="context-menu" :class="{ float }" ref="elem" v-if="items.length || $slots.top || $slots.bottom || showTransitions">
     <v-badge v-if="currentState?.icon" color="secondary" :icon="currentState.icon">
-      <v-btn flat :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
+      <v-btn variant="text" :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
     </v-badge>
-    <v-btn v-else flat :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
+    <v-btn v-else variant="text" :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
       <slot name="top"/>
       <template v-for="(item, i) in items" :key="i">
         <v-divider v-if="item === '---'" />
-        <v-btn :prepend-icon="item.icon" v-else :color="item.color" plain block :disabled="item.disabled || working" @click="clickItem(item)">
+        <v-btn :prepend-icon="item.icon" v-else :color="item.color" variant="text" block :disabled="item.disabled || working" @click="clickItem(item)">
           {{ item.text }}
         </v-btn>
       </template>
       <template v-if="transitionsAvailable">
         <v-divider v-if="items.length || $slots.top" />
-        <v-btn :prepend-icon="t.icon" plain block :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
+        <v-btn :prepend-icon="t.icon" variant="text" block :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
           {{ t.title }}
         </v-btn>
       </template>

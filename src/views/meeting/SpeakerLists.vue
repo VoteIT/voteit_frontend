@@ -4,7 +4,7 @@
       <header>
         <div class="btn-group">
           <v-btn v-for="nav in navigation" :key="nav.icon"
-                :disabled="nav.disabled" color="secondary" flat size="x-small" :icon="nav.icon"
+                :disabled="nav.disabled" color="secondary" variant="text" size="x-small" :icon="nav.icon"
                 @click="nav.action()" />
         </div>
         <h1>

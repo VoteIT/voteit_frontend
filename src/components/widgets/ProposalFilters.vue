@@ -1,7 +1,7 @@
 <template>
   <BtnDropdown ref="root" right>
     <template v-slot:activator="{ toggle }">
-      <v-btn :color="isModified ? 'warning' : undefined" plain @click="toggle()" append-icon="mdi-chevron-down">
+      <v-btn :color="isModified ? 'warning' : undefined" variant="text" @click="toggle()" append-icon="mdi-chevron-down">
         {{ t('sortAndFilter') }}
       </v-btn>
     </template>
@@ -30,7 +30,7 @@
           <v-divider/>
         </template>
         <h3>{{ t('reset') }}</h3>
-        <v-btn block plain :disabled="!isModified" @click="clearFilters()" prepend-icon="mdi-undo-variant">
+        <v-btn block variant="text" :disabled="!isModified" @click="clearFilters()" prepend-icon="mdi-undo-variant">
           {{ t('defaultFilters') }}
         </v-btn>
       </div>

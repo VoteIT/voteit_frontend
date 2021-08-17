@@ -5,7 +5,7 @@
       <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" /></RouterLink>
     </v-app-bar-title>
     <div>
-      <v-btn append-icon="mdi-chevron-down" class="user-menu" color="surface" :class="{ open: userMenuOpen }" plain @mousedown.stop @click="userMenuOpen = !userMenuOpen">
+      <v-btn append-icon="mdi-chevron-down" class="user-menu" :class="{ open: userMenuOpen }" variant="text" @mousedown.stop @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
         <span class="ml-2">{{ user.first_name || user.username }}</span>
       </v-btn>
@@ -16,15 +16,15 @@
           <p>{{ user.username }}</p>
         </div>
         <div>
-          <v-btn prepend-icon="mdi-account" plain block disabled>
+          <v-btn prepend-icon="mdi-account" variant="text" block disabled>
             {{ t('profile.profile') }}
           </v-btn>
-          <v-btn prepend-icon="mdi-at" plain block disabled>
+          <v-btn prepend-icon="mdi-at" variant="text" block disabled>
             {{ t('profile.verifyEmail') }}
           </v-btn>
         </div>
         <div>
-          <v-btn prepend-icon="mdi-logout" plain block @click="logout()">
+          <v-btn prepend-icon="mdi-logout" variant="text" block @click="logout()">
             {{ t('auth.logout') }}
           </v-btn>
         </div>
@@ -102,9 +102,9 @@ export default defineComponent({
       height: auto
       margin: 14px 8px 0
   button.user-menu
+    color: rgb(var(--v-theme-on-app-bar))
     i
       transition: transform .2s
-      color: rgb(var(--v-theme-surface))
     &.open i
       transform: rotate(180deg)
 

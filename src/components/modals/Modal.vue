@@ -1,7 +1,7 @@
 <template>
   <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @mousedown.self="dismiss">
     <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
-      <v-btn icon="mdi-close" size="large" class="closer" plain @click="dismiss" v-show="modal.dismissable" />
+      <v-btn icon="mdi-close" size="large" class="closer" variant="text" @click="dismiss" v-show="modal.dismissable" />
       <header v-if="modal.title">
         <h1>{{ modal.title }}</h1>
       </header>

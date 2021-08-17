@@ -20,13 +20,13 @@
     </v-sheet>
     <footer v-if="!readOnly">
       <div>
-        <v-btn prepend-icon="mdi-comment-outline" plain v-if="canComment(p)" @click="comment()">
+        <v-btn prepend-icon="mdi-comment-outline" variant="text" v-if="canComment(p)" @click="comment()">
           {{ t('discussion.comment') }}
         </v-btn>
-        <v-btn prepend-icon="mdi-chevron-up" plain v-if="showComments" @click="showComments = false">
+        <v-btn prepend-icon="mdi-chevron-up" variant="text" v-if="showComments" @click="showComments = false">
           {{ t('discussion.hideComments') }}
         </v-btn>
-        <v-btn plain v-else-if="comments?.length" @click="showComments = true">
+        <v-btn variant="text" v-else-if="comments?.length" @click="showComments = true">
           {{ t('discussion.comments', { count: comments.length }) }}
         </v-btn>
         <slot name="buttons"/>

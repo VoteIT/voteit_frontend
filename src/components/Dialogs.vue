@@ -2,11 +2,11 @@
   <transition name="dialog">
     <div id="dialog-backdrop" v-show="active" @mousedown.self="deny()">
       <v-sheet id="dialog" rounded elevation="16" ref="window" v-if="active" @keyup.esc="deny()">
-        <v-btn plain icon="mdi-close" class="closer" @click="deny()" />
+        <v-btn variant="text" icon="mdi-close" class="closer" @click="deny()" />
         <p>{{ active.title }}</p>
         <div class="btn-controls">
-          <v-btn outlined @click="deny()">{{ active.no }}</v-btn>
-          <v-btn :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
+          <v-btn variant="text" @click="deny()">{{ active.no }}</v-btn>
+          <v-btn variant="text" :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
         </div>
       </v-sheet>
     </div>

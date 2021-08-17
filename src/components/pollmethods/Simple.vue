@@ -3,7 +3,7 @@
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk">
       <template v-slot:vote>
         <div class="simple-options">
-          <Btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :border="opt.value !== votes.get(p.pk)" :icon="opt.icon" @click="change(p, opt)">
+          <Btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'contained' : 'outlined'" :icon="opt.icon" @click="change(p, opt)">
             {{ opt.title }}
           </Btn>
         </div>
