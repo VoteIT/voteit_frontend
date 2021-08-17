@@ -2,7 +2,7 @@
   <Widget class="poll">
     <header>
       <router-link :to="pollPath">
-        <v-icon icon="mdi-chevron-right"/>
+        <v-icon>mdi-chevron-right</v-icon>
         <h3>{{ poll.title }}</h3>
         <div class="meta">
           <span v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></span>
@@ -149,7 +149,7 @@ div.poll
       .mdi
         float: right
         font-size: 40pt
-        margin-top: 14px
+        margin-right: -14px
     .meta
       color: rgb(var(--v-theme-secondary))
       margin-bottom: 1em

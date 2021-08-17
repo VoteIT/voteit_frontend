@@ -1,30 +1,32 @@
 <template>
-  <Widget :selected="isActive">
-    <div class="btn-controls">
-      <v-btn :prepend-icon="enterLeaveBtn.icon" v-if="enterLeaveBtn" :color="enterLeaveBtn.color" size="small" @click="enterLeaveBtn.action()">
+  <v-card :color="isActive ? 'primary' : undefined" class="mb-2">
+    <v-card-title>
+      {{ list.title }}
+    </v-card-title>
+    <v-card-text>
+      <p v-if="currentSpeaker" class="mb-2">
+        {{ t('speaker.currentlySpeaking') }}:
+        <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
+      </p>
+      <h4>{{ t('speaker.queue') }}</h4>
+      <ol v-if="queue.length">
+        <li v-for="userPk in queue" :key="userPk"><User :pk="userPk"/></li>
+      </ol>
+      <p v-else>
+        <em>{{ t('speaker.queueEmpty') }}</em>
+      </p>
+    </v-card-text>
+    <v-card-actions v-if="enterLeaveBtn">
+      <v-btn :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <Menu :items="menuItems" :show-transitions="canChange(list)" :content-type="speakerListType" :object="list" />
-    </div>
-    <h3>
-      {{ list.title }}
-    </h3>
-    <p v-if="currentSpeaker" class="mb-2">
-      {{ t('speaker.currentlySpeaking') }}:
-      <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
-    </p>
-    <h4>{{ t('speaker.queue') }}</h4>
-    <ol v-if="queue.length">
-      <li v-for="userPk in queue" :key="userPk"><User :pk="userPk"/></li>
-    </ol>
-    <p v-else>
-      <em>{{ t('speaker.queueEmpty') }}</em>
-    </p>
-  </Widget>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useSpeakerLists from '../../composables/meeting/useSpeakerLists'
 import rules from '@/contentTypes/speakerList/rules'
@@ -33,9 +35,6 @@ import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerList } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import Moment from './Moment.vue'
-import { dialogQuery } from '@/utils'
-import { MenuItem, ThemeColor } from '@/utils/types'
-import { useI18n } from 'vue-i18n'
 
 interface EnterLeaveBtn {
   icon: string
@@ -58,7 +57,6 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const speakers = useSpeakerLists()
-    const api = speakerListType.getContentApi()
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
     const queue = computed(() => speakers.getQueue(props.list))
@@ -67,13 +65,6 @@ export default defineComponent({
     // eslint-disable-next-line camelcase
     const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
     const isOpen = computed(() => props.list.state === SpeakerListState.Open)
-
-    async function deleteList () {
-      if (await dialogQuery({
-        title: t('speaker.confirmListDeletion'),
-        theme: ThemeColor.Warning
-      })) await api.delete(props.list.pk)
-    }
 
     const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
       if (!inList.value && rules.canEnter(props.list)) {
@@ -95,28 +86,7 @@ export default defineComponent({
       return null
     })
 
-    const menuItems = computed<MenuItem[]>(() => {
-      const menu: MenuItem[] = []
-      if (rules.canActivate(props.list)) {
-        menu.push({
-          text: t('speaker.setActiveList'),
-          icon: 'mdi-toggle-switch-off',
-          onClick: async () => speakers.setActiveList(props.list)
-        })
-      }
-      if (rules.canDelete(props.list)) {
-        menu.push({
-          text: t('delete'),
-          icon: 'mdi-delete',
-          onClick: deleteList,
-          color: ThemeColor.Warning
-        })
-      }
-      return menu
-    })
-
     return {
-      deleteList,
       speakerListType,
       isActive,
       isOpen,
@@ -124,7 +94,6 @@ export default defineComponent({
       currentSpeaker,
       inList,
       enterLeaveBtn,
-      menuItems,
       ...rules,
       speakers,
       t

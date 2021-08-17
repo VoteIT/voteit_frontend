@@ -15,6 +15,7 @@ import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
 export const currentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map list pk to current speaker messages
+const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map system pk to current speaker messages
 export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
 
 speakerSystemType.getChannel()
@@ -32,9 +33,13 @@ const listChannel = speakerListType.getChannel()
 new Channel<SpeakerStartStopMessage>('speaker')
   .on<SpeakerStartStopMessage>('started', payload => {
     currentlySpeaking.set(payload.speaker_list, dateify(payload, 'started'))
+    const list = speakerLists.get(payload.speaker_list)
+    if (list) systemCurrentlySpeaking.set(list.speaker_system, payload)
   })
   .on<SpeakerStartStopMessage>('stopped', payload => {
     currentlySpeaking.delete(payload.speaker_list)
+    const list = speakerLists.get(payload.speaker_list)
+    if (list) systemCurrentlySpeaking.delete(list.speaker_system)
   })
 
 export default function useSpeakerLists () {
@@ -70,13 +75,10 @@ export default function useSpeakerLists () {
           (!isModerator || hasRole(s.pk, SpeakerSystemRole.ListModerator))
         )
     ]
-    // const systems = []
-    // for (const s of speakerSystems.values()) {
-    //   if (s.meeting === meeting && (all || s.state === SpeakerSystemState.Active)) {
-    //     systems.push(s)
-    //   }
-    // }
-    // return systems
+  }
+
+  function getSystemActiveSpeaker (system: SpeakerSystem): SpeakerStartStopMessage | undefined {
+    return systemCurrentlySpeaking.get(system.pk)
   }
 
   function getList (pk: number) {
@@ -158,6 +160,7 @@ export default function useSpeakerLists () {
 
   return {
     getSystem,
+    getSystemActiveSpeaker,
     getSystems,
     getSystemSpeakerLists,
     getList,

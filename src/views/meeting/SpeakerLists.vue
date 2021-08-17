@@ -3,9 +3,9 @@
     <v-col cols="12" md="10" lg="8" offset-md="1" offset-lg="2" v-if="agendaItem">
       <header>
         <div class="btn-group">
-          <v-btn v-for="nav in navigation" :key="nav.icon"
-                :disabled="nav.disabled" color="secondary" variant="text" size="x-small" :icon="nav.icon"
-                @click="nav.action()" />
+          <v-btn v-for="{ icon, disabled, action } in navigation" :key="icon"
+                :disabled="disabled" color="secondary" elevation="0" size="x-small" :icon="icon"
+                @click="action()" />
         </div>
         <h1>
           {{ agendaItem.title }}
@@ -13,19 +13,28 @@
       </header>
     </v-col>
   </v-row>
-  <v-row>
+  <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="4" lg="3">
-      <h2>List choices</h2>
-      <ul class="speaker-lists">
-        <li v-for="list in speakerLists" :key="list.pk" block :class="{ active: speakerSystem.active_list === list.pk }">
-          <a :href="`#activate:${list.pk}`" @click.prevent="speakers.setActiveList(list)">
-            {{ list.title }}
-          </a>
-        </li>
-      </ul>
-      <v-btn v-for="system in systems" :key="system.pk" prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
-             @click="addSpeakerList(system)" :disabled="system.state !== 'active'">
-        {{ t('speaker.addListToSystem', system) }}
+      <h2>{{ t('speaker.listChoices') }}</h2>
+      <v-item-group class="speaker-lists" v-model="currentList">
+        <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, disabled }" :disabled="!!speakers.getSystemActiveSpeaker(speakerSystem)">
+          <v-card :color="isSelected ? 'primary' : undefined" class="mb-2" :disabled="disabled && !isSelected">
+            <Menu float :items="getListMenu(list)" :show-transitions="canChange(list)" :content-type="speakerListType" :object="list" />
+            <v-card-title>
+              {{ list.title }}
+            </v-card-title>
+            <v-card-text v-if="isSelected && currentSpeaker">
+              {{ t('speaker.currentlySpeaking') }}: <strong><User :pk="currentSpeaker.userid" /></strong>
+            </v-card-text>
+            <v-card-text>
+              {{ t('speaker.speakerCount', { count: speakers.getQueue(list).length }, speakers.getQueue(list).length) }}
+            </v-card-text>
+          </v-card>
+        </v-item>
+      </v-item-group>
+      <v-btn prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
+             @click="addSpeakerList(speakerSystem)" :disabled="speakerSystem.state !== 'active'">
+        {{ t('speaker.addListToSystem', speakerSystem ) }}
       </v-btn>
     </v-col>
     <v-col cols="12" order-sm="0" sm="7" md="6" lg="5" offset-md="1" offset-lg="2">
@@ -76,9 +85,11 @@ import Moment from '@/components/widgets/Moment.vue'
 
 import speakerListType from '@/contentTypes/speakerList'
 import useMeeting from '@/composables/meeting/useMeeting'
-import { AgendaItem } from '@/contentTypes/types'
+import { AgendaItem, SpeakerList } from '@/contentTypes/types'
 import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
+import { MenuItem, ThemeColor } from '@/utils/types'
+import { dialogQuery } from '@/utils'
 
 interface AgendaNav {
   icon: string
@@ -94,6 +105,7 @@ export default defineComponent({
     const { t } = useI18n()
     const route = useRoute()
     const router = useRouter()
+
     const { user } = useAuthentication()
     const speakers = useSpeakerLists()
     const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, getAgenda } = useAgenda()
@@ -101,14 +113,19 @@ export default defineComponent({
     const systemId = computed(() => Number(route.params.system))
     const speakerSystem = computed(() => speakers.getSystem(systemId.value))
     const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
-    const systems = computed(() => agendaItem.value && speakers.getSystems(agendaItem.value.meeting, true, true))
-    // eslint-disable-next-line vue/return-in-computed-property
-    const currentList = computed(() => {
-      // eslint-disable-next-line camelcase
-      if (!speakerSystem.value?.active_list) return
-      const list = speakers.getList(speakerSystem.value.active_list)
-      // eslint-disable-next-line camelcase
-      if (list?.agenda_item === agendaId.value) return list
+    const currentList = computed<SpeakerList | undefined>({
+      // eslint-disable-next-line vue/return-in-computed-property
+      get () {
+        // eslint-disable-next-line camelcase
+        if (!speakerSystem.value?.active_list) return
+        const list = speakers.getList(speakerSystem.value.active_list)
+        // eslint-disable-next-line camelcase
+        if (list?.agenda_item === agendaId.value) return list
+      },
+      set (value) {
+        if (!value) return
+        speakers.setActiveList(value)
+      }
     })
     const currentSpeaker = computed(() => currentList.value && speakers.getCurrent(currentList.value))
     const currentQueue = computed(() => currentList.value && speakers.getQueue(currentList.value))
@@ -145,6 +162,33 @@ export default defineComponent({
       speakerListType.getContentApi().add(listData)
     }
 
+    async function deleteList (list: SpeakerList) {
+      if (await dialogQuery({
+        title: t('speaker.confirmListDeletion'),
+        theme: ThemeColor.Warning
+      })) await speakerListType.getContentApi().delete(list.pk)
+    }
+
+    function getListMenu (list: SpeakerList): MenuItem[] {
+      const menu: MenuItem[] = []
+      if (speakerListType.rules.canActivate(list)) {
+        menu.push({
+          text: t('speaker.setActiveList'),
+          icon: 'mdi-toggle-switch-off',
+          onClick: async () => speakers.setActiveList(list)
+        })
+      }
+      if (speakerListType.rules.canDelete(list)) {
+        menu.push({
+          text: t('delete'),
+          icon: 'mdi-delete',
+          onClick: () => deleteList(list),
+          color: ThemeColor.Warning
+        })
+      }
+      return menu
+    }
+
     return {
       t,
       agendaItem,
@@ -154,28 +198,21 @@ export default defineComponent({
       speakers,
       speakerSystem,
       speakerLists,
-      systems,
+      speakerListType,
       ...speakerListType.rules,
       isSelf,
       navigation,
-      addSpeakerList
+      addSpeakerList,
+      getListMenu
     }
   }
 })
 </script>
 
 <style lang="sass">
-ul.speaker-lists
-  li
-    list-style: none
-    a
-      display: block
-      color: rgb(var(--v-theme-on-background))
-      padding: .4em .8em
-      border-radius: 5px
-    &.active a
-      background-color: rgb(var(--v-theme-primary))
-      color: rgb(var(--v-theme-on-primary))
+div.speaker-lists
+  .v-card
+    overflow: visible
 
 ol.speaker-queue
   margin-left: 1.2em
