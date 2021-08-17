@@ -40,7 +40,7 @@ export interface Transition {
 }
 
 export interface BaseContent {
-  pk: number
+  readonly pk: number
   title: string
 }
 

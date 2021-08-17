@@ -70,7 +70,6 @@
 <script lang="ts">
 import { ComponentPublicInstance, computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
 
 import { orderBy } from '@/utils'
 
@@ -105,7 +104,6 @@ export default defineComponent({
   name: 'AgendaItem',
   setup () {
     const { t } = useI18n()
-    const router = useRouter()
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { meetingPath, meetingId } = useMeeting()
@@ -173,7 +171,7 @@ export default defineComponent({
         items.push({
           text: t('poll.new'),
           icon: 'mdi-star',
-          onClick: async () => { router.push(`${meetingPath.value}/polls/new/${agendaId.value}`) }
+          to: `${meetingPath.value}/polls/new/${agendaId.value}`
         })
       }
       if (agendaItemType.rules.canChange(agendaItem.value)) {
@@ -190,7 +188,7 @@ export default defineComponent({
           items.push({
             text: t('speaker.manageSystem', system as any),
             icon: 'mdi-bullhorn',
-            onClick: () => router.push(`${meetingPath.value}/lists/${system.pk}/${agendaId.value}`)
+            to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
           })
         }
       }

@@ -25,11 +25,13 @@
 
 <script lang="ts">
 /* eslint-disable no-unused-expressions */
+import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+
 import useClickControl from '@/composables/useClickControl'
 import ContentType from '@/contentTypes/ContentType'
 import { StateContent, Transition } from '@/contentTypes/types'
-import { MenuItem, MenuDescriptor } from '@/utils/types'
-import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
+import { MenuItem, MenuItemOnClick, MenuItemTo } from '@/utils/types'
 
 export default defineComponent({
   inject: ['t'],
@@ -45,6 +47,7 @@ export default defineComponent({
     float: Boolean
   },
   setup (props) {
+    const router = useRouter()
     const isOpen = ref(false)
     const onTop = ref(false)
     const elem = ref<HTMLElement | null>(null)
@@ -88,10 +91,14 @@ export default defineComponent({
       focusButton(overlay.value?.$el)
     })
 
-    async function clickItem (item: MenuDescriptor) {
-      working.value = true
-      await item.onClick()
-      working.value = false
+    async function clickItem (item: MenuItemOnClick | MenuItemTo) {
+      if ('to' in item) {
+        router.push(item.to)
+      } else {
+        working.value = true
+        await item.onClick()
+        working.value = false
+      }
       isOpen.value = false
     }
 

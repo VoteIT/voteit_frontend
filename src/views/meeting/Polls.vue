@@ -18,7 +18,6 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
 
 import Poll from '../../components/widgets/Poll.vue'
 
@@ -39,7 +38,6 @@ export default defineComponent({
     const { t } = useI18n()
     const { meeting, meetingPath, meetingId } = useMeeting()
     const { getPolls } = usePolls()
-    const router = useRouter()
     const { getPriorityStates } = pollType.useWorkflows()
 
     const tabStates = computed(() => {
@@ -54,15 +52,12 @@ export default defineComponent({
     })
 
     const menuItems = computed<MenuItem[]>(() => {
-      if (!meeting.value) return []
-      if (pollType.rules.canAdd(meeting.value)) {
-        return [{
-          icon: 'mdi-star',
-          text: t('poll.new'),
-          onClick: async () => router.push(meetingPath.value + '/polls/new')
-        }]
-      }
-      return []
+      if (!meeting.value || !pollType.rules.canAdd(meeting.value)) return []
+      return [{
+        icon: 'mdi-star',
+        text: t('poll.new'),
+        to: meetingPath.value + '/polls/new'
+      }]
     })
 
     return {

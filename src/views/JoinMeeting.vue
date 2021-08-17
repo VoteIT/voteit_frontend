@@ -33,7 +33,7 @@ import accessPolicies from '@/components/meeting/accessPolicies'
 import accessPolicyType from '@/contentTypes/accessPolicy'
 import meetingType from '@/contentTypes/meeting'
 import organizationRules from '@/contentTypes/organization/rules'
-import { AccessPolicy, MeetingAccessPolicy, MeetingRole } from '@/contentTypes/types'
+import { AccessPolicy, MeetingRole } from '@/contentTypes/types'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 
@@ -68,20 +68,18 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      loader.call(() => {
-        meetingApi.retrieve(meetingId.value)
-          .then(({ data }) => {
-            setMeeting(data)
-          })
-          .catch(() => {
-            router.push('/')
-          })
+      loader.call(async () => {
+        try {
+          const { data } = await meetingApi.retrieve(meetingId.value)
+          setMeeting(data)
+        } catch {
+          console.warn(`Failed fetching meeting ${meetingId.value}`)
+          router.push('/')
+        }
       })
-      loader.call(() => {
-        policyApi.retrieve(meetingId.value)
-          .then(({ data }: { data: MeetingAccessPolicy }) => {
-            policies.value = data.policies
-          })
+      loader.call(async () => {
+        const { data } = await policyApi.retrieve(meetingId.value)
+        policies.value = data.policies
       })
     })
 

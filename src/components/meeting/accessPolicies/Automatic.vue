@@ -16,15 +16,15 @@ export default defineComponent({
     const submitting = ref(false)
     const policyApi = accessPolicy.getContentApi()
 
-    function joinNow () {
+    async function joinNow () {
       submitting.value = true
-      policyApi.action(meetingId.value, 'join')
-        .then(() => {
-          router.push(meetingPath.value)
-        })
-        .finally(() => {
-          submitting.value = false
-        })
+      try {
+        await policyApi.action(meetingId.value, 'join')
+        router.push(meetingPath.value)
+      } catch {
+        // TODO
+      }
+      submitting.value = false
     }
     return {
       joinNow,

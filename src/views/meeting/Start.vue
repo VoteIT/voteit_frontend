@@ -36,13 +36,13 @@ export default defineComponent({
     const api = meetingType.getContentApi()
     const { meeting, meetingId } = useMeeting()
     const content = reactive({
-      title: meeting.value?.title,
-      body: meeting.value?.body
+      title: meeting.value?.title ?? '',
+      body: meeting.value?.body ?? ''
     })
     watch(meeting, value => {
       if (editing.value) return
-      content.title = value?.title
-      content.body = value?.body
+      content.title = value?.title ?? ''
+      content.body = value?.body ?? ''
     })
 
     const menuItems = computed<MenuItem[]>(() => {

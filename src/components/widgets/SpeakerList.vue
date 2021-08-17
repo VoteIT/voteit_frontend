@@ -72,7 +72,7 @@ export default defineComponent({
       if (await dialogQuery({
         title: t('speaker.confirmListDeletion'),
         theme: ThemeColor.Warning
-      })) return api.delete(props.list.pk)
+      })) await api.delete(props.list.pk)
     }
 
     const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {

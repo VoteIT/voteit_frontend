@@ -5,6 +5,7 @@ import Socket from './Socket'
 import restApi from './restApi'
 import { Alert, Dialog, Modal } from '@/composables/types'
 import { SubscribePayload } from './types'
+import _slugify from 'slugify'
 
 function uriToPayload (uri: string): SubscribePayload {
   // Convert internal resource identifier to subscription payload object
@@ -16,7 +17,10 @@ function uriToPayload (uri: string): SubscribePayload {
 }
 
 function slugify (text: string) {
-  return text.toLowerCase().replaceAll(/\s+/g, '-')
+  return _slugify(text, {
+    lower: true,
+    locale: document.documentElement.lang
+  })
 }
 
 function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {

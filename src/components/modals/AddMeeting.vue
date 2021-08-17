@@ -34,14 +34,12 @@ export default defineComponent({
 
     const disabled = computed(() => submitting.value || formData.title.length <= 5)
 
-    function addMeeting () {
+    async function addMeeting () {
       if (submitting.value) return
       submitting.value = true
-      meetingApi.add(formData)
-        .then(({ data }) => {
-          modal.closeModal()
-          router.push(`/m/${data.pk}/${slugify(data.title)}`)
-        })
+      const { data } = await meetingApi.add(formData)
+      modal.closeModal()
+      router.push(`/m/${data.pk}/${slugify(data.title)}`)
     }
 
     return {

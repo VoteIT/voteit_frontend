@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { OrganizationRole } from '@/contentTypes/types'
 
 // For Channels
 export enum State {
@@ -77,15 +76,22 @@ export enum ThemeColor {
   Success = 'success',
 }
 
-export interface MenuDescriptor {
+interface MenuItemBase {
   text: string
   icon?: string
-  onClick: () => Promise<any>
   disabled?: boolean
   color?: ThemeColor
 }
 
-export type MenuItem = '---' | MenuDescriptor
+export interface MenuItemTo extends MenuItemBase {
+  to: string
+}
+
+export interface MenuItemOnClick extends MenuItemBase {
+  onClick: () => Promise<void>
+}
+
+export type MenuItem = '---' | MenuItemOnClick | MenuItemTo
 
 export interface TreeMenuLink {
   title: string
