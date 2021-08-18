@@ -2,6 +2,7 @@
   "add": "Add",
   "all": "All",
   "back": "Back",
+  "block": "Block",
   "by": "by",
   "cancel": "Cancel",
   "clear": "Clear",
@@ -46,9 +47,16 @@
   },
   "agenda": {
     "agenda": "Agenda",
+    "allowProposals": "Allow proposals",
+    "allowDiscussion": "Allow discussion",
+    "blockProposals": "Block proposals",
+    "blockDiscussion": "Block discussion",
+    "changeMany": "Change one agenda item | Change {count} agenda items",
+    "changeManyFailed": "Operation failed for one agenda item {reason} | Operation failed for {count} agenda items ({reason})",
     "columns": "Columns",
     "edit": "Edit agenda",
-    "deleteItemConfirm": "You are about to delete an Agenda Item premanently.\nAre you sure?",
+    "deleteItemConfirm": "You are about to delete an Agenda Item permanently.\nAre you sure?",
+    "deleteSelectedConfirm": "You are about to delete {count} Agenda Items permanently.\nAre you sure?",
     "nested": "Nested",
     "newItem": "New Agenda Item",
     "order": "Order Agenda Items",
@@ -73,6 +81,10 @@
     "hideComments": "Hide comments",
     "noDiscussions": "Nothing to hear...",
     "postPlaceholder": "Write your comment"
+  },
+  "error": {
+    "error": "Error",
+    "unknown": "Unknown error"
   },
   "home": {
     "home": "Home",

@@ -19,17 +19,12 @@ import { defineComponent, onBeforeMount, reactive } from 'vue'
 
 import { openAlertEvent } from '@/utils'
 
-import { Alert } from '@/composables/types'
+import { Alert, AlertLevel } from '@/composables/types'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
-const Level = {
-  info: 'info',
-  warning: 'warning',
-  error: 'error'
-}
 const DEFAULTS = {
   sticky: false,
-  level: Level.info
+  level: AlertLevel.Info
 }
 
 export default defineComponent({
@@ -55,11 +50,11 @@ export default defineComponent({
       switch (text.charAt(0)) {
         case '*':
           text = text.substr(1)
-          level = Level.warning
+          level = AlertLevel.Warning
           break
         case '^':
           text = text.substr(1)
-          level = Level.error
+          level = AlertLevel.Error
           sticky = true
           break
       }

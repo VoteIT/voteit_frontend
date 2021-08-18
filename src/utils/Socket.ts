@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { AlertLevel } from '@/composables/types'
 import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
 import { ChannelsConfig, ChannelsMessage, State, SubscribePayload } from './types'
@@ -105,7 +106,7 @@ export default class Socket {
               openAlertEvent.emit({
                 title: 'Socket error',
                 text: 'Request timed out',
-                level: 'error',
+                level: AlertLevel.Error,
                 sticky: true
               })
             }
@@ -125,7 +126,7 @@ export default class Socket {
                 openAlertEvent.emit({
                   title: 'Socket error',
                   text: data.p.msg,
-                  level: 'error',
+                  level: AlertLevel.Error,
                   sticky: true
                 })
               }

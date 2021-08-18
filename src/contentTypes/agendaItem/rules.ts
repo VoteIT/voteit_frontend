@@ -18,15 +18,11 @@ const isPrivate: Predicate = (agendaItem: AgendaItem) => {
 }
 
 const isProposalBlocked: Predicate = (agendaItem: AgendaItem) => {
-  // TODO
-  return false
-  // return agendaItem.block_discussion
+  return agendaItem.block_proposals
 }
 
 const isDiscussionBlocked: Predicate = (agendaItem: AgendaItem) => {
-  // TODO
-  return false
-  // return agendaItem.block_proposals
+  return agendaItem.block_discussion
 }
 
 const canAdd: Predicate = (meeting: Meeting) => {

@@ -1,4 +1,4 @@
-import { RestApiConfig } from '@/composables/types'
+import { AlertLevel, RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils'
 import restApi from '@/utils/restApi'
 import { AxiosError, AxiosPromise } from 'axios'
@@ -30,7 +30,7 @@ export default class ContentAPI<T, K=number> {
   private handleError (error: AxiosError) {
     const response = error.response
     if (response) {
-      const title = `HTTP ${response.status}`
+      let title = `HTTP ${response.status}`
       let text = 'Unknown error'
       let sticky = false
       // Default strings from response.data, unless special cases below
@@ -45,19 +45,23 @@ export default class ContentAPI<T, K=number> {
           break
         case 400:
           sticky = true
+          if ('error' in response.data) {
+            title = 'Error'
+            text = response.data.error
+          }
           break
       }
       openAlertEvent.emit({
         title,
         text,
         sticky,
-        level: 'error'
+        level: AlertLevel.Error
       })
     } else {
       openAlertEvent.emit({
         title: 'Error',
         text: 'No response from server',
-        level: 'error'
+        level: AlertLevel.Error
       })
     }
   }

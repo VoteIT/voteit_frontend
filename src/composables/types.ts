@@ -16,8 +16,14 @@ export interface Modal {
   html?: string
 }
 
+export enum AlertLevel {
+  Info = 'info',
+  Warning = 'warning',
+  Error = 'error'
+}
+
 export interface Alert {
-  level: string
+  level: AlertLevel
   title: string
   text: string
   sticky?: boolean

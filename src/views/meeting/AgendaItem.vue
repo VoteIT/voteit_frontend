@@ -19,10 +19,10 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
+      <v-col cols="12" :md="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
-        <div class="btn-actions space-between">
+        <div class="btn-actions space-between mb-2">
           <span>
             <v-btn @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary">
               {{ t('proposal.add') }}
@@ -47,9 +47,9 @@
                     :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
                     ref="addProposalComponent" />
       </v-col>
-      <v-col v-if="displayMode === 'columns'" cols="12" lg="5" class="agenda-discussions">
+      <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
-        <div class="btn-actions space-between">
+        <div class="btn-actions space-between mb-2">
           <v-btn @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary">
             {{ t('discussion.add') }}
           </v-btn>

@@ -58,9 +58,11 @@ export interface Meeting extends StateContent {
 
 export interface AgendaItem extends StateContent {
   meeting: number
-  order: number
+  readonly order: number
   body: string
-  related_modified: string | Date | null
+  readonly related_modified: string | Date | null
+  block_proposals: boolean
+  block_discussion: boolean
 }
 
 export interface Proposal extends BaseContent {

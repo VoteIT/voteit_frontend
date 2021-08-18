@@ -35,7 +35,8 @@ export default [
     priority: 3
   },
   {
-    transition: 'archive',
+    // Transition not user accessible
+    // transition: 'archive',
     icon: 'mdi-archive',
     state: AgendaState.Archived
   }
