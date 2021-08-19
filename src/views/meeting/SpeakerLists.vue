@@ -2,6 +2,11 @@
   <v-row>
     <v-col cols="12" md="10" lg="8" offset-md="1" offset-lg="2" v-if="agendaItem">
       <header>
+        <div v-if="speakerSystem && speakerSystems.length" class="mb-2">
+          <v-btn v-for="system in speakerSystems" color="accent" :variant="speakerSystem === system ? 'contained' : 'outlined'" :key="system.pk" @click="$router.push(`${meetingPath}/lists/${system.pk}/${agendaItem.pk}`)" class="mr-1">
+            {{ system.title }}
+          </v-btn>
+        </div>
         <div class="btn-group">
           <v-btn v-for="{ icon, disabled, action } in navigation" :key="icon"
                 :disabled="disabled" color="secondary" elevation="0" size="x-small" :icon="icon"
@@ -112,6 +117,7 @@ export default defineComponent({
     const { meetingId, meetingPath } = useMeeting()
     const systemId = computed(() => Number(route.params.system))
     const speakerSystem = computed(() => speakers.getSystem(systemId.value))
+    const speakerSystems = computed(() => speakers.getSystems(meetingId.value, false, true))
     const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
     const currentList = computed<SpeakerList | undefined>({
       // eslint-disable-next-line vue/return-in-computed-property
@@ -197,10 +203,12 @@ export default defineComponent({
       currentQueue,
       speakers,
       speakerSystem,
+      speakerSystems,
       speakerLists,
       speakerListType,
       ...speakerListType.rules,
       isSelf,
+      meetingPath,
       navigation,
       addSpeakerList,
       getListMenu

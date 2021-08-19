@@ -234,7 +234,7 @@
     "reconnectingFailed": "Couldn't establish websocket connection"
   },
   "speaker": {
-    "addListToSystem": "New list ({title})",
+    "addListToSystem": "New list",
     "cantManageList": "You can't manage this list.",
     "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
