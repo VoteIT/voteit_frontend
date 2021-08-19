@@ -1,5 +1,4 @@
 import { reactive } from 'vue'
-import wu from 'wu'
 
 import { dateify } from '@/utils'
 import speakerListType from '@/contentTypes/speakerList'
@@ -42,39 +41,46 @@ new Channel<SpeakerStartStopMessage>('speaker')
     if (list) systemCurrentlySpeaking.delete(list.speaker_system)
   })
 
+function * iterSpeakerLists (filter: (list: SpeakerList) => boolean): Generator<SpeakerList, void> {
+  for (const list of speakerLists.values()) {
+    if (filter(list)) yield list
+  }
+}
+
+function * iterSpeakerSystems (filter: (system: SpeakerSystem) => boolean): Generator<SpeakerSystem, void> {
+  for (const system of speakerSystems.values()) {
+    if (filter(system)) yield system
+  }
+}
+
 export default function useSpeakerLists () {
   const { user } = useAuthentication()
 
-  function getAgendaSpeakerLists (agendaItem: number, isSpeaker = false): SpeakerList[] {
-    const lists = [...wu(speakerLists.values()).filter(l => l.agenda_item === agendaItem)]
-    if (isSpeaker) return lists.filter(l => hasRole(l.speaker_system, SpeakerSystemRole.Speaker))
-    return lists
+  function getAgendaSpeakerLists (agendaItem: number, filter: (list: SpeakerList) => boolean = () => true): SpeakerList[] {
+    return [...iterSpeakerLists(
+      list => list.agenda_item === agendaItem && filter(list)
+    )]
   }
 
-  function getSystemSpeakerLists (system: SpeakerSystem, agendaItem?: AgendaItem) {
-    return [
-      ...wu(speakerLists.values())
-        .filter(
-          l => l.speaker_system === system.pk &&
-               (!agendaItem || l.agenda_item === agendaItem.pk)
-        )
-    ]
+  function getSystemSpeakerLists (system: SpeakerSystem, agendaItem?: AgendaItem): SpeakerList[] {
+    return [...iterSpeakerLists(list => {
+      if (list.speaker_system !== system.pk) return false
+      return !agendaItem || list.agenda_item === agendaItem.pk
+    })]
   }
 
   function getSystem (pk: number) {
     return speakerSystems.get(pk)
   }
 
-  function getSystems (meeting: number, nonActive = false, isModerator = false) {
+  function getSystems (meeting: number, nonActive = false, isModerator = false): SpeakerSystem[] {
     // For meeting pk
     // By default only active systems
-    return [
-      ...wu(speakerSystems.values())
-        .filter(s => (s.meeting === meeting) &&
-          (nonActive || s.state === SpeakerSystemState.Active) &&
-          (!isModerator || hasRole(s.pk, SpeakerSystemRole.ListModerator))
-        )
-    ]
+    return [...iterSpeakerSystems(
+      s => (s.meeting === meeting) &&
+      (nonActive || s.state === SpeakerSystemState.Active) &&
+      (!isModerator || hasRole(s.pk, SpeakerSystemRole.ListModerator))
+    )]
   }
 
   function getSystemActiveSpeaker (system: SpeakerSystem): SpeakerStartStopMessage | undefined {

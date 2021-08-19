@@ -45,7 +45,7 @@ const canStop: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
   return !!system && isActive(list) && speakerSystemRules.isModerator(system)
 }
-const canEnter = (list: SpeakerList) => {
+const canEnter: Predicate = (list: SpeakerList) => {
   const system = getSystem(list)
   return !!system && (
     (speakerSystemRules.isSpeaker(system) && isOpen(list) && speakerSystemRules.isActive(system)) ||

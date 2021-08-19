@@ -12,10 +12,11 @@
         <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
         <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" />
-        <div class="speaker-lists" v-if="speakerSystems.length">
-          <h2>{{ t('speaker.lists', speakerLists.length) }}</h2>
-          <SpeakerList :list="list" v-for="list in speakerLists" :key="list.pk" />
-        </div>
+      </v-col>
+    </v-row>
+    <v-row v-if="speakerLists.length">
+      <v-col v-for="list in speakerLists" :key="list.pk">
+        <SpeakerList :list="list" />
       </v-col>
     </v-row>
     <v-row>
@@ -99,6 +100,7 @@ import proposalType from '@/contentTypes/proposal'
 import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
 import { AgendaItem, Proposal } from '@/contentTypes/types'
+import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 
 const AgendaFilters = reactive<Map<number, Filter>>(new Map())
 
@@ -136,7 +138,7 @@ export default defineComponent({
 
     const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value))
     const { getAgendaSpeakerLists, getSystems } = useSpeakerLists()
-    const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value))
+    const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value, list => list.state === SpeakerListState.Open))
     const speakerSystems = computed(() => getSystems(meetingId.value))
 
     const displayMode = ref(localStorage.agendaDisplayMode ?? 'columns')

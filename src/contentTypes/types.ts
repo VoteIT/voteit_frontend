@@ -5,6 +5,7 @@ import { ChannelsConfig } from '@/utils/types'
 import { PollState } from './poll/workflowStates'
 import { PresenceCheckState } from './presenceCheck/workflowStates'
 import { ProposalState } from './proposal/workflowStates'
+import { SpeakerListState } from './speakerList/workflowStates'
 import { UserState } from './user/workflowStates'
 
 export enum MeetingRole {
@@ -95,21 +96,22 @@ export interface PollStatus {
 }
 
 export interface DiscussionPost {
-  pk: number
-  agenda_item: number
-  author: number
-  created: string | Date
+  readonly pk: number
+  readonly agenda_item: number
+  readonly author: number
+  readonly created: string | Date
   body: string
   tags: string[]
 }
 
-export interface SpeakerList extends StateContent {
-  speaker_system: number
-  agenda_item: number
+export interface SpeakerList extends BaseContent {
+  state: SpeakerListState
+  readonly speaker_system: number
+  readonly agenda_item: number
 }
 
 export interface SpeakerOrderUpdate {
-  pk: number // Speaker list
+  readonly pk: number // Speaker list
   queue: number[] // Current order
   current: number // Current speaker
 }
