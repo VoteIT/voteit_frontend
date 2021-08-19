@@ -2,7 +2,7 @@
   <v-row>
     <v-col cols="12" md="10" lg="8" offset-md="1" offset-lg="2" v-if="agendaItem">
       <header>
-        <div v-if="speakerSystem && speakerSystems.length" class="mb-2">
+        <div v-if="speakerSystem && speakerSystems.length > 1" class="mb-2">
           <v-btn v-for="system in speakerSystems" color="accent" :variant="speakerSystem === system ? 'contained' : 'outlined'" :key="system.pk" @click="$router.push(`${meetingPath}/lists/${system.pk}/${agendaItem.pk}`)" class="mr-1">
             {{ system.title }}
           </v-btn>
