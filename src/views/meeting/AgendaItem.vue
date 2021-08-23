@@ -43,6 +43,15 @@
             </Proposal>
           </div>
         </div>
+        <HelpText icon="mdi-filter-outline" v-else-if="hasProposals" class="mb-2">
+          {{ t('agenda.helpNoProposalsInFilter') }}<br/>
+          <v-btn v-if="filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant" class="mt-2">
+            {{ t('defaultFilters') }}
+          </v-btn>
+        </HelpText>
+        <HelpText icon="mdi-text-box-outline" v-else class="mb-2">
+          {{ t('agenda.helpNoProposals') }}
+        </HelpText>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
                     :tags="allTags" :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
                     :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
@@ -62,6 +71,9 @@
             </template>
           </DiscussionPost>
         </div>
+        <HelpText icon="mdi-comment-text-outline" v-else class="mb-2">
+          {{ t('agenda.helpNoComments') }}
+        </HelpText>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :tags="allTags" :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
                     :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent" />
@@ -71,7 +83,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, ComputedRef, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { orderBy } from '@/utils'
@@ -79,6 +91,7 @@ import { orderBy } from '@/utils'
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
 import Headline from '@/components/widgets/Headline.vue'
+import HelpText from '@/components/widgets/HelpText.vue'
 import ProposalVue from '@/components/widgets/Proposal.vue'
 import ProposalFilters, { Filter, DEFAULT_FILTER_STATES } from '@/components/widgets/ProposalFilters.vue'
 import ReactionButton from '@/components/meeting/ReactionButton.vue'
@@ -199,6 +212,8 @@ export default defineComponent({
       return items
     })
 
+    const hasProposals = computed(() => proposals.agendaItemHasProposals(agendaId.value))
+
     // Register whether all proposals has been read
     const proposalsRead = reactive<Set<number>>(new Set())
     function proposalIntersect (p: Proposal) {
@@ -227,7 +242,7 @@ export default defineComponent({
       }
     })
 
-    const filterComponent = ref<ComponentPublicInstance<{ setTag:(tag: string) => void }> | null>(null)
+    const filterComponent = ref<ComponentPublicInstance<{ setTag:(tag: string) => void, isModified: ComputedRef<boolean>, clearFilters: () => {} }> | null>(null)
     function clickHandler (evt: MouseEvent) {
       const tagElem = evt.composedPath().find(elem => (elem as HTMLElement).dataset?.denotationChar === '#') as HTMLElement | null
       // eslint-disable-next-line no-unused-expressions
@@ -271,6 +286,7 @@ export default defineComponent({
       meetingPath,
       menuItems,
       proposalReactions,
+      hasProposals,
       sortedProposals,
       sortedDiscussions,
       speakerLists,
@@ -290,6 +306,7 @@ export default defineComponent({
     AddContent,
     DiscussionPost,
     Headline,
+    HelpText,
     Proposal: ProposalVue,
     ProposalFilters,
     SpeakerList,

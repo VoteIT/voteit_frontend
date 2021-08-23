@@ -1,11 +1,9 @@
 import { reactive } from 'vue'
-import wu from 'wu'
 
 import { dateify, orderBy } from '@/utils'
 
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
-import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import { Poll, Proposal } from '@/contentTypes/types'
 import { agendaDeletedEvent, agendaItems } from './useAgenda'
 
@@ -33,11 +31,23 @@ agendaDeletedEvent.on(pk => {
 })
 
 export default function useProposals () {
-  function getAgendaProposals (agendaPk: number, filter?: (p: Proposal) => boolean): Proposal[] {
-    const props = [...wu(proposals.values()).filter(
-      p => p.agenda_item === agendaPk && (!filter || filter(p))
-    )]
-    return orderBy(props)
+  function * iterProposals (filter: (p: Proposal) => boolean): Generator<Proposal, void> {
+    for (const p of proposals.values()) {
+      if (filter(p)) yield p
+    }
+  }
+
+  function agendaItemHasProposals (ai: number): boolean {
+    for (const p of proposals.values()) {
+      if (p.agenda_item === ai) return true
+    }
+    return false
+  }
+
+  function getAgendaProposals (ai: number, filter?: (p: Proposal) => boolean): Proposal[] {
+    return orderBy([...iterProposals(
+      p => p.agenda_item === ai && (!filter || filter(p))
+    )])
   }
 
   function getPollProposals (poll: Poll): Proposal[] {
@@ -53,6 +63,7 @@ export default function useProposals () {
   }
 
   return {
+    agendaItemHasProposals,
     getAgendaProposals,
     getPollProposals,
     getProposal

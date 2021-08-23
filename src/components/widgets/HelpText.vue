@@ -35,6 +35,7 @@ export default defineComponent({
 .help-text
   display: flex
   align-items: flex-start
+  background-color: rgb(var(--v-theme-info-lighten-2))
   .mdi
     margin: .5em
   p
