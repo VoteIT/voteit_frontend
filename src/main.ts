@@ -10,8 +10,10 @@ import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 
 import Btn from './components/Btn.vue'
+import HelpText from './components/widgets/HelpText.vue'
 import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
+import Switch from './components/inputs/Switch.vue'
 import Tag from './components/Tag.vue'
 import User from './components/User.vue'
 import Dropdown from './components/Dropdown.vue'
@@ -49,8 +51,10 @@ createApp(App)
   .use(vuetify)
   .use(Api)
   .component('Btn', Btn)
+  .component('HelpText', HelpText)
   .component('Menu', Menu)
   .component('ProgressBar', ProgressBar)
+  .component('Switch', Switch)
   .component('Tag', Tag)
   .component('User', User)
   .component('Dropdown', Dropdown)

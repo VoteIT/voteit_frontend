@@ -53,6 +53,7 @@ export interface Meeting extends StateContent {
   body: string
   current_user_roles?: MeetingRole[]
   end_time: string | Date
+  er_policy_name?: string
   public: boolean
   start_time: string | Date
 }

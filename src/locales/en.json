@@ -1,4 +1,5 @@
 {
+  "active": "Active",
   "add": "Add",
   "all": "All",
   "back": "Back",
@@ -14,11 +15,14 @@
   "dismissAll": "Dismiss all",
   "edit": "Edit",
   "icon": "Icon",
+  "inactive": "Inactive",
   "login": "Log in",
   "manage": "Manage",
   "name": "Name",
   "newestFirst": "Newest first",
   "no": "No",
+  "off": "Off",
+  "on": "On",
   "oldestFirst": "Oldest first",
   "orderBy": "Order by",
   "options": "Options",
@@ -85,6 +89,12 @@
     "hideComments": "Hide comments",
     "noDiscussions": "Nothing to hear...",
     "postPlaceholder": "Write your comment"
+  },
+  "electoralRegister": {
+    "method": "Method for electoral register",
+    "saved": "Electoral register method now set to {er_policy_name}.",
+    "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
+    "settings": "Settings for Electoral Registers"
   },
   "error": {
     "error": "Error",
