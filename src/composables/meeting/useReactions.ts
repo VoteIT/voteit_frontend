@@ -1,8 +1,7 @@
 import reactionType, { Reaction, ReactionCountMessage, ReactionRelation } from '@/contentTypes/reaction'
 import reactionButtonType, { ReactionButton } from '@/contentTypes/reactionButton'
-import { orderBy } from '@/utils'
+import { mapFilter, orderBy } from '@/utils'
 import { reactive } from 'vue'
-import wu from 'wu'
 import useAuthentication from '../useAuthentication'
 
 function getCountKey (contentType: string, objectId: number, button: number) {
@@ -26,7 +25,8 @@ export const reactionChannel = reactionType.getChannel()
 
 export default function useReactions () {
   function getMeetingButtons (meeting: number, contentType?: string) {
-    const buttons = [...wu(reactionButtons.values()).filter(
+    const buttons = [...mapFilter(
+      reactionButtons,
       b => b.meeting === meeting && (!contentType || b.allowed_models.includes(contentType))
     )]
     return orderBy(buttons, 'order')

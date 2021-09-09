@@ -77,12 +77,26 @@ async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | string) {
   })
 }
 
+function * mapFilter<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
+  for (const o of map.values()) {
+    if (filter(o)) yield o
+  }
+}
+
+function mapFind<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
+  for (const o of map.values()) {
+    if (filter(o)) return o
+  }
+}
+
 export {
   DefaultMap,
   ProgressPromise,
   Socket,
   dateify,
   dialogQuery,
+  mapFilter,
+  mapFind,
   orderBy,
   slugify,
   stripHTML,

@@ -1,7 +1,6 @@
 import { reactive } from 'vue'
-import wu from 'wu'
 
-import { dateify, orderBy } from '@/utils'
+import { dateify, mapFilter, orderBy } from '@/utils'
 
 import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
@@ -27,7 +26,7 @@ agendaDeletedEvent.on(deleteForAgendaItem)
 agendaItemType.getChannel().onLeave(deleteForAgendaItem)
 
 function orderedDiscussions (filter: (d: DiscussionPost) => boolean) {
-  return orderBy([...wu(discussions.values()).filter(filter)])
+  return orderBy([...mapFilter(discussions, filter)])
 }
 
 export default function useDiscussions () {

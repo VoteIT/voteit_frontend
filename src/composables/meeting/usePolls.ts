@@ -1,11 +1,10 @@
-import wu from 'wu'
 import { reactive } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
 import { Poll, PollStatus, Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from './useAgenda'
-import { dateify } from '@/utils'
+import { dateify, mapFilter } from '@/utils'
 import Channel from '@/contentTypes/Channel'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
@@ -57,13 +56,15 @@ agendaDeletedEvent.on(pk => {
 
 export default function usePolls () {
   function getPolls (meeting: number, state?: string) {
-    return [...wu(polls.values()).filter(
+    return [...mapFilter(
+      polls,
       p => p.meeting === meeting && (!state || p.state === state)
     )]
   }
 
   function getAiPolls (agendaItem: number, state?: string) {
-    return [...wu(polls.values()).filter(
+    return [...mapFilter(
+      polls,
       p => p.agenda_item === agendaItem && (!state || p.state === state)
     )]
   }

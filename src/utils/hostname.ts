@@ -1,3 +1,3 @@
-const hostname = process.env.NODE_ENV === 'development' ? 'localhost:8000' : location.host
+const hostname = process.env.VUE_APP_BACKEND_HOSTNAME ?? location.host
 
 export default hostname

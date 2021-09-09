@@ -3,20 +3,17 @@
     <h2>{{ title }}</h2>
     <v-row>
       <v-col>
-        <v-card v-for="p in policies" :key="p.pk">
-          <v-card-title>
-            {{ p.name }}
-          </v-card-title>
-          <v-card-subtitle>
-          </v-card-subtitle>
-          <v-list>
-            <v-list-subheader>
-              Roles given
-            </v-list-subheader>
-            <v-list-item v-for="r in p.roles_given" :key="r">
-              {{ r }}
-            </v-list-item>
-          </v-list>
+        <v-card v-for="p in policies" :key="p.pk" :title="p.name">
+          <v-card-text>
+            <h2 class="text-h6 mb-2">
+              {{ t('accessPolicy.rolesGiven') }}
+            </h2>
+            <v-chip-group>
+              <v-chip v-for="r in p.roles_given" :key="r">
+                {{ r }}
+              </v-chip>
+            </v-chip-group>
+          </v-card-text>
           <v-card-actions>
             <v-btn variant="text" color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn>
             <v-btn variant="text" color="warning" prepend-icon="mdi-delete" @click="alert('*Not implemented (missing API)')">{{ t('delete') }}</v-btn>

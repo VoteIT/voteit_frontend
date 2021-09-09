@@ -48,7 +48,8 @@
   "winners": "Winners",
   "yes": "Yes",
   "accessPolicy": {
-    "settings": "Access Policy settings"
+    "settings": "Access Policy settings",
+    "rolesGiven": "Roles given"
   },
   "agenda": {
     "agenda": "Agenda",
@@ -132,7 +133,8 @@
   },
   "organization": {
     "loginTo": "Log in to {title}",
-    "noLogin": "No login available"
+    "noLogin": "No login available",
+    "requires": "Requires"
   },
   "poll": {
     "abstain": "Abstain",
@@ -213,7 +215,7 @@
     "noRecentlyClosedChecks": "No recently closed checks",
     "ongoingCheck": "Ongoing presence check",
     "openedAt": "Opened",
-    "presentCount": "No users present yet | There is currently one present user | There are currently {count} present users",
+    "presentCount": "No users present | One present user | {count} present users",
     "recentlyClosedChecks": "Recently closed presence checks"
   },
   "profile": {

@@ -1,3 +1,4 @@
+import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import { ComponentPublicInstance } from '@vue/runtime-core'
 
 export type EditorComponent = ComponentPublicInstance<{
@@ -5,3 +6,11 @@ export type EditorComponent = ComponentPublicInstance<{
   focus: () => void,
   clear: () => void
 }>
+
+export interface Filter {
+  order: string
+  states: Set<ProposalState>
+  tags: Set<string>
+}
+
+export const DEFAULT_FILTER_STATES = new Set([ProposalState.Published, ProposalState.Voting, ProposalState.Approved])

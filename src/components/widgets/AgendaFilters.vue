@@ -40,26 +40,20 @@
 
 <script lang="ts">
 import { ComponentPublicInstance, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'
 
 import workflowStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
-import { useI18n } from 'vue-i18n'
 import useClickControl from '@/composables/useClickControl'
+
+import { DEFAULT_FILTER_STATES, Filter } from './types'
 
 interface FilterDescription {
   id: string
   label: string
   active?: boolean
 }
-
-export interface Filter {
-  order: string
-  states: Set<ProposalState>
-  tags: Set<string>
-}
-
-export const DEFAULT_FILTER_STATES = new Set([ProposalState.Published, ProposalState.Voting, ProposalState.Approved])
 
 function setEqual (a: Set<string>, b: Set<string>): boolean {
   if (a.size !== b.size) return false

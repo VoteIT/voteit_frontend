@@ -1,4 +1,3 @@
-import wu from 'wu'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
@@ -97,7 +96,7 @@ export default function useAgenda () {
 
   const agendaId = computed(() => route && Number(route.params.aid))
   const agendaItem = computed(() => agendaItems.get(agendaId.value))
-  const agendaItemLastRead = computed(() => agendaItemsLastRead.get(agendaId.value))
+  const agendaItemLastRead = computed(() => agendaItemsLastRead.get(agendaId.value) ?? new Date(0)) // Default to epoch
 
   const loader = useLoader('useAgenda')
   onBeforeMount(() => {

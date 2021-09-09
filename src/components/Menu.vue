@@ -117,21 +117,32 @@ export default defineComponent({
       focusButton(elem.value)
     }
 
+    function focusNextSibling (elem: HTMLElement | null, reverse = false, tagName = 'BUTTON') {
+      while (elem) {
+        elem = (reverse ? elem.previousElementSibling : elem.nextElementSibling) as HTMLElement
+        if (elem && elem.tagName === tagName) {
+          elem.focus()
+          break
+        }
+      }
+    }
+
     function keyWatch (evt: KeyboardEvent) {
       if (isOpen.value) {
-        const focusedEl = overlay.value?.$el.querySelector(':focus')
-        if (focusedEl) {
+        const focusEl = overlay.value?.$el.querySelector(':focus')
+        if (focusEl) {
           switch (evt.key) {
             case 'Escape':
               isOpen.value = false
               focusButton(elem.value)
               break
             case 'ArrowUp':
-              (focusedEl.previousElementSibling as HTMLElement)?.focus()
+              // (focusedEl.previousElementSibling as HTMLElement)?.focus()
+              focusNextSibling(focusEl, true)
               evt.preventDefault()
               break
             case 'ArrowDown':
-              (focusedEl.nextElementSibling as HTMLElement)?.focus()
+              focusNextSibling(focusEl)
               evt.preventDefault()
               break
           }

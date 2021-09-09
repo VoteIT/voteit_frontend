@@ -10,7 +10,6 @@
 </template>
 
 <script lang="ts">
-import wu from 'wu'
 import Quill from 'quill'
 import 'quill-mention'
 import { defineComponent, onMounted, PropType, ref } from 'vue'
@@ -18,6 +17,11 @@ import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/composables/meeting/useMeeting'
 import { MeetingRoles } from '@/composables/types'
 import useTags from '@/composables/meeting/useTags'
+
+interface TagObject {
+  id: string | number
+  value: string
+}
 
 const QUILL_CONFIG: any = {
   theme: 'bubble',
@@ -66,18 +70,22 @@ export default defineComponent({
     const rolesApi = meetingRoleType.getContentApi()
     const { meetingId } = useMeeting()
 
-    function tagObject (tagName: string) {
+    function tagObject (tagName: string): TagObject {
       return { id: tagName, value: tagName }
     }
 
-    async function mentionSource (searchTerm: string, renderList: CallableFunction, mentionChar: string) {
+    function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObject, void> {
+      for (const tag of props.tags) {
+        if (filter(tag)) yield tagObject(tag)
+      }
+    }
+
+    async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) {
       switch (mentionChar) {
         case '#':
           renderList([
             tagObject(searchTerm),
-            ...wu(props.tags)
-              .filter(tag => tag !== searchTerm && tag.startsWith(searchTerm))
-              .map(tagObject)
+            ...filterTagObjects(tag => tag.startsWith(searchTerm))
           ])
           break
         case '@':

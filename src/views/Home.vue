@@ -33,16 +33,20 @@
     </v-row>
     <v-row class="organizations">
       <v-col cols="4" v-for="o in organizations" :key="o.pk">
-        <v-sheet rounded>
-          <h2>
-            {{ o.title }}
-          </h2>
-          <p>
-            Requires: {{ o.scopes.join(", ")}}
-          </p>
-          <Btn v-if="o.login_url" icon="mdi-login" @click="startOrganizationLogin(o)">{{ t('organization.loginTo', o) }}</Btn>
-          <p v-else><em>{{ t('organization.noLogin') }}</em></p>
-        </v-sheet>
+        <v-card :title="o.title" v-if="o.login_url">
+          <v-card-text>
+            <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
+            <v-chip-group>
+              <v-chip v-for="scope in o.scopes" :key="scope">{{ scope }}</v-chip>
+            </v-chip-group>
+          </v-card-text>
+          <v-card-actions v-if="o.login_url">
+            <v-btn :href="getOrganizationLoginURL(o)" prepend-icon="mdi-login">
+              {{ t('organization.loginTo', o) }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+        <v-card :title="o.title" :subtitle="t('organization.noLogin')" v-else/>
       </v-col>
     </v-row>
   </template>
@@ -71,7 +75,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
-    const { logout, isAuthenticated, user, startOrganizationLogin } = useAuthentication()
+    const { logout, isAuthenticated, user, getOrganizationLoginURL } = useAuthentication()
     const { fetchOrganizations } = useOrganizations()
     const loader = useLoader('Home')
 
@@ -108,7 +112,7 @@ export default defineComponent({
       participatingMeetings,
       otherMeetings,
       organizations,
-      startOrganizationLogin,
+      getOrganizationLoginURL,
       logout,
       isAuthenticated,
       user,

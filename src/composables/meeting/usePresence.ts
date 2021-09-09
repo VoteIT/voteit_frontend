@@ -1,5 +1,4 @@
 import { reactive } from 'vue'
-import wu from 'wu'
 
 import presenceType from '@/contentTypes/presence'
 import presenceCheckType from '@/contentTypes/presenceCheck'
@@ -7,7 +6,7 @@ import presenceCheckType from '@/contentTypes/presenceCheck'
 import useAuthentication from '../useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
 import { PresenceCheckState } from '@/contentTypes/presenceCheck/workflowStates'
-import { dateify } from '@/utils'
+import { dateify, mapFilter } from '@/utils'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
@@ -31,7 +30,8 @@ export default function usePresence () {
   const { user } = useAuthentication()
 
   function getClosedPresenceChecks (meeting: number): PresenceCheck[] {
-    return [...wu(presenceChecks.values()).filter(
+    return [...mapFilter(
+      presenceChecks,
       pc => pc.meeting === meeting && pc.state === PresenceCheckState.Closed
     )]
   }
@@ -45,7 +45,8 @@ export default function usePresence () {
   }
 
   function getAllPresent (check: PresenceCheck): Presence[] {
-    return [...wu(presence.values()).filter(
+    return [...mapFilter(
+      presence,
       p => p.presence_check === check.pk
     )]
   }
