@@ -5,20 +5,22 @@
     </v-badge>
     <v-btn v-else variant="text" :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
-      <slot name="top"/>
-      <template v-for="(item, i) in items" :key="i">
-        <v-divider v-if="item === '---'" />
-        <v-btn :prepend-icon="item.icon" v-else :color="item.color" variant="text" block :disabled="item.disabled || working" @click="clickItem(item)">
-          {{ item.text }}
-        </v-btn>
-      </template>
-      <template v-if="transitionsAvailable">
-        <v-divider v-if="items.length || $slots.top" />
-        <v-btn :prepend-icon="t.icon" variant="text" block :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
-          {{ t.title }}
-        </v-btn>
-      </template>
-      <slot name="bottom"/>
+      <v-list nav density="comfortable">
+        <slot name="top"/>
+        <template v-for="(item, i) in items" :key="i">
+          <v-divider v-if="item === '---'" />
+          <v-list-item v-else :prepend-icon="item.icon" :color="item.color" :disabled="item.disabled || working" @click="clickItem(item)">
+            {{ item.text }}
+          </v-list-item>
+        </template>
+        <template v-if="transitionsAvailable">
+          <v-divider v-if="items.length || $slots.top" />
+          <v-list-item :prepend-icon="t.icon" :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
+            {{ t.title }}
+          </v-list-item>
+        </template>
+        <slot name="bottom"/>
+      </v-list>
     </v-sheet>
   </span>
 </template>
@@ -67,7 +69,7 @@ export default defineComponent({
 
     function focusButton (where: HTMLElement | null) {
       nextTick(() => {
-        where?.querySelector<HTMLElement>('button')?.focus()
+        where?.querySelector<HTMLElement>('[tabindex]')?.focus()
       })
     }
 
@@ -117,13 +119,10 @@ export default defineComponent({
       focusButton(elem.value)
     }
 
-    function focusNextSibling (elem: HTMLElement | null, reverse = false, tagName = 'BUTTON') {
+    function focusNextSibling (elem: HTMLElement | null, reverse = false) {
       while (elem) {
         elem = (reverse ? elem.previousElementSibling : elem.nextElementSibling) as HTMLElement
-        if (elem && elem.tagName === tagName) {
-          elem.focus()
-          break
-        }
+        if (elem && elem.tabIndex >= 0) return elem.focus()
       }
     }
 
@@ -192,10 +191,10 @@ export default defineComponent({
     right: 0
     &.onTop
       bottom: 50px
-    .v-btn
-      justify-content: left
+    .v-list-item
       white-space: nowrap
-      border-radius: 0
+      .v-icon
+        font-size: 16pt
       &:focus
         background-color: rgba(var(--v-theme-primary), .08)
   .mdi-loading
