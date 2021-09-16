@@ -195,8 +195,6 @@ export default defineComponent({
       white-space: nowrap
       .v-icon
         font-size: 16pt
-      &:focus
-        background-color: rgba(var(--v-theme-primary), .08)
   .mdi-loading
     animation: rotate 2s ease-in-out infinite
 </style>
