@@ -29,8 +29,8 @@
 /* eslint-disable no-unused-expressions */
 import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { onClickOutside } from '@vueuse/core'
 
-import useClickControl from '@/composables/useClickControl'
 import ContentType from '@/contentTypes/ContentType'
 import { StateContent, Transition } from '@/contentTypes/types'
 import { MenuItem, MenuItemOnClick, MenuItemTo } from '@/utils/types'
@@ -60,11 +60,8 @@ export default defineComponent({
       console.warn('Menu component needs object and contentType to show transitions.')
     }
 
-    useClickControl({
-      element: elem,
-      callback: () => {
-        isOpen.value = false
-      }
+    onClickOutside(elem, () => {
+      isOpen.value = false
     })
 
     function focusFirst (where: HTMLElement | null, query = 'button') {

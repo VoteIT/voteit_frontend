@@ -39,12 +39,12 @@
 import { ComponentPublicInstance, computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { onClickOutside } from '@vueuse/core'
 
 import { dialogQuery, toggleNavDrawerEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
-import useClickControl from '@/composables/useClickControl'
 
 export default defineComponent({
   setup () {
@@ -56,11 +56,8 @@ export default defineComponent({
     const userMenuOpen = ref(false)
     const userMenuComponent = ref<ComponentPublicInstance | null>(null)
 
-    useClickControl({
-      element: userMenuComponent,
-      callback: () => {
-        userMenuOpen.value = false
-      }
+    onClickOutside(userMenuComponent, () => {
+      userMenuOpen.value = false
     })
 
     async function logout () {

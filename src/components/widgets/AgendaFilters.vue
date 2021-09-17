@@ -41,11 +41,11 @@
 <script lang="ts">
 import { ComponentPublicInstance, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { onClickOutside } from '@vueuse/core'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'
 
 import workflowStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
-import useClickControl from '@/composables/useClickControl'
 
 import { DEFAULT_FILTER_STATES, Filter } from './types'
 
@@ -72,12 +72,15 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ['update:modelValue'],
   setup (props, { emit }) {
     const { t } = useI18n()
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
     const filter = reactive<Filter>(props.modelValue)
     const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, DEFAULT_FILTER_STATES))
-    useClickControl({ element: root, callback: () => { root.value && root.value.close() } })
+    onClickOutside(root, () => {
+      root.value && root.value.close()
+    })
 
     const orders = ref<FilterDescription[]>([
       {
