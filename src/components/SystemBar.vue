@@ -9,26 +9,28 @@
         <UserAvatar color="background" />
         <span class="ml-2">{{ user.first_name || user.username }}</span>
       </v-btn>
-      <v-sheet ref="userMenuComponent" absolute top="59" right="6" rounded min-width="240" elevation="4" v-if="userMenuOpen">
-        <div>
-          <UserAvatar />
-          <h2>{{ user.full_name }}</h2>
-          <p>{{ user.username }}</p>
-        </div>
-        <div>
-          <v-btn prepend-icon="mdi-account" variant="text" block disabled>
-            {{ t('profile.profile') }}
-          </v-btn>
-          <v-btn prepend-icon="mdi-at" variant="text" block disabled>
-            {{ t('profile.verifyEmail') }}
-          </v-btn>
-        </div>
-        <div>
-          <v-btn prepend-icon="mdi-logout" variant="text" block @click="logout()">
-            {{ t('auth.logout') }}
-          </v-btn>
-        </div>
-      </v-sheet>
+      <teleport to="body">
+        <v-sheet id="app-bar-user-menu" ref="userMenuComponent" fixed top="60" right="4" rounded min-width="240" elevation="4" v-if="userMenuOpen">
+          <v-list nav density="comfortable">
+            <v-list-item>
+              <UserAvatar />
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="text-h6">{{ user.full_name }}</v-list-item-title>
+                <v-list-item-subtitle>{{ user.username }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-divider />
+            <v-list-item :href="idHost" prepend-icon="mdi-account">
+              {{ t('profile.profile') }}
+            </v-list-item>
+            <v-list-item prepend-icon="mdi-logout" @click="logout()">
+              {{ t('auth.logout') }}
+            </v-list-item>
+          </v-list>
+        </v-sheet>
+      </teleport>
     </div>
   </v-app-bar>
 </template>
@@ -45,7 +47,6 @@ import useAuthentication from '@/composables/useAuthentication'
 import useClickControl from '@/composables/useClickControl'
 
 export default defineComponent({
-  inject: ['t'],
   setup () {
     const auth = useAuthentication()
     const router = useRouter()
@@ -77,12 +78,14 @@ export default defineComponent({
     })
 
     return {
+      t,
       ...auth,
       userMenuOpen,
       logout,
       userMenuComponent,
       hasNavDrawer,
-      toggleNavDrawerEvent
+      toggleNavDrawerEvent,
+      idHost: process.env.VUE_APP_ID_HOST
     }
   }
 })
@@ -92,7 +95,6 @@ export default defineComponent({
 .v-app-bar
   background-color: rgb(var(--v-theme-app-bar)) !important
   color: rgb(var(--v-theme-on-app-bar))
-  overflow: visible !important
   > div
     height: 100%
   .v-app-bar-title
@@ -108,21 +110,7 @@ export default defineComponent({
     &.open i
       transform: rotate(180deg)
 
-  .v-sheet
-    z-index: 100
-    text-align: left
-    background-color: rgb(var(--v-theme-surface))
-    color: rgb(var(--v-theme-on-surface))
-    padding: .3em 0
-    border: 1px solid rgb(var(--v-border-color))
-    > div
-      p
-        margin-bottom: 0
-      &:first-child
-        padding: .7em 1em
-      border-bottom: 1px solid rgb(var(--v-border-color))
-      &:last-child
-        border-bottom: none
-    button
-      justify-content: left
+#app-bar-user-menu
+  .v-icon
+    font-size: 16pt
 </style>

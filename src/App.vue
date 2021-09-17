@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app id="app">
     <router-view name="navigationDrawer"/>
     <SystemBar/>
     <v-main>
