@@ -12,7 +12,7 @@
         <HelpText v-if="votingComplete" color="success" class="mt-6">
           {{ t('poll.voteAddedInfo') }}
         </HelpText>
-        <HelpText v-else>
+        <HelpText v-else class="mt-6">
           {{ t(`poll.method.help.${poll.method_name}`) }}
         </HelpText>
       </header>
@@ -27,7 +27,7 @@
         </div>
       </template>
       <template v-else>
-        <v-divider/>
+        <v-divider />
         <component class="voting-component" :disabled="!canVote(poll)" v-if="isOngoing(poll)" :is="voteComponent" :poll="poll" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote(poll)">
           <v-btn color="primary" :disabled="!validVote || submitting" @click="castVote()" size="large" prepend-icon="mdi-vote">
@@ -72,7 +72,7 @@ export default defineComponent({
 
     const poll = computed(() => getPoll(Number(route.params.pid)))
     const userVote = computed(() => poll.value && getUserVote(poll.value))
-    const validVote = ref(userVote.value?.vote)
+    const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
     const votingComplete = ref(!!userVote.value)
     watch(poll, () => {
       votingComplete.value = !!userVote.value
@@ -108,6 +108,7 @@ export default defineComponent({
       try {
         await channels.post('vote.abstain', { poll: poll.value.pk })
         votingComplete.value = true
+        validVote.value = undefined // Forget vote
       } catch {}
       submitting.value = false
     }
