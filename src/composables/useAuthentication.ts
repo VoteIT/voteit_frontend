@@ -5,6 +5,7 @@ import restApi from '@/utils/restApi'
 import { Organization, User } from '@/contentTypes/types'
 import useContextRoles from './useContextRoles'
 import { UserState } from '@/contentTypes/user/workflowStates'
+import { AxiosError } from 'axios'
 
 export const user = ref<User | null>(null)
 const isAuthenticated = ref(false)
@@ -24,7 +25,7 @@ export default function useAuthentication () {
       organizationRoles.set(data.organisation, data.pk, data.organisation_roles)
       return data
     } catch (err) {
-      switch (err.response?.status) {
+      switch ((err as AxiosError).response?.status) {
         case 401:
           console.log('Not logged in')
           return null

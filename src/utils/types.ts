@@ -8,6 +8,12 @@ export enum State {
   Running = 'r',
 }
 
+export interface Progress {
+  curr: number
+  total: number
+  msg?: string
+}
+
 export interface BaseChannelsMessage {
   t: string
   i: string | null
@@ -53,12 +59,6 @@ export interface SubscribedMessage {
 
 export type ChannelsMessage = SuccessMessage<object> | ProgressMessage | FailedMessage | SubscribedMessage
 
-export interface Progress {
-  curr: number
-  total: number
-  msg?: string
-}
-
 export type ProgressHandler = (progress: Progress) => void
 
 // For Socket.ts
@@ -103,7 +103,7 @@ export interface TreeMenuLink {
 
 export interface TreeMenu {
   title: string
-  items: TreeMenuItem[]
+  items: (TreeMenuLink | TreeMenu)[]
   defaultOpen?: boolean
   openFirstNonEmpty?: boolean
   showCount?: boolean

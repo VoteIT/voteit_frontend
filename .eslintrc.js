@@ -28,7 +28,9 @@ module.exports = {
       files: ['*.vue'],
       rules: {
         'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': 'error'
+        '@typescript-eslint/no-unused-vars': 'error',
+        // We should try to activate next one at some point
+        'vue/script-setup-uses-vars': 'off'
       }
     }
   ]

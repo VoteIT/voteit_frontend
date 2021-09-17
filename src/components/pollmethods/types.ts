@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
 
-import { Poll } from '@/contentTypes/types'
-
 export enum PollMethodName {
   CombinedSimple = 'combined_simple',
   InstantRunoff = 'irv',
@@ -92,6 +90,25 @@ export interface ScottishSTVResult extends VoteResult {
 export type CombinedSimpleVote = Record<SimpleChoice, number[]>
 export type SimpleVote = SingleSimpleVote | CombinedSimpleVote
 
+interface BasePollMethodSettings {
+  title?: string
+}
+
+export interface RepeatedSchulzeSettings extends BasePollMethodSettings {
+  winners: number | null
+}
+
+export interface ScottishSTVSettings extends BasePollMethodSettings {
+  winners: number
+  allow_random: boolean
+}
+
+interface InstantRunoffSettings extends BasePollMethodSettings {
+  allow_random: boolean
+}
+
+export type PollMethodSettings = BasePollMethodSettings | RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings
+
 export interface PollMethod {
   name: PollMethodName
   title: string
@@ -146,25 +163,6 @@ export const pollMethods: PollMethod[] = [
     }
   }
 ]
-
-interface BasePollMethodSettings {
-  title?: string
-}
-
-export interface RepeatedSchulzeSettings extends BasePollMethodSettings {
-  winners: number | null
-}
-
-export interface ScottishSTVSettings extends BasePollMethodSettings {
-  winners: number
-  allow_random: boolean
-}
-
-interface InstantRunoffSettings extends BasePollMethodSettings {
-  allow_random: boolean
-}
-
-export type PollMethodSettings = BasePollMethodSettings | RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings
 
 /*
  * Post data sent to API
