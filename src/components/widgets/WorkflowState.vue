@@ -4,9 +4,11 @@
       {{ t(`workflowState.${currentState.state}`) }}
     </v-btn>
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
-      <v-btn :prepend-icon="t.icon" variant="text" block v-for="t in transitionsAvailable" :title="t.title" :key="t.name" @click="makeTransition(t)">
-        {{ t.title }}
-      </v-btn>
+      <v-list nav density="comfortable">
+        <v-list-item :prepend-icon="t.icon" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
+          {{ t.title }}
+        </v-list-item>
+      </v-list>
     </v-sheet>
   </span>
 </template>
@@ -48,9 +50,9 @@ export default defineComponent({
       return props.admin && !currentState.value?.isFinal
     })
 
-    function focusButton (where: HTMLElement | null) {
+    function focusFirst (where: HTMLElement | null, query = 'button') {
       nextTick(() => {
-        where?.querySelector<HTMLElement>('button')?.focus()
+        where?.querySelector<HTMLElement>(query)?.focus()
       })
     }
 
@@ -64,9 +66,9 @@ export default defineComponent({
       isOpen.value = !isOpen.value
       if (isOpen.value) {
         if (!transitionsAvailable.value) transitionsAvailable.value = await contentApi.getTransitions(props.object.pk, props.object.state)
-        nextTick(() => focusButton(menu.value?.$el))
+        nextTick(() => focusFirst(menu.value?.$el, '.v-list-item'))
       } else if (focus) { // If clicked out, don't shift that focus
-        focusButton(root.value)
+        focusFirst(root.value)
       }
     }
 
@@ -136,16 +138,13 @@ export default defineComponent({
     background-color: rgba(var(--v-theme-primary), .2)
 
   .v-sheet
-    background-color: rgb(var(--v-theme-surface))
     z-index: 100
     position: absolute
     margin-top: .1em
-    .v-btn
-      justify-content: left
+    .v-list-item
       white-space: nowrap
-      border-radius: 0
-      &:focus
-        background-color: rgba(var(--v-theme-primary), .08)
+      .v-icon
+        font-size: 16pt
 
   &.right .v-sheet
     right: 0

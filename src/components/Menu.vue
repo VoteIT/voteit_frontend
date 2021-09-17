@@ -67,9 +67,9 @@ export default defineComponent({
       }
     })
 
-    function focusButton (where: HTMLElement | null) {
+    function focusFirst (where: HTMLElement | null, query = 'button') {
       nextTick(() => {
-        where?.querySelector<HTMLElement>('[tabindex]')?.focus()
+        where?.querySelector<HTMLElement>(query)?.focus()
       })
     }
 
@@ -90,7 +90,7 @@ export default defineComponent({
         const rect = elem.getBoundingClientRect()
         onTop.value = rect.bottom > window.innerHeight
       })
-      focusButton(overlay.value?.$el)
+      focusFirst(overlay.value?.$el, '.v-list-item')
     })
 
     async function clickItem (item: MenuItemOnClick | MenuItemTo) {
@@ -116,7 +116,7 @@ export default defineComponent({
       await api.transition(props.object.pk, t.name)
       working.value = false
       isOpen.value = false
-      focusButton(elem.value)
+      focusFirst(elem.value)
     }
 
     function focusNextSibling (elem: HTMLElement | null, reverse = false) {
@@ -133,7 +133,7 @@ export default defineComponent({
           switch (evt.key) {
             case 'Escape':
               isOpen.value = false
-              focusButton(elem.value)
+              focusFirst(elem.value)
               break
             case 'ArrowUp':
               // (focusedEl.previousElementSibling as HTMLElement)?.focus()
