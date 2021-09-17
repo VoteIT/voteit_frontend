@@ -12,9 +12,10 @@ export default defineComponent({
       type: String,
       required: true
     },
-    modelValue: Boolean as PropType<any>,
+    modelValue: Boolean as PropType<boolean>,
     settings: Object
   },
+  emits: ['update:modelValue'],
   setup (props, { emit }) {
     const value = ref(!!props.modelValue)
     watch(value, value => {

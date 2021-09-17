@@ -39,6 +39,7 @@ export default defineComponent({
       required: true
     }
   },
+  emits: ['update:modelValue'],
   setup (props, { emit }) {
     const val = reactive(createInitialOptions(props.settings.options, props.modelValue || []))
     watch(val, value => {
