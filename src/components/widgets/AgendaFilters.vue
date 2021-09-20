@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, inject, PropType, reactive, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 
@@ -66,15 +66,12 @@ export default defineComponent({
     modelValue: {
       type: Object as PropType<Filter>,
       required: true
-    },
-    tags: {
-      type: Set as PropType<Set<string>>,
-      required: true
     }
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
     const { t } = useI18n()
+    const tags = inject<Ref<Set<string>>>('tags') ?? ref(new Set<string>())
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
     const filter = reactive<Filter>(props.modelValue)
     const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, DEFAULT_FILTER_STATES))
@@ -97,12 +94,12 @@ export default defineComponent({
       label: t(`workflowState.${state.state}`),
       active: props.modelValue.states.has(state.state)
     })))
-    const tagFilters = reactive<FilterDescription[]>([...props.tags].map(tag => ({
+    const tagFilters = reactive<FilterDescription[]>([...tags.value].map(tag => ({
       id: tag,
       label: tag,
       active: props.modelValue.tags.has(tag)
     })))
-    watch(() => props.tags, value => {
+    watch(tags, value => {
       // add missing
       for (const tag of value) {
         if (!tagFilters.find(tf => tf.id === tag)) {

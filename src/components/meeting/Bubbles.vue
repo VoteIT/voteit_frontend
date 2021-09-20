@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 64px"/>
+  <div style="height: 64px" />
   <div id="bubbles">
     <div v-for="{ component, data } in bubbles" :key="component.name" class="bubble">
       <v-btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
@@ -96,9 +96,10 @@ export default defineComponent({
       &.open
         background-color: rgb(var(--v-theme-on-surface))
         color: rgb(var(--v-theme-surface))
-      margin-left: 10px
-      &:first-child
-        margin-left: 0
+
+    margin-left: 10px
+    &:last-child
+      margin-left: 0
     > .content
       position: absolute
       bottom: 75px

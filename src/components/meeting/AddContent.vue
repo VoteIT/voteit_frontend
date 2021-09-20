@@ -3,7 +3,7 @@
     <UserAvatar size="small" class="mr-1" />
     <RichtextEditor ref="editorComponent" submit
       :placeholder="placeholder"
-      :disabled="disabled" v-model="text" @submit="submit()" :tags="tags"
+      :disabled="disabled" v-model="text" @submit="submit()"
       :submitText="submitText" :submitIcon="submitIcon" />
   </div>
 </template>
@@ -42,8 +42,7 @@ export default defineComponent({
     warnLength: {
       type: Number,
       default: 10
-    },
-    tags: Set as PropType<Set<string>>
+    }
   },
   setup (props, { emit }) {
     const { t } = useI18n()

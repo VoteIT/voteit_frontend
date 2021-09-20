@@ -29,7 +29,7 @@
               {{ t('proposal.add') }}
             </v-btn>
           </span>
-          <AgendaFilters ref="filterComponent" v-model="activeFilter" :tags="allTags" :key="agendaId" />
+          <AgendaFilters ref="filterComponent" v-model="activeFilter" :key="agendaId" />
         </div>
         <HelpText v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
           You have unread proposals that are hidden by your filter.
@@ -44,7 +44,7 @@
         </HelpText>
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
-            <Proposal :p="p" :all-tags="allTags" :comments="getProposalDiscussions(p)" :unread="p.created > agendaItemLastRead" v-intersect="{
+            <Proposal :p="p" :comments="getProposalDiscussions(p)" :lastRead="agendaItemLastRead" v-intersect="{
                 handler: proposalIntersect(p),
                 options: { threshold: 1 }
               }">
@@ -66,7 +66,7 @@
           {{ t('agenda.helpNoProposals') }}
         </HelpText>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
-                    :tags="allTags" :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
+                    :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
                     :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
                     ref="addProposalComponent" />
       </v-col>
@@ -78,7 +78,7 @@
           </v-btn>
         </div>
         <div v-if="sortedDiscussions.length" class="no-list">
-          <DiscussionPost :p="d" :all-tags="allTags" v-for="d in sortedDiscussions" :key="d.pk">
+          <DiscussionPost :p="d" v-for="d in sortedDiscussions" :key="d.pk">
             <template v-slot:buttons>
               <ReactionButton v-for="btn in discussionReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: d.pk }">{{ btn.title }}</ReactionButton>
             </template>
@@ -88,7 +88,7 @@
           {{ t('agenda.helpNoComments') }}
         </HelpText>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-                    :tags="allTags" :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
+                    :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
                     :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent" />
       </v-col>
     </v-row>
@@ -96,11 +96,11 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, ComputedRef, defineComponent, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, ComputedRef, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import AddContent from '@/components/meeting/AddContent.vue'
-import DiscussionPost from '@/components/widgets/DiscussionPost.vue'
+import DiscussionPostVue from '@/components/widgets/DiscussionPost.vue'
 import Headline from '@/components/widgets/Headline.vue'
 import HelpText from '@/components/widgets/HelpText.vue'
 import ProposalVue from '@/components/widgets/Proposal.vue'
@@ -124,8 +124,9 @@ import pollType from '@/contentTypes/poll'
 import proposalType from '@/contentTypes/proposal'
 import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
-import { AgendaItem, Proposal } from '@/contentTypes/types'
+import { AgendaItem, DiscussionPost, Proposal } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
+import { useStorage } from '@vueuse/core'
 
 // Store filters for each agenda id
 const agendaFilters = reactive<Map<number, Filter>>(new Map())
@@ -163,15 +164,16 @@ export default defineComponent({
     })
     const hiddenUnreadProposals = computed(() => proposals.filterHidesUnread(agendaId.value, agendaItemLastRead.value, proposalFilter))
 
-    const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value))
+    function discussionFilter (d: DiscussionPost): boolean {
+      const { tags } = activeFilter.value
+      return !tags.size || d.tags.some(t => tags.has(t))
+    }
+    const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value, discussionFilter))
     const { getAgendaSpeakerLists, getSystems } = useSpeakerLists()
     const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value, list => list.state === SpeakerListState.Open))
     const speakerSystems = computed(() => getSystems(meetingId.value))
 
-    const displayMode = ref(localStorage.agendaDisplayMode ?? 'columns')
-    watch(displayMode, value => {
-      localStorage.agendaDisplayMode = value
-    })
+    const displayMode = useStorage('agendadisplayMode', 'columns')
 
     const allTags = computed<Set<string>>(() => {
       // Perl achievement unlocked (sry)
@@ -281,12 +283,14 @@ export default defineComponent({
       channel.change(agendaId.value, { ...content })
     }
 
+    provide('lastRead', agendaItemLastRead)
+    provide('tags', allTags)
+
     return {
       t,
       activeFilter,
       agendaId,
       agendaItem,
-      allTags,
       addProposal,
       addDiscussionComponent,
       addProposalComponent,
@@ -321,7 +325,7 @@ export default defineComponent({
   },
   components: {
     AddContent,
-    DiscussionPost,
+    DiscussionPost: DiscussionPostVue,
     Headline,
     HelpText,
     Proposal: ProposalVue,

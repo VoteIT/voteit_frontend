@@ -4,8 +4,9 @@
 </template>
 
 <script lang="ts">
-import useTags from '@/composables/meeting/useTags'
 import { defineComponent, ref, watch } from 'vue'
+
+import useTags from '@/composables/meeting/useTags'
 import RichtextEditor from './RichtextEditor.vue'
 
 export default defineComponent({
@@ -39,7 +40,7 @@ export default defineComponent({
     }
 
     async function submit () {
-      if (props.modelValue) emit('edit-done')
+      if (props.modelValue) return emit('edit-done')
       if (props.object && content.value !== getContent()) {
         const data: Record<string, string> = {}
         data[props.contentAttribute] = content.value
@@ -70,12 +71,6 @@ export default defineComponent({
       el
     }
   }
-  // mounted () {
-  //   this.$emit('updated', this.$el)
-  // },
-  // updated () {
-  //   this.$emit('updated', this.$el)
-  // }
 })
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="p" class="proposal" :class="{ unread }">
+  <div v-if="p" class="proposal" :class="{ isUnread }">
     <slot name="top"/>
     <div class="meta">
       <div>
@@ -10,7 +10,7 @@
         <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
       </div>
     </div>
-    <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <div class="author">
       <span>{{ t('by') }} <User :pk="p.author" /></span>
       <Moment :date="p.created" />
@@ -34,7 +34,7 @@
       <Menu :items="menuItems" />
     </footer>
     <slot name="bottom"/>
-    <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="comments" :all-tags="allTags" :comment-input="discussionRules.canAdd(agendaItem)" />
+    <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="comments" :comment-input="discussionRules.canAdd(agendaItem)" />
   </div>
   <div v-else class="proposal">
     <em>{{ t('proposal.notFound') }}</em>
@@ -54,6 +54,7 @@ import WorkflowState from './WorkflowState.vue'
 
 import useAgenda from '@/composables/meeting/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
+import useUnread from '@/composables/useUnread'
 
 import proposalType from '@/contentTypes/proposal'
 import discussionRules from '@/contentTypes/discussionPost/rules'
@@ -68,10 +69,8 @@ export default defineComponent({
       type: Object as PropType<Proposal>,
       required: true
     },
-    allTags: Set as PropType<Set<string>>,
     comments: Array as PropType<DiscussionPost[]>,
-    readOnly: Boolean,
-    unread: Boolean
+    readOnly: Boolean
   },
   components: {
     Richtext,
@@ -90,6 +89,8 @@ export default defineComponent({
     const wfState = computed(() => {
       return proposalType.useWorkflows().getState(props.p.state)
     })
+
+    const { isUnread } = useUnread(props.p.created as Date)
 
     async function queryDelete () {
       if (await dialogQuery({
@@ -147,19 +148,20 @@ export default defineComponent({
 
     return {
       agendaItem,
-      comment,
       commentsComponent,
       discussionRules,
       editing,
+      isUnread,
       isModerator,
       proposalType,
-      queryDelete,
-      retract,
       showComments,
       menuItems,
       api,
       wfState,
-      ...proposalType.rules
+      ...proposalType.rules,
+      comment,
+      retract,
+      queryDelete
     }
   }
 })
@@ -189,7 +191,7 @@ export default defineComponent({
     > *
       margin-right: 1.5em
 
-  &.unread .richtext
+  &.isUnread .richtext
     position: relative
     ::after
       content: ''

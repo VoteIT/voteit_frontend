@@ -12,7 +12,7 @@
 <script lang="ts">
 import Quill from 'quill'
 import 'quill-mention'
-import { defineComponent, onMounted, PropType, ref } from 'vue'
+import { defineComponent, inject, onMounted, Ref, ref } from 'vue'
 import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/composables/meeting/useMeeting'
 import { MeetingRoles } from '@/composables/types'
@@ -48,10 +48,6 @@ export default defineComponent({
       type: String,
       default: ''
     },
-    tags: {
-      type: Set as PropType<Set<string>>,
-      default: () => new Set()
-    },
     setFocus: Boolean,
     submit: Boolean,
     disabled: Boolean,
@@ -63,6 +59,7 @@ export default defineComponent({
     placeholder: String
   },
   setup (props, { emit }) {
+    const tags = inject<Ref<Set<string>>>('tags')
     let editor: Quill | null = null
     const editorElement = ref<HTMLElement | null>(null)
     const rootElement = ref<HTMLElement | null>(null)
@@ -75,7 +72,8 @@ export default defineComponent({
     }
 
     function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObject, void> {
-      for (const tag of props.tags) {
+      if (!tags) return
+      for (const tag of tags.value) {
         if (filter(tag)) yield tagObject(tag)
       }
     }

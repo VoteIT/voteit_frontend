@@ -1,5 +1,5 @@
 <template>
-  <Widget class="discussion">
+  <Widget class="discussion" :class="{ isUnread }">
     <div class="meta">
       <div>
         <UserAvatar :pk="p.author" />
@@ -12,7 +12,7 @@
         <Tag v-for="tag in p.tags" :key="tag" :name="tag" />
       </div>
     </div>
-    <Richtext submit :tags="allTags" :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <footer v-if="!readOnly && ($slots.buttons || menuItems.length)">
       <div>
         <slot name="buttons"/>
@@ -33,6 +33,7 @@ import discussionPostType from '@/contentTypes/discussionPost'
 import { DiscussionPost, Predicate } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
 import { MenuItem, ThemeColor } from '@/utils/types'
+import useUnread from '@/composables/useUnread'
 
 export default defineComponent({
   props: {
@@ -40,7 +41,6 @@ export default defineComponent({
       type: Object as PropType<DiscussionPost>,
       required: true
     },
-    allTags: Set as PropType<Set<string>>,
     readOnly: Boolean
   },
   components: {
@@ -53,6 +53,7 @@ export default defineComponent({
     const { canDelete, canChange } = discussionPostType.rules as Record<string, Predicate>
 
     const editing = ref(false)
+    const { isUnread } = useUnread(props.p.created as Date)
 
     async function queryDelete () {
       if (await dialogQuery({
@@ -84,6 +85,7 @@ export default defineComponent({
     return {
       api,
       editing,
+      isUnread,
       menuItems
     }
   }
