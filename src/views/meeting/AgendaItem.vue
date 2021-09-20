@@ -173,7 +173,7 @@ export default defineComponent({
     const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value, list => list.state === SpeakerListState.Open))
     const speakerSystems = computed(() => getSystems(meetingId.value))
 
-    const displayMode = useStorage('agendadisplayMode', 'columns')
+    const displayMode = useStorage('agendaDisplayMode', 'columns')
 
     const allTags = computed<Set<string>>(() => {
       // Perl achievement unlocked (sry)

@@ -58,7 +58,7 @@ export default defineComponent({
         submitting.value = true
         try {
           await props.handler(text.value)
-          if (editorComponent.value) editorComponent.value.clear()
+          editorComponent.value?.setText(props.modelValue)
         } catch (err) {
           console.error(err)
         }
@@ -69,14 +69,10 @@ export default defineComponent({
     }
 
     function focus () {
-      // eslint-disable-next-line no-unused-expressions
       if (editorComponent.value) editorComponent.value.focus()
     }
 
     const editorComponent = ref<null | EditorComponent>(null)
-    watch(() => props.modelValue, value => {
-      text.value = value
-    })
     watch(text, value => {
       emit('update:modelValue', value)
     })
@@ -84,11 +80,11 @@ export default defineComponent({
     return {
       t,
       disabled,
+      text,
+      editorComponent,
       focus,
       open,
-      submit,
-      text,
-      editorComponent
+      submit
     }
   }
 })
