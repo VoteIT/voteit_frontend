@@ -13,4 +13,4 @@ export interface Filter {
   tags: Set<string>
 }
 
-export const DEFAULT_FILTER_STATES = new Set([ProposalState.Published, ProposalState.Voting, ProposalState.Approved])
+export const DEFAULT_FILTER_STATES = [ProposalState.Published, ProposalState.Voting, ProposalState.Approved]

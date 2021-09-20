@@ -8,6 +8,7 @@ export default function useUnread (modifiedOrCreated: Date) {
   })
 
   return {
+    lastRead,
     isUnread
   }
 }

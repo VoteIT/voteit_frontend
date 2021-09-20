@@ -1,4 +1,5 @@
 <template>
+  <label v-if="label" :for="name">{{ label }}</label>
   <input :id="name" type="number" v-model="value" :min="settings.min" :max="settings.max"/>
 </template>
 
@@ -13,7 +14,8 @@ export default defineComponent({
       required: true
     },
     modelValue: Number,
-    settings: Object
+    settings: Object,
+    label: String
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {

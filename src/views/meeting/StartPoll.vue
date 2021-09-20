@@ -2,34 +2,28 @@
   <v-row id="start-poll">
     <v-col lg="8" offset-lg="2">
       <header>
-        <h1>Start poll</h1>
+        <h1>{{ t('poll.start') }}</h1>
       </header>
       <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
-      <v-btn color="secondary" v-if="agendaId && agendaItem" @click="$router.push(`${meetingPath}/polls/new`)" append-icon="mdi-close">
+      <v-btn color="secondary" v-if="agendaId && agendaItem" :to="`${meetingPath}/polls/new`" append-icon="mdi-close">
         {{ agendaItem.title }}
       </v-btn>
-      <ul v-else>
-        <template v-for="ai in getAgenda(meetingId)" :key="ai.pk">
-          <li v-if="canAdd(ai) && getPublishedProposals(ai.pk).length">
-            <RouterLink :to="`${meetingPath}/polls/new/${ai.pk}`">{{ ai.title }} ({{ getPublishedProposals(ai.pk).length }})</RouterLink>
-          </li>
-          <li v-else class="disabled">
-            <span>{{ ai.title }} (-)</span>
-          </li>
-        </template>
-      </ul>
+      <v-list v-else-if="pollableAgendaItems.length">
+        <v-list-item v-for="pollable in pollableAgendaItems" :key="pollable.to" v-bind="pollable" />
+      </v-list>
+      <v-alert v-else type="info" :text="t('poll.noPollableAgendaItems')" />
       <template v-if="agendaId">
         <h2 class="mt-2">{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
         <div v-if="pickMethod">
           <Proposal read-only
             v-for="p in selectedProposals" :key="p.pk"
-            :p="p" class="selected locked" />
+            :p="p" class="isSelected locked" />
         </div>
-        <div v-else-if="availableProposals.length">
-          <Proposal read-only
-            v-for="p in availableProposals" :key="p.pk"
-            :p="p" @click="toggleSelected(p)" :class="{ selected: selectedProposalIds.has(p.pk) }" />
-        </div>
+        <v-item-group v-else-if="availableProposals.length" v-model="selectedProposalIds" multiple>
+          <v-item v-for="p in availableProposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
+            <Proposal read-only :p="p" @click="toggle()" :class="{ isSelected }" />
+          </v-item>
+        </v-item-group>
         <p v-else><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
         <div v-if="!pickMethod" class="btn-group mt-3">
           <Btn icon="mdi-check-all" @click="toggleAll">{{ t('all') }}</Btn>
@@ -38,16 +32,17 @@
       </template>
       <template v-if="pickMethod">
         <h2 class="mt-2">{{ t('step', { step: 3 }) }}: {{ t('poll.chooseMethod') }}</h2>
-        <ul class="method-list">
-          <li :class="{ selected: methodSelected?.name === m.name }" v-for="m in availableMethods" :key="m.name">
-            <a href="#" @click.prevent="selectMethod(m)">{{ t(`poll.method.${m.name}`) }}</a>
-            <div v-if="methodSelected && m.name === methodSelected.name" @submit.prevent>
-              <h3>{{ t('options') }}</h3>
-              <SchemaForm :schema="methodSchema" v-model="methodSettings" />
-              <!-- <component v-if="methodSettingsComponent" :is="methodSettingsComponent" v-model="methodSettings" :method="m" :proposals="selectedProposals.length" /> -->
+        <v-item-group class="method-list" v-model="methodSelected" mandatory>
+          <v-item v-for="m in availableMethods" :key="m.name" :value="m" v-slot="{ isSelected, toggle }">
+            <div :class="{ isSelected }">
+              <a href="#" @click.prevent="toggle()">{{ t(`poll.method.${m.name}`) }}</a>
+              <div v-if="isSelected" @submit.prevent>
+                <h3>{{ t('options') }}</h3>
+                <SchemaForm :schema="methodSchema" v-model="methodSettings" />
+              </div>
             </div>
-          </li>
-        </ul>
+          </v-item>
+        </v-item-group>
         <div class="btn-group mt-3">
           <v-btn prepend-icon="mdi-undo-variant" @click="pickMethod=false" color="primary">{{ t('back') }}</v-btn>
           <v-btn prepend-icon="mdi-check" color="primary" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</v-btn>
@@ -59,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -75,12 +70,12 @@ import ProposalComponent from '@/components/widgets/Proposal.vue'
 import SchemaForm from '@/components/inputs/SchemaForm.vue'
 
 import pollType from '@/contentTypes/poll'
-import { Poll } from '@/contentTypes/types'
 import { PollStartData, PollMethod, pollMethods, PollMethodSettings } from '@/components/pollmethods/types'
 import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import { polls } from '@/composables/meeting/usePolls'
 import methodSchemas from '@/components/pollmethods/schemas'
-import { InputType, SchemaInput } from '@/components/inputs/types'
+import { InputType } from '@/components/inputs/types'
+import { useTitle } from '@vueuse/core'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -97,28 +92,29 @@ export default defineComponent({
     const { meetingPath, meetingId } = useMeeting()
     const { alert } = useAlert()
 
-    const selectedProposalIds = reactive<Set<number>>(new Set())
+    useTitle(t('poll.start'))
+
+    const selectedProposalIds = ref<number[]>([])
     function getPublishedProposals (agendaItem: number) {
       return proposals.getAgendaProposals(agendaItem, p => p.state === ProposalState.Published)
     }
+    const agenda = computed(() => getAgenda(meetingId.value))
+    const pollableAgendaItems = computed(() => {
+      return agenda.value
+        .filter(ai => pollType.rules.canAdd(ai) && getPublishedProposals(ai.pk).length)
+        .map(ai => ({
+          to: `${meetingPath.value}/polls/new/${ai.pk}`,
+          title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
+        }))
+    })
     const availableProposals = computed(() => getPublishedProposals(agendaId.value))
-    const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.has(p.pk)))
+    const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.value.includes(p.pk)))
 
-    function toggleSelected (p: Poll) {
-      if (!pickMethod.value) {
-        if (selectedProposalIds.has(p.pk)) {
-          selectedProposalIds.delete(p.pk)
-        } else {
-          selectedProposalIds.add(p.pk)
-        }
-      }
-    }
     function toggleAll () {
       if (selectedProposals.value.length === availableProposals.value.length) {
-        selectedProposalIds.clear()
+        selectedProposalIds.value.length = 0
       } else {
-        availableProposals.value
-          .forEach(p => selectedProposalIds.add(p.pk))
+        selectedProposalIds.value = availableProposals.value.map(p => p.pk)
       }
     }
 
@@ -169,7 +165,7 @@ export default defineComponent({
             agenda_item: agendaId.value,
             meeting: meetingId.value,
             title: methodSettings.value?.title,
-            proposals: [...selectedProposalIds],
+            proposals: [...selectedProposalIds.value],
             method_name: methodSelected.value.name,
             start,
             settings
@@ -186,10 +182,10 @@ export default defineComponent({
       }
     }
 
-    const methodSchema = computed<SchemaInput[] | undefined>(() => {
+    const methodSchema = computed(() => {
       if (!methodSelected.value) return
       const getter = methodSchemas[methodSelected.value.name]
-      const specifics = getter?.(t, selectedProposalIds.size) || []
+      const specifics = getter?.(t, selectedProposalIds.value.length) || []
       return [{
         type: InputType.Text,
         name: 'title',
@@ -212,32 +208,30 @@ export default defineComponent({
 
     watch(agendaId, () => {
       pickMethod.value = false
-      selectedProposalIds.clear()
+      selectedProposalIds.value.length = 0
     })
 
     return {
       t,
+      agendaId,
+      agendaItem,
+      availableProposals,
       selectedProposalIds,
       selectedProposals,
-      getPublishedProposals,
-      availableProposals,
-      toggleSelected,
-      toggleAll,
-
       pickMethod,
       availableMethods,
       methodSchema,
       methodSelected,
       methodSettings,
       methodSettingsComponent,
-      selectMethod,
+      pollableAgendaItems,
       readyToCreate,
-      createPoll,
       nextTitle,
 
-      agendaId,
-      agendaItem,
+      createPoll,
       getAgenda,
+      selectMethod,
+      toggleAll,
 
       ...useMeeting(),
       ...proposals,
@@ -249,45 +243,37 @@ export default defineComponent({
 
 <style lang="sass">
 #start-poll
-  ul.method-list
-    padding: 0
-    margin-bottom: 1em
-  li
-    &.disabled
-      color: rgb(var(--v-theme-secondary))
-    list-style: none
-    border-top: var(--v-border-color)
+  .method-list > div
+    border-top: 1px solid rgb(var(--v-border-color))
     &:last-child
-      border-bottom: var(--agenda-separator)
-    h3
-      margin-top: 0
+      border-bottom: 1px solid rgb(var(--v-border-color))
     > div
-      padding: .5rem 1rem 1rem
+      padding: .5rem 1.5rem
     .number label
       display: block
     a
       display: block
       text-decoration: none
       padding: 6px
-      color: var(--text)
-      &:before
+      color: rgb(var(--v-theme-on-background))
+      &::before
         content: ''
         width: 1.2rem
         display: inline-block
         line-height: 1
-    &.selected
-      background-color: rgba(var(--v-theme-success-lighten-2), 1)
-      a:before
+    &.isSelected
+      background-color: rgb(var(--v-theme-success-lighten-2))
+      a::before
         content: '✔'
-    &.selected.locked
-      background-color: #ddd
+      &.locked
+        background-color: #ddd
     span
       display: block
       padding: 6px 6px 6px calc(6px + 1.2em)
 
   .proposal
     margin: 1.5em .5em
-    &.selected
+    &.isSelected
       background-color: rgb(var(--v-theme-success-lighten-2))
       outline: .5em solid rgb(var(--v-theme-success-lighten-2))
       position: relative

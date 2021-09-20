@@ -1,9 +1,7 @@
 <template>
   <form class="schema-form" @submit.prevent="submit()">
     <div v-for="input in schema" :key="input.name">
-      <label v-if="input.label && input.type !== 'checkbox'" :for="getName(input)">{{ input.label }}</label>
-      <component :is="getComponent(input)" :name="getName(input)" :settings="getSettings(input)" v-model="value[input.name]" />
-      <label v-if="input.label && input.type === 'checkbox'" :for="getName(input)" class="inline">{{ input.label }}</label>
+      <component :is="getComponent(input)" :name="getName(input)" :label="input.label" :settings="getSettings(input)" v-model="value[input.name]" />
     </div>
     <div class="buttons" v-if="buttons">
       <v-btn v-for="btn in buttons" :key="btn.name" :prepend-icon="btn.icon">

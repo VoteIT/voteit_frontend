@@ -1,5 +1,6 @@
 <template>
   <input :id="name" type="checkbox" v-model="value"/>
+  <label v-if="label" :for="name" class="inline">{{ label }}</label>
 </template>
 
 <script lang="ts">
@@ -13,7 +14,8 @@ export default defineComponent({
       required: true
     },
     modelValue: Boolean as PropType<boolean>,
-    settings: Object
+    settings: Object,
+    label: String
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {

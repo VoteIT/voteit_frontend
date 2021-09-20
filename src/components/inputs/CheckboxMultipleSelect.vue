@@ -1,4 +1,5 @@
 <template>
+  <label v-if="label">{{ label }}</label>
   <div>
     <span v-for="[title, value] in Object.entries(settings.options)" :key="value">
       <input :id="`${name}-choice-${value}`" type="checkbox" v-model="val[value]">
@@ -37,7 +38,8 @@ export default defineComponent({
     settings: {
       type: Object,
       required: true
-    }
+    },
+    label: String
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {

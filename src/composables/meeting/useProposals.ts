@@ -76,7 +76,7 @@ export default function useProposals () {
     for (const p of iterProposals(p => p.agenda_item === ai)) {
       if (
         (lastRead && p.created > lastRead) &&
-        DEFAULT_FILTER_STATES.has(p.state) &&
+        DEFAULT_FILTER_STATES.includes(p.state) &&
         !filter(p)
       ) return true
     }
@@ -89,7 +89,7 @@ export default function useProposals () {
       if (
         (lastRead && p.created > lastRead) &&
         !userReadProposals.has(p.pk) &&
-        DEFAULT_FILTER_STATES.has(p.state)
+        DEFAULT_FILTER_STATES.includes(p.state)
       ) return false
     }
     return true

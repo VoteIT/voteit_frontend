@@ -31,7 +31,7 @@
           </span>
           <AgendaFilters ref="filterComponent" v-model="activeFilter" :key="agendaId" />
         </div>
-        <HelpText v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
+        <!-- <HelpText v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
           You have unread proposals that are hidden by your filter.
           <template v-slot:actions>
             <v-btn @click="setLastRead(agendaItem, true)" prepend-icon="mdi-check-all">
@@ -41,10 +41,10 @@
               {{ t('defaultFilters') }}
             </v-btn>
           </template>
-        </HelpText>
+        </HelpText> -->
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
-            <Proposal :p="p" :comments="getProposalDiscussions(p)" :lastRead="agendaItemLastRead" v-intersect="{
+            <Proposal :p="p" :comments="getProposalDiscussions(p)" v-intersect="{
                 handler: proposalIntersect(p),
                 options: { threshold: 1 }
               }">
@@ -126,15 +126,10 @@ import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
 import { AgendaItem, DiscussionPost, Proposal } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
-import { useStorage } from '@vueuse/core'
+import { useStorage, useTitle } from '@vueuse/core'
 
 // Store filters for each agenda id
 const agendaFilters = reactive<Map<number, Filter>>(new Map())
-const DEFAULT_AGENDA_FILTER = {
-  order: 'created',
-  states: DEFAULT_FILTER_STATES,
-  tags: new Set<string>()
-}
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -142,14 +137,25 @@ export default defineComponent({
     const { t } = useI18n()
     const discussions = useDiscussions()
     const proposals = useProposals()
-    const { meetingPath, meetingId } = useMeeting()
+    const { meetingPath, meetingId, meeting } = useMeeting()
     const { agendaId, agendaItem, hasNewItems, agendaItemLastRead } = useAgenda()
     const { getMeetingButtons } = useReactions()
     const channel = agendaItemType.getChannel()
 
+    useTitle(computed(() => `${agendaItem.value?.title ?? t('agendaItem')} | ${meeting.value?.title ?? t('meeting')}`))
+
     const activeFilter = computed<Filter>({
-      get: () => agendaFilters.get(agendaId.value) ?? DEFAULT_AGENDA_FILTER,
-      set: (value) => agendaFilters.set(agendaId.value, value)
+      get: () => {
+        if (!agendaFilters.has(agendaId.value)) {
+          agendaFilters.set(agendaId.value, {
+            order: 'created',
+            states: new Set(DEFAULT_FILTER_STATES),
+            tags: new Set()
+          })
+        }
+        return agendaFilters.get(agendaId.value) as Filter
+      },
+      set: value => agendaFilters.set(agendaId.value, value)
     })
     function proposalFilter (p: Proposal): boolean {
       const { tags, states } = activeFilter.value
@@ -162,7 +168,7 @@ export default defineComponent({
       if (reversed) order = order.slice(1)
       return proposals.getAgendaProposals(agendaId.value, proposalFilter, order, reversed)
     })
-    const hiddenUnreadProposals = computed(() => proposals.filterHidesUnread(agendaId.value, agendaItemLastRead.value, proposalFilter))
+    // const hiddenUnreadProposals = computed(() => proposals.filterHidesUnread(agendaId.value, agendaItemLastRead.value, proposalFilter))
 
     function discussionFilter (d: DiscussionPost): boolean {
       const { tags } = activeFilter.value
@@ -231,21 +237,21 @@ export default defineComponent({
     const hasProposals = computed(() => proposals.agendaItemHasProposals(agendaId.value))
 
     // Register whether all proposals has been read
-    const proposalsRead = reactive<Set<number>>(new Set())
-    function proposalIntersect (p: Proposal) {
-      return (isIntersecting: boolean) => {
-        if (isIntersecting) proposalsRead.add(p.pk)
-      }
-    }
+    // const proposalsRead = reactive<Set<number>>(new Set())
+    // function proposalIntersect (p: Proposal) {
+    //   return (isIntersecting: boolean) => {
+    //     if (isIntersecting) proposalsRead.add(p.pk)
+    //   }
+    // }
     function setLastRead (ai: AgendaItem, force = false) {
       // Allow forcing read marker, on user demand
       if (force) return channel.send('last_read.change', { agenda_item: ai.pk })
       // Return if there is no new content
       if (!ai || !hasNewItems(ai)) return
       // Return if any unread proposals are unseen
-      for (const p of proposals.getAgendaProposals(ai.pk)) {
-        if (p.created > agendaItemLastRead.value && !proposalsRead.has(p.pk)) return
-      }
+      // for (const p of proposals.getAgendaProposals(ai.pk)) {
+      //   if (p.created > agendaItemLastRead.value && !proposalsRead.has(p.pk)) return
+      // }
       channel.send('last_read.change', {
         agenda_item: ai.pk
       })
@@ -296,7 +302,7 @@ export default defineComponent({
       addProposalComponent,
       addDiscussionPost,
       content,
-      hiddenUnreadProposals,
+      // hiddenUnreadProposals,
       setLastRead,
       submit,
       ...discussions,
@@ -319,8 +325,8 @@ export default defineComponent({
       proposalType,
       speakerListType,
 
-      proposalIntersect,
-      agendaItemLastRead
+      proposalIntersect: () => {}
+      // agendaItemLastRead
     }
   },
   components: {

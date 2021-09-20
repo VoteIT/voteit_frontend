@@ -74,7 +74,7 @@ export default defineComponent({
     const tags = inject<Ref<Set<string>>>('tags') ?? ref(new Set<string>())
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
     const filter = reactive<Filter>(props.modelValue)
-    const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, DEFAULT_FILTER_STATES))
+    const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, new Set(DEFAULT_FILTER_STATES)))
     onClickOutside(root, () => {
       root.value && root.value.close()
     })
@@ -114,7 +114,7 @@ export default defineComponent({
 
     function clearFilters () {
       filter.order = 'created'
-      for (const s of states) s.active = DEFAULT_FILTER_STATES.has(s.id as ProposalState)
+      for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
       for (const t of tagFilters) t.active = false
     }
     watch(filter, value => {

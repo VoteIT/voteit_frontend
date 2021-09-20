@@ -1,5 +1,6 @@
 <template>
-  <select :required="required" v-model="val">
+  <label v-if="label" :for="name">{{ label }}</label>
+  <select :id="name" :required="required" v-model="val">
     <option disabled v-if="required" :value="undefined">{{ t('select') }}</option>
     <option v-else :value="undefined">---</option>
     <option v-for="[name, value] in Object.entries(options)" :key="value" :value="value">{{ name }}</option>
@@ -16,7 +17,8 @@ export default defineComponent({
     options: {
       type: Object,
       required: true
-    }
+    },
+    label: String
   },
   setup (props, { emit }) {
     const val = ref(props.modelValue)

@@ -22,6 +22,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 import meetingType from '@/contentTypes/meeting'
 import { useI18n } from 'vue-i18n'
 import { MenuItem } from '@/utils/types'
+import { useTitle } from '@vueuse/core'
 
 export default defineComponent({
   name: 'MeetingIndex',
@@ -35,6 +36,9 @@ export default defineComponent({
     const editing = ref(false)
     const api = meetingType.getContentApi()
     const { meeting, meetingId } = useMeeting()
+
+    useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
+
     const content = reactive({
       title: meeting.value?.title ?? '',
       body: meeting.value?.body ?? ''

@@ -148,6 +148,7 @@
     "deny": "Deny",
     "details": "Poll details",
     "finished": "Finished",
+    "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",
     "numDenied": "Denied proposal | Denied proposals",
     "new": "New poll",
@@ -160,6 +161,7 @@
     "selectProposals": "Select proposals",
     "selectProposalsDescription": "Click to select the proposals you want to vote for.\nIn the next step you will be able to adjust the order.",
     "showProgress": "Show progress",
+    "start": "Start poll",
     "started": "Started",
     "votingTitle": "Voting {title}",
     "vote": "Vote",
@@ -191,6 +193,7 @@
       "help": {
         "scottish_stv": "Select the proposals you want to vote for in order of preference.",
         "schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
+        "repeated_schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
         "combined_simple": "Vote approve or deny for each proposal."
       }
     },

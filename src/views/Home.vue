@@ -32,7 +32,7 @@
       </v-col>
     </v-row>
     <v-row class="organizations">
-      <v-col cols="4" v-for="o in organizations" :key="o.pk">
+      <v-col cols="4" v-for="o in organisations.values()" :key="o.pk">
         <v-card :title="o.title" v-if="o.login_url">
           <v-card-text>
             <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
@@ -67,7 +67,9 @@ import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/composables/useMeetings'
 import useModal from '@/composables/useModal'
-import useOrganizations, { organizations } from '@/composables/useOrganizations'
+import useOrganisations from '@/modules/organisations/composables/useOrganisations'
+import useOrganisation from '@/modules/organisations/composables/useOrganisation'
+import { useTitle } from '@vueuse/core'
 
 export default defineComponent({
   name: 'Home',
@@ -76,8 +78,11 @@ export default defineComponent({
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user, getOrganizationLoginURL } = useAuthentication()
-    const { fetchOrganizations } = useOrganizations()
+    const { fetchOrganisations, organisations } = useOrganisations()
+    const { organisation } = useOrganisation()
     const loader = useLoader('Home')
+
+    useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
     watch(isAuthenticated, value => {
       if (value) fetchMeetings()
@@ -85,7 +90,7 @@ export default defineComponent({
     })
 
     onBeforeMount(() => {
-      fetchOrganizations()
+      fetchOrganisations()
       if (isAuthenticated.value) loader.call(fetchMeetings)
     })
 
@@ -111,14 +116,14 @@ export default defineComponent({
       t,
       participatingMeetings,
       otherMeetings,
-      organizations,
-      getOrganizationLoginURL,
-      logout,
+      organisations,
       isAuthenticated,
       user,
-
       ...rules,
+
       createMeeting,
+      getOrganizationLoginURL,
+      logout,
       slugify
     }
   },

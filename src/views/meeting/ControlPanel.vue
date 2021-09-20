@@ -32,23 +32,29 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 import useMeeting from '@/composables/meeting/useMeeting'
 
 import controlPanels from './controlPanels'
+import { useTitle } from '@vueuse/core'
 
 export default defineComponent({
   name: 'ControlPanel',
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
     const route = useRoute()
     const { meeting, meetingPath } = useMeeting()
+
+    useTitle(computed(() => `${t('settings')} | ${meeting.value?.title}`))
+
     const panels = computed(() => {
       return Object.values(controlPanels)
     })
     const currentPanel = computed(() => route.params.panel as string)
     const currentComponent = computed(() => Object.values(controlPanels).find(p => p.path === route.params.panel))
     return {
+      t,
       meeting,
       meetingPath,
       panels,

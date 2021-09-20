@@ -1,5 +1,5 @@
 <template>
-  <input :id="name" :type="settings.type ?? 'text'" v-model="value"/>
+  <v-text-field :id="name" :label="label" :type="settings.type ?? 'text'" v-model="value" />
 </template>
 
 <script lang="ts">
@@ -13,7 +13,8 @@ export default defineComponent({
       required: true
     },
     modelValue: String,
-    settings: Object
+    settings: Object,
+    label: String
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {

@@ -23,6 +23,7 @@ import { ContextRoles } from '@/composables/types'
 
 import meetingType from '@/contentTypes/meeting'
 import { MeetingRole } from '@/contentTypes/types'
+import { useTitle } from '@vueuse/core'
 
 const meetingChannel = meetingType.getChannel()
 
@@ -35,11 +36,12 @@ const meetingIcons: Record<MeetingRole, string> = {
 }
 
 export default defineComponent({
-  inject: ['t'],
   setup () {
     const { t } = useI18n()
     const { meetingId, meeting, getUser } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
+
+    useTitle(computed(() => `${t('meeting.participants')} | ${meeting.value?.title}`))
 
     function addRole (user: number, role: string) {
       meetingChannel.addRoles(meetingId.value, user, role)
@@ -66,13 +68,14 @@ export default defineComponent({
     })
 
     return {
-      addUser,
+      t,
       canChangeRoles,
-      getUserIds,
-      removeConfirm,
       meetingChannel,
       meetingIcons,
-      meetingId
+      meetingId,
+      addUser,
+      getUserIds,
+      removeConfirm
     }
   },
   components: {
