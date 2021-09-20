@@ -3,14 +3,12 @@
     <v-col cols="12" md="10" lg="8" offset-md="1" offset-lg="2" v-if="agendaItem">
       <header>
         <div v-if="speakerSystem && speakerSystems.length > 1" class="mb-2">
-          <v-btn v-for="system in speakerSystems" color="accent" :variant="speakerSystem === system ? 'contained' : 'outlined'" :key="system.pk" @click="$router.push(`${meetingPath}/lists/${system.pk}/${agendaItem.pk}`)" class="mr-1">
+          <v-btn v-for="system in speakerSystems" color="accent" :variant="speakerSystem === system ? 'contained' : 'outlined'" :key="system.pk" :to="`${meetingPath}/lists/${system.pk}/${agendaItem.pk}`" class="mr-1">
             {{ system.title }}
           </v-btn>
         </div>
-        <div class="btn-group">
-          <v-btn v-for="{ icon, disabled, action } in navigation" :key="icon"
-                :disabled="disabled" color="secondary" elevation="0" size="x-small" :icon="icon"
-                @click="action()" />
+        <div class="btn-group navigation">
+          <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="secondary" size="x-small" />
         </div>
         <h1>
           {{ agendaItem.title }}
@@ -79,7 +77,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import useAuthentication from '@/composables/useAuthentication'
@@ -98,7 +96,7 @@ import { dialogQuery } from '@/utils'
 
 interface AgendaNav {
   icon: string
-  action: () => void
+  to?: string
   disabled: boolean
 }
 
@@ -109,7 +107,6 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const router = useRouter()
 
     const { user } = useAuthentication()
     const speakers = useSpeakerLists()
@@ -142,7 +139,7 @@ export default defineComponent({
     function makeNavigation (icon: string, toAgendaItem?: AgendaItem): AgendaNav {
       return {
         icon,
-        action () { toAgendaItem && router.push(`${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}`) },
+        to: toAgendaItem ? `${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}` : route.path, // Vuetify alpha.11 does not accept change to undef
         disabled: !toAgendaItem || toAgendaItem === agendaItem.value
       }
     }
@@ -227,4 +224,8 @@ ol.speaker-queue
   li
     &.self
       font-weight: 700
+
+.btn-group.navigation // Flat does not work in vuetify alpha.11
+  .v-btn--variant-contained::before
+    box-shadow: none !important
 </style>

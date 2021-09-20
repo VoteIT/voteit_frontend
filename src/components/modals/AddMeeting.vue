@@ -1,8 +1,7 @@
 <template>
   <main>
     <form @submit.prevent="addMeeting()">
-      <label for="meeting_title">{{ t('title') }}:</label><br/>
-      <input id="meeting_title" type="text" v-model="formData.title" placeholder="Meeting title (at least 5 characters)" /><br/>
+      <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" hint="At least 5 characters" />
       <input type="checkbox" id="meeting_public" v-model="formData.public" /> <label for="meeting_public">{{ t('meeting.public') }}</label><br/>
       <Btn icon="mdi-send" :disabled="disabled" @click="addMeeting()">{{ t('create') }}</Btn>
     </form>
@@ -12,6 +11,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
@@ -20,8 +20,8 @@ import useModal from '@/composables/useModal'
 
 export default defineComponent({
   name: 'AddMeetingModal',
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
     const router = useRouter()
     const meetingApi = meetingType.getContentApi()
     const modal = useModal()
@@ -43,6 +43,7 @@ export default defineComponent({
     }
 
     return {
+      t,
       formData,
       disabled,
       addMeeting

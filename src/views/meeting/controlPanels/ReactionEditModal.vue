@@ -7,11 +7,8 @@
           {{ previewActive ? 100 : 99 }}
         </v-btn>
       </Widget>
-      <form @submit.prevent>
-        <div>
-          <label for="reaction-title">{{ t('title') }}</label>
-          <input required id="reaction-title" type="text" v-model="formData.title">
-        </div>
+      <form @submit.prevent class="mt-4">
+        <v-text-field dark required :label="t('title')" v-model="formData.title" />
         <div>
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">

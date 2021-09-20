@@ -102,6 +102,7 @@ export default defineComponent({
   box-shadow: 2px 2px 8px rgba(#000, .5)
   overflow-y: auto
   border-radius: 3px
+  overflow-x: hidden
 
   .closer
     position: absolute

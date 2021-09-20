@@ -5,7 +5,7 @@
         <div id="agenda-display-mode">
           <span class="text-secondary">{{ t('agenda.showAs') }}</span>
           <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
-            <img :src="require(`@/assets/agenda-display-${mode}.svg`)"/>
+            <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
           </v-btn>
         </div>
         <Menu float :items="menuItems" />

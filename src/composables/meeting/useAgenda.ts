@@ -75,15 +75,16 @@ export default function useAgenda () {
     return agendaItems.get(agendaItem)
   }
 
-  function getPreviousAgendaItem (agendaItem: AgendaItem) {
+  function getRelativeAgendaItem (agendaItem: AgendaItem, positions = 1) {
     const agenda = getAgenda(agendaItem.meeting)
     const index = agenda.indexOf(agendaItem)
-    return agenda[index - 1]
+    return agenda[index + positions]
+  }
+  function getPreviousAgendaItem (agendaItem: AgendaItem) {
+    return getRelativeAgendaItem(agendaItem, -1)
   }
   function getNextAgendaItem (agendaItem: AgendaItem) {
-    const agenda = getAgenda(agendaItem.meeting)
-    const index = agenda.indexOf(agendaItem)
-    return agenda[index + 1]
+    return getRelativeAgendaItem(agendaItem)
   }
 
   function hasNewItems (agendaItem: AgendaItem): boolean {

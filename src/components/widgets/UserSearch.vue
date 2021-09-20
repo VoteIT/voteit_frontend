@@ -1,14 +1,20 @@
 <template>
   <span class="user-search">
-    <input type="search" :placeholder="t('searchUser')" :class="{ selected: !!selected }" name="search" autocomplete="off" v-model="query" @keyup="delayedSearch" />
+    <!-- <v-text-field v-if="selected" type="search" prepend-inner-icon="mdi-account" :class="{ selected: !!selected }" autocomplete="off" :label="t('searchUser')" v-model="selected.full_name"  /> -->
+    <v-text-field type="search" prepend-inner-icon="mdi-account" :class="{ selected: !!selected }" autocomplete="off" :label="t('searchUser')" v-model="query" @focus="deSelect()" />
     <v-btn :prepend-icon="buttonIcon" color="primary" :disabled="!selected" @click="submit()">
       {{ buttonText || t('add') }}
     </v-btn>
     <v-sheet rounded elevation="4" class="selector" v-show="results.length">
-      <v-btn block v-for="result in results" :key="result.pk" @click="select(result)">
-        <span v-if="result.full_name">{{ result.full_name }} ({{ result.userid }})</span>
-        <em v-else>-- unknown --</em>
-      </v-btn>
+      <v-list>
+        <v-list-item v-for="result in results" :key="result.pk" @click="select(result)">
+          <v-list-item-content v-if="result.full_name">
+            <v-list-item-title >{{ result.full_name }}</v-list-item-title>
+            <v-list-item-subtitle>{{ result.userid }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-title v-else>-- unknown --</v-list-item-title>
+        </v-list-item>
+      </v-list>
     </v-sheet>
   </span>
 </template>
@@ -16,7 +22,7 @@
 <script lang="ts">
 import { User } from '@/contentTypes/types'
 import userType from '@/contentTypes/user'
-import { defineComponent, PropType, ref } from 'vue'
+import { defineComponent, PropType, ref, watch } from 'vue'
 
 const TYPE_DELAY = 250 // delay in ms
 let typeTimeout: number
@@ -56,12 +62,17 @@ export default defineComponent({
       query.value = user.full_name
     }
 
-    function delayedSearch () {
-      selected.value = null
+    watch(query, () => {
+      if (selected.value) return // Never search when selected
       clearTimeout(typeTimeout)
       typeTimeout = setTimeout(() => {
         search()
       }, TYPE_DELAY)
+    })
+
+    function deSelect () {
+      query.value = ''
+      selected.value = null
     }
 
     function submit () {
@@ -72,11 +83,11 @@ export default defineComponent({
 
     return {
       selected,
-      select,
-      submit,
       results,
       query,
-      delayedSearch
+      select,
+      deSelect,
+      submit
     }
   }
 })
@@ -86,21 +97,18 @@ export default defineComponent({
 .user-search
   display: flex
   position: relative
-  input[type=search]
-    padding: 0 .4em
-    background-color: rgb(var(--v-theme-surface))
-    border-bottom: 1px transparent
-    outline: none
-    &:focus
-      border-bottom: 1px solid rgb(var(--v-theme-on-surface))
+  max-width: 480px
+  .v-input
+    margin: 0
   .selector
     position: absolute
-    top: 38px
+    top: 56px
     left: 2px
     background-color: rgb(var(--v-theme-surface))
     min-width: 210px
     z-index: 100
   .v-btn
+    height: auto !important
     border-top-left-radius: 0
     border-bottom-left-radius: 0
 </style>

@@ -69,6 +69,7 @@ export default defineComponent({
           openMenus.add(index)
           return true
         }
+        return false
       })
     })
 

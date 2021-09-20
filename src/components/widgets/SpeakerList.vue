@@ -26,7 +26,7 @@
       <v-btn :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <v-btn @click="$router.push(`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`)" prepend-icon="mdi-bullhorn" v-if="canChange(list)">
+      <v-btn variant="text" :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange(list)">
         {{ t('manage') }}
       </v-btn>
     </v-card-actions>

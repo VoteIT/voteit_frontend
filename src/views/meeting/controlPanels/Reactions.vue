@@ -40,7 +40,8 @@ export default defineComponent({
       openModalEvent.emit({
         component: ReactionEditModalVue,
         data: button,
-        title: button ? t('reaction.editButton') : t('reaction.addButton')
+        title: button ? t('reaction.editButton') : t('reaction.addButton'),
+        dismissable: false
       })
     }
 

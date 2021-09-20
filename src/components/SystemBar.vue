@@ -2,7 +2,7 @@
   <v-app-bar app flat v-if="user">
     <v-app-bar-nav-icon v-show="hasNavDrawer" class="d-lg-none" @click.stop="toggleNavDrawerEvent.emit()" />
     <v-app-bar-title>
-      <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" /></RouterLink>
+      <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" /></RouterLink>
     </v-app-bar-title>
     <div>
       <v-btn append-icon="mdi-chevron-down" class="user-menu" :class="{ open: userMenuOpen }" variant="text" @mousedown.stop @click="userMenuOpen = !userMenuOpen">
@@ -108,6 +108,7 @@ export default defineComponent({
       transform: rotate(180deg)
 
 #app-bar-user-menu
+  z-index: 4
   .v-icon
     font-size: 16pt
 </style>
