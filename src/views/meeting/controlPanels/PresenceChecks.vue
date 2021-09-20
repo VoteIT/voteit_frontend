@@ -40,7 +40,7 @@ export default defineComponent({
   components: { Moment, PresenceCheckControl },
   name: 'PresenceChecks',
   path: 'presence',
-  icon: 'mdi-hand',
+  icon: 'mdi-hand-wave',
   setup () {
     const { t } = useI18n()
     const { getOpenPresenceCheck, getClosedPresenceChecks, openCheck, getPresenceCount } = usePresence()

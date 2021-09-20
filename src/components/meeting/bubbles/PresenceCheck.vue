@@ -5,7 +5,7 @@
       <p>
         U there, bruh?
       </p>
-      <btn @click="presence.channel.add({ presence_check: data.presenceCheck.pk })" icon="mdi-hand">Represent!</btn>
+      <btn @click="presence.channel.add({ presence_check: data.presenceCheck.pk })" icon="mdi-hand-wave">Represent!</btn>
     </template>
     <template v-else>
       <p>Your presence has been noted.</p>
@@ -28,7 +28,7 @@ import PresenceCheckControl from '../PresenceCheckControl.vue'
 export default defineComponent({
   components: { PresenceCheckControl },
   name: 'PresenceCheck',
-  icon: 'mdi-hand',
+  icon: 'mdi-hand-wave',
   props: {
     data: {
       type: Object,
