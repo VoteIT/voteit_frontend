@@ -85,7 +85,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
 
 import meetingType from '@/contentTypes/meeting'

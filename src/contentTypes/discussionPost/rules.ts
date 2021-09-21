@@ -1,5 +1,5 @@
-import { agendaItems } from '@/composables/meeting/useAgenda'
 import { meetings } from '@/composables/useMeetings'
+import { agendaItems } from '@/modules/agendas/useAgenda'
 
 import { isAuthor } from '../rules'
 import agendaRules from '../agendaItem/rules'

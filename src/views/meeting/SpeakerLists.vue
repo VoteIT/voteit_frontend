@@ -82,7 +82,7 @@ import { useI18n } from 'vue-i18n'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda from '@/modules/agendas/useAgenda'
 
 import Moment from '@/components/widgets/Moment.vue'
 

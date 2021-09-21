@@ -10,7 +10,6 @@ import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 
 import Btn from './components/Btn.vue'
-import HelpText from './components/widgets/HelpText.vue'
 import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import Switch from './components/inputs/Switch.vue'
@@ -51,7 +50,6 @@ createApp(App)
   .use(vuetify)
   .use(Api)
   .component('Btn', Btn)
-  .component('HelpText', HelpText)
   .component('Menu', Menu)
   .component('ProgressBar', ProgressBar)
   .component('Switch', Switch)

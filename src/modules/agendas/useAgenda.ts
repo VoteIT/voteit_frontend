@@ -6,7 +6,7 @@ import { dateify, orderBy } from '@/utils'
 import agendaItemType from '@/contentTypes/agendaItem'
 import meetingType from '@/contentTypes/meeting'
 
-import useLoader from '../useLoader'
+import useLoader from '@/composables/useLoader'
 import { AgendaItem } from '@/contentTypes/types'
 import Channel from '@/contentTypes/Channel'
 import TypedEvent from '@/utils/TypedEvent'

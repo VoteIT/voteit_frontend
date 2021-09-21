@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
 import { Poll, PollStatus, Vote } from '@/contentTypes/types'
-import { agendaDeletedEvent } from './useAgenda'
+import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 import { dateify, mapFilter } from '@/utils'
 import Channel from '@/contentTypes/Channel'
 

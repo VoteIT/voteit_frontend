@@ -1,6 +1,6 @@
 import useAuthentication from '@/composables/useAuthentication'
 
-import { agendaItems } from '@/composables/meeting/useAgenda'
+import { agendaItems } from '@/modules/agendas/useAgenda'
 import { meetings } from '@/composables/useMeetings'
 import useElectoralRegisters from '@/composables/meeting/useElectoralRegisters'
 

@@ -52,7 +52,7 @@ import Richtext from './Richtext.vue'
 import Comments from '../Comments.vue'
 import WorkflowState from './WorkflowState.vue'
 
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useUnread from '@/composables/useUnread'
 
@@ -63,7 +63,6 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 
 export default defineComponent({
   name: 'Proposal',
-  inject: ['t'],
   props: {
     p: {
       type: Object as PropType<Proposal>,
@@ -147,6 +146,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       agendaItem,
       commentsComponent,
       discussionRules,

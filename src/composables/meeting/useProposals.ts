@@ -5,7 +5,7 @@ import { dateify, orderBy } from '@/utils'
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
 import { Poll, Proposal } from '@/contentTypes/types'
-import { agendaDeletedEvent, agendaItems } from './useAgenda'
+import { agendaDeletedEvent, agendaItems } from '@/modules/agendas/useAgenda'
 import { DEFAULT_FILTER_STATES } from '@/components/widgets/types'
 
 type ProposalFilter = (p: Proposal) => boolean

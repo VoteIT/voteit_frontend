@@ -11,7 +11,7 @@ import { useI18n } from 'vue-i18n'
 import { slugify, toggleNavDrawerEvent } from '@/utils'
 
 import useLoader from '@/composables/useLoader'
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/composables/meeting/useMeeting'
 import agendaItemType from '@/contentTypes/agendaItem'
 import meetingRules from '@/contentTypes/meeting/rules'

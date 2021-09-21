@@ -67,8 +67,8 @@ import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/composables/useMeetings'
 import useModal from '@/composables/useModal'
-import useOrganisations from '@/modules/organisations/composables/useOrganisations'
-import useOrganisation from '@/modules/organisations/composables/useOrganisation'
+import useOrganisations from '@/modules/organisations/useOrganisations'
+import useOrganisation from '@/modules/organisations/useOrganisation'
 import { useTitle } from '@vueuse/core'
 
 export default defineComponent({

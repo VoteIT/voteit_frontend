@@ -5,7 +5,7 @@ import { dateify, mapFilter, orderBy } from '@/utils'
 import agendaItemType from '@/contentTypes/agendaItem'
 import discussionPostType from '@/contentTypes/discussionPost'
 import { DiscussionPost, Proposal } from '@/contentTypes/types'
-import { agendaDeletedEvent } from './useAgenda'
+import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 

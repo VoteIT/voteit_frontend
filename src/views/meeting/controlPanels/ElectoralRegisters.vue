@@ -13,12 +13,12 @@
           {{ m.name }}
         </option>
       </select>
-      <HelpText v-if="status === 'incomplete'" color="warning" class="mt-2">
+      <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
         {{ t('electoralRegister.selectMethod') }}
-      </HelpText>
-      <HelpText v-else-if="status === 'saved'" color="success" icon="mdi-check" class="mt-2">
+      </v-alert>
+      <v-alert v-else-if="status === 'saved'" type="success" closable class="mt-2">
         {{ t('electoralRegister.saved', settings) }}
-      </HelpText>
+      </v-alert>
       <div class="mt-2">
         <v-btn :disabled="disabled" @click="save()" color="primary">
           {{ t('save') }}
@@ -29,7 +29,6 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable camelcase */
 import { computed, ref, reactive, defineComponent, onBeforeMount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 

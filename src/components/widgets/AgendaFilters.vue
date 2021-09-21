@@ -48,6 +48,7 @@ import BtnDropdown from '@/components/BtnDropdown.vue'
 import workflowStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
 
 import { DEFAULT_FILTER_STATES, Filter } from './types'
+import { TagsKey } from '@/composables/meeting/useTags'
 
 interface FilterDescription {
   id: string
@@ -71,7 +72,7 @@ export default defineComponent({
   emits: ['update:modelValue'],
   setup (props, { emit }) {
     const { t } = useI18n()
-    const tags = inject<Ref<Set<string>>>('tags') ?? ref(new Set<string>())
+    const tags = inject(TagsKey) || ref(new Set<string>())
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
     const filter = reactive<Filter>(props.modelValue)
     const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, new Set(DEFAULT_FILTER_STATES)))

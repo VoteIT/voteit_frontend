@@ -60,7 +60,7 @@ import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda from '@/modules/agendas/useAgenda'
 import useAlert from '@/composables/useAlert'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'

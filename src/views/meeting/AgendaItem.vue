@@ -31,17 +31,21 @@
           </span>
           <AgendaFilters ref="filterComponent" v-model="activeFilter" :key="agendaId" />
         </div>
-        <!-- <HelpText v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
-          You have unread proposals that are hidden by your filter.
-          <template v-slot:actions>
-            <v-btn @click="setLastRead(agendaItem, true)" prepend-icon="mdi-check-all">
-              Mark all as read
-            </v-btn>
-            <v-btn v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
-              {{ t('defaultFilters') }}
-            </v-btn>
-          </template>
-        </HelpText> -->
+        <!-- <v-alert type="info" v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
+          <div>
+            <div class="mb-2">
+              You have unread proposals that are hidden by your filter.
+            </div>
+            <div>
+              <v-btn @click="setLastRead(agendaItem, true)" prepend-icon="mdi-check-all">
+                Mark all as read
+              </v-btn>
+              <v-btn v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
+                {{ t('defaultFilters') }}
+              </v-btn>
+            </div>
+          </div>
+        </v-alert> -->
         <div v-if="sortedProposals.length">
           <div v-for="p in sortedProposals" :key="p.pk">
             <Proposal :p="p" :comments="getProposalDiscussions(p)" v-intersect="{
@@ -54,17 +58,17 @@
             </Proposal>
           </div>
         </div>
-        <HelpText icon="mdi-filter-outline" v-else-if="hasProposals" class="mb-2">
-          {{ t('agenda.helpNoProposalsInFilter') }}
-          <template v-slot:actions>
+        <v-alert type="info" icon="mdi-filter-outline" v-else-if="hasProposals" class="mb-2">
+          <div>
+            <div class="mb-2">{{ t('agenda.helpNoProposalsInFilter') }}</div>
             <v-btn v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
               {{ t('defaultFilters') }}
             </v-btn>
-          </template>
-        </HelpText>
-        <HelpText icon="mdi-text-box-outline" v-else class="mb-2">
+          </div>
+        </v-alert>
+        <v-alert icon="mdi-text-box-outline" v-else class="mb-2">
           {{ t('agenda.helpNoProposals') }}
-        </HelpText>
+        </v-alert>
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
                     :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
                     :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
@@ -84,9 +88,9 @@
             </template>
           </DiscussionPost>
         </div>
-        <HelpText icon="mdi-comment-text-outline" v-else class="mb-2">
+        <v-alert icon="mdi-comment-text-outline" v-else class="mb-2">
           {{ t('agenda.helpNoComments') }}
-        </HelpText>
+        </v-alert>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
                     :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent" />
@@ -102,7 +106,6 @@ import { useI18n } from 'vue-i18n'
 import AddContent from '@/components/meeting/AddContent.vue'
 import DiscussionPostVue from '@/components/widgets/DiscussionPost.vue'
 import Headline from '@/components/widgets/Headline.vue'
-import HelpText from '@/components/widgets/HelpText.vue'
 import ProposalVue from '@/components/widgets/Proposal.vue'
 import AgendaFilters from '@/components/widgets/AgendaFilters.vue'
 import { Filter, DEFAULT_FILTER_STATES } from '@/components/widgets/types'
@@ -111,7 +114,7 @@ import Richtext from '@/components/widgets/Richtext.vue'
 import SpeakerList from '@/components/widgets/SpeakerList.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
-import useAgenda from '@/composables/meeting/useAgenda'
+import useAgenda from '@/modules/agendas/useAgenda'
 import useDiscussions from '@/composables/meeting/useDiscussions'
 import useMeeting from '@/composables/meeting/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
@@ -127,6 +130,8 @@ import { MenuItem } from '@/utils/types'
 import { AgendaItem, DiscussionPost, Proposal } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import { useStorage, useTitle } from '@vueuse/core'
+import { LastReadKey } from '@/composables/useUnread'
+import { TagsKey } from '@/composables/meeting/useTags'
 
 // Store filters for each agenda id
 const agendaFilters = reactive<Map<number, Filter>>(new Map())
@@ -142,7 +147,7 @@ export default defineComponent({
     const { getMeetingButtons } = useReactions()
     const channel = agendaItemType.getChannel()
 
-    useTitle(computed(() => `${agendaItem.value?.title ?? t('agendaItem')} | ${meeting.value?.title ?? t('meeting')}`))
+    useTitle(computed(() => `${agendaItem.value?.title ?? t('agenda.item')} | ${meeting.value?.title ?? t('meeting')}`))
 
     const activeFilter = computed<Filter>({
       get: () => {
@@ -289,8 +294,8 @@ export default defineComponent({
       channel.change(agendaId.value, { ...content })
     }
 
-    provide('lastRead', agendaItemLastRead)
-    provide('tags', allTags)
+    provide(LastReadKey, agendaItemLastRead)
+    provide(TagsKey, allTags)
 
     return {
       t,
@@ -333,7 +338,6 @@ export default defineComponent({
     AddContent,
     DiscussionPost: DiscussionPostVue,
     Headline,
-    HelpText,
     Proposal: ProposalVue,
     AgendaFilters,
     SpeakerList,

@@ -1,10 +1,12 @@
-import { inject, computed, Ref } from 'vue'
+import { inject, computed, InjectionKey, Ref } from 'vue'
+
+export const LastReadKey: InjectionKey<Ref<Date>> = Symbol('LastRead')
 
 export default function useUnread (modifiedOrCreated: Date) {
-  const lastRead = inject<Ref<Date | undefined>>('lastRead')
+  const lastRead = inject(LastReadKey)
   const isUnread = computed(() => {
     if (!lastRead) return false // No unread support
-    return !lastRead.value || modifiedOrCreated > lastRead.value // If there is a ref, but undefined, consider all unread, otherwise check if later
+    return modifiedOrCreated > lastRead.value // Should not be possible to be undef. Defaults to epoch.
   })
 
   return {

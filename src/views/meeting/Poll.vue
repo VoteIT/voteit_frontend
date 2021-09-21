@@ -9,12 +9,12 @@
         <h1>{{ poll.title }}</h1>
         <p class="text-secondary">{{ t('poll.method.name') }}: {{ t(`poll.method.${poll.method_name}`) }}</p>
         <p v-if="poll.body">{{ poll.body }}</p>
-        <HelpText v-if="votingComplete" color="success" class="mt-6">
+        <v-alert type="success" v-if="votingComplete" class="mt-6">
           {{ t('poll.voteAddedInfo') }}
-        </HelpText>
-        <HelpText v-else class="mt-6">
+        </v-alert>
+        <v-alert type="info" v-else class="mt-6">
           {{ t(`poll.method.help.${poll.method_name}`) }}
-        </HelpText>
+        </v-alert>
       </header>
       <template v-if="votingComplete">
         <div class="btn-controls mt-6" v-if="canVote(poll)">
@@ -52,7 +52,6 @@ import usePolls from '@/composables/meeting/usePolls'
 import pollType from '@/contentTypes/poll'
 
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
-import HelpText from '@/components/widgets/HelpText.vue'
 import { pollMethods } from '@/components/pollmethods'
 import Channel from '@/contentTypes/Channel'
 import useMeeting from '@/composables/meeting/useMeeting'
@@ -60,8 +59,7 @@ import useMeeting from '@/composables/meeting/useMeeting'
 export default defineComponent({
   name: 'PollView',
   components: {
-    WorkflowState,
-    HelpText
+    WorkflowState
   },
   setup () {
     const { t } = useI18n()
