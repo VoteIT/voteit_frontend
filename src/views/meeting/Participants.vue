@@ -18,7 +18,7 @@ import { ThemeColor } from '@/utils/types'
 import UserSearch from '@/components/widgets/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRoles } from '@/composables/types'
 
 import meetingType from '@/contentTypes/meeting'

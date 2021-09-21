@@ -87,7 +87,7 @@ import useAgenda from '@/modules/agendas/useAgenda'
 import Moment from '@/components/widgets/Moment.vue'
 
 import speakerListType from '@/contentTypes/speakerList'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import { AgendaItem, SpeakerList } from '@/contentTypes/types'
 import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'

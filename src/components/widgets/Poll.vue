@@ -66,7 +66,7 @@ import pollType from '@/contentTypes/poll'
 import { Poll } from '@/contentTypes/types'
 import { PollState } from '@/contentTypes/poll/workflowStates'
 import { useI18n } from 'vue-i18n'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import { slugify } from '@/utils'
 
 export default defineComponent({

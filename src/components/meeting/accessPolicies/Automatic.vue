@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import accessPolicy from '@/contentTypes/accessPolicy'
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'

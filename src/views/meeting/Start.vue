@@ -18,7 +18,7 @@ import Headline from '@/components/widgets/Headline.vue'
 import Richtext from '@/components/widgets/Richtext.vue'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import meetingType from '@/contentTypes/meeting'
 import { useI18n } from 'vue-i18n'
 import { MenuItem } from '@/utils/types'

@@ -28,7 +28,7 @@ import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 
 import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRole, UserContextRoles } from '@/composables/types'
 
 import Channel from '@/contentTypes/Channel'

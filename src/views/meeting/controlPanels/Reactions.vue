@@ -20,7 +20,7 @@
 import { computed, defineComponent, inject } from 'vue'
 
 import { openModalEvent } from '@/utils'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useReactions from '@/composables/meeting/useReactions'
 import { ReactionButton } from '@/contentTypes/reactionButton'
 

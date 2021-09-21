@@ -12,7 +12,7 @@ import { slugify, toggleNavDrawerEvent } from '@/utils'
 
 import useLoader from '@/composables/useLoader'
 import useAgenda from '@/modules/agendas/useAgenda'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import agendaItemType from '@/contentTypes/agendaItem'
 import meetingRules from '@/contentTypes/meeting/rules'
 import pollType from '@/contentTypes/poll'

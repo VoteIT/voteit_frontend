@@ -32,7 +32,7 @@ import { useI18n } from 'vue-i18n'
 
 import accessPolicyType from '@/contentTypes/accessPolicy'
 import { AccessPolicy } from '@/contentTypes/types'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useAlert from '@/composables/useAlert'
 
 export default defineComponent({

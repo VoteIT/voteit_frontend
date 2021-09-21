@@ -16,7 +16,7 @@
 import { computed, defineComponent, PropType, reactive } from 'vue'
 import { DefaultMap } from '@/utils'
 
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 
 import ProposalComponent from '../widgets/Proposal.vue'

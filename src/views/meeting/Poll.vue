@@ -54,7 +54,7 @@ import pollType from '@/contentTypes/poll'
 import WorkflowState from '@/components/widgets/WorkflowState.vue'
 import { pollMethods } from '@/components/pollmethods'
 import Channel from '@/contentTypes/Channel'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 
 export default defineComponent({
   name: 'PollView',

@@ -211,6 +211,9 @@
       "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds"
     }
   },
+  "plenary": {
+    "view": "Plenary view"
+  },
   "presence": {
     "closeCheck": "Close presence check",
     "closedAt": "Presence check closed",

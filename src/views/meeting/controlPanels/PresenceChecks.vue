@@ -27,7 +27,7 @@
 import { computed, defineComponent, ref } from 'vue'
 
 import usePresence from '@/composables/meeting/usePresence'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 
 import presenceCheckType from '@/contentTypes/presenceCheck'
 

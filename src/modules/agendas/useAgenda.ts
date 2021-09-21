@@ -95,9 +95,11 @@ export default function useAgenda () {
     return !lastRead || agendaItem.related_modified > lastRead
   }
 
-  const agendaId = computed(() => route && Number(route.params.aid))
+  const agendaId = computed(() => Number(route.params.aid))
   const agendaItem = computed(() => agendaItems.get(agendaId.value))
   const agendaItemLastRead = computed(() => agendaItemsLastRead.get(agendaId.value) ?? new Date(0)) // Default to epoch
+  const previousAgendaItem = computed(() => agendaItem.value && getPreviousAgendaItem(agendaItem.value))
+  const nextAgendaItem = computed(() => agendaItem.value && getNextAgendaItem(agendaItem.value))
 
   const loader = useLoader('useAgenda')
   onBeforeMount(() => {
@@ -119,6 +121,8 @@ export default function useAgenda () {
     hasNewItems,
     agendaId,
     agendaItem,
-    agendaItemLastRead
+    agendaItemLastRead,
+    previousAgendaItem,
+    nextAgendaItem
   }
 }

@@ -116,7 +116,7 @@ import WorkflowState from '@/components/widgets/WorkflowState.vue'
 
 import useAgenda from '@/modules/agendas/useAgenda'
 import useDiscussions from '@/composables/meeting/useDiscussions'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 import useReactions from '@/composables/meeting/useReactions'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
@@ -223,6 +223,11 @@ export default defineComponent({
           text: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
+        })
+        items.push({
+          text: t('plenary.view'),
+          icon: 'mdi-gavel',
+          to: `/p/${meetingId.value}/${agendaId.value}`
         })
       }
       const speakerSystems = getSystems(meetingId.value, false, true)

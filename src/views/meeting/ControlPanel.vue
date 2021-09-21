@@ -34,7 +34,7 @@ import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 
 import controlPanels from './controlPanels'
 import { useTitle } from '@vueuse/core'

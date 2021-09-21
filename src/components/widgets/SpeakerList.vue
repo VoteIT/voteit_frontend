@@ -45,7 +45,7 @@ import speakerListType from '@/contentTypes/speakerList'
 import { SpeakerList } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import Moment from './Moment.vue'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 
 interface EnterLeaveBtn {
   icon: string

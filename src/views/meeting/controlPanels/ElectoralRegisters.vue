@@ -34,7 +34,7 @@ import { useI18n } from 'vue-i18n'
 
 import { restApi } from '@/utils'
 import meetingType from '@/contentTypes/meeting'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import { Meeting } from '@/contentTypes/types'
 
 interface ERMethod {

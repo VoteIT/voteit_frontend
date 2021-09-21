@@ -96,6 +96,7 @@ export default defineComponent({
 
 <style lang="sass">
 #socket-info
+  z-index: 5
   position: fixed
   background-color: #000
   color: #fff

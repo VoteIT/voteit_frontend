@@ -1,7 +1,7 @@
 <template>
   <v-app id="app">
     <router-view name="navigationDrawer"/>
-    <SystemBar/>
+    <router-view name="appBar" />
     <v-main>
       <v-container>
         <router-view/>
@@ -27,7 +27,6 @@ import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/modals/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
-import SystemBar from './components/SystemBar.vue'
 
 export default defineComponent({
   components: {
@@ -35,8 +34,7 @@ export default defineComponent({
     Loader,
     Alerts,
     Modal,
-    Dialogs,
-    SystemBar
+    Dialogs
   },
   setup () {
     const { t } = useI18n()

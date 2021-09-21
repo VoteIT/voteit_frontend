@@ -21,7 +21,7 @@ import ReactionButton from './meeting/ReactionButton.vue'
 import DiscussionPostVue from './widgets/DiscussionPost.vue'
 
 import useAgenda from '@/modules/agendas/useAgenda'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useReactions from '@/composables/meeting/useReactions'
 
 import { DiscussionPost } from '@/contentTypes/types'

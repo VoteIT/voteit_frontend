@@ -42,7 +42,7 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 
 import useLoader from '@/composables/useLoader'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'

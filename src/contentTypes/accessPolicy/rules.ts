@@ -1,4 +1,4 @@
-import { meetings } from '@/composables/useMeetings'
+import { meetings } from '@/modules/meetings/useMeetings'
 import { AccessPolicy, AccessPolicyType, Predicate } from '../types'
 
 import meetingRules from '../meeting/rules'

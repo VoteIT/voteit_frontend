@@ -26,7 +26,7 @@ import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
 import { user } from '@/composables/useAuthentication'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 
 import Richtext from '@/components/widgets/Richtext.vue'
 import accessPolicies from '@/components/meeting/accessPolicies'

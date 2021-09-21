@@ -9,7 +9,7 @@
 import useAuthentication from '@/composables/useAuthentication'
 import { computed, defineComponent } from 'vue'
 
-import useMeeting from '../composables/meeting/useMeeting'
+import useMeeting from '../modules/meetings/useMeeting'
 
 export default defineComponent({
   name: 'User',

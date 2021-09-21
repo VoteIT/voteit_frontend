@@ -1,6 +1,6 @@
 import { Meeting, Predicate, PresenceCheck } from '../types'
 import meetingRules from '../meeting/rules'
-import { meetings } from '@/composables/useMeetings'
+import { meetings } from '@/modules/meetings/useMeetings'
 import { PresenceCheckState } from './workflowStates'
 
 const isOpen: Predicate = (check: PresenceCheck) => {

@@ -53,7 +53,7 @@ import Comments from '../Comments.vue'
 import WorkflowState from './WorkflowState.vue'
 
 import useAgenda from '@/modules/agendas/useAgenda'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useUnread from '@/composables/useUnread'
 
 import proposalType from '@/contentTypes/proposal'

@@ -1,4 +1,4 @@
-import { meetings } from '@/composables/useMeetings'
+import { meetings } from '@/modules/meetings/useMeetings'
 import { agendaItems } from '@/modules/agendas/useAgenda'
 
 import meetingRules from '../meeting/rules'

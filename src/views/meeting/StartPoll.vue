@@ -62,7 +62,7 @@ import { slugify } from '@/utils'
 
 import useAgenda from '@/modules/agendas/useAgenda'
 import useAlert from '@/composables/useAlert'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/composables/meeting/useProposals'
 
 import { pollMethods as implementedMethods, pollSettings } from '@/components/pollmethods'

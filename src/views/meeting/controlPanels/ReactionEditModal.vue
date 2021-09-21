@@ -71,7 +71,7 @@ import { MeetingRole } from '@/contentTypes/types'
 import { closeModalEvent, dialogQuery } from '@/utils'
 
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 
 enum ReactionContentType {
   DiscussionPost = 'discussion_post',

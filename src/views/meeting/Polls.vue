@@ -21,7 +21,7 @@ import { computed, defineComponent } from 'vue'
 
 import Poll from '../../components/widgets/Poll.vue'
 
-import useMeeting from '@/composables/meeting/useMeeting'
+import useMeeting from '@/modules/meetings/useMeeting'
 import usePolls from '@/composables/meeting/usePolls'
 
 import pollType from '@/contentTypes/poll'

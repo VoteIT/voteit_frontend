@@ -3,12 +3,12 @@ import { useRoute } from 'vue-router'
 
 import { slugify, restApi, mapFilter, mapFind } from '@/utils'
 
-import useAuthentication from '../useAuthentication'
-import { meetings } from '../useMeetings'
+import useAuthentication from '../../composables/useAuthentication'
+import { meetings } from './useMeetings'
 
 import meetingType from '@/contentTypes/meeting'
 import { Meeting, MeetingRole, User } from '@/contentTypes/types'
-import { MeetingRoles } from '../types'
+import { MeetingRoles } from '../../composables/types'
 
 const FORCE_ROLES_FETCH = false
 
@@ -28,6 +28,13 @@ export default function useMeeting () {
     if (meeting.current_user_roles && user.value) {
       meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
     }
+  }
+
+  async function fetchMeeting (pk: number) {
+    const { data } = await meetingApi.retrieve(pk)
+    if (!data.current_user_roles) return false
+    setMeeting(data)
+    return true
   }
 
   interface UserListParams {
@@ -101,13 +108,16 @@ export default function useMeeting () {
   function hasRole (role: MeetingRole, user?: number) {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
+  const isModerator = computed(() => hasRole(MeetingRole.Moderator))
 
   return {
+    isModerator,
     meetingId,
     meeting,
     meetingPath,
     meetingApi,
     userRoles,
+    fetchMeeting,
     getUser,
     hasRole,
     setMeeting,
