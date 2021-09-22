@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer v-model="isOpen" position="right" disable-resize-watcher>
     <v-list nav>
-      <template v-for="{ state, items } in agendaStates" :key="state.state">
+      <template v-for="{ state, items } in annotatedAgendaStates" :key="state.state">
         <v-list-subheader v-if="items.length">
           {{ t(`workflowState.${state.state}`) }}
         </v-list-subheader>
@@ -12,7 +12,7 @@
               {{ ai.title }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              {{ getProposalCount(ai) }} {{ t('proposal.proposals') }}
+              {{ t('proposal.proposalCountOfTotal', ai.proposals, ai.proposals.total) }}
             </v-list-item-subtitle>
           </div>
         </v-list-item>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import { toggleNavDrawerEvent } from '@/utils'
 import useAgenda from '@/modules/agendas/useAgenda'
@@ -49,12 +49,20 @@ export default defineComponent({
       return `/p/${meetingId.value}/${ai.pk}`
     }
 
-    // TODO: Optimise?
-    function getProposalCount (ai: AgendaItem) {
-      const filtered = getAgendaProposals(ai.pk, filterProposalStates).length
-      const total = getAgendaProposals(ai.pk).length
-      return `${filtered}/${total}`
-    }
+    const annotatedAgendaStates = computed(() => {
+      return agendaStates.value.map(({ state, items }) => {
+        return {
+          state,
+          items: items.map(ai => ({
+            ...ai,
+            proposals: {
+              count: getAgendaProposals(ai.pk, filterProposalStates).length,
+              total: getAgendaProposals(ai.pk).length
+            }
+          }))
+        }
+      })
+    })
 
     onMounted(() => {
       toggleNavDrawerEvent.on(toggle)
@@ -65,9 +73,8 @@ export default defineComponent({
 
     return {
       t,
-      agendaStates,
       isOpen,
-      getProposalCount,
+      annotatedAgendaStates,
       getURL
     }
   }
