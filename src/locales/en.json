@@ -212,7 +212,10 @@
     }
   },
   "plenary": {
-    "view": "Plenary view"
+    "view": "Plenary view",
+    "noProposalsInFilter": "No proposals",
+    "hintModifyFilter": "Try selecting more proposal states in filter menu.",
+    "selectProposals": "Select proposals"
   },
   "presence": {
     "closeCheck": "Close presence check",
@@ -233,6 +236,7 @@
     "add": "Add proposal",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
+    "proposalCount": "No proposals | One proposal | {count} proposals",
     "proposals": "Proposals",
     "proposalsAndComments": "Proposals and comments",
     "noProposals": "Nothing to say...",

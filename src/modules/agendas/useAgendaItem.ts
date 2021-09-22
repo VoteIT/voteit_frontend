@@ -6,7 +6,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useAgenda from './useAgenda'
 
 export default function useAgendaItem () {
-  const { agendaItem } = useAgenda()
+  const { agendaId, agendaItem } = useAgenda()
   const { meetingPath } = useMeeting()
 
   const agendaItemPath = computed(() => {
@@ -15,6 +15,7 @@ export default function useAgendaItem () {
   })
 
   return {
+    agendaId,
     agendaItem,
     agendaItemPath
   }

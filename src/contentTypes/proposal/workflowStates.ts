@@ -1,3 +1,5 @@
+import { ThemeColor } from '@/utils/types'
+
 export enum ProposalState {
   Published = 'published',
   Retracted = 'retracted',
@@ -11,31 +13,37 @@ export default [
   {
     transition: 'publish',
     icon: 'mdi-eye',
-    state: ProposalState.Published
+    state: ProposalState.Published,
+    color: ThemeColor.Primary
   },
   {
     transition: 'retract',
     icon: 'mdi-undo-variant',
-    state: ProposalState.Retracted
+    state: ProposalState.Retracted,
+    color: ThemeColor.Secondary
   },
   {
     transition: 'lock_for_vote',
     icon: 'mdi-vote',
-    state: ProposalState.Voting
+    state: ProposalState.Voting,
+    color: ThemeColor.Info
   },
   {
     transition: 'approved',
     icon: 'mdi-check-circle-outline',
-    state: ProposalState.Approved
+    state: ProposalState.Approved,
+    color: ThemeColor.Success
   },
   {
     transition: 'denied',
     icon: 'mdi-close-circle-outline',
-    state: ProposalState.Denied
+    state: ProposalState.Denied,
+    color: ThemeColor.Warning
   },
   {
     transition: 'unhandled',
     icon: 'mdi-help-circle-outline',
-    state: ProposalState.Unhandled
+    state: ProposalState.Unhandled,
+    color: ThemeColor.Secondary
   }
 ]

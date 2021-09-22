@@ -1,8 +1,8 @@
 <template>
   <v-app id="app">
-    <router-view name="navigationDrawer"/>
     <router-view name="appBar" />
     <v-main>
+      <router-view name="navigationDrawer"/>
       <v-container>
         <router-view/>
       </v-container>

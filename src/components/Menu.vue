@@ -1,9 +1,9 @@
 <template>
   <span class="context-menu" :class="{ float }" ref="elem" v-if="items.length || $slots.top || $slots.bottom || showTransitions">
     <v-badge v-if="currentState?.icon" color="secondary" :icon="currentState.icon">
-      <v-btn variant="text" :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
+      <v-btn v-bind="openerAttrs" @click="isOpen = !isOpen"/>
     </v-badge>
-    <v-btn v-else variant="text" :outlined="isOpen" :color="working ? 'secondary' : color" :icon="working ? 'mdi-loading' : 'mdi-dots-horizontal'" @click="isOpen = !isOpen"/>
+    <v-btn v-else v-bind="openerAttrs" @click="isOpen = !isOpen"/>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
       <v-list nav density="comfortable">
         <slot name="top"/>
@@ -36,13 +36,16 @@ import { StateContent, Transition } from '@/contentTypes/types'
 import { MenuItem, MenuItemOnClick, MenuItemTo } from '@/utils/types'
 
 export default defineComponent({
-  inject: ['t'],
   props: {
     items: {
       type: Array as PropType<MenuItem[]>,
       default: () => []
     },
     color: String,
+    icon: {
+      type: String,
+      default: 'mdi-dots-horizontal'
+    },
     showTransitions: Boolean,
     object: Object as PropType<StateContent>,
     contentType: Object as PropType<ContentType<any>>,
@@ -88,6 +91,15 @@ export default defineComponent({
         onTop.value = rect.bottom > window.innerHeight
       })
       focusFirst(overlay.value?.$el, '.v-list-item')
+    })
+
+    const openerAttrs = computed(() => {
+      return {
+        icon: working.value ? 'mdi-loading' : props.icon,
+        variant: 'text',
+        outlined: isOpen.value,
+        color: working.value ? 'secondary' : props.color
+      }
     })
 
     async function clickItem (item: MenuItemOnClick | MenuItemTo) {
@@ -153,15 +165,16 @@ export default defineComponent({
     })
 
     return {
-      onTop,
-      clickItem,
       currentState,
       elem,
       isOpen,
-      makeTransition,
+      onTop,
+      openerAttrs,
       overlay,
       transitionsAvailable,
-      working
+      working,
+      clickItem,
+      makeTransition
     }
   }
 })

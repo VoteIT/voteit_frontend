@@ -11,6 +11,8 @@ import { AgendaItem } from '@/contentTypes/types'
 import Channel from '@/contentTypes/Channel'
 import TypedEvent from '@/utils/TypedEvent'
 import { LastRead } from '@/utils/types'
+import useMeeting from '../meetings/useMeeting'
+import workflowStates from '@/contentTypes/agendaItem/workflowStates'
 
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaDeletedEvent = new TypedEvent<number>()
@@ -59,6 +61,7 @@ new Channel<LastRead>('last_read')
 
 export default function useAgenda () {
   const route = useRoute()
+  const { meetingId } = useMeeting()
 
   function * iterAgenda (filter: (ai: AgendaItem) => boolean): Generator<AgendaItem> {
     for (const ai of agendaItems.values()) if (filter(ai)) yield ai
@@ -70,6 +73,21 @@ export default function useAgenda () {
       'order'
     )
   }
+  const agenda = computed(() => {
+    return getAgenda(meetingId.value)
+  })
+
+  const agendaStates = computed(() => {
+    return workflowStates.map(state => {
+      return {
+        state,
+        items: orderBy(
+          [...iterAgenda(ai => ai.meeting === meetingId.value && ai.state === state.state)],
+          'order'
+        )
+      }
+    })
+  })
 
   function getAgendaItem (agendaItem: number) {
     return agendaItems.get(agendaItem)
@@ -114,15 +132,17 @@ export default function useAgenda () {
   })
 
   return {
+    agenda,
+    agendaId,
+    agendaItem,
+    agendaItemLastRead,
+    agendaStates,
+    previousAgendaItem,
+    nextAgendaItem,
     getAgenda,
     getAgendaItem,
     getPreviousAgendaItem,
     getNextAgendaItem,
-    hasNewItems,
-    agendaId,
-    agendaItem,
-    agendaItemLastRead,
-    previousAgendaItem,
-    nextAgendaItem
+    hasNewItems
   }
 }
