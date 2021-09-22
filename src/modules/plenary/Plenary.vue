@@ -89,6 +89,7 @@ export default defineComponent({
 
     async function makeTransition (p: Proposal, state: WorkflowState) {
       if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
+      if (state.state === p.state) return // No need to change state then is there?
       await proposalApi.transition(p.pk, state.transition)
     }
 
