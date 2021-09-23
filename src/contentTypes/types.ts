@@ -185,7 +185,7 @@ export interface Organization {
   title: string
   body: string
   login_url: string | null
-  scope: string[]
+  scopes: string[]
 }
 
 export interface User {
