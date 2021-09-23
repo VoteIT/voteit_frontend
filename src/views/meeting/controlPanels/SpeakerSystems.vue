@@ -43,10 +43,10 @@ import { dialogQuery } from '@/utils'
 
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/modules/meetings/useMeeting'
-import useSpeakerLists from '@/composables/meeting/useSpeakerLists'
+import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'
-import UserSearch from '@/components/widgets/UserSearch.vue'
+import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 
 import speakerSystemType, { SpeakerSystem, SpeakerSystemMethod } from '@/contentTypes/speakerSystem'
@@ -62,7 +62,12 @@ const systemIcons = {
 }
 
 export default defineComponent({
-  components: { BtnDropdown, UserSearch, RoleMatrix, SelectVue },
+  components: {
+    BtnDropdown,
+    UserSearch,
+    RoleMatrix,
+    SelectVue
+  },
   name: 'SpeakerSystems',
   path: 'speakers',
   icon: 'mdi-account-voice',

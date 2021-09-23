@@ -9,6 +9,8 @@ export enum ProposalState {
   Unhandled = 'unhandled'
 }
 
+export const DEFAULT_FILTER_STATES = [ProposalState.Published, ProposalState.Voting, ProposalState.Approved]
+
 export default [
   {
     transition: 'publish',

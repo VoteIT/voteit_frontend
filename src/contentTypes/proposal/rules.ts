@@ -7,7 +7,7 @@ import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
 import { AgendaItem, Predicate, Proposal } from '../types'
 import { ProposalState } from './workflowStates'
-import { polls } from '@/composables/meeting/usePolls'
+import { polls } from '@/modules/polls/usePolls'
 
 const isPublished: Predicate = (proposal: Proposal) => {
   return proposal.state === ProposalState.Published

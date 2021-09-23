@@ -2,7 +2,7 @@ import useAuthentication from '@/composables/useAuthentication'
 
 import { agendaItems } from '@/modules/agendas/useAgenda'
 import { meetings } from '@/modules/meetings/useMeetings'
-import useElectoralRegisters from '@/composables/meeting/useElectoralRegisters'
+import useElectoralRegisters from '@/modules/meetings/useElectoralRegisters'
 
 import agendaRules from '../agendaItem/rules'
 import meetingRules from '../meeting/rules'

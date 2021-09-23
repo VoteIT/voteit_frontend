@@ -35,8 +35,8 @@
 <script lang="ts">
 import { computed, defineComponent, provide, reactive, ref, watch } from 'vue'
 
-import ProposalVue from '@/components/widgets/Proposal.vue'
-import useProposals from '@/composables/meeting/useProposals'
+import ProposalVue from '@/modules/proposals/Proposal.vue'
+import useProposals from '@/modules/proposals/useProposals'
 import { LastReadKey } from '@/composables/useUnread'
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 import proposalType from '@/contentTypes/proposal'

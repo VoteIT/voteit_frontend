@@ -25,15 +25,15 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import usePresence from '@/composables/meeting/usePresence'
+import usePresence from '@/modules/presence/usePresence'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import presenceCheckType from '@/contentTypes/presenceCheck'
 
-import Moment from '@/components/widgets/Moment.vue'
-import PresenceCheckControl from '@/components/meeting/PresenceCheckControl.vue'
-import { useI18n } from 'vue-i18n'
+import Moment from '@/components/Moment.vue'
+import PresenceCheckControl from '@/modules/presence/PresenceCheckControl.vue'
 import { ControlPanelComponent } from './types'
 
 export default defineComponent({

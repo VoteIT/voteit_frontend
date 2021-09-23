@@ -1,4 +1,4 @@
-import { reactionButtons } from '@/composables/meeting/useReactions'
+import { reactionButtons } from '@/modules/reactions/useReactions'
 
 import { Predicate } from '../types'
 import { ReactionButton } from '../reactionButton'

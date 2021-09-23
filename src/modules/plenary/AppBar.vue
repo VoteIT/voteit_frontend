@@ -50,7 +50,7 @@ import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import usePlenary from './usePlenary'
-import useProposals from '@/composables/meeting/useProposals'
+import useProposals from '@/modules/proposals/useProposals'
 
 export default defineComponent({
   setup () {

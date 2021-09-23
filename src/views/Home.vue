@@ -58,7 +58,7 @@ import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
-import AddMeetingVue from '@/components/modals/AddMeeting.vue'
+import AddMeetingVue from '@/modules/meetings/AddMeetingModal.vue'
 import Counter from '@/components/examples/Counter.vue'
 import getSchema from '@/components/examples/GetSchema.vue'
 

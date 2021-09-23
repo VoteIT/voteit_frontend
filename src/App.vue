@@ -25,7 +25,7 @@ import useLoader from './composables/useLoader'
 import Alerts from './components/Alerts.vue'
 import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
-import Modal from './components/modals/Modal.vue'
+import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
 
 export default defineComponent({

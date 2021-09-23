@@ -1,7 +1,7 @@
 import useAuthentication from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 import { meetings } from '@/modules/meetings/useMeetings'
-import { currentlySpeaking, speakerLists } from '@/composables/meeting/useSpeakerLists'
+import { currentlySpeaking, speakerLists } from '@/modules/speakerLists/useSpeakerLists'
 
 import { Meeting, Predicate, SpeakerSystemRole } from '../types'
 import meetingRules from '../meeting/rules'

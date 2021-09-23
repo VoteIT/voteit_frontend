@@ -17,7 +17,7 @@ import Tag from './components/Tag.vue'
 import User from './components/User.vue'
 import Dropdown from './components/Dropdown.vue'
 import UserAvatar from './components/UserAvatar.vue'
-import Widget from './components/widgets/Widget.vue'
+import Widget from './components/Widget.vue'
 
 import en from './locales/en.json'
 

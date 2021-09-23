@@ -1,5 +1,5 @@
 import useAuthentication from '@/composables/useAuthentication'
-import { speakerSystems, currentlySpeaking } from '@/composables/meeting/useSpeakerLists'
+import { speakerSystems, currentlySpeaking } from '@/modules/speakerLists/useSpeakerLists'
 
 import { Predicate, SpeakerList } from '../types'
 import speakerSystemRules from '../speakerSystem/rules'

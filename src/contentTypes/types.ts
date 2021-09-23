@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { PollMethodName, PollMethodSettings } from '@/components/pollmethods/types'
+import { PollMethodName, PollMethodSettings } from '@/modules/polls/methods/types'
 import { ChannelsConfig } from '@/utils/types'
 import { PollState } from './poll/workflowStates'
 import { PresenceCheckState } from './presenceCheck/workflowStates'

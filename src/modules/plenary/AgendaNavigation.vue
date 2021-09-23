@@ -30,7 +30,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { AgendaItem } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
 import usePlenary from './usePlenary'
-import useProposals from '@/composables/meeting/useProposals'
+import useProposals from '@/modules/proposals/useProposals'
 
 export default defineComponent({
   setup () {
