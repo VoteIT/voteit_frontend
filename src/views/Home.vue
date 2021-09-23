@@ -37,7 +37,7 @@
           <v-card-text>
             <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
             <v-chip-group>
-              <v-chip v-for="scope in o.scopes" :key="scope">{{ scope }}</v-chip>
+              <v-chip v-for="scope in o.scope" :key="scope">{{ scope }}</v-chip>
             </v-chip-group>
           </v-card-text>
           <v-card-actions v-if="o.login_url">
