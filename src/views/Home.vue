@@ -1,28 +1,31 @@
 <template>
   <v-row class="home" v-if="isAuthenticated">
-    <v-col class="text-center">
-      <h1>{{ t('home.yourMeetings', participatingMeetings.length) }}</h1>
-      <ul v-if="participatingMeetings.length">
-        <li v-for="meeting in participatingMeetings" :key="meeting.pk">
-          <RouterLink :to="`/m/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
-        </li>
-      </ul>
+    <v-col cols="12" sm="6" lg="4">
+      <h1>
+        {{ t('home.yourMeetings', participatingMeetings.length) }}
+      </h1>
+      <v-list v-if="participatingMeetings.length">
+        <v-list-item v-for="meeting in participatingMeetings" :key="meeting.pk" :to="`/m/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
+      </v-list>
       <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
-      <template v-if="otherMeetings.length">
-        <h1>{{ t('join.joinAMeeting', otherMeetings.length) }}</h1>
-        <ul>
-          <li v-for="meeting in otherMeetings" :key="meeting.pk">
-            <RouterLink :to="`/join/${meeting.pk}/${slugify(meeting.title)}`">{{ meeting.title }}</RouterLink>
-          </li>
-        </ul>
-      </template>
       <div v-if="canAdd()">
         <btn icon="mdi-plus" @click="createMeeting()">{{ t('meeting.create') }}</btn>
       </div>
-      <template v-if="debug">
-        <counter :style="{ marginTop: '1.5em' }" />
-        <get-schema/>
-      </template>
+    </v-col>
+    <v-col cols="12" sm="6" lg="4">
+      <h1>
+        {{ t('join.joinAMeeting', otherMeetings.length) }}
+      </h1>
+      <v-list v-if="otherMeetings.length">
+        <v-list-item v-for="meeting in otherMeetings" :key="meeting.pk" :to="`/join/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
+      </v-list>
+      <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
+    </v-col>
+    <v-col cols="12" lg="4" v-if="meetingInvites.length">
+      <h1>
+        {{ t('join.invites', meetingInvites.length) }}
+      </h1>
+      <Invite v-for="inv in meetingInvites" :key="inv.pk" :invite="inv" />
     </v-col>
   </v-row>
   <template v-else>
@@ -50,6 +53,14 @@
       </v-col>
     </v-row>
   </template>
+  <v-row>
+    <v-col class="text-center">
+      <template v-if="debug">
+        <counter class="mt-12 mb-1" />
+        <get-schema/>
+      </template>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -66,10 +77,14 @@ import rules from '@/contentTypes/meeting/rules'
 import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/modules/meetings/useMeetings'
+import useMeetingInvites from '@/modules/meetings/useMeetingInvites'
 import useModal from '@/composables/useModal'
 import useOrganisations from '@/modules/organisations/useOrganisations'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { useTitle } from '@vueuse/core'
+import Invite from '@/modules/meetings/Invite.vue'
+
+const { meetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
 export default defineComponent({
   name: 'Home',
@@ -85,13 +100,18 @@ export default defineComponent({
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
     watch(isAuthenticated, value => {
-      if (value) fetchMeetings()
-      else clearMeetings()
+      if (value) {
+        fetchMeetings()
+        fetchInvites()
+      } else {
+        clearMeetings()
+        clearInvites()
+      }
     })
 
     onBeforeMount(() => {
       fetchOrganisations()
-      if (isAuthenticated.value) loader.call(fetchMeetings)
+      if (isAuthenticated.value) loader.call(fetchMeetings, fetchInvites)
     })
 
     const participatingMeetings = computed(() => {
@@ -114,10 +134,11 @@ export default defineComponent({
 
     return {
       t,
-      participatingMeetings,
+      isAuthenticated,
+      meetingInvites,
       otherMeetings,
       organisations,
-      isAuthenticated,
+      participatingMeetings,
       user,
       ...rules,
 
@@ -129,7 +150,8 @@ export default defineComponent({
   },
   components: {
     Counter,
-    getSchema
+    getSchema,
+    Invite
   }
 })
 </script>

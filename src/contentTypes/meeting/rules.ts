@@ -1,11 +1,12 @@
 import { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 
-import { Meeting, MeetingRole, Predicate } from '../types'
+import { Meeting, Predicate } from '../types'
 import workflowStates, { MeetingState } from './workflowStates'
 
 import useWorkflows from '../useWorkflows'
 import organizationRules from '../organization/rules'
+import { MeetingRole } from '@/modules/meetings/types'
 
 const { hasRole } = useContextRoles('meeting')
 // Import this a bit differently, to avoid cirkular imports

@@ -58,8 +58,9 @@ import useUnread from '@/composables/useUnread'
 
 import proposalType from '@/contentTypes/proposal'
 import discussionRules from '@/contentTypes/discussionPost/rules'
-import { DiscussionPost, MeetingRole, Proposal } from '@/contentTypes/types'
+import { DiscussionPost, Proposal } from '@/contentTypes/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
+import { MeetingRole } from '../meetings/types'
 
 export default defineComponent({
   name: 'Proposal',

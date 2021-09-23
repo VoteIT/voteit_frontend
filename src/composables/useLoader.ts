@@ -5,7 +5,7 @@ import useAuthentication from './useAuthentication'
 
 const initDone = ref(false)
 const initFailed = ref(false)
-let callbacks: CallableFunction[] = []
+let callbacks: (() => Promise<unknown>)[] = []
 
 const { isAuthenticated } = useAuthentication()
 
@@ -13,22 +13,17 @@ const isReady = computed(() => {
   return isAuthenticated.value && socketState.value
 })
 
-watch(isReady, value => {
-  if (value) {
-    Promise.all(
-      callbacks.map(cb => cb())
-    )
-      .then(() => {
-        initDone.value = true
-      })
-      .catch(err => {
-        console.log(err)
-        initFailed.value = true
-      })
-      .finally(() => {
-        callbacks = []
-      })
+watch(isReady, async value => {
+  if (!value) return
+  try {
+    await Promise.all(callbacks.map(cb => cb())) // Why is this needed???
+    // await Promise.all(callbacks) // Shouldn't this work
+    initDone.value = true
+  } catch (err) {
+    console.log(err)
+    initFailed.value = true
   }
+  callbacks = []
 })
 
 export default function useLoader (name: string) {
@@ -38,37 +33,33 @@ export default function useLoader (name: string) {
   function setLoaded (success = true) {
     if (success) {
       initDone.value = true
-      return
+    } else {
+      console.error('Loading failed', name)
+      initFailed.value = true
     }
-    console.error('Loading failed', name)
-    initFailed.value = true
   }
 
-  function call (cb: CallableFunction) {
+  function call (...cbs: (() => Promise<unknown>)[]) {
     // Queue if not initialized.
-    if (initDone.value) {
-      cb()
-    } else {
-      callbacks.push(cb)
-    }
+    cbs.forEach(cb => {
+      if (initDone.value) cb()
+      else callbacks.push(cb)
+    })
   }
 
-  function subscribe (channel: any, uriOrPk: string | number) {
-    // TODO Interface not any ^^ of some kind for channel
-    if (initDone.value) {
-      return channel.subscribe(uriOrPk)
-    } else {
-      return new Promise((resolve, reject) => {
-        callbacks.push(() => {
-          channel.subscribe(uriOrPk, true)
-            .then(resolve)
-            .catch((err: Error) => {
-              console.log('Loading failed', name)
-              reject(err)
-            })
-        })
+  async function subscribe (channel: any, uriOrPk: string | number) {
+    if (initDone.value) return channel.subscribe(uriOrPk)
+    return new Promise<void>((resolve, reject) => {
+      callbacks.push(async () => {
+        try {
+          await channel.subscribe(uriOrPk, true)
+          resolve()
+        } catch (err) {
+          console.log('Loading failed', name)
+          reject(err)
+        }
       })
-    }
+    })
   }
 
   return {

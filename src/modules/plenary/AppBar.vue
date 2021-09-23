@@ -5,12 +5,13 @@
         <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
       </router-link>
     </v-app-bar-title>
-    <v-app-bar-title>
+    <v-app-bar-title class="text-truncate">
       <router-link v-if="agendaItem" :to="agendaItemPath">
         {{ agendaItem.title }}
       </router-link>
     </v-app-bar-title>
-    <div>
+    <v-spacer/>
+    <div class="flex-shrink-0">
       <Menu :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
         <template v-slot:top>
           <v-item-group multiple v-model="stateFilter">

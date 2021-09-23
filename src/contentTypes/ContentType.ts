@@ -15,6 +15,7 @@ interface CType {
 
 export default class ContentType<T, K=number> {
   contentType: CType
+  private _api?: ContentAPI<T, K>
 
   constructor (contentType: CType) {
     this.contentType = contentType
@@ -32,31 +33,29 @@ export default class ContentType<T, K=number> {
     return this.contentType.rules || {}
   }
 
+  public get api () {
+    // Cache an api instance with default settings
+    if (!this._api) this._api = this.getContentApi()
+    return this._api
+  }
+
   getChannel (config?: ChannelConfig): Channel<T> {
-    if (this.contentType.channelName) {
-      return new Channel<T>(this.contentType.channelName, config, this.contentType.hasRoles)
-    }
-    throw new Error(`Channel not configured for Content Type ${this.name}`)
+    if (!this.contentType.channelName) throw new Error(`Channel not configured for Content Type ${this.name}`)
+    return new Channel<T>(this.contentType.channelName, config, this.contentType.hasRoles)
   }
 
   getContentApi (config?: RestApiConfig): ContentAPI<T, K> {
-    if (this.contentType.restEndpoint) {
-      return new ContentAPI<T, K>(this.contentType.restEndpoint, this.contentType.states, config)
-    }
-    throw new Error(`Content Api not configured for Content Type ${this.name}`)
+    if (!this.contentType.restEndpoint) throw new Error(`Content Api not configured for Content Type ${this.name}`)
+    return new ContentAPI<T, K>(this.contentType.restEndpoint, this.contentType.states, config)
   }
 
   useWorkflows () {
-    if (this.contentType.states) {
-      return useWorkflows(this.contentType.states)
-    }
-    throw new Error(`Workflow States not configured for Content Type ${this.name}`)
+    if (!this.contentType.states) throw new Error(`Workflow States not configured for Content Type ${this.name}`)
+    return useWorkflows(this.contentType.states)
   }
 
   useContextRoles () {
-    if (this.contentType.hasRoles && this.contentType.channelName) {
-      return useContextRoles(this.contentType.channelName)
-    }
-    throw new Error(`Context Roles not configured for Content Type ${this.name}`)
+    if (!this.contentType.hasRoles || !this.contentType.channelName) throw new Error(`Context Roles not configured for Content Type ${this.name}`)
+    return useContextRoles(this.contentType.channelName)
   }
 }

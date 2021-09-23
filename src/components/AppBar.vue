@@ -4,13 +4,14 @@
     <v-app-bar-title>
       <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" /></RouterLink>
     </v-app-bar-title>
+    <v-spacer />
     <div>
-      <v-btn append-icon="mdi-chevron-down" class="user-menu" :class="{ open: userMenuOpen }" variant="text" @mousedown.stop @click="userMenuOpen = !userMenuOpen">
+      <v-btn class="user-menu" :class="{ open: userMenuOpen }" variant="text" @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
-        <span class="ml-2">{{ user.first_name || user.username }}</span>
+        <span class="ml-2">{{ user.full_name || user.username }}</span>
       </v-btn>
-      <teleport to="body">
-        <v-sheet id="app-bar-user-menu" ref="userMenuComponent" fixed top="60" right="4" rounded min-width="240" elevation="4" v-if="userMenuOpen">
+      <teleport to="main.v-main">
+        <v-navigation-drawer position="right" v-model="userMenuOpen" disable-resize-watcher temporary>
           <v-list nav density="comfortable">
             <v-list-item>
               <UserAvatar />
@@ -25,11 +26,13 @@
             <v-list-item :href="idHost" prepend-icon="mdi-account">
               {{ t('profile.profile') }}
             </v-list-item>
-            <v-list-item prepend-icon="mdi-logout" @click="logout()">
-              {{ t('auth.logout') }}
-            </v-list-item>
           </v-list>
-        </v-sheet>
+          <template v-slot:append>
+            <v-btn block tile prepend-icon="mdi-logout" @click="logout()">
+              {{ t('auth.logout') }}
+            </v-btn>
+          </template>
+        </v-navigation-drawer>
       </teleport>
     </div>
   </v-app-bar>
@@ -39,7 +42,6 @@
 import { ComponentPublicInstance, computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { onClickOutside } from '@vueuse/core'
 
 import { dialogQuery, toggleNavDrawerEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
@@ -55,10 +57,6 @@ export default defineComponent({
 
     const userMenuOpen = ref(false)
     const userMenuComponent = ref<ComponentPublicInstance | null>(null)
-
-    onClickOutside(userMenuComponent, () => {
-      userMenuOpen.value = false
-    })
 
     async function logout () {
       userMenuOpen.value = false
@@ -92,20 +90,13 @@ export default defineComponent({
 .v-app-bar
   background-color: rgb(var(--v-theme-app-bar)) !important
   color: rgb(var(--v-theme-on-app-bar))
-  > div
-    height: 100%
   .v-app-bar-title
-    flex: 1 0 auto
     img
       width: 64px
       height: auto
       margin: 14px 8px 0
   button.user-menu
     color: rgb(var(--v-theme-on-app-bar))
-    i
-      transition: transform .2s
-    &.open i
-      transform: rotate(180deg)
 
 #app-bar-user-menu
   z-index: 4

@@ -1,4 +1,5 @@
-import { MeetingRole, WorkflowState } from '../types'
+import { MeetingRole } from '@/modules/meetings/types'
+import { WorkflowState } from '../types'
 
 export enum AgendaState {
   Private = 'private',

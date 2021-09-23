@@ -11,6 +11,7 @@ git<template>
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useTitle } from '@vueuse/core'
 
 import { dialogQuery, openAlertEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
@@ -22,8 +23,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRoles } from '@/composables/types'
 
 import meetingType from '@/contentTypes/meeting'
-import { MeetingRole } from '@/contentTypes/types'
-import { useTitle } from '@vueuse/core'
+import { MeetingRole } from './types'
 
 const meetingChannel = meetingType.getChannel()
 

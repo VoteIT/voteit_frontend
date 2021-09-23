@@ -1,11 +1,12 @@
-import { watch, onBeforeMount } from 'vue'
+import { watch, onBeforeMount, onBeforeUnmount } from 'vue'
 
 import Channel from '@/contentTypes/Channel'
 import meetingType from '@/contentTypes/meeting'
 import useMeeting from './useMeeting'
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import useLoader from '@/composables/useLoader'
 import { slugify } from '@/utils'
+import useMeetings from './useMeetings'
 
 const loader = useLoader('useMeetingChannels')
 
@@ -13,21 +14,22 @@ let currentRoleChannel: string | null = null
 const channel = meetingType.getChannel()
 const channels = new Channel() // For dynamic usage
 
-async function leaveRoleChannel () {
+function leaveRoleChannel () {
   if (!currentRoleChannel) return
-  await channels.leave(currentRoleChannel, { leaveDelay: 0 })
+  channels.leave(currentRoleChannel, { leaveDelay: 500 })
   currentRoleChannel = null
 }
 
 export default function useMeetingChannel (init = false) {
-  const { isModerator, meetingId, meeting, fetchMeeting } = useMeeting()
+  const { isModerator, meetingId, meeting } = useMeeting()
+  const { fetchMeeting } = useMeetings()
   const router = useRouter()
 
   async function enterRoleChannel () {
     if (!meetingId.value) return
     const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
     if (channelName === currentRoleChannel) return
-    await leaveRoleChannel()
+    leaveRoleChannel()
     currentRoleChannel = channelName
     await channels.subscribe(channelName)
   }
@@ -46,7 +48,7 @@ export default function useMeetingChannel (init = false) {
       })
       loader.subscribe(channel, meetingId.value)
     })
-    onBeforeRouteLeave(() => {
+    onBeforeUnmount(() => {
       channel.leave(meetingId.value)
       leaveRoleChannel()
     })

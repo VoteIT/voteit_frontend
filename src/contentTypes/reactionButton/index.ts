@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
+import { MeetingRole } from '@/modules/meetings/types'
 import ContentType from '../ContentType'
-import { BaseContent, MeetingRole } from '../types'
+import { BaseContent } from '../types'
 
 export interface ReactionButton extends BaseContent {
   meeting: number

@@ -108,12 +108,17 @@
     "yourMeetings": "Your meeting | Your meetings"
   },
   "join": {
+    "acceptInvite": "Accept invitation",
     "asModerator": "Manage meeting",
-    "asModeratorDescription": "As organization manager, you can join any meeting as moderator. This will make you a visible participant in the meeting.\nDo you want to join as moderator?",
+    "asModeratorDescription": "As an organization manager, you can join any meeting as moderator. This will make you a visible participant in the meeting.\nDo you want to join as moderator?",
+    "invites": "Meeting invitation | Meeting invitations",
     "joinAMeeting": "Join a meeting",
     "meeting": "Join meeting: {title}",
     "noAccess": "You can not join this meeting at this time",
-    "now": "Join now!"
+    "now": "Join now!",
+    "rejectInvite": "Deny",
+    "rejectInviteQuery": "You're about to reject this invitation. The invitation will no longer be usable.\nAre you sure?",
+    "userHasInvites": "You have an invitation to this meeting | You have invitations to this meeting"
   },
   "loader": {
     "loading": "Looting",

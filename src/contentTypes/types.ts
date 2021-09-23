@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 
+import { MeetingRole } from '@/modules/meetings/types'
 import { PollMethodName, PollMethodSettings } from '@/modules/polls/methods/types'
 import { ChannelsConfig } from '@/utils/types'
 import { PollState } from './poll/workflowStates'
@@ -7,14 +8,6 @@ import { PresenceCheckState } from './presenceCheck/workflowStates'
 import { ProposalState } from './proposal/workflowStates'
 import { SpeakerListState } from './speakerList/workflowStates'
 import { UserState } from './user/workflowStates'
-
-export enum MeetingRole {
-  Participant = 'participant',
-  Proposer = 'proposer',
-  Discusser = 'discusser',
-  PotentialVoter = 'potential_voter',
-  Moderator = 'moderator'
-}
 
 export enum SpeakerSystemRole {
   Speaker = 'speaker',

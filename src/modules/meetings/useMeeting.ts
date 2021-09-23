@@ -7,8 +7,9 @@ import useAuthentication from '../../composables/useAuthentication'
 import { meetings } from './useMeetings'
 
 import meetingType from '@/contentTypes/meeting'
-import { Meeting, MeetingRole, User } from '@/contentTypes/types'
+import { Meeting, User } from '@/contentTypes/types'
 import { MeetingRoles } from '../../composables/types'
+import { MeetingRole } from './types'
 
 const FORCE_ROLES_FETCH = false
 
@@ -22,20 +23,6 @@ export default function useMeeting () {
   const meetingRoles = meetingType.useContextRoles()
   const meetingApi = meetingType.getContentApi()
   const { user } = useAuthentication()
-
-  function setMeeting (meeting: Meeting) {
-    meetings.set(meeting.pk, meeting)
-    if (meeting.current_user_roles && user.value) {
-      meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
-    }
-  }
-
-  async function fetchMeeting (pk: number) {
-    const { data } = await meetingApi.retrieve(pk)
-    if (!data.current_user_roles) return false
-    setMeeting(data)
-    return true
-  }
 
   interface UserListParams {
     context: number
@@ -117,10 +104,8 @@ export default function useMeeting () {
     meetingPath,
     meetingApi,
     userRoles,
-    fetchMeeting,
     getUser,
     hasRole,
-    setMeeting,
     fetchParticipants,
     getParticipants
   }

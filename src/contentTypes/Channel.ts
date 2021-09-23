@@ -150,14 +150,12 @@ export default class Channel<T> {
   }
 
   public async subscribe (uriOrPk: string | number, fail = false) {
-    if (uriOrPk) {
-      const uri = this.getUri(uriOrPk)
-      clearTimeout(leaveTimeouts.get(uri))
-      if (subscriptions.has(uri)) return
-      subscriptions.add(uri)
-      if (socket.isOpen) return subscribeChannel(uri)
-      if (fail) throw new Error('Socket closed. Cannot subscribe.')
-    }
+    const uri = this.getUri(uriOrPk)
+    clearTimeout(leaveTimeouts.get(uri))
+    if (subscriptions.has(uri)) return
+    subscriptions.add(uri)
+    if (socket.isOpen) return subscribeChannel(uri)
+    if (fail) throw new Error('Socket closed. Cannot subscribe.')
   }
 
   private performLeave (uri: string): void {
@@ -176,10 +174,6 @@ export default class Channel<T> {
   public async leave (uri: string, config?: ChannelConfig): Promise<void>
   public async leave (pk: number, config?: ChannelConfig): Promise<void>
   public async leave (uriOrPk: string | number, config?: ChannelConfig): Promise<void> {
-    if (!uriOrPk) {
-      console.error(uriOrPk, config)
-      throw new Error('Channel leave function requires channel name or primary key')
-    }
     const myConfig: ChannelConfig = { ...this.config, ...(config || {}) }
     const uri = this.getUri(uriOrPk)
     clearTimeout(leaveTimeouts.get(uri))

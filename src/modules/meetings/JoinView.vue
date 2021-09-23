@@ -2,8 +2,7 @@
   <v-row id="join-meeting" v-if="meeting">
     <v-col>
       <h1>{{ t('join.meeting', meeting) }}</h1>
-      <Richtext :object="meeting" />
-      <p/>
+      <Richtext :object="meeting" class="mb-8" />
       <div class="btn-controls" v-if="canBecomeModerator" @click="joinAsModerator()">
         <v-btn color="warning" prepend-icon="mdi-gavel">
           {{ t('join.asModerator') }}
@@ -26,26 +25,28 @@ import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
 import { user } from '@/composables/useAuthentication'
-import useMeeting from '@/modules/meetings/useMeeting'
 
 import Richtext from '@/components/Richtext.vue'
 import accessPolicies from '@/modules/meetings/accessPolicies'
 import accessPolicyType from '@/contentTypes/accessPolicy'
 import meetingType from '@/contentTypes/meeting'
 import organizationRules from '@/contentTypes/organization/rules'
-import { AccessPolicy, MeetingRole } from '@/contentTypes/types'
+import { AccessPolicy } from '@/contentTypes/types'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
+import { MeetingRole } from './types'
+import useMeeting from './useMeeting'
+import useMeetings from './useMeetings'
 
 export default defineComponent({
   components: { Richtext },
   name: 'JoinMeeting',
   setup () {
     const { t } = useI18n()
-    const { meeting, meetingId, meetingPath, meetingApi, setMeeting } = useMeeting()
+    const { meeting, meetingId, meetingPath } = useMeeting()
+    const { fetchMeeting } = useMeetings()
     const loader = useLoader('JoinMeeting')
     const router = useRouter()
-    const policyApi = accessPolicyType.getContentApi()
     const policies = ref<AccessPolicy[]>([])
 
     const policyComponents = computed(() => {
@@ -68,37 +69,31 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      loader.call(async () => {
-        try {
-          const { data } = await meetingApi.retrieve(meetingId.value)
-          setMeeting(data)
-        } catch {
-          console.warn(`Failed fetching meeting ${meetingId.value}`)
-          router.push('/')
+      loader.call(
+        async () => {
+          try {
+            await fetchMeeting(meetingId.value)
+          } catch {
+            console.warn(`Failed fetching meeting ${meetingId.value}`)
+            router.push('/')
+          }
+        },
+        async () => {
+          const { data } = await accessPolicyType.api.retrieve(meetingId.value)
+          policies.value = data.policies
         }
-      })
-      loader.call(async () => {
-        const { data } = await policyApi.retrieve(meetingId.value)
-        policies.value = data.policies
-      })
+      )
     })
 
     return {
       t,
-      joinAsModerator,
       meeting,
       policies,
       policyComponents,
       ...organizationRules,
-      canBecomeModerator
+      canBecomeModerator,
+      joinAsModerator
     }
   }
 })
 </script>
-
-<style lang="sass">
-#join-meeting
-  text-align: center
-  .btn-controls
-    justify-content: center
-</style>
