@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, provide, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import useProposals from '@/modules/proposals/useProposals'
@@ -45,7 +46,6 @@ import proposalStates, { ProposalState } from '@/contentTypes/proposal/workflowS
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 
 import usePlenary from './usePlenary'
-import { useI18n } from 'vue-i18n'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
@@ -56,7 +56,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { agendaId, agendaItem } = useAgendaItem()
-    const { getAgendaProposals } = useProposals()
+    const { getAgendaProposals, getProposal } = useProposals()
     const proposalApi = proposalType.getContentApi()
     const { filterProposalStates } = usePlenary()
 
@@ -72,8 +72,7 @@ export default defineComponent({
     }
 
     const selected = computed(() => {
-      if (!agendaItem.value) return []
-      return getAgendaProposals(agendaId.value, p => selectedProposalIds.includes(p.pk))
+      return selectedProposalIds.map(pk => getProposal(pk)).filter(Boolean) as Proposal[]
     })
     const pool = computed(() => getAgendaProposals(
       agendaId.value,
