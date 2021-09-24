@@ -183,11 +183,12 @@ export interface Organization {
 
 export interface User {
   pk: number
-  state: UserState
-  userid: string | null
-  full_name: string
   first_name: string
+  full_name: string
+  img_url: string | null
   last_name: string
   organisation: number
   organisation_roles: OrganizationRole[]
+  state: UserState
+  userid: string | null
 }

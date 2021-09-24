@@ -1,5 +1,5 @@
 <template>
-  <v-avatar :size="size" :color="color">
+  <v-avatar :size="size" :color="color" :image="image">
     {{ initials }}
   </v-avatar>
 </template>
@@ -27,6 +27,7 @@ export default defineComponent({
     const user = computed(() => props.pk ? getUser(props.pk) : auth.user.value)
 
     const initials = computed(() => {
+      if (image.value) return
       if (!user.value) return '?'
       const { first_name, last_name } = user.value
       if (first_name && !last_name) return first_name.slice(0, 2).toUpperCase()
@@ -35,8 +36,14 @@ export default defineComponent({
       return (first_name[0] + last_name[0]).toUpperCase()
     })
 
+    const image = computed(() => {
+      if (!user.value) return
+      return user.value.img_url ?? undefined // Change null to undefined
+    })
+
     return {
-      initials
+      initials,
+      image
     }
   }
 })

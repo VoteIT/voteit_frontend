@@ -6,6 +6,8 @@ import { Poll, PollStatus, Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 import { dateify, mapFilter } from '@/utils'
 import Channel from '@/contentTypes/Channel'
+import { PollState } from '@/contentTypes/poll/workflowStates'
+import { PollMethod, PollMethodName } from './methods/types'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const userVotes = reactive<Map<number, Vote>>(new Map())
@@ -54,6 +56,51 @@ agendaDeletedEvent.on(pk => {
   }
 })
 
+const pollMethods: PollMethod[] = [
+  {
+    name: PollMethodName.CombinedSimple,
+    title: 'Simple majority',
+    proposalsMin: 1,
+    quickStart: true
+  },
+  {
+    name: PollMethodName.Schulze,
+    title: 'Schulze',
+    proposalsMin: 3,
+    quickStart: true
+  },
+  {
+    name: PollMethodName.RepeatedSchulze,
+    title: 'Repeated Schulze',
+    multipleWinners: true,
+    proposalsMin: 3,
+    winnersMin: 2,
+    initialSettings: {
+      winners: 2
+    }
+  },
+  {
+    name: PollMethodName.ScottishSTV,
+    title: 'Scottish STV',
+    multipleWinners: true,
+    proposalsMin: 3,
+    winnersMin: 2,
+    losersMin: 1,
+    initialSettings: {
+      winners: 2,
+      allow_random: true
+    }
+  },
+  {
+    name: PollMethodName.InstantRunoff,
+    title: 'Instant-Runoff Voting',
+    proposalsMin: 3,
+    initialSettings: {
+      allow_random: true
+    }
+  }
+]
+
 export default function usePolls () {
   function getPolls (meeting: number, state?: string) {
     return [...mapFilter(
@@ -62,7 +109,7 @@ export default function usePolls () {
     )]
   }
 
-  function getAiPolls (agendaItem: number, state?: string) {
+  function getAiPolls (agendaItem: number, state?: PollState) {
     return [...mapFilter(
       polls,
       p => p.agenda_item === agendaItem && (!state || p.state === state)
@@ -71,6 +118,19 @@ export default function usePolls () {
 
   function getPoll (pk: number) {
     return polls.get(pk)
+  }
+
+  function availableMethodFilter (method: PollMethod, proposalCount: number) {
+    if (method.proposalsMin && proposalCount < method.proposalsMin) return false
+    if (method.proposalsMax && proposalCount > method.proposalsMax) return false
+    return true
+}
+
+  function getPollMethods (proposalCount?: number, annotateDisabled = false) {
+    if (proposalCount === undefined) return pollMethods
+    // Annotate only
+    if (annotateDisabled) return pollMethods.map(method => ({ ...method, disabled: !availableMethodFilter(method, proposalCount) }))
+    return pollMethods.filter(method => availableMethodFilter(method, proposalCount))
   }
 
   function getPollStatus (pk: number) {
@@ -87,6 +147,7 @@ export default function usePolls () {
     getPolls,
     getAiPolls,
     getPoll,
+    getPollMethods,
     getPollStatus,
     getUserVote
   }

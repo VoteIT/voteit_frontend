@@ -71,11 +71,11 @@ import SchemaForm from '@/components/inputs/SchemaForm.vue'
 
 import pollType from '@/contentTypes/poll'
 import { ProposalState } from '@/contentTypes/proposal/workflowStates'
-import { polls } from '@/modules/polls/usePolls'
+import usePolls, { polls } from '@/modules/polls/usePolls'
 import { InputType } from '@/components/inputs/types'
 
 import { pollMethods as implementedMethods, pollSettings } from './methods'
-import { PollStartData, PollMethod, pollMethods, PollMethodSettings } from './methods/types'
+import { PollStartData, PollMethod, PollMethodSettings } from './methods/types'
 import methodSchemas from './methods/schemas'
 
 export default defineComponent({
@@ -89,6 +89,7 @@ export default defineComponent({
     const router = useRouter()
     const pollAPI = pollType.getContentApi()
     const proposals = useProposals()
+    const { getPollMethods } = usePolls()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
     const { meetingPath, meetingId } = useMeeting()
     const { alert } = useAlert()
@@ -119,20 +120,8 @@ export default defineComponent({
       }
     }
 
-    function methodFilter (method: PollMethod): boolean {
-      const pCount = selectedProposals.value.length
-      if (method.proposalsMin && pCount < method.proposalsMin) {
-        return false
-      }
-      if (method.proposalsMax && pCount > method.proposalsMax) {
-        return false
-      }
-      return true
-    }
     const pickMethod = ref(false)
-    const availableMethods = computed(() => {
-      return pollMethods.filter(methodFilter)
-    })
+    const availableMethods = computed(() => getPollMethods(selectedProposals.value.length))
 
     const methodSelected = ref<PollMethod | null>(null)
     const methodSettings = ref<PollMethodSettings | null>(null)

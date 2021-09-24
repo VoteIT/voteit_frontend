@@ -115,7 +115,7 @@ export default defineComponent({
     function getSystemMenu (s: SpeakerSystem): MenuItem[] {
       if (speakerSystemType.rules.canDelete(s)) {
         return [{
-          text: t('delete'),
+          title: t('delete'),
           icon: 'mdi-pencil',
           onClick: async () => { deleteSystem(s) },
           color: ThemeColor.Warning

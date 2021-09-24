@@ -22,6 +22,7 @@ import usePolls from '@/modules/polls/usePolls'
 import useProposals from '@/modules/proposals/useProposals'
 import MenuTree from '@/components/MenuTree.vue'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
+import { PollState } from '@/contentTypes/poll/workflowStates'
 
 export default defineComponent({
   name: 'Agenda',
@@ -98,7 +99,7 @@ export default defineComponent({
       return getAiType(s.state).map(ai => ({
           title: ai.title,
           to: getAiPath(ai),
-          icons: getAiPolls(ai.pk, 'ongoing').length ? ['mdi-star-outline'] : [],
+          icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
           count: getAgendaProposals(ai.pk).length || undefined,
           hasNewItems: hasNewItems(ai)
         })

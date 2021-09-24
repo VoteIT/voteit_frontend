@@ -118,14 +118,14 @@ export default defineComponent({
       const items: MenuItem[] = []
       if (proposalType.rules.canChange(props.p)) {
         items.push({
-          text: t('edit'),
+          title: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
       if (proposalType.rules.canRetract(props.p)) {
         items.push({
-          text: t('proposal.retract'),
+          title: t('proposal.retract'),
           icon: 'mdi-undo',
           onClick: retract,
           color: ThemeColor.Warning
@@ -133,7 +133,7 @@ export default defineComponent({
       }
       if (proposalType.rules.canDelete(props.p)) {
         items.push({
-          text: t('delete'),
+          title: t('delete'),
           icon: 'mdi-delete',
           onClick: queryDelete,
           color: ThemeColor.Warning

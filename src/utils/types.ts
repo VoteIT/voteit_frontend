@@ -77,10 +77,15 @@ export enum ThemeColor {
 }
 
 interface MenuItemBase {
-  text: string
+  title: string
+  subtitle?: string
   icon?: string
   disabled?: boolean
   color?: ThemeColor
+}
+
+interface MenuSubheader {
+  subheader: string
 }
 
 export interface MenuItemTo extends MenuItemBase {
@@ -91,7 +96,7 @@ export interface MenuItemOnClick extends MenuItemBase {
   onClick: () => Promise<void>
 }
 
-export type MenuItem = '---' | MenuItemOnClick | MenuItemTo
+export type MenuItem = '---' | MenuItemOnClick | MenuItemTo | MenuSubheader
 
 export interface TreeMenuLink {
   title: string

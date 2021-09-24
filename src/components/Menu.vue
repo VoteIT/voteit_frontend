@@ -9,9 +9,10 @@
         <slot name="top"/>
         <template v-for="(item, i) in items" :key="i">
           <v-divider v-if="item === '---'" />
-          <v-list-item v-else :prepend-icon="item.icon" :color="item.color" :disabled="item.disabled || working" @click="clickItem(item)">
-            {{ item.text }}
-          </v-list-item>
+          <v-list-subheader v-else-if="item.subheader">
+            {{ item.subheader }}
+          </v-list-subheader>
+          <v-list-item v-else :prepend-icon="item.icon" :color="item.color" :disabled="item.disabled || working" @click="clickItem(item)" :title="item.title" :subtitle="item.subtitle" />
         </template>
         <template v-if="transitionsAvailable">
           <v-divider v-if="items.length || $slots.top" />

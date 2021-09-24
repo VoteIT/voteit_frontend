@@ -55,7 +55,7 @@ export default defineComponent({
       if (!meeting.value || !pollType.rules.canAdd(meeting.value)) return []
       return [{
         icon: 'mdi-star',
-        text: t('poll.new'),
+        title: t('poll.new'),
         to: meetingPath.value + '/polls/new'
       }]
     })

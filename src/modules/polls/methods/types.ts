@@ -118,51 +118,10 @@ export interface PollMethod {
   winnersMin?: number
   losersMin?: number
   initialSettings?: PollMethodSettings
-  settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings
+  settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings,
+  disabled?: boolean, // Annotated in getPollMethods(proposalCount)
+  quickStart?: boolean // Available for quick start, i.e. in plenary view
 }
-
-export const pollMethods: PollMethod[] = [
-  {
-    name: PollMethodName.CombinedSimple,
-    title: 'Simple majority',
-    proposalsMin: 1
-  },
-  {
-    name: PollMethodName.Schulze,
-    title: 'Schulze',
-    proposalsMin: 3
-  },
-  {
-    name: PollMethodName.RepeatedSchulze,
-    title: 'Repeated Schulze',
-    multipleWinners: true,
-    proposalsMin: 3,
-    winnersMin: 2,
-    initialSettings: {
-      winners: 2
-    }
-  },
-  {
-    name: PollMethodName.ScottishSTV,
-    title: 'Scottish STV',
-    multipleWinners: true,
-    proposalsMin: 3,
-    winnersMin: 2,
-    losersMin: 1,
-    initialSettings: {
-      winners: 2,
-      allow_random: true
-    }
-  },
-  {
-    name: PollMethodName.InstantRunoff,
-    title: 'Instant-Runoff Voting',
-    proposalsMin: 3,
-    initialSettings: {
-      allow_random: true
-    }
-  }
-]
 
 /*
  * Post data sent to API

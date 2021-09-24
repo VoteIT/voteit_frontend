@@ -52,7 +52,7 @@ export default defineComponent({
     const menuItems = computed<MenuItem[]>(() => {
       if (!meetingType.rules.canChange(meeting.value)) return []
       return [{
-        text: t('edit'),
+        title: t('edit'),
         icon: 'mdi-pencil',
         onClick: async () => { editing.value = true }
       }]

@@ -1,5 +1,5 @@
 <template>
-  <v-row class="home" v-if="isAuthenticated">
+  <v-row class="home mt-6" v-if="isAuthenticated">
     <v-col cols="12" sm="6" lg="4">
       <h1>
         {{ t('home.yourMeetings', participatingMeetings.length) }}

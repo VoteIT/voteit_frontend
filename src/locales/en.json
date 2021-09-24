@@ -75,7 +75,8 @@
   "auth": {
     "loggedInAs": "Logged in as {username}",
     "logout": "Log out",
-    "logoutPrompt": "You're about to log out.\nAre you sure?"
+    "logoutPrompt": "You're about to log out.\nAre you sure?",
+    "manageAccount": "Manage account"
   },
   "content": {
     "addName": "Add {name}",
@@ -217,10 +218,13 @@
     }
   },
   "plenary": {
-    "view": "Plenary view",
-    "noProposalsInFilter": "No proposals",
     "hintModifyFilter": "Try selecting more proposal states in filter menu.",
-    "selectProposals": "Select proposals"
+    "noProposalsInFilter": "No proposals",
+    "ongoingPolls": "Ongoing polls",
+    "selectMinProposals": "Select at least one proposal | Select at least {min} proposals",
+    "selectProposals": "Select proposals",
+    "startPoll": "Start poll",
+    "view": "Plenary view"
   },
   "presence": {
     "closeCheck": "Close presence check",

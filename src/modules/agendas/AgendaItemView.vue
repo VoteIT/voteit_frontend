@@ -215,19 +215,19 @@ export default defineComponent({
       const items: MenuItem[] = []
       if (pollType.rules.canAdd(agendaItem.value)) {
         items.push({
-          text: t('poll.new'),
+          title: t('poll.new'),
           icon: 'mdi-star',
           to: `${meetingPath.value}/polls/new/${agendaId.value}`
         })
       }
       if (agendaItemType.rules.canChange(agendaItem.value)) {
         items.push({
-          text: t('edit'),
+          title: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
         items.push({
-          text: t('plenary.view'),
+          title: t('plenary.view'),
           icon: 'mdi-gavel',
           to: `/p/${meetingId.value}/${agendaId.value}`
         })
@@ -237,7 +237,7 @@ export default defineComponent({
         items.push('---')
         for (const system of speakerSystems) {
           items.push({
-            text: t('speaker.manageSystem', system as any),
+            title: t('speaker.manageSystem', system as any),
             icon: 'mdi-bullhorn',
             to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
           })

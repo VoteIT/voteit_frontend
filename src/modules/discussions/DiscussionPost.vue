@@ -66,14 +66,14 @@ export default defineComponent({
       const menu: MenuItem[] = []
       if (canChange(props.p)) {
         menu.push({
-          text: t('edit'),
+          title: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
       if (canDelete(props.p)) {
         menu.push({
-          text: t('delete'),
+          title: t('delete'),
           icon: 'mdi-delete',
           color: ThemeColor.Warning,
           onClick: queryDelete

@@ -176,14 +176,14 @@ export default defineComponent({
       const menu: MenuItem[] = []
       if (speakerListType.rules.canActivate(list)) {
         menu.push({
-          text: t('speaker.setActiveList'),
+          title: t('speaker.setActiveList'),
           icon: 'mdi-toggle-switch-off',
           onClick: async () => speakers.setActiveList(list)
         })
       }
       if (speakerListType.rules.canDelete(list)) {
         menu.push({
-          text: t('delete'),
+          title: t('delete'),
           icon: 'mdi-delete',
           onClick: () => deleteList(list),
           color: ThemeColor.Warning

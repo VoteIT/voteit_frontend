@@ -14,23 +14,24 @@
         <v-navigation-drawer position="right" v-model="userMenuOpen" disable-resize-watcher temporary>
           <v-list nav density="comfortable">
             <v-list-item>
-              <UserAvatar />
+              <UserAvatar size="large" />
             </v-list-item>
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="text-h6">{{ user.full_name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ user.username }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-divider />
-            <v-list-item :href="idHost" prepend-icon="mdi-account">
+            <v-divider class="mb-2 mt-2" />
+            <v-list-item :href="idHost" prepend-icon="mdi-account" disabled>
               {{ t('profile.profile') }}
             </v-list-item>
           </v-list>
           <template v-slot:append>
-            <v-btn block tile prepend-icon="mdi-logout" @click="logout()">
-              {{ t('auth.logout') }}
-            </v-btn>
+            <v-list nav density="comfortable">
+              <v-list-item prepend-icon="mdi-account" :href="idHost" :title="t('auth.manageAccount')" />
+              <v-list-item prepend-icon="mdi-logout" @click="logout()" :title="t('auth.logout')" />
+            </v-list>
           </template>
         </v-navigation-drawer>
       </teleport>
@@ -97,6 +98,8 @@ export default defineComponent({
       margin: 14px 8px 0
   button.user-menu
     color: rgb(var(--v-theme-on-app-bar))
+  .v-avatar
+    background: none
 
 #app-bar-user-menu
   z-index: 4
