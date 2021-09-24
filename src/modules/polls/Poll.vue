@@ -63,8 +63,7 @@ import Proposal from '@/modules/proposals/Proposal.vue'
 
 import { pollResults } from './methods'
 import pollType from '@/contentTypes/poll'
-import { Poll } from '@/contentTypes/types'
-import { PollState } from '@/contentTypes/poll/workflowStates'
+import { Poll, PollState } from './types'
 import { useI18n } from 'vue-i18n'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { slugify } from '@/utils'
@@ -122,19 +121,19 @@ export default defineComponent({
     const userVote = computed(() => getUserVote(props.poll))
 
     return {
+      t,
       pollPath,
       pollType,
       ...pollType.rules,
-      vote,
-      t,
       resultComponent,
-      getProposal,
       pollStatus,
       isFinished,
       isOngoing,
       userVote,
+      following,
       follow,
-      following
+      getProposal,
+      vote
     }
   }
 })

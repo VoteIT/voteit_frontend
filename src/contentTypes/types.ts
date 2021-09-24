@@ -3,7 +3,6 @@
 import { MeetingRole } from '@/modules/meetings/types'
 import { PollMethodName, PollMethodSettings } from '@/modules/polls/methods/types'
 import { ChannelsConfig } from '@/utils/types'
-import { PollState } from './poll/workflowStates'
 import { PresenceCheckState } from './presenceCheck/workflowStates'
 import { ProposalState } from './proposal/workflowStates'
 import { SpeakerListState } from './speakerList/workflowStates'
@@ -68,25 +67,6 @@ export interface Proposal extends BaseContent {
   created: string | Date
   prop_id: string
   tags: string[]
-}
-
-export interface Poll extends BaseContent {
-  state: PollState
-  agenda_item: number
-  meeting: number
-  method_name: PollMethodName
-  body: string | null
-  electoral_register?: number
-  initial_electoral_register?: number
-  proposals: number[]
-  result: object | null // TODO
-  settings: PollMethodSettings | null
-}
-
-export interface PollStatus {
-  pk: number
-  voted: number
-  total: number
 }
 
 export interface DiscussionPost {

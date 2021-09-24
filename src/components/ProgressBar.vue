@@ -40,7 +40,7 @@ export default defineComponent({
       if (props.text) return props.text
       if (disabled.value) return
       if (props.absolute) return `${props.value} / ${props.total}`
-      return Math.floor(percentage.value * 100) + ' %'
+      return `${Math.floor(percentage.value)} %`
     })
 
     return {
@@ -58,6 +58,7 @@ export default defineComponent({
   .bar
     margin: .5em 0
     background-color: rgb(var(--v-theme-on-background))
+    overflow: hidden
   .progress
     box-sizing: border-box
     background-color: rgb(var(--v-theme-success))

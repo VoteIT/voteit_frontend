@@ -16,6 +16,7 @@ interface CType {
 export default class ContentType<T, K=number> {
   contentType: CType
   private _api?: ContentAPI<T, K>
+  private _channel?: Channel<T>
 
   constructor (contentType: CType) {
     this.contentType = contentType
@@ -37,6 +38,12 @@ export default class ContentType<T, K=number> {
     // Cache an api instance with default settings
     if (!this._api) this._api = this.getContentApi()
     return this._api
+  }
+
+  public get channel () {
+    // Cache a channel instance with default settings
+    if (!this._channel) this._channel = this.getChannel()
+    return this._channel
   }
 
   getChannel (config?: ChannelConfig): Channel<T> {

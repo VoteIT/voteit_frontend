@@ -1,7 +1,7 @@
 <template>
   <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @mousedown.self="dismiss">
     <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
-      <v-btn icon="mdi-close" size="large" class="closer" variant="text" @click="dismiss" v-show="modal.dismissable" />
+      <v-btn icon="mdi-close" size="large" class="closer" variant="text" @click="dismiss()" v-show="modal.dismissable" />
       <header v-if="modal.title">
         <h1>{{ modal.title }}</h1>
       </header>
@@ -103,6 +103,8 @@ export default defineComponent({
   overflow-y: auto
   border-radius: 3px
   overflow-x: hidden
+  display: flex
+  flex-flow: column
 
   .closer
     position: absolute
@@ -112,8 +114,12 @@ export default defineComponent({
   header,
   main
     padding: 1rem
+  main
+    flex-grow: 1
   header
     border-bottom: 2px solid rgb(var(--v-border-color))
     .meta
       color: rgb(var(--v-theme-secondary))
+  .actions
+    padding: .6rem
 </style>

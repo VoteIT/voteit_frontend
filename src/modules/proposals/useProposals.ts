@@ -4,9 +4,10 @@ import { dateify, orderBy } from '@/utils'
 
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
-import { Poll, Proposal } from '@/contentTypes/types'
+import { Proposal } from '@/contentTypes/types'
 import { DEFAULT_FILTER_STATES } from '@/contentTypes/proposal/workflowStates'
 import { agendaDeletedEvent, agendaItems } from '@/modules/agendas/useAgenda'
+import { Poll } from '../polls/types'
 
 type ProposalFilter = (p: Proposal) => boolean
 

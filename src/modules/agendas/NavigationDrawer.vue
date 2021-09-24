@@ -22,7 +22,7 @@ import usePolls from '@/modules/polls/usePolls'
 import useProposals from '@/modules/proposals/useProposals'
 import MenuTree from '@/components/MenuTree.vue'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
-import { PollState } from '@/contentTypes/poll/workflowStates'
+import { PollState } from '../polls/types'
 
 export default defineComponent({
   name: 'Agenda',

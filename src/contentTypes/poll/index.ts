@@ -1,5 +1,5 @@
+import { Poll } from '@/modules/polls/types'
 import ContentType from '../ContentType'
-import { Poll } from '../types'
 
 import rules from './rules'
 import workflowStates from './workflowStates'

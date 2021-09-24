@@ -44,18 +44,23 @@
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { toggleNavDrawerEvent } from '@/utils'
+import { openModalEvent, toggleNavDrawerEvent } from '@/utils'
 import workflowStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
 
 import useAgenda from '@/modules/agendas/useAgenda'
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useMeeting from '@/modules/meetings/useMeeting'
+import pollType from '@/contentTypes/poll'
 
 import usePlenary from './usePlenary'
 import useProposals from '@/modules/proposals/useProposals'
 import { MenuItem } from '@/utils/types'
 import usePolls from '../polls/usePolls'
-import { PollState } from '@/contentTypes/poll/workflowStates'
+import { PollState } from '../polls/types'
+import PollModal from './PollModal.vue'
+import { WorkflowState } from '@/contentTypes/types'
+
+const { getState } = pollType.useWorkflows()
 
 export default defineComponent({
   setup () {
@@ -78,20 +83,27 @@ export default defineComponent({
       }))
     })
 
-    const ongoingPollMenu = computed<MenuItem[]>(() => {
-      return getAiPolls(agendaId.value, PollState.Ongoing)
+    function pollStateToMenu (state: PollState): MenuItem[] {
+      const wfState = getState(state) as WorkflowState
+      return getAiPolls(agendaId.value, state)
         .map(poll => ({
+          icon: wfState.icon,
           title: poll.title,
           subtitle: t(`poll.method.${poll.method_name}`),
-          onClick: async () => {}
+          onClick: async () => openModalEvent.emit({
+            title: poll.title,
+            component: PollModal,
+            data: poll
+          })
         }))
-    })
+    }
 
     const pollMethodMenu = computed<MenuItem[]>(() => {
       const pollMethods = getPollMethods(selectedProposals.value.length, true)
         .filter(method => method.quickStart)
       return pollMethods.map(method => {
         return {
+          icon: 'mdi-vote',
           title: t(`poll.method.${method.name}`),
           subtitle: method.disabled ? t('plenary.selectMinProposals', { min: method.proposalsMin }, method.proposalsMin ?? 1) : undefined,
           onClick: async () => {},
@@ -101,13 +113,14 @@ export default defineComponent({
     })
 
     const pollMenu = computed<MenuItem[]>(() => {
-      // {{ t('workflowState.ongoing') }}
       return [
         { subheader: t('plenary.startPoll') },
         ...pollMethodMenu.value,
         '---',
         { subheader: t('plenary.ongoingPolls') },
-        ...ongoingPollMenu.value
+        ...pollStateToMenu(PollState.Ongoing),
+        { subheader: t('plenary.finishedPolls') },
+        ...pollStateToMenu(PollState.Finished)
       ]
     })
 

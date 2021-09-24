@@ -22,8 +22,9 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalComponent from '@/modules/proposals/Proposal.vue'
 
 import { CombinedSimpleVote, SimpleChoice, simpleIcons } from './types'
-import { Poll, Proposal } from '@/contentTypes/types'
+import { Proposal } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
+import { Poll } from '../types'
 
 interface Option {
   value: SimpleChoice

@@ -1,50 +1,41 @@
 import { MeetingRole } from '@/modules/meetings/types'
+import { PollState, PollTransition } from '@/modules/polls/types'
 import { WorkflowState } from '../types'
-
-export enum PollState {
-  Private = 'private',
-  Upcoming = 'upcoming',
-  Ongoing = 'ongoing',
-  Closed = 'closed',
-  Finished = 'finished',
-  Canceled = 'canceled',
-  Failed = 'failed'
-}
 
 export default [
   {
-    transition: 'unpublish',
+    transition: PollTransition.Unpublish,
     icon: 'mdi-eye-off',
     state: PollState.Private,
     requiresRole: MeetingRole.Moderator,
     priority: 4
   },
   {
-    transition: 'upcoming',
+    transition: PollTransition.Upcoming,
     icon: 'mdi-progress-clock',
     state: PollState.Upcoming,
     priority: 2
   },
   {
-    transition: 'ongoing',
+    transition: PollTransition.Ongoing,
     icon: 'mdi-play-circle',
     state: PollState.Ongoing,
     priority: 1
   },
   {
-    transition: 'close',
+    transition: PollTransition.Close,
     icon: 'mdi-gavel',
     state: PollState.Closed
   },
   {
-    transition: 'finish',
+    transition: PollTransition.Finish,
     icon: 'mdi-check',
     state: PollState.Finished,
     isFinal: true,
     priority: 3
   },
   {
-    transition: 'cancel',
+    transition: PollTransition.Cancel,
     icon: 'mdi-cancel',
     state: PollState.Canceled,
     isFinal: true

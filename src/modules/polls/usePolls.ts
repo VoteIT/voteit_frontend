@@ -2,11 +2,11 @@ import { reactive } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
-import { Poll, PollStatus, Vote } from '@/contentTypes/types'
+import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 import { dateify, mapFilter } from '@/utils'
 import Channel from '@/contentTypes/Channel'
-import { PollState } from '@/contentTypes/poll/workflowStates'
+import { Poll, PollState, PollStatus } from './types'
 import { PollMethod, PollMethodName } from './methods/types'
 
 export const polls = reactive<Map<number, Poll>>(new Map())

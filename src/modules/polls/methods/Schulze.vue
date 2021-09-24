@@ -20,8 +20,9 @@ import { computed, defineComponent, PropType, reactive, watch } from 'vue'
 import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 
-import { Poll, Proposal } from '@/contentTypes/types'
+import { Proposal } from '@/contentTypes/types'
 import { SchulzeVote } from './types'
+import { Poll } from '../types'
 
 export default defineComponent({
   name: 'SchulzePoll',

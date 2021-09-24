@@ -63,7 +63,8 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 
 import { RankedVote } from './types'
-import { Poll, Proposal } from '@/contentTypes/types'
+import { Proposal } from '@/contentTypes/types'
+import { Poll } from '../types'
 
 export default defineComponent({
   name: 'ScottishSTVPoll',
