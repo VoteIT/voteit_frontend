@@ -2,7 +2,9 @@
   <main>
     <form @submit.prevent="addMeeting()">
       <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" hint="At least 5 characters" />
-      <input type="checkbox" id="meeting_public" v-model="formData.public" /> <label for="meeting_public">{{ t('meeting.public') }}</label><br/>
+      <div>
+        <Switch type="checkbox" id="meeting_public" v-model="formData.public" :label="t('meeting.public')" />
+      </div>
       <Btn icon="mdi-send" :disabled="disabled" @click="addMeeting()">{{ t('create') }}</Btn>
     </form>
   </main>

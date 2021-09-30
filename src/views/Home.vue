@@ -8,8 +8,8 @@
         <v-list-item v-for="meeting in participatingMeetings" :key="meeting.pk" :to="`/m/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
       </v-list>
       <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
-      <div v-if="canAdd()">
-        <btn icon="mdi-plus" @click="createMeeting()">{{ t('meeting.create') }}</btn>
+      <div v-if="canAdd()" class="mt-4">
+        <v-btn prepend-icon="mdi-plus" variant="text" color="primary" @click="createMeeting()">{{ t('meeting.create') }}</v-btn>
       </div>
     </v-col>
     <v-col cols="12" sm="6" lg="4">

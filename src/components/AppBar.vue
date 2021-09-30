@@ -98,8 +98,6 @@ export default defineComponent({
       margin: 14px 8px 0
   button.user-menu
     color: rgb(var(--v-theme-on-app-bar))
-  .v-avatar
-    background: none
 
 #app-bar-user-menu
   z-index: 4

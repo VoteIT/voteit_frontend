@@ -1,7 +1,7 @@
 <template>
   <template v-if="isOngoing">
     <main>
-      <ProgressBar v-if="progressBar" v-bind="progressBar" absolute />
+      <ProgressBar v-if="progressBar" v-bind="progressBar" absolute class="mt-8" />
     </main>
     <div class="actions text-right mt-6">
       <v-btn variant="text" :disabled="working" color="warning" prepend-icon="mdi-cancel" @click="cancel()" class="mr-1">

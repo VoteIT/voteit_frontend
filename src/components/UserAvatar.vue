@@ -1,5 +1,5 @@
 <template>
-  <v-avatar :size="size" :color="color" :image="image">
+  <v-avatar :size="size" :color="bg" :image="image">
     {{ initials }}
   </v-avatar>
 </template>
@@ -36,12 +36,18 @@ export default defineComponent({
       return (first_name[0] + last_name[0]).toUpperCase()
     })
 
+    const bg = computed(() => {
+      if (image.value) return
+      return props.color
+    })
+
     const image = computed(() => {
       if (!user.value) return
       return user.value.img_url ?? undefined // Change null to undefined
     })
 
     return {
+      bg,
       initials,
       image
     }

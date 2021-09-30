@@ -2,6 +2,7 @@
   <div class="voteit-switch" @click="toggle()" :class="{ loading, active, disabled }">
     <div class="lever"/>
   </div>
+  <label v-if="label" class="switch-label" @click="toggle()">{{ label }}</label>
 </template>
 
 <script lang="ts">
@@ -13,7 +14,8 @@ export default defineComponent({
     modelValue: Boolean,
     loading: Boolean,
     disabled: Boolean,
-    readonly: Boolean
+    readonly: Boolean,
+    label: String
   },
   setup (props, { emit }) {
     const active = ref(props.modelValue)
@@ -42,11 +44,11 @@ export default defineComponent({
   margin: 4px
   height: 16px
   width: 40px
-  background-color: rgba(var(--v-theme-secondary), .8)
+  background-color: rgba(var(--v-theme-secondary), .6)
   transition: background-color .2s
   border-radius: 8px
   &.active
-    background-color: rgb(var(--v-theme-primary), .8)
+    background-color: rgb(var(--v-theme-primary), .6)
 
   .lever
     background-color: rgba(var(--v-theme-secondary), 1)
@@ -67,4 +69,9 @@ export default defineComponent({
 
   &.disabled
     opacity: .6
+
+.switch-label
+  display: inline
+  vertical-align: 7px
+  margin-left: 7px
 </style>
