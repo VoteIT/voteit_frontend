@@ -109,15 +109,19 @@ export default defineComponent({
 
   iframe.ql-video
     width: 100%
-    max-width: 860px
+    max-width: 920px
+    &.ql-align-justify
+      max-width: unset
+  img
+    max-width: 100%
+  iframe.ql-video,
+  img
     aspect-ratio: 16/9
     display: block
     &.ql-align-center
       margin: 0 auto
     &.ql-align-right
       margin-left: auto
-    &.ql-align-justify
-      max-width: unset
   code
     color: rgb(var(--v-theme-secondary))
 </style>
