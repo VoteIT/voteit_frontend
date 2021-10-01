@@ -9,7 +9,7 @@
       <div class="proposal-filters">
         <h3>{{ t('orderBy')}}</h3>
         <div class="option" v-for="f in orders" :key="f.id">
-          <input type="radio" name="order-by" :id="`proposal-order-filter-${f.id}`" :value="f.id" v-model="filter.order">
+          <input type="radio" name="order-by" :id="`proposal-order-filter-${f.id}`" :value="f.id" v-model="activeFilter.order">
           <label :for="`proposal-order-filter-${f.id}`">{{ f.label }}</label>
         </div>
         <v-divider/>
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, inject, PropType, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, defineComponent, inject, reactive, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 
@@ -47,8 +47,8 @@ import BtnDropdown from '@/components/BtnDropdown.vue'
 
 import workflowStates, { DEFAULT_FILTER_STATES, ProposalState } from '@/contentTypes/proposal/workflowStates'
 
-import { Filter } from './types'
 import { TagsKey } from '@/modules/meetings/useTags'
+import useAgendaFilter from './useAgendaFilter'
 
 interface FilterDescription {
   id: string
@@ -56,29 +56,13 @@ interface FilterDescription {
   active?: boolean
 }
 
-function setEqual (a: Set<string>, b: Set<string>): boolean {
-  if (a.size !== b.size) return false
-  for (const v of a) if (!b.has(v)) return false
-  return true
-}
-
 export default defineComponent({
-  props: {
-    modelValue: {
-      type: Object as PropType<Filter>,
-      required: true
-    }
-  },
-  emits: ['update:modelValue'],
-  setup (props, { emit }) {
+  setup () {
     const { t } = useI18n()
-    const tags = inject(TagsKey) || ref(new Set<string>())
+    const { activeFilter, isModified } = useAgendaFilter()
+    const tags = inject(TagsKey) as Ref<Set<string>>
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
-    const filter = reactive<Filter>(props.modelValue)
-    const isModified = computed(() => props.modelValue.order !== 'created' || !!props.modelValue.tags.size || !setEqual(props.modelValue.states, new Set(DEFAULT_FILTER_STATES)))
-    onClickOutside(root, () => {
-      root.value && root.value.close()
-    })
+    onClickOutside(root, () => root.value?.close())
 
     const orders = ref<FilterDescription[]>([
       {
@@ -93,13 +77,14 @@ export default defineComponent({
     const states = reactive<FilterDescription[]>(workflowStates.map(state => ({
       id: state.state,
       label: t(`workflowState.${state.state}`),
-      active: props.modelValue.states.has(state.state)
+      active: activeFilter.value.states.has(state.state)
     })))
     const tagFilters = reactive<FilterDescription[]>([...tags.value].map(tag => ({
       id: tag,
       label: tag,
-      active: props.modelValue.tags.has(tag)
+      active: activeFilter.value.tags.has(tag)
     })))
+
     watch(tags, value => {
       // add missing
       for (const tag of value) {
@@ -107,42 +92,40 @@ export default defineComponent({
           tagFilters.push({
             id: tag,
             label: tag,
-            active: false
+            active: activeFilter.value.tags.has(tag)
           })
         }
       }
     })
 
     function clearFilters () {
-      filter.order = 'created'
+      activeFilter.value.order = 'created'
       for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
       for (const t of tagFilters) t.active = false
     }
-    watch(filter, value => {
-      emit('update:modelValue', value)
-    })
-    watch(states, (value: FilterDescription[]) => {
-      filter.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
-    })
-    watch(tagFilters, (value: FilterDescription[]) => {
-      filter.tags = new Set(value.filter(tf => tf.active).map(tf => tf.id))
-    })
     function setTag (tag: string) {
       for (const tf of tagFilters) {
         if (tf.id === tag) tf.active = true
       }
     }
 
+    watch(states, (value: FilterDescription[]) => {
+      activeFilter.value.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
+    })
+    watch(tagFilters, (value: FilterDescription[]) => {
+      activeFilter.value.tags = new Set(value.filter(f => f.active).map(f => f.id))
+    })
+
     return {
       t,
-      clearFilters,
-      filter,
+      activeFilter,
       isModified,
       orders,
       root,
-      setTag,
       states,
-      tagFilters
+      tagFilters,
+      clearFilters,
+      setTag
     }
   },
   components: {

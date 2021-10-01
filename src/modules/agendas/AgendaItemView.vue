@@ -29,7 +29,7 @@
               {{ t('proposal.add') }}
             </v-btn>
           </span>
-          <AgendaFilters ref="filterComponent" v-model="activeFilter" :key="agendaId" />
+          <AgendaFilters ref="filterComponent" :key="agendaId" />
         </div>
         <!-- <v-alert type="info" v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
           <div>
@@ -104,9 +104,9 @@ import { ComponentPublicInstance, computed, ComputedRef, defineComponent, onMoun
 import { useI18n } from 'vue-i18n'
 
 import AddContent from '@/components/AddContent.vue'
+import AgendaFilters from './AgendaFilters.vue'
 import Headline from '@/components/Headline.vue'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
-import { Filter } from './types'
 import ReactionButton from '@/modules/reactions/ReactionButton.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -128,20 +128,16 @@ import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
 import { AgendaItem, DiscussionPost, Proposal } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
-import { DEFAULT_FILTER_STATES } from '@/contentTypes/proposal/workflowStates'
 import { useStorage, useTitle } from '@vueuse/core'
 import { LastReadKey } from '@/composables/useUnread'
 import { TagsKey } from '@/modules/meetings/useTags'
-
-import AgendaFilters from './AgendaFilters.vue'
-
-// Store filters for each agenda id
-const agendaFilters = reactive<Map<number, Filter>>(new Map())
+import useAgendaFilter from './useAgendaFilter'
 
 export default defineComponent({
   name: 'AgendaItem',
   setup () {
     const { t } = useI18n()
+    const { activeFilter } = useAgendaFilter()
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { meetingPath, meetingId, meeting } = useMeeting()
@@ -151,19 +147,6 @@ export default defineComponent({
 
     useTitle(computed(() => `${agendaItem.value?.title ?? t('agenda.item')} | ${meeting.value?.title ?? t('meeting')}`))
 
-    const activeFilter = computed<Filter>({
-      get: () => {
-        if (!agendaFilters.has(agendaId.value)) {
-          agendaFilters.set(agendaId.value, {
-            order: 'created',
-            states: new Set(DEFAULT_FILTER_STATES),
-            tags: new Set()
-          })
-        }
-        return agendaFilters.get(agendaId.value) as Filter
-      },
-      set: value => agendaFilters.set(agendaId.value, value)
-    })
     function proposalFilter (p: Proposal): boolean {
       const { tags, states } = activeFilter.value
       if (tags.size && p.tags.every(t => !tags.has(t))) return false

@@ -28,7 +28,7 @@ import { EditorComponent } from './types'
 import Tag from './Tag.vue'
 
 function cleanTag (value: string): string {
-  return slugify(value.replaceAll(/[^\w\s]+/g, ''))
+  return slugify(value).replaceAll(/[^\w-]/g, '')
 }
 
 export default defineComponent({

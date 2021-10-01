@@ -82,14 +82,30 @@ export default defineComponent({
 <style lang="sass">
 .richtext
   margin: .4em 0
-  p
-    margin-bottom: .5em !important
-    line-height: 1.3em
   ol, ul
     padding-left: 1.2em
   blockquote
-    border-left: 3px solid var(--widget-alt-bg)
-    padding-left: .6em
-  ol, ul, p, blockquote
-    margin-bottom: .2em
+    border-left: 3px solid rgb(var(--v-border-color))
+    padding: .2em 0 .2em .6em
+    font-style: italic
+  ol, ul, blockquote, p
+    margin-bottom: .5em
+    line-height: 1.3em
+  ol, ul, blockquote, p, h2, h3, h4
+    &.ql-indent-1
+      margin-left: 2em
+    &.ql-indent-2
+      margin-left: 4em
+    &.ql-indent-3
+      margin-left: 6em
+    &.ql-indent-4
+      margin-left: 8em
+    &.ql-align-center
+      text-align: center
+    &.ql-align-right
+      text-align: right
+    &.ql-align-justify
+      text-align: justify
+  code
+    color: rgb(var(--v-theme-secondary))
 </style>
