@@ -52,7 +52,10 @@ export interface QuillOptions {
   debug?: 'error' | 'warn' | 'log' | 'info' | boolean
   formats?: QuillFormat[]
   modules: {
-    toolbar?: string[] | QuillToolbarGroup[]
+    toolbar?: string[] | QuillToolbarGroup[] | {
+      container: QuillToolbarGroup[],
+      handlers: Record<string, () => void>
+    }
     keyboard: {
       bindings: {
         tab?: null,

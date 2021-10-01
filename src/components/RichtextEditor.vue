@@ -55,16 +55,19 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
   full: {
     theme: 'snow',
     modules: {
-      toolbar: [
-        [{ header: [false, 2, 3, 4] }],
-        [QuillFormat.Bold, QuillFormat.Italic, QuillFormat.Link, QuillFormat.InlineCode],
-        [{ script: 'sub' }, { script: 'super' }],
-        [{ indent: '-1' }, { indent: '+1' }],
-        [QuillFormat.BlockQuote],
-        [QuillFormat.Image, QuillFormat.Video], // TODO: Embed img by url
-        [{ align: [] }],
-        ['clean']
-      ],
+      toolbar: {
+        container: [
+          [{ header: [false, 2, 3, 4] }],
+          [QuillFormat.Bold, QuillFormat.Italic, QuillFormat.Link, QuillFormat.InlineCode],
+          [{ script: 'sub' }, { script: 'super' }],
+          [{ indent: '-1' }, { indent: '+1' }],
+          [QuillFormat.BlockQuote],
+          [QuillFormat.Image, QuillFormat.Video], // TODO: Embed img by url
+          [{ align: [] }],
+          ['clean']
+        ],
+        handlers: {}
+      },
       keyboard: {
         bindings: {}
       },
@@ -154,6 +157,17 @@ export default defineComponent({
             key: 'Enter',
             ctrlKey: true,
             handler: () => emit('submit')
+          }
+        }
+        if (config.modules.toolbar && 'handlers' in config.modules.toolbar) {
+          config.modules.toolbar.handlers.image = () => {
+            if (!editor) return
+            const range = editor.getSelection()
+            if (!range) return
+            const value = prompt('please copy paste the image url here.')
+            if (value) {
+                editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
+            }
           }
         }
         config.modules.mention.source = mentionSource
