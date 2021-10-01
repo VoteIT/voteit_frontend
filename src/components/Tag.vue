@@ -1,7 +1,8 @@
 <template>
   <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name">
-    <v-icon size="x-small" icon="mdi-tag-outline"/>
+    <v-icon size="x-small" icon="mdi-tag-outline" />
     #{{ name }}
+    <v-icon v-if="closer" size="x-small" icon="mdi-close" @click.stop="$emit('remove')" />
   </span>
 </template>
 
@@ -16,7 +17,8 @@ export default defineComponent({
       type: String,
       required: true
     },
-    disabled: Boolean
+    disabled: Boolean,
+    closer: Boolean
   },
   setup (props) {
     return {
@@ -28,7 +30,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .voteit-tag
   white-space: nowrap
   padding: .2em .6em
@@ -39,4 +41,9 @@ export default defineComponent({
 span[data-denotation-char="#"]:not(.disabled)
   user-select: unset
   cursor: pointer
+
+.mdi-close
+  position: relative
+  top: -2px
+  left: 5px
 </style>

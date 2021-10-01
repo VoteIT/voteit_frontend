@@ -8,11 +8,11 @@
         <user :pk="p.author" /><br/>
         <Moment :date="p.created" />
       </div>
-      <div class="tags" v-if="false">
-        <Tag v-for="tag in p.tags" :key="tag" :name="tag" />
-      </div>
     </div>
     <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <div class="mt-6 mb-3" v-if="extraTags.length">
+      <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
+    </div>
     <footer v-if="!readOnly && ($slots.buttons || menuItems.length)">
       <div>
         <slot name="buttons"/>
@@ -34,6 +34,7 @@ import { DiscussionPost, Predicate } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useUnread from '@/composables/useUnread'
+import useTags from '../meetings/useTags'
 
 export default defineComponent({
   props: {
@@ -49,6 +50,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
+    const { getHTMLTags } = useTags()
     const api = discussionPostType.getContentApi()
     const { canDelete, canChange } = discussionPostType.rules as Record<string, Predicate>
 
@@ -82,9 +84,15 @@ export default defineComponent({
       return menu
     })
 
+    const extraTags = computed(() => {
+      const docTags = getHTMLTags(props.p.body)
+      return props.p.tags.filter(tag => !docTags.has(tag))
+    })
+
     return {
       api,
       editing,
+      extraTags,
       isUnread,
       menuItems
     }
@@ -117,12 +125,6 @@ export default defineComponent({
   p
     margin: .5rem 0
     white-space: pre-wrap
-
-  .tags
-    .tag
-      margin-left: .2em
-      &:first-child
-        margin-left: 0
 
 .richtext,
 .ql-editor

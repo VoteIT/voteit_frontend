@@ -11,7 +11,7 @@
         <Menu float :items="menuItems" />
         <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
         <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
-        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" />
+        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" />
       </v-col>
     </v-row>
     <v-row v-if="speakerLists.length">
@@ -93,7 +93,7 @@
         </v-alert>
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
-                    :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent" />
+                    :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent"/>
       </v-col>
     </v-row>
   </template>
@@ -195,16 +195,18 @@ export default defineComponent({
     })
     const addProposalComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     const addDiscussionComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-    async function addProposal (body: string) {
+    async function addProposal (body: string, tags: string[]) {
       await proposalType.getContentApi().add({
         agenda_item: agendaId.value,
-        body
+        body,
+        tags
       })
     }
-    async function addDiscussionPost (body: string) {
+    async function addDiscussionPost (body: string, tags: string[]) {
       await discussionPostType.getContentApi().add({
         agenda_item: agendaId.value,
-        body
+        body,
+        tags
       })
     }
 

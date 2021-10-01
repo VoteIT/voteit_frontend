@@ -10,7 +10,10 @@
         <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
       </div>
     </div>
-    <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" class="my-3" />
+    <div class="mt-6 mb-3" v-if="extraTags.length">
+      <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
+    </div>
     <div class="author">
       <span>{{ t('by') }} <User :pk="p.author" /></span>
       <Moment :date="p.created" />
@@ -60,7 +63,7 @@ import proposalType from '@/contentTypes/proposal'
 import discussionRules from '@/contentTypes/discussionPost/rules'
 import { DiscussionPost, Proposal } from '@/contentTypes/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import { MeetingRole } from '../meetings/types'
+import useTags from '../meetings/useTags'
 
 export default defineComponent({
   name: 'Proposal',
@@ -82,7 +85,8 @@ export default defineComponent({
     const { t } = useI18n()
     const api = proposalType.getContentApi()
     const { agendaItem } = useAgenda()
-    const { hasRole } = useMeeting()
+    const { isModerator } = useMeeting()
+    const { getHTMLTags } = useTags()
     const editing = ref(false)
     const showComments = ref(false)
 
@@ -142,8 +146,9 @@ export default defineComponent({
       return items
     })
 
-    const isModerator = computed<boolean>(() => {
-      return hasRole(MeetingRole.Moderator)
+    const extraTags = computed(() => {
+      const docTags = getHTMLTags(props.p.body)
+      return props.p.tags.filter(tag => !docTags.has(tag) && tag !== props.p.prop_id)
     })
 
     return {
@@ -152,6 +157,7 @@ export default defineComponent({
       commentsComponent,
       discussionRules,
       editing,
+      extraTags,
       isUnread,
       isModerator,
       proposalType,

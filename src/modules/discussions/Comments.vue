@@ -7,15 +7,15 @@
     </DiscussionPost>
     <AddContent ref="addContentComponent" v-if="commentInput" :name="t('discussion.discussion')"
                 :handler="submit" :placeholder="t('discussion.postPlaceholder')"
-                :submitText="t('post')" submitIcon="mdi-send" v-model="comment" />
+                :submitText="t('post')" submitIcon="mdi-send"
+                :setTag="setTag" />
   </div>
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, PropType, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, stripHTML } from '@/utils'
 import AddContent from '@/components/AddContent.vue'
 import ReactionButton from '@/modules/reactions/ReactionButton.vue'
 import DiscussionPostVue from '@/modules/discussions/DiscussionPost.vue'
@@ -26,11 +26,6 @@ import useReactions from '@/modules/reactions/useReactions'
 
 import { DiscussionPost } from '@/contentTypes/types'
 import discussionPostType from '@/contentTypes/discussionPost'
-
-function getTagHTML (tagName?: string): string {
-  if (!tagName) return ''
-  return `<p><span class="mention" data-index="0" data-denotation-char="#" data-id="${tagName}" data-value="${tagName}"><span contenteditable="false"><span class="ql-mention-denotation-char">#</span>${tagName}</span></span>&nbsp;</p>`
-}
 
 export default defineComponent({
   components: {
@@ -54,39 +49,24 @@ export default defineComponent({
       default: 10
     }
   },
-  setup (props) {
+  setup () {
     const { t } = useI18n()
     const { agendaId } = useAgenda()
     const { meetingId } = useMeeting()
     const { getMeetingButtons } = useReactions()
 
-    const comment = ref(getTagHTML(props.setTag))
     const api = discussionPostType.getContentApi()
 
-    watch(() => props.setTag, value => {
-      comment.value = getTagHTML(value)
-    })
-
-    const textLength = computed(() => stripHTML(comment.value).length)
-
-    async function submit (override = false) {
-      if (override || textLength.value >= props.warnLength) {
-        try {
-          await api.add({
-            body: comment.value,
-            agenda_item: agendaId.value
-          })
-          comment.value = getTagHTML(props.setTag)
-        } catch (err) {
-          console.error(err)
-        }
-      } else {
-        if (await dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))) submit(true)
-      }
+    async function submit (body: string, tags: string[]) {
+      await api.add({
+        agenda_item: agendaId.value,
+        body,
+        tags
+      })
     }
 
     function focus () {
-      if (addContentComponent.value) addContentComponent.value.focus()
+      addContentComponent.value?.focus()
     }
 
     const addContentComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
@@ -94,7 +74,6 @@ export default defineComponent({
 
     return {
       t,
-      comment,
       reactions,
       addContentComponent,
       focus,

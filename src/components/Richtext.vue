@@ -1,13 +1,14 @@
 <template>
-  <RichtextEditor v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
+  <RichtextEditor :variant="variant" v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
   <div v-else ref="el" v-html="content" class="richtext" />
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, PropType, ref, watch } from 'vue'
 
 import useTags from '@/modules/meetings/useTags'
 import RichtextEditor from './RichtextEditor.vue'
+import { QuillVariant } from './types'
 
 export default defineComponent({
   name: 'Richtext',
@@ -23,7 +24,11 @@ export default defineComponent({
       default: 'body'
     },
     object: Object,
-    editing: Boolean
+    editing: Boolean,
+    variant: {
+      type: String as PropType<QuillVariant>,
+      default: QuillVariant.Restricted
+    }
   },
   emits: ['edit-done', 'updated', 'update:modelValue'],
   setup (props, { emit }) {
@@ -55,9 +60,9 @@ export default defineComponent({
       if (props.editing) return
       content.value = getContent()
     })
-    watch(() => props.editing, value => {
-      if (!value) submit()
-    })
+    // watch(() => props.editing, value => {
+    //   if (!value) submit()
+    // })
     watch(content, value => {
       emit('update:modelValue', value)
     })

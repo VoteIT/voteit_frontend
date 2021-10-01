@@ -1,7 +1,8 @@
 <template>
   <div class="richtext-editor" ref="rootElement">
     <div ref="editorElement"/>
-    <div class="btn-controls" v-if="submit">
+    <slot name="controls" />
+    <div class="btn-controls" v-if="submit && !$slots.controls">
       <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
         {{ submitText || t('save') }}
       </v-btn>
@@ -12,31 +13,62 @@
 <script lang="ts">
 import Quill from 'quill'
 import 'quill-mention'
-import { defineComponent, inject, onMounted, ref } from 'vue'
+import { defineComponent, inject, onMounted, PropType, ref } from 'vue'
 import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { MeetingRoles } from '@/composables/types'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { useI18n } from 'vue-i18n'
+import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 
-interface TagObject {
-  id: string | number
-  value: string
+const mentionOptions = {
+  allowedChars: /^[0-9A-Za-z\-\sÅÄÖåäö]*$/,
+  mentionDenotationChars: ['@', '#']
 }
 
-const QUILL_CONFIG: any = {
-  theme: 'bubble',
-  formats: ['bold', 'italic', 'link', 'code', 'blockquote', 'list', 'mention'],
-  modules: {
-    toolbar: ['bold', 'italic', 'link', 'code', 'blockquote'],
-    keyboard: {
-      bindings: {
-        tab: null // Disable default tab behaviour
-      }
-    },
-    mention: {
-      allowedChars: /^[0-9A-Za-z\-\sÅÄÖåäö]*$/,
-      mentionDenotationChars: ['@', '#']
+const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'modules'>> = {
+  restricted: {
+    theme: 'bubble',
+    formats: [
+      QuillFormat.Bold,
+      QuillFormat.Italic,
+      QuillFormat.Link,
+      QuillFormat.BlockQuote,
+      QuillFormat.List,
+      QuillFormat.Mention
+    ],
+    modules: {
+      toolbar: [
+        QuillFormat.Bold,
+        QuillFormat.Italic,
+        QuillFormat.Link,
+        QuillFormat.BlockQuote
+      ],
+      keyboard: {
+        bindings: {
+          tab: null // Disable default tab behaviour
+        }
+      },
+      mention: mentionOptions
+    }
+  },
+  full: {
+    theme: 'snow',
+    modules: {
+      toolbar: [
+        [{ header: [false, 2, 3, 4] }],
+        [QuillFormat.Bold, QuillFormat.Italic, QuillFormat.Link, QuillFormat.InlineCode],
+        [{ script: 'sub' }, { script: 'super' }],
+        [{ indent: '-1' }, { indent: '+1' }],
+        [QuillFormat.BlockQuote],
+        [QuillFormat.Image, QuillFormat.Video], // TODO: Embed img by url
+        [{ align: [] }],
+        ['clean']
+      ],
+      keyboard: {
+        bindings: {}
+      },
+      mention: mentionOptions
     }
   }
 }
@@ -56,7 +88,11 @@ export default defineComponent({
       type: String,
       default: 'mdi-check'
     },
-    placeholder: String
+    placeholder: String,
+    variant: {
+      type: String as PropType<QuillVariant>,
+      default: QuillVariant.Restricted
+    }
   },
   setup (props, { emit }) {
     const { t } = useI18n()
@@ -83,7 +119,7 @@ export default defineComponent({
         case '#':
           renderList([
             tagObject(searchTerm),
-            ...filterTagObjects(tag => tag.startsWith(searchTerm))
+            ...filterTagObjects(tag => tag.startsWith(searchTerm) && tag !== searchTerm)
           ])
           break
         case '@':
@@ -109,8 +145,8 @@ export default defineComponent({
     onMounted(() => {
       if (editorElement.value) {
         editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
-        const config = {
-          ...QUILL_CONFIG,
+        const config: QuillOptions = {
+          ...variants[props.variant],
           placeholder: props.placeholder
         }
         if (props.submit) {
@@ -165,6 +201,7 @@ export default defineComponent({
 <style lang="sass">
 @import '~quill/dist/quill.core.css'
 @import '~quill/dist/quill.bubble.css'
+@import '~quill/dist/quill.snow.css'
 @import '~quill-mention/dist/quill.mention.css'
 .richtext-editor
   .btn-controls
