@@ -100,7 +100,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, ComputedRef, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import AddContent from '@/components/AddContent.vue'
@@ -130,8 +130,9 @@ import { AgendaItem, DiscussionPost, Proposal } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import { useStorage, useTitle } from '@vueuse/core'
 import { LastReadKey } from '@/composables/useUnread'
-import { TagsKey } from '@/modules/meetings/useTags'
+import { TagsKey, tagClickEvent } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
+import { AgendaFilterComponent } from './types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -262,17 +263,17 @@ export default defineComponent({
       }
     })
 
-    const filterComponent = ref<ComponentPublicInstance<{ setTag:(tag: string) => void, isModified: ComputedRef<boolean>, clearFilters: () => {} }> | null>(null)
-    function clickHandler (evt: MouseEvent) {
-      const tagElem = evt.composedPath().find(elem => (elem as HTMLElement).dataset?.denotationChar === '#') as HTMLElement | null
-      // eslint-disable-next-line no-unused-expressions
-      if (tagElem?.dataset.value && !tagElem.classList.contains('disabled')) filterComponent.value?.setTag(tagElem.dataset.value)
+    const filterComponent = ref<AgendaFilterComponent | null>(null)
+    function toggleTag (tagName: string) {
+      activeFilter.value.tags = new Set([tagName])
+      // if (tags.has(tagName)) tags.delete(tagName)
+      // else tags.add(tagName)
     }
     onMounted(() => {
-      document.addEventListener('click', clickHandler)
+      tagClickEvent.on(toggleTag)
     })
     onUnmounted(() => {
-      document.removeEventListener('click', clickHandler)
+      tagClickEvent.off(toggleTag)
     })
 
     const editing = ref(false)
@@ -291,17 +292,12 @@ export default defineComponent({
 
     return {
       t,
-      activeFilter,
       agendaId,
       agendaItem,
-      addProposal,
       addDiscussionComponent,
       addProposalComponent,
-      addDiscussionPost,
       content,
       // hiddenUnreadProposals,
-      setLastRead,
-      submit,
       ...discussions,
       discussionReactions,
       displayMode,
@@ -322,7 +318,11 @@ export default defineComponent({
       proposalType,
       speakerListType,
 
-      proposalIntersect: () => {}
+      addDiscussionPost,
+      addProposal,
+      proposalIntersect: () => {},
+      setLastRead,
+      submit
       // agendaItemLastRead
     }
   },

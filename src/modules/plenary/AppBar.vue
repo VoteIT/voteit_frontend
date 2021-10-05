@@ -12,8 +12,8 @@
     </v-app-bar-title>
     <v-spacer/>
     <div class="flex-shrink-0">
-      <Menu icon="mdi-star" :items="pollMenu" />
-      <Menu :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
+      <Menu position="bottom" icon="mdi-star" :items="pollMenu" />
+      <Menu position="bottom" :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
         <template v-slot:top>
           <v-item-group multiple v-model="stateFilter">
             <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">

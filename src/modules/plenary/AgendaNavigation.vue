@@ -56,7 +56,7 @@ export default defineComponent({
           items: items.map(ai => ({
             ...ai,
             proposals: {
-              count: getAgendaProposals(ai.pk, filterProposalStates).length,
+              filtered: getAgendaProposals(ai.pk, filterProposalStates).length,
               total: getAgendaProposals(ai.pk).length
             }
           }))

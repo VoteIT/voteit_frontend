@@ -1,5 +1,5 @@
 <template>
-  <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name">
+  <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name" @click="tagClickEvent.emit(name)">
     <v-icon size="x-small" icon="mdi-tag-outline" />
     #{{ name }}
     <v-icon v-if="closer" size="x-small" icon="mdi-close" @click.stop="$emit('remove')" />
@@ -10,8 +10,10 @@
 import { computed, defineComponent } from 'vue'
 
 import stringToHSL from '@/utils/stringToHSL'
+import { tagClickEvent } from '@/modules/meetings/useTags'
 
 export default defineComponent({
+  emits: ['remove'],
   props: {
     name: {
       type: String,
@@ -24,7 +26,8 @@ export default defineComponent({
     return {
       style: computed(() => ({
         'background-color': stringToHSL(props.name)
-      }))
+      })),
+      tagClickEvent
     }
   }
 })

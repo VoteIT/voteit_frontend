@@ -252,7 +252,7 @@
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
     "proposalCount": "No proposals | One proposal | {count} proposals",
-    "proposalCountOfTotal": "No proposals | {count}/{total} proposals | {count}/{total} proposals",
+    "proposalCountOfTotal": "No proposals | {filtered}/{total} proposals | {filtered}/{total} proposals",
     "proposals": "Proposals",
     "proposalsAndComments": "Proposals and comments",
     "noProposals": "Nothing to say...",

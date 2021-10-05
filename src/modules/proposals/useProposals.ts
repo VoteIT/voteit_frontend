@@ -103,6 +103,7 @@ export default function useProposals () {
     getAgendaProposals,
     getPollProposals,
     getProposal,
+    iterProposals,
     setProposalRead
   }
 }

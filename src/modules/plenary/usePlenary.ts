@@ -4,7 +4,7 @@ import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import { Proposal } from '@/contentTypes/types'
 import useProposals from '@/modules/proposals/useProposals'
 
-const { getProposal } = useProposals()
+const { getProposal, iterProposals } = useProposals()
 
 const stateFilter = ref([ProposalState.Published])
 const selectedProposalIds = reactive<number[]>([])
@@ -26,6 +26,13 @@ export default function usePlenary () {
     return readonly(selectedProposalIds.map(pk => getProposal(pk)).filter(Boolean) as Proposal[])
   })
 
+  function selectTag (tagName: string) {
+    selectedProposalIds.length = 0
+    for (const p of iterProposals(p => p.tags.includes(tagName))) {
+      selectedProposalIds.push(p.pk)
+    }
+  }
+
   return {
     selectedProposalIds: readonly(selectedProposalIds),
     selectedProposals,
@@ -33,6 +40,7 @@ export default function usePlenary () {
     clearSelected,
     deselectProposal,
     filterProposalStates,
-    selectProposal
+    selectProposal,
+    selectTag
   }
 }

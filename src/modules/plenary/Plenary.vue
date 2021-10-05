@@ -5,7 +5,7 @@
       <v-alert v-if="hasProposals" type="info" :text="t('plenary.hintModifyFilter')" />
     </v-col>
   </v-row>
-  <v-row v-else§>
+  <v-row v-else>
     <v-col cols="7" md="8" lg="9">
       <Widget v-for="p in selectedProposals" :key="p.pk">
         <div class="text-right">
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, provide, ref, watch } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import ProposalVue from '@/modules/proposals/Proposal.vue'
@@ -46,6 +46,7 @@ import proposalStates, { ProposalState } from '@/contentTypes/proposal/workflowS
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 
 import usePlenary from './usePlenary'
+import { tagClickEvent } from '../meetings/useTags'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
@@ -58,7 +59,7 @@ export default defineComponent({
     const { agendaId, agendaItem } = useAgendaItem()
     const { getAgendaProposals } = useProposals()
     const proposalApi = proposalType.getContentApi()
-    const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, deselectProposal, clearSelected } = usePlenary()
+    const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
 
     useMeetingChannel(true)
     provide(LastReadKey, ref(new Date()))
@@ -79,6 +80,12 @@ export default defineComponent({
       if (state.state === p.state) return // No need to change state then is there?
       await proposalApi.transition(p.pk, state.transition)
     }
+    onMounted(() => {
+      tagClickEvent.on(selectTag)
+    })
+    onBeforeUnmount(() => {
+      tagClickEvent.off(selectTag)
+    })
 
     return {
       t,

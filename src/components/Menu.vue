@@ -50,7 +50,11 @@ export default defineComponent({
     showTransitions: Boolean,
     object: Object as PropType<StateContent>,
     contentType: Object as PropType<ContentType<any>>,
-    float: Boolean
+    float: Boolean,
+    position: {
+      type: String as PropType<'auto' | 'top' | 'bottom'>,
+      default: 'auto'
+    }
   },
   setup (props) {
     const router = useRouter()
@@ -84,9 +88,9 @@ export default defineComponent({
         transitionsAvailable.value = await api.getTransitions(props.object.pk)
         working.value = false
       }
-      onTop.value = false
+      onTop.value = props.position === 'top'
       nextTick(() => {
-        if (!overlay.value) return
+        if (!overlay.value || props.position !== 'auto') return
         const elem = overlay.value.$el as HTMLElement
         const rect = elem.getBoundingClientRect()
         onTop.value = rect.bottom > window.innerHeight
@@ -194,6 +198,8 @@ export default defineComponent({
     float: right
   display: inline-block
   .v-sheet
+    max-height: calc(100vh - 80px)
+    overflow-y: auto
     background-color: rgb(var(--v-theme-surface))
     z-index: 100
     position: absolute
