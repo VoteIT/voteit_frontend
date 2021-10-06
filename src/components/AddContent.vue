@@ -8,7 +8,10 @@
         <div class="d-flex justify-space-between">
           <div class="mt-1">
             <Tag v-for="tag in tags" :key="tag" :name="tag" class="mr-1" :closer="tag !== setTag" @remove="tags.delete(tag)" />
-            <input type="text" class="tag-input" :placeholder="t('addTag')" v-model="newTag" @keydown.enter="addTag()">
+            <input :list="tagUid" type="text" class="tag-input" :placeholder="t('addTag')" v-model="newTag" @keydown.enter="addTag()" @input="detectTagClick">
+            <datalist :id="tagUid">
+              <option v-for="tag in allTags" :key="tag" :value="tag" />
+            </datalist>
           </div>
           <v-btn color="primary" :disabled="disabled" :prepend-icon="submitIcon" size="small" class="mr-1" @click="submit()">{{ submitText }}</v-btn>
         </div>
@@ -18,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, inject, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, stripHTML, slugify } from '@/utils'
@@ -26,10 +29,13 @@ import { dialogQuery, stripHTML, slugify } from '@/utils'
 import RichtextEditor from './RichtextEditor.vue'
 import { EditorComponent } from './types'
 import Tag from './Tag.vue'
+import { TagsKey } from '@/modules/meetings/useTags'
 
 function cleanTag (value: string): string {
   return slugify(value).replaceAll(/[^\w-]/g, '')
 }
+
+let uid = 0
 
 export default defineComponent({
   name: 'AddContent',
@@ -62,8 +68,10 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const { t } = useI18n()
+    const allTags = inject(TagsKey)
     const text = ref(props.modelValue)
     const submitting = ref(false)
+    uid++
 
     // eslint-disable-next-line vue/no-setup-props-destructure
     const newTag = ref('')
@@ -105,13 +113,26 @@ export default defineComponent({
       emit('update:modelValue', value)
     })
 
+    function detectTagClick (evt: Event) {
+      if (
+        !(evt instanceof InputEvent) || // Chromium
+        evt.inputType === 'insertReplacementText' // Firefox
+      ) {
+        tags.add(newTag.value)
+        newTag.value = ''
+      }
+    }
+
     return {
       t,
+      allTags,
       disabled,
       editorComponent,
       newTag,
       tags,
       text,
+      tagUid: `tagdata-${uid.toString()}`,
+      detectTagClick,
       addTag,
       focus,
       open,
