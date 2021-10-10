@@ -22,29 +22,34 @@
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <transition name="slide-down">
-        <MenuTree @hasActive="$emit('hasActive'); openMenus.add(i)" @navigation="$emit('navigation')" v-if="item.items" :level="level + 1" :parent="item" :items="item.items" v-show="openMenus.has(i)" />
+        <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @firstContent="firstContent()" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)" />
       </transition>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, reactive } from 'vue'
-import { TreeMenu, TreeMenuItem } from '@/utils/types'
+import { defineComponent, onMounted, PropType, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
+import { TreeMenuItem } from '@/utils/types'
+
 export default defineComponent({
-  emits: ['navigation', 'hasActive'],
+  emits: ['navigation', 'hasActive', 'firstContent'],
   props: {
+    title: String,
     items: {
       type: Array as PropType<TreeMenuItem[]>,
       required: true
     },
+    defaultOpen: Boolean,
+    openFirstNonEmpty: Boolean,
+    showCount: Boolean,
+    icon: String,
     level: {
       type: Number,
       default: 0
-    },
-    parent: Object as PropType<TreeMenu>
+    }
   },
   setup (props, { emit }) {
     const openMenus = reactive<Set<number>>(new Set())
@@ -59,11 +64,17 @@ export default defineComponent({
       openMenus.add(index)
     }
 
-    onMounted(() => {
-      // Emit 'hasActive' if any item is current active path at mount
+    watch(() => props.items, (items, oldItems) => {
+      if (!oldItems.length && items.length) firstContent()
+    })
+
+    function firstContent () {
+      if (openMenus.size) return // Don't meddle with active user navigation
+      // Emit 'hasActive' if any item is current active path
       if (props.items.some(item => 'to' in item && item.to === route.path)) emit('hasActive')
+      else emit('firstContent')
       // Open first non-empty submenu
-      if (!props.parent?.openFirstNonEmpty || openMenus.size) return // If user has a submenu open, don't meddle
+      if (!props.openFirstNonEmpty) return
       props.items.some((item, index) => {
         if ('items' in item && item.items.length) {
           openMenus.add(index)
@@ -71,10 +82,19 @@ export default defineComponent({
         }
         return false
       })
-    })
+    }
+    onMounted(firstContent)
+
+    function childHasActive (index: number) {
+      console.log('childHasActive', props.title, props.items[index].title)
+      openMenus.add(index)
+      emit('hasActive')
+    }
 
     return {
       openMenus,
+      childHasActive,
+      firstContent,
       toggleMenu
     }
   }

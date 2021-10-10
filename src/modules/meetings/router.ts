@@ -1,5 +1,5 @@
 import AgendaItemView from '@/modules/agendas/AgendaItemView.vue'
-import navigationDrawer from '@/modules/agendas/NavigationDrawer.vue'
+import navigationDrawer from '@/modules/meetings/NavigationDrawer.vue'
 import appBar from '@/components/AppBar.vue'
 import polls from '@/modules/polls/router'
 import speakerLists from '@/modules/speakerLists/router'
