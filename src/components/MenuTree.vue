@@ -86,7 +86,6 @@ export default defineComponent({
     onMounted(firstContent)
 
     function childHasActive (index: number) {
-      console.log('childHasActive', props.title, props.items[index].title)
       openMenus.add(index)
       emit('hasActive')
     }
