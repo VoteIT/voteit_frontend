@@ -42,9 +42,11 @@ export default defineComponent({
     const { fetchAuthenticatedUser } = useAuthentication()
 
     onBeforeMount(async () => {
-      // if (user.value) authenticate(user.value)
-      // else loader.setLoaded()
-      if (!await fetchAuthenticatedUser()) loader.setLoaded()
+      try {
+        if (!await fetchAuthenticatedUser()) loader.setLoaded()
+      } catch {
+        loader.initFailed.value = true
+      }
     })
     provide('t', t)
     provide('debug', process.env.NODE_ENV === 'development')

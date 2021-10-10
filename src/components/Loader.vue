@@ -13,13 +13,14 @@
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 
 import useLoader from '@/composables/useLoader'
+import { useI18n } from 'vue-i18n'
 
 let timer: number
 
 export default defineComponent({
   name: 'Loader',
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
     const dotCount = ref(0)
     const loader = useLoader('Loader')
 
@@ -40,6 +41,7 @@ export default defineComponent({
     const dots = computed(() => '.'.repeat(dotCount.value))
 
     return {
+      t,
       dotCount,
       dots,
       ...loader
