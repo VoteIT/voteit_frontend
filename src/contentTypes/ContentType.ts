@@ -11,15 +11,28 @@ interface CType {
   channelName?: string
   restEndpoint?: string
   hasRoles?: boolean
+  dateFields?: string[]
 }
 
-export default class ContentType<T, K=number> {
+export default class ContentType<T extends Record<string, any>, K extends string | number=number> {
   contentType: CType
   private _api?: ContentAPI<T, K>
   private _channel?: Channel<T>
 
   constructor (contentType: CType) {
     this.contentType = contentType
+  }
+
+  public dateify (obj: Record<string, any>): T {
+    if (!this.contentType.dateFields) return obj as T
+    for (const field of this.contentType.dateFields) {
+      if (typeof obj[field] === 'string') obj[field] = new Date(obj[field])
+    }
+    return obj as T
+  }
+
+  public channelUpdateMap (map: Map<number, T>) {
+    this.channel.updateMap(map, this.dateify)
   }
 
   public get name () {
