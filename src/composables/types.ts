@@ -28,6 +28,7 @@ export interface Alert {
   title: string
   text: string
   sticky?: boolean
+  active?: boolean
 }
 
 export interface Dialog {

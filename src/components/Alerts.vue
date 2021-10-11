@@ -1,37 +1,39 @@
 <template>
   <div id="alerts">
-    <div class="alert" :class="alert.level" v-for="(alert, index) in alerts" :key="index">
-      <v-icon icon="mdi-close" size="small" class="close" @click="dismiss(alert)" />
-      <span v-if="alert.html" v-html="alert.html" />
-      <span v-else>
+    <v-alert elevation="4" v-for="(alert, index) in alerts" :key="index" v-model="alert.active" :type="alert.level" closable class="mb-2">
+      <div>
         <strong v-if="alert.title">{{ alert.title }}:</strong>
         {{ alert.text }}
-      </span>
-    </div>
-    <v-btn prepend-icon="mdi-notification-clear-all" class="dismiss-all" v-if="alerts.length > 1" @click="dismiss()">
+      </div>
+    </v-alert>
+    <v-btn color="secondary" prepend-icon="mdi-notification-clear-all" class="dismiss-all" v-if="hasMultipleActive" @click="dismiss()">
       {{ t('dismissAll') }}
     </v-btn>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, reactive } from 'vue'
+import { computed, defineComponent, onBeforeMount, reactive } from 'vue'
 
 import { openAlertEvent } from '@/utils'
 
 import { Alert, AlertLevel } from '@/composables/types'
+import { useI18n } from 'vue-i18n'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
 const DEFAULTS = {
   sticky: false,
-  level: AlertLevel.Info
+  level: AlertLevel.Info,
+  active: true
 }
 
 export default defineComponent({
   name: 'Alerts',
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
     const alerts = reactive<Alert[]>([])
+
+    const hasMultipleActive = computed(() => alerts.filter(a => a.active).length > 1)
 
     function dismiss (alert?: Alert) {
       if (alert) {
@@ -83,7 +85,9 @@ export default defineComponent({
     })
 
     return {
+      t,
       alerts,
+      hasMultipleActive,
       dismiss
     }
   }
@@ -92,37 +96,13 @@ export default defineComponent({
 
 <style lang="sass">
 #alerts
+  z-index: 1000
   position: fixed
   bottom: 1.5rem
   right: 1.5rem
   width: calc(100% - 3rem)
   max-width: 600px
 
-  .alert
-    margin-top: 1rem
-    background-color: #ddd
-    padding: 1rem
-    border-radius: 5px
-    box-shadow: 1px 1px 3px rgba(#000, .3)
-
-    &.info
-      background-color: #ddf
-    &.error
-      background-color: #e8d3d3
-    &.warning
-      background-color: #ffd
-
-  .close
-    float: right
-    cursor: pointer
-    position: relative
-    top: -.4rem
-    left: .4rem
-    opacity: .5
-    &:hover
-      opacity: 1
-
   .dismiss-all
     float: right
-    margin-top: 1rem
 </style>

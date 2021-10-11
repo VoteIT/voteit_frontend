@@ -45,7 +45,6 @@ export default defineComponent({
 .btn-dropdown
   position: relative
   > button
-    padding-right: 1rem
     &:focus
       outline: none
     .mdi
@@ -59,6 +58,6 @@ export default defineComponent({
     right: 0
     left: initial
   &.isOpen
-    > button .mdi
+    > button .mdi-chevron-down
       transform: rotate(180deg)
 </style>

@@ -31,6 +31,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, PropType, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import _ from 'lodash'
 
 import { TreeMenuItem } from '@/utils/types'
 
@@ -68,20 +69,20 @@ export default defineComponent({
       if (!oldItems.length && items.length) firstContent()
     })
 
+    function openFirstNonEmpty () {
+      if (openMenus.size) return
+      for (const [index, item] of props.items.entries()) {
+        if ('items' in item && item.items.length) return openMenus.add(index)
+      }
+    }
+
     function firstContent () {
       if (openMenus.size) return // Don't meddle with active user navigation
       // Emit 'hasActive' if any item is current active path
       if (props.items.some(item => 'to' in item && item.to === route.path)) emit('hasActive')
       else emit('firstContent')
       // Open first non-empty submenu
-      if (!props.openFirstNonEmpty) return
-      props.items.some((item, index) => {
-        if ('items' in item && item.items.length) {
-          openMenus.add(index)
-          return true
-        }
-        return false
-      })
+      if (props.openFirstNonEmpty) _.defer(openFirstNonEmpty)
     }
     onMounted(firstContent)
 

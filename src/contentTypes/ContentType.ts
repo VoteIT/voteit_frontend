@@ -32,7 +32,7 @@ export default class ContentType<T extends Record<string, any>, K extends string
   }
 
   public channelUpdateMap (map: Map<number, T>) {
-    this.channel.updateMap(map, this.dateify)
+    this.channel.updateMap(map, this.dateify.bind(this))
   }
 
   public get name () {

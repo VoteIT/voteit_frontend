@@ -1,9 +1,11 @@
 <template>
-  <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name" @click="tagClickEvent.emit(name)">
-    <v-icon size="x-small" icon="mdi-tag-outline" />
-    #{{ name }}
-    <v-icon v-if="closer" size="x-small" icon="mdi-close" @click.stop="$emit('remove')" />
-  </span>
+  <v-badge v-model="badge" :content="badgeContent" offset-x="-5" offset-y="-2" color="secondary">
+    <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name" @click="tagClickEvent.emit(name)">
+      <v-icon size="x-small" icon="mdi-tag-outline" />
+      #{{ name }}
+      <v-icon v-if="closer" size="x-small" icon="mdi-close" @click.stop="$emit('remove')" />
+    </span>
+  </v-badge>
 </template>
 
 <script lang="ts">
@@ -20,13 +22,14 @@ export default defineComponent({
       required: true
     },
     disabled: Boolean,
-    closer: Boolean
+    closer: Boolean,
+    count: Number
   },
   setup (props) {
     return {
-      style: computed(() => ({
-        'background-color': stringToHSL(props.name)
-      })),
+      style: computed(() => ({ backgroundColor: stringToHSL(props.name) })),
+      badge: !!props.count,
+      badgeContent: computed(() => String(props.count)),
       tagClickEvent
     }
   }

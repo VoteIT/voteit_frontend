@@ -2,7 +2,7 @@
   <template v-if="agendaItem">
     <v-row>
       <v-col>
-        <div id="agenda-display-mode">
+        <div id="agenda-display-mode" class="d-none d-md-block">
           <span class="text-secondary">{{ t('agenda.showAs') }}</span>
           <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
             <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
@@ -14,13 +14,18 @@
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12" lg="8">
+        <TextDocuments />
+      </v-col>
+    </v-row>
     <v-row v-if="speakerLists.length">
       <v-col v-for="list in speakerLists" :key="list.pk">
         <SpeakerList :list="list" />
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" :md="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
+      <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
         <div class="btn-actions space-between mb-2">
@@ -112,6 +117,7 @@ import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import DiscussionPostVue from '@/modules/discussions/DiscussionPost.vue'
 import SpeakerList from '@/modules/speakerLists/SpeakerList.vue'
+import TextDocuments from '@/modules/proposals/TextDocuments.vue'
 
 import useAgenda from '@/modules/agendas/useAgenda'
 import useDiscussions from '@/modules/discussions/useDiscussions'
@@ -335,7 +341,8 @@ export default defineComponent({
     SpeakerList,
     Richtext,
     ReactionButton,
-    WorkflowState
+    WorkflowState,
+    TextDocuments
   }
 })
 </script>

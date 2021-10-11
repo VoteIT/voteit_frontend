@@ -1,19 +1,15 @@
 <template>
   <BtnDropdown ref="root" right>
     <template v-slot:activator="{ toggle }">
-      <v-btn :color="isModified ? 'warning' : undefined" variant="text" @click="toggle()" append-icon="mdi-chevron-down">
+      <v-btn size="small" color="warning" variant="text" icon="mdi-undo-variant" @click="clearFilters()" :disabled="!isModified" :title="t('defaultFilters')" />
+      <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
         {{ t('sortAndFilter') }}
       </v-btn>
     </template>
     <template v-slot>
       <div class="proposal-filters">
-        <h3>{{ t('reset') }}</h3>
-        <v-btn block variant="text" :disabled="!isModified" @click="clearFilters()" prepend-icon="mdi-undo-variant">
-          {{ t('defaultFilters') }}
-        </v-btn>
-        <v-divider/>
         <template v-if="activeFilter.tags.size">
-          <h3>{{ t('tags') }}</h3>
+          <h3>{{ t('tag') }}</h3>
           <Tag class="mr-1" closer v-for="tag in activeFilter.tags" :key="tag" :name="tag" @remove="activeFilter.tags.delete(tag)" />
           <v-divider/>
           <!-- <div class="option" v-for="f in tagFilters" :key="f.id">
