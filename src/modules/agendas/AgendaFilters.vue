@@ -1,37 +1,29 @@
 <template>
-  <BtnDropdown ref="root" right>
+  <BtnDropdown ref="root" right dense>
     <template v-slot:activator="{ toggle }">
       <v-btn size="small" color="warning" variant="text" icon="mdi-undo-variant" @click="clearFilters()" :disabled="!isModified" :title="t('defaultFilters')" />
       <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
         {{ t('sortAndFilter') }}
       </v-btn>
     </template>
-    <template v-slot>
-      <div class="proposal-filters">
-        <template v-if="activeFilter.tags.size">
-          <h3>{{ t('tag') }}</h3>
+    <v-list density="comfortable" class="agenda-filters">
+      <template v-if="activeFilter.tags.size">
+        <v-list-subheader class="tag-header">{{ t('tag')}}</v-list-subheader>
+        <v-list-item>
           <Tag class="mr-1" closer v-for="tag in activeFilter.tags" :key="tag" :name="tag" @remove="activeFilter.tags.delete(tag)" />
-          <v-divider/>
-          <!-- <div class="option" v-for="f in tagFilters" :key="f.id">
-            <input type="checkbox" :id="`proposal-filter-${f.id}`" v-model="f.active">
-            <label :for="`proposal-filter-${f.id}`">
-              <Tag :name="f.id" disabled />
-            </label>
-          </div> -->
-        </template>
-        <h3>{{ t('orderBy')}}</h3>
-        <div class="option" v-for="f in orders" :key="f.id">
-          <input type="radio" name="order-by" :id="`proposal-order-filter-${f.id}`" :value="f.id" v-model="activeFilter.order">
-          <label :for="`proposal-order-filter-${f.id}`">{{ f.label }}</label>
-        </div>
+        </v-list-item>
         <v-divider/>
-        <h3>{{ t('state') }}</h3>
-        <div class="option" v-for="f in states" :key="f.id">
-          <input type="checkbox" :id="`proposal-state-filter-${f.id}`" v-model="f.active">
-          <label :for="`proposal-state-filter-${f.id}`">{{ f.label }}</label>
-        </div>
-      </div>
-    </template>
+      </template>
+      <v-list-subheader>{{ t('orderBy')}}</v-list-subheader>
+      <v-list-item :prepend-icon="activeFilter.order === f.id ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'" :active="activeFilter.order === f.id" v-for="f in orders" :key="f.id" @click="activeFilter.order = f.id" @keydown.space.enter.prevent="activeFilter.order = f.id">
+        {{ f.label }}
+      </v-list-item>
+      <v-divider/>
+      <v-list-subheader>{{ t('state') }}</v-list-subheader>
+      <v-list-item :prepend-icon="f.active ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'" :active="f.active" v-for="f in states" :key="f.id" @click="f.active = !f.active" @keydown.space.enter.prevent="f.active = !f.active">
+        {{ f.label }}
+      </v-list-item>
+    </v-list>
   </BtnDropdown>
 </template>
 
@@ -121,9 +113,7 @@ export default defineComponent({
       orders,
       root,
       states,
-      // tagFilters,
       clearFilters
-      // setTag
     }
   },
   components: {
@@ -133,23 +123,12 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.proposal-filters
-  min-width: 280px
-  h3
-    font-size: 9pt
-    font-weight: 500
-    color: rgb(var(--v-theme-secondary))
-    margin: .5em
-  hr
-    margin: 10px -10px
-  .option
-    display: flex
-    input
-      margin: 5px
-    label
-      flex: 1 1 auto
-      margin: 2px
-
-  .v-btn--block
-    justify-content: start
+.agenda-filters
+  min-width: 240px
+  .tag-header
+    margin-bottom: -1em
+  .v-list-item
+    border-radius: 0
+  .v-list-item-avatar .v-icon
+    font-size: 16pt
 </style>

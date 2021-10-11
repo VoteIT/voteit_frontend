@@ -1,5 +1,5 @@
 <template>
-  <v-sheet elevation="2" class="widget" rounded :class="{ selected }">
+  <v-sheet elevation="2" class="widget" rounded :class="{ selected, dense }">
     <slot/>
   </v-sheet>
 </template>
@@ -8,7 +8,8 @@
 import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
-    selected: Boolean
+    selected: Boolean,
+    dense: Boolean
   }
 })
 </script>
@@ -19,6 +20,8 @@ export default defineComponent({
   // border: 1px solid rgb(var(--v-border-color))
   background-color: rgb(var(--v-theme-surface))
   padding: 10px
+  &.dense
+    padding: 0
   .btn-controls
     text-align: right
   &.selected

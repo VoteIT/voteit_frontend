@@ -71,9 +71,9 @@
             </v-btn>
           </div>
         </v-alert>
-        <v-alert icon="mdi-text-box-outline" v-else class="mb-2">
+        <!-- <v-alert icon="mdi-text-box-outline" v-else class="mb-2">
           {{ t('agenda.helpNoProposals') }}
-        </v-alert>
+        </v-alert> -->
         <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
                     :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
                     :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
@@ -93,9 +93,9 @@
             </template>
           </DiscussionPost>
         </div>
-        <v-alert icon="mdi-comment-text-outline" v-else class="mb-2">
+        <!-- <v-alert icon="mdi-comment-text-outline" v-else class="mb-2">
           {{ t('agenda.helpNoComments') }}
-        </v-alert>
+        </v-alert> -->
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
                     :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent"/>

@@ -1,8 +1,8 @@
 <template>
-  <span class="btn-dropdown" :class="{ dark, isOpen, right }">
+  <span class="btn-dropdown" :class="{ dark, isOpen, right }" @keydown.esc.prevent="isOpen = false">
     <slot name="activator" :toggle="toggle"/>
     <v-btn v-if="title && !$slots.activator" @click="isOpen = !isOpen" append-icon="mdi-chevron-down">{{ title }}</v-btn>
-    <Widget v-show="isOpen">
+    <Widget :dense="dense" v-show="isOpen">
       <slot v-if="!lazy || isOpen" />
     </Widget>
   </span>
@@ -18,7 +18,8 @@ export default defineComponent({
     title: String,
     dark: Boolean,
     lazy: Boolean,
-    right: Boolean
+    right: Boolean,
+    dense: Boolean
   },
   setup (props, { emit }) {
     const isOpen = ref(false)
