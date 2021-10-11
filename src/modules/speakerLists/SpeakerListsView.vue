@@ -42,11 +42,14 @@
     </v-col>
     <v-col cols="12" order-sm="0" sm="7" md="6" lg="5" offset-md="1" offset-lg="2">
       <template v-if="currentList">
-        <div v-if="canStart(currentList)" class="btn-group">
-          <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
-          <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
-          <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
-        </div>
+        <template v-if="canStart(currentList)">
+          <div class="btn-group mb-2">
+            <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+            <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
+            <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
+          </div>
+          <UserSearch label="Add speaker" :omitIds="currentQueue" @submit="addSpeaker" />
+        </template>
         <p v-else>
           <em>{{ t('speaker.cantManageList') }}</em>
         </p>
@@ -85,10 +88,11 @@ import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 import useAgenda from '@/modules/agendas/useAgenda'
 
 import Moment from '@/components/Moment.vue'
+import UserSearch from '@/components/UserSearch.vue'
 
 import speakerListType from '@/contentTypes/speakerList'
 import useMeeting from '@/modules/meetings/useMeeting'
-import { AgendaItem, SpeakerList } from '@/contentTypes/types'
+import { AgendaItem, SpeakerList, User } from '@/contentTypes/types'
 import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem, ThemeColor } from '@/utils/types'
@@ -102,7 +106,8 @@ interface AgendaNav {
 
 export default defineComponent({
   components: {
-    Moment
+    Moment,
+    UserSearch
   },
   setup () {
     const { t } = useI18n()
@@ -162,7 +167,12 @@ export default defineComponent({
         speaker_system: system.pk,
         agenda_item: agendaItem.value.pk
       }
-      speakerListType.getContentApi().add(listData)
+      speakerListType.api.add(listData)
+    }
+
+    function addSpeaker (user: User) {
+      if (!currentList.value) return
+      speakers.moderatorEnterList(currentList.value, user.pk)
     }
 
     async function deleteList (list: SpeakerList) {
@@ -204,10 +214,11 @@ export default defineComponent({
       speakerLists,
       speakerListType,
       ...speakerListType.rules,
-      isSelf,
       meetingPath,
       navigation,
+      addSpeaker,
       addSpeakerList,
+      isSelf,
       getListMenu
     }
   }

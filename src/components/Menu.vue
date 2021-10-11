@@ -1,9 +1,8 @@
 <template>
   <span class="context-menu" :class="{ float }" ref="elem" v-if="items.length || $slots.top || $slots.bottom || showTransitions">
-    <v-badge v-if="currentState?.icon" color="secondary" :icon="currentState.icon">
+    <v-badge :model-value="!!currentState?.icon" color="secondary" :icon="currentState?.icon">
       <v-btn v-bind="openerAttrs" @click="isOpen = !isOpen"/>
     </v-badge>
-    <v-btn v-else v-bind="openerAttrs" @click="isOpen = !isOpen"/>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
       <v-list nav density="comfortable">
         <slot name="top"/>

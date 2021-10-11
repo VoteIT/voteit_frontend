@@ -1,7 +1,6 @@
 <template>
   <span class="user-search">
-    <!-- <v-text-field v-if="selected" type="search" prepend-inner-icon="mdi-account" :class="{ selected: !!selected }" autocomplete="off" :label="t('searchUser')" v-model="selected.full_name"  /> -->
-    <v-text-field type="search" prepend-inner-icon="mdi-account" :class="{ selected: !!selected }" autocomplete="off" :label="t('searchUser')" v-model="query" @focus="deSelect()" />
+    <v-text-field type="search" prepend-inner-icon="mdi-account" :class="{ selected: !!selected }" autocomplete="off" :label="computedLabel" v-model="query" @focus="deSelect()" />
     <v-btn :prepend-icon="buttonIcon" color="primary" :disabled="!selected" @click="submit()">
       {{ buttonText || t('add') }}
     </v-btn>
@@ -22,28 +21,31 @@
 <script lang="ts">
 import { User } from '@/contentTypes/types'
 import userType from '@/contentTypes/user'
-import { defineComponent, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const TYPE_DELAY = 250 // delay in ms
 let typeTimeout: number
 
 export default defineComponent({
   name: 'SearchUser',
-  inject: ['t'],
   props: {
     buttonIcon: {
       type: String,
       default: 'mdi-plus'
     },
     buttonText: String,
-    omitIds: Array as PropType<number[]>
+    omitIds: Array as PropType<number[]>,
+    label: String
   },
   emits: ['submit'],
   setup (props, { emit }) {
+    const { t } = useI18n()
     const contentApi = userType.getContentApi()
     const query = ref('')
     const results = ref<User[]>([])
     const selected = ref<User | null>(null)
+    const computedLabel = computed(() => props.label ?? t('searchUser'))
 
     async function search () {
       if (!query.value) {
@@ -82,6 +84,8 @@ export default defineComponent({
     }
 
     return {
+      t,
+      computedLabel,
       selected,
       results,
       query,

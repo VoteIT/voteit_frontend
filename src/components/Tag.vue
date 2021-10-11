@@ -1,5 +1,5 @@
 <template>
-  <v-badge v-model="badge" :content="badgeContent" offset-x="-5" offset-y="-2" color="secondary">
+  <v-badge :model-value="badge" :content="badgeContent" offset-x="-5" offset-y="-2" color="secondary">
     <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name" @click="tagClickEvent.emit(name)">
       <v-icon size="x-small" icon="mdi-tag-outline" />
       #{{ name }}
