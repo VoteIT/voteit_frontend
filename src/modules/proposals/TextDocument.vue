@@ -3,6 +3,7 @@
     <v-card-title>
       <!-- Empty title not really allowed, so no translation needed here -->
       {{ document.title || '-- text document --' }}
+      <v-spacer/>
       <v-btn v-if="canChange" icon="mdi-pencil" variant="text" @click="editDocument()" />
       <v-btn v-if="canDelete" icon="mdi-delete" variant="text" color="warning" @click="deleteDocument()" />
     </v-card-title>
