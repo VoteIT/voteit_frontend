@@ -1,9 +1,8 @@
-FROM scratch
-WORKDIR /app
-COPY ./dist ./dist
-# COPY package.json .
-# install project dependencies first
-# RUN npm i
-# Lastly build app
-# COPY . .
-# RUN npm run build
+FROM voteit/voteit4dev:latest as backend
+RUN DJANGO_SETTINGS_MODULE=voteit_project.settings_docker_build ./manage.py collectstatic --noinput
+
+FROM nginx:1.21-alpine
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ./etc/nginx.conf /etc/nginx/conf.d
+COPY ./dist /app/public_html
+COPY --from=backend /app/static /app/public_html/static
