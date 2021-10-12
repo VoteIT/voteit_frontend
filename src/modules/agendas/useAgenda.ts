@@ -7,7 +7,7 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import meetingType from '@/contentTypes/meeting'
 
 import useLoader from '@/composables/useLoader'
-import { AgendaItem } from '@/contentTypes/types'
+import { AgendaItem } from '@/modules/agendas/types'
 import Channel from '@/contentTypes/Channel'
 import TypedEvent from '@/utils/TypedEvent'
 import { LastRead } from '@/utils/types'

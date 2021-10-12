@@ -249,6 +249,7 @@
   },
   "proposal": {
     "add": "Add proposal",
+    "change": "Propose change",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "proposal": "Proposal",
     "proposalCount": "No proposals | One proposal | {count} proposals",
@@ -259,7 +260,14 @@
     "notFound": "Proposal not found",
     "postPlaceholder": "Write your proposal",
     "retract": "Retract",
-    "retractPrompt": "Are you sure you want to retract this proposal?"
+    "retractPrompt": "Are you sure you want to retract this proposal?",
+    "text": "Proposal text",
+    "textAdd": "Add proposal text",
+    "textBaseTag": "Base tag",
+    "textBaseTagDefault": "paragraph",
+    "textModify": "Modify proposal text",
+    "textChangeProposal": "Change proposal",
+    "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?"
   },
   "reaction": {
     "addButton": "New Reaction Button",

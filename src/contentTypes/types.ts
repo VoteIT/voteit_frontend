@@ -50,15 +50,6 @@ export interface Meeting extends StateContent {
   start_time: string | Date
 }
 
-export interface AgendaItem extends StateContent {
-  meeting: number
-  readonly order: number
-  body: string
-  readonly related_modified: string | Date | null
-  block_proposals: boolean
-  block_discussion: boolean
-}
-
 export interface Proposal extends BaseContent {
   state: ProposalState
   agenda_item: number

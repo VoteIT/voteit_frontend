@@ -28,7 +28,7 @@ export default defineComponent({
   setup (props) {
     return {
       style: computed(() => ({ backgroundColor: stringToHSL(props.name) })),
-      badge: !!props.count,
+      badge: computed(() => !!props.count),
       badgeContent: computed(() => String(props.count)),
       tagClickEvent
     }

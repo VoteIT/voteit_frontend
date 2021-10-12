@@ -18,7 +18,7 @@ import { openModalEvent, closeModalEvent } from '@/utils'
 
 import { Modal } from '@/composables/types'
 
-const defaults: Modal = {
+const defaults: Partial<Modal> = {
   dismissable: true
 }
 

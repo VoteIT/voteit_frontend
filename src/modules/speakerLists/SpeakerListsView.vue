@@ -92,11 +92,12 @@ import UserSearch from '@/components/UserSearch.vue'
 
 import speakerListType from '@/contentTypes/speakerList'
 import useMeeting from '@/modules/meetings/useMeeting'
-import { AgendaItem, SpeakerList, User } from '@/contentTypes/types'
+import { SpeakerList, User } from '@/contentTypes/types'
 import { SpeakerSystem } from '@/contentTypes/speakerSystem'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery } from '@/utils'
+import { AgendaItem } from '../agendas/types'
 
 interface AgendaNav {
   icon: string

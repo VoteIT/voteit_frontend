@@ -90,12 +90,13 @@ import useMeeting from '@/modules/meetings/useMeeting'
 
 import meetingType from '@/contentTypes/meeting'
 import agendaItemType from '@/contentTypes/agendaItem'
-import { AgendaItem, WorkflowState } from '@/contentTypes/types'
+import { WorkflowState } from '@/contentTypes/types'
 import { dialogQuery, openAlertEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { ControlPanelComponent } from './types'
 import { AxiosError, AxiosResponse } from 'axios'
 import { AlertLevel } from '@/composables/types'
+import { AgendaItem } from '@/modules/agendas/types'
 
 interface Tab {
   name: string

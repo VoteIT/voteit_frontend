@@ -132,13 +132,16 @@ import pollType from '@/contentTypes/poll'
 import proposalType from '@/contentTypes/proposal'
 import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
-import { AgendaItem, DiscussionPost, Proposal } from '@/contentTypes/types'
+import { DiscussionPost, Proposal } from '@/contentTypes/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import { useStorage, useTitle } from '@vueuse/core'
 import { LastReadKey } from '@/composables/useUnread'
 import { TagsKey, tagClickEvent } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
-import { AgendaFilterComponent } from './types'
+import { AgendaFilterComponent, AgendaItem } from './types'
+import { canAddDocument } from '../proposals/rules'
+import { openModalEvent } from '@/utils'
+import EditTextDocumentModalVue from '../proposals/EditTextDocumentModal.vue'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -222,6 +225,16 @@ export default defineComponent({
           title: t('plenary.view'),
           icon: 'mdi-gavel',
           to: `/p/${meetingId.value}/${agendaId.value}`
+        })
+      }
+      if (agendaItem.value && canAddDocument(agendaItem.value)) {
+        items.push({
+          title: t('proposal.textAdd'),
+          icon: 'mdi-text-box-plus-outline',
+          onClick: async () => openModalEvent.emit({
+            title: t('proposal.textAdd'),
+            component: EditTextDocumentModalVue
+          })
         })
       }
       const speakerSystems = getSystems(meetingId.value, false, true)

@@ -32,7 +32,7 @@ import Tag from './Tag.vue'
 import { TagsKey } from '@/modules/meetings/useTags'
 
 function cleanTag (value: string): string {
-  return slugify(value).replaceAll(/[^\w-]/g, '')
+  return slugify(value)
 }
 
 let uid = 0

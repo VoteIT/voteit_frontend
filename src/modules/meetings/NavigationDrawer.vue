@@ -17,12 +17,13 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import meetingRules from '@/contentTypes/meeting/rules'
 import pollType from '@/contentTypes/poll'
 
-import { AgendaItem, WorkflowState } from '@/contentTypes/types'
+import { WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/modules/polls/usePolls'
 import useProposals from '@/modules/proposals/useProposals'
 import MenuTree from '@/components/MenuTree.vue'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import { PollState } from '../polls/types'
+import { AgendaItem } from '../agendas/types'
 
 export default defineComponent({
   name: 'Agenda',

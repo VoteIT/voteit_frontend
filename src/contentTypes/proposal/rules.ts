@@ -5,9 +5,10 @@ import meetingRules from '../meeting/rules'
 import discussionRules from '../discussionPost/rules'
 import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
-import { AgendaItem, Predicate, Proposal } from '../types'
+import { Predicate, Proposal } from '../types'
 import { ProposalState } from './workflowStates'
 import { polls } from '@/modules/polls/usePolls'
+import { AgendaItem } from '@/modules/agendas/types'
 
 const isPublished: Predicate = (proposal: Proposal) => {
   return proposal.state === ProposalState.Published

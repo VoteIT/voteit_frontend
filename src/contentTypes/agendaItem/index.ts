@@ -1,5 +1,5 @@
 import ContentType from '../ContentType'
-import { AgendaItem } from '../types'
+import { AgendaItem } from '@/modules/agendas/types'
 
 import rules from './rules'
 import states from './workflowStates'

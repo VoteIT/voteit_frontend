@@ -6,8 +6,9 @@ import useElectoralRegisters from '@/modules/meetings/useElectoralRegisters'
 
 import agendaRules from '../agendaItem/rules'
 import meetingRules from '../meeting/rules'
-import { AgendaItem, Meeting, Predicate } from '../types'
+import { Meeting, Predicate } from '../types'
 import { Poll } from '@/modules/polls/types'
+import { AgendaItem } from '@/modules/agendas/types'
 
 const { user } = useAuthentication()
 const { getRegister } = useElectoralRegisters()

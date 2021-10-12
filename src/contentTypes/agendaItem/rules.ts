@@ -1,7 +1,8 @@
+import { AgendaItem } from '@/modules/agendas/types'
 import { meetings } from '@/modules/meetings/useMeetings'
 
 import meetingRules from '../meeting/rules'
-import { AgendaItem, Meeting, Predicate } from '../types'
+import { Meeting, Predicate } from '../types'
 
 const FINISHED_STATES = ['closed', 'archived']
 

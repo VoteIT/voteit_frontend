@@ -20,7 +20,7 @@ function slugify (text: string) {
   return _slugify(text, {
     lower: true,
     locale: document.documentElement.lang
-  })
+  }).replaceAll(/[^\w-]/g, '')
 }
 
 function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {

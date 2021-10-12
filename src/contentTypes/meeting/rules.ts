@@ -31,11 +31,11 @@ const isPotentialVoter: Predicate = (meeting?: Meeting) => {
   return !!meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
 }
 
-const isModerator: Predicate = (meeting?: Meeting) => {
+function isModerator (meeting?: Meeting): boolean {
   return !!meeting && hasRole(meeting.pk, MeetingRole.Moderator)
 }
 
-const isActive: Predicate = (meeting?: Meeting) => {
+function isActive (meeting?: Meeting): boolean {
   return !!meeting && ACTIVE_STATES.includes(meeting.state as MeetingState)
 }
 

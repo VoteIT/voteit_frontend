@@ -6,10 +6,11 @@ import speakerSystemType, { SpeakerSystem } from '@/contentTypes/speakerSystem'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { AgendaItem, SpeakerList, SpeakerOrderUpdate, SpeakerSystemRole } from '@/contentTypes/types'
+import { SpeakerList, SpeakerOrderUpdate, SpeakerSystemRole } from '@/contentTypes/types'
 import { SpeakerSystemState } from '@/contentTypes/speakerSystem/workflowStates'
 import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
+import { AgendaItem } from '../agendas/types'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())

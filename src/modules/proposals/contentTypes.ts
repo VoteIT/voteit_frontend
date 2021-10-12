@@ -9,12 +9,13 @@ export interface TextParagraph {
 }
 
 export interface TextDocument {
+  title: string
+  body: string
   created: Date
   modified: Date
   pk: number
   agenda_item: number
   paragraphs: TextParagraph[]
-  body: string
   base_tag: string
 }
 

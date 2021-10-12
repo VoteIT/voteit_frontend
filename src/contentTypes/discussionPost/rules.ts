@@ -5,7 +5,8 @@ import { isAuthor } from '../rules'
 import agendaRules from '../agendaItem/rules'
 import meetingRules from '../meeting/rules'
 
-import { AgendaItem, DiscussionPost, Predicate } from '../types'
+import { DiscussionPost, Predicate } from '../types'
+import { AgendaItem } from '@/modules/agendas/types'
 
 const canAdd: Predicate = (agendaItem: AgendaItem) => {
   const meeting = meetings.get(agendaItem.meeting)
