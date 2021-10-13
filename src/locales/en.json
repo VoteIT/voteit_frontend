@@ -167,6 +167,7 @@
     "orderProposalsDescription": "Drag and drop proposals to adjust order.",
     "orderAll": "Order all proposals",
     "polls": "Polls",
+    "pollDescription": "{method} poll with one proposal | {method} poll with {count} proposals",
     "rankingSelectAs": "Select as",
     "rankingSelectedAs": "Selected as",
     "selectProposals": "Select proposals",

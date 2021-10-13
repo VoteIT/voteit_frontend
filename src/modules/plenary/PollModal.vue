@@ -1,6 +1,7 @@
 <template>
   <template v-if="isOngoing">
     <main>
+      <p>{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
       <ProgressBar v-if="progressBar" v-bind="progressBar" absolute class="mt-8" />
     </main>
     <div class="actions text-right mt-6">
@@ -13,7 +14,7 @@
     </div>
   </template>
   <main v-else>
-    Results are in!
+    {{ t(`workflowState.${poll.state}`) }}
   </main>
 </template>
 
@@ -34,7 +35,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const { isOngoing, poll, pollStatus } = usePoll(ref(props.data))
+    const { isOngoing, poll, pollStatus } = usePoll(ref(props.data.pk))
 
     const complete = computed(() => {
       if (!pollStatus.value) return false

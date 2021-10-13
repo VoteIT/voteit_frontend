@@ -87,7 +87,6 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const router = useRouter()
-    const pollAPI = pollType.getContentApi()
     const proposals = useProposals()
     const { getPollMethods } = usePolls()
     const { agendaId, agendaItem, getAgenda } = useAgenda()
@@ -145,30 +144,27 @@ export default defineComponent({
     })
 
     async function createPoll (start = false) {
-      if (methodSelected.value) {
-        if (methodSelected.value.name in implementedMethods) {
-          working.value = true
-          let settings: PollMethodSettings | null = { ...methodSettings.value }
-          delete settings.title
-          if (Object.keys(settings).length === 0) settings = null
-          const pollData: PollStartData = {
-            agenda_item: agendaId.value,
-            meeting: meetingId.value,
-            title: methodSettings.value?.title,
-            proposals: [...selectedProposalIds.value],
-            method_name: methodSelected.value.name,
-            start,
-            settings
-          }
-          try {
-            const { data } = await pollAPI.add(pollData)
-            router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
-          } catch {
-            working.value = false
-          }
-        } else {
-          alert(`*${methodSelected.value.title} not implemented`)
-        }
+      if (!methodSelected.value) return
+      if (!(methodSelected.value.name in implementedMethods)) return alert(`*${methodSelected.value.title} not implemented`)
+
+      working.value = true
+      let settings: PollMethodSettings | null = { ...methodSettings.value }
+      delete settings.title
+      if (Object.keys(settings).length === 0) settings = null
+      const pollData: PollStartData = {
+        agenda_item: agendaId.value,
+        meeting: meetingId.value,
+        title: methodSettings.value?.title,
+        proposals: [...selectedProposalIds.value],
+        method_name: methodSelected.value.name,
+        start,
+        settings
+      }
+      try {
+        const { data } = await pollType.api.add(pollData)
+        router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
+      } catch {
+        working.value = false
       }
     }
 

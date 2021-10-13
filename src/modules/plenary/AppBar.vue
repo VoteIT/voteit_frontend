@@ -59,6 +59,7 @@ import usePolls from '../polls/usePolls'
 import { PollState } from '../polls/types'
 import PollModal from './PollModal.vue'
 import { WorkflowState } from '@/contentTypes/types'
+import { PollMethod, PollStartData } from '../polls/methods/types'
 
 const { getState } = pollType.useWorkflows()
 
@@ -66,9 +67,9 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { previousAgendaItem, nextAgendaItem } = useAgenda()
-    const { agendaId, agendaItem, agendaItemPath } = useAgendaItem()
+    const { agendaId, agendaItem, agendaItemPath, nextPollTitle } = useAgendaItem()
     const { meetingId, meetingPath } = useMeeting()
-    const { stateFilter, selectedProposals } = usePlenary()
+    const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary()
     const { getAgendaProposals } = useProposals()
     const { getAiPolls, getPollMethods } = usePolls()
 
@@ -98,6 +99,29 @@ export default defineComponent({
         }))
     }
 
+    const working = ref(false)
+    async function createPoll (method: PollMethod) {
+      working.value = true
+      const pollData: PollStartData = {
+        agenda_item: agendaId.value,
+        meeting: meetingId.value,
+        title: nextPollTitle.value,
+        proposals: [...selectedProposalIds],
+        method_name: method.name,
+        start: true,
+        settings: null
+      }
+      try {
+        const { data } = await pollType.api.add(pollData)
+        openModalEvent.emit({
+          title: data.title,
+          component: PollModal,
+          data
+        })
+      } catch {}
+      working.value = false
+    }
+
     const pollMethodMenu = computed<MenuItem[]>(() => {
       const pollMethods = getPollMethods(selectedProposals.value.length, true)
         .filter(method => method.quickStart)
@@ -106,7 +130,7 @@ export default defineComponent({
           icon: 'mdi-vote',
           title: t(`poll.method.${method.name}`),
           subtitle: method.disabled ? t('plenary.selectMinProposals', { min: method.proposalsMin }, method.proposalsMin ?? 1) : undefined,
-          onClick: async () => {},
+          onClick: async () => createPoll(method),
           disabled: method.disabled
         }
       })

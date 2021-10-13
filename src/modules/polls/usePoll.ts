@@ -5,11 +5,8 @@ import usePolls from './usePolls'
 
 const polls = usePolls()
 
-export default function usePoll (pollRef: Ref<Poll | number>) {
-  const poll = computed(() => {
-    if (typeof pollRef.value === 'number') return polls.getPoll(pollRef.value)
-    return pollRef.value
-  })
+export default function usePoll (pollRef: Ref<number>) {
+  const poll = computed(() => polls.getPoll(pollRef.value))
 
   const pollStatus = computed(() => {
     if (!poll.value) return

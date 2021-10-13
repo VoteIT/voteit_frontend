@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 
 import meetingType from '@/contentTypes/meeting'
 import pollType from '@/contentTypes/poll'
@@ -101,6 +101,10 @@ const pollMethods: PollMethod[] = [
   }
 ]
 
+const allPollTitles = computed(() => {
+  return [...polls.values()].map(p => p.title)
+})
+
 export default function usePolls () {
   function getPolls (meeting: number, state?: string) {
     return [...mapFilter(
@@ -144,6 +148,7 @@ export default function usePolls () {
   }
 
   return {
+    allPollTitles,
     getPolls,
     getAiPolls,
     getPoll,
