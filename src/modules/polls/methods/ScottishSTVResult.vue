@@ -15,12 +15,12 @@
 
 <script lang="ts">
 import useProposals from '@/modules/proposals/useProposals'
-import { computed, defineComponent, inject, PropType } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { ScottishSTVResult } from './types'
 
 export default defineComponent({
-  inject: ['t'],
   props: {
     data: {
       type: Object as PropType<ScottishSTVResult>,
@@ -29,7 +29,7 @@ export default defineComponent({
   },
   setup (props) {
     const { getProposal } = useProposals()
-    const t = inject('t') as CallableFunction
+    const { t } = useI18n()
 
     const metadata = computed(() => [
       [t('poll.result.quota'), props.data.quota],
@@ -39,9 +39,9 @@ export default defineComponent({
     ])
 
     return {
+      t,
       getProposal,
-      metadata,
-      t
+      metadata
     }
   }
 })

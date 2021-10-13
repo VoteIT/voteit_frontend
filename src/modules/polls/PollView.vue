@@ -3,18 +3,20 @@
     <v-col offset-lg="2" lg="8">
       <header>
         <div class="header-meta">
-          <span v-if="isOngoing(poll) && !canVote(poll)" class="header-tag">{{ t('poll.cantVote') }}</span>
+          <span v-if="isOngoing && !canVote(poll)" class="header-tag">{{ t('poll.cantVote') }}</span>
           <WorkflowState :admin="canChange(poll)" :contentType="pollType" :object="poll" />
         </div>
         <h1>{{ poll.title }}</h1>
-        <p class="text-secondary">{{ t('poll.method.name') }}: {{ t(`poll.method.${poll.method_name}`) }}</p>
+        <p class="text-secondary">{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
         <p v-if="poll.body">{{ poll.body }}</p>
-        <v-alert type="success" v-if="votingComplete" class="mt-6">
-          {{ t('poll.voteAddedInfo') }}
-        </v-alert>
-        <v-alert type="info" v-else class="mt-6">
-          {{ t(`poll.method.help.${poll.method_name}`) }}
-        </v-alert>
+        <template v-if="isOngoing">
+          <v-alert type="success" v-if="votingComplete" class="mt-6">
+            {{ t('poll.voteAddedInfo') }}
+          </v-alert>
+          <v-alert type="info" v-else class="mt-6">
+            {{ t(`poll.method.help.${poll.method_name}`) }}
+          </v-alert>
+        </template>
       </header>
       <template v-if="votingComplete">
         <div class="btn-controls mt-6" v-if="canVote(poll)">
@@ -28,7 +30,7 @@
       </template>
       <template v-else>
         <v-divider />
-        <component class="voting-component" :disabled="!canVote(poll)" v-if="isOngoing(poll)" :is="voteComponent" :poll="poll" v-model="validVote" />
+        <component class="voting-component" :disabled="!canVote(poll)" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote(poll)">
           <v-btn color="primary" :disabled="!validVote || submitting" @click="castVote()" size="large" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
@@ -38,6 +40,9 @@
           </v-btn>
         </div>
       </template>
+      <div v-if="isFinished" class="my-6">
+        <component :is="resultComponent" :data="poll.result" />
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -47,15 +52,13 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
-import usePolls from '@/modules/polls/usePolls'
-
 import pollType from '@/contentTypes/poll'
 
 import WorkflowState from '@/components/WorkflowState.vue'
 import Channel from '@/contentTypes/Channel'
 import useMeeting from '@/modules/meetings/useMeeting'
 
-import { pollMethods } from './methods'
+import usePoll from './usePoll'
 
 export default defineComponent({
   name: 'PollView',
@@ -65,20 +68,16 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const { getPoll, getUserVote } = usePolls()
+    const { poll, isOngoing, isFinished, userVote, voteComponent, resultComponent } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath } = useMeeting()
     const channels = new Channel('vote')
 
-    const poll = computed(() => getPoll(Number(route.params.pid)))
-    const userVote = computed(() => poll.value && getUserVote(poll.value))
     const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
     const votingComplete = ref(!!userVote.value)
     watch(poll, () => {
       votingComplete.value = !!userVote.value
       validVote.value = userVote.value?.vote
     })
-
-    const voteComponent = computed(() => poll.value && pollMethods[poll.value.method_name])
 
     const submitting = ref(false)
     async function castVote () {
@@ -120,12 +119,15 @@ export default defineComponent({
       poll,
       pollType,
       ...pollType.rules,
+      resultComponent,
+      isOngoing,
+      isFinished,
       validVote,
       voteComponent,
-      abstainVote,
-      castVote,
       submitting,
-      votingComplete
+      votingComplete,
+      abstainVote,
+      castVote
     }
   }
 })

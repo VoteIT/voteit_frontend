@@ -15,6 +15,9 @@
   </template>
   <main v-else>
     {{ t(`workflowState.${poll.state}`) }}
+    <div v-if="isFinished" class="my-6">
+      <component :is="resultComponent" :data="poll.result" />
+    </div>
   </main>
 </template>
 
@@ -35,7 +38,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const { isOngoing, poll, pollStatus } = usePoll(ref(props.data.pk))
+    const { isOngoing, isFinished, poll, pollStatus, resultComponent } = usePoll(ref(props.data.pk))
 
     const complete = computed(() => {
       if (!pollStatus.value) return false
@@ -76,10 +79,12 @@ export default defineComponent({
       t,
       complete,
       isOngoing,
+      isFinished,
       poll,
       pollStatus,
       PollState,
       progressBar,
+      resultComponent,
       working,
       cancel,
       close

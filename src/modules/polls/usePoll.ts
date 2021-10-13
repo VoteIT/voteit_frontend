@@ -1,6 +1,7 @@
 import { computed, Ref } from 'vue'
+import { pollMethods, pollResults } from './methods'
 
-import { Poll, PollState } from './types'
+import { PollState } from './types'
 import usePolls from './usePolls'
 
 const polls = usePolls()
@@ -14,10 +15,19 @@ export default function usePoll (pollRef: Ref<number>) {
   })
 
   const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
+  const isFinished = computed(() => poll.value?.state === PollState.Finished)
+  const userVote = computed(() => poll.value && polls.getUserVote(poll.value))
+
+  const voteComponent = computed(() => poll.value && pollMethods[poll.value.method_name])
+  const resultComponent = computed(() => poll.value && pollResults[poll.value.method_name])
 
   return {
     isOngoing,
+    isFinished,
     poll,
-    pollStatus
+    pollStatus,
+    resultComponent,
+    userVote,
+    voteComponent
   }
 }
