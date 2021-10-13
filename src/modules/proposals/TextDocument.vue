@@ -13,7 +13,7 @@
         <Tag :name="p.tag" :count="proposalCount[p.tag]" />
         <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions v-if="canAddProposal">
         <v-btn size="small" prepend-icon="mdi-text-box-plus-outline" color="primary" @click="addProposal(p)">{{ t('proposal.change') }}</v-btn>
       </v-card-actions>
     </template>

@@ -1,11 +1,15 @@
 import { computed, Ref } from 'vue'
 
+import { agendaItems } from '../agendas/useAgenda'
+
 import { ProposalText } from './contentTypes'
-import { canChangeDocument, canDeleteDocument } from './rules'
+import { canAddProposal, canChangeDocument, canDeleteDocument } from './rules'
 
 export default function useTextDocument (doc: Ref<ProposalText>) {
+  const agendaItem = computed(() => agendaItems.get(doc.value.agenda_item))
   return {
     canChange: computed(() => canChangeDocument(doc.value)),
-    canDelete: computed(() => canDeleteDocument(doc.value))
+    canDelete: computed(() => canDeleteDocument(doc.value)),
+    canAddProposal: computed(() => agendaItem.value && canAddProposal(agendaItem.value))
   }
 }
