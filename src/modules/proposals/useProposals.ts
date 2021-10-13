@@ -4,10 +4,10 @@ import { dateify, orderBy } from '@/utils'
 
 import meetingType from '@/contentTypes/meeting'
 import proposalType from '@/contentTypes/proposal'
-import { Proposal } from '@/contentTypes/types'
 import { DEFAULT_FILTER_STATES } from '@/contentTypes/proposal/workflowStates'
 import { agendaDeletedEvent, agendaItems } from '@/modules/agendas/useAgenda'
 import { Poll } from '../polls/types'
+import { Proposal } from './types'
 
 type ProposalFilter = (p: Proposal) => boolean
 
@@ -15,19 +15,17 @@ const proposals = reactive<Map<number, Proposal>>(new Map())
 /* Used to figure out whether to mark agenda item as read */
 const userReadProposals = new Set<number>() // Track read proposals through since last reload
 
-proposalType.getChannel()
-  .updateMap(proposals, dateify)
+proposalType.channel.updateMap(proposals, dateify)
 
 // Automatically clear proposals for meeting when leaving.
-meetingType.getChannel()
-  .onLeave(meeting => {
-    for (const p of proposals.values()) {
-      const ai = agendaItems.get(p.agenda_item)
-      if (ai?.meeting === meeting) {
-        proposals.delete(p.pk)
-      }
+meetingType.channel.onLeave(meeting => {
+  for (const p of proposals.values()) {
+    const ai = agendaItems.get(p.agenda_item)
+    if (ai?.meeting === meeting) {
+      proposals.delete(p.pk)
     }
-  })
+  }
+})
 
 /* Make sure proposals for agenda item are cleaned up on "deletion" (private). */
 agendaDeletedEvent.on(pk => {

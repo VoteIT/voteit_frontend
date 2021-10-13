@@ -1,7 +1,5 @@
-import { RestApiConfig } from '@/composables/types'
-import Channel from '../Channel'
+import { Proposal } from '@/modules/proposals/types'
 import ContentType from '../ContentType'
-import { Proposal } from '../types'
 
 import rules from './rules'
 import states from './workflowStates'

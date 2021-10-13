@@ -1,9 +1,9 @@
 import { computed, Ref } from 'vue'
 
-import { TextDocument } from './contentTypes'
+import { ProposalText } from './contentTypes'
 import { canChangeDocument, canDeleteDocument } from './rules'
 
-export default function useTextDocument (doc: Ref<TextDocument>) {
+export default function useTextDocument (doc: Ref<ProposalText>) {
   return {
     canChange: computed(() => canChangeDocument(doc.value)),
     canDelete: computed(() => canDeleteDocument(doc.value))

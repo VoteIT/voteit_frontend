@@ -11,10 +11,10 @@
       <v-divider/>
       <v-card-text>
         <Tag :name="p.tag" :count="proposalCount[p.tag]" />
-        <p class="mt-2">{{ p.body }}</p>
+        <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
       </v-card-text>
       <v-card-actions>
-        <v-btn disabled size="small" prepend-icon="mdi-text-box-plus-outline" color="primary">{{ t('proposal.change') }}</v-btn>
+        <v-btn size="small" prepend-icon="mdi-text-box-plus-outline" color="primary" @click="addProposal(p)">{{ t('proposal.change') }}</v-btn>
       </v-card-actions>
     </template>
   </v-card>
@@ -25,16 +25,17 @@ import { dialogQuery, openModalEvent } from '@/utils'
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { TextDocument, textDocumentType } from './contentTypes'
+import { ProposalText, proposalTextType, TextParagraph } from './contentTypes'
 import useProposals from './useProposals'
 import useTextDocument from './useTextDocument'
-import EditTextDocumentModal from './EditTextDocumentModal.vue'
+import EditTextDocumentModal from './EditProposalTextModal.vue'
 import { ThemeColor } from '@/utils/types'
+import AddTextProposalModalVue from './AddTextProposalModal.vue'
 
 export default defineComponent({
   props: {
     document: {
-      type: Object as PropType<TextDocument>,
+      type: Object as PropType<ProposalText>,
       required: true
     }
   },
@@ -60,12 +61,21 @@ export default defineComponent({
       if (await dialogQuery({
         title: t('proposal.textDeleteConfirm'),
         theme: ThemeColor.Warning
-      })) textDocumentType.api.delete(props.document.pk)
+      })) proposalTextType.api.delete(props.document.pk)
+    }
+
+    function addProposal (data: TextParagraph) {
+      openModalEvent.emit({
+        title: t('proposal.change'),
+        component: AddTextProposalModalVue,
+        data
+      })
     }
 
     return {
       t,
       proposalCount,
+      addProposal,
       deleteDocument,
       editDocument,
       ...useTextDocument(ref(props.document))
@@ -73,3 +83,15 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass">
+.proposal-text-paragraph
+  white-space: pre-line
+
+  .text-diff-removed
+    color: rgb(var(--v-theme-warning))
+    text-decoration: line-through
+  .text-diff-added
+    color: rgb(var(--v-theme-success-darken-2))
+    font-weight: 700
+</style>

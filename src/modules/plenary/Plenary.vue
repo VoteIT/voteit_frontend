@@ -38,10 +38,11 @@ import { useI18n } from 'vue-i18n'
 
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import useProposals from '@/modules/proposals/useProposals'
+import { Proposal } from '@/modules/proposals/types'
 import { LastReadKey } from '@/composables/useUnread'
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 import proposalType from '@/contentTypes/proposal'
-import { Proposal, WorkflowState } from '@/contentTypes/types'
+import { WorkflowState } from '@/contentTypes/types'
 import proposalStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 

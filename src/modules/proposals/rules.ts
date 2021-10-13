@@ -1,16 +1,19 @@
 import { agendaItems } from '../agendas/useAgenda'
-
 import { isAIModerator, isFinishedAI } from '../agendas/rules'
-
-import { TextDocument } from './contentTypes'
-import useProposals from './useProposals'
+import { meetings } from '../meetings/useMeetings'
 import { AgendaItem } from '../agendas/types'
+
+import agendaRules from '@/contentTypes/agendaItem/rules'
+import meetingRules from '@/contentTypes/meeting/rules'
+
+import { ProposalText } from './contentTypes'
+import useProposals from './useProposals'
 import useTextDocuments from './useTextDocuments'
 
 const { iterProposals } = useProposals()
-const { textDocuments } = useTextDocuments()
+const { proposalTexts } = useTextDocuments()
 
-export function documentHasProposals (doc: TextDocument): boolean {
+export function documentHasProposals (doc: ProposalText): boolean {
   const tags = doc.paragraphs.map(p => p.tag)
   const generator = iterProposals(prop => {
     return prop.agenda_item === doc.agenda_item &&
@@ -20,7 +23,7 @@ export function documentHasProposals (doc: TextDocument): boolean {
 }
 
 function agendaItemHasDocuments (ai: AgendaItem): boolean {
-  for (const doc of textDocuments.values()) {
+  for (const doc of proposalTexts.values()) {
     if (doc.agenda_item === ai.pk) return true
   }
   return false
@@ -32,9 +35,17 @@ export function canAddDocument (ai: AgendaItem): boolean {
          !agendaItemHasDocuments(ai) // Temporary rule
 }
 
-export function canChangeDocument (doc: TextDocument): boolean {
+export function canChangeDocument (doc: ProposalText): boolean {
   const ai = agendaItems.get(doc.agenda_item)
   return !!ai && isAIModerator(ai) && !isFinishedAI(ai) && !documentHasProposals(doc)
 }
 
 export const canDeleteDocument = canChangeDocument
+
+export function canAddProposal (agendaItem: AgendaItem): boolean {
+  const meeting = meetings.get(agendaItem.meeting)
+  return !agendaRules.isFinished(agendaItem) && (
+    meetingRules.isModerator(meeting) || (
+      !agendaRules.isPrivate(agendaItem) && !agendaRules.isProposalBlocked(agendaItem) && meetingRules.isProposer(meeting)
+    ))
+}

@@ -28,11 +28,10 @@ import useProposals from '@/modules/proposals/useProposals'
 
 import { pollMethods } from './methods'
 
-import { Proposal } from '@/contentTypes/types'
-// import { ChannelsMessage } from '@/utils/types'
 import Channel from '@/contentTypes/Channel'
 import usePolls from '@/modules/polls/usePolls'
 import { Poll } from './types'
+import { Proposal } from '../proposals/types'
 
 export default defineComponent({
   name: 'VotingModal',

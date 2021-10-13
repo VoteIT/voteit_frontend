@@ -3,7 +3,7 @@
     <form @submit.prevent="save()">
       <v-text-field v-model="formData.title" required :label="t('title')" />
       <v-text-field v-model="formData.base_tag" required :label="t('proposal.textBaseTag')" @change="cleanBaseTag()" />
-      <textarea v-model="formData.body" required />
+      <textarea class="form-control" v-model="formData.body" required />
       <div class="btn-group text-right">
         <v-btn type="submit" :disabled="saving" color="primary" prepend-icon="mdi-check-all">{{ t('save') }}</v-btn>
       </div>
@@ -16,16 +16,16 @@ import { closeModalEvent, slugify } from '@/utils'
 import { defineComponent, PropType, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useAgendaItem from '../agendas/useAgendaItem'
-import { TextDocument, textDocumentType } from './contentTypes'
+import { ProposalText, proposalTextType } from './contentTypes'
 
 export default defineComponent({
   props: {
-    data: Object as PropType<TextDocument>
+    data: Object as PropType<ProposalText>
   },
   setup (props) {
     const { agendaId } = useAgendaItem()
     const { t } = useI18n()
-    const formData = reactive<Pick<TextDocument, 'base_tag' | 'body' | 'title'>>({
+    const formData = reactive<Pick<ProposalText, 'base_tag' | 'body' | 'title'>>({
       base_tag: props.data?.base_tag ?? t('proposal.textBaseTagDefault'),
       body: props.data?.body ?? '',
       title: props.data?.title ?? ''
@@ -38,8 +38,8 @@ export default defineComponent({
     async function save () {
       saving.value = true
       try {
-        if (props.data) await textDocumentType.api.patch(props.data.pk, formData)
-        else await textDocumentType.api.add({ agenda_item: agendaId.value, ...formData })
+        if (props.data) await proposalTextType.api.patch(props.data.pk, formData)
+        else await proposalTextType.api.add({ agenda_item: agendaId.value, ...formData })
         closeModalEvent.emit()
       } catch {
         saving.value = false
@@ -57,8 +57,8 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass" scoped>
-textarea
+<style lang="sass">
+textarea.form-control
   width: 100%
   min-height: 14em
   padding: .6em

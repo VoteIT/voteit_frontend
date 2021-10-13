@@ -1,10 +1,9 @@
 /* eslint-disable camelcase */
 
 import { MeetingRole } from '@/modules/meetings/types'
-import { PollMethodName, PollMethodSettings } from '@/modules/polls/methods/types'
+import { Proposal } from '@/modules/proposals/types'
 import { ChannelsConfig } from '@/utils/types'
 import { PresenceCheckState } from './presenceCheck/workflowStates'
-import { ProposalState } from './proposal/workflowStates'
 import { SpeakerListState } from './speakerList/workflowStates'
 import { UserState } from './user/workflowStates'
 
@@ -48,16 +47,6 @@ export interface Meeting extends StateContent {
   er_policy_name?: string
   public: boolean
   start_time: string | Date
-}
-
-export interface Proposal extends BaseContent {
-  state: ProposalState
-  agenda_item: number
-  author: number
-  body: string
-  created: string | Date
-  prop_id: string
-  tags: string[]
 }
 
 export interface DiscussionPost {

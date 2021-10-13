@@ -10,7 +10,8 @@
         <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
       </div>
     </div>
-    <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" class="my-3" />
+    <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" class="my-3" />
+    <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff" class="proposal-text-paragraph my-3" />
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
     </div>
@@ -61,9 +62,10 @@ import useUnread from '@/composables/useUnread'
 
 import proposalType from '@/contentTypes/proposal'
 import discussionRules from '@/contentTypes/discussionPost/rules'
-import { DiscussionPost, Proposal } from '@/contentTypes/types'
+import { DiscussionPost } from '@/contentTypes/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useTags from '../meetings/useTags'
+import { Proposal } from './types'
 
 export default defineComponent({
   name: 'Proposal',
@@ -200,7 +202,7 @@ export default defineComponent({
 
   &.isUnread .richtext
     position: relative
-    ::after
+    &::after
       content: ''
       display: block
       position: absolute

@@ -8,7 +8,7 @@ export interface TextParagraph {
   tag: string
 }
 
-export interface TextDocument {
+export interface ProposalText {
   title: string
   body: string
   created: Date
@@ -19,7 +19,7 @@ export interface TextDocument {
   base_tag: string
 }
 
-export const textDocumentType = new ContentType<TextDocument>({
+export const proposalTextType = new ContentType<ProposalText>({
   channelName: 'text_document',
   restEndpoint: 'text-documents/',
   dateFields: ['created', 'modified']

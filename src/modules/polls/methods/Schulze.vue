@@ -19,8 +19,8 @@ import { computed, defineComponent, PropType, reactive, watch } from 'vue'
 
 import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
+import { Proposal } from '@/modules/proposals/types'
 
-import { Proposal } from '@/contentTypes/types'
 import { SchulzeVote } from './types'
 import { Poll } from '../types'
 

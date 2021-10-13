@@ -17,7 +17,8 @@
 import { computed, defineComponent, PropType } from 'vue'
 
 import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/contentTypes/types'
+import { Proposal } from '@/modules/proposals/types'
+
 import { CombinedSimpleResult, CombinedSimpleProposalResult, simpleIcons, SimpleChoice } from './types'
 
 export default defineComponent({

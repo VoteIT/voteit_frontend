@@ -5,10 +5,11 @@ import meetingRules from '../meeting/rules'
 import discussionRules from '../discussionPost/rules'
 import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
-import { Predicate, Proposal } from '../types'
+import { Predicate } from '../types'
 import { ProposalState } from './workflowStates'
 import { polls } from '@/modules/polls/usePolls'
 import { AgendaItem } from '@/modules/agendas/types'
+import { Proposal } from '@/modules/proposals/types'
 
 const isPublished: Predicate = (proposal: Proposal) => {
   return proposal.state === ProposalState.Published
@@ -29,7 +30,9 @@ const canAdd: Predicate = (agendaItem: AgendaItem) => {
     ))
 }
 
-const canChange: Predicate = (proposal: Proposal) => {
+function canChange (proposal: Proposal): boolean {
+  // TODO Not implemented
+  if (proposal.shortname === 'diff_proposal') return false
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)

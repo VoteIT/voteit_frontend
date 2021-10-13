@@ -31,7 +31,7 @@ const canAdd: Predicate = (meeting: Meeting) => {
   return !meetingRules.isArchived(meeting) && meetingRules.isModerator(meeting)
 }
 
-const canChange: Predicate = (agendaItem: AgendaItem) => {
+function canChange (agendaItem: AgendaItem): boolean {
   const meeting = meetings.get(agendaItem.meeting)
   return !isArchived(agendaItem) && meetingRules.isModerator(meeting)
 }

@@ -61,9 +61,9 @@ import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
+import { Proposal } from '@/modules/proposals/types'
 
 import { RankedVote } from './types'
-import { Proposal } from '@/contentTypes/types'
 import { Poll } from '../types'
 
 export default defineComponent({

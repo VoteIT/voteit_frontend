@@ -14,16 +14,16 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 import { DefaultMap } from '@/utils'
 
 import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/modules/proposals/useProposals'
-
 import ProposalComponent from '@/modules/proposals/Proposal.vue'
+import { Proposal } from '@/modules/proposals/types'
 
 import { CombinedSimpleVote, SimpleChoice, simpleIcons } from './types'
-import { Proposal } from '@/contentTypes/types'
-import { useI18n } from 'vue-i18n'
 import { Poll } from '../types'
 
 interface Option {

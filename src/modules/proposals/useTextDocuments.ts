@@ -1,15 +1,15 @@
 import { reactive, readonly } from 'vue'
 
-import { TextDocument, textDocumentType } from './contentTypes'
+import { ProposalText, proposalTextType } from './contentTypes'
 
-const textDocuments = reactive<Map<number, TextDocument>>(new Map())
+const proposalTexts = reactive<Map<number, ProposalText>>(new Map())
 
-textDocumentType.channelUpdateMap(textDocuments)
+proposalTextType.channelUpdateMap(proposalTexts)
 
-type DocFilter = (document: TextDocument) => boolean
+type DocFilter = (document: ProposalText) => boolean
 
-function * iterDocuments (filter: DocFilter): Generator<TextDocument, void> {
-  for (const doc of textDocuments.values()) {
+function * iterDocuments (filter: DocFilter): Generator<ProposalText, void> {
+  for (const doc of proposalTexts.values()) {
     if (filter(doc)) yield doc
   }
 }
@@ -20,8 +20,8 @@ function getDocuments (filter: DocFilter) {
 
 export default function useTextDocuments () {
   return {
-    textDocuments: readonly(textDocuments),
-    api: textDocumentType.api,
+    proposalTexts: readonly(proposalTexts),
+    api: proposalTextType.api,
     getDocuments
   }
 }
