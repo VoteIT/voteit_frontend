@@ -31,15 +31,13 @@ const canAdd: Predicate = (agendaItem: AgendaItem) => {
 }
 
 function canChange (proposal: Proposal): boolean {
-  // TODO Not implemented
-  if (proposal.shortname === 'diff_proposal') return false
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
   return !meetingRules.isFinished(meeting) && meetingRules.isModerator(meeting)
 }
 
-const canDelete: Predicate = (proposal: Proposal) => {
+function canDelete (proposal: Proposal): boolean {
   return canChange(proposal) && !isUsedInPoll(proposal)
 }
 

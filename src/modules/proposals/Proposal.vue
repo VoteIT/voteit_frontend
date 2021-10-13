@@ -122,7 +122,7 @@ export default defineComponent({
 
     const menuItems = computed<MenuItem[]>(() => {
       const items: MenuItem[] = []
-      if (proposalType.rules.canChange(props.p)) {
+      if (props.p.shortname !== 'diff_proposal' && proposalType.rules.canChange(props.p)) {
         items.push({
           title: t('edit'),
           icon: 'mdi-pencil',
