@@ -21,9 +21,9 @@
         <span v-if="item.count">{{ item.count }}</span>
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
-      <transition name="slide-down">
+      <v-expand-transition>
         <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @firstContent="firstContent()" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)" />
-      </transition>
+      </v-expand-transition>
     </li>
   </ul>
 </template>
@@ -102,20 +102,8 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.slide-down-enter-active
-  transition: max-height .2s ease-in
-.slide-down-leave-active
-  transition: max-height .1s ease-out
-
-.slide-down-enter-from,
-.slide-down-leave-to
-  max-height: 0 !important
-
 ul.menu-tree
-  &:not(.level-0)
-    max-height: 2000px
-    overflow: hidden
-  padding: 0 0 .8em !important
+  // padding: 0 0 .8em !important
   .mdi
     transition: transform .2s
   li.open > a .mdi-chevron-right

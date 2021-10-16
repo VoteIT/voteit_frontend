@@ -45,7 +45,7 @@ interface ERMethod {
 const methods = ref<ERMethod[] | null>(null)
 
 export default defineComponent({
-  name: 'ElectoralRegisters',
+  translationKey: 'accessPolicy.plural',
   path: 'ers',
   icon: 'mdi-vote',
   setup () {

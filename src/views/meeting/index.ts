@@ -1,5 +1,5 @@
 import AgendaItem from '../../modules/agendas/AgendaItemView.vue'
-import ControlPanel from './ControlPanel.vue'
+import ControlPanel from '../../modules/meetings/ControlPanel.vue'
 import Meeting from '../../modules/meetings/MeetingView.vue'
 import Participants from '../../modules/meetings/ParticipantsView.vue'
 import Start from '../../modules/meetings/StartView.vue'

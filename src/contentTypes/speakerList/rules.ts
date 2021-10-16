@@ -5,7 +5,7 @@ import { Predicate, SpeakerList } from '../types'
 import speakerSystemRules from '../speakerSystem/rules'
 
 import { SpeakerListState } from './workflowStates'
-import { SpeakerSystem } from '../speakerSystem'
+import { SpeakerSystem } from '@/modules/speakerLists/types'
 
 const { user } = useAuthentication()
 

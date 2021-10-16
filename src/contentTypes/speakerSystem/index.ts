@@ -1,29 +1,14 @@
 /* eslint-disable camelcase */
+import { SpeakerSystem } from '@/modules/speakerLists/types'
+import { speakerSystemWorkflows } from '@/modules/speakerLists/workflowStates'
 import ContentType from '../ContentType'
 
 import rules from './rules'
-import states, { SpeakerSystemState } from './workflowStates'
-
-export enum SpeakerSystemMethod {
-  Simple = 'simple',
-  Priority = 'priority',
-}
-
-export interface SpeakerSystem {
-  pk: number
-  title: string
-  state: SpeakerSystemState
-  active_list?: number
-  meeting: number
-  method_name: SpeakerSystemMethod
-  safe_positions?: number
-  settings: object // TODO
-}
 
 export default new ContentType<SpeakerSystem>({
   channelName: 'speaker_system',
   restEndpoint: 'speaker-list-systems/',
-  states,
+  states: speakerSystemWorkflows,
   rules,
   hasRoles: true
 })

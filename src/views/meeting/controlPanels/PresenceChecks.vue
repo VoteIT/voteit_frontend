@@ -12,8 +12,10 @@
     <v-sheet border rounded>
       <v-list>
         <v-list-item v-for="check in closedChecks" :key="check.pk">
-          <v-list-item-title class="mr-2">{{ t('presence.closedAt') }} <Moment ordinary :date="check.closed"/></v-list-item-title>
-          <v-list-item-subtitle>{{ t('presence.presentCount', { count: getPresenceCount(check) }) }}</v-list-item-subtitle>
+          <v-list-item-content>
+            <v-list-item-title class="mr-2">{{ t('presence.closedAt') }} <Moment ordinary :date="check.closed"/></v-list-item-title>
+            <v-list-item-subtitle>{{ t('presence.presentCount', { count: getPresenceCount(check) }) }}</v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
         <v-list-item v-if="!closedChecks.length">
           <em>{{ t('presence.noRecentlyClosedChecks') }}</em>
@@ -38,7 +40,7 @@ import { ControlPanelComponent } from './types'
 
 export default defineComponent({
   components: { Moment, PresenceCheckControl },
-  name: 'PresenceChecks',
+  translationKey: 'presence.checks',
   path: 'presence',
   icon: 'mdi-hand-wave',
   setup () {

@@ -36,7 +36,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useAlert from '@/composables/useAlert'
 
 export default defineComponent({
-  name: 'AccessPolicies',
+  translationKey: 'accessPolicy.plural',
   path: 'aps',
   icon: 'mdi-key',
   setup () {

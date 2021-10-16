@@ -1,10 +1,10 @@
 import { ControlPanelComponent } from './types'
 import AccessPolicies from './AccessPolicies.vue'
-import Agenda from './Agenda.vue'
+import Agenda from '@/modules/agendas/ControlPanel.vue'
 import ElectoralRegisters from './ElectoralRegisters.vue'
 import PresenceChecks from './PresenceChecks.vue'
 import Reactions from './Reactions.vue'
-import SpeakerSystems from './SpeakerSystems.vue'
+import SpeakerSystems from '../../../modules/speakerLists/ControlPanel.vue'
 
 export default {
   AccessPolicies,

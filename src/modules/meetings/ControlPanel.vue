@@ -3,7 +3,8 @@
     <v-col>
       <header>
         <h1>{{ t('meeting.settings.for', meeting) }}</h1>
-        <v-btn color="primary" v-if="currentComponent" prepend-icon="mdi-chevron-left" @click="$router.push(`${meetingPath}/settings`)">
+        <v-breadcrumbs v-if="breadcrumbs.length" :items="breadcrumbs" />
+        <v-btn color="primary" v-if="currentComponent" prepend-icon="mdi-chevron-left" :to="`${meetingPath}/settings`">
           {{ t('meeting.settings.all') }}
         </v-btn>
       </header>
@@ -18,7 +19,7 @@
         <v-card>
           <v-card-title>
             <v-icon v-if="p.icon" sm :icon="p.icon" class="mr-2" />
-            {{ p.name }}
+            {{ t(p.translationKey) }}
           </v-card-title>
           <v-card-text v-if="p.description">
             {{ p.description }}
@@ -36,7 +37,7 @@ import { useI18n } from 'vue-i18n'
 
 import useMeeting from '@/modules/meetings/useMeeting'
 
-import controlPanels from './controlPanels'
+import controlPanels from '@/views/meeting/controlPanels'
 import { useTitle } from '@vueuse/core'
 
 export default defineComponent({
@@ -53,8 +54,22 @@ export default defineComponent({
     })
     const currentPanel = computed(() => route.params.panel as string)
     const currentComponent = computed(() => Object.values(controlPanels).find(p => p.path === route.params.panel))
+
+    const breadcrumbs = computed(() => {
+      if (currentPanel.value || !currentComponent.value) return []
+      return [{
+        text: t('settings'),
+        to: `${meetingPath.value}/settings`
+      },
+      {
+        text: t(currentComponent.value.translationKey),
+        to: `${meetingPath.value}/settings/${currentComponent.value.path}`
+      }]
+    })
+
     return {
       t,
+      breadcrumbs,
       meeting,
       meetingPath,
       panels,

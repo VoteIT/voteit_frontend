@@ -7,11 +7,6 @@ import { PresenceCheckState } from './presenceCheck/workflowStates'
 import { SpeakerListState } from './speakerList/workflowStates'
 import { UserState } from './user/workflowStates'
 
-export enum SpeakerSystemRole {
-  Speaker = 'speaker',
-  ListModerator = 'list_moderator'
-}
-
 export interface WorkflowState {
   state: string
   icon: string

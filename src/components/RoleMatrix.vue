@@ -6,7 +6,7 @@
           {{ t('name') }}
         </th>
         <th v-for="{ name, title } in roles" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
-          <v-icon :icon="getRoleIcon(name)" :title="title"/>
+          <v-icon :icon="getRoleIcon(name)" :title="title" />
           {{ roleCount(name) }}
         </th>
       </tr>

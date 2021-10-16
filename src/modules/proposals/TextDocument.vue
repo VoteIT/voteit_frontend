@@ -91,7 +91,9 @@ export default defineComponent({
   .text-diff-removed
     color: rgb(var(--v-theme-warning))
     text-decoration: line-through
+    font-weight: 700
   .text-diff-added
     color: rgb(var(--v-theme-success-darken-2))
     font-weight: 700
+    text-decoration: underline
 </style>

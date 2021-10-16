@@ -2,15 +2,15 @@ import { reactive } from 'vue'
 
 import { dateify } from '@/utils'
 import speakerListType from '@/contentTypes/speakerList'
-import speakerSystemType, { SpeakerSystem } from '@/contentTypes/speakerSystem'
+import speakerSystemType from '@/contentTypes/speakerSystem'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { SpeakerList, SpeakerOrderUpdate, SpeakerSystemRole } from '@/contentTypes/types'
-import { SpeakerSystemState } from '@/contentTypes/speakerSystem/workflowStates'
+import { SpeakerList, SpeakerOrderUpdate } from '@/contentTypes/types'
 import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 import { AgendaItem } from '../agendas/types'
+import { SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())

@@ -49,6 +49,7 @@
   "winners": "Winners",
   "yes": "Yes",
   "accessPolicy": {
+    "plural": "Access policies",
     "settings": "Access Policy settings",
     "rolesGiven": "Roles given"
   },
@@ -95,6 +96,7 @@
     "postPlaceholder": "Write your comment"
   },
   "electoralRegister": {
+    "plural": "Electoral registers",
     "method": "Method for electoral register",
     "saved": "Electoral register method now set to {er_policy_name}.",
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
@@ -234,6 +236,7 @@
     "view": "Plenary view"
   },
   "presence": {
+    "checks": "Presence checks",
     "closeCheck": "Close presence check",
     "closedAt": "Presence check closed",
     "manage": "Manage presence checks",
@@ -271,6 +274,7 @@
     "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?"
   },
   "reaction": {
+    "buttons": "Reaction buttons",
     "addButton": "New Reaction Button",
     "deleteButtonConfirmation": "You are about to delete a button permanently.\nAre you sure?",
     "editButton": "Edit Reaction Button",
@@ -304,9 +308,12 @@
     "selectAIList": "Select list to manage",
     "setActiveList": "Set as active list",
     "settings": "Speaker List settings",
+    "settingsHelp": "A speaker list system can only have one active speaker list. If you have parallel committees in you meeting, you can set up one system per committee.",
     "speakerCount": "No speakers in queue | One speaker in queue | {count} speakers in queue",
     "system": "Speaker system",
+    "systems": "Speaker systems",
     "systemAdd": "Add List System",
+    "systemEdit": "Edit List System",
     "systemMethod": "Priority method",
     "visible": "Visible to all participants"
   },

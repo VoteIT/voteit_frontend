@@ -27,7 +27,7 @@ import { ReactionButton } from '@/contentTypes/reactionButton'
 import ReactionEditModalVue from './ReactionEditModal.vue'
 
 export default defineComponent({
-  name: 'ReactionButtons',
+  translationKey: 'reaction.buttons',
   path: 'reactions',
   icon: 'mdi-thumb-up',
   setup () {

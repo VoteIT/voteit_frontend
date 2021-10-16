@@ -7,7 +7,7 @@ import speakerLists from '@/modules/speakerLists/router'
 import StartView from './StartView.vue'
 import ParticipantsView from './ParticipantsView.vue'
 import MeetingView from './MeetingView.vue'
-import ControlPanelView from '@/views/meeting/ControlPanel.vue'
+import ControlPanelView from '@/modules/meetings/ControlPanel.vue'
 
 export default {
   path: '/m/:id/:slug',

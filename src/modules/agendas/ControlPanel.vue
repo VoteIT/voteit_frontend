@@ -62,9 +62,9 @@
     </v-expand-transition>
     <v-divider class="mt-6 mb-2" />
     <h2>{{ t('agenda.newItem') }}</h2>
-    <form @submit.prevent="addAgendaItem" class="agenda-add-form mb-2">
-      <input ref="inputEl" type="text" :placeholder="t('title')" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
-      <v-btn :disabled="!newAgendaTitle" color="primary" @click="addAgendaItem">{{ t('add') }}</v-btn>
+    <form @submit.prevent="addAgendaItem" id="agenda-add-form" class="mb-2">
+      <v-text-field :label="t('title')" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
+      <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
     </form>
   </div>
   <div v-if="editMode.name === 'order'">
@@ -93,7 +93,7 @@ import agendaItemType from '@/contentTypes/agendaItem'
 import { WorkflowState } from '@/contentTypes/types'
 import { dialogQuery, openAlertEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { ControlPanelComponent } from './types'
+import { ControlPanelComponent } from '@/views/meeting/controlPanels/types'
 import { AxiosError, AxiosResponse } from 'axios'
 import { AlertLevel } from '@/composables/types'
 import { AgendaItem } from '@/modules/agendas/types'
@@ -104,7 +104,7 @@ interface Tab {
 }
 
 export default defineComponent({
-  name: 'Agenda',
+  translationKey: 'agenda.agenda',
   path: 'agenda',
   icon: 'mdi-clipboard-list',
   components: {
@@ -257,13 +257,15 @@ export default defineComponent({
 .sortable-ghost
   opacity: .5
 
-.agenda-add-form
+#agenda-add-form
   display: flex
-  input[type=text]
+  .v-input
     flex: 1 1 auto
+    margin-bottom: 0
   .v-btn
     border-top-left-radius: 0
     border-bottom-left-radius: 0
+    height: auto
 
 #agenda-edit
   width: 100%
