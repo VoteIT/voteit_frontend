@@ -63,7 +63,6 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import SelectVue from '@/components/inputs/Select.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
-import speakerSystemType from '@/contentTypes/speakerSystem'
 import { ContextRole } from '@/composables/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
 
@@ -71,6 +70,7 @@ import { User } from '@/contentTypes/types'
 
 import { canChangeSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
+import { speakerSystemType } from './contentTypes'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -88,7 +88,6 @@ export default defineComponent({
   icon: 'mdi-account-voice',
   setup () {
     const { t } = useI18n()
-    const systemChannel = speakerSystemType.getChannel()
     const { meetingId, meeting } = useMeeting()
     const speakerLists = useSpeakerLists()
     const loader = useLoader('SpeakerSystems panel')
@@ -97,7 +96,7 @@ export default defineComponent({
 
     onBeforeMount(() => {
       loader.call(async () => {
-        systemRoles.value = await systemChannel.getAvailableRoles()
+        systemRoles.value = await speakerSystemType.channel.getAvailableRoles()
       })
     })
 
@@ -152,7 +151,7 @@ export default defineComponent({
     }
 
     function addUser (system: SpeakerSystem, user: User) {
-      systemChannel.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
+      speakerSystemType.channel.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
     }
 
     function getSystemMenu (s: SpeakerSystem): MenuItem[] {
@@ -202,7 +201,7 @@ export default defineComponent({
       systems,
       SpeakerSystemMethod,
       systemData,
-      systemChannel,
+      systemChannel: speakerSystemType.channel,
       systemRoles,
       systemRules: speakerSystemType.rules,
       speakerSystemType,
