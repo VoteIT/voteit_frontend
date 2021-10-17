@@ -62,8 +62,8 @@
     </v-expand-transition>
     <v-divider class="mt-6 mb-2" />
     <h2>{{ t('agenda.newItem') }}</h2>
-    <form @submit.prevent="addAgendaItem" id="agenda-add-form" class="mb-2">
-      <v-text-field :label="t('title')" required v-model="newAgendaTitle" @keyup.ctrl.enter="addAgendaItem" />
+    <form @submit.prevent="addAgendaItem()" id="agenda-add-form" class="mb-2">
+      <v-text-field :label="t('title')" required v-model="newAgendaTitle" />
       <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
     </form>
   </div>
