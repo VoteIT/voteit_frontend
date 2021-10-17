@@ -105,7 +105,7 @@ export default defineComponent({
     }
 
     function focus () {
-      if (editorComponent.value) editorComponent.value.focus()
+      editorComponent.value?.focus()
     }
 
     const editorComponent = ref<null | EditorComponent>(null)

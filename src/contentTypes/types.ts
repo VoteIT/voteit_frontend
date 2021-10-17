@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 
+import { DiscussionPost } from '@/modules/discussions/types'
 import { MeetingRole } from '@/modules/meetings/types'
 import { Proposal } from '@/modules/proposals/types'
 import { ChannelsConfig } from '@/utils/types'
@@ -42,15 +43,6 @@ export interface Meeting extends StateContent {
   er_policy_name?: string
   public: boolean
   start_time: string | Date
-}
-
-export interface DiscussionPost {
-  readonly pk: number
-  readonly agenda_item: number
-  readonly author: number
-  readonly created: string | Date
-  body: string
-  tags: string[]
 }
 
 export interface SpeakerList extends BaseContent {
@@ -108,8 +100,6 @@ export interface MeetingAccessPolicy {
   pk: number // Meeting id
   policies: AccessPolicy[]
 }
-
-export type AuthoredContent = DiscussionPost | Proposal
 
 export enum SchemaType {
   Incoming = 'incoming',

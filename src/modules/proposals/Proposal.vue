@@ -30,15 +30,15 @@
         <v-btn prepend-icon="mdi-chevron-up" variant="text" v-if="showComments" @click="showComments = false">
           {{ t('discussion.hideComments') }}
         </v-btn>
-        <v-btn variant="text" v-else-if="comments?.length" @click="showComments = true">
-          {{ t('discussion.comments', { count: comments.length }) }}
+        <v-btn variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
+          {{ t('discussion.comments', { count: discussionPosts.length }) }}
         </v-btn>
         <slot name="buttons"/>
       </div>
       <Menu :items="menuItems" />
     </footer>
     <slot name="bottom"/>
-    <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="comments" :comment-input="discussionRules.canAdd(agendaItem)" />
+    <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" :comment-input="canAddDiscussionPost" />
   </div>
   <div v-else class="proposal">
     <em>{{ t('proposal.notFound') }}</em>
@@ -56,16 +56,15 @@ import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import Comments from '@/modules/discussions/Comments.vue'
 
-import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
+import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useUnread from '@/composables/useUnread'
 
 import proposalType from '@/contentTypes/proposal'
-import discussionRules from '@/contentTypes/discussionPost/rules'
-import { DiscussionPost } from '@/contentTypes/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useTags from '../meetings/useTags'
 import { Proposal } from './types'
+import useDiscussions from '../discussions/useDiscussions'
 
 export default defineComponent({
   name: 'Proposal',
@@ -74,7 +73,6 @@ export default defineComponent({
       type: Object as PropType<Proposal>,
       required: true
     },
-    comments: Array as PropType<DiscussionPost[]>,
     readOnly: Boolean
   },
   components: {
@@ -86,11 +84,12 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const api = proposalType.getContentApi()
-    const { agendaItem } = useAgenda()
+    const { agendaItem, canAddDiscussionPost } = useAgendaItem()
     const { isModerator } = useMeeting()
     const { getHTMLTags } = useTags()
     const editing = ref(false)
     const showComments = ref(false)
+    const { getProposalDiscussions } = useDiscussions()
 
     const wfState = computed(() => {
       return proposalType.useWorkflows().getState(props.p.state)
@@ -112,6 +111,10 @@ export default defineComponent({
       })) api.transition(props.p.pk, 'retract')
     }
 
+    const discussionPosts = computed(() => {
+      if (props.readOnly) return []
+      return getProposalDiscussions(props.p)
+    })
     const commentsComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     async function comment () {
       showComments.value = true
@@ -157,7 +160,8 @@ export default defineComponent({
       t,
       agendaItem,
       commentsComponent,
-      discussionRules,
+      canAddDiscussionPost,
+      discussionPosts,
       editing,
       extraTags,
       isUnread,

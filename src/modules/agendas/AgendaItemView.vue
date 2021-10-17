@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <Menu float :items="menuItems" />
-        <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
+        <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
         <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" />
       </v-col>
@@ -22,10 +22,10 @@
     <v-row>
       <v-col>
         <div class="d-flex">
-          <v-btn variant="text" @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-text-box-plus-outline" color="primary">
+          <v-btn variant="text" @click="focusProposalInput.emit()" v-if="canAddProposal" prepend-icon="mdi-text-box-plus-outline" color="primary">
             {{ t('proposal.add') }}
           </v-btn>
-          <v-btn variant="text" @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" v-show="displayMode === 'columns'" prepend-icon="mdi-comment-text-outline" color="primary" class="d-none d-md-inline">
+          <v-btn variant="text" @click="focusDiscussionInput.emit()" v-if="displayMode === 'columns' && canAddDiscussionPost" prepend-icon="mdi-comment-text-outline" color="primary" class="d-none d-md-inline">
             {{ t('discussion.add') }}
           </v-btn>
           <v-spacer />
@@ -43,34 +43,7 @@
       <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
-        <!-- <v-alert type="info" v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
-          <div>
-            <div class="mb-2">
-              You have unread proposals that are hidden by your filter.
-            </div>
-            <div>
-              <v-btn @click="setLastRead(agendaItem, true)" prepend-icon="mdi-check-all">
-                Mark all as read
-              </v-btn>
-              <v-btn v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
-                {{ t('defaultFilters') }}
-              </v-btn>
-            </div>
-          </div>
-        </v-alert> -->
-        <div v-if="sortedProposals.length">
-          <div v-for="p in sortedProposals" :key="p.pk">
-            <Proposal :p="p" :comments="getProposalDiscussions(p)" v-intersect="{
-                handler: proposalIntersect(p),
-                options: { threshold: 1 }
-              }">
-              <template v-slot:buttons>
-                <ReactionButton v-for="btn in proposalReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
-              </template>
-            </Proposal>
-          </div>
-        </div>
-        <v-alert type="info" icon="mdi-filter-outline" v-else-if="hasProposals" class="mb-2">
+        <v-alert type="info" icon="mdi-filter-outline" v-if="hasProposals && !sortedProposals.length" class="mb-2">
           <div>
             <div class="mb-2">{{ t('agenda.helpNoProposalsInFilter') }}</div>
             <v-btn v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
@@ -78,73 +51,53 @@
             </v-btn>
           </div>
         </v-alert>
-        <!-- <v-alert icon="mdi-text-box-outline" v-else class="mb-2">
-          {{ t('agenda.helpNoProposals') }}
-        </v-alert> -->
-        <AddContent v-if="proposalType.rules.canAdd(agendaItem)" :name="t('proposal.proposal')"
-                    :handler="addProposal" :placeholder="t('proposal.postPlaceholder')"
-                    :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
-                    ref="addProposalComponent" />
+        <AgendaProposals :proposals="sortedProposals" />
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
-        <div v-if="sortedDiscussions.length" class="no-list">
-          <DiscussionPost :p="d" v-for="d in sortedDiscussions" :key="d.pk">
-            <template v-slot:buttons>
-              <ReactionButton v-for="btn in discussionReactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: d.pk }">{{ btn.title }}</ReactionButton>
-            </template>
-          </DiscussionPost>
-        </div>
-        <!-- <v-alert icon="mdi-comment-text-outline" v-else class="mb-2">
-          {{ t('agenda.helpNoComments') }}
-        </v-alert> -->
-        <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
-                    :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
-                    :submitText="t('post')" submitIcon="mdi-comment-text-outline" ref="addDiscussionComponent"/>
+        <AgendaDiscussions :discussionPosts="sortedDiscussions" />
       </v-col>
     </v-row>
   </template>
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useStorage, useTitle } from '@vueuse/core'
 
-import AddContent from '@/components/AddContent.vue'
 import AgendaFilters from './AgendaFilters.vue'
 import Headline from '@/components/Headline.vue'
-import ProposalVue from '@/modules/proposals/Proposal.vue'
-import ReactionButton from '@/modules/reactions/ReactionButton.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import DiscussionPostVue from '@/modules/discussions/DiscussionPost.vue'
 import SpeakerList from '@/modules/speakerLists/SpeakerList.vue'
 import TextDocuments from '@/modules/proposals/TextDocuments.vue'
+import AgendaDiscussions from '../discussions/AgendaDiscussions.vue'
+import AgendaProposals from '../proposals/AgendaProposals.vue'
 
 import useAgenda from '@/modules/agendas/useAgenda'
 import useDiscussions from '@/modules/discussions/useDiscussions'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/modules/proposals/useProposals'
 import { Proposal } from '@/modules/proposals/types'
-import useReactions from '@/modules/reactions/useReactions'
 import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
+import { discussionPostType } from '@/modules/discussions/contentTypes'
 
 import agendaItemType from '@/contentTypes/agendaItem'
-import discussionPostType from '@/contentTypes/discussionPost'
 import pollType from '@/contentTypes/poll'
 import proposalType from '@/contentTypes/proposal'
 import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
-import { DiscussionPost } from '@/contentTypes/types'
+import { DiscussionPost } from '@/modules/discussions/types'
 import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
-import { useStorage, useTitle } from '@vueuse/core'
 import { LastReadKey } from '@/composables/useUnread'
 import { TagsKey, tagClickEvent } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
 import { AgendaFilterComponent, AgendaItem } from './types'
-import { canAddDocument } from '../proposals/rules'
 import { openModalEvent } from '@/utils'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
+import useAgendaItem from './useAgendaItem'
+import { focusDiscussionInput, focusProposalInput } from './events'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -154,8 +107,8 @@ export default defineComponent({
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { meetingPath, meetingId, meeting } = useMeeting()
-    const { agendaId, agendaItem, hasNewItems, agendaItemLastRead } = useAgenda()
-    const { getMeetingButtons } = useReactions()
+    const { hasNewItems, agendaItemLastRead } = useAgenda()
+    const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
     const channel = agendaItemType.getChannel()
 
     useTitle(computed(() => `${agendaItem.value?.title ?? t('agenda.item')} | ${meeting.value?.title ?? t('meeting')}`))
@@ -171,7 +124,6 @@ export default defineComponent({
       if (reversed) order = order.slice(1)
       return proposals.getAgendaProposals(agendaId.value, proposalFilter, order, reversed)
     })
-    // const hiddenUnreadProposals = computed(() => proposals.filterHidesUnread(agendaId.value, agendaItemLastRead.value, proposalFilter))
 
     function discussionFilter (d: DiscussionPost): boolean {
       const { tags } = activeFilter.value
@@ -189,8 +141,6 @@ export default defineComponent({
       const transform = (getter: (id: number) => { tags: string[] }[]) => Array.prototype.concat.apply([], getter(agendaId.value).map(i => i.tags))
       return new Set([...transform(proposals.getAgendaProposals), ...transform(discussions.getAgendaDiscussions)])
     })
-    const addProposalComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-    const addDiscussionComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     async function addProposal (body: string, tags: string[]) {
       await proposalType.getContentApi().add({
         agenda_item: agendaId.value,
@@ -206,9 +156,6 @@ export default defineComponent({
       })
     }
 
-    const proposalReactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
-    const discussionReactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
-
     const menuItems = computed<MenuItem[]>(() => {
       const items: MenuItem[] = []
       if (pollType.rules.canAdd(agendaItem.value)) {
@@ -218,7 +165,7 @@ export default defineComponent({
           to: `${meetingPath.value}/polls/new/${agendaId.value}`
         })
       }
-      if (agendaItemType.rules.canChange(agendaItem.value)) {
+      if (canChangeAgendaItem.value) {
         items.push({
           title: t('edit'),
           icon: 'mdi-pencil',
@@ -230,7 +177,7 @@ export default defineComponent({
           to: `/p/${meetingId.value}/${agendaId.value}`
         })
       }
-      if (agendaItem.value && canAddDocument(agendaItem.value)) {
+      if (canAddDocument.value) {
         items.push({
           title: t('proposal.textAdd'),
           icon: 'mdi-text-box-plus-outline',
@@ -256,22 +203,11 @@ export default defineComponent({
 
     const hasProposals = computed(() => proposals.agendaItemHasProposals(agendaId.value))
 
-    // Register whether all proposals has been read
-    // const proposalsRead = reactive<Set<number>>(new Set())
-    // function proposalIntersect (p: Proposal) {
-    //   return (isIntersecting: boolean) => {
-    //     if (isIntersecting) proposalsRead.add(p.pk)
-    //   }
-    // }
     function setLastRead (ai: AgendaItem, force = false) {
       // Allow forcing read marker, on user demand
       if (force) return channel.send('last_read.change', { agenda_item: ai.pk })
       // Return if there is no new content
       if (!ai || !hasNewItems(ai)) return
-      // Return if any unread proposals are unseen
-      // for (const p of proposals.getAgendaProposals(ai.pk)) {
-      //   if (p.created > agendaItemLastRead.value && !proposalsRead.has(p.pk)) return
-      // }
       channel.send('last_read.change', {
         agenda_item: ai.pk
       })
@@ -316,18 +252,18 @@ export default defineComponent({
       t,
       agendaId,
       agendaItem,
-      addDiscussionComponent,
-      addProposalComponent,
+      canAddProposal,
+      canAddDiscussionPost,
+      canChangeAgendaItem,
       content,
-      // hiddenUnreadProposals,
       ...discussions,
-      discussionReactions,
       displayMode,
       editing,
       filterComponent,
+      focusDiscussionInput,
+      focusProposalInput,
       meetingPath,
       menuItems,
-      proposalReactions,
       hasProposals,
       sortedProposals,
       sortedDiscussions,
@@ -342,21 +278,17 @@ export default defineComponent({
 
       addDiscussionPost,
       addProposal,
-      proposalIntersect: () => {},
       setLastRead,
       submit
-      // agendaItemLastRead
     }
   },
   components: {
-    AddContent,
-    DiscussionPost: DiscussionPostVue,
+    AgendaDiscussions,
+    AgendaProposals,
     Headline,
-    Proposal: ProposalVue,
     AgendaFilters,
     SpeakerList,
     Richtext,
-    ReactionButton,
     WorkflowState,
     TextDocuments
   }
@@ -368,10 +300,6 @@ export default defineComponent({
   border-top: 1px solid rgb(var(--v-border-color))
   margin-top: 1em
   padding-top: 1em
-
-.btn-actions.space-between
-  display: flex
-  justify-content: space-between
 
 #agenda-display-mode
   button

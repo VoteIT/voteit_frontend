@@ -24,8 +24,8 @@ import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useReactions from '@/modules/reactions/useReactions'
 
-import { DiscussionPost } from '@/contentTypes/types'
-import discussionPostType from '@/contentTypes/discussionPost'
+import { DiscussionPost } from './types'
+import { discussionPostType } from './contentTypes'
 
 export default defineComponent({
   components: {
@@ -39,15 +39,7 @@ export default defineComponent({
       required: true
     },
     commentInput: Boolean,
-    setTag: String,
-    minLength: {
-      type: Number,
-      default: 1
-    },
-    warnLength: {
-      type: Number,
-      default: 10
-    }
+    setTag: String
   },
   setup () {
     const { t } = useI18n()

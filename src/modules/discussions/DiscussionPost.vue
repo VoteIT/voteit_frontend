@@ -29,12 +29,14 @@ import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
 
 import { dialogQuery } from '@/utils'
-import discussionPostType from '@/contentTypes/discussionPost'
-import { DiscussionPost, Predicate } from '@/contentTypes/types'
 import { useI18n } from 'vue-i18n'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useUnread from '@/composables/useUnread'
 import useTags from '../meetings/useTags'
+
+import { DiscussionPost } from './types'
+import { discussionPostType } from './contentTypes'
+import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
 
 export default defineComponent({
   props: {
@@ -51,8 +53,6 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const { getHTMLTags } = useTags()
-    const api = discussionPostType.getContentApi()
-    const { canDelete, canChange } = discussionPostType.rules as Record<string, Predicate>
 
     const editing = ref(false)
     const { isUnread } = useUnread(props.p.created as Date)
@@ -61,19 +61,19 @@ export default defineComponent({
       if (await dialogQuery({
         title: t('discussion.deletePrompt'),
         theme: ThemeColor.Warning
-      })) api.delete(props.p.pk)
+      })) discussionPostType.api.delete(props.p.pk)
     }
 
     const menuItems = computed<MenuItem[]>(() => {
       const menu: MenuItem[] = []
-      if (canChange(props.p)) {
+      if (canChangeDiscussionPost(props.p)) {
         menu.push({
           title: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
-      if (canDelete(props.p)) {
+      if (canDeleteDiscussionPost(props.p)) {
         menu.push({
           title: t('delete'),
           icon: 'mdi-delete',
@@ -90,7 +90,7 @@ export default defineComponent({
     })
 
     return {
-      api,
+      api: discussionPostType.api,
       editing,
       extraTags,
       isUnread,

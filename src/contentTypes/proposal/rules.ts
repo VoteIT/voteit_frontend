@@ -2,7 +2,6 @@ import { meetings } from '@/modules/meetings/useMeetings'
 import { agendaItems } from '@/modules/agendas/useAgenda'
 
 import meetingRules from '../meeting/rules'
-import discussionRules from '../discussionPost/rules'
 import agendaRules from '../agendaItem/rules'
 import { isAuthor } from '../rules'
 import { Predicate } from '../types'
@@ -10,6 +9,7 @@ import { ProposalState } from './workflowStates'
 import { polls } from '@/modules/polls/usePolls'
 import { AgendaItem } from '@/modules/agendas/types'
 import { Proposal } from '@/modules/proposals/types'
+import { canAddDiscussionPost } from '@/modules/discussions/rules'
 
 const isPublished: Predicate = (proposal: Proposal) => {
   return proposal.state === ProposalState.Published
@@ -49,7 +49,7 @@ const canRetract: Predicate = (proposal: Proposal) => {
 
 const canComment: Predicate = (proposal: Proposal) => {
   const agendaItem = agendaItems.get(proposal.agenda_item)
-  return !!agendaItem && discussionRules.canAdd(agendaItem)
+  return !!agendaItem && canAddDiscussionPost(agendaItem)
 }
 
 export default {

@@ -7,7 +7,7 @@
           {{ previewActive ? 100 : 99 }}
         </v-btn>
       </Widget>
-      <form @submit.prevent class="mt-4">
+      <form @submit.prevent="save()" class="mt-4">
         <v-text-field dark required :label="t('title')" v-model="formData.title" />
         <div>
           <label>{{ t('color') }}</label>
@@ -40,20 +40,21 @@
           <CheckboxMultipleSelect name="listRoles" v-model="formData.list_roles" :settings="{ options: MeetingRole }" />
         </div>
         <div class="btn-controls submit">
-          <Btn icon="mdi-cancel" color="secondary" @click="close()">
+          <v-spacer />
+          <v-btn preprend-icon="mdi-cancel" color="secondary" @click="close()">
             {{ t('cancel') }}
-          </Btn>
+          </v-btn>
           <template v-if="formData.pk">
-            <Btn icon="mdi-send" :disabled="!isValid || submitting" @click="save()">
-              {{ t('update') }}
-            </Btn>
-            <Btn icon="mdi-delete" color="warning" :disabled="submitting" @click="deleteButton()">
+            <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" @click="deleteButton()">
               {{ t('delete') }}
-            </Btn>
+            </v-btn>
+            <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="!isValid || submitting">
+              {{ t('update') }}
+            </v-btn>
           </template>
-          <Btn v-else icon="mdi-send" :disabled="!isValid || submitting" @click="save()">
+          <v-btn v-else type="submit" color="primary" prepend-icon="mdi-send" :disabled="!isValid || submitting">
             {{ t('create') }}
-          </Btn>
+          </v-btn>
         </div>
       </form>
     </main>
