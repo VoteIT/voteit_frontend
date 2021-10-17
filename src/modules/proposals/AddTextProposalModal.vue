@@ -1,14 +1,14 @@
 <template>
   <main>
-    <transition name="slide-down">
+    <v-expand-transition>
       <form @submit.prevent="preview()" v-show="!done">
         <textarea class="form-control" v-model="paragraph" required />
         <div class="btn-group text-right">
-          <v-btn variant="text" color="warning" prepend-icon="mdi-undo-variant" @click="reset()">{{ t('reset') }}</v-btn>
+          <v-btn variant="text" color="warning" prepend-icon="mdi-undo-variant" :disabled="!isModified" @click="reset()">{{ t('reset') }}</v-btn>
           <v-btn type="submit" color="primary" prepend-icon="mdi-text-box-outline" :disabled="!isModified || !!html">{{ t('preview') }}</v-btn>
         </div>
       </form>
-    </transition>
+    </v-expand-transition>
     <template v-if="html">
       <v-divider class="my-4" v-if="!done" />
       <p class="proposal-text-paragraph" v-html="html"/>
