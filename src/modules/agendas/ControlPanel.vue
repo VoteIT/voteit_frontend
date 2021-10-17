@@ -29,10 +29,10 @@
             </td>
             <td>{{ ai.title }}</td>
             <td class="state">
-              <v-btn :icon="ai.block_proposals ? 'mdi-cancel' : 'mdi-check'" :color="ai.block_proposals ? 'warning' : 'success-darken-2'" size="x-small" @click="patchAgendaItem(ai, { block_proposals: !ai.block_proposals })"/>
+              <Switch :modelValue="!ai.block_proposals" @change="patchAgendaItem(ai, { block_proposals: !$event })" />
             </td>
             <td class="state">
-              <v-btn :icon="ai.block_discussion ? 'mdi-cancel' : 'mdi-check'" :color="ai.block_discussion ? 'warning' : 'success-darken-2'" size="x-small" @click="patchAgendaItem(ai, { block_discussion: !ai.block_discussion })"/>
+              <Switch :modelValue="!ai.block_discussion" @change="patchAgendaItem(ai, { block_discussion: !$event })" />
             </td>
             <td>
               <v-btn v-if="canDelete(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
@@ -46,17 +46,17 @@
         <h2>
           {{ t('agenda.changeMany', { count: editSelected.length }, editSelected.length) }}
         </h2>
-        <v-btn color="warning" prepend-icon="mdi-delete" :disabled="editManyWorking" @click="deleteSelected()">{{ t('delete') }}</v-btn>
+        <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">{{ t('delete') }}</v-btn>
         <div>
-          <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" :disabled="editManyWorking" @click="setStateSelected(state)">Set to {{ t(`workflowState.${state.state}`) }}</v-btn>
+          <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" @click="setStateSelected(state)">Set to {{ t(`workflowState.${state.state}`) }}</v-btn>
         </div>
         <div>
-          <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" :disabled="editManyWorking" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
-          <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" :disabled="editManyWorking" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
+          <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
+          <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
         </div>
         <div>
-          <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" :disabled="editManyWorking" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
-          <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" :disabled="editManyWorking" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
+          <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
+          <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
         </div>
       </v-sheet>
     </v-expand-transition>
@@ -85,6 +85,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
+import Switch from '@/components/inputs/Switch.vue'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
 
@@ -108,7 +109,8 @@ export default defineComponent({
   path: 'agenda',
   icon: 'mdi-clipboard-list',
   components: {
-    Draggable
+    Draggable,
+    Switch
   },
   setup () {
     const { t } = useI18n()
@@ -167,6 +169,7 @@ export default defineComponent({
     })
 
     async function actionOnSelected (fn: (pk: number) => Promise<AxiosResponse>, confirm?: string) {
+      if (editManyWorking.value) return
       editManyWorking.value = true
       if (confirm && !await dialogQuery({
         title: confirm,

@@ -9,6 +9,7 @@
 import { defineComponent, ref, watch } from 'vue'
 
 export default defineComponent({
+  emits: ['change', 'update:modelValue'],
   props: {
     value: Boolean,
     modelValue: Boolean,
@@ -49,6 +50,7 @@ export default defineComponent({
   border-radius: 8px
   &.active
     background-color: rgb(var(--v-theme-primary), .6)
+    box-shadow: 0px 0px 2px 3px rgba(var(--v-theme-primary), .2)
 
   .lever
     background-color: rgba(var(--v-theme-secondary), 1)
