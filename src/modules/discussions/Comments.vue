@@ -7,7 +7,7 @@
     </DiscussionPost>
     <AddContent ref="addContentComponent" v-if="commentInput" :name="t('discussion.discussion')"
                 :handler="submit" :placeholder="t('discussion.postPlaceholder')"
-                :submitText="t('post')" submitIcon="mdi-send"
+                :submitText="t('post')" submitIcon="mdi-comment-text-outline"
                 :setTag="setTag" />
   </div>
 </template>

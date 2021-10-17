@@ -2,15 +2,9 @@
   <template v-if="agendaItem">
     <v-row>
       <v-col>
-        <div id="agenda-display-mode" class="d-none d-md-block">
-          <span class="text-secondary">{{ t('agenda.showAs') }}</span>
-          <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
-            <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
-          </v-btn>
-        </div>
         <Menu float :items="menuItems" />
-        <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
         <WorkflowState :admin="agendaItemType.rules.canChange(agendaItem)" :content-type="agendaItemType" :object="agendaItem" />
+        <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" />
       </v-col>
     </v-row>
@@ -24,18 +18,31 @@
         <SpeakerList :list="list" />
       </v-col>
     </v-row>
+    <v-divider class="my-4" />
+    <v-row>
+      <v-col>
+        <div class="d-flex">
+          <v-btn variant="text" @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-text-box-plus-outline" color="primary">
+            {{ t('proposal.add') }}
+          </v-btn>
+          <v-btn variant="text" @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" v-show="displayMode === 'columns'" prepend-icon="mdi-comment-text-outline" color="primary" class="d-none d-md-inline">
+            {{ t('discussion.add') }}
+          </v-btn>
+          <v-spacer />
+          <AgendaFilters ref="filterComponent" :key="agendaId" />
+          <div id="agenda-display-mode" class="d-none d-md-block ml-8">
+            <span class="text-secondary">{{ t('agenda.showAs') }}</span>
+            <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
+              <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
+            </v-btn>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
         <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
-        <div class="btn-actions space-between mb-2">
-          <span>
-            <v-btn @click="addProposalComponent.focus()" v-if="proposalType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary">
-              {{ t('proposal.add') }}
-            </v-btn>
-          </span>
-          <AgendaFilters ref="filterComponent" :key="agendaId" />
-        </div>
         <!-- <v-alert type="info" v-if="hiddenUnreadProposals" icon="mdi-filter-outline">
           <div>
             <div class="mb-2">
@@ -81,11 +88,6 @@
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
         <h2>{{ t('discussion.discussions') }}</h2>
-        <div class="btn-actions space-between mb-2">
-          <v-btn @click="addDiscussionComponent.focus()" v-if="discussionPostType.rules.canAdd(agendaItem)" prepend-icon="mdi-plus" color="primary">
-            {{ t('discussion.add') }}
-          </v-btn>
-        </div>
         <div v-if="sortedDiscussions.length" class="no-list">
           <DiscussionPost :p="d" v-for="d in sortedDiscussions" :key="d.pk">
             <template v-slot:buttons>
@@ -98,7 +100,7 @@
         </v-alert> -->
         <AddContent v-if="discussionPostType.rules.canAdd(agendaItem)" :name="t('discussion.discussion')"
                     :handler="addDiscussionPost" :placeholder="t('discussion.postPlaceholder')"
-                    :submitText="t('post')" submitIcon="mdi-send" ref="addDiscussionComponent"/>
+                    :submitText="t('post')" submitIcon="mdi-comment-text-outline" ref="addDiscussionComponent"/>
       </v-col>
     </v-row>
   </template>
@@ -372,8 +374,6 @@ export default defineComponent({
   justify-content: space-between
 
 #agenda-display-mode
-  margin-top: .5em
-  text-align: right
   button
     border-radius: 0
     min-width: 40px
@@ -384,7 +384,8 @@ export default defineComponent({
       opacity: 1
       border-bottom: 1px solid #000
   span
-    font-size: 14pt
+    vertical-align: middle
+    font-size: 12pt
   img
     width: 24px
     height: auto

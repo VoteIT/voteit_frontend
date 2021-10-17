@@ -3,9 +3,9 @@
     <v-col lg="8" offset-lg="2">
       <header>
         <Menu float :items="menuItems" />
+        <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
         <Headline v-model="content.title" :editing="editing" @edit-done="submit()" />
       </header>
-      <WorkflowState :admin="canChange(meeting)" :content-type="meetingType" :object="meeting" />
       <Richtext v-model="content.body" :editing="editing" @edit-done="submit()" variant="full" />
     </v-col>
   </v-row>

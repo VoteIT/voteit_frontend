@@ -103,7 +103,7 @@ export default defineComponent({
 
 <style lang="sass">
 ul.menu-tree
-  // padding: 0 0 .8em !important
+  margin-bottom: 8px
   .mdi
     transition: transform .2s
   li.open > a .mdi-chevron-right
@@ -141,7 +141,9 @@ ul.menu-tree
       font-weight: bold
 
   &.level-0 > li
-    border-bottom: 1px solid rgb(var(--v-theme-app-bar-divider))
+    border-top: 1px solid rgb(var(--v-theme-app-bar-divider))
+    &:first-child
+      border-top: 0
     font-size: 12pt
     > a
       padding-top: 7px

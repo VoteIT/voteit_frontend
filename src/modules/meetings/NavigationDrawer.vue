@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-if="initDone" app id="agenda" v-model="isOpen" width="348">
+  <v-navigation-drawer v-if="initDone" app id="meeting-navigation" v-model="isOpen" width="348">
     <MenuTree :items="menu" @navigation="toggleDrawer" />
   </v-navigation-drawer>
 </template>
@@ -176,7 +176,7 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-#agenda
+#meeting-navigation
   background-color: rgb(var(--v-theme-app-bar))
   color: rgb(var(--v-theme-on-app-bar))
 </style>

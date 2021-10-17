@@ -1,10 +1,12 @@
 <template>
   <BtnDropdown ref="root" right dense>
     <template v-slot:activator="{ toggle }">
-      <v-btn size="small" color="warning" variant="text" icon="mdi-undo-variant" @click="clearFilters()" :disabled="!isModified" :title="t('defaultFilters')" />
-      <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
-        {{ t('sortAndFilter') }}
-      </v-btn>
+      <span class="text-no-wrap">
+        <v-btn size="small" color="warning" variant="text" icon="mdi-undo-variant" @click="clearFilters()" :disabled="!isModified" :title="t('defaultFilters')" />
+        <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
+          {{ t('sortAndFilter') }}
+        </v-btn>
+      </span>
     </template>
     <v-list density="comfortable" class="agenda-filters">
       <template v-if="activeFilter.tags.size">
@@ -15,12 +17,12 @@
         <v-divider/>
       </template>
       <v-list-subheader>{{ t('orderBy')}}</v-list-subheader>
-      <v-list-item :prepend-icon="activeFilter.order === f.id ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'" :active="activeFilter.order === f.id" v-for="f in orders" :key="f.id" @click="activeFilter.order = f.id" @keydown.space.enter.prevent="activeFilter.order = f.id">
+      <v-list-item :prepend-icon="activeFilter.order === f.id ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'" v-for="f in orders" :key="f.id" @click="activeFilter.order = f.id" @keydown.space.enter.prevent="activeFilter.order = f.id">
         {{ f.label }}
       </v-list-item>
       <v-divider/>
       <v-list-subheader>{{ t('state') }}</v-list-subheader>
-      <v-list-item :prepend-icon="f.active ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'" :active="f.active" v-for="f in states" :key="f.id" @click="f.active = !f.active" @keydown.space.enter.prevent="f.active = !f.active">
+      <v-list-item :prepend-icon="f.active ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'" v-for="f in states" :key="f.id" @click="f.active = !f.active" @keydown.space.enter.prevent="f.active = !f.active">
         {{ f.label }}
       </v-list-item>
     </v-list>
