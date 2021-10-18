@@ -1,17 +1,20 @@
 import { agendaItems } from '../agendas/useAgenda'
-import { isAIModerator, isFinishedAI } from '../agendas/rules'
+import { isAIModerator, isFinishedAI, isPrivateAI, isProposalBlocked } from '../agendas/rules'
 import { meetings } from '../meetings/useMeetings'
 import { AgendaItem } from '../agendas/types'
-
-import agendaRules from '@/contentTypes/agendaItem/rules'
-import meetingRules from '@/contentTypes/meeting/rules'
 
 import { ProposalText } from './contentTypes'
 import useProposals from './useProposals'
 import useTextDocuments from './useTextDocuments'
+import { Proposal, ProposalState } from './types'
+import { polls } from '../polls/usePolls'
+import { isAuthor } from '@/contentTypes/rules'
+import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
 
 const { iterProposals } = useProposals()
 const { proposalTexts } = useTextDocuments()
+
+/* Proposal texts / documents */
 
 export function documentHasProposals (doc: ProposalText): boolean {
   const tags = doc.paragraphs.map(p => p.tag)
@@ -42,10 +45,40 @@ export function canChangeDocument (doc: ProposalText): boolean {
 
 export const canDeleteDocument = canChangeDocument
 
+/* Plain proposals */
+
+function isPublishedProposal (proposal: Proposal): boolean {
+  return proposal.state === ProposalState.Published
+}
+
+function isUsedInPoll (proposal: Proposal): boolean {
+  for (const poll of polls.values()) {
+    if (poll.proposals.includes(proposal.pk)) return true
+  }
+  return false
+}
+
 export function canAddProposal (agendaItem: AgendaItem): boolean {
   const meeting = meetings.get(agendaItem.meeting)
-  return !agendaRules.isFinished(agendaItem) && (
-    meetingRules.isModerator(meeting) || (
-      !agendaRules.isPrivate(agendaItem) && !agendaRules.isProposalBlocked(agendaItem) && meetingRules.isProposer(meeting)
+  return !isFinishedAI(agendaItem) && (
+    isModerator(meeting) || (
+      !isPrivateAI(agendaItem) && !isProposalBlocked(agendaItem) && isProposer(meeting)
     ))
+}
+
+export function canChangeProposal (proposal: Proposal): boolean {
+  const agendaItem = agendaItems.get(proposal.agenda_item)
+  if (!agendaItem) return false
+  const meeting = meetings.get(agendaItem.meeting)
+  return !isFinishedMeeting(meeting) && isModerator(meeting)
+}
+
+export function canDeleteProposal (proposal: Proposal): boolean {
+  return canChangeProposal(proposal) && !isUsedInPoll(proposal)
+}
+
+export function canRetractProposal (proposal: Proposal): boolean {
+  const agendaItem = agendaItems.get(proposal.agenda_item)
+  if (!agendaItem) return false
+  return isAuthor(proposal) && isPublishedProposal(proposal) && !isProposalBlocked(agendaItem) && !isFinishedAI(agendaItem) && !isPrivateAI(agendaItem)
 }

@@ -1,6 +1,6 @@
 import { inject, computed, InjectionKey, Ref } from 'vue'
 
-export const LastReadKey: InjectionKey<Ref<Date>> = Symbol('LastRead')
+export const LastReadKey: InjectionKey<null | Ref<Date>> = Symbol('LastRead')
 
 export default function useUnread (modifiedOrCreated: Date) {
   const lastRead = inject(LastReadKey)

@@ -2,9 +2,8 @@ import { ref } from 'vue'
 
 import restApi from '@/utils/restApi'
 
-import { Organization, User } from '@/contentTypes/types'
 import useContextRoles from './useContextRoles'
-import { UserState } from '@/contentTypes/user/workflowStates'
+import { UserState, User, Organisation } from '@/modules/organisations/types'
 import { AxiosError } from 'axios'
 
 export const user = ref<User | null>(null)
@@ -42,7 +41,7 @@ export default function useAuthentication () {
   //   location.assign(organization.login_url)
   // }
 
-  function getOrganizationLoginURL (organization: Organization): string {
+  function getOrganizationLoginURL (organization: Organisation): string {
     if (!organization.login_url) throw new Error(`Organization ${organization.title} has no login information`)
     return `${process.env.VUE_APP_ID_HOST}/login-to/${organization.pk}` // TODO Add /login or whatenvs
   }

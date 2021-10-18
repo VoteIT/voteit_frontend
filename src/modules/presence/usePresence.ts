@@ -1,12 +1,10 @@
 import { reactive } from 'vue'
 
-import presenceType from '@/contentTypes/presence'
-import presenceCheckType from '@/contentTypes/presenceCheck'
-
 import useAuthentication from '@/composables/useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
-import { PresenceCheckState } from '@/contentTypes/presenceCheck/workflowStates'
+import { PresenceCheckState } from '@/modules/presence/workflowStates'
 import { dateify, mapFilter } from '@/utils'
+import { presenceCheckType, presenceType } from './contentTypes'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
@@ -17,14 +15,13 @@ interface PresenceCheckStatusMessage {
   present: number
 }
 
-presenceCheckType.getChannel()
-  .updateMap(presenceChecks, pc => dateify(pc, ['opened', 'closed']))
+presenceCheckType
+  .channelUpdateMap(presenceChecks)
   .on<PresenceCheckStatusMessage>('status', ({ pk, present }) => {
     presenceCount.set(pk, present)
   })
 
-const channel = presenceType.getChannel()
-  .updateMap(presence)
+const channel = presenceType.channel.updateMap(presence)
 
 export default function usePresence () {
   const { user } = useAuthentication()

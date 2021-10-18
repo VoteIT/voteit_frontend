@@ -14,12 +14,11 @@
 import Quill from 'quill'
 import 'quill-mention'
 import { defineComponent, inject, onMounted, PropType, ref } from 'vue'
-import meetingRoleType from '@/contentTypes/meetingRole'
 import useMeeting from '@/modules/meetings/useMeeting'
-import { MeetingRoles } from '@/composables/types'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { useI18n } from 'vue-i18n'
 import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
+import { meetingRoleType } from '@/modules/meetings/contentTypes'
 
 const mentionOptions = {
   allowedChars: /^[0-9A-Za-z\-\sÅÄÖåäö]*$/,
@@ -104,7 +103,6 @@ export default defineComponent({
     const editorElement = ref<HTMLElement | null>(null)
     const rootElement = ref<HTMLElement | null>(null)
 
-    const rolesApi = meetingRoleType.getContentApi()
     const { meetingId } = useMeeting()
 
     function tagObject (tagName: string): TagObject {
@@ -129,11 +127,11 @@ export default defineComponent({
           if (!searchTerm.length) {
             return renderList([])
           }
-          rolesApi.list({
+          meetingRoleType.api.list({
             search: searchTerm.toLowerCase(),
             context: meetingId.value
           })
-            .then(({ data }: { data: MeetingRoles[] }) => {
+            .then(({ data }) => {
               renderList(data.map(({ user }) => {
                 return {
                   id: user.pk,
@@ -173,7 +171,7 @@ export default defineComponent({
         config.modules.mention.source = mentionSource
         editor = new Quill(editorElement.value, config)
         editor.on('text-change', () => {
-          emit('update:modelValue', editor?.root.innerHTML)
+          emit('update:modelValue', editor?.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Disallow non-beaking spaces - they often show up by accident
         })
         if (props.setFocus) {
           focus()
@@ -242,8 +240,4 @@ export default defineComponent({
 
 ul.ql-mention-list
   padding: 0 !important
-
-.mention
-  background-color: rgba(var(--v-theme-primary), .3)
-  padding: .3em .1em .1em
 </style>

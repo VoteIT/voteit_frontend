@@ -1,8 +1,7 @@
 import { computed, reactive, readonly, ref } from 'vue'
 
-import { ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { ProposalState, Proposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/modules/proposals/types'
 
 const { getProposal, iterProposals } = useProposals()
 

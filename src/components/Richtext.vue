@@ -124,4 +124,17 @@ export default defineComponent({
     max-width: 100%
   code
     color: rgb(var(--v-theme-secondary))
+
+.richtext,
+.ql-editor
+  p
+    font-size: 10.5pt
+    line-height: 1.5
+  .mention
+    background-color: rgba(var(--v-theme-primary), .3)
+    white-space: nowrap
+    padding: .05em .6em
+    border-radius: 4px
+    font-size: 10pt
+
 </style>

@@ -13,9 +13,8 @@ import { slugify, toggleNavDrawerEvent } from '@/utils'
 import useLoader from '@/composables/useLoader'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
-import agendaItemType from '@/contentTypes/agendaItem'
-import meetingRules from '@/contentTypes/meeting/rules'
-import pollType from '@/contentTypes/poll'
+import { agendaItemType } from '../agendas/contentTypes'
+import { pollType } from '../polls/contentTypes'
 
 import { WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/modules/polls/usePolls'
@@ -24,6 +23,8 @@ import MenuTree from '@/components/MenuTree.vue'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import { PollState } from '../polls/types'
 import { AgendaItem } from '../agendas/types'
+import { canAddPoll } from '../polls/rules'
+import { canChangeMeeting } from './rules'
 
 export default defineComponent({
   name: 'Agenda',
@@ -33,7 +34,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { getAgenda, hasNewItems } = useAgenda()
-    const { meeting, meetingId, meetingPath, hasRole } = useMeeting()
+    const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
     const agendaWorkflows = agendaItemType.useWorkflows()
     const pollWorkflows = pollType.useWorkflows()
@@ -55,7 +56,7 @@ export default defineComponent({
 
     const aiMenus = computed<TreeMenuItem[]>(() => {
       const menus: TreeMenuItem[] = []
-      if (agendaItemType.rules.canChange(meeting.value)) {
+      if (isModerator.value) {
         menus.push({
           title: t('agenda.edit'),
           to: meetingPath.value + '/settings/agenda',
@@ -81,7 +82,7 @@ export default defineComponent({
         title: t('poll.all'),
         to: `${meetingPath.value}/polls`
       }]
-      if (pollType.rules.canAdd(meeting.value)) {
+      if (meeting.value && canAddPoll(meeting.value)) {
         menus.push({
           title: t('poll.new'),
           to: `${meetingPath.value}/polls/new`,
@@ -139,14 +140,10 @@ export default defineComponent({
         icon: 'mdi-format-list-bulleted',
         openFirstNonEmpty: true
       }]
-      if (meetingRules.canChange(meeting.value)) {
+      if (canChangeMeeting(meeting.value)) {
         items[0].items.push({
           title: t('settings'),
           to: `${meetingPath.value}/settings`
-        })
-        items[2].items.unshift({
-          title: t('agenda.edit'),
-          to: `${meetingPath.value}/settings/agenda`
         })
       }
       return items

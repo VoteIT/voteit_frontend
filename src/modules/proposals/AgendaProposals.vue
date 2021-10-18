@@ -20,10 +20,10 @@ import useReactions from '../reactions/useReactions'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 
-import proposalType from '@/contentTypes/proposal'
 import { focusProposalInput } from '../agendas/events'
 import { Proposal } from './types'
 import ProposalVue from './Proposal.vue'
+import { proposalType } from './contentTypes'
 
 export default defineComponent({
   components: {

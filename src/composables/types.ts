@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import { User } from '@/contentTypes/types'
 import { MeetingRole } from '@/modules/meetings/types'
+import { User } from '@/modules/organisations/types'
 import { ThemeColor } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'

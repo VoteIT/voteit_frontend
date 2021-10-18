@@ -1,6 +1,6 @@
 import { computed, reactive } from 'vue'
 
-import { DEFAULT_FILTER_STATES } from '@/contentTypes/proposal/workflowStates'
+import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
 
 import { Filter } from './types'
 import useAgendaItem from './useAgendaItem'

@@ -81,15 +81,11 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/modules/proposals/useProposals'
 import { Proposal } from '@/modules/proposals/types'
 import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
-import { discussionPostType } from '@/modules/discussions/contentTypes'
+import { proposalType } from '../proposals/contentTypes'
+import { discussionPostType } from '../discussions/contentTypes'
 
-import agendaItemType from '@/contentTypes/agendaItem'
-import pollType from '@/contentTypes/poll'
-import proposalType from '@/contentTypes/proposal'
-import speakerListType from '@/contentTypes/speakerList'
 import { MenuItem } from '@/utils/types'
 import { DiscussionPost } from '@/modules/discussions/types'
-import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import { LastReadKey } from '@/composables/useUnread'
 import { TagsKey, tagClickEvent } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
@@ -98,6 +94,9 @@ import { openModalEvent } from '@/utils'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 import useAgendaItem from './useAgendaItem'
 import { focusDiscussionInput, focusProposalInput } from './events'
+import { canAddPoll } from '../polls/rules'
+import { agendaItemType } from './contentTypes'
+import { SpeakerListState } from '../speakerLists/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -109,7 +108,6 @@ export default defineComponent({
     const { meetingPath, meetingId, meeting } = useMeeting()
     const { hasNewItems, agendaItemLastRead } = useAgenda()
     const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
-    const channel = agendaItemType.getChannel()
 
     useTitle(computed(() => `${agendaItem.value?.title ?? t('agenda.item')} | ${meeting.value?.title ?? t('meeting')}`))
 
@@ -142,14 +140,14 @@ export default defineComponent({
       return new Set([...transform(proposals.getAgendaProposals), ...transform(discussions.getAgendaDiscussions)])
     })
     async function addProposal (body: string, tags: string[]) {
-      await proposalType.getContentApi().add({
+      await proposalType.api.add({
         agenda_item: agendaId.value,
         body,
         tags
       })
     }
     async function addDiscussionPost (body: string, tags: string[]) {
-      await discussionPostType.getContentApi().add({
+      await discussionPostType.api.add({
         agenda_item: agendaId.value,
         body,
         tags
@@ -157,8 +155,9 @@ export default defineComponent({
     }
 
     const menuItems = computed<MenuItem[]>(() => {
+      if (!agendaItem.value) return []
       const items: MenuItem[] = []
-      if (pollType.rules.canAdd(agendaItem.value)) {
+      if (canAddPoll(agendaItem.value)) {
         items.push({
           title: t('poll.new'),
           icon: 'mdi-star',
@@ -205,10 +204,10 @@ export default defineComponent({
 
     function setLastRead (ai: AgendaItem, force = false) {
       // Allow forcing read marker, on user demand
-      if (force) return channel.send('last_read.change', { agenda_item: ai.pk })
+      if (force) return agendaItemType.channel.send('last_read.change', { agenda_item: ai.pk })
       // Return if there is no new content
       if (!ai || !hasNewItems(ai)) return
-      channel.send('last_read.change', {
+      agendaItemType.channel.send('last_read.change', {
         agenda_item: ai.pk
       })
     }
@@ -242,7 +241,7 @@ export default defineComponent({
     function submit () {
       editing.value = false
       if (content.title === agendaItem.value?.title && content.body === agendaItem.value?.body) return
-      channel.change(agendaId.value, { ...content })
+      agendaItemType.channel.change(agendaId.value, { ...content })
     }
 
     provide(LastReadKey, agendaItemLastRead)
@@ -271,10 +270,6 @@ export default defineComponent({
       speakerSystems,
 
       agendaItemType,
-      discussionPostType,
-      pollType,
-      proposalType,
-      speakerListType,
 
       addDiscussionPost,
       addProposal,

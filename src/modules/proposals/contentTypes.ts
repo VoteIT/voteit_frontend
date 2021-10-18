@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 import ContentType from '@/contentTypes/ContentType'
+import { Proposal } from './types'
+import { proposalStates } from './workflowStates'
 
 export interface TextParagraph {
   paragraph_id: number
@@ -18,6 +20,13 @@ export interface ProposalText {
   paragraphs: TextParagraph[]
   base_tag: string
 }
+
+export const proposalType = new ContentType<Proposal>({
+  states: proposalStates,
+  channelName: 'proposal',
+  restEndpoint: 'proposals/',
+  dateFields: ['created']
+})
 
 export const proposalTextType = new ContentType<ProposalText>({
   channelName: 'text_document',

@@ -1,7 +1,14 @@
 /* eslint-disable camelcase */
-import { AgendaState } from '@/contentTypes/agendaItem/workflowStates'
-import { ProposalState } from '@/contentTypes/proposal/workflowStates'
 import { ComponentPublicInstance, ComputedRef } from 'vue'
+import { ProposalState } from '../proposals/types'
+
+export enum AgendaState {
+  Private = 'private',
+  Upcoming = 'upcoming',
+  Ongoing = 'ongoing',
+  Closed = 'closed',
+  Archived = 'archived'
+}
 
 export interface AgendaItem {
   pk: number

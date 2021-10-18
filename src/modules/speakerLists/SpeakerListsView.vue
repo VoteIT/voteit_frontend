@@ -22,7 +22,7 @@
       <v-item-group class="speaker-lists" v-model="currentList">
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, disabled }" :disabled="!!speakers.getSystemActiveSpeaker(speakerSystem)">
           <v-card :color="isSelected ? 'primary' : undefined" class="mb-2" :disabled="disabled && !isSelected">
-            <Menu float :items="getListMenu(list)" :show-transitions="canChange(list)" :content-type="speakerListType" :object="list" />
+            <Menu float :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
             <v-card-title>
               {{ list.title }}
             </v-card-title>
@@ -42,7 +42,7 @@
     </v-col>
     <v-col cols="12" order-sm="0" sm="7" md="6" lg="5" offset-md="1" offset-lg="2">
       <template v-if="currentList">
-        <template v-if="canStart(currentList)">
+        <template v-if="canStartSpeaker(currentList)">
           <div class="btn-group mb-2">
             <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
@@ -90,14 +90,15 @@ import useAgenda from '@/modules/agendas/useAgenda'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
-import speakerListType from '@/contentTypes/speakerList'
 import useMeeting from '@/modules/meetings/useMeeting'
-import { SpeakerList, User } from '@/contentTypes/types'
+import { User } from '@/modules/organisations/types'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery } from '@/utils'
 import { AgendaItem } from '../agendas/types'
-import { SpeakerSystem } from './types'
+import { SpeakerList, SpeakerSystem } from './types'
+import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker } from './rules'
+import { speakerListType } from './contentTypes'
 
 interface AgendaNav {
   icon: string
@@ -180,19 +181,19 @@ export default defineComponent({
       if (await dialogQuery({
         title: t('speaker.confirmListDeletion'),
         theme: ThemeColor.Warning
-      })) await speakerListType.getContentApi().delete(list.pk)
+      })) await speakerListType.api.delete(list.pk)
     }
 
     function getListMenu (list: SpeakerList): MenuItem[] {
       const menu: MenuItem[] = []
-      if (speakerListType.rules.canActivate(list)) {
+      if (canActivateList(list)) {
         menu.push({
           title: t('speaker.setActiveList'),
           icon: 'mdi-toggle-switch-off',
           onClick: async () => speakers.setActiveList(list)
         })
       }
-      if (speakerListType.rules.canDelete(list)) {
+      if (canDeleteSpeakerList(list)) {
         menu.push({
           title: t('delete'),
           icon: 'mdi-delete',
@@ -214,11 +215,12 @@ export default defineComponent({
       speakerSystems,
       speakerLists,
       speakerListType,
-      ...speakerListType.rules,
       meetingPath,
       navigation,
       addSpeaker,
       addSpeakerList,
+      canChangeSpeakerList,
+      canStartSpeaker,
       isSelf,
       getListMenu
     }
@@ -230,6 +232,7 @@ export default defineComponent({
 div.speaker-lists
   .v-card
     overflow: visible
+    z-index: unset
 
 ol.speaker-queue
   margin-left: 1.2em

@@ -1,8 +1,8 @@
-import reactionType, { Reaction, ReactionCountMessage, ReactionRelation } from '@/contentTypes/reaction'
-import reactionButtonType, { ReactionButton } from '@/contentTypes/reactionButton'
 import { mapFilter, orderBy } from '@/utils'
 import { reactive } from 'vue'
 import useAuthentication from '@/composables/useAuthentication'
+import { reactionButtonType, reactionType } from './contentTypes'
+import { Reaction, ReactionButton, ReactionCountMessage, ReactionRelation } from './types'
 
 function getCountKey (contentType: string, objectId: number, button: number) {
   return `${contentType}/${objectId}/${button}`
@@ -14,9 +14,9 @@ const reactionCounts = reactive<Map<string, number>>(new Map())
 
 const { user } = useAuthentication()
 
-reactionButtonType.getChannel()
+reactionButtonType.channel
   .updateMap(reactionButtons)
-export const reactionChannel = reactionType.getChannel()
+reactionType.channel
   .updateMap(reactions)
   .on<ReactionCountMessage>('count', payload => {
     const key = getCountKey(payload.content_type, payload.object_id, payload.button)
@@ -48,8 +48,8 @@ export default function useReactions () {
   }
 
   function setUserReacted (button: ReactionButton, relation: ReactionRelation) {
-    return reactionChannel.add({
-      button: button.pk, // FIXME Should be button!
+    return reactionType.channel.add({
+      button: button.pk,
       ...relation,
       user: user.value?.pk
     })
@@ -58,7 +58,7 @@ export default function useReactions () {
   function removeUserReacted (button: ReactionButton, relation: ReactionRelation) {
     const reaction = getUserReaction(button, relation)
     if (reaction) {
-      return reactionChannel.delete(reaction.pk)
+      return reactionType.channel.delete(reaction.pk)
     } else {
       return Promise.reject(new Error('User has no previous reaction'))
     }

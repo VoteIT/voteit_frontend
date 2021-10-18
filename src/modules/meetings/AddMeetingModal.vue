@@ -17,15 +17,14 @@ import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
-import meetingType from '@/contentTypes/meeting'
 import useModal from '@/composables/useModal'
+import { meetingType } from './contentTypes'
 
 export default defineComponent({
   name: 'AddMeetingModal',
   setup () {
     const { t } = useI18n()
     const router = useRouter()
-    const meetingApi = meetingType.getContentApi()
     const modal = useModal()
 
     const formData = reactive({
@@ -39,7 +38,7 @@ export default defineComponent({
     async function addMeeting () {
       if (submitting.value) return
       submitting.value = true
-      const { data } = await meetingApi.add(formData)
+      const { data } = await meetingType.api.add(formData)
       modal.closeModal()
       router.push(`/m/${data.pk}/${slugify(data.title)}`)
     }

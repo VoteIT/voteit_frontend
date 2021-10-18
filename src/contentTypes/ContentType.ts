@@ -2,12 +2,12 @@ import { RestApiConfig } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
-import { ChannelConfig, Predicate, WorkflowState } from './types'
+import { ChannelConfig, WorkflowState } from './types'
 import useWorkflows from './useWorkflows'
 
 interface CType {
   states?: WorkflowState[]
-  rules?: Record<string, Predicate>
+  // rules?: Record<string, Predicate>
   channelName?: string
   restEndpoint?: string
   hasRoles?: boolean
@@ -23,7 +23,7 @@ export default class ContentType<T extends Record<string, any>, K extends string
     this.contentType = contentType
   }
 
-  public dateify (obj: Record<string, any>): T {
+  private dateify (obj: Record<string, any>): T {
     if (!this.contentType.dateFields) return obj as T
     for (const field of this.contentType.dateFields) {
       if (typeof obj[field] === 'string') obj[field] = new Date(obj[field])
@@ -32,7 +32,7 @@ export default class ContentType<T extends Record<string, any>, K extends string
   }
 
   public channelUpdateMap (map: Map<number, T>) {
-    this.channel.updateMap(map, this.dateify.bind(this))
+    return this.channel.updateMap(map, this.dateify.bind(this))
   }
 
   public get name () {
@@ -43,9 +43,9 @@ export default class ContentType<T extends Record<string, any>, K extends string
     return this.contentType.states
   }
 
-  public get rules () {
-    return this.contentType.rules || {}
-  }
+  // public get rules () {
+  //   return this.contentType.rules || {}
+  // }
 
   public get api () {
     // Cache an api instance with default settings
@@ -59,22 +59,22 @@ export default class ContentType<T extends Record<string, any>, K extends string
     return this._channel
   }
 
-  getChannel (config?: ChannelConfig): Channel<T> {
+  public getChannel (config?: ChannelConfig): Channel<T> {
     if (!this.contentType.channelName) throw new Error(`Channel not configured for Content Type ${this.name}`)
     return new Channel<T>(this.contentType.channelName, config, this.contentType.hasRoles)
   }
 
-  getContentApi (config?: RestApiConfig): ContentAPI<T, K> {
+  public getContentApi (config?: RestApiConfig): ContentAPI<T, K> {
     if (!this.contentType.restEndpoint) throw new Error(`Content Api not configured for Content Type ${this.name}`)
     return new ContentAPI<T, K>(this.contentType.restEndpoint, this.contentType.states, config)
   }
 
-  useWorkflows () {
+  public useWorkflows () {
     if (!this.contentType.states) throw new Error(`Workflow States not configured for Content Type ${this.name}`)
     return useWorkflows(this.contentType.states)
   }
 
-  useContextRoles () {
+  public useContextRoles () {
     if (!this.contentType.hasRoles || !this.contentType.channelName) throw new Error(`Context Roles not configured for Content Type ${this.name}`)
     return useContextRoles(this.contentType.channelName)
   }

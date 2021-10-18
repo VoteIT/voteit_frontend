@@ -4,9 +4,9 @@
 
 <script lang="ts">
 import useMeeting from '@/modules/meetings/useMeeting'
-import accessPolicy from '@/contentTypes/accessPolicy'
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { accessPolicyType } from '../contentTypes'
 
 export default defineComponent({
   inject: ['t'],
@@ -14,12 +14,11 @@ export default defineComponent({
     const router = useRouter()
     const { meetingId, meetingPath } = useMeeting()
     const submitting = ref(false)
-    const policyApi = accessPolicy.getContentApi()
 
     async function joinNow () {
       submitting.value = true
       try {
-        await policyApi.action(meetingId.value, 'join')
+        await accessPolicyType.api.action(meetingId.value, 'join')
         router.push(meetingPath.value)
       } catch {
         // TODO

@@ -8,7 +8,7 @@
         <v-list-item v-for="meeting in participatingMeetings" :key="meeting.pk" :to="`/m/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
       </v-list>
       <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
-      <div v-if="canAdd()" class="mt-4">
+      <div v-if="canAddMeeting()" class="mt-4">
         <v-btn prepend-icon="mdi-plus" variant="text" color="primary" @click="createMeeting()">{{ t('meeting.create') }}</v-btn>
       </div>
     </v-col>
@@ -39,9 +39,9 @@
         <v-card :title="o.title" v-if="o.login_url">
           <v-card-text>
             <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
-            <v-chip-group>
+            <div>
               <v-chip v-for="scope in o.scopes" :key="scope">{{ scope }}</v-chip>
-            </v-chip-group>
+            </div>
           </v-card-text>
           <v-card-actions v-if="o.login_url">
             <v-btn :href="getOrganizationLoginURL(o)" prepend-icon="mdi-login">
@@ -73,7 +73,6 @@ import AddMeetingVue from '@/modules/meetings/AddMeetingModal.vue'
 import Counter from '@/components/examples/Counter.vue'
 import getSchema from '@/components/examples/GetSchema.vue'
 
-import rules from '@/contentTypes/meeting/rules'
 import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/modules/meetings/useMeetings'
@@ -83,6 +82,7 @@ import useOrganisations from '@/modules/organisations/useOrganisations'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { useTitle } from '@vueuse/core'
 import Invite from '@/modules/meetings/Invite.vue'
+import { canAddMeeting } from '@/modules/meetings/rules'
 
 const { meetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -131,7 +131,6 @@ export default defineComponent({
         component: AddMeetingVue
       })
     }
-
     return {
       t,
       isAuthenticated,
@@ -140,8 +139,8 @@ export default defineComponent({
       organisations,
       participatingMeetings,
       user,
-      ...rules,
 
+      canAddMeeting,
       createMeeting,
       getOrganizationLoginURL,
       logout,

@@ -1,5 +1,5 @@
-import { socketState } from '@/contentTypes/Channel'
 import { computed, ref, watch } from 'vue'
+import Channel, { socketState } from '@/contentTypes/Channel'
 
 import useAuthentication from './useAuthentication'
 
@@ -47,7 +47,7 @@ export default function useLoader (name: string) {
     })
   }
 
-  async function subscribe (channel: any, uriOrPk: string | number) {
+  async function subscribe<T> (channel: Channel<T>, uriOrPk: string | number) {
     if (initDone.value) return channel.subscribe(uriOrPk)
     return new Promise<void>((resolve, reject) => {
       callbacks.push(async () => {

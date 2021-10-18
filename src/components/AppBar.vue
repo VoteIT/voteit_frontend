@@ -17,10 +17,10 @@
               <UserAvatar size="large" />
             </v-list-item>
             <v-list-item>
-              <v-list-item-content>
+              <div>
                 <v-list-item-title class="text-h6">{{ user.full_name }}</v-list-item-title>
                 <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
-              </v-list-item-content>
+              </div>
             </v-list-item>
             <v-divider class="mb-2 mt-2" />
             <v-list-item :href="idHost" prepend-icon="mdi-account" disabled>

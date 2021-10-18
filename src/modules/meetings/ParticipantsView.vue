@@ -2,7 +2,7 @@ git<template>
   <main>
     <h1>{{ t('meeting.participants') }}</h1>
     <div v-if="canChangeRoles" class="search">
-      <UserSearch @submit="addUser" :omitIds="getUserIds(meetingId)" />
+      <UserSearch @submit="addUser" :omitIds="omitIds" />
     </div>
     <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
   </main>
@@ -22,10 +22,8 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRoles } from '@/composables/types'
 
-import meetingType from '@/contentTypes/meeting'
 import { MeetingRole } from './types'
-
-const meetingChannel = meetingType.getChannel()
+import { meetingType } from './contentTypes'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -38,13 +36,13 @@ const meetingIcons: Record<MeetingRole, string> = {
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const { meetingId, meeting, getUser } = useMeeting()
+    const { meetingId, meeting, getUser, canChangeRoles } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
 
     useTitle(computed(() => `${t('meeting.participants')} | ${meeting.value?.title}`))
 
     function addRole (user: number, role: string) {
-      meetingChannel.addRoles(meetingId.value, user, role)
+      meetingType.channel.addRoles(meetingId.value, user, role)
     }
 
     function addUser (user: ContextRoles) {
@@ -63,16 +61,15 @@ export default defineComponent({
       return true
     }
 
-    const canChangeRoles = computed(() => {
-      return meetingType.rules.canChangeRoles(meeting.value)
-    })
+    const omitIds = computed(() => getUserIds(meetingId.value))
 
     return {
       t,
       canChangeRoles,
-      meetingChannel,
+      meetingChannel: meetingType.channel,
       meetingIcons,
       meetingId,
+      omitIds,
       addUser,
       getUserIds,
       removeConfirm

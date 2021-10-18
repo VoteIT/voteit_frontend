@@ -1,20 +1,20 @@
 import { reactive, computed } from 'vue'
 
-import meetingType from '@/contentTypes/meeting'
-import pollType from '@/contentTypes/poll'
 import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 import { dateify, mapFilter } from '@/utils'
 import Channel from '@/contentTypes/Channel'
 import { Poll, PollState, PollStatus } from './types'
 import { PollMethod, PollMethodName } from './methods/types'
+import { meetingType } from '../meetings/contentTypes'
+import { pollType } from './contentTypes'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
-pollType.getChannel()
-  .updateMap(polls, p => dateify(p, ['started', 'closed']))
+pollType
+  .channelUpdateMap(polls)
   .onStatus((_: any) => {
     const item = _ as PollStatus
     const existing = pollStatuses.get(item.pk)
@@ -36,7 +36,7 @@ new Channel<Vote>('vote')
 /*
 ** Clear polls when leaving meeting.
 */
-meetingType.getChannel()
+meetingType.channel
   .onLeave(pk => {
     for (const poll of polls.values()) {
       if (poll.meeting === pk) {

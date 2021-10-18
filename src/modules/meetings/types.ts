@@ -1,4 +1,8 @@
 /* eslint-disable camelcase */
+import { BaseContent } from '@/contentTypes/types'
+import { ComputedRef, DefineComponent } from 'vue'
+
+export type ControlPanelComponent = DefineComponent<{}, { title: ComputedRef<string> }, {}, {}, {}>
 export interface BubbleComponent {
   name: string
 }
@@ -45,4 +49,22 @@ export interface MeetingInvite {
   roles: MeetingRole[]
   state: MeetingInviteState
   used_by: null | number
+}
+
+export enum MeetingState {
+  Upcoming = 'upcoming',
+  Ongoing = 'ongoing',
+  Closed = 'closed',
+  Archiving = 'archiving',
+  Archived = 'archived'
+}
+
+export interface Meeting extends BaseContent {
+  state: MeetingState
+  body: string
+  current_user_roles?: MeetingRole[]
+  end_time: Date | null
+  er_policy_name?: string
+  public: boolean
+  start_time: Date | null
 }

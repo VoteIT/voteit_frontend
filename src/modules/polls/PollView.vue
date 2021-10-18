@@ -3,8 +3,8 @@
     <v-col offset-lg="2" lg="8">
       <header>
         <div class="header-meta">
-          <span v-if="isOngoing && !canVote(poll)" class="header-tag">{{ t('poll.cantVote') }}</span>
-          <WorkflowState :admin="canChange(poll)" :contentType="pollType" :object="poll" />
+          <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
+          <WorkflowState :admin="canChange" :contentType="pollType" :object="poll" />
         </div>
         <h1>{{ poll.title }}</h1>
         <p class="text-secondary">{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
@@ -19,7 +19,7 @@
         </template>
       </header>
       <template v-if="votingComplete">
-        <div class="btn-controls mt-6" v-if="canVote(poll)">
+        <div class="btn-controls mt-6" v-if="canVote">
           <v-btn color="primary" prepend-icon="mdi-chevron-left" @click="$router.push(allPollsPath)">
             {{ t('poll.all') }}
           </v-btn>
@@ -30,8 +30,8 @@
       </template>
       <template v-else>
         <v-divider />
-        <component class="voting-component" :disabled="!canVote(poll)" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
-        <div class="btn-controls mt-6" v-if="canVote(poll)">
+        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
+        <div class="btn-controls mt-6" v-if="canVote">
           <v-btn color="primary" :disabled="!validVote || submitting" @click="castVote()" size="large" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
           </v-btn>
@@ -52,13 +52,12 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
-import pollType from '@/contentTypes/poll'
-
 import WorkflowState from '@/components/WorkflowState.vue'
 import Channel from '@/contentTypes/Channel'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import usePoll from './usePoll'
+import { pollType } from './contentTypes'
 
 export default defineComponent({
   name: 'PollView',
@@ -68,7 +67,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const { poll, isOngoing, isFinished, userVote, voteComponent, resultComponent } = usePoll(computed(() => Number(route.params.pid)))
+    const { poll, isOngoing, isFinished, userVote, canChange, canVote, voteComponent, resultComponent } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath } = useMeeting()
     const channels = new Channel('vote')
 
@@ -116,9 +115,10 @@ export default defineComponent({
     return {
       t,
       allPollsPath,
+      canChange,
+      canVote,
       poll,
       pollType,
-      ...pollType.rules,
       resultComponent,
       isOngoing,
       isFinished,

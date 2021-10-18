@@ -36,10 +36,11 @@ import { onClickOutside } from '@vueuse/core'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'
 
-import workflowStates, { DEFAULT_FILTER_STATES, ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { DEFAULT_FILTER_STATES, proposalStates } from '@/modules/proposals/workflowStates'
 
 // import { TagsKey } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
+import { ProposalState } from '../proposals/types'
 
 interface FilterDescription {
   id: string
@@ -65,7 +66,7 @@ export default defineComponent({
         label: t('newestFirst')
       }
     ])
-    const states = reactive<FilterDescription[]>(workflowStates.map(state => ({
+    const states = reactive<FilterDescription[]>(proposalStates.map(state => ({
       id: state.state,
       label: t(`workflowState.${state.state}`),
       active: activeFilter.value.states.has(state.state)

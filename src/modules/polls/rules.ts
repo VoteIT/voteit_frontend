@@ -1,0 +1,58 @@
+import { meetings } from '../meetings/useMeetings'
+import { agendaItems } from '../agendas/useAgenda'
+
+import useAuthentication from '@/composables/useAuthentication'
+import { AgendaItem } from '../agendas/types'
+import useElectoralRegisters from '../meetings/useElectoralRegisters'
+import { Poll } from './types'
+import { isAIModerator, isFinishedAI } from '../agendas/rules'
+import { isFinishedMeeting, isModerator } from '../meetings/rules'
+import { Meeting } from '../meetings/types'
+
+const { user } = useAuthentication()
+const { getRegister } = useElectoralRegisters()
+
+const PERMISSIVE_STATES = ['private', 'upcoming', 'ongoing'] // States where moderators can make changes
+
+function isPollVoter (poll: Poll): boolean {
+  if (!poll.electoral_register || !user.value) return false
+  const register = getRegister(poll.electoral_register)
+  if (!register) return false
+  return register.has(user.value.pk)
+}
+
+function isOngoingPoll (poll: Poll): boolean {
+  return poll.state === 'ongoing'
+}
+
+function isPermissiveState (poll: Poll): boolean {
+  return PERMISSIVE_STATES.includes(poll.state)
+}
+
+export function canAddPoll (context: Meeting | AgendaItem): boolean {
+  // TODO Adding to different contexts needs better architecture
+  if ('meeting' in context) {
+    // Is agenda item
+    return !isFinishedAI(context) && isAIModerator(context)
+  }
+  // Else meeting
+  return !isFinishedMeeting(context) && isModerator(context)
+}
+
+export function canChangePoll (poll: Poll): boolean {
+  const agendaItem = agendaItems.get(poll.agenda_item)
+  if (!agendaItem) return false
+  const meeting = meetings.get(agendaItem.meeting)
+  return isPermissiveState(poll) && isModerator(meeting)
+}
+
+export function canDeletePoll (poll: Poll): boolean {
+  const agendaItem = agendaItems.get(poll.agenda_item)
+  if (!agendaItem) return false
+  const meeting = meetings.get(agendaItem.meeting)
+  return isModerator(meeting)
+}
+
+export function canVote (poll: Poll): boolean {
+  return isOngoingPoll(poll) && isPollVoter(poll)
+}

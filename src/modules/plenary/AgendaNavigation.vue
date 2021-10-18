@@ -23,14 +23,14 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { toggleNavDrawerEvent } from '@/utils'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { AgendaItem } from '@/modules/agendas/types'
-import { useI18n } from 'vue-i18n'
-import usePlenary from './usePlenary'
 import useProposals from '@/modules/proposals/useProposals'
+import usePlenary from './usePlenary'
 
 export default defineComponent({
   setup () {

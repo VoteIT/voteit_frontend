@@ -1,12 +1,7 @@
 /* eslint-disable camelcase */
-
-import { DiscussionPost } from '@/modules/discussions/types'
 import { MeetingRole } from '@/modules/meetings/types'
-import { Proposal } from '@/modules/proposals/types'
-import { ChannelsConfig } from '@/utils/types'
-import { PresenceCheckState } from './presenceCheck/workflowStates'
-import { SpeakerListState } from './speakerList/workflowStates'
-import { UserState } from './user/workflowStates'
+import { ChannelsConfig, ThemeColor } from '@/utils/types'
+import { PresenceCheckState } from '../modules/presence/workflowStates'
 
 export interface WorkflowState {
   state: string
@@ -15,6 +10,7 @@ export interface WorkflowState {
   requiresRole?: MeetingRole
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first
+  color?: ThemeColor
 }
 
 // Transitions from backend
@@ -34,27 +30,6 @@ export interface BaseContent {
 
 export interface StateContent extends BaseContent {
   state: string
-}
-
-export interface Meeting extends StateContent {
-  body: string
-  current_user_roles?: MeetingRole[]
-  end_time: string | Date
-  er_policy_name?: string
-  public: boolean
-  start_time: string | Date
-}
-
-export interface SpeakerList extends BaseContent {
-  state: SpeakerListState
-  readonly speaker_system: number
-  readonly agenda_item: number
-}
-
-export interface SpeakerOrderUpdate {
-  readonly pk: number // Speaker list
-  queue: number[] // Current order
-  current: number // Current speaker
 }
 
 export interface PresenceCheck {
@@ -109,31 +84,4 @@ export enum SchemaType {
 // For Channel.ts
 export interface ChannelConfig extends ChannelsConfig {
   leaveDelay?: number
-}
-
-export type Predicate = (obj: any) => boolean
-
-export enum OrganizationRole {
-  Manager = 'org_manager',
-  MeetingCreator = 'meeting_creator',
-}
-
-export interface Organization {
-  pk: number
-  title: string
-  body: string
-  login_url: string | null
-  scopes: string[]
-}
-
-export interface User {
-  pk: number
-  first_name: string
-  full_name: string
-  img_url: string | null
-  last_name: string
-  organisation: number
-  organisation_roles: OrganizationRole[]
-  state: UserState
-  userid: string | null
 }

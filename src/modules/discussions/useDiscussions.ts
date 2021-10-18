@@ -2,11 +2,11 @@ import { reactive } from 'vue'
 
 import { dateify, mapFilter, orderBy } from '@/utils'
 
-import agendaItemType from '@/contentTypes/agendaItem'
 import { discussionPostType } from './contentTypes'
 import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 import { Proposal } from '@/modules/proposals/types'
 import { DiscussionPost } from './types'
+import { agendaItemType } from '../agendas/contentTypes'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 
@@ -24,7 +24,7 @@ function deleteForAgendaItem (uriOrPk: number | string) {
 // Automatically clear proposals for deleted (or made private) agenda_items
 agendaDeletedEvent.on(deleteForAgendaItem)
 // Automatically clear proposals for agenda item when unsubscribed
-agendaItemType.getChannel().onLeave(deleteForAgendaItem)
+agendaItemType.channel.onLeave(deleteForAgendaItem)
 
 function orderedDiscussions (filter: (d: DiscussionPost) => boolean) {
   return orderBy([...mapFilter(discussions, filter)])

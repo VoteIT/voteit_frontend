@@ -3,22 +3,24 @@
     <h3>{{ t('presence.ongoingCheck') }}</h3>
     <p><Moment :prepend="t('presence.openedAt')" :date="check.opened"/></p>
     <p>{{ t('presence.presentCount', { count }) }}</p>
-    <Btn :disabled="submitting" v-if="canChange(check)" @click="closeCheck()" color="warning" icon="mdi-stop">{{ t('presence.closeCheck') }}</Btn>
+    <Btn :disabled="submitting" v-if="canChange" @click="closeCheck()" color="warning" icon="mdi-stop">{{ t('presence.closeCheck') }}</Btn>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, onBeforeUnmount, PropType, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import usePresence from '@/modules/presence/usePresence'
-import presenceCheckType from '@/contentTypes/presenceCheck'
 import { PresenceCheck } from '@/contentTypes/types'
 
 import Moment from '@/components/Moment.vue'
 
+import { canChangePresenceCheck } from './rules'
+import { presenceCheckType } from './contentTypes'
+
 export default defineComponent({
   components: { Moment },
-  inject: ['t'],
   props: {
     check: {
       type: Object as PropType<PresenceCheck>,
@@ -27,9 +29,9 @@ export default defineComponent({
     subscribe: Boolean
   },
   setup (props) {
+    const { t } = useI18n()
     const presence = usePresence()
     const submitting = ref(false)
-    const channel = presenceCheckType.getChannel()
 
     async function closeCheck () {
       if (submitting.value) return
@@ -43,16 +45,18 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      props.subscribe && channel.subscribe(props.check.pk)
+      props.subscribe && presenceCheckType.channel.subscribe(props.check.pk)
     })
     onBeforeUnmount(() => {
-      props.subscribe && channel.leave(props.check.pk)
+      props.subscribe && presenceCheckType.channel.leave(props.check.pk)
     })
 
     const count = computed(() => presence.getPresenceCount(props.check))
+    const canChange = computed(() => canChangePresenceCheck(props.check))
 
     return {
-      ...presenceCheckType.rules,
+      t,
+      canChange,
       count,
       submitting,
       closeCheck

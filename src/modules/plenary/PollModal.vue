@@ -23,11 +23,11 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, onBeforeUnmount, PropType, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import usePoll from '@/modules/polls/usePoll'
 import { Poll, PollState, PollTransition } from '../polls/types'
-import pollType from '@/contentTypes/poll'
-import { useI18n } from 'vue-i18n'
+import { pollType } from '../polls/contentTypes'
 
 export default defineComponent({
   props: {

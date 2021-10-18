@@ -38,16 +38,16 @@ import { useI18n } from 'vue-i18n'
 
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/modules/proposals/types'
+import { Proposal, ProposalState } from '@/modules/proposals/types'
 import { LastReadKey } from '@/composables/useUnread'
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
-import proposalType from '@/contentTypes/proposal'
 import { WorkflowState } from '@/contentTypes/types'
-import proposalStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { proposalStates } from '@/modules/proposals/workflowStates'
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 
 import usePlenary from './usePlenary'
 import { tagClickEvent } from '../meetings/useTags'
+import { proposalType } from '../proposals/contentTypes'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
@@ -59,7 +59,6 @@ export default defineComponent({
     const { t } = useI18n()
     const { agendaId, agendaItem } = useAgendaItem()
     const { getAgendaProposals } = useProposals()
-    const proposalApi = proposalType.getContentApi()
     const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
 
     useMeetingChannel(true)
@@ -79,10 +78,11 @@ export default defineComponent({
     async function makeTransition (p: Proposal, state: WorkflowState) {
       if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
       if (state.state === p.state) return // No need to change state then is there?
-      await proposalApi.transition(p.pk, state.transition)
+      await proposalType.api.transition(p.pk, state.transition)
     }
     onMounted(() => {
       tagClickEvent.on(selectTag)
+      clearSelected()
     })
     onBeforeUnmount(() => {
       tagClickEvent.off(selectTag)

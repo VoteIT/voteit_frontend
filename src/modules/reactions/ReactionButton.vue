@@ -5,11 +5,12 @@
 </template>
 
 <script lang="ts">
-import useReactions from '@/modules/reactions/useReactions'
-import { ReactionRelation } from '@/contentTypes/reaction'
-import rules from '@/contentTypes/reaction/rules'
-import { ReactionButton } from '@/contentTypes/reactionButton'
 import { computed, defineComponent, PropType } from 'vue'
+
+import useReactions from '@/modules/reactions/useReactions'
+import { canAddReaction, canDeleteReaction } from './rules'
+import { ReactionButton, ReactionRelation } from './types'
+
 export default defineComponent({
   props: {
     button: {
@@ -38,8 +39,7 @@ export default defineComponent({
       reaction,
       count,
       toggle,
-      disabled: computed(() => reaction.value ? !rules.canDelete(reaction.value) : !rules.canAdd(props.button)),
-      ...rules
+      disabled: computed(() => reaction.value ? !canDeleteReaction(reaction.value) : !canAddReaction(props.button))
     }
   }
 })

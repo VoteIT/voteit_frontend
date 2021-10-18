@@ -7,10 +7,10 @@
     <v-sheet rounded elevation="4" class="selector" v-show="results.length">
       <v-list>
         <v-list-item v-for="result in results" :key="result.pk" @click="select(result)">
-          <v-list-item-content v-if="result.full_name">
+          <div v-if="result.full_name">
             <v-list-item-title >{{ result.full_name }}</v-list-item-title>
             <v-list-item-subtitle>{{ result.userid }}</v-list-item-subtitle>
-          </v-list-item-content>
+          </div>
           <v-list-item-title v-else>-- unknown --</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -19,8 +19,8 @@
 </template>
 
 <script lang="ts">
-import { User } from '@/contentTypes/types'
-import userType from '@/contentTypes/user'
+import { userType } from '@/modules/organisations/contentTypes'
+import { User } from '@/modules/organisations/types'
 import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -41,7 +41,6 @@ export default defineComponent({
   emits: ['submit'],
   setup (props, { emit }) {
     const { t } = useI18n()
-    const contentApi = userType.getContentApi()
     const query = ref('')
     const results = ref<User[]>([])
     const selected = ref<User | null>(null)
@@ -52,7 +51,7 @@ export default defineComponent({
         results.value = []
         return
       }
-      const { data } = await contentApi.list({
+      const { data } = await userType.api.list({
         search: query.value
       })
       results.value = data.filter(u => !props.omitIds?.includes(u.pk))

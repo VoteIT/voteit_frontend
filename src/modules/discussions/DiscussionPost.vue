@@ -102,6 +102,7 @@ export default defineComponent({
 
 <style lang="sass">
 .discussion
+  overflow: hidden
   footer
     border-top: 1px solid rgb(var(--v-border-color))
     margin: 0 -10px
@@ -124,13 +125,4 @@ export default defineComponent({
       flex: 1 0 auto
   p
     margin: .5rem 0
-    white-space: pre-wrap
-
-.richtext,
-.ql-editor
-  .mention
-    white-space: nowrap
-    padding: .2em .6em
-    border-radius: 4px
-    font-size: 10pt
 </style>

@@ -10,7 +10,7 @@
         <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
       </div>
     </div>
-    <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" class="my-3" />
+    <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
     <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff" class="proposal-text-paragraph my-3" />
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
@@ -24,7 +24,7 @@
     </v-sheet>
     <footer v-if="!readOnly">
       <div>
-        <v-btn prepend-icon="mdi-comment-outline" variant="text" v-if="canComment(p)" @click="comment()">
+        <v-btn prepend-icon="mdi-comment-outline" variant="text" v-if="canAddDiscussionPost" @click="comment()">
           {{ t('discussion.comment') }}
         </v-btn>
         <v-btn prepend-icon="mdi-chevron-up" variant="text" v-if="showComments" @click="showComments = false">
@@ -60,11 +60,12 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useUnread from '@/composables/useUnread'
 
-import proposalType from '@/contentTypes/proposal'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useTags from '../meetings/useTags'
 import { Proposal } from './types'
 import useDiscussions from '../discussions/useDiscussions'
+import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rules'
+import { proposalType } from './contentTypes'
 
 export default defineComponent({
   name: 'Proposal',
@@ -83,32 +84,32 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const api = proposalType.getContentApi()
     const { agendaItem, canAddDiscussionPost } = useAgendaItem()
     const { isModerator } = useMeeting()
     const { getHTMLTags } = useTags()
     const editing = ref(false)
     const showComments = ref(false)
     const { getProposalDiscussions } = useDiscussions()
+    const workflows = proposalType.useWorkflows()
 
     const wfState = computed(() => {
-      return proposalType.useWorkflows().getState(props.p.state)
+      return workflows.getState(props.p.state)
     })
 
-    const { isUnread } = useUnread(props.p.created as Date)
+    const { isUnread } = useUnread(props.p.created)
 
     async function queryDelete () {
       if (await dialogQuery({
         title: t('proposal.deletePrompt'),
         theme: ThemeColor.Warning
-      })) api.delete(props.p.pk)
+      })) proposalType.api.delete(props.p.pk)
     }
 
     async function retract () {
       if (await dialogQuery({
         title: t('proposal.retractPrompt'),
         theme: ThemeColor.Warning
-      })) api.transition(props.p.pk, 'retract')
+      })) proposalType.api.transition(props.p.pk, 'retract')
     }
 
     const discussionPosts = computed(() => {
@@ -125,14 +126,14 @@ export default defineComponent({
 
     const menuItems = computed<MenuItem[]>(() => {
       const items: MenuItem[] = []
-      if (props.p.shortname !== 'diff_proposal' && proposalType.rules.canChange(props.p)) {
+      if (props.p.shortname !== 'diff_proposal' && canChangeProposal(props.p)) {
         items.push({
           title: t('edit'),
           icon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
-      if (proposalType.rules.canRetract(props.p)) {
+      if (canRetractProposal(props.p)) {
         items.push({
           title: t('proposal.retract'),
           icon: 'mdi-undo',
@@ -140,7 +141,7 @@ export default defineComponent({
           color: ThemeColor.Warning
         })
       }
-      if (proposalType.rules.canDelete(props.p)) {
+      if (canDeleteProposal(props.p)) {
         items.push({
           title: t('delete'),
           icon: 'mdi-delete',
@@ -169,9 +170,7 @@ export default defineComponent({
       proposalType,
       showComments,
       menuItems,
-      api,
       wfState,
-      ...proposalType.rules,
       comment,
       retract,
       queryDelete

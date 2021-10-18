@@ -66,11 +66,10 @@ import UserSearch from '@/components/UserSearch.vue'
 import { ContextRole } from '@/composables/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
 
-import { User } from '@/contentTypes/types'
-
-import { canChangeSpeakerSystem } from './rules'
+import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
+import { User } from '../organisations/types'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -163,7 +162,7 @@ export default defineComponent({
           onClick: async () => editSystem(s)
         })
       }
-      if (speakerSystemType.rules.canDelete(s)) {
+      if (canDeleteSpeakerSystem(s)) {
         items.push({
           title: t('delete'),
           icon: 'mdi-delete',
@@ -186,7 +185,7 @@ export default defineComponent({
         },
         {
           key: t('speaker.safePositions'),
-          value: system.safe_positions ?? t('speaker.noSafePositions')
+          value: String(system.safe_positions) ?? t('speaker.noSafePositions')
         }
       ]
     }
@@ -203,7 +202,6 @@ export default defineComponent({
       systemData,
       systemChannel: speakerSystemType.channel,
       systemRoles,
-      systemRules: speakerSystemType.rules,
       speakerSystemType,
       systemIcons,
       title: computed(() => t('speakerSystems')),

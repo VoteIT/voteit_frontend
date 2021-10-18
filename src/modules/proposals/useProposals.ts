@@ -1,13 +1,13 @@
 import { reactive } from 'vue'
 
-import { dateify, orderBy } from '@/utils'
+import { orderBy } from '@/utils'
 
-import meetingType from '@/contentTypes/meeting'
-import proposalType from '@/contentTypes/proposal'
-import { DEFAULT_FILTER_STATES } from '@/contentTypes/proposal/workflowStates'
+import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
 import { agendaDeletedEvent, agendaItems } from '@/modules/agendas/useAgenda'
 import { Poll } from '../polls/types'
 import { Proposal } from './types'
+import { proposalType } from './contentTypes'
+import { meetingType } from '../meetings/contentTypes'
 
 type ProposalFilter = (p: Proposal) => boolean
 
@@ -15,7 +15,7 @@ const proposals = reactive<Map<number, Proposal>>(new Map())
 /* Used to figure out whether to mark agenda item as read */
 const userReadProposals = new Set<number>() // Track read proposals through since last reload
 
-proposalType.channel.updateMap(proposals, dateify)
+proposalType.channelUpdateMap(proposals)
 
 // Automatically clear proposals for meeting when leaving.
 meetingType.channel.onLeave(meeting => {

@@ -18,14 +18,14 @@
           <v-item-group multiple v-model="stateFilter">
             <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
               <v-list-item @click="toggle()" :prepend-icon="state.icon" :active="isSelected">
-                <v-list-item-content>
+                <div>
                   <v-list-item-title>
                     {{ t(`workflowState.${state.state}`) }}
                   </v-list-item-title>
                   <v-list-item-subtitle>
                     {{ t('proposal.proposalCount', { count }, count) }}
                   </v-list-item-subtitle>
-                </v-list-item-content>
+                </div>
               </v-list-item>
             </v-item>
           </v-item-group>
@@ -45,12 +45,11 @@ import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent, toggleNavDrawerEvent } from '@/utils'
-import workflowStates, { ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { proposalStates } from '@/modules/proposals/workflowStates'
 
 import useAgenda from '@/modules/agendas/useAgenda'
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useMeeting from '@/modules/meetings/useMeeting'
-import pollType from '@/contentTypes/poll'
 
 import usePlenary from './usePlenary'
 import useProposals from '@/modules/proposals/useProposals'
@@ -60,6 +59,8 @@ import { PollState } from '../polls/types'
 import PollModal from './PollModal.vue'
 import { WorkflowState } from '@/contentTypes/types'
 import { PollMethod, PollStartData } from '../polls/methods/types'
+import { ProposalState } from '../proposals/types'
+import { pollType } from '../polls/contentTypes'
 
 const { getState } = pollType.useWorkflows()
 
@@ -78,7 +79,7 @@ export default defineComponent({
       return getAgendaProposals(agendaId.value, p => p.state === state).length
     }
     const filterStates = computed(() => {
-      return workflowStates.map(state => ({
+      return proposalStates.map(state => ({
         state,
         count: getStateProposalCount(state.state)
       }))

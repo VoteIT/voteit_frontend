@@ -1,5 +1,12 @@
 /* eslint-disable camelcase */
-import { ProposalState } from '@/contentTypes/proposal/workflowStates'
+export enum ProposalState {
+  Published = 'published',
+  Retracted = 'retracted',
+  Voting = 'voting',
+  Approved = 'approved',
+  Denied = 'denied',
+  Unhandled = 'unhandled'
+}
 
 interface BaseProposal {
   pk: number
@@ -9,7 +16,7 @@ interface BaseProposal {
   agenda_item: number
   author: number
   body: string
-  created: string | Date
+  created: Date
   prop_id: string
   tags: string[]
 }

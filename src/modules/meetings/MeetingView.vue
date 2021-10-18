@@ -7,7 +7,7 @@
 import { computed, defineComponent, onMounted, provide, watch } from 'vue'
 
 import Bubbles from '@/modules/meetings/Bubbles.vue'
-import PresenceCheck from '@/contentTypes/presenceCheck/PresenceCheckBubble.vue'
+import PresenceCheck from '@/modules/presence/PresenceCheckBubble.vue'
 
 import useBubbles from '@/modules/meetings/useBubbles'
 import useMeeting from '@/modules/meetings/useMeeting'
@@ -15,12 +15,14 @@ import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 import usePresence from '@/modules/presence/usePresence'
 
 import { BubbleComponent } from '@/modules/meetings/types'
+import { LastReadKey } from '@/composables/useUnread'
 
 export default defineComponent({
   name: 'Meeting',
   setup () {
     const { meetingId, hasRole } = useMeeting()
     useMeetingChannel(true)
+    provide(LastReadKey, null)
 
     const presence = usePresence()
     const presenceBubble = useBubbles(PresenceCheck as BubbleComponent)

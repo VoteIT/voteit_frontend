@@ -21,6 +21,7 @@
               <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
             </div>
           </template>
+          <!-- TODO FIXME PLZ -->
           <BtnDropdown dark v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )" :style="{ marginTop: '1em' }">
             <div class="proposals denied">
               <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
@@ -62,11 +63,12 @@ import Voting from './Voting.vue'
 import Proposal from '@/modules/proposals/Proposal.vue'
 
 import { pollResults } from './methods'
-import pollType from '@/contentTypes/poll'
 import { Poll, PollState } from './types'
 import { useI18n } from 'vue-i18n'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { slugify } from '@/utils'
+import { canVote } from './rules'
+import { pollType } from './contentTypes'
 
 export default defineComponent({
   name: 'Poll',
@@ -124,13 +126,13 @@ export default defineComponent({
       t,
       pollPath,
       pollType,
-      ...pollType.rules,
       resultComponent,
       pollStatus,
       isFinished,
       isOngoing,
       userVote,
       following,
+      canVote,
       follow,
       getProposal,
       vote

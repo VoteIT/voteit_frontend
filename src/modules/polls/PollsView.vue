@@ -24,10 +24,11 @@ import Poll from '@/modules/polls/Poll.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import usePolls from '@/modules/polls/usePolls'
 
-import pollType from '@/contentTypes/poll'
 import { WorkflowState } from '@/contentTypes/types'
 import { MenuItem } from '@/utils/types'
 import { useI18n } from 'vue-i18n'
+import { canAddPoll } from './rules'
+import { pollType } from './contentTypes'
 
 export default defineComponent({
   name: 'Polls',
@@ -42,17 +43,15 @@ export default defineComponent({
 
     const tabStates = computed(() => {
       return getPriorityStates()
-        .map(s => {
-          return {
-            ...s,
-            polls: getPolls(meetingId.value, s.state)
-          }
-        })
+        .map(s => ({
+          ...s,
+          polls: getPolls(meetingId.value, s.state)
+        }))
         .filter(s => s.polls.length)
     })
 
     const menuItems = computed<MenuItem[]>(() => {
-      if (!meeting.value || !pollType.rules.canAdd(meeting.value)) return []
+      if (!meeting.value || !canAddPoll(meeting.value)) return []
       return [{
         icon: 'mdi-star',
         title: t('poll.new'),

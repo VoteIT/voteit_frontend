@@ -35,7 +35,7 @@
               <Switch :modelValue="!ai.block_discussion" @change="patchAgendaItem(ai, { block_discussion: !$event })" />
             </td>
             <td>
-              <v-btn v-if="canDelete(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
+              <v-btn v-if="canDeleteAgendaItem(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
             </td>
           </tr>
         </v-item>
@@ -89,15 +89,16 @@ import Switch from '@/components/inputs/Switch.vue'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
 
-import meetingType from '@/contentTypes/meeting'
-import agendaItemType from '@/contentTypes/agendaItem'
 import { WorkflowState } from '@/contentTypes/types'
 import { dialogQuery, openAlertEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { ControlPanelComponent } from '@/views/meeting/controlPanels/types'
+import { ControlPanelComponent } from '../meetings/types'
 import { AxiosError, AxiosResponse } from 'axios'
 import { AlertLevel } from '@/composables/types'
 import { AgendaItem } from '@/modules/agendas/types'
+import { canDeleteAgendaItem } from './rules'
+import { agendaItemType } from './contentTypes'
+import { meetingType } from '../meetings/contentTypes'
 
 interface Tab {
   name: string
@@ -116,14 +117,13 @@ export default defineComponent({
     const { t } = useI18n()
     const { getAgenda } = useAgenda()
     const { meetingId } = useMeeting()
-    const meetingAPI = meetingType.getContentApi()
     const { getState } = agendaItemType.useWorkflows()
     const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 
     const agendaItems = computed({
       get: () => getAgenda(meetingId.value),
       set: (agendaItems: AgendaItem[]) => {
-        meetingAPI.action(meetingId.value, 'set_agenda_order', { order: agendaItems.map(ai => ai.pk) })
+        meetingType.api.action(meetingId.value, 'set_agenda_order', { order: agendaItems.map(ai => ai.pk) })
       }
     })
 
@@ -219,22 +219,22 @@ export default defineComponent({
     return {
       t,
       title: computed(() => t('agenda')),
-      deleteItem,
-      deleteSelected,
-      setStateSelected,
-      patchAgendaItem,
-      patchSelected,
       editManyWorking,
       editMode,
       editModes,
       agendaItems,
-      getState,
-      addAgendaItem,
       newAgendaTitle,
       editIsAllSelected,
       editSelected,
-      ...agendaItemType.rules,
-      agendaStates: agendaItemType.workflowStates
+      agendaStates: agendaItemType.workflowStates,
+      addAgendaItem,
+      canDeleteAgendaItem,
+      deleteItem,
+      deleteSelected,
+      getState,
+      patchAgendaItem,
+      patchSelected,
+      setStateSelected
     }
   }
 }) as ControlPanelComponent

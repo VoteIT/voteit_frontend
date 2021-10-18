@@ -6,10 +6,11 @@ import { slugify, restApi, mapFilter, mapFind } from '@/utils'
 import useAuthentication from '../../composables/useAuthentication'
 import { meetings } from './useMeetings'
 
-import meetingType from '@/contentTypes/meeting'
-import { Meeting, User } from '@/contentTypes/types'
 import { MeetingRoles } from '../../composables/types'
-import { MeetingRole } from './types'
+import { Meeting, MeetingRole } from './types'
+import { canChangeMeeting, canChangeRolesMeeting } from './rules'
+import { meetingType } from './contentTypes'
+import { User } from '../organisations/types'
 
 const FORCE_ROLES_FETCH = false
 
@@ -21,7 +22,6 @@ let pFetchTimeout: number
 export default function useMeeting () {
   const route = useRoute()
   const meetingRoles = meetingType.useContextRoles()
-  const meetingApi = meetingType.getContentApi()
   const { user } = useAuthentication()
 
   interface UserListParams {
@@ -96,13 +96,16 @@ export default function useMeeting () {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
   const isModerator = computed(() => hasRole(MeetingRole.Moderator))
+  const canChange = computed(() => canChangeMeeting(meeting.value))
+  const canChangeRoles = computed(() => meeting.value && canChangeRolesMeeting(meeting.value))
 
   return {
+    canChange,
+    canChangeRoles,
     isModerator,
     meetingId,
     meeting,
     meetingPath,
-    meetingApi,
     userRoles,
     getUser,
     hasRole,

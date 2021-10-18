@@ -69,14 +69,15 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import SchemaForm from '@/components/inputs/SchemaForm.vue'
 
-import pollType from '@/contentTypes/poll'
-import { ProposalState } from '@/contentTypes/proposal/workflowStates'
+import { ProposalState } from '@/modules/proposals/types'
 import usePolls, { polls } from '@/modules/polls/usePolls'
 import { InputType } from '@/components/inputs/types'
 
 import { pollMethods as implementedMethods, pollSettings } from './methods'
 import { PollStartData, PollMethod, PollMethodSettings } from './methods/types'
 import methodSchemas from './methods/schemas'
+import { canAddPoll } from './rules'
+import { pollType } from './contentTypes'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -102,7 +103,7 @@ export default defineComponent({
     const agenda = computed(() => getAgenda(meetingId.value))
     const pollableAgendaItems = computed(() => {
       return agenda.value
-        .filter(ai => pollType.rules.canAdd(ai) && getPublishedProposals(ai.pk).length)
+        .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
         .map(ai => ({
           to: `${meetingPath.value}/polls/new/${ai.pk}`,
           title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
@@ -220,8 +221,7 @@ export default defineComponent({
       toggleAll,
 
       ...useMeeting(),
-      ...proposals,
-      ...pollType.rules
+      ...proposals
     }
   }
 })

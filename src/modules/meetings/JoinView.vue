@@ -28,15 +28,14 @@ import { user } from '@/composables/useAuthentication'
 
 import Richtext from '@/components/Richtext.vue'
 import accessPolicies from '@/modules/meetings/accessPolicies'
-import accessPolicyType from '@/contentTypes/accessPolicy'
-import meetingType from '@/contentTypes/meeting'
-import organizationRules from '@/contentTypes/organization/rules'
+import { accessPolicyType, meetingType } from '@/modules/meetings/contentTypes'
 import { AccessPolicy } from '@/contentTypes/types'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { MeetingRole } from './types'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
+import { canBecomeModeratorMeeting } from './rules'
 
 export default defineComponent({
   components: { Richtext },
@@ -54,7 +53,7 @@ export default defineComponent({
     })
 
     const canBecomeModerator = computed(() => {
-      return meetingType.rules.canBecomeModerator(meeting.value)
+      return meeting.value && canBecomeModeratorMeeting(meeting.value)
     })
 
     async function joinAsModerator () {
@@ -63,7 +62,7 @@ export default defineComponent({
         title: t('join.asModeratorDescription'),
         theme: ThemeColor.Info
       })) {
-        await meetingType.getChannel().addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
+        await meetingType.channel.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
         router.push(meetingPath.value)
       }
     }
@@ -90,7 +89,6 @@ export default defineComponent({
       meeting,
       policies,
       policyComponents,
-      ...organizationRules,
       canBecomeModerator,
       joinAsModerator
     }

@@ -23,8 +23,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { TextParagraph } from './contentTypes'
-import proposalType from '@/contentTypes/proposal'
+import { proposalType, TextParagraph } from './contentTypes'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { DiffProposal } from './types'
 

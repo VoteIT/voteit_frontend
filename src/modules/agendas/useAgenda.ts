@@ -3,22 +3,21 @@ import { onBeforeRouteLeave, useRoute } from 'vue-router'
 
 import { dateify, orderBy } from '@/utils'
 
-import agendaItemType from '@/contentTypes/agendaItem'
-import meetingType from '@/contentTypes/meeting'
-
 import useLoader from '@/composables/useLoader'
 import { AgendaItem } from '@/modules/agendas/types'
 import Channel from '@/contentTypes/Channel'
 import TypedEvent from '@/utils/TypedEvent'
 import { LastRead } from '@/utils/types'
 import useMeeting from '../meetings/useMeeting'
-import workflowStates from '@/contentTypes/agendaItem/workflowStates'
+import { agendaItemType } from './contentTypes'
+import { agendaItemStates } from './workflowStates'
+import { meetingType } from '../meetings/contentTypes'
 
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaDeletedEvent = new TypedEvent<number>()
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
-const channel = agendaItemType.getChannel()
+const channel = agendaItemType.channel
   .onChanged(agendaItem => agendaItems.set(agendaItem.pk, dateify(agendaItem, 'related_modified')))
   .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
 
@@ -31,7 +30,7 @@ agendaDeletedEvent.on(pk => {
 /*
 ** Clear agenda when leaving meeting.
 */
-meetingType.getChannel()
+meetingType.channel
   .onLeave(pk => {
     for (const agendaItem of agendaItems.values()) {
       if (agendaItem.meeting === pk) {
@@ -78,7 +77,7 @@ export default function useAgenda () {
   })
 
   const agendaStates = computed(() => {
-    return workflowStates.map(state => {
+    return agendaItemStates.map(state => {
       return {
         state,
         items: orderBy(

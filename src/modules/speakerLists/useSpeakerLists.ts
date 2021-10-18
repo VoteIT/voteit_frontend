@@ -1,16 +1,14 @@
 import { reactive } from 'vue'
 
 import { dateify } from '@/utils'
-import speakerListType from '@/contentTypes/speakerList'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { SpeakerList, SpeakerOrderUpdate } from '@/contentTypes/types'
 import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 import { AgendaItem } from '../agendas/types'
-import { SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
-import { speakerSystemType } from './contentTypes'
+import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
+import { speakerListType, speakerSystemType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -18,12 +16,11 @@ export const currentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(
 const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map system pk to current speaker messages
 export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
 
-speakerSystemType.getChannel()
-  .updateMap(speakerSystems)
+speakerSystemType.channel.updateMap(speakerSystems)
 
 const { hasRole } = speakerSystemType.useContextRoles()
 
-const listChannel = speakerListType.getChannel()
+const listChannel = speakerListType.channel
   .updateMap(speakerLists)
   .on<SpeakerOrderUpdate>('order', ({ pk, queue, current }) => {
     speakerQueues.set(pk, queue)

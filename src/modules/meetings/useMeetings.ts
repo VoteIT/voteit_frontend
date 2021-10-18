@@ -1,20 +1,17 @@
 import { computed, reactive } from 'vue'
 
-import meetingType from '@/contentTypes/meeting'
-import { Meeting } from '@/contentTypes/types'
 import { orderBy } from '@/utils'
 import { user } from '@/composables/useAuthentication'
+import { meetingType } from './contentTypes'
+import { Meeting } from './types'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
-meetingType.getChannel()
-  .updateMap(meetings)
+meetingType.channelUpdateMap(meetings)
 
 const meetingRoles = meetingType.useContextRoles()
 
 export default function useMeetings () {
-  const meetingApi = meetingType.getContentApi()
-
   const orderedMeetings = computed(() => {
     return orderBy([...meetings.values()], 'title')
   })
@@ -27,13 +24,13 @@ export default function useMeetings () {
   }
 
   async function fetchMeeting (pk: number) {
-    const { data } = await meetingApi.retrieve(pk)
+    const { data } = await meetingType.api.retrieve(pk)
     setMeeting(data)
     return !!data.current_user_roles
   }
 
   async function fetchMeetings () {
-    const { data } = await meetingApi.list()
+    const { data } = await meetingType.api.list()
     for (const m of data) {
       meetings.set(m.pk, m)
     }

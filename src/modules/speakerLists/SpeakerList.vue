@@ -26,7 +26,7 @@
       <v-btn :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <v-btn variant="text" :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange(list)">
+      <v-btn variant="text" :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange">
         {{ t('manage') }}
       </v-btn>
     </v-card-actions>
@@ -39,13 +39,11 @@ import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
 import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
-import rules from '@/contentTypes/speakerList/rules'
 
-import speakerListType from '@/contentTypes/speakerList'
-import { SpeakerList } from '@/contentTypes/types'
-import { SpeakerListState } from '@/contentTypes/speakerList/workflowStates'
 import Moment from '@/components/Moment.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
+import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
+import { SpeakerList, SpeakerListState } from './types'
 
 interface EnterLeaveBtn {
   icon: string
@@ -80,7 +78,7 @@ export default defineComponent({
     const expandQueue = ref(false)
 
     const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
-      if (!inList.value && rules.canEnter(props.list)) {
+      if (!inList.value && canEnterList(props.list)) {
         return {
           icon: 'mdi-playlist-plus',
           title: t('speaker.enterList'),
@@ -88,7 +86,7 @@ export default defineComponent({
           action: () => speakers.enterList(props.list)
         }
       }
-      if (inList.value && rules.canLeave(props.list)) {
+      if (inList.value && canLeaveList(props.list)) {
         return {
           icon: 'mdi-playlist-remove',
           title: t('speaker.leaveList'),
@@ -99,20 +97,21 @@ export default defineComponent({
       return null
     })
 
+    const canChange = computed(() => canChangeSpeakerList(props.list))
+
     return {
+      t,
+      canChange,
       expandQueue,
-      speakerListType,
       isActive,
       isOpen,
       queue,
       currentSpeaker,
       inList,
       enterLeaveBtn,
-      ...rules,
       meetingPath,
       speakers,
-      user,
-      t
+      user
     }
   }
 })
