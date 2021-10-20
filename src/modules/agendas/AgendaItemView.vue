@@ -22,7 +22,7 @@
     <v-row>
       <v-col>
         <div class="d-flex">
-          <AddProposalModal />
+          <AddProposalModal v-if="canAddProposal" />
           <!-- <v-btn variant="text" @click="focusProposalInput.emit()" v-if="canAddProposal" prepend-icon="mdi-text-box-plus-outline" color="primary">
             {{ t('proposal.add') }}
           </v-btn>

@@ -4,17 +4,12 @@
       <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
     </template>
   </Proposal>
-  <AddContent v-if="canAddProposal" :name="t('proposal.proposal')"
-              :handler="submit" :placeholder="t('proposal.postPlaceholder')"
-              :submitText="t('publish')" submitIcon="mdi-text-box-plus-outline"
-              ref="addComponent" />
 </template>
 
 <script lang="ts">
 import { ComponentPublicInstance, computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import AddContent from '@/components/AddContent.vue'
 import ReactionButton from '../reactions/ReactionButton.vue'
 import useReactions from '../reactions/useReactions'
 import useAgendaItem from '../agendas/useAgendaItem'
@@ -27,7 +22,6 @@ import { proposalType } from './contentTypes'
 
 export default defineComponent({
   components: {
-    AddContent,
     Proposal: ProposalVue,
     ReactionButton
   },
