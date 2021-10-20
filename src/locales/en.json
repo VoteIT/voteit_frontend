@@ -335,6 +335,6 @@
     "retracted": "Retracted",
     "unhandled": "Unhandled",
     "upcoming": "Upcoming",
-    "voting": "Voting"
+    "voting": "Locked for vote"
   }
 }

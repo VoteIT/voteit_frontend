@@ -13,11 +13,10 @@
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
     </div>
-    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)">
-      <div>
-        <slot name="buttons"/>
-      </div>
-      <Menu :items="menuItems"/>
+    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
+      <slot name="buttons" />
+      <v-spacer />
+      <Menu :items="menuItems" size="small" />
     </footer>
   </Widget>
 </template>
@@ -102,13 +101,10 @@ export default defineComponent({
 
 <style lang="sass">
 .discussion
-  overflow: hidden
   footer
-    border-top: 1px solid rgb(var(--v-border-color))
+    border-top: 1px solid rgba(var(--v-border-color), .4)
     margin: 0 -10px
     padding: 10px 10px 0
-    display: flex
-    justify-content: space-between
 
     .context-menu
       margin: -10px

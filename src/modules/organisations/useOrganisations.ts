@@ -1,4 +1,4 @@
-import { reactive, readonly } from 'vue'
+import { computed, reactive, readonly } from 'vue'
 
 import { organisationType } from './contentTypes'
 import { Organisation } from './types'
@@ -14,8 +14,15 @@ export default function useOrganisations () {
     })
   }
 
+  // FIXME We will limit to one organisation per host for now. This is subject to change.
+  const organisation = computed(() => {
+    const first = organisations.values().next()
+    return first.done ? null : first.value
+  })
+
   return {
     organisations: readonly(organisations),
+    organisation,
     fetchOrganisations
   }
 }

@@ -21,10 +21,10 @@ import { computed, defineComponent, inject } from 'vue'
 
 import { openModalEvent } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
-import useReactions from '@/modules/reactions/useReactions'
-import { ReactionButton } from '@/contentTypes/reactionButton'
 
+import useReactions from './useReactions'
 import ReactionEditModalVue from './ReactionEditModal.vue'
+import { ReactionButton } from './types'
 
 export default defineComponent({
   translationKey: 'reaction.buttons',

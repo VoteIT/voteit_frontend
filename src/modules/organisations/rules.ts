@@ -1,7 +1,7 @@
 import useAuthentication from '@/composables/useAuthentication'
 
 import useContextRoles from '@/composables/useContextRoles'
-import { OrganisationRole } from './types'
+import { Organisation, OrganisationRole } from './types'
 
 const { user } = useAuthentication()
 const { hasRole } = useContextRoles('organisation') // Avoid circular import
@@ -15,4 +15,8 @@ export function isOrganisationManager (org?: number): boolean {
 export function isMeetingCreator (org?: number): boolean {
   if (!user.value) return false
   return hasRole(org || user.value.organisation, OrganisationRole.MeetingCreator)
+}
+
+export function canChangeOrganisation (org: Organisation): boolean {
+  return isOrganisationManager(org.pk)
 }

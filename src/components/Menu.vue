@@ -46,6 +46,7 @@ export default defineComponent({
       type: String,
       default: 'mdi-dots-horizontal'
     },
+    size: String as PropType<'small' | 'x-small'>,
     showTransitions: Boolean,
     object: Object as PropType<StateContent>,
     contentType: Object as PropType<ContentType<any>>,
@@ -102,7 +103,8 @@ export default defineComponent({
         icon: working.value ? 'mdi-loading' : props.icon,
         variant: 'text',
         outlined: isOpen.value,
-        color: working.value ? 'secondary' : props.color
+        color: working.value ? 'secondary' : props.color,
+        size: props.size
       }
     })
 

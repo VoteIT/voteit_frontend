@@ -1,5 +1,12 @@
 <template>
-  <v-row class="home mt-6" v-if="isAuthenticated">
+  <v-row v-if="organisation" class="home mt-6 mb-4">
+    <v-col xl="8" offset-xl="2">
+      <Menu :items="menu" float />
+      <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
+      <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
+    </v-col>
+  </v-row>
+  <v-row v-if="isAuthenticated">
     <v-col cols="12" sm="6" lg="4">
       <h1>
         {{ t('home.yourMeetings', participatingMeetings.length) }}
@@ -28,48 +35,46 @@
       <Invite v-for="inv in meetingInvites" :key="inv.pk" :invite="inv" />
     </v-col>
   </v-row>
-  <template v-else>
-    <v-row class="home">
-      <v-col>
-        <h1>{{ t('organizations') }}</h1>
-      </v-col>
-    </v-row>
-    <v-row class="organizations">
-      <v-col cols="4" v-for="o in organisations.values()" :key="o.pk">
-        <v-card :title="o.title" v-if="o.login_url">
-          <v-card-text>
-            <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
-            <div>
-              <v-chip v-for="scope in o.scopes" :key="scope">{{ scope }}</v-chip>
-            </div>
-          </v-card-text>
-          <v-card-actions v-if="o.login_url">
-            <v-btn :href="getOrganizationLoginURL(o)" prepend-icon="mdi-login">
-              {{ t('organization.loginTo', o) }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-        <v-card :title="o.title" :subtitle="t('organization.noLogin')" v-else/>
-      </v-col>
-    </v-row>
-  </template>
-  <v-row>
+  <v-row v-else-if="organisation">
+    <v-col sm="10" lg="8" offset-sm="1" offset-lg="2" xl="6" offset-xl="3">
+      <v-card :title="t('login')" v-if="organisation.login_url" border class="mt-6">
+        <v-card-text>
+          <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
+          <div>
+            <v-chip v-for="scope in organisation.scope" :key="scope">{{ scope }}</v-chip>
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn variant="text" :href="manageAccountURL" prepend-icon="mdi-account">
+            {{ t('auth.manageAccount') }}
+          </v-btn>
+          <v-btn color="primary" :href="getOrganizationLoginURL(organisation)" prepend-icon="mdi-login">
+            {{ t('organization.loginTo', organisation) }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      <p v-else><em>Login not available</em></p>
+    </v-col>
+  </v-row>
+  <v-row v-if="debug">
     <v-col class="text-center">
-      <template v-if="debug">
-        <counter class="mt-12 mb-1" />
-        <get-schema/>
-      </template>
+      <counter class="mt-12 mb-1" />
+      <get-schema/>
     </v-col>
   </v-row>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, watch } from 'vue'
+import { computed, defineComponent, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
 import AddMeetingVue from '@/modules/meetings/AddMeetingModal.vue'
+import Richtext from '@/components/Richtext.vue'
+import Headline from '@/components/Headline.vue'
+import Menu from '@/components/Menu.vue'
 import Counter from '@/components/examples/Counter.vue'
 import getSchema from '@/components/examples/GetSchema.vue'
 
@@ -79,10 +84,12 @@ import useMeetings from '@/modules/meetings/useMeetings'
 import useMeetingInvites from '@/modules/meetings/useMeetingInvites'
 import useModal from '@/composables/useModal'
 import useOrganisations from '@/modules/organisations/useOrganisations'
-import useOrganisation from '@/modules/organisations/useOrganisation'
 import { useTitle } from '@vueuse/core'
 import Invite from '@/modules/meetings/Invite.vue'
 import { canAddMeeting } from '@/modules/meetings/rules'
+import { MenuItem } from '@/utils/types'
+import { canChangeOrganisation } from '@/modules/organisations/rules'
+import { organisationType } from '@/modules/organisations/contentTypes'
 
 const { meetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -92,9 +99,8 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
-    const { logout, isAuthenticated, user, getOrganizationLoginURL } = useAuthentication()
-    const { fetchOrganisations, organisations } = useOrganisations()
-    const { organisation } = useOrganisation()
+    const { logout, isAuthenticated, user, getOrganizationLoginURL, manageAccountURL } = useAuthentication()
+    const { fetchOrganisations, organisation } = useOrganisations()
     const loader = useLoader('Home')
 
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
@@ -114,17 +120,37 @@ export default defineComponent({
       if (isAuthenticated.value) loader.call(fetchMeetings, fetchInvites)
     })
 
-    const participatingMeetings = computed(() => {
-      return orderedMeetings.value.filter(m => m.current_user_roles)
+    const participatingMeetings = computed(() => orderedMeetings.value.filter(m => m.current_user_roles))
+    const otherMeetings = computed(() => orderedMeetings.value.filter(m => !m.current_user_roles))
+
+    const editing = ref(false)
+    const changeForm = reactive({
+      title: organisation.value?.title ?? '',
+      body: organisation.value?.body ?? ''
+    })
+    watch(organisation, org => {
+      changeForm.title = org?.title ?? ''
+      changeForm.body = org?.body ?? ''
+    })
+    const menu = computed<MenuItem[]>(() => {
+      if (!organisation.value || !canChangeOrganisation(organisation.value)) return []
+      return [
+        {
+          title: t('edit'),
+          icon: 'mdi-pencil',
+          onClick: async () => { editing.value = true }
+        }
+      ]
     })
 
-    const otherMeetings = computed(() => {
-      return orderedMeetings.value.filter(m => !m.current_user_roles)
-    })
+    async function save () {
+      if (!organisation.value) throw new Error('No organisation')
+      await organisationType.api.patch(organisation.value.pk, changeForm)
+      editing.value = false
+    }
 
     // Add meeting
     const { openModal } = useModal()
-
     function createMeeting () {
       openModal({
         title: t('meeting.create'),
@@ -133,10 +159,14 @@ export default defineComponent({
     }
     return {
       t,
+      changeForm,
+      editing,
       isAuthenticated,
+      manageAccountURL,
       meetingInvites,
+      menu,
       otherMeetings,
-      organisations,
+      organisation,
       participatingMeetings,
       user,
 
@@ -144,27 +174,17 @@ export default defineComponent({
       createMeeting,
       getOrganizationLoginURL,
       logout,
+      save,
       slugify
     }
   },
   components: {
     Counter,
     getSchema,
-    Invite
+    Headline,
+    Invite,
+    Menu,
+    Richtext
   }
 })
 </script>
-
-<style lang="sass">
-div.home
-  ul
-    padding: 0
-    margin-bottom: 3em
-  li
-    list-style: none
-    padding: 4px
-  .organizations
-    .v-sheet
-      padding: .5em 1em
-      background-color: rgb(var(--v-theme-surface))
-</style>

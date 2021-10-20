@@ -27,6 +27,7 @@ import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
+import useOrganisations from './modules/organisations/useOrganisations'
 
 export default defineComponent({
   components: {
@@ -40,10 +41,16 @@ export default defineComponent({
     const { t } = useI18n()
     const loader = useLoader('App')
     const { fetchAuthenticatedUser } = useAuthentication()
+    const { fetchOrganisations } = useOrganisations()
 
     onBeforeMount(async () => {
       try {
-        if (!await fetchAuthenticatedUser()) loader.setLoaded()
+        const [user] = await Promise.all([
+          fetchAuthenticatedUser(),
+          fetchOrganisations()
+        ])
+        if (!user) loader.setLoaded()
+        // if (!await fetchAuthenticatedUser()) loader.setLoaded()
       } catch {
         loader.initFailed.value = true
       }
