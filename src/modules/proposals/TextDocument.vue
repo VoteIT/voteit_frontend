@@ -14,7 +14,7 @@
         <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
       </v-card-text>
       <v-card-actions v-if="canAddProposal">
-        <v-btn size="small" prepend-icon="mdi-text-box-plus-outline" color="primary" @click="addProposal(p)">{{ t('proposal.change') }}</v-btn>
+        <AddTextProposalModal :paragraph="p" />
       </v-card-actions>
     </template>
   </v-card>
@@ -25,12 +25,12 @@ import { dialogQuery, openModalEvent } from '@/utils'
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ProposalText, proposalTextType, TextParagraph } from './contentTypes'
+import { ProposalText, proposalTextType } from './contentTypes'
 import useProposals from './useProposals'
 import useTextDocument from './useTextDocument'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import { ThemeColor } from '@/utils/types'
-import AddTextProposalModalVue from './AddTextProposalModal.vue'
+import AddTextProposalModal from './AddTextProposalModal.vue'
 
 export default defineComponent({
   props: {
@@ -38,6 +38,9 @@ export default defineComponent({
       type: Object as PropType<ProposalText>,
       required: true
     }
+  },
+  components: {
+    AddTextProposalModal
   },
   setup (props) {
     const { t } = useI18n()
@@ -64,18 +67,18 @@ export default defineComponent({
       })) proposalTextType.api.delete(props.document.pk)
     }
 
-    function addProposal (data: TextParagraph) {
-      openModalEvent.emit({
-        title: t('proposal.change'),
-        component: AddTextProposalModalVue,
-        data
-      })
-    }
+    // function addProposal (data: TextParagraph) {
+    //   openModalEvent.emit({
+    //     title: t('proposal.change'),
+    //     component: AddTextProposalModal,
+    //     data
+    //   })
+    // }
 
     return {
       t,
       proposalCount,
-      addProposal,
+      // addProposal,
       deleteDocument,
       editDocument,
       ...useTextDocument(ref(props.document))

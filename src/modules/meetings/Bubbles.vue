@@ -77,7 +77,7 @@ export default defineComponent({
 <style lang="sass">
 #bubbles
   position: fixed
-  z-index: 100
+  z-index: 3
   right: 0
   bottom: 0
   padding: 10px

@@ -22,12 +22,13 @@
     <v-row>
       <v-col>
         <div class="d-flex">
-          <v-btn variant="text" @click="focusProposalInput.emit()" v-if="canAddProposal" prepend-icon="mdi-text-box-plus-outline" color="primary">
+          <AddProposalModal />
+          <!-- <v-btn variant="text" @click="focusProposalInput.emit()" v-if="canAddProposal" prepend-icon="mdi-text-box-plus-outline" color="primary">
             {{ t('proposal.add') }}
           </v-btn>
           <v-btn variant="text" @click="focusDiscussionInput.emit()" v-if="displayMode === 'columns' && canAddDiscussionPost" prepend-icon="mdi-comment-text-outline" color="primary" class="d-none d-md-inline">
             {{ t('discussion.add') }}
-          </v-btn>
+          </v-btn> -->
           <v-spacer />
           <AgendaFilters ref="filterComponent" :key="agendaId" />
           <div id="agenda-display-mode" class="d-none d-md-block ml-8">
@@ -85,6 +86,7 @@ import { proposalType } from '../proposals/contentTypes'
 import { discussionPostType } from '../discussions/contentTypes'
 
 import { MenuItem } from '@/utils/types'
+import { SpeakerListState } from '../speakerLists/types'
 import { DiscussionPost } from '@/modules/discussions/types'
 import { LastReadKey } from '@/composables/useUnread'
 import { TagsKey, tagClickEvent } from '@/modules/meetings/useTags'
@@ -92,11 +94,11 @@ import useAgendaFilter from './useAgendaFilter'
 import { AgendaFilterComponent, AgendaItem } from './types'
 import { openModalEvent } from '@/utils'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
+import AddProposalModal from '../proposals/AddProposalModal.vue'
 import useAgendaItem from './useAgendaItem'
-import { focusDiscussionInput, focusProposalInput } from './events'
+// import { focusDiscussionInput, focusProposalInput } from './events'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType } from './contentTypes'
-import { SpeakerListState } from '../speakerLists/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -259,8 +261,8 @@ export default defineComponent({
       displayMode,
       editing,
       filterComponent,
-      focusDiscussionInput,
-      focusProposalInput,
+      // focusDiscussionInput,
+      // focusProposalInput,
       meetingPath,
       menuItems,
       hasProposals,
@@ -278,6 +280,7 @@ export default defineComponent({
     }
   },
   components: {
+    AddProposalModal,
     AgendaDiscussions,
     AgendaProposals,
     Headline,
