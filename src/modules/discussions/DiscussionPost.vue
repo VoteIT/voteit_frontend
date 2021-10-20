@@ -114,8 +114,6 @@ export default defineComponent({
     margin-bottom: .5em
     > div
       flex: 0 1 auto
-      // &:last-child
-      //   text-align: right
     .fill
       margin: 0 .5em
       flex: 1 0 auto

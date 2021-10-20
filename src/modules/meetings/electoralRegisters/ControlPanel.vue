@@ -2,17 +2,7 @@
   <div>
     <h2>{{ title }}</h2>
     <form>
-      <label for="er_select">
-        {{ t('electoralRegister.method') }}
-      </label>
-      <select id="er_select" v-model="settings.er_policy_name">
-        <option disabled :value="undefined">
-          {{ t('select') }}
-        </option>
-        <option v-for="m in methods" :key="m.value" :value="m.value">
-          {{ m.name }}
-        </option>
-      </select>
+      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="options" />
       <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
         {{ t('electoralRegister.selectMethod') }}
       </v-alert>
@@ -34,6 +24,7 @@ import { useI18n } from 'vue-i18n'
 
 import { restApi } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
+import SelectVue from '@/components/inputs/Select.vue'
 import { meetingType } from '../contentTypes'
 import { Meeting } from '../types'
 
@@ -48,6 +39,9 @@ export default defineComponent({
   translationKey: 'electoralRegister.plural',
   path: 'ers',
   icon: 'mdi-vote',
+  components: {
+    SelectVue
+  },
   setup () {
     const { t } = useI18n()
     const { meeting, meetingId } = useMeeting()
@@ -80,14 +74,23 @@ export default defineComponent({
       status.value = value ? null : 'incomplete'
     })
 
+    const options = computed(() => {
+      if (!methods.value) return {}
+      const opts: Record<string, string> = {}
+      for (const { name, value } of methods.value) {
+        opts[name] = value
+      }
+      return opts
+    })
+
     return {
       t,
       disabled,
-      methods,
-      save,
+      options,
       settings,
       status,
-      title: computed(() => t('electoralRegister.settings'))
+      title: computed(() => t('electoralRegister.settings')),
+      save
     }
   }
 })

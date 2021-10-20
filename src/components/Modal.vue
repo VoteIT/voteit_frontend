@@ -117,7 +117,7 @@ export default defineComponent({
   main
     flex-grow: 1
   header
-    border-bottom: 2px solid rgb(var(--v-border-color))
+    border-bottom: 2px solid rgba(var(--v-border-color), .4)
     .meta
       color: rgb(var(--v-theme-secondary))
   .actions

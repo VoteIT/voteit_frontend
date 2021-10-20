@@ -1,8 +1,13 @@
 <template>
-  <div class="voteit-switch" @click="toggle()" :class="{ loading, active, disabled }">
+  <div v-if="label" class="mb-4">
+    <div class="voteit-switch" @click="toggle()" :class="{ loading, active, disabled }">
+      <div class="lever"/>
+    </div>
+    <label v-if="label" class="switch-label" @click="toggle()">{{ label }}</label>
+  </div>
+  <div v-else class="voteit-switch" @click="toggle()" :class="{ loading, active, disabled }">
     <div class="lever"/>
   </div>
-  <label v-if="label" class="switch-label" @click="toggle()">{{ label }}</label>
 </template>
 
 <script lang="ts">

@@ -10,10 +10,7 @@
         <v-card-text>
           <v-text-field :label="t('title')" v-model="systemData.title" />
           <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="SpeakerSystemMethod" />
-          <p>
-            <label for="speakersystem-safepos">{{ t('speaker.safePositions') }}</label>
-            <input id="speakersystem-safepos" type="number" min="0" max="2" v-model="systemData.safe_positions" style="width: 100%">
-          </p>
+          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -35,10 +32,7 @@
         <v-card-text>
           <v-text-field :label="t('title')" v-model="editSystemData.title" />
           <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="SpeakerSystemMethod" />
-          <p>
-            <label for="speakersystem-safepos">{{ t('speaker.safePositions') }}</label>
-            <input id="speakersystem-safepos" type="number" min="0" max="2" v-model="editSystemData.safe_positions" style="width: 100%">
-          </p>
+          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" class="mt-8" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -78,9 +72,9 @@ const systemIcons = {
 
 export default defineComponent({
   components: {
-    UserSearch,
     RoleMatrix,
-    SelectVue
+    SelectVue,
+    UserSearch
   },
   translationKey: 'speaker.systems',
   path: 'speakers',

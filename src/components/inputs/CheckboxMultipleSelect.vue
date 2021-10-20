@@ -1,6 +1,6 @@
 <template>
   <label v-if="label">{{ label }}</label>
-  <div>
+  <div class="mb-4">
     <span v-for="[title, value] in Object.entries(settings.options)" :key="value">
       <input :id="`${name}-choice-${value}`" type="checkbox" v-model="val[value]">
       <label :for="`${name}-choice-${value}`">{{ title }}</label>

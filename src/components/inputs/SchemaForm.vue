@@ -59,27 +59,22 @@ export default defineComponent({
 
 <style lang="sass">
 form
-  > div
-    margin-bottom: 1em
-  label
-    font-weight: bold
-    font-size: 10pt
-    display: block
-    &.inline
-      display: inline
-  select,
-  input[type=text],
-  input[type=number]
-    min-height: 2em
-    padding: 0 .4em
+  select
+    padding: .8em
     border-bottom: rgb(var(--v-border-color))
     background-color: rgb(var(--v-theme-surface))
+    border-bottom: 1px solid #fff
     &:focus
       border-bottom: 1px solid rgb(var(--v-theme-on-background))
       outline: none
   select,
-  input[type=text]
-    width: 100%
   input[type=checkbox]
     margin-right: .4em
+
+form.schema-form
+  label
+    display: block
+    font-weight: 700
+    &.inline
+      display: inline
 </style>

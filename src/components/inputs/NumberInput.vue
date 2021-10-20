@@ -1,6 +1,5 @@
 <template>
-  <label v-if="label" :for="name">{{ label }}</label>
-  <input :id="name" type="number" v-model="value" :min="settings.min" :max="settings.max"/>
+  <v-text-field :label="label" type="number" v-model="value" :min="settings.min" :max="settings.max"/>
 </template>
 
 <script lang="ts">
@@ -9,13 +8,12 @@ import { InputComponent } from './types'
 
 export default defineComponent({
   props: {
-    name: {
-      type: String,
-      required: true
-    },
     modelValue: Number,
     settings: Object,
-    label: String
+    label: {
+      type: String,
+      required: true
+    }
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
