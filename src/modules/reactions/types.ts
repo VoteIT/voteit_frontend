@@ -11,11 +11,18 @@ export interface Reaction {
   agenda_item: number
 }
 
-export interface ReactionCountMessage {
+interface ReactionMessage {
   button: number
   content_type: string
-  count: number
   object_id: number
+}
+
+export interface ReactionCountMessage extends ReactionMessage {
+  count: number
+}
+
+export interface ReactionListMessage extends ReactionMessage {
+  userids: number[]
 }
 
 export type ReactionRelation = Pick<Reaction, 'content_type' | 'object_id'>

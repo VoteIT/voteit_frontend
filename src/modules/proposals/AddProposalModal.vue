@@ -8,7 +8,7 @@
     <v-sheet color="background" class="pa-4 d-flex flex-column" width="640" max-width="90vw" min-height="580">
       <v-expand-transition>
         <form @submit.prevent="preview()" v-show="!done">
-          <RichtextEditor v-model="body" class="proposal-editor mb-2" />
+          <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
           <div class="btn-group text-right">
             <v-btn type="submit" color="primary" prepend-icon="mdi-text-box-outline" :disabled="!!proposal">{{ t('preview') }}</v-btn>
           </div>

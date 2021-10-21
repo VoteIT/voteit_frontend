@@ -2,7 +2,7 @@ import { mapFilter, orderBy } from '@/utils'
 import { reactive } from 'vue'
 import useAuthentication from '@/composables/useAuthentication'
 import { reactionButtonType, reactionType } from './contentTypes'
-import { Reaction, ReactionButton, ReactionCountMessage, ReactionRelation } from './types'
+import { Reaction, ReactionButton, ReactionCountMessage, ReactionListMessage, ReactionRelation } from './types'
 
 function getCountKey (contentType: string, objectId: number, button: number) {
   return `${contentType}/${objectId}/${button}`
@@ -64,7 +64,16 @@ export default function useReactions () {
     }
   }
 
+  async function fetchReactions (button: ReactionButton, relation: ReactionRelation) {
+    const { p } = await reactionType.channel.methodCall('list', {
+      button: button.pk,
+      ...relation
+    })
+    return p as ReactionListMessage
+  }
+
   return {
+    fetchReactions,
     getMeetingButtons,
     getButtonReactionCount,
     getUserReaction,
