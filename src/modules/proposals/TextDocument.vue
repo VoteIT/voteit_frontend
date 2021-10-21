@@ -1,22 +1,27 @@
 <template>
-  <v-card class="my-2" border>
+  <v-card class="my-2 proposal-text" border>
     <v-card-title>
       <!-- Empty title not really allowed, so no translation needed here -->
       {{ document.title || '-- text document --' }}
       <v-spacer/>
       <v-btn v-if="canChangeDocument" icon="mdi-pencil" variant="text" @click="editDocument()" />
       <v-btn v-if="canDeleteDocument" icon="mdi-delete" variant="text" color="warning" @click="deleteDocument()" />
+      <v-btn variant="text" icon="mdi-chevron-up" :class="{ collapsed }" @click="collapsed = !collapsed" />
     </v-card-title>
-    <template v-for="p in document.paragraphs" :key="p.pk">
-      <v-divider/>
-      <v-card-text>
-        <Tag :name="p.tag" :count="proposalCount[p.tag]" />
-        <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
-      </v-card-text>
-      <v-card-actions v-if="canAddProposal">
-        <AddTextProposalModal :paragraph="p" />
-      </v-card-actions>
-    </template>
+    <v-expand-transition>
+      <div v-show="!collapsed">
+        <template v-for="p in document.paragraphs" :key="p.pk">
+          <v-divider/>
+          <v-card-text>
+            <Tag :name="p.tag" :count="proposalCount[p.tag]" />
+            <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
+          </v-card-text>
+          <v-card-actions v-if="canAddProposal">
+            <AddTextProposalModal :paragraph="p" />
+          </v-card-actions>
+        </template>
+      </div>
+    </v-expand-transition>
   </v-card>
 </template>
 
@@ -75,8 +80,11 @@ export default defineComponent({
     //   })
     // }
 
+    const collapsed = ref(false)
+
     return {
       t,
+      collapsed,
       proposalCount,
       // addProposal,
       deleteDocument,
@@ -88,6 +96,11 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
+.proposal-text
+  .mdi-chevron-up
+    transition: transform 250ms
+  .collapsed .mdi-chevron-up
+    transform: rotate(180deg)
 .proposal-text-paragraph
   white-space: pre-line
 
