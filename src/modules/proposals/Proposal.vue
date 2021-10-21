@@ -11,7 +11,7 @@
       </div>
     </div>
     <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
-    <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff" class="proposal-text-paragraph my-3" />
+    <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3" />
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
     </div>
@@ -22,20 +22,20 @@
     <v-sheet v-if="$slots.vote" class="vote-slot">
       <slot name="vote"/>
     </v-sheet>
-    <footer v-if="!readOnly">
+    <footer v-if="!readOnly" class="mt-2">
       <div>
-        <v-btn prepend-icon="mdi-comment-outline" variant="text" v-if="canAddDiscussionPost" @click="comment()">
+        <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment()">
           {{ t('discussion.comment') }}
         </v-btn>
-        <v-btn prepend-icon="mdi-chevron-up" variant="text" v-if="showComments" @click="showComments = false">
+        <v-btn prepend-icon="mdi-chevron-up" size="small" variant="text" v-if="showComments" @click="showComments = false">
           {{ t('discussion.hideComments') }}
         </v-btn>
-        <v-btn variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
+        <v-btn size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
           {{ t('discussion.comments', { count: discussionPosts.length }) }}
         </v-btn>
         <slot name="buttons"/>
       </div>
-      <Menu :items="menuItems" />
+      <Menu size="small" :items="menuItems" />
     </footer>
     <slot name="bottom"/>
     <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" :comment-input="canAddDiscussionPost" />

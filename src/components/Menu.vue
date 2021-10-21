@@ -44,7 +44,7 @@ export default defineComponent({
     color: String,
     icon: {
       type: String,
-      default: 'mdi-dots-horizontal'
+      default: 'mdi-dots-vertical'
     },
     size: String as PropType<'small' | 'x-small'>,
     showTransitions: Boolean,
