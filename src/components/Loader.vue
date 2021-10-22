@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <main v-if="visible" :class="{ initFailed, initDone, mobile }">
+    <main v-if="visible" :class="{ initFailed, initDone }">
       <img :src="require('@/assets/voteit-logo.svg').default" class="logo" />
       <transition name="fade">
         <h1 v-if="!initDone">{{ message }}</h1>
@@ -12,7 +12,6 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify/composables'
 
 import useLoader from '@/composables/useLoader'
 
@@ -25,7 +24,6 @@ export default defineComponent({
     const dotCount = ref(0)
     const { initDone, initFailed } = useLoader('Loader')
     const visible = ref(true)
-    const { mobile } = useDisplay()
 
     function dotUp () {
       dotCount.value = (dotCount.value + 1) % 4
@@ -53,7 +51,6 @@ export default defineComponent({
       initDone,
       initFailed,
       message,
-      mobile,
       visible
     }
   }
@@ -103,8 +100,6 @@ img.logo
     height: 21.797px
     left: 32px
     top: 24px
-  .mobile.initDone &
-    left: 80px
   .initFailed &
     transform: rotate(6deg)
 
