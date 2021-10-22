@@ -127,8 +127,8 @@
     "userHasInvites": "You have an invitation to this meeting | You have invitations to this meeting"
   },
   "loader": {
-    "loading": "Looting",
-    "failed": "No loot!"
+    "loading": "Loading",
+    "failed": "Loading failed"
   },
   "meeting": {
     "agenda": "Agenda",

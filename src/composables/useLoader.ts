@@ -16,8 +16,7 @@ const isReady = computed(() => {
 watch(isReady, async value => {
   if (!value) return
   try {
-    await Promise.all(callbacks.map(cb => cb())) // Why is this needed???
-    // await Promise.all(callbacks) // Shouldn't this work
+    await Promise.all(callbacks.map(cb => cb()))
     initDone.value = true
   } catch (err) {
     console.log(err)
