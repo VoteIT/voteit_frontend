@@ -68,6 +68,7 @@ export interface ChannelsConfig {
 }
 
 export enum ThemeColor {
+  Accent = 'accent',
   Primary = 'primary',
   Secondary = 'secondary',
   Error = 'error',
