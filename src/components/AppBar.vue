@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar app flat v-if="user">
+  <v-app-bar app flat>
     <v-app-bar-nav-icon v-show="hasNavDrawer" class="d-lg-none" @click.stop="toggleNavDrawerEvent.emit()" />
     <v-app-bar-title>
       <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" /></RouterLink>
     </v-app-bar-title>
     <v-spacer />
-    <div>
+    <div v-if="user">
       <v-btn class="user-menu" :class="{ open: userMenuOpen }" variant="text" @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
         <span class="ml-2">{{ user.full_name || user.username }}</span>
