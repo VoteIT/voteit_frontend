@@ -21,7 +21,16 @@ import Widget from './components/Widget.vue'
 
 import en from './locales/en.json'
 
-const locale = document.documentElement.lang
+const availableLanguages = ['en', 'sv'] // FIXME somewhere else
+function resolveLocale (languages: readonly string[]): string {
+  for (const lang of languages) {
+    const short = lang.split('-')[0]
+    if (availableLanguages.includes(short)) return short
+  }
+  return 'en'
+}
+
+const locale = resolveLocale(navigator.languages)
 
 moment.locale(locale)
 
