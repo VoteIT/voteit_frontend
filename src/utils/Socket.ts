@@ -5,6 +5,9 @@ import hostname from '@/utils/hostname'
 import { ChannelsConfig, ChannelsMessage, State, SubscribePayload } from './types'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+// Send heartbeats, for "pull the network plug" type of protection.
+// const HEARTBEAT_MS = 5000 // Send a ping every 5 s
+// let heartbeatInterval: number
 
 type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
 
@@ -61,6 +64,9 @@ export default class Socket {
       for (const event of EVENTS) {
         this.ws.addEventListener(event, this.createEventListener(event as SocketEvent))
       }
+      // heartbeatInterval = setInterval(() => {
+      //   this.ws?.send('ping')
+      // }, HEARTBEAT_MS)
     })
   }
 
@@ -68,6 +74,7 @@ export default class Socket {
     // delete this.token
     this.ws?.close()
     this.active = false
+    // clearInterval(heartbeatInterval)
   }
 
   public get isOpen () {

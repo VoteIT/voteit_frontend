@@ -64,8 +64,6 @@ socket.addEventListener('close', () => {
   socketState.value = false
 })
 
-socket.addEventListener('error', console.error)
-
 export default class Channel<T> {
   private _contentType?: string
   private hasRoles?: boolean

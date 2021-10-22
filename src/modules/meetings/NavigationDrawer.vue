@@ -7,6 +7,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify/composables'
 
 import { slugify, toggleNavDrawerEvent } from '@/utils'
 
@@ -33,6 +34,7 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
+    const { mobile } = useDisplay()
     const { getAgenda, hasNewItems } = useAgenda()
     const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
@@ -149,9 +151,9 @@ export default defineComponent({
       return items
     })
 
-    const isOpen = ref(window.innerWidth >= 1280)
+    const isOpen = ref(!mobile.value)
     function toggleDrawer () {
-      if (window.innerWidth < 1280) isOpen.value = !isOpen.value
+      if (mobile.value) isOpen.value = !isOpen.value
     }
     toggleNavDrawerEvent.on(toggleDrawer)
 

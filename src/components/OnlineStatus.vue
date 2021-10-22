@@ -27,7 +27,7 @@ export default defineComponent({
     const { isAuthenticated } = useAuthentication()
     const { connect, socketState } = new Channel()
 
-    let reconnectIntervalId: number | undefined
+    let reconnectIntervalId: number
 
     async function reconnect () {
       clearInterval(reconnectIntervalId)

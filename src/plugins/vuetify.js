@@ -60,5 +60,8 @@ export default createVuetify({
       light
       // dark
     }
+  },
+  display: {
+    mobileBreakpoint: 'md'
   }
 })
