@@ -38,7 +38,7 @@
   "select": "Välj",
   "settings": "Inställningar",
   "sortAndFilter": "Sortera och filtrera",
-  "start": "Starta",
+  "start": "Start",
   "state": "Status",
   "step": "Steg {step}",
   "stop": "Stopp",
@@ -96,11 +96,11 @@
     "postPlaceholder": "Skriv din kommentar"
   },
   "electoralRegister": {
-    "plural": "Electoral registers",
-    "method": "Method for electoral register",
-    "saved": "Electoral register method now set to {er_policy_name}.",
-    "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
-    "settings": "Settings for Electoral Registers"
+    "plural": "Röstlängder",
+    "method": "Metod för röstlängder",
+    "saved": "Metod för röstlängder är nu satt till {er_policy_name}.",
+    "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
+    "settings": "Inställning för röstlängder"
   },
   "error": {
     "error": "Fel",
