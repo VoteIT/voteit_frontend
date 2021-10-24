@@ -22,12 +22,12 @@
       </v-expand-transition>
       <v-alert v-if="done" type="success" :text="t('allDone')" class="mt-8" />
       <v-spacer />
-      <div v-if="done" class="text-right">
+      <div v-if="done" class="text-right mt-2">
         <v-btn color="primary" @click="isOpen = false">
           {{ t('close') }}
         </v-btn>
       </div>
-      <div v-else class="text-right">
+      <div v-else class="text-right mt-2">
         <v-btn variant="text" @click="isOpen = false">
           {{ t('cancel') }}
         </v-btn>
