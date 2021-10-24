@@ -5,7 +5,7 @@
         {{ t('proposal.add') }}
       </v-btn>
     </template>
-    <v-sheet color="background" class="pa-4 d-flex flex-column" width="640" max-width="90vw" min-height="580">
+    <v-sheet color="background" class="pa-4 d-flex flex-column overflow-y-auto" v-bind="sheetProps">
       <v-expand-transition>
         <form @submit.prevent="preview()" v-show="!done">
           <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
@@ -16,7 +16,7 @@
       </v-expand-transition>
       <v-expand-transition>
         <div v-if="proposal">
-          <v-divider class="my-8" v-if="!done" />
+          <v-divider class="my-6" v-if="!done" />
           <Richtext v-model="proposal.body" />
         </div>
       </v-expand-transition>
@@ -40,8 +40,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify/composables'
 
 import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
@@ -56,6 +57,7 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
+    const { mobile } = useDisplay()
     const body = ref('')
     const { agendaId } = useAgendaItem()
     const isOpen = ref(false)
@@ -96,6 +98,14 @@ export default defineComponent({
       }
     })
 
+    const sheetProps = computed(() => {
+      return {
+        width: mobile.value ? 280 : 560,
+        minHeight: 400,
+        maxHeight: '70vh'
+      }
+    })
+
     return {
       t,
       done,
@@ -103,6 +113,7 @@ export default defineComponent({
       proposal,
       body,
       saving,
+      sheetProps,
       addProposal,
       preview
     }

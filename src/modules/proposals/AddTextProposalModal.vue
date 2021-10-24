@@ -5,7 +5,7 @@
         {{ t('proposal.change') }}
       </v-btn>
     </template>
-    <v-sheet color="background" class="pa-4 d-flex flex-column" width="640" max-width="90vw" min-height="580">
+    <v-sheet color="background" class="pa-4 d-flex flex-column overflow-y-auto" v-bind="sheetProps">
       <v-expand-transition>
         <form @submit.prevent="preview()" v-show="!done">
           <textarea class="form-control" v-model="body" required />
@@ -17,7 +17,7 @@
       </v-expand-transition>
       <v-expand-transition>
         <div v-if="html">
-          <v-divider class="my-8" v-if="!done" />
+          <v-divider class="my-6" v-if="!done" />
           <p class="proposal-text-paragraph" v-html="html"/>
         </div>
       </v-expand-transition>
@@ -43,6 +43,8 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify/composables'
+
 import { proposalType, TextParagraph } from './contentTypes'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { DiffProposal } from './types'
@@ -56,6 +58,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
+    const { mobile } = useDisplay()
     const body = ref(props.paragraph.body)
     const { agendaId } = useAgendaItem()
     const isOpen = ref(false)
@@ -102,6 +105,14 @@ export default defineComponent({
       }
     })
 
+    const sheetProps = computed(() => {
+      return {
+        width: mobile.value ? 280 : 560,
+        minHeight: 400,
+        maxHeight: '70vh'
+      }
+    })
+
     return {
       t,
       done,
@@ -109,6 +120,7 @@ export default defineComponent({
       isOpen,
       html,
       body,
+      sheetProps,
       saving,
       addProposal,
       reset,

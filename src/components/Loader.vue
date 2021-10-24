@@ -81,7 +81,10 @@ main
   bottom: 0
   right: 0
   background-color: rgb(var(--v-theme-app-bar))
+  transition: background-color 1s ease-in
   z-index: 100
+  &.initFailed
+    background-color: #303030
 
 .fade-leave-active
   transition: opacity 0.5s ease
@@ -108,6 +111,6 @@ h1
   color: rgb(var(--v-theme-on-app-bar))
   position: fixed
   left: calc(50vw - 12vh)
-  top: 43vh
-  font-size: 2vh
+  top: 44vh
+  font-size: 1.6vh
 </style>

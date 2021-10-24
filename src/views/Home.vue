@@ -1,13 +1,13 @@
 <template>
   <v-row v-if="organisation" class="home mt-6 mb-4">
-    <v-col xl="8" offset-xl="2">
+    <v-col sm="10" offset-sm="1" lg="8" offset-lg="2" xl="6" offset-xl="3">
       <Menu :items="menu" float />
       <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
       <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
     </v-col>
   </v-row>
   <v-row v-if="isAuthenticated">
-    <v-col cols="12" sm="6" lg="4">
+    <v-col cols="12" sm="5" offset-sm="1" lg="4" offset-lg="2" xl="3" offset-xl="3">
       <h1>
         {{ t('home.yourMeetings', participatingMeetings.length) }}
       </h1>
@@ -19,7 +19,7 @@
         <v-btn prepend-icon="mdi-plus" variant="text" color="primary" @click="createMeeting()">{{ t('meeting.create') }}</v-btn>
       </div>
     </v-col>
-    <v-col cols="12" sm="6" lg="4">
+    <v-col cols="12" sm="6" lg="4" xl="3">
       <h1>
         {{ t('join.joinAMeeting', otherMeetings.length) }}
       </h1>
@@ -36,7 +36,7 @@
     </v-col>
   </v-row>
   <v-row v-else-if="organisation">
-    <v-col sm="10" lg="8" offset-sm="1" offset-lg="2" xl="6" offset-xl="3">
+    <v-col sm="10" offset-sm="1" lg="8" offset-lg="2" xl="6" offset-xl="3">
       <v-card :title="t('login')" v-if="organisation.login_url" border class="mt-6">
         <v-card-text>
           <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>

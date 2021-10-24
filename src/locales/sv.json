@@ -30,7 +30,7 @@
   "options": "Alternativ",
   "organizations": "Organisationer",
   "post": "Posta",
-  "preview": "Förhandsvisning",
+  "preview": "Förhandsgranska",
   "publish": "Publicera",
   "reset": "Återställ",
   "save": "Spara",
@@ -108,7 +108,7 @@
   },
   "home": {
     "home": "Hem",
-    "noCurrentMeetings": "Du har inga möten.",
+    "noCurrentMeetings": "Inga möten",
     "yourMeetings": "Ditt möte | Dina möten"
   },
   "join": {
