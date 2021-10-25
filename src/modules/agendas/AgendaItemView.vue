@@ -1,21 +1,22 @@
 <template>
   <template v-if="agendaItem">
     <v-row>
-      <v-col>
-        <Menu float :items="menuItems" />
-        <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
-        <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
-        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" />
+      <v-col cols="12">
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12" lg="8">
+        <Menu float :items="menuItems" />
+        <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
+        <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
+        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" />
         <TextDocuments />
       </v-col>
-    </v-row>
-    <v-row v-if="speakerLists.length">
-      <v-col v-for="list in speakerLists" :key="list.pk">
-        <SpeakerList :list="list" />
+      <v-col cols="12" lg="4" v-if="speakerLists.length">
+        <h2>
+          {{ t('speaker.lists', speakerLists.length) }}
+        </h2>
+        <SpeakerList v-for="list in speakerLists" :key="list.pk" :list="list" />
       </v-col>
     </v-row>
     <v-divider class="my-4" />

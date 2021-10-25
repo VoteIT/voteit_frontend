@@ -96,11 +96,13 @@ export default function useSpeakerLists () {
   }
 
   function makeUniqueListName (title: string): string {
-    const checkDuplicate = (title: string) => {
+    function checkDuplicate (title: string): boolean {
       for (const list of speakerLists.values()) {
         if (list.title === title) return true
       }
+      return false
     }
+    if (!checkDuplicate(title)) return title
     for (let i = 1; true; i++) {
       const newTitle = `${title} - ${i}`
       if (!checkDuplicate(newTitle)) return newTitle

@@ -3,7 +3,7 @@
     <v-card-text>
       <p v-if="currentSpeaker" class="mb-2">
         {{ t('speaker.currentlySpeaking') }}:
-        <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
+        <strong><User :pk="currentSpeaker.userid" /></strong>
       </p>
       <h3>
         {{ t('speaker.queue') }}
@@ -40,7 +40,6 @@ import { useI18n } from 'vue-i18n'
 import { user } from '@/composables/useAuthentication'
 import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 
-import Moment from '@/components/Moment.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
 import { SpeakerList, SpeakerListState } from './types'
@@ -59,9 +58,6 @@ export default defineComponent({
       type: Object as PropType<SpeakerList>,
       required: true
     }
-  },
-  components: {
-    Moment
   },
   setup (props) {
     const { t } = useI18n()

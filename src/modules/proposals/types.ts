@@ -33,3 +33,5 @@ export interface DiffProposal extends BaseProposal {
 }
 
 export type Proposal = RichtextProposal | DiffProposal
+type PreviewOmitted = 'created' | 'author' | 'pk' | 'prop_id'
+export type PreviewProposal = Omit<Proposal, PreviewOmitted>

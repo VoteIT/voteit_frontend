@@ -17,24 +17,20 @@
     </v-col>
   </v-row>
   <v-row v-if="speakerSystem">
-    <v-col cols="12" order-sm="1" sm="5" md="4" lg="3">
+    <v-col cols="12" order-sm="1" sm="5" md="4" lg="3" class="speaker-lists">
       <h2>{{ t('speaker.listChoices') }}</h2>
-      <v-item-group class="speaker-lists" v-model="currentList">
-        <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, disabled }" :disabled="!!speakers.getSystemActiveSpeaker(speakerSystem)">
-          <v-card :color="isSelected ? 'primary' : undefined" class="mb-2" :disabled="disabled && !isSelected">
-            <Menu float :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
-            <v-card-title>
-              {{ list.title }}
-            </v-card-title>
-            <v-card-text v-if="isSelected && currentSpeaker">
-              {{ t('speaker.currentlySpeaking') }}: <strong><User :pk="currentSpeaker.userid" /></strong>
-            </v-card-text>
-            <v-card-text>
-              {{ t('speaker.speakerCount', { count: speakers.getQueue(list).length }, speakers.getQueue(list).length) }}
-            </v-card-text>
-          </v-card>
-        </v-item>
-      </v-item-group>
+      <v-card v-for="list in speakerLists" :key="list.pk" :color="list.pk === currentList.pk ? 'primary' : undefined" class="mb-2">
+        <Menu float :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
+        <v-card-title>
+          {{ list.title }}
+        </v-card-title>
+        <v-card-text v-if="list.pk === currentList.pk && currentSpeaker">
+          {{ t('speaker.currentlySpeaking') }}: <strong><User :pk="currentSpeaker.userid" /></strong>
+        </v-card-text>
+        <v-card-text>
+          {{ t('speaker.speakerCount', { count: speakers.getQueue(list).length }, speakers.getQueue(list).length) }}
+        </v-card-text>
+      </v-card>
       <v-btn prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
              @click="addSpeakerList(speakerSystem)" :disabled="speakerSystem.state !== 'active'">
         {{ t('speaker.addListToSystem', speakerSystem ) }}
