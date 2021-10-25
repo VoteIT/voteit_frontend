@@ -15,7 +15,7 @@ import useLoader from '@/composables/useLoader'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { agendaItemType } from '../agendas/contentTypes'
-import { pollType } from '../polls/contentTypes'
+// import { pollType } from '../polls/contentTypes'
 
 import { WorkflowState } from '@/contentTypes/types'
 import usePolls from '@/modules/polls/usePolls'
@@ -24,7 +24,7 @@ import MenuTree from '@/components/MenuTree.vue'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import { PollState } from '../polls/types'
 import { AgendaItem } from '../agendas/types'
-import { canAddPoll } from '../polls/rules'
+import { canAddPoll, canVote } from '../polls/rules'
 import { canChangeMeeting } from './rules'
 
 export default defineComponent({
@@ -39,8 +39,8 @@ export default defineComponent({
     const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
     const agenda = computed(() => getAgenda(meetingId.value))
     const agendaWorkflows = agendaItemType.useWorkflows()
-    const pollWorkflows = pollType.useWorkflows()
-    const { getAiPolls, getPolls } = usePolls()
+    // const pollWorkflows = pollType.useWorkflows()
+    const { getAiPolls, getPolls, getUserVote } = usePolls()
     const { getAgendaProposals } = useProposals()
     const { initDone } = useLoader('Agenda')
 
@@ -67,20 +67,21 @@ export default defineComponent({
       }
       for (const s of aiGroups.value) {
         menus.push({
-          title: s.state,
+          title: t(`workflowState.${s.state}`),
           showCount: true,
           items: getAIMenuItems(s)
         })
       }
       return menus
     })
-    const pollGroups = computed<WorkflowState[]>(() => {
-      return pollWorkflows.getPriorityStates(
-        s => !s.requiresRole || hasRole(s.requiresRole)
-      )
+
+    const unvotedPolls = computed(() => {
+      return getPolls(meetingId.value, PollState.Ongoing)
+        .filter(poll => canVote(poll) && !getUserVote(poll))
     })
+
     const pollMenus = computed<TreeMenuItem[]>(() => {
-      const menus: TreeMenuLink[] = [{
+      const menus: TreeMenuItem[] = [{
         title: t('poll.all'),
         to: `${meetingPath.value}/polls`
       }]
@@ -88,15 +89,21 @@ export default defineComponent({
         menus.push({
           title: t('poll.new'),
           to: `${meetingPath.value}/polls/new`,
-          icons: ['mdi-star']
+          icons: ['mdi-star-plus']
         })
       }
-      const groups: TreeMenu[] = pollGroups.value.map(s => ({
-        title: s.state,
-        items: getPollMenuItems(s),
-        showCount: true
-      }))
-      return [...menus, ...groups]
+      if (unvotedPolls.value.length) {
+        menus.push({
+          title: t('poll.unvoted'),
+          items: unvotedPolls.value.map(p => ({
+            title: p.title,
+            defaultOpen: true,
+            to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`,
+            icons: ['mdi-star']
+          }))
+        })
+      }
+      return menus
     })
 
     function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
@@ -108,13 +115,6 @@ export default defineComponent({
           hasNewItems: hasNewItems(ai)
         })
       )
-    }
-
-    function getPollMenuItems (s: WorkflowState): TreeMenuLink[] {
-      return getPolls(meetingId.value, s.state).map(p => ({
-        title: p.title,
-        to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`
-      }))
     }
 
     const menu = computed<TreeMenu[]>(() => {
@@ -132,7 +132,7 @@ export default defineComponent({
       {
         title: t('poll.polls'),
         items: pollMenus.value,
-        icon: 'mdi-star-outline',
+        icon: unvotedPolls.value.length ? 'mdi-star' : 'mdi-star-outline',
         openFirstNonEmpty: true
       },
       {
@@ -158,16 +158,9 @@ export default defineComponent({
     toggleNavDrawerEvent.on(toggleDrawer)
 
     return {
-      t,
       isOpen,
       initDone,
-      meeting,
       menu,
-      aiGroups,
-      getAiPath,
-      getAiPolls,
-      getAiType,
-      getAgendaProposals,
       toggleDrawer
     }
   }

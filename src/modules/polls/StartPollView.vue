@@ -1,7 +1,7 @@
 <template>
   <v-row id="start-poll">
     <v-col lg="8" offset-lg="2">
-      <header>
+      <header class="mb-4">
         <h1>{{ t('poll.start') }}</h1>
       </header>
       <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
@@ -11,7 +11,7 @@
       <v-list v-else-if="pollableAgendaItems.length">
         <v-list-item v-for="pollable in pollableAgendaItems" :key="pollable.to" v-bind="pollable" />
       </v-list>
-      <v-alert v-else type="info" :text="t('poll.noPollableAgendaItems')" />
+      <v-alert class="mt-4" v-else type="info" :text="t('poll.noPollableAgendaItems')" />
       <template v-if="agendaId">
         <h2 class="mt-2">{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
         <div v-if="pickMethod">

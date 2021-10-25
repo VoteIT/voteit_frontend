@@ -179,6 +179,7 @@
     "showProgress": "Show progress",
     "start": "Start poll",
     "started": "Started",
+    "unvoted": "Unvoted",
     "votingTitle": "Voting {title}",
     "vote": "Vote",
     "abstainRegistered": "You have chosen to abstain from this vote",
