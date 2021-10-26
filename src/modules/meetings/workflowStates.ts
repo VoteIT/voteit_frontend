@@ -1,7 +1,7 @@
 import { WorkflowState } from '@/contentTypes/types'
 import { MeetingState } from './types'
 
-export const meetingStates: WorkflowState[] = [
+export const meetingStates: WorkflowState<MeetingState>[] = [
   {
     transition: 'upcoming',
     icon: 'mdi-progress-clock',

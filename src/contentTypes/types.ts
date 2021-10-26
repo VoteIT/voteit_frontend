@@ -3,8 +3,8 @@ import { MeetingRole } from '@/modules/meetings/types'
 import { ChannelsConfig, ThemeColor } from '@/utils/types'
 import { PresenceCheckState } from '../modules/presence/workflowStates'
 
-export interface WorkflowState {
-  state: string
+export interface WorkflowState<S = string> {
+  state: S
   icon: string
   transition?: string
   requiresRole?: MeetingRole

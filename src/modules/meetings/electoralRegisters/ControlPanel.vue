@@ -2,7 +2,7 @@
   <div>
     <h2>{{ title }}</h2>
     <form>
-      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="options" />
+      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="erOptions" />
       <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
         {{ t('electoralRegister.selectMethod') }}
       </v-alert>
@@ -19,21 +19,14 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, reactive, defineComponent, onBeforeMount, watch } from 'vue'
+import { computed, ref, reactive, defineComponent, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { restApi } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
 import SelectVue from '@/components/inputs/Select.vue'
 import { meetingType } from '../contentTypes'
 import { Meeting } from '../types'
-
-interface ERMethod {
-  name: string
-  value: string
-}
-
-const methods = ref<ERMethod[] | null>(null)
+import useElectoralRegisters from '../useElectoralRegisters'
 
 export default defineComponent({
   translationKey: 'electoralRegister.plural',
@@ -45,16 +38,9 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { meeting, meetingId } = useMeeting()
+    const { erOptions } = useElectoralRegisters()
     const settings = reactive<Partial<Meeting>>({ er_policy_name: meeting.value?.er_policy_name })
     const status = ref<null | 'incomplete' | 'waiting' | 'saved'>(meeting.value?.er_policy_name ? null : 'incomplete')
-
-    onBeforeMount(async () => {
-      if (methods.value) return
-      try {
-        const { data } = await restApi.get('electoral-registers/methods/')
-        methods.value = data
-      } catch {}
-    })
 
     async function save () {
       status.value = 'waiting'
@@ -74,19 +60,10 @@ export default defineComponent({
       status.value = value ? null : 'incomplete'
     })
 
-    const options = computed(() => {
-      if (!methods.value) return {}
-      const opts: Record<string, string> = {}
-      for (const { name, value } of methods.value) {
-        opts[name] = value
-      }
-      return opts
-    })
-
     return {
       t,
       disabled,
-      options,
+      erOptions,
       settings,
       status,
       title: computed(() => t('electoralRegister.settings')),

@@ -3,9 +3,11 @@
     <v-btn prepend-icon="mdi-chevron-right" variant="text" block @click="isOpen = !isOpen" class="collapse" :class="{ isOpen }">
       {{ title }}
     </v-btn>
-    <div class="dropdown-content" v-show="isOpen">
-      <slot/>
-    </div>
+    <v-expand-transition>
+      <div class="dropdown-content" v-show="isOpen">
+        <slot/>
+      </div>
+    </v-expand-transition>
   </div>
 </template>
 
@@ -32,7 +34,6 @@ export default defineComponent({
 
 <style lang="sass">
 .page-dropdown
-  margin-top: 1em
   .collapse
     justify-content: left
     font-size: 12pt

@@ -8,6 +8,7 @@ import { Poll, PollState, PollStatus } from './types'
 import { PollMethod, PollMethodName } from './methods/types'
 import { meetingType } from '../meetings/contentTypes'
 import { pollType } from './contentTypes'
+import { canVote } from './rules'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const userVotes = reactive<Map<number, Vote>>(new Map())
@@ -106,7 +107,7 @@ const allPollTitles = computed(() => {
 })
 
 export default function usePolls () {
-  function getPolls (meeting: number, state?: string) {
+  function getPolls (meeting: number, state?: PollState) {
     return [...mapFilter(
       polls,
       p => p.meeting === meeting && (!state || p.state === state)
@@ -147,6 +148,23 @@ export default function usePolls () {
     }
   }
 
+  function iterUnvotedPolls (meeting: number) {
+    return mapFilter(polls, p => {
+      return p.meeting === meeting &&
+        p.state === PollState.Ongoing &&
+        canVote(p) &&
+        !getUserVote(p)
+    })
+  }
+
+  function getNextUnvotedPoll (meeting: number) {
+    return iterUnvotedPolls(meeting).next().value
+  }
+
+  function getUnvotedPolls (meeting: number) {
+    return [...iterUnvotedPolls(meeting)]
+  }
+
   return {
     allPollTitles,
     getPolls,
@@ -154,6 +172,8 @@ export default function usePolls () {
     getPoll,
     getPollMethods,
     getPollStatus,
+    getNextUnvotedPoll,
+    getUnvotedPolls,
     getUserVote
   }
 }

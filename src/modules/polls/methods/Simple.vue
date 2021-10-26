@@ -4,7 +4,7 @@
       <template v-slot:vote>
         <div class="simple-options">
           <Btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'contained' : 'outlined'" :icon="opt.icon" @click="change(p, opt)">
-            {{ opt.title }}
+            {{ t(opt.translationString) }}
           </Btn>
         </div>
       </template>
@@ -23,15 +23,8 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalComponent from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
-import { CombinedSimpleVote, SimpleChoice, simpleIcons } from './types'
+import { CombinedSimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices } from './types'
 import { Poll } from '../types'
-
-interface Option {
-  value: SimpleChoice
-  title: string
-  icon: string
-  color: string
-}
 
 export default defineComponent({
   name: 'SimplePoll',
@@ -62,33 +55,10 @@ export default defineComponent({
       }
     }
 
-    const options: Option[] = [
-      {
-        value: SimpleChoice.Yes,
-        title: t('poll.approve'),
-        icon: simpleIcons.yes,
-        color: 'success'
-      },
-      {
-        value: SimpleChoice.No,
-        title: t('poll.deny'),
-        icon: simpleIcons.no,
-        color: 'warning'
-      }
-    ]
-
     const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
+    const options = proposals.value.length > 1 ? simpleChoices : simpleChoices.filter(c => c.value !== SimpleChoice.Abstain)
 
-    if (proposals.value.length > 1) {
-      options.push({
-        value: SimpleChoice.Abstain,
-        title: t('poll.abstain'),
-        icon: simpleIcons.abstain,
-        color: 'secondary'
-      })
-    }
-
-    function change (proposal: Proposal, opt: Option) {
+    function change (proposal: Proposal, opt: SimpleChoiceDesc) {
       if (props.disabled) return
       votes.set(proposal.pk, opt.value)
       const map = new DefaultMap<SimpleChoice, number[]>(() => [])
@@ -108,6 +78,7 @@ export default defineComponent({
     // })
 
     return {
+      t,
       change,
       getUser,
       votes,

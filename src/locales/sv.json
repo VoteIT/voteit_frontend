@@ -134,6 +134,7 @@
     "confirmRemoveParticipant": "Detta kommer att ta bort användaren från detta möte.\nÄr du säker?",
     "participants": "Deltagare",
     "create": "Starta ett nytt möte",
+    "createTitleHint": "Minst 5 tecken",
     "meeting": "Möte",
     "public": "Gör mötet synligt för alla",
     "settings": {
@@ -178,6 +179,7 @@
     "start": "Ny omröstning",
     "started": "Startad",
     "unvoted": "Ej röstat",
+    "nextUnvoted": "Nästa: {title}",
     "votingTitle": "Omröstning {title}",
     "vote": "Rösta",
     "abstainRegistered": "Du har avstått från att delat i denna omröstning",
@@ -214,13 +216,14 @@
       }
     },
     "result": {
-      "runtime": "Beräkningstid",
-      "quota": "Kvot",
       "complete": "Fullständigt resultat",
-      "randomized": "Slumpmässig utslagsröst användes"
+      "quota": "Kvot",
+      "randomized": "Slumpmässig utslagsröst användes",
+      "runtime": "Beräkningstid",
+      "method": "Resultat ({method})"
     },
     "schulze": {
-      "numTiedWinners": "Vinnare kunda avgöras | One ring to rule them all, and in the darkness bind them | Det blev oavgjort mellan { count } vinnare"
+      "numTiedWinners": "En klar vinnare kunde utses | One ring to rule them all, and in the darkness bind them | Det blev oavgjort mellan { count } förslag"
     },
     "STV": {
       "numRounds": "Skotsk STV, en runda | Skotsk STV, {count} rundor"

@@ -24,7 +24,7 @@ import MenuTree from '@/components/MenuTree.vue'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import { PollState } from '../polls/types'
 import { AgendaItem } from '../agendas/types'
-import { canAddPoll, canVote } from '../polls/rules'
+import { canAddPoll } from '../polls/rules'
 import { canChangeMeeting } from './rules'
 
 export default defineComponent({
@@ -40,7 +40,7 @@ export default defineComponent({
     const agenda = computed(() => getAgenda(meetingId.value))
     const agendaWorkflows = agendaItemType.useWorkflows()
     // const pollWorkflows = pollType.useWorkflows()
-    const { getAiPolls, getPolls, getUserVote } = usePolls()
+    const { getAiPolls, getUnvotedPolls } = usePolls()
     const { getAgendaProposals } = useProposals()
     const { initDone } = useLoader('Agenda')
 
@@ -75,10 +75,7 @@ export default defineComponent({
       return menus
     })
 
-    const unvotedPolls = computed(() => {
-      return getPolls(meetingId.value, PollState.Ongoing)
-        .filter(poll => canVote(poll) && !getUserVote(poll))
-    })
+    const unvotedPolls = computed(() => getUnvotedPolls(meetingId.value))
 
     const pollMenus = computed<TreeMenuItem[]>(() => {
       const menus: TreeMenuItem[] = [{
@@ -97,7 +94,6 @@ export default defineComponent({
           title: t('poll.unvoted'),
           items: unvotedPolls.value.map(p => ({
             title: p.title,
-            defaultOpen: true,
             to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`,
             icons: ['mdi-star']
           }))

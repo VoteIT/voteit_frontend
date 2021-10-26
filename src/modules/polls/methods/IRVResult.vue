@@ -14,12 +14,10 @@
 import useProposals from '@/modules/proposals/useProposals'
 import { defineComponent, PropType } from 'vue'
 
-import { SimpleVoteResult } from './types'
-
 export default defineComponent({
   props: {
     data: {
-      type: Object as PropType<SimpleVoteResult>,
+      type: Object as PropType<object>,
       required: true
     }
   },

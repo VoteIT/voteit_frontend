@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3>Schulze result</h3>
     <p>
       {{ t('poll.schulze.numTiedWinners', tiedWinners.length, { count: tiedWinners.length }) }}
     </p>

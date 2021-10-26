@@ -3,7 +3,7 @@ import { MeetingRole } from '@/modules/meetings/types'
 
 import { AgendaState } from './types'
 
-export const agendaItemStates: WorkflowState[] = [
+export const agendaItemStates: WorkflowState<AgendaState>[] = [
   {
     transition: 'unpublish',
     icon: 'mdi-eye-off',

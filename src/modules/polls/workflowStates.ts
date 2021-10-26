@@ -2,7 +2,7 @@ import { MeetingRole } from '@/modules/meetings/types'
 import { PollState, PollTransition } from './types'
 import { WorkflowState } from '@/contentTypes/types'
 
-export const pollStates: WorkflowState[] = [
+export const pollStates: WorkflowState<PollState>[] = [
   {
     transition: PollTransition.Unpublish,
     icon: 'mdi-eye-off',

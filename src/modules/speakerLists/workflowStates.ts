@@ -1,7 +1,7 @@
 import { WorkflowState } from '@/contentTypes/types'
 import { SpeakerListState, SpeakerSystemState } from './types'
 
-export const speakerSystemStates: WorkflowState[] = [
+export const speakerSystemStates: WorkflowState<SpeakerSystemState>[] = [
   {
     transition: 'inactivate',
     icon: 'mdi-eye-off',
@@ -19,7 +19,7 @@ export const speakerSystemStates: WorkflowState[] = [
   }
 ]
 
-export const speakerListStates: WorkflowState[] = [
+export const speakerListStates: WorkflowState<SpeakerListState>[] = [
   {
     transition: 'open',
     icon: 'mdi-check',

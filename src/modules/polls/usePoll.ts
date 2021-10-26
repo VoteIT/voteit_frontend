@@ -14,6 +14,12 @@ export default function usePoll (pollRef: Ref<number>) {
     if (!poll.value) return
     return polls.getPollStatus(poll.value.pk)
   })
+  const nextUnvoted = computed(() => {
+    if (!poll.value) return
+    const next = polls.getNextUnvotedPoll(poll.value.meeting)
+    if (!next || next.pk === poll.value.pk) return
+    return next
+  })
 
   const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
   const isFinished = computed(() => poll.value?.state === PollState.Finished)
@@ -32,6 +38,7 @@ export default function usePoll (pollRef: Ref<number>) {
     isFinished,
     poll,
     pollStatus,
+    nextUnvoted,
     resultComponent,
     userVote,
     voteComponent

@@ -1,11 +1,16 @@
 <template>
   <main>
     <form @submit.prevent="addMeeting()">
-      <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" hint="At least 5 characters" />
+      <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" :hint="t('meeting.createTitleHint')" />
+      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="formData.er_policy_name" :options="erOptions" class="mb-6" />
       <div>
         <Switch type="checkbox" id="meeting_public" v-model="formData.public" :label="t('meeting.public')" />
       </div>
-      <Btn icon="mdi-send" :disabled="disabled" @click="addMeeting()">{{ t('create') }}</Btn>
+      <div class="text-right">
+        <v-btn color="primary" prepend-icon="mdi-send" :disabled="disabled">
+          {{ t('create') }}
+        </v-btn>
+      </div>
     </form>
   </main>
 </template>
@@ -17,23 +22,29 @@ import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 
+import SelectVue from '@/components/inputs/Select.vue'
 import useModal from '@/composables/useModal'
 import { meetingType } from './contentTypes'
+import useElectoralRegisters from './useElectoralRegisters'
 
 export default defineComponent({
-  name: 'AddMeetingModal',
+  components: {
+    SelectVue
+  },
   setup () {
     const { t } = useI18n()
     const router = useRouter()
     const modal = useModal()
+    const { erOptions } = useElectoralRegisters()
 
     const formData = reactive({
       title: '',
-      public: false
+      public: false,
+      er_policy_name: undefined
     })
     const submitting = ref(false)
 
-    const disabled = computed(() => submitting.value || formData.title.length <= 5)
+    const disabled = computed(() => submitting.value || formData.title.length <= 5 || !formData.er_policy_name)
 
     async function addMeeting () {
       if (submitting.value) return
@@ -45,6 +56,7 @@ export default defineComponent({
 
     return {
       t,
+      erOptions,
       formData,
       disabled,
       addMeeting

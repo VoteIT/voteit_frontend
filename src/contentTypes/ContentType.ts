@@ -5,8 +5,8 @@ import ContentAPI from './ContentAPI'
 import { ChannelConfig, WorkflowState } from './types'
 import useWorkflows from './useWorkflows'
 
-interface CType {
-  states?: WorkflowState[]
+interface CType<S> {
+  states?: WorkflowState<S>[]
   // rules?: Record<string, Predicate>
   channelName?: string
   restEndpoint?: string
@@ -15,11 +15,11 @@ interface CType {
 }
 
 export default class ContentType<T extends Record<string, any>, K extends string | number=number> {
-  contentType: CType
+  contentType: CType<T['state']>
   private _api?: ContentAPI<T, K>
   private _channel?: Channel<T>
 
-  constructor (contentType: CType) {
+  constructor (contentType: CType<T['state']>) {
     this.contentType = contentType
   }
 
@@ -71,7 +71,7 @@ export default class ContentType<T extends Record<string, any>, K extends string
 
   public useWorkflows () {
     if (!this.contentType.states) throw new Error(`Workflow States not configured for Content Type ${this.name}`)
-    return useWorkflows(this.contentType.states)
+    return useWorkflows<T['state']>(this.contentType.states)
   }
 
   public useContextRoles () {

@@ -6,7 +6,7 @@
         <h1>{{ t('poll.all') }}</h1>
       </header>
       <v-divider />
-      <Dropdown v-for="s in tabStates" :key="s.state" :title="`${t(`workflowState.${s.state}`)} (${s.polls.length})`" :open="s.state==='ongoing'">
+      <Dropdown v-for="s in tabStates" :key="s.state" :title="`${t(`workflowState.${s.state}`)} (${s.polls.length})`" :open="s.state==='ongoing'" class="mt-4">
         <Poll :poll="p" v-for="p in s.polls" :key="p.pk" />
       </Dropdown>
       <p v-if="tabStates.length === 0">
@@ -64,9 +64,7 @@ export default defineComponent({
       tabStates,
       menuItems,
       getStatePath (s: WorkflowState) {
-        if (s.state === 'ongoing') {
-          return `${meetingPath.value}/polls`
-        }
+        if (s.state === 'ongoing') return `${meetingPath.value}/polls`
         return `${meetingPath.value}/polls/${s.state}`
       }
     }

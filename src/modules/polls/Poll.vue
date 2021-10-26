@@ -3,31 +3,26 @@
     <header>
       <router-link :to="pollPath">
         <v-icon>mdi-chevron-right</v-icon>
-        <h3>{{ poll.title }}</h3>
+        <h3>{{ poll.title }} <small class="text-secondary ml-4">{{ methodName }}</small></h3>
         <div class="meta">
           <span v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></span>
           <span v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></span>
-          <span v-else>{{ t(`poll.method.${poll.method_name}`) }}</span>
+          <span v-else></span>
         </div>
       </router-link>
     </header>
     <div class="body">
-
       <template v-if="isFinished">
-        <component v-if="resultComponent" :is="resultComponent" :data="poll.result">
-          <template v-if="poll.result.approved.length">
-            <h3>{{ t('poll.numApproved', poll.result.approved.length )}}</h3>
-            <div class="proposals approved">
-              <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
-            </div>
-          </template>
-          <!-- TODO FIXME PLZ -->
-          <BtnDropdown dark v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )" :style="{ marginTop: '1em' }">
-            <div class="proposals denied">
-              <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
-            </div>
-          </BtnDropdown>
-        </component>
+        <Dropdown v-if="poll.result.approved.length" :title="t('poll.numApproved', poll.result.approved.length )">
+          <div class="proposals approved">
+            <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
+          </div>
+        </Dropdown>
+        <Dropdown v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )">
+          <div class="proposals denied">
+            <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
+          </div>
+        </Dropdown>
       </template>
 
       <!-- <Btn @click="vote()" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ userVote ? t('poll.changeVote') : t('poll.vote') }}</Btn> -->
@@ -57,8 +52,6 @@ import usePolls from '@/modules/polls/usePolls'
 import useProposals from '@/modules/proposals/useProposals'
 
 import Moment from '@/components/Moment.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
-import BtnDropdown from '@/components/BtnDropdown.vue'
 import Voting from './Voting.vue'
 import Proposal from '@/modules/proposals/Proposal.vue'
 
@@ -79,8 +72,6 @@ export default defineComponent({
     }
   },
   components: {
-    WorkflowState,
-    BtnDropdown,
     Proposal,
     Moment
   },
@@ -121,6 +112,7 @@ export default defineComponent({
     const pollStatus = computed(() => getPollStatus(props.poll.pk))
     const pollPath = computed(() => `${meetingPath.value}/polls/${props.poll.pk}/${slugify(props.poll.title)}`)
     const userVote = computed(() => getUserVote(props.poll))
+    const methodName = computed(() => t(`poll.method.${props.poll.method_name}`))
 
     return {
       t,
@@ -132,6 +124,7 @@ export default defineComponent({
       isOngoing,
       userVote,
       following,
+      methodName,
       canVote,
       follow,
       getProposal,

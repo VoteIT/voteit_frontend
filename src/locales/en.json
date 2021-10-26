@@ -136,6 +136,7 @@
     "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
     "participants": "Participants",
     "create": "Start a new meeting",
+    "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
     "settings": {
@@ -180,6 +181,7 @@
     "start": "Start poll",
     "started": "Started",
     "unvoted": "Unvoted",
+    "nextUnvoted": "Next: {title}",
     "votingTitle": "Voting {title}",
     "vote": "Vote",
     "abstainRegistered": "You have chosen to abstain from this vote",
@@ -216,10 +218,11 @@
       }
     },
     "result": {
-      "runtime": "Calculation time",
-      "quota": "Quota",
       "complete": "Complete result",
-      "randomized": "Random tiebreaker used"
+      "method": "Result ({method})",
+      "randomized": "Random tiebreaker used",
+      "runtime": "Calculation time",
+      "quota": "Quota"
     },
     "schulze": {
       "numTiedWinners": "There are no tied winners | One ring to rule them all, and in the darkness bind them | There are { count } tied winners"

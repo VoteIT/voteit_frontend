@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { ThemeColor } from '@/utils/types'
 
 export enum PollMethodName {
   CombinedSimple = 'combined_simple',
@@ -28,31 +29,39 @@ export enum SimpleChoice {
   No = 'no'
 }
 
-export const simpleIcons: Record<SimpleChoice, string> = {
-  abstain: 'mdi-cancel',
-  yes: 'mdi-thumb-up',
-  no: 'mdi-thumb-down'
+export interface SimpleChoiceDesc {
+  value: SimpleChoice
+  icon: string
+  translationString: string
+  color: ThemeColor
 }
 
-export interface SingleSimpleVote {
-  choice: SimpleChoice
-}
+export const simpleChoices: SimpleChoiceDesc[] = [
+  {
+    value: SimpleChoice.Yes,
+    icon: 'mdi-thumb-up',
+    translationString: 'poll.approve',
+    color: ThemeColor.Success
+  },
+  {
+    value: SimpleChoice.No,
+    icon: 'mdi-thumb-down',
+    translationString: 'poll.deny',
+    color: ThemeColor.Warning
+  },
+  {
+    value: SimpleChoice.Abstain,
+    icon: 'mdi-cancel',
+    translationString: 'poll.abstain',
+    color: ThemeColor.Secondary
+  }
+]
 
-export interface SimpleVoteResult extends VoteResult {
-  yes: number
-  no: number
-}
-
-export type CombinedSimpleProposalResult = {
-  [ key in SimpleChoice ]: number
-}
-
-type CombinedSimpleResultMap = {
-  [ key: string ]: CombinedSimpleProposalResult
-}
+export type SimpleProposalResult = Record<SimpleChoice, number>
+type SimpleResultMap = Record<number, SimpleProposalResult>
 
 export interface CombinedSimpleResult extends VoteResult {
-  results: CombinedSimpleResultMap
+  results: SimpleResultMap
 }
 
 type SchulzePair = [[number, number], number]
@@ -88,7 +97,7 @@ export interface ScottishSTVResult extends VoteResult {
 }
 
 export type CombinedSimpleVote = Record<SimpleChoice, number[]>
-export type SimpleVote = SingleSimpleVote | CombinedSimpleVote
+export type SimpleVote = CombinedSimpleVote
 
 interface BasePollMethodSettings {
   title?: string

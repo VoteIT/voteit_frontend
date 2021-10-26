@@ -5,12 +5,11 @@ import Simple from './Simple.vue'
 import Schulze from './Schulze.vue'
 import RankedVoting from './RankedVoting.vue'
 
-import CombinedSimpleResult from './CombinedSimpleResult.vue'
+import SimpleResult from './SimpleResult.vue'
 import IRVResult from './IRVResult.vue'
 import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
 import SchulzeResult from './SchulzeResult.vue'
 import ScottishSTVResult from './ScottishSTVResult.vue'
-// import SimpleResult from './SimpleResult.vue'
 
 import ScottishSTVSettings from './ScottishSTVSettings.vue'
 import RepeatedSchulzeSettings from './RepeatedSchulzeSettings.vue'
@@ -32,7 +31,7 @@ export const pollResults: Record<PollMethodName, Component> = {
   irv: IRVResult,
   // simple: SimpleResult,
   scottish_stv: ScottishSTVResult,
-  combined_simple: CombinedSimpleResult,
+  combined_simple: SimpleResult,
   schulze: SchulzeResult,
   repeated_schulze: RepeatedSchulzeResult
 }
