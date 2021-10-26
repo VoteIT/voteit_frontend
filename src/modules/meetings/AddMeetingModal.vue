@@ -7,7 +7,7 @@
         <Switch type="checkbox" id="meeting_public" v-model="formData.public" :label="t('meeting.public')" />
       </div>
       <div class="text-right">
-        <v-btn color="primary" prepend-icon="mdi-send" :disabled="disabled">
+        <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="disabled">
           {{ t('create') }}
         </v-btn>
       </div>

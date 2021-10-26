@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>{{ title }}</h2>
-    <form>
+    <form @submit.prevent="save()">
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="erOptions" />
       <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
         {{ t('electoralRegister.selectMethod') }}
@@ -10,7 +10,7 @@
         {{ t('electoralRegister.saved', settings) }}
       </v-alert>
       <div class="mt-2">
-        <v-btn :disabled="disabled" @click="save()" color="primary">
+        <v-btn type="submit" :disabled="disabled" color="primary">
           {{ t('save') }}
         </v-btn>
       </div>
