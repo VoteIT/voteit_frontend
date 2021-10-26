@@ -47,9 +47,8 @@ export default defineComponent({
 
     return {
       t,
-      title: computed(() => t('reactions')),
-      editReaction,
-      meetingButtons
+      meetingButtons,
+      editReaction
     }
   }
 })

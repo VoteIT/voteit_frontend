@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>{{ title }}</h2>
+    <h2>{{ t('accessPolicy.settings') }}</h2>
     <v-row>
       <v-col>
         <v-card v-for="p in policies" :key="p.pk" :title="p.name">
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, onBeforeMount, reactive } from 'vue'
+import { defineComponent, ref, onBeforeMount, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { AccessPolicy } from '@/contentTypes/types'
@@ -64,11 +64,10 @@ export default defineComponent({
 
     return {
       t,
-      alert,
       modifying,
       policies,
-      setActive,
-      title: computed(() => t('accessPolicy.settings'))
+      alert,
+      setActive
     }
   }
 })

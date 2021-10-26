@@ -92,7 +92,6 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { WorkflowState } from '@/contentTypes/types'
 import { dialogQuery, openAlertEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { ControlPanelComponent } from '../meetings/types'
 import { AxiosError, AxiosResponse } from 'axios'
 import { AlertLevel } from '@/composables/types'
 import { AgendaItem } from '@/modules/agendas/types'
@@ -218,7 +217,6 @@ export default defineComponent({
 
     return {
       t,
-      title: computed(() => t('agenda')),
       editManyWorking,
       editMode,
       editModes,
@@ -237,7 +235,7 @@ export default defineComponent({
       setStateSelected
     }
   }
-}) as ControlPanelComponent
+})
 </script>
 
 <style lang="sass" scoped>

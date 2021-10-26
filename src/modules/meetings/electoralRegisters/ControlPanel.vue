@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>{{ title }}</h2>
+    <h2>{{ t('electoralRegister.settings') }}</h2>
     <form @submit.prevent="save()">
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="erOptions" />
       <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
@@ -66,7 +66,6 @@ export default defineComponent({
       erOptions,
       settings,
       status,
-      title: computed(() => t('electoralRegister.settings')),
       save
     }
   }

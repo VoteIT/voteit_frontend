@@ -1,8 +1,6 @@
 /* eslint-disable camelcase */
 import { BaseContent } from '@/contentTypes/types'
-import { ComputedRef, DefineComponent } from 'vue'
 
-export type ControlPanelComponent = DefineComponent<{}, { title: ComputedRef<string> }, {}, {}, {}>
 export interface BubbleComponent {
   name: string
 }

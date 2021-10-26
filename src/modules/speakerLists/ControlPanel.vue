@@ -198,7 +198,6 @@ export default defineComponent({
       systemRoles,
       speakerSystemType,
       systemIcons,
-      title: computed(() => t('speakerSystems')),
       addUser,
       createSystem,
       deleteSystem,

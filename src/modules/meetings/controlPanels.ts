@@ -1,5 +1,3 @@
-import { ControlPanelComponent } from './types'
-
 import AccessPolicies from './accessPolicies/ControlPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import Agenda from '../agendas/ControlPanel.vue'
@@ -14,4 +12,4 @@ export default {
   PresenceChecks,
   Reactions,
   SpeakerSystems
-} as Record<string, ControlPanelComponent>
+}

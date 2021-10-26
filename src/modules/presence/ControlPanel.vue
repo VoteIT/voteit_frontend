@@ -65,7 +65,6 @@ export default defineComponent({
 
     return {
       t,
-      title: computed(() => t('presenceCheck')),
       canStart,
       currentCheck,
       submitting,
