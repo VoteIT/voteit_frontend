@@ -74,3 +74,8 @@ export interface QuillOptions {
   },
   placeholder?: string
 }
+
+export interface Tab {
+  name: string
+  title: string
+}

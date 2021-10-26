@@ -339,6 +339,25 @@
     "retracted": "Tillbakadraget",
     "unhandled": "Ohanterat",
     "upcoming": "Kommande",
-    "voting": "Låst för omröstning"
+    "voting": "Låst för omröstning",
+    "plural": {
+      "approved": "Bifallna",
+      "archived": "Arkiverade",
+      "archiving": "Arkiverar",
+      "canceling": "Avbryter",
+      "canceled": "Avbrutna",
+      "closed": "Stängda",
+      "closing": "Stänger",
+      "denied": "Avslagna",
+      "finished": "Avslutade",
+      "ongoing": "Pågående",
+      "open": "Öppna",
+      "private": "Privata",
+      "published": "Publicerade",
+      "retracted": "Tillbakadragna",
+      "unhandled": "Ohanterade",
+      "upcoming": "Kommande",
+      "voting": "Låsta för omröstning"
+    }
   }
 }

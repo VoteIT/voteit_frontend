@@ -67,7 +67,7 @@ export default defineComponent({
       }
       for (const s of aiGroups.value) {
         menus.push({
-          title: t(`workflowState.${s.state}`),
+          title: t(`workflowState.plural.${s.state}`),
           showCount: true,
           items: getAIMenuItems(s)
         })

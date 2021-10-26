@@ -53,7 +53,7 @@ export default defineComponent({
     const menuItems = computed<MenuItem[]>(() => {
       if (!meeting.value || !canAddPoll(meeting.value)) return []
       return [{
-        icon: 'mdi-star',
+        icon: 'mdi-star-plus',
         title: t('poll.new'),
         to: meetingPath.value + '/polls/new'
       }]

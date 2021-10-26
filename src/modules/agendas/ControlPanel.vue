@@ -1,10 +1,6 @@
 <template>
-  <v-item-group class="btn-controls mb-4" v-model="editMode">
-    <v-item v-for="tab in editModes" :key="tab.name" :value="tab" v-slot="{ isSelected, toggle }">
-      <v-btn color="accent" :variant="isSelected ? 'contained' : 'outlined'" @click="toggle()">{{ tab.title }}</v-btn>
-    </v-item>
-  </v-item-group>
-  <div v-if="editMode.name === 'default'">
+  <Tabs v-model="editMode" :tabs="editModes" />
+  <div v-if="editMode === 'default'">
     <v-item-group tag="table" id="agenda-edit" multiple v-model="editSelected">
       <thead>
         <tr>
@@ -67,7 +63,7 @@
       <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
     </form>
   </div>
-  <div v-if="editMode.name === 'order'">
+  <div v-if="editMode === 'order'">
     <Draggable v-model="agendaItems" item-key="pk" >
       <template #item="{ element }">
         <div>
@@ -85,7 +81,11 @@ import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
+import { Tab } from '@/components/types'
+
+import Tabs from '@/components/Tabs.vue'
 import Switch from '@/components/inputs/Switch.vue'
+
 import useAgenda from '@/modules/agendas/useAgenda'
 import useMeeting from '@/modules/meetings/useMeeting'
 
@@ -99,18 +99,14 @@ import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
 import { meetingType } from '../meetings/contentTypes'
 
-interface Tab {
-  name: string
-  title: string
-}
-
 export default defineComponent({
   translationKey: 'agenda.agenda',
   path: 'agenda',
   icon: 'mdi-clipboard-list',
   components: {
     Draggable,
-    Switch
+    Switch,
+    Tabs
   },
   setup () {
     const { t } = useI18n()
@@ -136,7 +132,7 @@ export default defineComponent({
         title: t('agenda.order')
       }]
     })
-    const editMode = ref<Tab>(editModes.value[0])
+    const editMode = ref('default')
 
     const newAgendaTitle = ref('')
     async function addAgendaItem () {

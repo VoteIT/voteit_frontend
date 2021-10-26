@@ -341,6 +341,25 @@
     "retracted": "Retracted",
     "unhandled": "Unhandled",
     "upcoming": "Upcoming",
-    "voting": "Locked for vote"
+    "voting": "Locked for vote",
+    "plural": {
+      "approved": "Approved",
+      "archived": "Archived",
+      "archiving": "Archiving",
+      "canceling": "Canceling",
+      "canceled": "Canceled",
+      "closed": "Closed",
+      "closing": "Closing",
+      "denied": "Denied",
+      "finished": "Finished",
+      "ongoing": "Ongoing",
+      "open": "Open",
+      "private": "Private",
+      "published": "Published",
+      "retracted": "Retracted",
+      "unhandled": "Unhandled",
+      "upcoming": "Upcoming",
+      "voting": "Locked for vote"
+    }
   }
 }
