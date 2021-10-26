@@ -63,8 +63,8 @@ export default defineComponent({
       }
     }
 
-    const scope = computed(() => Object.keys(props.invite.data)[0])
-    const data = computed(() => Object.values(props.invite.data)[0])
+    const scope = computed(() => Object.keys(props.invite.invite_data)[0])
+    const data = computed(() => Object.values(props.invite.invite_data)[0])
 
     return {
       t,

@@ -39,7 +39,7 @@ export enum MeetingInviteState {
 export interface MeetingInvite {
   pk: number
   created_by: number
-  data: Record<string, string>
+  invite_data: Record<string, string>
   matched: null | Record<string, string>[] // Set when accepted or rejected. Should probably never be available.
   meeting: number
   meeting_title: string

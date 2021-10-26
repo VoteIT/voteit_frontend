@@ -28,7 +28,7 @@
       </v-list>
       <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
     </v-col>
-    <v-col cols="12" lg="4" v-if="meetingInvites.length">
+    <v-col cols="12" sm="10" offset-sm="1" lg="8" offset-lg="2" xl="6" offset-xl="3" v-if="meetingInvites.length">
       <h1>
         {{ t('join.invites', meetingInvites.length) }}
       </h1>

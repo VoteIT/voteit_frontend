@@ -32,7 +32,7 @@
           </v-btn> -->
           <v-spacer />
           <AgendaFilters ref="filterComponent" :key="agendaId" />
-          <div id="agenda-display-mode" class="d-none d-md-block ml-8">
+          <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
             <span class="text-secondary">{{ t('agenda.showAs') }}</span>
             <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
               <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
