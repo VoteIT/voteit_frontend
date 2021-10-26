@@ -48,7 +48,7 @@
         </h2>
         <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">{{ t('delete') }}</v-btn>
         <div>
-          <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" @click="setStateSelected(state)">Set to {{ t(`workflowState.${state.state}`) }}</v-btn>
+          <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
         </div>
         <div>
           <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
