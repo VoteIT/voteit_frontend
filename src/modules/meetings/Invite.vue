@@ -1,11 +1,12 @@
 <template>
   <v-card :title="invite.meeting_title" :subtitle="`${scope}: ${data}`" elevation="4">
-    <v-card-actions>
-      <v-btn variant="text" color="primary" prepend-icon="mdi-door-open" :disabled="submitting" @click="acceptInvite(invite)">
-        {{ t('join.acceptInvite') }}
-      </v-btn>
+    <v-card-actions class="flex-wrap">
+      <v-spacer />
       <v-btn variant="text" color="warning" prepend-icon="mdi-close" :disabled="submitting" @click="rejectInvite(invite)">
         {{ t('join.rejectInvite') }}
+      </v-btn>
+      <v-btn color="primary" prepend-icon="mdi-door-open" :disabled="submitting" @click="acceptInvite(invite)">
+        {{ t('join.acceptInvite') }}
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -80,6 +81,6 @@ export default defineComponent({
 
 <style lang="sass" scoped>
 .v-card
-  border-top-left-radius: 14px
-  border-bottom-right-radius: 14px
+  border-top-right-radius: 14px
+  border-bottom-left-radius: 14px
 </style>

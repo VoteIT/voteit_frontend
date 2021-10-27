@@ -113,7 +113,7 @@
     "yourMeetings": "Ditt möte | Dina möten"
   },
   "join": {
-    "acceptInvite": "Acceptera inbjudan",
+    "acceptInvite": "Acceptera",
     "asModerator": "Hantera möte",
     "asModeratorDescription": " Som administratör kan du gå med I alla möten som moderator. Detta gör dig till en synlig deltagare i mötet.\nVill du gå med som moderator?",
     "invites": "Mötesinbjudan | Mötesinbjudningar",

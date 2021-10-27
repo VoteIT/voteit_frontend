@@ -1,60 +1,42 @@
 <template>
-  <v-row v-if="organisation" class="home mt-6 mb-4">
-    <v-col sm="10" offset-sm="1" lg="8" offset-lg="2" xl="6" offset-xl="3">
+  <v-row v-if="organisation" class="home mt-4 mb-4">
+    <v-col v-if="!isAuthenticated && organisation" cols="12" :order-sm="1" sm="4" xl="3">
+      <v-btn block v-if="organisation.login_url" color="primary" :href="getOrganizationLoginURL(organisation)" prepend-icon="mdi-login">
+        {{ t('organization.loginTo', organisation) }}
+      </v-btn>
+    </v-col>
+    <v-col cols="12" order-sm="0" sm="8" lg="6" offset-lg="2" xl="5" offset-xl="2">
       <Menu :items="menu" float />
       <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
       <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
     </v-col>
-  </v-row>
-  <v-row v-if="isAuthenticated">
-    <v-col cols="12" sm="5" offset-sm="1" lg="4" offset-lg="2" xl="3" offset-xl="3">
-      <h1>
+    <v-divider vertical />
+    <v-col v-if="isAuthenticated" cols="12" sm="4" xl="3">
+      <div v-if="meetingInvites.length" class="mb-4">
+        <h2 class="mb-2" v-if="meetingInvites.length">
+          {{ t('join.invites', meetingInvites.length) }}
+        </h2>
+        <Invite v-for="inv in meetingInvites" :key="inv.pk" :invite="inv" />
+      </div>
+      <h2>
         {{ t('home.yourMeetings', participatingMeetings.length) }}
-      </h1>
-      <v-list v-if="participatingMeetings.length">
+      </h2>
+      <v-list v-if="participatingMeetings.length" class="mb-4">
         <v-list-item v-for="meeting in participatingMeetings" :key="meeting.pk" :to="`/m/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
       </v-list>
-      <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
-      <div v-if="canAddMeeting()" class="mt-4">
+      <p v-else class="mb-4"><em>{{ t('home.noCurrentMeetings') }}</em></p>
+      <div v-if="canAddMeeting()" class="mb-4">
         <v-btn prepend-icon="mdi-plus" variant="text" color="primary" @click="createMeeting()">{{ t('meeting.create') }}</v-btn>
       </div>
-    </v-col>
-    <v-col cols="12" sm="6" lg="4" xl="3">
-      <h1>
+      <h2>
         {{ t('join.joinAMeeting', otherMeetings.length) }}
-      </h1>
-      <v-list v-if="otherMeetings.length">
+      </h2>
+      <v-list v-if="otherMeetings.length" class="mb-4">
         <v-list-item v-for="meeting in otherMeetings" :key="meeting.pk" :to="`/join/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
       </v-list>
-      <p v-else><em>{{ t('home.noCurrentMeetings') }}</em></p>
-    </v-col>
-    <v-col cols="12" sm="10" offset-sm="1" lg="8" offset-lg="2" xl="6" offset-xl="3" v-if="meetingInvites.length">
-      <h1>
-        {{ t('join.invites', meetingInvites.length) }}
-      </h1>
-      <Invite v-for="inv in meetingInvites" :key="inv.pk" :invite="inv" />
-    </v-col>
-  </v-row>
-  <v-row v-else-if="organisation">
-    <v-col sm="10" offset-sm="1" lg="8" offset-lg="2" xl="6" offset-xl="3">
-      <v-card :title="t('login')" v-if="organisation.login_url" border class="mt-6">
-        <v-card-text>
-          <h3 class="text-h6 mb-2">{{ t('organization.requires') }}</h3>
-          <div>
-            <v-chip v-for="scope in organisation.scope" :key="scope">{{ scope }}</v-chip>
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer/>
-          <v-btn variant="text" :href="manageAccountURL" prepend-icon="mdi-account">
-            {{ t('auth.manageAccount') }}
-          </v-btn>
-          <v-btn color="primary" :href="getOrganizationLoginURL(organisation)" prepend-icon="mdi-login">
-            {{ t('organization.loginTo', organisation) }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-      <p v-else><em>Login not available</em></p>
+      <p v-if="!otherMeetings.length"><em>
+        {{ t('home.noCurrentMeetings') }}
+      </em></p>
     </v-col>
   </v-row>
   <v-row v-if="debug">
@@ -95,7 +77,6 @@ const { meetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
 export default defineComponent({
   name: 'Home',
-  inject: ['debug'],
   setup () {
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
@@ -160,6 +141,7 @@ export default defineComponent({
     return {
       t,
       changeForm,
+      debug: false,
       editing,
       isAuthenticated,
       manageAccountURL,
