@@ -1,47 +1,48 @@
 <template>
-  <div v-if="p" class="proposal" :class="{ isUnread }">
-    <slot name="top"/>
-    <div class="meta">
-      <div>
-        <span class="content-type">{{ t('proposal.proposal') }}</span>
-        <Tag :name="p.prop_id"/>
+  <div>
+    <v-sheet v-if="p" rounded elevation="4" class="proposal" :class="{ isUnread }">
+      <slot name="top" />
+      <div class="meta">
+        <div>
+          <span class="content-type">{{ t('proposal.proposal') }}</span>
+          <Tag :name="p.prop_id"/>
+        </div>
+        <div>
+          <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
+        </div>
       </div>
-      <div>
-        <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
+      <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
+      <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3" />
+      <div class="mt-6 mb-3" v-if="extraTags.length">
+        <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
-    </div>
-    <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
-    <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3" />
-    <div class="mt-6 mb-3" v-if="extraTags.length">
-      <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
-    </div>
-    <div class="author">
-      <span>{{ t('by') }} <User :pk="p.author" /></span>
-      <Moment :date="p.created" />
-    </div>
-    <v-sheet v-if="$slots.vote" class="vote-slot">
-      <slot name="vote"/>
-    </v-sheet>
-    <footer v-if="!readOnly" class="mt-2">
-      <div>
+      <div class="author">
+        <span>{{ t('by') }} <User :pk="p.author" /></span>
+        <Moment :date="p.created" />
+      </div>
+      <v-sheet v-if="$slots.vote" class="vote-slot">
+        <slot name="vote"/>
+      </v-sheet>
+      <footer v-if="!readOnly" class="mt-2 d-flex align-center">
         <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment()">
           {{ t('discussion.comment') }}
         </v-btn>
         <v-btn prepend-icon="mdi-chevron-up" size="small" variant="text" v-if="showComments" @click="showComments = false">
           {{ t('discussion.hideComments') }}
         </v-btn>
-        <v-btn size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
+        <v-btn prepend-icon="mdi-chevron-down" size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
           {{ t('discussion.comments', { count: discussionPosts.length }) }}
         </v-btn>
         <slot name="buttons"/>
-      </div>
-      <Menu size="small" :items="menuItems" />
-    </footer>
-    <slot name="bottom"/>
-    <Comments v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" :comment-input="canAddDiscussionPost" />
-  </div>
-  <div v-else class="proposal">
-    <em>{{ t('proposal.notFound') }}</em>
+        <v-spacer />
+        <Menu size="small" :items="menuItems" />
+      </footer>
+      <slot name="bottom"/>
+    </v-sheet>
+    <v-sheet rounded elevation="2" v-else class="proposal">
+      <em>{{ t('proposal.notFound') }}</em>
+    </v-sheet>
+    <Comments class="proposal-comments mt-4 mb-8 ml-1 mr-4 mr-sm-8 mr-lg-12" v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" :comment-input="canAddDiscussionPost" />
   </div>
 </template>
 
@@ -181,7 +182,10 @@ export default defineComponent({
 
 <style lang="sass" scoped>
 .proposal
-  // border-left: 6px solid var(--proposal)
+  padding: 10px
+  border-left: 4px solid rgba(var(--v-border-color), .8)
+  &.isUnread
+    border-left-color: rgba(var(--v-theme-primary), .3)
   .meta
     .content-type
       color: #000
@@ -203,30 +207,25 @@ export default defineComponent({
     > *
       margin-right: 1.5em
 
-  &.isUnread .richtext
-    position: relative
-    &::after
-      content: ''
-      display: block
-      position: absolute
-      left: -1.2em
-      top: .5em
-      background-color: rgba(var(--v-theme-primary), .5)
-      height: 6px
-      width: 6px
-      border-radius: 50%
+  // &.isUnread .richtext
+  //   position: relative
+  //   &::after
+  //     content: ''
+  //     display: block
+  //     position: absolute
+  //     left: -1.2em
+  //     top: .5em
+  //     background-color: rgba(var(--v-theme-primary), .5)
+  //     height: 6px
+  //     width: 6px
+  //     border-radius: 50%
 
   footer
-    margin-bottom: .5em
-    display: flex
-    justify-content: space-between
+    border-top: 1px solid rgba(var(--v-border-color), .4)
+    margin: 0 -10px
+    padding: 10px 10px 0
     .context-menu
-      margin-top: -6px
-
-  .comments
-    border-left: 2px solid rgb(var(--v-border-color))
-    padding-left: 2em
-    padding-right: 4em
+      margin: -10px
 
   .vote-slot
     margin-top: .8em
@@ -234,6 +233,10 @@ export default defineComponent({
     background-color: rgb(var(--v-theme-surface))
     padding: .6em 1.2em
     border-radius: 5px
+
+.proposal-comments
+  border-left: 2px solid rgb(var(--v-border-color))
+  padding-left: 2em
 
 a.tag
   font-size: 10pt

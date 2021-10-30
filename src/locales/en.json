@@ -222,14 +222,25 @@
       "complete": "Complete result",
       "method": "Result ({method})",
       "randomized": "Random tiebreaker used",
+      "round": "Round",
       "runtime": "Calculation time",
-      "quota": "Quota"
+      "quota": "Quota",
+      "versus": "Versus",
+      "voteCount": "{count} vote | {count} votes",
+      "approveThis": "Approve",
+      "tie": "Tie",
+      "approveOther": "Approve other proposal"
     },
     "schulze": {
       "numTiedWinners": "There are no tied winners | One ring to rule them all, and in the darkness bind them | There are { count } tied winners"
     },
     "STV": {
-      "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds"
+      "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds",
+      "direct": "Direct",
+      "excluded": "Excluded",
+      "elected": "Elected",
+      "tiebreakRandom": "Tiebreak (random)",
+      "noCompetition": "No competition left"
     }
   },
   "plenary": {

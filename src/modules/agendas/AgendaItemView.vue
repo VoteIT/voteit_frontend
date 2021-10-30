@@ -43,8 +43,8 @@
     </v-row>
     <v-row>
       <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
-        <h2 v-if="displayMode === 'columns'">{{ t('proposal.proposals') }}</h2>
-        <h2 v-else>{{ t('proposal.proposalsAndComments') }}</h2>
+        <h2 v-if="displayMode === 'columns'" class="mb-2">{{ t('proposal.proposals') }}</h2>
+        <h2 v-else class="mb-2">{{ t('proposal.proposalsAndComments') }}</h2>
         <v-alert type="info" icon="mdi-filter-outline" v-if="hasProposals && !sortedProposals.length" class="mb-2">
           <div>
             <div class="mb-2">{{ t('agenda.helpNoProposalsInFilter') }}</div>
@@ -56,7 +56,7 @@
         <AgendaProposals :proposals="sortedProposals" />
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
-        <h2>{{ t('discussion.discussions') }}</h2>
+        <h2 class="mb-2">{{ t('discussion.discussions') }}</h2>
         <AgendaDiscussions :discussionPosts="sortedDiscussions" />
       </v-col>
     </v-row>
@@ -66,36 +66,37 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useStorage, useTitle } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 
-import AgendaFilters from './AgendaFilters.vue'
+import { openModalEvent } from '@/utils'
+import { MenuItem } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import SpeakerList from '@/modules/speakerLists/SpeakerList.vue'
-import TextDocuments from '@/modules/proposals/TextDocuments.vue'
+
 import AgendaDiscussions from '../discussions/AgendaDiscussions.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
-
-import useAgenda from '@/modules/agendas/useAgenda'
-import useDiscussions from '@/modules/discussions/useDiscussions'
-import useMeeting from '@/modules/meetings/useMeeting'
-import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/modules/proposals/types'
-import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
+import SpeakerList from '../speakerLists/SpeakerList.vue'
+import TextDocuments from '../proposals/TextDocuments.vue'
+import useDiscussions from '../discussions/useDiscussions'
+import useMeeting from '../meetings/useMeeting'
+import useMeetingTitle from '../meetings/useMeetingTitle'
+import useProposals from '../proposals/useProposals'
+import { Proposal } from '../proposals/types'
+import useSpeakerLists from '../speakerLists/useSpeakerLists'
 import { proposalType } from '../proposals/contentTypes'
 import { discussionPostType } from '../discussions/contentTypes'
-
-import { MenuItem } from '@/utils/types'
 import { SpeakerListState } from '../speakerLists/types'
-import { DiscussionPost } from '@/modules/discussions/types'
+import { DiscussionPost } from '../discussions/types'
+import { TagsKey, tagClickEvent } from '../meetings/useTags'
+import AddProposalModal from '../proposals/AddProposalModal.vue'
+import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
+
+import useAgenda from './useAgenda'
+import AgendaFilters from './AgendaFilters.vue'
 import { LastReadKey } from '@/composables/useUnread'
-import { TagsKey, tagClickEvent } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
 import { AgendaFilterComponent, AgendaItem } from './types'
-import { openModalEvent } from '@/utils'
-import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
-import AddProposalModal from '../proposals/AddProposalModal.vue'
 import useAgendaItem from './useAgendaItem'
 // import { focusDiscussionInput, focusProposalInput } from './events'
 import { canAddPoll } from '../polls/rules'
@@ -108,11 +109,11 @@ export default defineComponent({
     const { activeFilter } = useAgendaFilter()
     const discussions = useDiscussions()
     const proposals = useProposals()
-    const { meetingPath, meetingId, meeting } = useMeeting()
+    const { meetingPath, meetingId } = useMeeting()
     const { hasNewItems, agendaItemLastRead } = useAgenda()
     const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
 
-    useTitle(computed(() => `${agendaItem.value?.title ?? t('agenda.item')} | ${meeting.value?.title ?? t('meeting')}`))
+    useMeetingTitle(computed(() => agendaItem.value?.title ?? t('agenda.item')))
 
     function proposalFilter (p: Proposal): boolean {
       const { tags, states } = activeFilter.value
@@ -295,11 +296,6 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.agenda-proposals .proposal
-  border-top: 1px solid rgb(var(--v-border-color))
-  margin-top: 1em
-  padding-top: 1em
-
 #agenda-display-mode
   button
     border-radius: 0

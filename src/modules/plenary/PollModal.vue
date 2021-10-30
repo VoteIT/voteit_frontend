@@ -16,7 +16,7 @@
   <main v-else>
     {{ t(`workflowState.${poll.state}`) }}
     <div v-if="isFinished" class="my-6">
-      <component :is="resultComponent" :data="poll.result" />
+      <component :is="resultComponent" :result="poll.result" />
     </div>
   </main>
 </template>
@@ -26,8 +26,9 @@ import { computed, defineComponent, onBeforeMount, onBeforeUnmount, PropType, re
 import { useI18n } from 'vue-i18n'
 
 import usePoll from '@/modules/polls/usePoll'
-import { Poll, PollState, PollTransition } from '../polls/types'
+import { PollState, PollTransition } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
+import { Poll } from '../polls/methods/types'
 
 export default defineComponent({
   props: {

@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent>
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk">
-      <template v-slot:vote>
+  <form @submit.prevent class="my-4">
+    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+      <template #vote>
         <div class="simple-options">
           <Btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'contained' : 'outlined'" :icon="opt.icon" @click="change(p, opt)">
             {{ t(opt.translationString) }}
@@ -23,14 +23,13 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalComponent from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
-import { CombinedSimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices } from './types'
-import { Poll } from '../types'
+import { CombinedSimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
 
 export default defineComponent({
   name: 'SimplePoll',
   props: {
     poll: {
-      type: Object as PropType<Poll>,
+      type: Object as PropType<SimplePoll>,
       required: true
     },
     modelValue: {

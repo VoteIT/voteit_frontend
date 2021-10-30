@@ -7,18 +7,19 @@
   </v-row>
   <v-row v-else>
     <v-col cols="7" md="8" lg="9">
-      <Widget v-for="p in selectedProposals" :key="p.pk">
-        <div class="text-right">
-          <span class="btn-group mr-2">
-            <v-btn v-for="s in getProposalStates(p)" :key="s.name" :color="p.state === s.state ? s.color : 'background'"
-                   @click="makeTransition(p, s)">
-              <v-icon :icon="s.icon" />
-            </v-btn>
-          </span>
-          <v-btn icon="mdi-chevron-right" variant="text" @click="deselectProposal(p)" />
-        </div>
-        <Proposal readOnly :p="p" />
-      </Widget>
+      <Proposal v-for="p in selectedProposals" :key="p.pk" readOnly :p="p" class="mb-4">
+        <template #top>
+          <div class="text-right">
+            <span class="btn-group mr-2">
+              <v-btn v-for="s in getProposalStates(p)" :key="s.name" :color="p.state === s.state ? s.color : 'background'"
+                    @click="makeTransition(p, s)">
+                <v-icon :icon="s.icon" />
+              </v-btn>
+            </span>
+            <v-btn icon="mdi-chevron-right" variant="text" @click="deselectProposal(p)" />
+          </div>
+        </template>
+      </Proposal>
       <div v-if="!selectedProposals.length" class="text-h4 text-center text-secondary mt-12">
         {{ t('plenary.selectProposals') }} <v-icon icon="mdi-chevron-right" />
       </div>

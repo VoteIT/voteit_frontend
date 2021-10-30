@@ -5,7 +5,7 @@
         {{ t('organization.loginTo', organisation) }}
       </v-btn>
     </v-col>
-    <v-col cols="12" order-sm="0" sm="8" lg="6" offset-lg="2" xl="5" offset-xl="2">
+    <v-col cols="12" order-sm="0" sm="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
       <Menu :items="menu" float />
       <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
       <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />

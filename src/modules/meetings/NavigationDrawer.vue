@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify/composables'
 
@@ -26,6 +26,7 @@ import { PollState } from '../polls/types'
 import { AgendaItem } from '../agendas/types'
 import { canAddPoll } from '../polls/rules'
 import { canChangeMeeting } from './rules'
+import TypedEvent from '@/utils/TypedEvent'
 
 export default defineComponent({
   name: 'Agenda',
@@ -76,6 +77,11 @@ export default defineComponent({
     })
 
     const unvotedPolls = computed(() => getUnvotedPolls(meetingId.value))
+    const hasUnvotedPolls = computed(() => !!unvotedPolls.value.length)
+    const openPollMenuEvent = new TypedEvent<void>()
+    watch(hasUnvotedPolls, (value, oldValue) => {
+      if (value && !oldValue) openPollMenuEvent.emit()
+    })
 
     const pollMenus = computed<TreeMenuItem[]>(() => {
       const menus: TreeMenuItem[] = [{
@@ -96,7 +102,8 @@ export default defineComponent({
             title: p.title,
             to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`,
             icons: ['mdi-star']
-          }))
+          })),
+          defaultOpen: true
         })
       }
       return menus
@@ -128,8 +135,8 @@ export default defineComponent({
       {
         title: t('poll.polls'),
         items: pollMenus.value,
-        icon: unvotedPolls.value.length ? 'mdi-star' : 'mdi-star-outline',
-        openFirstNonEmpty: true
+        icon: hasUnvotedPolls.value ? 'mdi-star' : 'mdi-star-outline',
+        openEvent: openPollMenuEvent
       },
       {
         title: t('meeting.agenda'),

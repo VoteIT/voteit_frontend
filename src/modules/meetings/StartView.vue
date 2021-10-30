@@ -49,7 +49,7 @@ export default defineComponent({
     })
 
     const menuItems = computed<MenuItem[]>(() => {
-      if (!canChange) return []
+      if (!canChange.value) return []
       return [{
         title: t('edit'),
         icon: 'mdi-pencil',

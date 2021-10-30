@@ -14,17 +14,14 @@
       <v-alert class="mt-4" v-else type="info" :text="t('poll.noPollableAgendaItems')" />
       <template v-if="agendaId">
         <h2 class="mt-2">{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
-        <div v-if="pickMethod">
-          <Proposal read-only
-            v-for="p in selectedProposals" :key="p.pk"
-            :p="p" class="isSelected locked" />
-        </div>
-        <v-item-group v-else-if="availableProposals.length" v-model="selectedProposalIds" multiple>
+        <v-item-group v-model="selectedProposalIds" multiple>
           <v-item v-for="p in availableProposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
-            <Proposal read-only :p="p" @click="toggle()" :class="{ isSelected }" />
+            <v-expand-transition>
+              <Proposal v-show="!pickMethod || selectedProposalIds.includes(p.pk)" read-only :p="p" @click="toggle()" :class="{ isSelected, locked: pickMethod }" class="mb-4" />
+            </v-expand-transition>
           </v-item>
         </v-item-group>
-        <p v-else><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
+        <p v-if="!availableProposals.length"><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
         <div v-if="!pickMethod" class="btn-group mt-3">
           <Btn icon="mdi-check-all" @click="toggleAll">{{ t('all') }}</Btn>
           <Btn icon="mdi-arrow-right-bold" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</Btn>
@@ -36,10 +33,12 @@
           <v-item v-for="m in availableMethods" :key="m.name" :value="m" v-slot="{ isSelected, toggle }">
             <div :class="{ isSelected }">
               <a href="#" @click.prevent="toggle()">{{ t(`poll.method.${m.name}`) }}</a>
-              <div v-if="isSelected" @submit.prevent>
-                <h3>{{ t('options') }}</h3>
-                <SchemaForm :schema="methodSchema" v-model="methodSettings" />
-              </div>
+              <v-expand-transition>
+                <div v-if="isSelected" @submit.prevent>
+                  <h3>{{ t('options') }}</h3>
+                  <SchemaForm :schema="methodSchema" v-model="methodSettings" />
+                </div>
+              </v-expand-transition>
             </div>
           </v-item>
         </v-item-group>
@@ -57,7 +56,6 @@
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 
@@ -74,10 +72,11 @@ import usePolls, { polls } from '@/modules/polls/usePolls'
 import { InputType } from '@/components/inputs/types'
 
 import { pollMethods as implementedMethods, pollSettings } from './methods'
-import { PollStartData, PollMethod, PollMethodSettings } from './methods/types'
+import { PollStartData, PollMethod, PollMethodSettings, Poll } from './methods/types'
 import methodSchemas from './methods/schemas'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
+import useMeetingTitle from '../meetings/useMeetingTitle'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -94,7 +93,7 @@ export default defineComponent({
     const { meetingPath, meetingId } = useMeeting()
     const { alert } = useAlert()
 
-    useTitle(t('poll.start'))
+    useMeetingTitle(t('poll.start'))
 
     const selectedProposalIds = ref<number[]>([])
     function getPublishedProposals (agendaItem: number) {
@@ -124,19 +123,13 @@ export default defineComponent({
     const availableMethods = computed(() => getPollMethods(selectedProposals.value.length))
 
     const methodSelected = ref<PollMethod | null>(null)
-    const methodSettings = ref<PollMethodSettings | null>(null)
+    const methodSettings = ref<PollMethodSettings>({ title: '' })
     const methodSettingsComponent = computed(
       () => methodSelected.value && pollSettings[methodSelected.value.name]
     )
-    function selectMethod (method: PollMethod) {
-      // Toggle
-      if (methodSelected.value?.name === method.name) {
-        methodSelected.value = null
-      } else {
-        methodSettings.value = { ...(method.initialSettings || {}), title: nextTitle.value }
-        methodSelected.value = method
-      }
-    }
+    watch(methodSelected, method => {
+      methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value }
+    })
 
     const working = ref(false)
     const createdPollPk = ref(null)
@@ -149,20 +142,21 @@ export default defineComponent({
       if (!(methodSelected.value.name in implementedMethods)) return alert(`*${methodSelected.value.title} not implemented`)
 
       working.value = true
-      let settings: PollMethodSettings | null = { ...methodSettings.value }
+      const settings: PollMethodSettings = { ...methodSettings.value }
+      // For Repeated Schulze
+      if ('winners' in settings && settings.winners === selectedProposals.value.length) settings.winners = null
       delete settings.title
-      if (Object.keys(settings).length === 0) settings = null
       const pollData: PollStartData = {
         agenda_item: agendaId.value,
         meeting: meetingId.value,
-        title: methodSettings.value?.title,
+        title: methodSettings.value.title as string,
         proposals: [...selectedProposalIds.value],
         method_name: methodSelected.value.name,
         start,
         settings
       }
       try {
-        const { data } = await pollType.api.add(pollData)
+        const { data } = await pollType.api.add(pollData as Partial<Poll>)
         router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
       } catch {
         working.value = false
@@ -176,6 +170,7 @@ export default defineComponent({
       return [{
         type: InputType.Text,
         name: 'title',
+        required: true,
         label: t('title')
       }, ...specifics]
     })
@@ -217,7 +212,6 @@ export default defineComponent({
 
       createPoll,
       getAgenda,
-      selectMethod,
       toggleAll,
 
       ...useMeeting(),
@@ -248,7 +242,7 @@ export default defineComponent({
         display: inline-block
         line-height: 1
     &.isSelected
-      background-color: rgb(var(--v-theme-success-lighten-2))
+      background-color: rgb(var(--v-theme-surface))
       a::before
         content: '✔'
       &.locked
@@ -258,18 +252,21 @@ export default defineComponent({
       padding: 6px 6px 6px calc(6px + 1.2em)
 
   .proposal
-    margin: 1.5em .5em
-    &.isSelected
-      background-color: rgb(var(--v-theme-success-lighten-2))
-      outline: .5em solid rgb(var(--v-theme-success-lighten-2))
+    opacity: .6
+
+  .isSelected
+    .proposal
+      opacity: 1
+      border-color: rgb(var(--v-theme-success))
+      background-color: #fff
       position: relative
       &::after
         content: '✓'
-        font-size: 22pt
+        font-size: 36pt
         position: absolute
-        top: -10px
-        right: -5px
-      &.locked
-        background-color: rgb(var(--v-theme-secondary-lighten-2))
-        outline-color: rgb(var(--v-theme-secondary-lighten-2))
+        top: -15px
+        right: 0
+  .locked .proposal
+    // border-color: rgb(var(--v-theme-secondary))
+    background-color: rgba(var(--v-theme-secondary), .1)
 </style>

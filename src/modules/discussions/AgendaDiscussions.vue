@@ -1,5 +1,5 @@
 <template>
-  <DiscussionPost :p="d" v-for="d in discussionPosts" :key="d.pk">
+  <DiscussionPost :p="d" v-for="d in discussionPosts" :key="d.pk" class="mb-4">
     <template #buttons>
       <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: d.pk }">{{ btn.title }}</ReactionButton>
     </template>

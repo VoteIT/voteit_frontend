@@ -1,14 +1,9 @@
 <template>
-  <div>
-    <h3>Repeated Schulze result</h3>
-    <div class="proposals">
-      <Proposal v-for="(proposal, i) in orderedProposals" :key="i" :selected="proposal && data.approved.includes(proposal.pk)" :p="proposal" read-only>
-        <template v-slot:top>
-          <span class="ordinal">{{ i+1 }}</span>
-        </template>
-      </Proposal>
-    </div>
-  </div>
+  <Proposal v-for="proposal, i in orderedProposals" :key="proposal.pk" :selected="proposal && result.approved.includes(proposal.pk)" :p="proposal" read-only class="my-4">
+    <template #top>
+      <span class="ordinal">{{ i+1 }}</span>
+    </template>
+  </Proposal>
 </template>
 
 <script lang="ts">
@@ -21,7 +16,7 @@ import { RepeatedSchulzeResult } from './types'
 
 export default defineComponent({
   props: {
-    data: {
+    result: {
       type: Object as PropType<RepeatedSchulzeResult>,
       required: true
     }
@@ -33,7 +28,7 @@ export default defineComponent({
     const { getProposal } = useProposals()
 
     const orderedProposals = computed(() => {
-      return props.data.rounds.map(round => {
+      return props.result.rounds.map(round => {
         return getProposal(round.winner)
       })
     })
@@ -45,12 +40,10 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
-.proposal
+.ordinal
+  float: right
   position: relative
-  .ordinal
-    position: absolute
-    right: 8px
-    top: 5px
-    font-weight: bold
-    font-size: 20pt
+  top: -10px
+  font-weight: 700
+  font-size: 20pt
 </style>

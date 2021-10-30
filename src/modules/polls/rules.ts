@@ -1,13 +1,15 @@
-import { meetings } from '../meetings/useMeetings'
-import { agendaItems } from '../agendas/useAgenda'
-
 import useAuthentication from '@/composables/useAuthentication'
+
+import { agendaItems } from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
-import useElectoralRegisters from '../meetings/useElectoralRegisters'
-import { Poll, PollState } from './types'
 import { isAIModerator, isFinishedAI } from '../agendas/rules'
+import { meetings } from '../meetings/useMeetings'
+import useElectoralRegisters from '../meetings/useElectoralRegisters'
 import { isFinishedMeeting, isModerator } from '../meetings/rules'
 import { Meeting } from '../meetings/types'
+
+import { PollState } from './types'
+import { Poll } from './methods/types'
 
 const { user } = useAuthentication()
 const { getRegister } = useElectoralRegisters()

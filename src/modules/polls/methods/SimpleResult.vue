@@ -22,7 +22,7 @@ import { useI18n } from 'vue-i18n'
 import useProposals from '@/modules/proposals/useProposals'
 import { Proposal } from '@/modules/proposals/types'
 
-import { CombinedSimpleResult, SimpleProposalResult, simpleChoices, SimpleChoice } from './types'
+import { SimpleProposalResult, simpleChoices, SimpleChoice, CombinedSimpleResult } from './types'
 import { ThemeColor } from '@/utils/types'
 
 interface ProposalResult {
@@ -40,7 +40,7 @@ interface ProposalResult {
 
 export default defineComponent({
   props: {
-    data: {
+    result: {
       type: Object as PropType<CombinedSimpleResult>,
       required: true
     }
@@ -48,9 +48,10 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const { getProposal } = useProposals()
+
     function getActiveChoice (pk: number): SimpleChoice | undefined {
-      if (props.data.approved.includes(pk)) return SimpleChoice.Yes
-      if (props.data.denied.includes(pk)) return SimpleChoice.No
+      if (props.result.approved.includes(pk)) return SimpleChoice.Yes
+      if (props.result.denied.includes(pk)) return SimpleChoice.No
     }
     function transformResult ([_pk, result]: [string, SimpleProposalResult]): ProposalResult {
       const pk = Number(_pk)
@@ -72,7 +73,7 @@ export default defineComponent({
     }
 
     const results = computed(() => {
-      return Object.entries(props.data.results)
+      return Object.entries(props.result.results)
         .map(transformResult)
     })
 

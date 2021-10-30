@@ -8,7 +8,7 @@
   "block": "Blockera",
   "by": "av",
   "cancel": "Avbryt",
-  "clear": "Klar",
+  "clear": "Rensa",
   "color": "Färg",
   "continue": "Fortsätt",
   "create": "Skapa",
@@ -88,8 +88,8 @@
   },
   "discussion": {
     "add": "Starta diskussion",
-    "comment": "Kommentar",
     "comments": "Inga kommentarer | En kommentar | {count} kommentarer",
+    "comment": "Kommentera",
     "deletePrompt": "Du håller på att radera ett diskussionsinlägg.\nÄr du säker?",
     "discussion": "Diskussionsinlägg",
     "discussions": "Diskussioner",
@@ -219,15 +219,26 @@
     "result": {
       "complete": "Fullständigt resultat",
       "quota": "Kvot",
-      "randomized": "Slumpmässig utslagsröst användes",
+      "randomized": "Slumpmässig utslagsröst",
+      "round": "Runda",
       "runtime": "Beräkningstid",
-      "method": "Resultat ({method})"
+      "method": "Resultat ({method})",
+      "versus": "Mot",
+      "voteCount": "{count} röst | {count} röster",
+      "approveThis": "Bifall",
+      "tie": "Oavgjort",
+      "approveOther": "Motstående förslag"
     },
     "schulze": {
       "numTiedWinners": "En klar vinnare kunde utses | One ring to rule them all, and in the darkness bind them | Det blev oavgjort mellan { count } förslag"
     },
     "STV": {
-      "numRounds": "Skotsk STV, en runda | Skotsk STV, {count} rundor"
+      "numRounds": "Skotsk STV, en runda | Skotsk STV, {count} rundor",
+      "direct": "Direktvald",
+      "excluded": "Uteslöt",
+      "elected": "Valde",
+      "tiebreakRandom": "Tiebreak (slumpmässig)",
+      "noCompetition": "Kvarvarande förslag"
     }
   },
   "plenary": {

@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
+import { BaseContent } from '@/contentTypes/types'
 import { ThemeColor } from '@/utils/types'
+import { PollState } from '../types'
 
 export enum PollMethodName {
   CombinedSimple = 'combined_simple',
@@ -72,6 +74,7 @@ export interface SchulzeResult extends VoteResult {
   tied_winners: number[] | null
   pairs: SchulzePair[]
   strong_pairs: SchulzePair[]
+  votes?: number
 }
 
 export interface RepeatedSchulzeResult extends VoteResult {
@@ -79,7 +82,7 @@ export interface RepeatedSchulzeResult extends VoteResult {
   candidates: number[]
 }
 
-type ScottishSTVVoteCount = [number, string]
+type ScottishSTVVoteCount = [number, number]
 
 interface ScottishSTVRound {
   status: string
@@ -95,6 +98,7 @@ export interface ScottishSTVResult extends VoteResult {
   rounds: ScottishSTVRound[]
   runtime: number
 }
+export type InstantRunoffResult = ScottishSTVResult
 
 export type CombinedSimpleVote = Record<SimpleChoice, number[]>
 export type SimpleVote = CombinedSimpleVote
@@ -132,15 +136,47 @@ export interface PollMethod {
   quickStart?: boolean // Available for quick start, i.e. in plenary view
 }
 
-/*
- * Post data sent to API
- */
-export interface PollStartData {
+interface BasePoll extends BaseContent {
+  state: PollState
   agenda_item: number
   meeting: number
-  title?: string
-  proposals: number[]
   method_name: PollMethodName
-  start: boolean
-  settings: PollMethodSettings | null
+  body: string | null
+  electoral_register?: number
+  initial_electoral_register?: number
+  proposals: number[]
+  start?: boolean // In create call only
 }
+
+export interface SimplePoll extends BasePoll {
+  method_name: PollMethodName.CombinedSimple
+  result: CombinedSimpleResult
+  settings: BasePollMethodSettings | null
+}
+
+export interface SchulzePoll extends BasePoll {
+  method_name: PollMethodName.Schulze
+  result: SchulzeResult
+  settings: BasePollMethodSettings | null
+}
+
+export interface RepeatedSchulzePoll extends BasePoll {
+  method_name: PollMethodName.RepeatedSchulze
+  result: RepeatedSchulzeResult
+  settings: RepeatedSchulzeSettings
+}
+
+export interface ScottishSTVPoll extends BasePoll {
+  method_name: PollMethodName.ScottishSTV
+  result: ScottishSTVResult
+  settings: ScottishSTVSettings
+}
+
+export interface InstantRunoffPoll extends BasePoll {
+  method_name: PollMethodName.InstantRunoff
+  // result: Instant
+  settings: InstantRunoffSettings | null
+}
+
+export type Poll = SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll
+export type PollStartData = Omit<Poll, 'pk' | 'state' | 'electoral_register' | 'initial_electoral_register' | 'body'>

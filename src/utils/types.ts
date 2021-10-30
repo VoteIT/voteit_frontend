@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 
+import TypedEvent from './TypedEvent'
+
 // For Channels
 export enum State {
   Success = 's',
@@ -114,6 +116,7 @@ export interface TreeMenu {
   openFirstNonEmpty?: boolean
   showCount?: boolean
   icon?: string
+  openEvent?: TypedEvent<void>
 }
 
 export type TreeMenuItem = TreeMenuLink | TreeMenu

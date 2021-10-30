@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk">
-      <template v-slot:vote>
+    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+      <template #vote>
         <div class="grade">
           <div/>
           <v-rating length="5" v-model="grades[p.pk]" active-color="success-darken-2" size="small" :disabled="disabled" />
@@ -16,20 +16,19 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
-import { SchulzeVote } from './types'
-import { Poll } from '../types'
+import { SchulzePoll, SchulzeVote } from './types'
 
 export default defineComponent({
   name: 'SchulzePoll',
-  inject: ['t'],
   props: {
     poll: {
-      type: Object as PropType<Poll>,
+      type: Object as PropType<SchulzePoll>,
       required: true
     },
     modelValue: Object as PropType<SchulzeVote>,
@@ -39,6 +38,7 @@ export default defineComponent({
     Proposal: ProposalVue
   },
   setup (props, { emit }) {
+    const { t } = useI18n()
     const { getProposal } = useProposals()
     const grades = reactive<Record<number, number>>({})
     if (props.modelValue) {
@@ -58,6 +58,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       grades,
       proposals
     }

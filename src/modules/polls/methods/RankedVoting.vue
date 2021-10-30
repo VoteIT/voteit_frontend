@@ -1,8 +1,8 @@
 <template>
   <div id="scottish-stv-voting">
     <!-- <template v-if="currentStep.step === 1"> -->
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk">
-      <template v-slot:vote>
+    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+      <template #vote>
         <div class="voting-controls" v-if="ranking.includes(p.pk)">
           <div class="left">
             <span class="number">
@@ -63,8 +63,7 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
-import { RankedVote } from './types'
-import { Poll } from '../types'
+import { Poll, RankedVote } from './types'
 
 export default defineComponent({
   name: 'ScottishSTVPoll',

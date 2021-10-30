@@ -29,6 +29,7 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const value = reactive(props.modelValue || {})
+    console.log(value)
     watch(value, value => {
       emit('update:modelValue', value)
     })

@@ -10,26 +10,26 @@
         <p class="text-secondary">{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
         <p v-if="poll.body">{{ poll.body }}</p>
         <template v-if="isOngoing">
-          <v-alert type="success" v-if="votingComplete" class="mt-6">
+          <v-alert type="success" v-if="votingComplete" class="my-6">
             {{ t('poll.voteAddedInfo') }}
           </v-alert>
-          <v-alert type="info" v-else class="mt-6">
+          <v-alert type="info" v-else class="my-6">
             {{ t(`poll.method.help.${poll.method_name}`) }}
           </v-alert>
         </template>
       </header>
-      <div v-if="isFinished" class="my-6">
+      <div v-if="isFinished" id="poll-results" class="my-6">
         <h3>
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
-        <component :is="resultComponent" :data="poll.result" class="mb-8" />
+        <component :is="resultComponent" :result="poll.result" class="mb-8" />
         <Dropdown v-if="poll.result.approved.length" :title="t('poll.numApproved', poll.result.approved.length )">
-          <div class="proposals approved">
+          <div class="proposals approved mb-4">
             <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
           </div>
         </Dropdown>
         <Dropdown v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )">
-          <div class="proposals denied">
+          <div class="proposals denied mb-4">
             <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
           </div>
         </Dropdown>
@@ -62,7 +62,8 @@ import { useRoute } from 'vue-router'
 
 import WorkflowState from '@/components/WorkflowState.vue'
 import Channel from '@/contentTypes/Channel'
-import useMeeting from '@/modules/meetings/useMeeting'
+import useMeetingTitle from '../meetings/useMeetingTitle'
+import useMeeting from '../meetings/useMeeting'
 import useProposals from '../proposals/useProposals'
 import Proposal from '../proposals/Proposal.vue'
 
@@ -84,6 +85,7 @@ export default defineComponent({
     const { poll, isOngoing, isFinished, userVote, canChange, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath } = useMeeting()
     const channels = new Channel('vote')
+    useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
     const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
     const votingComplete = ref(!!userVote.value)
@@ -194,8 +196,12 @@ header .header-tag
   border: 2px solid rgba(var(--v-border-color), .6)
   border-radius: 4px
 
-.voting-component
-  .proposal
-    padding: 2em 0
-    border-bottom: 2px solid rgb(var(--v-border-color))
+#poll-results
+  .proposals
+    display: flex
+    margin: -10px
+    flex-flow: wrap
+    > *
+      margin: 10px
+      flex: 0 1 calc(50% - 20px)
 </style>

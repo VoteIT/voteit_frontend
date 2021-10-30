@@ -58,7 +58,7 @@ import usePolls from '../polls/usePolls'
 import { PollState } from '../polls/types'
 import PollModal from './PollModal.vue'
 import { WorkflowState } from '@/contentTypes/types'
-import { PollMethod, PollStartData } from '../polls/methods/types'
+import { Poll, PollMethod, PollStartData } from '../polls/methods/types'
 import { ProposalState } from '../proposals/types'
 import { pollType } from '../polls/contentTypes'
 
@@ -106,14 +106,14 @@ export default defineComponent({
       const pollData: PollStartData = {
         agenda_item: agendaId.value,
         meeting: meetingId.value,
-        title: nextPollTitle.value,
+        title: nextPollTitle.value as string,
         proposals: [...selectedProposalIds],
         method_name: method.name,
         start: true,
         settings: null
       }
       try {
-        const { data } = await pollType.api.add(pollData)
+        const { data } = await pollType.api.add(pollData as Partial<Poll>)
         openModalEvent.emit({
           title: data.title,
           component: PollModal,

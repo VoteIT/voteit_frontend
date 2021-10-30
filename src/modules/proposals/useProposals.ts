@@ -4,7 +4,7 @@ import { orderBy } from '@/utils'
 
 import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
 import { agendaDeletedEvent, agendaItems } from '@/modules/agendas/useAgenda'
-import { Poll } from '../polls/types'
+import { Poll } from '../polls/methods/types'
 import { Proposal } from './types'
 import { proposalType } from './contentTypes'
 import { meetingType } from '../meetings/contentTypes'

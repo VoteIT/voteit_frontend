@@ -1,5 +1,5 @@
 import ContentType from '@/contentTypes/ContentType'
-import { Poll } from './types'
+import { Poll } from './methods/types'
 import { pollStates } from './workflowStates'
 
 export const pollType = new ContentType<Poll>({

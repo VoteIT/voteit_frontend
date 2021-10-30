@@ -45,23 +45,22 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeUnmount, PropType, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useModal from '@/composables/useModal'
-
-import usePolls from '@/modules/polls/usePolls'
-import useProposals from '@/modules/proposals/useProposals'
-
 import Moment from '@/components/Moment.vue'
-import Voting from './Voting.vue'
-import Proposal from '@/modules/proposals/Proposal.vue'
 
-import { pollResults } from './methods'
-import { Poll, PollState } from './types'
-import { useI18n } from 'vue-i18n'
-import useMeeting from '@/modules/meetings/useMeeting'
+import usePolls from '../polls/usePolls'
+import useProposals from '../proposals/useProposals'
+import Proposal from '../proposals/Proposal.vue'
+import useMeeting from '../meetings/useMeeting'
+
+import Voting from './Voting.vue'
+import { PollState } from './types'
 import { slugify } from '@/utils'
 import { canVote } from './rules'
 import { pollType } from './contentTypes'
+import { Poll } from './methods/types'
 
 export default defineComponent({
   name: 'Poll',
@@ -93,8 +92,6 @@ export default defineComponent({
     const isFinished = computed(() => props.poll.state === PollState.Finished)
     const isOngoing = computed(() => props.poll.state === PollState.Ongoing)
 
-    const resultComponent = computed(() => isFinished.value && pollResults[props.poll.method_name])
-
     const following = ref(false)
     watch(isOngoing, value => {
       if (value || !following.value) return
@@ -118,7 +115,6 @@ export default defineComponent({
       t,
       pollPath,
       pollType,
-      resultComponent,
       pollStatus,
       isFinished,
       isOngoing,
@@ -156,9 +152,9 @@ div.poll
     display: flex
     margin: -10px
     flex-flow: wrap
-  .proposal
-    margin: 10px
-    flex: 0 1 calc(50% - 20px)
+    > *
+      margin: 10px
+      flex: 0 1 calc(50% - 20px)
 
   .progress-bar
     span .mdi

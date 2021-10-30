@@ -30,7 +30,7 @@ import { pollMethods } from './methods'
 
 import Channel from '@/contentTypes/Channel'
 import usePolls from '@/modules/polls/usePolls'
-import { Poll } from './types'
+import { Poll } from './methods/types'
 import { Proposal } from '../proposals/types'
 
 export default defineComponent({

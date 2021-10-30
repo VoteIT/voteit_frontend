@@ -33,7 +33,7 @@ import { defineComponent, onMounted, PropType, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { defer } from 'lodash'
 
-import { TreeMenuItem } from '@/utils/types'
+import { TreeMenu, TreeMenuItem } from '@/utils/types'
 
 export default defineComponent({
   emits: ['navigation', 'hasActive', 'firstContent'],
@@ -47,6 +47,7 @@ export default defineComponent({
     openFirstNonEmpty: Boolean,
     showCount: Boolean,
     icon: String,
+    openEvent: Object,
     level: {
       type: Number,
       default: 0
@@ -56,9 +57,21 @@ export default defineComponent({
     const openMenus = reactive<Set<number>>(new Set())
     const route = useRoute()
 
+    // Typescript-check if item is a submenu
+    const isSubMenu = (item: TreeMenuItem): item is TreeMenu => 'items' in item
+
     // Menus can be set to open by default
     props.items.forEach((item, index) => {
-      if ('defaultOpen' in item && item.defaultOpen) openMenus.add(index)
+      if (!isSubMenu(item)) return
+      if (item.defaultOpen) openMenus.add(index)
+      // Listen to opening events
+      item.openEvent?.on(() => openMenus.add(index))
+    })
+    // Default open on new items?
+    watch(() => props.items, (items, oldItems) => {
+      items.forEach((item, index) => {
+        if (isSubMenu(item) && !oldItems.includes(item) && item.defaultOpen) openMenus.add(index)
+      })
     })
     function toggleMenu (index: number) {
       if (openMenus.has(index)) return openMenus.delete(index)

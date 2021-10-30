@@ -1,6 +1,6 @@
 <template>
-  <div class="comments mb-2">
-    <DiscussionPost v-for="c in comments" :key="c.pk" :p="c">
+  <div class="comments">
+    <DiscussionPost v-for="c in comments" :key="c.pk" :p="c" class="mb-4">
       <template v-slot:buttons>
         <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: c.pk }">{{ btn.title }}</ReactionButton>
       </template>

@@ -1,5 +1,5 @@
 <template>
-  <Widget class="discussion" :class="{ isUnread }">
+  <v-sheet rounded elevation="4" class="discussion rounded-tl-xl" :class="{ isUnread }">
     <div class="meta">
       <div>
         <UserAvatar :pk="p.author" />
@@ -13,12 +13,12 @@
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
     </div>
-    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
+    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex align-center">
       <slot name="buttons" />
       <v-spacer />
       <Menu :items="menuItems" size="small" />
     </footer>
-  </Widget>
+  </v-sheet>
 </template>
 
 <script lang="ts">
@@ -99,8 +99,12 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .discussion
+  padding: 10px
+  border-right: 4px solid rgba(var(--v-border-color), .8)
+  &.isUnread
+    border-right: 4px solid rgba(var(--v-theme-warning), .4)
   footer
     border-top: 1px solid rgba(var(--v-border-color), .4)
     margin: 0 -10px

@@ -18,15 +18,15 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import Poll from '@/modules/polls/Poll.vue'
-
-import useMeeting from '@/modules/meetings/useMeeting'
-import usePolls from '@/modules/polls/usePolls'
+import useMeeting from '../meetings/useMeeting'
+import useMeetingTitle from '../meetings/useMeetingTitle'
+import Poll from '../polls/Poll.vue'
+import usePolls from '../polls/usePolls'
 
 import { WorkflowState } from '@/contentTypes/types'
 import { MenuItem } from '@/utils/types'
-import { useI18n } from 'vue-i18n'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 
@@ -40,6 +40,7 @@ export default defineComponent({
     const { meeting, meetingPath, meetingId } = useMeeting()
     const { getPolls } = usePolls()
     const { getPriorityStates } = pollType.useWorkflows()
+    useMeetingTitle(t('poll.all'))
 
     const tabStates = computed(() => {
       return getPriorityStates()

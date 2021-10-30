@@ -1,5 +1,5 @@
 <template>
-  <Proposal v-for="p in proposals" :key="p.pk" :p="p">
+  <Proposal v-for="p in proposals" :key="p.pk" :p="p" class="mb-4">
     <template v-slot:buttons>
       <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
     </template>
