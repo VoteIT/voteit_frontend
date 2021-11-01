@@ -58,19 +58,6 @@ export default defineComponent({
       })
     })
 
-    // FIXME Assume total vote count is same as max strength difference for now
-    const votes = computed(() => {
-      if (props.result.votes) return props.result.votes
-      let max = 0
-      for (const c of props.result.candidates) {
-        for (const o of props.result.candidates.filter(o => o !== c)) {
-          const total = strengthMap.value[c][o] + strengthMap.value[o][c]
-          if (total > max) max = total
-        }
-      }
-      return max
-    })
-
     const strengthMap = computed(() => {
       const record: Record<number, Record<number, number>> = {}
       for (const [pair, strength] of props.result.pairs) {
@@ -90,7 +77,7 @@ export default defineComponent({
             .map(other => {
               const myStrength = strengthMap.value[pk][other]
               const otherStrength = strengthMap.value[other][pk]
-              const tiedStrength = votes.value - myStrength - otherStrength
+              const tiedStrength = props.result.vote_count - myStrength - otherStrength
               return {
                 proposal: getProposal(other),
                 approve: myStrength,
@@ -99,15 +86,15 @@ export default defineComponent({
                 // Percentages
                 results: [
                   {
-                    percentage: myStrength / votes.value * 100,
+                    percentage: myStrength / props.result.vote_count * 100,
                     color: ThemeColor.Success
                   },
                   {
-                    percentage: tiedStrength / votes.value * 100,
+                    percentage: tiedStrength / props.result.vote_count * 100,
                     color: ThemeColor.Secondary
                   },
                   {
-                    percentage: otherStrength / votes.value * 100,
+                    percentage: otherStrength / props.result.vote_count * 100,
                     color: ThemeColor.Warning
                   }
                 ]

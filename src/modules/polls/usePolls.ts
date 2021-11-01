@@ -106,14 +106,14 @@ const allPollTitles = computed(() => {
   return [...polls.values()].map(p => p.title)
 })
 
-export default function usePolls () {
-  function getPolls (meeting: number, state?: PollState) {
-    return [...mapFilter(
-      polls,
-      p => p.meeting === meeting && (!state || p.state === state)
-    )]
-  }
+function getPolls (meeting: number, state?: PollState) {
+  return [...mapFilter(
+    polls,
+    p => p.meeting === meeting && (!state || p.state === state)
+  )]
+}
 
+export default function usePolls () {
   function getAiPolls (agendaItem: number, state?: PollState) {
     return [...mapFilter(
       polls,

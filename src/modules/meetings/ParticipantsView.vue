@@ -11,7 +11,6 @@ git<template>
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useTitle } from '@vueuse/core'
 
 import { dialogQuery, openAlertEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
@@ -24,6 +23,7 @@ import { ContextRoles } from '@/composables/types'
 
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
+import useMeetingTitle from './useMeetingTitle'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -36,10 +36,10 @@ const meetingIcons: Record<MeetingRole, string> = {
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const { meetingId, meeting, getUser, canChangeRoles } = useMeeting()
+    const { meetingId, getUser, canChangeRoles } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
 
-    useTitle(computed(() => `${t('meeting.participants')} | ${meeting.value?.title}`))
+    useMeetingTitle(t('meeting.participants'))
 
     function addRole (user: number, role: string) {
       meetingType.channel.addRoles(meetingId.value, user, role)

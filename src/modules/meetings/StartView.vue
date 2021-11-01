@@ -14,6 +14,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useTitle } from '@vueuse/core'
 
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
@@ -21,7 +22,6 @@ import WorkflowState from '@/components/WorkflowState.vue'
 
 import useMeeting from '@/modules/meetings/useMeeting'
 import { MenuItem } from '@/utils/types'
-import { useTitle } from '@vueuse/core'
 import { meetingType } from './contentTypes'
 
 export default defineComponent({

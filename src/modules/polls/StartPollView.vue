@@ -56,6 +56,7 @@
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { isEmpty } from 'lodash'
 
 import { slugify } from '@/utils'
 
@@ -123,12 +124,12 @@ export default defineComponent({
     const availableMethods = computed(() => getPollMethods(selectedProposals.value.length))
 
     const methodSelected = ref<PollMethod | null>(null)
-    const methodSettings = ref<PollMethodSettings>({ title: '' })
+    const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
     const methodSettingsComponent = computed(
       () => methodSelected.value && pollSettings[methodSelected.value.name]
     )
     watch(methodSelected, method => {
-      methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value }
+      methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value ?? '' }
     })
 
     const working = ref(false)
@@ -137,23 +138,27 @@ export default defineComponent({
       return methodSelected.value && !working.value && !createdPollPk.value
     })
 
+    function settingsOrNull (settings: PollMethodSettings | {}): PollMethodSettings | null {
+      if (isEmpty(settings)) return null
+      return settings as PollMethodSettings
+    }
+
     async function createPoll (start = false) {
       if (!methodSelected.value) return
       if (!(methodSelected.value.name in implementedMethods)) return alert(`*${methodSelected.value.title} not implemented`)
 
       working.value = true
-      const settings: PollMethodSettings = { ...methodSettings.value }
+      const { title, ...settings } = methodSettings.value
       // For Repeated Schulze
       if ('winners' in settings && settings.winners === selectedProposals.value.length) settings.winners = null
-      delete settings.title
       const pollData: PollStartData = {
         agenda_item: agendaId.value,
         meeting: meetingId.value,
-        title: methodSettings.value.title as string,
+        title,
         proposals: [...selectedProposalIds.value],
         method_name: methodSelected.value.name,
         start,
-        settings
+        settings: settingsOrNull(settings)
       }
       try {
         const { data } = await pollType.api.add(pollData as Partial<Poll>)

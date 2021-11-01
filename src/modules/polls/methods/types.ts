@@ -15,6 +15,7 @@ export enum PollMethodName {
 interface VoteResult {
   approved: number[]
   denied: number[]
+  vote_count: number
 }
 
 export interface RankedVote {
@@ -103,24 +104,20 @@ export type InstantRunoffResult = ScottishSTVResult
 export type CombinedSimpleVote = Record<SimpleChoice, number[]>
 export type SimpleVote = CombinedSimpleVote
 
-interface BasePollMethodSettings {
-  title?: string
-}
-
-export interface RepeatedSchulzeSettings extends BasePollMethodSettings {
+export interface RepeatedSchulzeSettings {
   winners: number | null
 }
 
-export interface ScottishSTVSettings extends BasePollMethodSettings {
+export interface ScottishSTVSettings {
   winners: number
   allow_random: boolean
 }
 
-interface InstantRunoffSettings extends BasePollMethodSettings {
+interface InstantRunoffSettings {
   allow_random: boolean
 }
 
-export type PollMethodSettings = BasePollMethodSettings | RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings
+export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings
 
 export interface PollMethod {
   name: PollMethodName
@@ -151,13 +148,13 @@ interface BasePoll extends BaseContent {
 export interface SimplePoll extends BasePoll {
   method_name: PollMethodName.CombinedSimple
   result: CombinedSimpleResult
-  settings: BasePollMethodSettings | null
+  settings: null
 }
 
 export interface SchulzePoll extends BasePoll {
   method_name: PollMethodName.Schulze
   result: SchulzeResult
-  settings: BasePollMethodSettings | null
+  settings: null
 }
 
 export interface RepeatedSchulzePoll extends BasePoll {
@@ -174,9 +171,9 @@ export interface ScottishSTVPoll extends BasePoll {
 
 export interface InstantRunoffPoll extends BasePoll {
   method_name: PollMethodName.InstantRunoff
-  // result: Instant
-  settings: InstantRunoffSettings | null
+  result: ScottishSTVResult // TODO: Rename to something more general
+  settings: InstantRunoffSettings
 }
 
 export type Poll = SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll
-export type PollStartData = Omit<Poll, 'pk' | 'state' | 'electoral_register' | 'initial_electoral_register' | 'body'>
+export type PollStartData = Omit<Poll, 'pk' | 'state' | 'electoral_register' | 'initial_electoral_register' | 'body' | 'result'>
