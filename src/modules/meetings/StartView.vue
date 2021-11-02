@@ -23,6 +23,7 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { MenuItem } from '@/utils/types'
 import { meetingType } from './contentTypes'
+import useSpeakerLists from '../speakerLists/useSpeakerLists'
 
 export default defineComponent({
   name: 'MeetingIndex',
@@ -35,6 +36,7 @@ export default defineComponent({
     const { t } = useI18n()
     const editing = ref(false)
     const { meeting, meetingId, canChange } = useMeeting()
+    const { getSystems } = useSpeakerLists()
 
     useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
 
@@ -49,12 +51,26 @@ export default defineComponent({
     })
 
     const menuItems = computed<MenuItem[]>(() => {
-      if (!canChange.value) return []
-      return [{
-        title: t('edit'),
-        icon: 'mdi-pencil',
-        onClick: async () => { editing.value = true }
-      }]
+      const items: MenuItem[] = []
+      if (canChange.value) {
+        items.push({
+          title: t('edit'),
+          icon: 'mdi-pencil',
+          onClick: async () => { editing.value = true }
+        })
+      }
+      const speakerSystems = getSystems(meetingId.value, false, true)
+      if (speakerSystems.length) {
+        items.push('---')
+        for (const system of speakerSystems) {
+          items.push({
+            title: t('speaker.fullscreenSystem', { ...system }),
+            icon: 'mdi-projector-screen-outline',
+            to: `/speakers/${meetingId.value}/${system.pk}`
+          })
+        }
+      }
+      return items
     })
 
     function submit () {

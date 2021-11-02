@@ -314,6 +314,7 @@
     "confirmStopActiveSpeaker": "The list \"{title}\" has an active speaker. To switch active list, you need to stop that speaker first.\nDo you want to do that?",
     "currentlySpeaking": "Now speaking",
     "enterList": "Enter list",
+    "fullscreenSystem": "Speaker list fullscreen ({title})",
     "isActiveList": "List is active",
     "leaveList": "Leave list",
     "listChoices": "List choices",

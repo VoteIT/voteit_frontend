@@ -195,7 +195,7 @@ export default defineComponent({
         items.push('---')
         for (const system of speakerSystems) {
           items.push({
-            title: t('speaker.manageSystem', system as any),
+            title: t('speaker.manageSystem', { ...system }),
             icon: 'mdi-bullhorn',
             to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
           })

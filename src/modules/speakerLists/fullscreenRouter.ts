@@ -1,7 +1,11 @@
 import FullscreenView from './FullscreenView.vue'
+import FullscreenAppBar from './FullscreenAppBar.vue'
 
 export default {
   path: '/speakers/:id/:system',
   name: 'speakerFullscreen',
-  component: FullscreenView
+  components: {
+    default: FullscreenView,
+    appBar: FullscreenAppBar
+  }
 }

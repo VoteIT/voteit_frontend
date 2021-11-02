@@ -44,7 +44,7 @@
       <template v-if="currentList">
         <template v-if="canStartSpeaker(currentList)">
           <div class="btn-group mb-2">
-            <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+            <v-btn color="primary" :disabAled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
             <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
