@@ -10,7 +10,6 @@ import { computed, defineComponent } from 'vue'
 import useMeeting from '../modules/meetings/useMeeting'
 
 export default defineComponent({
-  name: 'User',
   props: {
     pk: {
       type: Number,

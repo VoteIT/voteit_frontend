@@ -2,6 +2,6 @@ import SpeakerListsView from './SpeakerListsView.vue'
 
 export default {
   path: 'lists/:system/:aid',
-  name: 'spakerLists',
+  name: 'speakerLists',
   component: SpeakerListsView
 }

@@ -28,7 +28,7 @@ function isArchivedSystem (system: SpeakerSystem): boolean {
   return system.state === SpeakerSystemState.Archived
 }
 
-function isSystemModerator (system: SpeakerSystem): boolean {
+export function isSystemModerator (system: SpeakerSystem): boolean {
   return hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 

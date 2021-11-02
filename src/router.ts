@@ -4,6 +4,7 @@ import Home from '@/views/Home.vue'
 import meeting from '@/modules/meetings/router'
 import JoinMeeting from '@/modules/meetings/JoinView.vue'
 import plenary from '@/modules/plenary/router'
+import speakerFullscreen from '@/modules/speakerLists/fullscreenRouter'
 import AppBar from '@/components/AppBar.vue'
 
 const routes = [
@@ -17,6 +18,7 @@ const routes = [
   },
   meeting,
   plenary,
+  speakerFullscreen,
   // Join has url outside meeting, so users don't need meeting roles to visit this view.
   {
     path: '/join/:id/:slug',

@@ -144,10 +144,10 @@ export default function useSpeakerLists () {
     })
   }
 
-  function stopSpeaker (list: SpeakerList) {
+  async function stopSpeaker (list: SpeakerList) {
     const current = getCurrent(list)
     if (current) {
-      listChannel.methodCall('stop_user', {
+      await listChannel.methodCall('stop_user', {
         pk: list.pk,
         userid: current.userid
       })
@@ -160,8 +160,19 @@ export default function useSpeakerLists () {
     })
   }
 
-  function setActiveList (list: SpeakerList) {
-    listChannel.methodCall('set_active', { pk: list.pk })
+  function shuffleList (list: SpeakerList) {
+    listChannel.methodCall('mod_shuffle', {
+      pk: list.pk
+    })
+  }
+
+  async function setActiveList (list: SpeakerList, stopActiveSpeaker = false) {
+    if (stopActiveSpeaker) {
+      const system = getSystem(list.speaker_system)
+      const activeList = system?.active_list && getList(system.active_list)
+      if (activeList) await stopSpeaker(activeList)
+    }
+    await listChannel.methodCall('set_active', { pk: list.pk })
   }
 
   return {
@@ -180,6 +191,7 @@ export default function useSpeakerLists () {
     startSpeaker,
     stopSpeaker,
     undoSpeaker,
+    shuffleList,
     userInList,
     setActiveList,
     makeUniqueListName

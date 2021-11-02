@@ -1,4 +1,5 @@
 import { WorkflowState } from '@/contentTypes/types'
+import { ThemeColor } from '@/utils/types'
 import { SpeakerListState, SpeakerSystemState } from './types'
 
 export const speakerSystemStates: WorkflowState<SpeakerSystemState>[] = [
@@ -22,12 +23,14 @@ export const speakerSystemStates: WorkflowState<SpeakerSystemState>[] = [
 export const speakerListStates: WorkflowState<SpeakerListState>[] = [
   {
     transition: 'open',
-    icon: 'mdi-check',
-    state: SpeakerListState.Open
+    icon: 'mdi-play-circle-outline',
+    state: SpeakerListState.Open,
+    color: ThemeColor.Primary
   },
   {
     transition: 'close',
-    icon: 'mdi-close',
-    state: SpeakerListState.Closed
+    icon: 'mdi-lock',
+    state: SpeakerListState.Closed,
+    color: ThemeColor.Warning
   }
 ]
