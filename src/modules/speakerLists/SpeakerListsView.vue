@@ -44,7 +44,7 @@
       <template v-if="currentList">
         <template v-if="canStartSpeaker(currentList)">
           <div class="btn-group mb-2">
-            <v-btn color="primary" :disabAled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+            <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
             <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
@@ -54,10 +54,15 @@
         <p v-else>
           <em>{{ t('speaker.cantManageList') }}</em>
         </p>
-        <p v-if="currentSpeaker" class="mt-4">
-          {{ t('speaker.currentlySpeaking') }}:
-          <strong><User :pk="currentSpeaker.userid" /></strong> <Moment in-seconds :date="currentSpeaker.started" />
-        </p>
+        <v-sheet elevation="4" rounded="lg" v-if="currentSpeaker" class="my-4 pa-3">
+          <div class="d-flex mb-2 align-center">
+            <UserAvatar :pk="currentSpeaker.userid" class="mr-2" />
+            <User :pk="currentSpeaker.userid" style="font-size: 1.2rem;" />
+          </div>
+          <p class="text-h3 text-right">
+            <Moment in-seconds ordinary :date="currentSpeaker.started" />
+          </p>
+        </v-sheet>
         <h3 class="mt-4">{{ t('speaker.queue') }}</h3>
         <v-list v-if="currentQueue.length" density="comfortable">
           <v-list-item v-for="user in currentQueue" :key="user" :class="{ self: isSelf(user) }">
