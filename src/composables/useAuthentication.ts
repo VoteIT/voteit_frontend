@@ -41,13 +41,6 @@ export default function useAuthentication () {
   //   location.assign(organization.login_url)
   // }
 
-  function getOrganizationLoginURL (organization: Organisation): string {
-    if (!organization.login_url) throw new Error(`Organization ${organization.title} has no login information`)
-    return `${process.env.VUE_APP_ID_HOST}/login-to/${organization.pk}` // TODO Add /login or whatenvs
-  }
-
-  const manageAccountURL = process.env.VUE_APP_ID_HOST as string
-
   async function logout () {
     if (!isAuthenticated.value) return
     console.log('Logging out')
@@ -59,10 +52,7 @@ export default function useAuthentication () {
   return {
     user,
     isAuthenticated,
-    manageAccountURL,
     fetchAuthenticatedUser,
-    // startOrganizationLogin,
-    getOrganizationLoginURL,
     logout
   }
 }

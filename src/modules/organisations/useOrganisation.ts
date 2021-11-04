@@ -1,17 +1,22 @@
 import { computed } from 'vue'
 
-import useAuthentication from '@/composables/useAuthentication'
-
 import useOrganisations from './useOrganisations'
-import { canChangeOrganisation } from './rules'
 
-const { organisations } = useOrganisations()
-const { user } = useAuthentication()
+const { organisation } = useOrganisations()
 
 export default function useOrganisation () {
-  const organisation = computed(() => user.value && organisations.get(user.value.organisation))
+  const manageAccountURL = computed(() => {
+    if (!organisation.value) return
+    return `${organisation.value.id_host}/`
+  })
+  const idLoginURL = computed(() => {
+    if (!organisation.value || !organisation.value.id_host) return
+    return `${organisation.value.id_host}/login-to/${organisation.value.pk}`
+  })
 
   return {
-    organisation
+    organisation,
+    manageAccountURL,
+    idLoginURL
   }
 }

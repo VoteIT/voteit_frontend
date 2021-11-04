@@ -9,6 +9,7 @@ export interface Organisation {
   title: string
   body: string
   login_url: string | null
+  id_host: string | null
   scopes: string[]
 }
 

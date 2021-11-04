@@ -1,7 +1,7 @@
 <template>
   <v-row v-if="organisation" class="home mt-4 mb-4">
     <v-col v-if="!isAuthenticated && organisation" cols="12" :order-sm="1" sm="4" xl="3">
-      <v-btn block v-if="organisation.login_url" color="primary" :href="getOrganizationLoginURL(organisation)" prepend-icon="mdi-login">
+      <v-btn block v-if="organisation.login_url" color="primary" :href="idLoginURL" prepend-icon="mdi-login">
         {{ t('organization.loginTo', organisation) }}
       </v-btn>
     </v-col>
@@ -50,6 +50,7 @@
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 
@@ -66,12 +67,12 @@ import useMeetings from '@/modules/meetings/useMeetings'
 import useMeetingInvites from '@/modules/meetings/useMeetingInvites'
 import useModal from '@/composables/useModal'
 import useOrganisations from '@/modules/organisations/useOrganisations'
-import { useTitle } from '@vueuse/core'
 import Invite from '@/modules/meetings/Invite.vue'
 import { canAddMeeting } from '@/modules/meetings/rules'
 import { MenuItem } from '@/utils/types'
 import { canChangeOrganisation } from '@/modules/organisations/rules'
 import { organisationType } from '@/modules/organisations/contentTypes'
+import useOrganisation from '@/modules/organisations/useOrganisation'
 
 const { meetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -80,8 +81,9 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
-    const { logout, isAuthenticated, user, getOrganizationLoginURL, manageAccountURL } = useAuthentication()
+    const { logout, isAuthenticated, user } = useAuthentication()
     const { fetchOrganisations, organisation } = useOrganisations()
+    const { idLoginURL } = useOrganisation()
     const loader = useLoader('Home')
 
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
@@ -143,8 +145,8 @@ export default defineComponent({
       changeForm,
       debug: false,
       editing,
+      idLoginURL,
       isAuthenticated,
-      manageAccountURL,
       meetingInvites,
       menu,
       otherMeetings,
@@ -154,7 +156,6 @@ export default defineComponent({
 
       canAddMeeting,
       createMeeting,
-      getOrganizationLoginURL,
       logout,
       save,
       slugify

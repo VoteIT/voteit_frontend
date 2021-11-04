@@ -23,13 +23,13 @@
               </div>
             </v-list-item>
             <v-divider class="mb-2 mt-2" />
-            <v-list-item :href="idHost" prepend-icon="mdi-account" disabled>
+            <v-list-item :href="manageAccountURL" prepend-icon="mdi-account" disabled>
               {{ t('profile.profile') }}
             </v-list-item>
           </v-list>
           <template v-slot:append>
             <v-list nav density="comfortable">
-              <v-list-item prepend-icon="mdi-account" :href="idHost" :title="t('auth.manageAccount')" />
+              <v-list-item prepend-icon="mdi-account" :href="manageAccountURL" :title="t('auth.manageAccount')" />
               <v-list-item prepend-icon="mdi-logout" @click="logout()" :title="t('auth.logout')" />
             </v-list>
           </template>
@@ -48,13 +48,15 @@ import { dialogQuery, toggleNavDrawerEvent } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
+import useOrganisation from '@/modules/organisations/useOrganisation'
 
 export default defineComponent({
   setup () {
-    const auth = useAuthentication()
+    const { t } = useI18n()
     const router = useRouter()
     const route = useRoute()
-    const { t } = useI18n()
+    const auth = useAuthentication()
+    const { manageAccountURL } = useOrganisation()
 
     const userMenuOpen = ref(false)
     const userMenuComponent = ref<ComponentPublicInstance | null>(null)
@@ -76,12 +78,12 @@ export default defineComponent({
     return {
       t,
       ...auth,
-      userMenuOpen,
-      logout,
-      userMenuComponent,
       hasNavDrawer,
+      manageAccountURL,
       toggleNavDrawerEvent,
-      idHost: process.env.VUE_APP_ID_HOST
+      userMenuComponent,
+      userMenuOpen,
+      logout
     }
   }
 })
