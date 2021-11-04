@@ -1,15 +1,15 @@
-import AccessPolicies from './accessPolicies/ControlPanel.vue'
+// import AccessPolicies from './accessPolicies/ControlPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import Agenda from '../agendas/ControlPanel.vue'
-import PresenceChecks from '../presence/ControlPanel.vue'
+// import PresenceChecks from '../presence/ControlPanel.vue'
 import Reactions from '../reactions/Reactions.vue'
 import SpeakerSystems from '../speakerLists/ControlPanel.vue'
 
 export default {
-  AccessPolicies,
+  // AccessPolicies,
   Agenda,
   ElectoralRegisters,
-  PresenceChecks,
+  // PresenceChecks,
   Reactions,
   SpeakerSystems
 }

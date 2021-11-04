@@ -1,8 +1,12 @@
 <template>
   <div>
-    <h3>{{ t('presence.ongoingCheck') }}</h3>
-    <p><Moment :prepend="t('presence.openedAt')" :date="check.opened"/></p>
-    <p>{{ t('presence.presentCount', { count }) }}</p>
+    <h2>{{ t('presence.ongoingCheck') }}</h2>
+    <p>
+      <Moment :prepend="t('presence.openedAt')" :date="check.opened"/>
+    </p>
+    <p class="my-2">
+      {{ t('presence.presentCount', { count }) }}
+    </p>
     <Btn :disabled="submitting" v-if="canChange" @click="closeCheck()" color="warning" icon="mdi-stop">{{ t('presence.closeCheck') }}</Btn>
   </div>
 </template>
@@ -18,6 +22,7 @@ import Moment from '@/components/Moment.vue'
 
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckType } from './contentTypes'
+import { presenceCheckClosed } from './events'
 
 export default defineComponent({
   components: { Moment },
@@ -38,6 +43,7 @@ export default defineComponent({
       submitting.value = true
       try {
         await presence.closeCheck(props.check)
+        presenceCheckClosed.emit(props.check)
       } catch (err) {
         console.error(err)
       }

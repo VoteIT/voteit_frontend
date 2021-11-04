@@ -47,10 +47,11 @@
   "title": "Titel",
   "tryAgain": "Försök igen",
   "update": "Uppdatering",
+  "undo": "Ångra",
   "winners": "Vinnare",
   "yes": "Ja",
   "accessPolicy": {
-    "plural": "Åtkomstpolicyer",
+    "plural": "Åtkomstpolicies",
     "settings": "Åtkomstinställningar",
     "rolesGiven": "Tilldelade roller"
   },
@@ -101,7 +102,8 @@
     "method": "Metod för röstlängder",
     "saved": "Metod för röstlängder är nu satt till {er_policy_name}.",
     "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
-    "settings": "Inställning för röstlängder"
+    "settings": "Inställning för röstlängder",
+    "voterCount": "Inga röstande | 1 röstande | {count} röstande"
   },
   "error": {
     "error": "Fel",
@@ -259,14 +261,18 @@
     "view": "Plenumvy"
   },
   "presence": {
+    "check": "Närvarokontroll",
     "checks": "Närvarokontroller",
-    "closeCheck": "Stäng närvarokontroll",
+    "closeCheck": "Avsluta närvarokontroll",
     "closedAt": "Närvarokontrollen stängdes",
+    "imHere": "Jag är här!",
     "manage": "Hantera närvarokontroller",
     "newCheck": "Ny närvarokontroll",
     "noRecentlyClosedChecks": "Inga nyligen stängda närvarokontroller",
+    "notePresent": "Markera din närvaro",
     "ongoingCheck": "Pågående närvarokontroll",
     "openedAt": "Öppnades",
+    "presenceNoted": "Vi har noterat din närvaro",
     "presentCount": "Inga närvarande användare | En närvarande användare | {count} närvarande användare",
     "recentlyClosedChecks": "Nyligen stängda närvarokontroller"
   },

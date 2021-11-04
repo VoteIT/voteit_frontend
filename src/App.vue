@@ -56,6 +56,13 @@ export default defineComponent({
       }
     })
     provide('t', t)
+    provide('cols', {
+      default: {
+        cols: 12,
+        lg: 8,
+        offsetLg: 2
+      }
+    })
     provide('debug', process.env.NODE_ENV === 'development')
   }
 })

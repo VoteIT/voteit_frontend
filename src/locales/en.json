@@ -48,6 +48,7 @@
   "title": "Title",
   "tryAgain": "Try again",
   "update": "Update",
+  "undo": "Undo",
   "winners": "Winners",
   "yes": "Yes",
   "accessPolicy": {
@@ -103,7 +104,8 @@
     "method": "Method for electoral register",
     "saved": "Electoral register method now set to {er_policy_name}.",
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
-    "settings": "Settings for Electoral Registers"
+    "settings": "Settings for Electoral Registers",
+    "voterCount": "No voters | 1 voter | {count} voters"
   },
   "error": {
     "error": "Error",
@@ -261,14 +263,18 @@
     "view": "Plenary view"
   },
   "presence": {
+    "check": "Presence check",
     "checks": "Presence checks",
     "closeCheck": "Close presence check",
     "closedAt": "Presence check closed",
+    "imHere": "I'm here!",
     "manage": "Manage presence checks",
     "newCheck": "New presence check",
     "noRecentlyClosedChecks": "No recently closed checks",
+    "notePresent": "click to note your presence",
     "ongoingCheck": "Ongoing presence check",
     "openedAt": "Opened",
+    "presenceNoted": "We have noted your presence",
     "presentCount": "No users present | One present user | {count} present users",
     "recentlyClosedChecks": "Recently closed presence checks"
   },

@@ -129,6 +129,9 @@ export default defineComponent({
         }, {
           title: t('meeting.participants'),
           to: `${meetingPath.value}/participants`
+        }, {
+          title: t('electoralRegister.plural'),
+          to: `${meetingPath.value}/er`
         }],
         icon: 'mdi-home-variant-outline'
       },

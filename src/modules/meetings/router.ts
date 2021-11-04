@@ -6,6 +6,7 @@ import speakerLists from '@/modules/speakerLists/router'
 
 import StartView from './StartView.vue'
 import ParticipantsView from './ParticipantsView.vue'
+import ElectoralRegistersView from './electoralRegisters/ElectoralRegistersView.vue'
 import MeetingView from './MeetingView.vue'
 import ControlPanelView from '@/modules/meetings/ControlPanel.vue'
 
@@ -38,6 +39,11 @@ export default {
       path: 'participants',
       name: 'participants',
       component: ParticipantsView
+    },
+    {
+      path: 'er',
+      name: 'electoral-registers',
+      component: ElectoralRegistersView
     },
     polls,
     {

@@ -20,7 +20,7 @@ function isPollVoter (poll: Poll): boolean {
   if (!poll.electoral_register || !user.value) return false
   const register = getRegister(poll.electoral_register)
   if (!register) return false
-  return register.has(user.value.pk)
+  return register.voters.includes(user.value.pk)
 }
 
 function isOngoingPoll (poll: Poll): boolean {

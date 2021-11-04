@@ -1,9 +1,14 @@
 import { computed, reactive, ref } from 'vue'
+import { orderBy } from 'lodash'
+
+import { ElectoralRegister } from '@/contentTypes/types'
 
 import { electoralRegisterType } from './contentTypes'
+import { dateify } from '@/utils'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
-const registers = reactive<Map<number, Set<number> | null>>(new Map())
+// const registers = reactive<Map<number, Set<number> | null>>(new Map())
+const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
 
 interface ERMethod {
   name: string
@@ -16,15 +21,28 @@ export default function useElectoralRegisters () {
     registers.set(pk, null) // If it has any value, will not fetch again
     try {
       const { data } = await electoralRegisterType.api.retrieve(pk)
-      registers.set(pk, new Set(data.voters))
+      registers.set(pk, dateify(data))
     } catch {
       registers.delete(pk) // Enables trying again.
     }
-}
+  }
+
+  async function fetchRegisters (meeting: number) {
+    try {
+      const { data } = await electoralRegisterType.api.list({ meeting })
+      for (const er of data) {
+        registers.set(er.pk, dateify(er))
+      }
+    } catch {} // TODO
+  }
+
+  const sortedRegisters = computed(() => {
+    return orderBy([...registers.values()], ['created'], ['desc'])
+  })
 
   function getRegister (pk: number) {
     if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
-    return registers.get(pk) as Set<number> | null
+    return registers.get(pk) as ElectoralRegister | null
   }
 
   async function fetchMethods () {
@@ -45,6 +63,8 @@ export default function useElectoralRegisters () {
   return {
     erMethods,
     erOptions,
-    getRegister
+    sortedRegisters,
+    getRegister,
+    fetchRegisters
   }
 }
