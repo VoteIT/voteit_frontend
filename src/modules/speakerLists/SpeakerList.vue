@@ -29,6 +29,8 @@
       <v-btn variant="text" :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange">
         {{ t('manage') }}
       </v-btn>
+      <v-spacer />
+      <v-btn v-if="fullscreenPath" variant="text" :to="fullscreenPath" icon="mdi-overscan" />
     </v-card-actions>
   </v-card>
 </template>
@@ -62,7 +64,7 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const speakers = useSpeakerLists()
-    const { meetingPath } = useMeeting()
+    const { meetingId, meetingPath } = useMeeting()
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
     const queue = computed(() => speakers.getQueue(props.list))
@@ -101,6 +103,7 @@ export default defineComponent({
       expandQueue,
       isActive,
       isOpen,
+      fullscreenPath: computed(() => isActive.value && `/speakers/${meetingId.value}/${props.list.speaker_system}`),
       queue,
       currentSpeaker,
       inList,
