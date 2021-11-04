@@ -25,6 +25,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
@@ -32,11 +33,10 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRole, UserContextRoles } from '@/composables/types'
 
 import Channel from '@/contentTypes/Channel'
-import { ContextRolesPayload } from '@/contentTypes/messages'
 
 export default defineComponent({
   props: {
-    channel: {
+    channel: { // TODO Take ContentType object instead?
       type: Channel,
       required: true
     },
@@ -52,29 +52,26 @@ export default defineComponent({
     removeConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
     addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>
   },
-  inject: ['t'],
   setup (props) {
+    const { t } = useI18n()
     const { getUser } = useMeeting()
     const loader = useLoader('RoleMatrix')
     const roles = ref<ContextRole[]>([])
     const contextRoles = useContextRoles(props.channel.contentType)
 
     onBeforeMount(() => {
-      loader.call(() => {
-        return Promise.all([
-          props.channel.getAvailableRoles()
-            .then(value => {
-              roles.value = value
-            }),
-          props.channel.fetchRoles(props.pk)
-            .then(value => {
-              const payload = value.p as ContextRolesPayload
-              for (const [user, roles] of payload.items) {
-                contextRoles.set(props.pk, user, roles)
-              }
-            })
-        ])
-      })
+      loader.call(
+        async () => {
+        const data = await props.channel.getAvailableRoles()
+          roles.value = data
+        },
+        async () => {
+          const { p } = await props.channel.fetchRoles(props.pk)
+          for (const [user, roles] of p.items) {
+            contextRoles.set(props.pk, user, roles)
+          }
+        }
+      )
     })
 
     async function addRole (user: number, role: string) {
@@ -135,6 +132,7 @@ export default defineComponent({
     }
 
     return {
+      t,
       addRole,
       removeRole,
       roleCount,

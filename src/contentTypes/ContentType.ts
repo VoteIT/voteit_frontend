@@ -7,14 +7,13 @@ import useWorkflows from './useWorkflows'
 
 interface CType<S> {
   states?: WorkflowState<S>[]
-  // rules?: Record<string, Predicate>
   channelName?: string
   restEndpoint?: string
   hasRoles?: boolean
   dateFields?: string[]
 }
 
-export default class ContentType<T extends Record<string, any>, K extends string | number=number> {
+export default class ContentType<T extends Record<string, any>, R extends string=string, K extends string | number=number> {
   contentType: CType<T['state']>
   private _api?: ContentAPI<T, K>
   private _channel?: Channel<T>
@@ -76,6 +75,6 @@ export default class ContentType<T extends Record<string, any>, K extends string
 
   public useContextRoles () {
     if (!this.contentType.hasRoles || !this.contentType.channelName) throw new Error(`Context Roles not configured for Content Type ${this.name}`)
-    return useContextRoles(this.contentType.channelName)
+    return useContextRoles<R>(this.contentType.channelName)
   }
 }

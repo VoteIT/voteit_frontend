@@ -140,6 +140,13 @@
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
+    "role": {
+      "participant": "Participant",
+      "moderator": "Moderator",
+      "potential_voter": "Potential voter",
+      "proposer": "Proposer",
+      "discusser": "Discusser"
+    },
     "settings": {
       "all": "All settings",
       "for": "Settings for {title}"
@@ -308,6 +315,7 @@
   },
   "speaker": {
     "addListToSystem": "New list",
+    "speakerRoles": "Roles allowed to speak",
     "cantManageList": "You can't manage this list.",
     "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
@@ -336,9 +344,14 @@
     "systemAdd": "Add List System",
     "systemEdit": "Edit List System",
     "systemMethod": "Priority method",
-    "visible": "Visible to all participants"
+    "visible": "Visible to all participants",
+    "orderMethod": {
+      "priority": "Prioritize first-time speakers",
+      "simple": "Simple"
+    }
   },
   "workflowState": {
+    "active": "Active",
     "approved": "Approved",
     "archived": "Archived",
     "archiving": "Archiving",
@@ -348,6 +361,7 @@
     "closing": "Closing",
     "denied": "Denied",
     "finished": "Finished",
+    "inactive": "Inactive",
     "ongoing": "Ongoing",
     "open": "Open",
     "private": "Private",

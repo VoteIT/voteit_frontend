@@ -1,7 +1,7 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import { ElectoralRegister, MeetingAccessPolicy } from '@/contentTypes/types'
-import { Meeting, MeetingInvite } from './types'
+import { Meeting, MeetingInvite, MeetingRole } from './types'
 import { meetingStates } from './workflowStates'
 
 export const meetingInviteType = new ContentType<MeetingInvite>({
@@ -20,7 +20,7 @@ export const meetingRoleType = new ContentType<MeetingRoles>({
   restEndpoint: 'meeting-roles/'
 })
 
-export const meetingType = new ContentType<Meeting>({
+export const meetingType = new ContentType<Meeting, MeetingRole>({
   states: meetingStates,
   channelName: 'meeting',
   restEndpoint: 'meetings/',

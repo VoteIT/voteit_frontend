@@ -1,14 +1,15 @@
 import { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 import { isActiveMeeting, isModerator } from '../meetings/rules'
-import { Meeting } from '../meetings/types'
+import { Meeting, MeetingRole } from '../meetings/types'
 
 import { meetings } from '../meetings/useMeetings'
 
 import { SpeakerList, SpeakerListState, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
 import { currentlySpeaking, speakerLists, speakerSystems } from './useSpeakerLists'
 
-const { hasRole } = useContextRoles('speaker_system')
+const { hasRole } = useContextRoles<SpeakerSystemRole>('speaker_system')
+const meetingRoles = useContextRoles<MeetingRole>('meeting')
 
 /* Speaker Systems */
 
@@ -32,8 +33,8 @@ export function isSystemModerator (system: SpeakerSystem): boolean {
   return hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 
-function isSystemSpeaker (system: SpeakerSystem): boolean {
-  return hasRole(system.pk, SpeakerSystemRole.Speaker)
+export function isSystemSpeaker (system: SpeakerSystem, user?: number): boolean {
+  return meetingRoles.hasRole(system.meeting, system.meeting_roles_to_speaker, user) || hasRole(system.pk, SpeakerSystemRole.Speaker, user)
 }
 
 function hasActiveSpeaker (system: SpeakerSystem) {

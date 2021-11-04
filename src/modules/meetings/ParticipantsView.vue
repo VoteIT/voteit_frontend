@@ -2,7 +2,7 @@ git<template>
   <main>
     <h1>{{ t('meeting.participants') }}</h1>
     <div v-if="canChangeRoles" class="search">
-      <UserSearch @submit="addUser" :omitIds="omitIds" />
+      <UserSearch @submit="addUser" :filter="searchFilter" />
     </div>
     <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
   </main>
@@ -24,6 +24,7 @@ import { ContextRoles } from '@/composables/types'
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
+import { User } from '../organisations/types'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -62,6 +63,9 @@ export default defineComponent({
     }
 
     const omitIds = computed(() => getUserIds(meetingId.value))
+    function searchFilter (user: User): boolean {
+      return !omitIds.value.includes(user.pk)
+    }
 
     return {
       t,
@@ -69,10 +73,10 @@ export default defineComponent({
       meetingChannel: meetingType.channel,
       meetingIcons,
       meetingId,
-      omitIds,
       addUser,
       getUserIds,
-      removeConfirm
+      removeConfirm,
+      searchFilter
     }
   },
   components: {

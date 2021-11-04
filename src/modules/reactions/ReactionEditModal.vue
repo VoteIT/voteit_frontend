@@ -132,18 +132,18 @@ export default defineComponent({
     }
 
     return {
-      close,
-      deleteButton,
+      t,
       isValid,
       formData,
       previewActive,
-      save,
       submitting,
-      t,
       ReactionIcon,
       ThemeColor,
       ReactionContentType,
-      MeetingRole
+      MeetingRole,
+      close,
+      deleteButton,
+      save
     }
   }
 })

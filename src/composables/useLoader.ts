@@ -19,7 +19,7 @@ watch(isReady, async value => {
     await Promise.all(callbacks.map(cb => cb()))
     initDone.value = true
   } catch (err) {
-    console.log(err)
+    console.error(err)
     initFailed.value = true
   }
   callbacks = []
@@ -39,11 +39,9 @@ export default function useLoader (name: string) {
   }
 
   function call (...cbs: (() => Promise<unknown>)[]) {
-    // Queue if not initialized.
-    cbs.forEach(cb => {
-      if (initDone.value) cb()
-      else callbacks.push(cb)
-    })
+    // Call if already ready.
+    if (isReady.value) cbs.forEach(cb => cb())
+    else cbs.forEach(cb => callbacks.push(cb))
   }
 
   async function subscribe<T> (channel: Channel<T>, uriOrPk: string | number) {

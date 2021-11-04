@@ -1,9 +1,9 @@
 import ContentType from '@/contentTypes/ContentType'
 
-import { SpeakerList, SpeakerSystem } from './types'
+import { SpeakerList, SpeakerSystem, SpeakerSystemRole } from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
 
-export const speakerSystemType = new ContentType<SpeakerSystem>({
+export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRole>({
   channelName: 'speaker_system',
   restEndpoint: 'speaker-list-systems/',
   states: speakerSystemStates,

@@ -9,34 +9,46 @@
       <v-card tag="form" :title="t('speaker.systemAdd')" width="1280" max-width="100%" color="background" @submit.prevent="createSystem()">
         <v-card-text>
           <v-text-field :label="t('title')" v-model="systemData.title" />
-          <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="SpeakerSystemMethod" />
+          <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
           <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
+          <CheckboxMultipleSelect name="meeting_roles" v-model="systemData.meeting_roles_to_speaker" :settings="{ options: MeetingRole }" :label="t('speaker.speakerRoles')" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">{{ t('add') }}</v-btn>
+          <v-btn variant="text" @click="createDialogOpen = false">
+            {{ t('cancel') }}
+          </v-btn>
+          <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
+            {{ t('add') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <Widget class="speaker-system my-4" v-for="system in systems" :key="system.pk">
-      <Menu float :items="getSystemMenu(system)" show-transitions :content-type="speakerSystemType" :object="system"/>
+    <Widget class="speaker-system my-4" v-for="{ system, menu, data, userSearch } in systems" :key="system.pk">
+      <Menu float :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
       <h2>{{ system.title }}</h2>
       <v-list density="comfortable">
-        <v-list-item v-for="{ key, value } in getSystemData(system)" :key="key" :title="key" :subtitle="value" />
+        <v-list-item v-for="{ key, value } in data" :key="key" :title="key" :subtitle="value" />
       </v-list>
-      <UserSearch class="mt-4" @submit="addUser(system, $event)" :omitIds="getUserIds(system.pk)" />
+      <UserSearch class="mt-4" v-bind="userSearch" />
       <RoleMatrix class="mt-2" admin :channel="systemChannel" :pk="system.pk" :icons="systemIcons" />
     </Widget>
     <v-dialog v-model="editDialogOpen">
       <v-card tag="form" :title="t('speaker.systemEdit')" width="1280" max-width="100%" color="background" @submit.prevent="saveSystem()">
         <v-card-text>
           <v-text-field :label="t('title')" v-model="editSystemData.title" />
-          <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="SpeakerSystemMethod" />
+          <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
           <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" class="mt-8" />
+          <CheckboxMultipleSelect name="meeting_roles" v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: MeetingRole }" :label="t('speaker.speakerRoles')" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn type="submit" color="primary" prepend-icon="mdi-check">{{ t('save') }}</v-btn>
+          <v-btn variant="text" @click="editDialogOpen = false">
+            {{ t('cancel') }}
+          </v-btn>
+          <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!editSystemReady">
+            {{ t('save') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -55,6 +67,7 @@ import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import SelectVue from '@/components/inputs/Select.vue'
+import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
 import { ContextRole } from '@/composables/types'
@@ -64,6 +77,7 @@ import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
 import { User } from '../organisations/types'
+import { MeetingRole } from '../meetings/types'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -72,6 +86,7 @@ const systemIcons = {
 
 export default defineComponent({
   components: {
+    CheckboxMultipleSelect,
     RoleMatrix,
     SelectVue,
     UserSearch
@@ -93,14 +108,14 @@ export default defineComponent({
       })
     })
 
-    const systems = computed(() => speakerLists.getSystems(meetingId.value, true))
     const systemData = reactive<Partial<SpeakerSystem>>({
       title: t('speaker.system'),
-      safe_positions: 1
+      safe_positions: 1,
+      meeting_roles_to_speaker: []
     })
     const createDialogOpen = ref(false)
     const creating = ref(false)
-    const createReady = computed(() => !creating.value && systemData.title && systemData.method_name)
+    const createReady = computed(() => !creating.value && systemData.title && systemData.method_name && systemData.meeting_roles_to_speaker?.length)
 
     async function createSystem () {
       creating.value = true
@@ -119,10 +134,12 @@ export default defineComponent({
     const editDialogOpen = ref(false)
     const editSystemPk = ref<number | null>(null)
     const editSystemData = reactive<Partial<SpeakerSystem>>({})
+    const editSystemReady = computed(() => editSystemData.title && editSystemData.meeting_roles_to_speaker?.length)
     function editSystem (system: SpeakerSystem) {
       editSystemData.title = system.title
       editSystemData.method_name = system.method_name
       editSystemData.safe_positions = system.safe_positions
+      editSystemData.meeting_roles_to_speaker = system.meeting_roles_to_speaker
       editSystemPk.value = system.pk
       editDialogOpen.value = true
     }
@@ -141,10 +158,6 @@ export default defineComponent({
         title: t('speaker.confirmSystemDeletion'),
         theme: ThemeColor.Warning
       })) speakerSystemType.api.delete(system.pk)
-    }
-
-    function addUser (system: SpeakerSystem, user: User) {
-      speakerSystemType.channel.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
     }
 
     function getSystemMenu (s: SpeakerSystem): MenuItem[] {
@@ -171,18 +184,46 @@ export default defineComponent({
       return [
         {
           key: t('state'),
-          value: system.state
+          value: t(`workflowState.${system.state}`)
         },
         {
           key: t('speaker.systemMethod'),
-          value: system.method_name
+          value: t(`speaker.orderMethod.${system.method_name}`)
         },
         {
           key: t('speaker.safePositions'),
           value: String(system.safe_positions) ?? t('speaker.noSafePositions')
+        },
+        {
+          key: t('speaker.speakerRoles'),
+          value: system.meeting_roles_to_speaker.map(r => t(`meeting.role.${r}`)).join(', ')
         }
       ]
     }
+
+    const systems = computed(() => {
+      return speakerLists.getSystems(meetingId.value, true)
+        .map(system => {
+          const userIds = getUserIds(system.pk)
+          return {
+            system,
+            menu: getSystemMenu(system),
+            data: getSystemData(system),
+            userSearch: {
+              params: { meeting: meetingId.value },
+              filter: (user: User) => !userIds.includes(user.pk),
+              onSubmit: (user: User) => speakerSystemType.channel.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
+            }
+          }
+        })
+    })
+
+    const orderMethods = computed(() => {
+      return Object.fromEntries(
+        Object.values(SpeakerSystemMethod)
+          .map(name => [name, t(`speaker.orderMethod.${name}`)])
+      )
+    })
 
     return {
       t,
@@ -190,20 +231,18 @@ export default defineComponent({
       createReady,
       editDialogOpen,
       editSystemData,
+      editSystemReady,
       meeting,
+      MeetingRole,
+      orderMethods,
       systems,
-      SpeakerSystemMethod,
       systemData,
       systemChannel: speakerSystemType.channel,
       systemRoles,
       speakerSystemType,
       systemIcons,
-      addUser,
       createSystem,
       deleteSystem,
-      getSystemMenu,
-      getSystemData,
-      getUserIds,
       saveSystem
     }
   }

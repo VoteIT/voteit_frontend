@@ -59,7 +59,7 @@ export default defineComponent({
           onClick: async () => { editing.value = true }
         })
       }
-      const speakerSystems = getSystems(meetingId.value, false, true)
+      const speakerSystems = getSystems(meetingId.value)
       if (speakerSystems.length) {
         items.push('---')
         for (const system of speakerSystems) {

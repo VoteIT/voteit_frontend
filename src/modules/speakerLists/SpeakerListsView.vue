@@ -49,7 +49,7 @@
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
             <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
           </div>
-          <UserSearch label="Add speaker" :omitIds="currentQueue" @submit="addSpeaker" />
+          <UserSearch label="Add speaker" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" />
         </template>
         <p v-else>
           <em>{{ t('speaker.cantManageList') }}</em>
@@ -108,7 +108,7 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery } from '@/utils'
 import { AgendaItem } from '../agendas/types'
 import { SpeakerList, SpeakerSystem } from './types'
-import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker } from './rules'
+import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
 import { speakerListType } from './contentTypes'
 import useSpeakerSystem from './useSpeakerSystem'
 
@@ -181,6 +181,13 @@ export default defineComponent({
       speakerListType.api.add(listData)
     }
 
+    // For user search
+    // Filter on users that are speakers but not already in queue
+    function userSearchFilter (user: User): boolean {
+      if (!currentQueue.value || !speakerSystem.value) return false
+      if (currentQueue.value.includes(user.pk)) return false
+      return isSystemSpeaker(speakerSystem.value, user.pk)
+    }
     function addSpeaker (user: User) {
       if (!currentList.value) return
       speakers.moderatorEnterList(currentList.value, user.pk)
@@ -224,6 +231,7 @@ export default defineComponent({
       speakerSystems,
       speakerLists,
       speakerListType,
+      meetingId,
       meetingPath,
       navigation,
       addSpeaker,
@@ -231,7 +239,8 @@ export default defineComponent({
       canChangeSpeakerList,
       canStartSpeaker,
       isSelf,
-      getListMenu
+      getListMenu,
+      userSearchFilter
     }
   }
 })

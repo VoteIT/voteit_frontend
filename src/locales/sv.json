@@ -138,6 +138,13 @@
     "createTitleHint": "Minst 5 tecken",
     "meeting": "Möte",
     "public": "Gör mötet synligt för alla",
+    "role": {
+      "participant": "Deltagare",
+      "moderator": "Moderator",
+      "potential_voter": "Potentiell röstare",
+      "proposer": "Förslagsläggare",
+      "discusser": "Debattör"
+    },
     "settings": {
       "all": "Alla inställningar",
       "for": "Inställningar för {title}"
@@ -306,6 +313,7 @@
   },
   "speaker": {
     "addListToSystem": "Ny lista",
+    "speakerRoles": "Roller som tillåts tala",
     "cantManageList": "Du har inte rättigheter att hantera den här listan.",
     "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
@@ -334,9 +342,14 @@
     "systemAdd": "Lägg till listsystem",
     "systemEdit": "Ändra listsystem",
     "systemMethod": "Metod för ordning",
-    "visible": "Visa för alla deltagare"
+    "visible": "Visa för alla deltagare",
+    "orderMethod": {
+      "priority": "Prioritera förstagångstalare",
+      "simple": "Enkel"
+    }
   },
   "workflowState": {
+    "active": "Aktivt",
     "approved": "Bifallet",
     "archived": "Arkiverad",
     "archiving": "Arkiverar",
@@ -346,6 +359,7 @@
     "closing": "Stänger",
     "denied": "Avslaget",
     "finished": "Avslutad",
+    "inactive": "Inaktivt",
     "ongoing": "Pågående",
     "open": "Öppen",
     "private": "Privat",

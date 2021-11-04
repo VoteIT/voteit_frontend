@@ -1,17 +1,14 @@
 import { reactive } from 'vue'
+import { last } from 'lodash'
 
 import Channel from '@/contentTypes/Channel'
-import { SuccessMessage } from '@/utils/types'
 
 import useAuthentication from './useAuthentication'
 import { ContextRoles, UserContextRoles } from './types'
 
 const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
-type keyComponent = string | number
-function getRoleKey (...components: keyComponent[]) {
-  // Default context model = Meeting
-  components[0] = components[0] || 'Meeting'
+function getRoleKey (...components: [string, number, number | '']) {
   return components.join('/')
 }
 
@@ -35,34 +32,59 @@ new Channel('roles')
     payload.roles.forEach(r => store.add(r))
   })
 
-export default function useContextRoles (contentType: string) {
+export default function useContextRoles<T extends string> (contentType: string) {
   const { user } = useAuthentication()
 
-  function getUserRoles (pk: number, userId?: number) {
-    userId = userId ?? user.value?.pk
-    if (userId) {
-      const key = getRoleKey(contentType, pk, userId)
-      return contextRoles.get(key) || new Set()
-    }
-  }
-
-  function getRoleCount (pk: number, roleName: string) {
-    const key = getRoleKey(contentType, pk, '')
+  function * iterRoles (pk: number, filter?: (roles: Set<T>) => boolean): Generator<UserContextRoles, number> {
+    const contextKey = getRoleKey(contentType, pk, '')
     let count = 0
-    for (const [k, v] of contextRoles.entries()) {
-      if (k.startsWith(key) && v.has(roleName)) { count++ }
+    for (const [key, assigned] of contextRoles.entries()) {
+      if (key.startsWith(contextKey) && (!filter || filter(assigned as Set<T>))) {
+        const user = Number(key.split('/')[2])
+        yield {
+          user,
+          assigned
+        }
+        count++
+      }
     }
     return count
   }
 
-  function set (pk: number, userId: number, roles: string[]) {
+  function * iterUserIds (pk: number, filter?: (roles: Set<T>) => boolean): Generator<number, void> {
+    for (const { user } of iterRoles(pk, filter)) yield user
+  }
+
+  function getUserRoles (pk: number, userId?: number) {
+    userId = userId ?? user.value?.pk
+    if (!userId) return
+    const key = getRoleKey(contentType, pk, userId)
+    return contextRoles.get(key) || new Set()
+  }
+
+  function getRoleCount (pk: number, role: T) {
+    const generator = iterRoles(pk, (roles) => roles.has(role))
+    let res = generator.next()
+    while (!res.done) res = generator.next()
+    return res.value
+  }
+
+  // User ids that match any role
+  function getRoleUserIds (pk: number, ...anyRoles: T[]) {
+    return [...iterUserIds(
+      pk,
+      (roles) => anyRoles.some(role => roles.has(role))
+    )]
+  }
+
+  function set (pk: number, userId: number, roles: T[]) {
     // Sets or deletes roles
     const key = getRoleKey(contentType, pk, userId)
     if (roles.length) contextRoles.set(key, new Set(roles))
     else contextRoles.delete(key)
   }
 
-  function hasRole (pk: number, roleName: string | string[], user?: number): boolean {
+  function hasRole (pk: number, roleName: T | T[], user?: number): boolean {
     const userRoles = getUserRoles(pk, user)
     if (userRoles) {
       if (typeof roleName === 'string') {
@@ -75,25 +97,12 @@ export default function useContextRoles (contentType: string) {
     return false
   }
 
-  function * iterAll (pk: number): Generator<UserContextRoles> {
-    const contextKey = getRoleKey(contentType, pk) + '/'
-    for (const [key, assigned] of contextRoles.entries()) {
-      if (key.startsWith(contextKey)) {
-        const user = Number(key.split('/')[2])
-        yield {
-          user,
-          assigned
-        }
-      }
-    }
-  }
-
   function getAll<T extends string> (pk: number) {
-    return [...iterAll(pk)] as UserContextRoles<T>[]
+    return [...iterRoles(pk)] as UserContextRoles<T>[]
   }
 
-  function getUserIds (pk: number): number[] {
-    return [...iterAll(pk)].map(v => v.user)
+  function getUserIds (pk: number) {
+    return [...iterUserIds(pk)]
   }
 
   return {
@@ -102,6 +111,7 @@ export default function useContextRoles (contentType: string) {
     getUserRoles,
     getAll,
     getRoleCount,
+    getRoleUserIds,
     getUserIds
   }
 }

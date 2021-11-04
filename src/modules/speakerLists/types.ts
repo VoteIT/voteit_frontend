@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import { BaseContent } from '@/contentTypes/types'
+import { MeetingRole } from '../meetings/types'
 
 export enum SpeakerSystemState {
   Inactive = 'inactive',
@@ -24,6 +25,7 @@ export interface SpeakerSystem {
   state: SpeakerSystemState
   active_list?: number
   meeting: number
+  meeting_roles_to_speaker: MeetingRole[]
   method_name: SpeakerSystemMethod
   safe_positions?: number
   settings: object // TODO

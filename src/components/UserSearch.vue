@@ -35,7 +35,11 @@ export default defineComponent({
       default: 'mdi-plus'
     },
     buttonText: String,
-    omitIds: Array as PropType<number[]>,
+    params: {
+      type: Object,
+      default: () => ({})
+    },
+    filter: Function as PropType<(user: User) => boolean>,
     label: String
   },
   emits: ['submit'],
@@ -52,9 +56,11 @@ export default defineComponent({
         return
       }
       const { data } = await userType.api.list({
+        ...props.params,
         search: query.value
       })
-      results.value = data.filter(u => !props.omitIds?.includes(u.pk))
+      if (props.filter) results.value = data.filter(props.filter)
+      else results.value = data
     }
 
     function select (user: User) {

@@ -39,11 +39,7 @@ export default function useElectoralRegisters () {
 
   const erOptions = computed(() => {
     if (!erMethods.value) return {}
-    const opts: Record<string, string> = {}
-    for (const { name, value } of erMethods.value) {
-      opts[name] = value
-    }
-    return opts
+    return Object.fromEntries(erMethods.value.map(({ name, value }) => [value, name]))
   })
 
   return {

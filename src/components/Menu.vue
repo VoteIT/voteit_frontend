@@ -1,25 +1,25 @@
 <template>
   <span class="context-menu" :class="{ float }" ref="elem" v-if="items.length || $slots.top || $slots.bottom || showTransitions">
     <v-badge :model-value="!!currentState?.icon" color="secondary" :icon="currentState?.icon">
-      <v-btn v-bind="openerAttrs" @click="isOpen = !isOpen"/>
+      <v-btn v-bind="openerAttrs" @click.stop="isOpen = !isOpen" />
     </v-badge>
     <v-sheet rounded elevation="4" v-show="isOpen" ref="overlay" :class="{ onTop }">
       <v-list nav density="comfortable">
-        <slot name="top"/>
+        <slot name="top" />
         <template v-for="(item, i) in items" :key="i">
           <v-divider v-if="item === '---'" />
           <v-list-subheader v-else-if="item.subheader">
             {{ item.subheader }}
           </v-list-subheader>
-          <v-list-item v-else :prepend-icon="item.icon" :color="item.color" :disabled="item.disabled || working" @click="clickItem(item)" :title="item.title" :subtitle="item.subtitle" />
+          <v-list-item v-else :prepend-icon="item.icon" :color="item.color" :disabled="item.disabled || working" @click.stop="clickItem(item)" :title="item.title" :subtitle="item.subtitle" />
         </template>
         <template v-if="transitionsAvailable">
           <v-divider v-if="items.length || $slots.top" />
-          <v-list-item :prepend-icon="t.icon" :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
+          <v-list-item :prepend-icon="t.icon" :disabled="working" v-for="t in transitionsAvailable" :key="t.name" @click.stop="makeTransition(t)">
             {{ t.title }}
           </v-list-item>
         </template>
-        <slot name="bottom"/>
+        <slot name="bottom" />
       </v-list>
     </v-sheet>
   </span>

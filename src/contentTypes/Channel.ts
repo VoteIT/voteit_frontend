@@ -5,7 +5,7 @@ import { SubscribedMessage, SuccessMessage } from '@/utils/types'
 
 import { ChannelConfig, SchemaType } from './types'
 import { ContextRole } from '@/composables/types'
-import { AvailableRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
+import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
 
 type LeaveHandler = (uriOrPk: string | number) => void
 type UpdateHandler<T> = (message: SuccessMessage<T>) => void
@@ -191,13 +191,13 @@ export default class Channel<T> {
   }
 
   // Wrap call and handle request errors (Timeout only?)
-  private call (uri: string, data?: object, config?: ChannelConfig) {
+  private call<RT=unknown> (uri: string, data?: object, config?: ChannelConfig) {
     config = { ...this.config, ...(config || {}) }
-    return socket.call(uri, data, config)
+    return socket.call<RT>(uri, data, config)
   }
 
-  public post (uri: string, data?: object, config?: ChannelConfig) {
-    return this.call(uri, data, config)
+  public post<RT=unknown> (uri: string, data?: object, config?: ChannelConfig) {
+    return this.call<RT>(uri, data, config)
   }
 
   public send (type: string, payloadOrUri: string | object) {
@@ -239,7 +239,7 @@ export default class Channel<T> {
       pk,
       filter_userids: users
     }
-    return this.call('roles.get', message)
+    return this.call<ContextRolesPayload>('roles.get', message)
   }
 
   private changeRoles (method: string, pk: number, user: number, roles: string[]) {

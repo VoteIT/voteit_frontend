@@ -4,12 +4,13 @@
     <select :id="name" :required="required" v-model="value">
       <option disabled v-if="required" :value="undefined">{{ t('select') }}</option>
       <option v-else :value="undefined">---</option>
-      <option v-for="[name, value] in Object.entries(options)" :key="value" :value="value">{{ name }}</option>
+      <option v-for="[value, name] in Object.entries(options)" :key="value" :value="value">{{ name }}</option>
     </select>
   </div>
 </template>
+
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
@@ -17,7 +18,7 @@ export default defineComponent({
     required: Boolean,
     modelValue: String,
     options: {
-      type: Object,
+      type: Object as PropType<Record<string, string>>,
       required: true
     },
     label: String,

@@ -2,7 +2,7 @@
 import { AlertLevel } from '@/composables/types'
 import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
-import { ChannelsConfig, ChannelsMessage, State, SubscribePayload } from './types'
+import { ChannelsConfig, ChannelsMessage, State, SubscribePayload, SuccessMessage } from './types'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 // Send heartbeats, for "pull the network plug" type of protection.
@@ -86,9 +86,9 @@ export default class Socket {
     if (this.ws?.readyState !== WebSocket.OPEN) throw new Error('Socket closed')
   }
 
-  public call<Type> (type: string, payload: Type, config?: ChannelsConfig): ProgressPromise<ChannelsMessage>
-  public call (type: string, uri: string, config?: ChannelsConfig): ProgressPromise<ChannelsMessage>
-  public call (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<ChannelsMessage> {
+  public call<T> (type: string, payload?: object, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>>
+  public call<T> (type: string, uri: string, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>>
+  public call<T> (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>> {
     // Registers a response listener and returns promise that resolves or rejects depeding on subsequent
     // socket data, or times out.
     this.assertOpen()
@@ -124,35 +124,33 @@ export default class Socket {
       setRejectTimeout()
 
       this.callbacks.set(messageId, data => {
-        if (data.i === messageId) {
-          clearTimeout(timeoutId)
-          switch (data.s) {
-            case State.Failed:
-              this.callbacks.delete(messageId)
-              if (myConfig.alertOnError) {
-                openAlertEvent.emit({
-                  title: 'Socket error',
-                  text: data.p.msg,
-                  level: AlertLevel.Error,
-                  sticky: true
-                })
-              }
-              reject(new Error(data.p.msg))
-              break
-            case State.Waiting:
-            case State.Running:
-              // If we get progress, we reset timeout watcher
-              setRejectTimeout()
-              progress(data.p)
-              break
-            case State.Success:
-              this.callbacks.delete(messageId)
-              resolve(data)
-              break
-            default: // Should never happen
-              this.callbacks.delete(messageId)
-              reject(new Error(`Unknown socket state: ${data}`))
-          }
+        clearTimeout(timeoutId)
+        switch (data.s) {
+          case State.Failed:
+            this.callbacks.delete(messageId)
+            if (myConfig.alertOnError) {
+              openAlertEvent.emit({
+                title: 'Socket error',
+                text: data.p.msg,
+                level: AlertLevel.Error,
+                sticky: true
+              })
+            }
+            reject(new Error(data.p.msg))
+            break
+          case State.Waiting:
+          case State.Running:
+            // If we get progress, we reset timeout watcher
+            setRejectTimeout()
+            progress(data.p)
+            break
+          case State.Success:
+            this.callbacks.delete(messageId)
+            resolve(data as SuccessMessage<T>)
+            break
+          default: // Should never happen
+            this.callbacks.delete(messageId)
+            reject(new Error(`Unknown socket state: ${data}`))
         }
       })
     })

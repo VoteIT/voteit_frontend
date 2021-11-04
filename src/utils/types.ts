@@ -59,7 +59,7 @@ export interface SubscribedMessage {
   p: SubscribedPayload
 }
 
-export type ChannelsMessage = SuccessMessage<object> | ProgressMessage | FailedMessage | SubscribedMessage
+export type ChannelsMessage<T=unknown> = SuccessMessage<T> | ProgressMessage | FailedMessage | SubscribedMessage
 
 export type ProgressHandler = (progress: Progress) => void
 
