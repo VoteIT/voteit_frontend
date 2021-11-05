@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, provide, watch } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, provide, watch } from 'vue'
 
 import Bubbles from '@/modules/meetings/Bubbles.vue'
 import PresenceCheck from '@/modules/presence/PresenceCheckBubble.vue'
@@ -16,11 +16,13 @@ import usePresence from '@/modules/presence/usePresence'
 
 import { BubbleComponent } from '@/modules/meetings/types'
 import { LastReadKey } from '@/composables/useUnread'
+import useElectoralRegisters from './useElectoralRegisters'
 
 export default defineComponent({
   name: 'Meeting',
   setup () {
     const { meetingId, hasRole } = useMeeting()
+    const { clearRegisters } = useElectoralRegisters()
     useMeetingChannel(true)
     provide(LastReadKey, null)
 
@@ -50,6 +52,7 @@ export default defineComponent({
     }
 
     onMounted(() => checkIsPresent(isPresent.value))
+    onBeforeUnmount(clearRegisters)
     watch(isPresent, checkIsPresent)
 
     provide('hasRole', hasRole)

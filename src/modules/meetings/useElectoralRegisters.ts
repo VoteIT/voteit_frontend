@@ -36,6 +36,10 @@ export default function useElectoralRegisters () {
     } catch {} // TODO
   }
 
+  function clearRegisters () {
+    registers.clear()
+  }
+
   const sortedRegisters = computed(() => {
     return orderBy([...registers.values()].filter(er => er), ['created'], ['desc']) as ElectoralRegister[]
   })
@@ -64,6 +68,7 @@ export default function useElectoralRegisters () {
     erMethods,
     erOptions,
     sortedRegisters,
+    clearRegisters,
     getRegister,
     fetchRegisters
   }
