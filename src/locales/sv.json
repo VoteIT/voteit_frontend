@@ -98,8 +98,13 @@
     "postPlaceholder": "Skriv din kommentar"
   },
   "electoralRegister": {
+    "active": "Aktiva",
+    "activeDescription": "Röstlängder som används i pågående omröstningar",
+    "latest": "Aktuell",
     "plural": "Röstlängder",
+    "previous": "Tidigare",
     "method": "Metod för röstlängder",
+    "none": "Inga röstlängder",
     "saved": "Metod för röstlängder är nu satt till {er_policy_name}.",
     "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
     "settings": "Inställning för röstlängder",

@@ -114,6 +114,10 @@ function getPolls (meeting: number, state?: PollState) {
 }
 
 export default function usePolls () {
+  function filterPolls (filter: (poll: Poll) => boolean) {
+    return mapFilter(polls, filter)
+  }
+
   function getAiPolls (agendaItem: number, state?: PollState) {
     return [...mapFilter(
       polls,
@@ -167,6 +171,7 @@ export default function usePolls () {
 
   return {
     allPollTitles,
+    filterPolls,
     getPolls,
     getAiPolls,
     getPoll,

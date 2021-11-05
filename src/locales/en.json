@@ -100,8 +100,13 @@
     "postPlaceholder": "Write your comment"
   },
   "electoralRegister": {
+    "active": "Active",
+    "activeDescription": "Electoral registers used in ongoing polls",
+    "latest": "Latest",
     "plural": "Electoral registers",
+    "previous": "Previous",
     "method": "Method for electoral register",
+    "none": "No electoral registers",
     "saved": "Electoral register method now set to {er_policy_name}.",
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
     "settings": "Settings for Electoral Registers",

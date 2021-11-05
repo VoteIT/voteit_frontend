@@ -13,29 +13,37 @@
       <h1>
         {{ t('electoralRegister.plural') }}
       </h1>
-      <!-- <h2>
-        {{ t('active') }}
-      </h2> -->
-      <v-expansion-panels class="mt-4">
-        <v-expansion-panel v-for="{ pk, created, voters } in sortedRegisters" :key="pk">
-          <v-expansion-panel-title class="d-flex">
-            {{ t('electoralRegister.voterCount', voters.length) }}
-            <Moment :date="created" class="mr-4 flex-grow-1" />
-          </v-expansion-panel-title>
-          <v-expansion-panel-text>
-            <v-list>
-              <v-list-item v-for="pk in voters" :key="pk">
-                <v-list-item-avatar class="mr-2">
-                  <UserAvatar :pk="pk" />
-                </v-list-item-avatar>
-                <v-list-item-title>
-                  <User :pk="pk" />
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
+      <template v-for="{ description, title, registers } in groups" :key="title">
+        <h2 class="mt-6">
+          {{ title }}
+        </h2>
+        <p v-if="description" class="text-secondary">
+          {{ description }}
+        </p>
+        <p v-if="!registers.length" class="text-secondary my-4"><em>
+          {{ t('electoralRegister.none') }}
+        </em></p>
+        <v-expansion-panels class="mt-3">
+          <v-expansion-panel v-for="{ pk, created, voters } in registers" :key="pk">
+            <v-expansion-panel-title class="d-flex">
+              {{ t('electoralRegister.voterCount', voters.length) }}
+              <Moment :date="created" class="mr-4 flex-grow-1" />
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <v-list>
+                <v-list-item v-for="pk in voters" :key="pk">
+                  <v-list-item-avatar class="mr-2">
+                    <UserAvatar :pk="pk" />
+                  </v-list-item-avatar>
+                  <v-list-item-title>
+                    <User :pk="pk" />
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </template>
     </v-col>
   </v-row>
 </template>
@@ -52,6 +60,9 @@ import { canAddPresenceCheck } from '@/modules/presence/rules'
 import PresenceCheckControl from '../../presence/PresenceCheckControl.vue'
 import usePresence from '@/modules/presence/usePresence'
 import { presenceCheckClosed } from '@/modules/presence/events'
+import usePolls from '@/modules/polls/usePolls'
+import { PollState } from '@/modules/polls/types'
+import { ElectoralRegister } from '@/contentTypes/types'
 
 export default defineComponent({
   inject: ['cols'],
@@ -65,6 +76,7 @@ export default defineComponent({
     const { fetchRegisters, sortedRegisters } = useElectoralRegisters()
     const loader = useLoader('ElectoralRegisters')
     const { openCheck, getOpenPresenceCheck } = usePresence()
+    const { filterPolls } = usePolls()
 
     const canPresenceCheck = computed(() => meeting.value && canAddPresenceCheck(meeting.value))
     const activePresenceCheck = computed(() => getOpenPresenceCheck(meetingId.value))
@@ -72,6 +84,37 @@ export default defineComponent({
     async function getData () {
       await fetchRegisters(meetingId.value)
     }
+
+    const registerGroups = computed(() => {
+      const ongoing: ElectoralRegister[] = []
+      const historic: ElectoralRegister[] = []
+      sortedRegisters.value
+        .slice(1) // Exclude latest from this group
+        .forEach(er => {
+          const hasOngoing = !filterPolls(poll => poll.meeting === meetingId.value && poll.state === PollState.Ongoing && poll.electoral_register === er.pk).next().done
+          if (hasOngoing) ongoing.push(er)
+          else historic.push(er)
+        })
+      return { ongoing, historic }
+    })
+
+    const groups = computed(() => {
+      return [
+        {
+          title: t('electoralRegister.latest'),
+          registers: sortedRegisters.value.slice(0, 1)
+        },
+        {
+          title: t('electoralRegister.active'),
+          description: t('electoralRegister.activeDescription'),
+          registers: registerGroups.value.ongoing
+        },
+        {
+          title: t('electoralRegister.previous'),
+          registers: registerGroups.value.historic
+        }
+      ]
+    })
 
     onBeforeMount(() => {
       loader.call(getData)
@@ -86,7 +129,7 @@ export default defineComponent({
       activePresenceCheck,
       canPresenceCheck,
       meetingId,
-      sortedRegisters,
+      groups,
       fetchRegisters,
       openCheck
     }

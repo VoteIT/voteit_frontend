@@ -37,7 +37,7 @@ export default function useElectoralRegisters () {
   }
 
   const sortedRegisters = computed(() => {
-    return orderBy([...registers.values()], ['created'], ['desc'])
+    return orderBy([...registers.values()].filter(er => er), ['created'], ['desc']) as ElectoralRegister[]
   })
 
   function getRegister (pk: number) {
