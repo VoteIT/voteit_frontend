@@ -1,6 +1,6 @@
 <template>
-  <v-list density="comfortable">
-    <v-list-item v-for="{ pk, full_name, userid } in users" :key="pk" class="px-0">
+  <v-list :density="density">
+    <v-list-item v-for="{ pk, full_name, userid } in users" :key="pk" :class="{ 'px-0': density !== 'default' }" active-color="primary" :active="modelValue === pk">
       <v-list-item-avatar class="mr-2">
         <UserAvatar :pk="pk" />
       </v-list-item-avatar>
@@ -27,6 +27,11 @@ export default defineComponent({
     userIds: {
       type: Array as PropType<number[]>,
       required: true
+    },
+    modelValue: Number, // Active user pk, makes active list item
+    density: {
+      type: String as PropType<'default' | 'comfortable' | 'compact'>,
+      default: 'comfortable'
     }
   },
   setup (props) {

@@ -339,6 +339,7 @@
     "list": "Talarlista",
     "listActive": "Aktiv talarlista",
     "lists": "Inga talarlistor | Talarlista | Talarlistor",
+    "lockedPositions": "Låsta platser",
     "manageSystem": "Hantera talare ({title})",
     "noActiveList": "Ingen aktiv talarlista",
     "queue": "Talarkö",
