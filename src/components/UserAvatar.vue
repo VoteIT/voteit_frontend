@@ -7,6 +7,7 @@
 <script lang="ts">
 /* eslint-disable camelcase */
 import useAuthentication from '@/composables/useAuthentication'
+import { ThemeColor } from '@/utils/types'
 import { computed, defineComponent } from 'vue'
 
 import useMeeting from '../modules/meetings/useMeeting'
@@ -37,6 +38,7 @@ export default defineComponent({
     })
 
     const bg = computed(() => {
+      if (!user.value) return ThemeColor.Secondary
       if (image.value) return
       return props.color
     })

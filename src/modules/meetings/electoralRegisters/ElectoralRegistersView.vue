@@ -26,20 +26,16 @@
         <v-expansion-panels class="mt-3">
           <v-expansion-panel v-for="{ pk, created, voters } in registers" :key="pk">
             <v-expansion-panel-title class="d-flex">
-              {{ t('electoralRegister.voterCount', voters.length) }}
-              <Moment :date="created" class="mr-4 flex-grow-1" />
+              <span class="text-left" style="min-width: 92px;">
+                {{ t('electoralRegister.voterCount', voters.length) }}
+              </span>
+              <small class="text-secondary flex-grow-1">
+                {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
+                {{ created.toLocaleString(undefined, { timeStyle: 'short' }) }}
+              </small>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <v-list>
-                <v-list-item v-for="pk in voters" :key="pk">
-                  <v-list-item-avatar class="mr-2">
-                    <UserAvatar :pk="pk" />
-                  </v-list-item-avatar>
-                  <v-list-item-title>
-                    <User :pk="pk" />
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <UserList :userIds="voters" />
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -52,7 +48,7 @@
 import { computed, defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import Moment from '@/components/Moment.vue'
+import UserList from '@/components/UserList.vue'
 import useLoader from '@/composables/useLoader'
 import useElectoralRegisters from '../useElectoralRegisters'
 import useMeeting from '../useMeeting'
@@ -67,8 +63,8 @@ import { ElectoralRegister } from '@/contentTypes/types'
 export default defineComponent({
   inject: ['cols'],
   components: {
-    Moment,
-    PresenceCheckControl
+    PresenceCheckControl,
+    UserList
   },
   setup () {
     const { t } = useI18n()

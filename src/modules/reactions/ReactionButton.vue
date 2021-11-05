@@ -13,18 +13,7 @@
         <h3>
           Reactions
         </h3>
-        <v-list density="comfortable">
-          <v-list-item v-for="pk in reactionUsers" :key="pk" class="px-0">
-            <v-list-item-avatar class="mr-2">
-              <UserAvatar :pk="pk" />
-            </v-list-item-avatar>
-            <div>
-              <v-list-item-title>
-                <User  :pk="pk" />
-              </v-list-item-title>
-            </div>
-          </v-list-item>
-        </v-list>
+        <UserList :userIds="reactionUsers" />
       </v-sheet>
     </v-dialog>
   </span>
@@ -33,11 +22,15 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, watch } from 'vue'
 
+import UserList from '@/components/UserList.vue'
 import useReactions from './useReactions'
 import { canAddReaction, canDeleteReaction, canListReactions } from './rules'
 import { ReactionButton, ReactionRelation } from './types'
 
 export default defineComponent({
+  components: {
+    UserList
+  },
   props: {
     button: {
       type: Object as PropType<ReactionButton>,
