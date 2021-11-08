@@ -358,7 +358,9 @@
     "visible": "Visa för alla deltagare",
     "orderMethod": {
       "priority": "Prioritera förstagångstalare",
-      "simple": "Enkel"
+      "simple": "Enkel",
+      "maxTimes": "Antal lågpriotalarlistor",
+      "maxTimesHint": "Maximalt antal gånger som återkommande talare nedprioriteras till förmån för talare som talat färre gånger. 0 betyder ingen gräns."
     }
   },
   "workflowState": {

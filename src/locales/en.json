@@ -360,7 +360,9 @@
     "visible": "Visible to all participants",
     "orderMethod": {
       "priority": "Prioritize first-time speakers",
-      "simple": "Simple"
+      "simple": "Simple",
+      "maxTimes": "Number of low priority lists",
+      "maxTimesHint": "Maximum times recurring speakers will be deprioritized, in favor of speakers that has spoken fewer times. 0 means no limit."
     }
   },
   "workflowState": {

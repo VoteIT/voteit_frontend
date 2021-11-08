@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <label v-if="label" :for="name">{{ label }}</label>
-    <select :id="name" :required="required" v-model="value">
+  <v-field active model-value="value" class="mb-9">
+    <v-field-label v-if="label" :for="name" floating>
+      {{ label }}
+    </v-field-label>
+    <select :id="name" :required="required" v-model="value" class="v-field__input">
       <option disabled v-if="required" :value="undefined">{{ t('select') }}</option>
       <option v-else :value="undefined">---</option>
       <option v-for="[value, name] in Object.entries(options)" :key="value" :value="value">{{ name }}</option>
     </select>
-  </div>
+  </v-field>
 </template>
 
 <script lang="ts">
@@ -37,8 +39,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass" scoped>
-label
-  display: block
-</style>

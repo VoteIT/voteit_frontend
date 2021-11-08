@@ -60,15 +60,6 @@ export default defineComponent({
 
 <style lang="sass">
 form
-  select
-    padding: .8em
-    border-bottom: rgb(var(--v-border-color))
-    background-color: rgb(var(--v-theme-surface))
-    border-bottom: 1px solid #fff
-    &:focus
-      border-bottom: 1px solid rgb(var(--v-theme-on-background))
-      outline: none
-  select,
   input[type=checkbox]
     margin-right: .4em
 

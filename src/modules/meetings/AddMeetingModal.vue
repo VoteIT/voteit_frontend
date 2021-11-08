@@ -2,7 +2,7 @@
   <main>
     <form @submit.prevent="addMeeting()">
       <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" :hint="t('meeting.createTitleHint')" />
-      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="formData.er_policy_name" :options="erOptions" class="mb-6" />
+      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="formData.er_policy_name" :options="erOptions" />
       <div>
         <Switch type="checkbox" id="meeting_public" v-model="formData.public" :label="t('meeting.public')" />
       </div>

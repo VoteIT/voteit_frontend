@@ -36,7 +36,6 @@
                   </v-list-item-subtitle>
                 </div>
               </v-list-item>
-              <!-- <UserList :userIds="group.speakers" density="default" :modelValue="group.active" /> -->
             </template>
           </v-slide-x-transition>
         </v-list>

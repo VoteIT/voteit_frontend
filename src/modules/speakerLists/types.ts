@@ -19,6 +19,8 @@ export enum SpeakerSystemMethod {
   Priority = 'priority',
 }
 
+type SpeakerSystemSettings = { max_times: number } | null
+
 export interface SpeakerSystem {
   pk: number
   title: string
@@ -28,7 +30,7 @@ export interface SpeakerSystem {
   meeting_roles_to_speaker: MeetingRole[]
   method_name: SpeakerSystemMethod
   safe_positions?: number
-  settings: object // TODO
+  settings?: SpeakerSystemSettings
 }
 
 export enum SpeakerListState {

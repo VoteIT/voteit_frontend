@@ -3,17 +3,17 @@
     <h2>{{ t('electoralRegister.settings') }}</h2>
     <form @submit.prevent="save()">
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="erOptions" />
+      <div>
+        <v-btn type="submit" :disabled="disabled" color="primary">
+          {{ t('save') }}
+        </v-btn>
+      </div>
       <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
         {{ t('electoralRegister.selectMethod') }}
       </v-alert>
       <v-alert v-else-if="status === 'saved'" type="success" closable class="mt-2">
         {{ t('electoralRegister.saved', settings) }}
       </v-alert>
-      <div class="mt-2">
-        <v-btn type="submit" :disabled="disabled" color="primary">
-          {{ t('save') }}
-        </v-btn>
-      </div>
     </form>
   </div>
 </template>

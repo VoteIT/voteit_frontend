@@ -10,6 +10,12 @@
         <v-card-text>
           <v-text-field :label="t('title')" v-model="systemData.title" />
           <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
+<!-- TODO Better dynamic forms -->
+          <v-expand-transition>
+            <div v-if="createSystemSettings">
+              <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
+            </div>
+          </v-expand-transition>
           <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
           <CheckboxMultipleSelect name="meeting_roles" v-model="systemData.meeting_roles_to_speaker" :settings="{ options: MeetingRole }" :label="t('speaker.speakerRoles')" />
         </v-card-text>
@@ -38,7 +44,13 @@
         <v-card-text>
           <v-text-field :label="t('title')" v-model="editSystemData.title" />
           <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
-          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" class="mt-8" />
+<!-- TODO Better dynamic forms -->
+          <v-expand-transition>
+            <div v-if="editSystemSettings">
+              <v-text-field v-for="field in editSystemSettings" :key="field.name" v-bind="field" />
+            </div>
+          </v-expand-transition>
+          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" />
           <CheckboxMultipleSelect name="meeting_roles" v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: MeetingRole }" :label="t('speaker.speakerRoles')" />
         </v-card-text>
         <v-card-actions>
@@ -113,6 +125,7 @@ export default defineComponent({
       safe_positions: 1,
       meeting_roles_to_speaker: []
     })
+    const createSystemSettings = computed<Record<string, any>[] | undefined>(() => getMethodSettings(systemData))
     const createDialogOpen = ref(false)
     const creating = ref(false)
     const createReady = computed(() => !creating.value && systemData.title && systemData.method_name && systemData.meeting_roles_to_speaker?.length)
@@ -131,15 +144,30 @@ export default defineComponent({
       creating.value = false
     }
 
+    function getMethodSettings (data: Partial<SpeakerSystem>) {
+      if (data.method_name === SpeakerSystemMethod.Priority) { // TODO BETTER
+        if (!data.settings) data.settings = { max_times: 1 }
+        return [{
+          type: 'number',
+          min: 0,
+          modelValue: data.settings.max_times,
+          // eslint-disable-next-line camelcase
+          'onUpdate:modelValue': (max_times: number) => { data.settings = { max_times } },
+          label: t('speaker.orderMethod.maxTimes'),
+          hint: t('speaker.orderMethod.maxTimesHint')
+        }]
+      }
+      // If no settings, ensure there's no setting data
+      delete data.settings
+    }
+
     const editDialogOpen = ref(false)
     const editSystemPk = ref<number | null>(null)
     const editSystemData = reactive<Partial<SpeakerSystem>>({})
     const editSystemReady = computed(() => editSystemData.title && editSystemData.meeting_roles_to_speaker?.length)
+    const editSystemSettings = computed<Record<string, any>[] | undefined>(() => getMethodSettings(editSystemData))
     function editSystem (system: SpeakerSystem) {
-      editSystemData.title = system.title
-      editSystemData.method_name = system.method_name
-      editSystemData.safe_positions = system.safe_positions
-      editSystemData.meeting_roles_to_speaker = system.meeting_roles_to_speaker
+      Object.assign(editSystemData, system)
       editSystemPk.value = system.pk
       editDialogOpen.value = true
     }
@@ -229,8 +257,10 @@ export default defineComponent({
       t,
       createDialogOpen,
       createReady,
+      createSystemSettings,
       editDialogOpen,
       editSystemData,
+      editSystemSettings,
       editSystemReady,
       meeting,
       MeetingRole,
