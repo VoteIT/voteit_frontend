@@ -10,12 +10,7 @@ import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
 import SchulzeResult from './SchulzeResult.vue'
 import STVResult from './STVResult.vue'
 
-import ScottishSTVSettings from './ScottishSTVSettings.vue'
-import RepeatedSchulzeSettings from './RepeatedSchulzeSettings.vue'
-
 import { PollMethodName } from './types'
-
-// Use lowercase component names, to match method_name from api
 
 export const pollMethods: Record<PollMethodName, Component> = {
   combined_simple: Simple,
@@ -33,9 +28,4 @@ export const pollResults: Record<PollMethodName, Component> = {
   combined_simple: SimpleResult,
   schulze: SchulzeResult,
   repeated_schulze: RepeatedSchulzeResult
-}
-
-export const pollSettings: Partial<Record<PollMethodName, Component>> = {
-  repeated_schulze: RepeatedSchulzeSettings,
-  scottish_stv: ScottishSTVSettings
 }

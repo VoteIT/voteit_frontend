@@ -117,7 +117,12 @@ interface InstantRunoffSettings {
   allow_random: boolean
 }
 
-export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings
+interface SchulzeSettings {
+  stars: number
+  deny_proposal?: boolean
+}
+
+export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings
 
 export interface PollMethod {
   name: PollMethodName
@@ -154,7 +159,7 @@ export interface SimplePoll extends BasePoll {
 export interface SchulzePoll extends BasePoll {
   method_name: PollMethodName.Schulze
   result: SchulzeResult
-  settings: null
+  settings: SchulzeSettings
 }
 
 export interface RepeatedSchulzePoll extends BasePoll {

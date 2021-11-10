@@ -1,5 +1,5 @@
 <template>
-  <v-text-field :label="label" type="number" v-model="value" :min="settings.min" :max="settings.max"/>
+  <v-text-field :label="label" type="number" v-model="value" :min="settings.min" :max="settings.max" :required="required" />
 </template>
 
 <script lang="ts">
@@ -13,11 +13,12 @@ export default defineComponent({
     label: {
       type: String,
       required: true
-    }
+    },
+    required: Boolean
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
-    const value = ref(props.modelValue)
+    const value = ref(String(props.modelValue))
     watch(value, value => {
       emit('update:modelValue', Number(value))
     })

@@ -1,11 +1,7 @@
 <template>
-  <v-field active model-value="value" class="mb-9">
-    <v-field-label v-if="label" :for="name" floating>
-      {{ label }}
-    </v-field-label>
+  <v-field active model-value="value" class="mb-9" :label="label">
     <select :id="name" :required="required" v-model="value" class="v-field__input">
-      <option disabled v-if="required" :value="undefined">{{ t('select') }}</option>
-      <option v-else :value="undefined">---</option>
+      <option v-if="!required" :value="undefined">---</option>
       <option v-for="[value, name] in Object.entries(options)" :key="value" :value="value">{{ name }}</option>
     </select>
   </v-field>
@@ -13,29 +9,31 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { InputComponent } from './types'
 
 export default defineComponent({
+  emits: ['update:modelValue'],
   props: {
-    required: Boolean,
+    label: String,
     modelValue: String,
+    name: String,
+    settings: Object,
     options: {
       type: Object as PropType<Record<string, string>>,
       required: true
     },
-    label: String,
-    name: String
+    required: Boolean,
+    toNumber: Boolean
   },
   setup (props, { emit }) {
-    const { t } = useI18n()
     const value = ref(props.modelValue)
     watch(value, value => {
+      if (props.toNumber && value !== undefined) return emit('update:modelValue', Number(value))
       emit('update:modelValue', value)
     })
     return {
-      t,
       value
     }
   }
-})
+}) as InputComponent
 </script>

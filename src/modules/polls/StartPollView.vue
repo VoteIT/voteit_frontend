@@ -17,7 +17,7 @@
         <v-item-group v-model="selectedProposalIds" multiple>
           <v-item v-for="p in availableProposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
             <v-expand-transition>
-              <Proposal v-show="!pickMethod || selectedProposalIds.includes(p.pk)" read-only :p="p" @click="toggle()" :class="{ isSelected, locked: pickMethod }" class="mb-4" />
+              <Proposal v-show="!pickMethod || selectedProposalIds.includes(p.pk)" read-only :p="p" @click="!pickMethod && toggle()" :class="{ isSelected, locked: pickMethod }" class="mb-4" />
             </v-expand-transition>
           </v-item>
         </v-item-group>
@@ -36,7 +36,7 @@
               <v-expand-transition>
                 <div v-if="isSelected" @submit.prevent>
                   <h3>{{ t('options') }}</h3>
-                  <SchemaForm :schema="methodSchema" v-model="methodSettings" />
+                  <SchemaForm :schema="methodSchema" v-model="methodSettings" v-model:valid="settingsValid" />
                 </div>
               </v-expand-transition>
             </div>
@@ -72,7 +72,7 @@ import { ProposalState } from '@/modules/proposals/types'
 import usePolls, { polls } from '@/modules/polls/usePolls'
 import { InputType } from '@/components/inputs/types'
 
-import { pollMethods as implementedMethods, pollSettings } from './methods'
+import { pollMethods as implementedMethods } from './methods'
 import { PollStartData, PollMethod, PollMethodSettings, Poll } from './methods/types'
 import methodSchemas from './methods/schemas'
 import { canAddPoll } from './rules'
@@ -125,17 +125,15 @@ export default defineComponent({
 
     const methodSelected = ref<PollMethod | null>(null)
     const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
-    const methodSettingsComponent = computed(
-      () => methodSelected.value && pollSettings[methodSelected.value.name]
-    )
     watch(methodSelected, method => {
       methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value ?? '' }
     })
 
     const working = ref(false)
     const createdPollPk = ref(null)
+    const settingsValid = ref(false)
     const readyToCreate = computed(() => {
-      return methodSelected.value && !working.value && !createdPollPk.value
+      return methodSelected.value && !working.value && !createdPollPk.value && settingsValid.value
     })
 
     function settingsOrNull (settings: PollMethodSettings | {}): PollMethodSettings | null {
@@ -171,7 +169,7 @@ export default defineComponent({
     const methodSchema = computed(() => {
       if (!methodSelected.value) return
       const getter = methodSchemas[methodSelected.value.name]
-      const specifics = getter?.(t, selectedProposalIds.value.length) || []
+      const specifics = getter?.(t, selectedProposals.value) || []
       return [{
         type: InputType.Text,
         name: 'title',
@@ -210,9 +208,9 @@ export default defineComponent({
       methodSchema,
       methodSelected,
       methodSettings,
-      methodSettingsComponent,
       pollableAgendaItems,
       readyToCreate,
+      settingsValid,
       nextTitle,
 
       createPoll,

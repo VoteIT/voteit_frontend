@@ -247,6 +247,8 @@
       "approveOther": "Approve other proposal"
     },
     "schulze": {
+      "addDenyProposal": "Add deny proposal",
+      "numberOfStars": "Number of stars",
       "numTiedWinners": "There are no tied winners | One ring to rule them all, and in the darkness bind them | There are { count } tied winners"
     },
     "STV": {

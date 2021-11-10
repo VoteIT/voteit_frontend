@@ -1,16 +1,18 @@
-import CheckboxMultipleSelect from './CheckboxMultipleSelect.vue'
-import TextInput from './TextInput.vue'
-import NumberInput from './NumberInput.vue'
-import CheckboxInput from './CheckboxInput.vue'
+import checkbox from './CheckboxInput.vue'
+import checkboxes from './CheckboxMultipleSelect.vue'
+import number from './NumberInput.vue'
+import select from './Select.vue'
+import text from './TextInput.vue'
 import { InputComponent, InputDefaultsComponent, InputType } from './types'
 
 export default {
-  checkboxes: CheckboxMultipleSelect,
-  text: TextInput,
+  checkbox,
+  checkboxes,
   email: {
-    component: TextInput,
+    component: text,
     defaults: { type: 'email' }
   },
-  number: NumberInput,
-  checkbox: CheckboxInput
+  number,
+  select,
+  text
 } as Record<InputType, InputDefaultsComponent | InputComponent>

@@ -67,8 +67,11 @@ const pollMethods: PollMethod[] = [
   {
     name: PollMethodName.Schulze,
     title: 'Schulze',
-    proposalsMin: 3,
-    quickStart: true
+    proposalsMin: 2,
+    quickStart: true,
+    initialSettings: {
+      stars: 5
+    }
   },
   {
     name: PollMethodName.RepeatedSchulze,

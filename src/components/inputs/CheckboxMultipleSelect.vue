@@ -29,6 +29,7 @@ function toOutputValue (obj: ChoiceRecord): string[] {
 }
 
 export default defineComponent({
+  emits: ['update:modelValue'],
   props: {
     name: {
       type: String,
@@ -41,7 +42,6 @@ export default defineComponent({
     },
     label: String
   },
-  emits: ['update:modelValue'],
   setup (props, { emit }) {
     const val = reactive(createInitialOptions(props.settings.options, props.modelValue || []))
     watch(val, value => {

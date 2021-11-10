@@ -245,6 +245,8 @@
       "approveOther": "Motstående förslag"
     },
     "schulze": {
+      "addDenyProposal": "Lägg till avslag",
+      "numberOfStars": "Antal stjärnor",
       "numTiedWinners": "En klar vinnare kunde utses | One ring to rule them all, and in the darkness bind them | Det blev oavgjort mellan { count } förslag"
     },
     "STV": {
