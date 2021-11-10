@@ -18,7 +18,7 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
-    const value = ref(String(props.modelValue))
+    const value = ref(props.modelValue)
     watch(value, value => {
       emit('update:modelValue', Number(value))
     })

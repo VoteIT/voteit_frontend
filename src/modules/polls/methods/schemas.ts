@@ -48,7 +48,8 @@ const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
       label: t('poll.schulze.numberOfStars'),
       required: true,
       settings: {
-        min: 2
+        min: 3,
+        max: 20
       }
     },
     {
