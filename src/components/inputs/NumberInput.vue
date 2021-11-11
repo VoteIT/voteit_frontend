@@ -1,9 +1,9 @@
 <template>
-  <v-text-field :label="label" type="number" v-model="value" :min="settings.min" :max="settings.max" :required="required" />
+  <v-text-field :label="label" type="number" v-model="model" :min="settings.min" :max="settings.max" :required="required" />
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { InputComponent } from './types'
 
 export default defineComponent({
@@ -18,12 +18,16 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup (props, { emit }) {
-    const value = ref(props.modelValue)
-    watch(value, value => {
-      emit('update:modelValue', Number(value))
-    })
     return {
-      value
+      model: computed({
+        get () {
+          return String(props.modelValue)
+        },
+        set (value: string) {
+          // strValue.value = value
+          emit('update:modelValue', Number(value) || undefined)
+        }
+      })
     }
   }
 }) as InputComponent
