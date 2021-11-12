@@ -14,7 +14,8 @@
       <v-expansion-panel v-for="{ btn, proposal, pairs } in candidatePairs" :key="proposal?.pk ?? 0">
         <v-expansion-panel-title>
           <v-icon v-bind="btn" class="mr-4" />
-          <Tag disabled :name="proposal?.prop_id ?? ('poll.deny')" />
+          <Tag v-if="proposal" disabled :name="proposal.prop_id" />
+          <span v-else class="rounded bg-warning px-2 py-1">{{ t('poll.deny') }}</span>
         </v-expansion-panel-title>
         <v-expansion-panel-text v-for="pair in pairs" :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0}`" class="my-2">
           {{ t('poll.result.versus') }}:
@@ -26,7 +27,7 @@
             <span class="bg-warning px-2 rounded-pill">{{ t('poll.result.approveOther') }} ({{ pair.deny }})</span>
           </div>
           <div class="d-flex mt-1 overflow-hidden rounded">
-            <div v-for="({ percentage, color }, i) in pair.results" :key="`${proposal.pk} vs ${pair.proposal?.pk ?? 0} ${i}`" :class="`bg-${color}`" class="text-center overflow-hidden text-no-wrap" :style="{ width: `${percentage}%` }">
+            <div v-for="({ percentage, color }, i) in pair.results" :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0} ${i}`" :class="`bg-${color}`" class="text-center overflow-hidden text-no-wrap" :style="{ width: `${percentage}%` }">
               {{ Math.round(percentage) }} %
             </div>
           </div>
