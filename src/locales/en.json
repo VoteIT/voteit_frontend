@@ -221,6 +221,7 @@
     "method": {
       "name": "Poll method",
       "combined_simple": "Simple majority",
+      "majority": "Contraproposal",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
       "schulzeAddDeny": "Schulze (add deny)",
@@ -228,6 +229,7 @@
       "simple": "Simple majority",
       "irv": "Instant Runoff-Voting",
       "help": {
+        "majority": "Vote for your favorite proposal.",
         "scottish_stv": "Select the proposals you want to vote for in order of preference.",
         "schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
         "repeated_schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",

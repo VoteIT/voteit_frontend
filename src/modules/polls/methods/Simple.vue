@@ -18,12 +18,11 @@ import { useI18n } from 'vue-i18n'
 
 import { DefaultMap } from '@/utils'
 
-import useMeeting from '@/modules/meetings/useMeeting'
-import useProposals from '@/modules/proposals/useProposals'
-import ProposalComponent from '@/modules/proposals/Proposal.vue'
+import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
-import { CombinedSimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
+import { SimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
+import usePoll from '../usePoll'
 
 export default defineComponent({
   name: 'SimplePoll',
@@ -33,17 +32,16 @@ export default defineComponent({
       required: true
     },
     modelValue: {
-      type: Object as PropType<CombinedSimpleVote>
+      type: Object as PropType<SimpleVote>
     },
     disabled: Boolean
   },
   components: {
-    Proposal: ProposalComponent
+    Proposal: ProposalVue
   },
   setup (props, { emit }) {
     const { t } = useI18n()
-    const { getProposal } = useProposals()
-    const { getUser } = useMeeting()
+    const { proposals } = usePoll(computed(() => props.poll.pk))
     const votes = reactive<Map<number, SimpleChoice>>(new Map())
 
     if (props.modelValue) {
@@ -54,7 +52,6 @@ export default defineComponent({
       }
     }
 
-    const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
     const options = proposals.value.length > 1 ? simpleChoices : simpleChoices.filter(c => c.value !== SimpleChoice.Abstain)
 
     function change (proposal: Proposal, opt: SimpleChoiceDesc) {
@@ -67,22 +64,12 @@ export default defineComponent({
       emit('update:modelValue', Object.fromEntries(map))
     }
 
-    // watch(() => props.modelValue, (vote?: CombinedSimpleVote) => {
-    //   if (!vote) return
-    //   for (const [choice, pks] of Object.entries(vote)) {
-    //     for (const pk of pks) {
-    //       votes.set(pk, choice as SimpleChoice)
-    //     }
-    //   }
-    // })
-
     return {
       t,
-      change,
-      getUser,
       votes,
       options,
-      proposals
+      proposals,
+      change
     }
   }
 })

@@ -34,16 +34,22 @@ export default function usePoll (pollRef: Ref<number>) {
   const voteComponent = computed(() => poll.value && pollMethods[poll.value.method_name])
   const resultComponent = computed(() => poll.value && pollResults[poll.value.method_name])
 
-  const approved = computed(() => {
+  const proposals = computed(() => {
     if (!poll.value) return []
+    return poll.value.proposals
+      .map(getProposal)
+      .filter(p => p) as Proposal[]
+  })
+  const approved = computed(() => {
+    if (!poll.value?.result) return []
     return poll.value.result.approved
-      .map(pk => getProposal(pk))
+      .map(getProposal)
       .filter(p => p) as Proposal[]
   })
   const denied = computed(() => {
-    if (!poll.value) return []
+    if (!poll.value?.result) return []
     return poll.value.result.approved
-      .map(pk => getProposal(pk))
+      .map(getProposal)
       .filter(p => p) as Proposal[]
   })
 
@@ -56,6 +62,7 @@ export default function usePoll (pollRef: Ref<number>) {
     isFinished,
     poll,
     pollStatus,
+    proposals,
     nextUnvoted,
     resultComponent,
     userVote,

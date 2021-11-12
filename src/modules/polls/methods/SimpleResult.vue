@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <v-list>
-      <v-list-item disabled v-for="{ proposal, choices } in results" :key="proposal?.pk">
-        <div>
-          <v-list-item-title class="mb-1">
-            <Tag :name="proposal ? proposal.prop_id : t('proposal.unknown')" />
-          </v-list-item-title>
-          <span class="btn-group">
-            <v-btn v-for="{ key, value, btn } in choices" :key="key" size="small" v-bind="btn">{{ value }}</v-btn>
-          </span>
-        </div>
-      </v-list-item>
-    </v-list>
-  </div>
+  <v-list>
+    <v-list-item disabled v-for="{ proposal, choices } in results" :key="proposal?.pk">
+      <div>
+        <v-list-item-title class="mb-1">
+          <Tag :name="proposal ? proposal.prop_id : t('proposal.unknown')" />
+        </v-list-item-title>
+        <span class="btn-group">
+          <v-btn v-for="{ key, value, btn } in choices" :key="key" size="small" v-bind="btn">{{ value }}</v-btn>
+        </span>
+      </div>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script lang="ts">

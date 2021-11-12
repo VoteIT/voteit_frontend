@@ -61,12 +61,15 @@ agendaDeletedEvent.on(pk => {
 const pollMethods: PollMethod[] = [
   {
     name: PollMethodName.CombinedSimple,
-    title: 'Simple majority',
     proposalsMin: 1
   },
   {
+    name: PollMethodName.Majority,
+    proposalsMin: 2,
+    proposalsMax: 2
+  },
+  {
     name: PollMethodName.Schulze,
-    title: 'Schulze',
     proposalsMin: 2,
     initialSettings: {
       stars: 5
@@ -74,7 +77,6 @@ const pollMethods: PollMethod[] = [
   },
   {
     name: PollMethodName.RepeatedSchulze,
-    title: 'Repeated Schulze',
     multipleWinners: true,
     proposalsMin: 3,
     winnersMin: 2,
@@ -84,7 +86,6 @@ const pollMethods: PollMethod[] = [
   },
   {
     name: PollMethodName.ScottishSTV,
-    title: 'Scottish STV',
     multipleWinners: true,
     proposalsMin: 3,
     winnersMin: 2,
@@ -96,7 +97,6 @@ const pollMethods: PollMethod[] = [
   },
   {
     name: PollMethodName.InstantRunoff,
-    title: 'Instant-Runoff Voting',
     proposalsMin: 3,
     initialSettings: {
       allow_random: true

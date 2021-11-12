@@ -6,8 +6,8 @@ import { PollState } from '../types'
 export enum PollMethodName {
   CombinedSimple = 'combined_simple',
   InstantRunoff = 'irv',
+  Majority = 'majority',
   RepeatedSchulze = 'repeated_schulze',
-  // Simple = 'simple',
   Schulze = 'schulze',
   ScottishSTV = 'scottish_stv'
 }
@@ -67,6 +67,10 @@ export interface CombinedSimpleResult extends VoteResult {
   results: SimpleResultMap
 }
 
+export interface MajorityResult extends VoteResult {
+  results: { proposal: number, votes: number }[]
+}
+
 type SchulzePair = [[number, number], number]
 
 export interface SchulzeResult extends VoteResult {
@@ -101,8 +105,8 @@ export interface ScottishSTVResult extends VoteResult {
 }
 export type InstantRunoffResult = ScottishSTVResult
 
-export type CombinedSimpleVote = Record<SimpleChoice, number[]>
-export type SimpleVote = CombinedSimpleVote
+export type MajorityVote = { choice: number }
+export type SimpleVote = Record<SimpleChoice, number[]>
 
 export interface RepeatedSchulzeSettings {
   winners: number | null
@@ -126,7 +130,6 @@ export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings |
 
 export interface PollMethod {
   name: PollMethodName
-  title: string
   multipleWinners?: boolean
   proposalsMax?: number
   proposalsMin: number
@@ -160,6 +163,12 @@ export interface SchulzePoll extends BasePoll {
   settings: SchulzeSettings
 }
 
+export interface MajorityPoll extends BasePoll {
+  method_name: PollMethodName.Majority
+  result: MajorityResult
+  settings: null
+}
+
 export interface RepeatedSchulzePoll extends BasePoll {
   method_name: PollMethodName.RepeatedSchulze
   result: RepeatedSchulzeResult
@@ -178,5 +187,5 @@ export interface InstantRunoffPoll extends BasePoll {
   settings: InstantRunoffSettings
 }
 
-export type Poll = SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll
+export type Poll = MajorityPoll | SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll
 export type PollStartData = Omit<Poll, 'pk' | 'state' | 'electoral_register' | 'initial_electoral_register' | 'body' | 'result'>

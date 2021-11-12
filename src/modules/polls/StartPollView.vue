@@ -142,7 +142,7 @@ export default defineComponent({
 
     async function createPoll (start = false) {
       if (!methodSelected.value) return
-      if (!(methodSelected.value.name in implementedMethods)) return alert(`*${methodSelected.value.title} not implemented`)
+      if (!(methodSelected.value.name in implementedMethods)) return alert(`*${methodSelected.value.name} not implemented`)
 
       working.value = true
       const { title, ...settings } = methodSettings.value
