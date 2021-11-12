@@ -130,10 +130,9 @@ export default defineComponent({
     })
 
     const working = ref(false)
-    const createdPollPk = ref(null)
     const settingsValid = ref(false)
     const readyToCreate = computed(() => {
-      return methodSelected.value && !working.value && !createdPollPk.value && settingsValid.value
+      return methodSelected.value && !working.value && settingsValid.value
     })
 
     function settingsOrNull (settings: PollMethodSettings | {}): PollMethodSettings | null {
