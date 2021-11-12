@@ -44,7 +44,7 @@
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { openModalEvent, toggleNavDrawerEvent } from '@/utils'
+import { dialogQuery, openModalEvent, toggleNavDrawerEvent } from '@/utils'
 import { proposalStates } from '@/modules/proposals/workflowStates'
 
 import useAgenda from '@/modules/agendas/useAgenda'
@@ -53,7 +53,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 
 import usePlenary from './usePlenary'
 import useProposals from '@/modules/proposals/useProposals'
-import { MenuItem } from '@/utils/types'
+import { MenuItem, ThemeColor } from '@/utils/types'
 import usePolls from '../polls/usePolls'
 import { PollState } from '../polls/types'
 import { WorkflowState } from '@/contentTypes/types'
@@ -102,6 +102,12 @@ export default defineComponent({
         }))
     }
 
+    const protectedProposalStates = computed(() => {
+      return selectedProposals.value
+        .map(p => p.state)
+        .filter(s => s !== ProposalState.Published)
+    })
+
     const working = ref(false)
     async function createPoll (method: PollMethod, settings: PollMethodSettings | null) {
       working.value = true
@@ -113,6 +119,11 @@ export default defineComponent({
         method_name: method.name,
         start: true,
         settings: settings
+      }
+      if (protectedProposalStates.value.length) {
+        const states = [...new Set(protectedProposalStates.value)].map(s => t(`workflowState.${s}`).toLowerCase()).join(', ')
+        const title = t('plenary.confirmStartProtectedStates', { states }, protectedProposalStates.value.length)
+        if (!await dialogQuery({ title, theme: ThemeColor.Warning })) return
       }
       try {
         const { data } = await pollType.api.add(pollData as Partial<Poll>)
@@ -134,6 +145,13 @@ export default defineComponent({
           title: t('poll.method.combined_simple')
         },
         {
+          method: getPollMethod(PollMethodName.Majority),
+          settings: null,
+          proposalsMin: 2,
+          proposalsExact: 2,
+          title: t('poll.method.majority')
+        },
+        {
           method: getPollMethod(PollMethodName.Schulze),
           settings: null,
           proposalsMin: 3, // This here is the reason we need to replicate this from pollMethods
@@ -146,14 +164,21 @@ export default defineComponent({
           title: t('poll.method.schulzeAddDeny')
         }
       ]
-      return quickStartMethods.map(({ method, proposalsMin, settings, title }) => {
-        const disabled = proposalsMin > selectedProposals.value.length
+      return quickStartMethods.map(({ method, settings, title, ...opts }) => {
+        let disabled, subtitle
+        if (opts.proposalsExact) {
+          disabled = selectedProposals.value.length !== opts.proposalsExact
+          if (disabled) subtitle = t('plenary.selectExactProposals', opts.proposalsExact)
+        } else {
+          disabled = opts.proposalsMin > selectedProposals.value.length
+          if (disabled) subtitle = t('plenary.selectMinProposals', opts.proposalsMin)
+        }
         return {
+          disabled,
           icon: 'mdi-vote',
+          subtitle,
           title,
-          subtitle: disabled ? t('plenary.selectMinProposals', { min: proposalsMin }, proposalsMin) : undefined,
-          onClick: () => createPoll(method, settings),
-          disabled
+          onClick: () => createPoll(method, settings)
         }
       })
     })

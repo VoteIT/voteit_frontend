@@ -265,11 +265,13 @@
     }
   },
   "plenary": {
+    "confirmStartProtectedStates": "You have selected a proposal that is in {states} state.\nDo you still want to start the poll? | You have selected {count} proposals that are in {states} state.\nDo you still want to start the poll?",
     "finishedPolls": "Finished polls",
     "hintModifyFilter": "Try selecting more proposal states in filter menu.",
     "noProposalsInFilter": "No proposals",
     "ongoingPolls": "Ongoing polls",
-    "selectMinProposals": "Select at least one proposal | Select at least {min} proposals",
+    "selectMinProposals": "Select at least one proposal | Select at least {count} proposals",
+    "selectExactProposals": "Select {count} proposals",
     "selectProposals": "Select proposals",
     "startPoll": "Start poll",
     "view": "Plenary view"

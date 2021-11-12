@@ -27,7 +27,7 @@
     <v-col cols="5" md="4" lg="3">
       <div class="mb-6 d-flex" v-for="p in pool" :key="p.pk">
         <v-btn size="small" icon="mdi-chevron-left" variant="text" @click="selectProposal(p)" />
-        <Proposal readOnly :p="p" />
+        <Proposal readOnly :p="p" class="flex-grow-1" />
       </div>
     </v-col>
   </v-row>
