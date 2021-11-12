@@ -118,7 +118,7 @@ interface InstantRunoffSettings {
 }
 
 interface SchulzeSettings {
-  stars: number
+  stars?: number
   deny_proposal?: boolean
 }
 
@@ -129,13 +129,11 @@ export interface PollMethod {
   title: string
   multipleWinners?: boolean
   proposalsMax?: number
-  proposalsMin?: number
+  proposalsMin: number
   winnersMin?: number
   losersMin?: number
   initialSettings?: PollMethodSettings
-  settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings,
-  disabled?: boolean, // Annotated in getPollMethods(proposalCount)
-  quickStart?: boolean // Available for quick start, i.e. in plenary view
+  settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings
 }
 
 interface BasePoll extends BaseContent {

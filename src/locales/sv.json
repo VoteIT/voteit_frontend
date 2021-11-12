@@ -221,6 +221,7 @@
       "combined_simple": "Enkel majoritet",
       "repeated_schulze": "Repeterad Schulze",
       "schulze": "Schulze",
+      "schulzeAddDeny": "Schulze (lägg till avslag)",
       "scottish_stv": "Skotsk STV",
       "simple": "Majoritetsomröstning",
       "irv": "IRV",
@@ -246,6 +247,7 @@
     },
     "schulze": {
       "addDenyProposal": "Lägg till avslag",
+      "allDenied": "Alla förslag blev avslagna.",
       "numberOfStars": "Antal stjärnor",
       "numTiedWinners": "En klar vinnare kunde utses | One ring to rule them all, and in the darkness bind them | Det blev oavgjort mellan { count } förslag"
     },

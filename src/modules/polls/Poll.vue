@@ -13,14 +13,14 @@
     </header>
     <div class="body">
       <template v-if="isFinished">
-        <Dropdown v-if="poll.result.approved.length" :title="t('poll.numApproved', poll.result.approved.length )">
+        <Dropdown v-if="approved.length" :title="t('poll.numApproved', approved.length )" class="mb-2">
           <div class="proposals approved">
-            <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
+            <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
-        <Dropdown v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )">
+        <Dropdown v-if="denied.length" :title="t('poll.numDenied', denied.length )" class="mb-2">
           <div class="proposals denied">
-            <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
+            <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
       </template>
@@ -36,7 +36,7 @@
           {{ t('poll.showProgress') }}
         </v-btn>
         <span v-if="userVote" class="active">{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
-        <span v-else-if="canVote(poll)">{{ t('poll.youHaveNotVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
+        <span v-else-if="canVote">{{ t('poll.youHaveNotVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
       </ProgressBar>
 
     </div>
@@ -51,16 +51,14 @@ import useModal from '@/composables/useModal'
 import Moment from '@/components/Moment.vue'
 
 import usePolls from '../polls/usePolls'
-import useProposals from '../proposals/useProposals'
-import Proposal from '../proposals/Proposal.vue'
+import ProposalVue from '../proposals/Proposal.vue'
 import useMeeting from '../meetings/useMeeting'
 
 import Voting from './Voting.vue'
-import { PollState } from './types'
 import { slugify } from '@/utils'
-import { canVote } from './rules'
 import { pollType } from './contentTypes'
 import { Poll } from './methods/types'
+import usePoll from './usePoll'
 
 export default defineComponent({
   name: 'Poll',
@@ -71,7 +69,7 @@ export default defineComponent({
     }
   },
   components: {
-    Proposal,
+    Proposal: ProposalVue,
     Moment
   },
   setup (props) {
@@ -79,8 +77,8 @@ export default defineComponent({
     const channels = pollType.getChannel({ leaveDelay: 0 })
     const { meetingPath } = useMeeting()
     const { openModal } = useModal()
-    const { getProposal } = useProposals()
     const { getPollStatus, getUserVote } = usePolls()
+    const { canVote, approved, denied, isOngoing, isFinished } = usePoll(computed(() => props.poll.pk))
 
     function vote () {
       openModal({
@@ -88,9 +86,6 @@ export default defineComponent({
         data: props.poll
       })
     }
-
-    const isFinished = computed(() => props.poll.state === PollState.Finished)
-    const isOngoing = computed(() => props.poll.state === PollState.Ongoing)
 
     const following = ref(false)
     watch(isOngoing, value => {
@@ -113,6 +108,8 @@ export default defineComponent({
 
     return {
       t,
+      approved,
+      denied,
       pollPath,
       pollType,
       pollStatus,
@@ -123,7 +120,6 @@ export default defineComponent({
       methodName,
       canVote,
       follow,
-      getProposal,
       vote
     }
   }

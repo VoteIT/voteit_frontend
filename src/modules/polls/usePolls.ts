@@ -57,18 +57,17 @@ agendaDeletedEvent.on(pk => {
   }
 })
 
+// FIXME Maybe make this a Record<PollMethodName, Pollmethod>
 const pollMethods: PollMethod[] = [
   {
     name: PollMethodName.CombinedSimple,
     title: 'Simple majority',
-    proposalsMin: 1,
-    quickStart: true
+    proposalsMin: 1
   },
   {
     name: PollMethodName.Schulze,
     title: 'Schulze',
     proposalsMin: 2,
-    quickStart: true,
     initialSettings: {
       stars: 5
     }
@@ -136,12 +135,14 @@ export default function usePolls () {
     if (method.proposalsMin && proposalCount < method.proposalsMin) return false
     if (method.proposalsMax && proposalCount > method.proposalsMax) return false
     return true
-}
+  }
 
-  function getPollMethods (proposalCount?: number, annotateDisabled = false) {
+  function getPollMethod (name: PollMethodName) {
+    return pollMethods.find(method => method.name === name) as PollMethod // Type casting should be safe, since this list should match
+  }
+
+  function getPollMethods (proposalCount?: number) {
     if (proposalCount === undefined) return pollMethods
-    // Annotate only
-    if (annotateDisabled) return pollMethods.map(method => ({ ...method, disabled: !availableMethodFilter(method, proposalCount) }))
     return pollMethods.filter(method => availableMethodFilter(method, proposalCount))
   }
 
@@ -178,6 +179,7 @@ export default function usePolls () {
     getPolls,
     getAiPolls,
     getPoll,
+    getPollMethod,
     getPollMethods,
     getPollStatus,
     getNextUnvotedPoll,

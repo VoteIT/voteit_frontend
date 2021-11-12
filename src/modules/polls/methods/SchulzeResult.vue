@@ -1,26 +1,32 @@
 <template>
   <div>
-    <p>
+    <p v-if="!result.approved.length">
+      <!-- On deny win, there will be no winning proposals -->
+      {{ t('poll.schulze.allDenied') }}
+    </p>
+    <p v-else>
       {{ t('poll.schulze.numTiedWinners', tiedWinners.length, { count: tiedWinners.length }) }}
     </p>
     <p v-if="tiedWinners.length">
       {{ tiedWinners.join(', ') }}
     </p>
     <v-expansion-panels multiple class="my-4">
-      <v-expansion-panel v-for="{ btn, proposal, pairs } in candidatePairs" :key="proposal.pk">
+      <v-expansion-panel v-for="{ btn, proposal, pairs } in candidatePairs" :key="proposal?.pk ?? 0">
         <v-expansion-panel-title>
           <v-icon v-bind="btn" class="mr-4" />
-          <Tag disabled :name="proposal.prop_id" />
+          <Tag disabled :name="proposal?.prop_id ?? ('poll.deny')" />
         </v-expansion-panel-title>
-        <v-expansion-panel-text v-for="pair in pairs" :key="`${proposal.pk} vs ${pair.proposal.pk}`" class="my-2">
-          {{ t('poll.result.versus') }}: <Tag disabled :name="pair.proposal.prop_id" />
+        <v-expansion-panel-text v-for="pair in pairs" :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0}`" class="my-2">
+          {{ t('poll.result.versus') }}:
+            <Tag v-if="pair.proposal" disabled :name="pair.proposal.prop_id" />
+            <span v-else class="rounded bg-warning px-2">{{ t('poll.deny') }}</span>
           <div class="d-flex justify-space-between mt-2">
             <span class="bg-success px-2 rounded-pill">{{ t('poll.result.approveThis') }} ({{ pair.approve }})</span>
             <span class="bg-secondary px-2 rounded-pill">{{ t('poll.result.tie') }} ({{ pair.tie }})</span>
             <span class="bg-warning px-2 rounded-pill">{{ t('poll.result.approveOther') }} ({{ pair.deny }})</span>
           </div>
           <div class="d-flex mt-1 overflow-hidden rounded">
-            <div v-for="({ percentage, color }, i) in pair.results" :key="`${proposal.pk} vs ${pair.proposal.pk} ${i}`" :class="`bg-${color}`" class="text-center overflow-hidden text-no-wrap" :style="{ width: `${percentage}%` }">
+            <div v-for="({ percentage, color }, i) in pair.results" :key="`${proposal.pk} vs ${pair.proposal?.pk ?? 0} ${i}`" :class="`bg-${color}`" class="text-center overflow-hidden text-no-wrap" :style="{ width: `${percentage}%` }">
               {{ Math.round(percentage) }} %
             </div>
           </div>

@@ -23,14 +23,14 @@
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
         <component :is="resultComponent" :result="poll.result" class="mb-8" />
-        <Dropdown v-if="poll.result.approved.length" :title="t('poll.numApproved', poll.result.approved.length )">
+        <Dropdown v-if="approved.length" :title="t('poll.numApproved', approved.length )">
           <div class="proposals approved mb-4">
-            <Proposal v-for="pk in poll.result.approved" :key="pk" :p="getProposal(pk)" read-only selected />
+            <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
-        <Dropdown v-if="poll.result.denied.length" :title="t('poll.numDenied', poll.result.denied.length )">
+        <Dropdown v-if="denied.length" :title="t('poll.numDenied', denied.length )">
           <div class="proposals denied mb-4">
-            <Proposal v-for="pk in poll.result.denied" :key="pk" :p="getProposal(pk)" read-only />
+            <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
       </div>
@@ -64,7 +64,6 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import Channel from '@/contentTypes/Channel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
-import useProposals from '../proposals/useProposals'
 import Proposal from '../proposals/Proposal.vue'
 
 import usePoll from './usePoll'
@@ -81,8 +80,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const { getProposal } = useProposals()
-    const { poll, isOngoing, isFinished, userVote, canChange, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
+    const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath } = useMeeting()
     const channels = new Channel('vote')
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
@@ -98,12 +96,6 @@ export default defineComponent({
     async function castVote () {
       if (!validVote.value || !poll.value) return
       submitting.value = true
-      // Hopefully, some day
-      // const msg = {
-      //   vote,
-      //   method_name: props.data.method_name
-      // }
-      // channels.contextAdd(props.data.pk, msg)
       const msg = {
         poll: poll.value.pk,
         vote: validVote.value
@@ -163,9 +155,11 @@ export default defineComponent({
     return {
       t,
       allPollsPath,
+      approved,
       buttons,
       canChange,
       canVote,
+      denied,
       methodName,
       poll,
       pollType,
@@ -177,8 +171,7 @@ export default defineComponent({
       submitting,
       votingComplete,
       abstainVote,
-      castVote,
-      getProposal
+      castVote
     }
   }
 })

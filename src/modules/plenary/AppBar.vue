@@ -56,11 +56,13 @@ import useProposals from '@/modules/proposals/useProposals'
 import { MenuItem } from '@/utils/types'
 import usePolls from '../polls/usePolls'
 import { PollState } from '../polls/types'
-import PollModal from './PollModal.vue'
 import { WorkflowState } from '@/contentTypes/types'
-import { Poll, PollMethod, PollStartData } from '../polls/methods/types'
+import { Poll, PollMethod, PollMethodName, PollMethodSettings, PollStartData } from '../polls/methods/types'
 import { ProposalState } from '../proposals/types'
 import { pollType } from '../polls/contentTypes'
+
+import PollModal from './PollModal.vue'
+import { QuickStartMethod } from './types'
 
 const { getState } = pollType.useWorkflows()
 
@@ -72,7 +74,7 @@ export default defineComponent({
     const { meetingId, meetingPath } = useMeeting()
     const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary()
     const { getAgendaProposals } = useProposals()
-    const { getAiPolls, getPollMethods } = usePolls()
+    const { getAiPolls, getPollMethod } = usePolls()
 
     const filterMenuOpen = ref(false)
     function getStateProposalCount (state: ProposalState) {
@@ -101,7 +103,7 @@ export default defineComponent({
     }
 
     const working = ref(false)
-    async function createPoll (method: PollMethod) {
+    async function createPoll (method: PollMethod, settings: PollMethodSettings | null) {
       working.value = true
       const pollData: PollStartData = {
         agenda_item: agendaId.value,
@@ -110,7 +112,7 @@ export default defineComponent({
         proposals: [...selectedProposalIds],
         method_name: method.name,
         start: true,
-        settings: null
+        settings: settings
       }
       try {
         const { data } = await pollType.api.add(pollData as Partial<Poll>)
@@ -124,15 +126,34 @@ export default defineComponent({
     }
 
     const pollMethodMenu = computed<MenuItem[]>(() => {
-      const pollMethods = getPollMethods(selectedProposals.value.length, true)
-        .filter(method => method.quickStart)
-      return pollMethods.map(method => {
+      const quickStartMethods: QuickStartMethod[] = [
+        {
+          method: getPollMethod(PollMethodName.CombinedSimple),
+          settings: null,
+          proposalsMin: 1,
+          title: t('poll.method.combined_simple')
+        },
+        {
+          method: getPollMethod(PollMethodName.Schulze),
+          settings: null,
+          proposalsMin: 3, // This here is the reason we need to replicate this from pollMethods
+          title: t('poll.method.schulze')
+        },
+        {
+          method: getPollMethod(PollMethodName.Schulze),
+          settings: { deny_proposal: true },
+          proposalsMin: 2,
+          title: t('poll.method.schulzeAddDeny')
+        }
+      ]
+      return quickStartMethods.map(({ method, proposalsMin, settings, title }) => {
+        const disabled = proposalsMin > selectedProposals.value.length
         return {
           icon: 'mdi-vote',
-          title: t(`poll.method.${method.name}`),
-          subtitle: method.disabled ? t('plenary.selectMinProposals', { min: method.proposalsMin }, method.proposalsMin ?? 1) : undefined,
-          onClick: async () => createPoll(method),
-          disabled: method.disabled
+          title,
+          subtitle: disabled ? t('plenary.selectMinProposals', { min: proposalsMin }, proposalsMin) : undefined,
+          onClick: () => createPoll(method, settings),
+          disabled
         }
       })
     })

@@ -4,8 +4,11 @@ import { pollMethods, pollResults } from './methods'
 import { PollState } from './types'
 import usePolls from './usePolls'
 import { canChangePoll, canVote as _canVote } from './rules'
+import useProposals from '../proposals/useProposals'
+import { Proposal } from '../proposals/types'
 
 const polls = usePolls()
+const { getProposal } = useProposals()
 
 export default function usePoll (pollRef: Ref<number>) {
   const poll = computed(() => polls.getPoll(pollRef.value))
@@ -31,7 +34,22 @@ export default function usePoll (pollRef: Ref<number>) {
   const voteComponent = computed(() => poll.value && pollMethods[poll.value.method_name])
   const resultComponent = computed(() => poll.value && pollResults[poll.value.method_name])
 
+  const approved = computed(() => {
+    if (!poll.value) return []
+    return poll.value.result.approved
+      .map(pk => getProposal(pk))
+      .filter(p => p) as Proposal[]
+  })
+  const denied = computed(() => {
+    if (!poll.value) return []
+    return poll.value.result.approved
+      .map(pk => getProposal(pk))
+      .filter(p => p) as Proposal[]
+  })
+
   return {
+    approved,
+    denied,
     canChange,
     canVote,
     isOngoing,

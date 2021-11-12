@@ -11,6 +11,18 @@
         </div>
       </template>
     </Proposal>
+    <Widget v-if="poll.settings.deny_proposal" color="warning" elevation="4" class="pa-4">
+      <h2 class="text-center">
+        {{ t('poll.deny') }}
+      </h2>
+      <div class="grade">
+        <div/>
+        <v-rating length="5" v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" />
+        <div>
+          <v-btn size="small" border v-show="!!grades[0]" @click="grades[0] = 0">{{ t('clear') }}</v-btn>
+        </div>
+      </div>
+    </Widget>
   </div>
 </template>
 
@@ -40,12 +52,19 @@ export default defineComponent({
   setup (props, { emit }) {
     const { t } = useI18n()
     const { getProposal } = useProposals()
-    const grades = reactive<Record<number, number>>({})
-    if (props.modelValue) {
-      for (const [key, value] of props.modelValue.ranking) {
-        grades[key] = value
-      }
+
+    function getGrades () {
+      if (props.modelValue) return Object.fromEntries(props.modelValue.ranking)
+      const deny = props.poll.settings.deny_proposal ? [0] : []
+      return Object.fromEntries([...props.poll.proposals, ...deny].map(id => [id, 0]))
     }
+
+    const grades = reactive<Record<number, number>>(getGrades())
+    // if (props.modelValue) {
+    //   for (const [key, value] of props.modelValue.ranking) {
+    //     grades[key] = value
+    //   }
+    // }
 
     const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
 
@@ -53,8 +72,10 @@ export default defineComponent({
       const valid = Object.values(value).some(n => n) // Any grade set to non-zero?
       if (!valid) return emit('update:modelValue') // Clear vote on invalid
       emit('update:modelValue', {
-        ranking: proposals.value.map(p => [p.pk, grades[p.pk] ?? 0])
+        ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])
+        // ranking: proposals.value.map(p => [p.pk, grades[p.pk] ?? 0])
       })
+      console.log(grades, props.modelValue)
     })
 
     return {
