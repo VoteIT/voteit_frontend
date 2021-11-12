@@ -20,17 +20,18 @@ import UserAvatar from './components/UserAvatar.vue'
 import Widget from './components/Widget.vue'
 
 import en from './locales/en.json'
+import sv from './locales/sv.json'
 
-const availableLanguages = ['en', 'sv'] // FIXME somewhere else
-function resolveLocale (languages: readonly string[]): string {
-  for (const lang of languages) {
-    const short = lang.split('-')[0]
-    if (availableLanguages.includes(short)) return short
-  }
-  return 'en'
-}
-
-const locale = resolveLocale(navigator.languages)
+// const availableLanguages = ['en', 'sv'] // FIXME somewhere else
+// function resolveLocale (languages: readonly string[]): string {
+//   for (const lang of languages) {
+//     const short = lang.split('-')[0]
+//     if (availableLanguages.includes(short)) return short
+//   }
+//   return 'en'
+// }
+// const locale = resolveLocale(navigator.languages)
+const locale = 'sv'
 
 moment.locale(locale)
 
@@ -47,11 +48,12 @@ const i18n = createI18n({
   locale,
   fallbackLocale: 'en',
   messages: {
-    en
+    en,
+    sv
   }
 })
 
-if (locale !== 'en') loadLocaleMessages(i18n, locale)
+if (locale !== 'sv') loadLocaleMessages(i18n, locale)
 
 createApp(App)
   .use(i18n)
