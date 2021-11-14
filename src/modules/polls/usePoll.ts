@@ -48,7 +48,7 @@ export default function usePoll (pollRef: Ref<number>) {
   })
   const denied = computed(() => {
     if (!poll.value?.result) return []
-    return poll.value.result.approved
+    return poll.value.result.denied
       .map(getProposal)
       .filter(p => p) as Proposal[]
   })
