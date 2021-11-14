@@ -2,12 +2,14 @@ import { reactive } from 'vue'
 
 import { orderBy } from '@/utils'
 
-import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
-import { agendaDeletedEvent, agendaItems } from '@/modules/agendas/useAgenda'
+import { agendaDeletedEvent } from '../agendas/events'
+import { agendaItems } from '../agendas/useAgenda'
+import { meetingType } from '../meetings/contentTypes'
+import { DEFAULT_FILTER_STATES } from '../proposals/workflowStates'
 import { Poll } from '../polls/methods/types'
+
 import { Proposal } from './types'
 import { proposalType } from './contentTypes'
-import { meetingType } from '../meetings/contentTypes'
 
 type ProposalFilter = (p: Proposal) => boolean
 

@@ -22,7 +22,6 @@ import useMeeting from '../meetings/useMeeting'
 import DiscussionPostVue from './DiscussionPost.vue'
 import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
-import { focusDiscussionInput } from '../agendas/events'
 
 export default defineComponent({
   components: {
@@ -51,7 +50,6 @@ export default defineComponent({
     }
 
     const addComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-    focusDiscussionInput.on(() => addComponent.value?.focus())
     const reactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
 
     return {

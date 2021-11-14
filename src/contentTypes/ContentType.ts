@@ -30,8 +30,15 @@ export default class ContentType<T extends Record<string, any>, R extends string
     return obj as T
   }
 
-  public channelUpdateMap (map: Map<number, T>) {
-    return this.channel.updateMap(map, this.dateify.bind(this))
+  public channelUpdateMap (map: Map<number, T>, cb?: (obj: T, old?: T) => void) {
+    return this.channel
+      .onChanged(item => {
+        const old = map.get(item.pk)
+        item = this.dateify(item)
+        map.set(item.pk, item)
+        cb?.(item, old)
+      })
+      .onDeleted(item => map.delete(item.pk))
   }
 
   public get name () {

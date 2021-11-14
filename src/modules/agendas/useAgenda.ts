@@ -6,15 +6,14 @@ import { dateify, orderBy } from '@/utils'
 import useLoader from '@/composables/useLoader'
 import { AgendaItem } from '@/modules/agendas/types'
 import Channel from '@/contentTypes/Channel'
-import TypedEvent from '@/utils/TypedEvent'
 import { LastRead } from '@/utils/types'
 import useMeeting from '../meetings/useMeeting'
 import { agendaItemType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
+import { agendaDeletedEvent } from './events'
 
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
-export const agendaDeletedEvent = new TypedEvent<number>()
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
 const channel = agendaItemType.channel

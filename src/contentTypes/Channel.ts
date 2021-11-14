@@ -114,7 +114,7 @@ export default class Channel<T> {
     return this
   }
 
-  private registerTypeHandler (this: Channel<T>, method: string, fn: MethodHandler<T>, override = true) {
+  private registerTypeHandler<HT=T> (this: Channel<T>, method: string, fn: MethodHandler<HT>, override = true) {
     const ctHandlers = methodHanders.get(method)
     if (override || !ctHandlers.has(this.contentType)) {
       methodHanders.get(method).set(this.contentType, fn)
@@ -122,19 +122,21 @@ export default class Channel<T> {
     return this
   }
 
-  public onAdded = (fn: MethodHandler<T>) => this.registerTypeHandler('added', fn)
-  public onDeleted = (fn: MethodHandler<T>) => this.registerTypeHandler('deleted', fn)
-  public onStatus = (fn: MethodHandler<T>) => this.registerTypeHandler('status', fn)
+  public onAdded = (fn: MethodHandler<T>) => this.registerTypeHandler<T>('added', fn)
+  public onDeleted = (fn: MethodHandler<T>) => this.registerTypeHandler<T>('deleted', fn)
+  public onStatus<ST=T> (fn: MethodHandler<ST>) {
+    return this.registerTypeHandler<ST>('status', fn)
+  }
 
   public onChanged (fn: MethodHandler<T>) {
     // By default, send add events to change method. Register using .onAdded(fn) to handle separately.
-    return this.registerTypeHandler('added', fn, false)
-      .registerTypeHandler('changed', fn)
+    return this.registerTypeHandler<T>('added', fn, false)
+      .registerTypeHandler<T>('changed', fn)
   }
 
-  public updateMap (this: any, map: Map<number, T>, transform = (value: T) => value): Channel<T> {
+  public updateMap (map: Map<number, T>, transform = (value: T) => value): Channel<T> {
     // Convenience method to set onChanged and onDeleted to update Map object.
-    return this.onChanged((item: any) => map.set(item.pk, transform(item as T)))
+    return this.onChanged((item: any) => map.set(item.pk, transform(item)))
       .onDeleted((item: any) => map.delete(item.pk))
   }
 

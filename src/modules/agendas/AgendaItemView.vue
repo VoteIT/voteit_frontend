@@ -24,12 +24,6 @@
       <v-col>
         <div class="d-flex">
           <AddProposalModal v-if="canAddProposal" />
-          <!-- <v-btn variant="text" @click="focusProposalInput.emit()" v-if="canAddProposal" prepend-icon="mdi-text-box-plus-outline" color="primary">
-            {{ t('proposal.add') }}
-          </v-btn>
-          <v-btn variant="text" @click="focusDiscussionInput.emit()" v-if="displayMode === 'columns' && canAddDiscussionPost" prepend-icon="mdi-comment-text-outline" color="primary" class="d-none d-md-inline">
-            {{ t('discussion.add') }}
-          </v-btn> -->
           <v-spacer />
           <AgendaFilters ref="filterComponent" :key="agendaId" />
           <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
@@ -98,7 +92,6 @@ import { LastReadKey } from '@/composables/useUnread'
 import useAgendaFilter from './useAgendaFilter'
 import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
-// import { focusDiscussionInput, focusProposalInput } from './events'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType } from './contentTypes'
 
@@ -263,8 +256,6 @@ export default defineComponent({
       displayMode,
       editing,
       filterComponent,
-      // focusDiscussionInput,
-      // focusProposalInput,
       meetingPath,
       menuItems,
       hasProposals,

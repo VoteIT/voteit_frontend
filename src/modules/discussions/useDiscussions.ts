@@ -2,11 +2,12 @@ import { reactive } from 'vue'
 
 import { dateify, mapFilter, orderBy } from '@/utils'
 
-import { discussionPostType } from './contentTypes'
-import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
-import { Proposal } from '@/modules/proposals/types'
-import { DiscussionPost } from './types'
 import { agendaItemType } from '../agendas/contentTypes'
+import { agendaDeletedEvent } from '../agendas/events'
+import { Proposal } from '../proposals/types'
+
+import { discussionPostType } from './contentTypes'
+import { DiscussionPost } from './types'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 

@@ -15,7 +15,6 @@ import useReactions from '../reactions/useReactions'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 
-import { focusProposalInput } from '../agendas/events'
 import { Proposal } from './types'
 import ProposalVue from './Proposal.vue'
 import { proposalType } from './contentTypes'
@@ -46,7 +45,6 @@ export default defineComponent({
     }
 
     const addComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-    focusProposalInput.on(() => addComponent.value?.focus())
     const reactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
 
     return {

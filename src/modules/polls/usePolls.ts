@@ -1,23 +1,26 @@
-import { reactive, computed } from 'vue'
+import { reactive, computed, watch } from 'vue'
 
-import { Vote } from '@/contentTypes/types'
-import { agendaDeletedEvent } from '@/modules/agendas/useAgenda'
 import { mapFilter } from '@/utils'
+import { Vote } from '@/contentTypes/types'
 import Channel from '@/contentTypes/Channel'
-import { PollState, PollStatus } from './types'
-import { Poll, PollMethod, PollMethodName } from './methods/types'
+import { agendaDeletedEvent } from '../agendas/events'
 import { meetingType } from '../meetings/contentTypes'
+
+import { Poll, PollMethod, PollMethodName } from './methods/types'
 import { pollType } from './contentTypes'
 import { canVote } from './rules'
+import { PollState, PollStatus } from './types'
+import { pollStartedEvent } from './events'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType
-  .channelUpdateMap(polls)
-  .onStatus((_: any) => {
-    const item = _ as PollStatus
+  .channelUpdateMap(polls, (poll, old) => {
+    if (poll.state === PollState.Ongoing && poll.state !== old?.state) pollStartedEvent.emit(poll)
+  })
+  .onStatus<PollStatus>(item => {
     const existing = pollStatuses.get(item.pk)
     // Throw away statuses with less votes - in case async order wrong
     if (!existing || existing.voted < item.voted) {
@@ -30,7 +33,7 @@ pollType
     pollStatuses.delete(pk)
   })
 
-// This is not really a channel
+// This is not really a channel, per se...
 new Channel<Vote>('vote')
   .updateMap(userVotes)
 
@@ -40,9 +43,7 @@ new Channel<Vote>('vote')
 meetingType.channel
   .onLeave(pk => {
     for (const poll of polls.values()) {
-      if (poll.meeting === pk) {
-        polls.delete(poll.pk)
-      }
+      if (poll.meeting === pk) polls.delete(poll.pk)
     }
   })
 
