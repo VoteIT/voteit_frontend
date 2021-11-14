@@ -266,6 +266,7 @@
     "confirmStartProtectedStates": "Du har valt ett förslag som är i {states} läge.\nVill du ändå starta omröstningen? | Du har valt {count} förslag som är i {states} läge.\nVill du ändå starta omröstningen?",
     "finishedPolls": "Avslutade omröstningar",
     "hintModifyFilter": "Försök att välja fler förslagslägen i filtermenyn.",
+    "nextParagraph": "Nästa stycke",
     "noProposalsInFilter": "Inga förslag",
     "ongoingPolls": "Pågående omröstningar",
     "selectExactProposals": "Välj {count} förslag",

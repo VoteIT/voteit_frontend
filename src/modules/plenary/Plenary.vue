@@ -21,7 +21,15 @@
         </template>
       </Proposal>
       <div v-if="!selectedProposals.length" class="text-h4 text-center text-secondary mt-12">
-        {{ t('plenary.selectProposals') }} <v-icon icon="mdi-chevron-right" />
+        <template v-if="nextTextProposalTag">
+           <p class="mb-1">
+            {{ t('plenary.nextParagraph') }}
+          </p>
+          <Tag v-if="nextTextProposalTag" :name="nextTextProposalTag" style="transform: scale(1.4);" />
+        </template>
+        <template v-else>
+          {{ t('plenary.selectProposals') }} <v-icon icon="mdi-chevron-right" />
+        </template>
       </div>
     </v-col>
     <v-col cols="5" md="4" lg="3">
@@ -36,21 +44,26 @@
 <script lang="ts">
 import { computed, defineComponent, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { flatten } from 'lodash'
 
-import ProposalVue from '@/modules/proposals/Proposal.vue'
-import useProposals from '@/modules/proposals/useProposals'
-import { Proposal, ProposalState } from '@/modules/proposals/types'
 import { LastReadKey } from '@/composables/useUnread'
-import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 import { WorkflowState } from '@/contentTypes/types'
-import { proposalStates } from '@/modules/proposals/workflowStates'
-import useAgendaItem from '@/modules/agendas/useAgendaItem'
+import useAgendaItem from '../agendas/useAgendaItem'
+import ProposalVue from '../proposals/Proposal.vue'
+import useProposals from '../proposals/useProposals'
+import { Proposal, ProposalState } from '../proposals/types'
+import { proposalType } from '../proposals/contentTypes'
+import useTextDocuments from '../proposals/useTextDocuments'
+import { proposalStates } from '../proposals/workflowStates'
+import useMeetingChannel from '../meetings/useMeetingChannel'
+import { tagClickEvent } from '../meetings/useTags'
 
 import usePlenary from './usePlenary'
-import { tagClickEvent } from '../meetings/useTags'
-import { proposalType } from '../proposals/contentTypes'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
+
+const { getAgendaProposals } = useProposals()
+const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
 
 export default defineComponent({
   components: {
@@ -59,8 +72,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { agendaId, agendaItem } = useAgendaItem()
-    const { getAgendaProposals } = useProposals()
-    const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
+    const { aiProposalTexts } = useTextDocuments(agendaId)
 
     useMeetingChannel(true)
     provide(LastReadKey, ref(new Date()))
@@ -75,6 +87,14 @@ export default defineComponent({
       p => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
     ))
     const hasProposals = computed(() => !!getAgendaProposals(agendaId.value).length)
+
+    const textProposalTags = computed(() => flatten(aiProposalTexts.value.map(doc => doc.paragraphs.map(p => p.tag))))
+    // eslint-disable-next-line vue/return-in-computed-property
+    const nextTextProposalTag = computed(() => {
+      for (const tag of textProposalTags.value) {
+        if (pool.value.some(prop => prop.tags.includes(tag))) return tag
+      }
+    })
 
     async function makeTransition (p: Proposal, state: WorkflowState) {
       if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
@@ -93,6 +113,7 @@ export default defineComponent({
       t,
       agendaItem,
       hasProposals,
+      nextTextProposalTag,
       pool,
       proposalStates,
       selectedProposals,

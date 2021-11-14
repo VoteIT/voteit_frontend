@@ -1,4 +1,4 @@
-import { reactive, readonly } from 'vue'
+import { computed, reactive, readonly, Ref } from 'vue'
 
 import { ProposalText, proposalTextType } from './contentTypes'
 
@@ -18,9 +18,15 @@ function getDocuments (filter: DocFilter) {
   return readonly([...iterDocuments(filter)])
 }
 
-export default function useTextDocuments () {
+export default function useTextDocuments (agendaItem?: Ref<number>) {
+  const aiProposalTexts = computed(() => {
+    if (!agendaItem?.value) return []
+    return getDocuments(doc => doc.agenda_item === agendaItem.value)
+  })
+
   return {
     proposalTexts: readonly(proposalTexts),
+    aiProposalTexts,
     api: proposalTextType.api,
     getDocuments
   }

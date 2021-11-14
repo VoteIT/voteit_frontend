@@ -26,9 +26,6 @@
             <v-card-title>
               {{ list.title }}
             </v-card-title>
-            <v-card-text v-if="list.pk === currentList?.pk && currentSpeaker">
-              {{ t('speaker.currentlySpeaking') }}: <strong><User :pk="currentSpeaker.userid" /></strong>
-            </v-card-text>
             <v-card-text>
               {{ t('speaker.speakerCount', { count: speakers.getQueue(list).length }, speakers.getQueue(list).length) }}
             </v-card-text>
