@@ -109,7 +109,7 @@
     "saved": "Metod för röstlängder är nu satt till {er_policy_name}.",
     "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
     "settings": "Inställning för röstlängder",
-    "voterCount": "Inga röstande | 1 röstande | {count} röstande"
+    "voterCount": "Inga röstberättigade | 1 röstberättigad | {count} röstberättigade"
   },
   "error": {
     "error": "Fel",
@@ -162,6 +162,11 @@
     "loginTo": "Logga in till {title}",
     "noLogin": "Ingen inloggning tillgänglig",
     "requires": "Kräver"
+  },
+  "participantNumber": {
+    "alreadyInList": "Deltagarnummer {ids} står redan på talarlistan | Deltagarnummerna {ids} står redan på talarlistan",
+    "doesNotExist": "Deltagarnummer {ids} finns inte i mötet | Deltagarnummerna {ids} finns inte i mötet",
+    "enterToSubmit": "Tryck enter för att lägga till på talarlistan"
   },
   "poll": {
     "abstain": "Avstå",
@@ -334,6 +339,8 @@
     "reconnectingFailed": "Kunde inte ansluta till webbservern"
   },
   "speaker": {
+    "addByName": "Sök namn",
+    "addByParticipantNumber": "Lägg till deltagarnummer",
     "addListToSystem": "Ny lista",
     "speakerRoles": "Roller som tillåts tala",
     "cantManageList": "Du har inte rättigheter att hantera den här listan.",

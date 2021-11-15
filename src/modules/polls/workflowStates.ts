@@ -8,7 +8,7 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-eye-off',
     state: PollState.Private,
     requiresRole: MeetingRole.Moderator,
-    priority: 4
+    priority: 5
   },
   {
     transition: PollTransition.Upcoming,
@@ -25,24 +25,29 @@ export const pollStates: WorkflowState<PollState>[] = [
   {
     transition: PollTransition.Close,
     icon: 'mdi-gavel',
-    state: PollState.Closed
+    state: PollState.Closed,
+    requiresRole: MeetingRole.Moderator,
+    priority: 3
   },
   {
     transition: PollTransition.Finish,
     icon: 'mdi-check',
     state: PollState.Finished,
     isFinal: true,
-    priority: 3
+    priority: 4
   },
   {
     transition: PollTransition.Cancel,
     icon: 'mdi-cancel',
     state: PollState.Canceled,
-    isFinal: true
+    isFinal: true,
+    priority: 6
   },
   {
     icon: 'mdi-alert',
     state: PollState.Failed,
-    isFinal: true
+    isFinal: true,
+    requiresRole: MeetingRole.Moderator,
+    priority: 7
   }
 ]

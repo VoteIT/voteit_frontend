@@ -165,6 +165,10 @@
     "noLogin": "No login available",
     "requires": "Requires"
   },
+  "participantNumber": {
+    "alreadyInList": "Participant number {ids} is already in speaker queue | Participant numbers {ids} are already in speaker queue",
+    "doesNotExist": "Participant number {ids} does not exist in meeting | Participant numbers {ids} does not exist in meeting"
+  },
   "poll": {
     "abstain": "Abstain",
     "all": "All polls",
@@ -336,6 +340,8 @@
     "reconnectingFailed": "Couldn't establish websocket connection"
   },
   "speaker": {
+    "AddByName": "Add by name",
+    "addByParticipantNumber": "Add by participant number",
     "addListToSystem": "New list",
     "speakerRoles": "Roles allowed to speak",
     "cantManageList": "You can't manage this list.",

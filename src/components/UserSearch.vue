@@ -1,12 +1,12 @@
 <template>
-  <span class="user-search">
-    <v-text-field type="search" prepend-inner-icon="mdi-account" :class="{ selected: !!selected }" autocomplete="off" :label="computedLabel" v-model="query" @focus="deSelect()" />
-    <v-btn :prepend-icon="buttonIcon" color="primary" :disabled="!selected" @click="submit()">
+  <form class="user-search" @submit.prevent="submit()">
+    <v-text-field :hint="hint" type="search" ref="inputField" v-bind="fieldBind" autocomplete="off" v-model="query" />
+    <v-btn v-if="!instant" type="submit" v-bind="btnBind" color="primary">
       {{ buttonText || t('add') }}
     </v-btn>
     <v-sheet rounded elevation="4" class="selector" v-show="results.length">
       <v-list>
-        <v-list-item v-for="result in results" :key="result.pk" @click="select(result)">
+        <v-list-item v-for="result in results" :key="result.pk" @click="select(result)" @keydown.enter="select(result)">
           <div v-if="result.full_name">
             <v-list-item-title >{{ result.full_name }}</v-list-item-title>
             <v-list-item-subtitle>{{ result.userid }}</v-list-item-subtitle>
@@ -15,13 +15,13 @@
         </v-list-item>
       </v-list>
     </v-sheet>
-  </span>
+  </form>
 </template>
 
 <script lang="ts">
 import { userType } from '@/modules/organisations/contentTypes'
 import { User } from '@/modules/organisations/types'
-import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const TYPE_DELAY = 250 // delay in ms
@@ -40,7 +40,10 @@ export default defineComponent({
       default: () => ({})
     },
     filter: Function as PropType<(user: User) => boolean>,
-    label: String
+    label: String,
+    hint: String,
+    small: Boolean,
+    instant: Boolean
   },
   emits: ['submit'],
   setup (props, { emit }) {
@@ -48,7 +51,6 @@ export default defineComponent({
     const query = ref('')
     const results = ref<User[]>([])
     const selected = ref<User | null>(null)
-    const computedLabel = computed(() => props.label ?? t('searchUser'))
 
     async function search () {
       if (!query.value) {
@@ -67,6 +69,7 @@ export default defineComponent({
       selected.value = user
       results.value = []
       query.value = user.full_name
+      if (props.instant) submit()
     }
 
     watch(query, () => {
@@ -82,15 +85,30 @@ export default defineComponent({
       selected.value = null
     }
 
+    const fieldBind = computed(() => ({
+      prependInnerIcon: props.small ? undefined : 'mdi-account',
+      label: props.label ?? t('searchUser'),
+      class: { selected: !!selected.value },
+      onFocus: deSelect
+    }))
+
+    const inputField = ref<ComponentPublicInstance | null>(null)
     function submit () {
       emit('submit', selected.value)
-      selected.value = null
-      query.value = ''
+      deSelect()
+      if (props.instant) inputField.value?.$el.focus()
     }
+
+    const btnBind = computed(() => ({
+      prependIcon: props.small ? undefined : props.buttonIcon,
+      disabled: !selected.value
+    }))
 
     return {
       t,
-      computedLabel,
+      btnBind,
+      fieldBind,
+      inputField,
       selected,
       results,
       query,

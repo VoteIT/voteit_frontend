@@ -2,7 +2,7 @@
 import { AlertLevel } from '@/composables/types'
 import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
-import { ChannelsConfig, ChannelsMessage, State, SubscribePayload, SuccessMessage } from './types'
+import { ChannelsConfig, ChannelsMessage, State, SuccessMessage } from './types'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 // Send heartbeats, for "pull the network plug" type of protection.

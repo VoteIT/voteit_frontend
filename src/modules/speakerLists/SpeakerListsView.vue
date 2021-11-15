@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" md="10" lg="8" offset-md="1" offset-lg="2" v-if="agendaItem">
+    <v-col cols="12" lg="10" offset-lg="1" v-if="agendaItem">
       <header>
         <div v-if="speakerSystem && speakerSystems.length > 1" class="mb-2">
           <v-btn v-for="system in speakerSystems" color="accent" :variant="speakerSystem === system ? 'contained' : 'outlined'" :key="system.pk" :to="`${meetingPath}/lists/${system.pk}/${agendaItem.pk}`" class="mr-1">
@@ -17,7 +17,7 @@
     </v-col>
   </v-row>
   <v-row v-if="speakerSystem">
-    <v-col cols="12" order-sm="1" sm="5" md="4" lg="3" class="speaker-lists">
+    <v-col cols="12" order-sm="1" sm="5" md="5" lg="4" class="speaker-lists">
       <h2>{{ t('speaker.listChoices') }}</h2>
       <v-item-group v-model="currentList">
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, toggle }">
@@ -37,7 +37,7 @@
         {{ t('speaker.addListToSystem', speakerSystem ) }}
       </v-btn>
     </v-col>
-    <v-col cols="12" order-sm="0" sm="7" md="6" lg="5" offset-md="1" offset-lg="2">
+    <v-col cols="12" order-sm="0" sm="7" md="7" lg="6" offset-lg="1">
       <template v-if="currentList">
         <template v-if="canStartSpeaker(currentList)">
           <div class="btn-group mb-2">
@@ -46,7 +46,11 @@
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
             <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
           </div>
-          <UserSearch label="Add speaker" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" />
+          <div class="d-flex">
+            <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" instant small class="flex-grow-1" />
+            <div style="width: 10px;" />
+            <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
+          </div>
         </template>
         <p v-else>
           <em>{{ t('speaker.cantManageList') }}</em>
@@ -87,26 +91,26 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery, openAlertEvent } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
-import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
-import useAgenda from '@/modules/agendas/useAgenda'
-
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
-import useMeeting from '@/modules/meetings/useMeeting'
-import { User } from '@/modules/organisations/types'
+import useAgenda from '../agendas/useAgenda'
+import { AgendaItem } from '../agendas/types'
+import useMeeting from '../meetings/useMeeting'
+import { User } from '../organisations/types'
+import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import { dialogQuery } from '@/utils'
-import { AgendaItem } from '../agendas/types'
 import { SpeakerList, SpeakerSystem } from './types'
 import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
 import { speakerListType } from './contentTypes'
+import useSpeakerLists from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
 
 interface AgendaNav {
@@ -185,9 +189,10 @@ export default defineComponent({
       if (currentQueue.value.includes(user.pk)) return false
       return isSystemSpeaker(speakerSystem.value, user.pk)
     }
-    function addSpeaker (user: User) {
+    function addSpeaker (user: User | number) {
       if (!currentList.value) return
-      speakers.moderatorEnterList(currentList.value, user.pk)
+      if (typeof user === 'number') speakers.moderatorEnterList(currentList.value, user)
+      else speakers.moderatorEnterList(currentList.value, user.pk)
     }
 
     async function deleteList (list: SpeakerList) {
@@ -217,12 +222,30 @@ export default defineComponent({
       return []
     }
 
+    const { participantNumbers } = useParticipantNumbers(meetingId)
+    const participantNumberInput = ref('')
+    async function addParticipantNumbers () {
+      const numbers = participantNumberInput.value.split(/[^\d]+/).filter(n => n).map(Number)
+      const inList: number[] = []
+      const missing: number[] = []
+      for (const n of numbers) {
+        const user = participantNumbers.value.find(pn => pn.number === n)?.user
+        if (!user) missing.push(n)
+        else if (currentQueue.value?.includes(user)) inList.push(n)
+        else addSpeaker(user)
+      }
+      if (missing.length) openAlertEvent.emit('*' + t('participantNumber.doesNotExist', { ids: missing.join(', ') }, missing.length))
+      if (inList.length) openAlertEvent.emit('*' + t('participantNumber.alreadyInList', { ids: inList.join(', ') }, inList.length))
+      participantNumberInput.value = ''
+    }
+
     return {
       t,
       agendaItem,
       currentList,
       currentSpeaker,
       currentQueue,
+      participantNumberInput,
       speakers,
       speakerSystem,
       speakerSystems,
@@ -231,6 +254,7 @@ export default defineComponent({
       meetingId,
       meetingPath,
       navigation,
+      addParticipantNumbers,
       addSpeaker,
       addSpeakerList,
       canChangeSpeakerList,
