@@ -2,10 +2,12 @@ import { ref } from 'vue'
 
 import { DefaultMap, Socket } from '@/utils'
 import { SubscribedMessage, SuccessMessage } from '@/utils/types'
+import { DocumentVisibleEvent } from '@/utils/events'
 
 import { ChannelConfig, SchemaType } from './types'
 import { ContextRole } from '@/composables/types'
 import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
+import { SocketEvent } from '@/utils/Socket'
 
 type LeaveHandler = (uriOrPk: string | number) => void
 type UpdateHandler<T> = (message: SuccessMessage<T>) => void
@@ -22,7 +24,7 @@ const subscriptions = new Set<string>()
 const leaveTimeouts = new Map<string, number>()
 const updateHandlers = new Map<string, UpdateHandler<any>>()
 const leaveHandlers = new DefaultMap<string, LeaveHandler[]>(() => [])
-const methodHanders = new DefaultMap<string, Map<string, MethodHandler<any>>>(() => new Map())
+const methodHandlers = new DefaultMap<string, Map<string, MethodHandler<any>>>(() => new Map())
 const ignoreContentTypes = new Set(['testing', 'channel', 'response'])
 const rolesAvailable = new Map<string, ContextRole[]>()
 
@@ -32,7 +34,7 @@ function handleMessage (data: SuccessMessage<object>) {
   // General update handler takes overrides other handlers
   if (updateHandler) return updateHandler(data)
 
-  const handler = methodHanders.get(method).get(contentType)
+  const handler = methodHandlers.get(method).get(contentType)
   if (handler) {
     // Method handler only needs payload
     handler(data.p)
@@ -41,7 +43,36 @@ function handleMessage (data: SuccessMessage<object>) {
   }
 }
 
-socket.addEventListener('message', event => {
+/* Ping Pong */
+let heartbeatInterval: number
+const HEARTBEAT_MS = 30_000
+// Reset interval
+function heartbeat (restart = true) {
+  clearInterval(heartbeatInterval)
+  if (restart) heartbeatInterval = setTimeout(ping, HEARTBEAT_MS)
+}
+// Ping server when socket has been quiet
+async function ping () {
+  if (document.visibilityState !== 'visible') {
+    DocumentVisibleEvent.once(ping)
+    return
+  }
+  try {
+    await socket.call('s.ping')
+  } catch {
+    heartbeat(false)
+    return socket.close()
+  }
+}
+// Respond to server ping
+updateHandlers.set('s', ({ t, i }) => {
+  if (!i) return
+  if (t === 's.ping') socket.respond('s.pong', i)
+})
+/* End of Ping Pong */
+
+socket.addEventListener(SocketEvent.Message, event => {
+  heartbeat()
   if ('data' in event) {
     handleMessage(JSON.parse(event.data))
   }
@@ -55,12 +86,14 @@ async function subscribeChannel (uri: string) {
 }
 
 // Send all subscription messages on connect
-socket.addEventListener('open', () => {
+socket.addEventListener(SocketEvent.Open, () => {
+  heartbeat()
   socketState.value = true
   subscriptions.forEach(subscribeChannel)
 })
 
-socket.addEventListener('close', () => {
+socket.addEventListener(SocketEvent.Close, () => {
+  heartbeat(false)
   socketState.value = false
 })
 
@@ -107,7 +140,7 @@ export default class Channel<T> {
   }
 
   public on<Type> (this: Channel<T>, method: string, fn: MethodHandler<Type>, override = true): Channel<T> {
-    const ctHandlers = methodHanders.get(method)
+    const ctHandlers = methodHandlers.get(method)
     if (override || !ctHandlers.has(this.contentType)) {
       ctHandlers.set(this.contentType, fn)
     }
@@ -115,9 +148,9 @@ export default class Channel<T> {
   }
 
   private registerTypeHandler<HT=T> (this: Channel<T>, method: string, fn: MethodHandler<HT>, override = true) {
-    const ctHandlers = methodHanders.get(method)
+    const ctHandlers = methodHandlers.get(method)
     if (override || !ctHandlers.has(this.contentType)) {
-      methodHanders.get(method).set(this.contentType, fn)
+      methodHandlers.get(method).set(this.contentType, fn)
     }
     return this
   }

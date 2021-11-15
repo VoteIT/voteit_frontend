@@ -1,26 +1,23 @@
 /* eslint-disable no-unused-expressions */
-import { AlertLevel } from '@/composables/types'
 import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
 import hostname from '@/utils/hostname'
+import { AlertLevel } from '@/composables/types'
+
 import { ChannelsConfig, ChannelsMessage, State, SuccessMessage } from './types'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-// Send heartbeats, for "pull the network plug" type of protection.
-// const HEARTBEAT_MS = 5000 // Send a ping every 5 s
-// let heartbeatInterval: number
 
 type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
 
 const DEFAULT_CONFIG: ChannelsConfig = {
   timeout: 5000 // 5s
 }
-enum SocketEvent {
+export enum SocketEvent {
   Open = 'open',
   Close = 'close',
   Error = 'error',
   Message = 'message'
 }
-const EVENTS = [SocketEvent.Open, SocketEvent.Close, SocketEvent.Error, SocketEvent.Message]
 
 export default class Socket {
   public active: boolean
@@ -61,20 +58,15 @@ export default class Socket {
         const data: ChannelsMessage = JSON.parse(event.data)
         if (data.i) this.callbacks.get(data.i)?.(data)
       })
-      for (const event of EVENTS) {
-        this.ws.addEventListener(event, this.createEventListener(event as SocketEvent))
+      for (const event of Object.values(SocketEvent)) {
+        this.ws.addEventListener(event, this.createEventListener(event))
       }
-      // heartbeatInterval = setInterval(() => {
-      //   this.ws?.send('ping')
-      // }, HEARTBEAT_MS)
     })
   }
 
   public close () {
-    // delete this.token
     this.ws?.close()
     this.active = false
-    // clearInterval(heartbeatInterval)
   }
 
   public get isOpen () {
@@ -165,6 +157,16 @@ export default class Socket {
     this.ws?.send(JSON.stringify({
       t: type,
       p: payload
+    }))
+  }
+
+  public respond (type: string, id: string, state: State = State.Success, payload?: object) {
+    this.assertOpen()
+    this.ws?.send(JSON.stringify({
+      t: type,
+      i: id,
+      p: payload,
+      s: state
     }))
   }
 }
