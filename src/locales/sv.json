@@ -318,13 +318,14 @@
     "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?"
   },
   "reaction": {
-    "buttons": "Reaktionsknappar",
     "addButton": "Ny reaktionsknapp",
+    "buttons": "Reaktionsknappar",
     "deleteButtonConfirmation": "Du håller på att radera knappen permanent.\nÄr du säker?",
     "editButton": "Ändra reaktionsknapp",
-    "modelsAllowed": "Visa på innehållstyper",
-    "rolesRequired": "Roller som krävs för att reagera",
     "listRolesRequired": "Roller som krävs för att se vem som reagerat",
+    "modelsAllowed": "Visa på innehållstyper",
+    "peopleReacted": "Reaktioner",
+    "rolesRequired": "Roller som krävs för att reagera",
     "settings": "Inställningar för reaktionsknappar"
   },
   "socket": {

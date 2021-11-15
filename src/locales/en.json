@@ -320,13 +320,14 @@
     "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?"
   },
   "reaction": {
-    "buttons": "Reaction buttons",
     "addButton": "New Reaction Button",
+    "buttons": "Reaction buttons",
     "deleteButtonConfirmation": "You are about to delete a button permanently.\nAre you sure?",
     "editButton": "Edit Reaction Button",
-    "modelsAllowed": "Show on content types",
-    "rolesRequired": "Roles allowed to react",
     "listRolesRequired": "Roles allowed to see who reacted",
+    "modelsAllowed": "Show on content types",
+    "peopleReacted": "Reactions",
+    "rolesRequired": "Roles allowed to react",
     "settings": "Reaction Button settings"
   },
   "socket": {

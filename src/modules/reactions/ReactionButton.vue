@@ -11,7 +11,7 @@
       </template>
       <v-sheet class="pa-4">
         <h3>
-          Reactions
+          {{ t('reaction.peopleReacted') }}
         </h3>
         <UserList :userIds="reactionUsers" />
       </v-sheet>
@@ -26,6 +26,7 @@ import UserList from '@/components/UserList.vue'
 import useReactions from './useReactions'
 import { canAddReaction, canDeleteReaction, canListReactions } from './rules'
 import { ReactionButton, ReactionRelation } from './types'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   components: {
@@ -42,6 +43,7 @@ export default defineComponent({
     }
   },
   setup (props) {
+    const { t } = useI18n()
     const { fetchReactions, getUserReaction, setUserReacted, removeUserReacted, getButtonReactionCount } = useReactions()
     const reaction = computed(() => getUserReaction(props.button, props.relation))
     const count = computed(() => getButtonReactionCount(props.button, props.relation))
@@ -63,6 +65,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       canReact: computed(() => reaction.value ? canDeleteReaction(reaction.value) : canAddReaction(props.button)),
       canListReactions: computed(() => !!count.value && canListReactions(props.button)),
       count,
