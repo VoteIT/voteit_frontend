@@ -164,9 +164,8 @@
     "requires": "Kräver"
   },
   "participantNumber": {
-    "alreadyInList": "Deltagarnummer {ids} står redan på talarlistan | Deltagarnummerna {ids} står redan på talarlistan",
-    "doesNotExist": "Deltagarnummer {ids} finns inte i mötet | Deltagarnummerna {ids} finns inte i mötet",
-    "enterToSubmit": "Tryck enter för att lägga till på talarlistan"
+    "alreadyInList": "Deltagarnummer {ids} står redan på talarlistan | Deltagarnumren {ids} står redan på talarlistan",
+    "doesNotExist": "Deltagarnummer {ids} finns inte i mötet | Deltagarnumren {ids} finns inte i mötet"
   },
   "poll": {
     "abstain": "Avstå",
