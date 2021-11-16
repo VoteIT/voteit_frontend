@@ -60,13 +60,14 @@ async function ping () {
   try {
     await socket.call('s.ping')
   } catch {
-    heartbeat(false)
-    return socket.close()
+    heartbeat(false) // Stop pings
+    socket.close() // This takes time to finish
+    // Probably need to either wait for closure, or unregister everything connected to old socket connection before connecting again.
+    socketState.value = false // Trigger reactivity straight away?
   }
 }
 // Respond to server ping
 updateHandlers.set('s', ({ t, i }) => {
-  if (!i) return
   if (t === 's.ping') socket.respond('s.pong', i)
 })
 /* End of Ping Pong */

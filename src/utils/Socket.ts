@@ -10,7 +10,7 @@ const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
 
 const DEFAULT_CONFIG: ChannelsConfig = {
-  timeout: 5000 // 5s
+  timeout: 5_000 // 5s
 }
 export enum SocketEvent {
   Open = 'open',
@@ -39,11 +39,11 @@ export default class Socket {
     }
   }
 
-  public addEventListener (eventName: string, listener: SocketEventHandler) {
+  public addEventListener (eventName: SocketEvent, listener: SocketEventHandler) {
     this.listeners.get(eventName).add(listener)
   }
 
-  public removeEventListener (eventName: string, listener: SocketEventHandler) {
+  public removeEventListener (eventName: SocketEvent, listener: SocketEventHandler) {
     this.listeners.get(eventName).delete(listener)
   }
 
@@ -58,15 +58,25 @@ export default class Socket {
         const data: ChannelsMessage = JSON.parse(event.data)
         if (data.i) this.callbacks.get(data.i)?.(data)
       })
-      for (const event of Object.values(SocketEvent)) {
-        this.ws.addEventListener(event, this.createEventListener(event))
-      }
+      this.ws.onopen = this.createEventListener(SocketEvent.Open)
+      this.ws.onmessage = this.createEventListener(SocketEvent.Message)
+      this.ws.onerror = this.createEventListener(SocketEvent.Error)
+      this.ws.onclose = this.createEventListener(SocketEvent.Close)
+      // for (const event of Object.values(SocketEvent)) {
+      //   this.ws.addEventListener(event, this.createEventListener(event))
+      // }
     })
   }
 
   public close () {
-    this.ws?.close()
+    // Unregister listeners here?
     this.active = false
+    if (!this.ws) return
+    this.ws.onopen = () => { throw new Error('Undead socket detected') }
+    this.ws.onmessage = null
+    this.ws.onerror = null
+    this.ws.onclose = null
+    this.ws.close()
   }
 
   public get isOpen () {
@@ -160,7 +170,7 @@ export default class Socket {
     }))
   }
 
-  public respond (type: string, id: string, state: State = State.Success, payload?: object) {
+  public respond (type: string, id: string | null, state: State = State.Success, payload?: object) {
     this.assertOpen()
     this.ws?.send(JSON.stringify({
       t: type,
