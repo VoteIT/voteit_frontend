@@ -19,19 +19,6 @@ const getSTVSchema: SchemaGenerator = (t, proposals) => {
   }]
 }
 
-const getRepeatedSchulzeSchema: SchemaGenerator = (t, proposals) => {
-  return [{
-    name: 'winners',
-    type: InputType.Number,
-    label: t('winners'),
-    required: true,
-    settings: {
-      min: 1,
-      max: proposals.length
-    }
-  }]
-}
-
 const getInstantRunoffSchema: SchemaGenerator = (t) => {
   return [{
     name: 'allow_random',
@@ -58,6 +45,22 @@ const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
       required: proposals.length < 3,
       label: t('poll.schulze.addDenyProposal')
     }
+  ]
+}
+
+const getRepeatedSchulzeSchema: SchemaGenerator = (t, proposals) => {
+  return [
+    {
+      name: 'winners',
+      type: InputType.Number,
+      label: t('winners'),
+      required: true,
+      settings: {
+        min: 1,
+        max: proposals.length
+      }
+    },
+    ...getSchulzeSchema(t, proposals)
   ]
 }
 

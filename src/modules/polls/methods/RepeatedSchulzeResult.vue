@@ -28,9 +28,9 @@ export default defineComponent({
     const { getProposal } = useProposals()
 
     const orderedProposals = computed(() => {
-      return props.result.rounds.map(round => {
-        return getProposal(round.winner)
-      })
+      return props.result.rounds
+        .map(round => getProposal(round.winner))
+        .filter(p => p)
     })
     return {
       orderedProposals

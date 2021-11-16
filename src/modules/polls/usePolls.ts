@@ -82,7 +82,8 @@ const pollMethods: PollMethod[] = [
     proposalsMin: 3,
     winnersMin: 2,
     initialSettings: {
-      winners: 2
+      winners: 2,
+      stars: 5
     }
   },
   {

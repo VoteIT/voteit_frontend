@@ -4,7 +4,7 @@
       <template #vote>
         <div class="grade">
           <div/>
-          <v-rating length="5" v-model="grades[p.pk]" active-color="success-darken-2" size="small" :disabled="disabled" />
+          <v-rating :length="stars" v-model="grades[p.pk]" active-color="success-darken-2" size="small" :disabled="disabled" />
           <div>
             <v-btn size="small" border v-show="!!grades[p.pk]" @click="grades[p.pk] = 0">{{ t('clear') }}</v-btn>
           </div>
@@ -67,21 +67,21 @@ export default defineComponent({
     // }
 
     const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
+    const stars = computed(() => props.poll.settings?.stars ?? 5)
 
     watch(grades, value => {
       const valid = Object.values(value).some(n => n) // Any grade set to non-zero?
       if (!valid) return emit('update:modelValue') // Clear vote on invalid
       emit('update:modelValue', {
         ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])
-        // ranking: proposals.value.map(p => [p.pk, grades[p.pk] ?? 0])
       })
-      console.log(grades, props.modelValue)
     })
 
     return {
       t,
       grades,
-      proposals
+      proposals,
+      stars
     }
   }
 })
