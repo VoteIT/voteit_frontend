@@ -48,7 +48,6 @@ export default defineComponent({
           fetchOrganisations()
         ])
         if (!user) loader.setLoaded()
-        // if (!await fetchAuthenticatedUser()) loader.setLoaded()
       } catch {
         loader.initFailed.value = true
       }
@@ -62,29 +61,13 @@ export default defineComponent({
     })
   }
 })
-/* Disabled from style below
-$material-icons-font-path: '~material-icons/iconfont/'
-@import '~material-icons/iconfont/material-icons.scss'
-*/
 </script>
 
 <style lang="sass">
 @import './theme/fonts.sass'
-// @import './theme/dark.sass'
-// @import './theme/light.sass'
-
-// :root
-//   @include light-theme
-//  @media (prefers-color-scheme: dark)
-//    @include dark-theme
 
 *
   box-sizing: border-box
-
-// TODO: Revisit how Vuetify should handle scroll
-html,
-.v-main__wrap
-  overflow-y: auto !important
 
 .v-btn
   text-transform: none !important

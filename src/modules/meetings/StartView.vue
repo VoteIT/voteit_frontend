@@ -1,6 +1,6 @@
 <template>
   <v-row v-if="meeting">
-    <v-col lg="8" offset-lg="2">
+    <v-col v-bind="cols.default">
       <header>
         <Menu float :items="menuItems" />
         <WorkflowState :admin="canChange" :contentType="meetingType" :object="meeting" />
@@ -26,7 +26,7 @@ import { meetingType } from './contentTypes'
 import useSpeakerLists from '../speakerLists/useSpeakerLists'
 
 export default defineComponent({
-  name: 'MeetingIndex',
+  inject: ['cols'],
   components: {
     Richtext,
     WorkflowState,
