@@ -53,7 +53,6 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { activeFilter, isModified } = useAgendaFilter()
-    // const tags = inject(TagsKey) as Ref<Set<string>>
     const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
     onClickOutside(root, () => root.value?.close())
 
@@ -72,24 +71,6 @@ export default defineComponent({
       label: t(`workflowState.${state.state}`),
       active: activeFilter.value.states.has(state.state)
     })))
-    // const tagFilters = reactive<FilterDescription[]>([...tags.value].map(tag => ({
-    //   id: tag,
-    //   label: tag,
-    //   active: activeFilter.value.tags.has(tag)
-    // })))
-
-    // watch(tags, value => {
-    //   // add missing
-    //   for (const tag of value) {
-    //     if (!tagFilters.find(tf => tf.id === tag)) {
-    //       tagFilters.push({
-    //         id: tag,
-    //         label: tag,
-    //         active: activeFilter.value.tags.has(tag)
-    //       })
-    //     }
-    //   }
-    // })
 
     function clearFilters () {
       activeFilter.value.order = 'created'
@@ -97,18 +78,10 @@ export default defineComponent({
       // for (const t of tagFilters) t.active = false
       activeFilter.value.tags.clear()
     }
-    // function setTag (tag: string) {
-    //   for (const tf of tagFilters) {
-    //     if (tf.id === tag) tf.active = true
-    //   }
-    // }
 
     watch(states, (value: FilterDescription[]) => {
       activeFilter.value.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
     })
-    // watch(tagFilters, (value: FilterDescription[]) => {
-    //   activeFilter.value.tags = new Set(value.filter(f => f.active).map(f => f.id))
-    // })
 
     return {
       t,

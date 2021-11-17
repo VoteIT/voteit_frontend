@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useAlert from '@/composables/useAlert'
 import { StateContent, Transition, WorkflowState } from '@/contentTypes/types'
@@ -22,7 +23,6 @@ import ContentType from '@/contentTypes/ContentType'
 
 export default defineComponent({
   name: 'WorkflowState',
-  inject: ['t'],
   props: {
     admin: Boolean,
     object: {
@@ -36,6 +36,7 @@ export default defineComponent({
     right: Boolean
   },
   setup (props) {
+    const { t } = useI18n()
     const contentApi = props.contentType.getContentApi()
     const { getState } = props.contentType.useWorkflows()
     const transitionsAvailable = ref<Transition[] | null>(null)
@@ -113,6 +114,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       root,
       menu,
       currentState,

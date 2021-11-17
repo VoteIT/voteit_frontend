@@ -14,20 +14,19 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 import usePresence from '@/modules/presence/usePresence'
 
-import { BubbleComponent } from '@/modules/meetings/types'
 import { LastReadKey } from '@/composables/useUnread'
 import useElectoralRegisters from './useElectoralRegisters'
 
 export default defineComponent({
   name: 'Meeting',
   setup () {
-    const { meetingId, hasRole } = useMeeting()
+    const { meetingId } = useMeeting()
     const { clearRegisters } = useElectoralRegisters()
     useMeetingChannel(true)
     provide(LastReadKey, null)
 
     const presence = usePresence()
-    const presenceBubble = useBubbles(PresenceCheck as BubbleComponent)
+    const presenceBubble = useBubbles(PresenceCheck)
 
     const presenceCheck = computed(() => presence.getOpenPresenceCheck(meetingId.value))
     const isPresent = computed(() => presenceCheck.value && !!presence.getUserPresence(presenceCheck.value.pk))
@@ -54,8 +53,6 @@ export default defineComponent({
     onMounted(() => checkIsPresent(isPresent.value))
     onBeforeUnmount(clearRegisters)
     watch(isPresent, checkIsPresent)
-
-    provide('hasRole', hasRole)
   },
   components: {
     Bubbles

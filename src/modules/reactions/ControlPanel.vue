@@ -17,7 +17,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
@@ -31,7 +32,7 @@ export default defineComponent({
   path: 'reactions',
   icon: 'mdi-thumb-up',
   setup () {
-    const t = inject('t') as (text: string) => string
+    const { t } = useI18n()
     const reactions = useReactions()
     const { meetingId } = useMeeting()
     const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))

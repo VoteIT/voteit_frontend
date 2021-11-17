@@ -3,14 +3,16 @@
 </template>
 
 <script lang="ts">
-import useMeeting from '@/modules/meetings/useMeeting'
 import { defineComponent, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+
+import useMeeting from '../useMeeting'
 import { accessPolicyType } from '../contentTypes'
 
 export default defineComponent({
-  inject: ['t'],
   setup () {
+    const { t } = useI18n()
     const router = useRouter()
     const { meetingId, meetingPath } = useMeeting()
     const submitting = ref(false)
@@ -26,8 +28,9 @@ export default defineComponent({
       submitting.value = false
     }
     return {
-      joinNow,
-      submitting
+      t,
+      submitting,
+      joinNow
     }
   }
 })

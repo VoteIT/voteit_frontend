@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { defineComponent, onBeforeMount, provide } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import useAuthentication from './composables/useAuthentication'
 import useLoader from './composables/useLoader'
@@ -38,7 +37,6 @@ export default defineComponent({
     Dialogs
   },
   setup () {
-    const { t } = useI18n()
     const loader = useLoader('App')
     const { fetchAuthenticatedUser } = useAuthentication()
     const { fetchOrganisations } = useOrganisations()
@@ -55,7 +53,6 @@ export default defineComponent({
         loader.initFailed.value = true
       }
     })
-    provide('t', t)
     provide('cols', {
       default: {
         cols: 12,
@@ -63,7 +60,6 @@ export default defineComponent({
         offsetLg: 2
       }
     })
-    provide('debug', process.env.NODE_ENV === 'development')
   }
 })
 /* Disabled from style below
