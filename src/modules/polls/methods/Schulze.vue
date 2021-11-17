@@ -2,24 +2,14 @@
   <div>
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
-        <div class="d-flex align-center">
-          <v-rating :length="stars" v-model="grades[p.pk]" active-color="success-darken-2" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center flex-grow-1" />
-          <div style="flex: 0 0 64px;">
-            <v-btn size="small" border v-show="!!grades[p.pk]" @click="grades[p.pk] = 0">{{ t('clear') }}</v-btn>
-          </div>
-        </div>
+        <v-rating :length="stars" clearable v-model="grades[p.pk]" active-color="success-darken-2" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center" />
       </template>
     </Proposal>
     <Widget v-if="poll.settings.deny_proposal" color="warning" elevation="4" class="pa-4">
       <h2 class="text-center">
         {{ t('poll.deny') }}
       </h2>
-      <div class="d-flex align-center">
-        <v-rating :length="stars" v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" class="flex-wrap justify-center flex-grow-1" />
-        <div style="flex: 0 0 64px;">
-          <v-btn size="small" border v-show="!!grades[0]" @click="grades[0] = 0">{{ t('clear') }}</v-btn>
-        </div>
-      </div>
+      <v-rating :length="stars" clearable v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" class="flex-wrap justify-center" />
     </Widget>
   </div>
 </template>
