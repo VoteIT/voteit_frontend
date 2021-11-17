@@ -1,9 +1,11 @@
 <template>
-  <Proposal v-for="proposal, i in orderedProposals" :key="proposal.pk" :selected="proposal && result.approved.includes(proposal.pk)" :p="proposal" read-only class="my-4">
-    <template #top>
-      <span class="ordinal">{{ i+1 }}</span>
-    </template>
-  </Proposal>
+  <div>
+    <Proposal v-for="proposal, i in orderedProposals" :key="proposal.pk" :selected="proposal && result.approved.includes(proposal.pk)" :p="proposal" read-only class="my-4">
+      <template #top>
+        <span class="ordinal">{{ i+1 }}</span>
+      </template>
+    </Proposal>
+  </div>
 </template>
 
 <script lang="ts">

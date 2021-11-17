@@ -1,11 +1,13 @@
-git<template>
-  <main>
-    <h1>{{ t('meeting.participants') }}</h1>
-    <div v-if="canChangeRoles" class="search">
-      <UserSearch @submit="addUser" :filter="searchFilter" />
-    </div>
-    <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
-  </main>
+<template>
+  <v-row>
+    <v-col v-bind="cols.default">
+      <h1>{{ t('meeting.participants') }}</h1>
+      <div v-if="canChangeRoles" class="search">
+        <UserSearch @submit="addUser" :filter="searchFilter" />
+      </div>
+      <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -35,6 +37,7 @@ const meetingIcons: Record<MeetingRole, string> = {
 }
 
 export default defineComponent({
+  inject: ['cols'],
   setup () {
     const { t } = useI18n()
     const { meetingId, getUser, canChangeRoles } = useMeeting()
