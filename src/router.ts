@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '@/views/Home.vue'
+import PageNotFoundView from '@/views/PageNotFoundView.vue'
 import meeting from '@/modules/meetings/router'
 import JoinMeeting from '@/modules/meetings/JoinView.vue'
 import plenary from '@/modules/plenary/router'
@@ -10,7 +11,7 @@ import AppBar from '@/components/AppBar.vue'
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     components: {
       default: Home,
       appBar: AppBar
@@ -25,6 +26,15 @@ const routes = [
     name: 'JoinMeeting',
     components: {
       default: JoinMeeting,
+      appBar: AppBar
+    }
+  },
+  // Other pages, do a 404
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404',
+    components: {
+      default: PageNotFoundView,
       appBar: AppBar
     }
   }

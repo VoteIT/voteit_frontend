@@ -29,6 +29,8 @@
   "orderBy": "Sortera efter",
   "options": "Alternativ",
   "organizations": "Organisationer",
+  "pageNotFound": "Sidan hittades inte",
+  "pageNotFoundDescription": "Sidan du efterfrågade finns inte på den här servern.",
   "post": "Posta",
   "preview": "Förhandsgranska",
   "publish": "Publicera",

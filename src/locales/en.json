@@ -30,6 +30,8 @@
   "orderBy": "Order by",
   "options": "Options",
   "organizations": "Organizations",
+  "pageNotFound": "Page not found",
+  "pageNotFoundDescription": "The page you requested can't be found on this server.",
   "post": "Post",
   "preview": "Preview",
   "publish": "Publish",
