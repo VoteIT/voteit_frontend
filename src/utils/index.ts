@@ -1,11 +1,11 @@
 import DefaultMap from './DefaultMap'
-import TypedEvent from './TypedEvent'
 import ProgressPromise from './ProgressPromise'
 import Socket from './Socket'
 import restApi from './restApi'
-import { Alert, Dialog, Modal } from '@/composables/types'
+import { Dialog } from '@/composables/types'
 import { SubscribePayload } from './types'
 import _slugify from 'slugify'
+import { openDialogEvent } from './events'
 
 function uriToPayload (uri: string): SubscribePayload {
   // Convert internal resource identifier to subscription payload object
@@ -46,12 +46,6 @@ function orderBy<T> (objects: T[], attributeOrGetter: ((object: T) => any) | str
   })
   return objects
 }
-
-const openAlertEvent = new TypedEvent<Alert | string>()
-const openDialogEvent = new TypedEvent<Dialog>()
-const openModalEvent = new TypedEvent<Modal>()
-const closeModalEvent = new TypedEvent()
-const toggleNavDrawerEvent = new TypedEvent()
 
 function stripHTML (html: string) {
   const tmp = document.createElement('div')
@@ -101,10 +95,5 @@ export {
   slugify,
   stripHTML,
   uriToPayload,
-  openAlertEvent,
-  openDialogEvent,
-  openModalEvent,
-  closeModalEvent,
-  toggleNavDrawerEvent,
   restApi
 }

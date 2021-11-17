@@ -1,7 +1,9 @@
-import { AlertLevel, RestApiConfig } from '@/composables/types'
-import { openAlertEvent } from '@/utils'
-import restApi from '@/utils/restApi'
 import { AxiosError, AxiosPromise } from 'axios'
+
+import { AlertLevel, RestApiConfig } from '@/composables/types'
+import { openAlertEvent } from '@/utils/events'
+import restApi from '@/utils/restApi'
+
 import { Transition, WorkflowState } from './types'
 
 const DEFAULT_CONFIG: RestApiConfig = {

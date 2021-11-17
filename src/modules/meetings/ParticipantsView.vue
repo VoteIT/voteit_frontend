@@ -14,19 +14,19 @@
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, openAlertEvent } from '@/utils'
+import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-
+import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
-
-import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRoles } from '@/composables/types'
+
+import useMeeting from '../meetings/useMeeting'
+import { User } from '../organisations/types'
 
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
-import { User } from '../organisations/types'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',

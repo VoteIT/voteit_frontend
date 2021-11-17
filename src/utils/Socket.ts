@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import { uriToPayload, ProgressPromise, DefaultMap, openAlertEvent } from '@/utils'
+import { uriToPayload, ProgressPromise, DefaultMap } from '@/utils'
 import hostname from '@/utils/hostname'
 import { AlertLevel } from '@/composables/types'
 
 import { ChannelsConfig, ChannelsMessage, State, SuccessMessage } from './types'
+import { openAlertEvent } from './events'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 

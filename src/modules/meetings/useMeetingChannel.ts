@@ -8,7 +8,7 @@ import { slugify } from '@/utils'
 import useMeetings from './useMeetings'
 import { meetingType } from './contentTypes'
 
-const loader = useLoader('useMeetingChannels')
+const loader = useLoader('useMeetingChannel')
 
 let currentRoleChannel: string | null = null
 const channels = new Channel() // For dynamic usage
@@ -43,6 +43,7 @@ export default function useMeetingChannel (init = false) {
           else await router.push(`/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
         } catch {
           await router.push('/')
+          loader.reset()
         }
       })
       loader.subscribe(meetingType.channel, meetingId.value)

@@ -9,24 +9,24 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify/composables'
 
-import { slugify, toggleNavDrawerEvent } from '@/utils'
-
-import useLoader from '@/composables/useLoader'
-import useAgenda from '@/modules/agendas/useAgenda'
-import useMeeting from '@/modules/meetings/useMeeting'
-import { agendaItemType } from '../agendas/contentTypes'
-// import { pollType } from '../polls/contentTypes'
-
-import { WorkflowState } from '@/contentTypes/types'
-import usePolls from '@/modules/polls/usePolls'
-import useProposals from '@/modules/proposals/useProposals'
-import MenuTree from '@/components/MenuTree.vue'
+import { slugify } from '@/utils'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
+import TypedEvent from '@/utils/TypedEvent'
+import { WorkflowState } from '@/contentTypes/types'
+import useLoader from '@/composables/useLoader'
+import MenuTree from '@/components/MenuTree.vue'
+
+import useAgenda from '../agendas/useAgenda'
+import { agendaItemType } from '../agendas/contentTypes'
+import useMeeting from '../meetings/useMeeting'
+import usePolls from '../polls/usePolls'
+import useProposals from '../proposals/useProposals'
 import { PollState } from '../polls/types'
 import { AgendaItem } from '../agendas/types'
 import { canAddPoll } from '../polls/rules'
+
 import { canChangeMeeting } from './rules'
-import TypedEvent from '@/utils/TypedEvent'
+import { toggleNavDrawerEvent } from '@/utils/events'
 
 export default defineComponent({
   name: 'Agenda',

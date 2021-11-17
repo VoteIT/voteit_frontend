@@ -67,13 +67,14 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 
-import { closeModalEvent, dialogQuery } from '@/utils'
+import { dialogQuery } from '@/utils'
 
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { MeetingRole } from '@/modules/meetings/types'
 import { ReactionButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
+import { closeModalEvent } from '@/utils/events'
 
 enum ReactionContentType {
   DiscussionPost = 'discussion_post',

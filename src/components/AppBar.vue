@@ -44,7 +44,8 @@ import { ComponentPublicInstance, computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, toggleNavDrawerEvent } from '@/utils'
+import { dialogQuery } from '@/utils'
+import { toggleNavDrawerEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'

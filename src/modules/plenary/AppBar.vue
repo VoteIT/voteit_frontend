@@ -44,23 +44,23 @@
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, openModalEvent, toggleNavDrawerEvent } from '@/utils'
-import { proposalStates } from '@/modules/proposals/workflowStates'
-
-import useAgenda from '@/modules/agendas/useAgenda'
-import useAgendaItem from '@/modules/agendas/useAgendaItem'
-import useMeeting from '@/modules/meetings/useMeeting'
-
-import usePlenary from './usePlenary'
-import useProposals from '@/modules/proposals/useProposals'
+import { dialogQuery } from '@/utils'
+import { openModalEvent, toggleNavDrawerEvent } from '@/utils/events'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import usePolls from '../polls/usePolls'
-import { PollState } from '../polls/types'
 import { WorkflowState } from '@/contentTypes/types'
-import { Poll, PollMethod, PollMethodName, PollMethodSettings, PollStartData } from '../polls/methods/types'
+
+import { proposalStates } from '../proposals/workflowStates'
+import useAgenda from '../agendas/useAgenda'
+import useAgendaItem from '../agendas/useAgendaItem'
+import useMeeting from '../meetings/useMeeting'
+import useProposals from '../proposals/useProposals'
 import { ProposalState } from '../proposals/types'
 import { pollType } from '../polls/contentTypes'
+import usePolls from '../polls/usePolls'
+import { PollState } from '../polls/types'
+import { Poll, PollMethod, PollMethodName, PollMethodSettings, PollStartData } from '../polls/methods/types'
 
+import usePlenary from './usePlenary'
 import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
 

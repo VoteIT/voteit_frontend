@@ -49,7 +49,7 @@ export default defineComponent({
         ])
         if (!user) loader.setLoaded()
       } catch {
-        loader.initFailed.value = true
+        loader.setLoaded(false)
       }
     })
     provide('cols', {

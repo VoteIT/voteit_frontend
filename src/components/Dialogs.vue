@@ -16,11 +16,10 @@
 <script lang="ts">
 /* eslint-disable no-unused-expressions */
 import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeMount, reactive, ref } from 'vue'
-
-import { openDialogEvent } from '@/utils'
-
-import { Dialog } from '@/composables/types'
 import { useI18n } from 'vue-i18n'
+
+import { openDialogEvent } from '@/utils/events'
+import { Dialog } from '@/composables/types'
 
 export default defineComponent({
   setup () {

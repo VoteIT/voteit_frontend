@@ -12,9 +12,12 @@
 </template>
 
 <script lang="ts">
-import { closeModalEvent, slugify } from '@/utils'
 import { defineComponent, PropType, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+import { slugify } from '@/utils'
+import { closeModalEvent } from '@/utils/events'
+
 import useAgendaItem from '../agendas/useAgendaItem'
 import { ProposalText, proposalTextType } from './contentTypes'
 

@@ -1,4 +1,4 @@
-import { openModalEvent, closeModalEvent } from '@/utils'
+import { openModalEvent, closeModalEvent } from '@/utils/events'
 import { Modal } from './types'
 
 export default function useModal () {

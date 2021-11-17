@@ -14,11 +14,10 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, reactive } from 'vue'
-
-import { openAlertEvent } from '@/utils'
-
-import { Alert, AlertLevel } from '@/composables/types'
 import { useI18n } from 'vue-i18n'
+
+import { clearAlertsEvent, openAlertEvent } from '@/utils/events'
+import { Alert, AlertLevel } from '@/composables/types'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
 const DEFAULTS = {
@@ -28,7 +27,6 @@ const DEFAULTS = {
 }
 
 export default defineComponent({
-  name: 'Alerts',
   setup () {
     const { t } = useI18n()
     const alerts = reactive<Alert[]>([])
@@ -82,6 +80,7 @@ export default defineComponent({
 
     onBeforeMount(() => {
       openAlertEvent.on(open)
+      clearAlertsEvent.on(() => dismiss())
     })
 
     return {
@@ -96,7 +95,7 @@ export default defineComponent({
 
 <style lang="sass">
 #alerts
-  z-index: 1000
+  z-index: 100
   position: fixed
   bottom: 1.5rem
   right: 1.5rem

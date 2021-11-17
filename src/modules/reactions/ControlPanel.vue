@@ -20,7 +20,7 @@
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { openModalEvent } from '@/utils'
+import { openModalEvent } from '@/utils/events'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import useReactions from './useReactions'

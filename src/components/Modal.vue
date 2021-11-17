@@ -14,7 +14,7 @@
 <script lang="ts">
 import { computed, defineComponent, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
 
-import { openModalEvent, closeModalEvent } from '@/utils'
+import { openModalEvent, closeModalEvent } from '@/utils/events'
 
 import { Modal } from '@/composables/types'
 

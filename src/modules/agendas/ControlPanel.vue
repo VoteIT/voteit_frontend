@@ -80,24 +80,24 @@
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
+import { AxiosError, AxiosResponse } from 'axios'
 
+import { dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 import { Tab } from '@/components/types'
-
+import { WorkflowState } from '@/contentTypes/types'
+import { AlertLevel } from '@/composables/types'
 import Tabs from '@/components/Tabs.vue'
 import Switch from '@/components/inputs/Switch.vue'
 
-import useAgenda from '@/modules/agendas/useAgenda'
-import useMeeting from '@/modules/meetings/useMeeting'
+import useAgenda from '../agendas/useAgenda'
+import { AgendaItem } from '../agendas/types'
+import useMeeting from '../meetings/useMeeting'
+import { meetingType } from '../meetings/contentTypes'
 
-import { WorkflowState } from '@/contentTypes/types'
-import { dialogQuery, openAlertEvent } from '@/utils'
-import { ThemeColor } from '@/utils/types'
-import { AxiosError, AxiosResponse } from 'axios'
-import { AlertLevel } from '@/composables/types'
-import { AgendaItem } from '@/modules/agendas/types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
-import { meetingType } from '../meetings/contentTypes'
+import { openAlertEvent } from '@/utils/events'
 
 export default defineComponent({
   translationKey: 'agenda.agenda',

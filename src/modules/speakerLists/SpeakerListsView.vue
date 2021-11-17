@@ -95,7 +95,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, openAlertEvent } from '@/utils'
+import { dialogQuery } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
@@ -112,6 +112,7 @@ import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSp
 import { speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
+import { openAlertEvent } from '@/utils/events'
 
 interface AgendaNav {
   icon: string

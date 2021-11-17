@@ -62,7 +62,7 @@ import { computed, defineComponent, onMounted, onUnmounted, provide, reactive, r
 import { useI18n } from 'vue-i18n'
 import { useStorage } from '@vueuse/core'
 
-import { openModalEvent } from '@/utils'
+import { openModalEvent } from '@/utils/events'
 import { MenuItem } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'

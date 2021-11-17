@@ -26,15 +26,16 @@
 </template>
 
 <script lang="ts">
-import { dialogQuery, openModalEvent } from '@/utils'
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery } from '@/utils'
+import { openModalEvent } from '@/utils/events'
+import { ThemeColor } from '@/utils/types'
 import { ProposalText, proposalTextType } from './contentTypes'
 import useProposals from './useProposals'
 import useTextDocument from './useTextDocument'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
-import { ThemeColor } from '@/utils/types'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 
 export default defineComponent({
