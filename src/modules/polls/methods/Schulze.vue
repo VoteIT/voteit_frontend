@@ -2,14 +2,18 @@
   <div>
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
-        <v-rating :length="stars" clearable v-model="grades[p.pk]" active-color="success-darken-2" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center" />
+        <div class="text-center">
+          <v-rating :length="stars" clearable v-model="grades[p.pk]" active-color="success-darken-2" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center" />
+        </div>
       </template>
     </Proposal>
     <Widget v-if="poll.settings.deny_proposal" color="warning" elevation="4" class="pa-4">
       <h2 class="text-center">
         {{ t('poll.deny') }}
       </h2>
-      <v-rating :length="stars" clearable v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" class="flex-wrap justify-center" />
+      <div class="text-center">
+        <v-rating :length="stars" clearable v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" class="flex-wrap justify-center" />
+      </div>
     </Widget>
   </div>
 </template>
