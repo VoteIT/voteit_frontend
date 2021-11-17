@@ -2,10 +2,9 @@
   <div>
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
-        <div class="grade">
-          <div/>
-          <v-rating :length="stars" v-model="grades[p.pk]" active-color="success-darken-2" size="small" :disabled="disabled" />
-          <div>
+        <div class="d-flex align-center">
+          <v-rating :length="stars" v-model="grades[p.pk]" active-color="success-darken-2" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center flex-grow-1" />
+          <div style="flex: 0 0 64px;">
             <v-btn size="small" border v-show="!!grades[p.pk]" @click="grades[p.pk] = 0">{{ t('clear') }}</v-btn>
           </div>
         </div>
@@ -15,10 +14,9 @@
       <h2 class="text-center">
         {{ t('poll.deny') }}
       </h2>
-      <div class="grade">
-        <div/>
-        <v-rating length="5" v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" />
-        <div>
+      <div class="d-flex align-center">
+        <v-rating :length="stars" v-model="grades[0]" active-color="surface" size="small" :disabled="disabled" class="flex-wrap justify-center flex-grow-1" />
+        <div style="flex: 0 0 64px;">
           <v-btn size="small" border v-show="!!grades[0]" @click="grades[0] = 0">{{ t('clear') }}</v-btn>
         </div>
       </div>
@@ -86,16 +84,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass" scoped>
-.grade
-  text-align: center
-  display: flex
-  > div
-    flex: 0 1 100px
-  :last-child
-    text-align: right
-  .v-rating
-    flex: 1 0 auto
-    justify-content: center
-</style>
