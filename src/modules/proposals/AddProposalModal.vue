@@ -20,9 +20,15 @@
         </form>
       </v-expand-transition>
       <v-expand-transition>
+      <div v-if="!proposal">
+        <p class="my-6 text-center text-secondary">
+          {{ t('proposal.previewBeforePublish') }}
+        </p>
+      </div>
+      </v-expand-transition>
+      <v-expand-transition>
         <div v-if="proposal">
-          <v-divider class="my-6" v-if="!done" />
-          <Proposal readOnly :p="proposal" />
+          <Proposal readOnly :p="proposal" class="my-6" />
         </div>
       </v-expand-transition>
       <v-alert v-if="done" type="success" :text="t('allDone')" class="mt-8" />

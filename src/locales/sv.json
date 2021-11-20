@@ -306,6 +306,7 @@
     "add": "Lägg ett förslag",
     "change": "Föreslå ändring",
     "deletePrompt": "Du håller på att permanent radera ett förslag.\nÄr du säker?",
+    "previewBeforePublish": "Du behöver förhandsgranska ditt förslag innan du kan publicera det.",
     "proposal": "Förslag",
     "proposalCount": "Inga förslag | Ett förslag | {count} förslag",
     "proposalCountOfTotal": "Inga förslag | {filtered}/{total} förslag | {filtered}/{total} förslag",
