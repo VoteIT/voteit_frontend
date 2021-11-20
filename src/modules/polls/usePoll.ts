@@ -3,7 +3,7 @@ import { pollMethods, pollResults } from './methods'
 
 import { PollState } from './types'
 import usePolls from './usePolls'
-import { canChangePoll, canVote as _canVote } from './rules'
+import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
 import useProposals from '../proposals/useProposals'
 import { Proposal } from '../proposals/types'
 
@@ -29,6 +29,7 @@ export default function usePoll (pollRef: Ref<number>) {
   const userVote = computed(() => poll.value && polls.getUserVote(poll.value))
 
   const canChange = computed(() => poll.value && canChangePoll(poll.value))
+  const canDelete = computed(() => poll.value && canDeletePoll(poll.value))
   const canVote = computed(() => poll.value && _canVote(poll.value))
 
   const voteComponent = computed(() => poll.value && pollMethods[poll.value.method_name])
@@ -57,6 +58,7 @@ export default function usePoll (pollRef: Ref<number>) {
     approved,
     denied,
     canChange,
+    canDelete,
     canVote,
     isOngoing,
     isFinished,

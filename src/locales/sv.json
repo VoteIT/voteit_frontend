@@ -180,6 +180,7 @@
     "castVote": "Rösta",
     "changeVote": "Ändra röst",
     "close": "Avsluta omröstningen",
+    "confirmDeleteQuery": "Du håller på att radera den här omröstningen.\nÄr du säker?",
     "created": "Skapa omröstning {title}",
     "deny": "Avslag",
     "details": "Omröstningsdetaljer",

@@ -2,10 +2,10 @@ import useAuthentication from '@/composables/useAuthentication'
 
 import { agendaItems } from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
-import { isAIModerator, isFinishedAI } from '../agendas/rules'
+import { isAIModerator, isArchivedAI, isFinishedAI } from '../agendas/rules'
 import { meetings } from '../meetings/useMeetings'
 import useElectoralRegisters from '../meetings/useElectoralRegisters'
-import { isFinishedMeeting, isModerator } from '../meetings/rules'
+import { isArchivedMeeting, isFinishedMeeting, isModerator } from '../meetings/rules'
 import { Meeting } from '../meetings/types'
 
 import { PollState } from './types'
@@ -52,7 +52,7 @@ export function canDeletePoll (poll: Poll): boolean {
   const agendaItem = agendaItems.get(poll.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
-  return isModerator(meeting)
+  return !isArchivedMeeting(meeting) && !isArchivedAI(agendaItem) && isModerator(meeting)
 }
 
 export function canVote (poll: Poll): boolean {

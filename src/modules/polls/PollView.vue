@@ -3,6 +3,7 @@
     <v-col offset-lg="2" lg="8">
       <header>
         <div class="header-meta">
+          <Menu float :items="menuItems" />
           <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
           <WorkflowState :admin="canChange" :contentType="pollType" :object="poll" />
         </div>
@@ -58,7 +59,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import WorkflowState from '@/components/WorkflowState.vue'
 import Channel from '@/contentTypes/Channel'
@@ -68,8 +69,9 @@ import Proposal from '../proposals/Proposal.vue'
 
 import usePoll from './usePoll'
 import { pollType } from './contentTypes'
-import { ThemeColor } from '@/utils/types'
+import { MenuItem, ThemeColor } from '@/utils/types'
 import slugify from 'slugify'
+import { dialogQuery } from '@/utils'
 
 export default defineComponent({
   name: 'PollView',
@@ -80,8 +82,9 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
-    const { meetingPath } = useMeeting()
+    const router = useRouter()
+    const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
+    const { meetingPath, meetingId } = useMeeting()
     const channels = new Channel('vote')
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
@@ -117,6 +120,29 @@ export default defineComponent({
       } catch {}
       submitting.value = false
     }
+
+    async function deletePoll () {
+      if (!canDelete.value || !poll.value) return
+      if (!await dialogQuery({
+        title: t('poll.confirmDeleteQuery'),
+        theme: ThemeColor.Warning
+      })) return
+      await pollType.api.delete(poll.value.pk)
+      router.push({
+        name: 'polls',
+        params: { id: meetingId.value }
+      })
+    }
+
+    const menuItems = computed<MenuItem[]>(() => {
+      if (!canDelete.value) return []
+      return [{
+        title: t('delete'),
+        icon: 'mdi-delete',
+        color: ThemeColor.Warning,
+        onClick: deletePoll
+      }]
+    })
 
     const allPollsPath = computed(() => `${meetingPath.value}/polls`)
     const buttons = computed(() => {
@@ -160,6 +186,7 @@ export default defineComponent({
       canChange,
       canVote,
       denied,
+      menuItems,
       methodName,
       poll,
       pollType,

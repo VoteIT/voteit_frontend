@@ -182,6 +182,7 @@
     "castVote": "Cast vote",
     "changeVote": "Change vote",
     "close": "Close poll",
+    "confirmDeleteQuery": "You're about to delete this poll.\nAre you sure?",
     "created": "Created poll {title}",
     "deny": "Deny",
     "details": "Poll details",
