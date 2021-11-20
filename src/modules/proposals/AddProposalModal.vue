@@ -13,7 +13,7 @@
           <slot name="editor">
             <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
           </slot>
-          <div class="btn-group text-right">
+          <div class="text-right">
             <slot name="actions" />
             <v-btn type="submit" color="primary" prepend-icon="mdi-text-box-outline" :disabled="!!proposal">{{ t('preview') }}</v-btn>
           </div>
@@ -27,12 +27,12 @@
       </v-expand-transition>
       <v-alert v-if="done" type="success" :text="t('allDone')" class="mt-8" />
       <v-spacer />
-      <div v-if="done" class="text-right mt-2">
+      <div v-if="done" class="text-right mt-4">
         <v-btn color="primary" @click="isOpen = false">
           {{ t('close') }}
         </v-btn>
       </div>
-      <div v-else class="text-right mt-2">
+      <div v-else class="text-right mt-4">
         <v-btn variant="text" @click="isOpen = false">
           {{ t('cancel') }}
         </v-btn>

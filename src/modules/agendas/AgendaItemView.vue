@@ -21,17 +21,15 @@
     </v-row>
     <v-divider class="my-4" />
     <v-row>
-      <v-col>
-        <div class="d-flex">
-          <AddProposalModal v-if="canAddProposal" />
-          <v-spacer />
-          <AgendaFilters ref="filterComponent" :key="agendaId" />
-          <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
-            <span class="text-secondary">{{ t('agenda.showAs') }}</span>
-            <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
-              <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
-            </v-btn>
-          </div>
+      <v-col class="d-flex">
+        <AddProposalModal v-if="canAddProposal" />
+        <v-spacer />
+        <AgendaFilters ref="filterComponent" :key="agendaId" />
+        <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
+          <span class="text-secondary">{{ t('agenda.showAs') }}</span>
+          <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
+            <img :src="require(`@/assets/agenda-display-${mode}.svg`).default"/>
+          </v-btn>
         </div>
       </v-col>
     </v-row>
@@ -39,13 +37,23 @@
       <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'" class="mb-2">{{ t('proposal.proposals') }}</h2>
         <h2 v-else class="mb-2">{{ t('proposal.proposalsAndComments') }}</h2>
-        <v-alert type="info" icon="mdi-filter-outline" v-if="hasProposals && !sortedProposals.length" class="mb-2">
-          <div>
-            <div class="mb-2">{{ t('agenda.helpNoProposalsInFilter') }}</div>
-            <v-btn v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
-              {{ t('defaultFilters') }}
-            </v-btn>
+        <v-alert type="info" icon="mdi-filter-outline" v-if="!hasProposals" class="mb-2">
+          {{ t('agenda.helpNoProposals') }}
+        </v-alert>
+        <v-alert type="info" icon="mdi-filter-outline" v-else-if="filterTag" class="mb-2">
+          <div class="flex-grow-1">
+            {{ t('agenda.filteringOnTag') }}
+            <Tag :name="filterTag" disabled class="ml-2" />
           </div>
+          <v-btn variant="text" size="small" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
+            {{ t('defaultFilters') }}
+          </v-btn>
+        </v-alert>
+        <v-alert type="info" icon="mdi-filter-outline" v-else-if="hasProposals && !sortedProposals.length" class="mb-2">
+          <div class="flex-grow-1">{{ t('agenda.helpNoProposalsInFilter') }}</div>
+          <v-btn size="small" variant="text" v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
+            {{ t('defaultFilters') }}
+          </v-btn>
         </v-alert>
         <AgendaProposals :proposals="sortedProposals" />
       </v-col>
@@ -58,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStorage } from '@vueuse/core'
 
@@ -218,11 +226,17 @@ export default defineComponent({
     })
 
     const filterComponent = ref<AgendaFilterComponent | null>(null)
-    function toggleTag (tagName: string) {
+    async function toggleTag (tagName: string) {
       activeFilter.value.tags = new Set([tagName])
-      // if (tags.has(tagName)) tags.delete(tagName)
-      // else tags.add(tagName)
+      const el: HTMLElement = filterComponent.value?.$el
+      if (!el) return
+      await nextTick()
+      window.scrollTo({
+        top: el.offsetTop - 12,
+        behavior: 'smooth'
+      })
     }
+    const filterTag = computed(() => [...activeFilter.value.tags][0])
     onMounted(() => {
       tagClickEvent.on(toggleTag)
     })
@@ -256,6 +270,7 @@ export default defineComponent({
       displayMode,
       editing,
       filterComponent,
+      filterTag,
       meetingPath,
       menuItems,
       hasProposals,
