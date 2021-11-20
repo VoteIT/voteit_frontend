@@ -1,6 +1,9 @@
 <template>
   <span>
     {{ user.full_name }}
+    <small v-if="userid && user.userid" class="text-secondary">
+      ({{ user.userid }})
+    </small>
   </span>
 </template>
 
@@ -14,7 +17,8 @@ export default defineComponent({
     pk: {
       type: Number,
       required: true
-    }
+    },
+    userid: Boolean
   },
   setup (props) {
     const { getUser } = useMeeting()

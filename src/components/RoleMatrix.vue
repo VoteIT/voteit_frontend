@@ -13,7 +13,7 @@
     </thead>
     <tbody>
       <tr v-for="{ user, assigned } in users" :key="user">
-        <td><User :pk="user" /></td>
+        <td><User :pk="user" userid /></td>
         <td v-for="{ name } in roles" :key="name">
           <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/>
           <v-icon v-else @click="addRole(user, name)" icon="mdi-close" />
@@ -172,6 +172,7 @@ table
     th::after
       transform: rotate(180deg)
   td
+    padding: 2px
     text-align: center
     .mdi
       color: rgb(var(--v-theme-warning))
