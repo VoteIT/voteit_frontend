@@ -67,6 +67,7 @@ async function ping () {
   }
 }
 // Respond to server ping
+// 's' == system
 updateHandlers.set('s', ({ t, i }) => {
   if (t === 's.ping') socket.respond('s.pong', i)
 })

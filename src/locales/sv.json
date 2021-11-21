@@ -236,7 +236,7 @@
       "irv": "IRV",
       "help": {
         "majority": "Rösta på det förslag du föredrar.",
-        "scottish_stv": "Välj de förslag du vill rösta påminner i prioriteringsordning.",
+        "scottish_stv": "Välj de förslag du vill rösta på i prioriteringsordning.",
         "schulze": "Rangordna förslag genom att ange en till fem stjärnor. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag.",
         "repeated_schulze": "Rangordna förslag genom att ange en till fem stjärnor. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag.",
         "combined_simple": "Rösta bifall eller avslag på varje förslag."

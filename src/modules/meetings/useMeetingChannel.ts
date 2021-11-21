@@ -11,7 +11,8 @@ import { meetingType } from './contentTypes'
 const loader = useLoader('useMeetingChannel')
 
 let currentRoleChannel: string | null = null
-const channels = new Channel() // For dynamic usage
+const channelConfig = { timeout: 15_000 } // Use long timeout for meeting channel subscription, so people don't get thrown out.
+const channels = new Channel(undefined, channelConfig) // For dynamic usage
 
 function leaveRoleChannel () {
   if (!currentRoleChannel) return
@@ -39,7 +40,7 @@ export default function useMeetingChannel (init = false) {
     onBeforeMount(() => {
       loader.call(async () => {
         try {
-          if (await fetchMeeting(meetingId.value)) await enterRoleChannel()
+          if (await fetchMeeting(meetingId.value)) enterRoleChannel()
           else await router.push(`/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
         } catch {
           await router.push('/')
