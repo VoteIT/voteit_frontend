@@ -7,7 +7,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify/composables'
+import { useDisplay } from 'vuetify'
 
 import { slugify } from '@/utils'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'

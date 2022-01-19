@@ -1,10 +1,7 @@
 <template>
   <label v-if="label">{{ label }}</label>
-  <div class="mb-4">
-    <span v-for="[title, value] in Object.entries(settings.options)" :key="value">
-      <input :id="`${name}-choice-${value}`" type="checkbox" v-model="val[value]">
-      <label :for="`${name}-choice-${value}`">{{ title }}</label>
-    </span>
+  <div class="mb-4 d-flex flex-wrap">
+    <v-checkbox v-for="[key, label] in Object.entries(settings.options)" :key="key" v-model="val[key]" :label="label" :disabled="requiredValues.includes(key)" hide-details class="flex-grow-0" />
   </div>
 </template>
 
@@ -14,36 +11,36 @@ import { InputComponent } from './types'
 
 type ChoiceRecord = Record<string, boolean>
 
-function createInitialOptions (options: Record<string, string>, values: string[]): ChoiceRecord {
-  const obj: ChoiceRecord = {}
-  for (const value of Object.values(options)) {
-    obj[value] = values.includes(value)
-  }
-  return obj
+function createInitialValues (keys: string[], values: Set<string>): ChoiceRecord {
+  return Object.fromEntries(
+    keys.map(k => [k, values.has(k)])
+  )
 }
 
 function toOutputValue (obj: ChoiceRecord): string[] {
-  return Object.entries(obj)
-    .filter(e => e[1])
-    .map(e => e[0])
+  return Object.keys(obj)
+    .filter(k => obj[k])
 }
 
 export default defineComponent({
   emits: ['update:modelValue'],
   props: {
-    name: {
-      type: String,
-      required: true
+    modelValue: {
+      type: Array as PropType<string[]>,
+      default: () => []
     },
-    modelValue: Array as PropType<string[]>,
     settings: {
       type: Object,
       required: true
     },
-    label: String
+    label: String,
+    requiredValues: {
+      type: Array as PropType<string[]>,
+      default: () => []
+    }
   },
   setup (props, { emit }) {
-    const val = reactive(createInitialOptions(props.settings.options, props.modelValue || []))
+    const val = reactive(createInitialValues(Object.keys(props.settings.options), new Set([...props.modelValue, ...props.requiredValues])))
     watch(val, value => {
       emit('update:modelValue', toOutputValue(value))
     })

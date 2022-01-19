@@ -1,79 +1,80 @@
 <template>
-  <Tabs v-model="editMode" :tabs="editModes" />
-  <div v-if="editMode === 'default'">
-    <v-item-group tag="table" id="agenda-edit" multiple v-model="editSelected">
-      <thead>
-        <tr>
-          <th>
-            <input type="checkbox" v-model="editIsAllSelected">
-          </th>
-          <th>{{ t('state') }}</th>
-          <th class="title">{{ t('title') }}</th>
-          <th>{{ t('proposal.proposals') }}</th>
-          <th>{{ t('discussion.discussions') }}</th>
-          <th/>
-        </tr>
-      </thead>
-      <tbody>
-        <v-item v-for="ai in agendaItems" :key="ai.pk" v-slot="{ toggle, isSelected }" :value="ai.pk">
+  <Tabs :tabs="editModes">
+    <template #default>
+      <v-item-group tag="table" id="agenda-edit" multiple v-model="editSelected">
+        <thead>
           <tr>
-            <td>
-              <input type="checkbox" :checked="isSelected" @change.prevent="toggle()" class="mr-2">
-            </td>
-            <td class="state">
-              <v-icon size="small" :icon="getState(ai.state).icon" />
-            </td>
-            <td>{{ ai.title }}</td>
-            <td class="state">
-              <Switch :modelValue="!ai.block_proposals" @change="patchAgendaItem(ai, { block_proposals: !$event })" />
-            </td>
-            <td class="state">
-              <Switch :modelValue="!ai.block_discussion" @change="patchAgendaItem(ai, { block_discussion: !$event })" />
-            </td>
-            <td>
-              <v-btn v-if="canDeleteAgendaItem(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
-            </td>
+            <th>
+              <input type="checkbox" v-model="editIsAllSelected">
+            </th>
+            <th>{{ t('state') }}</th>
+            <th class="title">{{ t('title') }}</th>
+            <th>{{ t('proposal.proposals') }}</th>
+            <th>{{ t('discussion.discussions') }}</th>
+            <th/>
           </tr>
-        </v-item>
-      </tbody>
-    </v-item-group>
-    <v-expand-transition>
-      <v-sheet border rounded v-show="editSelected.length" class="pa-2">
-        <h2>
-          {{ t('agenda.changeMany', { count: editSelected.length }, editSelected.length) }}
-        </h2>
-        <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">{{ t('delete') }}</v-btn>
-        <div>
-          <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
-        </div>
-        <div>
-          <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
-          <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
-        </div>
-        <div>
-          <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
-          <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
-        </div>
-      </v-sheet>
-    </v-expand-transition>
-    <v-divider class="mt-6 mb-2" />
-    <h2>{{ t('agenda.newItem') }}</h2>
-    <form @submit.prevent="addAgendaItem()" id="agenda-add-form" class="mb-2">
-      <v-text-field :label="t('title')" required v-model="newAgendaTitle" />
-      <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
-    </form>
-  </div>
-  <div v-if="editMode === 'order'">
-    <Draggable v-model="agendaItems" item-key="pk" >
-      <template #item="{ element }">
-        <div>
-          <v-icon size="small" :icon="getState(element.state).icon" />
-          <span>{{ element.title }}</span>
-          <v-icon size="small" icon="mdi-drag-horizontal"/>
-        </div>
-      </template>
-    </Draggable>
-  </div>
+        </thead>
+        <tbody>
+          <v-item v-for="ai in agendaItems" :key="ai.pk" v-slot="{ toggle, isSelected }" :value="ai.pk">
+            <tr>
+              <td>
+                <input type="checkbox" :checked="isSelected" @change.prevent="toggle()" class="mr-2">
+              </td>
+              <td class="state">
+                <v-icon size="small" :icon="getState(ai.state).icon" />
+              </td>
+              <td>{{ ai.title }}</td>
+              <td class="state">
+                <Switch :modelValue="!ai.block_proposals" @change="patchAgendaItem(ai, { block_proposals: !$event })" />
+              </td>
+              <td class="state">
+                <Switch :modelValue="!ai.block_discussion" @change="patchAgendaItem(ai, { block_discussion: !$event })" />
+              </td>
+              <td>
+                <v-btn v-if="canDeleteAgendaItem(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
+              </td>
+            </tr>
+          </v-item>
+        </tbody>
+      </v-item-group>
+      <v-expand-transition>
+        <v-sheet border rounded v-show="editSelected.length" class="pa-2">
+          <h2>
+            {{ t('agenda.changeMany', { count: editSelected.length }, editSelected.length) }}
+          </h2>
+          <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">{{ t('delete') }}</v-btn>
+          <div>
+            <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
+          </div>
+          <div>
+            <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
+            <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
+          </div>
+          <div>
+            <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
+            <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
+          </div>
+        </v-sheet>
+      </v-expand-transition>
+      <v-divider class="mt-6 mb-2" />
+      <h2>{{ t('agenda.newItem') }}</h2>
+      <form @submit.prevent="addAgendaItem()" id="agenda-add-form" class="mb-2">
+        <v-text-field :label="t('title')" required v-model="newAgendaTitle" />
+        <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
+      </form>
+    </template>
+    <template #order>
+      <Draggable v-model="agendaItems" item-key="pk" >
+        <template #item="{ element }">
+          <div>
+            <v-icon size="small" :icon="getState(element.state).icon" />
+            <span>{{ element.title }}</span>
+            <v-icon size="small" icon="mdi-drag-horizontal"/>
+          </div>
+        </template>
+      </Draggable>
+    </template>
+  </Tabs>
 </template>
 
 <script lang="ts">

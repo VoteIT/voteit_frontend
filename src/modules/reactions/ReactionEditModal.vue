@@ -29,15 +29,15 @@
         </div>
         <div>
           <label>{{ t('reaction.modelsAllowed') }}</label>
-          <CheckboxMultipleSelect name="allowedModels" v-model="formData.allowed_models" :settings="{ options: ReactionContentType }" />
+          <CheckboxMultipleSelect v-model="formData.allowed_models" :settings="{ options: contentTypeLabels }" />
         </div>
         <div>
           <label>{{ t('reaction.rolesRequired') }}</label>
-          <CheckboxMultipleSelect name="changeRoles" v-model="formData.change_roles" :settings="{ options: MeetingRole }" />
+          <CheckboxMultipleSelect v-model="formData.change_roles" :settings="{ options: roleLabels }" />
         </div>
         <div>
           <label>{{ t('reaction.listRolesRequired') }}</label>
-          <CheckboxMultipleSelect name="listRoles" v-model="formData.list_roles" :settings="{ options: MeetingRole }" />
+          <CheckboxMultipleSelect v-model="formData.list_roles" :settings="{ options: roleLabels }" />
         </div>
         <div class="btn-controls submit">
           <v-spacer />
@@ -71,15 +71,9 @@ import { dialogQuery } from '@/utils'
 
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
-import { MeetingRole } from '@/modules/meetings/types'
 import { ReactionButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
 import { closeModalEvent } from '@/utils/events'
-
-enum ReactionContentType {
-  DiscussionPost = 'discussion_post',
-  Proposal = 'proposal'
-}
 
 export default defineComponent({
   components: {
@@ -90,7 +84,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const { meetingId } = useMeeting()
+    const { meetingId, roleLabels } = useMeeting()
     const formData = reactive<Partial<ReactionButton>>({ ...(props.data || { color: 'primary', meeting: meetingId.value }) })
     const previewActive = ref(true)
     const submitting = ref(false)
@@ -98,7 +92,7 @@ export default defineComponent({
       closeModalEvent.emit()
     }
     const isValid = computed(() => {
-      return formData.title && formData.icon && formData.color && formData.allowed_models?.length && formData.change_roles?.length && formData.list_roles?.length
+      return formData.title && formData.icon && formData.color && formData.change_roles?.length && formData.list_roles?.length
     })
 
     async function save () {
@@ -115,6 +109,14 @@ export default defineComponent({
         console.error(err)
       }
     }
+
+    /* Checkboxes options */
+    const contentTypeLabels = computed(() => {
+      return {
+        discussion_post: t('discussion.discussions'),
+        proposal: t('proposal.proposals')
+      }
+    })
 
     async function deleteButton () {
       if (!formData.pk) return
@@ -134,14 +136,14 @@ export default defineComponent({
 
     return {
       t,
+      contentTypeLabels,
       isValid,
       formData,
       previewActive,
       submitting,
       ReactionIcon,
+      roleLabels,
       ThemeColor,
-      ReactionContentType,
-      MeetingRole,
       close,
       deleteButton,
       save

@@ -12,11 +12,11 @@
     </v-col>
     <v-divider vertical />
     <v-col v-if="isAuthenticated" cols="12" sm="4" xl="3">
-      <div v-if="meetingInvites.length" class="mb-4">
-        <h2 class="mb-2" v-if="meetingInvites.length">
-          {{ t('join.invites', meetingInvites.length) }}
+      <div v-if="userMeetingInvites.length" class="mb-4">
+        <h2 class="mb-2">
+          {{ t('join.invites', userMeetingInvites.length) }}
         </h2>
-        <Invite v-for="inv in meetingInvites" :key="inv.pk" :invite="inv" />
+        <Invite v-for="inv in userMeetingInvites" :key="inv.pk" :invite="inv" />
       </div>
       <h2>
         {{ t('home.yourMeetings', participatingMeetings.length) }}
@@ -74,7 +74,7 @@ import { canChangeOrganisation } from '@/modules/organisations/rules'
 import { organisationType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 
-const { meetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
+const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
 export default defineComponent({
   name: 'Home',
@@ -147,7 +147,7 @@ export default defineComponent({
       editing,
       idLoginURL,
       isAuthenticated,
-      meetingInvites,
+      userMeetingInvites,
       menu,
       otherMeetings,
       organisation,

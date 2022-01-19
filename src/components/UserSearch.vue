@@ -125,8 +125,12 @@ export default defineComponent({
   display: flex
   position: relative
   max-width: 480px
-  .v-input
-    margin: 0
+  .v-input__details
+    display: none
+  .v-field__control
+    border-top-right-radius: 0
+  // .v-input
+  //   margin: 0
   .selector
     position: absolute
     top: 56px

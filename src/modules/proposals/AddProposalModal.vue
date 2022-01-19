@@ -53,7 +53,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify/composables'
+import { useDisplay } from 'vuetify'
 
 import { user } from '@/composables/useAuthentication'
 import ProposalVue from '@/modules/proposals/Proposal.vue'

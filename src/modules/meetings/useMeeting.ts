@@ -8,9 +8,10 @@ import { meetings } from './useMeetings'
 
 import { MeetingRoles } from '../../composables/types'
 import { Meeting, MeetingRole } from './types'
-import { canChangeMeeting, canChangeRolesMeeting } from './rules'
+import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite } from './rules'
 import { meetingType } from './contentTypes'
 import { User } from '../organisations/types'
+import { useI18n } from 'vue-i18n'
 
 const FORCE_ROLES_FETCH = false
 
@@ -23,6 +24,17 @@ export default function useMeeting () {
   const route = useRoute()
   const meetingRoles = meetingType.useContextRoles()
   const { user } = useAuthentication()
+  const { t } = useI18n()
+
+  function getRoleLabels (filter: (k: string) => boolean = () => true) {
+    return Object.fromEntries(
+      Object.values(MeetingRole)
+        .filter(filter)
+        .map(role => [role, t(`meeting.role.${role}`)])
+    )
+  }
+
+  const roleLabels = computed(() => getRoleLabels())
 
   interface UserListParams {
     context: number
@@ -102,11 +114,15 @@ export default function useMeeting () {
   return {
     canChange,
     canChangeRoles,
+    canAddMeetingInvite: computed(() => meeting.value && canAddMeetingInvite(meeting.value)),
+    canViewMeetingInvite: computed(() => meeting.value && canViewMeetingInvite(meeting.value)),
     isModerator,
     meetingId,
     meeting,
     meetingPath,
+    roleLabels,
     userRoles,
+    getRoleLabels,
     getUser,
     hasRole,
     fetchParticipants,

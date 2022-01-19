@@ -48,7 +48,7 @@
   "tags": "Taggar",
   "title": "Titel",
   "tryAgain": "Försök igen",
-  "update": "Uppdatering",
+  "update": "Uppdatera",
   "undo": "Ångra",
   "unknownUser": "okänd",
   "winners": "Vinnare",
@@ -149,6 +149,15 @@
     "createTitleHint": "Minst 5 tecken",
     "meeting": "Möte",
     "public": "Gör mötet synligt för alla",
+    "invites": {
+      "add": "Bjud in deltagare",
+      "data": "Inbjuden data",
+      "emails": "E-postadresser att bjuda in",
+      "emailsHint": "Lägg till en e-postadress per rad",
+      "existing": "Existerande inbjudningar",
+      "invites": "Inbjudningar",
+      "roles": "Bjud in med roller"
+    },
     "role": {
       "participant": "Deltagare",
       "moderator": "Moderator",

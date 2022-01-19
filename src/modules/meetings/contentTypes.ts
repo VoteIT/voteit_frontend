@@ -4,10 +4,6 @@ import { ElectoralRegister, MeetingAccessPolicy } from '@/contentTypes/types'
 import { Meeting, MeetingInvite, MeetingRole } from './types'
 import { meetingStates } from './workflowStates'
 
-export const meetingInviteType = new ContentType<MeetingInvite>({
-  restEndpoint: 'handle-matched-invites/'
-})
-
 export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
   restEndpoint: 'access-policies/'
 })
@@ -26,4 +22,9 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
   restEndpoint: 'meetings/',
   hasRoles: true,
   dateFields: ['start_time', 'end_time']
+})
+
+export const meetingInviteType = new ContentType<MeetingInvite>({
+  channelName: 'meeting_invites',
+  restEndpoint: 'handle-matched-invites/'
 })

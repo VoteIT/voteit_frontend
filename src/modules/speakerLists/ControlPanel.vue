@@ -17,7 +17,7 @@
             </div>
           </v-expand-transition>
           <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
-          <CheckboxMultipleSelect name="meeting_roles" v-model="systemData.meeting_roles_to_speaker" :settings="{ options: MeetingRole }" :label="t('speaker.speakerRoles')" />
+          <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -51,7 +51,7 @@
             </div>
           </v-expand-transition>
           <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" />
-          <CheckboxMultipleSelect name="meeting_roles" v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: MeetingRole }" :label="t('speaker.speakerRoles')" />
+          <CheckboxMultipleSelect v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -89,7 +89,6 @@ import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
 import { User } from '../organisations/types'
-import { MeetingRole } from '../meetings/types'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -108,7 +107,7 @@ export default defineComponent({
   icon: 'mdi-account-voice',
   setup () {
     const { t } = useI18n()
-    const { meetingId, meeting } = useMeeting()
+    const { meetingId, meeting, roleLabels } = useMeeting()
     const speakerLists = useSpeakerLists()
     const loader = useLoader('SpeakerSystems panel')
     const systemRoles = ref<ContextRole[]>([])
@@ -263,8 +262,8 @@ export default defineComponent({
       editSystemSettings,
       editSystemReady,
       meeting,
-      MeetingRole,
       orderMethods,
+      roleLabels,
       systems,
       systemData,
       systemChannel: speakerSystemType.channel,

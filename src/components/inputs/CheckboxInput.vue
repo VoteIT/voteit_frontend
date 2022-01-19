@@ -1,6 +1,7 @@
 <template>
-  <input :id="name" type="checkbox" v-model="value" :required="required" />
-  <label v-if="label" :for="name" class="inline">{{ label }}</label>
+  <v-checkbox v-model="value" :required="required" :label="label" />
+  <!-- <input :id="name" type="checkbox" v-model="value" :required="required" />
+  <label v-if="label" :for="name" class="inline">{{ label }}</label> -->
 </template>
 
 <script lang="ts">
@@ -9,10 +10,6 @@ import { InputComponent } from './types'
 
 export default defineComponent({
   props: {
-    name: {
-      type: String,
-      required: true
-    },
     modelValue: Boolean as PropType<boolean>,
     settings: Object,
     label: String,

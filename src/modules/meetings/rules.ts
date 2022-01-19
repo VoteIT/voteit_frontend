@@ -65,3 +65,11 @@ export function canChangeRolesMeeting (meeting: Meeting): boolean {
 export function canBecomeModeratorMeeting (meeting: Meeting): boolean {
   return isOrganisationManager(user.value?.organisation)
 }
+
+export function canViewMeetingInvite (meeting: Meeting): boolean {
+  return isModerator(meeting)
+}
+
+export function canAddMeetingInvite (meeting: Meeting): boolean {
+  return isModerator(meeting) && !isArchivedMeeting(meeting)
+}

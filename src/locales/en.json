@@ -151,6 +151,15 @@
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
+    "invites": {
+      "add": "Invite participants",
+      "data": "Invite data",
+      "emails": "Emails to invite",
+      "emailsHint": "Add one email address per row",
+      "existing": "Existing invitations",
+      "invites": "Invitations",
+      "roles": "Invite with roles"
+    },
     "role": {
       "participant": "Participant",
       "moderator": "Moderator",
