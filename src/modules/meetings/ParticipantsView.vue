@@ -72,7 +72,7 @@
               </tr>
             </tbody>
           </v-table>
-          <v-alert v-else theme="info" :text="'sdf'" class="my-4" />
+          <v-alert v-else type="info" :text="t('meeting.invites.noInvitationsHelp')" class="my-4" />
         </template>
       </Tabs>
     </v-col>
