@@ -72,4 +72,10 @@ export default defineComponent({
 .v-btn
   text-transform: none !important
   letter-spacing: .04em !important
+
+// Temporary Vuetify fix
+// TODO Remove when v-text-input supports hide-details
+.v-input.hide-details
+  .v-input__details
+    display: none
 </style>

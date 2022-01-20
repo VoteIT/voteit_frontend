@@ -154,10 +154,11 @@
     "invites": {
       "add": "Invite participants",
       "data": "Invite data",
-      "emails": "Emails to invite",
+      "emails": "Emails to add",
       "emailsHint": "Add one email address per row",
       "existing": "Existing invitations",
       "invites": "Invitations",
+      "noInvitationsHelp": "Noone has been invited to this meeting yet.",
       "roles": "Invite with roles"
     },
     "role": {

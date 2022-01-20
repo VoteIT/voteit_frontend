@@ -150,12 +150,13 @@
     "meeting": "Möte",
     "public": "Gör mötet synligt för alla",
     "invites": {
-      "add": "Bjud in deltagare",
+      "add": "Lägg till inbjudningar",
       "data": "Inbjuden data",
-      "emails": "E-postadresser att bjuda in",
+      "emails": "E-postadresser att lägga till",
       "emailsHint": "Lägg till en e-postadress per rad",
       "existing": "Existerande inbjudningar",
       "invites": "Inbjudningar",
+      "noInvitationsHelp": "Ingen har bjudits in till det här mötet än.",
       "roles": "Bjud in med roller"
     },
     "role": {

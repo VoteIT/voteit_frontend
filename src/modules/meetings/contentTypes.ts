@@ -25,6 +25,6 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
 })
 
 export const meetingInviteType = new ContentType<MeetingInvite>({
-  channelName: 'meeting_invites',
+  channelName: 'invites',
   restEndpoint: 'handle-matched-invites/'
 })

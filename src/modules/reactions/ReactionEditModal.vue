@@ -3,7 +3,10 @@
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
-        <v-btn :prepend-icon="formData.icon" size="small" :title="formData.title" @click="previewActive = !previewActive" :variant="previewActive ? 'contained' : 'text'" :color="formData.color">
+        <v-btn :prepend-icon="formData.icon" size="small" @click="previewActive = !previewActive" :variant="previewActive ? 'contained' : 'text'" :color="formData.color">
+          {{ formData.title }}
+        </v-btn>
+        <v-btn variant="text" flat size="small" class="reaction-count">
           {{ previewActive ? 100 : 99 }}
         </v-btn>
       </Widget>

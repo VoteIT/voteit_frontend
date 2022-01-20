@@ -1,18 +1,39 @@
 <template>
   <div>
     <h2>{{ t('reaction.settings') }}</h2>
-    <Widget v-for="button in meetingButtons" :key="button.pk">
-      <h2>
-        {{ button.title }}
-      </h2>
-      <div class="btn-controls">
-        <v-btn :prepend-icon="button.icon" :color="button.color">
-          {n}
-        </v-btn>
-        <Btn icon="mdi-pencil" @click="editReaction(button)">{{ t('edit') }}</Btn>
-      </div>
-    </Widget>
-    <Btn icon="mdi-plus" @click="editReaction()">{{ t('reaction.addButton') }}</Btn>
+    <v-table v-if="meetingButtons.length">
+      <thead>
+        <tr>
+          <th>
+            {{ t('reaction.buttons') }}
+          </th>
+          <th>
+            {{ t('proposal.proposals') }}
+          </th>
+          <th>
+            {{ t('discussion.discussions') }}
+          </th>
+          <th />
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="button in meetingButtons" :key="button.pk">
+          <td>
+            <v-btn :prepend-icon="button.icon" :color="button.color" size="small">
+              {{ button.title }}
+            </v-btn>
+          </td>
+          <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
+            <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event)" />
+          </td>
+          <td class="text-right">
+            <v-btn prepend-icon="mdi-pencil" @click="editReaction(button)" size="small" color="primary">
+              {{ t('edit') }}
+            </v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
   </div>
 </template>
 
@@ -26,6 +47,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useReactions from './useReactions'
 import ReactionEditModalVue from './ReactionEditModal.vue'
 import { ReactionButton } from './types'
+import { reactionButtonType } from './contentTypes'
 
 export default defineComponent({
   translationKey: 'reaction.buttons',
@@ -36,6 +58,14 @@ export default defineComponent({
     const reactions = useReactions()
     const { meetingId } = useMeeting()
     const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
+
+    async function setContentType (button: ReactionButton, contentType: string, value: boolean) {
+      // eslint-disable-next-line camelcase
+      const allowed_models = value
+        ? [contentType, ...button.allowed_models]
+        : button.allowed_models.filter(ct => ct !== contentType)
+      await reactionButtonType.api.patch(button.pk, { allowed_models })
+    }
 
     function editReaction (button?: ReactionButton) {
       openModalEvent.emit({
@@ -49,7 +79,8 @@ export default defineComponent({
     return {
       t,
       meetingButtons,
-      editReaction
+      editReaction,
+      setContentType
     }
   }
 })

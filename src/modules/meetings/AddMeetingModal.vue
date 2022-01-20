@@ -4,7 +4,7 @@
       <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" :hint="t('meeting.createTitleHint')" />
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="formData.er_policy_name" :options="erOptions" />
       <div>
-        <Switch type="checkbox" id="meeting_public" v-model="formData.public" :label="t('meeting.public')" />
+        <v-switch color="primary" v-model="formData.public" :label="t('meeting.public')" />
       </div>
       <div class="text-right">
         <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="disabled">

@@ -1,26 +1,33 @@
 <template>
-  <table class="context-roles" v-if="users.length" :class="{ orderReversed, admin }">
-    <thead>
-      <tr>
-        <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
-          {{ t('name') }}
-        </th>
-        <th v-for="{ name, title } in roles" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
-          <v-icon :icon="getRoleIcon(name)" :title="title" />
-          {{ roleCount(name) }}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="{ user, assigned } in users" :key="user">
-        <td><User :pk="user" userid /></td>
-        <td v-for="{ name } in roles" :key="name">
-          <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/>
-          <v-icon v-else @click="addRole(user, name)" icon="mdi-close" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div>
+    <v-pagination v-if="false" v-model="currentPage" :length="pageCount" color="primary" />
+    <v-table class="context-roles" v-if="users.length" :class="{ orderReversed, admin }">
+      <thead>
+        <tr>
+          <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
+            {{ t('name') }}
+          </th>
+          <th v-for="{ name, title } in roles" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
+            <v-tooltip :text="title">
+              <template #activator="{ props }">
+                <v-icon v-bind="props" :icon="getRoleIcon(name)" />
+                {{ roleCount(name) }}
+              </template>
+            </v-tooltip>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="{ user, assigned } in users" :key="user">
+          <td><User :pk="user" userid /></td>
+          <td v-for="{ name } in roles" :key="name">
+            <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/>
+            <v-icon v-else @click="addRole(user, name)" icon="mdi-close" />
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+  </div>
 </template>
 
 <script lang="ts">
@@ -33,6 +40,8 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRole, UserContextRoles } from '@/composables/types'
 
 import Channel from '@/contentTypes/Channel'
+
+const USERS_PER_PAGE = 2
 
 export default defineComponent({
   props: {
@@ -131,56 +140,52 @@ export default defineComponent({
       return props.icons[role]
     }
 
+    const currentPage = ref(1)
+    const pageCount = computed(() => Math.ceil(users.value.length / USERS_PER_PAGE))
+    const pageUsers = computed(() => {
+      return users.value.slice(USERS_PER_PAGE * (currentPage.value - 1), USERS_PER_PAGE * currentPage.value)
+    })
+
     return {
       t,
-      addRole,
-      removeRole,
-      roleCount,
-      roles,
-      getRoleIcon,
-
-      users,
-      orderUsers,
+      currentPage,
       orderBy,
-      orderReversed
+      orderReversed,
+      pageCount,
+      pageUsers,
+      roles,
+      users,
+      addRole,
+      getRoleIcon,
+      orderUsers,
+      removeRole,
+      roleCount
     }
   }
 })
 </script>
 
 <style lang="sass" scoped>
-table
-  width: 100%
-  border-spacing: 0
-  tbody
-    tr
-      background-color: rgb(var(--v-theme-surface))
-      &:nth-child(even)
-        background-color: rgb(var(--v-theme-background))
+.v-table
   th
     position: relative
     cursor: pointer
     color: rgb(var(--v-theme-on-background))
     &.orderBy::after
       content: "↓"
+      color: rgba(var(--v-theme-on-background), .5)
       font-size: 1.4em
       position: absolute
-      top: -6px
+      top: 12px
       padding: 0 4px
       transition: transform .1s
   &.orderReversed
     th::after
       transform: rotate(180deg)
-  td
-    padding: 2px
-    text-align: center
-    .mdi
-      color: rgb(var(--v-theme-warning))
-      &.success
-        color: rgb(var(--v-theme-success-darken-2))
-  td:first-child,
-  th:first-child
-    text-align: left
+  td .mdi
+    color: rgb(var(--v-theme-warning))
+    &.success
+      color: rgb(var(--v-theme-success-darken-2))
 
   &.admin td .mdi
     cursor: pointer

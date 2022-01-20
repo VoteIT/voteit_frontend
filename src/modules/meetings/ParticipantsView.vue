@@ -31,8 +31,8 @@
                   <v-textarea v-model="inviteData.invite_data" rows="10" :label="t('meeting.invites.emails')" :hint="t('meeting.invites.emailsHint')" />
                   <CheckboxMultipleSelect v-model="inviteData.roles" :settings="{ options: inviteRoles }" :label="t('meeting.invites.roles')" :requiredValues="['participant']" />
                   <div class="text-right">
-                    <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="!invitationsReady">
-                      {{ t('meeting.invites.add') }}
+                    <v-btn type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitationsReady">
+                      {{ t('add') }}
                     </v-btn>
                   </div>
                 </form>

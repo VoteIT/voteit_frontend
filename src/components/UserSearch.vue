@@ -1,6 +1,6 @@
 <template>
   <form class="user-search" @submit.prevent="submit()">
-    <v-text-field :hint="hint" type="search" ref="inputField" v-bind="fieldBind" autocomplete="off" v-model="query" />
+    <v-text-field :hint="hint" type="search" ref="inputField" v-bind="fieldBind" autocomplete="off" v-model="query" hide-details class="hide-details" />
     <v-btn v-if="!instant" type="submit" v-bind="btnBind" color="primary">
       {{ buttonText || t('add') }}
     </v-btn>
@@ -125,8 +125,6 @@ export default defineComponent({
   display: flex
   position: relative
   max-width: 480px
-  .v-input__details
-    display: none
   .v-field__control
     border-top-right-radius: 0
   // .v-input

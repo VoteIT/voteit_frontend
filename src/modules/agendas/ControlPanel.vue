@@ -25,10 +25,10 @@
               </td>
               <td>{{ ai.title }}</td>
               <td class="state">
-                <Switch :modelValue="!ai.block_proposals" @change="patchAgendaItem(ai, { block_proposals: !$event })" />
+                <v-switch :modelValue="!ai.block_proposals" hide-details color="primary" @update:modelValue="patchAgendaItem(ai, { block_proposals: !$event })" />
               </td>
               <td class="state">
-                <Switch :modelValue="!ai.block_discussion" @change="patchAgendaItem(ai, { block_discussion: !$event })" />
+                <v-switch :modelValue="!ai.block_discussion" hide-details color="primary" @update:modelValue="patchAgendaItem(ai, { block_discussion: !$event })" />
               </td>
               <td>
                 <v-btn v-if="canDeleteAgendaItem(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
@@ -58,8 +58,8 @@
       </v-expand-transition>
       <v-divider class="mt-6 mb-2" />
       <h2>{{ t('agenda.newItem') }}</h2>
-      <form @submit.prevent="addAgendaItem()" id="agenda-add-form" class="mb-2">
-        <v-text-field :label="t('title')" required v-model="newAgendaTitle" />
+      <form @submit.prevent="addAgendaItem()" id="agenda-add-form" class="d-flex mb-2">
+        <v-text-field :label="t('title')" required v-model="newAgendaTitle" hide-details class="flex-grow-1 hide-details" />
         <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
       </form>
     </template>
@@ -89,7 +89,6 @@ import { Tab } from '@/components/types'
 import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
 import Tabs from '@/components/Tabs.vue'
-import Switch from '@/components/inputs/Switch.vue'
 
 import useAgenda from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
@@ -106,7 +105,6 @@ export default defineComponent({
   icon: 'mdi-clipboard-list',
   components: {
     Draggable,
-    Switch,
     Tabs
   },
   setup () {
@@ -256,10 +254,6 @@ export default defineComponent({
   opacity: .5
 
 #agenda-add-form
-  display: flex
-  .v-input
-    flex: 1 1 auto
-    margin-bottom: 0
   .v-btn
     border-top-left-radius: 0
     border-bottom-left-radius: 0

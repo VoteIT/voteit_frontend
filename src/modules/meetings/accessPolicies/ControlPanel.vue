@@ -17,7 +17,7 @@
           <v-card-actions>
             <v-btn variant="text" color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn>
             <v-btn variant="text" color="warning" prepend-icon="mdi-delete" @click="alert('*Not implemented (missing API)')">{{ t('delete') }}</v-btn>
-            <Switch v-model="p.active" readonly :loading="modifying.has(p.pk)" @change="setActive(p, $event)" />
+            <v-switch :modelValue="p.active" @update:modelValue="setActive(p, $event)" />
             <span class="ml-1">{{ p.active ? t('active') : t('inactive') }}</span>
           </v-card-actions>
         </v-card>
