@@ -1,7 +1,7 @@
 <template>
   <label v-if="label">{{ label }}</label>
   <div class="mb-4 d-flex flex-wrap">
-    <v-checkbox v-for="[key, label] in Object.entries(settings.options)" :key="key" v-model="val[key]" :label="label" :disabled="requiredValues.includes(key)" hide-details class="flex-grow-0" />
+    <v-checkbox v-for="[key, label] in Object.entries(settings.options)" :key="key" v-model="val[key]" :label="label" :disabled="requiredValues.includes(key)" density="compact" hide-details class="flex-grow-0" />
   </div>
 </template>
 

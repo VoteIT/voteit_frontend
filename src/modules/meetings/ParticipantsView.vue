@@ -28,7 +28,7 @@
                   <h2 class="mb-1">
                     {{ t('meeting.invites.add') }}
                   </h2>
-                  <v-textarea v-model="inviteData.invite_data" rows="10" :label="t('meeting.invites.emails')" :hint="t('meeting.invites.emailsHint')" />
+                  <v-textarea v-model="inviteData.invite_data" :error="!!inviteErrors.__root__" :messages="inviteErrors.__root__" rows="10" :label="t('meeting.invites.emails')" :hint="t('meeting.invites.emailsHint')" />
                   <CheckboxMultipleSelect v-model="inviteData.roles" :settings="{ options: inviteRoles }" :label="t('meeting.invites.roles')" :requiredValues="['participant']" />
                   <div class="text-right">
                     <v-btn type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitationsReady">
@@ -99,6 +99,7 @@ import useMeetingTitle from './useMeetingTitle'
 import Tabs from '@/components/Tabs.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useMeetingInvites from './useMeetingInvites'
+import { parseSocketError } from '@/utils/Socket'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -166,7 +167,7 @@ export default defineComponent({
     const inviteRoles = computed(() => getRoleLabels())
     const inviteData = reactive({
       invite_data: '',
-      roles: []
+      roles: ['participant']
     })
     function checkInviteData (): boolean {
       for (const line of inviteData.invite_data.split('\n')) {
@@ -177,19 +178,21 @@ export default defineComponent({
     const submittingInvitations = ref(false)
     const invitationsReady = computed(() => !submittingInvitations.value && checkInviteData())
     const invitationDialogOpen = ref(false)
+    const inviteErrors = ref<Record<string, string[]>>({})
     async function submitInvitations () {
+      inviteErrors.value = {}
       submittingInvitations.value = true
       try {
         await meetingInviteType.channel.post('invites.add', {
           invite_data: inviteData.invite_data.split('\n'),
           meeting: meetingId.value,
           roles: inviteData.roles
-        })
+        }, { alertOnError: false })
         invitationDialogOpen.value = false
         inviteData.invite_data = ''
-        inviteData.roles = []
-      } catch {
-        // TODO
+        inviteData.roles = ['participant']
+      } catch (e) {
+        inviteErrors.value = parseSocketError(e as Error)
       }
       submittingInvitations.value = false
     }
@@ -209,6 +212,7 @@ export default defineComponent({
       currentTab,
       invitationDialogOpen,
       inviteData,
+      inviteErrors,
       inviteRoles,
       meetingChannel: meetingType.channel,
       meetingIcons,

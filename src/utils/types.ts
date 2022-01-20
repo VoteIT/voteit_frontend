@@ -31,13 +31,20 @@ export interface ProgressMessage extends BaseChannelsMessage {
   p: Progress
 }
 
-interface MessageObject {
+export interface PydanticError {
+  loc: string[]
   msg: string
+  type: string
+}
+
+interface ValidationError {
+  msg: string
+  errors: PydanticError[]
 }
 
 export interface FailedMessage extends BaseChannelsMessage {
   s: State.Failed
-  p: MessageObject
+  p: ValidationError
 }
 
 export interface SubscribePayload {

@@ -3,8 +3,9 @@ import { uriToPayload, ProgressPromise, DefaultMap } from '@/utils'
 import hostname from '@/utils/hostname'
 import { AlertLevel } from '@/composables/types'
 
-import { ChannelsConfig, ChannelsMessage, State, SuccessMessage } from './types'
+import { ChannelsConfig, ChannelsMessage, PydanticError, State, SuccessMessage } from './types'
 import { openAlertEvent } from './events'
+import { last } from 'lodash'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 
@@ -18,6 +19,27 @@ export enum SocketEvent {
   Close = 'close',
   Error = 'error',
   Message = 'message'
+}
+
+class ValidationError extends Error {
+  errors: PydanticError[]
+
+  constructor (msg: string, errors: PydanticError[]) {
+    super(msg)
+    this.name = 'ValidationError'
+    this.errors = errors
+  }
+}
+
+export function parseSocketError (error: Error | ValidationError) {
+  if (!('errors' in error)) throw error
+  const locErrors: Record<string, string[]> = {}
+  for (const e of error.errors) {
+    const loc = last(e.loc) as string // Should not be empty
+    if (!(loc in locErrors)) locErrors[loc] = []
+    locErrors[loc].push(e.msg)
+  }
+  return locErrors
 }
 
 export default class Socket {
@@ -139,7 +161,7 @@ export default class Socket {
                 sticky: true
               })
             }
-            reject(new Error(data.p.msg))
+            reject(new ValidationError(data.p.msg, data.p.errors))
             break
           case State.Waiting:
           case State.Running:
