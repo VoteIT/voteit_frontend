@@ -15,6 +15,12 @@
               {{ t('meeting.invites.existing') }}
             </h2>
             <v-spacer />
+            <v-btn class="mr-2" @click="copy(filteredInvites.map(inv => inv.invite_data).join('\n'))" :color="copied ? 'success' : undefined" >
+              <v-icon :icon="copied ? 'mdi-check' : 'mdi-content-copy'" />
+            </v-btn>
+            <v-btn class="mr-2" @click="filterMenu = !filterMenu" :color="filterMenu ? 'accent' : undefined" >
+              <v-icon>mdi-filter-menu</v-icon>
+            </v-btn>
             <v-dialog v-model="invitationDialogOpen">
               <template #activator="{ props }">
                 <div class="text-right mb-2">
@@ -29,7 +35,7 @@
                     {{ t('meeting.invites.add') }}
                   </h2>
                   <v-textarea v-model="inviteData.invite_data" :error="!!inviteErrors.__root__" :messages="inviteErrors.__root__" rows="10" :label="t('meeting.invites.emails')" :hint="t('meeting.invites.emailsHint')" />
-                  <CheckboxMultipleSelect v-model="inviteData.roles" :settings="{ options: inviteRoles }" :label="t('meeting.invites.roles')" :requiredValues="['participant']" />
+                  <CheckboxMultipleSelect v-model="inviteData.roles" :settings="{ options: roleLabels }" :label="t('meeting.invites.roles')" :requiredValues="['participant']" />
                   <div class="text-right">
                     <v-btn type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitationsReady">
                       {{ t('add') }}
@@ -39,6 +45,12 @@
               </v-sheet>
             </v-dialog>
           </div>
+          <v-expand-transition>
+            <v-sheet v-show="filterMenu" rounded border class="my-4 pa-4">
+              <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabels }" label="Filtrera på roller" :requiredValues="['participant']" />
+              <v-switch v-model="inviteFilter.exactRoles" color="primary" label="Matcha roller exakt" />
+            </v-sheet>
+          </v-expand-transition>
           <v-table v-if="meetingInvites.length">
             <thead>
               <tr>
@@ -54,7 +66,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="invite in meetingInvites" :key="invite.pk">
+              <tr v-for="invite in filteredInvites" :key="invite.pk">
                 <td>
                   <v-icon :icon="getTypeIcon(invite.type)" class="mr-2" />
                   {{ invite.invite_data }}
@@ -93,13 +105,15 @@ import { ContextRoles } from '@/composables/types'
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
 
-import { MeetingRole } from './types'
+import { MeetingInvite, MeetingRole } from './types'
 import { meetingInviteType, meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
 import Tabs from '@/components/Tabs.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useMeetingInvites from './useMeetingInvites'
 import { parseSocketError } from '@/utils/Socket'
+import { isEqual } from 'lodash'
+import { useClipboard } from '@vueuse/core'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -113,7 +127,7 @@ export default defineComponent({
   inject: ['cols'],
   setup () {
     const { t } = useI18n()
-    const { meetingId, getUser, canChangeRoles, canViewMeetingInvite, getRoleLabels } = useMeeting()
+    const { meetingId, getUser, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
     const { meetingInvites } = useMeetingInvites(meetingId)
 
@@ -164,7 +178,7 @@ export default defineComponent({
     })
 
     /* INVITES */
-    const inviteRoles = computed(() => getRoleLabels())
+    // const inviteRoles = computed(() => getRoleLabels())
     const inviteData = reactive({
       invite_data: '',
       roles: ['participant']
@@ -206,14 +220,30 @@ export default defineComponent({
       }[type]
     }
 
+    const inviteFilter = reactive({
+      roles: ['participant'],
+      exactRoles: false
+    })
+    const filteredInvites = computed(() => {
+      const roleSet = new Set(inviteFilter.roles)
+      const filter = inviteFilter.exactRoles
+        ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
+        : (invite: MeetingInvite) => inviteFilter.roles.every((role) => invite.roles.includes(role as MeetingRole))
+      return meetingInvites.value
+        .filter(filter)
+    })
+
     return {
       t,
       canChangeRoles,
       currentTab,
+      filterMenu: ref(false),
+      filteredInvites,
       invitationDialogOpen,
       inviteData,
       inviteErrors,
-      inviteRoles,
+      inviteFilter,
+      roleLabels,
       meetingChannel: meetingType.channel,
       meetingIcons,
       meetingId,
@@ -226,7 +256,8 @@ export default defineComponent({
       getUserIds,
       removeConfirm,
       searchFilter,
-      submitInvitations
+      submitInvitations,
+      ...useClipboard()
     }
   },
   components: {
