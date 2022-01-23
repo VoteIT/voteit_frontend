@@ -16,9 +16,15 @@
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
-      <div class="author">
-        <span>{{ t('by') }} <User :pk="p.author" /></span>
-        <Moment :date="p.created" />
+      <div class="author text-secondary">
+        <v-icon v-if="meetingGroup" size="small" class="mr-1" style="position: relative; top: -1px;">mdi-account-multiple</v-icon>
+        <span>{{ t('by') }}
+          <span v-if="meetingGroup">
+            {{ meetingGroup.title }}
+          </span>
+          <User v-else :pk="p.author" />
+        </span>
+        <Moment :date="p.created" class="ml-6" />
       </div>
       <v-sheet v-if="$slots.vote" class="vote-slot">
         <slot name="vote"/>
@@ -63,6 +69,7 @@ import useUnread from '@/composables/useUnread'
 
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useTags from '../meetings/useTags'
+import useMeetingGroups from '../meetings/useMeetingGroups'
 import { Proposal } from './types'
 import useDiscussions from '../discussions/useDiscussions'
 import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rules'
@@ -86,16 +93,19 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const { agendaItem, canAddDiscussionPost } = useAgendaItem()
-    const { isModerator } = useMeeting()
+    const { isModerator, meetingId } = useMeeting()
     const { getHTMLTags } = useTags()
     const editing = ref(false)
     const showComments = ref(false)
     const { getProposalDiscussions } = useDiscussions()
     const workflows = proposalType.useWorkflows()
+    const { getMeetingGroup } = useMeetingGroups(meetingId)
 
     const wfState = computed(() => {
       return workflows.getState(props.p.state)
     })
+
+    const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
 
     const { isUnread } = useUnread(props.p.created)
 
@@ -170,6 +180,7 @@ export default defineComponent({
       isModerator,
       proposalType,
       showComments,
+      meetingGroup,
       menuItems,
       wfState,
       comment,
@@ -202,10 +213,7 @@ export default defineComponent({
         margin-right: 0
 
   .author
-    color: rgb(var(--v-theme-secondary))
     font-size: 10.5pt
-    > *
-      margin-right: 1.5em
 
   // &.isUnread .richtext
   //   position: relative

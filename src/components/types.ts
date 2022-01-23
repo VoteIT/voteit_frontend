@@ -79,3 +79,46 @@ export interface Tab {
   name: string
   title: string
 }
+
+export enum FieldType {
+  Checkbox = 'checkbox',
+  Number = 'number',
+  Select = 'select',
+  Switch = 'switch',
+  Text = 'text',
+  TextArea = 'textarea',
+}
+
+export interface FieldRule<T> {
+  props?: {
+    required?: boolean,
+    type?: 'email' | 'password' // TODO More types
+  }
+  validate?: (value: T) => true | string
+}
+
+interface SchemaField<T> {
+  default?: T
+  label: string
+  name: string
+  options?: Record<string | number, string> // TODO Maybe for selects?
+  rules?: FieldRule<T>[] // TODO Vuelidate rules?
+}
+
+interface CheckboxField extends SchemaField<boolean> {
+  type: FieldType.Checkbox
+}
+
+interface NumberField extends SchemaField<number> {
+  type: FieldType.Number
+}
+
+interface SwitchField extends SchemaField<boolean> {
+  type: FieldType.Switch
+}
+
+interface TextField extends SchemaField<string> {
+  type: FieldType.Text
+}
+
+export type FormSchema = (CheckboxField | NumberField | SwitchField | TextField)[]

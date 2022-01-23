@@ -1,7 +1,7 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import { ElectoralRegister, MeetingAccessPolicy } from '@/contentTypes/types'
-import { Meeting, MeetingInvite, MeetingRole } from './types'
+import { Meeting, MeetingGroup, MeetingInvite, MeetingRole } from './types'
 import { meetingStates } from './workflowStates'
 
 export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
@@ -25,6 +25,12 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
 })
 
 export const meetingInviteType = new ContentType<MeetingInvite>({
-  channelName: 'invites',
+  channelName: 'invites', // TODO There aren't really channels for invites. Set this up in a future useChannel('invites') for subscribing.
   restEndpoint: 'handle-matched-invites/'
+})
+
+export const meetingGroupType = new ContentType<MeetingGroup>({
+  restEndpoint: 'meeting-groups/',
+  channelName: 'meeting_group',
+  dateFields: ['created', 'modified']
 })

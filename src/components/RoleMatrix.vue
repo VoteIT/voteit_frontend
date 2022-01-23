@@ -172,8 +172,8 @@ export default defineComponent({
     cursor: pointer
     color: rgb(var(--v-theme-on-background))
     &.orderBy::after
-      content: "↓"
-      color: rgba(var(--v-theme-on-background), .5)
+      content: "⬇"
+      color: rgba(var(--v-theme-on-background), .4)
       font-size: 1.4em
       position: absolute
       top: 12px

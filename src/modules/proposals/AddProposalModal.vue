@@ -13,7 +13,18 @@
           <slot name="editor">
             <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
           </slot>
-          <div class="text-right">
+          <div class="d-flex" id="post-as">
+            <v-field active v-if="userGroups.length" density="comfortable" label="Posta som">
+              <select name="group" v-model="group" class="v-field__input">
+                <option :value="null">
+                  {{ user.full_name }}
+                </option>
+                <option v-for="{ pk, title } in userGroups" :key="pk" :value="pk">
+                  {{ title }}
+                </option>
+              </select>
+            </v-field>
+            <v-spacer />
             <slot name="actions" />
             <v-btn type="submit" color="primary" prepend-icon="mdi-text-box-outline" :disabled="!!proposal">{{ t('preview') }}</v-btn>
           </div>
@@ -55,12 +66,14 @@ import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
-import { user } from '@/composables/useAuthentication'
+import useAuthentication from '@/composables/useAuthentication'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import { proposalType } from './contentTypes'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { PreviewProposal, Proposal } from './types'
+import useMeeting from '../meetings/useMeeting'
+import useMeetingGroups from '../meetings/useMeetingGroups'
 
 export default defineComponent({
   emits: ['reset'],
@@ -83,14 +96,19 @@ export default defineComponent({
     const { t } = useI18n()
     const { mobile } = useDisplay()
     const body = ref('')
+    const group = ref<null | number>(null)
+    const { meetingId } = useMeeting()
     const { agendaId } = useAgendaItem()
     const isOpen = ref(false)
+    const { userGroups } = useMeetingGroups(meetingId)
+    const { user } = useAuthentication()
 
     function getPostData (): Partial<Proposal> {
       return {
         shortname: props.shortname,
         agenda_item: agendaId.value,
         body: props.modelValue ?? body.value,
+        meeting_group: group.value,
         ...props.extra
       }
     }
@@ -122,6 +140,9 @@ export default defineComponent({
     watch(body, () => {
       proposal.value = null
     })
+    watch(group, () => {
+      proposal.value = null
+    })
     watch(() => props.modelValue, () => {
       proposal.value = null
     })
@@ -145,11 +166,14 @@ export default defineComponent({
     return {
       t,
       done,
+      group,
       isOpen,
       proposal,
       body,
       saving,
       sheetProps,
+      user,
+      userGroups,
       addProposal,
       preview
     }
@@ -160,4 +184,8 @@ export default defineComponent({
 <style lang="sass">
 .proposal-editor .ql-editor
   min-height: 140px
+
+#post-as
+  .v-input__details
+    display: none
 </style>

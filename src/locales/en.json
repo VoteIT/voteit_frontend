@@ -12,6 +12,7 @@
   "close": "Close",
   "color": "Color",
   "continue": "Continue",
+  "copied": "Copied",
   "create": "Create",
   "defaultFilters": "Default Filters",
   "delete": "Delete",
@@ -40,6 +41,7 @@
   "searchUser": "Search user",
   "select": "Select",
   "settings": "Settings",
+  "show": "Show",
   "sortAndFilter": "Sort and filter",
   "start": "Start",
   "state": "State",
@@ -151,6 +153,16 @@
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
+    "groups": {
+      "create": "Create group",
+      "deleteConfirm": "You're about to permanently delete the group {title}.\nAre you sure?",
+      "groups": "Groups",
+      "members": "Members",
+      "membersIn": "Members in {title}",
+      "modify": "Modify group",
+      "new": "New group",
+      "noMembers": "This group has no members."
+    },
     "invites": {
       "add": "Invite participants",
       "data": "Invite data",

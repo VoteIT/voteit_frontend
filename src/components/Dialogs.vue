@@ -87,7 +87,7 @@ export default defineComponent({
 
 #dialog-backdrop
   background-color: rgba(#000, .3)
-  z-index: 100
+  z-index: 850
   position: fixed
   left: 0
   right: 0

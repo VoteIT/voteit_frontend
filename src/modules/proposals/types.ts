@@ -17,6 +17,7 @@ interface BaseProposal {
   author: number
   body: string
   created: Date
+  meeting_group: number | null
   prop_id: string
   tags: string[]
 }

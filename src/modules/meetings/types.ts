@@ -66,3 +66,15 @@ export interface Meeting extends BaseContent {
   public: boolean
   start_time: Date | null
 }
+
+export interface MeetingGroup extends BaseContent {
+  body: string
+  created: Date
+  modified: Date
+  tags: string[]
+  author: number
+  last_modified_by: number | null
+  meeting: number
+  mentions: number[]
+  members: number[]
+}
