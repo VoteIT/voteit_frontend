@@ -10,7 +10,7 @@ export interface Organisation {
   body: string
   login_url: string | null
   id_host: string | null
-  scopes: string[]
+  scope: string[]
 }
 
 export enum UserState {

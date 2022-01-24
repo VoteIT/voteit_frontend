@@ -11,7 +11,7 @@ export default function useOrganisation () {
   })
   const idLoginURL = computed(() => {
     if (!organisation.value || !organisation.value.id_host) return
-    return `${organisation.value.id_host}/login-to/${organisation.value.pk}`
+    return `${organisation.value.id_host}/login-to/${location.hostname}`
   })
 
   return {

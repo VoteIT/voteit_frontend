@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import restApi from '@/utils/restApi'
 
 import useContextRoles from './useContextRoles'
-import { UserState, User, Organisation } from '@/modules/organisations/types'
+import { UserState, User } from '@/modules/organisations/types'
 import { AxiosError } from 'axios'
 
 export const user = ref<User | null>(null)
