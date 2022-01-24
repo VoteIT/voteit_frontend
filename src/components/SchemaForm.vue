@@ -6,7 +6,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
-import { FieldType, FormSchema } from './types'
+import { FieldRule, FieldType, FormSchema } from './types'
 
 const componentNames: Record<FieldType, string> = {
   checkbox: 'v-checkbox',
@@ -52,12 +52,11 @@ export default defineComponent({
 
     const disabled = ref(false)
     const valid = computed(() => {
-      return props.schema.every((field) => {
+      return props.schema.every(field => {
         if (!field.rules) return true
-        return field.rules.every((rule) => {
-          if (!rule.validate) return true
-          return rule.validate?.(formData[field.name]) === true
-        })
+        return (field.rules as FieldRule<unknown>[]).every(
+          rule => !rule.validate || rule.validate(formData[field.name]) === true // true or a string
+        )
       })
     })
     async function submit () {
