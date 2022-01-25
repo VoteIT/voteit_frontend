@@ -7,7 +7,7 @@
         {{ t('reaction.addButton') }}
       </v-btn>
     </div>
-    <v-table v-if="meetingButtons.length">
+    <v-table>
       <thead>
         <tr>
           <th>
