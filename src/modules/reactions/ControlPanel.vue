@@ -1,6 +1,12 @@
 <template>
   <div>
-    <h2>{{ t('reaction.settings') }}</h2>
+    <div class="d-flex mb-4">
+      <h2>{{ t('reaction.settings') }}</h2>
+      <v-spacer />
+      <v-btn color="primary" prepend-icon="mdi-gesture-tap-button" @click="editReaction()">
+        {{ t('reaction.addButton') }}
+      </v-btn>
+    </div>
     <v-table v-if="meetingButtons.length">
       <thead>
         <tr>
