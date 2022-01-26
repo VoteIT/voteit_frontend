@@ -68,6 +68,7 @@ export interface Meeting extends BaseContent {
 }
 
 export interface MeetingGroup extends BaseContent {
+  groupid: string
   body: string
   created: Date
   modified: Date

@@ -102,6 +102,7 @@ export default defineComponent({
     const isOpen = ref(false)
     const { userGroups } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
+    const { getMeetingGroup } = useMeetingGroups(meetingId)
 
     function getPostData (): Partial<Proposal> {
       return {
@@ -116,12 +117,15 @@ export default defineComponent({
     const proposal = ref<Partial<Proposal> | null>(null)
     async function preview () {
       const { data } = await proposalType.api.action<PreviewProposal>('preview', getPostData())
+      const baseId = data.meeting_group
+        ? getMeetingGroup(data.meeting_group)?.groupid
+        : user.value?.userid
       proposal.value = {
         ...data,
         created: new Date(),
         author: user.value?.pk as number,
         pk: 0,
-        prop_id: `${user.value?.userid}-XX`,
+        prop_id: `${baseId}-{n}`,
         shortname: props.shortname
       }
     }
