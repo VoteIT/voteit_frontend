@@ -169,8 +169,12 @@
       "emailsHint": "Lägg till en e-postadress per rad",
       "existing": "Existerande inbjudningar",
       "invites": "Inbjudningar",
+      "invitedAs": "Inbjuden som",
       "noInvitationsHelp": "Ingen har bjudits in till det här mötet än.",
-      "roles": "Bjud in med roller"
+      "roles": "Bjud in med roller",
+      "types": {
+        "email": "E-post"
+      }
     },
     "role": {
       "participant": "Deltagare",

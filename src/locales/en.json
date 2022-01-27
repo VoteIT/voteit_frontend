@@ -170,8 +170,12 @@
       "emailsHint": "Add one email address per row",
       "existing": "Existing invitations",
       "invites": "Invitations",
+      "invitedAs": "Invites as",
       "noInvitationsHelp": "Noone has been invited to this meeting yet.",
-      "roles": "Invite with roles"
+      "roles": "Invite with roles",
+      "types": {
+        "email": "Email"
+      }
     },
     "role": {
       "participant": "Participant",

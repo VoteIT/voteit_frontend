@@ -1,5 +1,9 @@
 <template>
-  <v-card :title="invite.meeting_title" :subtitle="`${scope}: ${data}`" elevation="4">
+  <v-card :title="invite.meeting_title" elevation="4">
+    <v-list-subheader>
+      {{ t('meeting.invites.invitedAs') }}:
+    </v-list-subheader>
+    <v-list-item :prepend-icon="icon" :title="invite.invite_data" :subtitle="t(`meeting.invites.types.${invite.type}`)" />
     <v-card-actions class="flex-wrap">
       <v-spacer />
       <v-btn variant="text" color="warning" prepend-icon="mdi-close" :disabled="submitting" @click="rejectInvite(invite)">
@@ -27,6 +31,10 @@ import { ThemeColor } from '@/utils/types'
 
 const { fetchInvites } = useMeetingInvites()
 const { fetchMeetings } = useMeetings()
+
+const TYPE_ICONS = {
+  email: 'mdi-email'
+}
 
 export default defineComponent({
   props: {
@@ -64,13 +72,9 @@ export default defineComponent({
       }
     }
 
-    const scope = computed(() => Object.keys(props.invite.invite_data)[0])
-    const data = computed(() => Object.values(props.invite.invite_data)[0])
-
     return {
       t,
-      data,
-      scope,
+      icon: computed(() => TYPE_ICONS[props.invite.type]),
       submitting,
       acceptInvite,
       rejectInvite
