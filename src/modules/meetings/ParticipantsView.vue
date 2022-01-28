@@ -7,6 +7,7 @@
           <UserSearch v-if="canChangeRoles" class="mb-6" @submit="addUser" :filter="searchFilter" />
           <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
         </template>
+
         <template #invites>
           <div class="mb-4">
             <div class="d-flex">
@@ -50,6 +51,7 @@
                 <div class="ma-4">
                   <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabels }" label="Filtrera på roller" :requiredValues="['participant']" />
                   <v-switch v-model="inviteFilter.exactRoles" color="primary" label="Matcha roller exakt" />
+                  <CheckboxMultipleSelect v-model="inviteFilter.states" :settings="{ options: stateLabels }" label="Filtrera på status" />
                 </div>
               </v-sheet>
             </v-expand-transition>
@@ -71,15 +73,16 @@
             <tbody>
               <tr v-for="invite in filteredInvites" :key="invite.pk">
                 <td>
-                  <v-icon :icon="getTypeIcon(invite.type)" class="mr-2" />
+                  <v-icon :icon="invite.typeIcon" class="mr-2" />
                   {{ invite.invite_data }}
                 </td>
                 <td>
-                  <v-tooltip v-for="role in invite.roles" :key="role" :text="t(`meeting.role.${role}`)">
+                  <!-- <v-tooltip v-for="{ title, icon } in invite.roles" :key="icon" :text="title">
                     <template #activator="{ props }">
-                      <v-icon :icon="getRoleIcon(role)" v-bind="props" />
+                      <v-icon :icon="icon" v-bind="props" />
                     </template>
-                  </v-tooltip>
+                  </v-tooltip> -->
+                  <v-icon v-for="{ title, icon } in invite.roles" :key="icon" :title="title" :icon="icon" />
                 </td>
                 <td>
                   {{ invite.state }}
@@ -89,6 +92,7 @@
           </v-table>
           <v-alert v-else type="info" :text="t('meeting.invites.noInvitationsHelp')" class="my-4" />
         </template>
+
         <template #groups>
           <v-alert type="warning" class="mb-4">
             Grupper i VoteIT är under utveckling. Du kan lägga till och ta bort grupper, med inte hantera medlemskap.
@@ -351,15 +355,33 @@ export default defineComponent({
 
     const inviteFilter = reactive({
       roles: ['participant'],
-      exactRoles: false
+      exactRoles: false,
+      states: ['open']
+    })
+    const stateLabels = computed(() => {
+      return { // TODO ts
+        open: 'Öppen',
+        expired: 'Utgången',
+        revoked: 'Tillbakadragen',
+        accepted: 'Accepterad',
+        rejected: 'Avvisad'
+      }
     })
     const filteredInvites = computed(() => {
       const roleSet = new Set(inviteFilter.roles)
-      const filter = inviteFilter.exactRoles
+      const roleFilter = inviteFilter.exactRoles
         ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
         : (invite: MeetingInvite) => inviteFilter.roles.every((role) => invite.roles.includes(role as MeetingRole))
       return meetingInvites.value
-        .filter(filter)
+        .filter(inv => roleFilter(inv) && inviteFilter.states.includes(inv.state))
+        .map(inv => {
+          return {
+            ...inv,
+            typeIcon: getTypeIcon(inv.type),
+            roles: inv.roles.map(role => ({ title: t(`meeting.role.${role}`), icon: getRoleIcon(role) })),
+            state: stateLabels.value[inv.state]
+          }
+        })
     })
 
     function copyFilteredData () {
@@ -426,14 +448,13 @@ export default defineComponent({
       meetingId,
       meetingInvites,
       invitationsReady,
+      stateLabels,
       tabs,
       addUser,
       copyFilteredData,
       changeGroup,
       createGroup,
       deleteGroup,
-      getRoleIcon,
-      getTypeIcon,
       getUserIds,
       removeConfirm,
       searchFilter,
