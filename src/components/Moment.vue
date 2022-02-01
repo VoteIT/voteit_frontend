@@ -6,8 +6,7 @@
 import { onBeforeUnmount, onBeforeMount, ref, defineComponent, PropType } from 'vue'
 import moment from 'moment'
 import { AxiosResponse } from 'axios'
-
-import { restApi } from '@/utils'
+import restApi from '@/utils/restApi'
 
 let serverAhead = 0 // In Seconds
 let interceptorId: number | null = null

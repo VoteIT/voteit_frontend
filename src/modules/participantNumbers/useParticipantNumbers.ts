@@ -5,7 +5,7 @@ import { ParticipantNumber } from './types'
 
 const participantNumbers = reactive<Map<number, ParticipantNumber>>(new Map())
 
-participantNumberType.channel.updateMap(participantNumbers)
+participantNumberType.updateMap(participantNumbers)
 
 export default function useParticipantNumbers (meeting: Ref<number>) {
   return {

@@ -1,4 +1,4 @@
-import { restApi } from '../utils'
+import restApi from '@/utils/restApi'
 
 export default {
   install (app: any) {

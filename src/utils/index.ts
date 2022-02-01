@@ -1,13 +1,9 @@
-import DefaultMap from './DefaultMap'
-import ProgressPromise from './ProgressPromise'
-import Socket from './Socket'
-import restApi from './restApi'
 import { Dialog } from '@/composables/types'
 import { SubscribePayload } from './types'
 import _slugify from 'slugify'
 import { openDialogEvent } from './events'
 
-function uriToPayload (uri: string): SubscribePayload {
+export function uriToPayload (uri: string): SubscribePayload {
   // Convert internal resource identifier to subscription payload object
   const [ct, pk] = uri.split('/')
   return {
@@ -16,14 +12,14 @@ function uriToPayload (uri: string): SubscribePayload {
   }
 }
 
-function slugify (text: string) {
+export function slugify (text: string) {
   return _slugify(text, {
     lower: true,
     locale: document.documentElement.lang
   }).replaceAll(/[^\w-]/g, '')
 }
 
-function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {
+export function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {
   if (typeof attributes === 'string') attributes = [attributes]
   attributes.forEach(attrName => {
     // Respect null dates
@@ -32,9 +28,9 @@ function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {
   return obj
 }
 
-function orderBy<T> (objects: T[], getter: (object: T) => any, reversed?: boolean): T[]
-function orderBy<T> (objects: T[], attribute?: string, reversed?: boolean): T[]
-function orderBy<T> (objects: T[], attributeOrGetter: ((object: T) => any) | string = 'created', reversed?: boolean): T[] {
+export function orderBy<T> (objects: T[], getter: (object: T) => any, reversed?: boolean): T[]
+export function orderBy<T> (objects: T[], attribute?: string, reversed?: boolean): T[]
+export function orderBy<T> (objects: T[], attributeOrGetter: ((object: T) => any) | string = 'created', reversed?: boolean): T[] {
   const direction = reversed ? -1 : 1
   const getter = typeof attributeOrGetter === 'string' ? (object: any) => object[attributeOrGetter] : attributeOrGetter
   objects.sort((objA: T, objB: T) => {
@@ -47,15 +43,15 @@ function orderBy<T> (objects: T[], attributeOrGetter: ((object: T) => any) | str
   return objects
 }
 
-function stripHTML (html: string) {
+export function stripHTML (html: string) {
   const tmp = document.createElement('div')
   tmp.innerHTML = html
   return tmp.textContent || tmp.innerText || ''
 }
 
-async function dialogQuery (text: string): Promise<undefined>
-async function dialogQuery (dialog: Omit<Dialog, 'resolve'>): Promise<undefined>
-async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | string) {
+export async function dialogQuery (text: string): Promise<undefined>
+export async function dialogQuery (dialog: Omit<Dialog, 'resolve'>): Promise<undefined>
+export async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | string) {
   return new Promise(resolve => {
     if (typeof dialogOrText === 'string') {
       openDialogEvent.emit({
@@ -71,29 +67,14 @@ async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | string) {
   })
 }
 
-function * mapFilter<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
+export function * mapFilter<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
   for (const o of map.values()) {
     if (filter(o)) yield o
   }
 }
 
-function mapFind<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
+export function mapFind<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
   for (const o of map.values()) {
     if (filter(o)) return o
   }
-}
-
-export {
-  DefaultMap,
-  ProgressPromise,
-  Socket,
-  dateify,
-  dialogQuery,
-  mapFilter,
-  mapFind,
-  orderBy,
-  slugify,
-  stripHTML,
-  uriToPayload,
-  restApi
 }

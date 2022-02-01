@@ -16,13 +16,12 @@
 import { computed, defineComponent, PropType, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { DefaultMap } from '@/utils'
-
 import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
 import { SimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
 import usePoll from '../usePoll'
+import DefaultMap from '@/utils/DefaultMap'
 
 export default defineComponent({
   name: 'SimplePoll',

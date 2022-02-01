@@ -2,13 +2,15 @@
   <v-row v-if="poll">
     <v-col offset-lg="2" lg="8">
       <header>
-        <div class="header-meta">
-          <Menu float :items="menuItems" />
-          <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
-          <WorkflowState :admin="canChange" :contentType="pollType" :object="poll" />
-        </div>
-        <h1>{{ poll.title }}</h1>
-        <p class="text-secondary">{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
+        <header class="d-flex">
+          <div class="flex-grow-1">
+            <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
+            <WorkflowState :admin="canChange" :contentType="pollType" :object="poll" />
+            <h1>{{ poll.title }}</h1>
+            <p class="text-secondary">{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
+          </div>
+          <Menu :items="menuItems" />
+        </header>
         <p v-if="poll.body">{{ poll.body }}</p>
         <template v-if="isOngoing">
           <v-alert type="success" v-if="votingComplete" class="my-6">
@@ -62,16 +64,16 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import WorkflowState from '@/components/WorkflowState.vue'
-import Channel from '@/contentTypes/Channel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
 import Proposal from '../proposals/Proposal.vue'
 
 import usePoll from './usePoll'
-import { pollType } from './contentTypes'
+import { pollType, voteType } from './contentTypes'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import slugify from 'slugify'
 import { dialogQuery } from '@/utils'
+import { socket } from '@/utils/Socket'
 
 export default defineComponent({
   name: 'PollView',
@@ -85,7 +87,6 @@ export default defineComponent({
     const router = useRouter()
     const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath, meetingId } = useMeeting()
-    const channels = new Channel('vote')
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
     const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
@@ -104,7 +105,7 @@ export default defineComponent({
         vote: validVote.value
       }
       try {
-        await channels.post(`${poll.value.method_name}_vote.add`, msg)
+        await socket.call(`${poll.value.method_name}_vote.add`, msg)
         votingComplete.value = true
       } catch {}
       submitting.value = false
@@ -114,7 +115,7 @@ export default defineComponent({
       if (!poll.value) return
       submitting.value = true
       try {
-        await channels.post('vote.abstain', { poll: poll.value.pk })
+        await voteType.methodCall('abstain', { poll: poll.value.pk })
         votingComplete.value = true
         validVote.value = undefined // Forget vote
       } catch {}

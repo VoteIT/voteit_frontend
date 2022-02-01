@@ -12,7 +12,7 @@
 import { computed, defineComponent, onBeforeMount, ref, watch } from 'vue'
 
 import useAuthentication from '@/composables/useAuthentication'
-import Channel from '@/contentTypes/Channel'
+import { socket, socketState } from '@/utils/Socket'
 import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 
@@ -25,14 +25,13 @@ export default defineComponent({
     const reconnectTries = ref(1)
     const failedInitialization = ref(false)
     const { isAuthenticated } = useAuthentication()
-    const { connect, socketState } = new Channel()
 
     let reconnectIntervalId: number
 
     async function reconnect () {
       clearInterval(reconnectIntervalId)
       try {
-        await connect()
+        await socket.connect()
         reconnectTries.value = 1
       } catch {
         if (reconnectTries.value > MAX_RETRIES) {
@@ -58,7 +57,7 @@ export default defineComponent({
     watch(isAuthenticated, async (value) => {
       if (!value) return
       try {
-        await connect()
+        await socket.connect()
       } catch {
         failedInitialization.value = true
       }
@@ -89,7 +88,7 @@ export default defineComponent({
         prependIcon: 'mdi-reload',
         onClick: () => {
           failedInitialization.value = false
-          connect()
+          socket.connect()
             .catch(() => { failedInitialization.value = true })
         },
         color: ThemeColor.Accent

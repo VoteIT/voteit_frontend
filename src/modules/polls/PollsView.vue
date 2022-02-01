@@ -1,9 +1,13 @@
 <template>
   <v-row>
     <v-col offset-lg="2" lg="8">
-      <header>
-        <Menu float :items="menuItems" />
-        <h1>{{ t('poll.all') }}</h1>
+      <header class="d-flex align-end mb-4">
+        <h1 class="flex-grow-1">
+          {{ t('poll.all') }}
+        </h1>
+        <v-btn v-if="canAddPoll" color="primary" prepend-icon="mdi-star-plus" :to="toAddPoll">
+          {{ t('poll.new') }}
+        </v-btn>
       </header>
       <v-divider />
       <Dropdown v-for="s in tabStates" :key="s.state" :title="`${t(`workflowState.plural.${s.state}`)} (${s.polls.length})`" :open="s.state==='ongoing'" class="mt-4">
@@ -26,7 +30,6 @@ import Poll from '../polls/Poll.vue'
 import usePolls from '../polls/usePolls'
 
 import { WorkflowState } from '@/contentTypes/types'
-import { MenuItem } from '@/utils/types'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 
@@ -51,19 +54,11 @@ export default defineComponent({
         .filter(s => s.polls.length)
     })
 
-    const menuItems = computed<MenuItem[]>(() => {
-      if (!meeting.value || !canAddPoll(meeting.value)) return []
-      return [{
-        icon: 'mdi-star-plus',
-        title: t('poll.new'),
-        to: meetingPath.value + '/polls/new'
-      }]
-    })
-
     return {
       t,
       tabStates,
-      menuItems,
+      canAddPoll: computed(() => meeting.value && canAddPoll(meeting.value)),
+      toAddPoll: computed(() => meetingPath.value + '/polls/new'),
       getStatePath (s: WorkflowState) {
         if (s.state === 'ongoing') return `${meetingPath.value}/polls`
         return `${meetingPath.value}/polls/${s.state}`
@@ -72,34 +67,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass" scoped>
-nav.tabs
-  display: flex
-  margin-top: 20px
-  border-bottom: 1px solid #bbb
-  padding-bottom: 0
-  a
-    text-decoration: none
-    margin: 0 5px -1px
-    padding: 8px 12px
-    border: 1px solid #000
-    border-bottom: 0
-    border-radius: 4px 4px 0 0
-    background-color: #333
-    font-weight: 700
-    color: #ddf
-    > span
-      vertical-align: super
-      font-size: 80%
-    .material-icons
-      color: #779
-      vertical-align: text-bottom
-    &.router-link-exact-active
-      background-color: #fff
-      color: #000
-      border-color: #bbb
-
-header
-  margin-bottom: 1em
-</style>

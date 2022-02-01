@@ -1,5 +1,4 @@
 import useAuthentication from '@/composables/useAuthentication'
-import Channel from '@/contentTypes/Channel'
 import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { meetingGroupType } from './contentTypes'
@@ -7,8 +6,7 @@ import { MeetingGroup } from './types'
 
 const meetingGroups = reactive<Map<number, MeetingGroup>>(new Map())
 
-meetingGroupType.channel
-  .updateMap(meetingGroups)
+meetingGroupType.updateMap(meetingGroups)
 
 function * iterGroups (filter: (group: MeetingGroup) => boolean) {
   for (const group of meetingGroups.values()) {

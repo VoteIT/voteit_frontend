@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import useAuthentication from '@/composables/useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
 import { PresenceCheckState } from '@/modules/presence/workflowStates'
-import { dateify, mapFilter } from '@/utils'
+import { mapFilter } from '@/utils'
 import { presenceCheckType, presenceType } from './contentTypes'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
@@ -16,12 +16,12 @@ interface PresenceCheckStatusMessage {
 }
 
 presenceCheckType
-  .channelUpdateMap(presenceChecks)
+  .updateMap(presenceChecks)
   .on<PresenceCheckStatusMessage>('status', ({ pk, present }) => {
     presenceCount.set(pk, present)
   })
 
-const channel = presenceType.channel.updateMap(presence)
+presenceType.updateMap(presence)
 
 export default function usePresence () {
   const { user } = useAuthentication()
@@ -71,6 +71,14 @@ export default function usePresence () {
     })
   }
 
+  function markPresence (check: PresenceCheck) {
+    presenceType.add({ presence_check: check.pk })
+  }
+
+  function undoPresence (presence: Presence) {
+    presenceType.delete(presence.pk)
+  }
+
   return {
     closeCheck,
     getClosedPresenceChecks,
@@ -78,7 +86,8 @@ export default function usePresence () {
     getAllPresent,
     getUserPresence,
     getPresenceCount,
+    markPresence,
     openCheck,
-    channel
+    undoPresence
   }
 }

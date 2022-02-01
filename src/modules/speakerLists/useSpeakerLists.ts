@@ -8,7 +8,7 @@ import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 import { AgendaItem } from '../agendas/types'
 import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
-import { speakerListType, speakerSystemType } from './contentTypes'
+import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -16,17 +16,17 @@ export const currentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(
 const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map system pk to current speaker messages
 export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
 
-speakerSystemType.channel.updateMap(speakerSystems)
+speakerSystemType.updateMap(speakerSystems)
+speakerListType.updateMap(speakerLists)
 
 const { hasRole } = speakerSystemType.useContextRoles()
 
-const listChannel = speakerListType.channel
-  .updateMap(speakerLists)
+const listChannel = speakerListType
   .on<SpeakerOrderUpdate>('order', ({ pk, queue }) => {
     speakerQueues.set(pk, queue)
-  })
+  }).channel
 
-new Channel('speaker')
+speakerType
   .on<SpeakerStartStopMessage>('started', payload => {
     currentlySpeaking.set(payload.speaker_list, dateify(payload, 'started'))
     const list = speakerLists.get(payload.speaker_list)
@@ -109,10 +109,10 @@ export default function useSpeakerLists () {
   }
 
   function enterList (list: SpeakerList) {
-    return listChannel.methodCall('enter', { pk: list.pk })
+    return speakerListType.methodCall('enter', { pk: list.pk })
   }
   function leaveList (list: SpeakerList) {
-    return listChannel.methodCall('leave', { pk: list.pk })
+    return speakerListType.methodCall('leave', { pk: list.pk })
   }
   function userInList (list: SpeakerList) {
     const queue = speakerQueues.get(list.pk)
@@ -122,13 +122,13 @@ export default function useSpeakerLists () {
   }
 
   function moderatorEnterList (list: SpeakerList, userid: number) {
-    return listChannel.methodCall('mod_enter', {
+    return speakerListType.methodCall('mod_enter', {
       pk: list.pk,
       userid
     })
   }
   function moderatorLeaveList (list: SpeakerList, userid: number) {
-    return listChannel.methodCall('mod_leave', {
+    return speakerListType.methodCall('mod_leave', {
       pk: list.pk,
       userid
     })
@@ -137,7 +137,7 @@ export default function useSpeakerLists () {
   // Start by userid, or first in queue
   function startSpeaker (list: SpeakerList, userid: number) {
     userid = userid || getQueue(list)[0]
-    listChannel.methodCall('start_user', {
+    speakerListType.methodCall('start_user', {
       pk: list.pk,
       userid
     })
@@ -146,7 +146,7 @@ export default function useSpeakerLists () {
   async function stopSpeaker (list: SpeakerList) {
     const current = getCurrent(list)
     if (current) {
-      await listChannel.methodCall('stop_user', {
+      await speakerListType.methodCall('stop_user', {
         pk: list.pk,
         userid: current.userid
       })
@@ -154,13 +154,13 @@ export default function useSpeakerLists () {
   }
 
   function undoSpeaker (list: SpeakerList) {
-    listChannel.methodCall('mod_undo', {
+    speakerListType.methodCall('mod_undo', {
       pk: list.pk
     })
   }
 
   function shuffleList (list: SpeakerList) {
-    listChannel.methodCall('mod_shuffle', {
+    speakerListType.methodCall('mod_shuffle', {
       pk: list.pk
     })
   }
@@ -171,7 +171,7 @@ export default function useSpeakerLists () {
       const activeList = system?.active_list && getList(system.active_list)
       if (activeList) await stopSpeaker(activeList)
     }
-    await listChannel.methodCall('set_active', { pk: list.pk })
+    await speakerListType.methodCall('set_active', { pk: list.pk })
   }
 
   return {

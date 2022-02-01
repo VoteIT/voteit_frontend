@@ -6,9 +6,13 @@
       </v-btn>
     </v-col>
     <v-col cols="12" order-sm="0" sm="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
-      <Menu :items="menu" float />
-      <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
-      <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
+      <header class="d-flex">
+        <div class="flex-grow-1">
+          <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
+          <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
+        </div>
+        <Menu :items="menu" float />
+      </header>
     </v-col>
     <v-divider vertical />
     <v-col v-if="isAuthenticated" cols="12" sm="4" xl="3">
@@ -82,7 +86,7 @@ export default defineComponent({
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user } = useAuthentication()
-    const { fetchOrganisations, organisation } = useOrganisations()
+    const { organisation } = useOrganisations()
     const { idLoginURL } = useOrganisation()
     const loader = useLoader('Home')
 
@@ -99,7 +103,6 @@ export default defineComponent({
     })
 
     onBeforeMount(() => {
-      fetchOrganisations()
       if (isAuthenticated.value) loader.call(fetchMeetings, fetchInvites)
     })
 

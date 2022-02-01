@@ -62,7 +62,7 @@ export default defineComponent({
         title: t('join.asModeratorDescription'),
         theme: ThemeColor.Info
       })) {
-        await meetingType.channel.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
+        await meetingType.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
         router.push(meetingPath.value)
       }
     }

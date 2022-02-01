@@ -17,7 +17,7 @@ const proposals = reactive<Map<number, Proposal>>(new Map())
 /* Used to figure out whether to mark agenda item as read */
 const userReadProposals = new Set<number>() // Track read proposals through since last reload
 
-proposalType.channelUpdateMap(proposals)
+proposalType.updateMap(proposals)
 
 // Automatically clear proposals for meeting when leaving.
 meetingType.channel.onLeave(meeting => {

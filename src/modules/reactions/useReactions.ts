@@ -14,10 +14,8 @@ const reactionCounts = reactive<Map<string, number>>(new Map())
 
 const { user } = useAuthentication()
 
-reactionButtonType.channel
-  .updateMap(reactionButtons)
-reactionType.channel
-  .updateMap(reactions)
+reactionButtonType.updateMap(reactionButtons)
+reactionType.updateMap(reactions)
   .on<ReactionCountMessage>('count', payload => {
     const key = getCountKey(payload.content_type, payload.object_id, payload.button)
     reactionCounts.set(key, payload.count)
@@ -48,7 +46,7 @@ export default function useReactions () {
   }
 
   function setUserReacted (button: ReactionButton, relation: ReactionRelation) {
-    return reactionType.channel.add({
+    return reactionType.add({
       button: button.pk,
       ...relation,
       user: user.value?.pk
@@ -58,18 +56,18 @@ export default function useReactions () {
   function removeUserReacted (button: ReactionButton, relation: ReactionRelation) {
     const reaction = getUserReaction(button, relation)
     if (reaction) {
-      return reactionType.channel.delete(reaction.pk)
+      return reactionType.delete(reaction.pk)
     } else {
       return Promise.reject(new Error('User has no previous reaction'))
     }
   }
 
   async function fetchReactions (button: ReactionButton, relation: ReactionRelation) {
-    const { p } = await reactionType.channel.methodCall('list', {
+    const { p } = await reactionType.methodCall<ReactionListMessage>('list', {
       button: button.pk,
       ...relation
     })
-    return p as ReactionListMessage
+    return p
   }
 
   return {

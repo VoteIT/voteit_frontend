@@ -4,7 +4,7 @@ import { ProposalText, proposalTextType } from './contentTypes'
 
 const proposalTexts = reactive<Map<number, ProposalText>>(new Map())
 
-proposalTextType.channelUpdateMap(proposalTexts)
+proposalTextType.updateMap(proposalTexts)
 
 type DocFilter = (document: ProposalText) => boolean
 

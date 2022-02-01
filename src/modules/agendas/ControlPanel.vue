@@ -1,20 +1,20 @@
 <template>
   <Tabs :tabs="editModes">
     <template #default>
-      <v-item-group tag="table" id="agenda-edit" multiple v-model="editSelected">
+      <v-table id="agenda-edit">
         <thead>
           <tr>
             <th>
               <input type="checkbox" v-model="editIsAllSelected">
             </th>
             <th>{{ t('state') }}</th>
-            <th class="title">{{ t('title') }}</th>
+            <th width="100%">{{ t('title') }}</th>
             <th>{{ t('proposal.proposals') }}</th>
             <th>{{ t('discussion.discussions') }}</th>
             <th/>
           </tr>
         </thead>
-        <tbody>
+        <v-item-group tag="tbody" multiple v-model="editSelected">
           <v-item v-for="ai in agendaItems" :key="ai.pk" v-slot="{ toggle, isSelected }" :value="ai.pk">
             <tr>
               <td>
@@ -35,8 +35,8 @@
               </td>
             </tr>
           </v-item>
-        </tbody>
-      </v-item-group>
+        </v-item-group>
+      </v-table>
       <v-expand-transition>
         <v-sheet border rounded v-show="editSelected.length" class="pa-2">
           <h2>
@@ -259,18 +259,18 @@ export default defineComponent({
     border-bottom-left-radius: 0
     height: auto
 
-#agenda-edit
-  width: 100%
-  border-spacing: 0
-  td, th
-    padding: .4em
-  th
-    text-align: left
-  .title
-    width: 100%
-  td.state
-    text-align: center
-  tbody
-    tr:nth-child(odd)
-      background-color: rgb(var(--v-theme-surface))
+// #agenda-edit
+//   width: 100%
+//   border-spacing: 0
+//   td, th
+//     padding: .4em
+//   th
+//     text-align: left
+//   .title
+//     width: 100%
+//   td.state
+//     text-align: center
+//   tbody
+//     tr:nth-child(odd)
+//       background-color: rgb(var(--v-theme-surface))
 </style>

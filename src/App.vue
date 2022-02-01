@@ -78,4 +78,9 @@ export default defineComponent({
 .v-input.hide-details
   .v-input__details
     display: none
+
+// TODO Remove when fiex upstream
+.v-dialog .v-overlay__content
+  max-height: calc(100vh - 40px) !important
+  overflow-y: auto
 </style>

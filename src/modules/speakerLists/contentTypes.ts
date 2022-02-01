@@ -4,7 +4,7 @@ import { SpeakerList, SpeakerSystem, SpeakerSystemRole } from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
 
 export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRole>({
-  channelName: 'speaker_system',
+  name: 'speaker_system',
   restEndpoint: 'speaker-list-systems/',
   states: speakerSystemStates,
   hasRoles: true
@@ -12,6 +12,11 @@ export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRol
 
 export const speakerListType = new ContentType<SpeakerList>({
   states: speakerListStates,
-  channelName: 'speaker_list',
+  name: 'speaker_list',
+  channels: ['speaker_list'],
   restEndpoint: 'speaker-lists/'
+})
+
+export const speakerType = new ContentType<object>({
+  name: 'speaker'
 })

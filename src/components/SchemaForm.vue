@@ -5,11 +5,13 @@
   </v-form>
 </template>
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { Component, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
 import { FieldRule, FieldType, FormSchema } from './types'
 
-const componentNames: Record<FieldType, string> = {
+const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
+  checkbox_multiple: CheckboxMultipleSelectVue,
   number: 'v-text-field', // ?
   select: 'v-text-field', // TODO
   switch: 'v-switch',

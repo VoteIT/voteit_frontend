@@ -1,25 +1,32 @@
-/* eslint-disable no-unused-expressions */
-import { uriToPayload, ProgressPromise, DefaultMap } from '@/utils'
+import { ref } from 'vue'
+
+import { uriToPayload } from '@/utils'
 import hostname from '@/utils/hostname'
 import { AlertLevel } from '@/composables/types'
 
-import { ChannelsConfig, ChannelsMessage, PydanticError, State, SuccessMessage } from './types'
-import { openAlertEvent } from './events'
+import { ChannelsConfig, ChannelsMessage, PydanticError, State, SubscribedPayload, SuccessMessage } from './types'
+import { DocumentVisibleEvent, openAlertEvent } from './events'
 import { last } from 'lodash'
-
-const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+import DefaultMap from './DefaultMap'
+import ProgressPromise from './ProgressPromise'
 
 type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
-
-const DEFAULT_CONFIG: ChannelsConfig = {
-  timeout: 5_000 // 5s
-}
 export enum SocketEvent {
   Open = 'open',
   Close = 'close',
   Error = 'error',
   Message = 'message'
 }
+
+const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+
+const DEFAULT_CONFIG: ChannelsConfig = {
+  timeout: 5_000 // 5s
+}
+let heartbeatInterval: number
+const HEARTBEAT_MS = 30_000
+
+export const socketState = ref(false)
 
 class ValidationError extends Error {
   errors: PydanticError[]
@@ -42,16 +49,27 @@ export function parseSocketError (error: Error | ValidationError) {
   return locErrors
 }
 
-export default class Socket {
+function isSubscribedMessage (msg: ChannelsMessage<unknown>): msg is SuccessMessage<SubscribedPayload> {
+  return msg.t === 'channel.subscribed'
+}
+
+class Socket {
   public active: boolean
   private callbacks: Map<string, (data: ChannelsMessage) => void>
+  private typeListeners: Map<string, (data: ChannelsMessage) => void>
   private listeners: DefaultMap<string, Set<SocketEventHandler>>
   private ws?: WebSocket
 
   constructor () {
     this.active = false
     this.callbacks = new Map()
+    this.typeListeners = new Map()
     this.listeners = new DefaultMap(() => new Set())
+    // Respond to server ping
+    // 's' == system
+    this.registerTypeListener('s', ({ t, i }) => {
+      if (t === 's.ping') socket.respond('s.pong', i)
+    })
   }
 
   private createEventListener (eventName: SocketEvent): SocketEventHandler {
@@ -70,25 +88,42 @@ export default class Socket {
     this.listeners.get(eventName).delete(listener)
   }
 
+  public registerTypeListener (name: string, listener: (data: ChannelsMessage) => void) {
+    this.typeListeners.set(name, listener)
+  }
+
   public connect () {
     this.active = true
     return new Promise((resolve, reject) => {
       this.ws = new WebSocket(`${wsProtocol}//${hostname}/ws/`)
 
       this.ws.addEventListener(SocketEvent.Error, reject)
-      this.ws.addEventListener(SocketEvent.Open, resolve)
+      this.ws.addEventListener(SocketEvent.Open, (evt) => {
+        socketState.value = true
+        resolve(evt)
+      })
       this.ws.addEventListener(SocketEvent.Message, event => {
-        const data: ChannelsMessage = JSON.parse(event.data)
-        if (data.i) this.callbacks.get(data.i)?.(data)
+        this.heartbeat()
+        const msg: ChannelsMessage = JSON.parse(event.data)
+        // If there's a listener for message identifier
+        if (msg.i) this.callbacks.get(msg.i)?.(msg)
+        // If it's a subscribed response, handle any app_state
+        if (isSubscribedMessage(msg)) msg.p.app_state?.forEach(this.handleTypeMessage.bind(this))
+        // Else handle type message
+        else this.handleTypeMessage(msg)
+      })
+      this.ws.addEventListener(SocketEvent.Close, () => {
+        socketState.value = false
       })
       this.ws.onopen = this.createEventListener(SocketEvent.Open)
       this.ws.onmessage = this.createEventListener(SocketEvent.Message)
       this.ws.onerror = this.createEventListener(SocketEvent.Error)
       this.ws.onclose = this.createEventListener(SocketEvent.Close)
-      // for (const event of Object.values(SocketEvent)) {
-      //   this.ws.addEventListener(event, this.createEventListener(event))
-      // }
     })
+  }
+
+  private handleTypeMessage (msg: ChannelsMessage) {
+    if (msg.t) this.typeListeners.get(msg.t.split('.')[0])?.(msg)
   }
 
   public close () {
@@ -101,6 +136,30 @@ export default class Socket {
     this.ws.onclose = null
     this.ws.close()
   }
+
+  /* Ping Pong */
+  // Reset interval
+  private heartbeat (restart = true) {
+    clearInterval(heartbeatInterval)
+    if (restart) heartbeatInterval = setTimeout(this.ping.bind(this), HEARTBEAT_MS)
+  }
+
+  // Ping server when socket has been quiet
+  private async ping () {
+    if (document.visibilityState !== 'visible') {
+      DocumentVisibleEvent.once(this.ping.bind(this))
+      return
+    }
+    try {
+      await this.call('s.ping')
+    } catch {
+      this.heartbeat(false) // Stop pings
+      socket.close() // This takes time to finish
+      // Probably need to either wait for closure, or unregister everything connected to old socket connection before connecting again.
+      socketState.value = false // Trigger reactivity straight away?
+    }
+  }
+  /* End of Ping Pong */
 
   public get isOpen () {
     return this.active && this.ws?.readyState === WebSocket.OPEN
@@ -203,3 +262,5 @@ export default class Socket {
     }))
   }
 }
+
+export const socket = new Socket()

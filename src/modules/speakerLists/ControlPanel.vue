@@ -1,43 +1,89 @@
 <template>
   <div>
-    <h2>{{ t('speaker.settings') }}</h2>
     <v-alert type="info" :text="t('speaker.settingsHelp')" class="my-4" />
-    <v-dialog v-model="createDialogOpen">
-      <template #activator="{ props }">
-        <v-btn color="primary" v-bind="props" prepend-icon="mdi-plus">{{ t('speaker.systemAdd') }}</v-btn>
-      </template>
-      <v-card tag="form" :title="t('speaker.systemAdd')" width="1280" max-width="100%" color="background" @submit.prevent="createSystem()">
-        <v-card-text>
-          <v-text-field :label="t('title')" v-model="systemData.title" />
-          <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
-<!-- TODO Better dynamic forms -->
-          <v-expand-transition>
-            <div v-if="createSystemSettings">
-              <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
-            </div>
-          </v-expand-transition>
-          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
-          <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="createDialogOpen = false">
-            {{ t('cancel') }}
-          </v-btn>
-          <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
-            {{ t('add') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <div class="d-flex">
+      <h2 class="text-truncate">
+        {{ t('speaker.settings') }}
+      </h2>
+      <v-spacer />
+      <v-dialog v-model="createDialogOpen">
+        <template #activator="{ props }">
+          <v-btn color="primary" v-bind="props" prepend-icon="mdi-plus">{{ t('speaker.systemAdd') }}</v-btn>
+        </template>
+        <v-card tag="form" :title="t('speaker.systemAdd')" width="1280" max-width="100%" color="background" @submit.prevent="createSystem()">
+          <v-card-text>
+            <v-text-field :label="t('title')" v-model="systemData.title" />
+            <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
+  <!-- TODO Better dynamic forms -->
+            <v-expand-transition>
+              <div v-if="createSystemSettings">
+                <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
+              </div>
+            </v-expand-transition>
+            <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
+            <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn variant="text" @click="createDialogOpen = false">
+              {{ t('cancel') }}
+            </v-btn>
+            <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
+              {{ t('add') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+    <!-- <v-table class="my-4" id="speaker-systems-table">
+      <thead>
+        <tr>
+          <th width="33%">
+            {{ t('title' )}}
+          </th>
+          <th>
+            {{ t('speaker.systemMethod') }}
+          </th>
+          <th>
+            {{ t('speaker.safePositions') }}
+          </th>
+          <th colspan="2">
+            {{ t('speaker.speakerRoles') }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="{ system, menu } in systems" :key="system.pk">
+          <td>
+            {{ system.title }}
+          </td>
+          <td>
+            {{ t(`speaker.orderMethod.${system.method_name}`) }}
+          </td>
+          <td>
+            {{ system.safe_positions ?? t('speaker.noSafePositions') }}
+          </td>
+          <td>
+            {{ system.meeting_roles_to_speaker.map(r => t(`meeting.role.${r}`)).join(', ') }}
+          </td>
+          <td class="text-right">
+            <Menu :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
+          </td>
+        </tr>
+      </tbody>
+    </v-table> -->
     <Widget class="speaker-system my-4" v-for="{ system, menu, data, userSearch } in systems" :key="system.pk">
-      <Menu float :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
-      <h2>{{ system.title }}</h2>
+      <div class="d-flex">
+        <h2 class="flex-grow-1">
+          {{ system.title }}
+        </h2>
+        <Menu float :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
+      </div>
       <v-list density="comfortable">
         <v-list-item v-for="{ key, value } in data" :key="key" :title="key" :subtitle="value" />
       </v-list>
       <UserSearch class="mt-4" v-bind="userSearch" />
-      <RoleMatrix class="mt-2" admin :channel="systemChannel" :pk="system.pk" :icons="systemIcons" />
+      <RoleMatrix class="mt-2" admin :contentType="speakerSystemType" :pk="system.pk" :icons="systemIcons" />
     </Widget>
     <v-dialog v-model="editDialogOpen">
       <v-card tag="form" :title="t('speaker.systemEdit')" width="1280" max-width="100%" color="background" @submit.prevent="saveSystem()">
@@ -115,7 +161,7 @@ export default defineComponent({
 
     onBeforeMount(() => {
       loader.call(async () => {
-        systemRoles.value = await speakerSystemType.channel.getAvailableRoles()
+        systemRoles.value = await speakerSystemType.getAvailableRoles()
       })
     })
 
@@ -239,7 +285,7 @@ export default defineComponent({
             userSearch: {
               params: { meeting: meetingId.value },
               filter: (user: User) => !userIds.includes(user.pk),
-              onSubmit: (user: User) => speakerSystemType.channel.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
+              onSubmit: (user: User) => speakerSystemType.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
             }
           }
         })
@@ -266,7 +312,6 @@ export default defineComponent({
       roleLabels,
       systems,
       systemData,
-      systemChannel: speakerSystemType.channel,
       systemRoles,
       speakerSystemType,
       systemIcons,

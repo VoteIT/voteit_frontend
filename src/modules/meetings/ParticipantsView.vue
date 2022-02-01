@@ -5,17 +5,17 @@
         <template #default>
           <h1>{{ t('meeting.participants') }}</h1>
           <UserSearch v-if="canChangeRoles" class="mb-6" @submit="addUser" :filter="searchFilter" />
-          <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :channel="meetingChannel" :pk="meetingId" :icons="meetingIcons" />
+          <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :contentType="meetingType" :pk="meetingId" :icons="meetingIcons" />
         </template>
 
         <template #invites>
           <div class="mb-4">
             <div class="d-flex">
-              <h1>
+              <h1 class="text-truncate">
                 {{ t('meeting.invites.existing') }}
               </h1>
               <v-spacer />
-              <v-btn class="mr-2" @click="copyFilteredData()" :color="copied ? 'success' : undefined" >
+              <v-btn class="mr-2" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :title="t('meeting.invites.copyMatchingTooltip')">
                 <span v-if="copied">{{ t('copied') }}!</span>
                 <v-icon v-else>mdi-content-copy</v-icon>
               </v-btn>
@@ -25,12 +25,17 @@
               <v-dialog v-model="invitationDialogOpen">
                 <template #activator="{ props }">
                   <div class="text-right mb-2">
-                    <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-multiple-plus">
+                    <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
                       {{ t('meeting.invites.add') }}
                     </v-btn>
                   </div>
                 </template>
                 <v-sheet class="pa-4">
+                  <!-- <SchemaForm :schema="inviteSchema">
+                    <template #buttons="{ disabled }">
+                      <v-progress-linear v-if="disabled" indeterminate />
+                    </template>
+                  </SchemaForm> -->
                   <form @submit.prevent="submitInvitations()">
                     <h2 class="mb-1">
                       {{ t('meeting.invites.add') }}
@@ -38,7 +43,10 @@
                     <v-textarea v-model="inviteData.invite_data" :error="!!inviteErrors.__root__" :messages="inviteErrors.__root__" rows="10" :label="t('meeting.invites.emails')" :hint="t('meeting.invites.emailsHint')" />
                     <CheckboxMultipleSelect v-model="inviteData.roles" :settings="{ options: roleLabels }" :label="t('meeting.invites.roles')" :requiredValues="['participant']" />
                     <div class="text-right">
-                      <v-btn type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitationsReady">
+                      <v-btn v-if="submittingInvitations" disabled>
+                        <v-progress-circular indeterminate size="small" />
+                      </v-btn>
+                      <v-btn v-else type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitationsReady">
                         {{ t('add') }}
                       </v-btn>
                     </div>
@@ -49,9 +57,9 @@
             <v-expand-transition>
               <v-sheet v-show="filterMenu" rounded border>
                 <div class="ma-4">
-                  <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabels }" label="Filtrera på roller" :requiredValues="['participant']" />
-                  <v-switch v-model="inviteFilter.exactRoles" color="primary" label="Matcha roller exakt" />
-                  <CheckboxMultipleSelect v-model="inviteFilter.states" :settings="{ options: stateLabels }" label="Filtrera på status" />
+                  <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabels }" :label="t('meeting.invites.filterOnRoles')" :requiredValues="['participant']" />
+                  <v-switch v-model="inviteFilter.exactRoles" color="primary" :label="t('meeting.invites.filterMatchRoles')" />
+                  <CheckboxMultipleSelect v-model="inviteFilter.states" :settings="{ options: stateLabels }" :label="t('meeting.invites.filterOnStatus')" />
                 </div>
               </v-sheet>
             </v-expand-transition>
@@ -215,7 +223,7 @@ import { isEqual } from 'lodash'
 
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { parseSocketError } from '@/utils/Socket'
+import { parseSocketError, socket } from '@/utils/Socket'
 import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
@@ -225,7 +233,7 @@ import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
 
 import { MeetingGroup, MeetingInvite, MeetingRole } from './types'
-import { meetingGroupType, meetingInviteType, meetingType } from './contentTypes'
+import { meetingGroupType, meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
 import Tabs from '@/components/Tabs.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
@@ -249,6 +257,11 @@ const required: FieldRule<string> = {
   validate: v => !!v || 'required'
 }
 
+// const containsEmail: FieldRule<string> = {
+//   props: { required: true },
+//   validate: v => (v && v.length > 5 && v.includes('@')) || 'must contain at least one e-mail address'
+// }
+
 export default defineComponent({
   inject: ['cols'],
   setup () {
@@ -263,7 +276,7 @@ export default defineComponent({
     useMeetingTitle(t('meeting.participants'))
 
     function addRole (user: number, role: string) {
-      meetingType.channel.addRoles(meetingId.value, user, role)
+      meetingType.addRoles(meetingId.value, user, role)
     }
 
     function addUser (user: ContextRoles) {
@@ -305,13 +318,27 @@ export default defineComponent({
         }
       ]
     })
-    watch(currentTab, (value) => {
-      if (value === 'invites') meetingInviteType.channel.subscribe(meetingId.value)
-      else meetingInviteType.channel.leave(meetingId.value)
-    })
 
     /* INVITES */
-    // const inviteRoles = computed(() => getRoleLabels())
+    const invitesChannel = meetingType.getChannel('invites')
+    watch(currentTab, (value) => {
+      if (value === 'invites') invitesChannel.subscribe(meetingId.value)
+      else invitesChannel.leave(meetingId.value)
+    })
+    // const inviteSchema = computed<FormSchema>(() => {
+    //   return [{
+    //     name: 'invite_data',
+    //     label: t('meeting.invites.emails'),
+    //     type: FieldType.TextArea,
+    //     rules: [containsEmail]
+    //   },
+    //   {
+    //     name: 'roles',
+    //     label: t('meeting.invites.roles'),
+    //     type: FieldType.CheckboxMultiple,
+    //     options: roleLabels.value
+    //   }]
+    // })
     const inviteData = reactive({
       invite_data: '',
       roles: ['participant']
@@ -330,7 +357,7 @@ export default defineComponent({
       inviteErrors.value = {}
       submittingInvitations.value = true
       try {
-        await meetingInviteType.channel.post('invites.add', {
+        await socket.call('invites.add', {
           invite_data: inviteData.invite_data.split('\n'),
           meeting: meetingId.value,
           roles: inviteData.roles
@@ -442,13 +469,14 @@ export default defineComponent({
       inviteErrors,
       inviteFilter,
       roleLabels,
-      meetingChannel: meetingType.channel,
+      meetingType,
       meetingGroups,
       meetingIcons,
       meetingId,
       meetingInvites,
       invitationsReady,
       stateLabels,
+      submittingInvitations,
       tabs,
       addUser,
       copyFilteredData,

@@ -12,7 +12,7 @@
         {{ t('electoralRegister.selectMethod') }}
       </v-alert>
       <v-alert v-else-if="status === 'saved'" type="success" closable class="mt-2">
-        {{ t('electoralRegister.saved', settings) }}
+        {{ t(`electoralRegister.methodDescription.${settings.er_policy_name}`) }}
       </v-alert>
     </form>
   </div>

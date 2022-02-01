@@ -74,7 +74,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const channels = pollType.getChannel({ leaveDelay: 0 })
+    const channels = pollType.getChannel('poll', { leaveDelay: 0 })
     const { meetingPath } = useMeeting()
     const { openModal } = useModal()
     const { getPollStatus, getUserVote } = usePolls()

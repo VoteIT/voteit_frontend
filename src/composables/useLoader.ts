@@ -1,10 +1,11 @@
 import { computed, ref, watch } from 'vue'
-import { RouteLocationRaw, useRouter } from 'vue-router'
 
-import Channel, { socketState } from '@/contentTypes/Channel'
+import { clearAlertsEvent } from '@/utils/events'
+import { socketState } from '@/utils/Socket'
+import Channel from '@/contentTypes/Channel'
+
 import useAuthentication from './useAuthentication'
 import { InitState } from './types'
-import { clearAlertsEvent } from '@/utils/events'
 
 const { isAuthenticated } = useAuthentication()
 
@@ -59,8 +60,8 @@ export default function useLoader (name: string) {
     else _failure(name)
   }
 
-  async function subscribe<T> (channel: Channel<T>, uriOrPk: string | number) {
-  // If isReady, load is already performed. Therefore, call immediately.
+  async function subscribe (channel: Channel, uriOrPk: string | number) {
+    // If isReady, load is already performed. Therefore, call immediately.
     if (isReady.value) return channel.subscribe(uriOrPk)
     return new Promise<void>((resolve, reject) => {
       callbacks.push(async () => {

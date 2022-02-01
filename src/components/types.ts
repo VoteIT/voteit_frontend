@@ -82,6 +82,7 @@ export interface Tab {
 
 export enum FieldType {
   Checkbox = 'checkbox',
+  CheckboxMultiple = 'checkbox_multiple',
   Number = 'number',
   Select = 'select',
   Switch = 'switch',
@@ -101,12 +102,17 @@ interface SchemaField<T> {
   default?: T
   label: string
   name: string
-  options?: Record<string | number, string> // TODO Maybe for selects?
   rules?: FieldRule<T>[] // TODO Vuelidate rules?
 }
 
 interface CheckboxField extends SchemaField<boolean> {
   type: FieldType.Checkbox
+}
+
+interface CheckboxMultipleField extends SchemaField<boolean> {
+  type: FieldType.CheckboxMultiple
+  options: Record<string | number, string>,
+  requiredValues?: string[]
 }
 
 interface NumberField extends SchemaField<number> {
@@ -121,4 +127,8 @@ interface TextField extends SchemaField<string> {
   type: FieldType.Text
 }
 
-export type FormSchema = (CheckboxField | NumberField | SwitchField | TextField)[]
+interface TextAreaField extends SchemaField<string> {
+  type: FieldType.TextArea
+}
+
+export type FormSchema = (CheckboxField | CheckboxMultipleField | NumberField | SwitchField | TextField | TextAreaField)[]

@@ -29,17 +29,19 @@
       <v-sheet v-if="$slots.vote" class="vote-slot">
         <slot name="vote"/>
       </v-sheet>
-      <footer v-if="!readOnly" class="mt-2 d-flex align-center">
-        <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment()">
-          {{ t('discussion.comment') }}
-        </v-btn>
-        <v-btn prepend-icon="mdi-chevron-up" size="small" variant="text" v-if="showComments" @click="showComments = false">
-          {{ t('discussion.hideComments') }}
-        </v-btn>
-        <v-btn prepend-icon="mdi-chevron-down" size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
-          {{ t('discussion.comments', { count: discussionPosts.length }) }}
-        </v-btn>
-        <slot name="buttons"/>
+      <footer v-if="!readOnly" class="mt-2 d-flex">
+        <div class="d-flex flex-wrap">
+          <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment()">
+            {{ t('discussion.comment') }}
+          </v-btn>
+          <v-btn prepend-icon="mdi-chevron-up" size="small" variant="text" v-if="showComments" @click="showComments = false">
+            {{ t('discussion.hideComments') }}
+          </v-btn>
+          <v-btn prepend-icon="mdi-chevron-down" size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
+            {{ t('discussion.comments', { count: discussionPosts.length }) }}
+          </v-btn>
+          <slot name="buttons"/>
+        </div>
         <v-spacer />
         <Menu size="small" :items="menuItems" />
       </footer>
@@ -106,7 +108,6 @@ export default defineComponent({
     })
 
     const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
-
     const { isUnread } = useUnread(props.p.created)
 
     async function queryDelete () {
@@ -233,7 +234,7 @@ export default defineComponent({
     margin: 0 -10px
     padding: 10px 10px 0
     .context-menu
-      margin: -10px
+      margin: -6px
 
   .vote-slot
     margin-top: .8em

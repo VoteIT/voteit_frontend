@@ -116,7 +116,17 @@
     "saved": "Electoral register method now set to {er_policy_name}.",
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
     "settings": "Settings for Electoral Registers",
-    "voterCount": "No voters | 1 voter | {count} voters"
+    "voterCount": "No voters | 1 voter | {count} voters",
+    "methodDescription": {
+      "auto_always": "Electoral register will always update to match potential voters, even on ongoing polls. This should never be used in official meetings.",
+      "auto_before_poll": "Electoral register will update as needed to include all potential voters whenever a poll is started.",
+      "presence_check": "Electoral register will update when closing a presence check. It will include all potential voters that has noted their presence."
+    },
+    "methodName": {
+      "auto_always": "Always update (demo)",
+      "auto_before_poll": "Automatic before poll",
+      "presence_check": "Presence check"
+    }
   },
   "error": {
     "error": "Error",
@@ -165,10 +175,14 @@
     },
     "invites": {
       "add": "Invite participants",
+      "copyMatchingTooltip": "Copies all invitations matching filter",
       "data": "Invite data",
       "emails": "Emails to add",
       "emailsHint": "Add one email address per row",
       "existing": "Existing invitations",
+      "filterOnRoles": "Filter on roles",
+      "filterMatchRoles": "Match roles exactly",
+      "filterOnStatus": "Filter on status",
       "invites": "Invitations",
       "invitedAs": "Invites as",
       "noInvitationsHelp": "Noone has been invited to this meeting yet.",

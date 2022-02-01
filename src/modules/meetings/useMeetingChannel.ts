@@ -1,4 +1,4 @@
-import { watch, onBeforeMount, onBeforeUnmount } from 'vue'
+import { watch, onBeforeMount, onBeforeUnmount, computed } from 'vue'
 
 import Channel from '@/contentTypes/Channel'
 import useMeeting from './useMeeting'
@@ -10,32 +10,30 @@ import { meetingType } from './contentTypes'
 
 const loader = useLoader('useMeetingChannel')
 
-let currentRoleChannel: string | null = null
+let currentRoleChannel: Channel | null = null
 const channelConfig = { timeout: 15_000 } // Use long timeout for meeting channel subscription, so people don't get thrown out.
-const channels = new Channel(undefined, channelConfig) // For dynamic usage
-
-function leaveRoleChannel () {
-  if (!currentRoleChannel) return
-  channels.leave(currentRoleChannel, { leaveDelay: 500 })
-  currentRoleChannel = null
-}
 
 export default function useMeetingChannel (init = false) {
   const { isModerator, meetingId, meeting } = useMeeting()
   const { fetchMeeting } = useMeetings()
   const router = useRouter()
 
+  function leaveRoleChannel () {
+    if (!currentRoleChannel) return
+    currentRoleChannel.leave(meetingId.value, { leaveDelay: 500 })
+    currentRoleChannel = null
+  }
+  const roleChannel = computed(() => isModerator.value ? 'moderators' : 'participants')
+
   async function enterRoleChannel () {
-    if (!meetingId.value) return
-    const channelName = `${isModerator.value ? 'moderators' : 'participants'}/${meetingId.value}`
-    if (channelName === currentRoleChannel) return
+    if (!meetingId.value || roleChannel.value === currentRoleChannel?.name) return
     leaveRoleChannel()
-    currentRoleChannel = channelName
-    await channels.subscribe(channelName)
+    currentRoleChannel = meetingType.getChannel(roleChannel.value, channelConfig)
+    await currentRoleChannel.subscribe(meetingId.value)
   }
 
   if (init) {
-    watch(isModerator, enterRoleChannel)
+    watch(roleChannel, enterRoleChannel)
 
     onBeforeMount(() => {
       loader.call(async () => {

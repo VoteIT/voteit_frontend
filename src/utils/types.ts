@@ -52,21 +52,14 @@ export interface SubscribePayload {
   pk: number
 }
 
-interface SubscribedPayload {
+export interface SubscribedPayload {
   app_state: SuccessMessage<object>[] | null
   channel_name: string
   channel_type: string
   pk: number
 }
 
-export interface SubscribedMessage {
-  i: string
-  s: State.Success
-  t: 'channel.subscribed'
-  p: SubscribedPayload
-}
-
-export type ChannelsMessage<T=unknown> = SuccessMessage<T> | ProgressMessage | FailedMessage | SubscribedMessage
+export type ChannelsMessage<T=unknown> = SuccessMessage<T> | ProgressMessage | FailedMessage
 
 export type ProgressHandler = (progress: Progress) => void
 

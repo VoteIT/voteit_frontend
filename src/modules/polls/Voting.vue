@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Component, computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
+import { Component, computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAlert from '@/composables/useAlert'
@@ -28,10 +28,11 @@ import useProposals from '@/modules/proposals/useProposals'
 
 import { pollMethods } from './methods'
 
-import Channel from '@/contentTypes/Channel'
 import usePolls from '@/modules/polls/usePolls'
 import { Poll } from './methods/types'
 import { Proposal } from '../proposals/types'
+import { voteType } from './contentTypes'
+import { socket } from '@/utils/Socket'
 
 export default defineComponent({
   name: 'VotingModal',
@@ -46,7 +47,6 @@ export default defineComponent({
     const { getPollProposals } = useProposals()
     const { getUserVote } = usePolls()
     const { alert } = useAlert()
-    const channels = new Channel('vote', { alertOnError: false })
 
     const method = ref(null)
     const waiting = ref(false)
@@ -75,7 +75,7 @@ export default defineComponent({
           vote: validVote.value
         }
         try {
-          await channels.post(`${props.data.method_name}_vote.add`, msg)
+          await socket.call(`${props.data.method_name}_vote.add`, msg)
           done.value = true
         } catch {
           waiting.value = false
@@ -87,22 +87,12 @@ export default defineComponent({
 
     function abstainVote () {
       try {
-        channels.post('vote.abstain', { poll: props.data.pk })
+        voteType.methodCall('abstain', { poll: props.data.pk })
         abstained.value = true
       } catch {
         waiting.value = false
       }
     }
-
-    onBeforeMount(() => {
-      // channels.get(props.data.pk)
-      //   .then((msg: ChannelsMessage) => {
-      //     const p = msg.p as Vote
-      //     if (p.vote) validVote.value = p.vote
-      //     currentAbstained.value = p.abstain
-      //   })
-      //   .catch(() => {}) // Should mean no previous vote, but should be sanity checked.
-    })
 
     return {
       t,

@@ -3,11 +3,14 @@ import { Presence, PresenceCheck } from '@/contentTypes/types'
 import { presenceCheckStates } from './workflowStates'
 
 export const presenceType = new ContentType<Presence>({
-  channelName: 'presence'
+  name: 'presence',
+  channels: ['presence'],
+  useSocketApi: true
 })
 
 export const presenceCheckType = new ContentType<PresenceCheck>({
-  channelName: 'presence_check',
+  name: 'presence_check',
+  channels: ['presence_check'],
   restEndpoint: 'presence-checks/',
   states: presenceCheckStates,
   dateFields: ['opened', 'closed']

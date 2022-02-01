@@ -3,25 +3,25 @@
     <h2>
       {{ t('presence.check') }}
     </h2>
-    <template v-if="!userPresence">
+    <template v-if="userPresence">
       <p class="my-2">
-        {{ t('presence.notePresent') }}
+        {{ t('presence.presenceNoted') }}
       </p>
-      <btn @click="presence.channel.add({ presence_check: data.presenceCheck.pk })" icon="mdi-hand-wave">
-        {{ t('presence.imHere') }}
+      <btn @click="presence.undoPresence(userPresence)" icon="mdi-undo-variant">
+        {{ t('undo') }}
       </btn>
     </template>
     <template v-else>
       <p class="my-2">
-        {{ t('presence.presenceNoted') }}
+        {{ t('presence.notePresent') }}
       </p>
-      <btn @click="presence.channel.delete(userPresence.pk)" icon="mdi-undo-variant">
-        {{ t('undo') }}
+      <btn @click="presence.markPresence(data.presenceCheck)" icon="mdi-hand-wave">
+        {{ t('presence.imHere') }}
       </btn>
     </template>
-    <template v-if="canChangePresenceCheck(data.presenceCheck)">
+    <template v-if="canChange">
       <v-divider class="mt-4 mb-2" />
-      <PresenceCheckControl :check="data.presenceCheck" subscribe />
+      <PresenceCheckControl :check="presenceCheck" subscribe />
     </template>
   </div>
 </template>
@@ -48,15 +48,16 @@ export default defineComponent({
     const { t } = useI18n()
     const presence = usePresence()
 
-    const userPresence = computed(() => {
-      return presence.getUserPresence(props.data.presenceCheck.pk)
-    })
+    const presenceCheck = computed(() => props.data.presenceCheck)
+    const userPresence = computed(() => presence.getUserPresence(props.data.presenceCheck.pk))
+    const canChange = computed(() => canChangePresenceCheck(presenceCheck.value))
 
     return {
       t,
+      canChange,
       presence,
-      userPresence,
-      canChangePresenceCheck
+      presenceCheck,
+      userPresence
     }
   }
 })

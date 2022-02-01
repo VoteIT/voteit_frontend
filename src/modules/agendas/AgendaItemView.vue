@@ -6,9 +6,13 @@
     </v-row>
     <v-row>
       <v-col cols="12" lg="8">
-        <Menu float :items="menuItems" />
-        <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
-        <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
+        <div class="d-flex">
+          <div class="flex-grow-1">
+            <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
+            <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
+          </div>
+          <Menu float :items="menuItems" />
+        </div>
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" />
         <TextDocuments />
       </v-col>
@@ -101,7 +105,7 @@ import useAgendaFilter from './useAgendaFilter'
 import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
-import { agendaItemType } from './contentTypes'
+import { agendaItemType, lastReadType } from './contentTypes'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -209,10 +213,10 @@ export default defineComponent({
 
     function setLastRead (ai: AgendaItem, force = false) {
       // Allow forcing read marker, on user demand
-      if (force) return agendaItemType.channel.send('last_read.change', { agenda_item: ai.pk })
+      if (force) return lastReadType.methodCall('last_read.change', { agenda_item: ai.pk })
       // Return if there is no new content
       if (!ai || !hasNewItems(ai)) return
-      agendaItemType.channel.send('last_read.change', {
+      lastReadType.methodCall('change', {
         agenda_item: ai.pk
       })
     }
@@ -252,7 +256,7 @@ export default defineComponent({
     function submit () {
       editing.value = false
       if (content.title === agendaItem.value?.title && content.body === agendaItem.value?.body) return
-      agendaItemType.channel.change(agendaId.value, { ...content })
+      agendaItemType.update(agendaId.value, { ...content })
     }
 
     provide(LastReadKey, agendaItemLastRead)

@@ -1,37 +1,56 @@
-import { RestApiConfig } from '@/composables/types'
+import { ContextRole, RestApiConfig } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
+import { socket } from '@/utils/Socket'
+import { ChannelsMessage } from '@/utils/types'
+import { onBeforeMount, onBeforeUnmount, Ref } from 'vue'
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
+import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
 import { ChannelConfig, WorkflowState } from './types'
 import useWorkflows from './useWorkflows'
 
+type MethodHandler<T> = (item: T) => void
+
 interface CType<S> {
   states?: WorkflowState<S>[]
-  channelName?: string
+  name: string // Content type name in channels
   restEndpoint?: string
+  channels?: string[]
   hasRoles?: boolean
   dateFields?: string[]
+  useSocketApi?: boolean
 }
 
-export default class ContentType<T extends Record<string, any>, R extends string=string, K extends string | number=number> {
+export default class ContentType<T extends Record<string, any> = object, R extends string=string, K extends string | number=number> {
   contentType: CType<T['state']>
+  methodHandlers: Map<string, MethodHandler<any>>
+  rolesAvailable?: ContextRole[]
   private _api?: ContentAPI<T, K>
-  private _channel?: Channel<T>
+  private _channel?: Channel
 
   constructor (contentType: CType<T['state']>) {
     this.contentType = contentType
+    this.methodHandlers = new Map()
+    socket.registerTypeListener(this.name, this.handleMessage.bind(this))
   }
 
-  private dateify (obj: Record<string, any>): T {
+  private handleMessage (msg: ChannelsMessage) {
+    const [name, method] = msg.t.split('.')
+    const handler = this.methodHandlers.get(method)
+    if (handler) handler(msg.p)
+  }
+
+  private dateify (obj: Record<string, unknown>): T {
     if (!this.contentType.dateFields) return obj as T
     for (const field of this.contentType.dateFields) {
-      if (typeof obj[field] === 'string') obj[field] = new Date(obj[field])
+      const value = obj[field]
+      if (typeof value === 'string') obj[field] = new Date(value)
     }
     return obj as T
   }
 
-  public channelUpdateMap (map: Map<number, T>, cb?: (obj: T, old?: T) => void) {
-    return this.channel
+  public updateMap (map: Map<number, T>, cb?: (obj: T, old?: T) => void) {
+    return this
       .onChanged(item => {
         const old = map.get(item.pk)
         item = this.dateify(item)
@@ -42,16 +61,12 @@ export default class ContentType<T extends Record<string, any>, R extends string
   }
 
   public get name () {
-    return this.contentType.channelName || this.contentType.restEndpoint
+    return this.contentType.name
   }
 
   public get workflowStates () {
     return this.contentType.states
   }
-
-  // public get rules () {
-  //   return this.contentType.rules || {}
-  // }
 
   public get api () {
     // Cache an api instance with default settings
@@ -60,14 +75,49 @@ export default class ContentType<T extends Record<string, any>, R extends string
   }
 
   public get channel () {
-    // Cache a channel instance with default settings
-    if (!this._channel) this._channel = this.getChannel()
+    // Cache default channel instance with default settings
+    if (!this._channel) this._channel = this.getChannel(this.name)
     return this._channel
   }
 
-  public getChannel (config?: ChannelConfig): Channel<T> {
-    if (!this.contentType.channelName) throw new Error(`Channel not configured for Content Type ${this.name}`)
-    return new Channel<T>(this.contentType.channelName, config, this.contentType.hasRoles)
+  public methodCall<RT=T> (method: string, data?: object, config?: ChannelConfig) {
+    return socket.call<RT>(`${this.name}.${method}`, data, config)
+  }
+
+  public add (data: Partial<T>, config?: ChannelConfig) {
+    if (this.contentType.useSocketApi) return this.methodCall('add', data, config)
+    return this.api.add(data)
+  }
+
+  public update (pk: K, data: Partial<T>, config?: ChannelConfig) {
+    if (this.contentType.useSocketApi) return this.methodCall('change', { pk, kwargs: data }, config)
+    return this.api.patch(pk, data)
+  }
+
+  public delete (pk: K, config?: ChannelConfig) {
+    if (this.contentType.useSocketApi) return this.methodCall('delete', { pk }, config)
+    return this.api.delete(pk)
+  }
+
+  public on<LT=T> (method: string, fn: MethodHandler<LT>, override = true) {
+    if (override || !this.methodHandlers.has(method)) this.methodHandlers.set(method, fn)
+    return this
+  }
+
+  public onChanged (fn: MethodHandler<T>) {
+    // By default, send add events to change method. Register using .onAdded(fn) to handle separately.
+    return this.on('added', fn, false)
+      .on('changed', fn)
+  }
+
+  public onDeleted (fn: MethodHandler<T>) {
+    return this.on('deleted', fn)
+  }
+
+  public getChannel (name?: string, config?: ChannelConfig): Channel {
+    name = name ?? this.name
+    if (!this.contentType.channels?.includes(name)) throw new Error(`Content Type "${this.name}" has no channel "${name}"`)
+    return new Channel(name, config)
   }
 
   public getContentApi (config?: RestApiConfig): ContentAPI<T, K> {
@@ -81,7 +131,51 @@ export default class ContentType<T extends Record<string, any>, R extends string
   }
 
   public useContextRoles () {
-    if (!this.contentType.hasRoles || !this.contentType.channelName) throw new Error(`Context Roles not configured for Content Type ${this.name}`)
-    return useContextRoles<R>(this.contentType.channelName)
+    if (!this.contentType.hasRoles || !this.contentType.name) throw new Error(`Context Roles not configured for Content Type ${this.name}`)
+    return useContextRoles<R>(this.contentType.name)
+  }
+
+  // Moved from Channel
+
+  private assertHasRoles (): void {
+    if (!this.contentType.hasRoles) throw new Error(`Content Type ${this.name} is not configured to have context roles.`)
+  }
+
+  public async getAvailableRoles (): Promise<ContextRole[]> {
+    this.assertHasRoles()
+    if (this.rolesAvailable) return this.rolesAvailable
+    const response = await socket.call<AvailableRolesPayload>('roles.available', { model: this.name })
+    const { roles } = response.p
+    this.rolesAvailable = roles
+    return roles
+  }
+
+  public async fetchRoles (pk: number, users?: number[]) {
+    this.assertHasRoles()
+    const message: RolesGetMessage = {
+      model: this.name,
+      pk,
+      filter_userids: users
+    }
+    return socket.call<ContextRolesPayload>('roles.get', message)
+  }
+
+  private changeRoles (method: string, pk: number, user: number, roles: string[]) {
+    this.assertHasRoles()
+    const message: RoleChangeMessage = {
+      model: this.name,
+      pk,
+      userids: [user],
+      roles
+    }
+    return socket.call(`roles.${method}`, message)
+  }
+
+  public addRoles (pk: number, user: number, ...roles: string[]) {
+    return this.changeRoles('add', pk, user, roles)
+  }
+
+  public removeRoles (pk: number, user: number, ...roles: string[]) {
+    return this.changeRoles('remove', pk, user, roles)
   }
 }

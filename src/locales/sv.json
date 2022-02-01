@@ -115,7 +115,17 @@
     "saved": "Metod för röstlängder är nu satt till {er_policy_name}.",
     "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
     "settings": "Inställning för röstlängder",
-    "voterCount": "Inga röstberättigade | 1 röstberättigad | {count} röstberättigade"
+    "voterCount": "Inga röstberättigade | 1 röstberättigad | {count} röstberättigade",
+    "methodDescription": {
+      "auto_always": "Röstlängden kommer alltid uppdateras automatiskt för att inkludera alla potentiella röstande, även för pågående omröstningar. Denna metoden bör aldrig användas i officiella möten.",
+      "auto_before_poll": "Röstlängden kommer vid behov uppdateras för att inkludera alla potentiella röstande när en omröstning startas.",
+      "presence_check": "Röstlängden kommer uppdatera vid stängning av närvarokontroll. Den kommer inkludera alla potentiella röstande som markerat sin närvaro."
+    },
+    "methodName": {
+      "auto_always": "Uppdatera alltid (demo)",
+      "auto_before_poll": "Automatisk vid omröstning",
+      "presence_check": "Närvarokontroll"
+    }
   },
   "error": {
     "error": "Fel",
@@ -164,10 +174,14 @@
     },
     "invites": {
       "add": "Lägg till inbjudningar",
+      "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
       "data": "Inbjuden data",
       "emails": "E-postadresser att lägga till",
       "emailsHint": "Lägg till en e-postadress per rad",
       "existing": "Existerande inbjudningar",
+      "filterOnRoles": "Filtrera på roller",
+      "filterMatchRoles": "Matcha roller exakt",
+      "filterOnStatus": "Filtrera på status",
       "invites": "Inbjudningar",
       "invitedAs": "Inbjuden som",
       "noInvitationsHelp": "Ingen har bjudits in till det här mötet än.",
@@ -237,7 +251,7 @@
     "voteRegistered": "Din röst har blivit registrerad",
     "selectAgendaItem": "Välj dagordningspunkt",
     "pickProposals": "Välj förslag",
-    "chooseMethod": "Välj valmetod",
+    "chooseMethod": "Välj omröstningsmetod",
     "createAndStart": "Skapa och starta",
     "noPublishedPolls": "Det finns inga omröstningar i detta mötet ännu",
     "noAiPublishedProposals": "Den här dagordningspunkten har inga förslag ännu",
@@ -396,7 +410,7 @@
     "selectAIList": "Välj lista att sköta",
     "setActiveList": "Välj som aktiv lista",
     "settings": "Inställningar för talarlistor",
-    "settingsHelp": "A speaker list system can only have one active speaker list. If you have parallel committees in you meeting, you can set up one system per committee.",
+    "settingsHelp": "Ett system för talarlistor kan bara ha en aktiv talarlista. Om du har parallella utskott i ett möte kan du sätta upp ett system mer utskott.",
     "speakerCount": "Inga talare i kö | En talare i kö | {count} talare i kö",
     "system": "System för talarlistor",
     "systems": "System för talarlistor",

@@ -23,13 +23,13 @@ export interface ProposalText {
 
 export const proposalType = new ContentType<Proposal>({
   states: proposalStates,
-  channelName: 'proposal',
+  name: 'proposal',
   restEndpoint: 'proposals/',
   dateFields: ['created']
 })
 
 export const proposalTextType = new ContentType<ProposalText>({
-  channelName: 'text_document',
+  name: 'text_document',
   restEndpoint: 'text-documents/',
   dateFields: ['created', 'modified']
 })

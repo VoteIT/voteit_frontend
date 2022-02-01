@@ -11,8 +11,7 @@ import { DiscussionPost } from './types'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 
-discussionPostType.getChannel()
-  .updateMap(discussions, dateify)
+discussionPostType.updateMap(discussions)
 
 function deleteForAgendaItem (uriOrPk: number | string) {
   const pk = typeof uriOrPk === 'string' ? Number(uriOrPk.split('/')[1]) : uriOrPk

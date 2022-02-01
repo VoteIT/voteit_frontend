@@ -5,10 +5,8 @@ import { dateify, orderBy } from '@/utils'
 
 import useLoader from '@/composables/useLoader'
 import { AgendaItem } from '@/modules/agendas/types'
-import Channel from '@/contentTypes/Channel'
-import { LastRead } from '@/utils/types'
 import useMeeting from '../meetings/useMeeting'
-import { agendaItemType } from './contentTypes'
+import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
 import { agendaDeletedEvent } from './events'
@@ -16,9 +14,10 @@ import { agendaDeletedEvent } from './events'
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
-const channel = agendaItemType.channel
+const channel = agendaItemType
   .onChanged(agendaItem => agendaItems.set(agendaItem.pk, dateify(agendaItem, 'related_modified')))
   .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
+  .channel
 
 // Delete as first event
 agendaDeletedEvent.on(pk => {
@@ -42,7 +41,7 @@ meetingType.channel
 /*
 ** Clear private agenda items when leaving moderators channel.
 */
-new Channel('moderators')
+meetingType.getChannel('moderators')
   .onLeave(uriOrPk => {
     const pk = typeof uriOrPk === 'string' ? Number(uriOrPk.split('/')[1]) : uriOrPk
     for (const agendaItem of agendaItems.values()) {
@@ -52,7 +51,7 @@ new Channel('moderators')
     }
   })
 
-new Channel<LastRead>('last_read')
+lastReadType
   .onChanged(payload => {
     agendaItemsLastRead.set(payload.agenda_item, new Date(payload.timestamp))
   })

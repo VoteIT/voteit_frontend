@@ -34,19 +34,17 @@
 import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useContextRoles from '@/composables/useContextRoles'
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRole, UserContextRoles } from '@/composables/types'
-
-import Channel from '@/contentTypes/Channel'
+import ContentType from '@/contentTypes/ContentType'
 
 const USERS_PER_PAGE = 2
 
 export default defineComponent({
   props: {
-    channel: { // TODO Take ContentType object instead?
-      type: Channel,
+    contentType: { // TODO Take ContentType object instead?
+      type: Object as PropType<ContentType>,
       required: true
     },
     icons: {
@@ -66,16 +64,16 @@ export default defineComponent({
     const { getUser } = useMeeting()
     const loader = useLoader('RoleMatrix')
     const roles = ref<ContextRole[]>([])
-    const contextRoles = useContextRoles(props.channel.contentType)
+    const contextRoles = props.contentType.useContextRoles()
 
     onBeforeMount(() => {
       loader.call(
         async () => {
-        const data = await props.channel.getAvailableRoles()
+        const data = await props.contentType.getAvailableRoles()
           roles.value = data
         },
         async () => {
-          const { p } = await props.channel.fetchRoles(props.pk)
+          const { p } = await props.contentType.fetchRoles(props.pk)
           for (const [user, roles] of p.items) {
             contextRoles.set(props.pk, user, roles)
           }
@@ -86,12 +84,12 @@ export default defineComponent({
     async function addRole (user: number, role: string) {
       if (!props.admin) return
       if (props.addConfirm && !await props.addConfirm(user, role)) return
-      props.channel.addRoles(props.pk, user, role)
+      props.contentType.addRoles(props.pk, user, role)
     }
     async function removeRole (user: number, role: string) {
       if (!props.admin) return
       if (props.removeConfirm && !await props.removeConfirm(user, role)) return
-      props.channel.removeRoles(props.pk, user, role)
+      props.contentType.removeRoles(props.pk, user, role)
     }
 
     const orderBy = ref<string | null>(null)

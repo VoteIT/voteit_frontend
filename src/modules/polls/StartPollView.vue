@@ -34,8 +34,10 @@
             <div :class="{ isSelected }">
               <a href="#" @click.prevent="toggle()">{{ t(`poll.method.${m.name}`) }}</a>
               <v-expand-transition>
-                <div v-if="isSelected" @submit.prevent>
-                  <h3>{{ t('options') }}</h3>
+                <div v-if="isSelected">
+                  <h3 class="mb-4">
+                    {{ t('options') }}
+                  </h3>
                   <SchemaForm :schema="methodSchema" v-model="methodSettings" v-model:valid="settingsValid" />
                 </div>
               </v-expand-transition>

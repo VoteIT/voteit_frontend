@@ -77,16 +77,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass">
-form
-  input[type=checkbox]
-    margin-right: .4em
-
-form.schema-form
-  label
-    display: block
-    font-weight: 700
-    &.inline
-      display: inline
-</style>

@@ -7,7 +7,7 @@ import { Meeting } from './types'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
-meetingType.channelUpdateMap(meetings)
+meetingType.updateMap(meetings)
 
 const meetingRoles = meetingType.useContextRoles()
 

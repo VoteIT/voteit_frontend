@@ -24,19 +24,18 @@ import { SchemaType } from '@/contentTypes/types'
 export default defineComponent({
   name: 'GetSchema',
   setup () {
-    const channels = new Channel()
+    const channels = new Channel('testing')
 
     const schemaName = ref('schema.get_outgoing')
     const schema = ref<Object | null>(null)
 
-    function getSchema (type: SchemaType) {
-      channels.getSchema(schemaName.value, type)
-        .then(({ p }: { p: any }) => {
-          schema.value = p.message_schema
-        })
-        .catch(() => {
-          schema.value = null
-        })
+    async function getSchema (type: SchemaType) {
+      try {
+        const { p } = await channels.getSchema(schemaName.value, type)
+        schema.value = p.message_schema
+      } catch {
+        schema.value = null
+      }
     }
 
     return {

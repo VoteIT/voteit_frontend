@@ -5,6 +5,7 @@ import Channel from '@/contentTypes/Channel'
 
 import useAuthentication from './useAuthentication'
 import { ContextRoles, UserContextRoles } from './types'
+import ContentType from '@/contentTypes/ContentType'
 
 const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
@@ -21,13 +22,13 @@ function getRoleStore (p: ContextRoles): { key: string, store: Set<string> } {
   }
 }
 
-new Channel('roles')
-  .on<ContextRoles>('removed', payload => {
+new ContentType<ContextRoles>({ name: 'roles' })
+  .on('removed', payload => {
     const { store, key } = getRoleStore(payload)
     payload.roles.forEach(r => store.delete(r))
     if (!store.size) contextRoles.delete(key)
   })
-  .on<ContextRoles>('added', payload => {
+  .on('added', payload => {
     const { store } = getRoleStore(payload)
     payload.roles.forEach(r => store.add(r))
   })

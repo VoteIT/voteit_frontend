@@ -1,7 +1,8 @@
 import { InjectionKey, onMounted, onUpdated, Ref, watch } from '@vue/runtime-core'
 import stringToHSL from '@/utils/stringToHSL'
-import { DefaultMap, slugify } from '@/utils'
+import { slugify } from '@/utils'
 import TypedEvent from '@/utils/TypedEvent'
+import DefaultMap from '@/utils/DefaultMap'
 
 // Automatic FIFO-cache, keep 30
 const cache = new DefaultMap<string, string>(stringToHSL, 30)

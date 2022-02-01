@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import Channel from '@/contentTypes/Channel'
+import ContentType from '@/contentTypes/ContentType'
 import { Progress } from '@/utils/types'
 import { computed, defineComponent, ref } from 'vue'
 
@@ -22,21 +22,21 @@ const PROGRESS_DEFAULT: Progress = {
 export default defineComponent({
   name: 'Counter',
   setup () {
-    const channel = new Channel('testing', { alertOnError: false }) // Handle errors here
+    const testingType = new ContentType({ name: 'testing' })
 
     const progress = ref<Progress>(PROGRESS_DEFAULT)
     const state = ref<boolean | null>(null)
     const counting = ref(false)
 
-    function countToTen (succeed: boolean, config: Object) {
+    function countToTen (succeed: boolean) {
       const data = succeed ? undefined : { fail: 5 }
       counting.value = true
-      channel.post('testing.count', data, config)
-        .onProgress((value: Progress) => {
+      testingType.methodCall<Progress>('count', data, { alertOnError: false })
+        .onProgress((value) => {
           progress.value = value
         })
         .then(({ p }) => {
-          progress.value = p as Progress
+          progress.value = p
           state.value = true
         })
         .catch(() => {

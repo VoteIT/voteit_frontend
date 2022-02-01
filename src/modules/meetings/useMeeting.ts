@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { slugify, restApi, mapFilter, mapFind } from '@/utils'
+import { slugify, mapFilter, mapFind } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 import { meetings } from './useMeetings'
@@ -9,7 +9,7 @@ import { meetings } from './useMeetings'
 import { MeetingRoles } from '../../composables/types'
 import { Meeting, MeetingRole } from './types'
 import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite } from './rules'
-import { meetingType } from './contentTypes'
+import { meetingRoleType, meetingType } from './contentTypes'
 import { User } from '../organisations/types'
 import { useI18n } from 'vue-i18n'
 
@@ -61,7 +61,7 @@ export default function useMeeting () {
         params.user_id_in = userIds.join(',')
       }
     }
-    const { data } = await restApi.get<MeetingRoles[]>('meeting-roles/', { params })
+    const { data } = await meetingRoleType.api.list({ params })
     data.forEach(p => {
       meetingRoles.set(meeting, p.user.pk, p.assigned)
       participants.value.set(p.pk, p)

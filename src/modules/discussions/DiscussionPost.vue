@@ -13,8 +13,10 @@
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
     </div>
-    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex align-center">
-      <slot name="buttons" />
+    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
+      <div class="d-flex flex-wrap">
+        <slot name="buttons" />
+      </div>
       <v-spacer />
       <Menu :items="menuItems" size="small" />
     </footer>
@@ -111,7 +113,7 @@ export default defineComponent({
     padding: 10px 10px 0
 
     .context-menu
-      margin: -10px
+      margin: -6px
 
   .meta
     display: flex
