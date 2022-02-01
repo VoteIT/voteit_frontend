@@ -22,10 +22,12 @@
       <v-item-group v-model="currentList">
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, toggle }">
           <v-card :color="isSelected ? 'primary' : undefined" class="mb-2" @click="toggle()">
-            <Menu float :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
-            <v-card-title>
-              {{ list.title }}
-            </v-card-title>
+            <div class="d-flex">
+              <v-card-title class="flex-grow-1">
+                {{ list.title }}
+              </v-card-title>
+              <Menu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
+            </div>
             <v-card-text>
               {{ t('speaker.speakerCount', { count: speakers.getQueue(list).length }, speakers.getQueue(list).length) }}
             </v-card-text>
