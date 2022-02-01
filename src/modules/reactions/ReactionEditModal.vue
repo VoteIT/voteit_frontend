@@ -15,10 +15,8 @@
         <div>
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
-            <v-item v-for="[name, value] in Object.entries(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :variant="isSelected ? 'contained' : 'text'" :color="value" @click="toggle()">
-                {{ name }}
-              </v-btn>
+            <v-item v-for="value in Object.values(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
+              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'contained' : 'text'" :color="value" @click="toggle()" />
             </v-item>
           </v-item-group>
         </div>
