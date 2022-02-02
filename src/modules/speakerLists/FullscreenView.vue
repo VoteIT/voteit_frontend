@@ -69,7 +69,7 @@ export default defineComponent({
     const { t } = useI18n()
     const route = useRoute()
     const { getState } = speakerListType.useWorkflows()
-    useMeetingChannel(true)
+    useMeetingChannel()
     const { getUser } = useMeeting()
 
     const { currentActiveList, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))

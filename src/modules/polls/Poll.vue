@@ -32,7 +32,7 @@
           ...pollStatus,
           percentage: Math.round(pollStatus.voted / pollStatus.total * 100)
         }, pollStatus.voted) }}</span>
-        <v-btn prepend-icon="mdi-reload" v-else variant="text" size="small" @click="follow()">
+        <v-btn prepend-icon="mdi-reload" v-else variant="text" size="small" @click="following = true">
           {{ t('poll.showProgress') }}
         </v-btn>
         <span v-if="userVote" class="active">{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useModal from '@/composables/useModal'
@@ -59,6 +59,7 @@ import { slugify } from '@/utils'
 import { pollType } from './contentTypes'
 import { Poll } from './methods/types'
 import usePoll from './usePoll'
+import useChannel from '@/composables/useChannel'
 
 export default defineComponent({
   name: 'Poll',
@@ -74,7 +75,6 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const channels = pollType.getChannel('poll', { leaveDelay: 0 })
     const { meetingPath } = useMeeting()
     const { openModal } = useModal()
     const { getPollStatus, getUserVote } = usePolls()
@@ -88,18 +88,12 @@ export default defineComponent({
     }
 
     const following = ref(false)
-    watch(isOngoing, value => {
-      if (value || !following.value) return
-      channels.leave(props.poll.pk)
-      following.value = false
+    const subscribePk = computed(() => {
+      // Automatically follow with useChannel if it's ongoing and following is set
+      if (isOngoing.value && following.value) return props.poll.pk
+      return undefined
     })
-    onBeforeUnmount(() => {
-      if (following.value) channels.leave(props.poll.pk)
-    })
-    function follow () {
-      channels.subscribe(props.poll.pk)
-      following.value = true
-    }
+    useChannel('poll', subscribePk, { leaveDelay: 0 })
 
     const pollStatus = computed(() => getPollStatus(props.poll.pk))
     const pollPath = computed(() => `${meetingPath.value}/polls/${props.poll.pk}/${slugify(props.poll.title)}`)
@@ -119,7 +113,6 @@ export default defineComponent({
       following,
       methodName,
       canVote,
-      follow,
       vote
     }
   }

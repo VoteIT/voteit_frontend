@@ -74,7 +74,7 @@ export default defineComponent({
     const { agendaId, agendaItem } = useAgendaItem()
     const { aiProposalTexts } = useTextDocuments(agendaId)
 
-    useMeetingChannel(true)
+    useMeetingChannel()
     provide(LastReadKey, ref(new Date()))
 
     watch(agendaItem, clearSelected)

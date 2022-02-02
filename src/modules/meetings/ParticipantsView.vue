@@ -216,7 +216,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, reactive, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { isEqual } from 'lodash'
@@ -243,6 +243,7 @@ import SchemaForm from '@/components/SchemaForm.vue'
 import { FieldRule } from '@/components/types'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
+import useChannel from '@/composables/useChannel'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -320,11 +321,10 @@ export default defineComponent({
     })
 
     /* INVITES */
-    const invitesChannel = meetingType.getChannel('invites')
-    watch(currentTab, (value) => {
-      if (value === 'invites') invitesChannel.subscribe(meetingId.value)
-      else invitesChannel.leave(meetingId.value)
-    })
+    useChannel(
+      computed(() => currentTab.value === 'invites' ? 'invites' : undefined),
+      meetingId
+    )
     // const inviteSchema = computed<FormSchema>(() => {
     //   return [{
     //     name: 'invite_data',
@@ -416,11 +416,6 @@ export default defineComponent({
     }
 
     /* Groups */
-    // function sleep (ms: number) {
-    //   return new Promise((resolve) => {
-    //     setTimeout(resolve, ms)
-    //   })
-    // }
     const groupSchema = [
       {
         name: 'title',
@@ -430,7 +425,6 @@ export default defineComponent({
       }
     ]
     async function createGroup (data: Partial<MeetingGroup>) {
-      // await sleep(3000)
       if (!user.value) throw new Error('User not authenticated')
       await meetingGroupType.api.add({
         ...data,

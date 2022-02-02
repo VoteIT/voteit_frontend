@@ -22,7 +22,7 @@ export default defineComponent({
   setup () {
     const { meetingId } = useMeeting()
     const { clearRegisters } = useElectoralRegisters()
-    useMeetingChannel(true)
+    useMeetingChannel()
     provide(LastReadKey, null)
 
     const presence = usePresence()

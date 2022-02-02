@@ -1,15 +1,15 @@
-import { computed, onBeforeMount, reactive, watch } from 'vue'
-import { onBeforeRouteLeave, useRoute } from 'vue-router'
+import { computed, reactive } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { dateify, orderBy } from '@/utils'
 
-import useLoader from '@/composables/useLoader'
 import { AgendaItem } from '@/modules/agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
 import { agendaDeletedEvent } from './events'
+import useChannel from '@/composables/useChannel'
 
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
@@ -116,17 +116,7 @@ export default function useAgenda () {
   const previousAgendaItem = computed(() => agendaItem.value && getPreviousAgendaItem(agendaItem.value))
   const nextAgendaItem = computed(() => agendaItem.value && getNextAgendaItem(agendaItem.value))
 
-  const loader = useLoader('useAgenda')
-  onBeforeMount(() => {
-    agendaId.value && loader.subscribe(channel, agendaId.value)
-  })
-  onBeforeRouteLeave(() => {
-    agendaId.value && channel.leave(agendaId.value)
-  })
-  watch(agendaId, (value, oldValue) => {
-    value && channel.subscribe(value)
-    oldValue && channel.leave(oldValue)
-  })
+  useChannel('agenda_item', agendaId)
 
   return {
     agenda,
