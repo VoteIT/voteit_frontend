@@ -61,7 +61,7 @@ export default function useMeeting () {
         params.user_id_in = userIds.join(',')
       }
     }
-    const { data } = await meetingRoleType.api.list({ params })
+    const { data } = await meetingRoleType.api.list(params)
     data.forEach(p => {
       meetingRoles.set(meeting, p.user.pk, p.assigned)
       participants.value.set(p.pk, p)
