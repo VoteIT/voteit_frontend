@@ -4,7 +4,7 @@
     <div v-for="{ component, data } in bubbles" :key="component.name" class="bubble">
       <v-btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
       <transition name="bubble-content">
-        <component class="content" v-show="component.name === openBubble" :is="component" :data="data" />
+        <component class="content" v-show="component.id === openBubble" :is="component" :data="data" @close="toggle(component)" />
       </transition>
     </div>
   </div>
@@ -22,7 +22,6 @@ const DEFAULT_CONFIG: BubbleConfig = {
 }
 
 export default defineComponent({
-  name: 'Bubbles',
   setup () {
     const bubbles = reactive<BubbleInfo[]>([])
     // const bubbles = ref<BubbleInfo[]>([{
@@ -41,7 +40,7 @@ export default defineComponent({
         })
       }
       if (config.open) {
-        nextTick(() => { openBubble.value = evt.component.name })
+        nextTick(() => { openBubble.value = evt.component.id })
       }
     })
 
@@ -51,7 +50,7 @@ export default defineComponent({
     })
 
     openBubbleEvent.on(component => {
-      openBubble.value = component.name
+      openBubble.value = component.id
     })
 
     closeBubbleEvent.on(component => {
@@ -61,8 +60,8 @@ export default defineComponent({
     })
 
     function toggle (component: BubbleComponent) {
-      if (openBubble.value === component.name) openBubble.value = null
-      else openBubble.value = component.name
+      if (openBubble.value === component.id) openBubble.value = null
+      else openBubble.value = component.id
     }
 
     return {

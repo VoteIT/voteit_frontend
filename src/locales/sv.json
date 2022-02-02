@@ -243,6 +243,8 @@
     "showProgress": "Följ röstning",
     "start": "Ny omröstning",
     "started": "Startad",
+    "timeToVote": "Dags att rösta",
+    "timeToVoteDescription": "Det finns en omröstning du inte röstat i än. | Det finns {count} omröstningar du inte röstat i än.",
     "unvoted": "Ej röstat",
     "nextUnvoted": "Nästa: {title}",
     "votingTitle": "Omröstning {title}",

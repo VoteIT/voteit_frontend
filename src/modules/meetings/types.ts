@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
 import { BaseContent } from '@/contentTypes/types'
+import { Component } from 'vue'
 
-export interface BubbleComponent {
-  name: string
-}
+export type BubbleComponent = Component & { id: string, icon: string }
 
 export interface BubbleInfo {
   component: BubbleComponent

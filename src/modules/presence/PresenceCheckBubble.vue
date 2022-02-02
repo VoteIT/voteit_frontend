@@ -35,9 +35,9 @@ import PresenceCheckControl from './PresenceCheckControl.vue'
 import { canChangePresenceCheck } from '@/modules/presence/rules'
 
 export default defineComponent({
-  components: { PresenceCheckControl },
-  name: 'PresenceCheck',
+  id: 'presence-check',
   icon: 'mdi-hand-wave',
+  components: { PresenceCheckControl },
   props: {
     data: {
       type: Object,

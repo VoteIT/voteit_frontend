@@ -244,6 +244,8 @@
     "showProgress": "Show progress",
     "start": "Start poll",
     "started": "Started",
+    "timeToVote": "Time to vote",
+    "timeToVoteDescription": "There is a poll where you haven't voted yet. | There are {count} polls where you haven't voted yet.",
     "unvoted": "Unvoted",
     "nextUnvoted": "Next: {title}",
     "votingTitle": "Voting {title}",

@@ -13,19 +13,41 @@
       <teleport to="main.v-main">
         <v-navigation-drawer position="right" v-model="userMenuOpen" disable-resize-watcher temporary>
           <v-list nav density="comfortable">
-            <v-list-item>
+            <v-list-item class="no-prepend">
               <UserAvatar size="large" />
             </v-list-item>
-            <v-list-item>
+            <v-list-item class="no-prepend">
               <div>
                 <v-list-item-title class="text-h6">{{ user.full_name }}</v-list-item-title>
                 <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
               </div>
             </v-list-item>
             <v-divider class="mb-2 mt-2" />
-            <v-list-item :href="manageAccountURL" prepend-icon="mdi-account" disabled>
-              {{ t('profile.profile') }}
-            </v-list-item>
+            <v-list-item prepend-icon="mdi-account" :title="t('profile.profile')" disabled />
+            <!-- <v-dialog>
+              <template #activator="{ props }">
+                <v-list-item prepend-icon="mdi-account" :title="t('profile.profile')" v-bind="props" />
+              </template>
+              <template #default="{ isActive }">
+                <v-sheet class="pa-4">
+                  <h2 class="mb-2">
+                    Edit profile
+                  </h2>
+                  <SchemaForm :schema="[{ name: 'userid', label: 'Användar-ID', type: 'text' }]" :modelValue="{ userid: user.userid }" :handler="updateProfile">
+                    <template #buttons>
+                      <div class="text-right">
+                        <v-btn variant="text" @click="isActive.value = false">
+                          {{ t('cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" type="submit">
+                          {{ t('save') }}
+                        </v-btn>
+                      </div>
+                    </template>
+                  </SchemaForm>
+                </v-sheet>
+              </template>
+            </v-dialog> -->
           </v-list>
           <template v-slot:append>
             <v-list nav density="comfortable">
@@ -50,8 +72,11 @@ import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useOrganisation from '@/modules/organisations/useOrganisation'
+// import SchemaForm from './SchemaForm.vue'
+import { User } from '@/modules/organisations/types'
 
 export default defineComponent({
+  // components: { SchemaForm },
   setup () {
     const { t } = useI18n()
     const router = useRouter()
@@ -76,6 +101,10 @@ export default defineComponent({
       return !!route.matched[0]?.components?.navigationDrawer
     })
 
+    async function updateProfile (data: Pick<User, 'userid'>) {
+      await auth.updateProfile(data)
+    }
+
     return {
       t,
       ...auth,
@@ -84,7 +113,8 @@ export default defineComponent({
       toggleNavDrawerEvent,
       userMenuComponent,
       userMenuOpen,
-      logout
+      logout,
+      updateProfile
     }
   }
 })
@@ -102,8 +132,7 @@ export default defineComponent({
   button.user-menu
     color: rgb(var(--v-theme-on-app-bar))
 
-#app-bar-user-menu
-  z-index: 4
-  .v-icon
-    font-size: 16pt
+.v-list--density-comfortable .v-list-item--prepend.no-prepend
+  -webkit-padding-start: 16px !important
+  padding-inline-start: 16px !important
 </style>

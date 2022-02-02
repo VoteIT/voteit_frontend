@@ -86,7 +86,7 @@ export default class ContentAPI<T, K=number> {
     return this.call(HTTPMethod.Post, this.endpoint, { data })
   }
 
-  public list (params?: object): AxiosPromise<T[]> {
+  public list<RT=T[]> (params?: object): AxiosPromise<RT> {
     return this.call(HTTPMethod.Get, this.endpoint, { params })
   }
 
@@ -117,14 +117,13 @@ export default class ContentAPI<T, K=number> {
   }
 
   public action<Type> (pk: number, action: string, data?: object): AxiosPromise<Type>
-  public action<Type> (action: string, data: object): AxiosPromise<Type>
-  public action (pkOrAction: number | string, actionOrData: string | object, data?: object) {
+  public action<Type> (action: string, data?: object): AxiosPromise<Type>
+  public action (pkOrAction: number | string, actionOrData?: string | object, data?: object) {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
       return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/${actionOrData}/`, { data })
-    } else if (typeof actionOrData === 'object') {
-      return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/`, { data: actionOrData })
     }
+    return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/`, { data: actionOrData })
   }
 
   public transition (pk: number, name: string): AxiosPromise {

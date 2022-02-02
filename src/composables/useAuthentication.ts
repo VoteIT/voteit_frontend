@@ -1,10 +1,9 @@
 import { ref } from 'vue'
-
-import restApi from '@/utils/restApi'
+import { AxiosError } from 'axios'
 
 import useContextRoles from './useContextRoles'
 import { UserState, User } from '@/modules/organisations/types'
-import { AxiosError } from 'axios'
+import { profileType } from '@/modules/organisations/contentTypes'
 
 export const user = ref<User | null>(null)
 const isAuthenticated = ref(false)
@@ -15,7 +14,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 export default function useAuthentication () {
   async function fetchAuthenticatedUser (tries = 3): Promise<User | null> {
     try {
-      const { data } = await restApi.get<User>('user/')
+      const { data } = await profileType.api.list<User>()
       console.log('User authenticated', data.userid)
       // TODO
       if (data.state === UserState.Incomplete) console.warn('User is incomplete')
@@ -44,15 +43,22 @@ export default function useAuthentication () {
   async function logout () {
     if (!isAuthenticated.value) return
     console.log('Logging out')
-    await restApi.post('user/logout/')
+    await profileType.api.action('logout')
     isAuthenticated.value = false
     user.value = null
+  }
+
+  async function updateProfile (profile: Pick<User, 'userid'>) {
+    if (!user.value) throw new Error('Unauthenticated user cannot update profile')
+    const { data } = await profileType.api.patch(user.value.pk, profile)
+    user.value = data
   }
 
   return {
     user,
     isAuthenticated,
     fetchAuthenticatedUser,
-    logout
+    logout,
+    updateProfile
   }
 }
