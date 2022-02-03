@@ -1,10 +1,13 @@
-import { reactive } from 'vue'
+import { computed, reactive, Ref } from 'vue'
 
+import { mapFilter } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
-import { PresenceCheckState } from '@/modules/presence/workflowStates'
-import { mapFilter } from '@/utils'
+import useBubbles from '../meetings/useBubbles'
+
+import { PresenceCheckState } from './workflowStates'
 import { presenceCheckType, presenceType } from './contentTypes'
+import PresenceCheckBubble from './PresenceCheckBubble.vue'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
@@ -23,7 +26,9 @@ presenceCheckType
 
 presenceType.updateMap(presence)
 
-export default function usePresence () {
+useBubbles().register(PresenceCheckBubble)
+
+export default function usePresence (meetingId: Ref<number>) {
   const { user } = useAuthentication()
 
   function getClosedPresenceChecks (meeting: number): PresenceCheck[] {
@@ -79,7 +84,14 @@ export default function usePresence () {
     presenceType.delete(presence.pk)
   }
 
+  const presenceCheck = computed(() => getOpenPresenceCheck(meetingId.value))
+  const userPresence = computed(() => presenceCheck.value && getUserPresence(presenceCheck.value.pk))
+  const isPresent = computed(() => presenceCheck.value && !!userPresence.value) // undefined or boolean
+
   return {
+    isPresent,
+    presenceCheck,
+    userPresence,
     closeCheck,
     getClosedPresenceChecks,
     getOpenPresenceCheck,

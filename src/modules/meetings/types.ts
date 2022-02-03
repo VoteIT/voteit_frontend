@@ -2,7 +2,7 @@
 import { BaseContent } from '@/contentTypes/types'
 import { Component } from 'vue'
 
-export type BubbleComponent = Component & { id: string, icon: string }
+export type BubbleComponent = Component & { id: string, icon: string, order: number }
 
 export interface BubbleInfo {
   component: BubbleComponent

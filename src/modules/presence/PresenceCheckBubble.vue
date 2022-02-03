@@ -7,7 +7,7 @@
       <p class="my-2">
         {{ t('presence.presenceNoted') }}
       </p>
-      <btn @click="presence.undoPresence(userPresence)" icon="mdi-undo-variant">
+      <btn @click="togglePresence()" icon="mdi-undo-variant">
         {{ t('undo') }}
       </btn>
     </template>
@@ -15,7 +15,7 @@
       <p class="my-2">
         {{ t('presence.notePresent') }}
       </p>
-      <btn @click="presence.markPresence(data.presenceCheck)" icon="mdi-hand-wave">
+      <btn @click="togglePresence()" icon="mdi-hand-wave">
         {{ t('presence.imHere') }}
       </btn>
     </template>
@@ -27,37 +27,56 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import usePresence from '@/modules/presence/usePresence'
-import PresenceCheckControl from './PresenceCheckControl.vue'
-import { canChangePresenceCheck } from '@/modules/presence/rules'
+import useMeeting from '../meetings/useMeeting'
+import usePresence from './usePresence'
+import { canChangePresenceCheck } from './rules'
 
 export default defineComponent({
   id: 'presence-check',
   icon: 'mdi-hand-wave',
-  components: { PresenceCheckControl },
+  order: 10,
   props: {
-    data: {
-      type: Object,
-      required: true
-    }
+    modelValue: Boolean
   },
-  setup (props) {
+  emits: ['close', 'update:modelValue', 'update:open', 'update:attention'],
+  setup (props, { emit }) {
     const { t } = useI18n()
-    const presence = usePresence()
+    const { meetingId } = useMeeting()
+    const { presenceCheck, userPresence, isPresent, markPresence, undoPresence } = usePresence(meetingId)
 
-    const presenceCheck = computed(() => props.data.presenceCheck)
-    const userPresence = computed(() => presence.getUserPresence(props.data.presenceCheck.pk))
-    const canChange = computed(() => canChangePresenceCheck(presenceCheck.value))
+    const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
+    function togglePresence () {
+      if (userPresence.value) return undoPresence(userPresence.value)
+      if (!presenceCheck.value) return
+      markPresence(presenceCheck.value)
+      emit('update:open', false)
+    }
+
+    watchEffect(() => {
+      switch (isPresent.value) {
+        case false:
+          emit('update:modelValue', true)
+          emit('update:attention', true)
+          break
+        case true:
+          emit('update:modelValue', true)
+          emit('update:attention', false)
+          break
+        case undefined:
+          emit('update:modelValue', false)
+          break
+      }
+    })
 
     return {
       t,
       canChange,
-      presence,
       presenceCheck,
-      userPresence
+      userPresence,
+      togglePresence
     }
   }
 })

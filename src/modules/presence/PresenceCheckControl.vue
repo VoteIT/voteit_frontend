@@ -19,6 +19,7 @@ import usePresence from '@/modules/presence/usePresence'
 import { PresenceCheck } from '@/contentTypes/types'
 
 import Moment from '@/components/Moment.vue'
+import useMeeting from '../meetings/useMeeting'
 
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckType } from './contentTypes'
@@ -35,7 +36,8 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const presence = usePresence()
+    const { meetingId } = useMeeting()
+    const presence = usePresence(meetingId)
     const submitting = ref(false)
 
     async function closeCheck () {

@@ -17,6 +17,7 @@ import User from './components/User.vue'
 import Dropdown from './components/Dropdown.vue'
 import UserAvatar from './components/UserAvatar.vue'
 import Widget from './components/Widget.vue'
+import PresenceCheckControl from './modules/presence/PresenceCheckControl.vue'
 
 import en from './locales/en.json'
 import sv from './locales/sv.json'
@@ -67,4 +68,5 @@ createApp(App)
   .component('Dropdown', Dropdown)
   .component('UserAvatar', UserAvatar)
   .component('Widget', Widget)
+  .component('PresenceCheckControl', PresenceCheckControl)
   .mount('#app')

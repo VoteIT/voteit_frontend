@@ -49,8 +49,8 @@
           </v-btn>
         </div>
       </template>
-      <div class="btn-controls mt-6">
-        <v-btn v-for="{ props, title } in buttons" :key="title" v-bind="props">
+      <div class="mt-6">
+        <v-btn v-for="{ props, title } in buttons" :key="title" v-bind="props" class="mr-1 mb-1">
           {{ title }}
         </v-btn>
       </div>

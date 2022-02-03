@@ -3,6 +3,7 @@ import { reactive, computed, watch } from 'vue'
 import { mapFilter } from '@/utils'
 import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '../agendas/events'
+import useBubbles from '../meetings/useBubbles'
 import { meetingType } from '../meetings/contentTypes'
 
 import { Poll, PollMethod, PollMethodName } from './methods/types'
@@ -10,10 +11,14 @@ import { pollType, voteType } from './contentTypes'
 import { canVote } from './rules'
 import { PollState, PollStatus } from './types'
 import { pollStartedEvent } from './events'
+import UnvotedPollsBubble from './UnvotedPollsBubble.vue'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
+
+/* Register unvoted bubble */
+useBubbles().register(UnvotedPollsBubble)
 
 pollType
   .updateMap(polls, (poll, old) => {

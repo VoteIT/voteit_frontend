@@ -2,7 +2,7 @@
   <v-row>
     <v-col v-bind="cols.default">
       <template v-if="canPresenceCheck">
-        <presenceCheckControl v-if="activePresenceCheck" :check="activePresenceCheck" subscribe class="text-center" />
+        <presenceCheckControl v-if="presenceCheck" :check="presenceCheck" subscribe class="text-center" />
         <div v-else class="text-center my-8">
           <v-btn size="large" color="primary" @click="openCheck(meetingId)" prepend-icon="mdi-hand-wave">
             {{ t('presence.newCheck') }}
@@ -53,7 +53,6 @@ import useLoader from '@/composables/useLoader'
 import useElectoralRegisters from '../useElectoralRegisters'
 import useMeeting from '../useMeeting'
 import { canAddPresenceCheck } from '@/modules/presence/rules'
-import PresenceCheckControl from '../../presence/PresenceCheckControl.vue'
 import usePresence from '@/modules/presence/usePresence'
 import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
@@ -63,7 +62,6 @@ import { ElectoralRegister } from '@/contentTypes/types'
 export default defineComponent({
   inject: ['cols'],
   components: {
-    PresenceCheckControl,
     UserList
   },
   setup () {
@@ -71,11 +69,10 @@ export default defineComponent({
     const { meetingId, meeting } = useMeeting()
     const { fetchRegisters, sortedRegisters } = useElectoralRegisters()
     const loader = useLoader('ElectoralRegisters')
-    const { openCheck, getOpenPresenceCheck } = usePresence()
+    const { openCheck, presenceCheck } = usePresence(meetingId)
     const { filterPolls } = usePolls()
 
     const canPresenceCheck = computed(() => meeting.value && canAddPresenceCheck(meeting.value))
-    const activePresenceCheck = computed(() => getOpenPresenceCheck(meetingId.value))
 
     async function getData () {
       await fetchRegisters(meetingId.value)
@@ -122,7 +119,7 @@ export default defineComponent({
 
     return {
       t,
-      activePresenceCheck,
+      presenceCheck,
       canPresenceCheck,
       meetingId,
       groups,

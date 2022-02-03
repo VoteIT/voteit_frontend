@@ -33,18 +33,17 @@ import usePresence from '@/modules/presence/usePresence'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import Moment from '@/components/Moment.vue'
-import PresenceCheckControl from '@/modules/presence/PresenceCheckControl.vue'
 import { canAddPresenceCheck } from './rules'
 
 export default defineComponent({
-  components: { Moment, PresenceCheckControl },
+  components: { Moment },
   translationKey: 'presence.checks',
   path: 'presence',
   icon: 'mdi-hand-wave',
   setup () {
     const { t } = useI18n()
-    const { getOpenPresenceCheck, getClosedPresenceChecks, openCheck, getPresenceCount } = usePresence()
     const { meetingId, meeting } = useMeeting()
+    const { getOpenPresenceCheck, getClosedPresenceChecks, openCheck, getPresenceCount } = usePresence(meetingId)
     const submitting = ref(false)
 
     const currentCheck = computed(() => getOpenPresenceCheck(meetingId.value))
