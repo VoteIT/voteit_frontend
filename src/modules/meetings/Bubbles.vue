@@ -27,12 +27,6 @@
         />
       </v-sheet>
     </v-overlay>
-    <!-- <div v-for="{ component, data } in bubbles" :key="component.id" class="bubble">
-      <v-btn :icon="component.icon" @click="toggle(component)" :class="{ open: component.name === openBubble }" />
-      <transition name="bubble-content">
-        <component class="content" v-show="component.id === openBubble" :is="component" :data="data" @close="toggle(component)" />
-      </transition>
-    </div> -->
   </div>
 </template>
 
@@ -111,28 +105,6 @@ export default defineComponent({
     margin-left: 10px
     &:last-child
       margin-left: 0
-    > .content
-      position: absolute
-      bottom: 75px
-      width: 20vw
-      min-width: 300px
-      right: 32px
-      padding: 1rem
-      background-color: rgb(var(--v-theme-surface))
-      border-radius: 5px 5px 0 5px
-      filter: drop-shadow(1px 1px 2px rgba(#000, .4))
-      &::after
-        content: ""
-        border: 5px solid rgb(var(--v-theme-surface))
-        border-bottom: 5px solid transparent
-        border-left: 5px solid transparent
-        position: absolute
-        width: 0
-        height: 0
-        right: 0
-        bottom: -10px
-      h2
-        margin-top: 0
 
 .bubble-content-enter-active,
 .bubble-content-leave-active
