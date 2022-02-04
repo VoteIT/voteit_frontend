@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-alert type="warning" class="mb-4">
-      Grupper i VoteIT är under utveckling. Du kan lägga till och ta bort grupper, med inte hantera medlemskap.
+    <v-alert type="info" class="mb-4">
+      {{ t('meeting.groups.help') }}
     </v-alert>
     <div class="d-flex mb-4">
       <h1>

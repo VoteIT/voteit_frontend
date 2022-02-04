@@ -164,6 +164,7 @@
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
     "groups": {
+      "help": "Members in a group can post proposals in that groups name, wherever the user has permission to add proposals. This is useful for adding proposals from a committee or other group, that should not be considered personal proposals.",
       "addMember": "Add member",
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
