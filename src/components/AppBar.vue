@@ -127,7 +127,7 @@ export default defineComponent({
           name: 'userid',
           label: 'Användar-ID',
           type: FieldType.Text,
-          rules: [rules.slug, rules.required, rules.minLength(5)]
+          rules: [rules.slug, rules.required]
         }
       ]
     })

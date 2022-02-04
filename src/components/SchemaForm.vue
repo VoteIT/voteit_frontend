@@ -1,17 +1,18 @@
 <template>
   <v-form ref="form" :disabled="disabled" @submit="submit()">
     <component
-      v-for="({ componentName, name, props }, i) in fields" :key="i"
-      :is="componentName" v-bind="props" v-model="formData[name]"
-      @blur="blurField(name)"
-      :error="!!fieldErrors[name]" :messages="fieldErrors[name]"
+      v-for="(field, i) in fields" :key="i"
+      :is="field.componentName" v-bind="field.props" v-model="formData[field.name]"
+      @blur="blurField(field)"
+      @input="changeField(field)"
+      :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name]"
     />
     <slot name="buttons" :disabled="disabled" :valid="valid" />
   </v-form>
 </template>
 
 <script lang="ts">
-import { Component, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { Component, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
 import axios, { AxiosError } from 'axios'
 
 import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
@@ -97,22 +98,20 @@ export default defineComponent({
         if (typeof result === 'string') return [result]
       }
     }
-    function validateForm () {
-      return props.schema.every(field => !validateField(field))
-    }
-    function blurField (name: string) {
-      const field = fields.find(f => f.name === name)
-      if (!field) throw new Error(`Unknown field "${name}"`)
+    function blurField (field: FormField) {
       cleanField(field)
       const errors = validateField(field)
-      if (errors) fieldErrors.value[name] = errors
+      fieldErrors.value[field.name] = errors
+    }
+    function changeField (field: FormField) {
+      /* Ensure form does not remain invalid */
+      if (!valid.value) fieldErrors.value[field.name] = validateField(field)
     }
 
     const disabled = ref(false)
-    const valid = ref(validateForm())
+    const valid = computed(() => Object.values(fieldErrors.value).every(e => !e))
     async function submit () {
       cleanForm()
-      valid.value = validateForm()
       if (!valid.value) return
       if (!props.handler) return emit('submit', formData.value)
       disabled.value = true
@@ -143,6 +142,7 @@ export default defineComponent({
       formData,
       valid,
       blurField,
+      changeField,
       submit
     }
   }
