@@ -163,6 +163,8 @@
     "meeting": "Möte",
     "public": "Gör mötet synligt för alla",
     "groups": {
+      "addMember": "Lägg till medlem",
+      "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Skapa grupp",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
       "groups": "Grupper",

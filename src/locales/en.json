@@ -164,6 +164,8 @@
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
     "groups": {
+      "addMember": "Add member",
+      "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
       "deleteConfirm": "You're about to permanently delete the group {title}.\nAre you sure?",
       "groups": "Groups",

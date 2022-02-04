@@ -66,10 +66,10 @@ export default defineComponent({
   0%
     transform: scale(1)
     filter: brightness(100%)
-  60%
+  30%
     transform: scale(1)
     filter: brightness(100%)
-  65%
+  45%
     transform: scale(1.1)
     filter: brightness(75%)
   100%
@@ -97,7 +97,7 @@ export default defineComponent({
     &:focus
       outline: none
     &.attention
-      animation: attention 4s infinite
+      animation: attention 2s infinite
     &.open
       background-color: rgb(var(--v-theme-on-surface))
       color: rgb(var(--v-theme-surface))

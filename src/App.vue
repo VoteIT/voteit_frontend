@@ -82,5 +82,6 @@ export default defineComponent({
 // TODO Remove when fiex upstream
 .v-dialog .v-overlay__content
   max-height: calc(100vh - 40px) !important
-  overflow-y: auto
+  .v-sheet
+    overflow-y: auto !important
 </style>
