@@ -1,13 +1,21 @@
 <template>
   <v-form ref="form" :disabled="disabled" @submit="submit()">
-    <component v-for="({ componentName, name, props }, i) in fields" :key="i" :is="componentName" v-bind="props" v-model="formData[name]" />
+    <component
+      v-for="({ componentName, name, props }, i) in fields" :key="i"
+      :is="componentName" v-bind="props" v-model="formData[name]"
+      @blur="blurField(name)"
+      :error="!!fieldErrors[name]" :messages="fieldErrors[name]"
+    />
     <slot name="buttons" :disabled="disabled" :valid="valid" />
   </v-form>
 </template>
+
 <script lang="ts">
-import { Component, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { Component, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import axios, { AxiosError } from 'axios'
+
 import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
-import { FieldRule, FieldType, FormSchema } from './types'
+import { FieldType, FormField, FormSchema } from './types'
 
 const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
@@ -17,6 +25,16 @@ const componentNames: Record<FieldType, string | Component> = {
   switch: 'v-switch',
   text: 'v-text-field',
   textarea: 'v-textarea'
+}
+
+function getFieldErrors (e: Error | AxiosError) {
+  // TODO
+  if (axios.isAxiosError(e)) {
+    if (!e.response) return { __root__: 'Unkown error' }
+    const { data } = e.response
+    return data
+  }
+  return { __root__: 'Unkown error' }
 }
 
 export default defineComponent({
@@ -33,7 +51,12 @@ export default defineComponent({
     handler: Function as PropType<(data: object) => Promise<any>>
   },
   setup (props, { emit }) {
-    const formData = reactive({ ...Object.fromEntries(props.schema.map(f => [f.name, f.default])), ...props.modelValue })
+    const formData = reactive(
+      Object.fromEntries(
+        props.schema.map(f => [f.name, props.modelValue[f.name] ?? f.default])
+      )
+    )
+    const fieldErrors = ref<Record<string, string[] | undefined>>({})
     const fields = props.schema.map((field) => {
       const props = {
         label: field.label
@@ -52,16 +75,45 @@ export default defineComponent({
       }
     })
 
+    function cleanField (field: FormField) {
+      let value = formData[field.name]
+      for (const { clean } of field.rules || []) {
+        // Mutter .... ### TypeScript says never...
+        if (clean) value = (clean as (v: string) => string)(value)
+      }
+      // Avoid triggering unneccessary reactivity
+      if (formData[field.name] !== value) formData[field.name] = value
+    }
+    function cleanForm () {
+      for (const field of props.schema) {
+        cleanField(field)
+      }
+    }
+    function validateField (field: FormField) {
+      const value = formData[field.name]
+      for (const { validate } of field.rules || []) {
+        // Mutter .... ### TypeScript says never...
+        const result = (validate as (v: string) => string | true)?.(value)
+        if (typeof result === 'string') return [result]
+      }
+    }
+    function validateForm () {
+      return props.schema.every(field => !validateField(field))
+    }
+    function blurField (name: string) {
+      const field = fields.find(f => f.name === name)
+      if (!field) throw new Error(`Unknown field "${name}"`)
+      cleanField(field)
+      const errors = validateField(field)
+      if (errors) fieldErrors.value[name] = errors
+    }
+
     const disabled = ref(false)
-    const valid = computed(() => {
-      return props.schema.every(field => {
-        if (!field.rules) return true
-        return (field.rules as FieldRule<unknown>[]).every(
-          rule => !rule.validate || rule.validate(formData[field.name]) === true // true or a string
-        )
-      })
-    })
+    const valid = ref(validateForm())
     async function submit () {
+      cleanForm()
+      valid.value = validateForm()
+      if (!valid.value) return
       if (!props.handler) return emit('submit', formData.value)
       disabled.value = true
       try {
@@ -69,8 +121,8 @@ export default defineComponent({
         Object.assign(formData, props.modelValue)
         emit('saved')
       } catch (e) {
-        console.log(e)
-      } // TODOS
+        fieldErrors.value = getFieldErrors(e as AxiosError)
+      }
       disabled.value = false
     }
 
@@ -86,9 +138,11 @@ export default defineComponent({
     return {
       disabled,
       fields,
+      fieldErrors,
       // form,
       formData,
       valid,
+      blurField,
       submit
     }
   }

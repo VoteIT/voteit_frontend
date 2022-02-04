@@ -23,23 +23,23 @@
               </div>
             </v-list-item>
             <v-divider class="mb-2 mt-2" />
-            <v-list-item prepend-icon="mdi-account" :title="t('profile.profile')" disabled />
-            <!-- <v-dialog>
+            <v-dialog>
               <template #activator="{ props }">
                 <v-list-item prepend-icon="mdi-account" :title="t('profile.profile')" v-bind="props" />
               </template>
               <template #default="{ isActive }">
-                <v-sheet class="pa-4">
+                <v-sheet class="pa-4" v-bind="dialogDefaults">
                   <h2 class="mb-2">
-                    Edit profile
+                    {{ t('profile.changeUserid') }}
                   </h2>
-                  <SchemaForm :schema="[{ name: 'userid', label: 'Användar-ID', type: 'text' }]" :modelValue="{ userid: user.userid }" :handler="updateProfile">
-                    <template #buttons>
+                  <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
+                  <SchemaForm :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
+                    <template #buttons="{ valid, disabled }">
                       <div class="text-right">
                         <v-btn variant="text" @click="isActive.value = false">
                           {{ t('cancel') }}
                         </v-btn>
-                        <v-btn color="primary" type="submit">
+                        <v-btn color="primary" type="submit" :disabled="disabled || !valid">
                           {{ t('save') }}
                         </v-btn>
                       </div>
@@ -47,7 +47,7 @@
                   </SchemaForm>
                 </v-sheet>
               </template>
-            </v-dialog> -->
+            </v-dialog>
           </v-list>
           <template v-slot:append>
             <v-list nav density="comfortable">
@@ -71,12 +71,16 @@ import { toggleNavDrawerEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
+import useDefaults from '@/composables/useDefaults'
 import useOrganisation from '@/modules/organisations/useOrganisation'
-// import SchemaForm from './SchemaForm.vue'
+import SchemaForm from './SchemaForm.vue'
 import { User } from '@/modules/organisations/types'
+import { FieldType, FormSchema } from './types'
+
+import * as rules from '@/utils/rules'
 
 export default defineComponent({
-  // components: { SchemaForm },
+  components: { SchemaForm },
   setup () {
     const { t } = useI18n()
     const router = useRouter()
@@ -105,11 +109,36 @@ export default defineComponent({
       await auth.updateProfile(data)
     }
 
+    const profileSchema = computed<FormSchema>(() => {
+      return [
+        {
+          name: 'first_name',
+          label: 'Förnamn',
+          type: FieldType.Text,
+          rules: [rules.disabled]
+        },
+        {
+          name: 'last_name',
+          label: 'Efternamn',
+          type: FieldType.Text,
+          rules: [rules.disabled]
+        },
+        {
+          name: 'userid',
+          label: 'Användar-ID',
+          type: FieldType.Text,
+          rules: [rules.slug, rules.required, rules.minLength(5)]
+        }
+      ]
+    })
+
     return {
       t,
       ...auth,
+      ...useDefaults(),
       hasNavDrawer,
       manageAccountURL,
+      profileSchema,
       toggleNavDrawerEvent,
       userMenuComponent,
       userMenuOpen,

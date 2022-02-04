@@ -343,6 +343,8 @@
     "recentlyClosedChecks": "Nyligen stängda närvarokontroller"
   },
   "profile": {
+    "editProfileHelp": "Här kan du bara ändra ditt användar-ID. Gå till Hantera konto för att ändra namn eller e-post.",
+    "changeUserid": "Byt användar-ID",
     "profile": "Profil",
     "verifyEmail": "Verifiera mejladress"
   },

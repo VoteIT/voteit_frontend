@@ -7,7 +7,7 @@
         </v-btn>
       </slot>
     </template>
-    <v-sheet color="background" class="pa-4 d-flex flex-column overflow-y-auto" v-bind="sheetProps">
+    <v-sheet color="background" class="pa-4 d-flex flex-column overflow-y-auto" v-bind="dialogDefaults">
       <v-expand-transition>
         <form @submit.prevent="preview()" v-show="!done">
           <slot name="editor">
@@ -62,9 +62,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify'
 
 import useAuthentication from '@/composables/useAuthentication'
 import ProposalVue from '@/modules/proposals/Proposal.vue'
@@ -74,6 +73,7 @@ import useAgendaItem from '../agendas/useAgendaItem'
 import { PreviewProposal, Proposal } from './types'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
+import useDefaults from '@/composables/useDefaults'
 
 export default defineComponent({
   emits: ['reset'],
@@ -94,7 +94,6 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const { t } = useI18n()
-    const { mobile } = useDisplay()
     const body = ref('')
     const group = ref<null | number>(null)
     const { meetingId } = useMeeting()
@@ -159,23 +158,15 @@ export default defineComponent({
       }
     })
 
-    const sheetProps = computed(() => {
-      return {
-        width: mobile.value ? 280 : 560,
-        minHeight: 400,
-        maxHeight: '70vh'
-      }
-    })
-
     return {
       t,
+      ...useDefaults(),
       done,
       group,
       isOpen,
       proposal,
       body,
       saving,
-      sheetProps,
       user,
       userGroups,
       addProposal,

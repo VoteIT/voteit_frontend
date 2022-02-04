@@ -344,6 +344,8 @@
     "recentlyClosedChecks": "Recently closed presence checks"
   },
   "profile": {
+    "editProfileHelp": "You can only modify you user ID here. Go to Manage account to change your name or email.",
+    "changeUserid": "Change user ID",
     "profile": "Profile",
     "verifyEmail": "Verify email"
   },
