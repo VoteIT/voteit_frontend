@@ -14,6 +14,7 @@ interface CType<S> {
   states?: WorkflowState<S>[]
   name: string // Content type name in channels
   restEndpoint?: string
+  restConfig?: RestApiConfig
   channels?: string[]
   hasRoles?: boolean
   dateFields?: string[]
@@ -69,7 +70,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
 
   public get api () {
     // Cache an api instance with default settings
-    if (!this._api) this._api = this.getContentApi()
+    if (!this._api) this._api = this.getContentApi(this.contentType.restConfig)
     return this._api
   }
 
