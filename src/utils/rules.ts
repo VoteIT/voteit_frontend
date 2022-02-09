@@ -22,6 +22,12 @@ export function minLength (length: number) {
   }
 }
 
+export function selectOptions (options: Record<string, string>) {
+  return {
+    props: { options }
+  }
+}
+
 // export const containsEmail: FieldRule<string> = {
 //   props: { required: true },
 //   validate: v => (v && v.length > 5 && v.includes('@')) || 'must contain at least one e-mail address'

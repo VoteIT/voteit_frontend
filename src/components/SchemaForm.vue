@@ -16,13 +16,14 @@ import { Component, computed, defineComponent, PropType, reactive, ref, watch } 
 import axios, { AxiosError } from 'axios'
 
 import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
+import SelectVue from './inputs/Select.vue'
 import { FieldType, FormField, FormSchema } from './types'
 
 const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
   checkbox_multiple: CheckboxMultipleSelectVue,
   number: 'v-text-field', // ?
-  select: 'v-text-field', // TODO
+  select: SelectVue, // TODO
   switch: 'v-switch',
   text: 'v-text-field',
   textarea: 'v-textarea'

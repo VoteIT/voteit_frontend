@@ -1,6 +1,9 @@
 <template>
   <v-navigation-drawer v-if="initDone" app id="meeting-navigation" v-model="isOpen" width="348">
     <MenuTree :items="menu" @navigation="toggleDrawer" />
+    <template #append>
+      <BugReports class="ma-2 mt-4" />
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -12,9 +15,10 @@ import { useDisplay } from 'vuetify'
 import { slugify } from '@/utils'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
-import { WorkflowState } from '@/contentTypes/types'
-import useLoader from '@/composables/useLoader'
 import MenuTree from '@/components/MenuTree.vue'
+import BugReports from '@/modules/bugReports/BugReports.vue'
+import useLoader from '@/composables/useLoader'
+import { WorkflowState } from '@/contentTypes/types'
 
 import useAgenda from '../agendas/useAgenda'
 import { agendaItemType } from '../agendas/contentTypes'
@@ -31,7 +35,8 @@ import { toggleNavDrawerEvent } from '@/utils/events'
 export default defineComponent({
   name: 'Agenda',
   components: {
-    MenuTree
+    MenuTree,
+    BugReports
   },
   setup () {
     const { t } = useI18n()
