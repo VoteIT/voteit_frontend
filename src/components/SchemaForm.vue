@@ -5,7 +5,7 @@
       :is="field.componentName" v-bind="field.props" v-model="formData[field.name]"
       @blur="blurField(field)"
       @input="changeField(field)"
-      :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name]"
+      :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name] || field.messages"
     />
     <slot name="buttons" :disabled="disabled" :valid="valid" />
   </v-form>

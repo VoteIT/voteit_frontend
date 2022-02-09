@@ -29,7 +29,7 @@
             <p class="my-2">
               VoteIT är under ständig utveckling och vi behöver få in rapporter om konstigheter och buggar så att vi kan förhindra problem i framtiden.
             </p>
-            <p class="my-2 text-warning">
+            <p class="my-2">
               Genom att skicka denna felrapport godkänner du att vi sparar ditt användarnamn tillsammans med felrapporten fram till att problemet är avhjälpt eller som längst ett år.
             </p>
             <SchemaForm :schema="schema" class="mt-4" :handler="submit" @saved="submitted = true">

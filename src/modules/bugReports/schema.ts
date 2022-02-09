@@ -20,6 +20,6 @@ export default [
     type: 'textarea',
     label: 'Beskrivning',
     rules: [required],
-    hint: 'Beskriv vad du gjorde när felet uppkom, vad du försökte åstadkomma och vad konsekvensen blev.'
+    messages: ['Beskriv vad du gjorde när felet uppkom, vad du försökte åstadkomma och vad konsekvensen blev.']
   }
 ]
