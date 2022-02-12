@@ -106,6 +106,7 @@ import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
+import useChannel from '@/composables/useChannel'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -117,6 +118,8 @@ export default defineComponent({
     const { meetingPath, meetingId } = useMeeting()
     const { hasNewItems, agendaItemLastRead } = useAgenda()
     const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
+
+    useChannel('agenda_item', agendaId)
 
     useMeetingTitle(computed(() => agendaItem.value?.title ?? t('agenda.item')))
 

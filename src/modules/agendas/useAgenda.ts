@@ -9,7 +9,6 @@ import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
 import { agendaDeletedEvent } from './events'
-import useChannel from '@/composables/useChannel'
 
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
@@ -115,8 +114,6 @@ export default function useAgenda () {
   const agendaItemLastRead = computed(() => agendaItemsLastRead.get(agendaId.value) ?? new Date(0)) // Default to epoch
   const previousAgendaItem = computed(() => agendaItem.value && getPreviousAgendaItem(agendaItem.value))
   const nextAgendaItem = computed(() => agendaItem.value && getNextAgendaItem(agendaItem.value))
-
-  useChannel('agenda_item', agendaId)
 
   return {
     agenda,
