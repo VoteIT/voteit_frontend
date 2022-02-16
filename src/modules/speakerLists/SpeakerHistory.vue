@@ -1,7 +1,7 @@
 <template>
-  <div v-if="history">
+  <div>
     <Tabs :tabs="systemTabs" v-model="currentTab" />
-    <v-table>
+    <v-table v-if="history">
       <thead>
         <tr>
           <th>
@@ -29,13 +29,15 @@
         </tr>
       </tbody>
     </v-table>
-  </div>
-  <div v-else class="text-center">
-    <v-progress-circular indeterminate />
+    <div v-else class="text-center">
+      <v-progress-circular indeterminate />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
+import { sum } from 'lodash'
+import moment from 'moment'
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -44,9 +46,7 @@ import Tabs from '@/components/Tabs.vue'
 import useMeeting from '../meetings/useMeeting'
 
 import useSpeakerHistory from './useSpeakerHistory'
-import { speakerSystems } from './useSpeakerLists'
-import { sum } from 'lodash'
-import moment from 'moment'
+import useSpeakerSystems from './useSpeakerSystems'
 
 export default defineComponent({
   setup () {
@@ -54,6 +54,7 @@ export default defineComponent({
     const { meetingId } = useMeeting()
     const speakerSystem = ref<number | undefined>(undefined)
     const { history } = useSpeakerHistory(meetingId, speakerSystem)
+    const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 
     const currentTab = computed({
       get () {
@@ -74,11 +75,12 @@ export default defineComponent({
     }
 
     const systemTabs = computed(() => {
+      if (allSpeakerSystems.value.length <= 1) return
       const tabs = [{
         name: 'default',
         title: t('all')
       }]
-      for (const system of speakerSystems.values()) {
+      for (const system of allSpeakerSystems.value) {
         tabs.push({
           name: String(system.pk),
           title: system.title

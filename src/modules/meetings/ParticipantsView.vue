@@ -139,6 +139,7 @@ import useMeetingInvites from './useMeetingInvites'
 import useMeetingGroups from './useMeetingGroups'
 import useChannel from '@/composables/useChannel'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
+import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -157,6 +158,7 @@ export default defineComponent({
     const { meetingInvites } = useMeetingInvites(meetingId)
     const { copy, copied } = useClipboard()
     const { meetingGroups } = useMeetingGroups(meetingId)
+    const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
 
     useMeetingTitle(t('meeting.participants'))
 
@@ -188,7 +190,7 @@ export default defineComponent({
     const currentTab = ref('default')
     const tabs = computed(() => {
       if (!canViewMeetingInvite) return
-      return [
+      const tabs = [
         {
           name: 'default',
           title: t('meeting.participants')
@@ -200,12 +202,15 @@ export default defineComponent({
         {
           name: 'groups',
           title: t('meeting.groups.groups')
-        },
-        {
-          name: 'speakerHistory',
-          title: t('speaker.history')
         }
       ]
+      if (hasSpeakerSystems.value) {
+        tabs.push({
+          name: 'speakerHistory',
+          title: t('speaker.history')
+        })
+      }
+      return tabs
     })
 
     /* INVITES */

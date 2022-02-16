@@ -4,7 +4,6 @@ import { dateify } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import Channel from '@/contentTypes/Channel'
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 import { AgendaItem } from '../agendas/types'
 import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
@@ -17,14 +16,13 @@ const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(n
 export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
 
 speakerSystemType.updateMap(speakerSystems)
-speakerListType.updateMap(speakerLists)
-
 const { hasRole } = speakerSystemType.useContextRoles()
 
-const listChannel = speakerListType
+speakerListType
+  .updateMap(speakerLists)
   .on<SpeakerOrderUpdate>('order', ({ pk, queue }) => {
     speakerQueues.set(pk, queue)
-  }).channel
+  })
 
 speakerType
   .on<SpeakerStartStopMessage>('started', payload => {
