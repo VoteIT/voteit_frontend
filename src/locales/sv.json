@@ -402,6 +402,7 @@
     "currentlySpeaking": "Talar nu",
     "enterList": "Sätt upp mig",
     "fullscreenSystem": "Talalista fullskärm ({title})",
+    "history": "Talarhistorik",
     "isActiveList": "Listan är aktiv",
     "leaveList": "Lämna listan",
     "listChoices": "Listval",
@@ -424,6 +425,8 @@
     "systemAdd": "Lägg till listsystem",
     "systemEdit": "Ändra listsystem",
     "systemMethod": "Metod för ordning",
+    "timeSpoken": "Tid ({time})",
+    "timesSpoken": "Antal gånger ({count})",
     "visible": "Visa för alla deltagare",
     "orderMethod": {
       "priority": "Prioritera förstagångstalare",

@@ -104,6 +104,9 @@
         <template #groups>
           <MeetingGroupsTab />
         </template>
+        <template #speakerHistory>
+          <SpeakerHistory />
+        </template>
       </Tabs>
     </v-col>
   </v-row>
@@ -126,6 +129,7 @@ import { ContextRoles } from '@/composables/types'
 
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
+import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
 
 import { MeetingInvite, MeetingRole } from './types'
 import { meetingType } from './contentTypes'
@@ -196,6 +200,10 @@ export default defineComponent({
         {
           name: 'groups',
           title: t('meeting.groups.groups')
+        },
+        {
+          name: 'speakerHistory',
+          title: t('speaker.history')
         }
       ]
     })
@@ -328,6 +336,7 @@ export default defineComponent({
     CheckboxMultipleSelect,
     MeetingGroupsTab,
     RoleMatrix,
+    SpeakerHistory,
     Tabs,
     UserSearch
     // SchemaForm

@@ -49,3 +49,10 @@ export interface SpeakerOrderUpdate {
   queue: number[] // Current order
   current: number // Current speaker
 }
+
+// Historical speaker data, for a meeting or speaker_system
+export interface SpeakerHistory {
+  user: number
+  times_spoken: number
+  seconds_spoken: number
+}

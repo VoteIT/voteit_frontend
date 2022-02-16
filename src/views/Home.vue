@@ -11,7 +11,7 @@
           <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
           <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
         </div>
-        <Menu :items="menu" float />
+        <Menu :items="menu" />
       </header>
     </v-col>
     <v-divider vertical />

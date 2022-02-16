@@ -2,7 +2,7 @@
   <v-navigation-drawer v-if="initDone" app id="meeting-navigation" v-model="isOpen" width="348">
     <MenuTree :items="menu" @navigation="toggleDrawer" />
     <template #append>
-      <BugReports class="ma-2 mt-4" />
+      <BugReports class="ma-2" />
     </template>
   </v-navigation-drawer>
 </template>

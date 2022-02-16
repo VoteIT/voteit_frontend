@@ -1,6 +1,6 @@
 import ContentType from '@/contentTypes/ContentType'
 
-import { SpeakerList, SpeakerSystem, SpeakerSystemRole } from './types'
+import { SpeakerHistory, SpeakerList, SpeakerSystem, SpeakerSystemRole } from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
 
 export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRole>({
@@ -19,4 +19,9 @@ export const speakerListType = new ContentType<SpeakerList>({
 
 export const speakerType = new ContentType<object>({
   name: 'speaker'
+})
+
+export const speakerHistoryType = new ContentType<SpeakerHistory>({
+  name: 'speaker_history',
+  restEndpoint: 'speaker-history/'
 })
