@@ -85,4 +85,5 @@ export enum SchemaType {
 // For Channel.ts
 export interface ChannelConfig extends ChannelsConfig {
   leaveDelay?: number
+  leaveOnUnmount?: boolean
 }

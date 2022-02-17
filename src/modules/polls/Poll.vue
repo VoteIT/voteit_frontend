@@ -1,13 +1,19 @@
 <template>
   <Widget class="poll">
-    <header>
+    <header class="mb-1">
       <router-link :to="pollPath">
-        <v-icon>mdi-chevron-right</v-icon>
-        <h3>{{ poll.title }} <small class="text-secondary ml-4">{{ methodName }}</small></h3>
-        <div class="meta">
-          <span v-if="isOngoing && poll.started"><Moment :prepend="t('poll.started')" :date="poll.started" /></span>
-          <span v-else-if="isFinished && poll.closed"><Moment :prepend="t('poll.finished')" :date="poll.closed" /></span>
-          <span v-else></span>
+        <div class="d-flex">
+          <div class="flex-grow-1">
+            <h3>
+              {{ poll.title }}
+              <small class="text-secondary ml-4">{{ methodName }}</small>
+            </h3>
+            <div class="text-secondary">
+              <Moment v-if="isOngoing && poll.started" :prepend="t('poll.started')" :date="poll.started" />
+              <Moment v-else-if="isFinished && poll.closed" :prepend="t('poll.finished')" :date="poll.closed" />
+            </div>
+          </div>
+          <v-icon size="xxx-large">mdi-chevron-right</v-icon>
         </div>
       </router-link>
     </header>
@@ -24,8 +30,6 @@
           </div>
         </Dropdown>
       </template>
-
-      <!-- <Btn @click="vote()" color="accent" icon="mdi-vote" v-if="canVote(poll)">{{ userVote ? t('poll.changeVote') : t('poll.vote') }}</Btn> -->
 
       <ProgressBar v-if="isOngoing" :value="pollStatus?.voted" :total="pollStatus?.total">
         <span v-if="pollStatus">{{ t('poll.votedProgress', {
@@ -47,14 +51,12 @@
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useModal from '@/composables/useModal'
 import Moment from '@/components/Moment.vue'
 
 import usePolls from '../polls/usePolls'
 import ProposalVue from '../proposals/Proposal.vue'
 import useMeeting from '../meetings/useMeeting'
 
-import Voting from './Voting.vue'
 import { slugify } from '@/utils'
 import { pollType } from './contentTypes'
 import { Poll } from './methods/types'
@@ -76,16 +78,8 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const { meetingPath } = useMeeting()
-    const { openModal } = useModal()
     const { getPollStatus, getUserVote } = usePolls()
     const { canVote, approved, denied, isOngoing, isFinished } = usePoll(computed(() => props.poll.pk))
-
-    function vote () {
-      openModal({
-        component: Voting,
-        data: props.poll
-      })
-    }
 
     const following = ref(false)
     const subscribePk = computed(() => {
@@ -93,7 +87,7 @@ export default defineComponent({
       if (isOngoing.value && following.value) return props.poll.pk
       return undefined
     })
-    useChannel('poll', subscribePk, { leaveDelay: 0 })
+    useChannel('poll', subscribePk, { leaveDelay: 0, leaveOnUnmount: true })
 
     const pollStatus = computed(() => getPollStatus(props.poll.pk))
     const pollPath = computed(() => `${meetingPath.value}/polls/${props.poll.pk}/${slugify(props.poll.title)}`)
@@ -112,8 +106,7 @@ export default defineComponent({
       userVote,
       following,
       methodName,
-      canVote,
-      vote
+      canVote
     }
   }
 })
@@ -125,15 +118,6 @@ div.poll
     a
       text-decoration: none
       color: rgb(var(--v-theme-on-surface))
-      .mdi
-        float: right
-        font-size: 40pt
-        margin-right: -14px
-    .meta
-      color: rgb(var(--v-theme-secondary))
-      margin-bottom: 1em
-      > *
-        margin-right: 1em
   .voting-info
     margin-top: 1em
 

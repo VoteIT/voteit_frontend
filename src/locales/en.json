@@ -404,6 +404,7 @@
     "enterList": "Enter list",
     "fullscreenSystem": "Speaker list fullscreen ({title})",
     "isActiveList": "List is active",
+    "history": "Speaker history",
     "leaveList": "Leave list",
     "listChoices": "List choices",
     "list": "Speaker list",
@@ -425,6 +426,8 @@
     "systemAdd": "Add List System",
     "systemEdit": "Edit List System",
     "systemMethod": "Priority method",
+    "timeSpoken": "Time ({time})",
+    "timesSpoken": "Count ({count})",
     "visible": "Visible to all participants",
     "orderMethod": {
       "priority": "Prioritize first-time speakers",
