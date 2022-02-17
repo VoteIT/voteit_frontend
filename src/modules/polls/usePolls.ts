@@ -106,6 +106,14 @@ const pollMethods: PollMethod[] = [
     initialSettings: {
       allow_random: true
     }
+  },
+  {
+    name: PollMethodName.Dutt,
+    proposalsMin: 3,
+    initialSettings: {
+      min: 0,
+      max: 0
+    }
   }
 ]
 

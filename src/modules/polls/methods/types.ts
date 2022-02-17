@@ -5,6 +5,7 @@ import { PollState } from '../types'
 
 export enum PollMethodName {
   CombinedSimple = 'combined_simple',
+  Dutt = 'dutt',
   InstantRunoff = 'irv',
   Majority = 'majority',
   RepeatedSchulze = 'repeated_schulze',
@@ -108,6 +109,11 @@ export type InstantRunoffResult = ScottishSTVResult
 export type MajorityVote = { choice: number }
 export type SimpleVote = Record<SimpleChoice, number[]>
 
+export interface DuttSettings {
+  min: number
+  max: number
+}
+
 export interface RepeatedSchulzeSettings {
   winners: number | null
 }
@@ -126,7 +132,7 @@ interface SchulzeSettings {
   deny_proposal?: boolean
 }
 
-export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings
+export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings | DuttSettings
 
 export interface PollMethod {
   name: PollMethodName
@@ -187,5 +193,22 @@ export interface InstantRunoffPoll extends BasePoll {
   settings: InstantRunoffSettings
 }
 
-export type Poll = MajorityPoll | SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll
+export interface DuttVote {
+  choices: number[]
+}
+
+export interface DuttResult extends VoteResult {
+  results: {
+    votes: number,
+    proposal: number
+  }[]
+}
+
+export interface DuttPoll extends BasePoll {
+  method_name: PollMethodName.Dutt
+  result: DuttResult
+  settings: DuttSettings
+}
+
+export type Poll = MajorityPoll | SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll | DuttPoll
 export type PollStartData = Omit<Poll, 'pk' | 'state' | 'electoral_register' | 'initial_electoral_register' | 'body' | 'result'>

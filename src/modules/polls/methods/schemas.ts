@@ -1,4 +1,5 @@
 import { InputType, SchemaGenerator } from '@/components/inputs/types'
+import { Proposal } from '@/modules/proposals/types'
 import { PollMethodName } from './types'
 
 const getSTVSchema: SchemaGenerator = (t, proposals) => {
@@ -64,7 +65,23 @@ const getRepeatedSchulzeSchema: SchemaGenerator = (t, proposals) => {
   ]
 }
 
+const getDuttSchema: SchemaGenerator = (t, proposals) => {
+  return ['min', 'max'].map(name => {
+    return {
+      name,
+      type: InputType.Number,
+      label: t(`poll.dutt.${name}`),
+      hint: t('poll.dutt.minMaxProposals'),
+      settings: {
+        min: 0,
+        max: proposals.length
+      }
+    }
+  })
+}
+
 const schemas: Partial<Record<PollMethodName, SchemaGenerator>> = {
+  dutt: getDuttSchema,
   irv: getInstantRunoffSchema,
   repeated_schulze: getRepeatedSchulzeSchema,
   schulze: getSchulzeSchema,

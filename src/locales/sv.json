@@ -267,12 +267,21 @@
     "watchVoting": "Visa resultat",
     "youHaveVoted": "Du har röstat",
     "youHaveNotVoted": "Du har inte röstat",
+    "dutt": {
+      "max": "Max antal förslag att välja",
+      "maxHelpText": "Välj bort ett förslag för en giltig röst | Välj bort {count} förslag för en giltig röst",
+      "min": "Lägst antal förslag att välja",
+      "minHelpText": "Välj ytterligare ett förslag för en giltig röst | Välj ytterligare {count} förslag för en giltig röst",
+      "minMaxHint": "0 = ingen begränsning",
+      "validVoteHelpText": "Din röst är giltig."
+    },
     "IRV": {
       "numRounds": "IRV, en omgång | IRV, {count} omgångar"
     },
     "method": {
       "name": "Omröstningsmetod",
       "combined_simple": "Enkel majoritet",
+      "dutt": "Dutt",
       "majority": "Motförslag",
       "repeated_schulze": "Repeterad Schulze",
       "schulze": "Schulze",
@@ -281,11 +290,12 @@
       "simple": "Majoritetsomröstning",
       "irv": "IRV",
       "help": {
+        "combined_simple": "Rösta bifall eller avslag på varje förslag.",
+        "dutt": "Markera de förslag du föredrar.",
         "majority": "Rösta på det förslag du föredrar.",
         "scottish_stv": "Välj de förslag du vill rösta på i prioriteringsordning.",
         "schulze": "Rangordna förslag genom att ange en till fem stjärnor. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag.",
-        "repeated_schulze": "Rangordna förslag genom att ange en till fem stjärnor. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag.",
-        "combined_simple": "Rösta bifall eller avslag på varje förslag."
+        "repeated_schulze": "Rangordna förslag genom att ange en till fem stjärnor. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag."
       }
     },
     "result": {

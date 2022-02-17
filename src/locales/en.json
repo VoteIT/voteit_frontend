@@ -268,12 +268,21 @@
     "watchVoting": "Watch voting",
     "youHaveVoted": "You have voted",
     "youHaveNotVoted": "You have not voted",
+    "dutt": {
+      "max": "Require max proposals",
+      "maxHelpText": "Select one less proposal for a valid vote | Select {count} fewer proposals for a valid vote",
+      "min": "Require min proposals",
+      "minHelpText": "Select one more proposal for a valid vote | Select {count} more proposals for a valid vote",
+      "minMaxHint": "0 = no limit",
+      "validVoteHelpText": "Your vote is valid."
+    },
     "IRV": {
       "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
     },
     "method": {
       "name": "Poll method",
       "combined_simple": "Simple majority",
+      "dutt": "Acceptance poll",
       "majority": "Contraproposal",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
@@ -282,11 +291,12 @@
       "simple": "Simple majority",
       "irv": "Instant Runoff-Voting",
       "help": {
+        "combined_simple": "Vote approve or deny for each proposal.",
+        "dutt": "Select the proposals you prefer.",
         "majority": "Vote for your favorite proposal.",
         "scottish_stv": "Select the proposals you want to vote for in order of preference.",
         "schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
-        "repeated_schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
-        "combined_simple": "Vote approve or deny for each proposal."
+        "repeated_schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal."
       }
     },
     "result": {
