@@ -11,9 +11,9 @@ const DEFAULT_CONFIG: ChannelConfig = {
   leaveDelay: 10_000 // Delay before leaving channel in ms
 }
 
-const subscriptions = new Set<string>()
 const leaveTimeouts = new Map<string, number>()
 const leaveHandlers = new DefaultMap<string, LeaveHandler[]>(() => [])
+const subscriptions = new Set<string>()
 
 function subscribeChannel (uri: string) {
   return socket.call<SubscribedPayload>('channel.subscribe', uri)

@@ -10,8 +10,8 @@
         </v-btn>
       </header>
       <v-divider />
-      <Dropdown v-for="s in tabStates" :key="s.state" :title="`${t(`workflowState.plural.${s.state}`)} (${s.polls.length})`" :open="s.state==='ongoing'" class="mt-4">
-        <Poll :poll="p" v-for="p in s.polls" :key="p.pk" />
+      <Dropdown v-for="{ state, polls } in tabStates" :key="state" :title="`${t(`workflowState.plural.${state}`)} (${polls.length})`" :modelValue="state==='ongoing'" class="mt-4">
+        <Poll :poll="p" v-for="p in polls" :key="p.pk" />
       </Dropdown>
       <p v-if="tabStates.length === 0">
         <em>{{ t('poll.noPublishedPolls') }}</em>
@@ -23,20 +23,28 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { orderBy } from 'lodash'
 
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import Poll from '../polls/Poll.vue'
+import PollVue from '../polls/Poll.vue'
 import usePolls from '../polls/usePolls'
 
 import { WorkflowState } from '@/contentTypes/types'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
+import { PollState } from './types'
+import { Poll } from './methods/types'
+
+const STATE_ORDERS: Partial<Record<PollState, [keyof Poll, 'asc' | 'desc']>> = {
+  ongoing: ['started', 'asc'],
+  finished: ['closed', 'desc']
+}
 
 export default defineComponent({
   name: 'Polls',
   components: {
-    Poll
+    Poll: PollVue
   },
   setup () {
     const { t } = useI18n()
@@ -47,10 +55,13 @@ export default defineComponent({
 
     const tabStates = computed(() => {
       return getPriorityStates()
-        .map(s => ({
-          ...s,
-          polls: getPolls(meetingId.value, s.state)
-        }))
+        .map((s) => {
+          const [attr, direction] = STATE_ORDERS[s.state] || ['pk', 'asc']
+          return {
+            ...s,
+            polls: orderBy(getPolls(meetingId.value, s.state), [attr], [direction])
+          }
+        })
         .filter(s => s.polls.length)
     })
 

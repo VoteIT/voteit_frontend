@@ -154,7 +154,8 @@ interface BasePoll extends BaseContent {
   electoral_register?: number
   initial_electoral_register?: number
   proposals: number[]
-  start?: boolean // In create call only
+  started: Date | null
+  closed: Date | null
 }
 
 export interface SimplePoll extends BasePoll {
@@ -211,4 +212,4 @@ export interface DuttPoll extends BasePoll {
 }
 
 export type Poll = MajorityPoll | SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll | DuttPoll
-export type PollStartData = Omit<Poll, 'pk' | 'state' | 'electoral_register' | 'initial_electoral_register' | 'body' | 'result'>
+export type PollStartData = Pick<Poll, 'agenda_item' | 'meeting' | 'method_name' | 'proposals' | 'settings' | 'title'> & { start: boolean }

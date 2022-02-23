@@ -116,7 +116,8 @@ export interface TreeMenu {
   openFirstNonEmpty?: boolean
   showCount?: boolean
   icon?: string
-  openEvent?: TypedEvent<void>
+  openEvent?: TypedEvent
+  loadedEvent?: TypedEvent
 }
 
 export type TreeMenuItem = TreeMenuLink | TreeMenu

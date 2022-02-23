@@ -22,21 +22,22 @@
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <v-expand-transition>
-        <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @firstContent="firstContent()" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)" />
+        <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)" />
       </v-expand-transition>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, reactive, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { defer } from 'lodash'
+import { computed, defineComponent, PropType, reactive, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { TreeMenu, TreeMenuItem } from '@/utils/types'
+import TypedEvent from '@/utils/TypedEvent'
 
 export default defineComponent({
-  emits: ['navigation', 'hasActive', 'firstContent'],
+  emits: ['navigation', 'hasActive'],
   props: {
     title: String,
     items: {
@@ -47,15 +48,16 @@ export default defineComponent({
     openFirstNonEmpty: Boolean,
     showCount: Boolean,
     icon: String,
-    openEvent: Object,
+    openEvent: Object as PropType<TypedEvent>,
+    loadedEvent: Object as PropType<TypedEvent>,
     level: {
       type: Number,
       default: 0
     }
   },
   setup (props, { emit }) {
-    const openMenus = reactive<Set<number>>(new Set())
     const route = useRoute()
+    const openMenus = reactive<Set<number>>(new Set())
 
     // Typescript-check if item is a submenu
     const isSubMenu = (item: TreeMenuItem): item is TreeMenu => 'items' in item
@@ -66,6 +68,9 @@ export default defineComponent({
       if (item.defaultOpen) openMenus.add(index)
       // Listen to opening events
       item.openEvent?.on(() => openMenus.add(index))
+    })
+    props.loadedEvent?.on(() => {
+      if (props.openFirstNonEmpty) defer(openFirstNonEmpty)
     })
     // Default open on new items?
     watch(() => props.items, (items, oldItems) => {
@@ -78,26 +83,18 @@ export default defineComponent({
       openMenus.add(index)
     }
 
-    watch(() => props.items, (items, oldItems) => {
-      if (!oldItems.length && items.length) firstContent()
-    })
-
     function openFirstNonEmpty () {
+      // Only if none open already
       if (openMenus.size) return
       for (const [index, item] of props.items.entries()) {
         if ('items' in item && item.items.length) return openMenus.add(index)
       }
     }
 
-    function firstContent () {
-      if (openMenus.size) return // Don't meddle with active user navigation
-      // Emit 'hasActive' if any item is current active path
-      if (props.items.some(item => 'to' in item && item.to === route.path)) emit('hasActive')
-      else emit('firstContent')
-      // Open first non-empty submenu
-      if (props.openFirstNonEmpty) defer(openFirstNonEmpty)
-    }
-    onMounted(firstContent)
+    const hasActive = computed(() => props.items.some(item => 'to' in item && item.to === route.path))
+    watch(hasActive, value => {
+      if (value) emit('hasActive')
+    }, { immediate: true })
 
     function childHasActive (index: number) {
       openMenus.add(index)
@@ -107,7 +104,6 @@ export default defineComponent({
     return {
       openMenus,
       childHasActive,
-      firstContent,
       toggleMenu
     }
   }

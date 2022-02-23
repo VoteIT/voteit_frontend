@@ -1,6 +1,6 @@
 <template>
   <div class="page-dropdown">
-    <v-btn prepend-icon="mdi-chevron-right" variant="text" block @click="isOpen = !isOpen" class="collapse" :class="{ isOpen }">
+    <v-btn prepend-icon="mdi-chevron-right" variant="text" block @click="toggle()" class="collapse" :class="{ isOpen }">
       {{ title }}
     </v-btn>
     <v-expand-transition>
@@ -16,17 +16,23 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   props: {
+    modelValue: Boolean,
     tag: {
       type: String,
       default: 'h2'
     },
-    title: String,
-    open: Boolean // Default value
+    title: String
   },
-  setup (props) {
-    const isOpen = ref(props.open)
+  setup (props, { emit }) {
+    const isOpen = ref(props.modelValue)
+    function toggle () {
+      isOpen.value = !isOpen.value
+      emit('update:modelValue', isOpen.value)
+    }
+
     return {
-      isOpen
+      isOpen,
+      toggle
     }
   }
 })

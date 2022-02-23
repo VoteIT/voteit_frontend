@@ -1,6 +1,8 @@
+import { computed, onUnmounted, Ref, watch } from 'vue'
+
 import Channel from '@/contentTypes/Channel'
 import { ChannelConfig } from '@/contentTypes/types'
-import { computed, onUnmounted, Ref, watch } from 'vue'
+import { channelSubscribedEvent } from './events'
 
 export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig) {
   const channel = new Channel('', config) // Empty channel, so that we can dynamically switch channel names
@@ -13,9 +15,12 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
     return `${channel}/${pk.value}`
   })
 
-  watch(channelUri, (to, from) => {
+  watch(channelUri, async (to, from) => {
     if (from) channel.leave(from)
-    if (to) channel.subscribe(to)
+    if (to) {
+      await channel.subscribe(to)
+      channelSubscribedEvent.emit(to)
+    }
   }, { immediate: true })
 
   if (config?.leaveOnUnmount) {

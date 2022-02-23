@@ -31,6 +31,15 @@ import { canAddPoll } from '../polls/rules'
 
 import { canChangeMeeting } from './rules'
 import { toggleNavDrawerEvent } from '@/utils/events'
+import { orderBy } from 'lodash'
+import { channelSubscribedEvent } from '@/composables/events'
+
+const agendaLoadedEvent = new TypedEvent()
+channelSubscribedEvent.on(uri => {
+  const channelName = uri.split('/')[0]
+  // Agenda is loaded when "participants" or "moderators" channels are subscribed
+  if (['participants', 'moderators'].includes(channelName)) agendaLoadedEvent.emit()
+})
 
 export default defineComponent({
   name: 'Agenda',
@@ -75,15 +84,16 @@ export default defineComponent({
         menus.push({
           title: t(`workflowState.plural.${s.state}`),
           showCount: true,
-          items: getAIMenuItems(s)
+          items: getAIMenuItems(s),
+          loadedEvent: agendaLoadedEvent
         })
       }
       return menus
     })
 
-    const unvotedPolls = computed(() => getUnvotedPolls(meetingId.value))
+    const unvotedPolls = computed(() => orderBy(getUnvotedPolls(meetingId.value), ['started']))
     const hasUnvotedPolls = computed(() => !!unvotedPolls.value.length)
-    const openPollMenuEvent = new TypedEvent<void>()
+    const openPollMenuEvent = new TypedEvent()
     watch(hasUnvotedPolls, (value, oldValue) => {
       if (value && !oldValue) openPollMenuEvent.emit()
     })
@@ -151,7 +161,8 @@ export default defineComponent({
         items: aiMenus.value,
         defaultOpen: true,
         icon: 'mdi-format-list-bulleted',
-        openFirstNonEmpty: true
+        openFirstNonEmpty: true,
+        loadedEvent: agendaLoadedEvent
       }]
       if (canChangeMeeting(meeting.value)) {
         items[0].items.push({
