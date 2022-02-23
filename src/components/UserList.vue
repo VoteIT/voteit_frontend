@@ -6,7 +6,7 @@
       </v-list-item-avatar>
       <div>
         <v-list-item-title :class="{ 'text-secondary': !full_name }">
-          {{ full_name ?? `- ${t('unknownUser')} -` }}
+          {{ full_name ?? `- ${t('unknownUser')} (${pk}) -` }}
         </v-list-item-title>
         <v-list-item-subtitle>
           {{ userid }}
