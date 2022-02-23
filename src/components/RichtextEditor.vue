@@ -134,7 +134,7 @@ export default defineComponent({
           renderList(data.map(({ user }) => {
             return {
               id: user.pk,
-              value: user.full_name
+              value: user.userid || user.full_name
             }
           }))
           break
