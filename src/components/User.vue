@@ -18,7 +18,10 @@ export default defineComponent({
       type: Number,
       required: true
     },
-    userid: Boolean
+    userid: {
+      type: Boolean,
+      default: true
+    }
   },
   setup (props) {
     const { getUser } = useMeeting()
