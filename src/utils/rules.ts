@@ -1,4 +1,4 @@
-import { slugify } from '.'
+import { slugify, tagify } from '.'
 
 export const disabled = {
   props: {
@@ -9,6 +9,11 @@ export const disabled = {
 export const slug = {
   clean: (value: string) => slugify(value),
   validate: (value: string) => value === slugify(value) || 'Must only contain a-z, 0-9, separated by a single "-"'
+}
+
+export const tag = {
+  clean: (value: string) => tagify(value),
+  validate: (value: string) => value === tagify(value) || 'Must only contain word characters and numbers, separated by a single "-"'
 }
 
 export const required = {

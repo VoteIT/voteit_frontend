@@ -24,16 +24,12 @@
 import { computed, defineComponent, inject, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, stripHTML, slugify } from '@/utils'
+import { dialogQuery, stripHTML, tagify } from '@/utils'
 
 import RichtextEditor from './RichtextEditor.vue'
 import { EditorComponent } from './types'
 import Tag from './Tag.vue'
 import { TagsKey } from '@/modules/meetings/useTags'
-
-function cleanTag (value: string): string {
-  return slugify(value)
-}
 
 let uid = 0
 
@@ -77,7 +73,7 @@ export default defineComponent({
     const newTag = ref('')
     const tags = reactive(new Set(props.setTag ? [props.setTag] : []))
     function addTag (name?: string) {
-      const tag = cleanTag(name ?? newTag.value)
+      const tag = tagify(name ?? newTag.value)
       if (!tag.length) return
       tags.add(tag)
       newTag.value = ''

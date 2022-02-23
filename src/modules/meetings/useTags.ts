@@ -1,6 +1,6 @@
 import { InjectionKey, onMounted, onUpdated, Ref, watch } from '@vue/runtime-core'
 import stringToHSL from '@/utils/stringToHSL'
-import { slugify } from '@/utils'
+import { tagify } from '@/utils'
 import TypedEvent from '@/utils/TypedEvent'
 import DefaultMap from '@/utils/DefaultMap'
 
@@ -41,7 +41,7 @@ export default function useTags (el?: Ref<HTMLElement | null>) {
     const body = domParser.parseFromString(html, 'text/html')
     const docTags = new Set<string>()
     for (const tagElem of body.querySelectorAll<HTMLElement>('[data-denotation-char="#"]')) {
-      docTags.add(slugify(tagElem.dataset.value as string))
+      docTags.add(tagify(tagElem.dataset.value as string))
     }
     return docTags
   }
