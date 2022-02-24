@@ -6,16 +6,15 @@ const { getSystem, getList, getQueue, getCurrent } = useSpeakerLists()
 
 export default function useSpeakerSystem (systemId: Ref<number>) {
   const speakerSystem = computed(() => getSystem(systemId.value))
-  const currentActiveList = computed(() => {
-    if (!speakerSystem.value?.active_list) return
-    return getList(speakerSystem.value.active_list)
-  })
-  const currentlySpeaking = computed(() => currentActiveList.value && getCurrent(currentActiveList.value))
-  const currentSpeakerQueue = computed(() => currentActiveList.value && getQueue(currentActiveList.value))
+  const currentActiveListId = computed(() => speakerSystem.value?.active_list)
+  const currentActiveList = computed(() => currentActiveListId.value ? getList(currentActiveListId.value) : undefined)
+  const currentlySpeaking = computed(() => currentActiveList.value && getCurrent(currentActiveList.value.pk))
+  const currentSpeakerQueue = computed(() => currentActiveList.value && getQueue(currentActiveList.value.pk))
   const isModerator = computed(() => !!speakerSystem.value && isSystemModerator(speakerSystem.value))
 
   return {
     currentActiveList,
+    currentActiveListId,
     currentSpeakerQueue,
     currentlySpeaking,
     isModerator,

@@ -7,10 +7,10 @@
       </p>
       <h3>
         {{ t('speaker.queue') }}
-        <v-btn :class="{ expanded: expandQueue }" variant="text" size="small" v-if="queue.length > 1 && (queue.length !== 2 || queue[1] !== user.pk)" @click="expandQueue = !expandQueue" icon="mdi-chevron-down" />
+        <v-btn :class="{ expanded: expandQueue }" variant="text" size="small" v-if="speakerQueue.length > 1 && (speakerQueue.length !== 2 || speakerQueue[1] !== user.pk)" @click="expandQueue = !expandQueue" icon="mdi-chevron-down" />
       </h3>
-      <div v-if="queue.length">
-        <template v-for="(userPk, i) in queue" :key="userPk">
+      <div v-if="speakerQueue.length">
+        <template v-for="(userPk, i) in speakerQueue" :key="userPk">
           <v-expand-transition>
             <div :class="{ self: userPk === user.pk }" v-show="expandQueue || i === 0 || userPk === user.pk">
               {{ i+1 }}. <User :pk="userPk"/>
@@ -47,6 +47,7 @@ import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
 import { SpeakerList, SpeakerListState } from './types'
+import useSpeakerList from './useSpeakerList'
 
 interface EnterLeaveBtn {
   icon: string
@@ -67,10 +68,9 @@ export default defineComponent({
     const { t } = useI18n()
     const speakers = useSpeakerLists()
     const { meetingId, meetingPath } = useMeeting()
+    const { currentSpeaker, speakerQueue } = useSpeakerList(computed(() => props.list.pk))
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
-    const queue = computed(() => speakers.getQueue(props.list))
-    const currentSpeaker = computed(() => speakers.getCurrent(props.list))
     const inList = computed(() => speakers.userInList(props.list))
     // eslint-disable-next-line camelcase
     const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
@@ -106,7 +106,7 @@ export default defineComponent({
       isActive,
       isOpen,
       fullscreenPath: computed(() => isActive.value && `/speakers/${meetingId.value}/${props.list.speaker_system}`),
-      queue,
+      speakerQueue,
       currentSpeaker,
       inList,
       enterLeaveBtn,

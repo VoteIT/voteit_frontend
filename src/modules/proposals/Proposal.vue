@@ -22,7 +22,7 @@
           <span v-if="meetingGroup">
             {{ meetingGroup.title }}
           </span>
-          <User v-else :pk="p.author" />
+          <User v-else :pk="p.author" userid />
         </span>
         <Moment :date="p.created" class="ml-6" />
       </div>

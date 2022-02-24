@@ -103,7 +103,7 @@ export type MenuItem = '---' | MenuItemOnClick | MenuItemTo | MenuSubheader
 
 export interface TreeMenuLink {
   title: string
-  to: string
+  to: string // Can only be string, not route object, for matching purposes.
   icons?: string[]
   count?: number
   hasNewItems?: boolean

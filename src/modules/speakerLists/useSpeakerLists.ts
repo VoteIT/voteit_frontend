@@ -6,7 +6,7 @@ import useAuthentication from '../../composables/useAuthentication'
 
 import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 import { AgendaItem } from '../agendas/types'
-import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
+import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
@@ -14,14 +14,16 @@ export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
 export const currentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map list pk to current speaker messages
 const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map system pk to current speaker messages
 export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
+const speakerHistory = reactive<Map<number, SpeakerHistoryEntry[]>>(new Map()) // Map list pk to history entries
 
 speakerSystemType.updateMap(speakerSystems)
 const { hasRole } = speakerSystemType.useContextRoles()
 
 speakerListType
   .updateMap(speakerLists)
-  .on<SpeakerOrderUpdate>('order', ({ pk, queue }) => {
+  .on<SpeakerOrderUpdate>('order', ({ pk, queue, history }) => {
     speakerQueues.set(pk, queue)
+    speakerHistory.set(pk, history)
   })
 
 speakerType
@@ -48,6 +50,22 @@ function * iterSpeakerSystems (filter: (system: SpeakerSystem) => boolean): Gene
   }
 }
 
+function getCurrent (list: number) {
+  return currentlySpeaking.get(list)
+}
+function getHistory (list: number) {
+  return speakerHistory.get(list) ?? []
+}
+function getList (pk: number) {
+  return speakerLists.get(pk)
+}
+function getSystem (pk: number) {
+  return speakerSystems.get(pk)
+}
+function getQueue (list: number) {
+  return speakerQueues.get(list) || []
+}
+
 export default function useSpeakerLists () {
   const { user } = useAuthentication()
 
@@ -64,10 +82,6 @@ export default function useSpeakerLists () {
     })]
   }
 
-  function getSystem (pk: number) {
-    return speakerSystems.get(pk)
-  }
-
   function getSystems (meeting: number, nonActive = false, isModerator = false): SpeakerSystem[] {
     // For meeting pk
     // By default only active systems
@@ -80,16 +94,6 @@ export default function useSpeakerLists () {
 
   function getSystemActiveSpeaker (system: SpeakerSystem): SpeakerStartStopMessage | undefined {
     return systemCurrentlySpeaking.get(system.pk)
-  }
-
-  function getList (pk: number) {
-    return speakerLists.get(pk)
-  }
-  function getQueue (list: SpeakerList) {
-    return speakerQueues.get(list.pk) || []
-  }
-  function getCurrent (list: SpeakerList) {
-    return currentlySpeaking.get(list.pk)
   }
 
   function makeUniqueListName (title: string): string {
@@ -134,7 +138,7 @@ export default function useSpeakerLists () {
 
   // Start by userid, or first in queue
   function startSpeaker (list: SpeakerList, userid: number) {
-    userid = userid || getQueue(list)[0]
+    userid = userid || getQueue(list.pk)[0]
     speakerListType.methodCall('start_user', {
       pk: list.pk,
       userid
@@ -142,7 +146,7 @@ export default function useSpeakerLists () {
   }
 
   async function stopSpeaker (list: SpeakerList) {
-    const current = getCurrent(list)
+    const current = getCurrent(list.pk)
     if (current) {
       await speakerListType.methodCall('stop_user', {
         pk: list.pk,
@@ -173,6 +177,7 @@ export default function useSpeakerLists () {
   }
 
   return {
+    getHistory,
     getSystem,
     getSystemActiveSpeaker,
     getSystems,

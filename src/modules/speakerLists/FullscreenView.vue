@@ -14,16 +14,16 @@
         </p>
         <v-list>
           <v-slide-x-transition group>
-            <template v-for="group, i in groups" :key="i">
-              <div v-if="!group.active && group.speakers.length" :key="group.title" class="mt-6 mb-2" style="z-index: 0;">
+            <template v-for="{ active, title, queue } in groups" :key="title">
+              <div v-if="!active && queue.length" :key="title" class="mt-6 mb-2" style="z-index: 0;">
                 <v-divider />
                 <div class="overflow-visible mt-n3">
-                  <span v-if="group.title" class="bg-background text-secondary pr-2">
-                    {{ group.title }}
+                  <span v-if="title" class="bg-background text-secondary pr-2">
+                    {{ title }}
                   </span>
                 </div>
               </div>
-              <v-list-item v-for="pk in group.speakers" :key="pk" active-color="primary" :active="group.active" style="z-index: 1;">
+              <v-list-item v-for="pk in queue" :key="pk" active-color="primary" :active="active" style="z-index: 1;">
                 <v-list-item-avatar class="mr-2">
                   <UserAvatar :pk="pk" />
                 </v-list-item-avatar>
@@ -53,18 +53,14 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import useMeeting from '../meetings/useMeeting'
 
-// import UserList from '@/components/UserList.vue'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 
 import { speakerListType } from './contentTypes'
+import { SpeakerGroup } from './types'
+import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
 
-type SpeakerGroup = ({ title: string } | { active?: true }) & { speakers: number[] }
-
 export default defineComponent({
-  components: {
-    // UserList
-  },
   setup () {
     const { t } = useI18n()
     const route = useRoute()
@@ -72,7 +68,8 @@ export default defineComponent({
     useMeetingChannel()
     const { getUser } = useMeeting()
 
-    const { currentActiveList, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
+    const { currentActiveList, currentActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
+    const { speakerGroups } = useSpeakerList(currentActiveListId)
 
     const listState = computed(() => currentActiveList.value && getState(currentActiveList.value.state))
 
@@ -81,22 +78,17 @@ export default defineComponent({
     }
 
     const groups = computed<SpeakerGroup[]>(() => {
-      if (!currentActiveList.value || !speakerSystem.value || !currentSpeakerQueue.value) return []
-      const grps: SpeakerGroup[] = [{
-        active: true,
-        speakers: currentlySpeaking.value ? [currentlySpeaking.value.userid] : []
-      }]
-      if (speakerSystem.value.safe_positions) {
-        grps.push({
-          title: t('speaker.lockedPositions'),
-          speakers: currentSpeakerQueue.value.slice(0, speakerSystem.value.safe_positions)
-        })
+      if (!currentActiveList.value || !speakerSystem.value || !currentSpeakerQueue.value || !speakerGroups.value) return []
+      if (currentlySpeaking.value) {
+        return [
+          {
+            active: true,
+            queue: [currentlySpeaking.value.userid]
+          },
+          ...speakerGroups.value
+        ]
       }
-      grps.push({
-        title: t('speaker.queue'),
-        speakers: currentSpeakerQueue.value.slice(speakerSystem.value.safe_positions)
-      })
-      return grps
+      return speakerGroups.value
     })
 
     return {

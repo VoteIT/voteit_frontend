@@ -43,10 +43,10 @@
       <template v-if="currentList">
         <template v-if="canStartSpeaker(currentList)">
           <div class="btn-group mb-2">
-            <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+            <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
             <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
-            <v-btn color="primary" :disabled="!currentQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
+            <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
           </div>
           <div class="d-flex">
             <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" instant small class="flex-grow-1" />
@@ -66,20 +66,24 @@
             <Moment in-seconds ordinary :date="currentSpeaker.started" />
           </p>
         </v-sheet>
-        <h3 class="mt-4">{{ t('speaker.queue') }}</h3>
-        <v-list v-if="currentQueue.length" density="comfortable">
-          <v-list-item v-for="user in currentQueue" :key="user" :class="{ self: isSelf(user) }">
-            <v-list-item-avatar class="mr-2">
-              <UserAvatar :pk="user" />
-            </v-list-item-avatar>
-            <v-list-item-title class="flex-grow-1">
-              <User :pk="user"/>
-            </v-list-item-title>
-            <span class="btn-group">
-              <v-btn color="primary" @click="speakers.startSpeaker(currentList, user)" size="x-small"><v-icon icon="mdi-play"/></v-btn>
-              <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small"><v-icon icon="mdi-delete"/></v-btn>
-            </span>
-          </v-list-item>
+        <v-list v-if="annotatedSpeakerQueue.length" density="comfortable">
+          <template v-for="{ title, queue } in speakerGroups" :key="title">
+            <v-list-subheader v-if="title" class="mt-3">
+              {{ title }}
+            </v-list-subheader>
+            <v-list-item v-for="user in queue" :key="user" :class="{ self: isSelf(user) }">
+              <v-list-item-avatar class="mr-2">
+                <UserAvatar :pk="user" />
+              </v-list-item-avatar>
+              <v-list-item-title class="flex-grow-1">
+                <User :pk="user"/>
+              </v-list-item-title>
+              <span class="btn-group d-flex flex-nowrap">
+                <v-btn color="primary" @click="speakers.startSpeaker(currentList, user)" size="x-small"><v-icon icon="mdi-play"/></v-btn>
+                <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small"><v-icon icon="mdi-delete"/></v-btn>
+              </span>
+            </v-list-item>
+          </template>
         </v-list>
         <p v-else>
           <em>{{ t('speaker.queueEmpty') }}</em>
@@ -107,14 +111,17 @@ import { AgendaItem } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
+
 import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { SpeakerList, SpeakerSystem } from './types'
 import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
 import { speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
+import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
 import { openAlertEvent } from '@/utils/events'
+import useChannel from '@/composables/useChannel'
 
 interface AgendaNav {
   icon: string
@@ -135,8 +142,9 @@ export default defineComponent({
     const speakers = useSpeakerLists()
     const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, getAgenda } = useAgenda()
     const { meetingId, meetingPath } = useMeeting()
+    useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
-    const { currentActiveList, speakerSystem } = useSpeakerSystem(systemId)
+    const { currentActiveList, currentActiveListId, speakerSystem } = useSpeakerSystem(systemId)
     const speakerSystems = computed(() => speakers.getSystems(meetingId.value, false, true))
     const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
     const currentList = computed<SpeakerList | undefined>({
@@ -150,8 +158,7 @@ export default defineComponent({
         else if (await dialogQuery(t('speaker.confirmStopActiveSpeaker', { ...list }))) speakers.setActiveList(list, true)
       }
     })
-    const currentSpeaker = computed(() => currentList.value && speakers.getCurrent(currentList.value))
-    const currentQueue = computed(() => currentList.value && speakers.getQueue(currentList.value))
+    const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerQueue } = useSpeakerList(currentActiveListId)
     function isSelf (userId: number) {
       return user.value?.pk === userId
     }
@@ -188,8 +195,8 @@ export default defineComponent({
     // For user search
     // Filter on users that are speakers but not already in queue
     function userSearchFilter (user: User): boolean {
-      if (!currentQueue.value || !speakerSystem.value) return false
-      if (currentQueue.value.includes(user.pk)) return false
+      if (!speakerQueue.value || !speakerSystem.value) return false
+      if (speakerQueue.value.includes(user.pk)) return false
       return isSystemSpeaker(speakerSystem.value, user.pk)
     }
     function addSpeaker (user: User | number) {
@@ -234,7 +241,7 @@ export default defineComponent({
       for (const n of numbers) {
         const user = participantNumbers.value.find(pn => pn.number === n)?.user
         if (!user) missing.push(n)
-        else if (currentQueue.value?.includes(user)) inList.push(n)
+        else if (speakerQueue.value?.includes(user)) inList.push(n)
         else addSpeaker(user)
       }
       if (missing.length) openAlertEvent.emit('*' + t('participantNumber.doesNotExist', { ids: missing.join(', ') }, missing.length))
@@ -245,9 +252,11 @@ export default defineComponent({
     return {
       t,
       agendaItem,
+      annotatedSpeakerQueue,
       currentList,
       currentSpeaker,
-      currentQueue,
+      speakerGroups,
+      speakerQueue,
       participantNumberInput,
       speakers,
       speakerSystem,

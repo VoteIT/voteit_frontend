@@ -191,7 +191,7 @@ export default defineComponent({
 
     function getMethodSettings (data: Partial<SpeakerSystem>) {
       if (data.method_name === SpeakerSystemMethod.Priority) { // TODO BETTER
-        if (!data.settings) data.settings = { max_times: 1 }
+        if (!data.settings) data.settings = { max_times: 0 }
         return [{
           type: 'number',
           min: 0,

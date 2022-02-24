@@ -418,6 +418,7 @@
     "listChoices": "Listval",
     "list": "Talarlista",
     "listActive": "Aktiv talarlista",
+    "listNumber": "Lista {count}",
     "lists": "Inga talarlistor | Talarlista | Talarlistor",
     "lockedPositions": "Låsta platser",
     "manageSystem": "Hantera talare ({title})",

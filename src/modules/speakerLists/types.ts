@@ -44,8 +44,11 @@ export interface SpeakerList extends BaseContent {
   readonly agenda_item: number
 }
 
+export type SpeakerHistoryEntry = [number, number] // [user pk, seconds spoken]
+
 export interface SpeakerOrderUpdate {
   readonly pk: number // Speaker list
+  history: SpeakerHistoryEntry[] // [user pk, seconds spoken] in descending order
   queue: number[] // Current order
   current: number // Current speaker
 }
@@ -55,4 +58,10 @@ export interface SpeakerHistory {
   user: number
   times_spoken: number
   seconds_spoken: number
+}
+
+export interface SpeakerGroup {
+  active?: boolean
+  title?: string
+  queue: number[]
 }
