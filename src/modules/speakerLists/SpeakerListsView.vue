@@ -50,8 +50,10 @@
           </div>
           <div class="d-flex">
             <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" instant small class="flex-grow-1" />
-            <div style="width: 10px;" />
-            <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
+            <template v-if="hasParticipantNumbers">
+              <div style="width: 10px;" />
+              <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
+            </template>
           </div>
         </template>
         <p v-else>
@@ -272,7 +274,8 @@ export default defineComponent({
       canStartSpeaker,
       isSelf,
       getListMenu,
-      userSearchFilter
+      userSearchFilter,
+      ...useParticipantNumbers(meetingId)
     }
   }
 })
