@@ -1,10 +1,19 @@
 import { computed, onUnmounted, Ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import Channel from '@/contentTypes/Channel'
 import { ChannelConfig } from '@/contentTypes/types'
+import { openDialogEvent } from '@/utils/events'
 import { channelSubscribedEvent } from './events'
+import { ThemeColor } from '@/utils/types'
+import { useRouter } from 'vue-router'
 
-export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig) {
+export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
+  const { t } = useI18n()
+  const router = useRouter()
+
+  // Critical subscription errors handled here
+  if (config?.critical) config.alertOnError = false
   const channel = new Channel('', config) // Empty channel, so that we can dynamically switch channel names
 
   const channelUri = computed(() => {
@@ -18,8 +27,20 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
   watch(channelUri, async (to, from) => {
     if (from) channel.leave(from)
     if (to) {
-      await channel.subscribe(to)
-      channelSubscribedEvent.emit(to)
+      try {
+        await channel.subscribe(to)
+        channelSubscribedEvent.emit(to)
+      } catch {
+        if (config?.critical) {
+          openDialogEvent.emit({
+            title: t('meeting.subscriptionFailedMessage'),
+            theme: ThemeColor.Error,
+            no: false,
+            yes: t('meeting.subscriptionFailedButton'),
+            resolve: async () => { router.push('/') }
+          })
+        }
+      }
     }
   }, { immediate: true })
 

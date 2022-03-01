@@ -65,3 +65,17 @@ export interface SpeakerGroup {
   title?: string
   queue: number[]
 }
+
+export interface SpeakerListAddMessage {
+  title: string
+  speaker_system: number
+  agenda_item: number
+}
+
+export interface SpeakerStartStopMessage {
+  pk: number
+  seconds?: number
+  speaker_list: number
+  started: string | Date
+  user: number
+}

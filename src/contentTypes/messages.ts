@@ -4,7 +4,7 @@ import { ContextRole } from '@/composables/types'
 export interface RoleChangeMessage {
   model: string // Context model
   pk: number // Context primary key
-  userids: number[]
+  users: number[]
   roles: any[]
 }
 
@@ -12,7 +12,7 @@ export interface RolesGetMessage {
   model: string // Context model
   pk: number // Context primary key
   // eslint-disable-next-line camelcase
-  filter_userids?: number[]
+  filter_users?: number[]
 }
 
 export interface RolesAvailableMessage {
@@ -25,18 +25,4 @@ export interface ContextRolesPayload {
 
 export interface AvailableRolesPayload {
   roles: ContextRole[]
-}
-
-export interface SpeakerListAddMessage {
-  title: string
-  speaker_system: number
-  agenda_item: number
-}
-
-export interface SpeakerStartStopMessage {
-  pk: number
-  seconds?: number
-  speaker_list: number
-  started: string | Date
-  userid: number
 }

@@ -155,7 +155,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
     const message: RolesGetMessage = {
       model: this.name,
       pk,
-      filter_userids: users
+      filter_users: users
     }
     return socket.call<ContextRolesPayload>('roles.get', message)
   }
@@ -165,7 +165,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
     const message: RoleChangeMessage = {
       model: this.name,
       pk,
-      userids: [user],
+      users: [user],
       roles
     }
     return socket.call(`roles.${method}`, message)

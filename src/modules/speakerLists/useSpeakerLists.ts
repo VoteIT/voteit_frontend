@@ -4,9 +4,8 @@ import { dateify } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { SpeakerStartStopMessage } from '@/contentTypes/messages'
 import { AgendaItem } from '../agendas/types'
-import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
+import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState, SpeakerStartStopMessage } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
@@ -123,25 +122,25 @@ export default function useSpeakerLists () {
     }
   }
 
-  function moderatorEnterList (list: SpeakerList, userid: number) {
+  function moderatorEnterList (list: SpeakerList, user: number) {
     return speakerListType.methodCall('mod_enter', {
       pk: list.pk,
-      userid
+      user
     })
   }
-  function moderatorLeaveList (list: SpeakerList, userid: number) {
+  function moderatorLeaveList (list: SpeakerList, user: number) {
     return speakerListType.methodCall('mod_leave', {
       pk: list.pk,
-      userid
+      user
     })
   }
 
-  // Start by userid, or first in queue
-  function startSpeaker (list: SpeakerList, userid: number) {
-    userid = userid || getQueue(list.pk)[0]
+  // Start by user pk, or first in queue
+  function startSpeaker (list: SpeakerList, user: number) {
+    user = user || getQueue(list.pk)[0]
     speakerListType.methodCall('start_user', {
       pk: list.pk,
-      userid
+      user
     })
   }
 
@@ -150,7 +149,7 @@ export default function useSpeakerLists () {
     if (current) {
       await speakerListType.methodCall('stop_user', {
         pk: list.pk,
-        userid: current.userid
+        user: current.user
       })
     }
   }

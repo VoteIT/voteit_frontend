@@ -22,7 +22,7 @@ export interface ReactionCountMessage extends ReactionMessage {
 }
 
 export interface ReactionListMessage extends ReactionMessage {
-  userids: number[]
+  users: number[]
 }
 
 export type ReactionRelation = Pick<Reaction, 'content_type' | 'object_id'>

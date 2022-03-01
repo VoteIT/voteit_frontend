@@ -83,7 +83,7 @@ export default defineComponent({
         return [
           {
             active: true,
-            queue: [currentlySpeaking.value.userid]
+            queue: [currentlySpeaking.value.user]
           },
           ...speakerGroups.value
         ]

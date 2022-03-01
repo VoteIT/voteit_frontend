@@ -9,7 +9,7 @@ import useChannel from '@/composables/useChannel'
 
 const loader = useLoader('useMeetingChannel')
 
-const channelConfig = { timeout: 15_000 } // Use long timeout for meeting channel subscription, so people don't get thrown out.
+const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel () {
   const { isModerator, meetingId, meeting } = useMeeting()

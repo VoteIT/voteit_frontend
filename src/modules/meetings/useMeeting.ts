@@ -42,23 +42,21 @@ export default function useMeeting () {
     user_id_in?: string
   }
 
-  async function fetchParticipants (meeting: number, userIds: Set<number> | number[]) {
+  async function fetchParticipants (meeting: number, users: Set<number> | number[]) {
     // Fetch all or specified participants (rest)
     // If specific, checks if already fetched
     meeting = meeting || meetingId.value
     const params: UserListParams = { context: meeting }
-    if (userIds) {
-      userIds = [...new Set(userIds)] // Reduce to unique values
+    if (users) {
+      users = [...new Set(users)] // Reduce to unique values
       if (!FORCE_ROLES_FETCH) {
-        // Skip userid's already in store
-        const existingUserIds = new Set([
+        // Skip user pk's already in store
+        const existingUsers = new Set([
           ...mapFilter(participants.value, p => p.meeting === meeting)
         ].map(p => p.user.pk))
-        userIds = userIds.filter(pk => !existingUserIds.has(pk))
-        if (userIds.length === 0) {
-          return Promise.resolve()
-        }
-        params.user_id_in = userIds.join(',')
+        users = users.filter(pk => !existingUsers.has(pk))
+        if (users.length === 0) return
+        params.user_id_in = users.join(',')
       }
     }
     const { data } = await meetingRoleType.api.list(params)

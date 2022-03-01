@@ -59,8 +59,8 @@
         </p>
         <v-sheet elevation="4" rounded="lg" v-if="currentSpeaker" class="my-4 pa-3">
           <div class="d-flex mb-2 align-center">
-            <UserAvatar :pk="currentSpeaker.userid" class="mr-2" />
-            <User :pk="currentSpeaker.userid" style="font-size: 1.2rem;" />
+            <UserAvatar :pk="currentSpeaker.user" class="mr-2" />
+            <User :pk="currentSpeaker.user" style="font-size: 1.2rem;" />
           </div>
           <p class="text-h3 text-right">
             <Moment in-seconds ordinary :date="currentSpeaker.started" />
@@ -112,9 +112,8 @@ import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 
-import { SpeakerListAddMessage } from '@/contentTypes/messages'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import { SpeakerList, SpeakerSystem } from './types'
+import { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
 import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
 import { speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'

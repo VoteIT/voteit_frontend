@@ -3,7 +3,7 @@
     <v-card-text>
       <p v-if="currentSpeaker" class="mb-2">
         {{ t('speaker.currentlySpeaking') }}:
-        <strong><User :pk="currentSpeaker.userid" /></strong>
+        <strong><User :pk="currentSpeaker.user" /></strong>
       </p>
       <h3>
         {{ t('speaker.queue') }}

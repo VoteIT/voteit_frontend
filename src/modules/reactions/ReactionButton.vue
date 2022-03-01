@@ -61,7 +61,7 @@ export default defineComponent({
     watch(listOpen, async (value) => {
       if (!value) return
       const data = await fetchReactions(props.button, props.relation)
-      reactionUsers.value = data.userids
+      reactionUsers.value = data.users
     })
 
     return {

@@ -2,11 +2,11 @@
   <transition name="dialog">
     <div id="dialog-backdrop" v-show="active" @mousedown.self="deny()">
       <v-sheet id="dialog" rounded elevation="16" ref="window" v-if="active" @keyup.esc="deny()">
-        <v-btn variant="text" icon="mdi-close" class="closer" @click="deny()" />
+        <v-btn v-if="dismissible" variant="text" icon="mdi-close" class="closer" @click="deny()" />
         <p>{{ active.title }}</p>
-        <div class="btn-controls">
-          <v-btn variant="text" @click="deny()">{{ active.no }}</v-btn>
-          <v-btn variant="text" :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
+        <div class="btn-controls justify-end">
+          <v-btn v-if="active.no" variant="text" @click="deny()">{{ active.no }}</v-btn>
+          <v-btn v-if="active.yes" :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
         </div>
       </v-sheet>
     </div>
@@ -14,7 +14,6 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable no-unused-expressions */
 import { ComponentPublicInstance, computed, defineComponent, nextTick, onBeforeMount, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -28,6 +27,7 @@ export default defineComponent({
     let savedFocusEl: HTMLElement | null
     const queue = reactive<Dialog[]>([])
     const active = computed<Dialog | undefined>(() => queue[0])
+    const dismissible = computed(() => active.value?.dismissible === false)
 
     function close () {
       queue.shift()
@@ -38,6 +38,7 @@ export default defineComponent({
     }
 
     function deny () {
+      if (!dismissible.value) return
       active.value?.resolve(false)
       close()
     }
@@ -50,8 +51,8 @@ export default defineComponent({
     onBeforeMount(() => {
       openDialogEvent.on(dialog => {
         if (!dialog) return
-        dialog.no = dialog.no || t('no')
-        dialog.yes = dialog.yes || t('yes')
+        dialog.no = dialog.no ?? t('no')
+        dialog.yes = dialog.yes ?? t('yes')
         if (!queue.length) {
           savedFocusEl = document.querySelector(':focus')
         }
@@ -107,8 +108,6 @@ export default defineComponent({
     font-size: 1.2rem
     white-space: pre-line
     margin: 1em 0
-  .btn-controls
-    justify-content: center
   .closer
     position: absolute
     right: 10px

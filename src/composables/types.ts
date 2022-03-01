@@ -41,9 +41,10 @@ export interface Alert {
 
 export interface Dialog {
   title: string
-  resolve: (value: unknown) => void
-  yes?: string
-  no?: string
+  resolve: (value: boolean) => void
+  dismissible?: boolean
+  yes?: string | false
+  no?: string | false
   theme?: ThemeColor
 }
 

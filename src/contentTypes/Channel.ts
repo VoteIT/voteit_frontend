@@ -15,13 +15,15 @@ const leaveTimeouts = new Map<string, number>()
 const leaveHandlers = new DefaultMap<string, LeaveHandler[]>(() => [])
 const subscriptions = new Set<string>()
 
-function subscribeChannel (uri: string) {
-  return socket.call<SubscribedPayload>('channel.subscribe', uri)
+function subscribeChannel (uri: string, config: ChannelConfig) {
+  return socket.call<SubscribedPayload>('channel.subscribe', uri, config)
 }
 
 // Send all subscription messages on connect
 socket.addEventListener(SocketEvent.Open, () => {
-  subscriptions.forEach(subscribeChannel)
+  for (const uri of subscriptions) {
+    subscribeChannel(uri, DEFAULT_CONFIG)
+  }
 })
 
 export default class Channel {
@@ -54,7 +56,7 @@ export default class Channel {
     clearTimeout(leaveTimeouts.get(uri))
     if (subscriptions.has(uri)) return
     subscriptions.add(uri)
-    if (socket.isOpen) return subscribeChannel(uri)
+    if (socket.isOpen) return subscribeChannel(uri, this.config)
     if (fail) throw new Error('Socket closed. Cannot subscribe.')
   }
 
