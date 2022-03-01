@@ -163,6 +163,8 @@
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
     "public": "Make meeting visible to everyone",
+    "subscriptionFailedMessage": "Couldn't load meeting.",
+    "subscriptionFailedButton": "To start page",
     "groups": {
       "help": "Members in a group can post proposals in that groups name, wherever the user has permission to add proposals. This is useful for adding proposals from a committee or other group, that should not be considered personal proposals.",
       "addMember": "Add member",
@@ -386,6 +388,7 @@
     "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?"
   },
   "reaction": {
+    "active": "Active (users can react)",
     "addButton": "New Reaction Button",
     "buttons": "Reaction buttons",
     "deleteButtonConfirmation": "You are about to delete a button permanently.\nAre you sure?",

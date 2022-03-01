@@ -14,6 +14,9 @@
             {{ t('reaction.buttons') }}
           </th>
           <th>
+            {{ t('reaction.active') }}
+          </th>
+          <th>
             {{ t('proposal.proposals') }}
           </th>
           <th>
@@ -28,6 +31,9 @@
             <v-btn :prepend-icon="button.icon" :color="button.color" size="small">
               {{ button.title }}
             </v-btn>
+          </td>
+          <td>
+            <v-switch hide-details color="primary" :modelValue="button.active" @update:modelValue="setActive(button, $event)" />
           </td>
           <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
             <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event)" />
@@ -73,6 +79,10 @@ export default defineComponent({
       await reactionButtonType.api.patch(button.pk, { allowed_models })
     }
 
+    async function setActive (button: ReactionButton, active: boolean) {
+      await reactionButtonType.api.patch(button.pk, { active })
+    }
+
     function editReaction (button?: ReactionButton) {
       openModalEvent.emit({
         component: ReactionEditModalVue,
@@ -86,6 +96,7 @@ export default defineComponent({
       t,
       meetingButtons,
       editReaction,
+      setActive,
       setContentType
     }
   }

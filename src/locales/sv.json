@@ -387,6 +387,7 @@
     "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?"
   },
   "reaction": {
+    "active": "Aktiv (användare kan reagera)",
     "addButton": "Ny reaktionsknapp",
     "buttons": "Reaktionsknappar",
     "deleteButtonConfirmation": "Du håller på att radera knappen permanent.\nÄr du säker?",
