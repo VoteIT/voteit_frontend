@@ -7,7 +7,7 @@ import { Meeting } from '../meetings/types'
 const FINISHED_STATES = [AgendaState.Closed, AgendaState.Archived]
 const ACTIVE_STATES = [AgendaState.Upcoming, AgendaState.Ongoing]
 
-export function isAIModerator (agendaItem: AgendaItem): boolean {
+export function isAIModerator (agendaItem: AgendaItem): boolean | undefined {
   return isModerator(meetings.get(agendaItem.meeting))
 }
 
@@ -37,11 +37,11 @@ export function isDiscussionBlocked (agendaItem: AgendaItem): boolean {
 
 export function canAddAgendaItem (meeting: Meeting): boolean {
   // Can add agenda item to meeting
-  return !isArchivedMeeting(meeting) && isModerator(meeting)
+  return !isArchivedMeeting(meeting) && !!isModerator(meeting)
 }
 
 export function canChangeAgendaItem (agendaItem: AgendaItem): boolean {
   const meeting = meetings.get(agendaItem.meeting)
-  return !isArchivedAI(agendaItem) && isModerator(meeting)
+  return !isArchivedAI(agendaItem) && !!isModerator(meeting)
 }
 export const canDeleteAgendaItem = canChangeAgendaItem

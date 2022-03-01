@@ -11,15 +11,15 @@ import { isArchivedMeeting, isDiscusser, isModerator } from '../meetings/rules'
 export function canAddDiscussionPost (agendaItem: AgendaItem): boolean {
   const meeting = meetings.get(agendaItem.meeting)
   return !isArchivedAI(agendaItem) && (
-    isModerator(meeting) || (
-      !isPrivateAI(agendaItem) && !isDiscussionBlocked(agendaItem) && isDiscusser(meeting)
+    !!isModerator(meeting) || (
+      !isPrivateAI(agendaItem) && !isDiscussionBlocked(agendaItem) && !!isDiscusser(meeting)
   ))
 }
 
 export function canChangeDiscussionPost (post: DiscussionPost): boolean {
   const agendaItem = agendaItems.get(post.agenda_item)
   const meeting = agendaItem && meetings.get(agendaItem.meeting)
-  return !isArchivedMeeting(meeting) && isModerator(meeting)
+  return !isArchivedMeeting(meeting) && !!isModerator(meeting)
 }
 
 export function canDeleteDiscussionPost (post: DiscussionPost): boolean {

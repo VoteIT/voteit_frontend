@@ -68,7 +68,7 @@ export default defineComponent({
     }
 
     const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
-      s => s && (!s.requiresRole || hasRole(s.requiresRole))
+      s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
     ))
 
     const aiMenus = computed<TreeMenuItem[]>(() => {

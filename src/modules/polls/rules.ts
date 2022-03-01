@@ -31,28 +31,29 @@ function isPermissiveState (poll: Poll): boolean {
   return PERMISSIVE_STATES.includes(poll.state)
 }
 
+function isAgendaItem (context: Meeting | AgendaItem): context is AgendaItem {
+  return 'meeting' in context
+}
+
 export function canAddPoll (context: Meeting | AgendaItem): boolean {
   // TODO Adding to different contexts needs better architecture
-  if ('meeting' in context) {
-    // Is agenda item
-    return !isFinishedAI(context) && isAIModerator(context)
-  }
+  if (isAgendaItem(context)) return !isFinishedAI(context) && !!isAIModerator(context)
   // Else meeting
-  return !isFinishedMeeting(context) && isModerator(context)
+  return !isFinishedMeeting(context) && !!isModerator(context)
 }
 
 export function canChangePoll (poll: Poll): boolean {
   const agendaItem = agendaItems.get(poll.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
-  return isPermissiveState(poll) && isModerator(meeting)
+  return isPermissiveState(poll) && !!isModerator(meeting)
 }
 
 export function canDeletePoll (poll: Poll): boolean {
   const agendaItem = agendaItems.get(poll.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
-  return !isArchivedMeeting(meeting) && !isArchivedAI(agendaItem) && isModerator(meeting)
+  return !isArchivedMeeting(meeting) && !isArchivedAI(agendaItem) && !!isModerator(meeting)
 }
 
 export function canVote (poll: Poll): boolean {

@@ -196,7 +196,7 @@ export default defineComponent({
     function userSearchFilter (user: User): boolean {
       if (!speakerQueue.value || !speakerSystem.value) return false
       if (speakerQueue.value.includes(user.pk)) return false
-      return isSystemSpeaker(speakerSystem.value, user.pk)
+      return !!isSystemSpeaker(speakerSystem.value, user.pk)
     }
     function addSpeaker (user: User | number) {
       if (!currentList.value) return

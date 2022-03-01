@@ -29,11 +29,11 @@ function isArchivedSystem (system: SpeakerSystem): boolean {
   return system.state === SpeakerSystemState.Archived
 }
 
-export function isSystemModerator (system: SpeakerSystem): boolean {
+export function isSystemModerator (system: SpeakerSystem): boolean | undefined {
   return hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 
-export function isSystemSpeaker (system: SpeakerSystem, user?: number): boolean {
+export function isSystemSpeaker (system: SpeakerSystem, user?: number): boolean | undefined {
   return meetingRoles.hasRole(system.meeting, system.meeting_roles_to_speaker, user) || hasRole(system.pk, SpeakerSystemRole.Speaker, user)
 }
 
@@ -43,17 +43,17 @@ function hasActiveSpeaker (system: SpeakerSystem) {
 }
 
 export function canAddSpeakerSystem (meeting: Meeting): boolean {
-  return isModerator(meeting) && isActiveMeeting(meeting)
+  return !!isModerator(meeting) && isActiveMeeting(meeting)
 }
 
 export function canChangeSpeakerSystem (system: SpeakerSystem): boolean {
   const meeting = meetings.get(system.meeting)
-  return isModerator(meeting) && isActiveMeeting(meeting) && !isArchivedSystem(system)
+  return !!isModerator(meeting) && isActiveMeeting(meeting) && !isArchivedSystem(system)
 }
 
 export function canDeleteSpeakerSystem (system: SpeakerSystem): boolean {
   const meeting = meetings.get(system.meeting)
-  return isModerator(meeting) && isActiveMeeting(meeting) && !isArchivedSystem(system)
+  return !!isModerator(meeting) && isActiveMeeting(meeting) && !isArchivedSystem(system)
 }
 
 /* Speaker Lists */
@@ -73,7 +73,7 @@ function isCurrentlySpeaking (list: SpeakerList): boolean {
 }
 
 export function canAddSpeakerList (system: SpeakerSystem): boolean {
-  return isSystemModerator(system) && isActiveSystem(system)
+  return !!isSystemModerator(system) && isActiveSystem(system)
 }
 
 export function canChangeSpeakerList (list: SpeakerList): boolean {
@@ -89,23 +89,23 @@ export function canActivateList (list: SpeakerList): boolean {
 
 export function canStartSpeaker (list: SpeakerList): boolean {
   const system = getSystem(list)
-  return !!system && isActiveList(list) && isSystemModerator(system) && isActiveSystem(system)
+  return !!system && isActiveList(list) && !!isSystemModerator(system) && isActiveSystem(system)
 }
 
 export function canStopSpeaker (list: SpeakerList): boolean {
   const system = getSystem(list)
-  return !!system && isActiveList(list) && isSystemModerator(system)
+  return !!system && isActiveList(list) && !!isSystemModerator(system)
 }
 
 export function canEnterList (list: SpeakerList): boolean {
   const system = getSystem(list)
   return !!system && (
-    (isSystemSpeaker(system) && isOpenList(list) && isActiveSystem(system)) ||
-    (isSystemModerator(system) && !isArchivedSystem(system))
+    (!!isSystemSpeaker(system) && isOpenList(list) && isActiveSystem(system)) ||
+    (!!isSystemModerator(system) && !isArchivedSystem(system))
   )
 }
 
 export function canLeaveList (list: SpeakerList): boolean {
   const system = getSystem(list)
-  return !!system && (isSystemModerator(system) || isSystemSpeaker(system)) && !isCurrentlySpeaking(list)
+  return !!system && (!!isSystemModerator(system) || !!isSystemSpeaker(system)) && !isCurrentlySpeaking(list)
 }

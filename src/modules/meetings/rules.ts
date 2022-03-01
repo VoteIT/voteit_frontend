@@ -13,23 +13,23 @@ const { getState } = useWorkflows(meetingStates)
 const FINISHED_STATES = [MeetingState.Closed, MeetingState.Archiving, MeetingState.Archived]
 const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
-export function isParticipant (meeting?: Meeting): boolean {
+export function isParticipant (meeting?: Meeting): boolean | undefined {
   return !!meeting && hasRole(meeting.pk, MeetingRole.Participant)
 }
 
-export function isProposer (meeting?: Meeting): boolean {
+export function isProposer (meeting?: Meeting): boolean | undefined {
   return !!meeting && hasRole(meeting.pk, MeetingRole.Proposer)
 }
 
-export function isDiscusser (meeting?: Meeting): boolean {
+export function isDiscusser (meeting?: Meeting): boolean | undefined {
   return !!meeting && hasRole(meeting.pk, MeetingRole.Discusser)
 }
 
-export function isPotentialVoter (meeting?: Meeting): boolean {
+export function isPotentialVoter (meeting?: Meeting): boolean | undefined {
   return !!meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
 }
 
-export function isModerator (meeting?: Meeting): boolean {
+export function isModerator (meeting?: Meeting): boolean | undefined {
   return !!meeting && hasRole(meeting.pk, MeetingRole.Moderator)
 }
 
@@ -46,7 +46,7 @@ export function isFinishedMeeting (meeting?: Meeting): boolean {
 }
 
 export function canViewMeeting (meeting?: Meeting): boolean {
-  return isParticipant(meeting)
+  return !!isParticipant(meeting)
 }
 
 // Special rule case: Check organisation by pk. We won't always have organization data.
@@ -55,7 +55,7 @@ export function canAddMeeting (org?: number): boolean {
 }
 
 export function canChangeMeeting (meeting?: Meeting): boolean {
-  return !isArchivedMeeting(meeting) && isModerator(meeting)
+  return !isArchivedMeeting(meeting) && !!isModerator(meeting)
 }
 
 export function canChangeRolesMeeting (meeting: Meeting): boolean {
@@ -67,9 +67,9 @@ export function canBecomeModeratorMeeting (meeting: Meeting): boolean {
 }
 
 export function canViewMeetingInvite (meeting: Meeting): boolean {
-  return isModerator(meeting)
+  return !!isModerator(meeting)
 }
 
 export function canAddMeetingInvite (meeting: Meeting): boolean {
-  return isModerator(meeting) && !isArchivedMeeting(meeting)
+  return !!isModerator(meeting) && !isArchivedMeeting(meeting)
 }

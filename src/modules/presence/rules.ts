@@ -9,10 +9,10 @@ function isOpenPresenceCheck (check: PresenceCheck): boolean {
 }
 
 export function canAddPresenceCheck (meeting: Meeting): boolean {
-  return isModerator(meeting) && isActiveMeeting(meeting)
+  return !!isModerator(meeting) && isActiveMeeting(meeting)
 }
 
 export function canChangePresenceCheck (check: PresenceCheck): boolean {
   const meeting = meetings.get(check.meeting)
-  return !!meeting && isModerator(meeting) && isOpenPresenceCheck(check)
+  return !!meeting && !!isModerator(meeting) && isOpenPresenceCheck(check)
 }

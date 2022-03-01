@@ -18,6 +18,7 @@ export default function useMeetingChannel () {
 
   const roleChannel = computed(() => {
     if (!meeting.value) return
+    if (isModerator.value === undefined) return
     return isModerator.value ? 'moderators' : 'participants'
   })
 

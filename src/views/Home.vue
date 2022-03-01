@@ -86,7 +86,7 @@ export default defineComponent({
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user } = useAuthentication()
-    const { organisation } = useOrganisations()
+    const { organisation, fetchOrganisations } = useOrganisations()
     const { idLoginURL } = useOrganisation()
     const loader = useLoader('Home')
 
@@ -104,6 +104,8 @@ export default defineComponent({
 
     onBeforeMount(() => {
       if (isAuthenticated.value) loader.call(fetchMeetings, fetchInvites)
+      // App.vue loads organisation data at first load
+      if (loader.initDone.value) fetchOrganisations()
     })
 
     const participatingMeetings = computed(() => orderedMeetings.value.filter(m => m.current_user_roles))

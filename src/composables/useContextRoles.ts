@@ -60,7 +60,7 @@ export default function useContextRoles<T extends string> (contentType: string) 
     userId = userId ?? user.value?.pk
     if (!userId) return
     const key = getRoleKey(contentType, pk, userId)
-    return contextRoles.get(key) || new Set()
+    return contextRoles.get(key)
   }
 
   function getRoleCount (pk: number, role: T) {
@@ -85,8 +85,9 @@ export default function useContextRoles<T extends string> (contentType: string) 
     else contextRoles.delete(key)
   }
 
-  function hasRole (pk: number, roleName: T | T[], user?: number): boolean {
+  function hasRole (pk: number, roleName: T | T[], user?: number): undefined | boolean {
     const userRoles = getUserRoles(pk, user)
+    if (!userRoles) return
     if (userRoles) {
       if (typeof roleName === 'string') {
         return userRoles.has(roleName)

@@ -33,14 +33,14 @@ function agendaItemHasDocuments (ai: AgendaItem): boolean {
 }
 
 export function canAddDocument (ai: AgendaItem): boolean {
-  return isAIModerator(ai) &&
+  return !!isAIModerator(ai) &&
          !isFinishedAI(ai) &&
          !agendaItemHasDocuments(ai) // Temporary rule
 }
 
 export function canChangeDocument (doc: ProposalText): boolean {
   const ai = agendaItems.get(doc.agenda_item)
-  return !!ai && isAIModerator(ai) && !isFinishedAI(ai) && !documentHasProposals(doc)
+  return !!ai && !!isAIModerator(ai) && !isFinishedAI(ai) && !documentHasProposals(doc)
 }
 
 export const canDeleteDocument = canChangeDocument
@@ -61,8 +61,8 @@ function isUsedInPoll (proposal: Proposal): boolean {
 export function canAddProposal (agendaItem: AgendaItem): boolean {
   const meeting = meetings.get(agendaItem.meeting)
   return !isFinishedAI(agendaItem) && (
-    isModerator(meeting) || (
-      !isPrivateAI(agendaItem) && !isProposalBlocked(agendaItem) && isProposer(meeting)
+    !!isModerator(meeting) || (
+      !isPrivateAI(agendaItem) && !isProposalBlocked(agendaItem) && !!isProposer(meeting)
     ))
 }
 
@@ -70,7 +70,7 @@ export function canChangeProposal (proposal: Proposal): boolean {
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
-  return !isFinishedMeeting(meeting) && isModerator(meeting)
+  return !isFinishedMeeting(meeting) && !!isModerator(meeting)
 }
 
 export function canDeleteProposal (proposal: Proposal): boolean {
