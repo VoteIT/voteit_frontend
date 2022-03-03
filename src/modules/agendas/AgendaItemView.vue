@@ -13,7 +13,7 @@
           </div>
           <Menu float :items="menuItems" />
         </div>
-        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" />
+        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" :maxHeight="collapsedBodyHeight" />
         <TextDocuments />
       </v-col>
       <v-col cols="12" lg="4" v-if="speakerLists.length">
@@ -107,6 +107,7 @@ import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
 import useChannel from '@/composables/useChannel'
+import useDefaults from '@/composables/useDefaults'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -291,7 +292,8 @@ export default defineComponent({
       addDiscussionPost,
       addProposal,
       setLastRead,
-      submit
+      submit,
+      ...useDefaults()
     }
   },
   components: {

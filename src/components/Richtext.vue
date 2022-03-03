@@ -1,14 +1,24 @@
 <template>
   <RichtextEditor :variant="variant" v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
-  <div v-else ref="el" v-html="content" class="richtext" />
+  <template v-else>
+    <div class="overflow-hidden position-relative" :style="style">
+      <div ref="contentElem" class="richtext" v-html="content" />
+      <div class="overflow-fade" v-show="isOverflowing && !userExpanded" />
+    </div>
+    <v-btn block v-if="isOverflowing" variant="text" color="primary" @click="userExpanded = !userExpanded" :append-icon="expandIcon">
+      {{ userExpanded ? t('collapse') : t('expand') }}
+    </v-btn>
+  </template>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
 
 import useTags from '@/modules/meetings/useTags'
 import RichtextEditor from './RichtextEditor.vue'
 import { QuillVariant } from './types'
+import { useElementBounding } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   name: 'Richtext',
@@ -28,10 +38,12 @@ export default defineComponent({
     variant: {
       type: String as PropType<QuillVariant>,
       default: QuillVariant.Restricted
-    }
+    },
+    maxHeight: Number
   },
   emits: ['edit-done', 'updated', 'update:modelValue'],
   setup (props, { emit }) {
+    const { t } = useI18n()
     function getContent (): string {
       if (props.object) return props.object[props.contentAttribute]
       if (typeof props.modelValue === 'string') return props.modelValue
@@ -67,13 +79,30 @@ export default defineComponent({
       emit('update:modelValue', value)
     })
 
-    const el = ref<HTMLElement | null>(null)
-    useTags(el)
+    const contentElem = ref<HTMLElement | null>(null)
+    useTags(contentElem)
+    const { height } = useElementBounding(contentElem)
+    const isOverflowing = computed(() => !!props.maxHeight && height.value > (props.maxHeight + 72)) // Add 72 for double btn height
+    const userExpanded = ref<null | boolean>(null)
+    const expandIcon = computed(() => `mdi-chevron-${userExpanded.value ? 'up' : 'down'}`)
+    const style = computed(() => {
+      if (!isOverflowing.value) return
+      return {
+        maxHeight: userExpanded.value
+          ? '80000px'
+          : `${(props.maxHeight || 0)}px`
+      }
+    })
 
     return {
+      t,
       content,
-      submit,
-      el
+      contentElem,
+      expandIcon,
+      isOverflowing,
+      style,
+      userExpanded,
+      submit
     }
   }
 })
@@ -137,4 +166,10 @@ export default defineComponent({
     border-radius: 4px
     font-size: 10pt
 
+.overflow-fade
+  position: absolute
+  bottom: 0
+  width: 100%
+  height: 64px
+  background: linear-gradient(rgba(var(--v-theme-background), 0), rgba(var(--v-theme-background), 1))
 </style>
