@@ -46,16 +46,14 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
           ? Math.min(timesSpoken, max)
           : timesSpoken
       }
-      const spokenNumbers = sortBy([...new Set(annotatedSpeakerQueue.value.map(maxListValue))])
+      // Create a list of unique spoken times in order
+      const spokenNumbers = sortBy([...new Set(annotatedRestQueue.map(maxListValue))])
       for (const spoken of spokenNumbers) {
-        const queue = annotatedRestQueue
-          .filter(entry => maxListValue(entry) === spoken)
-          .map(e => e.user)
-        // Safe positions guard - may otherwise cause lists to be empty
-        if (!queue.length) continue
         groups.push({
           title: t('speaker.listNumber', spoken + 1),
-          queue
+          queue: annotatedRestQueue
+            .filter(entry => maxListValue(entry) === spoken)
+            .map(e => e.user)
         })
       }
     } else {

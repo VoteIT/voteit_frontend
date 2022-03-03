@@ -414,7 +414,7 @@
     "confirmStopActiveSpeaker": "Listan \"{title}\" har en aktiv talare. För att välja en ny aktiv lista behöver du stoppa den talaren först.\nVill du göra det?",
     "currentlySpeaking": "Talar nu",
     "enterList": "Sätt upp mig",
-    "fullscreenSystem": "Talalista fullskärm ({title})",
+    "fullscreenSystem": "Talarlista fullskärm ({title})",
     "history": "Talarhistorik",
     "isActiveList": "Listan är aktiv",
     "leaveList": "Lämna listan",

@@ -72,7 +72,7 @@ export default defineComponent({
     const { currentActiveList, currentActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
     const { speakerGroups } = useSpeakerList(currentActiveListId)
 
-    useMeetingTitle(computed(() => currentActiveList.value?.title ?? t('speaker.list')))
+    useMeetingTitle(computed(() => t('speaker.fullscreenSystem', { ...speakerSystem.value })))
 
     const listState = computed(() => currentActiveList.value && getState(currentActiveList.value.state))
 
