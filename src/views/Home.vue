@@ -5,17 +5,17 @@
         {{ t('organization.loginTo', organisation) }}
       </v-btn>
     </v-col>
-    <v-col cols="12" order-sm="0" sm="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
+    <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
       <header class="d-flex">
         <div class="flex-grow-1">
           <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
-          <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" />
         </div>
         <Menu :items="menu" />
       </header>
+      <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
     </v-col>
     <v-divider vertical />
-    <v-col v-if="isAuthenticated" cols="12" sm="4" xl="3">
+    <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
       <div v-if="userMeetingInvites.length" class="mb-4">
         <h2 class="mb-2">
           {{ t('join.invites', userMeetingInvites.length) }}
@@ -77,6 +77,7 @@ import { MenuItem } from '@/utils/types'
 import { canChangeOrganisation } from '@/modules/organisations/rules'
 import { organisationType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'
+import useDefaults from '@/composables/useDefaults'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -163,7 +164,8 @@ export default defineComponent({
       createMeeting,
       logout,
       save,
-      slugify
+      slugify,
+      ...useDefaults()
     }
   },
   components: {
