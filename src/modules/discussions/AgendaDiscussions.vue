@@ -6,7 +6,7 @@
   </DiscussionPost>
   <AddContent v-if="canAddDiscussionPost" :name="t('discussion.discussion')"
               :handler="submit" :placeholder="t('discussion.postPlaceholder')"
-              :submitText="t('post')" submitIcon="mdi-comment-text-outline" ref="addComponent"/>
+              :submitText="t('post')" :submitIcon="submitIcon" ref="addComponent"/>
 </template>
 
 <script lang="ts">
@@ -37,10 +37,11 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { agendaId, canAddDiscussionPost } = useAgendaItem()
+    const { agendaId, canAddDiscussionPost, agendaItem } = useAgendaItem()
     const { meetingId } = useMeeting()
     const { getMeetingButtons } = useReactions()
 
+    const submitIcon = computed(() => agendaItem.value?.block_discussion ? 'mdi-lock-outline' : 'mdi-comment-text-outline')
     async function submit (body: string, tags: string[]) {
       await discussionPostType.api.add({
         agenda_item: agendaId.value,
@@ -57,6 +58,7 @@ export default defineComponent({
       addComponent,
       canAddDiscussionPost,
       reactions,
+      submitIcon,
       submit
     }
   }

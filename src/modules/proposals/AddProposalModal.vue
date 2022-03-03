@@ -2,7 +2,7 @@
   <v-dialog v-model="isOpen">
     <template #activator="{ props }">
       <slot name="activator" :props="props">
-        <v-btn prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
+        <v-btn :prepend-icon="activatorIcon" color="primary" v-bind="props">
           {{ t('proposal.add') }}
         </v-btn>
       </slot>
@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAuthentication from '@/composables/useAuthentication'
@@ -97,7 +97,7 @@ export default defineComponent({
     const body = ref('')
     const group = ref<null | number>(null)
     const { meetingId } = useMeeting()
-    const { agendaId } = useAgendaItem()
+    const { agendaId, agendaItem } = useAgendaItem()
     const isOpen = ref(false)
     const { userGroups } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
@@ -140,6 +140,8 @@ export default defineComponent({
       saving.value = false
     }
 
+    const activatorIcon = computed(() => agendaItem.value?.block_proposals ? 'mdi-lock-outline' : 'mdi-text-box-plus-outline')
+
     watch(body, () => {
       proposal.value = null
     })
@@ -161,6 +163,7 @@ export default defineComponent({
     return {
       t,
       ...useDefaults(),
+      activatorIcon,
       done,
       group,
       isOpen,
