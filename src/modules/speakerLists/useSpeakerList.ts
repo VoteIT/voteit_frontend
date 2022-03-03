@@ -40,6 +40,7 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
     // TODO: Move this into plugin architecture
     if (speakerSystem.value.method_name === SpeakerSystemMethod.Priority) {
       const max = (speakerSystem.value.settings?.max_times ?? 0) - 1
+      // A speaker system can have a maximum amount of lists. This will get spoken times up to that max value.
       function maxListValue ({ timesSpoken }: { timesSpoken: number }) {
         return max >= 0
           ? Math.min(timesSpoken, max)
@@ -47,11 +48,14 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
       }
       const spokenNumbers = sortBy([...new Set(annotatedSpeakerQueue.value.map(maxListValue))])
       for (const spoken of spokenNumbers) {
+        const queue = annotatedRestQueue
+          .filter(entry => maxListValue(entry) === spoken)
+          .map(e => e.user)
+        // Safe positions guard - may otherwise cause lists to be empty
+        if (!queue.length) continue
         groups.push({
           title: t('speaker.listNumber', spoken + 1),
-          queue: annotatedRestQueue
-            .filter(entry => maxListValue(entry) === spoken)
-            .map(e => e.user)
+          queue
         })
       }
     } else {

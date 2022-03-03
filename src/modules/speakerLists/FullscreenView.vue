@@ -54,6 +54,7 @@ import { useRoute } from 'vue-router'
 import useMeeting from '../meetings/useMeeting'
 
 import useMeetingChannel from '../meetings/useMeetingChannel'
+import useMeetingTitle from '../meetings/useMeetingTitle'
 
 import { speakerListType } from './contentTypes'
 import { SpeakerGroup } from './types'
@@ -70,6 +71,8 @@ export default defineComponent({
 
     const { currentActiveList, currentActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
     const { speakerGroups } = useSpeakerList(currentActiveListId)
+
+    useMeetingTitle(computed(() => currentActiveList.value?.title ?? t('speaker.list')))
 
     const listState = computed(() => currentActiveList.value && getState(currentActiveList.value.state))
 
