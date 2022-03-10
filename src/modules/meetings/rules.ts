@@ -51,7 +51,7 @@ export function canViewMeeting (meeting?: Meeting): boolean {
 
 // Special rule case: Check organisation by pk. We won't always have organization data.
 export function canAddMeeting (org?: number): boolean {
-  return isMeetingCreator(org)
+  return isMeetingCreator(org) || isOrganisationManager(org)
 }
 
 export function canChangeMeeting (meeting?: Meeting): boolean {
