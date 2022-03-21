@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { MeetingRole } from '@/modules/meetings/types'
-import { User } from '@/modules/organisations/types'
+import { OrganisationRole, User } from '@/modules/organisations/types'
 import { ThemeColor } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'
@@ -46,6 +46,12 @@ export interface Dialog {
   yes?: string | false
   no?: string | false
   theme?: ThemeColor
+}
+
+export interface OrganisationRoles {
+  pk: number,
+  user: User,
+  assigned: OrganisationRole[]
 }
 
 export interface MeetingRoles {

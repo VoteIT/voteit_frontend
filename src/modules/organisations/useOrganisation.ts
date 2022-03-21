@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 
+import { canChangeOrganisation } from './rules'
 import useOrganisations from './useOrganisations'
 
 const { organisation } = useOrganisations()
@@ -15,6 +16,7 @@ export default function useOrganisation () {
   })
 
   return {
+    canChangeOrganisation: computed(() => !!organisation.value && canChangeOrganisation(organisation.value)),
     organisation,
     manageAccountURL,
     idLoginURL

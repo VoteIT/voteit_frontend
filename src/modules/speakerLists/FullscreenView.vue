@@ -48,13 +48,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import useMeeting from '../meetings/useMeeting'
 
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import useUserDetails from '../organisations/useUserDetails'
 
 import { speakerListType } from './contentTypes'
 import { SpeakerGroup } from './types'
@@ -63,11 +63,12 @@ import useSpeakerSystem from './useSpeakerSystem'
 
 export default defineComponent({
   setup () {
+    provide('context', 'meeting')
     const { t } = useI18n()
     const route = useRoute()
     const { getState } = speakerListType.useWorkflows()
     useMeetingChannel()
-    const { getUser } = useMeeting()
+    const { getUser } = useUserDetails()
 
     const { currentActiveList, currentActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
     const { speakerGroups } = useSpeakerList(currentActiveListId)

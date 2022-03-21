@@ -1,6 +1,6 @@
 <template>
   <RichtextEditor :variant="variant" v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
-  <template v-else>
+  <div v-else>
     <div class="overflow-hidden position-relative" :style="style">
       <div ref="contentElem" class="richtext" v-html="content" />
       <div class="overflow-fade" v-show="isOverflowing && !userExpanded" />
@@ -8,7 +8,7 @@
     <v-btn block v-if="isOverflowing" variant="text" color="primary" @click="userExpanded = !userExpanded" :append-icon="expandIcon">
       {{ userExpanded ? t('collapse') : t('expand') }}
     </v-btn>
-  </template>
+  </div>
 </template>
 
 <script lang="ts">
@@ -41,7 +41,7 @@ export default defineComponent({
     },
     maxHeight: Number
   },
-  emits: ['edit-done', 'updated', 'update:modelValue'],
+  emits: ['edit-done', 'update:modelValue'],
   setup (props, { emit }) {
     const { t } = useI18n()
     function getContent (): string {

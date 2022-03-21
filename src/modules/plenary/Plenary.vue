@@ -70,6 +70,7 @@ export default defineComponent({
     Proposal: ProposalVue
   },
   setup () {
+    provide('context', 'meeting')
     const { t } = useI18n()
     const { agendaId, agendaItem } = useAgendaItem()
     const { aiProposalTexts } = useTextDocuments(agendaId)

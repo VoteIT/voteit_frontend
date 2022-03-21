@@ -1,7 +1,4 @@
 import { reactive } from 'vue'
-import { last } from 'lodash'
-
-import Channel from '@/contentTypes/Channel'
 
 import useAuthentication from './useAuthentication'
 import { ContextRoles, UserContextRoles } from './types'

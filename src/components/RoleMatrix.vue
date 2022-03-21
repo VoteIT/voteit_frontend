@@ -35,15 +35,15 @@ import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
-import useMeeting from '@/modules/meetings/useMeeting'
 import { ContextRole, UserContextRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
+import useUserDetails from '@/modules/organisations/useUserDetails'
 
 const USERS_PER_PAGE = 2
 
 export default defineComponent({
   props: {
-    contentType: { // TODO Take ContentType object instead?
+    contentType: {
       type: Object as PropType<ContentType>,
       required: true
     },
@@ -61,7 +61,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const { getUser } = useMeeting()
+    const { getUser } = useUserDetails()
     const loader = useLoader('RoleMatrix')
     const roles = ref<ContextRole[]>([])
     const contextRoles = props.contentType.useContextRoles()

@@ -11,7 +11,7 @@
           <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
         </div>
       </div>
-      <Richtext v-if="p.shortname === 'proposal'" submit :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
+      <Richtext v-if="p.shortname === 'proposal'" :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
       <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3" />
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />

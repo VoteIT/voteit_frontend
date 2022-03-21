@@ -52,6 +52,7 @@ export default defineComponent({
         loader.setLoaded(false)
       }
     })
+    provide('context', 'organisation') // Default context name
     provide('cols', {
       default: {
         cols: 12,

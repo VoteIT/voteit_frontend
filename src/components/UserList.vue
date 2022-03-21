@@ -18,9 +18,9 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-
-import useMeeting from '@/modules/meetings/useMeeting'
 import { useI18n } from 'vue-i18n'
+
+import useUserDetails from '@/modules/organisations/useUserDetails'
 
 export default defineComponent({
   props: {
@@ -36,7 +36,7 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const { getUser } = useMeeting()
+    const { getUser } = useUserDetails()
     const users = computed(() => {
       return props.userIds
         .map(pk => getUser(pk) ?? { pk })

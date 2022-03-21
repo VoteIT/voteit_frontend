@@ -1,0 +1,66 @@
+import { MeetingRoles, OrganisationRoles } from '@/composables/types'
+import restApi from '@/utils/restApi'
+import { computed, inject, reactive, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+import { User } from './types'
+
+const userDetails = reactive(new Map<number, User>())
+
+const fetchQueue = new Set<number>(new Set())
+let fetchTimeout: number
+let loading = false
+const TIMEOUT = 50
+
+export default function useUserDetails () {
+  const context = inject<string>('context')
+  const { params } = useRoute()
+  const contextId = computed(() => params.id ? Number(params.id) : undefined)
+  const endpoint = `${context}-roles/`
+
+  watch(contextId, () => {
+    fetchQueue.clear()
+    clearTimeout(fetchTimeout)
+  })
+
+  async function fetchMultiple () {
+    // Fetch all queued users (rest)
+    const missing = [...fetchQueue].filter(pk => !userDetails.has(pk))
+    if (loading || !missing.length) return
+    const params = {
+      context: contextId.value,
+      user_id_in: missing.join(',')
+    }
+    fetchQueue.clear()
+    loading = true
+    try {
+      const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(endpoint, { params })
+      for (const r of data) {
+        userDetails.set(r.user.pk, r.user)
+      }
+    } catch {}
+    loading = false
+    // Any new queued
+    if (fetchQueue.size) fetchMultiple()
+  }
+
+  function fetchUserDetails (user: number) {
+    // Avoid getting participants in several requests by queueing, and setting a short timeout.
+    if (!fetchQueue.has(user)) {
+      fetchQueue.add(user)
+      clearTimeout(fetchTimeout)
+      fetchTimeout = setTimeout(fetchMultiple, TIMEOUT)
+    }
+  }
+
+  function getUser (user: number): User | undefined {
+    // Return user object if found in meeting participants
+    // Otherwise queue for fetch
+    if (!userDetails.has(user)) fetchUserDetails(user)
+    return userDetails.get(user)
+  }
+
+  return {
+    getUser
+  }
+}

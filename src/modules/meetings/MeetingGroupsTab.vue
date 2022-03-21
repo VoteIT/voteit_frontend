@@ -158,11 +158,13 @@ import { meetingGroupType, meetingType } from './contentTypes'
 import { MeetingGroup } from './types'
 import useDefaults from '@/composables/useDefaults'
 import { User } from '../organisations/types'
+import useUserDetails from '../organisations/useUserDetails'
 
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const { meetingId, getUser } = useMeeting()
+    const { meetingId } = useMeeting()
+    const { getUser } = useUserDetails()
     const { meetingGroups } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
 

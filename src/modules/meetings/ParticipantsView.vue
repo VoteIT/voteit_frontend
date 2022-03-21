@@ -126,20 +126,21 @@ import Tabs from '@/components/Tabs.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import { ContextRoles } from '@/composables/types'
+import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
 import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
+import useChannel from '@/composables/useChannel'
+import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
 import { MeetingInvite, MeetingRole } from './types'
 import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
-import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useMeetingInvites from './useMeetingInvites'
 import useMeetingGroups from './useMeetingGroups'
-import useChannel from '@/composables/useChannel'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
-import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
+import useAuthentication from '@/composables/useAuthentication'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -153,7 +154,8 @@ export default defineComponent({
   inject: ['cols'],
   setup () {
     const { t } = useI18n()
-    const { meetingId, getUser, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
+    const { user } = useAuthentication()
+    const { meetingId, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
     const { meetingInvites } = useMeetingInvites(meetingId)
     const { copy, copied } = useClipboard()
@@ -170,8 +172,8 @@ export default defineComponent({
       addRole(user.pk, MeetingRole.Participant)
     }
 
-    async function removeConfirm (user: number, role: string) {
-      if (user === getUser()?.pk && ['moderator', 'participant'].includes(role)) {
+    async function removeConfirm (userPk: number, role: string) {
+      if (userPk === user.value?.pk && ['moderator', 'participant'].includes(role)) {
         openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
         return false
       }

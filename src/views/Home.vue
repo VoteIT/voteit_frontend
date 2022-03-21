@@ -1,18 +1,28 @@
 <template>
   <v-row v-if="organisation" class="home mt-4 mb-4">
-    <v-col v-if="!isAuthenticated && organisation" cols="12" :order-sm="1" sm="4" xl="3">
+    <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
       <v-btn block v-if="organisation.login_url" color="primary" :href="idLoginURL" prepend-icon="mdi-login">
         {{ t('organization.loginTo', organisation) }}
       </v-btn>
     </v-col>
     <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
-      <header class="d-flex">
-        <div class="flex-grow-1">
-          <Headline v-model="changeForm.title" :editing="editing" @submit="save()" />
-        </div>
-        <Menu :items="menu" />
-      </header>
-      <Richtext v-model="changeForm.body" :editing="editing" @submit="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
+      <Tabs :tabs="tabs">
+        <template #default>
+          <header class="d-flex">
+            <div class="flex-grow-1">
+              <h1>
+                {{ organisation.title }}
+              </h1>
+            </div>
+            <Menu :items="menu" />
+          </header>
+          <Richtext v-model="changeForm.body" :editing="editing" @edit-done="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
+        </template>
+        <template #roles>
+          <UserSearch class="mb-6" @submit="addUser" />
+          <RoleMatrix admin :contentType="organisationType" :pk="organisation.pk" :icons="organisationIcons" />
+        </template>
+      </Tabs>
     </v-col>
     <v-divider vertical />
     <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
@@ -59,11 +69,15 @@ import { useTitle } from '@vueuse/core'
 import { slugify } from '@/utils'
 
 import AddMeetingVue from '@/modules/meetings/AddMeetingModal.vue'
-import Richtext from '@/components/Richtext.vue'
-import Headline from '@/components/Headline.vue'
-import Menu from '@/components/Menu.vue'
 import Counter from '@/components/examples/Counter.vue'
-import getSchema from '@/components/examples/GetSchema.vue'
+import GetSchema from '@/components/examples/GetSchema.vue'
+// import Headline from '@/components/Headline.vue'
+import Menu from '@/components/Menu.vue'
+import Richtext from '@/components/Richtext.vue'
+import RoleMatrix from '@/components/RoleMatrix.vue'
+import { Tab } from '@/components/types'
+import Tabs from '@/components/Tabs.vue'
+import UserSearch from '@/components/UserSearch.vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
@@ -74,21 +88,26 @@ import useOrganisations from '@/modules/organisations/useOrganisations'
 import Invite from '@/modules/meetings/Invite.vue'
 import { canAddMeeting } from '@/modules/meetings/rules'
 import { MenuItem } from '@/utils/types'
-import { canChangeOrganisation } from '@/modules/organisations/rules'
 import { organisationType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import useDefaults from '@/composables/useDefaults'
+import { OrganisationRole } from '@/modules/organisations/types'
+import { ContextRoles } from '@/composables/types'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
+const organisationIcons: Record<OrganisationRole, string> = {
+  meeting_creator: 'mdi-calendar-plus',
+  org_manager: 'mdi-account-supervisor-circle'
+}
+
 export default defineComponent({
-  name: 'Home',
   setup () {
     const { t } = useI18n()
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user } = useAuthentication()
-    const { organisation, fetchOrganisations } = useOrganisations()
-    const { idLoginURL } = useOrganisation()
+    const { fetchOrganisations } = useOrganisations()
+    const { canChangeOrganisation, idLoginURL, organisation } = useOrganisation()
     const loader = useLoader('Home')
 
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
@@ -114,15 +133,15 @@ export default defineComponent({
 
     const editing = ref(false)
     const changeForm = reactive({
-      title: organisation.value?.title ?? '',
+      // title: organisation.value?.title ?? '',
       body: organisation.value?.body ?? ''
     })
     watch(organisation, org => {
-      changeForm.title = org?.title ?? ''
+      // changeForm.title = org?.title ?? ''
       changeForm.body = org?.body ?? ''
     })
     const menu = computed<MenuItem[]>(() => {
-      if (!organisation.value || !canChangeOrganisation(organisation.value)) return []
+      if (!organisation.value || !canChangeOrganisation.value) return []
       return [
         {
           title: t('edit'),
@@ -130,6 +149,20 @@ export default defineComponent({
           onClick: async () => { editing.value = true }
         }
       ]
+    })
+    const tabs = computed<Tab[] | undefined>(() => {
+      return undefined
+      // if (!canChangeOrganisation.value) return
+      // return [
+      //   {
+      //     name: 'default',
+      //     title: 'Hem'
+      //   },
+      //   {
+      //     name: 'roles',
+      //     title: 'Roller'
+      //   }
+      // ]
     })
 
     async function save () {
@@ -146,6 +179,12 @@ export default defineComponent({
         component: AddMeetingVue
       })
     }
+
+    function addUser (user: ContextRoles) {
+      if (!organisation.value) return
+      organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
+    }
+
     return {
       t,
       changeForm,
@@ -157,9 +196,13 @@ export default defineComponent({
       menu,
       otherMeetings,
       organisation,
+      organisationIcons,
+      organisationType,
       participatingMeetings,
+      tabs,
       user,
 
+      addUser,
       canAddMeeting,
       createMeeting,
       logout,
@@ -170,11 +213,14 @@ export default defineComponent({
   },
   components: {
     Counter,
-    getSchema,
-    Headline,
+    GetSchema,
+    // Headline,
     Invite,
     Menu,
-    Richtext
+    Richtext,
+    RoleMatrix,
+    Tabs,
+    UserSearch
   }
 })
 </script>

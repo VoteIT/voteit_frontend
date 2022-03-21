@@ -21,6 +21,7 @@ export default defineComponent({
     const { clearRegisters } = useElectoralRegisters()
     useMeetingChannel()
     provide(LastReadKey, null)
+    provide('context', 'meeting')
 
     onBeforeUnmount(clearRegisters)
   },

@@ -1,24 +1,15 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { slugify, mapFilter, mapFind } from '@/utils'
+import { slugify } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 import { meetings } from './useMeetings'
 
-import { MeetingRoles } from '../../composables/types'
 import { Meeting, MeetingRole } from './types'
 import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite } from './rules'
-import { meetingRoleType, meetingType } from './contentTypes'
-import { User } from '../organisations/types'
+import { meetingType } from './contentTypes'
 import { useI18n } from 'vue-i18n'
-
-const FORCE_ROLES_FETCH = false
-
-const participants = ref<Map<number, MeetingRoles>>(new Map())
-
-const pFetchQueue = new Set<number>()
-let pFetchTimeout: number
 
 export default function useMeeting () {
   const route = useRoute()
@@ -35,67 +26,6 @@ export default function useMeeting () {
   }
 
   const roleLabels = computed(() => getRoleLabels())
-
-  interface UserListParams {
-    context: number
-    // eslint-disable-next-line camelcase
-    user_id_in?: string
-  }
-
-  async function fetchParticipants (meeting: number, users: Set<number> | number[]) {
-    // Fetch all or specified participants (rest)
-    // If specific, checks if already fetched
-    meeting = meeting || meetingId.value
-    const params: UserListParams = { context: meeting }
-    if (users) {
-      users = [...new Set(users)] // Reduce to unique values
-      if (!FORCE_ROLES_FETCH) {
-        // Skip user pk's already in store
-        const existingUsers = new Set([
-          ...mapFilter(participants.value, p => p.meeting === meeting)
-        ].map(p => p.user.pk))
-        users = users.filter(pk => !existingUsers.has(pk))
-        if (users.length === 0) return
-        params.user_id_in = users.join(',')
-      }
-    }
-    const { data } = await meetingRoleType.api.list(params)
-    data.forEach(p => {
-      meetingRoles.set(meeting, p.user.pk, p.assigned)
-      participants.value.set(p.pk, p)
-    })
-  }
-
-  function fetchParticipant (user: number, meeting: number, timeout = 50) {
-    // Avoid getting participants in several requests by queing, and setting a short timeout.
-    if (!pFetchQueue.has(user)) {
-      pFetchQueue.add(user)
-      clearTimeout(pFetchTimeout)
-      pFetchTimeout = setTimeout(() => {
-        fetchParticipants(meeting, pFetchQueue)
-        pFetchQueue.clear()
-      }, timeout)
-    }
-  }
-
-  function getUser (pk?: number, meeting?: number): User | undefined {
-    // Return user object if found in meeting participants
-    // Otherwise queue for fetch
-    meeting = meeting ?? meetingId.value
-    pk = pk ?? user.value?.pk
-    if (typeof pk !== 'number') return
-    const role = mapFind(participants.value, r => r.user.pk === pk && r.meeting === meeting)
-    if (role) {
-      return role.user
-    }
-    // No data, queue participant for fetch and return nothing for now
-    fetchParticipant(pk, meeting)
-  }
-
-  function getParticipants (meeting: number) {
-    // Return all participants in meeting
-    return [...mapFilter(participants.value, r => r.meeting === meeting)]
-  }
 
   const meetingId = computed(() => Number(route.params.id))
   const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value)) // Disable fallback || {})
@@ -121,9 +51,6 @@ export default function useMeeting () {
     roleLabels,
     userRoles,
     getRoleLabels,
-    getUser,
-    hasRole,
-    fetchParticipants,
-    getParticipants
+    hasRole
   }
 }

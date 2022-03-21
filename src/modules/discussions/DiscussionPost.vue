@@ -9,7 +9,7 @@
         <Moment :date="p.created" />
       </div>
     </div>
-    <Richtext submit :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
+    <Richtext :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
     <div class="mt-6 mb-3" v-if="extraTags.length">
       <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
     </div>

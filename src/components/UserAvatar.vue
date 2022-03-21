@@ -6,11 +6,11 @@
 
 <script lang="ts">
 /* eslint-disable camelcase */
-import useAuthentication from '@/composables/useAuthentication'
-import { ThemeColor } from '@/utils/types'
 import { computed, defineComponent } from 'vue'
 
-import useMeeting from '../modules/meetings/useMeeting'
+import useAuthentication from '@/composables/useAuthentication'
+import useUserDetails from '@/modules/organisations/useUserDetails'
+import { ThemeColor } from '@/utils/types'
 
 export default defineComponent({
   name: 'User',
@@ -23,7 +23,7 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const { getUser } = useMeeting()
+    const { getUser } = useUserDetails()
     const auth = useAuthentication()
     const user = computed(() => props.pk ? getUser(props.pk) : auth.user.value)
 

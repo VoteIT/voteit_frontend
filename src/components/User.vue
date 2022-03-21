@@ -10,7 +10,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 
-import useMeeting from '../modules/meetings/useMeeting'
+import useUserDetails from '../modules/organisations/useUserDetails'
 
 export default defineComponent({
   props: {
@@ -21,7 +21,7 @@ export default defineComponent({
     userid: Boolean
   },
   setup (props) {
-    const { getUser } = useMeeting()
+    const { getUser } = useUserDetails()
     const user = computed(() => getUser(props.pk) || {})
     return {
       user
