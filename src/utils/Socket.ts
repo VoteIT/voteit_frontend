@@ -223,6 +223,7 @@ class Socket {
             reject(new ValidationError(data.p.msg, data.p.errors))
             break
           case State.Waiting:
+          case State.Queued:
           case State.Running:
             // If we get progress, we reset timeout watcher
             setRejectTimeout()

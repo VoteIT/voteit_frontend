@@ -6,7 +6,8 @@ import TypedEvent from './TypedEvent'
 export enum State {
   Success = 's',
   Failed = 'f',
-  Waiting = 'w',
+  Waiting = 'w', // Deprecated
+  Queued = 'q',
   Running = 'r',
 }
 
@@ -27,7 +28,7 @@ export interface SuccessMessage<T> extends BaseChannelsMessage {
 }
 
 export interface ProgressMessage extends BaseChannelsMessage {
-  s: State.Running | State.Waiting
+  s: State.Running | State.Waiting | State.Queued
   p: Progress
 }
 
