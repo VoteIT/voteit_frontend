@@ -1,6 +1,6 @@
 <template>
   <span ref="root" class="dropdown" :class="{ isOpen, right }">
-    <v-btn :prepend-icon="currentState.icon" :append-icon="isUserModifiable ? 'mdi-chevron-down' : undefined" size="x-small" elevation="0" :border="isUserModifiable" @click="toggle()">
+    <v-btn :prepend-icon="currentState.icon" :append-icon="isUserModifiable ? 'mdi-chevron-down' : undefined" size="x-small" elevation="0" :border="isUserModifiable" @click="toggle()" class="text-no-wrap">
       {{ t(`workflowState.${currentState.state}`) }}
     </v-btn>
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
