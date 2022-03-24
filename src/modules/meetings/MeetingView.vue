@@ -7,8 +7,6 @@
 import { defineComponent, onBeforeUnmount, provide } from 'vue'
 
 import Bubbles from '@/modules/meetings/Bubbles.vue'
-// import PresenceCheckBubble from '@/modules/presence/PresenceCheckBubble.vue'
-// import UnvotedPollsBubble from '@/modules/polls/UnvotedPollsBubble.vue'
 
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 
