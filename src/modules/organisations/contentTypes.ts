@@ -3,6 +3,7 @@ import { Organisation, User } from './types'
 
 export const organisationType = new ContentType<Organisation>({
   name: 'organisation', // Required for roles
+  channels: ['organisation'],
   restEndpoint: 'organisations/',
   hasRoles: true
 })

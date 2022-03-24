@@ -18,6 +18,7 @@ export default function useOrganisation () {
   return {
     canChangeOrganisation: computed(() => !!organisation.value && canChangeOrganisation(organisation.value)),
     organisation,
+    organisationId: computed(() => organisation.value?.pk),
     manageAccountURL,
     idLoginURL
   }
