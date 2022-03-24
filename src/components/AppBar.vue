@@ -150,10 +150,10 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.v-app-bar
+.v-toolbar
   background-color: rgb(var(--v-theme-app-bar)) !important
   color: rgb(var(--v-theme-on-app-bar))
-  .v-app-bar-title
+  .v-toolbar-title
     img
       width: 64px
       height: auto

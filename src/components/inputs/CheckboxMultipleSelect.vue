@@ -30,7 +30,7 @@ export default defineComponent({
       default: () => []
     },
     settings: {
-      type: Object,
+      type: Object as PropType<{ options: Record<string, string> }>,
       required: true
     },
     label: String,
@@ -40,7 +40,8 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    const val = reactive(createInitialValues(Object.keys(props.settings.options), new Set([...props.modelValue, ...props.requiredValues])))
+    const keys = Object.keys(props.settings?.options || {}) // TypeScript is messing with me
+    const val = reactive(createInitialValues(keys, new Set([...props.modelValue, ...props.requiredValues])))
     watch(val, value => {
       emit('update:modelValue', toOutputValue(value))
     })

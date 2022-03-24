@@ -77,7 +77,7 @@ export default defineComponent({
 
 <style lang="sass">
 #modal-backdrop
-  z-index: 100
+  z-index: 1010
   position: fixed
   display: flex
   justify-content: center

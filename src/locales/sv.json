@@ -340,7 +340,7 @@
     "selectExactProposals": "Välj {count} förslag",
     "selectMinProposals": "Välj minst ett förslag | Välj minst {count} förslag",
     "selectProposals": "Välj förslag",
-    "startPoll": "Start omröstning",
+    "startPoll": "Starta omröstning",
     "view": "Plenumvy"
   },
   "presence": {

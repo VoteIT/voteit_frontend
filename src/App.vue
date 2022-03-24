@@ -70,6 +70,9 @@ export default defineComponent({
 *
   box-sizing: border-box
 
+#app
+  min-height: 100vh
+
 .v-btn
   text-transform: none !important
   letter-spacing: .04em !important

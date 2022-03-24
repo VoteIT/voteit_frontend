@@ -216,10 +216,8 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
-.v-app-bar
-  overflow: visible
-  color: rgb(var(--v-theme-on-app-bar))
-a
+a,
+button
   color: rgb(var(--v-theme-on-app-bar))
   text-decoration: none
 </style>

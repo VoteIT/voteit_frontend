@@ -95,7 +95,7 @@ main
   right: 0
   background-color: rgb(var(--v-theme-app-bar))
   transition: background-color 1s ease-in
-  z-index: 101
+  z-index: 1010
   &.initFailed
     background-color: #303030
 
@@ -114,8 +114,8 @@ img.logo
   transition: height 700ms, left 500ms, top 500ms, transform 1s ease-in
   .initDone &
     height: 21.797px
-    left: 32px
-    top: 24px
+    left: 24px
+    top: 26px
   .initFailed &
     transform: rotate(6deg)
 
