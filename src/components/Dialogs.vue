@@ -27,7 +27,7 @@ export default defineComponent({
     let savedFocusEl: HTMLElement | null
     const queue = reactive<Dialog[]>([])
     const active = computed<Dialog | undefined>(() => queue[0])
-    const dismissible = computed(() => active.value?.dismissible === false)
+    const dismissible = computed(() => active.value?.dismissible)
 
     function close () {
       queue.shift()
@@ -51,8 +51,12 @@ export default defineComponent({
     onBeforeMount(() => {
       openDialogEvent.on(dialog => {
         if (!dialog) return
-        dialog.no = dialog.no ?? t('no')
-        dialog.yes = dialog.yes ?? t('yes')
+        dialog = {
+          dismissible: true,
+          no: t('no'),
+          yes: t('yes'),
+          ...dialog
+        }
         if (!queue.length) {
           savedFocusEl = document.querySelector(':focus')
         }
@@ -67,10 +71,11 @@ export default defineComponent({
 
     return {
       active,
-      close,
+      dismissible,
+      window,
       accept,
-      deny,
-      window
+      close,
+      deny
     }
   }
 })

@@ -191,15 +191,10 @@ export default defineComponent({
 
     const currentTab = ref('default')
     const tabs = computed(() => {
-      if (!canViewMeetingInvite) return
       const tabs = [
         {
           name: 'default',
           title: t('meeting.participants')
-        },
-        {
-          name: 'invites',
-          title: t('meeting.invites.invites')
         },
         {
           name: 'groups',
@@ -210,6 +205,12 @@ export default defineComponent({
         tabs.push({
           name: 'speakerHistory',
           title: t('speaker.history')
+        })
+      }
+      if (canViewMeetingInvite.value) {
+        tabs.push({
+          name: 'invites',
+          title: t('meeting.invites.invites')
         })
       }
       return tabs
