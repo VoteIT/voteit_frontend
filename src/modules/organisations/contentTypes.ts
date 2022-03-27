@@ -15,5 +15,6 @@ export const userType = new ContentType<User>({
 
 export const profileType = new ContentType<User>({
   name: 'user',
-  restEndpoint: 'user/'
+  restEndpoint: 'user/',
+  restConfig: { alertOnError: false }
 })

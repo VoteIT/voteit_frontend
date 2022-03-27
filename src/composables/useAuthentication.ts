@@ -43,15 +43,23 @@ export default function useAuthentication () {
   async function logout () {
     if (!isAuthenticated.value) return
     console.log('Logging out')
-    await profileType.api.action('logout')
-    isAuthenticated.value = false
-    user.value = null
+    try {
+      await profileType.api.action('logout')
+      isAuthenticated.value = false
+      user.value = null
+    } catch {
+      // TODO
+    }
   }
 
   async function updateProfile (profile: Pick<User, 'userid'>) {
     if (!user.value) throw new Error('Unauthenticated user cannot update profile')
-    const { data } = await profileType.getContentApi({ alertOnError: false }).patch(user.value.pk, profile)
-    user.value = { ...user.value, ...data }
+    try {
+      const { data } = await profileType.api.patch(user.value.pk, profile)
+      user.value = { ...user.value, ...data }
+    } catch {
+      // TODO
+    }
   }
 
   return {
