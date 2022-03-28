@@ -44,7 +44,7 @@
           </h2>
           <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">{{ t('delete') }}</v-btn>
           <div>
-            <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
+            <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
           </div>
           <div>
             <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
@@ -81,7 +81,7 @@
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
-import { AxiosError, AxiosResponse } from 'axios'
+import Axios from 'axios'
 
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
@@ -109,7 +109,7 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { getAgenda } = useAgenda()
+    const { getAgenda, getAgendaItem } = useAgenda()
     const { meetingId } = useMeeting()
     const { getState } = agendaItemType.useWorkflows()
     const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
@@ -150,6 +150,12 @@ export default defineComponent({
     }
 
     const editSelected = ref<number[]>([])
+    const selectedAgendaItems = computed(() => editSelected.value.map(getAgendaItem) as AgendaItem[])
+    const selectedSingularState = computed(() => {
+      const states = new Set(selectedAgendaItems.value.map(ai => ai?.state))
+      if (states.size !== 1) return
+      return states.values().next().value
+    })
     const editManyWorking = ref(false)
     const editIsAllSelected = computed({
       get: () => agendaItems.value.length === editSelected.value.length,
@@ -162,7 +168,21 @@ export default defineComponent({
       }
     })
 
-    async function actionOnSelected (fn: (pk: number) => Promise<AxiosResponse>, confirm?: string) {
+    function isRejected (settled: PromiseSettledResult<any>): settled is PromiseRejectedResult {
+      return settled.status === 'rejected'
+    }
+
+    function getRejectedDescriptions (settled: PromiseSettledResult<any>[]) {
+      const rejectedDescriptions = settled
+        .filter(isRejected)
+        .map(({ reason }) => {
+          if (Axios.isAxiosError(reason)) return Object.values(reason.response?.data ?? {})[0]
+          return t('error.unknown')
+        })
+      return [...new Set(rejectedDescriptions)]
+    }
+
+    async function actionOnSelected (fn: (ai: AgendaItem) => Promise<any>, confirm?: string) {
       if (editManyWorking.value) return
       editManyWorking.value = true
       if (confirm && !await dialogQuery({
@@ -172,17 +192,16 @@ export default defineComponent({
         editManyWorking.value = false
         return
       }
-      const settled = await Promise.allSettled(editSelected.value.map(fn))
-      const rejected = settled.filter(r => r.status === 'rejected') as PromiseRejectedResult[]
-      if (rejected.length) {
+      const settled = await Promise.allSettled(selectedAgendaItems.value.map(fn))
+      const rejectedDescriptions = getRejectedDescriptions(settled)
+      if (rejectedDescriptions.length) {
         openAlertEvent.emit({
           title: t('error.error'),
           level: AlertLevel.Error,
           sticky: true,
           text: t('agenda.changeManyFailed', {
-            count: rejected.length,
-            reason: (rejected[0].reason as AxiosError).response?.data.error ?? t('error.unknown')
-          }, rejected.length)
+            reason: rejectedDescriptions.join(', ')
+          }, rejectedDescriptions.length)
         })
       }
       editManyWorking.value = false
@@ -190,15 +209,16 @@ export default defineComponent({
 
     function deleteSelected () {
       actionOnSelected(
-        pk => agendaApi.delete(pk),
+        ai => agendaApi.delete(ai.pk),
         t('agenda.deleteSelectedConfirm', { count: editSelected.value.length }, editSelected.value.length)
       )
     }
 
     function setStateSelected (state: WorkflowState) {
-      actionOnSelected(pk => {
+      actionOnSelected(ai => {
+        if (ai.state === state.state) return Promise.resolve()
         if (!state.transition) return Promise.reject(new Error('No transition'))
-        return agendaApi.transition(pk, state.transition)
+        return agendaApi.transition(ai.pk, state.transition)
       })
     }
 
@@ -207,7 +227,7 @@ export default defineComponent({
     }
 
     function patchSelected (data: Partial<AgendaItem>) {
-      actionOnSelected(pk => agendaApi.patch(pk, data))
+      actionOnSelected(ai => agendaApi.patch(ai.pk, data))
     }
 
     return {
@@ -220,6 +240,7 @@ export default defineComponent({
       editIsAllSelected,
       editSelected,
       agendaStates: agendaItemType.workflowStates,
+      selectedSingularState,
       addAgendaItem,
       canDeleteAgendaItem,
       deleteItem,

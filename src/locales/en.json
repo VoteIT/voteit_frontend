@@ -70,7 +70,7 @@
     "blockProposals": "Block proposals",
     "blockDiscussion": "Block discussion",
     "changeMany": "Change one agenda item | Change {count} agenda items",
-    "changeManyFailed": "Operation failed for one agenda item {reason} | Operation failed for {count} agenda items ({reason})",
+    "changeManyFailed": "Operation failed for one agenda item ({reason}) | Operation failed for {count} agenda items ({reason})",
     "columns": "Columns",
     "deleteItemConfirm": "You are about to delete an Agenda Item permanently.\nAre you sure?",
     "deleteSelectedConfirm": "You are about to delete {count} Agenda Items permanently.\nAre you sure?",
