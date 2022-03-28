@@ -14,9 +14,7 @@ let callbacks: (() => Promise<unknown>)[] = []
 const initState = ref(InitState.Loading)
 const initFailed = computed(() => initState.value === InitState.Failed)
 const initDone = computed(() => initState.value === InitState.Done)
-const isReady = computed(() => {
-  return isAuthenticated.value && socketState.value
-})
+const isReady = computed(() => isAuthenticated.value && socketState.value)
 
 async function _failure (name?: string) {
   console.error('Loading failed', name)
