@@ -8,8 +8,7 @@ export const agendaItemType = new ContentType<AgendaItem>({
   name: 'agenda_item',
   channels: ['agenda_item'],
   restEndpoint: 'agenda-items/',
-  dateFields: ['related_modified'],
-  useSocketApi: true
+  dateFields: ['related_modified']
 })
 
 export const lastReadType = new ContentType<LastRead>({
