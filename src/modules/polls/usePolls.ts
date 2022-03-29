@@ -22,6 +22,9 @@ useBubbles().register(UnvotedPollsBubble)
 
 pollType
   .updateMap(polls, (poll, old) => {
+    // Warn if we got an unknown poll method
+    if (!(poll.method_name in pollMethods)) console.warn(`Unknown poll method: ${poll.method_name}`)
+    // Emit an event if started
     if (poll.state === PollState.Ongoing && poll.state !== old?.state) pollStartedEvent.emit(poll)
   })
   .on<PollStatus>('status', item => {
@@ -61,25 +64,24 @@ agendaDeletedEvent.on(pk => {
   }
 })
 
-// FIXME Maybe make this a Record<PollMethodName, Pollmethod>
-const pollMethods: PollMethod[] = [
-  {
+const pollMethods: Record<PollMethodName, PollMethod> = {
+  combined_simple: {
     name: PollMethodName.CombinedSimple,
     proposalsMin: 1
   },
-  {
+  majority: {
     name: PollMethodName.Majority,
     proposalsMin: 2,
     proposalsMax: 2
   },
-  {
+  schulze: {
     name: PollMethodName.Schulze,
     proposalsMin: 2,
     initialSettings: {
       stars: 5
     }
   },
-  {
+  repeated_schulze: {
     name: PollMethodName.RepeatedSchulze,
     multipleWinners: true,
     proposalsMin: 3,
@@ -89,7 +91,7 @@ const pollMethods: PollMethod[] = [
       stars: 5
     }
   },
-  {
+  scottish_stv: {
     name: PollMethodName.ScottishSTV,
     multipleWinners: true,
     proposalsMin: 3,
@@ -100,14 +102,14 @@ const pollMethods: PollMethod[] = [
       allow_random: true
     }
   },
-  {
+  irv: {
     name: PollMethodName.InstantRunoff,
     proposalsMin: 3,
     initialSettings: {
       allow_random: true
     }
   },
-  {
+  dutt: {
     name: PollMethodName.Dutt,
     proposalsMin: 3,
     initialSettings: {
@@ -115,7 +117,7 @@ const pollMethods: PollMethod[] = [
       max: 0
     }
   }
-]
+}
 
 const allPollTitles = computed(() => {
   return [...polls.values()].map(p => p.title)
@@ -128,64 +130,64 @@ function getPolls (meeting: number, state?: PollState) {
   )]
 }
 
+function filterPolls (filter: (poll: Poll) => boolean) {
+  return mapFilter(polls, filter)
+}
+
+function getAiPolls (agendaItem: number, state?: PollState) {
+  return [...mapFilter(
+    polls,
+    p => p.agenda_item === agendaItem && (!state || p.state === state)
+  )]
+}
+
+function getPoll (pk: number) {
+  return polls.get(pk)
+}
+
+function availableMethodFilter (method: PollMethod, proposalCount: number) {
+  if (method.proposalsMin && proposalCount < method.proposalsMin) return false
+  if (method.proposalsMax && proposalCount > method.proposalsMax) return false
+  return true
+}
+
+function getPollMethod (name: PollMethodName) {
+  return pollMethods[name]
+}
+
+function getPollMethods (proposalCount?: number) {
+  if (proposalCount === undefined) return Object.values(pollMethods)
+  return Object.values(pollMethods).filter(method => availableMethodFilter(method, proposalCount))
+}
+
+function getPollStatus (pk: number) {
+  return pollStatuses.get(pk)
+}
+
+function getUserVote (poll: Poll): Vote | undefined {
+  for (const vote of userVotes.values()) {
+    if (vote.poll === poll.pk) return vote
+  }
+}
+
+function iterUnvotedPolls (meeting: number) {
+  return mapFilter(polls, p => {
+    return p.meeting === meeting &&
+      p.state === PollState.Ongoing &&
+      canVote(p) &&
+      !getUserVote(p)
+  })
+}
+
+function getNextUnvotedPoll (meeting: number) {
+  return iterUnvotedPolls(meeting).next().value
+}
+
+function getUnvotedPolls (meeting: number) {
+  return [...iterUnvotedPolls(meeting)]
+}
+
 export default function usePolls () {
-  function filterPolls (filter: (poll: Poll) => boolean) {
-    return mapFilter(polls, filter)
-  }
-
-  function getAiPolls (agendaItem: number, state?: PollState) {
-    return [...mapFilter(
-      polls,
-      p => p.agenda_item === agendaItem && (!state || p.state === state)
-    )]
-  }
-
-  function getPoll (pk: number) {
-    return polls.get(pk)
-  }
-
-  function availableMethodFilter (method: PollMethod, proposalCount: number) {
-    if (method.proposalsMin && proposalCount < method.proposalsMin) return false
-    if (method.proposalsMax && proposalCount > method.proposalsMax) return false
-    return true
-  }
-
-  function getPollMethod (name: PollMethodName) {
-    return pollMethods.find(method => method.name === name) as PollMethod // Type casting should be safe, since this list should match
-  }
-
-  function getPollMethods (proposalCount?: number) {
-    if (proposalCount === undefined) return pollMethods
-    return pollMethods.filter(method => availableMethodFilter(method, proposalCount))
-  }
-
-  function getPollStatus (pk: number) {
-    return pollStatuses.get(pk)
-  }
-
-  function getUserVote (poll: Poll): Vote | undefined {
-    for (const vote of userVotes.values()) {
-      if (vote.poll === poll.pk) return vote
-    }
-  }
-
-  function iterUnvotedPolls (meeting: number) {
-    return mapFilter(polls, p => {
-      return p.meeting === meeting &&
-        p.state === PollState.Ongoing &&
-        canVote(p) &&
-        !getUserVote(p)
-    })
-  }
-
-  function getNextUnvotedPoll (meeting: number) {
-    return iterUnvotedPolls(meeting).next().value
-  }
-
-  function getUnvotedPolls (meeting: number) {
-    return [...iterUnvotedPolls(meeting)]
-  }
-
   return {
     allPollTitles,
     filterPolls,
