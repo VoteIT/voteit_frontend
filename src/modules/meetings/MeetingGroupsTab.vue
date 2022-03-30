@@ -8,7 +8,7 @@
         {{ t('meeting.groups.groups') }}
       </h1>
       <v-spacer />
-      <v-dialog>
+      <v-dialog v-if="canChangeMeeting">
         <template #activator="{ props }">
           <v-btn color="primary" prepend-icon="mdi-account-multiple-plus" v-bind="props">
             {{ t('meeting.groups.create') }}
@@ -41,7 +41,7 @@
           <th>
             {{ t('name') }}
           </th>
-          <th colspan="2">
+          <th :colspan="canChangeMeeting ? 2 : 1">
             {{ t('meeting.groups.members') }}
           </th>
         </tr>
@@ -73,7 +73,7 @@
               </template>
             </v-dialog>
           </td>
-          <td class="text-right">
+          <td class="text-right" v-if="canChangeMeeting">
             <v-dialog>
               <template #activator="{ props }">
                 <v-btn size="small" color="primary" v-bind="props">
@@ -165,7 +165,7 @@ export default defineComponent({
     const { t } = useI18n()
     const { meetingId } = useMeeting()
     const { getUser } = useUserDetails()
-    const { meetingGroups } = useMeetingGroups(meetingId)
+    const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
 
     const groupSchema = [
@@ -217,6 +217,7 @@ export default defineComponent({
       t,
       ...useDefaults(),
       addUser,
+      canChangeMeeting,
       groupSchema,
       meetingId,
       meetingType,

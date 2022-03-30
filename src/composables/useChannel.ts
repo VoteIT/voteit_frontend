@@ -33,6 +33,7 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
       } catch {
         if (config?.critical) {
           openDialogEvent.emit({
+            dismissible: false,
             title: t('meeting.subscriptionFailedMessage'),
             theme: ThemeColor.Error,
             no: false,

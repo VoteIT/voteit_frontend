@@ -6,13 +6,13 @@ import { UserState, User } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
 
 export const user = ref<User | null>(null)
-const isAuthenticated = ref(false)
+const isAuthenticated = ref<boolean | undefined>(undefined)
 const organizationRoles = useContextRoles('organisation') // Avoid circular import
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 export default function useAuthentication () {
-  async function fetchAuthenticatedUser (tries = 3): Promise<User | null> {
+  async function fetchAuthenticatedUser (tries = 3): Promise<User | undefined> {
     try {
       const { data } = await profileType.api.list<User>()
       console.log('User authenticated', data.userid)
@@ -25,8 +25,9 @@ export default function useAuthentication () {
     } catch (err) {
       switch ((err as AxiosError).response?.status) {
         case 401:
+          isAuthenticated.value = false
           console.log('Not logged in')
-          return null
+          return
         default:
           if (tries === 0) throw new Error('Unknown authentication error')
           await sleep(1000)
@@ -35,23 +36,26 @@ export default function useAuthentication () {
     }
   }
 
-  // function startOrganizationLogin (organization: Organization) {
-  //   if (!organization.login_url) throw new Error(`Organization ${organization.title} has no login information`)
-  //   location.assign(organization.login_url)
-  // }
-
   async function logout () {
     if (!isAuthenticated.value) return
     console.log('Logging out')
-    await profileType.api.action('logout')
-    isAuthenticated.value = false
-    user.value = null
+    try {
+      await profileType.api.action('logout')
+      isAuthenticated.value = false
+      user.value = null
+    } catch {
+      // TODO
+    }
   }
 
   async function updateProfile (profile: Pick<User, 'userid'>) {
     if (!user.value) throw new Error('Unauthenticated user cannot update profile')
-    const { data } = await profileType.getContentApi({ alertOnError: false }).patch(user.value.pk, profile)
-    user.value = { ...user.value, ...data }
+    try {
+      const { data } = await profileType.api.patch(user.value.pk, profile)
+      user.value = { ...user.value, ...data }
+    } catch {
+      // TODO
+    }
   }
 
   return {

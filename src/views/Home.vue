@@ -6,7 +6,7 @@
       </v-btn>
     </v-col>
     <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
-      <Tabs :tabs="tabs">
+      <Tabs :tabs="tabs" v-model="currentTab">
         <template #default>
           <header class="d-flex">
             <div class="flex-grow-1">
@@ -93,6 +93,7 @@ import useOrganisation from '@/modules/organisations/useOrganisation'
 import useDefaults from '@/composables/useDefaults'
 import { OrganisationRole } from '@/modules/organisations/types'
 import { ContextRoles } from '@/composables/types'
+import useChannel from '@/composables/useChannel'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -107,8 +108,15 @@ export default defineComponent({
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user } = useAuthentication()
     const { fetchOrganisations } = useOrganisations()
-    const { canChangeOrganisation, idLoginURL, organisation } = useOrganisation()
+    const { canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
     const loader = useLoader('Home')
+
+    const currentTab = ref('default')
+    const subscribeOrganisationId = computed(() => {
+      if (currentTab.value !== 'roles') return
+      return organisationId.value
+    })
+    useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
 
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
@@ -151,18 +159,17 @@ export default defineComponent({
       ]
     })
     const tabs = computed<Tab[] | undefined>(() => {
-      return undefined
-      // if (!canChangeOrganisation.value) return
-      // return [
-      //   {
-      //     name: 'default',
-      //     title: 'Hem'
-      //   },
-      //   {
-      //     name: 'roles',
-      //     title: 'Roller'
-      //   }
-      // ]
+      if (!canChangeOrganisation.value) return
+      return [
+        {
+          name: 'default',
+          title: 'Hem'
+        },
+        {
+          name: 'roles',
+          title: 'Roller'
+        }
+      ]
     })
 
     async function save () {
@@ -188,6 +195,7 @@ export default defineComponent({
     return {
       t,
       changeForm,
+      currentTab,
       debug: false,
       editing,
       idLoginURL,

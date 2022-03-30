@@ -26,9 +26,9 @@
     <v-divider class="my-4" />
     <v-row>
       <v-col class="d-flex">
-        <AddProposalModal v-if="canAddProposal" />
+        <AddProposalModal v-if="canAddProposal" :key="`add-proposal-${agendaId}`" />
         <v-spacer />
-        <AgendaFilters ref="filterComponent" :key="agendaId" />
+        <AgendaFilters ref="filterComponent" :key="`filter-${agendaId}`" />
         <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
           <span class="text-secondary">{{ t('agenda.showAs') }}</span>
           <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">

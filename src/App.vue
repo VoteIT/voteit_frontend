@@ -27,6 +27,7 @@ import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
 import useOrganisations from './modules/organisations/useOrganisations'
+import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   components: {
@@ -40,6 +41,8 @@ export default defineComponent({
     const loader = useLoader('App')
     const { fetchAuthenticatedUser } = useAuthentication()
     const { fetchOrganisations } = useOrganisations()
+    const route = useRoute()
+    const router = useRouter()
 
     onBeforeMount(async () => {
       try {
@@ -47,7 +50,10 @@ export default defineComponent({
           fetchAuthenticatedUser(),
           fetchOrganisations()
         ])
-        if (!user) loader.setLoaded()
+        if (!user) {
+          if (route.path !== '/') await router.push('/') // Reroute unauthenticated user to start page
+          loader.setLoaded()
+        }
       } catch {
         loader.setLoaded(false)
       }
@@ -83,7 +89,7 @@ export default defineComponent({
   .v-input__details
     display: none
 
-// TODO Remove when fiex upstream
+// TODO Remove when fixed upstream
 .v-dialog .v-overlay__content
   max-height: calc(100vh - 40px) !important
   .v-sheet

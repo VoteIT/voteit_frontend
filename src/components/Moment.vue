@@ -8,13 +8,14 @@ import moment from 'moment'
 import { AxiosResponse } from 'axios'
 import restApi from '@/utils/restApi'
 
-let serverAhead = 0 // In Seconds
+const ABSOLUTE_BREAKPOINT = moment.duration(6, 'days').asMilliseconds() // After 6 days, display absolute time
+let serverAhead = 0 // In ms
 let interceptorId: number | null = null
 
 function interceptTime (response: AxiosResponse): AxiosResponse {
   if (response.headers.date) {
-    serverAhead = Math.floor(new Date(response.headers.date).getTime() / 1000) - Math.floor(new Date().getTime() / 1000)
-    if (serverAhead !== 0) console.log(`Server is ${Math.abs(serverAhead)} second(s) ${serverAhead > 0 ? 'ahead of' : 'behind'} you`)
+    serverAhead = new Date(response.headers.date).getTime() - new Date().getTime()
+    if (serverAhead !== 0) console.log(`Server is ${Math.abs(serverAhead)} ms ${serverAhead > 0 ? 'ahead of' : 'behind'} you`)
     if (typeof interceptorId === 'number') restApi.interceptors.response.eject(interceptorId)
   }
   return response
@@ -36,25 +37,39 @@ export default defineComponent({
     let intervalId: number
     const fromNow = ref('')
 
-    const digits = (n: number) => n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
+    function digits (n: number) {
+      return n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
+    }
+
+    // Adjust serverAhead value if we got a date in the future.
+    function adjustServerAhead () {
+      const date = moment(props.date)
+      const msAhead = date.diff(moment())
+      if (msAhead > serverAhead) {
+        console.log(`Adjusting serverAhead to ${msAhead} ms ahead`)
+        serverAhead = msAhead
+      }
+    }
 
     function updateFromNow () {
-      // Can not be computed(), because it has to trigger reactivity
-      const date = moment(props.date).set('ms', 0)
-      const serverDate = moment().add(serverAhead, 's').set('ms', 0)
+      // Can not be computed(), because time is not reactive
+      const date = moment(props.date)
+      const serverDate = moment().add(serverAhead, 'ms')
+      const serverDiff = serverDate.diff(date)
       if (props.inSeconds) {
-        const duration = moment.duration(serverDate.diff(date))
-        if (duration.hours()) {
-          fromNow.value = `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
-        } else {
-          fromNow.value = `${duration.minutes()}:${digits(duration.seconds())}`
-        }
+        const duration = moment.duration(serverDiff)
+        fromNow.value = duration.hours()
+          ? `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
+          : `${duration.minutes()}:${digits(duration.seconds())}`
       } else {
-        fromNow.value = date.from(serverDate)
+        fromNow.value = serverDiff > ABSOLUTE_BREAKPOINT
+          ? date.calendar()
+          : date.from(serverDate)
       }
     }
 
     onBeforeMount(() => {
+      adjustServerAhead()
       updateFromNow()
       intervalId = setInterval(updateFromNow, props.inSeconds ? 1000 : 60000)
     })

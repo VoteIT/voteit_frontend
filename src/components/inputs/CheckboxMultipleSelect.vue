@@ -30,7 +30,7 @@ export default defineComponent({
       default: () => []
     },
     settings: {
-      type: Object as PropType<{ options: Record<string, string> }>,
+      type: Object as PropType<{ options?: Record<string, string> }>,
       required: true
     },
     label: String,
@@ -40,8 +40,11 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    const keys = Object.keys(props.settings?.options || {}) // TypeScript is messing with me
-    const val = reactive(createInitialValues(keys, new Set([...props.modelValue, ...props.requiredValues])))
+    if (!props.settings?.options) throw new Error('CheckboxMultipleSelect requires :settings="{ options: Record<string, string> }"')
+    const val = reactive(createInitialValues(
+      Object.keys(props.settings.options),
+      new Set([...props.modelValue, ...props.requiredValues])
+    ))
     watch(val, value => {
       emit('update:modelValue', toOutputValue(value))
     })
