@@ -71,7 +71,7 @@ const getDuttSchema: SchemaGenerator = (t, proposals) => {
       name,
       type: InputType.Number,
       label: t(`poll.dutt.${name}`),
-      hint: t('poll.dutt.minMaxProposals'),
+      hint: t('poll.dutt.minMaxHint'),
       settings: {
         min: 0,
         max: proposals.length

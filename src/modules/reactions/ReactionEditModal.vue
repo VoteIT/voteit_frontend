@@ -42,18 +42,18 @@
         </div>
         <div class="btn-controls submit">
           <v-spacer />
-          <v-btn preprend-icon="mdi-cancel" color="secondary" @click="close()">
+          <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close()">
             {{ t('cancel') }}
           </v-btn>
           <template v-if="formData.pk">
             <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" @click="deleteButton()">
               {{ t('delete') }}
             </v-btn>
-            <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="!isValid || submitting">
+            <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
               {{ t('update') }}
             </v-btn>
           </template>
-          <v-btn v-else type="submit" color="primary" prepend-icon="mdi-send" :disabled="!isValid || submitting">
+          <v-btn v-else type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
             {{ t('create') }}
           </v-btn>
         </div>

@@ -1,9 +1,9 @@
 <template>
   <v-app-bar app flat>
     <v-app-bar-nav-icon v-show="hasNavDrawer" class="d-md-none" variant="text" color="background" @click.stop="toggleNavDrawerEvent.emit()" />
-    <v-app-bar-title>
-      <RouterLink to="/" :title="t('home.home')"><img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" /></RouterLink>
-    </v-app-bar-title>
+    <router-link to="/" :title="t('home.home')">
+      <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
+    </router-link>
     <v-spacer />
     <div v-if="user">
       <v-btn class="user-menu" :class="{ open: userMenuOpen }" variant="text" @click="userMenuOpen = !userMenuOpen">
@@ -153,13 +153,14 @@ export default defineComponent({
 .v-toolbar
   background-color: rgb(var(--v-theme-app-bar)) !important
   color: rgb(var(--v-theme-on-app-bar))
-  .v-toolbar-title
-    img
-      width: 64px
-      height: auto
-      margin: 14px 8px 0
-  button.user-menu
+  img
+    width: 64px
+    height: auto
+    margin: 10px 16px 0
+  a,
+  button
     color: rgb(var(--v-theme-on-app-bar))
+    text-decoration: none
 
 .v-list--density-comfortable .v-list-item--prepend.no-prepend
   -webkit-padding-start: 16px !important

@@ -1,22 +1,17 @@
 <template>
   <v-app-bar app flat>
-    <v-app-bar-title>
-      <router-link to="/" :title="t('home.home')" class="mr-4">
-        <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
-      </router-link>
-    </v-app-bar-title>
+    <router-link :to="meetingPath" :title="t('home.home')" class="mr-4">
+      <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
+    </router-link>
     <v-app-bar-title v-if="meeting">
       <router-link :to="meetingPath">
         {{ meeting.title }}
+        <small v-if="speakerSystem">
+          ({{ speakerSystem.title }})
+        </small>
       </router-link>
     </v-app-bar-title>
-    <template v-if="systemsMenu">
-      <v-spacer />
-      <v-app-bar-title>
-        {{ speakerSystem.title }}
-      </v-app-bar-title>
-      <Menu position="bottom" :items="systemsMenu" icon="mdi-chevron-down" />
-    </template>
+    <Menu v-if="systemsMenu" position="bottom" :items="systemsMenu" icon="mdi-chevron-down" />
   </v-app-bar>
 </template>
 
@@ -43,12 +38,14 @@ export default defineComponent({
     const systems = computed(() => getSystems(meetingId.value))
     const systemsMenu = computed<MenuItemTo[] | undefined>(() => {
       if (systems.value.length <= 1) return
-      return systems.value.map(system => {
-        return {
-          title: system.title,
-          to: `/speakers/${meetingId.value}/${system.pk}`
-        }
-      })
+      return systems.value
+        .filter(system => system.pk !== speakerSystem.value?.pk)
+        .map(system => {
+          return {
+            title: system.title,
+            to: `/speakers/${meetingId.value}/${system.pk}`
+          }
+        })
     })
     return {
       t,
@@ -60,12 +57,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass" scoped>
-.v-app-bar
-  overflow: visible
-  color: rgb(var(--v-theme-on-app-bar))
-a
-  color: rgb(var(--v-theme-on-app-bar))
-  text-decoration: none
-</style>

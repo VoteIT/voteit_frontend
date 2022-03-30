@@ -12,7 +12,7 @@
         <p v-if="!queue.length" class="text-secondary text-center">
           {{ t('speaker.queueEmpty') }}
         </p>
-        <v-list>
+        <v-list color="background">
           <v-slide-x-transition group>
             <template v-for="{ active, title, queue } in groups" :key="title">
               <div v-if="!active && queue.length" :key="title" class="mt-6 mb-2" style="z-index: 0;">

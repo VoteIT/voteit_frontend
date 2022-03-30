@@ -23,15 +23,15 @@
       </p>
     </v-card-text>
     <v-card-actions v-if="enterLeaveBtn" class="flex-wrap">
-      <v-btn :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
+      <v-btn variant="contained" :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <v-btn variant="text" :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange">
+      <v-btn :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange">
         {{ t('manage') }}
       </v-btn>
       <div class="d-flex flex-grow-1">
         <v-spacer />
-        <v-btn v-if="fullscreenPath" variant="text" :to="fullscreenPath" icon="mdi-overscan" />
+        <v-btn v-if="fullscreenPath" :to="fullscreenPath" icon="mdi-overscan" />
       </div>
     </v-card-actions>
   </v-card>

@@ -85,9 +85,9 @@ export default defineComponent({
 
 // Temporary Vuetify fix
 // TODO Remove when v-text-input supports hide-details
-.v-input.hide-details
-  .v-input__details
-    display: none
+// .v-input.hide-details
+//   .v-input__details
+//     display: none
 
 // TODO Remove when fixed upstream
 .v-dialog .v-overlay__content

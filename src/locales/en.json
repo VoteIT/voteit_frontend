@@ -199,11 +199,15 @@
       }
     },
     "role": {
-      "participant": "Participant",
+      "discusser": "Discusser",
+      "list_moderator": "List moderator",
+      "meeting_creator": "Meeting creator",
       "moderator": "Moderator",
+      "org_manager": "Organisation manager",
+      "participant": "Participant",
       "potential_voter": "Potential voter",
       "proposer": "Proposer",
-      "discusser": "Discusser"
+      "speaker": "Speaker"
     },
     "settings": {
       "all": "All settings",

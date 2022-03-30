@@ -15,8 +15,7 @@ export default function useAgendaItem () {
   const { allPollTitles } = usePolls()
 
   const agendaItemPath = computed(() => {
-    if (!meetingPath.value || !agendaItem.value) return
-    return `${meetingPath.value}/a/${agendaItem.value.pk}/${slugify(agendaItem.value.title)}`
+    return `${meetingPath.value}/a/${agendaId.value}/${slugify(agendaItem.value ? agendaItem.value.title : '-')}`
   })
 
   const nextPollTitle = computed(() => {

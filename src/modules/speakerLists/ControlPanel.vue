@@ -64,7 +64,7 @@
             {{ system.safe_positions ?? t('speaker.noSafePositions') }}
           </td>
           <td>
-            {{ system.meeting_roles_to_speaker.map(r => t(`meeting.role.${r}`)).join(', ') }}
+            {{ system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ') }}
           </td>
           <td class="text-right">
             <Menu :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
@@ -269,7 +269,7 @@ export default defineComponent({
         },
         {
           key: t('speaker.speakerRoles'),
-          value: system.meeting_roles_to_speaker.map(r => t(`meeting.role.${r}`)).join(', ')
+          value: system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ')
         }
       ]
     }

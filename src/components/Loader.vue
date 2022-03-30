@@ -114,8 +114,8 @@ img.logo
   transition: height 700ms, left 500ms, top 500ms, transform 1s ease-in
   .initDone &
     height: 21.797px
-    left: 24px
-    top: 26px
+    left: 31px
+    top: 23px
   .initFailed &
     transform: rotate(6deg)
 

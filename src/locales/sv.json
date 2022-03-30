@@ -197,13 +197,6 @@
         "email": "E-post"
       }
     },
-    "role": {
-      "participant": "Deltagare",
-      "moderator": "Moderator",
-      "potential_voter": "Potentiell röstare",
-      "proposer": "Förslagsläggare",
-      "discusser": "Debattör"
-    },
     "settings": {
       "all": "Alla inställningar",
       "for": "Inställningar för {title}"
@@ -399,6 +392,17 @@
     "peopleReacted": "Reaktioner",
     "rolesRequired": "Roller som krävs för att reagera",
     "settings": "Inställningar för reaktionsknappar"
+  },
+  "role": {
+    "discusser": "Debattör",
+    "list_moderator": "Listmoderator",
+    "meeting_creator": "Mötesskapare",
+    "moderator": "Moderator",
+    "org_manager": "Administratör",
+    "participant": "Deltagare",
+    "potential_voter": "Potentiell röstare",
+    "proposer": "Förslagsläggare",
+    "speaker": "Talare"
   },
   "socket": {
     "connected": "Uppkopplad",

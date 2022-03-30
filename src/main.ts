@@ -35,13 +35,14 @@ const locale = 'sv'
 
 moment.locale(locale)
 
-async function loadLocaleMessages (i18n: I18n, locale: string) {
-  const messages = await import(
-    /* webpackChunkName: "locale-[request]" */ `./locales/${locale}.json`
-  )
-  i18n.global.setLocaleMessage(locale, messages)
-  return nextTick()
-}
+/* LOCKED TO 'sv' */
+// async function loadLocaleMessages (i18n: I18n, locale: string) {
+//   const messages = await import(
+//     /* webpackChunkName: "locale-[request]" */ `./locales/${locale}.json`
+//   )
+//   i18n.global.setLocaleMessage(locale, messages)
+//   return nextTick()
+// }
 
 const i18n = createI18n({
   legacy: false,
@@ -53,7 +54,8 @@ const i18n = createI18n({
   }
 })
 
-if (locale !== 'sv') loadLocaleMessages(i18n, locale)
+/* LOCKED TO 'sv' */
+// if (locale !== 'sv') loadLocaleMessages(i18n, locale)
 
 createApp(App)
   .use(i18n)

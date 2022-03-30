@@ -301,7 +301,7 @@ export default defineComponent({
           return {
             ...inv,
             typeIcon: getTypeIcon(inv.type),
-            roles: inv.roles.map(role => ({ title: t(`meeting.role.${role}`), icon: getRoleIcon(role) })),
+            roles: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
             state: stateLabels.value[inv.state]
           }
         })

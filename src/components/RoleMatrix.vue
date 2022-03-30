@@ -7,8 +7,8 @@
           <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
             {{ t('name') }}
           </th>
-          <th v-for="{ name, title } in roles" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
-            <v-tooltip :text="title" anchor="top">
+          <th v-for="{ name } in roles" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
+            <v-tooltip :text="t(`role.${name}`)" anchor="top">
               <template #activator="{ props }">
                 <v-icon v-bind="props" :icon="getRoleIcon(name)" />
                 {{ roleCount(name) }}

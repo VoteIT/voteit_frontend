@@ -1,16 +1,13 @@
 <template>
   <v-app-bar app flat>
-    <v-app-bar-title>
-      <router-link to="/" :title="t('home.home')" class="mr-4">
-        <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
-      </router-link>
-    </v-app-bar-title>
+    <router-link :to="agendaItemPath" :title="t('home.home')" class="mr-4">
+      <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
+    </router-link>
     <v-app-bar-title class="text-truncate">
       <router-link v-if="agendaItem" :to="agendaItemPath">
         {{ agendaItem.title }}
       </router-link>
     </v-app-bar-title>
-    <v-spacer/>
     <div class="flex-shrink-0">
       <Menu position="bottom" icon="mdi-star" :items="pollMenu" />
       <Menu position="bottom" :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
@@ -214,10 +211,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass" scoped>
-a,
-button
-  color: rgb(var(--v-theme-on-app-bar))
-  text-decoration: none
-</style>

@@ -21,7 +21,7 @@ export default function useMeeting () {
     return Object.fromEntries(
       Object.values(MeetingRole)
         .filter(filter)
-        .map(role => [role, t(`meeting.role.${role}`)])
+        .map(role => [role, t(`role.${role}`)])
     )
   }
 
