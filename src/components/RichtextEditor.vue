@@ -1,6 +1,9 @@
 <template>
   <div class="richtext-editor" ref="rootElement">
     <div ref="editorElement"/>
+    <p v-if="errors" class="text-error">
+      {{ errors.join(', ') }}
+    </p>
     <slot name="controls" />
     <div class="btn-controls" v-if="submit && !$slots.controls">
       <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
@@ -79,6 +82,7 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
 export default defineComponent({
   emits: ['submit', 'update:modelValue'],
   props: {
+    errors: Array as PropType<string[]>,
     modelValue: {
       type: String,
       default: ''

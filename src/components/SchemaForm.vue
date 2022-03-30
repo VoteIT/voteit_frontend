@@ -13,7 +13,8 @@
 
 <script lang="ts">
 import { Component, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
-import axios, { AxiosError } from 'axios'
+
+import { parseRestError } from '@/utils/restApi'
 
 import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
 import SelectVue from './inputs/Select.vue'
@@ -27,16 +28,6 @@ const componentNames: Record<FieldType, string | Component> = {
   switch: 'v-switch',
   text: 'v-text-field',
   textarea: 'v-textarea'
-}
-
-function getFieldErrors (e: Error | AxiosError) {
-  // TODO
-  if (axios.isAxiosError(e)) {
-    if (!e.response) return { __root__: 'Unkown error' }
-    const { data } = e.response
-    return data
-  }
-  return { __root__: 'Unkown error' }
 }
 
 export default defineComponent({
@@ -121,7 +112,7 @@ export default defineComponent({
         Object.assign(formData, props.modelValue)
         emit('saved')
       } catch (e) {
-        fieldErrors.value = getFieldErrors(e as AxiosError)
+        fieldErrors.value = parseRestError(e)
       }
       disabled.value = false
     }

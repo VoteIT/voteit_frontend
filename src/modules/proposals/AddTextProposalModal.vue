@@ -1,7 +1,7 @@
 <template>
   <AddProposalModal shortname="diff_proposal" :extra="{ paragraph: paragraph.pk }" v-model="body" @reset="reset()">
     <template #activator="{ props }">
-      <v-btn size="small" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
+      <v-btn size="small" variant="contained" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
         {{ t('proposal.change') }}
       </v-btn>
     </template>

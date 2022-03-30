@@ -90,8 +90,8 @@ export default defineComponent({
 //     display: none
 
 // TODO Remove when fixed upstream
-.v-dialog .v-overlay__content
-  max-height: calc(100vh - 40px) !important
-  .v-sheet
-    overflow-y: auto !important
+// .v-dialog .v-overlay__content
+//   max-height: calc(100vh - 40px) !important
+//   .v-sheet
+//     overflow-y: auto !important
 </style>
