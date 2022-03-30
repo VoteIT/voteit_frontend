@@ -52,7 +52,7 @@ export default defineComponent({
     }
 
     function updateFromNow () {
-      // Can not be computed(), because it has to trigger reactivity
+      // Can not be computed(), because time is not reactive
       const date = moment(props.date)
       const serverDate = moment().add(serverAhead, 'ms')
       const serverDiff = serverDate.diff(date)
