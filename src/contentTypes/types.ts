@@ -13,14 +13,23 @@ export interface WorkflowState<S = string> {
   color?: ThemeColor
 }
 
+export interface TransitionCondition {
+  name: string
+  allowed: boolean // Condition met?
+  title: string // Title or name, mostly meant for the developer
+}
+
 // Transitions from backend
 export interface Transition {
   name: string
   permission: string
   source: string
   target: string
-  title: string,
+  title: string
   icon?: string
+  conditions: TransitionCondition[],
+  allowed: boolean // perm + conditions met?
+  has_perm: boolean // Is the permission met?
 }
 
 export interface BaseContent {

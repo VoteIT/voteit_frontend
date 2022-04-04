@@ -7,6 +7,13 @@
       <v-list nav density="comfortable">
         <v-list-item :prepend-icon="t.icon" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
           {{ t.title }}
+          <!-- FIXME: Make this sane :)
+          {{ t.allowed ? 'allowed' : 'not allowed:' }}
+          {{ t.has_perm ? '' : 'You lack permission ' + t.permisison }}
+          <span v-for="c in unmetContions(t)" :key="c.name">
+            {{ c.title }}
+          </span>
+          -->
         </v-list-item>
       </v-list>
     </v-sheet>
@@ -77,6 +84,10 @@ export default defineComponent({
       nextTick(toggle)
     }
 
+    function unmetContions (t: Transition) {
+      return t.conditions.filter(c => !c.allowed)
+    }
+
     watch(() => props.object.state, () => { transitionsAvailable.value = null })
 
     function clickWatch (event: MouseEvent) {
@@ -119,6 +130,7 @@ export default defineComponent({
       menu,
       currentState,
       transitionsAvailable,
+      unmetContions,
       isOpen,
       isUserModifiable,
       toggle,
