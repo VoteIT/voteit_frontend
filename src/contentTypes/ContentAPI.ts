@@ -140,8 +140,6 @@ export default class ContentAPI<T, K=number> {
   public async getTransitions (pk: number, exclude?: string): Promise<Transition[]> {
     // Cannot handle K = string
     const { data }: { data: Transition[] } = await this.call(HTTPMethod.Get, `${this.endpoint}${pk}/transitions/`)
-    return data
-      .filter(t => t.permission !== '__not_allowed')
-      .map(t => ({ ...t, icon: this.workflowStates?.find(s => s.transition === t.name)?.icon }))
+    return data.map(t => ({ ...t, icon: this.workflowStates?.find(s => s.transition === t.name)?.icon }))
   }
 }
