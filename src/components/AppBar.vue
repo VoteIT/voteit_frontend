@@ -48,6 +48,25 @@
                 </v-sheet>
               </template>
             </v-dialog>
+            <v-dialog>
+              <template #activator="{ props }">
+                <v-list-item v-if="!alternateUsers.length" prepend-icon="mdi-account-switch" :title="t('profile.switchUser')" v-bind="props" />
+              </template>
+                <v-sheet class="pa-4" v-bind="dialogDefaults">
+                  <h2 class="mb-2">
+                    {{ t('profile.switchUser') }}
+                  </h2>
+                  <v-list>
+                    <v-list-item
+                      v-for="user in alternateUsers"
+                      :key="user.pk"
+                      :title="user.name"
+                      :subtitle="user.userid"
+                      @click="switchUser(user)"
+                    />
+                  </v-list>
+                </v-sheet>
+            </v-dialog>
           </v-list>
           <template v-slot:append>
             <v-list nav density="comfortable">
