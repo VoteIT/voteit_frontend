@@ -1,10 +1,6 @@
 <template>
   <template v-if="agendaItem">
-    <v-row>
-      <v-col cols="12">
-      </v-col>
-    </v-row>
-    <v-row>
+    <v-row :key="`agenda-header-${agendaId}`">
       <v-col cols="12" lg="8">
         <div class="d-flex">
           <div class="flex-grow-1">
@@ -24,11 +20,11 @@
       </v-col>
     </v-row>
     <v-divider class="my-4" />
-    <v-row>
+    <v-row :key="`agenda-filters-${agendaId}`">
       <v-col class="d-flex">
-        <AddProposalModal v-if="canAddProposal" :key="`add-proposal-${agendaId}`" />
+        <AddProposalModal v-if="canAddProposal" />
         <v-spacer />
-        <AgendaFilters ref="filterComponent" :key="`filter-${agendaId}`" />
+        <AgendaFilters ref="filterComponent" />
         <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
           <span class="text-secondary">{{ t('agenda.showAs') }}</span>
           <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
@@ -37,7 +33,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row :key="`agenda-content-${agendaId}`">
       <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
         <h2 v-if="displayMode === 'columns'" class="mb-2">{{ t('proposal.proposals') }}</h2>
         <h2 v-else class="mb-2">{{ t('proposal.proposalsAndComments') }}</h2>

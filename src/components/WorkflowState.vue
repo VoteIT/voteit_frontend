@@ -5,16 +5,15 @@
     </v-btn>
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
       <v-list nav density="comfortable">
-        <v-list-item :prepend-icon="t.icon" v-for="t in transitionsAvailable" :key="t.name" @click="makeTransition(t)">
-          {{ t.title }}
-          <!-- FIXME: Make this sane :)
-          {{ t.allowed ? 'allowed' : 'not allowed:' }}
-          {{ t.has_perm ? '' : 'You lack permission ' + t.permisison }}
-          <span v-for="c in unmetContions(t)" :key="c.name">
-            {{ c.title }}
-          </span>
-          -->
-        </v-list-item>
+        <v-list-item
+          :prepend-icon="t.icon"
+          :title="t.title"
+          :disabled="!t.allowed"
+          :subtitle="unmetConditions(t)"
+          v-for="t in transitionsAvailable"
+          :key="t.name"
+          @click="makeTransition(t)"
+        />
       </v-list>
     </v-sheet>
   </span>
@@ -84,8 +83,12 @@ export default defineComponent({
       nextTick(toggle)
     }
 
-    function unmetContions (t: Transition) {
-      return t.conditions.filter(c => !c.allowed)
+    function unmetConditions (t: Transition) {
+      if (t.allowed) return
+      return t.conditions
+        .filter(c => !c.allowed)
+        .map(c => c.title)
+        .join(', ')
     }
 
     watch(() => props.object.state, () => { transitionsAvailable.value = null })
@@ -130,11 +133,11 @@ export default defineComponent({
       menu,
       currentState,
       transitionsAvailable,
-      unmetContions,
       isOpen,
       isUserModifiable,
       toggle,
-      makeTransition
+      makeTransition,
+      unmetConditions
     }
   }
 })

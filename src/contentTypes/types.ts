@@ -27,7 +27,7 @@ export interface Transition {
   target: string
   title: string
   icon?: string
-  conditions: TransitionCondition[],
+  conditions: TransitionCondition[]
   allowed: boolean // perm + conditions met?
   has_perm: boolean // Is the permission met?
 }
