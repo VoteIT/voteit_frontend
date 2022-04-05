@@ -6,12 +6,12 @@
     <v-sheet rounded elevation="4" ref="menu" v-if="isOpen && transitionsAvailable">
       <v-list nav density="comfortable">
         <v-list-item
+          v-for="t in transitionsAvailable"
+          :key="t.name"
           :prepend-icon="t.icon"
           :title="t.title"
           :disabled="!t.allowed"
           :subtitle="unmetConditions(t)"
-          v-for="t in transitionsAvailable"
-          :key="t.name"
           @click="makeTransition(t)"
         />
       </v-list>
