@@ -120,19 +120,19 @@ export default defineComponent({
 
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
-    watch(isAuthenticated, value => {
+    watch(user, value => {
+      clearMeetings()
+      clearInvites()
       if (value) {
         fetchMeetings()
         fetchInvites()
-      } else {
-        clearMeetings()
-        clearInvites()
       }
     })
 
     onBeforeMount(() => {
       if (isAuthenticated.value) loader.call(fetchMeetings, fetchInvites)
       // App.vue loads organisation data at first load
+      // Call again to update page content
       if (loader.initDone.value) fetchOrganisations()
     })
 

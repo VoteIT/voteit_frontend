@@ -5,13 +5,8 @@ import useContextRoles from './useContextRoles'
 import { UserState, User } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
 
-interface AlternateUser {
-  pk: number
-  name: string
-}
-
 export const user = ref<User | null>(null)
-const alternateUsers = ref<AlternateUser[]>([])
+const alternateUsers = ref<User[]>([])
 const isAuthenticated = ref<boolean | undefined>(undefined)
 const organizationRoles = useContextRoles('organisation') // Avoid circular import
 
@@ -19,9 +14,16 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 export default function useAuthentication () {
   async function fetchAlternateUsers () {
-    const { data } = await profileType.api.getAction<AlternateUser[]>('alternate')
+    const { data } = await profileType.api.getAction<User[]>('alternate')
     alternateUsers.value = data
   }
+
+  function setAuthenticatedUser (_user: User) {
+    user.value = _user
+    isAuthenticated.value = true
+    organizationRoles.set(_user.organisation, _user.pk, _user.organisation_roles)
+    fetchAlternateUsers() // Do not await
+}
 
   async function fetchAuthenticatedUser (tries = 3): Promise<User | undefined> {
     try {
@@ -29,10 +31,7 @@ export default function useAuthentication () {
       console.log('User authenticated', data.userid)
       // TODO
       if (data.state === UserState.Incomplete) console.warn('User is incomplete')
-      user.value = data
-      isAuthenticated.value = true
-      organizationRoles.set(data.organisation, data.pk, data.organisation_roles)
-      fetchAlternateUsers() // Do not await
+      setAuthenticatedUser(data)
       return data
     } catch (err) {
       switch ((err as AxiosError).response?.status) {
@@ -48,9 +47,9 @@ export default function useAuthentication () {
     }
   }
 
-  async function switchUser (user: AlternateUser) {
+  async function switchUser (user: User) {
     await profileType.api.action(user.pk, 'switch')
-    await fetchAuthenticatedUser()
+    setAuthenticatedUser(user)
   }
 
   async function logout () {

@@ -368,6 +368,7 @@
     "editProfileHelp": "You can only modify you user ID here. Go to Manage account to change your name or email.",
     "changeUserid": "Change user ID",
     "profile": "Profile",
+    "switchUser": "Switch user",
     "verifyEmail": "Verify email"
   },
   "proposal": {

@@ -27,11 +27,14 @@
               <template #activator="{ props }">
                 <v-list-item prepend-icon="mdi-account" :title="t('profile.profile')" v-bind="props" />
               </template>
-              <template #default="{ isActive }">
+              <template v-slot="{ isActive }">
                 <v-sheet class="pa-4" v-bind="dialogDefaults">
-                  <h2 class="mb-2">
-                    {{ t('profile.changeUserid') }}
-                  </h2>
+                  <div class="d-flex">
+                    <h2 class="mb-2 flex-grow-1">
+                      {{ t('profile.changeUserid') }}
+                    </h2>
+                    <v-btn icon="mdi-close" @click="isActive.value = false" />
+                  </div>
                   <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
                   <SchemaForm :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
                     <template #buttons="{ valid, disabled }">
@@ -48,24 +51,39 @@
                 </v-sheet>
               </template>
             </v-dialog>
-            <v-dialog>
+            <v-dialog v-if="canSwitchUser">
               <template #activator="{ props }">
-                <v-list-item v-if="!alternateUsers.length" prepend-icon="mdi-account-switch" :title="t('profile.switchUser')" v-bind="props" />
+                <v-list-item prepend-icon="mdi-account-switch" :title="t('profile.switchUser')" v-bind="props" />
               </template>
+              <template v-slot="{ isActive }">
                 <v-sheet class="pa-4" v-bind="dialogDefaults">
-                  <h2 class="mb-2">
-                    {{ t('profile.switchUser') }}
-                  </h2>
+                  <div class="d-flex">
+                    <h2 class="mb-2 flex-grow-1">
+                      {{ t('profile.switchUser') }}
+                    </h2>
+                    <v-btn icon="mdi-close" @click="isActive.value = false" />
+                  </div>
                   <v-list>
                     <v-list-item
                       v-for="user in alternateUsers"
                       :key="user.pk"
-                      :title="user.name"
-                      :subtitle="user.userid"
                       @click="switchUser(user)"
-                    />
+                    >
+                      <v-list-item-avatar class="mr-2">
+                        <UserAvatar :pk="user.pk" />
+                      </v-list-item-avatar>
+                      <div>
+                        <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
+                          {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{ user.userid }}
+                        </v-list-item-subtitle>
+                      </div>
+                    </v-list-item>
                   </v-list>
                 </v-sheet>
+              </template>
             </v-dialog>
           </v-list>
           <template v-slot:append>
@@ -151,10 +169,16 @@ export default defineComponent({
       ]
     })
 
+    const canSwitchUser = computed(() => {
+      if (!auth.alternateUsers.value.length) return false
+      return route.path === '/'
+    })
+
     return {
       t,
       ...auth,
       ...useDefaults(),
+      canSwitchUser,
       hasNavDrawer,
       manageAccountURL,
       profileSchema,
