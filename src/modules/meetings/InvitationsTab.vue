@@ -107,7 +107,7 @@
         <h2 class="mb-2">
           {{ t('meeting.invites.bulkChange', selectedInvites.length) }}
         </h2>
-        <v-btn variant="contained" prepend-icon="mdi-undo" color="primary" disabled @click="revokeSelected()" class="mr-1">
+        <v-btn variant="contained" prepend-icon="mdi-undo" color="primary" :disabled="!selectedHasDeletable" @click="revokeSelected()" class="mr-1">
           {{ t('meeting.invites.revoke') }}
         </v-btn>
         <v-btn variant="contained" prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected()">
@@ -232,6 +232,7 @@ export default defineComponent({
 
     const allInvitesSelected = computed({
       get () {
+        if (!filteredInvites.value.length) return false
         return filteredInvites.value.every(inv => selectedInviteIds.value.includes(inv.pk))
       },
       set (value) {
