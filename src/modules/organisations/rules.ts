@@ -17,6 +17,10 @@ export function isMeetingCreator (org?: number): boolean {
   return !!hasRole(org || user.value.organisation, OrganisationRole.MeetingCreator)
 }
 
+export function canAddMeeting (org?: number): boolean {
+  return isMeetingCreator(org) || isOrganisationManager(org)
+}
+
 export function canChangeOrganisation (org: Organisation): boolean {
   return isOrganisationManager(org.pk)
 }

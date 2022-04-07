@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-import { canChangeOrganisation } from './rules'
+import { canAddMeeting, canChangeOrganisation, isMeetingCreator } from './rules'
 import useOrganisations from './useOrganisations'
 
 const { organisation } = useOrganisations()
@@ -16,6 +16,7 @@ export default function useOrganisation () {
   })
 
   return {
+    canAddMeeting: computed(() => canAddMeeting()),
     canChangeOrganisation: computed(() => !!organisation.value && canChangeOrganisation(organisation.value)),
     organisation,
     organisationId: computed(() => organisation.value?.pk),

@@ -4,7 +4,7 @@ import useContextRoles from '@/composables/useContextRoles'
 import { Meeting, MeetingRole, MeetingState } from '@/modules/meetings/types'
 import useWorkflows from '@/contentTypes/useWorkflows'
 import { meetingStates } from './workflowStates'
-import { isMeetingCreator, isOrganisationManager } from '../organisations/rules'
+import { isOrganisationManager } from '../organisations/rules'
 
 const { hasRole } = useContextRoles('meeting')
 // Import this a bit differently, to avoid cirkular imports
@@ -47,11 +47,6 @@ export function isFinishedMeeting (meeting?: Meeting): boolean {
 
 export function canViewMeeting (meeting?: Meeting): boolean {
   return !!isParticipant(meeting)
-}
-
-// Special rule case: Check organisation by pk. We won't always have organization data.
-export function canAddMeeting (org?: number): boolean {
-  return isMeetingCreator(org) || isOrganisationManager(org)
 }
 
 export function canChangeMeeting (meeting?: Meeting): boolean {

@@ -1,7 +1,7 @@
 <template>
   <form class="user-search" :class="{ instant }" @submit.prevent="submit()">
     <v-text-field :hint="hint" type="search" ref="inputField" v-bind="fieldBind" autocomplete="off" v-model="query" hide-details class="hide-details" />
-    <v-btn v-if="!instant" type="submit" v-bind="btnBind" color="primary">
+    <v-btn v-if="!instant" type="submit" v-bind="btnBind" variant="contained" color="primary">
       {{ buttonText || t('add') }}
     </v-btn>
     <v-sheet rounded elevation="4" class="selector" v-show="results.length">

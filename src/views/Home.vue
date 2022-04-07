@@ -6,7 +6,25 @@
       </v-btn>
     </v-col>
     <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
-      <Tabs :tabs="tabs" v-model="currentTab">
+      <v-tabs v-if="tabs" v-model="currentTab" :items="tabs" right class="mb-4" />
+      <v-window v-model="currentTab">
+        <v-window-item value="default">
+          <header class="d-flex">
+            <div class="flex-grow-1">
+              <h1>
+                {{ organisation.title }}
+              </h1>
+            </div>
+            <Menu :items="menu" />
+          </header>
+          <Richtext v-model="changeForm.body" :editing="editing" @edit-done="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
+        </v-window-item>
+        <v-window-item value="roles">
+          <UserSearch class="mb-6" @submit="addUser" />
+          <RoleMatrix admin :contentType="organisationType" :pk="organisation.pk" :icons="organisationIcons" />
+        </v-window-item>
+      </v-window>
+      <!-- <Tabs :tabs="tabs" v-model="currentTab">
         <template #default>
           <header class="d-flex">
             <div class="flex-grow-1">
@@ -22,7 +40,7 @@
           <UserSearch class="mb-6" @submit="addUser" />
           <RoleMatrix admin :contentType="organisationType" :pk="organisation.pk" :icons="organisationIcons" />
         </template>
-      </Tabs>
+      </Tabs> -->
     </v-col>
     <v-divider vertical />
     <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
@@ -39,18 +57,42 @@
         <v-list-item v-for="meeting in participatingMeetings" :key="meeting.pk" :to="`/m/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
       </v-list>
       <p v-else class="mb-4"><em>{{ t('home.noCurrentMeetings') }}</em></p>
-      <div v-if="canAddMeeting()" class="mb-4">
-        <v-btn prepend-icon="mdi-plus" variant="text" color="primary" @click="createMeeting()">{{ t('meeting.create') }}</v-btn>
+      <v-dialog v-if="canAddMeeting">
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            block
+            class="mb-4"
+            prepend-icon="mdi-plus"
+            variant="text"
+            color="primary"
+          >
+            {{ t('meeting.create') }}
+          </v-btn>
+        </template>
+        <template v-slot="{ isActive }">
+          <v-sheet class="pa-4" v-bind="dialogDefaults">
+            <div class="d-flex mb-2">
+              <h1 class="flex-grow-1">
+                {{ t('meeting.create') }}
+              </h1>
+              <v-btn icon="mdi-close" variant="text" @click="isActive.value=false" />
+            </div>
+            <AddMeeting @close="isActive.value=false" />
+          </v-sheet>
+        </template>
+      </v-dialog>
+      <div v-if="otherMeetings.length">
+        <h2>
+          {{ t('join.joinAMeeting', otherMeetings.length) }}
+        </h2>
+        <v-list v-if="otherMeetings.length" class="mb-4">
+          <v-list-item v-for="meeting in otherMeetings" :key="meeting.pk" :to="`/join/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
+        </v-list>
+        <p v-if="!otherMeetings.length"><em>
+          {{ t('home.noCurrentMeetings') }}
+        </em></p>
       </div>
-      <h2>
-        {{ t('join.joinAMeeting', otherMeetings.length) }}
-      </h2>
-      <v-list v-if="otherMeetings.length" class="mb-4">
-        <v-list-item v-for="meeting in otherMeetings" :key="meeting.pk" :to="`/join/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t(`workflowState.${meeting.state}`)" />
-      </v-list>
-      <p v-if="!otherMeetings.length"><em>
-        {{ t('home.noCurrentMeetings') }}
-      </em></p>
     </v-col>
   </v-row>
   <v-row v-if="debug">
@@ -68,25 +110,23 @@ import { useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 
-import AddMeetingVue from '@/modules/meetings/AddMeetingModal.vue'
+import AddMeeting from '@/modules/meetings/AddMeetingModal.vue'
 import Counter from '@/components/examples/Counter.vue'
 import GetSchema from '@/components/examples/GetSchema.vue'
 // import Headline from '@/components/Headline.vue'
 import Menu from '@/components/Menu.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
-import { Tab } from '@/components/types'
-import Tabs from '@/components/Tabs.vue'
+// import { Tab } from '@/components/types'
+// import Tabs from '@/components/Tabs.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useLoader from '@/composables/useLoader'
 import useMeetings from '@/modules/meetings/useMeetings'
 import useMeetingInvites from '@/modules/meetings/useMeetingInvites'
-import useModal from '@/composables/useModal'
 import useOrganisations from '@/modules/organisations/useOrganisations'
 import Invite from '@/modules/meetings/Invite.vue'
-import { canAddMeeting } from '@/modules/meetings/rules'
 import { MenuItem } from '@/utils/types'
 import { organisationType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'
@@ -108,7 +148,7 @@ export default defineComponent({
     const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user } = useAuthentication()
     const { fetchOrganisations } = useOrganisations()
-    const { canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
+    const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
     const loader = useLoader('Home')
 
     const currentTab = ref('default')
@@ -158,15 +198,15 @@ export default defineComponent({
         }
       ]
     })
-    const tabs = computed<Tab[] | undefined>(() => {
+    const tabs = computed(() => {
       if (!canChangeOrganisation.value) return
       return [
         {
-          name: 'default',
+          value: 'default',
           title: 'Hem'
         },
         {
-          name: 'roles',
+          value: 'roles',
           title: 'Roller'
         }
       ]
@@ -178,15 +218,6 @@ export default defineComponent({
       editing.value = false
     }
 
-    // Add meeting
-    const { openModal } = useModal()
-    function createMeeting () {
-      openModal({
-        title: t('meeting.create'),
-        component: AddMeetingVue
-      })
-    }
-
     function addUser (user: ContextRoles) {
       if (!organisation.value) return
       organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
@@ -194,6 +225,7 @@ export default defineComponent({
 
     return {
       t,
+      canAddMeeting,
       changeForm,
       currentTab,
       debug: false,
@@ -211,8 +243,6 @@ export default defineComponent({
       user,
 
       addUser,
-      canAddMeeting,
-      createMeeting,
       logout,
       save,
       slugify,
@@ -220,6 +250,7 @@ export default defineComponent({
     }
   },
   components: {
+    AddMeeting,
     Counter,
     GetSchema,
     // Headline,
@@ -227,7 +258,7 @@ export default defineComponent({
     Menu,
     Richtext,
     RoleMatrix,
-    Tabs,
+    // Tabs,
     UserSearch
   }
 })

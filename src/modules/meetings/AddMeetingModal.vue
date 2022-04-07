@@ -7,6 +7,9 @@
         <v-switch color="primary" v-model="formData.public" :label="t('meeting.public')" />
       </div>
       <div class="text-right">
+        <v-btn variant="text" @click="$emit('close')">
+          {{ t('cancel') }}
+        </v-btn>
         <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="disabled">
           {{ t('create') }}
         </v-btn>
@@ -23,7 +26,6 @@ import { useI18n } from 'vue-i18n'
 import { slugify } from '@/utils'
 
 import SelectVue from '@/components/inputs/Select.vue'
-import useModal from '@/composables/useModal'
 import { meetingType } from './contentTypes'
 import useElectoralRegisters from './useElectoralRegisters'
 
@@ -31,10 +33,10 @@ export default defineComponent({
   components: {
     SelectVue
   },
+  emits: ['close'],
   setup () {
     const { t } = useI18n()
     const router = useRouter()
-    const modal = useModal()
     const { erOptions } = useElectoralRegisters()
 
     const formData = reactive({
@@ -49,9 +51,13 @@ export default defineComponent({
     async function addMeeting () {
       if (submitting.value) return
       submitting.value = true
-      const { data } = await meetingType.api.add(formData)
-      modal.closeModal()
-      router.push(`/m/${data.pk}/${slugify(data.title)}`)
+      try {
+        const { data } = await meetingType.api.add(formData)
+        router.push(`/m/${data.pk}/${slugify(data.title)}`)
+      } catch {
+        // TODO
+      }
+      submitting.value = false
     }
 
     return {
