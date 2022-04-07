@@ -192,7 +192,8 @@
       "filterOnStatus": "Filtrera på status",
       "invites": "Inbjudningar",
       "invitedAs": "Inbjuden som",
-      "noInvitationsHelp": "Ingen har bjudits in till det här mötet än.",
+      "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
+      "noFilteredInvitesHelp": "Inga inbjudningar matchar ditt filter.",
       "revoke": "Dra tillbaka",
       "roles": "Bjud in med roller",
       "types": {

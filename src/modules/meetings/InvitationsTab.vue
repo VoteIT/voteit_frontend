@@ -5,11 +5,14 @@
         {{ t('meeting.invites.existing') }}
       </h1>
       <v-spacer />
-      <v-btn class="mr-2" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :title="t('meeting.invites.copyMatchingTooltip')">
-        <span v-if="copied">{{ t('copied') }}!</span>
-        <v-icon v-else>mdi-content-copy</v-icon>
-      </v-btn>
-      <v-btn class="mr-2" @click="filterMenu = !filterMenu" :color="filterMenu ? 'accent' : undefined" >
+      <v-tooltip :modelValue="copied" anchor="top" :text="t('copied')">
+        <template #activator="{ props }">
+          <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'contained' : 'text'" :title="t('meeting.invites.copyMatchingTooltip')">
+            <v-icon>mdi-content-copy</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
+      <v-btn class="mr-2" :variant="filterMenu ? 'contained' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'accent' : undefined" >
         <v-icon>mdi-filter-menu</v-icon>
       </v-btn>
       <v-dialog v-model="inviteDialogOpen">
@@ -57,7 +60,7 @@
       </v-sheet>
     </v-expand-transition>
   </div>
-  <v-table v-if="meetingInvites.length" class="mb-4">
+  <v-table class="mb-4">
     <thead>
       <tr>
         <th>
@@ -100,7 +103,7 @@
       </v-item>
     </v-item-group>
   </v-table>
-  <v-alert v-else type="info" :text="t('meeting.invites.noInvitationsHelp')" class="my-4" />
+  <v-alert v-if="inviteHelp" v-bind="inviteHelp" class="my-4" />
   <v-expand-transition>
     <v-sheet rounded border v-show="selectedInvites.length">
       <div class="ma-4">
@@ -280,6 +283,23 @@ export default defineComponent({
       }
     }
 
+    const inviteHelp = computed(() => {
+      if (!meetingInvites.value.length) {
+          return {
+          type: 'info',
+          text: t('meeting.invites.noInvitesHelp')
+        }
+      }
+      if (!filteredInvites.value.length) {
+        return {
+          type: 'info',
+          text: t('meeting.invites.noFilteredInvitesHelp'),
+          icon: 'mdi-filter-off'
+        }
+      }
+      return undefined
+    })
+
     return {
       t,
       allInvitesSelected,
@@ -290,6 +310,7 @@ export default defineComponent({
       inviteData,
       inviteErrors,
       inviteFilter,
+      inviteHelp,
       roleLabels,
       meetingInvites,
       invitesReady,

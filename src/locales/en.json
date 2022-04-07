@@ -193,7 +193,8 @@
       "filterOnStatus": "Filter on status",
       "invites": "Invitations",
       "invitedAs": "Invites as",
-      "noInvitationsHelp": "Noone has been invited to this meeting yet.",
+      "noInvitesHelp": "Noone has been invited to this meeting yet.",
+      "noFilteredInvitesHelp": "No invites matches your filter.",
       "revoke": "Revoke",
       "roles": "Invite with roles",
       "types": {
