@@ -21,7 +21,7 @@ import { computed, defineComponent, PropType, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { meetingInviteType } from './contentTypes'
+import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 import useMeetingInvites from './useMeetingInvites'
 import slugify from 'slugify'
@@ -51,7 +51,7 @@ export default defineComponent({
     async function acceptInvite (inv: MeetingInvite) {
       submitting.value = true
       try {
-        await meetingInviteType.api.action(inv.pk, 'accept')
+        await matchedInviteType.api.action(inv.pk, 'accept')
         await fetchMeetings()
         router.push(`/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`)
       } catch {
@@ -65,7 +65,7 @@ export default defineComponent({
       })) return
       submitting.value = true
       try {
-        await meetingInviteType.api.action(inv.pk, 'reject')
+        await matchedInviteType.api.action(inv.pk, 'reject')
         fetchInvites()
       } catch {
         submitting.value = false

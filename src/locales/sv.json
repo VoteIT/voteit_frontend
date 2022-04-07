@@ -181,6 +181,7 @@
     },
     "invites": {
       "add": "Lägg till inbjudningar",
+      "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
       "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
       "data": "Inbjuden data",
       "emails": "E-postadresser att lägga till",
@@ -192,6 +193,7 @@
       "invites": "Inbjudningar",
       "invitedAs": "Inbjuden som",
       "noInvitationsHelp": "Ingen har bjudits in till det här mötet än.",
+      "revoke": "Dra tillbaka",
       "roles": "Bjud in med roller",
       "types": {
         "email": "E-post"

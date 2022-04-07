@@ -28,9 +28,14 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
   dateFields: ['start_time', 'end_time']
 })
 
-export const meetingInviteType = new ContentType<MeetingInvite>({
+export const matchedInviteType = new ContentType<MeetingInvite>({
   name: 'meeting_invite',
   restEndpoint: 'handle-matched-invites/'
+})
+
+export const meetingInviteType = new ContentType<MeetingInvite>({
+  name: 'meeting_invite',
+  restEndpoint: 'meeting-invites/'
 })
 
 export const meetingGroupType = new ContentType<MeetingGroup>({

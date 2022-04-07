@@ -73,9 +73,9 @@
         <template v-slot="{ isActive }">
           <v-sheet class="pa-4" v-bind="dialogDefaults">
             <div class="d-flex mb-2">
-              <h1 class="flex-grow-1">
+              <h2 class="flex-grow-1">
                 {{ t('meeting.create') }}
-              </h1>
+              </h2>
               <v-btn icon="mdi-close" variant="text" @click="isActive.value=false" />
             </div>
             <AddMeeting @close="isActive.value=false" />

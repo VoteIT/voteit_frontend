@@ -1,10 +1,11 @@
 import { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 
-import { Meeting, MeetingRole, MeetingState } from '@/modules/meetings/types'
+import { Meeting, MeetingInvite, MeetingInviteState, MeetingRole, MeetingState } from '@/modules/meetings/types'
 import useWorkflows from '@/contentTypes/useWorkflows'
 import { meetingStates } from './workflowStates'
 import { isOrganisationManager } from '../organisations/rules'
+import { meetings } from './useMeetings'
 
 const { hasRole } = useContextRoles('meeting')
 // Import this a bit differently, to avoid cirkular imports
@@ -61,10 +62,20 @@ export function canBecomeModerator (): boolean {
   return isOrganisationManager(user.value?.organisation)
 }
 
+function isOpenMeetingInvite (invite: MeetingInvite): boolean {
+  return invite.state === MeetingInviteState.Open
+}
+
 export function canViewMeetingInvite (meeting: Meeting): boolean {
   return !!isModerator(meeting)
 }
 
 export function canAddMeetingInvite (meeting: Meeting): boolean {
   return !!isModerator(meeting) && !isArchivedMeeting(meeting)
+}
+
+export function canDeleteMeetingInvite (invite: MeetingInvite): boolean {
+  const meeting = meetings.get(invite.meeting)
+  if (!meeting) return false
+  return canAddMeetingInvite(meeting) && isOpenMeetingInvite(invite)
 }

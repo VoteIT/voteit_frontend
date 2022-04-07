@@ -55,7 +55,7 @@ export const meetingInviteStates: WorkflowState<MeetingInviteState>[] = [
     isFinal: true
   },
   {
-    icon: 'mdi-todo', // TODO
+    icon: 'mdi-clock-alert',
     state: MeetingInviteState.Expired,
     isFinal: true
   }

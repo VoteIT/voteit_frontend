@@ -1,5 +1,5 @@
 import { readonly, reactive, computed, ref, Ref } from 'vue'
-import { meetingInviteType } from './contentTypes'
+import { matchedInviteType, meetingInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 
 const meetingInvites = reactive<Map<number, MeetingInvite>>(new Map())
@@ -10,7 +10,7 @@ meetingInviteType.updateMap(meetingInvites)
 export default function useMeetingInvites (meetingId?: Ref<number>) {
   async function fetchInvites () {
     /* For user from rest API */
-    const { data } = await meetingInviteType.api.list()
+    const { data } = await matchedInviteType.api.list()
     userMeetingInvites.value = data
   }
 

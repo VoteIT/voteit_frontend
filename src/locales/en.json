@@ -182,6 +182,7 @@
     },
     "invites": {
       "add": "Invite participants",
+      "bulkChange": "Change one invite | Change {count} invites",
       "copyMatchingTooltip": "Copies all invitations matching filter",
       "data": "Invite data",
       "emails": "Emails to add",
@@ -193,6 +194,7 @@
       "invites": "Invitations",
       "invitedAs": "Invites as",
       "noInvitationsHelp": "Noone has been invited to this meeting yet.",
+      "revoke": "Revoke",
       "roles": "Invite with roles",
       "types": {
         "email": "Email"
