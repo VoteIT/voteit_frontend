@@ -1,6 +1,7 @@
 <template>
-  <Tabs :tabs="editModes">
-    <template #default>
+  <v-tabs :items="editModes" v-model="editMode" right class="mb-4" />
+  <v-window v-model="editMode">
+    <v-window-item value="default">
       <v-table id="agenda-edit">
         <thead>
           <tr>
@@ -62,8 +63,8 @@
         <v-text-field :label="t('title')" required v-model="newAgendaTitle" hide-details class="flex-grow-1 hide-details" />
         <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
       </form>
-    </template>
-    <template #order>
+    </v-window-item>
+    <v-window-item value="order">
       <Draggable v-model="agendaItems" item-key="pk" >
         <template #item="{ element }">
           <div>
@@ -73,8 +74,8 @@
           </div>
         </template>
       </Draggable>
-    </template>
-  </Tabs>
+    </v-window-item>
+  </v-window>
 </template>
 
 <script lang="ts">
@@ -85,10 +86,8 @@ import Axios from 'axios'
 
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
-import { Tab } from '@/components/types'
 import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
-import Tabs from '@/components/Tabs.vue'
 
 import useAgenda from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
@@ -104,8 +103,7 @@ export default defineComponent({
   path: 'agenda',
   icon: 'mdi-clipboard-list',
   components: {
-    Draggable,
-    Tabs
+    Draggable
   },
   setup () {
     const { t } = useI18n()
@@ -121,13 +119,13 @@ export default defineComponent({
       }
     })
 
-    const editModes = computed<Tab[]>(() => {
+    const editModes = computed(() => {
       return [{
-        name: 'default',
+        value: 'default',
         title: t('agenda.edit')
       },
       {
-        name: 'order',
+        value: 'order',
         title: t('agenda.order')
       }]
     })

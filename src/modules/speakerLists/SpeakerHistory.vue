@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Tabs :tabs="systemTabs" v-model="currentTab" />
+    <v-tabs :items="systemTabs" v-model="currentTab" />
     <v-table v-if="history">
       <thead>
         <tr>
@@ -41,8 +41,6 @@ import moment from 'moment'
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import Tabs from '@/components/Tabs.vue'
-
 import useMeeting from '../meetings/useMeeting'
 
 import useSpeakerHistory from './useSpeakerHistory'
@@ -77,12 +75,12 @@ export default defineComponent({
     const systemTabs = computed(() => {
       if (allSpeakerSystems.value.length <= 1) return
       const tabs = [{
-        name: 'default',
+        value: 'default',
         title: t('all')
       }]
       for (const system of allSpeakerSystems.value) {
         tabs.push({
-          name: String(system.pk),
+          value: String(system.pk),
           title: system.title
         })
       }
@@ -100,9 +98,6 @@ export default defineComponent({
       totalTime,
       totalTimes
     }
-  },
-  components: {
-    Tabs
   }
 })
 </script>

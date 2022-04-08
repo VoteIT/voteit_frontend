@@ -24,23 +24,6 @@
           <RoleMatrix admin :contentType="organisationType" :pk="organisation.pk" :icons="organisationIcons" />
         </v-window-item>
       </v-window>
-      <!-- <Tabs :tabs="tabs" v-model="currentTab">
-        <template #default>
-          <header class="d-flex">
-            <div class="flex-grow-1">
-              <h1>
-                {{ organisation.title }}
-              </h1>
-            </div>
-            <Menu :items="menu" />
-          </header>
-          <Richtext v-model="changeForm.body" :editing="editing" @edit-done="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
-        </template>
-        <template #roles>
-          <UserSearch class="mb-6" @submit="addUser" />
-          <RoleMatrix admin :contentType="organisationType" :pk="organisation.pk" :icons="organisationIcons" />
-        </template>
-      </Tabs> -->
     </v-col>
     <v-divider vertical />
     <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
@@ -117,8 +100,6 @@ import GetSchema from '@/components/examples/GetSchema.vue'
 import Menu from '@/components/Menu.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
-// import { Tab } from '@/components/types'
-// import Tabs from '@/components/Tabs.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
 import useAuthentication from '@/composables/useAuthentication'
@@ -258,7 +239,6 @@ export default defineComponent({
     Menu,
     Richtext,
     RoleMatrix,
-    // Tabs,
     UserSearch
   }
 })
