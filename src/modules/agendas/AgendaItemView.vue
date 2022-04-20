@@ -12,11 +12,13 @@
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" :maxHeight="collapsedBodyHeight" />
         <TextDocuments />
       </v-col>
-      <v-col cols="12" lg="4" v-if="speakerLists.length">
-        <h2>
-          {{ t('speaker.lists', speakerLists.length) }}
-        </h2>
-        <SpeakerList v-for="list in speakerLists" :key="list.pk" :list="list" />
+      <v-col cols="12" lg="4">
+        <Dropdown v-if="sortedPolls.length" :title="t('poll.pollCount', sortedPolls.length)" modelValue class="mb-4">
+          <Poll v-for="poll in sortedPolls" :key="poll.pk" :poll="poll" />
+        </Dropdown>
+        <Dropdown v-if="speakerLists.length" :title="t('speaker.lists', speakerLists.length)" modelValue>
+          <SpeakerList v-for="list in speakerLists" :key="list.pk" :list="list" />
+        </Dropdown>
       </v-col>
     </v-row>
     <v-divider class="my-4" />
@@ -66,6 +68,7 @@
 </template>
 
 <script lang="ts">
+import { orderBy } from 'lodash'
 import { computed, defineComponent, nextTick, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStorage } from '@vueuse/core'
@@ -91,6 +94,8 @@ import { discussionPostType } from '../discussions/contentTypes'
 import { SpeakerListState } from '../speakerLists/types'
 import { DiscussionPost } from '../discussions/types'
 import { TagsKey, tagClickEvent } from '../meetings/useTags'
+import Poll from '../polls/Poll.vue'
+import usePolls from '../polls/usePolls'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 
@@ -104,6 +109,7 @@ import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
+import { PollState } from '../polls/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -112,6 +118,7 @@ export default defineComponent({
     const { activeFilter } = useAgendaFilter()
     const discussions = useDiscussions()
     const proposals = useProposals()
+    const { getAiPolls } = usePolls()
     const { meetingPath, meetingId } = useMeeting()
     const { hasNewItems, agendaItemLastRead } = useAgenda()
     const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
@@ -131,6 +138,7 @@ export default defineComponent({
       if (reversed) order = order.slice(1)
       return proposals.getAgendaProposals(agendaId.value, proposalFilter, order, reversed)
     })
+    const sortedPolls = computed(() => orderBy(getAiPolls(agendaId.value, PollState.Ongoing), ['created'], ['desc']))
 
     function discussionFilter (d: DiscussionPost): boolean {
       const { tags } = activeFilter.value
@@ -278,6 +286,7 @@ export default defineComponent({
       meetingPath,
       menuItems,
       hasProposals,
+      sortedPolls,
       sortedProposals,
       sortedDiscussions,
       speakerLists,
@@ -295,13 +304,14 @@ export default defineComponent({
   components: {
     AddProposalModal,
     AgendaDiscussions,
+    AgendaFilters,
     AgendaProposals,
     Headline,
-    AgendaFilters,
-    SpeakerList,
+    Poll,
     Richtext,
-    WorkflowState,
-    TextDocuments
+    SpeakerList,
+    TextDocuments,
+    WorkflowState
   }
 })
 </script>

@@ -237,6 +237,7 @@
     "orderProposals": "Sortera förslag",
     "orderProposalsDescription": "Dra och släpp förslag för att sen sortera ordningen.",
     "orderAll": "Sortera alla förslag",
+    "pollCount": "Inga omröstningar | En omröstning | {count} omröstningar",
     "polls": "Omröstningar",
     "pollDescription": "{method} med ett förslag | {method} med {count} förslag",
     "rankingSelectAs": "Välj som",
