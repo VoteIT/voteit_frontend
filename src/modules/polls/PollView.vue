@@ -22,6 +22,7 @@
         </template>
       </header>
       <div v-if="isFinished" id="poll-results" class="my-6">
+        <ProgressBar class="my-4" :text="t('poll.votedProgress', voteCount, voteCount.voted)" :value="voteCount.voted" :total="voteCount.total" />
         <h3>
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
@@ -85,7 +86,7 @@ export default defineComponent({
     const { t } = useI18n()
     const route = useRoute()
     const router = useRouter()
-    const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted } = usePoll(computed(() => Number(route.params.pid)))
+    const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath, meetingId } = useMeeting()
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
@@ -198,6 +199,7 @@ export default defineComponent({
       voteComponent,
       submitting,
       votingComplete,
+      voteCount,
       abstainVote,
       castVote
     }

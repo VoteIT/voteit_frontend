@@ -29,6 +29,7 @@
             <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
+        <ProgressBar class="my-4" :text="t('poll.votedProgress', voteCount, voteCount.voted)" :value="voteCount.voted" :total="voteCount.total" />
       </template>
 
       <ProgressBar v-if="isOngoing" :value="pollStatus?.voted" :total="pollStatus?.total">
@@ -79,7 +80,7 @@ export default defineComponent({
     const { t } = useI18n()
     const { meetingPath } = useMeeting()
     const { getPollStatus, getUserVote } = usePolls()
-    const { canVote, approved, denied, isOngoing, isFinished } = usePoll(computed(() => props.poll.pk))
+    const { canVote, approved, denied, isOngoing, isFinished, voteCount } = usePoll(computed(() => props.poll.pk))
 
     const following = ref(false)
     const subscribePk = computed(() => {
@@ -97,16 +98,17 @@ export default defineComponent({
     return {
       t,
       approved,
+      canVote,
       denied,
+      following,
+      isFinished,
+      isOngoing,
+      methodName,
       pollPath,
       pollType,
       pollStatus,
-      isFinished,
-      isOngoing,
       userVote,
-      following,
-      methodName,
-      canVote
+      voteCount
     }
   }
 })

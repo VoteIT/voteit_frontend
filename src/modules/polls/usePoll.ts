@@ -6,12 +6,25 @@ import usePolls from './usePolls'
 import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
 import useProposals from '../proposals/useProposals'
 import { Proposal } from '../proposals/types'
+import useElectoralRegisters from '../meetings/useElectoralRegisters'
 
 const polls = usePolls()
+const { getRegister } = useElectoralRegisters()
 const { getProposal } = useProposals()
 
 export default function usePoll (pollRef: Ref<number>) {
   const poll = computed(() => polls.getPoll(pollRef.value))
+  const electoralRegister = computed(() => poll.value?.electoral_register && getRegister(poll.value.electoral_register))
+  const voteCount = computed(() => {
+    if (!poll.value || !electoralRegister.value) return {}
+    const voted = poll.value.result?.vote_count ?? 0
+    const total = electoralRegister.value.voters.length
+    return {
+      percentage: Math.round(voted / total * 100),
+      voted,
+      total
+    }
+  })
 
   const pollStatus = computed(() => {
     if (!poll.value) return
@@ -68,6 +81,7 @@ export default function usePoll (pollRef: Ref<number>) {
     nextUnvoted,
     resultComponent,
     userVote,
-    voteComponent
+    voteComponent,
+    voteCount
   }
 }
