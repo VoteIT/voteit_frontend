@@ -79,6 +79,7 @@
     "helpNoProposals": "This agenda item has no proposals yet.",
     "helpNoProposalsInFilter": "There are proposals on this agenda item that are not shown because of your filter settings.",
     "helpNoComments": "You can get first post on this agenda item!",
+    "hiddenProposals": "{count} proposals hidden by filter",
     "item": "Agenda item",
     "nested": "Nested",
     "newItem": "New Agenda Item",

@@ -43,21 +43,26 @@
           {{ t('agenda.helpNoProposals') }}
         </v-alert>
         <v-alert type="info" icon="mdi-filter-outline" v-else-if="filterTag" class="mb-2">
-          <div class="flex-grow-1">
+          <div class="flex-grow-1 mb-2">
             {{ t('agenda.filteringOnTag') }}
             <Tag :name="filterTag" disabled class="ml-2" />
           </div>
-          <v-btn variant="text" size="small" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
+          <v-btn size="small" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
             {{ t('defaultFilters') }}
           </v-btn>
         </v-alert>
         <v-alert type="info" icon="mdi-filter-outline" v-else-if="hasProposals && !sortedProposals.length" class="mb-2">
-          <div class="flex-grow-1">{{ t('agenda.helpNoProposalsInFilter') }}</div>
-          <v-btn size="small" variant="text" v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
+          <div class="flex-grow-1 mb-2">
+            {{ t('agenda.helpNoProposalsInFilter') }}
+          </div>
+          <v-btn size="small" v-if="filterComponent && filterComponent.isModified" @click="filterComponent.clearFilters()" prepend-icon="mdi-undo-variant">
             {{ t('defaultFilters') }}
           </v-btn>
         </v-alert>
         <AgendaProposals :proposals="sortedProposals" />
+        <Dropdown class="mt-8" v-if="hiddenProposals.length" :title="t('agenda.hiddenProposals', hiddenProposals.length)">
+          <AgendaProposals :proposals="hiddenProposals" />
+        </Dropdown>
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
         <h2 class="mb-2">{{ t('discussion.discussions') }}</h2>
@@ -132,11 +137,23 @@ export default defineComponent({
       if (tags.size && p.tags.every(t => !tags.has(t))) return false
       return states.has(p.state)
     }
-    const sortedProposals = computed(() => {
-      let order = activeFilter.value.order
+    const sortOrder = computed(() => {
+      const order = activeFilter.value.order
       const reversed = order.startsWith('-')
-      if (reversed) order = order.slice(1)
+      return {
+        order: reversed
+          ? order.slice(1)
+          : order,
+        reversed
+      }
+    })
+    const sortedProposals = computed(() => {
+      const { order, reversed } = sortOrder.value
       return proposals.getAgendaProposals(agendaId.value, proposalFilter, order, reversed)
+    })
+    const hiddenProposals = computed(() => {
+      const { order, reversed } = sortOrder.value
+      return proposals.getAgendaProposals(agendaId.value, p => !proposalFilter(p), order, reversed)
     })
     const sortedPolls = computed(() => orderBy(getAiPolls(agendaId.value, PollState.Ongoing), ['created'], ['desc']))
 
@@ -283,6 +300,7 @@ export default defineComponent({
       editing,
       filterComponent,
       filterTag,
+      hiddenProposals,
       meetingPath,
       menuItems,
       hasProposals,

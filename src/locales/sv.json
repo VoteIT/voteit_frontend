@@ -79,6 +79,7 @@
     "helpNoProposals": "Den här dagordningspunkten har inga förslag än.",
     "helpNoProposalsInFilter": "Det finns förslag på den här dagordningspunkten som inte visas på grund av dina filterinställningar.",
     "helpNoComments": "Du kan göra det första inlägget på den här dagordningspunkten!",
+    "hiddenProposals": "{count} bortfiltrerade förslag",
     "item": "Dagordningspunkt",
     "nested": "Nästlad",
     "newItem": "Ny dagordningspunkt",

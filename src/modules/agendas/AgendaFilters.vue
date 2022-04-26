@@ -2,7 +2,7 @@
   <BtnDropdown ref="root" right dense>
     <template v-slot:activator="{ toggle }">
       <span class="text-no-wrap">
-        <v-btn size="small" color="warning" variant="text" icon="mdi-undo-variant" @click="clearFilters()" :disabled="!isModified" :title="t('defaultFilters')" />
+        <v-btn size="small" :color="isModified ? 'warning' : undefined" variant="text" icon="mdi-undo-variant" @click="clearFilters()" :disabled="!isModified" :title="t('defaultFilters')" />
         <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
           <v-icon class="d-sm-none" :icon="isModified ? 'mdi-filter' : 'mdi-filter-outline'" />
           <span class="d-none d-sm-inline">{{ t('sortAndFilter') }}</span>
