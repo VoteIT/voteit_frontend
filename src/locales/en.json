@@ -379,6 +379,7 @@
     "add": "Add proposal",
     "change": "Propose change",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
+    "postAs": "Post as",
     "previewBeforePublish": "You need to preview your proposal before you can publish it.",
     "proposal": "Proposal",
     "proposalCount": "No proposals | One proposal | {count} proposals",
