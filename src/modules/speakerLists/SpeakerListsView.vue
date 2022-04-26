@@ -2,13 +2,15 @@
   <v-row>
     <v-col cols="12" lg="10" offset-lg="1" v-if="agendaItem">
       <header>
-        <div v-if="speakerSystem && speakerSystems.length > 1" class="mb-2">
-          <v-btn v-for="system in speakerSystems" color="accent" :variant="speakerSystem === system ? 'contained' : 'outlined'" :key="system.pk" :to="`${meetingPath}/lists/${system.pk}/${agendaItem.pk}`" class="mr-1">
-            {{ system.title }}
-          </v-btn>
-        </div>
-        <div class="btn-group navigation">
-          <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="secondary" size="x-small" />
+        <div class="d-flex">
+          <div class="btn-group navigation">
+            <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" variant="text" size="small" />
+          </div>
+          <v-tabs v-if="speakerSystem && speakerSystems.length > 1" class="mb-2 flex-grow-1" right>
+            <v-tab v-for="{ pk, title } in speakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
+              {{ title }}
+            </v-tab>
+          </v-tabs>
         </div>
         <h1>
           {{ agendaItem.title }}
@@ -21,7 +23,7 @@
       <h2>{{ t('speaker.listChoices') }}</h2>
       <v-item-group v-model="currentList">
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, toggle }">
-          <v-card :color="isSelected ? 'primary' : undefined" class="mb-2" @click="toggle()">
+          <v-card :color="isSelected ? 'success' : undefined" class="mb-4" @click="toggle()">
             <div class="d-flex">
               <v-card-title class="flex-grow-1">
                 {{ list.title }}
@@ -127,7 +129,8 @@ import useChannel from '@/composables/useChannel'
 interface AgendaNav {
   icon: string
   to?: string
-  disabled: boolean
+  disabled: boolean,
+  title?: string
 }
 
 export default defineComponent({
@@ -168,7 +171,8 @@ export default defineComponent({
       return {
         icon,
         to: toAgendaItem ? `${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}` : route.path, // Vuetify alpha.11 does not accept change to undef
-        disabled: !toAgendaItem || toAgendaItem === agendaItem.value
+        disabled: !toAgendaItem || toAgendaItem === agendaItem.value,
+        title: toAgendaItem?.title
       }
     }
 

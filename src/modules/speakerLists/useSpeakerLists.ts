@@ -87,7 +87,7 @@ export default function useSpeakerLists () {
     return [...iterSpeakerSystems(
       s => (s.meeting === meeting) &&
       (nonActive || s.state === SpeakerSystemState.Active) &&
-      (!isModerator || !!hasRole(s.pk, SpeakerSystemRole.ListModerator))
+      (isModerator || !!hasRole(s.pk, SpeakerSystemRole.ListModerator))
     )]
   }
 
