@@ -68,7 +68,7 @@
             <Moment in-seconds ordinary :date="currentSpeaker.started" />
           </p>
         </v-sheet>
-        <v-list v-if="annotatedSpeakerQueue.length" density="comfortable" color="background">
+        <v-list v-if="annotatedSpeakerQueue.length" density="comfortable" bg-color="background">
           <template v-for="{ title, queue } in speakerGroups" :key="title">
             <v-list-subheader v-if="title" class="mt-3">
               {{ title }}
