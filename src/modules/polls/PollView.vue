@@ -42,7 +42,7 @@
         <v-divider />
         <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote">
-          <v-btn color="primary" :disabled="!validVote || submitting" @click="castVote()" prepend-icon="mdi-vote">
+          <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote()" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
           </v-btn>
           <v-btn color="warning" :disabled="submitting" @click="abstainVote()" prepend-icon="mdi-cancel">
@@ -168,7 +168,7 @@ export default defineComponent({
       if (nextUnvoted.value) {
         btns.push({
           props: {
-            color: ThemeColor.Accent,
+            color: ThemeColor.Primary,
             to: `${meetingPath.value}/polls/${nextUnvoted.value.pk}/${slugify(nextUnvoted.value.title)}`,
             prependIcon: 'mdi-star'
           },

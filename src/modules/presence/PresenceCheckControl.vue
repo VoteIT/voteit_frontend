@@ -7,7 +7,9 @@
     <p class="my-2">
       {{ t('presence.presentCount', { count }) }}
     </p>
-    <Btn :disabled="submitting" v-if="canChange" @click="closeCheck()" color="warning" icon="mdi-stop">{{ t('presence.closeCheck') }}</Btn>
+    <v-btn :disabled="submitting" v-if="canChange" @click="closeCheck()" color="warning" prepend-icon="mdi-stop">
+      {{ t('presence.closeCheck') }}
+    </v-btn>
   </div>
 </template>
 

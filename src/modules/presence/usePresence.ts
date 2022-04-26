@@ -77,11 +77,11 @@ export default function usePresence (meetingId: Ref<number>) {
   }
 
   function markPresence (check: PresenceCheck) {
-    presenceType.add({ presence_check: check.pk })
+    return presenceType.add({ presence_check: check.pk })
   }
 
   function undoPresence (presence: Presence) {
-    presenceType.delete(presence.pk)
+    return presenceType.delete(presence.pk)
   }
 
   const presenceCheck = computed(() => getOpenPresenceCheck(meetingId.value))

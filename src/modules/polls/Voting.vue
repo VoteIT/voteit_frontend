@@ -10,7 +10,9 @@
     <template v-else>
       <component ref="method" :is="methodComponent" :poll="data" :proposals="proposals" v-model="validVote" />
       <div class="buttons btn-controls">
-        <btn icon="mdi-vote" :disabled="!validVote || waiting" @click="castVote()">{{ t('poll.castVote') }}</btn>
+        <v-btn prepend-icon="mdi-vote" color="primary" :disabled="!validVote || waiting" @click="castVote()">
+          {{ t('poll.castVote') }}
+        </v-btn>
         <v-btn prepend-icon="mdi-cancel" color="warning" :disabled="waiting" @click="abstainVote()">
           {{ t('poll.abstain') }}
         </v-btn>

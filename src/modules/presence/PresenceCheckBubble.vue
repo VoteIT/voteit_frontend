@@ -7,17 +7,17 @@
       <p class="my-2">
         {{ t('presence.presenceNoted') }}
       </p>
-      <btn @click="togglePresence()" icon="mdi-undo-variant">
+      <v-btn @click="togglePresence()" color="primary" prepend-icon="mdi-undo-variant" :disabled="working">
         {{ t('undo') }}
-      </btn>
+      </v-btn>
     </template>
     <template v-else>
       <p class="my-2">
         {{ t('presence.notePresent') }}
       </p>
-      <btn @click="togglePresence()" icon="mdi-hand-wave">
+      <v-btn @click="togglePresence()" color="primary" prepend-icon="mdi-hand-wave" :disabled="working">
         {{ t('presence.imHere') }}
-      </btn>
+      </v-btn>
     </template>
     <template v-if="canChange">
       <v-divider class="mt-4 mb-2" />
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, watchEffect } from 'vue'
+import { computed, defineComponent, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../meetings/useMeeting'
@@ -46,13 +46,22 @@ export default defineComponent({
     const { t } = useI18n()
     const { meetingId } = useMeeting()
     const { presenceCheck, userPresence, isPresent, markPresence, undoPresence } = usePresence(meetingId)
+    const working = ref(false)
 
     const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
-    function togglePresence () {
-      if (userPresence.value) return undoPresence(userPresence.value)
+    async function togglePresence () {
       if (!presenceCheck.value) return
-      markPresence(presenceCheck.value)
-      emit('update:open', false)
+      working.value = true
+      try {
+        if (userPresence.value) await undoPresence(userPresence.value)
+        else {
+          await markPresence(presenceCheck.value)
+          emit('update:open', false)
+        }
+      } catch {
+        // TODO
+      }
+      working.value = false
     }
 
     watchEffect(() => {
@@ -76,6 +85,7 @@ export default defineComponent({
       canChange,
       presenceCheck,
       userPresence,
+      working,
       togglePresence
     }
   }
