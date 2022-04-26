@@ -7,7 +7,7 @@
           <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
             {{ t('name') }}
           </th>
-          <th v-for="{ name } in roles" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
+          <th v-for="{ name } in roles" class="text-center" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
             <v-tooltip :text="t(`role.${name}`)" anchor="top">
               <template #activator="{ props }">
                 <v-icon v-bind="props" :icon="getRoleIcon(name)" />
@@ -20,9 +20,15 @@
       <tbody>
         <tr v-for="{ user, assigned } in users" :key="user">
           <td><User :pk="user" userid /></td>
-          <td v-for="{ name } in roles" :key="name">
-            <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/>
-            <v-icon v-else @click="addRole(user, name)" icon="mdi-close" />
+          <td v-for="{ name } in roles" :key="name" class="text-center">
+            <v-btn v-if="assigned.has(name)" :disabled="!admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
+              <v-icon icon="mdi-check" />
+            </v-btn>
+            <v-btn v-else variant="text" :disabled="!admin" color="warning" @click="addRole(user, name)">
+              <v-icon icon="mdi-close" />
+            </v-btn>
+            <!-- <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/> -->
+            <!-- <v-icon v-else @click="addRole(user, name)" icon="mdi-close" /> -->
           </td>
         </tr>
       </tbody>
@@ -180,11 +186,4 @@ export default defineComponent({
   &.orderReversed
     th::after
       transform: rotate(180deg)
-  td .mdi
-    color: rgb(var(--v-theme-warning))
-    &.success
-      color: rgb(var(--v-theme-success-darken-2))
-
-  &.admin td .mdi
-    cursor: pointer
 </style>
