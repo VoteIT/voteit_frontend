@@ -179,7 +179,14 @@ function iterUnvotedPolls (meeting: number) {
   })
 }
 
-function getNextUnvotedPoll (meeting: number) {
+function getNextUnvotedPoll (meeting: number, poll?: Poll) {
+  if (poll) {
+    let found = false
+    for (const p of iterUnvotedPolls(meeting)) {
+      if (found) return p
+      if (p.pk === poll.pk) found = true
+    }
+  }
   return iterUnvotedPolls(meeting).next().value
 }
 

@@ -72,8 +72,7 @@ import Proposal from '../proposals/Proposal.vue'
 import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import slugify from 'slugify'
-import { dialogQuery } from '@/utils'
+import { dialogQuery, slugify } from '@/utils'
 import { socket } from '@/utils/Socket'
 
 export default defineComponent({

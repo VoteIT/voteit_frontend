@@ -32,7 +32,7 @@ export default function usePoll (pollRef: Ref<number>) {
   })
   const nextUnvoted = computed(() => {
     if (!poll.value) return
-    const next = polls.getNextUnvotedPoll(poll.value.meeting)
+    const next = polls.getNextUnvotedPoll(poll.value.meeting, poll.value)
     if (!next || next.pk === poll.value.pk) return
     return next
   })
