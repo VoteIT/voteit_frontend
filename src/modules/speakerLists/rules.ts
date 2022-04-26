@@ -30,7 +30,8 @@ function isArchivedSystem (system: SpeakerSystem): boolean {
 }
 
 export function isSystemModerator (system: SpeakerSystem): boolean | undefined {
-  return hasRole(system.pk, SpeakerSystemRole.ListModerator)
+  const meeting = meetings.get(system.meeting)
+  return isModerator(meeting) || hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 
 export function isSystemSpeaker (system: SpeakerSystem, user?: number): boolean | undefined {
