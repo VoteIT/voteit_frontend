@@ -1,7 +1,7 @@
 <template>
   <Widget class="poll">
     <div v-if="canChange" class="text-right mb-1">
-      <WorkflowState admin :object="poll" :contentType="pollType" />
+      <WorkflowState admin :object="poll" :contentType="pollType" right />
     </div>
     <header class="mb-1">
       <router-link :to="pollPath">
