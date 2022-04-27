@@ -22,11 +22,11 @@
         </template>
       </header>
       <div v-if="isFinished" id="poll-results" class="my-6">
-        <ProgressBar class="my-4" :text="t('poll.votedProgress', voteCount, voteCount.voted)" :value="voteCount.voted" :total="voteCount.total" />
+        <ProgressBar class="my-4" :text="t('poll.finalVoteCount', voteCount)" :value="voteCount.voted" :total="voteCount.total" />
         <h3>
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
-        <component :is="resultComponent" :result="poll.result" class="mb-8" />
+        <component :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" class="mb-8" />
         <Dropdown v-if="approved.length" :title="t('poll.numApproved', approved.length )">
           <div class="proposals approved mb-4">
             <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />

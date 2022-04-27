@@ -24,6 +24,10 @@ import { MajorityResult } from './types'
 
 export default defineComponent({
   props: {
+    abstainCount: {
+      type: Number,
+      required: true
+    },
     result: {
       type: Object as PropType<MajorityResult>,
       required: true

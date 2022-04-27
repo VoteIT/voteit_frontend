@@ -241,6 +241,7 @@
     "created": "Created poll {title}",
     "deny": "Deny",
     "details": "Poll details",
+    "finalVoteCount": "{votes} voted, {abstains} abstained actively, {total} eligible",
     "finished": "Finished",
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",

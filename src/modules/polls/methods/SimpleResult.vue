@@ -1,5 +1,5 @@
 <template>
-  <v-list>
+  <v-list bg-color="background">
     <v-list-item disabled v-for="{ proposal, choices } in results" :key="proposal?.pk">
       <div>
         <v-list-item-title class="mb-1">
@@ -38,6 +38,10 @@ interface ProposalResult {
 
 export default defineComponent({
   props: {
+    abstainCount: {
+      type: Number,
+      required: true
+    },
     result: {
       type: Object as PropType<CombinedSimpleResult>,
       required: true
@@ -55,18 +59,25 @@ export default defineComponent({
       const pk = Number(_pk)
       return {
         proposal: getProposal(pk),
-        choices: simpleChoices.map(c => {
-          const activeChoice = getActiveChoice(pk)
-          return {
-            key: c.value,
-            value: result[c.value],
-            btn: {
-              variant: activeChoice === c.value ? 'contained' : 'text',
-              color: c.color,
-              prependIcon: c.icon
+        choices: simpleChoices
+          .map(c => {
+            const activeChoice = getActiveChoice(pk)
+            // Add poll abstain_count to abstains
+            const value = c.value === SimpleChoice.Abstain
+              ? result[c.value] + props.abstainCount
+              : result[c.value]
+            return {
+              key: c.value,
+              value,
+              btn: {
+                variant: activeChoice === c.value
+                  ? 'contained'
+                  : 'text',
+                color: c.color,
+                prependIcon: c.icon
+              }
             }
-          }
-        })
+          })
       }
     }
 

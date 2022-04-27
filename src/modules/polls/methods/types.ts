@@ -146,16 +146,17 @@ export interface PollMethod {
 }
 
 interface BasePoll extends BaseContent {
-  state: PollState
+  abstain_count?: number // Only finished polls
   agenda_item: number
-  meeting: number
-  method_name: PollMethodName
   body: string | null
+  closed: Date | null
   electoral_register?: number
   initial_electoral_register?: number
+  meeting: number
+  method_name: PollMethodName
   proposals: number[]
+  state: PollState
   started: Date | null
-  closed: Date | null
 }
 
 export interface SimplePoll extends BasePoll {

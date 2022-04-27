@@ -6,8 +6,9 @@
     <div v-else-if="textDisplay">
       <span>{{ textDisplay }}</span>
     </div>
-    <div class="bar">
+    <div class="bar d-flex">
       <div class="progress" :style="{ width: percentage + '%' }" />
+      <div class="buffer" v-if="buffer" :style="{ width: bufferPercentage + '%' }" />
     </div>
   </div>
 </template>
@@ -26,11 +27,19 @@ export default defineComponent({
     value: {
       type: Number,
       default: 0
+    },
+    buffer: {
+      type: Number,
+      default: 0
     }
   },
   setup (props) {
     const disabled = computed(() => {
       return !props.total
+    })
+    const bufferPercentage = computed(() => {
+      if (!props.total) return 0
+      return props.buffer / props.total * 100
     })
     const percentage = computed(() => {
       if (!props.total) return 0
@@ -44,6 +53,7 @@ export default defineComponent({
     })
 
     return {
+      bufferPercentage,
       disabled,
       percentage,
       textDisplay
@@ -64,6 +74,10 @@ export default defineComponent({
     background-color: rgb(var(--v-theme-success))
     height: 3px
     transition: background-color .2s, width .1s
+  .buffer
+    box-sizing: border-box
+    background-color: rgba(var(--v-theme-success-lighten-2), .75)
+    height: 3px
   .meta
     display: flex
     justify-content: space-between

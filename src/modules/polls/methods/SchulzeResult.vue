@@ -48,6 +48,10 @@ import { SchulzeResult } from './types'
 
 export default defineComponent({
   props: {
+    abstainCount: {
+      type: Number,
+      required: true
+    },
     result: {
       type: Object as PropType<SchulzeResult>,
       required: true

@@ -229,6 +229,7 @@
     "created": "Skapa omröstning {title}",
     "deny": "Avslag",
     "details": "Omröstningsdetaljer",
+    "finalVoteCount": "{votes} röstade, {abstains} avstod aktivt, {total} röstberättigade",
     "finished": "Avslutad",
     "noPollableAgendaItems": "Det finns inga dagordningspunkter där du kan starta en omröstning.",
     "numApproved": "Bifallet förslag | Bifallna förslag",

@@ -17,12 +17,16 @@ export default function usePoll (pollRef: Ref<number>) {
   const electoralRegister = computed(() => poll.value?.electoral_register && getRegister(poll.value.electoral_register))
   const voteCount = computed(() => {
     if (!poll.value || !electoralRegister.value) return {}
-    const voted = poll.value.result?.vote_count ?? 0
+    const abstains = poll.value.abstain_count ?? 0
+    const votes = poll.value.result?.vote_count ?? 0
+    const voted = votes + abstains
     const total = electoralRegister.value.voters.length
     return {
+      abstains,
       percentage: Math.round(voted / total * 100),
+      total,
       voted,
-      total
+      votes
     }
   })
 

@@ -18,6 +18,10 @@ import { RepeatedSchulzeResult } from './types'
 
 export default defineComponent({
   props: {
+    abstainCount: {
+      type: Number,
+      required: true
+    },
     result: {
       type: Object as PropType<RepeatedSchulzeResult>,
       required: true
