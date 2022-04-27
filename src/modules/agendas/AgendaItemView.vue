@@ -13,8 +13,11 @@
         <TextDocuments />
       </v-col>
       <v-col cols="12" lg="4">
-        <Dropdown v-if="sortedPolls.length" :title="t('poll.pollCount', sortedPolls.length)" modelValue class="mb-4">
-          <Poll v-for="poll in sortedPolls" :key="poll.pk" :poll="poll" />
+        <Dropdown v-if="pollCount || canAddPoll" :title="t('poll.pollCount', pollCount)" modelValue>
+          <template #actions>
+            <v-btn icon="mdi-star-plus" variant="text" size="small" :to="toNewPoll" />
+          </template>
+          <PollList :agendaItem="agendaId" class="ml-4" />
         </Dropdown>
         <Dropdown v-if="speakerLists.length" :title="t('speaker.lists', speakerLists.length)" modelValue>
           <SpeakerList v-for="list in speakerLists" :key="list.pk" :list="list" />
@@ -73,13 +76,13 @@
 </template>
 
 <script lang="ts">
-import { orderBy } from 'lodash'
 import { computed, defineComponent, nextTick, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStorage } from '@vueuse/core'
 
 import { openModalEvent } from '@/utils/events'
 import { MenuItem } from '@/utils/types'
+import Dropdown from '@/components/Dropdown.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -99,7 +102,7 @@ import { discussionPostType } from '../discussions/contentTypes'
 import { SpeakerListState } from '../speakerLists/types'
 import { DiscussionPost } from '../discussions/types'
 import { TagsKey, tagClickEvent } from '../meetings/useTags'
-import Poll from '../polls/Poll.vue'
+import PollList from '../polls/PollList.vue'
 import usePolls from '../polls/usePolls'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
@@ -114,7 +117,6 @@ import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
-import { PollState } from '../polls/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -155,7 +157,7 @@ export default defineComponent({
       const { order, reversed } = sortOrder.value
       return proposals.getAgendaProposals(agendaId.value, p => !proposalFilter(p), order, reversed)
     })
-    const sortedPolls = computed(() => orderBy(getAiPolls(agendaId.value, PollState.Ongoing), ['created'], ['desc']))
+    const pollCount = computed(() => getAiPolls(agendaId.value).length)
 
     function discussionFilter (d: DiscussionPost): boolean {
       const { tags } = activeFilter.value
@@ -188,14 +190,16 @@ export default defineComponent({
       })
     }
 
+    const toNewPoll = computed(() => `${meetingPath.value}/polls/new/${agendaId.value}`)
+
     const menuItems = computed<MenuItem[]>(() => {
       if (!agendaItem.value) return []
       const items: MenuItem[] = []
       if (canAddPoll(agendaItem.value)) {
         items.push({
           title: t('poll.new'),
-          icon: 'mdi-star',
-          to: `${meetingPath.value}/polls/new/${agendaId.value}`
+          icon: 'mdi-star-plus',
+          to: toNewPoll.value
         })
       }
       if (canChangeAgendaItem.value) {
@@ -291,6 +295,7 @@ export default defineComponent({
       t,
       agendaId,
       agendaItem,
+      canAddPoll: computed(() => agendaItem.value && canAddPoll(agendaItem.value)),
       canAddProposal,
       canAddDiscussionPost,
       canChangeAgendaItem,
@@ -304,11 +309,12 @@ export default defineComponent({
       meetingPath,
       menuItems,
       hasProposals,
-      sortedPolls,
+      pollCount,
       sortedProposals,
       sortedDiscussions,
       speakerLists,
       speakerSystems,
+      toNewPoll,
 
       agendaItemType,
 
@@ -324,8 +330,9 @@ export default defineComponent({
     AgendaDiscussions,
     AgendaFilters,
     AgendaProposals,
+    Dropdown,
     Headline,
-    Poll,
+    PollList,
     Richtext,
     SpeakerList,
     TextDocuments,

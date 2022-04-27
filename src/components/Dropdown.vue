@@ -1,6 +1,12 @@
 <template>
   <div class="page-dropdown">
-    <v-btn prepend-icon="mdi-chevron-right" variant="text" block @click="toggle()" class="collapse" :class="{ isOpen }">
+    <div v-if="$slots.actions" class="d-flex">
+      <v-btn prepend-icon="mdi-chevron-right" variant="text" @click="toggle()" class="collapse flex-grow-1" :class="{ isOpen }">
+        {{ title }}
+      </v-btn>
+      <slot name="actions" />
+    </div>
+    <v-btn v-else prepend-icon="mdi-chevron-right" variant="text" block @click="toggle()" class="collapse" :class="{ isOpen }">
       {{ title }}
     </v-btn>
     <v-expand-transition>
@@ -49,6 +55,4 @@ export default defineComponent({
       transition: transform .2s
     &.isOpen .mdi-chevron-right
       transform: rotate(90deg)
-  .dropdown-content
-    padding-top: 1em
 </style>

@@ -1,5 +1,8 @@
 <template>
   <Widget class="poll">
+    <div v-if="canChange" class="text-right mb-1">
+      <WorkflowState admin :object="poll" :contentType="pollType" />
+    </div>
     <header class="mb-1">
       <router-link :to="pollPath">
         <div class="d-flex">
@@ -53,6 +56,7 @@ import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
 
 import usePolls from '../polls/usePolls'
 import ProposalVue from '../proposals/Proposal.vue'
@@ -74,13 +78,14 @@ export default defineComponent({
   },
   components: {
     Proposal: ProposalVue,
-    Moment
+    Moment,
+    WorkflowState
   },
   setup (props) {
     const { t } = useI18n()
     const { meetingPath } = useMeeting()
     const { getPollStatus, getUserVote } = usePolls()
-    const { canVote, approved, denied, isOngoing, isFinished, voteCount } = usePoll(computed(() => props.poll.pk))
+    const { canChange, canVote, approved, denied, isOngoing, isFinished, voteCount } = usePoll(computed(() => props.poll.pk))
 
     const following = ref(false)
     const subscribePk = computed(() => {
@@ -98,6 +103,7 @@ export default defineComponent({
     return {
       t,
       approved,
+      canChange,
       canVote,
       denied,
       following,

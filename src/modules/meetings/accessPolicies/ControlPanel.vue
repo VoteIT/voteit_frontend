@@ -1,24 +1,32 @@
 <template>
   <div>
-    <h2>{{ t('accessPolicy.settings') }}</h2>
+    <h2 class="mb-2">
+      {{ t('accessPolicy.settings') }}
+    </h2>
     <v-row>
       <v-col>
-        <v-card v-for="p in policies" :key="p.pk" :title="p.name">
+        <v-card v-for="p in policies" :key="p.pk">
+          <v-card-header class="d-flex align-start">
+            <v-card-title class="flex-grow-1">
+              {{ p.name }}
+            </v-card-title>
+            <v-switch color="primary" :modelValue="p.active" @update:modelValue="setActive(p, $event)" :label="t('active')" class="flex-grow-0" hide-details />
+          </v-card-header>
           <v-card-text>
-            <h2 class="text-h6 mb-2">
-              {{ t('accessPolicy.rolesGiven') }}
-            </h2>
+            <div class="d-flex">
+              <h2 class="text-h6 mb-2 flex-grow-1">
+                {{ t('accessPolicy.rolesGiven') }}
+              </h2>
+            </div>
             <div>
               <v-chip v-for="r in p.roles_given" :key="r">
                 {{ r }}
               </v-chip>
             </div>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions >
             <v-btn variant="text" color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn>
             <v-btn variant="text" color="warning" prepend-icon="mdi-delete" @click="alert('*Not implemented (missing API)')">{{ t('delete') }}</v-btn>
-            <v-switch :modelValue="p.active" @update:modelValue="setActive(p, $event)" />
-            <span class="ml-1">{{ p.active ? t('active') : t('inactive') }}</span>
           </v-card-actions>
         </v-card>
       </v-col>
