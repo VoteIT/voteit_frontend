@@ -14,7 +14,7 @@
             <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
           </slot>
           <div class="d-flex flex-column flex-md-row" id="post-as">
-            <v-select v-if="postAsOptions" v-model="group" :label="t('proposal.postAs')" :items="postAsOptions" />
+            <v-select v-if="postAsOptions" v-model="group" :label="t('proposal.postAs')" :items="postAsOptions" :transition="false" />
             <v-spacer />
             <slot name="actions" />
           </div>
