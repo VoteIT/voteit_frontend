@@ -135,7 +135,7 @@ export default defineComponent({
 
     const agendaItemExists = computed(() => {
       if (!agenda.value.length) return
-      return !!agendaItem.value
+      return !agendaId.value || !!agendaItem.value
     })
     usePermission(agendaItemExists, { to: meetingPath })
 
