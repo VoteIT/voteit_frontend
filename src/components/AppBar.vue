@@ -2,7 +2,7 @@
   <v-app-bar app flat>
     <v-app-bar-nav-icon v-show="hasNavDrawer" class="d-md-none" variant="text" color="background" @click.stop="toggleNavDrawerEvent.emit()" />
     <router-link to="/" :title="t('home.home')">
-      <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
+      <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-spacer />
     <div v-if="user">
@@ -196,14 +196,15 @@ export default defineComponent({
 .v-toolbar
   background-color: rgb(var(--v-theme-app-bar)) !important
   color: rgb(var(--v-theme-on-app-bar))
-  img
-    width: 64px
-    height: auto
-    margin: 10px 16px 0
   a,
   button
     color: rgb(var(--v-theme-on-app-bar))
     text-decoration: none
+
+#navbar-logo
+  width: 64px
+  height: auto
+  margin: 10px 16px 0
 
 .v-list--density-comfortable .v-list-item--prepend.no-prepend
   -webkit-padding-start: 16px !important
