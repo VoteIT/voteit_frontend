@@ -19,7 +19,7 @@
         </v-window-item>
 
         <v-window-item value="invites">
-          <InvitationsTab />
+          <InvitationsTab @denied="currentTab = 'default'" />
         </v-window-item>
 
       </v-window>

@@ -137,6 +137,7 @@ import { MeetingInvite, MeetingRole } from './types'
 import useMeetingInvites from './useMeetingInvites'
 import { canDeleteMeetingInvite } from './rules'
 import { meetingInviteType } from './contentTypes'
+import usePermission from '@/composables/usePermission'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -147,12 +148,14 @@ const meetingIcons: Record<MeetingRole, string> = {
 }
 
 export default defineComponent({
-  inject: ['cols'],
-  setup () {
+  emits: ['denied'],
+  setup (props, { emit }) {
     const { t } = useI18n()
-    const { meetingId, roleLabels } = useMeeting()
+    const { isModerator, meetingId, roleLabels } = useMeeting()
     const { meetingInvites } = useMeetingInvites(meetingId)
     const { copy, copied } = useClipboard()
+
+    usePermission(isModerator, {}, () => { emit('denied') })
 
     useChannel(
       'invites',

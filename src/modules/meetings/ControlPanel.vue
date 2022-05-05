@@ -39,15 +39,17 @@ import useMeeting from '@/modules/meetings/useMeeting'
 
 import controlPanels from './controlPanels'
 import { useTitle } from '@vueuse/core'
+import usePermission from '@/composables/usePermission'
 
 export default defineComponent({
   name: 'ControlPanel',
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const { meeting, meetingPath } = useMeeting()
+    const { isModerator, meeting, meetingPath } = useMeeting()
 
     useTitle(computed(() => `${t('settings')} | ${meeting.value?.title}`))
+    usePermission(isModerator, { to: meetingPath })
 
     const panels = computed(() => {
       return Object.values(controlPanels)

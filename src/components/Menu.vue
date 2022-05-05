@@ -93,7 +93,6 @@ export default defineComponent({
 
     function open () {
       isOpen.value = !isOpen.value
-      console.log('sesamy')
     }
 
     async function clickItem (item: MenuItemOnClick | MenuItemTo) {

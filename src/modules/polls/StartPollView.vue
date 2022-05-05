@@ -80,6 +80,7 @@ import methodSchemas from './methods/schemas'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import usePermission from '@/composables/usePermission'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -92,9 +93,11 @@ export default defineComponent({
     const router = useRouter()
     const proposals = useProposals()
     const { getPollMethods } = usePolls()
-    const { agendaId, agendaItem, getAgenda } = useAgenda()
-    const { meetingPath, meetingId } = useMeeting()
+    const { agendaId, agendaItem, agenda } = useAgenda()
+    const { isModerator, meetingPath, meetingId } = useMeeting()
     const { alert } = useAlert()
+
+    usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future
 
     useMeetingTitle(t('poll.start'))
 
@@ -102,7 +105,6 @@ export default defineComponent({
     function getPublishedProposals (agendaItem: number) {
       return proposals.getAgendaProposals(agendaItem, p => p.state === ProposalState.Published)
     }
-    const agenda = computed(() => getAgenda(meetingId.value))
     const pollableAgendaItems = computed(() => {
       return agenda.value
         .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
@@ -215,7 +217,6 @@ export default defineComponent({
       nextTitle,
 
       createPoll,
-      getAgenda,
       toggleAll,
 
       ...useMeeting(),

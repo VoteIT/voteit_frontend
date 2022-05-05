@@ -28,6 +28,7 @@
   "newestFirst": "Nyaste först",
   "no": "Nej",
   "off": "Av",
+  "ok": "OK",
   "on": "På",
   "oldestFirst": "Äldst först",
   "orderBy": "Sortera efter",
@@ -214,6 +215,10 @@
   "participantNumber": {
     "alreadyInList": "Deltagarnummer {ids} står redan på talarlistan | Deltagarnumren {ids} står redan på talarlistan",
     "doesNotExist": "Deltagarnummer {ids} finns inte i mötet | Deltagarnumren {ids} finns inte i mötet"
+  },
+  "permission": {
+    "defaultMessage": "Du saknar behörighet att se den här sidan.",
+    "defaultChangedMessage": "Du har inte längre behörighet att se den här sidan."
   },
   "poll": {
     "abstain": "Avstå",

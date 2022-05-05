@@ -9,9 +9,13 @@ meetingInviteType.updateMap(meetingInvites)
 
 export default function useMeetingInvites (meetingId?: Ref<number>) {
   async function fetchInvites () {
-    /* For user from rest API */
-    const { data } = await matchedInviteType.api.list()
-    userMeetingInvites.value = data
+    try {
+      /* For user from rest API */
+      const { data } = await matchedInviteType.api.list()
+      userMeetingInvites.value = data
+    } catch {
+      // TODO
+    }
   }
 
   function clearInvites () {

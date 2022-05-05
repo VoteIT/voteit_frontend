@@ -3,11 +3,17 @@ import { reactive } from 'vue'
 import useAuthentication from './useAuthentication'
 import { ContextRoles, UserContextRoles } from './types'
 import ContentType from '@/contentTypes/ContentType'
+import { defer } from 'lodash'
 
 const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
 function getRoleKey (...components: [string, number, number | '']) {
   return components.join('/')
+}
+
+function hasRoleKey (p: ContextRoles): boolean {
+  const key = getRoleKey(p.model.toLowerCase(), p.pk, p.user_pk)
+  return contextRoles.has(key)
 }
 
 function getRoleStore (p: ContextRoles): { key: string, store: Set<string> } {
@@ -21,9 +27,11 @@ function getRoleStore (p: ContextRoles): { key: string, store: Set<string> } {
 
 new ContentType<ContextRoles>({ name: 'roles' })
   .on('removed', payload => {
+    if (!hasRoleKey(payload)) return
     const { store, key } = getRoleStore(payload)
     payload.roles.forEach(r => store.delete(r))
-    if (!store.size) contextRoles.delete(key)
+    // Defer to trigger reactivity on empty role list, before removing role store completely
+    if (!store.size) defer(() => contextRoles.delete(key))
   })
   .on('added', payload => {
     const { store } = getRoleStore(payload)

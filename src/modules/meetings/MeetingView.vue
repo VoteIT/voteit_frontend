@@ -12,12 +12,16 @@ import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 
 import { LastReadKey } from '@/composables/useUnread'
 import useElectoralRegisters from './useElectoralRegisters'
+import usePermission from '@/composables/usePermission'
+import useMeeting from './useMeeting'
 
 export default defineComponent({
   name: 'Meeting',
   setup () {
     const { clearRegisters } = useElectoralRegisters()
+    const { canViewMeeting } = useMeeting()
     useMeetingChannel()
+    usePermission(canViewMeeting)
     provide(LastReadKey, null)
     provide('context', 'meeting')
 

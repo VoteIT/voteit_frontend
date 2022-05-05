@@ -28,6 +28,7 @@
   "newestFirst": "Newest first",
   "no": "No",
   "off": "Off",
+  "ok": "OK",
   "on": "On",
   "oldestFirst": "Oldest first",
   "orderBy": "Order by",
@@ -226,6 +227,10 @@
   "participantNumber": {
     "alreadyInList": "Participant number {ids} is already in speaker queue | Participant numbers {ids} are already in speaker queue",
     "doesNotExist": "Participant number {ids} does not exist in meeting | Participant numbers {ids} does not exist in meeting"
+  },
+  "permission": {
+    "defaultMessage": "You don't have permission to view this page.",
+    "defaultChangedMessage": "You no longer have permission to view this page."
   },
   "poll": {
     "abstain": "Abstain",

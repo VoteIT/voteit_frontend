@@ -15,7 +15,7 @@ const FINISHED_STATES = [MeetingState.Closed, MeetingState.Archiving, MeetingSta
 const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
 export function isParticipant (meeting?: Meeting): boolean | undefined {
-  return !!meeting && hasRole(meeting.pk, MeetingRole.Participant)
+  return meeting && hasRole(meeting.pk, MeetingRole.Participant)
 }
 
 export function isProposer (meeting?: Meeting): boolean | undefined {
@@ -31,7 +31,7 @@ export function isPotentialVoter (meeting?: Meeting): boolean | undefined {
 }
 
 export function isModerator (meeting?: Meeting): boolean | undefined {
-  return !!meeting && hasRole(meeting.pk, MeetingRole.Moderator)
+  return meeting && hasRole(meeting.pk, MeetingRole.Moderator)
 }
 
 export function isActiveMeeting (meeting?: Meeting): boolean {
@@ -46,8 +46,8 @@ export function isFinishedMeeting (meeting?: Meeting): boolean {
   return !!meeting && FINISHED_STATES.includes(meeting.state as MeetingState)
 }
 
-export function canViewMeeting (meeting?: Meeting): boolean {
-  return !!isParticipant(meeting)
+export function canViewMeeting (meeting?: Meeting): boolean | undefined {
+  return isParticipant(meeting)
 }
 
 export function canChangeMeeting (meeting?: Meeting): boolean {
