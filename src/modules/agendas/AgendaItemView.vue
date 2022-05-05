@@ -86,6 +86,9 @@ import Dropdown from '@/components/Dropdown.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
+import useChannel from '@/composables/useChannel'
+import useDefaults from '@/composables/useDefaults'
+import usePermission from '@/composables/usePermission'
 
 import AgendaDiscussions from '../discussions/AgendaDiscussions.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
@@ -115,8 +118,6 @@ import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
-import useChannel from '@/composables/useChannel'
-import useDefaults from '@/composables/useDefaults'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -127,10 +128,16 @@ export default defineComponent({
     const proposals = useProposals()
     const { getAiPolls } = usePolls()
     const { meetingPath, meetingId } = useMeeting()
-    const { hasNewItems, agendaItemLastRead } = useAgenda()
+    const { agenda, agendaItemLastRead, hasNewItems } = useAgenda()
     const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
 
     useChannel('agenda_item', agendaId)
+
+    const agendaItemExists = computed(() => {
+      if (!agenda.value.length) return
+      return !!agendaItem.value
+    })
+    usePermission(agendaItemExists, { to: meetingPath })
 
     useMeetingTitle(computed(() => agendaItem.value?.title ?? t('agenda.item')))
 
