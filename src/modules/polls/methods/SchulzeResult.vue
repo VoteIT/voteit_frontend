@@ -11,7 +11,7 @@
       {{ tiedWinners.join(', ') }}
     </p>
     <v-expansion-panels multiple class="my-4">
-      <v-expansion-panel v-for="{ btn, proposal, pairs } in candidatePairs" :key="proposal?.pk ?? 0">
+      <v-expansion-panel v-for="{ btn, proposal, pairs } in proposalPairs" :key="proposal?.pk ?? 0">
         <v-expansion-panel-title>
           <v-icon v-bind="btn" class="mr-4" />
           <Tag v-if="proposal" disabled :name="proposal.prop_id" />
@@ -78,17 +78,41 @@ export default defineComponent({
       return record
     })
 
+    const sortedProposals = computed(() => {
+      const proposals = [...props.result.approved, ...props.result.denied]
+      return proposals.length === props.result.candidates.length
+        ? proposals
+        : props.result.candidates
+    })
+
+    const proposalCombinations = computed(() => {
+      // All possible combinations of proposals
+      return sortedProposals.value.flatMap(
+        (one, i) => sortedProposals.value.slice(i + 1).map(other => [one, other])
+      )
+    })
+
+    const voteCount = computed(() => {
+      // If no vote count from backend, calculate minimum value for this poll.
+      // (To handle historic repeated schulze rounds)
+      return props.result.vote_count
+        ? props.result.vote_count
+        : Math.max(...proposalCombinations.value.map(([one, other]) => strengthMap.value[one][other] + strengthMap.value[other][one]))
+    })
+
     function mapProposal (proposals: number[]) {
       return proposals.map(pk => {
         return {
           proposal: getProposal(pk),
-          btn: props.result.approved.includes(pk) ? { icon: 'mdi-thumb-up', color: ThemeColor.Success } : { icon: 'mdi-thumb-down', color: ThemeColor.Warning },
+          btn: props.result.approved.includes(pk)
+            ? { icon: 'mdi-thumb-up', color: ThemeColor.Success }
+            : { icon: 'mdi-thumb-down', color: ThemeColor.Warning },
           pairs: props.result.candidates
             .filter(n => n !== pk)
             .map(other => {
               const myStrength = strengthMap.value[pk][other]
               const otherStrength = strengthMap.value[other][pk]
-              const tiedStrength = props.result.vote_count - myStrength - otherStrength
+              const tiedStrength = voteCount.value - myStrength - otherStrength
               return {
                 proposal: getProposal(other),
                 approve: myStrength,
@@ -97,15 +121,15 @@ export default defineComponent({
                 // Percentages
                 results: [
                   {
-                    percentage: myStrength / props.result.vote_count * 100,
+                    percentage: myStrength / voteCount.value * 100,
                     color: ThemeColor.Success
                   },
                   {
-                    percentage: tiedStrength / props.result.vote_count * 100,
+                    percentage: tiedStrength / voteCount.value * 100,
                     color: ThemeColor.Secondary
                   },
                   {
-                    percentage: otherStrength / props.result.vote_count * 100,
+                    percentage: otherStrength / voteCount.value * 100,
                     color: ThemeColor.Warning
                   }
                 ]
@@ -115,15 +139,13 @@ export default defineComponent({
       })
     }
 
-    const candidatePairs = computed(() => {
-      return [...mapProposal(props.result.approved), ...mapProposal(props.result.denied)]
+    const proposalPairs = computed(() => {
+      return mapProposal(sortedProposals.value)
     })
-    const pairs = computed(() => props.result.pairs)
 
     return {
       t,
-      candidatePairs,
-      pairs,
+      proposalPairs,
       tiedWinners,
       getProposal
     }

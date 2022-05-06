@@ -325,6 +325,7 @@
       "method": "Result ({method})",
       "randomized": "Random tiebreaker used",
       "round": "Round",
+      "roundNum": "Round {count}",
       "runtime": "Calculation time",
       "quota": "Quota",
       "versus": "Versus",

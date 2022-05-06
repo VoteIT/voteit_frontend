@@ -313,6 +313,7 @@
       "quota": "Kvot",
       "randomized": "Slumpmässig utslagsröst",
       "round": "Runda",
+      "roundNum": "Runda {count}",
       "runtime": "Beräkningstid",
       "method": "Resultat ({method})",
       "versus": "Mot",
