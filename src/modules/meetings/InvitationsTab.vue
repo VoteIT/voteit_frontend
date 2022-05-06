@@ -1,5 +1,6 @@
 <template>
   <div class="mb-4">
+    <v-alert class="mb-4" :title="t('meeting.invites.helpTextTitle')" :text="t('meeting.invites.helpTextBody')" color="primary" icon="mdi-email-off" />
     <div class="d-flex">
       <h1 class="text-truncate">
         {{ t('meeting.invites.existing') }}

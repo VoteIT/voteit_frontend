@@ -192,6 +192,8 @@
       "filterOnRoles": "Filtrera på roller",
       "filterMatchRoles": "Matcha roller exakt",
       "filterOnStatus": "Filtrera på status",
+      "helpTextTitle": "Vill du skicka ut inbjudningarna?",
+      "helpTextBody": "En inbjudan innebär att användare med rätt mejladress kan gå med i ert möte. Men VoteIT skickar inte ut några mejl - det behöver du göra själv. Använd kopieringsknappen ovan för att kopiera alla mejladresser i listan.",
       "invites": "Inbjudningar",
       "invitedAs": "Inbjuden som",
       "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
