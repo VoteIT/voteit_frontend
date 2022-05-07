@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p v-if="!result.approved.length">
+    <p v-if="!result.winner">
       <!-- On deny win, there will be no winning proposals -->
       {{ t('poll.schulze.allDenied') }}
     </p>
@@ -104,7 +104,7 @@ export default defineComponent({
       return proposals.map(pk => {
         return {
           proposal: getProposal(pk),
-          btn: props.result.approved.includes(pk)
+          btn: props.result.winner === pk
             ? { icon: 'mdi-thumb-up', color: ThemeColor.Success }
             : { icon: 'mdi-thumb-down', color: ThemeColor.Warning },
           pairs: props.result.candidates
