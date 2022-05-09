@@ -109,7 +109,7 @@ export default defineComponent({
 
 <style lang="sass">
 #socket-info
-  z-index: 5
+  z-index: 1010
   position: fixed
   top: -64px
   left: 0

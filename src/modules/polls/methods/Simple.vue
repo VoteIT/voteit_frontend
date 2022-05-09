@@ -53,14 +53,21 @@ export default defineComponent({
 
     const options = proposals.value.length > 1 ? simpleChoices : simpleChoices.filter(c => c.value !== SimpleChoice.Abstain)
 
+    const validVote = computed(() => {
+      // Return a valid vote, or undefined if not valid
+      const map = new DefaultMap<SimpleChoice, number[]>(() => [])
+      for (const prop of proposals.value) {
+        const vote = votes.get(prop.pk)
+        if (!vote) return
+        map.get(vote).push(prop.pk)
+      }
+      return Object.fromEntries(map)
+    })
+
     function change (proposal: Proposal, opt: SimpleChoiceDesc) {
       if (props.disabled) return
       votes.set(proposal.pk, opt.value)
-      const map = new DefaultMap<SimpleChoice, number[]>(() => [])
-      for (const prop of proposals.value) {
-        map.get(votes.get(prop.pk) ?? SimpleChoice.Abstain).push(prop.pk)
-      }
-      emit('update:modelValue', Object.fromEntries(map))
+      emit('update:modelValue', validVote.value)
     }
 
     return {

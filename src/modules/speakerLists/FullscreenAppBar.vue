@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app flat>
     <router-link :to="meetingPath" :title="t('home.home')" class="mr-4">
-      <img :src="require('@/assets/voteit-logo.svg').default" alt="VoteIT" />
+      <img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" />
     </router-link>
     <v-app-bar-title v-if="meeting">
       <router-link :to="meetingPath">

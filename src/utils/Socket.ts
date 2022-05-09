@@ -190,20 +190,19 @@ class Socket {
     return new ProgressPromise((resolve, reject, progress) => {
       let timeoutId: number
       const setRejectTimeout = () => {
-        if (myConfig.timeout) {
-          timeoutId = setTimeout(() => {
-            this.callbacks.delete(messageId)
-            if (myConfig.alertOnError) {
-              openAlertEvent.emit({
-                title: 'Socket error',
-                text: 'Request timed out',
-                level: AlertLevel.Error,
-                sticky: true
-              })
-            }
-            reject(new Error('Request timed out'))
-          }, myConfig.timeout)
-        }
+        if (!myConfig.timeout) return
+        timeoutId = setTimeout(() => {
+          this.callbacks.delete(messageId)
+          if (myConfig.alertOnError) {
+            openAlertEvent.emit({
+              title: 'Socket error',
+              text: 'Request timed out',
+              level: AlertLevel.Error,
+              sticky: true
+            })
+          }
+          reject(new Error('Request timed out'))
+        }, myConfig.timeout)
       }
       setRejectTimeout()
 

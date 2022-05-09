@@ -63,6 +63,7 @@ export interface ElectoralRegister {
 }
 
 export interface Vote {
+  pk: Number
   abstain: boolean
   vote: object
   poll: number

@@ -5,10 +5,10 @@
       {{ t('poll.schulze.allDenied') }}
     </p>
     <p v-else>
-      {{ t('poll.schulze.numTiedWinners', tiedWinners.length, { count: tiedWinners.length }) }}
+      {{ t('poll.schulze.numTiedWinners', tiedWinners.length) }}
     </p>
     <p v-if="tiedWinners.length">
-      {{ tiedWinners.join(', ') }}
+      <Tag v-for="(tag, i) in tiedWinners" :key="i" :tag="tag" /><template v-if="i < (tiedWinners.length - 1)">, </template>
     </p>
     <v-expansion-panels multiple class="my-4">
       <v-expansion-panel v-for="{ btn, proposal, pairs } in proposalPairs" :key="proposal?.pk ?? 0">
@@ -65,7 +65,9 @@ export default defineComponent({
       if (!props.result.tied_winners) return []
       return props.result.tied_winners.map(pk => {
         const prop = getProposal(pk)
-        return prop ? '#' + prop.prop_id : t('proposal.unknown')
+        return prop
+          ? '#' + prop.prop_id
+          : t('proposal.unknown')
       })
     })
 

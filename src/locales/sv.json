@@ -224,6 +224,7 @@
   },
   "poll": {
     "abstain": "Avstå",
+    "abstainValidVoteConfirm": "Du har fyllt i en giltig röst, men klickat avstå. Är du säker? Avbryt och klicka Rösta för att lägga din röst.",
     "all": "Alla omröstningar",
     "allowRandomTiebreaker": "Tillåt slumpmässig utslagsröst",
     "approve": "Bifall",
@@ -326,7 +327,7 @@
       "addDenyProposal": "Lägg till avslag",
       "allDenied": "Alla förslag blev avslagna.",
       "numberOfStars": "Antal stjärnor",
-      "numTiedWinners": "En klar vinnare kunde utses | One ring to rule them all, and in the darkness bind them | Det blev oavgjort mellan { count } förslag"
+      "numTiedWinners": "En klar vinnare kunde utses. | One ring to rule them all, and in the darkness bind them. | Det blev oavgjort mellan { count } förslag. Slumpröst användes för att utse vinnare bland dessa."
     },
     "STV": {
       "numRounds": "Skotsk STV, en runda | Skotsk STV, {count} rundor",

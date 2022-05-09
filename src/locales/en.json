@@ -236,6 +236,7 @@
   },
   "poll": {
     "abstain": "Abstain",
+    "abstainValidVoteConfirm": "You have entered a valid vote, but clicked abstain. Are you sure? Cancel and click Vote to cast as a vote.",
     "all": "All polls",
     "allowRandomTiebreaker": "Allow random in tiebreaker",
     "approve": "Approve",
@@ -338,7 +339,7 @@
       "addDenyProposal": "Add deny proposal",
       "allDenied": "All proposals were denied.",
       "numberOfStars": "Number of stars",
-      "numTiedWinners": "There are no tied winners | One ring to rule them all, and in the darkness bind them | There are { count } tied winners"
+      "numTiedWinners": "A clear winner was established. | One ring to rule them all, and in the darkness bind them. | There was a tie between { count } proposals. The winner was randomly selected among those."
     },
     "STV": {
       "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds",

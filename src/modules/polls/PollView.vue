@@ -73,7 +73,7 @@ import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery, slugify } from '@/utils'
-import { socket } from '@/utils/Socket'
+import { parseSocketError, socket } from '@/utils/Socket'
 
 export default defineComponent({
   name: 'PollView',
@@ -92,8 +92,12 @@ export default defineComponent({
     const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
     const votingComplete = ref(!!userVote.value)
     watch(poll, () => {
-      votingComplete.value = !!userVote.value
+      // votingComplete.value = !!userVote.value
       validVote.value = userVote.value?.vote
+    })
+    watch(userVote, (value) => {
+      if (!value) return
+      validVote.value = value.vote
     })
 
     const submitting = ref(false)
@@ -105,20 +109,36 @@ export default defineComponent({
         vote: validVote.value
       }
       try {
-        await socket.call(`${poll.value.method_name}_vote.add`, msg)
+        await socket.call(`${poll.value.method_name}_vote.add`, msg, { alertOnError: true })
         votingComplete.value = true
-      } catch {}
+      } catch (e) {
+        // TODO
+        console.error(parseSocketError(e as Error))
+      }
       submitting.value = false
     }
 
     async function abstainVote () {
       if (!poll.value) return
+      if (validVote.value) {
+        if (!await dialogQuery({
+          title: t('poll.abstainValidVoteConfirm'),
+          no: t('cancel'),
+          yes: t('poll.abstain'),
+          theme: ThemeColor.Warning
+        })) {
+          return
+        }
+      }
       submitting.value = true
       try {
         await voteType.methodCall('abstain', { poll: poll.value.pk })
         votingComplete.value = true
         validVote.value = undefined // Forget vote
-      } catch {}
+      } catch (e) {
+        // TODO
+        console.error(parseSocketError(e as Error))
+      }
       submitting.value = false
     }
 
