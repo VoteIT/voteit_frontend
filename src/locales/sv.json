@@ -129,7 +129,8 @@
       "auto_always": "Uppdatera alltid (demo)",
       "auto_before_poll": "Automatisk vid omröstning",
       "presence_check": "Närvarokontroll"
-    }
+    },
+    "inCurrent": "I nuvarande röstlängd"
   },
   "error": {
     "error": "Fel",

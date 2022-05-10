@@ -7,7 +7,7 @@
         <v-window-item value="default">
           <h1>{{ t('meeting.participants') }}</h1>
           <UserSearch v-if="canChangeRoles" class="mb-6" @submit="addUser" :filter="searchFilter" />
-          <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :contentType="meetingType" :pk="meetingId" :icons="meetingIcons" />
+          <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :contentType="meetingType" :pk="meetingId" :icons="meetingIcons" :cols="matrixCols" />
         </v-window-item>
 
         <v-window-item value="groups">
@@ -36,7 +36,9 @@ import { ThemeColor } from '@/utils/types'
 import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
+import { RoleMatrixCol } from '@/components/types'
 import { ContextRoles } from '@/composables/types'
+import useAuthentication from '@/composables/useAuthentication'
 
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
@@ -49,7 +51,7 @@ import useMeetingTitle from './useMeetingTitle'
 import useMeetingGroups from './useMeetingGroups'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
-import useAuthentication from '@/composables/useAuthentication'
+import useElectoralRegisters from './useElectoralRegisters'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -66,10 +68,27 @@ export default defineComponent({
     const { user } = useAuthentication()
     const { meetingId, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
+    const { currentElectoralRegister } = useElectoralRegisters()
     const { meetingGroups } = useMeetingGroups(meetingId)
     const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
 
     useMeetingTitle(t('meeting.participants'))
+
+    const matrixCols: RoleMatrixCol[] = [
+      'participant',
+      'moderator',
+      'potential_voter',
+      {
+        count: () => currentElectoralRegister.value?.voters.length,
+        hasRole: ({ user }) => !!currentElectoralRegister.value?.voters.includes(user),
+        icon: 'mdi-star',
+        name: 'voter',
+        readonly: true,
+        title: t('electoralRegister.inCurrent')
+      },
+      'proposer',
+      'discusser'
+    ]
 
     function addRole (user: number, role: string) {
       meetingType.addRoles(meetingId.value, user, role)
@@ -128,6 +147,7 @@ export default defineComponent({
       canChangeRoles,
       currentTab,
       roleLabels,
+      matrixCols,
       meetingType,
       meetingGroups,
       meetingIcons,

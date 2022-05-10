@@ -130,7 +130,8 @@
       "auto_always": "Always update (demo)",
       "auto_before_poll": "Automatic before poll",
       "presence_check": "Presence check"
-    }
+    },
+    "inCurrent": "In current electoral register"
   },
   "error": {
     "error": "Error",

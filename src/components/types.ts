@@ -1,3 +1,4 @@
+import { UserContextRoles } from '@/composables/types'
 import { ComponentPublicInstance } from 'vue'
 
 export type EditorComponent = ComponentPublicInstance<{
@@ -135,3 +136,14 @@ interface TextAreaField extends SchemaField<string> {
 
 export type FormField = CheckboxField | CheckboxMultipleField | NumberField | SwitchField | TextField | TextAreaField
 export type FormSchema = FormField[]
+
+export interface RoleMatrixColDescription {
+  count: () => number
+  hasRole: (userRoles: UserContextRoles) => boolean
+  icon: string
+  name: string
+  orderBy?: () => void
+  readonly?: boolean
+  title: string
+}
+export type RoleMatrixCol = RoleMatrixColDescription | string

@@ -7,28 +7,26 @@
           <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
             {{ t('name') }}
           </th>
-          <th v-for="{ name } in roles" class="text-center" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === orderBy }">
-            <v-tooltip :text="t(`role.${name}`)" anchor="top">
+          <th v-for="col in columns" class="text-center" :key="col.name" @click="col.orderBy && col.orderBy()" :class="{ orderBy: col.name === orderBy }">
+            <v-tooltip :text="col.title" anchor="top">
               <template #activator="{ props }">
-                <v-icon v-bind="props" :icon="getRoleIcon(name)" />
-                {{ roleCount(name) }}
+                <v-icon v-bind="props" :icon="col.icon" />
+                {{ col.count() }}
               </template>
             </v-tooltip>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="{ user, assigned } in users" :key="user">
-          <td><User :pk="user" userid /></td>
-          <td v-for="{ name } in roles" :key="name" class="text-center">
-            <v-btn v-if="assigned.has(name)" :disabled="!admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
+        <tr v-for="user in users" :key="user">
+          <td><User :pk="user.user" userid /></td>
+          <td v-for="{ hasRole, name, readonly } in columns" :key="name" class="text-center">
+            <v-btn v-if="hasRole(user)" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user.user, name)">
               <v-icon icon="mdi-check" />
             </v-btn>
-            <v-btn v-else variant="text" :disabled="!admin" color="warning" @click="addRole(user, name)">
+            <v-btn v-else variant="text" :disabled="readonly || !admin" color="warning" @click="addRole(user.user, name)">
               <v-icon icon="mdi-close" />
             </v-btn>
-            <!-- <v-icon v-if="assigned.has(name)" class="success" @click="removeRole(user, name)" icon="mdi-check"/> -->
-            <!-- <v-icon v-else @click="addRole(user, name)" icon="mdi-close" /> -->
           </td>
         </tr>
       </tbody>
@@ -44,6 +42,7 @@ import useLoader from '@/composables/useLoader'
 import { ContextRole, UserContextRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import useUserDetails from '@/modules/organisations/useUserDetails'
+import { RoleMatrixCol, RoleMatrixColDescription } from './types'
 
 const USERS_PER_PAGE = 2
 
@@ -63,20 +62,41 @@ export default defineComponent({
     },
     admin: Boolean,
     removeConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
-    addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>
+    addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
+    cols: Array as PropType<RoleMatrixCol[]>
   },
   setup (props) {
     const { t } = useI18n()
     const { getUser } = useUserDetails()
     const loader = useLoader('RoleMatrix')
-    const roles = ref<ContextRole[]>([])
+    // const roles = ref<ContextRole[]>([])
+    const columns = ref<RoleMatrixColDescription[]>([])
     const contextRoles = props.contentType.useContextRoles()
+
+    function roleToCol ({ name }: ContextRole): RoleMatrixColDescription {
+      return {
+        count: () => contextRoles.getRoleCount(props.pk, name),
+        hasRole: (user) => user.assigned.has(name),
+        icon: props.icons[name],
+        name,
+        orderBy: () => orderUsers(name),
+        title: t(`role.${name}`)
+      }
+    }
 
     onBeforeMount(() => {
       loader.call(
         async () => {
-        const data = await props.contentType.getAvailableRoles()
-          roles.value = data
+          const roles = await props.contentType.getAvailableRoles()
+          // roles.value = data
+          if (props.cols) {
+            columns.value = props.cols.map(col => {
+              if (typeof col === 'string') return roleToCol(roles.find(r => r.name === col) as ContextRole)
+              return col
+            })
+          } else {
+            columns.value = roles.map(roleToCol)
+          }
         },
         async () => {
           const { p } = await props.contentType.fetchRoles(props.pk)
@@ -152,12 +172,12 @@ export default defineComponent({
 
     return {
       t,
+      columns,
       currentPage,
       orderBy,
       orderReversed,
       pageCount,
       pageUsers,
-      roles,
       users,
       addRole,
       getRoleIcon,
