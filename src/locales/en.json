@@ -250,6 +250,7 @@
     "deny": "Deny",
     "details": "Poll details",
     "finalVoteCount": "{votes} voted, {abstains} abstained actively, {total} eligible",
+    "finalVoteCountNoER": "{votes} voted, {abstains} abstained actively, no electoral register",
     "finished": "Finished",
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",

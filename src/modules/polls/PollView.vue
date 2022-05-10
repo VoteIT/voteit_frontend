@@ -22,7 +22,7 @@
         </template>
       </header>
       <div v-if="isFinished" id="poll-results" class="my-6">
-        <ProgressBar class="my-4" :text="t('poll.finalVoteCount', voteCount)" :value="voteCount.voted" :total="voteCount.total" />
+        <ProgressBar class="my-4" :text="voteCount.text" :value="voteCount.voted" :total="voteCount.total" />
         <h3>
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>

@@ -238,6 +238,7 @@
     "deny": "Avslag",
     "details": "Omröstningsdetaljer",
     "finalVoteCount": "{votes} röstade, {abstains} avstod aktivt, {total} röstberättigade",
+    "finalVoteCountNoEr": "{votes} röstade, {abstains} avstod aktivt, röstlängd saknas",
     "finished": "Avslutad",
     "noPollableAgendaItems": "Det finns inga dagordningspunkter där du kan starta en omröstning.",
     "numApproved": "Bifallet förslag | Bifallna förslag",

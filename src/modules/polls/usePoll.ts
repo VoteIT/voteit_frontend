@@ -7,27 +7,42 @@ import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
 import useProposals from '../proposals/useProposals'
 import { Proposal } from '../proposals/types'
 import useElectoralRegisters from '../meetings/useElectoralRegisters'
+import { useI18n } from 'vue-i18n'
 
 const polls = usePolls()
 const { getRegister } = useElectoralRegisters()
 const { getProposal } = useProposals()
 
 export default function usePoll (pollRef: Ref<number>) {
+  const { t } = useI18n()
+
   const poll = computed(() => polls.getPoll(pollRef.value))
-  const electoralRegister = computed(() => poll.value?.electoral_register && getRegister(poll.value.electoral_register))
+  const electoralRegister = computed(() => {
+    if (typeof poll.value?.electoral_register !== 'number') return null
+    return getRegister(poll.value.electoral_register)
+  })
   const voteCount = computed(() => {
-    if (!poll.value || !electoralRegister.value) return {}
+    if (!poll.value) return {}
     const abstains = poll.value.abstain_count ?? 0
     const votes = poll.value.result?.vote_count ?? 0
     const voted = votes + abstains
-    const total = electoralRegister.value.voters.length
+    if (electoralRegister.value) {
+      const total = electoralRegister.value.voters.length
+      return {
+        abstains,
+        percentage: Math.round(voted / total * 100),
+        text: t('poll.finalVoteCount', { abstains, votes, total }),
+        voted,
+        votes,
+        total
+      }
+    }
     return {
       abstains,
-      percentage: Math.round(voted / total * 100),
-      total,
+      text: t('poll.finalVoteCountNoEr', { abstains, votes }),
       voted,
       votes
-    }
+  }
   })
 
   const pollStatus = computed(() => {
@@ -74,6 +89,7 @@ export default function usePoll (pollRef: Ref<number>) {
   return {
     approved,
     denied,
+    electoralRegister,
     canChange,
     canDelete,
     canVote,

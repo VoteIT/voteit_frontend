@@ -32,7 +32,7 @@
             <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
-        <ProgressBar class="my-4" :text="t('poll.finalVoteCount', voteCount)" :value="voteCount.voted" :total="voteCount.total" />
+        <ProgressBar class="my-4" :text="voteCount.text" :value="voteCount.voted" :total="voteCount.total" />
       </template>
 
       <ProgressBar v-if="isOngoing" :value="pollStatus?.voted" :total="pollStatus?.total">
