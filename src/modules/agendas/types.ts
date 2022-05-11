@@ -12,14 +12,15 @@ export enum AgendaState {
 
 export interface AgendaItem {
   pk: number
-  title: string
-  state: AgendaState
-  readonly related_modified: Date | null
-  meeting: number
-  readonly order: number
-  body: string
   block_proposals: boolean
   block_discussion: boolean
+  body: string
+  meeting: number
+  readonly order: number
+  readonly related_modified: Date | null
+  state: AgendaState
+  tags: string[]
+  title: string
 }
 
 export interface Filter {

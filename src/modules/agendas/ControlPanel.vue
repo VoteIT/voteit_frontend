@@ -10,6 +10,7 @@
             </th>
             <th>{{ t('state') }}</th>
             <th width="100%">{{ t('title') }}</th>
+            <th>{{ t('tags') }}</th>
             <th>{{ t('proposal.proposals') }}</th>
             <th>{{ t('discussion.discussions') }}</th>
             <th/>
@@ -25,6 +26,13 @@
                 <v-icon size="small" :icon="getState(ai.state).icon" />
               </td>
               <td>{{ ai.title }}</td>
+              <td>
+                <v-chip-group disabled>
+                  <v-chip v-for="tag in ai.tags" :key="tag" size="small">
+                    {{ tag }}
+                  </v-chip>
+                </v-chip-group>
+              </td>
               <td class="state">
                 <v-switch :modelValue="!ai.block_proposals" hide-details color="primary" @update:modelValue="patchAgendaItem(ai, { block_proposals: !$event })" />
               </td>
@@ -39,21 +47,32 @@
         </v-item-group>
       </v-table>
       <v-expand-transition>
-        <v-sheet border rounded v-show="editSelected.length" class="pa-2">
-          <h2>
+        <v-sheet border rounded v-if="editSelected.length" class="pa-2">
+          <h2 class="my-2">
             {{ t('agenda.changeMany', { count: editSelected.length }, editSelected.length) }}
           </h2>
-          <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">{{ t('delete') }}</v-btn>
-          <div>
-            <v-btn color="primary" class="mt-2 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
+          <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">
+            {{ t('delete') }}
+          </v-btn>
+          <div class="my-2">
+            <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
           </div>
-          <div>
-            <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
-            <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
+          <div class="my-2">
+            <v-btn color="success-darken-2" class="mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
+            <v-btn color="warning" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
           </div>
-          <div>
-            <v-btn color="success-darken-2" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
-            <v-btn color="warning" class="mt-2 mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
+          <div class="my-2">
+            <v-btn color="success-darken-2" class="mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
+            <v-btn color="warning" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
+          </div>
+          <div class="my-2">
+            <v-combobox v-model="bulkTags" :items="allTags" hide-details multiple :label="t('tags')">
+              <template #chip="{ props, selection }">
+                <v-chip v-bind="props" :color="isBulkAllSelected(selection.value) ? 'primary' : 'secondary'" @click.self="tagBulkAdd(selection.value)" closable @click:close.prevent="tagBulkRemove(selection.value)">
+                  {{ selection.value }}
+                </v-chip>
+              </template>
+            </v-combobox>
           </div>
         </v-sheet>
       </v-expand-transition>
@@ -79,10 +98,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import Axios from 'axios'
+import { isEqual } from 'lodash'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
-import Axios from 'axios'
 
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
@@ -228,8 +248,47 @@ export default defineComponent({
       actionOnSelected(ai => agendaApi.patch(ai.pk, data))
     }
 
+    /* TAGS */
+    const allTags = computed(() => [...new Set(agendaItems.value.flatMap(ai => ai.tags))])
+    const allSelectedTags = computed(() => [...new Set(selectedAgendaItems.value.flatMap(ai => ai.tags))])
+    const bulkTags = ref(allSelectedTags.value)
+    watch(allSelectedTags, tags => {
+      // Avoid unnecessary modification
+      if (isEqual(new Set(bulkTags.value), new Set(tags))) return
+      bulkTags.value = tags
+    })
+    // Deep watch, because v-model won't trigger computed setter
+    watch(bulkTags, (tags) => {
+      // Compare to all selected tags to find what's changed
+      // Can't use reactive allSelectedTags for some reason
+      const allSelected = new Set(selectedAgendaItems.value.flatMap(ai => ai.tags))
+      const added = tags.filter(tag => !allSelected.has(tag))
+      const removed = [...allSelected].filter(tag => !tags.includes(tag))
+      added.forEach(tagBulkAdd)
+      removed.forEach(tagBulkRemove)
+    }, { deep: true })
+
+    function isBulkAllSelected (tag: string) {
+      return selectedAgendaItems.value.every(ai => ai.tags.includes(tag))
+    }
+    function tagBulkRemove (tag: string) {
+      for (const { tags, pk } of selectedAgendaItems.value) {
+        if (!tags.includes(tag)) continue
+        agendaItemType.api.patch(pk, { tags: tags.filter(t => t !== tag) })
+      }
+    }
+    function tagBulkAdd (tag: string) {
+      for (const { tags, pk } of selectedAgendaItems.value) {
+        if (tags.includes(tag)) continue
+        agendaItemType.api.patch(pk, { tags: [...tags, tag] })
+      }
+    }
+    /* END TAGS */
+
     return {
       t,
+      allTags,
+      bulkTags,
       editManyWorking,
       editMode,
       editModes,
@@ -246,7 +305,10 @@ export default defineComponent({
       getState,
       patchAgendaItem,
       patchSelected,
-      setStateSelected
+      setStateSelected,
+      isBulkAllSelected,
+      tagBulkAdd,
+      tagBulkRemove
     }
   }
 })
