@@ -10,7 +10,7 @@ export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
 })
 
 export const electoralRegisterType = new ContentType<ElectoralRegister>({
-  name: 'electoral_register',
+  name: 'er',
   restEndpoint: 'electoral-registers/'
 })
 

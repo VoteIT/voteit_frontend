@@ -16,6 +16,9 @@ interface ERMethod {
 }
 const registerMethods = ref<ERMethod[] | null>(null)
 
+electoralRegisterType
+  .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
+
 export default function useElectoralRegisters () {
   async function fetchRegister (pk: number) {
     registers.set(pk, null) // If it has any value, will not fetch again

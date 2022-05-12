@@ -19,10 +19,10 @@
           {{ t('electoralRegister.none') }}
         </em></p>
         <v-expansion-panels class="mt-3">
-          <v-expansion-panel v-for="{ pk, created, voters } in registers" :key="pk">
+          <v-expansion-panel v-for="{ pk, created, weights } in registers" :key="pk">
             <v-expansion-panel-title class="d-flex">
               <span class="text-left" style="min-width: 92px;">
-                {{ t('electoralRegister.voterCount', voters.length) }}
+                {{ t('electoralRegister.voterCount', weights.length) }}
               </span>
               <small class="text-secondary flex-grow-1">
                 {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
@@ -30,7 +30,7 @@
               </small>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <UserList :userIds="voters" />
+              <UserList :userIds="weights.map(v => v.user)" />
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>

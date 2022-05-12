@@ -27,7 +27,7 @@ export default function usePoll (pollRef: Ref<number>) {
     const votes = poll.value.result?.vote_count ?? 0
     const voted = votes + abstains
     if (electoralRegister.value) {
-      const total = electoralRegister.value.voters.length
+      const total = electoralRegister.value.weights.length
       return {
         abstains,
         percentage: Math.round(voted / total * 100),

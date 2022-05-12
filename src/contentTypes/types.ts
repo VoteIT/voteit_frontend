@@ -59,7 +59,10 @@ export interface Presence {
 export interface ElectoralRegister {
   pk: number
   created: Date
-  voters: number[]
+  weights: {
+    user: number
+    weight: number
+  }[]
 }
 
 export interface Vote {

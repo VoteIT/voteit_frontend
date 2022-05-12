@@ -99,8 +99,8 @@ export default defineComponent({
       'moderator',
       'potential_voter',
       {
-        count: () => currentElectoralRegister.value?.voters.length,
-        hasRole: ({ user }) => !!currentElectoralRegister.value?.voters.includes(user),
+        count: () => currentElectoralRegister.value?.weights.length,
+        hasRole: ({ user }) => !!currentElectoralRegister.value?.weights.find(v => v.user === user),
         icon: 'mdi-star',
         name: 'voter',
         readonly: true,
