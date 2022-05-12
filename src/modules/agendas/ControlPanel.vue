@@ -3,7 +3,7 @@
   <v-window v-model="editMode">
     <v-window-item value="default">
       <v-chip-group v-model="agendaTag">
-        <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small">
+        <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small" color="primary">
           {{ tag }}
         </v-chip>
       </v-chip-group>

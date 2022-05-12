@@ -2,11 +2,21 @@
   <v-navigation-drawer v-if="initDone" app id="meeting-navigation" v-model="isOpen" width="348">
     <MenuTree :items="menu" @navigation="toggleDrawer">
       <template #tagFilter v-if="agendaTags.length">
-        <v-chip-group column class="ml-8" v-model="agendaTag" :items="agendaTags">
-          <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small">
-            {{ tag }}
-          </v-chip>
-        </v-chip-group>
+        <div class="d-flex ml-8 mb-1 mr-2">
+          <v-btn class="flex-grow-1" variant="text" size="small" :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="filterMenuOpen = !filterMenuOpen">
+            {{ t('filter') }}
+          </v-btn>
+          <v-btn variant="text" size="small" :disabled="!agendaTag" @click="agendaTag = undefined">
+            <v-icon icon="mdi-undo" />
+          </v-btn>
+        </div>
+        <v-expand-transition>
+          <v-chip-group column class="ml-8" v-model="agendaTag" :items="agendaTags" v-show="filterMenuOpen">
+            <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small">
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
+        </v-expand-transition>
       </template>
     </MenuTree>
     <template #append>
@@ -81,6 +91,17 @@ export default defineComponent({
       s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
     ))
 
+    function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
+      return getAiType(s.state).map(ai => ({
+          title: ai.title,
+          to: getAiPath(ai),
+          icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
+          count: getAgendaProposals(ai.pk).length || undefined,
+          hasNewItems: hasNewItems(ai)
+        })
+      )
+    }
+
     const aiMenus = computed<TreeMenuItem[]>(() => {
       const menus: TreeMenuItem[] = []
       if (isModerator.value) {
@@ -92,9 +113,10 @@ export default defineComponent({
       }
       for (const s of aiGroups.value) {
         menus.push({
+          items: getAIMenuItems(s),
           title: t(`workflowState.plural.${s.state}`),
           showCount: true,
-          items: getAIMenuItems(s),
+          showCountTotal: agenda.value.filter(ai => ai.state === s.state).length,
           loadedEvent: agendaLoadedEvent
         })
       }
@@ -133,17 +155,6 @@ export default defineComponent({
       }
       return menus
     })
-
-    function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
-      return getAiType(s.state).map(ai => ({
-          title: ai.title,
-          to: getAiPath(ai),
-          icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
-          count: getAgendaProposals(ai.pk).length || undefined,
-          hasNewItems: hasNewItems(ai)
-        })
-      )
-    }
 
     const menu = computed<TreeMenu[]>(() => {
       const items: TreeMenu[] = [{
@@ -191,6 +202,8 @@ export default defineComponent({
     toggleNavDrawerEvent.on(toggleDrawer)
 
     return {
+      t,
+      filterMenuOpen: ref(false),
       agendaTag,
       agendaTags,
       isOpen,
@@ -206,4 +219,9 @@ export default defineComponent({
 #meeting-navigation
   background-color: rgb(var(--v-theme-app-bar))
   color: rgb(var(--v-theme-on-app-bar))
+
+  .v-chip--selected
+    background-color: rgb(var(--v-theme-app-bar-active))
+    .v-chip__overlay
+       opacity: 0
 </style>

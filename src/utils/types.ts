@@ -119,6 +119,7 @@ export interface TreeMenu {
   openEvent?: TypedEvent
   openFirstNonEmpty?: boolean
   showCount?: boolean
+  showCountTotal?: number
   slotAfter?: string
   slotBefore?: string
   title: string

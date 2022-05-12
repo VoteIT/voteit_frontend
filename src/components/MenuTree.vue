@@ -1,6 +1,6 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
-    <li v-if="slotBefore">
+    <li v-if="$slots[slotBefore]">
       <slot :name="slotBefore" />
     </li>
     <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">
@@ -19,7 +19,8 @@
         <div>
           <v-icon :size="level ? 'x-small' : 'small'" left icon="mdi-chevron-right"/>
           {{ item.title }}
-          <template v-if="item.showCount">({{ item.items.length }})</template>
+          <template v-if="item.showCount && item.showCountTotal !== undefined && item.showCountTotal !== item.items.length">({{ item.items.length }}/{{ item.showCountTotal }})</template>
+          <template v-else-if="item.showCount">({{ item.items.length }})</template>
         </div>
         <span v-if="item.count">{{ item.count }}</span>
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
