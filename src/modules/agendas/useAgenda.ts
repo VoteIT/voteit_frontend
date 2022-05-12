@@ -1,4 +1,4 @@
-import { computed, reactive } from 'vue'
+import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { dateify, orderBy } from '@/utils'
@@ -55,22 +55,28 @@ lastReadType
     agendaItemsLastRead.set(payload.agenda_item, new Date(payload.timestamp))
   })
 
-export default function useAgenda () {
+// Must supply meetingId
+// Optionally supply a tag for using filteredAgenda
+export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | undefined>) {
   const route = useRoute()
-  const { meetingId } = useMeeting()
 
   function * iterAgenda (filter: (ai: AgendaItem) => boolean): Generator<AgendaItem> {
     for (const ai of agendaItems.values()) if (filter(ai)) yield ai
   }
 
-  function getAgenda (meeting: number) {
+  const agenda = computed(() => {
+    // Filter on meetingId
     return orderBy(
-      [...iterAgenda(ai => ai.meeting === meeting)],
+      [...iterAgenda(ai => ai.meeting === meetingId.value)],
       'order'
     )
-  }
-  const agenda = computed(() => {
-    return getAgenda(meetingId.value)
+  })
+
+  const filteredAgenda = computed(() => {
+    // Filter on tag, if supplied
+    return agenda.value.filter(
+      ai => !tag?.value || ai.tags.includes(tag.value)
+    )
   })
 
   const agendaStates = computed(() => {
@@ -90,9 +96,8 @@ export default function useAgenda () {
   }
 
   function getRelativeAgendaItem (agendaItem: AgendaItem, positions = 1) {
-    const agenda = getAgenda(agendaItem.meeting)
-    const index = agenda.indexOf(agendaItem)
-    return agenda[index + positions]
+    const index = agenda.value.indexOf(agendaItem)
+    return agenda.value[index + positions]
   }
   function getPreviousAgendaItem (agendaItem: AgendaItem) {
     return getRelativeAgendaItem(agendaItem, -1)
@@ -121,9 +126,9 @@ export default function useAgenda () {
     agendaItem,
     agendaItemLastRead,
     agendaStates,
+    filteredAgenda,
     previousAgendaItem,
     nextAgendaItem,
-    getAgenda,
     getAgendaItem,
     getPreviousAgendaItem,
     getNextAgendaItem,

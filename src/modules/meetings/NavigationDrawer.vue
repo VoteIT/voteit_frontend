@@ -1,6 +1,14 @@
 <template>
   <v-navigation-drawer v-if="initDone" app id="meeting-navigation" v-model="isOpen" width="348">
-    <MenuTree :items="menu" @navigation="toggleDrawer" />
+    <MenuTree :items="menu" @navigation="toggleDrawer">
+      <template #tagFilter v-if="agendaTags.length">
+        <v-chip-group column class="ml-8" v-model="agendaTag" :items="agendaTags">
+          <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small">
+            {{ tag }}
+          </v-chip>
+        </v-chip-group>
+      </template>
+    </MenuTree>
     <template #append>
       <BugReports class="ma-2" />
     </template>
@@ -8,6 +16,7 @@
 </template>
 
 <script lang="ts">
+import { orderBy } from 'lodash'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
@@ -21,17 +30,17 @@ import useLoader from '@/composables/useLoader'
 import { WorkflowState } from '@/contentTypes/types'
 
 import useAgenda from '../agendas/useAgenda'
+import useAgendaTags from '../agendas/useAgendaTags'
+import { AgendaItem } from '../agendas/types'
 import { agendaItemType } from '../agendas/contentTypes'
-import useMeeting from '../meetings/useMeeting'
 import usePolls from '../polls/usePolls'
 import useProposals from '../proposals/useProposals'
 import { PollState } from '../polls/types'
-import { AgendaItem } from '../agendas/types'
 import { canAddPoll } from '../polls/rules'
 
+import useMeeting from './useMeeting'
 import { canChangeMeeting } from './rules'
 import { toggleNavDrawerEvent } from '@/utils/events'
-import { orderBy } from 'lodash'
 import { channelSubscribedEvent } from '@/composables/events'
 
 const agendaLoadedEvent = new TypedEvent()
@@ -49,10 +58,11 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
+    const agendaTag = ref<string | undefined>(undefined)
     const { mobile } = useDisplay()
-    const { getAgenda, hasNewItems } = useAgenda()
     const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
-    const agenda = computed(() => getAgenda(meetingId.value))
+    const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
+    const { agendaTags } = useAgendaTags(agenda)
     const agendaWorkflows = agendaItemType.useWorkflows()
     // const pollWorkflows = pollType.useWorkflows()
     const { getAiPolls, getUnvotedPolls } = usePolls()
@@ -64,7 +74,7 @@ export default defineComponent({
     }
 
     function getAiType (state: string) {
-      return agenda.value.filter(ai => ai.state === state)
+      return filteredAgenda.value.filter(ai => ai.state === state)
     }
 
     const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
@@ -162,7 +172,8 @@ export default defineComponent({
         defaultOpen: true,
         icon: 'mdi-format-list-bulleted',
         openFirstNonEmpty: true,
-        loadedEvent: agendaLoadedEvent
+        loadedEvent: agendaLoadedEvent,
+        slotBefore: 'tagFilter'
       }]
       if (canChangeMeeting(meeting.value)) {
         items[0].items.push({
@@ -180,6 +191,8 @@ export default defineComponent({
     toggleNavDrawerEvent.on(toggleDrawer)
 
     return {
+      agendaTag,
+      agendaTags,
       isOpen,
       initDone,
       menu,

@@ -66,9 +66,9 @@ const { getState } = pollType.useWorkflows()
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const { previousAgendaItem, nextAgendaItem } = useAgenda()
-    const { agendaId, agendaItem, agendaItemPath, nextPollTitle } = useAgendaItem()
     const { meetingId, meetingPath } = useMeeting()
+    const { previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
+    const { agendaId, agendaItem, agendaItemPath, nextPollTitle } = useAgendaItem()
     const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary()
     const { getAgendaProposals } = useProposals()
     const { getAiPolls, getPollMethod } = usePolls()

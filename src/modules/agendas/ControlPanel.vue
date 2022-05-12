@@ -2,6 +2,11 @@
   <v-tabs :items="editModes" v-model="editMode" right class="mb-4" />
   <v-window v-model="editMode">
     <v-window-item value="default">
+      <v-chip-group v-model="agendaTag">
+        <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small">
+          {{ tag }}
+        </v-chip>
+      </v-chip-group>
       <v-table id="agenda-edit">
         <thead>
           <tr>
@@ -17,7 +22,7 @@
           </tr>
         </thead>
         <v-item-group tag="tbody" multiple v-model="editSelected">
-          <v-item v-for="ai in agendaItems" :key="ai.pk" v-slot="{ toggle, isSelected }" :value="ai.pk">
+          <v-item v-for="ai in filteredAgenda" :key="ai.pk" v-slot="{ toggle, isSelected }" :value="ai.pk">
             <tr>
               <td>
                 <input type="checkbox" :checked="isSelected" @change.prevent="toggle()" class="mr-2">
@@ -47,9 +52,9 @@
         </v-item-group>
       </v-table>
       <v-expand-transition>
-        <v-sheet border rounded v-if="editSelected.length" class="pa-2">
+        <v-sheet border rounded v-if="selectedAgendaItems.length" class="pa-2">
           <h2 class="my-2">
-            {{ t('agenda.changeMany', { count: editSelected.length }, editSelected.length) }}
+            {{ t('agenda.changeMany', selectedAgendaItems.length) }}
           </h2>
           <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">
             {{ t('delete') }}
@@ -66,9 +71,9 @@
             <v-btn color="warning" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
           </div>
           <div class="my-2">
-            <v-combobox v-model="bulkTags" :items="allTags" hide-details multiple :label="t('tags')">
+            <v-combobox v-model="bulkTags" :items="agendaTags" hide-details multiple :label="t('tags')">
               <template #chip="{ props, selection }">
-                <v-chip v-bind="props" :color="isBulkAllSelected(selection.value) ? 'primary' : 'secondary'" @click.self="tagBulkAdd(selection.value)" closable @click:close.prevent="tagBulkRemove(selection.value)">
+                <v-chip v-bind="props" :color="isBulkAllSelected(selection.value) ? 'primary' : 'secondary'" @click.self.stop="tagBulkAdd(selection.value)" closable @click:close.prevent="tagBulkRemove(selection.value)">
                   {{ selection.value }}
                 </v-chip>
               </template>
@@ -105,18 +110,19 @@ import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
 import { dialogQuery } from '@/utils'
+import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
 
-import useAgenda from '../agendas/useAgenda'
-import { AgendaItem } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import { meetingType } from '../meetings/contentTypes'
 
+import useAgenda from './useAgenda'
+import useAgendaTags from './useAgendaTags'
+import { AgendaItem } from './types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
-import { openAlertEvent } from '@/utils/events'
 
 export default defineComponent({
   translationKey: 'agenda.agenda',
@@ -127,13 +133,14 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { getAgenda, getAgendaItem } = useAgenda()
+    const agendaTag = ref<string | undefined>(undefined)
     const { meetingId } = useMeeting()
+    const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
     const { getState } = agendaItemType.useWorkflows()
     const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 
     const agendaItems = computed({
-      get: () => getAgenda(meetingId.value),
+      get: () => agenda.value,
       set: (agendaItems: AgendaItem[]) => {
         meetingType.api.action(meetingId.value, 'set_agenda_order', { order: agendaItems.map(ai => ai.pk) })
       }
@@ -168,7 +175,7 @@ export default defineComponent({
     }
 
     const editSelected = ref<number[]>([])
-    const selectedAgendaItems = computed(() => editSelected.value.map(getAgendaItem) as AgendaItem[])
+    const selectedAgendaItems = computed(() => filteredAgenda.value.filter(ai => editSelected.value.includes(ai.pk)))
     const selectedSingularState = computed(() => {
       const states = new Set(selectedAgendaItems.value.map(ai => ai?.state))
       if (states.size !== 1) return
@@ -176,10 +183,10 @@ export default defineComponent({
     })
     const editManyWorking = ref(false)
     const editIsAllSelected = computed({
-      get: () => agendaItems.value.length === editSelected.value.length,
+      get: () => selectedAgendaItems.value.length === filteredAgenda.value.length,
       set: (value: boolean) => {
         if (value) {
-          editSelected.value = agendaItems.value.map(ai => ai.pk)
+          editSelected.value = filteredAgenda.value.map(ai => ai.pk)
         } else {
           editSelected.value = []
         }
@@ -249,8 +256,8 @@ export default defineComponent({
     }
 
     /* TAGS */
-    const allTags = computed(() => [...new Set(agendaItems.value.flatMap(ai => ai.tags))])
-    const allSelectedTags = computed(() => [...new Set(selectedAgendaItems.value.flatMap(ai => ai.tags))])
+    const { agendaTags } = useAgendaTags(agendaItems)
+    const allSelectedTags = useAgendaTags(selectedAgendaItems).agendaTags
     const bulkTags = ref(allSelectedTags.value)
     watch(allSelectedTags, tags => {
       // Avoid unnecessary modification
@@ -287,16 +294,19 @@ export default defineComponent({
 
     return {
       t,
-      allTags,
+      agendaTag,
+      agendaTags,
       bulkTags,
       editManyWorking,
       editMode,
       editModes,
+      filteredAgenda,
       agendaItems,
       newAgendaTitle,
       editIsAllSelected,
       editSelected,
       agendaStates: agendaItemType.workflowStates,
+      selectedAgendaItems,
       selectedSingularState,
       addAgendaItem,
       canDeleteAgendaItem,

@@ -128,7 +128,7 @@ export default defineComponent({
     const proposals = useProposals()
     const { getAiPolls } = usePolls()
     const { meetingPath, meetingId } = useMeeting()
-    const { agenda, agendaItemLastRead, hasNewItems } = useAgenda()
+    const { agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
     const { agendaId, agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem()
 
     useChannel('agenda_item', agendaId)

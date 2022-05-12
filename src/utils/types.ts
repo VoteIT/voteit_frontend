@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 
+import { DefineComponent } from 'vue'
 import TypedEvent from './TypedEvent'
 
 // For Channels
@@ -111,14 +112,16 @@ export interface TreeMenuLink {
 }
 
 export interface TreeMenu {
-  title: string
-  items: (TreeMenuLink | TreeMenu)[]
   defaultOpen?: boolean
+  icon?: string
+  items: (TreeMenuLink | TreeMenu)[]
+  loadedEvent?: TypedEvent
+  openEvent?: TypedEvent
   openFirstNonEmpty?: boolean
   showCount?: boolean
-  icon?: string
-  openEvent?: TypedEvent
-  loadedEvent?: TypedEvent
+  slotAfter?: string
+  slotBefore?: string
+  title: string
 }
 
 export type TreeMenuItem = TreeMenuLink | TreeMenu

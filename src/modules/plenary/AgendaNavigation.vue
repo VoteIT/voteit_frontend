@@ -37,8 +37,8 @@ import usePlenary from './usePlenary'
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const { agendaStates } = useAgenda()
     const { meetingId } = useMeeting()
+    const { agendaStates } = useAgenda(meetingId)
     const { filterProposalStates } = usePlenary()
     const { getAgendaProposals } = useProposals()
     const isOpen = ref(false)

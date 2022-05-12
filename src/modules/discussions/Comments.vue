@@ -43,8 +43,8 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { agendaId } = useAgenda()
     const { meetingId } = useMeeting()
+    const { agendaId } = useAgenda(meetingId)
     const { getMeetingButtons } = useReactions()
 
     const api = discussionPostType.getContentApi()

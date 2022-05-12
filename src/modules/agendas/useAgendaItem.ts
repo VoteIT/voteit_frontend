@@ -10,8 +10,8 @@ import useAgenda from './useAgenda'
 import usePolls from '../polls/usePolls'
 
 export default function useAgendaItem () {
-  const { agendaId, agendaItem } = useAgenda()
-  const { meetingPath } = useMeeting()
+  const { meetingId, meetingPath } = useMeeting()
+  const { agendaId, agendaItem } = useAgenda(meetingId)
   const { allPollTitles } = usePolls()
 
   const agendaItemPath = computed(() => {

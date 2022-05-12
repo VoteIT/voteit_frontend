@@ -93,8 +93,8 @@ export default defineComponent({
     const router = useRouter()
     const proposals = useProposals()
     const { getPollMethods } = usePolls()
-    const { agendaId, agendaItem, agenda } = useAgenda()
     const { isModerator, meetingPath, meetingId } = useMeeting()
+    const { agendaId, agendaItem, agenda } = useAgenda(meetingId)
     const { alert } = useAlert()
 
     usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future

@@ -1,5 +1,8 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
+    <li v-if="slotBefore">
+      <slot :name="slotBefore" />
+    </li>
     <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">
       <router-link @click="$emit('navigation')" class="menu-item" :class="{ 'has-new': item.hasNewItems }" v-if="item.to" :to="item.to" v-ripple>
         <div>
@@ -22,8 +25,15 @@
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <v-expand-transition>
-        <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)" />
+        <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)">
+          <template v-for="component, slot in $slots" :key="slot" v-slot:[slot]>
+            <component :is="component" />
+          </template>
+        </MenuTree>
       </v-expand-transition>
+    </li>
+    <li v-if="slotAfter">
+      <slot :name="slotAfter" />
     </li>
   </ul>
 </template>
@@ -50,6 +60,8 @@ export default defineComponent({
     icon: String,
     openEvent: Object as PropType<TypedEvent>,
     loadedEvent: Object as PropType<TypedEvent>,
+    slotAfter: String,
+    slotBefore: String,
     level: {
       type: Number,
       default: 0

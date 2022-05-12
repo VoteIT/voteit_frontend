@@ -144,8 +144,8 @@ export default defineComponent({
 
     const { user } = useAuthentication()
     const speakers = useSpeakerLists()
-    const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, getAgenda } = useAgenda()
     const { meetingId, meetingPath } = useMeeting()
+    const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
     const { currentActiveList, currentActiveListId, speakerSystem } = useSpeakerSystem(systemId)
@@ -178,12 +178,11 @@ export default defineComponent({
 
     const navigation = computed<AgendaNav[]>(() => {
       if (!agendaItem.value) return []
-      const agenda = getAgenda(meetingId.value)
       return [
-        makeNavigation('mdi-page-first', agenda[0]),
+        makeNavigation('mdi-page-first', agenda.value[0]),
         makeNavigation('mdi-chevron-left', getPreviousAgendaItem(agendaItem.value)),
         makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value)),
-        makeNavigation('mdi-page-last', agenda[agenda.length - 1])
+        makeNavigation('mdi-page-last', agenda.value[agenda.value.length - 1])
       ]
     })
 
