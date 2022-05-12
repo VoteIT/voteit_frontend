@@ -9,10 +9,14 @@
         <v-btn :prepend-icon="button.icon" :color="button.color">
           {n}
         </v-btn>
-        <Btn icon="mdi-pencil" @click="editReaction(button)">{{ t('edit') }}</Btn>
+        <v-btn prepend-icon="mdi-pencil" @click="editReaction(button)">
+          {{ t('edit') }}
+        </v-btn>
       </div>
     </Widget>
-    <Btn icon="mdi-plus" @click="editReaction()">{{ t('reaction.addButton') }}</Btn>
+    <v-btn prepend-icon="mdi-plus" @click="editReaction()">
+      {{ t('reaction.addButton') }}
+    </v-btn>
   </div>
 </template>
 

@@ -3,9 +3,9 @@
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
         <div class="simple-options">
-          <Btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'contained' : 'outlined'" :icon="opt.icon" @click="change(p, opt)">
+          <v-btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'contained' : 'outlined'" :prepend-icon="opt.icon" @click="change(p, opt)">
             {{ t(opt.translationString) }}
-          </Btn>
+          </v-btn>
         </div>
       </template>
     </Proposal>

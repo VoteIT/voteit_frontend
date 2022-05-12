@@ -14,6 +14,22 @@
           <MeetingGroupsTab />
         </v-window-item>
 
+        <v-window-item value="presence">
+          <PresenceCheckControl class="text-center" />
+          <template v-if="presenceCheck">
+            <v-divider class="my-4" />
+            <h2>
+              {{ t('presence.presentCount', presentUserIds.length) }}
+            </h2>
+            <UserSearch class="mb-6" @submit="addPresence" instant />
+            <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-4">
+              <template #appendItem="{ user }">
+                <v-btn size="small" variant="text" icon="mdi-close" @click="removePresence(user)" />
+              </template>
+            </UserList>
+          </template>
+        </v-window-item>
+
         <v-window-item value="speakerHistory">
           <SpeakerHistory />
         </v-window-item>
@@ -34,6 +50,7 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { openAlertEvent } from '@/utils/events'
+import UserList from '@/components/UserList.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import { RoleMatrixCol } from '@/components/types'
@@ -52,6 +69,8 @@ import useMeetingGroups from './useMeetingGroups'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import useElectoralRegisters from './useElectoralRegisters'
+import usePresence from '../presence/usePresence'
+import { presenceType } from '../presence/contentTypes'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -71,6 +90,7 @@ export default defineComponent({
     const { currentElectoralRegister } = useElectoralRegisters()
     const { meetingGroups } = useMeetingGroups(meetingId)
     const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
+    const { canManagePresence, closedPresenceChecks, presenceCheck, presentUserIds } = usePresence()
 
     useMeetingTitle(t('meeting.participants'))
 
@@ -127,6 +147,12 @@ export default defineComponent({
           title: t('meeting.groups.groups')
         }
       ]
+      if (canManagePresence.value) {
+        tabs.push({
+          value: 'presence',
+          title: t('presence.presence')
+        })
+      }
       if (hasSpeakerSystems.value) {
         tabs.push({
           value: 'speakerHistory',
@@ -142,9 +168,34 @@ export default defineComponent({
       return tabs
     })
 
+    function addPresence (user: User) {
+      console.log('add presence for user', user)
+      try {
+        presenceType.methodCall('add_user', {
+          presence_check: presenceCheck.value?.pk,
+          userid: user.pk
+        })
+      } catch {
+        // TODO
+      }
+    }
+
+    function removePresence (userid: number) {
+      console.log('remove presence for user', userid)
+      try {
+        presenceType.methodCall('delete_user', {
+          pk: presenceCheck.value?.pk,
+          userid
+        })
+      } catch {
+        // TODO
+      }
+    }
+
     return {
       t,
       canChangeRoles,
+      closedPresenceChecks,
       currentTab,
       roleLabels,
       matrixCols,
@@ -152,10 +203,14 @@ export default defineComponent({
       meetingGroups,
       meetingIcons,
       meetingId,
+      presenceCheck,
+      presentUserIds,
       tabs,
+      addPresence,
       addUser,
       getUserIds,
       removeConfirm,
+      removePresence,
       searchFilter
     }
   },
@@ -164,6 +219,7 @@ export default defineComponent({
     MeetingGroupsTab,
     RoleMatrix,
     SpeakerHistory,
+    UserList,
     UserSearch
   }
 })

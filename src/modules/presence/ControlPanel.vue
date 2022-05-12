@@ -3,21 +3,23 @@
     <header>
       <h2>{{ t('presence.manage') }}</h2>
     </header>
-    <Widget v-if="currentCheck" selected>
-      <PresenceCheckControl :check="currentCheck"/>
+    <Widget v-if="presenceCheck" selected>
+      <PresenceCheckControl />
     </Widget>
-    <Btn v-else-if="canStart" @click="startCheck()" icon="mdi-plus">{{ t('presence.newCheck') }}</Btn>
+    <v-btn v-else-if="canStart" @click="startCheck()" prepend-icon="mdi-plus">
+      {{ t('presence.newCheck') }}
+    </v-btn>
     <v-divider class="my-2" />
     <h2>{{ t('presence.recentlyClosedChecks') }}</h2>
     <v-sheet border rounded>
       <v-list>
-        <v-list-item v-for="check in closedChecks" :key="check.pk">
+        <v-list-item v-for="check in closedPresenceChecks" :key="check.pk">
           <div>
             <v-list-item-title class="mr-2">{{ t('presence.closedAt') }} <Moment ordinary :date="check.closed"/></v-list-item-title>
-            <v-list-item-subtitle>{{ t('presence.presentCount', { count: getPresenceCount(check) }) }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ t('presence.presentCount', presenceCount) }}</v-list-item-subtitle>
           </div>
         </v-list-item>
-        <v-list-item v-if="!closedChecks.length">
+        <v-list-item v-if="!closedPresenceChecks.length">
           <em>{{ t('presence.noRecentlyClosedChecks') }}</em>
         </v-list-item>
       </v-list>
@@ -26,49 +28,43 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import usePresence from '@/modules/presence/usePresence'
-import useMeeting from '@/modules/meetings/useMeeting'
-
 import Moment from '@/components/Moment.vue'
-import { canAddPresenceCheck } from './rules'
+
+import usePresence from './usePresence'
 
 export default defineComponent({
-  components: { Moment },
+  components: {
+    Moment
+  },
   translationKey: 'presence.checks',
   path: 'presence',
   icon: 'mdi-hand-wave',
   setup () {
     const { t } = useI18n()
-    const { meetingId, meeting } = useMeeting()
-    const { getOpenPresenceCheck, getClosedPresenceChecks, openCheck, getPresenceCount } = usePresence(meetingId)
+    const { canManagePresence, closedPresenceChecks, openCheck, presenceCheck, presenceCount } = usePresence()
     const submitting = ref(false)
 
-    const currentCheck = computed(() => getOpenPresenceCheck(meetingId.value))
-    const closedChecks = computed(() => getClosedPresenceChecks(meetingId.value))
-
     async function startCheck () {
-      if (currentCheck.value) return
+      if (presenceCheck.value) return
       submitting.value = true
       try {
-        await openCheck(meetingId.value)
+        await openCheck()
       } catch (err) {
         console.error(err)
       }
       submitting.value = false
     }
 
-    const canStart = computed(() => meeting.value && canAddPresenceCheck(meeting.value))
-
     return {
       t,
-      canStart,
-      currentCheck,
+      canManagePresence,
+      presenceCheck,
       submitting,
-      closedChecks,
-      getPresenceCount,
+      closedPresenceChecks,
+      presenceCount,
       startCheck
     }
   }

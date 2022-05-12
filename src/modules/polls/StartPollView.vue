@@ -23,8 +23,12 @@
         </v-item-group>
         <p v-if="!availableProposals.length"><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
         <div v-if="!pickMethod" class="btn-group mt-3">
-          <Btn icon="mdi-check-all" @click="toggleAll">{{ t('all') }}</Btn>
-          <Btn icon="mdi-arrow-right-bold" :disabled="!selectedProposals.length" @click="pickMethod=true">{{ t('continue') }}</Btn>
+          <v-btn prepend-icon="mdi-check-all" @click="toggleAll">
+            {{ t('all') }}
+          </v-btn>
+          <v-btn prepend-icon="mdi-arrow-right-bold" :disabled="!selectedProposals.length" @click="pickMethod=true">
+            {{ t('continue') }}
+          </v-btn>
         </div>
       </template>
       <template v-if="pickMethod">

@@ -1,13 +1,8 @@
 <template>
   <v-row>
     <v-col v-bind="cols.default">
-      <template v-if="canPresenceCheck">
-        <presenceCheckControl v-if="presenceCheck" :check="presenceCheck" subscribe class="text-center" />
-        <div v-else class="text-center my-8">
-          <v-btn size="large" color="primary" @click="openCheck(meetingId)" prepend-icon="mdi-hand-wave">
-            {{ t('presence.newCheck') }}
-          </v-btn>
-        </div>
+      <template v-if="canManagePresence">
+        <PresenceCheckControl class="text-center" />
         <v-divider class="my-4" />
       </template>
       <h1>
@@ -52,7 +47,6 @@ import UserList from '@/components/UserList.vue'
 import useLoader from '@/composables/useLoader'
 import useElectoralRegisters from '../useElectoralRegisters'
 import useMeeting from '../useMeeting'
-import { canAddPresenceCheck } from '@/modules/presence/rules'
 import usePresence from '@/modules/presence/usePresence'
 import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
@@ -66,13 +60,11 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { meetingId, meeting } = useMeeting()
+    const { meetingId } = useMeeting()
     const { fetchRegisters, sortedRegisters } = useElectoralRegisters()
     const loader = useLoader('ElectoralRegisters')
-    const { openCheck, presenceCheck } = usePresence(meetingId)
+    const { canManagePresence } = usePresence()
     const { filterPolls } = usePolls()
-
-    const canPresenceCheck = computed(() => meeting.value && canAddPresenceCheck(meeting.value))
 
     async function getData () {
       await fetchRegisters(meetingId.value)
@@ -119,12 +111,9 @@ export default defineComponent({
 
     return {
       t,
-      presenceCheck,
-      canPresenceCheck,
-      meetingId,
+      canManagePresence,
       groups,
-      fetchRegisters,
-      openCheck
+      fetchRegisters
     }
   }
 })

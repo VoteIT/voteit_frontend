@@ -4,7 +4,7 @@
       <v-list-item-avatar class="mr-2">
         <UserAvatar :pk="pk" />
       </v-list-item-avatar>
-      <div>
+      <div class="flex-grow-1">
         <v-list-item-title :class="{ 'text-secondary': !full_name }">
           {{ full_name ?? `- ${t('unknownUser')} (${pk}) -` }}
         </v-list-item-title>
@@ -12,6 +12,7 @@
           {{ userid }}
         </v-list-item-subtitle>
       </div>
+      <slot name="appendItem" :user="pk" />
     </v-list-item>
   </v-list>
 </template>

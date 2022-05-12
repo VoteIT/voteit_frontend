@@ -9,7 +9,6 @@ import moment from 'moment'
 import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 
-import Btn from './components/Btn.vue'
 import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import Tag from './components/Tag.vue'
@@ -62,7 +61,6 @@ createApp(App)
   .use(router)
   .use(vuetify)
   .use(Api)
-  .component('Btn', Btn)
   .component('Menu', Menu)
   .component('ProgressBar', ProgressBar)
   .component('Tag', Tag)
@@ -70,5 +68,6 @@ createApp(App)
   .component('Dropdown', Dropdown)
   .component('UserAvatar', UserAvatar)
   .component('Widget', Widget)
+  // Bubble requires this to be registered here, dunno why
   .component('PresenceCheckControl', PresenceCheckControl)
   .mount('#app')

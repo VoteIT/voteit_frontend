@@ -366,8 +366,9 @@
     "notePresent": "Markera din närvaro",
     "ongoingCheck": "Pågående närvarokontroll",
     "openedAt": "Öppnades",
+    "presence": "Närvaro",
     "presenceNoted": "Vi har noterat din närvaro",
-    "presentCount": "Inga närvarande användare | En närvarande användare | {count} närvarande användare",
+    "presentCount": "Inga närvarande deltagare | En närvarande deltagare | {count} närvarande deltagare",
     "recentlyClosedChecks": "Nyligen stängda närvarokontroller"
   },
   "profile": {

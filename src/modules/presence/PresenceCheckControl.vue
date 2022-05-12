@@ -1,75 +1,72 @@
 <template>
-  <div>
+  <div v-if="presenceCheck">
     <h2>{{ t('presence.ongoingCheck') }}</h2>
     <p>
-      <Moment :prepend="t('presence.openedAt')" :date="check.opened"/>
+      <Moment :prepend="t('presence.openedAt')" :date="presenceCheck.opened"/>
     </p>
     <p class="my-2">
-      {{ t('presence.presentCount', { count }) }}
+      {{ t('presence.presentCount', presenceCount) }}
     </p>
-    <v-btn :disabled="submitting" v-if="canChange" @click="closeCheck()" color="warning" prepend-icon="mdi-stop">
+    <v-btn :disabled="submitting" v-if="canChange" @click="close()" color="warning" prepend-icon="mdi-stop">
       {{ t('presence.closeCheck') }}
+    </v-btn>
+  </div>
+  <div v-else class="text-center my-8">
+    <v-btn size="large" color="primary" @click="openCheck()" prepend-icon="mdi-hand-wave">
+      {{ t('presence.newCheck') }}
     </v-btn>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, onBeforeUnmount, PropType, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import usePresence from '@/modules/presence/usePresence'
-import { PresenceCheck } from '@/contentTypes/types'
 
 import Moment from '@/components/Moment.vue'
-import useMeeting from '../meetings/useMeeting'
 
 import { canChangePresenceCheck } from './rules'
-import { presenceCheckType } from './contentTypes'
 import { presenceCheckClosed } from './events'
+import useChannel from '@/composables/useChannel'
 
 export default defineComponent({
   components: { Moment },
-  props: {
-    check: {
-      type: Object as PropType<PresenceCheck>,
-      required: true
-    },
-    subscribe: Boolean
-  },
-  setup (props) {
+  setup () {
     const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const presence = usePresence(meetingId)
+    const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence()
     const submitting = ref(false)
 
-    async function closeCheck () {
-      if (submitting.value) return
+    async function close () {
+      if (submitting.value || !presenceCheck.value) return
       submitting.value = true
       try {
-        await presence.closeCheck(props.check)
-        presenceCheckClosed.emit(props.check)
+        await closeCheck()
+        presenceCheckClosed.emit(presenceCheck.value)
       } catch (err) {
         console.error(err)
       }
       submitting.value = false
     }
 
-    onBeforeMount(() => {
-      props.subscribe && presenceCheckType.channel.subscribe(props.check.pk)
-    })
-    onBeforeUnmount(() => {
-      props.subscribe && presenceCheckType.channel.leave(props.check.pk)
-    })
+    useChannel('presence_check', computed(() => presenceCheck.value?.pk))
+    // onBeforeMount(() => {
+    //   props.subscribe && presenceCheck.value && presenceCheckType.channel.subscribe(presenceCheck.value.pk)
+    // })
+    // onBeforeUnmount(() => {
+    //   props.subscribe && presenceCheck.value && presenceCheckType.channel.leave(presenceCheck.value.pk)
+    // })
 
-    const count = computed(() => presence.getPresenceCount(props.check))
-    const canChange = computed(() => canChangePresenceCheck(props.check))
+    const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
 
     return {
       t,
       canChange,
-      count,
+      presenceCheck,
+      presenceCount,
       submitting,
-      closeCheck
+      close,
+      openCheck
     }
   }
 })

@@ -378,8 +378,9 @@
     "notePresent": "click to note your presence",
     "ongoingCheck": "Ongoing presence check",
     "openedAt": "Opened",
+    "presence": "Presence",
     "presenceNoted": "We have noted your presence",
-    "presentCount": "No users present | One present user | {count} present users",
+    "presentCount": "No participants present | One present participant | {count} present participants",
     "recentlyClosedChecks": "Recently closed presence checks"
   },
   "profile": {

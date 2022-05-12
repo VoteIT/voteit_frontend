@@ -21,7 +21,7 @@
     </template>
     <template v-if="canChange">
       <v-divider class="mt-4 mb-2" />
-      <PresenceCheckControl :check="presenceCheck" subscribe />
+      <PresenceCheckControl />
     </template>
   </div>
 </template>
@@ -30,7 +30,6 @@
 import { computed, defineComponent, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useMeeting from '../meetings/useMeeting'
 import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
 
@@ -44,8 +43,7 @@ export default defineComponent({
   emits: ['close', 'update:modelValue', 'update:open', 'update:attention'],
   setup (props, { emit }) {
     const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { presenceCheck, userPresence, isPresent, markPresence, undoPresence } = usePresence(meetingId)
+    const { presenceCheck, userPresence, isPresent, markPresence, undoPresence } = usePresence()
     const working = ref(false)
 
     const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
