@@ -271,24 +271,28 @@ export default defineComponent({
       const allSelected = new Set(selectedAgendaItems.value.flatMap(ai => ai.tags))
       const added = tags.filter(tag => !allSelected.has(tag))
       const removed = [...allSelected].filter(tag => !tags.includes(tag))
-      added.forEach(tagBulkAdd)
-      removed.forEach(tagBulkRemove)
+      added.map(tagBulkAdd)
+      removed.map(tagBulkRemove)
     }, { deep: true })
 
     function isBulkAllSelected (tag: string) {
       return selectedAgendaItems.value.every(ai => ai.tags.includes(tag))
     }
     function tagBulkRemove (tag: string) {
-      for (const { tags, pk } of selectedAgendaItems.value) {
-        if (!tags.includes(tag)) continue
-        agendaItemType.api.patch(pk, { tags: tags.filter(t => t !== tag) })
-      }
+      actionOnSelected(
+        ({ tags, pk }) => {
+          if (!tags.includes(tag)) return Promise.resolve()
+          return agendaItemType.api.patch(pk, { tags: tags.filter(t => t !== tag) })
+        }
+      )
     }
     function tagBulkAdd (tag: string) {
-      for (const { tags, pk } of selectedAgendaItems.value) {
-        if (tags.includes(tag)) continue
-        agendaItemType.api.patch(pk, { tags: [...tags, tag] })
-      }
+      actionOnSelected(
+        ({ tags, pk }) => {
+          if (tags.includes(tag)) return Promise.resolve()
+          return agendaItemType.api.patch(pk, { tags: [...tags, tag] })
+        }
+      )
     }
     /* END TAGS */
 
