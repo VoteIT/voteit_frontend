@@ -61,9 +61,16 @@
   "winners": "Winners",
   "yes": "Yes",
   "accessPolicy": {
+    "confirmDelete": "You're about to delete this access policy.\nAre you sure?",
     "plural": "Access policies",
     "settings": "Access Policy settings",
     "rolesGiven": "Roles given"
+  },
+  "accessPolicies": {
+    "automatic": {
+      "title": "Automatic",
+      "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles."
+    }
   },
   "agenda": {
     "agenda": "Agenda",
@@ -206,17 +213,6 @@
       "types": {
         "email": "Email"
       }
-    },
-    "role": {
-      "discusser": "Discusser",
-      "list_moderator": "List moderator",
-      "meeting_creator": "Meeting creator",
-      "moderator": "Moderator",
-      "org_manager": "Organisation manager",
-      "participant": "Participant",
-      "potential_voter": "Potential voter",
-      "proposer": "Proposer",
-      "speaker": "Speaker"
     },
     "settings": {
       "all": "All settings",
@@ -425,6 +421,17 @@
     "peopleReacted": "Reactions",
     "rolesRequired": "Roles allowed to react",
     "settings": "Reaction Button settings"
+  },
+  "role": {
+    "discusser": "Discusser",
+    "list_moderator": "List moderator",
+    "meeting_creator": "Meeting creator",
+    "moderator": "Moderator",
+    "org_manager": "Organisation manager",
+    "participant": "Participant",
+    "potential_voter": "Potential voter",
+    "proposer": "Proposer",
+    "speaker": "Speaker"
   },
   "socket": {
     "connected": "Connected",

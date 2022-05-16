@@ -83,6 +83,22 @@ export default defineComponent({
   text-transform: none !important
   letter-spacing: .04em !important
 
+.btn-controls
+  display: flex
+  align-items: flex-end
+  > .v-btn
+    margin-right: .2rem
+    &:last-child
+      margin-right: 0
+
+.btn-group
+  .v-btn:not(:first-child)
+    border-top-left-radius: 0
+    border-bottom-left-radius: 0
+  .v-btn:not(:last-child)
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
+
 // Temporary Vuetify fix
 // TODO Remove when v-text-input supports hide-details
 // .v-input.hide-details

@@ -5,28 +5,31 @@
     </h2>
     <v-row>
       <v-col>
-        <v-card v-for="p in policies" :key="p.pk">
+        <v-switch :label="t('meeting.public')" v-model="meetingPublic" color="primary" />
+        <v-card v-for="p in accessPolicies" :key="p.pk">
           <v-card-header class="d-flex align-start">
             <v-card-title class="flex-grow-1">
-              {{ p.name }}
+              {{ t(`accessPolicies.${p.name}.title`) }}
             </v-card-title>
             <v-switch color="primary" :modelValue="p.active" @update:modelValue="setActive(p, $event)" :label="t('active')" class="flex-grow-0" hide-details />
           </v-card-header>
           <v-card-text>
-            <div class="d-flex">
-              <h2 class="text-h6 mb-2 flex-grow-1">
-                {{ t('accessPolicy.rolesGiven') }}
-              </h2>
-            </div>
+            <p class="mb-4">
+              {{ t(`accessPolicies.${p.name}.description`) }}
+            </p>
+            <h2 class="text-h6 mb-2">
+              {{ t('accessPolicy.rolesGiven') }}
+            </h2>
             <div>
-              <v-chip v-for="r in p.roles_given" :key="r">
-                {{ r }}
-              </v-chip>
+              <v-chip-group :modelValue="p.roles_given" @update:modelValue="setRoles(p, $event)" multiple>
+                <v-chip color="primary" v-for="role in roles" :key="role.value" v-bind="role" />
+              </v-chip-group>
             </div>
           </v-card-text>
-          <v-card-actions >
-            <v-btn variant="text" color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn>
-            <v-btn variant="text" color="warning" prepend-icon="mdi-delete" @click="alert('*Not implemented (missing API)')">{{ t('delete') }}</v-btn>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="warning" prepend-icon="mdi-delete" @click="_delete(p)">{{ t('delete') }}</v-btn>
+            <!-- <v-btn color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn> -->
           </v-card-actions>
         </v-card>
       </v-col>
@@ -35,13 +38,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onBeforeMount, reactive } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery } from '@/utils'
+import useAlert from '@/composables/useAlert'
 import { AccessPolicy } from '@/contentTypes/types'
 import useMeeting from '@/modules/meetings/useMeeting'
-import useAlert from '@/composables/useAlert'
-import { accessPolicyType } from '../contentTypes'
+
+import useAccessPolicies from './useAccessPolicies'
+import { MeetingRole } from '../types'
+import { meetingType } from '../contentTypes'
+
+const NON_MODIFIABLE_ROLES = [
+  'participant',
+  'moderator'
+]
 
 export default defineComponent({
   translationKey: 'accessPolicy.plural',
@@ -49,33 +61,49 @@ export default defineComponent({
   icon: 'mdi-key',
   setup () {
     const { t } = useI18n()
-    const { meetingId } = useMeeting()
+    const { meetingId, meeting } = useMeeting()
     const { alert } = useAlert()
-    const policies = ref<AccessPolicy[]>([])
-    const modifying = reactive<Set<number>>(new Set())
+    const { accessPolicies, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
 
-    onBeforeMount(async () => {
-      const { data } = await accessPolicyType.api.retrieve(meetingId.value)
-      policies.value = data.policies
+    async function _delete (p: AccessPolicy) {
+      if (!await dialogQuery(t('accessPolicy.confirmDelete'))) return
+      await deletePolicy(p)
+    }
+
+    const meetingPublic = computed<boolean>({
+      get () {
+        return !!meeting.value && meeting.value.public
+      },
+      set (value) {
+        try {
+          meetingType.api.patch(meetingId.value, {
+            public: value
+          })
+        } catch {
+          alert('*Could not set meeting public status')
+        }
+      }
     })
 
-    function setActive (p: AccessPolicy /* value: boolean */) {
-      modifying.add(p.pk)
-      setTimeout(() => {
-        modifying.delete(p.pk)
-        // for (const ep of policies.value) {
-        //   if (ep.pk === p.pk) ep.active = value
-        // }
-        alert('*Not implemented (missing API)')
-      }, 150)
-    }
+    const roles = computed(() => {
+      return Object.values(MeetingRole)
+        .filter(
+          r => r
+        )
+        .map(
+          r => ({ text: t(`role.${r}`), value: r, disabled: NON_MODIFIABLE_ROLES.includes(r) })
+        )
+    })
 
     return {
       t,
-      modifying,
-      policies,
+      accessPolicies,
+      roles,
       alert,
-      setActive
+      _delete,
+      meetingPublic,
+      setActive,
+      setRoles
     }
   }
 })

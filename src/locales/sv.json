@@ -1,5 +1,5 @@
 {
-  "active": "Aktiva",
+  "active": "Aktiv",
   "add": "Lägg till",
   "addTag": "Lägg till tagg",
   "all": "Allt",
@@ -61,9 +61,16 @@
   "winners": "Vinnare",
   "yes": "Ja",
   "accessPolicy": {
-    "plural": "Åtkomstpolicies",
-    "settings": "Åtkomstinställningar",
+    "confirmDelete": "Du håller nu på att radera den här åtkomstregeln.\nÄr du säker?",
+    "plural": "Åtkomstregler",
+    "settings": "Inställningar för åtkomst till mötet",
     "rolesGiven": "Tilldelade roller"
+  },
+  "accessPolicies": {
+    "automatic": {
+      "title": "Automatisk åtkomst",
+      "description": "Tillåter publik tillgång till mötet. Med den här policyn aktiv kan vem som helst gå med i ditt mötet, och får genast de valda rollerna."
+    }
   },
   "agenda": {
     "agenda": "Dagordning",
