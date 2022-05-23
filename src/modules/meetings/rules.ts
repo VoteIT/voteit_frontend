@@ -30,8 +30,10 @@ export function isPotentialVoter (meeting?: Meeting): boolean | undefined {
   return !!meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
 }
 
-export function isModerator (meeting?: Meeting): boolean | undefined {
-  return meeting && hasRole(meeting.pk, MeetingRole.Moderator)
+export function isModerator (meeting?: Meeting | number): boolean | undefined {
+  if (!meeting) return
+  if (typeof meeting !== 'number') meeting = meeting.pk
+  return hasRole(meeting, MeetingRole.Moderator)
 }
 
 export function isActiveMeeting (meeting?: Meeting): boolean {

@@ -7,6 +7,7 @@ import useAuthentication from '../../composables/useAuthentication'
 import { AgendaItem } from '../agendas/types'
 import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState, SpeakerStartStopMessage } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
+import { isModerator } from '../meetings/rules'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -61,6 +62,17 @@ function getList (pk: number) {
 function getSystem (pk: number) {
   return speakerSystems.get(pk)
 }
+
+function getSystems (meeting: number, nonActive = false): SpeakerSystem[] {
+  // For meeting pk
+  // By default only active systems
+  return [...iterSpeakerSystems(
+    s => (s.meeting === meeting) &&
+    (nonActive || s.state === SpeakerSystemState.Active) &&
+    !!(isModerator(s.meeting) || hasRole(s.pk, SpeakerSystemRole.ListModerator))
+  )]
+}
+
 function getQueue (list: number) {
   return speakerQueues.get(list) || []
 }
@@ -79,16 +91,6 @@ export default function useSpeakerLists () {
       if (list.speaker_system !== system.pk) return false
       return !agendaItem || list.agenda_item === agendaItem.pk
     })]
-  }
-
-  function getSystems (meeting: number, nonActive = false, isModerator = false): SpeakerSystem[] {
-    // For meeting pk
-    // By default only active systems
-    return [...iterSpeakerSystems(
-      s => (s.meeting === meeting) &&
-      (nonActive || s.state === SpeakerSystemState.Active) &&
-      (isModerator || !!hasRole(s.pk, SpeakerSystemRole.ListModerator))
-    )]
   }
 
   function getSystemActiveSpeaker (system: SpeakerSystem): SpeakerStartStopMessage | undefined {

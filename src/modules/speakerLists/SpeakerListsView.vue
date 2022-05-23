@@ -31,7 +31,7 @@
               <Menu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
             </div>
             <v-card-text>
-              {{ t('speaker.speakerCount', { count: speakers.getQueue(list).length }, speakers.getQueue(list).length) }}
+              {{ t('speaker.speakerCount', speakerQueue.length) }}
             </v-card-text>
           </v-card>
         </v-item>
@@ -149,7 +149,7 @@ export default defineComponent({
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
     const { currentActiveList, currentActiveListId, speakerSystem } = useSpeakerSystem(systemId)
-    const speakerSystems = computed(() => speakers.getSystems(meetingId.value, false, true))
+    const speakerSystems = computed(() => speakers.getSystems(meetingId.value))
     const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
     const currentList = computed<SpeakerList | undefined>({
       get () {
