@@ -14,7 +14,7 @@
           <MeetingGroupsTab />
         </v-window-item>
 
-        <v-window-item value="presence">
+        <v-window-item value="presence" v-if="canManagePresence">
           <PresenceCheckControl class="text-center" />
           <template v-if="presenceCheck">
             <v-divider class="my-4" />
@@ -30,11 +30,11 @@
           </template>
         </v-window-item>
 
-        <v-window-item value="speakerHistory">
+        <v-window-item value="speakerHistory" v-if="hasSpeakerSystems">
           <SpeakerHistory />
         </v-window-item>
 
-        <v-window-item value="invites">
+        <v-window-item value="invites" v-if="canViewMeetingInvite">
           <InvitationsTab @denied="currentTab = 'default'" />
         </v-window-item>
 
@@ -195,8 +195,11 @@ export default defineComponent({
     return {
       t,
       canChangeRoles,
+      canManagePresence,
+      canViewMeetingInvite,
       closedPresenceChecks,
       currentTab,
+      hasSpeakerSystems,
       roleLabels,
       matrixCols,
       meetingType,

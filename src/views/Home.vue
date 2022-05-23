@@ -19,7 +19,7 @@
           </header>
           <Richtext v-model="changeForm.body" :editing="editing" @edit-done="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
         </v-window-item>
-        <v-window-item value="roles">
+        <v-window-item value="roles" v-if="canChangeOrganisation">
           <UserSearch class="mb-6" @submit="addUser" />
           <RoleMatrix admin :contentType="organisationType" :pk="organisation.pk" :icons="organisationIcons" />
         </v-window-item>
@@ -207,6 +207,7 @@ export default defineComponent({
     return {
       t,
       canAddMeeting,
+      canChangeOrganisation,
       changeForm,
       currentTab,
       debug: false,
