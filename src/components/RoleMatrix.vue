@@ -98,12 +98,7 @@ export default defineComponent({
             columns.value = roles.map(roleToCol)
           }
         },
-        async () => {
-          const { p } = await props.contentType.fetchRoles(props.pk)
-          for (const [user, roles] of p.items) {
-            contextRoles.set(props.pk, user, roles)
-          }
-        }
+        () => props.contentType.fetchRoles(props.pk)
       )
     })
 

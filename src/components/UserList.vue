@@ -1,6 +1,6 @@
 <template>
   <v-list :density="density">
-    <v-list-item v-for="{ pk, full_name, userid } in users" :key="pk" :class="{ 'px-0': density !== 'default' }" active-color="primary" :active="modelValue === pk">
+    <v-list-item @click="$emit('clickItem', pk)" v-for="{ pk, full_name, userid } in users" :key="pk" :class="{ 'px-0': density !== 'default' }" active-color="primary" :active="modelValue === pk">
       <v-list-item-avatar class="mr-2">
         <UserAvatar :pk="pk" />
       </v-list-item-avatar>
@@ -24,6 +24,7 @@ import { useI18n } from 'vue-i18n'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 
 export default defineComponent({
+  emits: ['clickItem'],
   props: {
     userIds: {
       type: Array as PropType<number[]>,

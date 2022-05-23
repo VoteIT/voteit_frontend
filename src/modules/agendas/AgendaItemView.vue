@@ -231,7 +231,7 @@ export default defineComponent({
           })
         })
       }
-      const speakerSystems = getSystems(meetingId.value)
+      const speakerSystems = getSystems(meetingId.value, true)
       if (speakerSystems.length) {
         items.push('---')
         for (const system of speakerSystems) {

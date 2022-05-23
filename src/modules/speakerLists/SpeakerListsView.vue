@@ -37,7 +37,7 @@
         </v-item>
       </v-item-group>
       <v-btn prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
-             @click="addSpeakerList(speakerSystem)" :disabled="speakerSystem.state !== 'active'">
+             @click="addSpeakerList(speakerSystem)" :disabled="canAddSpeakerlist">
         {{ t('speaker.addListToSystem', speakerSystem ) }}
       </v-btn>
     </v-col>
@@ -148,7 +148,7 @@ export default defineComponent({
     const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
-    const { currentActiveList, currentActiveListId, speakerSystem } = useSpeakerSystem(systemId)
+    const { canAddSpeakerList, currentActiveList, currentActiveListId, speakerSystem } = useSpeakerSystem(systemId)
     const speakerSystems = computed(() => speakers.getSystems(meetingId.value))
     const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
     const currentList = computed<SpeakerList | undefined>({
@@ -257,6 +257,7 @@ export default defineComponent({
       t,
       agendaItem,
       annotatedSpeakerQueue,
+      canAddSpeakerList,
       currentList,
       currentSpeaker,
       speakerGroups,

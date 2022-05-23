@@ -69,7 +69,7 @@ function isCurrentlySpeaking (list: SpeakerList): boolean {
 }
 
 export function canAddSpeakerList (system: SpeakerSystem): boolean {
-  return !!isSystemModerator(system) && isActiveSystem(system)
+  return !!isSystemModerator(system) && !isArchivedSystem(system)
 }
 
 export function canChangeSpeakerList (list: SpeakerList): boolean {

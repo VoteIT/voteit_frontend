@@ -61,7 +61,7 @@ export default function useElectoralRegisters () {
     return registers.get(pk) as ElectoralRegister | null
   }
 
-  const currentElectoralRegister = computed(() => {
+  const currentElectoralRegister = computed<ElectoralRegister | undefined>(() => {
     return sortedRegisters.value[0]
   })
 

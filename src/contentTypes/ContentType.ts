@@ -131,7 +131,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
   }
 
   public useContextRoles () {
-    if (!this.contentType.hasRoles || !this.contentType.name) throw new Error(`Context Roles not configured for Content Type ${this.name}`)
+    this.assertHasRoles()
     return useContextRoles<R>(this.contentType.name)
   }
 
@@ -151,13 +151,16 @@ export default class ContentType<T extends Record<string, any> = object, R exten
   }
 
   public async fetchRoles (pk: number, users?: number[]) {
-    this.assertHasRoles()
+    const { set } = this.useContextRoles()
     const message: RolesGetMessage = {
       model: this.name,
       pk,
       filter_users: users
     }
-    return socket.call<ContextRolesPayload>('roles.get', message)
+    const { p } = await socket.call<ContextRolesPayload<R>>('roles.get', message)
+    for (const [user, roles] of p.items) {
+      set(pk, user, roles)
+    }
   }
 
   private changeRoles (method: string, pk: number, user: number, roles: string[]) {

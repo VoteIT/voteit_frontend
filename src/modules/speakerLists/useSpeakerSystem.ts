@@ -1,5 +1,5 @@
 import { computed, Ref } from 'vue'
-import { isSystemModerator } from './rules'
+import { canAddSpeakerList, isSystemModerator } from './rules'
 import useSpeakerLists from './useSpeakerLists'
 
 const { getSystem, getList, getQueue, getCurrent } = useSpeakerLists()
@@ -13,6 +13,7 @@ export default function useSpeakerSystem (systemId: Ref<number>) {
   const isModerator = computed(() => !!speakerSystem.value && isSystemModerator(speakerSystem.value))
 
   return {
+    canAddSpeakerList: computed(() => speakerSystem.value && canAddSpeakerList(speakerSystem.value)),
     currentActiveList,
     currentActiveListId,
     currentSpeakerQueue,

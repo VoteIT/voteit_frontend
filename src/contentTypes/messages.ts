@@ -19,8 +19,8 @@ export interface RolesAvailableMessage {
   model: string // Context model
 }
 
-export interface ContextRolesPayload {
-  items: [number, string[]][]
+export interface ContextRolesPayload<R = string> {
+  items: [number, R[]][]
 }
 
 export interface AvailableRolesPayload {

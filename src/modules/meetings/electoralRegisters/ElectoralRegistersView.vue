@@ -1,13 +1,47 @@
 <template>
   <v-row>
     <v-col v-bind="cols.default">
-      <template v-if="canManagePresence">
+      <!-- <template v-if="canManagePresence">
         <PresenceCheckControl class="text-center" />
         <v-divider class="my-4" />
-      </template>
-      <h1>
-        {{ t('electoralRegister.plural') }}
-      </h1>
+      </template> -->
+      <div class="d-flex">
+        <h1 class="flex-grow-1">
+          {{ t('electoralRegister.plural') }}
+        </h1>
+        <div>
+          <v-dialog @update:modelValue="$event && fetchRoles()">
+            <template #activator="{ props }">
+              <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-plus">
+                Skapa röstlängd
+              </v-btn>
+            </template>
+            <template v-slot="{ isActive }">
+              <v-sheet v-bind="dialogDefaults" class="pa-4">
+                <h2>Ny röstlängd</h2>
+                <v-alert type="info" class="my-2">
+                  Välj vilka av mötets potentiella röstare som ska ingå i röstlängden.
+                </v-alert>
+                <UserList :userIds="potentialVoters" class="mb-4" @clickItem="selectUser($event)">
+                  <template #appendItem="{ user }">
+                    <div>
+                      <v-checkbox :model-value="createSelection.has(user)" @update:modelValue="selectUser(user, $event)" hide-details />
+                    </div>
+                  </template>
+                </UserList>
+                <div class="text-right">
+                  <v-btn variant="text" @click="isActive.value = false">
+                    {{ t('cancel') }}
+                  </v-btn>
+                  <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister()" :disabled="createSelection.size === 0">
+                    {{ t('create') }}
+                  </v-btn>
+                </div>
+              </v-sheet>
+            </template>
+          </v-dialog>
+        </div>
+      </div>
       <template v-for="{ description, title, registers } in groups" :key="title">
         <h2 class="mt-6">
           {{ title }}
@@ -40,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, onBeforeUnmount } from 'vue'
+import { computed, defineComponent, onBeforeMount, onBeforeUnmount, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import UserList from '@/components/UserList.vue'
@@ -52,6 +86,9 @@ import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
 import { PollState } from '@/modules/polls/types'
 import { ElectoralRegister } from '@/contentTypes/types'
+import useDefaults from '@/composables/useDefaults'
+import { MeetingRole } from '../types'
+import { meetingType } from '../contentTypes'
 
 export default defineComponent({
   inject: ['cols'],
@@ -60,8 +97,9 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
+    const { getRoleUserIds } = meetingType.useContextRoles()
     const { meetingId } = useMeeting()
-    const { fetchRegisters, sortedRegisters } = useElectoralRegisters()
+    const { fetchRegisters, sortedRegisters, currentElectoralRegister } = useElectoralRegisters()
     const loader = useLoader('ElectoralRegisters')
     const { canManagePresence } = usePresence()
     const { filterPolls } = usePolls()
@@ -101,6 +139,25 @@ export default defineComponent({
       ]
     })
 
+    const potentialVoters = computed(() => getRoleUserIds(meetingId.value, MeetingRole.PotentialVoter))
+    const createSelection = reactive(new Set(currentElectoralRegister.value?.weights.map(w => w.user) ?? []))
+    watch(currentElectoralRegister, register => {
+      createSelection.clear()
+      if (!register) return
+      for (const w of register.weights) {
+        createSelection.add(w.user)
+      }
+    })
+
+    function selectUser (user: number, value?: boolean) {
+      if (value === undefined) value = !createSelection.has(user)
+      createSelection[value ? 'add' : 'delete'](user)
+    }
+
+    function createRegister () {
+      console.log('CREATE', createSelection)
+    }
+
     onBeforeMount(() => {
       loader.call(getData)
       presenceCheckClosed.on(getData)
@@ -112,8 +169,15 @@ export default defineComponent({
     return {
       t,
       canManagePresence,
+      createSelection,
+      currentElectoralRegister,
       groups,
-      fetchRegisters
+      potentialVoters,
+      createRegister,
+      fetchRegisters,
+      fetchRoles: () => meetingType.fetchRoles(meetingId.value),
+      selectUser,
+      ...useDefaults()
     }
   }
 })
