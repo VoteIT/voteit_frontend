@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { slugify } from '@/utils'
@@ -26,8 +26,10 @@ export default function useMeeting () {
   const roleLabels = computed(() => getRoleLabels())
 
   const meetingId = computed(() => Number(route.params.id))
-  const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value)) // Disable fallback || {})
+  const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value))
   const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
+  const meetingUrl = computed(() => `${location.origin}${meetingPath.value}`)
+  const meetingJoinPath = computed(() => `/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
 
   const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value))
   function hasRole (role: MeetingRole, user?: number) {
@@ -44,6 +46,8 @@ export default function useMeeting () {
     meetingId,
     meeting,
     meetingPath,
+    meetingUrl,
+    meetingJoinPath,
     roleLabels,
     userRoles,
     getRoleLabels,

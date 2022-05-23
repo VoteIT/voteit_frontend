@@ -45,15 +45,14 @@ export function canAddPoll (context: Meeting | AgendaItem): boolean {
 export function canChangePoll (poll: Poll): boolean {
   const agendaItem = agendaItems.get(poll.agenda_item)
   if (!agendaItem) return false
-  const meeting = meetings.get(agendaItem.meeting)
-  return isPermissiveState(poll) && !!isModerator(meeting)
+  return isPermissiveState(poll) && !!isModerator(agendaItem.meeting)
 }
 
 export function canDeletePoll (poll: Poll): boolean {
   const agendaItem = agendaItems.get(poll.agenda_item)
   if (!agendaItem) return false
   const meeting = meetings.get(agendaItem.meeting)
-  return !isArchivedMeeting(meeting) && !isArchivedAI(agendaItem) && !!isModerator(meeting)
+  return !isArchivedMeeting(meeting) && !isArchivedAI(agendaItem) && !!isModerator(agendaItem.meeting)
 }
 
 export function canVote (poll: Poll): boolean {

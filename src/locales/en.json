@@ -62,14 +62,19 @@
   "yes": "Yes",
   "accessPolicy": {
     "confirmDelete": "You're about to delete this access policy.\nAre you sure?",
+    "invitationsAlert": "You can invite participants directly. That does not require any other access policies. Invited users will see the meeting when they log in.",
+    "noAccessPolicies": "The meeting has no access policies",
+    "noAccessPoliciesAlert": "The meeting is visible to everyone, but there is no way to join it. Create and activate and access policy if you want users to be able to join without an invitation.",
     "plural": "Access policies",
+    "publicMeetingHelp": "When you make a meeting public, it will be visible for everyone on the organisation start page.",
     "settings": "Access Policy settings",
-    "rolesGiven": "Roles given"
+    "rolesGiven": "Select roles"
   },
   "accessPolicies": {
     "automatic": {
+      "add": "Configure automatic access",
       "title": "Automatic",
-      "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles."
+      "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles. Existing participants will not be affected."
     }
   },
   "agenda": {

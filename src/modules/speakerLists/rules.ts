@@ -3,8 +3,6 @@ import useContextRoles from '@/composables/useContextRoles'
 import { isActiveMeeting, isModerator } from '../meetings/rules'
 import { Meeting, MeetingRole } from '../meetings/types'
 
-import { meetings } from '../meetings/useMeetings'
-
 import { SpeakerList, SpeakerListState, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
 import { currentlySpeaking, speakerLists, speakerSystems } from './useSpeakerLists'
 
@@ -30,8 +28,7 @@ function isArchivedSystem (system: SpeakerSystem): boolean {
 }
 
 export function isSystemModerator (system: SpeakerSystem): boolean | undefined {
-  const meeting = meetings.get(system.meeting)
-  return isModerator(meeting) || hasRole(system.pk, SpeakerSystemRole.ListModerator)
+  return isModerator(system.meeting) || hasRole(system.pk, SpeakerSystemRole.ListModerator)
 }
 
 export function isSystemSpeaker (system: SpeakerSystem, user?: number): boolean | undefined {
@@ -48,13 +45,11 @@ export function canAddSpeakerSystem (meeting: Meeting): boolean {
 }
 
 export function canChangeSpeakerSystem (system: SpeakerSystem): boolean {
-  const meeting = meetings.get(system.meeting)
-  return !!isModerator(meeting) && isActiveMeeting(meeting) && !isArchivedSystem(system)
+  return !!isModerator(system.meeting) && isActiveMeeting(system.meeting) && !isArchivedSystem(system)
 }
 
 export function canDeleteSpeakerSystem (system: SpeakerSystem): boolean {
-  const meeting = meetings.get(system.meeting)
-  return !!isModerator(meeting) && isActiveMeeting(meeting) && !isArchivedSystem(system)
+  return !!isModerator(system.meeting) && isActiveMeeting(system.meeting) && !isArchivedSystem(system)
 }
 
 /* Speaker Lists */

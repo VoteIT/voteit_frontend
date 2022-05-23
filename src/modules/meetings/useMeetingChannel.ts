@@ -12,7 +12,7 @@ const loader = useLoader('useMeetingChannel')
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel () {
-  const { isModerator, meetingId, meeting } = useMeeting()
+  const { isModerator, meetingId, meeting, meetingJoinPath } = useMeeting()
   const { fetchMeeting } = useMeetings()
   const router = useRouter()
 
@@ -28,7 +28,7 @@ export default function useMeetingChannel () {
   onBeforeMount(() => {
     loader.call(async () => {
       try {
-        if (!await fetchMeeting(meetingId.value)) await router.push(`/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
+        if (!await fetchMeeting(meetingId.value)) await router.push(meetingJoinPath.value)
       } catch {
         await router.push('/')
         loader.reset()

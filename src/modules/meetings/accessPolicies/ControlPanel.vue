@@ -5,7 +5,38 @@
     </h2>
     <v-row>
       <v-col>
-        <v-switch :label="t('meeting.public')" v-model="meetingPublic" color="primary" />
+        <v-alert type="info" title="Bjud in deltagare">
+          <p class="mb-2">
+            {{ t('accessPolicy.invitationsAlert') }}
+          </p>
+          <v-btn
+            color="primary"
+            :to="`${meetingPath}/participants`"
+            prepend-icon="mdi-account">
+            {{ t('meeting.participants') }}
+          </v-btn>
+        </v-alert>
+        <v-switch :label="t('meeting.public')" v-model="meetingPublic" color="primary" :messages="t('accessPolicy.publicMeetingHelp')" />
+        <v-expand-transition>
+          <div v-if="meetingPublic && !hasActivePolicy">
+            <v-alert
+              type="warning"
+              :title="t('accessPolicy.noAccessPolicies')"
+              :text="t('accessPolicy.noAccessPoliciesAlert')"
+              class="my-4" />
+          </div>
+        </v-expand-transition>
+        <!-- TODO Add more access policies later! -->
+        <div class="my-12 text-center">
+          <v-btn
+            v-if="!accessPolicies.length"
+            @click="addAutomaticAccess()"
+            prepend-icon="mdi-account-cog"
+            size="large"
+            color="primary">
+            {{ t('accessPolicies.automatic.add') }}
+          </v-btn>
+        </div>
         <v-card v-for="p in accessPolicies" :key="p.pk">
           <v-card-header class="d-flex align-start">
             <v-card-title class="flex-grow-1">
@@ -28,6 +59,18 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
+            <v-tooltip v-if="p.active" :model-value="copied" text="Kopierat" anchor="top">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  prepend-icon="mdi-content-copy"
+                  variant="contained"
+                  :color="copied ? 'success' : 'primary'"
+                  @click="copy(meetingUrl)">
+                  Kopiera möteslänk
+                </v-btn>
+              </template>
+            </v-tooltip>
             <v-btn color="warning" prepend-icon="mdi-delete" @click="_delete(p)">{{ t('delete') }}</v-btn>
             <!-- <v-btn color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn> -->
           </v-card-actions>
@@ -40,10 +83,11 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useClipboard } from '@vueuse/core'
 
 import { dialogQuery } from '@/utils'
 import useAlert from '@/composables/useAlert'
-import { AccessPolicy } from '@/contentTypes/types'
+import { AccessPolicy, AccessPolicyType } from '@/contentTypes/types'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import useAccessPolicies from './useAccessPolicies'
@@ -61,9 +105,17 @@ export default defineComponent({
   icon: 'mdi-key',
   setup () {
     const { t } = useI18n()
-    const { meetingId, meeting } = useMeeting()
+    const { meetingId, meeting, meetingPath, meetingUrl } = useMeeting()
     const { alert } = useAlert()
-    const { accessPolicies, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
+    const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
+
+    async function addAutomaticAccess () {
+      await addPolicy({
+        meeting: meetingId.value,
+        name: AccessPolicyType.Automatic,
+        roles_given: [MeetingRole.Participant]
+      })
+    }
 
     async function _delete (p: AccessPolicy) {
       if (!await dialogQuery(t('accessPolicy.confirmDelete'))) return
@@ -98,12 +150,17 @@ export default defineComponent({
     return {
       t,
       accessPolicies,
+      hasActivePolicy,
+      meetingPath,
+      meetingPublic,
+      meetingUrl,
       roles,
+      addAutomaticAccess,
       alert,
       _delete,
-      meetingPublic,
       setActive,
-      setRoles
+      setRoles,
+      ...useClipboard()
     }
   }
 })

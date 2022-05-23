@@ -18,10 +18,16 @@ const { alert } = useAlert()
 export default function useAccessPolicies (meetingId: Ref<number>) {
   const accessPolicies = computed(() => [...mapFilter(policyStore, p => p.meeting === meetingId.value)])
 
-  function getContentType (p: AccessPolicy) {
+  function getContentType (p: Pick<AccessPolicy, 'name'>) {
     const ct = contentTypes[p.name]
     if (!ct) throw new Error(`No API for access policy type "${p.name}"`)
     return ct
+  }
+
+  async function addPolicy (p: Pick<AccessPolicy, 'meeting' | 'name' | 'roles_given'>) {
+    const { api } = getContentType(p)
+    const { data } = await api.add(p)
+    policyStore.set(data.pk, data)
   }
 
   async function deletePolicy (p: AccessPolicy) {
@@ -33,6 +39,8 @@ export default function useAccessPolicies (meetingId: Ref<number>) {
        alert('*Cound not delete access policy')
     }
   }
+
+  const hasActivePolicy = computed(() => accessPolicies.value.some(p => p.active))
 
   async function setActive (p: AccessPolicy, active: boolean) {
     const { api } = getContentType(p)
@@ -78,6 +86,8 @@ export default function useAccessPolicies (meetingId: Ref<number>) {
 
   return {
     accessPolicies,
+    hasActivePolicy,
+    addPolicy,
     deletePolicy,
     setActive,
     setRoles

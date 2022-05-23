@@ -1,6 +1,5 @@
 import { agendaItems } from '../agendas/useAgenda'
 import { isAIModerator, isFinishedAI, isPrivateAI, isProposalBlocked } from '../agendas/rules'
-import { meetings } from '../meetings/useMeetings'
 import { AgendaItem } from '../agendas/types'
 
 import { ProposalText } from './contentTypes'
@@ -59,18 +58,16 @@ function isUsedInPoll (proposal: Proposal): boolean {
 }
 
 export function canAddProposal (agendaItem: AgendaItem): boolean {
-  const meeting = meetings.get(agendaItem.meeting)
   return !isFinishedAI(agendaItem) && (
-    !!isModerator(meeting) || (
-      !isPrivateAI(agendaItem) && !isProposalBlocked(agendaItem) && !!isProposer(meeting)
+    !!isModerator(agendaItem.meeting) || (
+      !isPrivateAI(agendaItem) && !isProposalBlocked(agendaItem) && !!isProposer(agendaItem.meeting)
     ))
 }
 
 export function canChangeProposal (proposal: Proposal): boolean {
   const agendaItem = agendaItems.get(proposal.agenda_item)
   if (!agendaItem) return false
-  const meeting = meetings.get(agendaItem.meeting)
-  return !isFinishedMeeting(meeting) && !!isModerator(meeting)
+  return !isFinishedMeeting(agendaItem.meeting) && !!isModerator(agendaItem.meeting)
 }
 
 export function canDeleteProposal (proposal: Proposal): boolean {

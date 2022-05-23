@@ -49,7 +49,9 @@ export default defineComponent({
     const policies = ref<AccessPolicy[]>([])
 
     const policyComponents = computed(() => {
-      return policies.value.map(ap => accessPolicies[ap.name])
+      return policies.value
+        .filter(ap => ap.active)
+        .map(ap => accessPolicies[ap.name])
     })
 
     const canBecomeModeratorMeeting = computed(() => {

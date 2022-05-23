@@ -14,37 +14,46 @@ const { getState } = useWorkflows(meetingStates)
 const FINISHED_STATES = [MeetingState.Closed, MeetingState.Archiving, MeetingState.Archived]
 const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
-export function isParticipant (meeting?: Meeting): boolean | undefined {
-  return meeting && hasRole(meeting.pk, MeetingRole.Participant)
-}
+type MeetingT = Meeting | number | undefined
 
-export function isProposer (meeting?: Meeting): boolean | undefined {
-  return !!meeting && hasRole(meeting.pk, MeetingRole.Proposer)
-}
-
-export function isDiscusser (meeting?: Meeting): boolean | undefined {
-  return !!meeting && hasRole(meeting.pk, MeetingRole.Discusser)
-}
-
-export function isPotentialVoter (meeting?: Meeting): boolean | undefined {
-  return !!meeting && hasRole(meeting.pk, MeetingRole.PotentialVoter)
-}
-
-export function isModerator (meeting?: Meeting | number): boolean | undefined {
+function hasMeetingRole (meeting: MeetingT, role: MeetingRole): boolean | undefined {
   if (!meeting) return
   if (typeof meeting !== 'number') meeting = meeting.pk
-  return hasRole(meeting, MeetingRole.Moderator)
+  return hasRole(meeting, role)
 }
 
-export function isActiveMeeting (meeting?: Meeting): boolean {
+export function isParticipant (meeting: MeetingT): boolean | undefined {
+  return hasMeetingRole(meeting, MeetingRole.Participant)
+}
+
+export function isProposer (meeting: MeetingT): boolean | undefined {
+  return hasMeetingRole(meeting, MeetingRole.Proposer)
+}
+
+export function isDiscusser (meeting: MeetingT): boolean | undefined {
+  return hasMeetingRole(meeting, MeetingRole.Discusser)
+}
+
+export function isPotentialVoter (meeting: MeetingT): boolean | undefined {
+  return hasMeetingRole(meeting, MeetingRole.PotentialVoter)
+}
+
+export function isModerator (meeting: MeetingT): boolean | undefined {
+  return hasMeetingRole(meeting, MeetingRole.Moderator)
+}
+
+export function isActiveMeeting (meeting: MeetingT): boolean {
+  if (typeof meeting === 'number') meeting = meetings.get(meeting)
   return !!meeting && ACTIVE_STATES.includes(meeting.state as MeetingState)
 }
 
-export function isArchivedMeeting (meeting?: Meeting): boolean {
+export function isArchivedMeeting (meeting: MeetingT): boolean {
+  if (typeof meeting === 'number') meeting = meetings.get(meeting)
   return !!meeting && !!getState(meeting.state)?.isFinal
 }
 
-export function isFinishedMeeting (meeting?: Meeting): boolean {
+export function isFinishedMeeting (meeting: MeetingT): boolean {
+  if (typeof meeting === 'number') meeting = meetings.get(meeting)
   return !!meeting && FINISHED_STATES.includes(meeting.state as MeetingState)
 }
 
