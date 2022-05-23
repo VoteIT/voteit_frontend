@@ -124,6 +124,7 @@
   "electoralRegister": {
     "active": "Aktiva",
     "activeDescription": "Röstlängder som används i pågående omröstningar",
+    "activeMethod": "Aktiv metod: {method}",
     "latest": "Aktuell",
     "plural": "Röstlängder",
     "previous": "Tidigare",
@@ -133,17 +134,25 @@
     "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
     "settings": "Inställning för röstlängder",
     "voterCount": "Inga röstberättigade | 1 röstberättigad | {count} röstberättigade",
-    "methodDescription": {
-      "auto_always": "Röstlängden kommer alltid uppdateras automatiskt för att inkludera alla potentiella röstande, även för pågående omröstningar. Denna metoden bör aldrig användas i officiella möten.",
-      "auto_before_poll": "Röstlängden kommer vid behov uppdateras för att inkludera alla potentiella röstande när en omröstning startas.",
-      "presence_check": "Röstlängden kommer uppdatera vid stängning av närvarokontroll. Den kommer inkludera alla potentiella röstande som markerat sin närvaro."
-    },
-    "methodName": {
-      "auto_always": "Uppdatera alltid (demo)",
-      "auto_before_poll": "Automatisk vid omröstning",
-      "presence_check": "Närvarokontroll"
-    },
     "inCurrent": "I nuvarande röstlängd"
+  },
+  "erMethods": {
+    "auto_always": {
+      "description": "Med den här metoden skapas alltid en ny röstlängd när potentiella röstare förändras. Den bör endast användas i demomöten.",
+      "title": "Demomöte: Uppdatera alltid röstlängd"
+    },
+    "auto_before_poll": {
+      "description": "Med den här metoden skapas röstlängd automatiskt vid behov när en omröstning startas, utifrån potentiella röstare.",
+      "title": "Automatisk vid omröstning"
+    },
+    "manual": {
+      "description": "Med den här metoden skapar mötets moderator röstlängden manuellt. Tillåter viktade röster.",
+      "title": "Manuell"
+    },
+    "presence_check": {
+      "description": "Med den här metoden skapas en ny röstlängd när en närvarokontroll avslutas. Rösträtt ges till närvarande deltagare med rollen potentiell röstare.",
+      "title": "Närvarokontroll"
+    }
   },
   "error": {
     "error": "Fel",

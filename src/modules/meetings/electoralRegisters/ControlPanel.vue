@@ -1,20 +1,20 @@
 <template>
   <div>
     <h2>{{ t('electoralRegister.settings') }}</h2>
-    <form @submit.prevent="save()">
+    <v-alert v-if="erInfo" class="my-4" v-bind="erInfo" />
+    <form v-if="editing" @submit.prevent="save()">
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="erOptions" />
-      <div>
+      <div class="text-right">
         <v-btn type="submit" :disabled="disabled" color="primary">
           {{ t('save') }}
         </v-btn>
       </div>
-      <v-alert v-if="status === 'incomplete'" type="warning" class="mt-2">
-        {{ t('electoralRegister.selectMethod') }}
-      </v-alert>
-      <v-alert v-else-if="status === 'saved'" type="success" closable class="mt-2">
-        {{ t(`electoralRegister.methodDescription.${settings.er_policy_name}`) }}
-      </v-alert>
     </form>
+    <div v-else-if="erOptions" class="pa-12 text-center">
+      <v-btn color="primary" size="large" prepend-icon="mdi-book-account" @click="editing = true">
+        Ändra metod för röstlängder
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -27,6 +27,7 @@ import SelectVue from '@/components/inputs/Select.vue'
 import { meetingType } from '../contentTypes'
 import { Meeting } from '../types'
 import useElectoralRegisters from '../useElectoralRegisters'
+import useAlert from '@/composables/useAlert'
 
 export default defineComponent({
   translationKey: 'electoralRegister.plural',
@@ -38,34 +39,57 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { meeting, meetingId } = useMeeting()
-    const { erOptions } = useElectoralRegisters()
-    const settings = reactive<Partial<Meeting>>({ er_policy_name: meeting.value?.er_policy_name })
-    const status = ref<null | 'incomplete' | 'waiting' | 'saved'>(meeting.value?.er_policy_name ? null : 'incomplete')
+    const { erMethods } = useElectoralRegisters()
+    const settings = reactive<Pick<Meeting, 'er_policy_name'>>({ er_policy_name: meeting.value?.er_policy_name })
+    const { alert } = useAlert()
+
+    const editing = ref(!!meeting.value && !meeting.value.er_policy_name)
+    const submitting = ref(false)
+
+    const erOptions = computed(() => {
+      return Object.fromEntries(erMethods.map(({ name }) => [name, t(`erMethods.${name}.title`)]))
+    })
+
+    const erInfo = computed(() => {
+      const name = meeting.value?.er_policy_name
+      if (!name) return
+      return {
+        title: t('electoralRegister.activeMethod', { method: t(`erMethods.${name}.title`) }),
+        text: t(`erMethods.${name}.description`),
+        type: name === 'auto_always'
+          ? 'warning'
+          : 'info'
+      }
+    })
 
     async function save () {
-      status.value = 'waiting'
+      submitting.value = true
       try {
         await meetingType.api.patch(meetingId.value, settings)
-        status.value = 'saved'
       } catch {
-        status.value = null
+        alert('*Could not save method for electoral register.')
       }
+      submitting.value = false
     }
 
     const disabled = computed(() => {
-      return status.value === 'waiting' || !settings.er_policy_name
+      return submitting.value || !settings.er_policy_name
     })
 
-    watch(() => settings.er_policy_name, value => {
-      status.value = value ? null : 'incomplete'
+    watch(meeting, m => {
+      if (!m) return
+      settings.er_policy_name = m.er_policy_name
+      editing.value = !m.er_policy_name
     })
 
     return {
       t,
+      erInfo,
+      editing,
       disabled,
       erOptions,
       settings,
-      status,
+      submitting,
       save
     }
   }

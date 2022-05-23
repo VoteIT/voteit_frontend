@@ -125,6 +125,7 @@
   "electoralRegister": {
     "active": "Active",
     "activeDescription": "Electoral registers used in ongoing polls",
+    "activeMethod": "Active method: {method}",
     "latest": "Latest",
     "plural": "Electoral registers",
     "previous": "Previous",
@@ -134,17 +135,25 @@
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
     "settings": "Settings for Electoral Registers",
     "voterCount": "No voters | 1 voter | {count} voters",
-    "methodDescription": {
-      "auto_always": "Electoral register will always update to match potential voters, even on ongoing polls. This should never be used in official meetings.",
-      "auto_before_poll": "Electoral register will update as needed to include all potential voters whenever a poll is started.",
-      "presence_check": "Electoral register will update when closing a presence check. It will include all potential voters that has noted their presence."
-    },
-    "methodName": {
-      "auto_always": "Always update (demo)",
-      "auto_before_poll": "Automatic before poll",
-      "presence_check": "Presence check"
-    },
     "inCurrent": "In current electoral register"
+  },
+  "erMethods": {
+    "auto_always": {
+      "description": "This method will always create a new electoral register when potential voters change. Should only be used in demo meetings.",
+      "title": "Demo meeting: Always update electoral register"
+    },
+    "auto_before_poll": {
+      "description": "This method automatically creates electoral registers as needed, from potential voters, when a poll is started.",
+      "title": "Automatic on poll"
+    },
+    "manual": {
+      "description": "When using this method, the meeting moderator creates electoral registers manually. Allows for weighted votes.",
+      "title": "Manual"
+    },
+    "presence_check": {
+      "description": "This method creates a new electoral register upon closing a presence check. Voting rights will be given to present users with the role potential voter.",
+      "title": "Presence check"
+    }
   },
   "error": {
     "error": "Error",

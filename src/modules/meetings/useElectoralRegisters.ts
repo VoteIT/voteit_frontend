@@ -5,19 +5,28 @@ import { ElectoralRegister } from '@/contentTypes/types'
 
 import { electoralRegisterType } from './contentTypes'
 import { dateify } from '@/utils'
+import { useI18n } from 'vue-i18n'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
-// const registers = reactive<Map<number, Set<number> | null>>(new Map())
 const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
-
-interface ERMethod {
-  name: string
-  value: string
-}
-const registerMethods = ref<ERMethod[] | null>(null)
 
 electoralRegisterType
   .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
+
+const erMethods = [
+  {
+    name: 'auto_before_poll'
+  },
+  {
+    name: 'presence_check'
+  },
+  {
+    name: 'manual'
+  },
+  {
+    name: 'auto_always'
+  }
+]
 
 export default function useElectoralRegisters () {
   async function fetchRegister (pk: number) {
@@ -52,29 +61,13 @@ export default function useElectoralRegisters () {
     return registers.get(pk) as ElectoralRegister | null
   }
 
-  async function fetchMethods () {
-    const { data } = await electoralRegisterType.api.getAction<ERMethod[]>('methods')
-    registerMethods.value = data
-  }
-
   const currentElectoralRegister = computed(() => {
     return sortedRegisters.value[0]
-  })
-
-  const erMethods = computed(() => {
-    if (!registerMethods.value) fetchMethods()
-    return registerMethods.value
-  })
-
-  const erOptions = computed(() => {
-    if (!erMethods.value) return {}
-    return Object.fromEntries(erMethods.value.map(({ name, value }) => [value, name]))
   })
 
   return {
     currentElectoralRegister,
     erMethods,
-    erOptions,
     sortedRegisters,
     clearRegisters,
     getRegister,

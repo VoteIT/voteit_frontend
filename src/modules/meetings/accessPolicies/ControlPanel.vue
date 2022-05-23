@@ -71,8 +71,7 @@
                 </v-btn>
               </template>
             </v-tooltip>
-            <v-btn color="warning" prepend-icon="mdi-delete" @click="_delete(p)">{{ t('delete') }}</v-btn>
-            <!-- <v-btn color="primary" prepend-icon="mdi-pencil" @click="alert('*Not implemented (missing API)')">{{ t('edit') }}</v-btn> -->
+            <v-btn color="warning" prepend-icon="mdi-delete" @click="deletePolicy(p)">{{ t('delete') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -157,7 +156,7 @@ export default defineComponent({
       roles,
       addAutomaticAccess,
       alert,
-      _delete,
+      deletePolicy: _delete,
       setActive,
       setRoles,
       ...useClipboard()

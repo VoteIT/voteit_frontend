@@ -37,7 +37,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const router = useRouter()
-    const { erOptions } = useElectoralRegisters()
+    const { erMethods } = useElectoralRegisters()
 
     const formData = reactive({
       title: '',
@@ -47,6 +47,10 @@ export default defineComponent({
     const submitting = ref(false)
 
     const disabled = computed(() => submitting.value || formData.title.length <= 5 || !formData.er_policy_name)
+
+    const erOptions = computed(() => {
+      return Object.fromEntries(erMethods.map(({ name }) => [name, t(`erMethods.${name}.title`)]))
+    })
 
     async function addMeeting () {
       if (submitting.value) return
