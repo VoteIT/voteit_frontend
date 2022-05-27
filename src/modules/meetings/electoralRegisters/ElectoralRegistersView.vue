@@ -9,7 +9,8 @@
         <h1 class="flex-grow-1">
           {{ t('electoralRegister.plural') }}
         </h1>
-        <div>
+        <!-- WIP TODO FIXME -->
+        <div class="d-none">
           <v-dialog @update:modelValue="$event && fetchRoles()">
             <template #activator="{ props }">
               <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-plus">
