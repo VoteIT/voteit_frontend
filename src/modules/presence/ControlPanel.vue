@@ -34,6 +34,7 @@ import { useI18n } from 'vue-i18n'
 import Moment from '@/components/Moment.vue'
 
 import usePresence from './usePresence'
+import useMeeting from '../meetings/useMeeting'
 
 export default defineComponent({
   components: {
@@ -44,7 +45,8 @@ export default defineComponent({
   icon: 'mdi-hand-wave',
   setup () {
     const { t } = useI18n()
-    const { canManagePresence, closedPresenceChecks, openCheck, presenceCheck, presenceCount } = usePresence()
+    const { meetingId } = useMeeting()
+    const { canManagePresence, closedPresenceChecks, openCheck, presenceCheck, presenceCount } = usePresence(meetingId)
     const submitting = ref(false)
 
     async function startCheck () {

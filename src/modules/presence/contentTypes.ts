@@ -5,6 +5,7 @@ import { presenceCheckStates } from './workflowStates'
 export const presenceType = new ContentType<Presence>({
   name: 'presence',
   channels: ['presence'],
+  dateFields: ['created'],
   useSocketApi: true
 })
 

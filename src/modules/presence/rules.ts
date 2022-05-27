@@ -7,7 +7,7 @@ function isOpenPresenceCheck (check: PresenceCheck): boolean {
   return check.state === PresenceCheckState.Open
 }
 
-export function canAddPresenceCheck (meeting: Meeting): boolean {
+export function canAddPresenceCheck (meeting: Meeting | number): boolean {
   return !!isModerator(meeting) && isActiveMeeting(meeting)
 }
 

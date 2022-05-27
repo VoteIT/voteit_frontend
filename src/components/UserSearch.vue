@@ -1,11 +1,15 @@
 <template>
-  <form class="user-search" :class="{ instant }" @submit.prevent="submit()">
-    <v-text-field :hint="hint" type="search" ref="inputField" v-bind="fieldBind" autocomplete="off" v-model="query" hide-details class="hide-details" />
-    <v-btn v-if="!instant" type="submit" v-bind="btnBind" variant="contained" color="primary">
-      {{ buttonText || t('add') }}
-    </v-btn>
-    <v-sheet rounded elevation="4" class="selector" v-show="results.length">
-      <v-list>
+  <div>
+    <v-overlay :modelValue="!!results.length" position-strategy="connected" anchor="bottom" :scrim="false" :transition="false">
+      <template #activator="{ props }">
+        <form v-bind="props" class="user-search" :class="{ instant }" @submit.prevent="submit()">
+          <v-text-field v-bind="fieldBind" :hint="hint" type="search" ref="inputField" autocomplete="off" v-model="query" hide-details class="hide-details" />
+          <v-btn v-if="!instant" type="submit" v-bind="btnBind" variant="contained" color="primary">
+            {{ buttonText || t('add') }}
+          </v-btn>
+        </form>
+      </template>
+      <v-list elevation="4" rounded>
         <v-list-item v-for="result in results" :key="result.pk" @click="select(result)" @keydown.enter="select(result)">
           <div v-if="result.full_name">
             <v-list-item-title >{{ result.full_name }}</v-list-item-title>
@@ -14,8 +18,8 @@
           <v-list-item-title v-else>-- unknown --</v-list-item-title>
         </v-list-item>
       </v-list>
-    </v-sheet>
-  </form>
+    </v-overlay>
+  </div>
 </template>
 
 <script lang="ts">
@@ -123,19 +127,9 @@ export default defineComponent({
 <style lang="sass">
 .user-search
   display: flex
-  position: relative
   max-width: 480px
   &:not(.instant) .v-field__control
     border-top-right-radius: 0
-  // .v-input
-  //   margin: 0
-  .selector
-    position: absolute
-    top: 56px
-    left: 2px
-    background-color: rgb(var(--v-theme-surface))
-    min-width: 210px
-    z-index: 100
   .v-btn
     height: auto !important
     border-top-left-radius: 0

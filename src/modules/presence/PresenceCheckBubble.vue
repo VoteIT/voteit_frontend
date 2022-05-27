@@ -32,6 +32,8 @@ import { useI18n } from 'vue-i18n'
 
 import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
+import useAlert from '@/composables/useAlert'
+import useMeeting from '../meetings/useMeeting'
 
 export default defineComponent({
   id: 'presence-check',
@@ -43,21 +45,22 @@ export default defineComponent({
   emits: ['close', 'update:modelValue', 'update:open', 'update:attention'],
   setup (props, { emit }) {
     const { t } = useI18n()
-    const { presenceCheck, userPresence, isPresent, markPresence, undoPresence } = usePresence()
+    const { alert } = useAlert()
+    const { meetingId } = useMeeting()
+    const { presenceCheck, userPresence, isPresent, changePresence } = usePresence(meetingId)
     const working = ref(false)
 
     const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
     async function togglePresence () {
       if (!presenceCheck.value) return
       working.value = true
+      // Save in case isPresent is not updated after await
+      const wasPresent = isPresent.value
       try {
-        if (userPresence.value) await undoPresence(userPresence.value)
-        else {
-          await markPresence(presenceCheck.value)
-          emit('update:open', false)
-        }
+        await changePresence(presenceCheck.value.pk, !isPresent.value)
+        if (!wasPresent) emit('update:open', false)
       } catch {
-        // TODO
+        alert(`*Could not set presence to ${isPresent.value}`)
       }
       working.value = false
     }

@@ -29,12 +29,14 @@ import Moment from '@/components/Moment.vue'
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckClosed } from './events'
 import useChannel from '@/composables/useChannel'
+import useMeeting from '../meetings/useMeeting'
 
 export default defineComponent({
   components: { Moment },
   setup () {
     const { t } = useI18n()
-    const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence()
+    const { meetingId } = useMeeting()
+    const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence(meetingId)
     const submitting = ref(false)
 
     async function close () {

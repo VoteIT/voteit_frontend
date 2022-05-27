@@ -54,6 +54,7 @@ export interface Presence {
   pk: number
   user: number
   presence_check: number
+  created: string | Date
 }
 
 export interface ElectoralRegister {

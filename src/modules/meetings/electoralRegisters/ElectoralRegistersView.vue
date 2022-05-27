@@ -101,7 +101,7 @@ export default defineComponent({
     const { meetingId } = useMeeting()
     const { fetchRegisters, sortedRegisters, currentElectoralRegister } = useElectoralRegisters()
     const loader = useLoader('ElectoralRegisters')
-    const { canManagePresence } = usePresence()
+    const { canManagePresence } = usePresence(meetingId)
     const { filterPolls } = usePolls()
 
     async function getData () {

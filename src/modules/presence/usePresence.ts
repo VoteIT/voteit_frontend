@@ -8,45 +8,35 @@ import useBubbles from '../meetings/useBubbles'
 import { PresenceCheckState } from './workflowStates'
 import { presenceCheckType, presenceType } from './contentTypes'
 import PresenceCheckBubble from './PresenceCheckBubble.vue'
-import useMeeting from '../meetings/useMeeting'
 import { canAddPresenceCheck } from './rules'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
-const presenceCount = reactive<Map<number, number>>(new Map())
+// const presenceCount = reactive<Map<number, number>>(new Map())
 
-interface PresenceCheckStatusMessage {
-  pk: number
-  present: number
-}
+// interface PresenceCheckStatusMessage {
+//   pk: number
+//   present: number
+// }
 
-presenceCheckType
-  .updateMap(presenceChecks)
-  .on<PresenceCheckStatusMessage>('status', ({ pk, present }) => {
-    presenceCount.set(pk, present)
-  })
+presenceCheckType.updateMap(presenceChecks)
+  // .on<PresenceCheckStatusMessage>('status', ({ pk, present }) => {
+  //   presenceCount.set(pk, present)
+  // })
 
 presenceType.updateMap(presence)
 
 useBubbles().register(PresenceCheckBubble)
 
-export default function usePresence () {
-  const { meeting, meetingId } = useMeeting()
-  const { user } = useAuthentication()
+const { user } = useAuthentication()
 
+export default function usePresence (meetingId: Ref<number>) {
   const closedPresenceChecks = computed(() => {
     return [...mapFilter(
       presenceChecks,
       pc => pc.meeting === meetingId.value && pc.state === PresenceCheckState.Closed
     )]
   })
-
-  function getAllPresent (check: PresenceCheck): Presence[] {
-    return [...mapFilter(
-      presence,
-      p => p.presence_check === check.pk
-    )]
-  }
 
   function getUserPresence (check: number, userPk?: number): Presence | undefined {
     userPk = userPk || user.value?.pk
@@ -67,15 +57,15 @@ export default function usePresence () {
     })
   }
 
-  function markPresence (check: PresenceCheck) {
-    return presenceType.add({ presence_check: check.pk })
+  // eslint-disable-next-line camelcase
+  function changePresence (presence_check: number, present: boolean) {
+    return presenceType.methodCall('change', {
+      presence_check,
+      present
+    })
   }
 
-  function undoPresence (presence: Presence) {
-    return presenceType.delete(presence.pk)
-  }
-
-  const canManagePresence = computed(() => meeting.value && canAddPresenceCheck(meeting.value))
+  const canManagePresence = computed(() => canAddPresenceCheck(meetingId.value))
   // eslint-disable-next-line vue/return-in-computed-property
   const presenceCheck = computed(() => {
     for (const pc of presenceChecks.values()) {
@@ -93,14 +83,11 @@ export default function usePresence () {
     closedPresenceChecks,
     isPresent,
     presenceCheck,
-    presenceCount: computed(() => presenceCheck.value && (presenceCount.get(presenceCheck.value.pk) ?? 0)),
+    presenceCount: computed(() => presentUserIds.value.length),
     presentUserIds,
     userPresence,
+    changePresence,
     closeCheck,
-    getAllPresent,
-    getUserPresence,
-    markPresence,
-    openCheck,
-    undoPresence
+    openCheck
   }
 }

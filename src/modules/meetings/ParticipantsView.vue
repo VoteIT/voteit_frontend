@@ -18,13 +18,13 @@
           <PresenceCheckControl class="text-center" />
           <template v-if="presenceCheck">
             <v-divider class="my-4" />
-            <h2>
+            <h2 class="mb-4">
               {{ t('presence.presentCount', presentUserIds.length) }}
             </h2>
-            <UserSearch class="mb-6" @submit="addPresence" instant />
-            <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-4">
+            <UserSearch class="mb-6" @submit="changePresence($event.pk, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
+            <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-2" bgColor="background" density="default">
               <template #appendItem="{ user }">
-                <v-btn size="small" variant="text" icon="mdi-close" @click="removePresence(user)" />
+                <v-btn size="small" variant="text" icon="mdi-close" @click="changePresence(user, false)" />
               </template>
             </UserList>
           </template>
@@ -71,6 +71,7 @@ import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import useElectoralRegisters from './useElectoralRegisters'
 import usePresence from '../presence/usePresence'
 import { presenceType } from '../presence/contentTypes'
+import useAlert from '@/composables/useAlert'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -90,7 +91,8 @@ export default defineComponent({
     const { currentElectoralRegister } = useElectoralRegisters()
     const { meetingGroups } = useMeetingGroups(meetingId)
     const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
-    const { canManagePresence, closedPresenceChecks, presenceCheck, presentUserIds } = usePresence()
+    const { canManagePresence, closedPresenceChecks, presenceCheck, presentUserIds } = usePresence(meetingId)
+    const { alert } = useAlert()
 
     useMeetingTitle(t('meeting.participants'))
 
@@ -168,28 +170,21 @@ export default defineComponent({
       return tabs
     })
 
-    function addPresence (user: User) {
-      console.log('add presence for user', user)
+    function changePresence (user: number, present: boolean) {
+      if (!presenceCheck.value) return
       try {
-        presenceType.methodCall('add_user', {
-          presence_check: presenceCheck.value?.pk,
-          userid: user.pk
+        presenceType.methodCall('change', {
+          presence_check: presenceCheck.value.pk,
+          present,
+          user
         })
       } catch {
-        // TODO
+        alert(`Cound not ${present ? 'add' : 'remove'} presence`)
       }
     }
 
-    function removePresence (userid: number) {
-      console.log('remove presence for user', userid)
-      try {
-        presenceType.methodCall('delete_user', {
-          pk: presenceCheck.value?.pk,
-          userid
-        })
-      } catch {
-        // TODO
-      }
+    function presenceFilter ({ pk }: User) {
+      return !presentUserIds.value.includes(pk)
     }
 
     return {
@@ -207,13 +202,13 @@ export default defineComponent({
       meetingIcons,
       meetingId,
       presenceCheck,
+      presenceFilter,
       presentUserIds,
       tabs,
-      addPresence,
       addUser,
+      changePresence,
       getUserIds,
       removeConfirm,
-      removePresence,
       searchFilter
     }
   },

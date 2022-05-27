@@ -73,7 +73,7 @@ export async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | strin
   })
 }
 
-export function * mapFilter<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
+export function * mapFilter<T> (map: Map<unknown, T>, filter: (obj: T) => boolean | undefined) {
   for (const o of map.values()) {
     if (filter(o)) yield o
   }
