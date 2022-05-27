@@ -86,11 +86,10 @@ export default function useSpeakerLists () {
     )]
   }
 
-  function getSystemSpeakerLists (system: SpeakerSystem, agendaItem?: AgendaItem): SpeakerList[] {
-    return [...iterSpeakerLists(list => {
-      if (list.speaker_system !== system.pk) return false
-      return !agendaItem || list.agenda_item === agendaItem.pk
-    })]
+  function getSystemSpeakerLists (systemId: number, agendaItem?: number): SpeakerList[] {
+    return [...iterSpeakerLists(list => list.speaker_system === systemId &&
+      (!agendaItem || list.agenda_item === agendaItem)
+    )]
   }
 
   function getSystemActiveSpeaker (system: SpeakerSystem): SpeakerStartStopMessage | undefined {
@@ -138,7 +137,7 @@ export default function useSpeakerLists () {
   }
 
   // Start by user pk, or first in queue
-  function startSpeaker (list: SpeakerList, user: number) {
+  function startSpeaker (list: SpeakerList, user?: number) {
     user = user || getQueue(list.pk)[0]
     speakerListType.methodCall('start_user', {
       pk: list.pk,

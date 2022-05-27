@@ -37,27 +37,25 @@
         </v-item>
       </v-item-group>
       <v-btn prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
-             @click="addSpeakerList(speakerSystem)" :disabled="canAddSpeakerlist">
+             @click="addSpeakerList(speakerSystem)" :disabled="!canManageSystem">
         {{ t('speaker.addListToSystem', speakerSystem ) }}
       </v-btn>
     </v-col>
     <v-col cols="12" order-sm="0" sm="7" md="7" lg="6" offset-lg="1">
       <template v-if="currentList">
-        <template v-if="canStartSpeaker(currentList)">
-          <div class="btn-group mb-2">
-            <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
-            <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
-            <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
-            <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
-          </div>
-          <div class="d-flex">
-            <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" instant small class="flex-grow-1" />
-            <template v-if="hasParticipantNumbers">
-              <div style="width: 10px;" />
-              <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
-            </template>
-          </div>
-        </template>
+        <div class="btn-group mb-2">
+          <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+          <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
+          <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
+          <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
+        </div>
+        <div class="d-flex" v-if="canManageSystem">
+          <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" instant small class="flex-grow-1" />
+          <template v-if="hasParticipantNumbers">
+            <div style="width: 10px;" />
+            <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
+          </template>
+        </div>
         <p v-else>
           <em>{{ t('speaker.cantManageList') }}</em>
         </p>
@@ -148,13 +146,12 @@ export default defineComponent({
     const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
-    const { canAddSpeakerList, currentActiveList, currentActiveListId, speakerSystem } = useSpeakerSystem(systemId)
+    const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
     const speakerSystems = computed(() => speakers.getSystems(meetingId.value))
-    const speakerLists = computed(() => speakerSystem.value && agendaItem.value && speakers.getSystemSpeakerLists(speakerSystem.value, agendaItem.value))
     const currentList = computed<SpeakerList | undefined>({
       get () {
-        if (currentActiveList.value?.agenda_item !== agendaId.value) return
-        return currentActiveList.value
+        if (systemActiveList.value?.agenda_item !== agendaId.value) return
+        return systemActiveList.value
       },
       async set (list?: SpeakerList) {
         if (!list) return
@@ -162,7 +159,7 @@ export default defineComponent({
         else if (await dialogQuery(t('speaker.confirmStopActiveSpeaker', { ...list }))) speakers.setActiveList(list, true)
       }
     })
-    const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerQueue } = useSpeakerList(currentActiveListId)
+    const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerQueue } = useSpeakerList(systemActiveListId)
     function isSelf (userId: number) {
       return user.value?.pk === userId
     }
@@ -257,7 +254,7 @@ export default defineComponent({
       t,
       agendaItem,
       annotatedSpeakerQueue,
-      canAddSpeakerList,
+      canManageSystem,
       currentList,
       currentSpeaker,
       speakerGroups,

@@ -68,19 +68,19 @@ function isCurrentlySpeaking (list: SpeakerList): boolean {
   return currentlySpeaking.get(list.pk) === user.value?.pk
 }
 
-export function canAddSpeakerList (system: SpeakerSystem): boolean {
-  return !!isSystemModerator(system) && !isArchivedSystem(system)
-}
-
 export function canChangeSpeakerList (list: SpeakerList): boolean {
   const system = getSystem(list)
-  return !!system && canAddSpeakerList(system)
+  return !!system && canManageSystem(system)
 }
 export const canDeleteSpeakerList = canChangeSpeakerList
 
 export function canActivateList (list: SpeakerList): boolean {
   const system = speakerSystems.get(list.speaker_system)
-  return !!system && canAddSpeakerList(system) && system.active_list !== list.pk && !hasActiveSpeaker(system)
+  return !!system && canManageSystem(system) && system.active_list !== list.pk && !hasActiveSpeaker(system)
+}
+
+export function canManageSystem (system: SpeakerSystem): boolean {
+  return !!isSystemModerator(system) && !isArchivedSystem(system)
 }
 
 export function canStartSpeaker (list: SpeakerList): boolean {

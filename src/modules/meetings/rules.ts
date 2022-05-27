@@ -44,7 +44,7 @@ export function isModerator (meeting: MeetingT): boolean | undefined {
 
 export function isActiveMeeting (meeting: MeetingT): boolean {
   if (typeof meeting === 'number') meeting = meetings.get(meeting)
-  return !!meeting && ACTIVE_STATES.includes(meeting.state as MeetingState)
+  return !!meeting && ACTIVE_STATES.includes(meeting.state)
 }
 
 export function isArchivedMeeting (meeting: MeetingT): boolean {
@@ -54,7 +54,7 @@ export function isArchivedMeeting (meeting: MeetingT): boolean {
 
 export function isFinishedMeeting (meeting: MeetingT): boolean {
   if (typeof meeting === 'number') meeting = meetings.get(meeting)
-  return !!meeting && FINISHED_STATES.includes(meeting.state as MeetingState)
+  return !!meeting && FINISHED_STATES.includes(meeting.state)
 }
 
 export function canViewMeeting (meeting?: Meeting): boolean | undefined {

@@ -70,19 +70,19 @@ export default defineComponent({
     useMeetingChannel()
     const { getUser } = useUserDetails()
 
-    const { currentActiveList, currentActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
-    const { speakerGroups } = useSpeakerList(currentActiveListId)
+    const { systemActiveList, systemActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
+    const { speakerGroups } = useSpeakerList(systemActiveListId)
 
     useMeetingTitle(computed(() => t('speaker.fullscreenSystem', { ...speakerSystem.value })))
 
-    const listState = computed(() => currentActiveList.value && getState(currentActiveList.value.state))
+    const listState = computed(() => systemActiveList.value && getState(systemActiveList.value.state))
 
     function getUserId (pk: number): string | undefined {
       return getUser(pk)?.userid || undefined
     }
 
     const groups = computed<SpeakerGroup[]>(() => {
-      if (!currentActiveList.value || !speakerSystem.value || !currentSpeakerQueue.value || !speakerGroups.value) return []
+      if (!systemActiveList.value || !speakerSystem.value || !currentSpeakerQueue.value || !speakerGroups.value) return []
       if (currentlySpeaking.value) {
         return [
           {
@@ -97,7 +97,7 @@ export default defineComponent({
 
     return {
       t,
-      list: currentActiveList,
+      list: systemActiveList,
       listState,
       groups,
       system: speakerSystem,
