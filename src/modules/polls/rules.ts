@@ -4,7 +4,7 @@ import { agendaItems } from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
 import { isAIModerator, isArchivedAI, isFinishedAI } from '../agendas/rules'
 import { meetings } from '../meetings/useMeetings'
-import useElectoralRegisters from '../meetings/useElectoralRegisters'
+import useElectoralRegisters from '../meetings/electoralRegisters/useElectoralRegisters'
 import { isArchivedMeeting, isFinishedMeeting, isModerator } from '../meetings/rules'
 import { Meeting } from '../meetings/types'
 

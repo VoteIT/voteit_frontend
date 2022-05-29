@@ -56,11 +56,14 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import { RoleMatrixCol } from '@/components/types'
 import { ContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
+import useAlert from '@/composables/useAlert'
 
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
 import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
+import usePresence from '../presence/usePresence'
+import { presenceType } from '../presence/contentTypes'
 
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
@@ -68,10 +71,7 @@ import useMeetingTitle from './useMeetingTitle'
 import useMeetingGroups from './useMeetingGroups'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
-import useElectoralRegisters from './useElectoralRegisters'
-import usePresence from '../presence/usePresence'
-import { presenceType } from '../presence/contentTypes'
-import useAlert from '@/composables/useAlert'
+import useElectoralRegister from './electoralRegisters/useElectoralRegister'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -88,7 +88,7 @@ export default defineComponent({
     const { user } = useAuthentication()
     const { meetingId, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
-    const { currentElectoralRegister } = useElectoralRegisters()
+    const { currentElectoralRegister } = useElectoralRegister(meetingId)
     const { meetingGroups } = useMeetingGroups(meetingId)
     const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
     const { canManagePresence, closedPresenceChecks, presenceCheck, presentUserIds } = usePresence(meetingId)
@@ -202,12 +202,12 @@ export default defineComponent({
       meetingIcons,
       meetingId,
       presenceCheck,
-      presenceFilter,
       presentUserIds,
       tabs,
       addUser,
       changePresence,
       getUserIds,
+      presenceFilter,
       removeConfirm,
       searchFilter
     }

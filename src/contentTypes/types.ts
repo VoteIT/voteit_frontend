@@ -57,15 +57,6 @@ export interface Presence {
   created: string | Date
 }
 
-export interface ElectoralRegister {
-  pk: number
-  created: Date
-  weights: {
-    user: number
-    weight: number
-  }[]
-}
-
 export interface Vote {
   pk: Number
   abstain: boolean

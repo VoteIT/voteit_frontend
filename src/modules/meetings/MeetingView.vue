@@ -11,7 +11,7 @@ import Bubbles from '@/modules/meetings/Bubbles.vue'
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 
 import { LastReadKey } from '@/composables/useUnread'
-import useElectoralRegisters from './useElectoralRegisters'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import usePermission from '@/composables/usePermission'
 import useMeeting from './useMeeting'
 

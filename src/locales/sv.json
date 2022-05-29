@@ -134,6 +134,7 @@
     "selectMethod": "Det saknas en metod för att fastställa röstlängder i det här mötet.\nRöstlängden används för att avgöra vem som får rösta i en omröstning. Därför måste du välja en metod för röstlängd innan du kan starta omröstningar.",
     "settings": "Inställning för röstlängder",
     "voterCount": "Inga röstberättigade | 1 röstberättigad | {count} röstberättigade",
+    "weight": "Vikt",
     "inCurrent": "I nuvarande röstlängd"
   },
   "erMethods": {

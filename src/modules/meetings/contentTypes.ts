@@ -1,6 +1,7 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
-import { ElectoralRegister, MeetingAccessPolicy } from '@/contentTypes/types'
+import { MeetingAccessPolicy } from '@/contentTypes/types'
+import { ElectoralRegister } from './electoralRegisters/types'
 import { Meeting, MeetingGroup, MeetingInvite, MeetingRole } from './types'
 import { meetingInviteStates, meetingStates } from './workflowStates'
 

@@ -6,7 +6,7 @@ import usePolls from './usePolls'
 import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
 import useProposals from '../proposals/useProposals'
 import { Proposal } from '../proposals/types'
-import useElectoralRegisters from '../meetings/useElectoralRegisters'
+import useElectoralRegisters from '../meetings/electoralRegisters/useElectoralRegisters'
 import { useI18n } from 'vue-i18n'
 
 const polls = usePolls()

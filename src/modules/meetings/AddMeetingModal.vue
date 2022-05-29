@@ -27,7 +27,7 @@ import { slugify } from '@/utils'
 
 import SelectVue from '@/components/inputs/Select.vue'
 import { meetingType } from './contentTypes'
-import useElectoralRegisters from './useElectoralRegisters'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 export default defineComponent({
   components: {

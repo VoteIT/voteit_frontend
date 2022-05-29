@@ -135,6 +135,7 @@
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
     "settings": "Settings for Electoral Registers",
     "voterCount": "No voters | 1 voter | {count} voters",
+    "weight": "Weight",
     "inCurrent": "In current electoral register"
   },
   "erMethods": {

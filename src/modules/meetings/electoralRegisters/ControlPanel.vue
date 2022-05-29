@@ -26,7 +26,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import SelectVue from '@/components/inputs/Select.vue'
 import { meetingType } from '../contentTypes'
 import { Meeting } from '../types'
-import useElectoralRegisters from '../useElectoralRegisters'
+import useElectoralRegisters from './useElectoralRegisters'
 import useAlert from '@/composables/useAlert'
 
 export default defineComponent({

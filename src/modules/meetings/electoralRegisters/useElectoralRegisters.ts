@@ -1,11 +1,9 @@
-import { computed, reactive, ref } from 'vue'
-import { orderBy } from 'lodash'
+import { reactive } from 'vue'
 
-import { ElectoralRegister } from '@/contentTypes/types'
-
-import { electoralRegisterType } from './contentTypes'
+import { electoralRegisterType } from '../contentTypes'
 import { dateify } from '@/utils'
-import { useI18n } from 'vue-i18n'
+
+import { ElectoralRegister, ErDefinition } from './types'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
@@ -13,17 +11,22 @@ const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
 electoralRegisterType
   .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
 
-const erMethods = [
+const erMethods: ErDefinition[] = [
   {
+    allowManual: false,
     name: 'auto_before_poll'
   },
   {
+    allowManual: true,
     name: 'presence_check'
   },
   {
+    allowManual: true,
+    hasWeight: true,
     name: 'manual'
   },
   {
+    allowManual: false,
     name: 'auto_always'
   }
 ]
@@ -52,25 +55,20 @@ export default function useElectoralRegisters () {
     registers.clear()
   }
 
-  const sortedRegisters = computed(() => {
-    return orderBy([...registers.values()].filter(er => er), ['created'], ['desc']) as ElectoralRegister[]
-  })
+  function getRegisters (meeting: number) {
+    return [...registers.values()].filter(er => er?.meeting === meeting) as ElectoralRegister[]
+  }
 
   function getRegister (pk: number) {
     if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
     return registers.get(pk) as ElectoralRegister | null
   }
 
-  const currentElectoralRegister = computed<ElectoralRegister | undefined>(() => {
-    return sortedRegisters.value[0]
-  })
-
   return {
-    currentElectoralRegister,
     erMethods,
-    sortedRegisters,
     clearRegisters,
     getRegister,
+    getRegisters,
     fetchRegisters
   }
 }
