@@ -1,9 +1,11 @@
-import { reactive } from 'vue'
+import { orderBy } from 'lodash'
+import { computed, reactive, Ref } from 'vue'
 
-import { electoralRegisterType } from '../contentTypes'
 import { dateify } from '@/utils'
+import { electoralRegisterType } from '../contentTypes'
+import { meetings } from '../useMeetings'
 
-import { ElectoralRegister, ErDefinition } from './types'
+import type { ElectoralRegister, ErDefinition } from './types'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
@@ -13,7 +15,6 @@ electoralRegisterType
 
 const erMethods: ErDefinition[] = [
   {
-    allowManual: false,
     name: 'auto_before_poll'
   },
   {
@@ -22,16 +23,21 @@ const erMethods: ErDefinition[] = [
   },
   {
     allowManual: true,
-    hasWeight: true,
     name: 'manual'
   },
   {
-    allowManual: false,
     name: 'auto_always'
   }
 ]
 
-export default function useElectoralRegisters () {
+export default function useElectoralRegisters (meetingId?: Ref<number>) {
+  const erMethod = computed<ErDefinition | undefined>(() => {
+    if (!meetingId) return
+    const m = meetings.get(meetingId.value)
+    if (!m) return
+    return erMethods.find(erm => erm.name === m.er_policy_name)
+  })
+
   async function fetchRegister (pk: number) {
     registers.set(pk, null) // If it has any value, will not fetch again
     try {
@@ -42,9 +48,10 @@ export default function useElectoralRegisters () {
     }
   }
 
-  async function fetchRegisters (meeting: number) {
+  async function fetchRegisters () {
+    if (!meetingId) throw new Error('Call using useElectoralRegisters(Ref<meetingId>) to fetch meeting registers')
     try {
-      const { data } = await electoralRegisterType.api.list({ meeting })
+      const { data } = await electoralRegisterType.api.list({ meeting: meetingId.value })
       for (const er of data) {
         registers.set(er.pk, dateify(er))
       }
@@ -55,20 +62,34 @@ export default function useElectoralRegisters () {
     registers.clear()
   }
 
-  function getRegisters (meeting: number) {
-    return [...registers.values()].filter(er => er?.meeting === meeting) as ElectoralRegister[]
-  }
+  const sortedRegisters = computed(() => {
+    if (!meetingId) return []
+    return orderBy(
+      [...registers.values()].filter(er => er?.meeting === meetingId.value),
+      ['created'], ['desc']
+    ) as ElectoralRegister[]
+  })
+  const currentElectoralRegister = computed(() => {
+    return sortedRegisters.value[0] as ElectoralRegister | undefined
+  })
 
   function getRegister (pk: number) {
     if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
     return registers.get(pk) as ElectoralRegister | null
   }
 
+  function hasWeightedVotes ({ weights }: ElectoralRegister) {
+    return weights.some(({ weight }) => weight !== 1)
+  }
+
   return {
+    currentElectoralRegister,
+    erMethod,
     erMethods,
+    sortedRegisters,
     clearRegisters,
+    hasWeightedVotes,
     getRegister,
-    getRegisters,
     fetchRegisters
   }
 }

@@ -1,45 +1,31 @@
-import { orderBy } from 'lodash'
 import { computed, Ref } from 'vue'
-import { meetings } from '../useMeetings'
 
-import { ElectoralRegister, ErDefinition } from './types'
 import useElectoralRegisters from './useElectoralRegisters'
 
-export default function useElectoralRegister (meeting: Ref<number>) {
-  const { getRegisters, erMethods } = useElectoralRegisters()
+export default function useElectoralRegister (pk: Ref<number | undefined>) {
+  const { getRegister, erMethods } = useElectoralRegisters()
 
-  const sortedRegisters = computed(() => {
-    return orderBy(getRegisters(meeting.value), ['created'], ['desc']) as ElectoralRegister[]
-  })
-  const currentElectoralRegister = computed<ElectoralRegister | undefined>(() => {
-    return sortedRegisters.value[0]
+  const electoralRegister = computed(() => {
+    if (!pk.value) return
+    return getRegister(pk.value)
   })
 
-  const erMethod = computed<ErDefinition | undefined>(() => {
-    const m = meetings.get(meeting.value)
-    if (!m) return
-    return erMethods.find(erm => erm.name === m.er_policy_name)
+  const erMethod = computed(() => erMethods.find(erm => erm.name === electoralRegister.value?.source))
+  const erWeightDecimals = computed(() => 0)
+  const erWeightMultiplier = computed(() => {
+    return erWeightDecimals.value === 0
+      ? 1
+      : 10 ** erWeightDecimals.value
   })
 
-  const erWeightDecimals = computed(() => {
-    return 0
-  })
-
-  function toInteger (weight: number) {
-    if (erWeightDecimals.value === 0) return weight
-    return Math.round(weight * (10 ** erWeightDecimals.value))
-  }
-
-  function toFractions (weight: number) {
-    if (erWeightDecimals.value === 0) return weight
-    return weight / (10 ** erWeightDecimals.value)
-  }
+  const toInteger = (weight: number) => Math.round(weight * erWeightMultiplier.value)
+  const toFractions = (weight: number) => weight / erWeightMultiplier.value
 
   return {
+    electoralRegister,
     erMethod,
     erWeightDecimals,
-    sortedRegisters,
-    currentElectoralRegister,
+    erWeightMultiplier,
     toInteger,
     toFractions
   }

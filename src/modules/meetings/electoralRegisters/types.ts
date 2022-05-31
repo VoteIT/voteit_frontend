@@ -11,6 +11,5 @@ export interface ElectoralRegister {
 
 export interface ErDefinition {
   allowManual?: boolean
-  hasWeight?: boolean
   name: string
 }

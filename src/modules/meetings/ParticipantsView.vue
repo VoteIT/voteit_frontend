@@ -71,7 +71,7 @@ import useMeetingTitle from './useMeetingTitle'
 import useMeetingGroups from './useMeetingGroups'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
-import useElectoralRegister from './electoralRegisters/useElectoralRegister'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -88,7 +88,7 @@ export default defineComponent({
     const { user } = useAuthentication()
     const { meetingId, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
     const { getUserIds } = meetingType.useContextRoles()
-    const { currentElectoralRegister } = useElectoralRegister(meetingId)
+    const { currentElectoralRegister } = useElectoralRegisters(meetingId)
     const { meetingGroups } = useMeetingGroups(meetingId)
     const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
     const { canManagePresence, closedPresenceChecks, presenceCheck, presentUserIds } = usePresence(meetingId)

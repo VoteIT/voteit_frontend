@@ -39,7 +39,7 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { meeting, meetingId } = useMeeting()
-    const { erMethods } = useElectoralRegisters()
+    const { erMethods } = useElectoralRegisters(meetingId)
     const settings = reactive<Pick<Meeting, 'er_policy_name'>>({ er_policy_name: meeting.value?.er_policy_name })
     const { alert } = useAlert()
 

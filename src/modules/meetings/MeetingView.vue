@@ -18,7 +18,8 @@ import useMeeting from './useMeeting'
 export default defineComponent({
   name: 'Meeting',
   setup () {
-    const { clearRegisters } = useElectoralRegisters()
+    const { meetingId } = useMeeting()
+    const { clearRegisters } = useElectoralRegisters(meetingId)
     const { canViewMeeting } = useMeeting()
     useMeetingChannel()
     usePermission(canViewMeeting)

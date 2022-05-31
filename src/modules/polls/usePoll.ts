@@ -1,26 +1,23 @@
 import { computed, Ref } from 'vue'
-import { pollMethods, pollResults } from './methods'
-
-import { PollState } from './types'
-import usePolls from './usePolls'
-import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
-import useProposals from '../proposals/useProposals'
-import { Proposal } from '../proposals/types'
-import useElectoralRegisters from '../meetings/electoralRegisters/useElectoralRegisters'
 import { useI18n } from 'vue-i18n'
 
+import useProposals from '../proposals/useProposals'
+import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
+import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
+import { pollMethods, pollResults } from './methods'
+import usePolls from './usePolls'
+import { PollState } from './types'
+
+import type { Proposal } from '../proposals/types'
+
 const polls = usePolls()
-const { getRegister } = useElectoralRegisters()
 const { getProposal } = useProposals()
 
 export default function usePoll (pollRef: Ref<number>) {
   const { t } = useI18n()
 
   const poll = computed(() => polls.getPoll(pollRef.value))
-  const electoralRegister = computed(() => {
-    if (typeof poll.value?.electoral_register !== 'number') return null
-    return getRegister(poll.value.electoral_register)
-  })
+  const { electoralRegister } = useElectoralRegister(computed(() => poll.value?.electoral_register))
   const voteCount = computed(() => {
     if (!poll.value) return {}
     const abstains = poll.value.abstain_count ?? 0

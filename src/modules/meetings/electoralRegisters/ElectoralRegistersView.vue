@@ -14,20 +14,25 @@
           <v-dialog @update:modelValue="$event && fetchRoles()">
             <template #activator="{ props }">
               <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-plus">
-                Skapa röstlängd
+                {{ t('electoralRegister.create') }}
               </v-btn>
             </template>
             <template v-slot="{ isActive }">
               <v-sheet v-bind="dialogDefaults" class="pa-4">
-                <h2>Ny röstlängd</h2>
-                <v-alert type="info" class="my-2">
-                  Välj vilka av mötets potentiella röstare som ska ingå i röstlängden.
-                </v-alert>
-                <!-- <v-text-field v-if="erMethod?.hasWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
+                <h2 class="mb-2">
+                  {{ t('electoralRegister.create') }}
+                </h2>
+                <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
+                <div class="d-flex align-center">
+                  <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
+                  <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
+                  <v-spacer />
+                  <v-switch v-model="setVoteWeight" color="primary" label="Använd viktade röster" hide-details class="flex-grow-0" />
+                </div>
                 <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
                   <template #appendItem="{ user, isSelected }">
                     <div v-if="isSelected" @click.stop>
-                      <v-text-field v-if="erMethod?.hasWeight" required :min="minWeight" :step="minWeight" :label="t('electoralRegister.weight')" type="number" :model-value="createSelection.get(user)" @update:modelValue="createSelection.set(user, round($event))" hide-details />
+                      <v-text-field v-if="setVoteWeight" density="compact" required :min="minWeight" :step="minWeight" :label="t('electoralRegister.weight')" type="number" :model-value="createSelection.get(user)" @update:modelValue="createSelection.set(user, round($event))" hide-details />
                       <v-icon v-else>mdi-check-circle</v-icon>
                     </div>
                   </template>
@@ -62,6 +67,9 @@
                 {{ t('electoralRegister.voterCount', weights.length) }}
               </span>
               <small class="text-secondary flex-grow-1">
+                <span v-if="source">
+                  {{ t(`erMethods.${source}.title`) }},
+                </span>
                 {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
                 {{ created.toLocaleString(undefined, { timeStyle: 'short' }) }}
               </small>
@@ -97,7 +105,6 @@ import useDefaults from '@/composables/useDefaults'
 import { MeetingRole } from '../types'
 import { electoralRegisterType, meetingType } from '../contentTypes'
 import { ElectoralRegister } from './types'
-import useElectoralRegister from './useElectoralRegister'
 import useElectoralRegisters from './useElectoralRegisters'
 
 export default defineComponent({
@@ -109,15 +116,10 @@ export default defineComponent({
     const { t } = useI18n()
     const { getRoleUserIds } = meetingType.useContextRoles()
     const { meetingId } = useMeeting()
-    const { fetchRegisters } = useElectoralRegisters()
-    const { sortedRegisters, currentElectoralRegister, erMethod, erWeightDecimals } = useElectoralRegister(meetingId)
+    const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, hasWeightedVotes } = useElectoralRegisters(meetingId)
     const loader = useLoader('ElectoralRegisters')
     const { canManagePresence } = usePresence(meetingId)
     const { filterPolls } = usePolls()
-
-    async function getData () {
-      await fetchRegisters(meetingId.value)
-    }
 
     const registerGroups = computed(() => {
       const ongoing: ElectoralRegister[] = []
@@ -150,7 +152,8 @@ export default defineComponent({
       ]
     })
 
-    const decimalPlaces = ref(erWeightDecimals.value)
+    const decimalPlaces = ref(0) // Maybe TODO
+    const setVoteWeight = ref(!currentElectoralRegister.value || hasWeightedVotes(currentElectoralRegister.value))
     const potentialVoters = computed(() => getRoleUserIds(meetingId.value, MeetingRole.PotentialVoter))
     const createSelection = reactive(new Map(currentElectoralRegister.value?.weights.map(w => [w.user, w.weight]) ?? []))
     const selectedUsers = computed({
@@ -186,12 +189,14 @@ export default defineComponent({
       for (const w of register.weights) {
         createSelection.set(w.user, toFractions(w.weight))
       }
+      setVoteWeight.value = hasWeightedVotes(register)
     })
-
-    // function selectUser (user: number, value?: boolean) {
-    //   if (value === undefined) value = !createSelection.has(user)
-    //   createSelection[value ? 'add' : 'delete'](user)
-    // }
+    watch(setVoteWeight, value => {
+      if (value) return
+      for (const user of createSelection.keys()) {
+        createSelection.set(user, 1)
+      }
+    })
 
     function createRegister (isActive: Ref<boolean>) {
       if (!erMethod.value) return
@@ -210,11 +215,11 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      loader.call(getData)
-      presenceCheckClosed.on(getData)
+      loader.call(fetchRegisters)
+      presenceCheckClosed.on(fetchRegisters)
     })
     onBeforeUnmount(() => {
-      presenceCheckClosed.off(getData)
+      presenceCheckClosed.off(fetchRegisters)
     })
 
     return {
@@ -224,11 +229,11 @@ export default defineComponent({
       currentElectoralRegister,
       decimalPlaces,
       erMethod,
-      erWeightDecimals,
       groups,
       minWeight,
       potentialVoters,
       selectedUsers,
+      setVoteWeight,
       createRegister,
       fetchRegisters,
       fetchRoles: () => meetingType.fetchRoles(meetingId.value),
