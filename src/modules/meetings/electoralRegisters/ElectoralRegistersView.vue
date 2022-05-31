@@ -102,10 +102,12 @@ import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
 import { PollState } from '@/modules/polls/types'
 import useDefaults from '@/composables/useDefaults'
+import useMeetingTitle from '../useMeetingTitle'
 import { MeetingRole } from '../types'
 import { electoralRegisterType, meetingType } from '../contentTypes'
-import { ElectoralRegister } from './types'
 import useElectoralRegisters from './useElectoralRegisters'
+
+import type { ElectoralRegister } from './types'
 
 export default defineComponent({
   inject: ['cols'],
@@ -120,6 +122,8 @@ export default defineComponent({
     const loader = useLoader('ElectoralRegisters')
     const { canManagePresence } = usePresence(meetingId)
     const { filterPolls } = usePolls()
+
+    useMeetingTitle(t('electoralRegister.plural'))
 
     const registerGroups = computed(() => {
       const ongoing: ElectoralRegister[] = []
