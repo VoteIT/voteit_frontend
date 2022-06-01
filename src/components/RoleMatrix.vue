@@ -1,13 +1,13 @@
 <template>
   <div>
-    <v-pagination v-if="false" v-model="currentPage" :length="pageCount" color="primary" />
-    <v-table class="context-roles" v-if="users.length" :class="{ orderReversed, admin }">
+    <!-- <v-pagination v-model="currentPage" :length="pageCount" color="primary" /> -->
+    <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed, admin }">
       <thead>
         <tr>
           <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
             {{ t('name') }}
           </th>
-          <th v-for="col in columns" class="text-center" :key="col.name" @click="col.orderBy && col.orderBy()" :class="{ orderBy: col.name === orderBy }">
+          <th v-for="col in columns" class="text-center" :key="col.name" @click="orderUsers(col.name)" :class="{ orderBy: col.name === orderBy }">
             <v-tooltip :text="col.title" anchor="top">
               <template #activator="{ props }">
                 <v-icon v-bind="props" :icon="col.icon" />
@@ -18,13 +18,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user">
-          <td><User :pk="user.user" userid /></td>
-          <td v-for="{ hasRole, name, readonly } in columns" :key="name" class="text-center">
-            <v-btn v-if="hasRole(user)" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user.user, name)">
+        <tr v-for="[user, ...cols] in userMatrix" :key="user">
+          <td><User :pk="user" userid /></td>
+          <td v-for="({ name, readonly }, i) in columns" :key="name" class="text-center">
+            <v-btn v-if="cols[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
               <v-icon icon="mdi-check" />
             </v-btn>
-            <v-btn v-else variant="text" :disabled="readonly || !admin" color="warning" @click="addRole(user.user, name)">
+            <v-btn v-else variant="text" :disabled="readonly || !admin" color="warning" @click="addRole(user, name)">
               <v-icon icon="mdi-close" />
             </v-btn>
           </td>
@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts">
+import { orderBy as _orderBy } from 'lodash'
 import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -69,7 +70,6 @@ export default defineComponent({
     const { t } = useI18n()
     const { getUser } = useUserDetails()
     const loader = useLoader('RoleMatrix')
-    // const roles = ref<ContextRole[]>([])
     const columns = ref<RoleMatrixColDescription[]>([])
     const contextRoles = props.contentType.useContextRoles()
 
@@ -79,7 +79,6 @@ export default defineComponent({
         hasRole: (user) => user.assigned.has(name),
         icon: props.icons[name],
         name,
-        orderBy: () => orderUsers(name),
         title: t(`role.${name}`)
       }
     }
@@ -116,43 +115,34 @@ export default defineComponent({
     const orderBy = ref<string | null>(null)
     const orderReversed = ref(false)
 
-    function orderMethod (a: UserContextRoles, b: UserContextRoles) { // TODO Types
-      let valA, valB
-      if (orderBy.value) {
-        valA = !a.assigned.has(orderBy.value)
-        valB = !b.assigned.has(orderBy.value)
-      } else {
-        valA = getUser(a.user)
-        valB = getUser(b.user)
-        if (!valA || !valB) return 0
-        valA = valA.full_name
-        valB = valB.full_name
-      }
-      if (valA > valB) {
-        return orderReversed.value ? -1 : 1
-      }
-      if (valA < valB) {
-        return orderReversed.value ? 1 : -1
-      }
-      return 0
-    }
-
     function orderUsers (role: string) {
-      if (orderBy.value === role) {
-        orderReversed.value = !orderReversed.value
-      } else {
-        orderBy.value = role
-      }
+      if (orderBy.value === role) orderReversed.value = !orderReversed.value
+      else orderBy.value = role
     }
 
     function roleCount (role: string) {
       return contextRoles.getRoleCount(props.pk, role)
     }
 
-    const users = computed(() => {
-      const ps = contextRoles.getAll<string>(props.pk)
-      ps.sort(orderMethod)
-      return ps
+    const getRow = (userRoles: UserContextRoles) => [userRoles.user, ...columns.value.map(c => c.hasRole(userRoles))]
+
+    const userMatrix = computed(() => {
+      const userRoles = contextRoles.getAll<string>(props.pk)
+      const matrix = userRoles.map(getRow)
+      const orderByName = orderBy.value === null
+      // Ordering function
+      const ordering = orderByName
+        ? ([user]: [number]) => getUser(user)?.full_name
+        : columns.value.findIndex(c => c.name === orderBy.value) + 1
+      // Ordering direction
+      const order = (orderReversed.value !== orderByName) // XOR
+        ? 'asc'
+        : 'desc'
+      return _orderBy(
+        matrix,
+        ordering,
+        [order]
+      )
     })
 
     function getRoleIcon (role: string): string {
@@ -160,9 +150,9 @@ export default defineComponent({
     }
 
     const currentPage = ref(1)
-    const pageCount = computed(() => Math.ceil(users.value.length / USERS_PER_PAGE))
+    const pageCount = computed(() => Math.ceil(userMatrix.value.length / USERS_PER_PAGE))
     const pageUsers = computed(() => {
-      return users.value.slice(USERS_PER_PAGE * (currentPage.value - 1), USERS_PER_PAGE * currentPage.value)
+      return userMatrix.value.slice(USERS_PER_PAGE * (currentPage.value - 1), USERS_PER_PAGE * currentPage.value)
     })
 
     return {
@@ -173,7 +163,7 @@ export default defineComponent({
       orderReversed,
       pageCount,
       pageUsers,
-      users,
+      userMatrix,
       addRole,
       getRoleIcon,
       orderUsers,

@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col v-bind="cols.default">
+    <v-col>
       <v-tabs v-model="currentTab" :items="tabs" right class="mb-4" />
       <v-window v-model="currentTab">
 
@@ -82,7 +82,6 @@ const meetingIcons: Record<MeetingRole, string> = {
 }
 
 export default defineComponent({
-  inject: ['cols'],
   setup () {
     const { t } = useI18n()
     const { user } = useAuthentication()

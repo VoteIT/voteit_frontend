@@ -142,7 +142,6 @@ export interface RoleMatrixColDescription {
   hasRole: (userRoles: UserContextRoles) => boolean
   icon: string
   name: string
-  orderBy?: () => void
   readonly?: boolean
   title: string
 }
