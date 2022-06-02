@@ -31,7 +31,7 @@
               <Menu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
             </div>
             <v-card-text>
-              {{ t('speaker.speakerCount', speakerQueue.length) }}
+              {{ t('speaker.speakerCount', speakers.getQueue(list.pk).length) }}
             </v-card-text>
           </v-card>
         </v-item>
@@ -214,14 +214,6 @@ export default defineComponent({
     }
 
     function getListMenu (list: SpeakerList): MenuItem[] {
-      // const menu: MenuItem[] = []
-      // if (canActivateList(list)) {
-      //   menu.push({
-      //     title: t('speaker.setActiveList'),
-      //     icon: 'mdi-toggle-switch-off',
-      //     onClick: async () => speakers.setActiveList(list)
-      //   })
-      // }
       if (canDeleteSpeakerList(list)) {
         return [{
           title: t('delete'),
