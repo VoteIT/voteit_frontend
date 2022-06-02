@@ -113,7 +113,7 @@ import { Proposal } from '../proposals/types'
 import useSpeakerLists from '../speakerLists/useSpeakerLists'
 import { proposalType } from '../proposals/contentTypes'
 import { discussionPostType } from '../discussions/contentTypes'
-import { SpeakerListState } from '../speakerLists/types'
+import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 import { DiscussionPost } from '../discussions/types'
 import { TagsKey, tagClickEvent } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
@@ -129,6 +129,7 @@ import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
+import { SpeakerListState } from '../speakerLists/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -182,9 +183,12 @@ export default defineComponent({
       return !tags.size || d.tags.some(t => tags.has(t))
     }
     const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value, discussionFilter))
-    const { getAgendaSpeakerLists, getSystems } = useSpeakerLists()
-    const speakerLists = computed(() => getAgendaSpeakerLists(agendaId.value, list => list.state === SpeakerListState.Open))
-    const speakerSystems = computed(() => getSystems(meetingId.value))
+    const { activeSpeakerSystems, allSpeakerSystems, hasSpeakerSystems } = useSpeakerSystems(meetingId)
+    const { getAgendaSpeakerLists } = useSpeakerLists()
+    const speakerLists = computed(() => getAgendaSpeakerLists(
+      agendaId.value,
+      list => list.state === SpeakerListState.Open
+    ))
 
     const displayMode = useStorage('agendaDisplayMode', 'columns')
 
@@ -242,10 +246,9 @@ export default defineComponent({
           })
         })
       }
-      const speakerSystems = getSystems(meetingId.value, true)
-      if (speakerSystems.length) {
+      if (hasSpeakerSystems.value) {
         items.push('---')
-        for (const system of speakerSystems) {
+        for (const system of allSpeakerSystems.value) {
           items.push({
             title: t('speaker.manageSystem', { ...system }),
             icon: 'mdi-bullhorn',
@@ -331,7 +334,6 @@ export default defineComponent({
       sortedProposals,
       sortedDiscussions,
       speakerLists,
-      speakerSystems,
       toNewPoll,
 
       agendaItemType,
@@ -340,7 +342,10 @@ export default defineComponent({
       addProposal,
       setLastRead,
       submit,
-      ...useDefaults()
+      ...useDefaults(),
+
+      allSpeakerSystems,
+      activeSpeakerSystems
     }
   },
   components: {

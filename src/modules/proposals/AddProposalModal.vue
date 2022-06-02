@@ -115,10 +115,10 @@ export default defineComponent({
 
     function getAuthor (): Partial<Proposal> {
       if (!postAs.value) return {}
-      const [type, pk] = postAs.value.split(':')
+      const [type, pk] = postAs.value.split(':') // Format: 'group:<pk>' or 'user:<pk>'
       return type === 'group'
-        ? { meeting_group: Number(pk) }
-        : { meeting_group: null, author: Number(pk) }
+        ? { meeting_group: Number(pk) } // If meeting_group, don't modify author
+        : { meeting_group: null, author: Number(pk) } // If author, ensure meeting_group is null
     }
 
     function getPatchData (): Partial<Proposal> {

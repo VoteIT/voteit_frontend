@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col>
-      <v-tabs v-model="currentTab" :items="tabs" right class="mb-4" />
+      <v-tabs v-model="currentTab" :items="tabs" end class="mb-4" />
       <v-window v-model="currentTab">
 
         <v-window-item value="default">

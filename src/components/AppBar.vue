@@ -170,8 +170,7 @@ export default defineComponent({
     })
 
     const canSwitchUser = computed(() => {
-      if (!auth.alternateUsers.value.length) return false
-      return route.path === '/'
+      return !!auth.alternateUsers.value.length
     })
 
     return {

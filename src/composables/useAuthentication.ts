@@ -49,7 +49,8 @@ export default function useAuthentication () {
 
   async function switchUser (user: User) {
     await profileType.api.action(user.pk, 'switch')
-    setAuthenticatedUser(user)
+    // setAuthenticatedUser(user)
+    location.reload()
   }
 
   async function logout () {

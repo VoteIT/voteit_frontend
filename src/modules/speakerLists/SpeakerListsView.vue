@@ -6,7 +6,7 @@
           <div class="btn-group navigation">
             <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" variant="text" size="small" />
           </div>
-          <v-tabs v-if="speakerSystem && speakerSystems.length > 1" class="mb-2 flex-grow-1" right>
+          <v-tabs v-if="speakerSystem && speakerSystems.length > 1" class="mb-2 flex-grow-1" end>
             <v-tab v-for="{ pk, title } in speakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
               {{ title }}
             </v-tab>
@@ -147,7 +147,7 @@ export default defineComponent({
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
     const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
-    const speakerSystems = computed(() => speakers.getSystems(meetingId.value))
+    const speakerSystems = computed(() => speakers.getSystems(meetingId.value, true))
     const currentList = computed<SpeakerList | undefined>({
       get () {
         if (systemActiveList.value?.agenda_item !== agendaId.value) return
