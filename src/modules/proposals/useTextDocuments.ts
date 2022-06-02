@@ -18,6 +18,14 @@ function getDocuments (filter: DocFilter) {
   return readonly([...iterDocuments(filter)])
 }
 
+function getParagraph (pk: number) {
+  for (const document of proposalTexts.values()) {
+    for (const paragraph of document.paragraphs) {
+      if (paragraph.pk === pk) return paragraph
+    }
+  }
+}
+
 export default function useTextDocuments (agendaItem?: Ref<number>) {
   const aiProposalTexts = computed(() => {
     if (!agendaItem?.value) return []
@@ -28,6 +36,7 @@ export default function useTextDocuments (agendaItem?: Ref<number>) {
     proposalTexts: readonly(proposalTexts),
     aiProposalTexts,
     api: proposalTextType.api,
-    getDocuments
+    getDocuments,
+    getParagraph
   }
 }

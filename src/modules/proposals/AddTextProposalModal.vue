@@ -1,10 +1,5 @@
 <template>
-  <AddProposalModal shortname="diff_proposal" :extra="{ paragraph: paragraph.pk }" v-model="body" @reset="reset()">
-    <template #activator="{ props }">
-      <v-btn size="small" variant="contained" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
-        {{ t('proposal.change') }}
-      </v-btn>
-    </template>
+  <AddProposalModal v-bind="props" @close="$emit('close')">
     <template #editor>
       <textarea class="form-control mb-2" v-model="body" required />
     </template>
@@ -18,31 +13,47 @@
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { TextParagraph } from './contentTypes'
+import type { TextParagraph } from './contentTypes'
 import AddProposalModal from './AddProposalModal.vue'
+import useTextDocuments from './useTextDocuments'
+import type { DiffProposal } from './types'
 
 export default defineComponent({
   components: {
     AddProposalModal
   },
   props: {
-    paragraph: {
-      type: Object as PropType<TextParagraph>,
-      required: true
-    }
+    paragraph: Object as PropType<TextParagraph>,
+    proposal: Object as PropType<DiffProposal>
   },
   setup (props) {
+    if (!(props.proposal || props.paragraph)) throw new Error('AddTextProposalModal requires either paragraph or proposal')
+
     const { t } = useI18n()
-    const body = ref(props.paragraph.body)
+    const { getParagraph } = useTextDocuments()
+    const paragraph = computed(() => props.paragraph ?? (props.proposal && getParagraph(props.proposal?.paragraph)))
+    const body = ref(
+      props.proposal
+        ? props.proposal.body
+        : paragraph.value?.body ?? ''
+    )
 
     function reset () {
-      body.value = props.paragraph.body
+      body.value = paragraph.value?.body ?? ''
     }
 
-    const isModified = computed(() => body.value.trim() !== props.paragraph.body)
+    const isModified = computed(() => body.value.trim() !== paragraph.value?.body)
 
     return {
       t,
+      props: computed(() => ({
+        shortname: 'diff_proposal',
+        extra: {
+          paragraph: paragraph.value?.pk
+        },
+        modelValue: body.value,
+        proposal: props.proposal
+      })),
       isModified,
       body,
       reset

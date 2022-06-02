@@ -11,7 +11,7 @@
         <span class="ml-2">{{ user.full_name || user.username }}</span>
       </v-btn>
       <teleport to="main.v-main">
-        <v-navigation-drawer position="right" v-model="userMenuOpen" disable-resize-watcher temporary>
+        <v-navigation-drawer location="right" v-model="userMenuOpen" disable-resize-watcher temporary>
           <v-list nav density="comfortable">
             <v-list-item class="no-prepend">
               <UserAvatar size="large" />

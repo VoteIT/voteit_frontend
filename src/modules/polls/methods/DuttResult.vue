@@ -22,14 +22,12 @@ import { useI18n } from 'vue-i18n'
 
 import Tag from '@/components/Tag.vue'
 import useProposals from '../../proposals/useProposals'
-import Proposal from '../../proposals/Proposal.vue'
 import { DuttResult } from './types'
 
 const { getProposal } = useProposals()
 
 export default defineComponent({
   components: {
-    Proposal,
     Tag
   },
   props: {

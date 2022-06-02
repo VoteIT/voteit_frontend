@@ -20,7 +20,6 @@ import { computed, defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import ProposalVue from '@/modules/proposals/Proposal.vue'
 
 import { RepeatedSchulzeResult } from './types'
 import SchulzeResultVue from './SchulzeResult.vue'
@@ -37,7 +36,6 @@ export default defineComponent({
     }
   },
   components: {
-    Proposal: ProposalVue,
     SchulzeResult: SchulzeResultVue
   },
   setup (props) {

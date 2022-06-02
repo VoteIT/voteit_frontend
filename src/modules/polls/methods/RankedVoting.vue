@@ -60,7 +60,6 @@ import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
 import { Poll, RankedVote } from './types'
@@ -74,10 +73,6 @@ export default defineComponent({
     },
     modelValue: Object as PropType<RankedVote>,
     disabled: Boolean
-  },
-  components: {
-    Proposal: ProposalVue
-    // Draggable
   },
   setup (props, { emit }) {
     const { t } = useI18n()

@@ -5,7 +5,7 @@
       v-for="component in bubbles" :key="component.id"
       eager
       transition="bubble-content"
-      scroll-strategy="reposition" position-strategy="connected" origin="bottom end" anchor="top end"
+      scroll-strategy="reposition" location-strategy="connected" location="bottom end" anchor="top end"
       :scrim="false"
       :modelValue="component.id === openBubble" @update:modelValue="setOpen(component, $event)"
     >

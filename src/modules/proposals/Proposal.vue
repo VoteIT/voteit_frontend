@@ -11,7 +11,7 @@
           <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
         </div>
       </div>
-      <Richtext v-if="p.shortname === 'proposal'" :editing="editing" :api="proposalType.api" :object="p" @edit-done="editing = false" class="my-3" />
+      <Richtext v-if="p.shortname === 'proposal'" :object="p" class="my-3" />
       <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3" />
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
@@ -44,6 +44,10 @@
         </div>
         <v-spacer />
         <Menu size="small" :items="menuItems" />
+        <v-dialog v-model="editDialog">
+          <AddTextProposalModal v-if="p.shortname === 'diff_proposal'" @close="editDialog = false" :proposal="p" />
+          <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
+        </v-dialog>
       </footer>
       <slot name="bottom"/>
     </v-sheet>
@@ -59,6 +63,7 @@ import { ComponentPublicInstance, computed, defineComponent, nextTick, PropType,
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
+import { MenuItem, ThemeColor } from '@/utils/types'
 
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
@@ -69,13 +74,14 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useUnread from '@/composables/useUnread'
 
-import { MenuItem, ThemeColor } from '@/utils/types'
 import useTags from '../meetings/useTags'
 import useMeetingGroups from '../meetings/useMeetingGroups'
-import { Proposal } from './types'
 import useDiscussions from '../discussions/useDiscussions'
-import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rules'
 import { proposalType } from './contentTypes'
+import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rules'
+import AddProposalModal from './AddProposalModal.vue'
+import AddTextProposalModal from './AddTextProposalModal.vue'
+import type { Proposal } from './types'
 
 export default defineComponent({
   name: 'Proposal',
@@ -87,9 +93,11 @@ export default defineComponent({
     readOnly: Boolean
   },
   components: {
+    AddProposalModal,
+    AddTextProposalModal,
+    Comments,
     Richtext,
     Moment,
-    Comments,
     WorkflowState
   },
   setup (props) {
@@ -97,7 +105,6 @@ export default defineComponent({
     const { agendaItem, canAddDiscussionPost } = useAgendaItem()
     const { isModerator, meetingId } = useMeeting()
     const { getHTMLTags } = useTags()
-    const editing = ref(false)
     const showComments = ref(false)
     const { getProposalDiscussions } = useDiscussions()
     const workflows = proposalType.useWorkflows()
@@ -136,13 +143,14 @@ export default defineComponent({
       commentsComponent.value?.focus()
     }
 
+    const editDialog = ref(false)
     const menuItems = computed<MenuItem[]>(() => {
       const items: MenuItem[] = []
-      if (props.p.shortname !== 'diff_proposal' && canChangeProposal(props.p)) {
+      if (canChangeProposal(props.p)) {
         items.push({
           title: t('edit'),
           icon: 'mdi-pencil',
-          onClick: async () => { editing.value = true }
+          onClick: async () => { editDialog.value = true }
         })
       }
       if (canRetractProposal(props.p)) {
@@ -175,7 +183,7 @@ export default defineComponent({
       commentsComponent,
       canAddDiscussionPost,
       discussionPosts,
-      editing,
+      editDialog,
       extraTags,
       isUnread,
       isModerator,

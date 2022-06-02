@@ -17,7 +17,16 @@
             <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
           </v-card-text>
           <v-card-actions v-if="canAddProposal">
-            <AddTextProposalModal :paragraph="p" />
+            <v-dialog>
+              <template #activator="{ props }">
+                <v-btn size="small" variant="contained" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
+                  {{ t('proposal.change') }}
+                </v-btn>
+              </template>
+              <template v-slot="{ isActive }">
+                <AddTextProposalModal :paragraph="p" @close="isActive.value = false" />
+              </template>
+            </v-dialog>
           </v-card-actions>
         </template>
       </div>

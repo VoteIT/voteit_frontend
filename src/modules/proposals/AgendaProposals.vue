@@ -16,12 +16,10 @@ import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 
 import { Proposal } from './types'
-import ProposalVue from './Proposal.vue'
 import { proposalType } from './contentTypes'
 
 export default defineComponent({
   components: {
-    Proposal: ProposalVue,
     ReactionButton
   },
   props: {

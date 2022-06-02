@@ -17,6 +17,7 @@ import Dropdown from './components/Dropdown.vue'
 import UserAvatar from './components/UserAvatar.vue'
 import Widget from './components/Widget.vue'
 import PresenceCheckControl from './modules/presence/PresenceCheckControl.vue'
+import Proposal from './modules/proposals/Proposal.vue'
 
 import en from './locales/en.json'
 import sv from './locales/sv.json'
@@ -70,4 +71,5 @@ createApp(App)
   .component('Widget', Widget)
   // Bubble requires this to be registered here, dunno why
   .component('PresenceCheckControl', PresenceCheckControl)
+  .component('Proposal', Proposal)
   .mount('#app')

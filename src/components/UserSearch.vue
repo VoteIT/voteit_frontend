@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-overlay :modelValue="!!results.length" position-strategy="connected" anchor="bottom" :scrim="false" :transition="false">
+    <v-overlay :modelValue="!!results.length" location-strategy="connected" location="bottom" :scrim="false" :transition="false">
       <template #activator="{ props }">
         <form v-bind="props" class="user-search" :class="{ instant }" @submit.prevent="submit()">
           <v-text-field v-bind="fieldBind" :hint="hint" type="search" ref="inputField" autocomplete="off" v-model="query" hide-details class="hide-details" />

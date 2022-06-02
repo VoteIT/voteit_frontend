@@ -71,7 +71,6 @@ import useAlert from '@/composables/useAlert'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/modules/proposals/useProposals'
 
-import ProposalVue from '@/modules/proposals/Proposal.vue'
 import SchemaForm from '@/components/inputs/SchemaForm.vue'
 
 import { ProposalState } from '@/modules/proposals/types'
@@ -89,7 +88,6 @@ import usePermission from '@/composables/usePermission'
 export default defineComponent({
   name: 'StartPoll',
   components: {
-    Proposal: ProposalVue,
     SchemaForm
   },
   setup () {

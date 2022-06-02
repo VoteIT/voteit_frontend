@@ -20,7 +20,6 @@ import { computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
 import { DuttPoll, DuttVote } from './types'
@@ -34,9 +33,6 @@ export default defineComponent({
     },
     modelValue: Object as PropType<DuttVote>,
     disabled: Boolean
-  },
-  components: {
-    Proposal: ProposalVue
   },
   setup (props, { emit }) {
     const { t } = useI18n()

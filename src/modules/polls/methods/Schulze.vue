@@ -23,7 +23,6 @@ import { computed, defineComponent, PropType, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
 import { SchulzePoll, SchulzeVote } from './types'
@@ -37,9 +36,6 @@ export default defineComponent({
     },
     modelValue: Object as PropType<SchulzeVote>,
     disabled: Boolean
-  },
-  components: {
-    Proposal: ProposalVue
   },
   setup (props, { emit }) {
     const { t } = useI18n()

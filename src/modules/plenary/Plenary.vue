@@ -49,7 +49,6 @@ import { flatten } from 'lodash'
 import { LastReadKey } from '@/composables/useUnread'
 import { WorkflowState } from '@/contentTypes/types'
 import useAgendaItem from '../agendas/useAgendaItem'
-import ProposalVue from '../proposals/Proposal.vue'
 import useProposals from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
@@ -66,9 +65,6 @@ const { getAgendaProposals } = useProposals()
 const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
 
 export default defineComponent({
-  components: {
-    Proposal: ProposalVue
-  },
   setup () {
     provide('context', 'meeting')
     const { t } = useI18n()

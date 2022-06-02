@@ -16,7 +16,6 @@
 import { computed, defineComponent, PropType, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import ProposalVue from '@/modules/proposals/Proposal.vue'
 import { Proposal } from '@/modules/proposals/types'
 
 import { SimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
@@ -34,9 +33,6 @@ export default defineComponent({
       type: Object as PropType<SimpleVote>
     },
     disabled: Boolean
-  },
-  components: {
-    Proposal: ProposalVue
   },
   setup (props, { emit }) {
     const { t } = useI18n()

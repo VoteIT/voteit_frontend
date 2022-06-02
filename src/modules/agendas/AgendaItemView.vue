@@ -27,7 +27,18 @@
     <v-divider class="my-4" />
     <v-row :key="`agenda-filters-${agendaId}`">
       <v-col class="d-flex">
-        <AddProposalModal v-if="canAddProposal" />
+        <v-dialog v-if="canAddProposal">
+          <template #activator="{ props }">
+            <slot name="activator" :props="props">
+              <v-btn :prepend-icon="agendaItem.block_proposals ? 'mdi-lock-outline' : 'mdi-text-box-plus-outline'" color="primary" v-bind="props">
+                {{ t('proposal.add') }}
+              </v-btn>
+            </slot>
+          </template>
+          <template v-slot="{ isActive }">
+            <AddProposalModal @close="isActive.value = false" />
+          </template>
+        </v-dialog>
         <v-spacer />
         <AgendaFilters ref="filterComponent" />
         <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">

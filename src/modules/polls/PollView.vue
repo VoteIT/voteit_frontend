@@ -67,7 +67,6 @@ import { useRoute, useRouter } from 'vue-router'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
-import Proposal from '../proposals/Proposal.vue'
 
 import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
@@ -78,8 +77,7 @@ import { parseSocketError, socket } from '@/utils/Socket'
 export default defineComponent({
   name: 'PollView',
   components: {
-    WorkflowState,
-    Proposal
+    WorkflowState
   },
   setup () {
     const { t } = useI18n()

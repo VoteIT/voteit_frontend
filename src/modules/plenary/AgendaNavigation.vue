@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="isOpen" position="right" disable-resize-watcher>
+  <v-navigation-drawer v-model="isOpen" location="right" disable-resize-watcher>
     <v-list nav>
       <template v-for="{ state, items } in annotatedAgendaStates" :key="state.state">
         <v-list-subheader v-if="items.length">

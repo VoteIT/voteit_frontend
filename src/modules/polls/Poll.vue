@@ -59,7 +59,6 @@ import Moment from '@/components/Moment.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 
 import usePolls from '../polls/usePolls'
-import ProposalVue from '../proposals/Proposal.vue'
 import useMeeting from '../meetings/useMeeting'
 
 import { slugify } from '@/utils'
@@ -77,7 +76,6 @@ export default defineComponent({
     }
   },
   components: {
-    Proposal: ProposalVue,
     Moment,
     WorkflowState
   },
