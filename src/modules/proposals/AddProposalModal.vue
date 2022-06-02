@@ -14,7 +14,8 @@
             <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
           </slot>
           <div class="d-flex flex-column flex-md-row" id="post-as">
-            <v-select v-if="postAsOptions" v-model="group" :label="t('proposal.postAs')" :items="postAsOptions" :transition="false" />
+            <v-autocomplete v-if="postAsOptions" :label="t('proposal.postAs')" :items="postAsOptions" v-model="postAs" v-model:search="postAsSearch" />
+            <!-- <v-select v-if="postAsOptions" v-model="group" :label="t('proposal.postAs')" :items="postAsOptions" :transition="false" /> -->
             <v-spacer />
             <slot name="actions" />
           </div>
@@ -69,9 +70,15 @@ import useMeetingGroups from '../meetings/useMeetingGroups'
 import useDefaults from '@/composables/useDefaults'
 import { parseRestError } from '@/utils/restApi'
 import { stripHTML } from '@/utils'
+import { userType } from '../organisations/contentTypes'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: number
+
+interface AutocompleteItem {
+  value: string
+  title: string
+}
 
 export default defineComponent({
   emits: ['reset'],
@@ -96,7 +103,6 @@ export default defineComponent({
   setup (props, { emit }) {
     const { t } = useI18n()
     const body = ref(props.modelValue)
-    const group = ref(0)
     const { meetingId } = useMeeting()
     const { agendaId, agendaItem } = useAgendaItem()
     const isOpen = ref(false)
@@ -104,12 +110,20 @@ export default defineComponent({
     const { user } = useAuthentication()
     const { getMeetingGroup } = useMeetingGroups(meetingId)
 
+    function getAuthor (): Partial<Proposal> {
+      if (!postAs.value) return {}
+      const [type, pk] = postAs.value.split(':')
+      return type === 'group'
+        ? { meeting_group: Number(pk) }
+        : { author: Number(pk) }
+    }
+
     function getPostData (): Partial<Proposal> {
       return {
         shortname: props.shortname,
         agenda_item: agendaId.value,
         body: body.value,
-        meeting_group: group.value || null, // Switch 0 for null
+        ...getAuthor(),
         ...props.extra
       }
     }
@@ -132,7 +146,6 @@ export default defineComponent({
         proposal.value = {
           ...data,
           created: new Date(),
-          author: user.value?.pk as number,
           pk: 0,
           prop_id: `${baseId}-{n}`,
           shortname: props.shortname
@@ -144,14 +157,40 @@ export default defineComponent({
       previewing.value = false
     }
 
+    const postAs = ref<string | null>(null)
+    const postAsSearch = ref('')
+    function preserveCurrentAuthor (newOptions?: AutocompleteItem[]): AutocompleteItem[] {
+      newOptions = newOptions ?? []
+      const { author } = getAuthor()
+      const preserve = userOptions.value.find(item => author === Number(item.value.split(':')[1]))
+      return preserve
+        ? [preserve, ...newOptions]
+        : newOptions
+    }
+    watch(postAsSearch, async (search: string) => {
+      if (!search.length) {
+        userOptions.value = preserveCurrentAuthor()
+        return
+      }
+      const { data } = await userType.api.list({
+        meeting: meetingId.value,
+        search
+      })
+      // eslint-disable-next-line camelcase
+      const newOptions = data.map(({ full_name, userid, pk }) => ({ value: `user:${pk}`, title: `${full_name} (${userid})` }))
+      userOptions.value = preserveCurrentAuthor(newOptions)
+    })
+    const userOptions = ref<AutocompleteItem[]>([])
     const postAsOptions = computed(() => {
       if (!userGroups.value.length) return
       return [
         {
-          value: 0,
+          value: null,
           title: user.value?.full_name
         },
-        ...userGroups.value.map(({ pk, title }) => ({ value: pk, title }))
+        ...userGroups.value.map(({ pk, title }) => ({ value: `group:${pk}`, title })),
+        // eslint-disable-next-line camelcase
+        ...userOptions.value
       ]
     })
 
@@ -184,7 +223,7 @@ export default defineComponent({
     }
 
     watch(body, setPreviewTimeout)
-    watch(group, preview)
+    watch(postAs, preview)
     watch(() => props.modelValue, value => { // React when used as subcomponent, i.e. in AddTextProposalModal
       body.value = value
     })
@@ -203,9 +242,10 @@ export default defineComponent({
       activatorIcon,
       done,
       errorText,
-      group,
       isOpen,
+      postAs,
       postAsOptions,
+      postAsSearch,
       previewing,
       proposal,
       body,

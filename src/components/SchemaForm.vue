@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" :disabled="disabled" @submit="submit()">
+  <v-form ref="form" :disabled="disabled" @submit.prevent="submit()">
     <component
       v-for="(field, i) in fields" :key="i"
       :is="field.componentName" v-bind="field.props" v-model="formData[field.name]"
