@@ -121,7 +121,6 @@ import { dialogQuery } from '@/utils'
 
 import useLoader from '@/composables/useLoader'
 import useMeeting from '@/modules/meetings/useMeeting'
-import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import SelectVue from '@/components/inputs/Select.vue'
@@ -134,7 +133,9 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
-import { User } from '../organisations/types'
+import useSpeakerSystems from './useSpeakerSystems'
+
+import type { User } from '../organisations/types'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -154,10 +155,10 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { meetingId, meeting, roleLabels } = useMeeting()
-    const speakerLists = useSpeakerLists()
     const loader = useLoader('SpeakerSystems panel')
     const systemRoles = ref<ContextRole[]>([])
     const { getUserIds } = speakerSystemType.useContextRoles()
+    const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 
     onBeforeMount(() => {
       loader.call(async () => {
@@ -275,7 +276,7 @@ export default defineComponent({
     }
 
     const systems = computed(() => {
-      return speakerLists.getSystems(meetingId.value, true)
+      return allSpeakerSystems.value
         .map(system => {
           const userIds = getUserIds(system.pk)
           return {

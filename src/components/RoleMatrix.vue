@@ -8,7 +8,7 @@
             {{ t('name') }}
           </th>
           <th v-for="col in columns" class="text-center" :key="col.name" @click="orderUsers(col.name)" :class="{ orderBy: col.name === orderBy }">
-            <v-tooltip :text="col.title" anchor="top">
+            <v-tooltip :text="col.title" location="top">
               <template #activator="{ props }">
                 <v-icon v-bind="props" :icon="col.icon" />
                 {{ col.count() }}

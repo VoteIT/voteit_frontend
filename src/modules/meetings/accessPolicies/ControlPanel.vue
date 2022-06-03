@@ -59,7 +59,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-tooltip v-if="p.active" :model-value="copied" text="Kopierat" anchor="top">
+            <v-tooltip v-if="p.active" :model-value="copied" :text="t('copied')" location="top">
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"

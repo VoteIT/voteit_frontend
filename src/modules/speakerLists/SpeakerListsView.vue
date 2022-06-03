@@ -6,9 +6,14 @@
           <div class="btn-group navigation">
             <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" variant="text" size="small" />
           </div>
-          <v-tabs v-if="speakerSystem && speakerSystems.length > 1" class="mb-2 flex-grow-1" end>
-            <v-tab v-for="{ pk, title } in speakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
+          <v-tabs v-if="speakerSystem && allSpeakerSystems.length > 1" class="mb-2 flex-grow-1" end>
+            <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
               {{ title }}
+              <v-tooltip v-if="state === 'inactive'" :text="t('inactive')" location="top">
+                <template #activator="{ props }">
+                  <v-icon v-bind="props" end color="secondary" start>mdi-eye-off</v-icon>
+                </template>
+              </v-tooltip>
             </v-tab>
           </v-tabs>
         </div>
@@ -115,14 +120,16 @@ import { User } from '../organisations/types'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 
 import { MenuItem, ThemeColor } from '@/utils/types'
-import { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
+import useChannel from '@/composables/useChannel'
 import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
 import { speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
 import { openAlertEvent } from '@/utils/events'
-import useChannel from '@/composables/useChannel'
+import useSpeakerSystems from './useSpeakerSystems'
+
+import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
 
 interface AgendaNav {
   icon: string
@@ -147,7 +154,7 @@ export default defineComponent({
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
     const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
-    const speakerSystems = computed(() => speakers.getSystems(meetingId.value, true))
+    const { allSpeakerSystems } = useSpeakerSystems(meetingId)
     const currentList = computed<SpeakerList | undefined>({
       get () {
         if (systemActiveList.value?.agenda_item !== agendaId.value) return
@@ -245,6 +252,7 @@ export default defineComponent({
     return {
       t,
       agendaItem,
+      allSpeakerSystems,
       annotatedSpeakerQueue,
       canManageSystem,
       currentList,
@@ -254,7 +262,6 @@ export default defineComponent({
       participantNumberInput,
       speakers,
       speakerSystem,
-      speakerSystems,
       speakerLists,
       speakerListType,
       meetingId,

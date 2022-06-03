@@ -129,7 +129,6 @@ import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
-import { SpeakerListState } from '../speakerLists/types'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -183,11 +182,11 @@ export default defineComponent({
       return !tags.size || d.tags.some(t => tags.has(t))
     }
     const sortedDiscussions = computed(() => discussions.getAgendaDiscussions(agendaId.value, discussionFilter))
-    const { activeSpeakerSystems, allSpeakerSystems, hasSpeakerSystems } = useSpeakerSystems(meetingId)
+    const { activeSpeakerSystems, managingSpeakerSystems } = useSpeakerSystems(meetingId)
     const { getAgendaSpeakerLists } = useSpeakerLists()
     const speakerLists = computed(() => getAgendaSpeakerLists(
       agendaId.value,
-      list => list.state === SpeakerListState.Open
+      list => !!activeSpeakerSystems.value.find(system => system.pk === list.speaker_system)
     ))
 
     const displayMode = useStorage('agendaDisplayMode', 'columns')
@@ -246,9 +245,9 @@ export default defineComponent({
           })
         })
       }
-      if (hasSpeakerSystems.value) {
+      if (managingSpeakerSystems.value.length) {
         items.push('---')
-        for (const system of allSpeakerSystems.value) {
+        for (const system of managingSpeakerSystems.value) {
           items.push({
             title: t('speaker.manageSystem', { ...system }),
             icon: 'mdi-bullhorn',
@@ -342,10 +341,7 @@ export default defineComponent({
       addProposal,
       setLastRead,
       submit,
-      ...useDefaults(),
-
-      allSpeakerSystems,
-      activeSpeakerSystems
+      ...useDefaults()
     }
   },
   components: {

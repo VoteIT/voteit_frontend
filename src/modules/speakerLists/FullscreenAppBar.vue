@@ -23,22 +23,21 @@ import { useRoute } from 'vue-router'
 import { MenuItemTo } from '@/utils/types'
 import useMeeting from '../meetings/useMeeting'
 
-import useSpeakerLists from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
+import useSpeakerSystems from './useSpeakerSystems'
 
 export default defineComponent({
   setup () {
     const { t } = useI18n()
     const route = useRoute()
 
-    const { getSystems } = useSpeakerLists()
     const { meeting, meetingId, meetingPath } = useMeeting()
+    const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
     const { speakerSystem } = useSpeakerSystem(computed(() => Number(route.params.system)))
 
-    const systems = computed(() => getSystems(meetingId.value))
     const systemsMenu = computed<MenuItemTo[] | undefined>(() => {
-      if (systems.value.length <= 1) return
-      return systems.value
+      if (activeSpeakerSystems.value.length <= 1) return
+      return activeSpeakerSystems.value
         .filter(system => system.pk !== speakerSystem.value?.pk)
         .map(system => {
           return {

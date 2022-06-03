@@ -6,7 +6,7 @@
         {{ t('meeting.invites.existing') }}
       </h1>
       <v-spacer />
-      <v-tooltip :modelValue="copied" anchor="top" :text="t('copied')">
+      <v-tooltip :modelValue="copied" location="top" :text="t('copied')">
         <template #activator="{ props }">
           <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'contained' : 'text'" :title="t('meeting.invites.copyMatchingTooltip')">
             <v-icon>mdi-content-copy</v-icon>
@@ -90,7 +90,7 @@
               {{ invite.invite_data }}
             </td>
             <td>
-              <v-tooltip anchor="top" v-for="{ title, icon } in invite.rolesDescription" :key="icon" :text="title">
+              <v-tooltip location="top" v-for="{ title, icon } in invite.rolesDescription" :key="icon" :text="title">
                 <template #activator="{ props }">
                   <v-icon :icon="icon" v-bind="props" />
                 </template>

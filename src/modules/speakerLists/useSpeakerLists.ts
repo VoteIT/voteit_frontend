@@ -8,6 +8,7 @@ import { AgendaItem } from '../agendas/types'
 import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState, SpeakerStartStopMessage } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 import { isModerator } from '../meetings/rules'
+import { isSystemModerator } from './rules'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -63,13 +64,9 @@ function getSystem (pk: number) {
   return speakerSystems.get(pk)
 }
 
-function getSystems (meeting: number, nonActive = false): SpeakerSystem[] {
-  // For meeting pk
-  // By default only active systems
+function getSystems (meeting: number, filter?: (system: SpeakerSystem) => boolean): SpeakerSystem[] {
   return [...iterSpeakerSystems(
-    s => (s.meeting === meeting) &&
-    (nonActive || s.state === SpeakerSystemState.Active) &&
-    !!(isModerator(s.meeting) || hasRole(s.pk, SpeakerSystemRole.ListModerator))
+    s => s.meeting === meeting && (!filter || filter(s))
   )]
 }
 

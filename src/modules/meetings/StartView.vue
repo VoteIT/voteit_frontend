@@ -25,7 +25,7 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { MenuItem } from '@/utils/types'
 import { meetingType } from './contentTypes'
-import useSpeakerLists from '../speakerLists/useSpeakerLists'
+import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
 export default defineComponent({
   inject: ['cols'],
@@ -38,7 +38,7 @@ export default defineComponent({
     const { t } = useI18n()
     const editing = ref(false)
     const { meeting, meetingId, canChange } = useMeeting()
-    const { getSystems } = useSpeakerLists()
+    const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
 
     useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
 
@@ -61,10 +61,9 @@ export default defineComponent({
           onClick: async () => { editing.value = true }
         })
       }
-      const speakerSystems = getSystems(meetingId.value)
-      if (speakerSystems.length) {
+      if (activeSpeakerSystems.value.length) {
         items.push('---')
-        for (const system of speakerSystems) {
+        for (const system of activeSpeakerSystems.value) {
           items.push({
             title: t('speaker.fullscreenSystem', { ...system }),
             icon: 'mdi-projector-screen-outline',
