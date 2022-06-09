@@ -30,7 +30,9 @@
               <td class="state">
                 <v-icon size="small" :icon="getState(ai.state).icon" />
               </td>
-              <td>{{ ai.title }}</td>
+              <td>
+                <Headline :modelValue="ai.title" tag="h4" clickToEdit @update:modelValue="setTitle(ai, $event)" />
+              </td>
               <td>
                 <v-chip-group disabled>
                   <v-chip v-for="tag in ai.tags" :key="tag" size="small">
@@ -72,9 +74,9 @@
           </div>
           <div class="my-2">
             <v-combobox v-model="bulkTags" :items="agendaTags" hide-details multiple :label="t('tags')">
-              <template #chip="{ props, selection }">
-                <v-chip v-bind="props" :color="isBulkAllSelected(selection.value) ? 'primary' : 'secondary'" @click.self.stop="tagBulkAdd(selection.value)" closable @click:close.prevent="tagBulkRemove(selection.value)">
-                  {{ selection.value }}
+              <template #chip="{ item, props }">
+                <v-chip v-bind="props" :color="isBulkAllSelected(item) ? 'primary' : 'secondary'" @click.self.stop="tagBulkAdd(item)" closable @click:close.prevent="tagBulkRemove(item)">
+                  {{ item }}
                 </v-chip>
               </template>
             </v-combobox>
@@ -112,6 +114,7 @@ import Draggable from 'vuedraggable'
 import { dialogQuery } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
+import Headline from '@/components/Headline.vue'
 import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
 
@@ -129,7 +132,8 @@ export default defineComponent({
   path: 'agenda',
   icon: 'mdi-clipboard-list',
   components: {
-    Draggable
+    Draggable,
+    Headline
   },
   setup () {
     const { t } = useI18n()
@@ -296,6 +300,10 @@ export default defineComponent({
     }
     /* END TAGS */
 
+    async function setTitle ({ pk }: AgendaItem, title: string) {
+      agendaItemType.api.patch(pk, { title })
+    }
+
     return {
       t,
       agendaTag,
@@ -320,6 +328,7 @@ export default defineComponent({
       patchAgendaItem,
       patchSelected,
       setStateSelected,
+      setTitle,
       isBulkAllSelected,
       tagBulkAdd,
       tagBulkRemove
