@@ -51,7 +51,7 @@
   "sortAndFilter": "Sortera och filtrera",
   "start": "Start",
   "state": "Status",
-  "step": "Steg {step}",
+  "step": "Steg {count}",
   "stop": "Stopp",
   "tag": "Tagg",
   "tags": "Taggar",
@@ -307,6 +307,36 @@
     "watchVoting": "Visa resultat",
     "youHaveVoted": "Du har röstat",
     "youHaveNotVoted": "Du har inte röstat",
+    "criterion": {
+      "majorityWinner": {
+        "title": "Majoritetsvinnare",
+        "description": "A majority (more than 50%) must prefer this, otherwise it shouldn't be able to win."
+      },
+      "majorityLoser": {
+        "title": "Majoritetsförlorare",
+        "description": "If a majority of voters do not want this, it shouldn't be able to win."
+      },
+      "mutualMajority": {
+        "title": "Gemensam majoritet",
+        "description": "If there's a subset of candidates where every voter prefer other candidates within the subset and the subset itself has a majority, then the winner must come from the subset. Example: Alice (apple with 30% vote share) and Granny Smith (apple with 30% vote share) goes against Navelina (orange with 40%). All Alice/GS fans prefer the other apple over the orange, so one of the apples should win."
+      },
+      "condorcetWinner": {
+        "title": "Condorcetvinnare",
+        "description": "The winner must beat every other candidate in a pairwise comparison."
+      },
+      "condorcetLoser": {
+        "title": "Condorcetförlorare",
+        "description": "The loser must loose against every other candidate in a pairwise comparison."
+      },
+      "cloneProof": {
+        "title": "Klonsäker",
+        "description": "The winner must not change due to strategic nomination, for instance that a similar candidate runs."
+      },
+      "proportional": {
+        "title": "Proportionell",
+        "description": "The result should reflect the user base as a whole, for instance: If 20 percent of the electorate support a particular political party as their favorite, then roughly 20 percent of seats will be won by that party. Applies to multiple winner methods."
+      }
+    },
     "dutt": {
       "max": "Max antal förslag att välja",
       "maxHelpText": "Välj bort ett förslag för en giltig röst | Välj bort {count} förslag för en giltig röst",
@@ -320,12 +350,11 @@
     },
     "method": {
       "name": "Omröstningsmetod",
-      "combined_simple": "Enkel majoritet",
+      "combined_simple": "Bifall / Avslag / Avstå",
       "dutt": "Dutt",
       "majority": "Motförslag",
       "repeated_schulze": "Repeterad Schulze",
       "schulze": "Schulze",
-      "schulzeAddDeny": "Schulze (lägg till avslag)",
       "scottish_stv": "Skotsk STV",
       "simple": "Majoritetsomröstning",
       "irv": "IRV",

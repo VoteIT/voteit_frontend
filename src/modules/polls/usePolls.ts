@@ -66,16 +66,32 @@ agendaDeletedEvent.on(pk => {
 
 const pollMethods: Record<PollMethodName, PollMethod> = {
   combined_simple: {
+    criterion: {
+      majorityWinner: true,
+      majorityLoser: true
+    },
     name: PollMethodName.CombinedSimple,
     proposalsMin: 1
   },
   majority: {
     name: PollMethodName.Majority,
+    criterion: {
+      majorityWinner: true,
+      majorityLoser: true
+    },
     proposalsMin: 2,
     proposalsMax: 2
   },
   schulze: {
     name: PollMethodName.Schulze,
+    criterion: {
+      cloneProof: true,
+      condorcetLoser: true,
+      condorcetWinner: true,
+      majorityLoser: true,
+      majorityWinner: true,
+      mutualMajority: true
+    },
     proposalsMin: 2,
     initialSettings: {
       stars: 5
@@ -83,6 +99,14 @@ const pollMethods: Record<PollMethodName, PollMethod> = {
   },
   repeated_schulze: {
     name: PollMethodName.RepeatedSchulze,
+    criterion: {
+      cloneProof: true,
+      condorcetLoser: true,
+      condorcetWinner: true,
+      majorityLoser: true,
+      majorityWinner: true,
+      proportional: false
+    },
     multipleWinners: true,
     proposalsMin: 3,
     winnersMin: 2,
@@ -93,6 +117,13 @@ const pollMethods: Record<PollMethodName, PollMethod> = {
   },
   scottish_stv: {
     name: PollMethodName.ScottishSTV,
+    criterion: {
+      proportional: true,
+      condorcetLoser: false,
+      condorcetWinner: false,
+      majorityLoser: false,
+      majorityWinner: false
+    },
     multipleWinners: true,
     proposalsMin: 3,
     winnersMin: 2,
@@ -104,6 +135,13 @@ const pollMethods: Record<PollMethodName, PollMethod> = {
   },
   irv: {
     name: PollMethodName.InstantRunoff,
+    criterion: {
+      cloneProof: true,
+      mutualMajority: true,
+      majorityLoser: false,
+      majorityWinner: false,
+      proportional: false
+    },
     proposalsMin: 3,
     initialSettings: {
       allow_random: true
@@ -111,6 +149,15 @@ const pollMethods: Record<PollMethodName, PollMethod> = {
   },
   dutt: {
     name: PollMethodName.Dutt,
+    criterion: {
+      cloneProof: false,
+      condorcetLoser: false,
+      condorcetWinner: false,
+      majorityLoser: false,
+      majorityWinner: false,
+      mutualMajority: false,
+      proportional: false
+    },
     proposalsMin: 3,
     initialSettings: {
       min: 0,

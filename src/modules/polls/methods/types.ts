@@ -13,6 +13,19 @@ export enum PollMethodName {
   ScottishSTV = 'scottish_stv'
 }
 
+enum PollCriteria {
+  MajorityWinner = 'majorityWinner',
+  MajorityLoser = 'majorityLoser',
+  MutualMajority = 'mutualMajority',
+  CondorcetWinner = 'condorcetWinner',
+  CondorcetLoser = 'condorcetLoser',
+  CloneProof = 'cloneProof',
+  Proportional = 'proportional'
+}
+
+export const Conditional = Symbol('conditional')
+type PollMethodCriterias = Partial<Record<PollCriteria, boolean | typeof Conditional>>
+
 interface VoteResult {
   approved: number[]
   denied: number[]
@@ -134,8 +147,10 @@ interface SchulzeSettings {
 
 export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings | DuttSettings
 
+// Internal poll description
 export interface PollMethod {
   name: PollMethodName
+  criterion: PollMethodCriterias
   multipleWinners?: boolean
   proposalsMax?: number
   proposalsMin: number
@@ -145,6 +160,7 @@ export interface PollMethod {
   settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings
 }
 
+// Poll format from API
 interface BasePoll extends BaseContent {
   abstain_count?: number // Only finished polls
   agenda_item: number

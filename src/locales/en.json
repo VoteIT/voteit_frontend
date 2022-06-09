@@ -51,7 +51,7 @@
   "sortAndFilter": "Sort and filter",
   "start": "Start",
   "state": "State",
-  "step": "Step {step}",
+  "step": "Step {count}",
   "stop": "Stop",
   "tag": "Tag",
   "tags": "Tags",
@@ -308,6 +308,36 @@
     "watchVoting": "Watch voting",
     "youHaveVoted": "You have voted",
     "youHaveNotVoted": "You have not voted",
+    "criterion": {
+      "majorityWinner": {
+        "title": "Majority winner",
+        "description": "A majority (more than 50%) must prefer this, otherwise it shouldn't be able to win."
+      },
+      "majorityLoser": {
+        "title": "Majority loser",
+        "description": "If a majority of voters do not want this, it shouldn't be able to win."
+      },
+      "mutualMajority": {
+        "title": "Mutual majority",
+        "description": "If there's a subset of candidates where every voter prefer other candidates within the subset and the subset itself has a majority, then the winner must come from the subset. Example: Alice (apple with 30% vote share) and Granny Smith (apple with 30% vote share) goes against Navelina (orange with 40%). All Alice/GS fans prefer the other apple over the orange, so one of the apples should win."
+      },
+      "condorcetWinner": {
+        "title": "Condorcet winner",
+        "description": "The winner must beat every other candidate in a pairwise comparison."
+      },
+      "condorcetLoser": {
+        "title": "Condorcet loser",
+        "description": "The loser must loose against every other candidate in a pairwise comparison."
+      },
+      "cloneProof": {
+        "title": "Clone proof",
+        "description": "The winner must not change due to strategic nomination, for instance that a similar candidate runs."
+      },
+      "proportional": {
+        "title": "Proportional",
+        "description": "The result should reflect the user base as a whole, for instance: If 20 percent of the electorate support a particular political party as their favorite, then roughly 20 percent of seats will be won by that party. Applies to multiple winner methods."
+      }
+    },
     "dutt": {
       "max": "Require max proposals",
       "maxHelpText": "Select one less proposal for a valid vote | Select {count} fewer proposals for a valid vote",
@@ -321,15 +351,23 @@
     },
     "method": {
       "name": "Poll method",
-      "combined_simple": "Simple majority",
+      "combined_simple": "Accept / Reject / Abstain",
       "dutt": "Acceptance poll",
       "majority": "Contraproposal",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
-      "schulzeAddDeny": "Schulze (add deny)",
       "scottish_stv": "Scottish STV",
       "simple": "Simple majority",
       "irv": "Instant Runoff-Voting",
+      "description": {
+        "combined_simple": "",
+        "dutt": "Preliminary checks or time budgets, never for actual decisions.  This is almost always the wrong choice for board elections for instance.",
+        "irv": "",
+        "majority": "",
+        "scottish_stv": "",
+        "schulze": "",
+        "repeated_schulze": ""
+      },
       "help": {
         "combined_simple": "Vote approve or deny for each proposal.",
         "dutt": "Select the proposals you prefer.",

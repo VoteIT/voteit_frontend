@@ -4,16 +4,19 @@
       <header class="mb-4">
         <h1>{{ t('poll.start') }}</h1>
       </header>
-      <h2>{{ t('step', { step: 1 }) }}: {{ t('poll.selectAgendaItem') }}</h2>
-      <v-btn color="secondary" v-if="agendaId && agendaItem" :to="`${meetingPath}/polls/new`" append-icon="mdi-close">
-        {{ agendaItem.title }}
-      </v-btn>
-      <v-list v-else-if="pollableAgendaItems.length">
-        <v-list-item v-for="pollable in pollableAgendaItems" :key="pollable.to" v-bind="pollable" />
+      <h2 class="mb-2">
+        {{ t('step', 1) }}: {{ t('poll.selectAgendaItem') }}
+      </h2>
+      <v-alert class="mt-4" v-if="!pollableAgendaItems.length" type="info" :text="t('poll.noPollableAgendaItems')" />
+      <v-list bg-color="background">
+        <v-list-item v-show="!agendaId || agendaId === ai.pk" v-for="{ ai, ...bind } in pollableAgendaItems" :key="ai.pk" v-bind="bind">
+          <template #append v-if="agendaId">
+            <v-btn size="small" variant="text" icon="mdi-close" :to="`${meetingPath}/polls/new`"/>
+          </template>
+        </v-list-item>
       </v-list>
-      <v-alert class="mt-4" v-else type="info" :text="t('poll.noPollableAgendaItems')" />
       <template v-if="agendaId">
-        <h2 class="mt-2">{{ t('step', { step: 2 }) }}: {{ t('poll.pickProposals') }}</h2>
+        <h2 class="my-2">{{ t('step', 2) }}: {{ t('poll.pickProposals') }}</h2>
         <v-item-group v-model="selectedProposalIds" multiple>
           <v-item v-for="p in availableProposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
             <v-expand-transition>
@@ -23,31 +26,51 @@
         </v-item-group>
         <p v-if="!availableProposals.length"><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
         <div v-if="!pickMethod" class="btn-group mt-3">
-          <v-btn prepend-icon="mdi-check-all" @click="toggleAll">
+          <v-btn prepend-icon="mdi-check-all" color="primary" @click="toggleAll">
             {{ t('all') }}
           </v-btn>
-          <v-btn prepend-icon="mdi-arrow-right-bold" :disabled="!selectedProposals.length" @click="pickMethod=true">
+          <v-btn prepend-icon="mdi-arrow-right-bold" color="primary" :disabled="!selectedProposals.length" @click="pickMethod=true">
             {{ t('continue') }}
           </v-btn>
         </div>
       </template>
       <template v-if="pickMethod">
-        <h2 class="mt-2">{{ t('step', { step: 3 }) }}: {{ t('poll.chooseMethod') }}</h2>
-        <v-item-group class="method-list" v-model="methodSelected" mandatory>
-          <v-item v-for="m in availableMethods" :key="m.name" :value="m" v-slot="{ isSelected, toggle }">
-            <div :class="{ isSelected }">
-              <a href="#" @click.prevent="toggle()">{{ t(`poll.method.${m.name}`) }}</a>
-              <v-expand-transition>
-                <div v-if="isSelected">
-                  <h3 class="mb-4">
-                    {{ t('options') }}
-                  </h3>
-                  <SchemaForm :schema="methodSchema" v-model="methodSettings" v-model:valid="settingsValid" />
+        <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
+        <v-expansion-panels v-model="methodSelected">
+          <v-expansion-panel v-for="{ name, criterion } in availableMethods" :key="name" :title="t(`poll.method.${name}`)" :value="name">
+            <v-expansion-panel-text>
+              <v-alert v-if="methodSelected" class="my-4" icon="mdi-help">
+                {{ t(`poll.method.description.${methodSelected}`) }}
+              </v-alert>
+              <h3 class="my-2">
+                Valkriterier
+              </h3>
+              <v-tooltip v-for="[criteria, value] of Object.entries(criterion)" :key="criteria" location="top">
+                <template #activator="{ props }">
+                  <v-chip v-if="value === Conditional" class="ma-1" v-bind="props">
+                    <v-icon start>mdi-help-circle</v-icon>
+                    {{ t(`poll.criterion.${criteria}.title`) }}
+                  </v-chip>
+                  <v-chip v-else-if="value" color="success-darken-2" class="ma-1" v-bind="props">
+                    <v-icon start>mdi-check-circle</v-icon>
+                    {{ t(`poll.criterion.${criteria}.title`) }}
+                  </v-chip>
+                  <v-chip v-else color="warning" class="ma-1" v-bind="props">
+                    <v-icon start>mdi-close-circle</v-icon>
+                    {{ t(`poll.criterion.${criteria}.title`) }}
+                  </v-chip>
+                </template>
+                <div style="max-width: 200px;">
+                  {{ t(`poll.criterion.${criteria}.description`) }}
                 </div>
-              </v-expand-transition>
-            </div>
-          </v-item>
-        </v-item-group>
+              </v-tooltip>
+              <h3 class="my-2">
+                {{ t('options') }}
+              </h3>
+              <SchemaForm v-if="methodSchema" :key="`options-${name}`" :schema="methodSchema" v-model="methodSettings" v-model:valid="settingsValid" />
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
         <div class="btn-group mt-3">
           <v-btn prepend-icon="mdi-undo-variant" @click="pickMethod=false" color="primary">{{ t('back') }}</v-btn>
           <v-btn prepend-icon="mdi-check" color="primary" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</v-btn>
@@ -78,7 +101,7 @@ import usePolls, { polls } from '@/modules/polls/usePolls'
 import { InputType } from '@/components/inputs/types'
 
 import { pollMethods as implementedMethods } from './methods'
-import { PollStartData, PollMethod, PollMethodSettings, Poll } from './methods/types'
+import { Conditional, PollStartData, PollMethodSettings, Poll, PollMethodName } from './methods/types'
 import methodSchemas from './methods/schemas'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
@@ -111,6 +134,7 @@ export default defineComponent({
       return agenda.value
         .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
         .map(ai => ({
+          ai,
           to: `${meetingPath.value}/polls/new/${ai.pk}`,
           title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
         }))
@@ -129,9 +153,10 @@ export default defineComponent({
     const pickMethod = ref(false)
     const availableMethods = computed(() => getPollMethods(selectedProposals.value.length))
 
-    const methodSelected = ref<PollMethod | null>(null)
+    const methodSelected = ref<PollMethodName | null>(null)
     const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
-    watch(methodSelected, method => {
+    watch(methodSelected, name => {
+      const method = availableMethods.value.find(m => m.name === name)
       methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value ?? '' }
     })
 
@@ -148,7 +173,7 @@ export default defineComponent({
 
     async function createPoll (start = false) {
       if (!methodSelected.value) return
-      if (!(methodSelected.value.name in implementedMethods)) return alert(`*${methodSelected.value.name} not implemented`)
+      if (!(methodSelected.value in implementedMethods)) return alert(`*${methodSelected.value} not implemented`)
 
       working.value = true
       const { title, ...settings } = methodSettings.value
@@ -159,21 +184,20 @@ export default defineComponent({
         meeting: meetingId.value,
         title,
         proposals: [...selectedProposalIds.value],
-        method_name: methodSelected.value.name,
+        method_name: methodSelected.value,
         start,
         settings: settingsOrNull(settings)
       }
       try {
         const { data } = await pollType.api.add(pollData as Partial<Poll>)
         router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
-      } catch {
-        working.value = false
-      }
+      } catch {}
+      working.value = false
     }
 
     const methodSchema = computed(() => {
       if (!methodSelected.value) return
-      const getter = methodSchemas[methodSelected.value.name]
+      const getter = methodSchemas[methodSelected.value]
       const specifics = getter?.(t, selectedProposals.value) || []
       return [{
         type: InputType.Text,
@@ -206,6 +230,7 @@ export default defineComponent({
       agendaId,
       agendaItem,
       availableProposals,
+      Conditional,
       selectedProposalIds,
       selectedProposals,
       pickMethod,
