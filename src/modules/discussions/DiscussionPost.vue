@@ -1,11 +1,25 @@
 <template>
   <v-sheet rounded elevation="4" class="discussion rounded-tl-xl" :class="{ isUnread }">
-    <div class="meta">
-      <div>
-        <UserAvatar :pk="p.author" />
+    <div class="d-flex" v-if="meetingGroup">
+      <v-avatar color="secondary" class="mr-2" icon="mdi-account-multiple" />
+      <div class="flex-grow-1">
+        {{ meetingGroup.title }}<br/>
+        <Moment :date="p.created" />
       </div>
-      <div class="fill">
+    </div>
+    <div class="d-flex" v-else-if="p.author">
+      <UserAvatar :pk="p.author" class="mr-2" />
+      <div class="flex-grow-1">
         <user :pk="p.author" /><br/>
+        <Moment :date="p.created" />
+      </div>
+    </div>
+    <div class="d-flex" v-else>
+      <v-avatar color="secondary" class="mr-2">
+        ?
+      </v-avatar>
+      <div class="flex-grow-1">
+        {{ t('unknownUser') }}<br/>
         <Moment :date="p.created" />
       </div>
     </div>
@@ -34,6 +48,8 @@ import { useI18n } from 'vue-i18n'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useUnread from '@/composables/useUnread'
 import useTags from '../meetings/useTags'
+import useMeeting from '../meetings/useMeeting'
+import useMeetingGroups from '../meetings/useMeetingGroups'
 
 import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
@@ -54,9 +70,12 @@ export default defineComponent({
   setup (props) {
     const { t } = useI18n()
     const { getHTMLTags } = useTags()
+    const { meetingId } = useMeeting()
+    const { getMeetingGroup } = useMeetingGroups(meetingId)
 
     const editing = ref(false)
     const { isUnread } = useUnread(props.p.created as Date)
+    const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
 
     async function queryDelete () {
       if (await dialogQuery({
@@ -91,10 +110,12 @@ export default defineComponent({
     })
 
     return {
+      t,
       api: discussionPostType.api,
       editing,
       extraTags,
       isUnread,
+      meetingGroup,
       menuItems
     }
   }
@@ -115,14 +136,14 @@ export default defineComponent({
     .context-menu
       margin: -6px
 
-  .meta
-    display: flex
-    margin-bottom: .5em
-    > div
-      flex: 0 1 auto
-    .fill
-      margin: 0 .5em
-      flex: 1 0 auto
+  // .meta
+  //   display: flex
+  //   margin-bottom: .5em
+  //   > div
+  //     flex: 0 1 auto
+  //   .fill
+  //     margin: 0 .5em
+  //     flex: 1 0 auto
   p
     margin: .5rem 0
 </style>

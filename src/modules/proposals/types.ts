@@ -14,7 +14,7 @@ interface BaseProposal {
   name: string
   state: ProposalState
   agenda_item: number
-  author: number
+  author: number | null
   body: string
   created: Date
   meeting_group: number | null
