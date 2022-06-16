@@ -397,7 +397,7 @@
     "recentlyClosedChecks": "Nyligen stängda närvarokontroller"
   },
   "profile": {
-    "editProfileHelp": "Här kan du bara ändra ditt användar-ID. Gå till Hantera konto för att ändra namn eller e-post.",
+    "editProfileHelp": "Du kan bara använda epostadresser som redan är validerade. Gå till Hantera konto för att validera en ny adress.",
     "changeUserid": "Byt användar-ID",
     "profile": "Profil",
     "switchUser": "Byt användare",

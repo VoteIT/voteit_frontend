@@ -28,4 +28,5 @@ export interface User {
   organisation_roles: OrganisationRole[]
   state: UserState
   userid: string | null
+  email: string
 }

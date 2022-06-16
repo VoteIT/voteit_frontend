@@ -152,13 +152,19 @@ export default defineComponent({
           name: 'first_name',
           label: 'Förnamn',
           type: FieldType.Text,
-          rules: [rules.disabled]
+          rules: [rules.required]
         },
         {
           name: 'last_name',
           label: 'Efternamn',
           type: FieldType.Text,
-          rules: [rules.disabled]
+          rules: [rules.required]
+        },
+        {
+          name: 'email',
+          label: 'Epost',
+          type: FieldType.Text,
+          rules: [rules.required]
         },
         {
           name: 'userid',
