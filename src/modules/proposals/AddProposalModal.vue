@@ -178,7 +178,7 @@ export default defineComponent({
     )
     const postAsSearch = ref('')
     function getInitialUserOption () {
-      if (props.proposal && props.proposal.author !== user.value?.pk) {
+      if (props.proposal && props.proposal.author && props.proposal.author !== user.value?.pk) {
         const author = getUser(props.proposal.author)
         if (author) return [userToAutocomplete(author)]
       }
