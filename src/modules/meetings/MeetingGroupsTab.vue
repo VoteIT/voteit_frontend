@@ -20,12 +20,12 @@
               {{ t('meeting.groups.new') }}
             </h2>
             <SchemaForm :schema="groupSchema" :handler="createGroup" @saved="isActive.value = false">
-              <template #buttons="{ disabled, valid }">
+              <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
-                  <v-btn variant="text" @click="isActive.value = false" :disabled="disabled">
+                  <v-btn variant="text" @click="isActive.value = false">
                     {{ t('cancel') }}
                   </v-btn>
-                  <v-btn type="submit" color="primary" :disabled="disabled || !valid" prepend-icon="mdi-account-multiple-plus">
+                  <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
                     {{ t('meeting.groups.create') }}
                   </v-btn>
                 </div>
@@ -86,15 +86,15 @@
                     {{ t('meeting.groups.modify') }}
                   </h2>
                   <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title }" @saved="isActive.value = false">
-                    <template #buttons="{ disabled, valid }">
+                    <template #buttons="{ disabled, submitting }">
                       <div class="text-right">
-                        <v-btn @click="isActive.value = false" variant="text" :disabled="disabled">
+                        <v-btn @click="isActive.value = false" variant="text">
                           {{ t('cancel') }}
                         </v-btn>
                         <v-btn @click="deleteGroup(group).then((done) => { isActive.value = !done })" variant="text" color="warning">
                           {{ t('delete') }}
                         </v-btn>
-                        <v-btn type="submit" color="primary" :disabled="disabled || !valid">
+                        <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled">
                           {{ t('save') }}
                         </v-btn>
                       </div>

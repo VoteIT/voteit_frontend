@@ -67,13 +67,10 @@ export default function useAuthentication () {
   }
 
   async function updateProfile (profile: Pick<User, 'userid'>) {
+    // Handle errors in calling function
     if (!user.value) throw new Error('Unauthenticated user can\'t update profile')
-    try {
-      const { data } = await profileType.api.patch(user.value.pk, profile)
-      user.value = { ...user.value, ...data }
-    } catch {
-      // TODO
-    }
+    const { data } = await profileType.api.patch(user.value.pk, profile)
+    user.value = data
   }
 
   return {

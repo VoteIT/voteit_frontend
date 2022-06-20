@@ -1,9 +1,20 @@
+import { FieldRule } from '@/components/types'
 import { slugify, tagify } from '.'
+
+const emailPattern =
+  /^(([^<>()[\].,:\s@"]+(\.[^<>()[\].,:\s@"]+)*)|(".+"))@(([^<>()[\].,:\s@"]+\.)+[^<>()[\].,:\s@"]{2,})$/i
 
 export const disabled = {
   props: {
     disabled: true
   }
+}
+
+export const email: FieldRule<string> = {
+  props: {
+    type: 'email'
+  },
+  validate: (value) => !value.length || emailPattern.test(value) || 'Invalid email address'
 }
 
 export const slug = {
@@ -24,12 +35,6 @@ export const required = {
 export function minLength (length: number) {
   return {
     validate: (value: string) => value.length >= length || `Must be at least ${length} characters`
-  }
-}
-
-export function selectOptions (options: Record<string, string>) {
-  return {
-    props: { options }
   }
 }
 

@@ -1,30 +1,32 @@
 <template>
-  <v-form ref="form" :disabled="disabled" @submit.prevent="submit()">
+  <v-form
+    ref="form"
+    v-model="valid"
+    @submit.prevent="submit()"
+  >
     <component
       v-for="(field, i) in fields" :key="i"
-      :is="field.componentName" v-bind="field.props" v-model="formData[field.name]"
-      @blur="blurField(field)"
-      @input="changeField(field)"
+      :is="field.component" v-bind="field.props" v-model="formData[field.name]"
+      @blur="cleanField(field)"
       :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name] || field.messages"
     />
-    <slot name="buttons" :disabled="disabled" :valid="valid" />
+    <slot name="buttons" :valid="valid" :submitting="submitting" :disabled="submitting || !valid" />
   </v-form>
 </template>
 
 <script lang="ts">
-import { Component, computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { Component, ComponentPublicInstance, defineComponent, PropType, reactive, ref, watch } from 'vue'
 
 import { parseRestError } from '@/utils/restApi'
 
 import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
-import SelectVue from './inputs/Select.vue'
-import { FieldType, FormField, FormSchema } from './types'
+import type { FieldType, FormField, FormSchema } from './types'
 
 const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
   checkbox_multiple: CheckboxMultipleSelectVue,
   number: 'v-text-field', // ?
-  select: SelectVue, // TODO
+  select: 'v-select',
   switch: 'v-switch',
   text: 'v-text-field',
   textarea: 'v-textarea'
@@ -44,26 +46,22 @@ export default defineComponent({
     handler: Function as PropType<(data: object) => Promise<any>>
   },
   setup (props, { emit }) {
+    const valid = ref(false)
     const formData = reactive(
       Object.fromEntries(
         props.schema.map(f => [f.name, props.modelValue[f.name] ?? f.default])
       )
     )
     const fieldErrors = ref<Record<string, string[] | undefined>>({})
-    const fields = props.schema.map((field) => {
-      const props = {
-        label: field.label
-        // Not supported in current vuetify alpha
-        // rules: field.rules?.map((r) => r.validate).filter(Boolean) ?? []
-      }
-      if (field.rules) {
-        for (const rule of field.rules) {
-          Object.assign(props, rule.props)
-        }
+    const fields = props.schema.map(({ name, rules, type, ...props }) => {
+      const fieldValidators = rules?.map(r => r.validate).filter(v => v)
+      for (const rule of rules || []) {
+        Object.assign(props, rule.props)
       }
       return {
-        componentName: componentNames[field.type],
-        ...field,
+        component: componentNames[type],
+        name,
+        rules: fieldValidators,
         props
       }
     })
@@ -82,31 +80,13 @@ export default defineComponent({
         cleanField(field)
       }
     }
-    function validateField (field: FormField) {
-      const value = formData[field.name]
-      for (const { validate } of field.rules || []) {
-        // Mutter .... ### TypeScript says never...
-        const result = (validate as (v: string) => string | true)?.(value)
-        if (typeof result === 'string') return [result]
-      }
-    }
-    function blurField (field: FormField) {
-      cleanField(field)
-      const errors = validateField(field)
-      fieldErrors.value[field.name] = errors
-    }
-    function changeField (field: FormField) {
-      /* Ensure form does not remain invalid */
-      if (!valid.value) fieldErrors.value[field.name] = validateField(field)
-    }
 
-    const disabled = ref(false)
-    const valid = computed(() => Object.values(fieldErrors.value).every(e => !e))
+    const submitting = ref(false)
     async function submit () {
       cleanForm()
       if (!valid.value) return
       if (!props.handler) return emit('submit', formData.value)
-      disabled.value = true
+      submitting.value = true
       try {
         await props.handler(formData)
         Object.assign(formData, props.modelValue)
@@ -114,27 +94,26 @@ export default defineComponent({
       } catch (e) {
         fieldErrors.value = parseRestError(e)
       }
-      disabled.value = false
+      submitting.value = false
     }
 
-    // .validate() not supported in current vuetify alpha
-    // const form = ref<ComponentPublicInstance<{ validate:() => void }> | null>(null)
+    const form = ref<ComponentPublicInstance<{ validate:() => void }> | null>(null)
 
     watch(formData, (value) => {
       // Not supported in current vuetify alpha
-      // form.value?.validate()
+      fieldErrors.value = {}
+      form.value?.validate()
       emit('update:modelValue', value)
     })
 
     return {
-      disabled,
       fields,
       fieldErrors,
-      // form,
+      form,
       formData,
+      submitting,
       valid,
-      blurField,
-      changeField,
+      cleanField,
       submit
     }
   }

@@ -1,16 +1,14 @@
 <template>
-  <transition name="dialog">
-    <div id="dialog-backdrop" v-show="active" @mousedown.self="deny()">
-      <v-sheet id="dialog" rounded elevation="16" ref="window" v-if="active" @keyup.esc="deny()">
-        <v-btn v-if="dismissible" variant="text" icon="mdi-close" class="closer" @click="deny()" />
-        <p>{{ active.title }}</p>
-        <div class="btn-controls justify-end">
-          <v-btn v-if="active.no" variant="text" @click="deny()">{{ active.no }}</v-btn>
-          <v-btn v-if="active.yes" :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
-        </div>
-      </v-sheet>
-    </div>
-  </transition>
+  <v-dialog :modelValue="!!active" style="z-index: 2020">
+    <v-sheet id="dialog" rounded elevation="16" ref="window" v-if="active" @keyup.esc="deny()">
+      <v-btn v-if="dismissible" variant="text" icon="mdi-close" class="closer" @click="deny()" />
+      <p>{{ active.title }}</p>
+      <div class="btn-controls justify-end">
+        <v-btn v-if="active.no" variant="text" @click="deny()">{{ active.no }}</v-btn>
+        <v-btn v-if="active.yes" :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
+      </div>
+    </v-sheet>
+  </v-dialog>
 </template>
 
 <script lang="ts">
@@ -19,6 +17,7 @@ import { useI18n } from 'vue-i18n'
 
 import { openDialogEvent } from '@/utils/events'
 import { Dialog } from '@/composables/types'
+import { onClickOutside } from '@vueuse/core'
 
 export default defineComponent({
   setup () {
@@ -36,6 +35,8 @@ export default defineComponent({
         savedFocusEl = null
       }
     }
+
+    onClickOutside(window, close)
 
     function deny () {
       if (!dismissible.value) return
@@ -82,30 +83,7 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-.dialog-enter-active,
-.dialog-leave-active
-  opacity: 1
-  transition: opacity 0.5s ease
-
-.dialog-enter-from,
-.dialog-leave-to
-  opacity: 0
-
-#dialog-backdrop
-  background-color: rgba(#000, .3)
-  z-index: 1010
-  position: fixed
-  left: 0
-  right: 0
-  top: 0
-  bottom: 0
-  display: flex
-  justify-content: center
-  align-items: center
-
 #dialog
-  position: relative
-  background-color: rgb(var(--v-theme-background))
   padding: 20px 40px
   width: 600px
   max-width: calc(100vw - 40px)

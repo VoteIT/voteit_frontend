@@ -437,7 +437,7 @@
     "recentlyClosedChecks": "Recently closed presence checks"
   },
   "profile": {
-    "editProfileHelp": "You can only modify you user ID here. Go to Manage account to change your name or email.",
+    "editProfileHelp": "You can only add email addresses you've validated already. Go to handle account to validate a new adress.",
     "changeUserid": "Change user ID",
     "profile": "Profile",
     "switchUser": "Switch user",

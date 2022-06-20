@@ -10,29 +10,36 @@
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props" prepend-icon="mdi-plus">{{ t('speaker.systemAdd') }}</v-btn>
         </template>
-        <v-card tag="form" :title="t('speaker.systemAdd')" width="1280" max-width="100%" color="background" @submit.prevent="createSystem()">
-          <v-card-text>
-            <v-text-field :label="t('title')" v-model="systemData.title" />
-            <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
-  <!-- TODO Better dynamic forms -->
-            <v-expand-transition>
-              <div v-if="createSystemSettings">
-                <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
+        <template v-slot="{ isActive }">
+          <v-sheet v-bind="dialogDefaults" class="pa-4">
+            <div class="d-flex mb-2">
+              <h2 class="flex-grow-1">
+                {{ t('speaker.systemAdd') }}
+              </h2>
+              <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" />
+            </div>
+            <v-form @submit.prevent="createSystem()">
+              <v-text-field :label="t('title')" v-model="systemData.title" />
+              <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
+    <!-- TODO Better dynamic forms -->
+              <v-expand-transition>
+                <div v-if="createSystemSettings">
+                  <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
+                </div>
+              </v-expand-transition>
+              <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" />
+              <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
+              <div class="text-right">
+                <v-btn variant="text" @click="isActive.value = false">
+                  {{ t('cancel') }}
+                </v-btn>
+                <v-btn type="submit" color="primary" variant="contained" prepend-icon="mdi-plus" :disabled="!createReady">
+                  {{ t('add') }}
+                </v-btn>
               </div>
-            </v-expand-transition>
-            <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" class="mt-8" />
-            <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn variant="text" @click="createDialogOpen = false">
-              {{ t('cancel') }}
-            </v-btn>
-            <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
-              {{ t('add') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+            </v-form>
+          </v-sheet>
+        </template>
       </v-dialog>
     </div>
     <!-- <v-table class="my-4" id="speaker-systems-table">
@@ -86,29 +93,36 @@
       <RoleMatrix class="mt-2" admin :contentType="speakerSystemType" :pk="system.pk" :icons="systemIcons" />
     </Widget>
     <v-dialog v-model="editDialogOpen">
-      <v-card tag="form" :title="t('speaker.systemEdit')" width="1280" max-width="100%" color="background" @submit.prevent="saveSystem()">
-        <v-card-text>
-          <v-text-field :label="t('title')" v-model="editSystemData.title" />
-          <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
-<!-- TODO Better dynamic forms -->
-          <v-expand-transition>
-            <div v-if="editSystemSettings">
-              <v-text-field v-for="field in editSystemSettings" :key="field.name" v-bind="field" />
+      <template v-slot="{ isActive }">
+        <v-sheet v-bind="dialogDefaults" class="pa-4">
+          <div class="d-flex mb-2">
+            <h2 class="flex-grow-1">
+              {{ t('speaker.systemEdit') }}
+            </h2>
+            <v-btn variant="text" @click="isActive.value = false" icon="mdi-close" />
+          </div>
+          <v-form @submit.prevent="saveSystem()">
+            <v-text-field :label="t('title')" v-model="editSystemData.title" />
+            <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
+    <!-- TODO Better dynamic forms -->
+            <v-expand-transition>
+              <div v-if="editSystemSettings">
+                <v-text-field v-for="field in editSystemSettings" :key="field.name" v-bind="field" />
+              </div>
+            </v-expand-transition>
+            <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" />
+            <CheckboxMultipleSelect v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
+            <div class="text-right">
+              <v-btn variant="text" @click="isActive.value = false">
+                {{ t('cancel') }}
+              </v-btn>
+              <v-btn type="submit" color="primary" variant="contained" prepend-icon="mdi-check" :disabled="!editSystemReady">
+                {{ t('save') }}
+              </v-btn>
             </div>
-          </v-expand-transition>
-          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" />
-          <CheckboxMultipleSelect v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="editDialogOpen = false">
-            {{ t('cancel') }}
-          </v-btn>
-          <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!editSystemReady">
-            {{ t('save') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+          </v-form>
+        </v-sheet>
+      </template>
     </v-dialog>
   </div>
 </template>
@@ -126,6 +140,7 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import SelectVue from '@/components/inputs/Select.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserSearch from '@/components/UserSearch.vue'
+import useDefaults from '@/composables/useDefaults'
 
 import { ContextRole } from '@/composables/types'
 import { MenuItem, ThemeColor } from '@/utils/types'
@@ -318,7 +333,8 @@ export default defineComponent({
       systemIcons,
       createSystem,
       deleteSystem,
-      saveSystem
+      saveSystem,
+      ...useDefaults()
     }
   }
 })

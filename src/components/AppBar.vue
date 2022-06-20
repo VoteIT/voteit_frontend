@@ -8,7 +8,7 @@
     <div v-if="user">
       <v-btn class="user-menu" :class="{ open: userMenuOpen }" variant="text" @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
-        <span class="ml-2">{{ user.full_name || user.username }}</span>
+        <span class="ml-2">{{ user.full_name || user.userid }}</span>
       </v-btn>
       <teleport to="main.v-main">
         <v-navigation-drawer location="right" v-model="userMenuOpen" disable-resize-watcher temporary>
@@ -36,18 +36,21 @@
                     <v-btn icon="mdi-close" @click="isActive.value = false" />
                   </div>
                   <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
-                  <SchemaForm :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
-                    <template #buttons="{ valid, disabled }">
+                  <SchemaForm v-if="profileSchema" :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
+                    <template #buttons="{ disabled, submitting }">
                       <div class="text-right">
                         <v-btn variant="text" @click="isActive.value = false">
                           {{ t('cancel') }}
                         </v-btn>
-                        <v-btn color="primary" type="submit" :disabled="disabled || !valid">
+                        <v-btn color="primary" variant="contained" type="submit" :loading="submitting" :disabled="disabled">
                           {{ t('save') }}
                         </v-btn>
                       </div>
                     </template>
                   </SchemaForm>
+                  <div v-else class="text-center">
+                    <v-progress-circular indeterminate color="primary" />
+                  </div>
                 </v-sheet>
               </template>
             </v-dialog>
@@ -107,14 +110,18 @@ import { dialogQuery } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 
+import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import SchemaForm from './SchemaForm.vue'
 import { User } from '@/modules/organisations/types'
-import { FieldType, FormSchema } from './types'
+import { FieldType } from './types'
 
 import * as rules from '@/utils/rules'
+import { profileType } from '@/modules/organisations/contentTypes'
+
+import type { FormSchema } from './types'
 
 export default defineComponent({
   components: { SchemaForm },
@@ -124,6 +131,7 @@ export default defineComponent({
     const route = useRoute()
     const auth = useAuthentication()
     const { manageAccountURL } = useOrganisation()
+    const { alert } = useAlert()
 
     const userMenuOpen = ref(false)
     const userMenuComponent = ref<ComponentPublicInstance | null>(null)
@@ -142,23 +150,44 @@ export default defineComponent({
       return !!route.matched[0]?.components?.navigationDrawer
     })
 
-    async function updateProfile (data: Pick<User, 'userid'>) {
-      await auth.updateProfile(data)
+    function updateProfile (data: Pick<User, 'userid' | 'first_name' | 'last_name' | 'email'>) {
+      return auth.updateProfile(data)
     }
 
-    const profileSchema = computed<FormSchema>(() => {
+    const emailChoices = ref<string[] | null>(null)
+    async function fetchEmailChoices () {
+      try {
+        const { data } = await profileType.api.getAction<{ emails: string[] }>('email_choices')
+        emailChoices.value = data.emails
+      } catch {
+        alert('*Could not load email address options')
+      }
+    }
+
+    const profileSchema = computed<FormSchema | undefined>(() => {
+      if (!emailChoices.value) {
+        fetchEmailChoices()
+        return
+      }
       return [
         {
           name: 'first_name',
           label: 'Förnamn',
           type: FieldType.Text,
-          rules: [rules.disabled]
+          rules: [rules.required]
         },
         {
           name: 'last_name',
           label: 'Efternamn',
           type: FieldType.Text,
-          rules: [rules.disabled]
+          rules: [rules.required]
+        },
+        {
+          name: 'email',
+          label: 'E-post',
+          type: FieldType.Select,
+          rules: [rules.required],
+          items: emailChoices.value.map(v => ({ value: v, title: v }))
         },
         {
           name: 'userid',
