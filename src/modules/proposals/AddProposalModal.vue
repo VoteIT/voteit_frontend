@@ -37,7 +37,7 @@
     <v-spacer />
     <v-alert v-if="done" type="success" :text="t('allDone')" class="mt-8 flex-grow-0" />
     <div v-if="done" class="text-right mt-4">
-      <v-btn variant="contained" color="primary" @click="$emit('close')">
+      <v-btn color="primary" @click="$emit('close')">
         {{ t('close') }}
       </v-btn>
     </div>
@@ -45,7 +45,7 @@
       <v-btn variant="text" @click="$emit('close')">
         {{ t('cancel') }}
       </v-btn>
-      <v-btn variant="contained" color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal()">
+      <v-btn color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal()">
         {{ proposal ? t('update') : t('publish') }}
       </v-btn>
     </div>

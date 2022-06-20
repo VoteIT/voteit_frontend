@@ -23,7 +23,7 @@
       </p>
     </v-card-text>
     <v-card-actions v-if="enterLeaveBtn" class="flex-wrap">
-      <v-btn variant="contained" :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
+      <v-btn variant="elevated" :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
       <v-btn :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange">

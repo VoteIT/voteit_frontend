@@ -4,7 +4,7 @@
       <template #activator="{ props }">
         <form v-bind="props" class="user-search" :class="{ instant }" @submit.prevent="submit()">
           <v-text-field v-bind="fieldBind" :hint="hint" type="search" ref="inputField" autocomplete="off" v-model="query" hide-details class="hide-details" />
-          <v-btn v-if="!instant" type="submit" v-bind="btnBind" variant="contained" color="primary">
+          <v-btn v-if="!instant" type="submit" v-bind="btnBind" color="primary">
             {{ buttonText || t('add') }}
           </v-btn>
         </form>

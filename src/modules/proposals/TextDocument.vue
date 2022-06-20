@@ -19,7 +19,7 @@
           <v-card-actions v-if="canAddProposal">
             <v-dialog>
               <template #activator="{ props }">
-                <v-btn size="small" variant="contained" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
+                <v-btn size="small" variant="elevated" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
                   {{ t('proposal.change') }}
                 </v-btn>
               </template>

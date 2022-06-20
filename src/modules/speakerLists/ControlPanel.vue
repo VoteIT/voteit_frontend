@@ -33,7 +33,7 @@
                 <v-btn variant="text" @click="isActive.value = false">
                   {{ t('cancel') }}
                 </v-btn>
-                <v-btn type="submit" color="primary" variant="contained" prepend-icon="mdi-plus" :disabled="!createReady">
+                <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
                   {{ t('add') }}
                 </v-btn>
               </div>
@@ -116,7 +116,7 @@
               <v-btn variant="text" @click="isActive.value = false">
                 {{ t('cancel') }}
               </v-btn>
-              <v-btn type="submit" color="primary" variant="contained" prepend-icon="mdi-check" :disabled="!editSystemReady">
+              <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!editSystemReady">
                 {{ t('save') }}
               </v-btn>
             </div>

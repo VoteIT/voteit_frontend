@@ -61,8 +61,11 @@ export default defineComponent({
       return {
         component: componentNames[type],
         name,
-        rules: fieldValidators,
-        props
+        rules,
+        props: {
+          rules: fieldValidators,
+          ...props
+        }
       }
     })
 
@@ -104,6 +107,9 @@ export default defineComponent({
       fieldErrors.value = {}
       form.value?.validate()
       emit('update:modelValue', value)
+    })
+    watch(form, value => {
+      value?.validate()
     })
 
     return {

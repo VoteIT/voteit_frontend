@@ -49,7 +49,7 @@
     <v-col cols="12" order-sm="0" sm="7" md="7" lg="6" offset-lg="1">
       <template v-if="currentList">
         <div class="btn-group mb-2">
-          <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
+          <v-btn color="primary" :disabled="!canStartSpeaker(currentList) || !speakerQueue.length" @click="speakers.startSpeaker(currentList)"><v-icon icon="mdi-play"/></v-btn>
           <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.stopSpeaker(currentList)"><v-icon icon="mdi-stop"/></v-btn>
           <v-btn color="primary" :disabled="!currentSpeaker" @click="speakers.undoSpeaker(currentList)"><v-icon icon="mdi-undo"/></v-btn>
           <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
@@ -292,8 +292,4 @@ ol.speaker-queue
   li
     &.self
       font-weight: 700
-
-.btn-group.navigation // Flat does not work in vuetify alpha.11
-  .v-btn--variant-contained::before
-    box-shadow: none !important
 </style>

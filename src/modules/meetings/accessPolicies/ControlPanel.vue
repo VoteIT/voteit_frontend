@@ -64,8 +64,8 @@
                 <v-btn
                   v-bind="props"
                   prepend-icon="mdi-content-copy"
-                  variant="contained"
                   :color="copied ? 'success' : 'primary'"
+                  variant="elevated"
                   @click="copy(meetingUrl)">
                   Kopiera möteslänk
                 </v-btn>
