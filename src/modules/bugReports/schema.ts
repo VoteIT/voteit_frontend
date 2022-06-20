@@ -1,19 +1,20 @@
-import { required, selectOptions } from '@/utils/rules'
+import { required } from '@/utils/rules'
 
 export default [
   {
     name: 'function',
     type: 'select',
     label: 'Funktion',
-    rules: [selectOptions({
-      participants: 'Deltagar- och användarhantering',
-      discussions: 'Diskussioner',
-      proposals: 'Förslag',
-      polls: 'Omröstningar',
-      agenda: 'Skapa och bygga möte eller dagordning',
-      speaker: 'Talarlistor',
-      other: 'Annat'
-    })]
+    items: [
+      { title: 'Deltagar- och användarhantering', value: 'participants' },
+      { title: 'Diskussioner', value: 'discussions' },
+      { title: 'Förslag', value: 'proposals' },
+      { title: 'Omröstningar', value: 'polls' },
+      { title: 'Skapa och bygga möte eller dagordning', value: 'agenda' },
+      { title: 'Talarlistor', value: 'speaker' },
+      { title: 'Annat', value: 'other' }
+    ],
+    rules: [required]
   },
   {
     name: 'description',

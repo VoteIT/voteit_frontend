@@ -33,9 +33,9 @@
               Genom att skicka denna felrapport godkänner du att vi sparar ditt användarnamn tillsammans med felrapporten fram till att problemet är avhjälpt eller som längst ett år.
             </p>
             <SchemaForm :schema="schema" class="mt-4" :handler="submit" @saved="submitted = true">
-              <template #buttons="{ disabled, valid }">
+              <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
-                  <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="disabled || !valid">
+                  <v-btn type="submit" color="primary" prepend-icon="mdi-send" :loading="submitting" :disabled="disabled">
                     Skicka
                   </v-btn>
                 </div>

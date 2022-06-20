@@ -95,7 +95,7 @@ export interface FieldRule<T> {
   props?: {
     required?: boolean,
     disabled?: boolean,
-    type?: 'email' | 'password' // TODO More types
+    type?: 'email' | 'password', // TODO More types
   }
   clean?: (value: T) => T
   validate?: (value: T) => true | string
@@ -122,6 +122,14 @@ interface NumberField extends SchemaField<number> {
   type: FieldType.Number
 }
 
+interface SelectField extends SchemaField<string> {
+  type: FieldType.Select,
+  items: {
+    title: string
+    value: string | number
+  }[]
+}
+
 interface SwitchField extends SchemaField<boolean> {
   type: FieldType.Switch
 }
@@ -134,7 +142,7 @@ interface TextAreaField extends SchemaField<string> {
   type: FieldType.TextArea
 }
 
-export type FormField = CheckboxField | CheckboxMultipleField | NumberField | SwitchField | TextField | TextAreaField
+export type FormField = CheckboxField | CheckboxMultipleField | NumberField | SelectField | SwitchField | TextField | TextAreaField
 export type FormSchema = FormField[]
 
 export interface RoleMatrixColDescription {
