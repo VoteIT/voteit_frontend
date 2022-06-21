@@ -160,7 +160,7 @@ export default defineComponent({
         const { data } = await profileType.api.getAction<{ emails: string[] }>('email_choices')
         emailChoices.value = data.emails
       } catch {
-        alert('*Could not load email address options')
+        alert('^Could not load email address options')
       }
     }
 
