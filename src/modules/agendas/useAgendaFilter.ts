@@ -3,7 +3,8 @@ import { computed, reactive } from 'vue'
 import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
 
 import { Filter } from './types'
-import useAgendaItem from './useAgendaItem'
+import useAgenda from './useAgenda'
+import useMeeting from '../meetings/useMeeting'
 
 // Store filters for each agenda id
 const agendaFilters = reactive<Map<number, Filter>>(new Map())
@@ -15,7 +16,8 @@ function setEqual (a: Set<string>, b: Set<string>): boolean {
 }
 
 export default function useAgendaFilter () {
-  const { agendaId } = useAgendaItem()
+  const { meetingId } = useMeeting()
+  const { agendaId } = useAgenda(meetingId)
   const activeFilter = computed<Filter>(() => {
     if (!agendaFilters.has(agendaId.value)) {
       agendaFilters.set(agendaId.value, {

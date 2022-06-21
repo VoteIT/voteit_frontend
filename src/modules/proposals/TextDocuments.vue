@@ -7,7 +7,8 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 
-import useAgendaItem from '../agendas/useAgendaItem'
+import useAgenda from '../agendas/useAgenda'
+import useMeeting from '../meetings/useMeeting'
 
 import TextDocument from './TextDocument.vue'
 import useTextDocuments from './useTextDocuments'
@@ -17,7 +18,8 @@ export default defineComponent({
     TextDocument
   },
   setup () {
-    const { agendaId } = useAgendaItem()
+    const { meetingId } = useMeeting()
+    const { agendaId } = useAgenda(meetingId)
     const { getDocuments } = useTextDocuments()
     const documents = computed(() => getDocuments((doc) => doc.agenda_item === agendaId.value))
 

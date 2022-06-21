@@ -8,9 +8,9 @@
       v-for="(field, i) in fields" :key="i"
       :is="field.component" v-bind="field.props" v-model="formData[field.name]"
       @blur="cleanField(field)"
-      :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name] || field.messages"
+      :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name]"
     />
-    <slot name="buttons" :valid="valid" :submitting="submitting" :disabled="submitting || !valid" />
+    <slot name="buttons" :valid="valid" :submitting="submitting" :disabled="submitting || valid === false" />
   </v-form>
 </template>
 
@@ -20,7 +20,7 @@ import { Component, ComponentPublicInstance, defineComponent, PropType, reactive
 import { parseRestError } from '@/utils/restApi'
 
 import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
-import type { FieldType, FormField, FormSchema } from './types'
+import type { FieldRule, FieldType, FormSchema } from './types'
 
 const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
@@ -36,7 +36,7 @@ export default defineComponent({
   emits: ['update:modelValue', 'saved', 'submit'],
   props: {
     modelValue: {
-      type: Object,
+      type: Object as PropType<Record<string, string | boolean | number>>,
       default: () => ({})
     },
     schema: {
@@ -46,7 +46,7 @@ export default defineComponent({
     handler: Function as PropType<(data: object) => Promise<any>>
   },
   setup (props, { emit }) {
-    const valid = ref(false)
+    const valid = ref<boolean | null>(null)
     const formData = reactive(
       Object.fromEntries(
         props.schema.map(f => [f.name, props.modelValue[f.name] ?? f.default])
@@ -61,19 +61,21 @@ export default defineComponent({
       return {
         component: componentNames[type],
         name,
-        rules: fieldValidators,
-        props
+        rules,
+        props: {
+          rules: fieldValidators,
+          ...props
+        }
       }
     })
 
-    function cleanField (field: FormField) {
-      let value = formData[field.name]
-      for (const { clean } of field.rules || []) {
-        // Mutter .... ### TypeScript says never...
-        if (clean) value = (clean as (v: string) => string)(value)
+    function cleanField ({ name, rules }: { name: string, rules?: FieldRule<any>[] }) {
+      let value = formData[name]
+      for (const { clean } of rules || []) {
+        if (clean) value = clean(value)
       }
       // Avoid triggering unneccessary reactivity
-      if (formData[field.name] !== value) formData[field.name] = value
+      if (formData[name] !== value) formData[name] = value
     }
     function cleanForm () {
       for (const field of props.schema) {
@@ -84,7 +86,7 @@ export default defineComponent({
     const submitting = ref(false)
     async function submit () {
       cleanForm()
-      if (!valid.value) return
+      if (!form.value?.validate()) return
       if (!props.handler) return emit('submit', formData.value)
       submitting.value = true
       try {
@@ -100,9 +102,7 @@ export default defineComponent({
     const form = ref<ComponentPublicInstance<{ validate:() => void }> | null>(null)
 
     watch(formData, (value) => {
-      // Not supported in current vuetify alpha
       fieldErrors.value = {}
-      form.value?.validate()
       emit('update:modelValue', value)
     })
 

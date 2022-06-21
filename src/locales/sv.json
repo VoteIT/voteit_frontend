@@ -252,6 +252,7 @@
   },
   "poll": {
     "abstain": "Avstå",
+    "abstained": "Du avstod från att rösta i den här omröstningen.",
     "abstainValidVoteConfirm": "Du har fyllt i en giltig röst, men klickat avstå. Är du säker? Avbryt och klicka Rösta för att lägga din röst.",
     "all": "Alla omröstningar",
     "allowRandomTiebreaker": "Tillåt slumpmässig utslagsröst",
@@ -265,6 +266,7 @@
     "created": "Skapa omröstning {title}",
     "deny": "Avslag",
     "details": "Omröstningsdetaljer",
+    "didNotVote": "Du röstade inte i den här omröstningen.",
     "finalVoteCount": "{votes} röstade, {abstains} avstod aktivt, {total} röstberättigade",
     "finalVoteCountNoEr": "{votes} röstade, {abstains} avstod aktivt, röstlängd saknas",
     "finished": "Avslutad",
@@ -284,6 +286,7 @@
     "selectProposals": "Välj förslag",
     "selectProposalsDescription": "Klicka för att välja det förslag du vill rösta på.\nI nästa steg kommer du att kunna justera ordningen.",
     "showProgress": "Följ röstning",
+    "showVote": "Visa din röst",
     "start": "Ny omröstning",
     "started": "Startad",
     "timeToVote": "Dags att rösta",
@@ -307,6 +310,7 @@
     "watchVoting": "Visa resultat",
     "youHaveVoted": "Du har röstat",
     "youHaveNotVoted": "Du har inte röstat",
+    "yourVote": "Din röst",
     "criterion": {
       "majorityWinner": {
         "title": "Majoritetsvinnare",

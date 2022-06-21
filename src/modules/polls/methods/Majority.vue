@@ -3,7 +3,7 @@
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
         <div class="text-center">
-          <v-btn :disabled="disabled" :color="option.color" :variant="choice === p.pk ? 'contained' : 'outlined'" :prepend-icon="option.icon" @click="select(p)">
+          <v-btn :disabled="disabled" :color="option.color" :variant="choice === p.pk ? 'elevated' : 'outlined'" :prepend-icon="option.icon" @click="select(p)">
             {{ t(option.translationString) }}
           </v-btn>
         </div>

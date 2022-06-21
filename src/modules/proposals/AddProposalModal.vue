@@ -37,7 +37,7 @@
     <v-spacer />
     <v-alert v-if="done" type="success" :text="t('allDone')" class="mt-8 flex-grow-0" />
     <div v-if="done" class="text-right mt-4">
-      <v-btn variant="contained" color="primary" @click="$emit('close')">
+      <v-btn color="primary" @click="$emit('close')">
         {{ t('close') }}
       </v-btn>
     </div>
@@ -45,7 +45,7 @@
       <v-btn variant="text" @click="$emit('close')">
         {{ t('cancel') }}
       </v-btn>
-      <v-btn variant="contained" color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal()">
+      <v-btn color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal()">
         {{ proposal ? t('update') : t('publish') }}
       </v-btn>
     </div>
@@ -63,7 +63,7 @@ import useAuthentication from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import { proposalType } from './contentTypes'
-import useAgendaItem from '../agendas/useAgendaItem'
+import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import { userType } from '../organisations/contentTypes'
@@ -108,7 +108,7 @@ export default defineComponent({
         : props.modelValue
     )
     const { meetingId, isModerator } = useMeeting()
-    const { agendaId } = useAgendaItem()
+    const { agendaId } = useAgenda(meetingId)
     const { userGroups } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
     const { getUser } = useUserDetails()

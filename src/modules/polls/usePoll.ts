@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 
 import useProposals from '../proposals/useProposals'
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
-import { canChangePoll, canDeletePoll, canVote as _canVote } from './rules'
+import { canChangePoll, canDeletePoll, canVote as _canVote, isPollVoter } from './rules'
 import { pollMethods, pollResults } from './methods'
 import usePolls from './usePolls'
 import { PollState } from './types'
@@ -92,6 +92,7 @@ export default function usePoll (pollRef: Ref<number>) {
     canVote,
     isOngoing,
     isFinished,
+    isPollVoter: computed(() => poll.value && isPollVoter(poll.value)),
     poll,
     pollStatus,
     proposals,

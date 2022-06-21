@@ -29,7 +29,7 @@ interface ProposalResult {
     key: string
     value: number
     btn: {
-      variant: 'contained' | 'text'
+      variant?: 'text'
       color: ThemeColor
       prependIcon: string
     }
@@ -71,7 +71,7 @@ export default defineComponent({
               value,
               btn: {
                 variant: activeChoice === c.value
-                  ? 'contained'
+                  ? undefined
                   : 'text',
                 color: c.color,
                 prependIcon: c.icon

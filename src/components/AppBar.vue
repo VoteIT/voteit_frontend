@@ -42,7 +42,7 @@
                         <v-btn variant="text" @click="isActive.value = false">
                           {{ t('cancel') }}
                         </v-btn>
-                        <v-btn color="primary" variant="contained" type="submit" :loading="submitting" :disabled="disabled">
+                        <v-btn color="primary" variant="elevated" type="submit" :loading="submitting" :disabled="disabled">
                           {{ t('save') }}
                         </v-btn>
                       </div>
@@ -160,7 +160,7 @@ export default defineComponent({
         const { data } = await profileType.api.getAction<{ emails: string[] }>('email_choices')
         emailChoices.value = data.emails
       } catch {
-        alert('*Could not load email address options')
+        alert('^Could not load email address options')
       }
     }
 

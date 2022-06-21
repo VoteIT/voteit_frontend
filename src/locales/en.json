@@ -253,6 +253,7 @@
   },
   "poll": {
     "abstain": "Abstain",
+    "abstained": "You abstained from voting in this poll.",
     "abstainValidVoteConfirm": "You have entered a valid vote, but clicked abstain. Are you sure? Cancel and click Vote to cast as a vote.",
     "all": "All polls",
     "allowRandomTiebreaker": "Allow random in tiebreaker",
@@ -266,6 +267,7 @@
     "created": "Created poll {title}",
     "deny": "Deny",
     "details": "Poll details",
+    "didNotVote": "You did not vote in this poll.",
     "finalVoteCount": "{votes} voted, {abstains} abstained actively, {total} eligible",
     "finalVoteCountNoER": "{votes} voted, {abstains} abstained actively, no electoral register",
     "finished": "Finished",
@@ -285,6 +287,7 @@
     "selectProposals": "Select proposals",
     "selectProposalsDescription": "Click to select the proposals you want to vote for.\nIn the next step you will be able to adjust the order.",
     "showProgress": "Show progress",
+    "showVote": "Show your vote",
     "start": "Start poll",
     "started": "Started",
     "timeToVote": "Time to vote",
@@ -308,6 +311,7 @@
     "watchVoting": "Watch voting",
     "youHaveVoted": "You have voted",
     "youHaveNotVoted": "You have not voted",
+    "yourVote": "Your vote",
     "criterion": {
       "majorityWinner": {
         "title": "Majority winner",

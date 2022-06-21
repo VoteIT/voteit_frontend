@@ -8,18 +8,18 @@
       <v-spacer />
       <v-tooltip :modelValue="copied" location="top" :text="t('copied')">
         <template #activator="{ props }">
-          <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'contained' : 'text'" :title="t('meeting.invites.copyMatchingTooltip')">
+          <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('meeting.invites.copyMatchingTooltip')">
             <v-icon>mdi-content-copy</v-icon>
           </v-btn>
         </template>
       </v-tooltip>
-      <v-btn class="mr-2" :variant="filterMenu ? 'contained' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'accent' : undefined" >
+      <v-btn class="mr-2" :variant="filterMenu ? 'elevated' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'accent' : undefined" >
         <v-icon>mdi-filter-menu</v-icon>
       </v-btn>
       <v-dialog v-model="inviteDialogOpen">
         <template #activator="{ props }">
           <div class="text-right mb-2">
-            <v-btn v-bind="props" variant="contained" color="primary" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
+            <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
               {{ t('meeting.invites.add') }}
             </v-btn>
           </div>
@@ -43,7 +43,7 @@
               <v-btn v-if="submittingInvites" disabled>
                 <v-progress-circular indeterminate size="small" />
               </v-btn>
-              <v-btn v-else variant="contained" type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitesReady">
+              <v-btn v-else type="submit" color="primary" prepend-icon="mdi-account-multiple-plus" :disabled="!invitesReady">
                 {{ t('add') }}
               </v-btn>
             </div>
@@ -111,10 +111,10 @@
         <h2 class="mb-2">
           {{ t('meeting.invites.bulkChange', selectedInvites.length) }}
         </h2>
-        <v-btn variant="contained" prepend-icon="mdi-undo" color="primary" :disabled="!selectedHasDeletable" @click="revokeSelected()" class="mr-1">
+        <v-btn prepend-icon="mdi-undo" color="primary" :disabled="!selectedHasDeletable" @click="revokeSelected()" class="mr-1">
           {{ t('meeting.invites.revoke') }}
         </v-btn>
-        <v-btn variant="contained" prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected()">
+        <v-btn prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected()">
           {{ t('delete') }}
         </v-btn>
       </div>

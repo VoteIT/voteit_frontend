@@ -1,6 +1,6 @@
 <template>
   <span class="text-no-wrap mr-1">
-    <v-btn :prepend-icon="button.icon" size="small" :variant="reaction ? 'contained' : 'text'" :color="button.color" :disabled="!canReact" @click="toggle">
+    <v-btn :prepend-icon="button.icon" size="small" :variant="reaction ? 'elevated' : 'text'" :color="button.color" :disabled="!canReact" @click="toggle">
       {{ button.title }}
     </v-btn>
     <v-dialog v-model="listOpen">

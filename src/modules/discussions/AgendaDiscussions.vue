@@ -22,6 +22,7 @@ import useMeeting from '../meetings/useMeeting'
 import DiscussionPostVue from './DiscussionPost.vue'
 import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
+import useAgenda from '../agendas/useAgenda'
 
 export default defineComponent({
   components: {
@@ -37,8 +38,9 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { agendaId, canAddDiscussionPost, agendaItem } = useAgendaItem()
     const { meetingId } = useMeeting()
+    const { agendaId } = useAgenda(meetingId)
+    const { canAddDiscussionPost, agendaItem } = useAgendaItem(agendaId)
     const { getMeetingButtons } = useReactions()
 
     const submitIcon = computed(() => agendaItem.value?.block_discussion ? 'mdi-lock-outline' : 'mdi-comment-text-outline')

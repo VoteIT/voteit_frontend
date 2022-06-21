@@ -18,7 +18,8 @@ import { useI18n } from 'vue-i18n'
 import { slugify } from '@/utils'
 import { closeModalEvent } from '@/utils/events'
 
-import useAgendaItem from '../agendas/useAgendaItem'
+import useMeeting from '../meetings/useMeeting'
+import useAgenda from '../agendas/useAgenda'
 import { ProposalText, proposalTextType } from './contentTypes'
 
 export default defineComponent({
@@ -26,7 +27,8 @@ export default defineComponent({
     data: Object as PropType<ProposalText>
   },
   setup (props) {
-    const { agendaId } = useAgendaItem()
+    const { meetingId } = useMeeting()
+    const { agendaId } = useAgenda(meetingId)
     const { t } = useI18n()
     const formData = reactive<Pick<ProposalText, 'base_tag' | 'body' | 'title'>>({
       base_tag: props.data?.base_tag ?? t('proposal.textBaseTagDefault'),

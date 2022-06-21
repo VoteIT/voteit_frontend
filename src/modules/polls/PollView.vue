@@ -7,7 +7,14 @@
             <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
             <WorkflowState :admin="canChange" :contentType="pollType" :object="poll" />
             <h1>{{ poll.title }}</h1>
-            <p class="text-secondary">{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
+            <p class="text-secondary">
+              {{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}
+            </p>
+            <p v-if="agendaItem">
+              <router-link :to="agendaItemPath">
+                {{ agendaItem.title }}
+              </router-link>
+            </p>
           </div>
           <Menu :items="menuItems" />
         </header>
@@ -54,6 +61,36 @@
         <v-btn v-for="{ props, title } in buttons" :key="title" v-bind="props" class="mr-1 mb-1">
           {{ title }}
         </v-btn>
+        <v-dialog v-if="isFinished && isPollVoter">
+          <template #activator="{ props }">
+            <v-btn v-bind="props" color="secondary mb-1" prepend-icon="mdi-vote">
+              {{ t('poll.showVote') }}
+            </v-btn>
+          </template>
+          <template v-slot="{ isActive }">
+            <v-sheet v-bind="dialogDefaults" class="pa-4 d-flex flex-column">
+              <div class="d-flex mb-2">
+                <h2 class="flex-grow-1">
+                  {{ t('poll.yourVote') }}
+                </h2>
+                <v-btn class="ma-n2" icon="mdi-close" variant="text" @click="isActive.value = false" />
+              </div>
+              <p v-if="!userVote">
+                {{ t('poll.didNotVote') }}
+              </p>
+              <p v-else-if="userVote.abstain">
+                {{ t('poll.abstained') }}
+              </p>
+              <component v-else class="voting-component" disabled :is="voteComponent" :poll="poll" :modelValue="userVote.vote" />
+              <v-spacer />
+              <div class="text-right">
+                <v-btn color="primary" @click="isActive.value = false">
+                  {{ t('close') }}
+                </v-btn>
+              </div>
+            </v-sheet>
+          </template>
+        </v-dialog>
       </div>
     </v-col>
   </v-row>
@@ -65,6 +102,8 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import WorkflowState from '@/components/WorkflowState.vue'
+import useDefaults from '@/composables/useDefaults'
+import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
 
@@ -83,8 +122,9 @@ export default defineComponent({
     const { t } = useI18n()
     const route = useRoute()
     const router = useRouter()
-    const { approved, denied, poll, isOngoing, isFinished, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
+    const { approved, denied, poll, isOngoing, isFinished, isPollVoter, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath, meetingId } = useMeeting()
+    const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
     const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
@@ -190,7 +230,7 @@ export default defineComponent({
             to: `${meetingPath.value}/polls/${nextUnvoted.value.pk}/${slugify(nextUnvoted.value.title)}`,
             prependIcon: 'mdi-star'
           },
-          title: t('poll.nextUnvoted', nextUnvoted.value as {})
+          title: t('poll.nextUnvoted', { ...nextUnvoted.value })
         })
       }
       return btns
@@ -199,26 +239,31 @@ export default defineComponent({
 
     return {
       t,
+      agendaItem,
+      agendaItemPath,
       allPollsPath,
       approved,
       buttons,
       canChange,
       canVote,
       denied,
+      isOngoing,
+      isFinished,
+      isPollVoter,
       menuItems,
       methodName,
       poll,
       pollType,
       resultComponent,
-      isOngoing,
-      isFinished,
+      userVote,
       validVote,
       voteComponent,
       submitting,
       votingComplete,
       voteCount,
       abstainVote,
-      castVote
+      castVote,
+      ...useDefaults()
     }
   }
 })

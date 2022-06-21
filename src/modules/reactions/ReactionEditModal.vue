@@ -3,7 +3,7 @@
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
-        <v-btn :prepend-icon="formData.icon" size="small" @click="previewActive = !previewActive" :variant="previewActive ? 'contained' : 'text'" :color="formData.color">
+        <v-btn :prepend-icon="formData.icon" size="small" @click="previewActive = !previewActive" :variant="previewActive ? 'elevated' : 'text'" :color="formData.color">
           {{ formData.title }}
         </v-btn>
         <v-btn variant="text" flat size="small" class="reaction-count">
@@ -16,7 +16,7 @@
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
             <v-item v-for="value in Object.values(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'contained' : 'text'" :color="value" @click="toggle()" />
+              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'elevated' : 'text'" :color="value" @click="toggle()" />
             </v-item>
           </v-item-group>
         </div>
@@ -24,7 +24,7 @@
           <label>{{ t('icon') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.icon">
             <v-item v-for="value in Object.values(ReactionIcon)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :variant="isSelected ? 'contained' : 'text'" :color="formData.color" :icon="value" @click="toggle()" />
+              <v-btn :variant="isSelected ? 'elevated' : 'text'" :color="formData.color" :icon="value" @click="toggle()" />
             </v-item>
           </v-item-group>
         </div>
