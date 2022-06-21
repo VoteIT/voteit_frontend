@@ -10,9 +10,9 @@
           {{ t('role.help.' + col.name) }}
         </li>
       </ul>
-  </v-alert>
+    </v-alert>
 
-    <!-- <v-pagination v-model="currentPage" :length="pageCount" color="primary" /> -->
+    <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
     <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed, admin }">
       <thead>
         <tr>
@@ -30,7 +30,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="[user, ...cols] in userMatrix" :key="user">
+        <tr v-for="[user, ...cols] in pageUsers" :key="user">
           <td><User :pk="user" userid /></td>
           <td v-for="({ name, readonly }, i) in columns" :key="name" class="text-center">
             <v-btn v-if="cols[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
@@ -57,7 +57,7 @@ import ContentType from '@/contentTypes/ContentType'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 import { RoleMatrixCol, RoleMatrixColDescription } from './types'
 
-const USERS_PER_PAGE = 2
+const USERS_PER_PAGE = 50
 
 export default defineComponent({
   props: {
@@ -203,4 +203,12 @@ export default defineComponent({
   &.orderReversed
     th::after
       transform: rotate(180deg)
+</style>
+
+<style lang="sass">
+// Visual bug in Vuetify
+// TODO Remove hopefully!
+.v-pagination
+  .v-btn__overlay
+    --v-border-opacity: .12 !important
 </style>
