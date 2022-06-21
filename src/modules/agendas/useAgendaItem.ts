@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, Ref } from 'vue'
 
 import { slugify } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
@@ -9,9 +9,10 @@ import { canChangeAgendaItem as canChange } from './rules'
 import useAgenda from './useAgenda'
 import usePolls from '../polls/usePolls'
 
-export default function useAgendaItem () {
+export default function useAgendaItem (agendaId: Ref<number | undefined>) {
   const { meetingId, meetingPath } = useMeeting()
-  const { agendaId, agendaItem } = useAgenda(meetingId)
+  const { getAgendaItem } = useAgenda(meetingId)
+  const agendaItem = computed(() => typeof agendaId.value === 'number' ? getAgendaItem(agendaId.value) : undefined)
   const { allPollTitles } = usePolls()
 
   const agendaItemPath = computed(() => {
@@ -47,7 +48,6 @@ export default function useAgendaItem () {
   })
 
   return {
-    agendaId,
     agendaItem,
     agendaItemPath,
     canAddDiscussionPost,

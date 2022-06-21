@@ -102,8 +102,8 @@ export default defineComponent({
   },
   setup (props) {
     const { t } = useI18n()
-    const { agendaItem, canAddDiscussionPost } = useAgendaItem()
     const { isModerator, meetingId } = useMeeting()
+    const { agendaItem, canAddDiscussionPost } = useAgendaItem(computed(() => props.p.agenda_item))
     const { getHTMLTags } = useTags()
     const showComments = ref(false)
     const { getProposalDiscussions } = useDiscussions()

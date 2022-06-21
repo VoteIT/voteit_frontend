@@ -12,6 +12,7 @@ import { useI18n } from 'vue-i18n'
 
 import ReactionButton from '../reactions/ReactionButton.vue'
 import useReactions from '../reactions/useReactions'
+import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 
@@ -30,8 +31,9 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { agendaId, canAddProposal } = useAgendaItem()
     const { meetingId } = useMeeting()
+    const { agendaId } = useAgenda(meetingId)
+    const { canAddProposal } = useAgendaItem(agendaId)
     const { getMeetingButtons } = useReactions()
 
     async function submit (body: string, tags: string[]) {

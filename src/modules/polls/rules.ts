@@ -16,7 +16,7 @@ const { getRegister } = useElectoralRegisters()
 
 const PERMISSIVE_STATES = [PollState.Private, PollState.Upcoming, PollState.Ongoing] // States where moderators can make changes
 
-function isPollVoter (poll: Poll): boolean {
+export function isPollVoter (poll: Poll): boolean {
   if (!poll.electoral_register || !user.value) return false
   const register = getRegister(poll.electoral_register)
   if (!register) return false

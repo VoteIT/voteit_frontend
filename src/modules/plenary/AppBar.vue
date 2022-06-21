@@ -67,8 +67,8 @@ export default defineComponent({
   setup () {
     const { t } = useI18n()
     const { meetingId, meetingPath } = useMeeting()
-    const { previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
-    const { agendaId, agendaItem, agendaItemPath, nextPollTitle } = useAgendaItem()
+    const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
+    const { agendaItem, agendaItemPath, nextPollTitle } = useAgendaItem(agendaId)
     const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary()
     const { getAgendaProposals } = useProposals()
     const { getAiPolls, getPollMethod } = usePolls()

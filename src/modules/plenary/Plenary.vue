@@ -48,12 +48,14 @@ import { flatten } from 'lodash'
 
 import { LastReadKey } from '@/composables/useUnread'
 import { WorkflowState } from '@/contentTypes/types'
+import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useProposals from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
 import useTextDocuments from '../proposals/useTextDocuments'
 import { proposalStates } from '../proposals/workflowStates'
+import useMeeting from '../meetings/useMeeting'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import { tagClickEvent } from '../meetings/useTags'
 
@@ -68,7 +70,9 @@ export default defineComponent({
   setup () {
     provide('context', 'meeting')
     const { t } = useI18n()
-    const { agendaId, agendaItem } = useAgendaItem()
+    const { meetingId } = useMeeting()
+    const { agendaId } = useAgenda(meetingId)
+    const { agendaItem } = useAgendaItem(agendaId)
     const { aiProposalTexts } = useTextDocuments(agendaId)
 
     useMeetingChannel()

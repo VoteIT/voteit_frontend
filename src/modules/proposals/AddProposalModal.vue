@@ -63,7 +63,7 @@ import useAuthentication from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import { proposalType } from './contentTypes'
-import useAgendaItem from '../agendas/useAgendaItem'
+import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import { userType } from '../organisations/contentTypes'
@@ -108,7 +108,7 @@ export default defineComponent({
         : props.modelValue
     )
     const { meetingId, isModerator } = useMeeting()
-    const { agendaId } = useAgendaItem()
+    const { agendaId } = useAgenda(meetingId)
     const { userGroups } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
     const { getUser } = useUserDetails()
