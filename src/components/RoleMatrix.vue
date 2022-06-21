@@ -1,5 +1,17 @@
 <template>
+
   <div>
+    <v-alert closable class="mb-8">
+      <p class="mb-4">{{ t('role.help.intro') }}</p>
+      <ul>
+        <li class="mb-1" v-for="col in columns" :key="col.name">
+          <v-icon :icon="col.icon" />
+          {{ col.title }} &mdash;
+          {{ t('role.help.' + col.name) }}
+        </li>
+      </ul>
+  </v-alert>
+
     <!-- <v-pagination v-model="currentPage" :length="pageCount" color="primary" /> -->
     <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed, admin }">
       <thead>
