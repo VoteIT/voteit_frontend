@@ -158,6 +158,7 @@ const pollMethods: Record<PollMethodName, PollMethod> = {
       mutualMajority: false,
       proportional: false
     },
+    descriptionType: 'warning',
     proposalsMin: 3,
     initialSettings: {
       min: 0,

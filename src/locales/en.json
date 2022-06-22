@@ -130,6 +130,7 @@
     "activeMethod": "Active method: {method}",
     "create": "Create electoral register",
     "createHelp": "Pick users from potential voters to create a new electoral register.",
+    "electoralRegister": "Electoral register",
     "latest": "Latest",
     "plural": "Electoral registers",
     "previous": "Previous",
@@ -315,7 +316,7 @@
     "criterion": {
       "majorityWinner": {
         "title": "Majority winner",
-        "description": "A majority (more than 50%) must prefer this, otherwise it shouldn't be able to win."
+        "description": "A majority (more than 50 %) must prefer this, otherwise it shouldn't be able to win."
       },
       "majorityLoser": {
         "title": "Majority loser",
@@ -323,7 +324,7 @@
       },
       "mutualMajority": {
         "title": "Mutual majority",
-        "description": "If there's a subset of candidates where every voter prefer other candidates within the subset and the subset itself has a majority, then the winner must come from the subset. Example: Alice (apple with 30% vote share) and Granny Smith (apple with 30% vote share) goes against Navelina (orange with 40%). All Alice/GS fans prefer the other apple over the orange, so one of the apples should win."
+        "description": "If there's a subset of proposals which a majority of the voters prefer to every other proposal, then the winner must come from the subset. Example: Alice (apple with 30% vote share) and Granny Smith (apple with 30% vote share) goes against Navelina (orange with 40%). All Alice/GS fans prefer the other apple over the orange, so one of the apples should win."
       },
       "condorcetWinner": {
         "title": "Condorcet winner",
@@ -364,13 +365,13 @@
       "simple": "Simple majority",
       "irv": "Instant Runoff-Voting",
       "description": {
-        "combined_simple": "",
+        "combined_simple": "Each proposal will be voted individually, with the options to approve, deny or abstain.",
         "dutt": "Preliminary checks or time budgets, never for actual decisions.  This is almost always the wrong choice for board elections for instance.",
-        "irv": "",
-        "majority": "",
-        "scottish_stv": "",
-        "schulze": "",
-        "repeated_schulze": ""
+        "irv": "Ranked poll with a single winner. Voters rank proposals by order of preference. Proposals with least amount of votes will be excluded and votes transfered until one proposal has more than 50 % of the votes.",
+        "majority": "Voters choose between two proposals. The one with the most votes wins.",
+        "scottish_stv": "Ranked poll with multiple winners. Voters rank proposals by order of preference. Surplus or discarded votes are transferred to reduce wasted votes.",
+        "schulze": "Rank proposals with stars - more is better. The proposal that is prefered in pairwise comparison to every other proposal wins.",
+        "repeated_schulze": "A regular Schulze poll is repeated until all candidates have a ranking. The result is non-proportional, and each stage produces the Condorcet winner within the remaining candidates. Voters rank proposals with stars."
       },
       "help": {
         "combined_simple": "Vote approve or deny for each proposal.",

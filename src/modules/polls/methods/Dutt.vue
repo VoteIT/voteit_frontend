@@ -5,13 +5,13 @@
         <Proposal readOnly :p="p" class="mb-4">
           <template #vote>
             <div class="text-center">
-              <v-checkbox @update:modelValue="toggle()" :modelValue="isSelected" hide-details :label="t('select')" class="d-inline-block mb-n2" density="compact" />
+              <v-checkbox @update:modelValue="toggle()" :disabled="disabled" :modelValue="isSelected" hide-details :label="t('select')" class="d-inline-block mb-n2" density="compact" />
             </div>
           </template>
         </Proposal>
       </v-item>
     </v-item-group>
-    <v-alert v-if="validHelpText" :text="validHelpText" />
+    <v-alert v-if="!disabled && validHelpText" :text="validHelpText" />
   </div>
 </template>
 

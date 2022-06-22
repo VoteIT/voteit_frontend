@@ -37,9 +37,9 @@
       <template v-if="pickMethod">
         <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
-          <v-expansion-panel v-for="{ name, criterion } in availableMethods" :key="name" :title="t(`poll.method.${name}`)" :value="name">
+          <v-expansion-panel v-for="{ name, criterion, descriptionType } in availableMethods" :key="name" :title="t(`poll.method.${name}`)" :value="name">
             <v-expansion-panel-text>
-              <v-alert v-if="methodSelected" class="my-4" icon="mdi-help">
+              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" :type="descriptionType ?? 'info'">
                 {{ t(`poll.method.description.${methodSelected}`) }}
               </v-alert>
               <h3 class="my-2">

@@ -1,6 +1,17 @@
 <template>
-  <div id="scottish-stv-voting">
-    <!-- <template v-if="currentStep.step === 1"> -->
+  <div v-if="disabled && rankedProposals.length" id="scottish-stv-voting">
+    <!-- If already voted -->
+    <Proposal readOnly :p="p" v-for="p in rankedProposals" :key="p.pk" class="mb-4">
+      <template #top>
+        <div class="float-right">
+          <span class="number">
+            {{ ranking.indexOf(p.pk) + 1 }}
+          </span>
+        </div>
+      </template>
+    </Proposal>
+  </div>
+  <div v-else id="scottish-stv-voting">
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
         <div class="voting-controls" v-if="ranking.includes(p.pk)">
@@ -10,13 +21,13 @@
             </span>
           </div>
           <div class="center">
-            <v-btn variant="text" size="small" @click="toggleSelected(p)">
+            <v-btn :disabled="disabled" variant="text" size="small" @click="toggleSelected(p)">
               {{ t('poll.rankingSelectedAs') }}
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>
           </div>
           <div class="right">
-            <v-btn outlined color="primary" size="small" @click="toggleSelected(p)">
+            <v-btn :disabled="disabled" outlined color="primary" size="small" @click="toggleSelected(p)">
               {{ t('clear') }}
             </v-btn>
           </div>
@@ -31,32 +42,11 @@
         </div>
       </template>
     </Proposal>
-    <!-- </template> -->
-    <!-- <template v-if="currentStep.step === 2">
-      <Draggable v-model="orderedProposals" item-key="pk">
-        <template #item="{ element }">
-          <Proposal read-only selected :p="element">
-            <template v-slot:top>
-              <div class="ranking-position">
-                <span>{{ (ranking.indexOf(element.pk) + 1) }}</span>
-              </div>
-            </template>
-          </Proposal>
-        </template>
-      </Draggable>
-    </template> -->
-    <!-- <div class="btn-controls">
-      <v-btn color="secondary" v-if="previousStep" @click="previous()"><v-icon left icon="mdi-arrow-left-bold"/>{{ previousStep.title }}</v-btn>
-      <span v-else/>
-      <v-btn color="secondary" v-if="nextStep" :disabled="!currentStep.ready" @click="next()">{{ nextStep.title }}<v-icon right icon="mdi-arrow-right-bold"/></v-btn>
-      <span v-else/>
-    </div> -->
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
-// import Draggable from 'vuedraggable'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
@@ -77,32 +67,8 @@ export default defineComponent({
   setup (props, { emit }) {
     const { t } = useI18n()
     const { getProposal } = useProposals()
-    // const steps = reactive([
-    //   {
-    //     step: 1,
-    //     title: t('poll.selectProposals'),
-    //     description: t('poll.selectProposalsDescription'),
-    //     ready: false
-    //   },
-    //   {
-    //     step: 2,
-    //     title: t('poll.orderProposals'),
-    //     description: t('poll.orderProposalsDescription')
-    //   }
-    // ])
 
     const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
-    // const step = ref(0)
-    // const previousStep = computed(() => steps[step.value - 1])
-    // const currentStep = computed(() => steps[step.value])
-    // const nextStep = computed(() => steps[step.value + 1])
-
-    // watch(() => props.modelValue, (vote) => {
-    //   if (vote) {
-    //     ranking.value = vote.ranking
-    //     steps[0].ready = true
-    //   }
-    // })
 
     function setOrder (order?: number[]) {
       if (order) {
@@ -129,20 +95,14 @@ export default defineComponent({
     }
 
     const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
+    const rankedProposals = computed(() => ranking.value.map(getProposal) as Proposal[])
 
     return {
       t,
+      proposals,
       ranking,
-      // setOrder,
-      toggleSelected,
-      // orderedProposals,
-      proposals
-
-      // previousStep,
-      // currentStep,
-      // nextStep,
-      // previous,
-      // next
+      rankedProposals,
+      toggleSelected
     }
   }
 })

@@ -129,6 +129,7 @@
     "activeMethod": "Aktiv metod: {method}",
     "create": "Skapa röstlängd",
     "createHelp": "Välj från mötets potentiella röstare för att skapa en ny röstlängd.",
+    "electoralRegister": "Röstlängd",
     "latest": "Aktuell",
     "plural": "Röstlängder",
     "previous": "Tidigare",
@@ -314,15 +315,15 @@
     "criterion": {
       "majorityWinner": {
         "title": "Majoritetsvinnare",
-        "description": "A majority (more than 50%) must prefer this, otherwise it shouldn't be able to win."
+        "description": "En majoritet (mer än 50 %) måste föredra ett förslag för att det ska kunna vinna."
       },
       "majorityLoser": {
         "title": "Majoritetsförlorare",
-        "description": "If a majority of voters do not want this, it shouldn't be able to win."
+        "description": "Om majoriteten inte föredrar ett förslag ska det inte kunna vinna."
       },
       "mutualMajority": {
         "title": "Gemensam majoritet",
-        "description": "If there's a subset of candidates where every voter prefer other candidates within the subset and the subset itself has a majority, then the winner must come from the subset. Example: Alice (apple with 30% vote share) and Granny Smith (apple with 30% vote share) goes against Navelina (orange with 40%). All Alice/GS fans prefer the other apple over the orange, so one of the apples should win."
+        "description": "Om det finns en grupp med förslag som en majoritet röstande föredrar framför alla andra förslag, måste vinnaren komma från denna grupp. Exempel: Alice (äpple med 30 % av rösterna) och Granny Smith (äpple med 30 %) ställs mot Navelina (apelsin med 40 %). Alla Alice/GS-fans föredrar det andra äpplet framför apelsinen, så något av äpplena ska vinna omröstningen."
       },
       "condorcetWinner": {
         "title": "Condorcetvinnare",
@@ -362,6 +363,15 @@
       "scottish_stv": "Skotsk STV",
       "simple": "Majoritetsomröstning",
       "irv": "IRV",
+      "description": {
+        "combined_simple": "Varje förslag behandlas individuellt, med alternativen bifall, avslag och avstå.",
+        "dutt": "Duttmetoden ska användas för opinionsmätningar eller vägledande yttringar; aldrig för riktiga beslut. Detta är nästan alltid fel metod för exempelvis styrelseval.",
+        "irv": "Rangordnad omröstning med en vinnare. De röstande rangordnar förslag efter preferens. De förslag som fått minst antal röster exckluderas och röster överförs tills ett förslag fått mer än 50 % av rösterna.",
+        "majority": "De röstande väljer mellan två förslag. Det förslag som fått mest röster vinner.",
+        "scottish_stv": "Rangordnad omröstning med flera vinnare. De röstande rangordnar förslag efter preferens. När ett förslag vunnit eller exkluderats överförs överskott respektive hel röst till nästa i ordning för att minska bortkastade röster.",
+        "schulze": "Rangordna förslag med stjärnor - fler är bättre. Det förslag som föredras i parvis jämförelse med alla andra förslag vinner.",
+        "repeated_schulze": "En enkel Schulze-omröstning repreteras tills alla förslag har en rangordning. Resultatet är icke-proportionerligt, och varje runda ger en Condorcet-vinnare inom de kvarvarande kandidaterna. De röstande rangordnar förslagen med stjärnor."
+      },
       "help": {
         "combined_simple": "Rösta bifall eller avslag på varje förslag.",
         "dutt": "Markera de förslag du föredrar.",

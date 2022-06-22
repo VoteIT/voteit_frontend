@@ -15,7 +15,7 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-    <v-list density="comfortable">
+    <v-list density="comfortable" bg-color="background">
       <v-list-item v-for="([key, value], i) in metadata" :key="i">
         <div>
           <v-list-item-subtitle>

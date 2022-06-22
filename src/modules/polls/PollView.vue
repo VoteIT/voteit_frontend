@@ -11,9 +11,27 @@
               {{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}
             </p>
             <p v-if="agendaItem">
+              {{ t('agenda.item') }}:
               <router-link :to="agendaItemPath">
                 {{ agendaItem.title }}
               </router-link>
+            </p>
+            <p v-if="electoralRegister">
+              <v-tooltip>
+                <template #activator="{ props }">
+                  <span v-bind="props">
+                    {{ t('electoralRegister.electoralRegister') }}:
+                    <span class="text-secondary">
+                      {{ electoralRegister.created.toLocaleString(undefined, { dateStyle: 'long' }) }},
+                      {{ electoralRegister.created.toLocaleString(undefined, { timeStyle: 'short' }) }}
+                    </span>
+                  </span>
+                </template>
+                <span>
+                  {{ electoralRegister.source && t(`erMethods.${electoralRegister.source}.title`) }}
+                  (ID: {{ electoralRegister.pk }})
+                </span>
+              </v-tooltip>
             </p>
           </div>
           <Menu :items="menuItems" />
@@ -122,7 +140,7 @@ export default defineComponent({
     const { t } = useI18n()
     const route = useRoute()
     const router = useRouter()
-    const { approved, denied, poll, isOngoing, isFinished, isPollVoter, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
+    const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
     const { meetingPath, meetingId } = useMeeting()
     const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
@@ -247,6 +265,7 @@ export default defineComponent({
       canChange,
       canVote,
       denied,
+      electoralRegister,
       isOngoing,
       isFinished,
       isPollVoter,

@@ -151,6 +151,7 @@ export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings |
 export interface PollMethod {
   name: PollMethodName
   criterion: PollMethodCriterias
+  descriptionType?: 'success' | 'info' | 'warning' | 'error'
   multipleWinners?: boolean
   proposalsMax?: number
   proposalsMin: number

@@ -67,6 +67,10 @@ const getRepeatedSchulzeSchema: SchemaGenerator = (t, proposals) => {
 
 const getDuttSchema: SchemaGenerator = (t, proposals) => {
   return ['min', 'max'].map(name => {
+    // Don't allow requiring to select all proposals
+    const max = name === 'min'
+      ? proposals.length - 1
+      : proposals.length
     return {
       name,
       type: InputType.Number,
@@ -74,7 +78,7 @@ const getDuttSchema: SchemaGenerator = (t, proposals) => {
       hint: t('poll.dutt.minMaxHint'),
       settings: {
         min: 0,
-        max: proposals.length
+        max
       }
     }
   })
