@@ -1,48 +1,63 @@
 <template>
   <div class="add-content">
-    <UserAvatar size="small" class="mr-1" />
+    <v-avatar v-if="author?.meeting_group" icon="mdi-account-multiple" color="secondary" size="small" class="mr-1" />
+    <UserAvatar v-else size="small" class="mr-1" :pk="author?.author" />
     <RichtextEditor ref="editorComponent"
       :placeholder="placeholder"
-      :disabled="disabled" v-model="text" submit @submit="submit()">
+      :disabled="disabled" v-model="text" submit @submit="submit()"
+      @focus="active = true"
+      >
       <template v-slot:controls>
-        <div class="d-flex justify-space-between">
-          <div class="mt-1">
-            <Tag v-for="tag in tags" :key="tag" :name="tag" class="mr-1" :closer="tag !== setTag" @remove="tags.delete(tag)" />
-            <input :list="tagUid" type="text" class="tag-input" :placeholder="t('addTag')" v-model="newTag" @keydown.enter="addTag()" @input="detectTagClick">
-            <datalist :id="tagUid">
-              <option v-for="tag in allTags" :key="tag" :value="tag" />
-            </datalist>
-          </div>
-          <v-btn color="primary" :disabled="disabled" :prepend-icon="submitIcon" size="small" class="mr-1" @click="submit()">{{ submitText }}</v-btn>
+        <v-expand-transition>
+          <TagEdit v-show="active" :setTag="setTag" v-model="tags" class="mt-1" />
+        </v-expand-transition>
+        <div class="d-flex mt-1">
+          <v-spacer />
+          <v-btn v-if="active && canPostAs" variant="text" :append-icon="`mdi-chevron-${postAsExpanded ? 'up' : 'down'}`" @click="postAsExpanded = !postAsExpanded" size="small">
+            {{ t('proposal.postAs') }}
+          </v-btn>
+          <v-btn v-if="active" variant="text" @click="reset()" size="small">
+            {{ t('cancel') }}
+          </v-btn>
+          <v-btn color="primary" :disabled="disabled" :prepend-icon="submitIcon" size="small" @click="submit()">
+            {{ submitText }}
+          </v-btn>
         </div>
+        <v-expand-transition>
+          <PostAs v-show="active && canPostAs && postAsExpanded" v-model="author" class="mt-1" />
+        </v-expand-transition>
       </template>
     </RichtextEditor>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, PropType, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, inject, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, stripHTML, tagify } from '@/utils'
+import { dialogQuery, stripHTML } from '@/utils'
+
+import { meetingIdKey } from '@/modules/meetings/injectionKeys'
+import useMeetingGroups from '@/modules/meetings/useMeetingGroups'
+import PostAs from '@/modules/meetings/PostAs.vue'
+import type { Author } from '@/modules/meetings/types'
+import { DiscussionPost } from '@/modules/discussions/types'
 
 import RichtextEditor from './RichtextEditor.vue'
 import { EditorComponent } from './types'
-import Tag from './Tag.vue'
-import { TagsKey } from '@/modules/meetings/useTags'
-
-let uid = 0
+import TagEdit from './TagEdit.vue'
 
 export default defineComponent({
   name: 'AddContent',
   components: {
     RichtextEditor,
-    Tag
-  },
+    TagEdit,
+    PostAs
+},
   props: {
     name: String,
     handler: {
-      type: Function as PropType<(body: string, tags: string[]) => Promise<void>>,
+      type: Function as PropType<(post: Partial<DiscussionPost>) => Promise<void>>,
       required: true
     },
     modelValue: {
@@ -64,40 +79,50 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const { t } = useI18n()
-    const allTags = inject(TagsKey)
     const text = ref(props.modelValue)
+    const active = ref(false)
     const submitting = ref(false)
-    uid++
 
-    // eslint-disable-next-line vue/no-setup-props-destructure
-    const newTag = ref('')
-    const tags = reactive(new Set(props.setTag ? [props.setTag] : []))
-    function addTag (name?: string) {
-      const tag = tagify(name ?? newTag.value)
-      if (!tag.length) return
-      tags.add(tag)
-      newTag.value = ''
-    }
+    const tags = ref(props.setTag ? [props.setTag] : [])
 
     const textLength = computed(() => stripHTML(text.value).length)
     const disabled = computed(() => submitting.value || textLength.value < props.minLength)
 
-    async function submit (override = false) {
+    const postAsExpanded = ref(false)
+    const author = ref<Author>()
+
+    const meetingId = inject(meetingIdKey)
+    if (!meetingId) throw new Error('AddContent requires provided meetingId')
+    const { canPostAs } = useMeetingGroups(meetingId)
+
+    function reset (soft = false) {
+      if (soft && stripHTML(text.value).length) return // For blur event, only reset if text is empty.
+      active.value = false
+      postAsExpanded.value = false
+      text.value = ''
+      tags.value = props.setTag
+        ? [props.setTag]
+        : []
+    }
+
+    async function submit () {
       if (disabled.value) return
-      if (override || textLength.value >= props.warnLength) {
-        submitting.value = true
-        try {
-          await props.handler(text.value, [...tags])
-          editorComponent.value?.setText(props.modelValue)
-        } catch (err) {
-          console.error(err)
-        }
-        submitting.value = false
-        tags.clear()
-        if (props.setTag) tags.add(props.setTag)
-      } else {
-        if (await dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))) submit(true)
+      if (textLength.value < props.warnLength) {
+        if (!await dialogQuery(t('content.warnShorterThan', { length: props.warnLength }))) return
       }
+      submitting.value = true
+      try {
+        await props.handler({
+          body: text.value,
+          tags: tags.value,
+          ...(author.value || {})
+        })
+        editorComponent.value?.setText(props.modelValue)
+      } catch (err) {
+        console.error(err)
+      }
+      submitting.value = false
+      reset()
     }
 
     function focus () {
@@ -109,29 +134,19 @@ export default defineComponent({
       emit('update:modelValue', value)
     })
 
-    function detectTagClick (evt: Event) {
-      if (
-        !(evt instanceof InputEvent) || // Chromium
-        evt.inputType === 'insertReplacementText' // Firefox
-      ) {
-        tags.add(newTag.value)
-        newTag.value = ''
-      }
-    }
-
     return {
       t,
-      allTags,
+      active,
+      author,
+      canPostAs,
       disabled,
       editorComponent,
-      newTag,
+      postAsExpanded,
       tags,
       text,
-      tagUid: `tagdata-${uid.toString()}`,
-      detectTagClick,
-      addTag,
       focus,
       open,
+      reset,
       submit
     }
   }
@@ -143,12 +158,4 @@ export default defineComponent({
   display: flex
   .richtext-editor
     flex: 1 1 auto
-
-  .tag-input
-    padding: 0 .3em
-    width: 10em
-    background-color: rgba(var(--v-theme-surface), 0)
-    transition: background-color .5s
-    &:focus
-      background-color: rgba(var(--v-theme-surface), 1)
 </style>

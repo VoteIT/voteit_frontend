@@ -1,6 +1,6 @@
 <template>
   <div class="richtext-editor" ref="rootElement">
-    <div ref="editorElement"/>
+    <div ref="editorElement" />
     <p v-if="errors" class="text-error">
       {{ errors.join(', ') }}
     </p>
@@ -80,7 +80,7 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
 }
 
 export default defineComponent({
-  emits: ['submit', 'update:modelValue'],
+  emits: ['blur', 'focus', 'submit', 'update:modelValue'],
   props: {
     errors: Array as PropType<string[]>,
     modelValue: {
@@ -178,6 +178,8 @@ export default defineComponent({
         if (props.setFocus) {
           focus()
         }
+        editor.root.addEventListener('focus', () => emit('focus'))
+        editor.root.addEventListener('blur', () => emit('blur'))
       }
     })
 
@@ -199,6 +201,13 @@ export default defineComponent({
     }
 
     useTags(editorElement)
+
+    // watch(editorElement, elem => {
+    //   if (!elem) return
+    //   const editor = elem.querySelector('#quillEditor')?.firstChild as HTMLElement | undefined
+    //   console.log(elem, editor)
+    //   editor?.addEventListener('focus', () => alert('focus'))
+    // }, { immediate: true })
 
     return {
       t,

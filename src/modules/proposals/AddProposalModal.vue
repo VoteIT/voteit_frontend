@@ -5,15 +5,8 @@
         <slot name="editor">
           <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
         </slot>
-        <div class="d-flex flex-column flex-md-row" id="post-as">
-          <v-autocomplete
-            v-if="postAsOptions"
-            :label="t('proposal.postAs')"
-            :items="postAsOptions"
-            v-model="postAs"
-            v-model:search="postAsSearch"
-            :no-data-text="t('noSuggestions')"
-            />
+        <div class="d-flex flex-column flex-md-row">
+          <PostAs v-if="canPostAs" v-model="author" />
           <v-spacer />
           <slot name="actions" />
         </div>
@@ -65,24 +58,19 @@ import RichtextEditor from '@/components/RichtextEditor.vue'
 import { proposalType } from './contentTypes'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
+import PostAs from '../meetings/PostAs.vue'
 import useMeetingGroups from '../meetings/useMeetingGroups'
-import { userType } from '../organisations/contentTypes'
-import useUserDetails from '../organisations/useUserDetails'
 
-import type { User } from '../organisations/types'
 import type { PreviewProposal, Proposal } from './types'
+import type { Author } from '../meetings/types'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: number
 
-interface AutocompleteItem {
-  value: string
-  title: string
-}
-
 export default defineComponent({
   emits: ['close'],
   components: {
+    PostAs,
     RichtextEditor
   },
   props: {
@@ -107,24 +95,22 @@ export default defineComponent({
         ? props.proposal.body
         : props.modelValue
     )
-    const { meetingId, isModerator } = useMeeting()
+    const { meetingId } = useMeeting()
     const { agendaId } = useAgenda(meetingId)
-    const { userGroups } = useMeetingGroups(meetingId)
+    const { canPostAs } = useMeetingGroups(meetingId)
     const { user } = useAuthentication()
-    const { getUser } = useUserDetails()
 
-    function getAuthor (): Partial<Proposal> {
-      if (!postAs.value) return {}
-      const [type, pk] = postAs.value.split(':') // Format: 'group:<pk>' or 'user:<pk>'
-      return type === 'group'
-        ? { meeting_group: Number(pk) } // If meeting_group, don't modify author
-        : { meeting_group: null, author: Number(pk) } // If author, ensure meeting_group is null
-    }
+    const author = ref<Partial<Author> | undefined>(
+      props.proposal && {
+        author: props.proposal.author,
+        meeting_group: props.proposal.meeting_group
+      } as Author
+    )
 
     function getPatchData (): Partial<Proposal> {
       return {
         body: body.value,
-        ...getAuthor()
+        ...(author.value || {})
       }
     }
 
@@ -163,74 +149,6 @@ export default defineComponent({
       previewing.value = false
     }
 
-    function userToAutocomplete (user: User): AutocompleteItem {
-      return {
-        title: `${user.full_name} (${user.userid})`,
-        value: `user:${user.pk}`
-      }
-    }
-    const postAs = ref<string | null>(
-      props.proposal
-        ? props.proposal.meeting_group
-          ? `group:${props.proposal.meeting_group}`
-          : `user:${props.proposal.author}`
-        : `user:${user.value?.pk}`
-    )
-    const postAsSearch = ref('')
-    function getInitialUserOption () {
-      if (props.proposal && props.proposal.author && props.proposal.author !== user.value?.pk) {
-        const author = getUser(props.proposal.author)
-        if (author) return [userToAutocomplete(author)]
-      }
-      return []
-    }
-    const userOptions = ref<AutocompleteItem[]>(getInitialUserOption())
-
-    function preserveCurrentAuthor (newOptions?: AutocompleteItem[]): AutocompleteItem[] {
-      newOptions = newOptions ?? []
-      const { author } = getAuthor()
-      if (!author) return newOptions
-      const finder = (item: AutocompleteItem) => author === Number(item.value.split(':')[1])
-      // Ok, it's in the new options as well
-      if (newOptions.find(finder)) return newOptions
-      // Not in new options - preserve this
-      const preserve = userOptions.value.find(finder)
-      // Should always find this, but let's not take anything for granted
-      return preserve
-        ? [preserve, ...newOptions]
-        : newOptions
-    }
-
-    watch(postAsSearch, async (search: string) => {
-      // Only moderators can switch user
-      if (!isModerator) return
-      if (!search.length) {
-        userOptions.value = preserveCurrentAuthor()
-        return
-      }
-      const { data } = await userType.api.list({
-        meeting: meetingId.value,
-        search
-      })
-      const newOptions = data
-        .filter(({ pk }) => user.value?.pk !== pk)
-        .map(userToAutocomplete)
-      userOptions.value = preserveCurrentAuthor(newOptions)
-    })
-    const postAsOptions = computed(() => {
-      if (!isModerator || !userGroups.value.length) return
-      return [
-        user.value
-          ? userToAutocomplete(user.value)
-          : { // Should not happen
-            value: null,
-            title: 'self'
-          },
-        ...userGroups.value.map(({ pk, title }) => ({ value: `group:${pk}`, title })),
-        ...userOptions.value
-      ]
-    })
-
     const saving = ref(false)
     const done = ref(false)
     async function saveProposal () {
@@ -258,8 +176,8 @@ export default defineComponent({
       )
     }
 
+    watch(author, preview)
     watch(body, setPreviewTimeout)
-    watch(postAs, preview)
     watch(() => props.modelValue, value => { // React when used as subcomponent, i.e. in AddTextProposalModal
       body.value = value
     })
@@ -267,17 +185,15 @@ export default defineComponent({
     return {
       t,
       ...useDefaults(),
+      author,
+      canPostAs,
       done,
       errorText,
-      postAs,
-      postAsOptions,
-      postAsSearch,
       previewing,
       proposalPreview,
       body,
       saving,
       user,
-      userGroups,
       saveProposal,
       preview
     }
@@ -288,10 +204,6 @@ export default defineComponent({
 <style lang="sass">
 .proposal-editor .ql-editor
   min-height: 140px
-
-#post-as
-  .v-input__details
-    display: none
 
 #proposal-preview
   .previewing

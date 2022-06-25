@@ -63,7 +63,7 @@
                 <v-sheet rounded class="pa-4">
                   <div class="d-flex">
                     <h2>
-                      {{ t('meeting.groups.membersIn', group) }}
+                      {{ t('meeting.groups.membersIn', { ...group }) }}
                     </h2>
                     <v-spacer />
                     <v-btn icon="mdi-close" size="small" flat @click="isActive.value = false" style="position: relative; top: -.5em; right: -.5em;" />

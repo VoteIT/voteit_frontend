@@ -4,6 +4,7 @@ import { computed, reactive, Ref } from 'vue'
 import { meetingGroupType } from './contentTypes'
 import { canChangeMeeting } from './rules'
 import { MeetingGroup } from './types'
+import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 
 const meetingGroups = reactive<Map<number, MeetingGroup>>(new Map())
@@ -16,15 +17,27 @@ function * iterGroups (filter: (group: MeetingGroup) => boolean) {
   }
 }
 
-export default function useGroups (meetingId: Ref<number>) {
+const { meetings } = useMeetings()
+
+export default function useMeetingGroups (meetingId: Ref<number>) {
   const { user } = useAuthentication()
-  const { meetings } = useMeetings()
+  const { isModerator } = useMeeting() // Waning: If meetingId above differs from useMeeting computed meetingId, we get the wrong value. This is inconsequential.
+
+  const userGroups = computed(() => {
+    return orderBy([...iterGroups(
+      group => group.meeting === meetingId.value && (isModerator.value || (!!user.value && group.members.includes(user.value.pk)))
+    )], ['title'])
+  })
+
+  const canPostAs = computed(() => isModerator.value || userGroups.value.length)
+
   return {
     canChangeMeeting: computed(() => {
       const meeting = meetings.get(meetingId.value)
       if (!meeting) return false
       return canChangeMeeting(meeting)
     }),
+    canPostAs,
     getMeetingGroup (pk: number) {
       return meetingGroups.get(pk)
     },
@@ -33,10 +46,6 @@ export default function useGroups (meetingId: Ref<number>) {
         group => group.meeting === meetingId.value
       )], ['title'])
     }),
-    userGroups: computed(() => {
-      return orderBy([...iterGroups(
-        group => group.meeting === meetingId.value && !!user.value && group.members.includes(user.value.pk)
-      )], ['title'])
-    })
+    userGroups
   }
 }

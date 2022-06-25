@@ -78,3 +78,7 @@ export interface MeetingGroup extends BaseContent {
   mentions: number[]
   members: number[]
 }
+
+type UserAuthor = { author: number, meeting_group: null }
+type GroupAuthor = { author: number | null, meeting_group: number }
+export type Author = UserAuthor | GroupAuthor

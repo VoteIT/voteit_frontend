@@ -44,11 +44,10 @@ export default defineComponent({
     const { getMeetingButtons } = useReactions()
 
     const submitIcon = computed(() => agendaItem.value?.block_discussion ? 'mdi-lock-outline' : 'mdi-comment-text-outline')
-    async function submit (body: string, tags: string[]) {
+    async function submit (post: Partial<DiscussionPost>) {
       await discussionPostType.api.add({
         agenda_item: agendaId.value,
-        body,
-        tags
+        ...post
       })
     }
 

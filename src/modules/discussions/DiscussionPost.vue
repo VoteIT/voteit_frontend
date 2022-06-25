@@ -23,9 +23,30 @@
         <Moment :date="p.created" />
       </div>
     </div>
-    <Richtext :editing="editing" :api="api" :object="p" @edit-done="editing = false" />
-    <div class="mt-6 mb-3" v-if="extraTags.length">
-      <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
+    <div v-if="editing">
+      <RichtextEditor v-if="editing" v-model="body" />
+      <TagEdit v-model="tags" />
+      <div class="d-flex mt-1">
+        <v-spacer />
+        <v-btn v-if="canPostAs" variant="text" :append-icon="`mdi-chevron-${postAsExpanded ? 'up' : 'down'}`" size="small" @click="postAsExpanded = !postAsExpanded">
+          {{ t('proposal.postAs') }}
+        </v-btn>
+        <v-btn @click="cancel()" variant="text" size="small">
+          {{ t('cancel') }}
+        </v-btn>
+        <v-btn type="submit" color="primary" @click="save()" size="small">
+          {{ t('save') }}
+        </v-btn>
+      </div>
+      <v-expand-transition>
+        <PostAs v-show="canPostAs && postAsExpanded" v-model="author" class="my-2" />
+      </v-expand-transition>
+    </div>
+    <div v-else>
+      <Richtext :object="p" />
+      <div class="mt-6 mb-3" v-if="extraTags.length">
+        <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
+      </div>
     </div>
     <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
       <div class="d-flex flex-wrap">
@@ -38,6 +59,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable camelcase */
 import { computed, defineComponent, PropType, ref } from 'vue'
 
 import Moment from '@/components/Moment.vue'
@@ -54,6 +76,10 @@ import useMeetingGroups from '../meetings/useMeetingGroups'
 import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
 import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
+import PostAs from '../meetings/PostAs.vue'
+import { Author } from '../meetings/types'
+import RichtextEditor from '@/components/RichtextEditor.vue'
+import TagEdit from '@/components/TagEdit.vue'
 
 export default defineComponent({
   props: {
@@ -65,15 +91,24 @@ export default defineComponent({
   },
   components: {
     Richtext,
-    Moment
-  },
+    Moment,
+    PostAs,
+    RichtextEditor,
+    TagEdit
+},
   setup (props) {
     const { t } = useI18n()
     const { getHTMLTags } = useTags()
     const { meetingId } = useMeeting()
-    const { getMeetingGroup } = useMeetingGroups(meetingId)
+    const { getMeetingGroup, canPostAs } = useMeetingGroups(meetingId)
 
     const editing = ref(false)
+    const saving = ref(false)
+    const body = ref(props.p.body)
+    const author = ref({
+      author: props.p.author,
+      meeting_group: props.p.meeting_group
+    } as Author)
     const { isUnread } = useUnread(props.p.created as Date)
     const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
 
@@ -109,14 +144,47 @@ export default defineComponent({
       return props.p.tags.filter(tag => !docTags.has(tag))
     })
 
+    const tags = ref(props.p.tags)
+
+    function cancel () {
+      editing.value = false
+      body.value = props.p.body
+      tags.value = props.p.tags
+      author.value = {
+        author: props.p.author,
+        meeting_group: props.p.meeting_group
+      } as Author
+    }
+
+    async function save () {
+      saving.value = true
+      discussionPostType.api.patch(
+        props.p.pk,
+        {
+          body: body.value,
+          tags: tags.value,
+          ...author.value
+        }
+      )
+      editing.value = false
+      saving.value = false
+    }
+
     return {
       t,
-      api: discussionPostType.api,
+      author,
+      body,
+      canPostAs,
       editing,
       extraTags,
       isUnread,
       meetingGroup,
-      menuItems
+      menuItems,
+      postAsExpanded: ref(false),
+      saving,
+      tags,
+      cancel,
+      save
     }
   }
 })
@@ -136,14 +204,6 @@ export default defineComponent({
     .context-menu
       margin: -6px
 
-  // .meta
-  //   display: flex
-  //   margin-bottom: .5em
-  //   > div
-  //     flex: 0 1 auto
-  //   .fill
-  //     margin: 0 .5em
-  //     flex: 1 0 auto
   p
     margin: .5rem 0
 </style>

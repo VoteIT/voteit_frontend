@@ -4,7 +4,7 @@ export interface DiscussionPost {
   readonly pk: number
   readonly agenda_item: number
   readonly author: number | null
-  readonly created: string | Date
+  readonly created: Date
   readonly body: string
   readonly meeting_group: number | null
   readonly tags: string[]
