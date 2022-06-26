@@ -20,8 +20,7 @@ export const meetingStates: WorkflowState<MeetingState>[] = [
   {
     transition: 'request_archiving',
     icon: 'mdi-archive',
-    state: MeetingState.Archiving,
-    isFinal: true
+    state: MeetingState.Archiving
   },
   {
     transition: 'archive',
