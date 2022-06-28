@@ -26,11 +26,10 @@
     <div v-if="editing">
       <RichtextEditor v-if="editing" v-model="body" />
       <TagEdit v-model="tags" />
+      <br/>
+      <PostAs v-show="canPostAs" v-model="author" class="my-2" />
       <div class="d-flex mt-1">
         <v-spacer />
-        <v-btn v-if="canPostAs" variant="text" :append-icon="`mdi-chevron-${postAsExpanded ? 'up' : 'down'}`" size="small" @click="postAsExpanded = !postAsExpanded">
-          {{ t('proposal.postAs') }}
-        </v-btn>
         <v-btn @click="cancel()" variant="text" size="small">
           {{ t('cancel') }}
         </v-btn>
@@ -38,9 +37,6 @@
           {{ t('save') }}
         </v-btn>
       </div>
-      <v-expand-transition>
-        <PostAs v-show="canPostAs && postAsExpanded" v-model="author" class="my-2" />
-      </v-expand-transition>
     </div>
     <div v-else>
       <Richtext :object="p" />

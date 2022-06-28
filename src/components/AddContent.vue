@@ -11,11 +11,10 @@
         <v-expand-transition>
           <TagEdit v-show="active" :setTag="setTag" v-model="tags" class="mt-1" />
         </v-expand-transition>
+        <br/>
+        <PostAs v-show="active && canPostAs" v-model="author" class="mt-1" />
         <div class="d-flex mt-1">
           <v-spacer />
-          <v-btn v-if="active && canPostAs" variant="text" :append-icon="`mdi-chevron-${postAsExpanded ? 'up' : 'down'}`" @click="postAsExpanded = !postAsExpanded" size="small">
-            {{ t('proposal.postAs') }}
-          </v-btn>
           <v-btn v-if="active" variant="text" @click="reset()" size="small">
             {{ t('cancel') }}
           </v-btn>
@@ -23,9 +22,6 @@
             {{ submitText }}
           </v-btn>
         </div>
-        <v-expand-transition>
-          <PostAs v-show="active && canPostAs && postAsExpanded" v-model="author" class="mt-1" />
-        </v-expand-transition>
       </template>
     </RichtextEditor>
   </div>
