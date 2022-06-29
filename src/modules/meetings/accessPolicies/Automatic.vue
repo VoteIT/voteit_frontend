@@ -1,29 +1,39 @@
 <template>
-  <v-btn color="primary" :disabled="submitting" prepend-icon="mdi-door-open" @click="joinNow()">{{ t('join.now') }}</v-btn>
+  <v-btn color="primary" :loading="submitting" :disabled="submitting" prepend-icon="mdi-door-open" @click="joinNow()">{{ t('join.now') }}</v-btn>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
+import useAlert from '@/composables/useAlert'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
+import type { AccessPolicy } from '@/contentTypes/types'
+
 import useMeeting from '../useMeeting'
-import { accessPolicyType } from '../contentTypes'
+import { automaticAccessType } from './contentTypes'
 
 export default defineComponent({
-  setup () {
+  props: {
+    policy: {
+      type: Object as PropType<AccessPolicy>,
+      required: true
+    }
+  },
+  setup (props) {
     const { t } = useI18n()
+    const { alert } = useAlert()
     const router = useRouter()
-    const { meetingId, meetingPath } = useMeeting()
+    const { meetingPath } = useMeeting()
     const submitting = ref(false)
 
     async function joinNow () {
       submitting.value = true
       try {
-        await accessPolicyType.api.action(meetingId.value, 'join')
+        await automaticAccessType.api.action(props.policy.pk, 'join')
         router.push(meetingPath.value)
       } catch {
-        // TODO
+        alert('^Could not join meeting')
       }
       submitting.value = false
     }

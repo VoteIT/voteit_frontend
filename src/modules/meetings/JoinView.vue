@@ -1,7 +1,7 @@
 <template>
   <v-row id="join-meeting" v-if="meeting">
     <v-col>
-      <h1>{{ t('join.meeting', meeting) }}</h1>
+      <h1>{{ t('join.meeting', { ...meeting }) }}</h1>
       <Richtext :object="meeting" class="mb-8" />
       <div class="btn-controls" v-if="canBecomeModeratorMeeting" @click="joinAsModerator()">
         <v-btn color="warning" prepend-icon="mdi-gavel">
@@ -9,7 +9,7 @@
         </v-btn>
       </div>
       <div class="btn-controls" v-else-if="policyComponents.length">
-        <component v-for="(c, i) in policyComponents" :is="c" :key="i" />
+        <component v-for="{ component, policy } in policyComponents" :is="component" :key="policy.name" :policy="policy" />
       </div>
       <p v-else>
         <em>{{ t('join.noAccess') }}</em>
@@ -51,7 +51,10 @@ export default defineComponent({
     const policyComponents = computed(() => {
       return policies.value
         .filter(ap => ap.active)
-        .map(ap => accessPolicies[ap.name])
+        .map(policy => ({
+          component: accessPolicies[policy.name],
+          policy
+        }))
     })
 
     const canBecomeModeratorMeeting = computed(() => {
