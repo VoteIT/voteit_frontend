@@ -146,14 +146,11 @@ export default defineComponent({
     useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
     const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
-    const votingComplete = ref(!!userVote.value)
-    watch(poll, () => {
-      // votingComplete.value = !!userVote.value
-      validVote.value = userVote.value?.vote
-    })
+    const votingComplete = ref(!!userVote.value) // Set to false to allow changing vote
     watch(userVote, (value) => {
-      if (!value) return
-      validVote.value = value.vote
+      // Reset voting values if user vote is updated. This is also triggered on poll change.
+      votingComplete.value = !!value
+      validVote.value = value?.vote
     })
 
     const submitting = ref(false)
