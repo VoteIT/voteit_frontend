@@ -1,6 +1,6 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
-    <li v-if="$slots[slotBefore]">
+    <li v-if="slotBefore && $slots[slotBefore]">
       <slot :name="slotBefore" />
     </li>
     <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">

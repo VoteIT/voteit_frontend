@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import { dateify, orderBy } from '@/utils'
 
 import { AgendaItem } from '@/modules/agendas/types'
-import useMeeting from '../meetings/useMeeting'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
