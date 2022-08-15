@@ -11,10 +11,13 @@
       </template>
       <v-list elevation="4" rounded>
         <v-list-item v-for="result in results" :key="result.pk" @click="select(result)" @keydown.enter="select(result)">
-          <div v-if="result.full_name">
+          <template #prepend>
+            <UserAvatar :user="result" />
+          </template>
+          <template v-if="result.full_name">
             <v-list-item-title >{{ result.full_name }}</v-list-item-title>
             <v-list-item-subtitle>{{ result.userid }}</v-list-item-subtitle>
-          </div>
+          </template>
           <v-list-item-title v-else>-- unknown --</v-list-item-title>
         </v-list-item>
       </v-list>

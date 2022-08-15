@@ -3,18 +3,18 @@
     <v-item-group :multiple="multiple" :modelValue="modelValue" @update:modelValue="$emit('update:modelValue', $event)">
       <v-item v-for="{ pk, full_name, userid } in users" :key="pk" :value="pk" v-slot="{ isSelected, toggle }">
       <v-list-item  @click="toggle()" :active="isSelected">
-        <v-list-item-avatar class="mr-2">
+        <template #prepend>
           <UserAvatar :pk="pk" />
-        </v-list-item-avatar>
-        <div class="flex-grow-1">
-          <v-list-item-title :class="{ 'text-secondary': !full_name }">
-            {{ full_name ?? `- ${t('unknownUser')} (${pk}) -` }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ userid }}
-          </v-list-item-subtitle>
-        </div>
-        <slot name="appendItem" :user="pk" :isSelected="isSelected" />
+        </template>
+        <v-list-item-title :class="{ 'text-secondary': !full_name }">
+          {{ full_name ?? `- ${t('unknownUser')} (${pk}) -` }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ userid }}
+        </v-list-item-subtitle>
+        <template #append>
+          <slot name="appendItem" :user="pk" :isSelected="isSelected" />
+        </template>
       </v-list-item>
       </v-item>
     </v-item-group>

@@ -15,14 +15,12 @@
           <v-item-group multiple v-model="stateFilter">
             <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
               <v-list-item @click="toggle()" :prepend-icon="state.icon" :active="isSelected">
-                <div>
-                  <v-list-item-title>
-                    {{ t(`workflowState.${state.state}`) }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('proposal.proposalCount', { count }, count) }}
-                  </v-list-item-subtitle>
-                </div>
+                <v-list-item-title>
+                  {{ t(`workflowState.${state.state}`) }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ t('proposal.proposalCount', { count }, count) }}
+                </v-list-item-subtitle>
               </v-list-item>
             </v-item>
           </v-item-group>

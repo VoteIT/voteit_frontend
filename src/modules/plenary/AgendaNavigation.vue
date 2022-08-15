@@ -6,15 +6,12 @@
           {{ t(`workflowState.${state.state}`) }}
         </v-list-subheader>
         <v-list-item v-for="ai in items" :key="ai.pk" :to="getURL(ai)">
-          <!-- TODO: Support for v-list-item-content coming? -->
-          <div style="width: 100%">
-            <v-list-item-title>
-              {{ ai.title }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ t('proposal.proposalCountOfTotal', ai.proposals, ai.proposals.total) }}
-            </v-list-item-subtitle>
-          </div>
+          <v-list-item-title>
+            {{ ai.title }}
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            {{ t('proposal.proposalCountOfTotal', ai.proposals, ai.proposals.total) }}
+          </v-list-item-subtitle>
         </v-list-item>
       </template>
     </v-list>

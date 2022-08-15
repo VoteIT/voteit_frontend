@@ -66,7 +66,7 @@
         <v-expansion-panels class="mt-3">
           <v-expansion-panel v-for="{ pk, created, weights, source } in registers" :key="pk">
             <v-expansion-panel-title class="d-flex">
-              <span class="text-left" style="min-width: 92px;">
+              <span class="text-left mr-2" style="min-width: 92px;">
                 {{ t('electoralRegister.voterCount', weights.length) }}
               </span>
               <small class="text-secondary flex-grow-1">
