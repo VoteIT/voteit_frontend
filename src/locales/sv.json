@@ -259,6 +259,7 @@
     "allowRandomTiebreaker": "Tillåt slumpmässig utslagsröst",
     "approve": "Bifall",
     "cancel": "Avbryt omröstningen",
+    "cantStartWithoutOngoing": "Eftersom dagordningspunkten inte är pågående kan du inte starta omröstningen ännu.",
     "cantVote": "Har inte rösträtt",
     "castVote": "Rösta",
     "changeVote": "Ändra röst",

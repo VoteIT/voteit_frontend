@@ -260,6 +260,7 @@
     "allowRandomTiebreaker": "Allow random in tiebreaker",
     "approve": "Approve",
     "cancel": "Cancel poll",
+    "cantStartWithoutOngoing": "Since the agenda item is not ongoing, the poll can't be started yet.",
     "cantVote": "Not a voter",
     "castVote": "Cast vote",
     "changeVote": "Change vote",
