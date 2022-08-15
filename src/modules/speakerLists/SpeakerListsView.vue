@@ -30,7 +30,7 @@
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, toggle }">
           <v-card :color="isSelected ? 'success' : undefined" class="mb-4" @click="toggle()">
             <div class="d-flex">
-              <v-card-title class="flex-grow-1">
+              <v-card-title class="flex-grow-1 flex-shrink-1">
                 {{ list.title }}
               </v-card-title>
               <Menu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
