@@ -19,9 +19,12 @@
             </template>
             <template v-slot="{ isActive }">
               <v-sheet v-bind="dialogDefaults" class="pa-4">
-                <h2 class="mb-2">
-                  {{ t('electoralRegister.create') }}
-                </h2>
+                <div class="d-flex mb-2">
+                  <h2 class="flex-grow-1">
+                    {{ t('electoralRegister.create') }}
+                  </h2>
+                  <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" class="mt-n2 mr-n2" />
+                </div>
                 <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
                 <div class="d-flex align-center">
                   <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->

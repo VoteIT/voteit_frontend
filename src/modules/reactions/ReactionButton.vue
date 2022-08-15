@@ -9,12 +9,17 @@
           {{ count }}
         </v-btn>
       </template>
-      <v-sheet class="pa-4">
-        <h3>
-          {{ t('reaction.peopleReacted') }}
-        </h3>
-        <UserList :userIds="reactionUsers" />
-      </v-sheet>
+      <template v-slot="{ isActive }">
+        <v-sheet class="pa-4">
+          <div class="d-flex mb-2">
+            <h2 class="flex-grow-1">
+              {{ t('reaction.peopleReacted') }}
+            </h2>
+            <v-btn icon="mdi-close" flat @click="isActive.value = false" class="mt-n2 mr-n2" />
+          </div>
+          <UserList :userIds="reactionUsers" />
+        </v-sheet>
+      </template>
     </v-dialog>
   </span>
 </template>

@@ -59,7 +59,7 @@
               <h2 class="flex-grow-1">
                 {{ t('meeting.create') }}
               </h2>
-              <v-btn icon="mdi-close" variant="text" @click="isActive.value=false" />
+              <v-btn class="mt-n2 mr-n2" icon="mdi-close" variant="text" @click="isActive.value=false" />
             </div>
             <AddMeeting @close="isActive.value=false" />
           </v-sheet>
