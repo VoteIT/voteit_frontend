@@ -69,7 +69,7 @@
                       @click="switchUser(user)"
                     >
                       <template #prepend>
-                        <UserAvatar :pk="user.pk" />
+                        <UserAvatar :user="user" />
                       </template>
                       <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
                         {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
