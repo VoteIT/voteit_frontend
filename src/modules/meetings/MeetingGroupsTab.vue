@@ -121,7 +121,7 @@
                       v-for="user in getMembers(group)" :key="user.pk"
                     >
                       <template #prepend>
-                        <UserAvatar :pk="user.pk" />
+                        <UserAvatar :user="user" />
                       </template>
                       <v-list-item-header>
                         <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
