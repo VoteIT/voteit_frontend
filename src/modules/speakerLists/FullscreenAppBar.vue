@@ -65,13 +65,13 @@ export default defineComponent({
           return {
             icon: 'mdi-format-list-bulleted',
             to: agendaItemPath.value,
-            title: 'Till dagordningspunkten'
+            title: t('speaker.toAgendaItem')
           }
         }
         return {
           icon: 'mdi-home-outline',
           to: meetingPath.value,
-          title: 'Till mötet'
+          title: t('speaker.toMeeting')
         }
       }),
       speakerSystem,
