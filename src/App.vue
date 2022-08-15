@@ -98,16 +98,4 @@ export default defineComponent({
   .v-btn:not(:last-child)
     border-top-right-radius: 0
     border-bottom-right-radius: 0
-
-// Temporary Vuetify fix
-// TODO Remove when v-text-input supports hide-details
-// .v-input.hide-details
-//   .v-input__details
-//     display: none
-
-// TODO Remove when fixed upstream
-// .v-dialog .v-overlay__content
-//   max-height: calc(100vh - 40px) !important
-//   .v-sheet
-//     overflow-y: auto !important
 </style>
