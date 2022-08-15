@@ -19,6 +19,9 @@
           <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
             {{ t('name') }}
           </th>
+          <th v-if="admin">
+            {{ t('Email')}}
+          </th>
           <th v-for="col in columns" class="text-center" :key="col.name" @click="orderUsers(col.name)" :class="{ orderBy: col.name === orderBy }">
             <v-tooltip :text="col.title" location="top">
               <template #activator="{ props }">
@@ -32,6 +35,9 @@
       <tbody>
         <tr v-for="[user, ...cols] in pageUsers" :key="user">
           <td><User :pk="user" userid /></td>
+          <td v-if="admin">
+            {{ getUser(user)?.email }}
+          </td>
           <td v-for="({ name, readonly }, i) in columns" :key="name" class="text-center">
             <v-btn v-if="cols[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
               <v-icon icon="mdi-check" />
@@ -171,6 +177,7 @@ export default defineComponent({
       t,
       columns,
       currentPage,
+      getUser,
       orderBy,
       orderReversed,
       pageCount,
