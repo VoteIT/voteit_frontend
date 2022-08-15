@@ -33,7 +33,7 @@
                     <h2 class="mb-2 flex-grow-1">
                       {{ t('profile.changeUserid') }}
                     </h2>
-                    <v-btn icon="mdi-close" @click="isActive.value = false" />
+                    <v-btn class="mt-n2 mr-n2" icon="mdi-close" @click="isActive.value = false" />
                   </div>
                   <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
                   <SchemaForm v-if="profileSchema" :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
@@ -64,7 +64,7 @@
                     <h2 class="mb-2 flex-grow-1">
                       {{ t('profile.switchUser') }}
                     </h2>
-                    <v-btn icon="mdi-close" @click="isActive.value = false" />
+                    <v-btn class="mt-n2 mr-n2" icon="mdi-close" @click="isActive.value = false" />
                   </div>
                   <v-list>
                     <v-list-item
@@ -72,17 +72,15 @@
                       :key="user.pk"
                       @click="switchUser(user)"
                     >
-                      <v-list-item-avatar class="mr-2">
+                      <template #prepend>
                         <UserAvatar :pk="user.pk" />
-                      </v-list-item-avatar>
-                      <div>
-                        <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
-                          {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ user.userid }}
-                        </v-list-item-subtitle>
-                      </div>
+                      </template>
+                      <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
+                        {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ user.userid }}
+                      </v-list-item-subtitle>
                     </v-list-item>
                   </v-list>
                 </v-sheet>

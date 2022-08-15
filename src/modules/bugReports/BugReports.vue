@@ -15,7 +15,7 @@
             <h2 class="flex-grow-1">
               Felrapport
             </h2>
-            <v-btn variant="text" class="mt-n2 mr-n2" icon="mdi-close" size="small" @click="isActive.value = false" />
+            <v-btn variant="text" class="mt-n2 mr-n2" icon="mdi-close" @click="isActive.value = false" />
           </div>
           <template v-if="submitted">
             <p class="mt-2 mb-6 text-secondary">

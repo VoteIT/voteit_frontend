@@ -16,7 +16,7 @@
               <h2 class="flex-grow-1">
                 {{ t('speaker.systemAdd') }}
               </h2>
-              <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" />
+              <v-btn class="mr-n2 mt-n2" icon="mdi-close" variant="text" @click="isActive.value = false" />
             </div>
             <v-form @submit.prevent="createSystem()">
               <v-text-field :label="t('title')" v-model="systemData.title" />
@@ -99,7 +99,7 @@
             <h2 class="flex-grow-1">
               {{ t('speaker.systemEdit') }}
             </h2>
-            <v-btn variant="text" @click="isActive.value = false" icon="mdi-close" />
+            <v-btn class="mt-n2 mr-n2" variant="text" @click="isActive.value = false" icon="mdi-close" />
           </div>
           <v-form @submit.prevent="saveSystem()">
             <v-text-field :label="t('title')" v-model="editSystemData.title" />

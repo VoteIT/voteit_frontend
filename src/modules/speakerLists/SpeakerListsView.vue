@@ -79,9 +79,9 @@
               {{ title }}
             </v-list-subheader>
             <v-list-item v-for="user in queue" :key="user" :class="{ self: isSelf(user) }">
-              <v-list-item-avatar class="mr-2">
+              <template #prepend>
                 <UserAvatar :pk="user" />
-              </v-list-item-avatar>
+              </template>
               <v-list-item-title class="flex-grow-1">
                 <User :pk="user"/>
               </v-list-item-title>

@@ -29,7 +29,7 @@
             <h2 class="flex-grow-1">
               {{ t('meeting.invites.add') }}
             </h2>
-            <v-btn icon="mdi-close" variant="text" @click="inviteDialogOpen = false" />
+            <v-btn class="mt-n2 mr-n2" icon="mdi-close" variant="text" @click="inviteDialogOpen = false" />
           </div>
           <!-- <SchemaForm :schema="inviteSchema">
             <template #buttons="{ disabled }">

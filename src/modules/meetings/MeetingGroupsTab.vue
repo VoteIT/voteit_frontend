@@ -16,9 +16,12 @@
         </template>
         <template #default="{ isActive }">
           <v-sheet rounded class="pa-4">
-            <h2 class="mb-2">
-              {{ t('meeting.groups.new') }}
-            </h2>
+            <div class="d-flex mb-2">
+              <h2 class="flex-grow-1">
+                {{ t('meeting.groups.new') }}
+              </h2>
+              <v-btn class="mt-n2 mr-n2" icon="mdi-close" variant="text" @click="isActive.value = false" />
+            </div>
             <SchemaForm :schema="groupSchema" :handler="createGroup" @saved="isActive.value = false">
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
@@ -60,13 +63,13 @@
                 </v-btn>
               </template>
               <template #default="{ isActive }">
-                <v-sheet rounded class="pa-4">
+                <v-sheet rounded class="pa-4" v-bind="dialogDefaults">
                   <div class="d-flex">
                     <h2>
                       {{ t('meeting.groups.membersIn', { ...group }) }}
                     </h2>
                     <v-spacer />
-                    <v-btn icon="mdi-close" size="small" flat @click="isActive.value = false" style="position: relative; top: -.5em; right: -.5em;" />
+                    <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" class="mt-n2 mr-n2" />
                   </div>
                   <UserList :userIds="group.members" />
                 </v-sheet>
@@ -82,9 +85,12 @@
               </template>
               <template #default="{ isActive }">
                 <v-sheet rounded class="pa-4" v-bind="dialogDefaults">
-                  <h2 class="mb-2">
-                    {{ t('meeting.groups.modify') }}
-                  </h2>
+                  <div class="d-flex mb-2">
+                    <h2 class="flex-grow-1">
+                      {{ t('meeting.groups.modify') }}
+                    </h2>
+                    <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" class="mt-n2 mr-n2" />
+                  </div>
                   <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title }" @saved="isActive.value = false">
                     <template #buttons="{ disabled, submitting }">
                       <div class="text-right">
@@ -114,9 +120,9 @@
                     <v-list-item
                       v-for="user in getMembers(group)" :key="user.pk"
                     >
-                      <v-list-item-avatar class="mr-2">
+                      <template #prepend>
                         <UserAvatar :pk="user.pk" />
-                      </v-list-item-avatar>
+                      </template>
                       <v-list-item-header>
                         <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
                           {{ user.full_name ?? `- ${t('unknownUser')} -` }}
@@ -125,7 +131,9 @@
                           {{ user.userid }}
                         </v-list-item-subtitle>
                       </v-list-item-header>
-                      <v-btn icon="mdi-close" color="secondary" variant="text" @click="removeMember(group, user)" />
+                      <template #append>
+                        <v-btn icon="mdi-close" color="secondary" variant="text" @click="removeMember(group, user)" />
+                      </template>
                     </v-list-item>
                   </v-list>
                   <v-alert v-else type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />

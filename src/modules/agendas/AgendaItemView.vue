@@ -27,7 +27,7 @@
     <v-divider class="my-4" />
     <v-row :key="`agenda-filters-${agendaId}`">
       <v-col class="d-flex">
-        <v-dialog v-if="canAddProposal">
+        <v-dialog v-if="canAddProposal" persistent>
           <template #activator="{ props }">
             <slot name="activator" :props="props">
               <v-btn :prepend-icon="agendaItem.block_proposals ? 'mdi-lock-outline' : 'mdi-text-box-plus-outline'" color="primary" v-bind="props">
