@@ -538,6 +538,8 @@
     "systemMethod": "Metod för ordning",
     "timeSpoken": "Tid ({time})",
     "timesSpoken": "Antal gånger ({count})",
+    "toAgendaItem": "Till dagordningspunkten",
+    "toMeeting": "Till mötet",
     "visible": "Visa för alla deltagare",
     "orderMethod": {
       "priority": "Prioritera förstagångstalare",

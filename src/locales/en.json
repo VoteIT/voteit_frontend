@@ -551,6 +551,8 @@
     "systemMethod": "Priority method",
     "timeSpoken": "Time ({time})",
     "timesSpoken": "Count ({count})",
+    "toAgendaItem": "To agenda item",
+    "toMeeting": "To meeting",
     "visible": "Visible to all participants",
     "orderMethod": {
       "priority": "Prioritize first-time speakers",
