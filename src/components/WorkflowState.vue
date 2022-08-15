@@ -157,6 +157,7 @@ export default defineComponent({
     z-index: 100
     position: absolute
     margin-top: .1em
+    width: max-content
     .v-list-item
       white-space: nowrap
       .v-icon
