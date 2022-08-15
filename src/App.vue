@@ -76,9 +76,6 @@ export default defineComponent({
 *
   box-sizing: border-box
 
-#app
-  min-height: 100vh
-
 .v-btn
   text-transform: none !important
   letter-spacing: .04em !important
@@ -98,4 +95,9 @@ export default defineComponent({
   .v-btn:not(:last-child)
     border-top-right-radius: 0
     border-bottom-right-radius: 0
+
+/* Vuetify has an elusive blocked scrolling issue. This disables scroll blocking. */
+html.v-overlay-scroll-blocked
+  position: initial !important
+  overflow-y: auto !important
 </style>
