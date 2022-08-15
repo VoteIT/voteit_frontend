@@ -10,6 +10,11 @@
           ({{ speakerSystem.title }})
         </small>
       </router-link>
+      <v-fade-transition>
+        <v-btn v-show="!idle" size="small" variant="tonal" class="ml-4 mt-n1" :to="nav.to" :prepend-icon="nav.icon">
+          {{ nav.title }}
+        </v-btn>
+      </v-fade-transition>
     </v-app-bar-title>
     <Menu v-if="systemsMenu" position="bottom" :items="systemsMenu" icon="mdi-chevron-down" />
   </v-app-bar>
@@ -19,8 +24,10 @@
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import { useIdle } from '@vueuse/core'
 
 import { MenuItemTo } from '@/utils/types'
+import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 
 import useSpeakerSystem from './useSpeakerSystem'
@@ -29,11 +36,13 @@ import useSpeakerSystems from './useSpeakerSystems'
 export default defineComponent({
   setup () {
     const { t } = useI18n()
+    const { idle } = useIdle(3000)
     const route = useRoute()
 
     const { meeting, meetingId, meetingPath } = useMeeting()
     const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
-    const { speakerSystem } = useSpeakerSystem(computed(() => Number(route.params.system)))
+    const { speakerSystem, systemActiveList } = useSpeakerSystem(computed(() => Number(route.params.system)))
+    const { agendaItemPath } = useAgendaItem(computed(() => systemActiveList.value?.agenda_item))
 
     const systemsMenu = computed<MenuItemTo[] | undefined>(() => {
       if (activeSpeakerSystems.value.length <= 1) return
@@ -48,8 +57,23 @@ export default defineComponent({
     })
     return {
       t,
+      idle,
       meeting,
       meetingPath,
+      nav: computed(() => {
+        if (agendaItemPath.value) {
+          return {
+            icon: 'mdi-format-list-bulleted',
+            to: agendaItemPath.value,
+            title: 'Till dagordningspunkten'
+          }
+        }
+        return {
+          icon: 'mdi-home-outline',
+          to: meetingPath.value,
+          title: 'Till mötet'
+        }
+      }),
       speakerSystem,
       systemsMenu
     }

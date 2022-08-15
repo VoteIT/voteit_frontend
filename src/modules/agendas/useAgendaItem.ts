@@ -16,6 +16,7 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
   const { allPollTitles } = usePolls()
 
   const agendaItemPath = computed(() => {
+    if (!agendaId.value) return
     return `${meetingPath.value}/a/${agendaId.value}/${slugify(agendaItem.value ? agendaItem.value.title : '-')}`
   })
 
