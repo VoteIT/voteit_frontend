@@ -6,16 +6,18 @@
 
 <script lang="ts">
 /* eslint-disable camelcase */
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 import { ThemeColor } from '@/utils/types'
+import type { User } from '@/modules/organisations/types'
 
 export default defineComponent({
   name: 'User',
   props: {
     pk: Number,
+    user: Object as PropType<User>,
     size: String,
     color: {
       type: String,
@@ -25,7 +27,7 @@ export default defineComponent({
   setup (props) {
     const { getUser } = useUserDetails()
     const auth = useAuthentication()
-    const user = computed(() => props.pk ? getUser(props.pk) : auth.user.value)
+    const user = computed(() => props.user ?? (props.pk ? getUser(props.pk) : auth.user.value))
 
     const initials = computed(() => {
       if (image.value) return

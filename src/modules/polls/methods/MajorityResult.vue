@@ -1,15 +1,15 @@
 <template>
-  <v-list>
+  <v-list bg-color="background">
     <v-list-item disabled v-for="{ icon, proposal, votes } in proposalResults" :key="proposal?.pk">
-      <v-icon size="x-large" v-bind="icon" class="mr-4" />
-      <div>
-        <v-list-item-title>
-          <Tag :name="proposal ? proposal.prop_id : t('proposal.unknown')" />
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t('poll.result.voteCount', votes) }}
-        </v-list-item-subtitle>
-      </div>
+      <template #prepend>
+        <v-icon size="x-large" v-bind="icon" class="mr-4" />
+      </template>
+      <v-list-item-title>
+        <Tag :name="proposal ? proposal.prop_id : t('proposal.unknown')" />
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ t('poll.result.voteCount', votes) }}
+      </v-list-item-subtitle>
     </v-list-item>
   </v-list>
 </template>

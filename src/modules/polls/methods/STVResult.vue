@@ -17,14 +17,12 @@
     </v-expansion-panels>
     <v-list density="comfortable" bg-color="background">
       <v-list-item v-for="([key, value], i) in metadata" :key="i">
-        <div>
-          <v-list-item-subtitle>
-            {{ key }}
-          </v-list-item-subtitle>
-          <v-list-item-title>
-            {{ value }}
-          </v-list-item-title>
-        </div>
+        <v-list-item-subtitle>
+          {{ key }}
+        </v-list-item-subtitle>
+        <v-list-item-title>
+          {{ value }}
+        </v-list-item-title>
       </v-list-item>
     </v-list>
     <slot/>

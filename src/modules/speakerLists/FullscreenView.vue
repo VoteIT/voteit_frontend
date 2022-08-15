@@ -24,17 +24,15 @@
                 </div>
               </div>
               <v-list-item v-for="pk in queue" :key="pk" active-color="primary" :active="active" style="z-index: 1;">
-                <v-list-item-avatar class="mr-2">
+                <template #prepend>
                   <UserAvatar :pk="pk" />
-                </v-list-item-avatar>
-                <div>
-                  <v-list-item-title>
-                    <User :pk="pk" />
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ getUserId(pk) }}
-                  </v-list-item-subtitle>
-                </div>
+                </template>
+                <v-list-item-title>
+                  <User :pk="pk" />
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ getUserId(pk) }}
+                </v-list-item-subtitle>
               </v-list-item>
             </template>
           </v-slide-x-transition>
