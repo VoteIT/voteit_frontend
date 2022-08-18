@@ -1,4 +1,3 @@
-import { WorkflowState } from '@/contentTypes/types'
 import { ThemeColor } from '@/utils/types'
 import { ProposalState } from './types'
 

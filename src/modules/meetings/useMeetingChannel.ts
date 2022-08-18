@@ -3,7 +3,6 @@ import { onBeforeMount, computed } from 'vue'
 import useMeeting from './useMeeting'
 import { useRouter } from 'vue-router'
 import useLoader from '@/composables/useLoader'
-import { slugify } from '@/utils'
 import useMeetings from './useMeetings'
 import useChannel from '@/composables/useChannel'
 

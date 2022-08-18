@@ -1,7 +1,7 @@
 <template>
   <UserPopup :user="user">
     <template #activator="{ props }">
-      <span v-bind="props">
+      <span v-bind="props" class="activator">
         {{ user.full_name }}
         <small v-if="userid && user.userid" class="text-secondary">
           ({{ user.userid }})
@@ -35,3 +35,8 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass" scoped>
+.activator
+  cursor: pointer
+</style>

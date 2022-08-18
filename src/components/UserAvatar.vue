@@ -1,7 +1,7 @@
 <template>
   <UserPopup v-if="popup" :user="computedUser">
     <template #activator="{ props }">
-      <v-avatar v-bind="{ ...$attrs, ...props }" :size="size" :color="bg" :image="image">
+      <v-avatar v-bind="{ ...$attrs, ...props }" :size="size" :color="bg" :image="image" class="activator">
         {{ initials }}
       </v-avatar>
     </template>
@@ -72,3 +72,8 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="sass" scoped>
+.activator
+  cursor: pointer
+</style>
