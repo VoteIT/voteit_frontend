@@ -1,18 +1,24 @@
 <template>
-  <span>
-    {{ user.full_name }}
-    <small v-if="userid && user.userid" class="text-secondary">
-      ({{ user.userid }})
-    </small>
-  </span>
+  <UserPopup :user="user">
+    <template #activator="{ props }">
+      <span v-bind="props">
+        {{ user.full_name }}
+        <small v-if="userid && user.userid" class="text-secondary">
+          ({{ user.userid }})
+        </small>
+      </span>
+    </template>
+  </UserPopup>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 
 import useUserDetails from '../modules/organisations/useUserDetails'
+import UserPopup from './UserPopup.vue'
 
 export default defineComponent({
+  components: { UserPopup },
   props: {
     pk: {
       type: Number,

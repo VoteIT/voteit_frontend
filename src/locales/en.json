@@ -496,7 +496,7 @@
     "proposer": "Proposer",
     "speaker": "Speaker",
     "help": {
-      "intro": "Sort the list by clicking an icon or name bellow. The icons represent a role that enables you to do certain things.",
+      "intro": "Sort the list by clicking an icon or name below. The icons represent a role that enables you to do certain things.",
       "discusser": "Allowed to add discussion posts if discussion is allowed and the meeting hasn't closed.",
       "list_moderator": "Handles speaker lists.",
       "meeting_creator": "Can add new meetings.",

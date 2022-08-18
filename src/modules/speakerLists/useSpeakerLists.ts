@@ -4,11 +4,8 @@ import { dateify } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { AgendaItem } from '../agendas/types'
-import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState, SpeakerStartStopMessage } from './types'
+import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerStartStopMessage } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
-import { isModerator } from '../meetings/rules'
-import { isSystemModerator } from './rules'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
@@ -18,7 +15,6 @@ export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map l
 const speakerHistory = reactive<Map<number, SpeakerHistoryEntry[]>>(new Map()) // Map list pk to history entries
 
 speakerSystemType.updateMap(speakerSystems)
-const { hasRole } = speakerSystemType.useContextRoles()
 
 speakerListType
   .updateMap(speakerLists)

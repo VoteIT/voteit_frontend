@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 
-import { DefineComponent } from 'vue'
 import TypedEvent from './TypedEvent'
 
 // For Channels

@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="d-flex" v-else-if="p.author">
-      <UserAvatar :pk="p.author" class="mr-2" />
+      <UserAvatar popup :pk="p.author" class="mr-2" />
       <div class="flex-grow-1">
         <user :pk="p.author" /><br/>
         <Moment :date="p.created" />
