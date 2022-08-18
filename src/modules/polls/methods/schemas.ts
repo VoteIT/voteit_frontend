@@ -1,5 +1,4 @@
 import { InputType, SchemaGenerator } from '@/components/inputs/types'
-import { Proposal } from '@/modules/proposals/types'
 import { PollMethodName } from './types'
 
 const getSTVSchema: SchemaGenerator = (t, proposals) => {

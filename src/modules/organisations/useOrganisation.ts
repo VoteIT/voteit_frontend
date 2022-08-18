@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-import { canAddMeeting, canChangeOrganisation, isMeetingCreator } from './rules'
+import { canAddMeeting, canChangeOrganisation } from './rules'
 import useOrganisations from './useOrganisations'
 
 const { organisation } = useOrganisations()

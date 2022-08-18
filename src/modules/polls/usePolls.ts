@@ -1,4 +1,4 @@
-import { reactive, computed, watch } from 'vue'
+import { reactive, computed } from 'vue'
 
 import { mapFilter } from '@/utils'
 import { Vote } from '@/contentTypes/types'

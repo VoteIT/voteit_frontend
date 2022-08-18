@@ -6,7 +6,7 @@
     :transition="false"
     >
     <template #activator="{ props }">
-      <slot name="activator" :props="props" class="activator" />
+      <slot name="activator" :props="props" />
     </template>
     <v-card rounded="lg" class="mb-1" elevation="4">
       <v-card-item>
@@ -41,8 +41,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass" scoped>
-.activator
-  cursor: pointer
-</style>
