@@ -7,6 +7,7 @@ import speakerLists from '@/modules/speakerLists/router'
 import StartView from './StartView.vue'
 import ParticipantsView from './ParticipantsView.vue'
 import ElectoralRegistersView from './electoralRegisters/ElectoralRegistersView.vue'
+import MinutesView from './MinutesView.vue'
 import MeetingView from './MeetingView.vue'
 import ControlPanelView from '@/modules/meetings/ControlPanel.vue'
 
@@ -26,7 +27,7 @@ export default {
   children: [
     {
       path: '',
-      name: 'index',
+      name: 'meeting',
       component: StartView
     },
     speakerLists,
@@ -49,6 +50,11 @@ export default {
       path: 'er',
       name: 'electoral-registers',
       component: ElectoralRegistersView
+    },
+    {
+      path: 'minutes',
+      name: 'meeting-minutes',
+      component: MinutesView
     },
     polls,
     {
