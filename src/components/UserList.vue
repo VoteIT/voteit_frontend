@@ -4,7 +4,7 @@
       <v-item v-for="{ pk, full_name, userid } in users" :key="pk" :value="pk" v-slot="{ isSelected, toggle }">
       <v-list-item  @click="toggle()" :active="isSelected">
         <template #prepend>
-          <UserAvatar :pk="pk" />
+          <UserAvatar popup :pk="pk" />
         </template>
         <v-list-item-title :class="{ 'text-secondary': !full_name }">
           {{ full_name ?? `- ${t('unknownUser')} (${pk}) -` }}

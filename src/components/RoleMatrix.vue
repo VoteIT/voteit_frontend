@@ -36,7 +36,9 @@
         <tr v-for="[user, ...cols] in pageUsers" :key="user">
           <td><User :pk="user" userid /></td>
           <td v-if="admin">
-            {{ getUser(user)?.email }}
+            <small>
+              {{ getUser(user)?.email }}
+            </small>
           </td>
           <td v-for="({ name, readonly }, i) in columns" :key="name" class="text-center">
             <v-btn v-if="cols[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">

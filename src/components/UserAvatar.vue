@@ -1,5 +1,12 @@
 <template>
-  <v-avatar :size="size" :color="bg" :image="image">
+  <UserPopup v-if="popup" :user="computedUser">
+    <template #activator="{ props }">
+      <v-avatar v-bind="{ ...$attrs, ...props }" :size="size" :color="bg" :image="image">
+        {{ initials }}
+      </v-avatar>
+    </template>
+  </UserPopup>
+  <v-avatar v-else :size="size" :color="bg" :image="image">
     {{ initials }}
   </v-avatar>
 </template>
@@ -10,19 +17,25 @@ import { computed, defineComponent, PropType } from 'vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useUserDetails from '@/modules/organisations/useUserDetails'
-import { ThemeColor } from '@/utils/types'
 import type { User } from '@/modules/organisations/types'
+import { ThemeColor } from '@/utils/types'
+
+import UserPopup from './UserPopup.vue'
 
 export default defineComponent({
   name: 'User',
+  components: {
+    UserPopup
+  },
   props: {
-    pk: Number,
-    user: Object as PropType<User>,
-    size: String,
     color: {
       type: String,
       default: 'primary'
-    }
+    },
+    popup: Boolean,
+    pk: Number,
+    size: String,
+    user: Object as PropType<User>
   },
   setup (props) {
     const { getUser } = useUserDetails()
@@ -52,6 +65,7 @@ export default defineComponent({
 
     return {
       bg,
+      computedUser: user,
       initials,
       image
     }
