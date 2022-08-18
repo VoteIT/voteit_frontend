@@ -1,5 +1,5 @@
 <template>
-  <UserPopup :user="user">
+  <UserPopup v-if="user" :user="user">
     <template #activator="{ props }">
       <span v-bind="props" class="activator">
         {{ user.full_name }}
@@ -28,7 +28,7 @@ export default defineComponent({
   },
   setup (props) {
     const { getUser } = useUserDetails()
-    const user = computed(() => getUser(props.pk) || {})
+    const user = computed(() => getUser(props.pk))
     return {
       user
     }
