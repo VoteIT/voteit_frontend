@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-center">
+    <div class="text-center d-print-none">
       <v-btn-toggle mandatory variant="outlined" v-model="baseSetting" class="mb-1">
         <v-btn size="large" value="documents" prepend-icon="mdi-file-document">
           {{ t('minutes.documents') }}
@@ -11,7 +11,7 @@
       </v-btn-toggle>
     </div>
     <v-expand-transition>
-      <v-sheet v-if="baseSetting" border rounded class="pa-4">
+      <v-sheet v-if="baseSetting" border rounded class="pa-4 d-print-none">
         <h3>
           {{ t('minutes.includeProposalStates') }}
         </h3>

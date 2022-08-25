@@ -100,4 +100,8 @@ export default defineComponent({
 html.v-overlay-scroll-blocked
   position: initial !important
   overflow-y: auto !important
+
+.v-main
+  @media print
+    padding: 0 !important
 </style>
