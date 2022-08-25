@@ -18,7 +18,7 @@
       <tbody>
         <tr v-for="{ user, times_spoken, timeSpoken } in history" :key="user">
           <td>
-            <User :pk="user" />
+            <User :pk="user" userid />
           </td>
           <td>
             {{ times_spoken }}
