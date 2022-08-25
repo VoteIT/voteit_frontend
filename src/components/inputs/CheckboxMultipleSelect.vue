@@ -45,6 +45,12 @@ export default defineComponent({
       Object.keys(props.settings.options),
       new Set([...props.modelValue, ...props.requiredValues])
     ))
+    watch(() => props.modelValue, values => {
+      if (!props.settings?.options) return
+      for (const key in props.settings.options) {
+        val[key] = values.includes(key)
+      }
+    })
     watch(val, value => {
       emit('update:modelValue', toOutputValue(value))
     })

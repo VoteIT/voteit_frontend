@@ -169,7 +169,7 @@ export default defineComponent({
           title: t('electoralRegister.plural'),
           to: `${meetingPath.value}/er`
         }, {
-          title: 'Minutes',
+          title: t('minutes.minutes'),
           to: `${meetingPath.value}/minutes`
         }],
         icon: 'mdi-home-variant-outline'
