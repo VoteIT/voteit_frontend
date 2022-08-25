@@ -15,6 +15,7 @@
   "continue": "Continue",
   "copied": "Copied",
   "create": "Create",
+  "created": "Created",
   "defaultFilters": "Default Filters",
   "delete": "Delete",
   "dismissAll": "Dismiss all",
@@ -25,6 +26,7 @@
   "inactive": "Inactive",
   "login": "Log in",
   "manage": "Manage",
+  "modified": "Modified",
   "name": "Name",
   "newestFirst": "Newest first",
   "no": "No",
@@ -238,6 +240,19 @@
       "all": "All settings",
       "for": "Settings for {title}"
     }
+  },
+  "minutes": {
+    "documents": "Meeting documents",
+    "includeProposalStates": "Include proposal states",
+    "minutes": "Minutes",
+    "noInformation": "No information",
+    "proposalOrder": "Proposal order",
+    "showAuthors": "Show proposal authors",
+    "showSeparators": "Show horizontal separators",
+    "showMeetingBody": "Show text body from meeting",
+    "showAIBody": "Show text body from agenda items",
+    "warningAIUnresolved": "This agenda item has unresolved proposals",
+    "warningMeetingNotFinished": "This meeting is not finished. You should close the meeting before printing or copying the minutes."
   },
   "organization": {
     "loginTo": "Log in to {title}",

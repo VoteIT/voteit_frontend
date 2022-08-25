@@ -6,7 +6,7 @@ import { slugify } from '@/utils'
 import { meetings } from './useMeetings'
 
 import { Meeting, MeetingRole } from './types'
-import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite, canViewMeeting, isModerator } from './rules'
+import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite, canViewMeeting, isModerator, isFinishedMeeting } from './rules'
 import { meetingType } from './contentTypes'
 import { useI18n } from 'vue-i18n'
 
@@ -42,6 +42,7 @@ export default function useMeeting () {
     canAddMeetingInvite: computed(() => meeting.value && canAddMeetingInvite(meeting.value)),
     canViewMeeting: computed(() => canViewMeeting(meeting.value)),
     canViewMeetingInvite: computed(() => meeting.value && canViewMeetingInvite(meeting.value)),
+    isFinishedMeeting: computed(() => isFinishedMeeting(meeting.value)),
     isModerator: computed(() => isModerator(meeting.value)),
     meetingId,
     meeting,

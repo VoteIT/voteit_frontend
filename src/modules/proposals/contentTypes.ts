@@ -25,7 +25,7 @@ export const proposalType = new ContentType<Proposal>({
   states: proposalStates,
   name: 'proposal',
   restEndpoint: 'proposals/',
-  dateFields: ['created']
+  dateFields: ['created', 'modified']
 })
 
 export const proposalTextType = new ContentType<ProposalText>({
