@@ -1,6 +1,6 @@
 <template>
   <div style="height: 64px" />
-  <div id="bubbles">
+  <div id="bubbles" class="d-print-none">
     <v-overlay
       v-for="component in bubbles" :key="component.id"
       eager
