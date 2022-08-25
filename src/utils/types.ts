@@ -60,6 +60,11 @@ export interface SubscribedPayload {
   pk: number
 }
 
+export interface BatchPayload {
+  t: string
+  payloads: object[]
+}
+
 export type ChannelsMessage<T=unknown> = SuccessMessage<T> | ProgressMessage | FailedMessage
 
 export type ProgressHandler = (progress: Progress) => void

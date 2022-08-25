@@ -1,14 +1,16 @@
 import { ref } from 'vue'
+import { last } from 'lodash'
 
 import { uriToPayload } from '@/utils'
 import hostname from '@/utils/hostname'
 import { AlertLevel } from '@/composables/types'
 
-import { ChannelsConfig, ChannelsMessage, PydanticError, State, SubscribedPayload, SuccessMessage } from './types'
+import { State } from './types'
 import { DocumentVisibleEvent, openAlertEvent } from './events'
-import { last } from 'lodash'
 import DefaultMap from './DefaultMap'
 import ProgressPromise from './ProgressPromise'
+
+import type { BatchPayload, ChannelsConfig, ChannelsMessage, PydanticError, SubscribedPayload, SuccessMessage } from './types'
 
 type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
 export enum SocketEvent {
@@ -65,11 +67,29 @@ class Socket {
     this.callbacks = new Map()
     this.typeListeners = new Map()
     this.listeners = new DefaultMap(() => new Set())
-    // Respond to server ping
     // 's' == system
-    this.registerTypeListener('s', ({ t, i }) => {
-      if (t === 's.ping') socket.respond('s.pong', i)
+    this.registerTypeListener('s', ({ i, p, t }) => {
+      switch (t) {
+        case 's.ping':
+          // Respond to server ping
+          socket.respond('s.pong', i)
+          break
+        case 's.batch':
+          this.handleBatchMessage(p as BatchPayload, i)
+          break
+      }
     })
+  }
+
+  // Batch messages allows sending a group of messages that are handled in the same tick,
+  // to avoid triggering Vue component updates on each added object
+  private handleBatchMessage ({ t, payloads }: BatchPayload, i: string | null) {
+    const [contentType] = t.split('.')
+    const listener = this.typeListeners.get(contentType)
+    if (!listener) return console.warn(`No listener registered for batch message ${t}`)
+    for (const p of payloads) {
+      listener({ t, i, p })
+    }
   }
 
   private createEventListener (eventName: SocketEvent): SocketEventHandler {
