@@ -196,7 +196,7 @@
     "create": "Starta ett nytt möte",
     "createTitleHint": "Minst 5 tecken",
     "meeting": "Möte",
-    "visible_in_lists": "Visa mötet på organisaitonens startsida.",
+    "visibleInLists": "Visa mötet på organisationens startsida.",
     "subscriptionFailedMessage": "Kunde inte ladda mötet.",
     "subscriptionFailedButton": "Till startsidan",
     "groups": {

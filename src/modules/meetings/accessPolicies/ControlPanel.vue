@@ -16,7 +16,7 @@
             {{ t('meeting.participants') }}
           </v-btn>
         </v-alert>
-        <v-switch :label="t('meeting.visible_in_lists')" v-model="meetingListed" color="primary" :messages="t('accessPolicy.listedMeetingHelp')" />
+        <v-switch :label="t('meeting.visibleInLists')" v-model="meetingListed" color="primary" :messages="t('accessPolicy.listedMeetingHelp')" />
         <v-expand-transition>
           <div v-if="meetingListed && !hasActivePolicy">
             <v-alert
@@ -38,12 +38,12 @@
           </v-btn>
         </div>
         <v-card v-for="p in accessPolicies" :key="p.pk">
-          <v-card-header class="d-flex align-start">
+          <div class="d-flex align-start pr-3">
             <v-card-title class="flex-grow-1">
               {{ t(`accessPolicies.${p.name}.title`) }}
             </v-card-title>
             <v-switch color="primary" :modelValue="p.active" @update:modelValue="setActive(p, $event)" :label="t('active')" class="flex-grow-0" hide-details />
-          </v-card-header>
+          </div>
           <v-card-text>
             <p class="mb-4">
               {{ t(`accessPolicies.${p.name}.description`) }}
