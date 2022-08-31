@@ -1,5 +1,6 @@
 # FROM voteit/voteit4dev:${BACKEND_VERSION} as backend
 FROM voteit/voteit4dev:latest as backend
+USER root
 RUN DJANGO_SETTINGS_MODULE=voteit_project.settings_docker_build ./manage.py collectstatic --noinput
 
 FROM nginx:1.23-alpine
