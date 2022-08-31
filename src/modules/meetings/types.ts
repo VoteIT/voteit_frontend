@@ -63,6 +63,7 @@ export interface Meeting extends BaseContent {
   end_time: Date | null
   er_policy_name?: string
   public: boolean
+  visible_in_lists: boolean
   start_time: Date | null
 }
 

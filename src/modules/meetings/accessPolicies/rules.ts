@@ -5,7 +5,7 @@ import { isParticipant } from '../rules'
 function baseCheck (accessPolicy: AccessPolicy) {
   if (!accessPolicy.active) return false // Unnecessary atm; will not get inactive from API
   const meeting = meetings.get(accessPolicy.meeting)
-  return !!meeting && meeting.public && !isParticipant(meeting)
+  return !!meeting && meeting.visible_in_lists && !isParticipant(meeting)
 }
 
 export function canJoin (accessPolicy: AccessPolicy): boolean {

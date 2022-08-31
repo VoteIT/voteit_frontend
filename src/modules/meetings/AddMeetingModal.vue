@@ -4,7 +4,7 @@
       <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" :hint="t('meeting.createTitleHint')" />
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="formData.er_policy_name" :options="erOptions" />
       <div>
-        <v-switch color="primary" v-model="formData.public" :label="t('meeting.public')" />
+        <v-switch color="primary" v-model="formData.visible_in_lists" :label="t('meeting.visible_in_lists')" />
       </div>
       <div class="text-right">
         <v-btn variant="text" @click="$emit('close')">
@@ -41,7 +41,7 @@ export default defineComponent({
 
     const formData = reactive({
       title: '',
-      public: false,
+      visible_in_lists: false,
       er_policy_name: undefined
     })
     const submitting = ref(false)

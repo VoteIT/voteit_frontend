@@ -70,7 +70,7 @@
     "noAccessPolicies": "Mötet saknar åtkomstregler",
     "noAccessPoliciesAlert": "Mötet är nu synligt för alla, men det finns inget sätt för användare att gå med. Skapa och aktivera en åtkomstregel om du vill att en användare ska kunna gå med utan inbjudan.",
     "plural": "Åtkomstregler",
-    "publicMeetingHelp": "När du gör mötet publikt visas det för alla användare på organisationens startsida.",
+    "listedMeetingHelp": "Är det okej att visa mötet för användare på organisationens startsida? Det går bara att se grundläggande information om mötet.",
     "settings": "Inställningar för åtkomst till mötet",
     "rolesGiven": "Välj roller"
   },
@@ -196,7 +196,7 @@
     "create": "Starta ett nytt möte",
     "createTitleHint": "Minst 5 tecken",
     "meeting": "Möte",
-    "public": "Gör mötet synligt för alla",
+    "visible_in_lists": "Visa mötet på organisaitonens startsida.",
     "subscriptionFailedMessage": "Kunde inte ladda mötet.",
     "subscriptionFailedButton": "Till startsidan",
     "groups": {

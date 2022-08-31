@@ -70,7 +70,7 @@
     "noAccessPolicies": "The meeting has no access policies",
     "noAccessPoliciesAlert": "The meeting is visible to everyone, but there is no way to join it. Create and activate and access policy if you want users to be able to join without an invitation.",
     "plural": "Access policies",
-    "publicMeetingHelp": "When you make a meeting public, it will be visible for everyone on the organisation start page.",
+    "listedMeetingHelp": "Is it okay to show this meeting to users on the organisation start page? They will only be able to access basic details if they aren't participants.",
     "settings": "Access Policy settings",
     "rolesGiven": "Select roles"
   },
@@ -197,7 +197,7 @@
     "create": "Start a new meeting",
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
-    "public": "Make meeting visible to everyone",
+    "visible_in_lists": "Show meeting on organisation start page.",
     "subscriptionFailedMessage": "Couldn't load meeting.",
     "subscriptionFailedButton": "To start page",
     "groups": {

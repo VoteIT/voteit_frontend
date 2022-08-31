@@ -16,9 +16,9 @@
             {{ t('meeting.participants') }}
           </v-btn>
         </v-alert>
-        <v-switch :label="t('meeting.public')" v-model="meetingPublic" color="primary" :messages="t('accessPolicy.publicMeetingHelp')" />
+        <v-switch :label="t('meeting.visible_in_lists')" v-model="meetingListed" color="primary" :messages="t('accessPolicy.listedMeetingHelp')" />
         <v-expand-transition>
-          <div v-if="meetingPublic && !hasActivePolicy">
+          <div v-if="meetingListed && !hasActivePolicy">
             <v-alert
               type="warning"
               :title="t('accessPolicy.noAccessPolicies')"
@@ -121,17 +121,17 @@ export default defineComponent({
       await deletePolicy(p)
     }
 
-    const meetingPublic = computed<boolean>({
+    const meetingListed = computed<boolean>({
       get () {
-        return !!meeting.value && meeting.value.public
+        return !!meeting.value && meeting.value.visible_in_lists
       },
       set (value) {
         try {
           meetingType.api.patch(meetingId.value, {
-            public: value
+            visible_in_lists: value
           })
         } catch {
-          alert('*Could not set meeting public status')
+          alert('*Could not set meeting visible_in_lists status')
         }
       }
     })
@@ -151,7 +151,7 @@ export default defineComponent({
       accessPolicies,
       hasActivePolicy,
       meetingPath,
-      meetingPublic,
+      meetingListed,
       meetingUrl,
       roles,
       addAutomaticAccess,
