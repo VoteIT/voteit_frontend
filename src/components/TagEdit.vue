@@ -48,12 +48,13 @@ export default defineComponent({
     watch(tags, value => {
       emit('update:modelValue', [...value])
     })
-    watch(() => props.modelValue, value => {
-      tags.clear()
-      for (const tag of value) {
-        tags.add(tag)
-      }
-    })
+    // !!! This causes infinite recursive updates
+    // watch(() => props.modelValue, value => {
+    //   tags.clear()
+    //   for (const tag of value) {
+    //     tags.add(tag)
+    //   }
+    // })
 
     function detectTagClick (evt: Event) {
       if (

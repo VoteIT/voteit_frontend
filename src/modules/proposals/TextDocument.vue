@@ -1,6 +1,6 @@
 <template>
   <v-card class="my-2 proposal-text" border>
-    <v-card-title>
+    <v-card-title class="d-flex">
       <!-- Empty title not really allowed, so no translation needed here -->
       {{ document.title || '-- text document --' }}
       <v-spacer/>

@@ -1,5 +1,5 @@
 <template>
-  <UserPopup v-if="popup" :user="computedUser">
+  <UserPopup v-if="popup && computedUser" :user="computedUser">
     <template #activator="{ props }">
       <v-avatar v-bind="{ ...$attrs, ...props }" :size="size" :color="bg" :image="image" class="activator">
         {{ initials }}
