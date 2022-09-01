@@ -49,11 +49,10 @@ export default defineComponent({
 
     const api = discussionPostType.getContentApi()
 
-    async function submit (body: string, tags: string[]) {
+    async function submit (post: Partial<DiscussionPost>) {
       await api.add({
         agenda_item: agendaId.value,
-        body,
-        tags
+        ...post
       })
     }
 
