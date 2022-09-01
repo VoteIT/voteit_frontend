@@ -3,10 +3,12 @@
 </template>
 
 <script lang="ts">
-import { onBeforeUnmount, onBeforeMount, ref, defineComponent, PropType } from 'vue'
 import moment from 'moment'
 import { AxiosResponse } from 'axios'
+import { onBeforeUnmount, onBeforeMount, ref, defineComponent, PropType } from 'vue'
+
 import restApi from '@/utils/restApi'
+import { durationToString } from '@/utils'
 
 const ABSOLUTE_BREAKPOINT = moment.duration(6, 'days').asMilliseconds() // After 6 days, display absolute time
 let serverAhead = 0 // In ms
@@ -37,10 +39,6 @@ export default defineComponent({
     let intervalId: number
     const fromNow = ref('')
 
-    function digits (n: number) {
-      return n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
-    }
-
     // Adjust serverAhead value if we got a date in the future.
     function adjustServerAhead () {
       const date = moment(props.date)
@@ -57,10 +55,7 @@ export default defineComponent({
       const serverDate = moment().add(serverAhead, 'ms')
       const serverDiff = serverDate.diff(date)
       if (props.inSeconds) {
-        const duration = moment.duration(serverDiff)
-        fromNow.value = duration.hours()
-          ? `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
-          : `${duration.minutes()}:${digits(duration.seconds())}`
+        fromNow.value = durationToString(moment.duration(serverDiff))
       } else {
         fromNow.value = serverDiff > ABSOLUTE_BREAKPOINT
           ? date.calendar()

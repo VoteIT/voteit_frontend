@@ -45,6 +45,56 @@
              @click="addSpeakerList(speakerSystem)" :disabled="!canManageSystem">
         {{ t('speaker.addListToSystem', speakerSystem ) }}
       </v-btn>
+      <div v-if="currentList && annotatedSpeakerHistory.length" class="mt-4">
+        <h2>
+          Speaker history
+        </h2>
+        <v-list bg-color="background">
+          <v-list-item v-for="{ userPk, time }, i in annotatedSpeakerHistory" :key="i">
+            <template #prepend>
+              <UserAvatar :pk="userPk" />
+            </template>
+            <v-list-item-title>
+              <User :pk="userPk" userid />
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ time }}
+            </v-list-item-subtitle>
+            <template #append>
+              <span class="btn-group d-flex flex-nowrap">
+                <v-dialog>
+                  <template #activator="{ props }">
+                    <v-btn size="x-small" color="secondary" v-bind="props">
+                      <v-icon icon="mdi-pencil" />
+                    </v-btn>
+                  </template>
+                  <template v-slot="{ isActive }">
+                    <v-sheet v-bind="dialogDefaults" class="pa-4">
+                      <div class="d-flex mb-4">
+                        <h2 class="flex-grow-1">
+                          Change speaker time
+                        </h2>
+                        <v-btn @click="isActive.value = false" icon="mdi-close" variant="text" class="mt-n2 mr-n2" />
+                      </div>
+                      <v-form>
+                        <v-text-field label="Time spoken" :modelValue="time" />
+                        <div class="text-right">
+                          <v-btn type="submit" color="primary">
+                            Save me
+                          </v-btn>
+                        </div>
+                      </v-form>
+                    </v-sheet>
+                  </template>
+                </v-dialog>
+                <v-btn size="x-small" color="warning">
+                  <v-icon icon="mdi-delete" />
+                </v-btn>
+              </span>
+            </template>
+          </v-list-item>
+        </v-list>
+      </div>
     </v-col>
     <v-col cols="12" order-sm="0" sm="7" md="7" lg="6" offset-lg="1">
       <template v-if="currentList">
@@ -85,10 +135,12 @@
               <v-list-item-title class="flex-grow-1">
                 <User :pk="user"/>
               </v-list-item-title>
-              <span class="btn-group d-flex flex-nowrap">
-                <v-btn color="primary" @click="speakers.startSpeaker(currentList, user)" size="x-small"><v-icon icon="mdi-play"/></v-btn>
-                <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small"><v-icon icon="mdi-delete"/></v-btn>
-              </span>
+              <template #append>
+                <span class="btn-group d-flex flex-nowrap">
+                  <v-btn color="primary" @click="speakers.startSpeaker(currentList, user)" size="x-small"><v-icon icon="mdi-play"/></v-btn>
+                  <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small"><v-icon icon="mdi-delete"/></v-btn>
+                </span>
+              </template>
             </v-list-item>
           </template>
         </v-list>
@@ -104,12 +156,14 @@
 </template>
 
 <script lang="ts">
+import { duration } from 'moment'
 import { computed, defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
+import { dialogQuery, durationToString } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
+import useDefaults from '@/composables/useDefaults'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
@@ -166,7 +220,7 @@ export default defineComponent({
         else if (await dialogQuery(t('speaker.confirmStopActiveSpeaker', { ...list }))) speakers.setActiveList(list, true)
       }
     })
-    const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerQueue } = useSpeakerList(systemActiveListId)
+    const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerHistory, speakerQueue } = useSpeakerList(systemActiveListId)
     function isSelf (userId: number) {
       return user.value?.pk === userId
     }
@@ -249,10 +303,20 @@ export default defineComponent({
       participantNumberInput.value = ''
     }
 
+    const annotatedSpeakerHistory = computed(() => {
+      return speakerHistory.value.map(([userPk, seconds]) => {
+        return {
+          userPk,
+          time: durationToString(duration({ seconds }))
+        }
+      })
+    })
+
     return {
       t,
       agendaItem,
       allSpeakerSystems,
+      annotatedSpeakerHistory,
       annotatedSpeakerQueue,
       canManageSystem,
       currentList,
@@ -275,7 +339,8 @@ export default defineComponent({
       isSelf,
       getListMenu,
       userSearchFilter,
-      ...useParticipantNumbers(meetingId)
+      ...useParticipantNumbers(meetingId),
+      ...useDefaults()
     }
   }
 })
