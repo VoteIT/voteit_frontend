@@ -47,10 +47,8 @@ export default defineComponent({
     const { agendaId } = useAgenda(meetingId)
     const { getMeetingButtons } = useReactions()
 
-    const api = discussionPostType.getContentApi()
-
     async function submit (post: Partial<DiscussionPost>) {
-      await api.add({
+      await discussionPostType.api.add({
         agenda_item: agendaId.value,
         ...post
       })
