@@ -10,7 +10,7 @@
     <div class="d-flex" v-else-if="p.author">
       <UserAvatar popup :pk="p.author" class="mr-2" />
       <div class="flex-grow-1">
-        <user :pk="p.author" /><br/>
+        <User :pk="p.author" /><br/>
         <Moment :date="p.created" />
       </div>
     </div>
@@ -91,7 +91,7 @@ export default defineComponent({
     PostAs,
     RichtextEditor,
     TagEdit
-},
+  },
   setup (props) {
     const { t } = useI18n()
     const { getHTMLTags } = useTags()

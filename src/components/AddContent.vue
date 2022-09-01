@@ -114,11 +114,11 @@ export default defineComponent({
           ...(author.value || {})
         })
         editorComponent.value?.setText(props.modelValue)
+        reset()
       } catch (err) {
         console.error(err)
       }
       submitting.value = false
-      reset()
     }
 
     function focus () {
