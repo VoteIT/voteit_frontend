@@ -102,6 +102,5 @@ export function canEnterList (list: SpeakerList): boolean {
 }
 
 export function canLeaveList (list: SpeakerList): boolean {
-  const system = getSystem(list)
-  return !!system && (!!isSystemModerator(system) || !!isSystemSpeaker(system)) && !isCurrentlySpeaking(list)
+  return !isCurrentlySpeaking(list)
 }
