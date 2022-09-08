@@ -1,5 +1,5 @@
 <template>
-  <v-sheet rounded elevation="4" class="discussion rounded-tl-xl" :class="{ isUnread }">
+  <v-sheet rounded elevation="4" class="discussion rounded-ts-xl" :class="{ isUnread }">
     <div class="d-flex" v-if="meetingGroup">
       <v-avatar color="secondary" class="mr-2" icon="mdi-account-multiple" />
       <div class="flex-grow-1">
