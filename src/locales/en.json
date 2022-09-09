@@ -535,6 +535,7 @@
     "addListToSystem": "New list",
     "speakerRoles": "Roles allowed to speak",
     "cantManageList": "You can't manage this list.",
+    "confirmSpeakerDeletion": "You're about to delete this speaker entry.\nAre you sure?",
     "confirmSystemDeletion": "You are about to delete this speaker system.\nAre you sure?",
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
     "confirmStopActiveSpeaker": "The list \"{title}\" has an active speaker. To switch active list, you need to stop that speaker first.\nDo you want to do that?",

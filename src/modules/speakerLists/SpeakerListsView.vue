@@ -43,19 +43,19 @@
       </v-item-group>
       <v-btn prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
              @click="addSpeakerList(speakerSystem)" :disabled="!canManageSystem">
-        {{ t('speaker.addListToSystem', speakerSystem ) }}
+        {{ t('speaker.addListToSystem', speakerSystem) }}
       </v-btn>
       <div v-if="currentList && annotatedSpeakerHistory.length" class="mt-4">
         <h2>
-          Speaker history
+          {{ t('speaker.history') }}
         </h2>
         <v-list bg-color="background">
-          <v-list-item v-for="{ userPk, time }, i in annotatedSpeakerHistory" :key="i">
+          <v-list-item v-for="{ pk, seconds, time, user } in annotatedSpeakerHistory" :key="pk">
             <template #prepend>
-              <UserAvatar :pk="userPk" />
+              <UserAvatar :pk="user" />
             </template>
             <v-list-item-title>
-              <User :pk="userPk" userid />
+              <User :pk="user" userid />
             </v-list-item-title>
             <v-list-item-subtitle>
               {{ time }}
@@ -76,18 +76,19 @@
                         </h2>
                         <v-btn @click="isActive.value = false" icon="mdi-close" variant="text" class="mt-n2 mr-n2" />
                       </div>
-                      <v-form>
-                        <v-text-field label="Time spoken" :modelValue="time" />
-                        <div class="text-right">
-                          <v-btn type="submit" color="primary">
-                            Save me
-                          </v-btn>
-                        </div>
-                      </v-form>
+                      <SchemaForm :schema="timeSpokenSchema" :handler="timeSpokenHandler(pk)" @saved="isActive.value = false" :modelValue="{ seconds }">
+                        <template #buttons>
+                          <div class="text-right">
+                            <v-btn type="submit" color="primary">
+                              {{ t('save') }}
+                            </v-btn>
+                          </div>
+                        </template>
+                      </SchemaForm>
                     </v-sheet>
                   </template>
                 </v-dialog>
-                <v-btn size="x-small" color="warning">
+                <v-btn size="x-small" color="warning" @click="deleteHistory(pk)">
                   <v-icon icon="mdi-delete" />
                 </v-btn>
               </span>
@@ -165,7 +166,9 @@ import { dialogQuery, durationToString } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
 import Moment from '@/components/Moment.vue'
+import SchemaForm from '@/components/SchemaForm.vue'
 import UserSearch from '@/components/UserSearch.vue'
+import { FieldType, FormSchema } from '@/components/types'
 
 import useAgenda from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
@@ -176,7 +179,7 @@ import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useChannel from '@/composables/useChannel'
 import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
-import { speakerListType } from './contentTypes'
+import { speakerType, speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
@@ -184,6 +187,15 @@ import { openAlertEvent } from '@/utils/events'
 import useSpeakerSystems from './useSpeakerSystems'
 
 import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
+import useAlert from '@/composables/useAlert'
+
+const timeSpokenSchema: FormSchema = [
+  {
+    label: 'Time spoken',
+    name: 'seconds',
+    type: FieldType.Duration
+  }
+]
 
 interface AgendaNav {
   icon: string
@@ -192,9 +204,12 @@ interface AgendaNav {
   title?: string
 }
 
+const { alert } = useAlert()
+
 export default defineComponent({
   components: {
     Moment,
+    SchemaForm,
     UserSearch
   },
   setup () {
@@ -207,6 +222,7 @@ export default defineComponent({
     const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
     useChannel('agenda_item', agendaId)
     const systemId = computed(() => Number(route.params.system))
+    useChannel('sls', systemId)
     const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
     const { allSpeakerSystems } = useSpeakerSystems(meetingId)
     const currentList = computed<SpeakerList | undefined>({
@@ -304,13 +320,30 @@ export default defineComponent({
     }
 
     const annotatedSpeakerHistory = computed(() => {
-      return speakerHistory.value.map(([userPk, seconds]) => {
+      return speakerHistory.value.map(({ pk, user, seconds }) => {
         return {
-          userPk,
+          pk,
+          user,
+          seconds,
           time: durationToString(duration({ seconds }))
         }
       })
     })
+
+    function timeSpokenHandler (pk: number) {
+      return (data: { seconds: number }) => {
+        return speakerType.update(pk, data)
+      }
+    }
+
+    async function deleteHistory (pk: number) {
+      if (!await dialogQuery(t('speaker.confirmSpeakerDeletion'))) return
+      try {
+        await speakerType.api.delete(pk)
+      } catch {
+        alert('^Could not delete spoken time entry')
+      }
+    }
 
     return {
       t,
@@ -328,6 +361,7 @@ export default defineComponent({
       speakerSystem,
       speakerLists,
       speakerListType,
+      timeSpokenSchema,
       meetingId,
       meetingPath,
       navigation,
@@ -336,8 +370,10 @@ export default defineComponent({
       addSpeakerList,
       canChangeSpeakerList,
       canStartSpeaker,
+      deleteHistory,
       isSelf,
       getListMenu,
+      timeSpokenHandler,
       userSearchFilter,
       ...useParticipantNumbers(meetingId),
       ...useDefaults()

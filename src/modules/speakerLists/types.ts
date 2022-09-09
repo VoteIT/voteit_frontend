@@ -44,13 +44,13 @@ export interface SpeakerList extends BaseContent {
   readonly agenda_item: number
 }
 
-export type SpeakerHistoryEntry = [number, number] // [user pk, seconds spoken]
+export type TimesSpokenEntry = [number, number] // [user pk, times spoken]
 
 export interface SpeakerOrderUpdate {
   readonly pk: number // Speaker list
-  history: SpeakerHistoryEntry[] // [user pk, seconds spoken] in descending order
   queue: number[] // Current order
   current: number // Current speaker
+  times_spoken: TimesSpokenEntry[] // [user pk, times spoken]
 }
 
 // Historical speaker data, for a meeting or speaker_system
@@ -72,10 +72,21 @@ export interface SpeakerListAddMessage {
   agenda_item: number
 }
 
-export interface SpeakerStartStopMessage {
+// At time of writing, Speaker will only be sent when started or stopped
+export interface CurrentSpeaker {
   pk: number
-  seconds?: number
   speaker_list: number
-  started: string | Date
+  started: Date
   user: number
+  seconds: null
 }
+
+export interface HistoricSpeaker {
+  pk: number
+  speaker_list: number
+  started: Date
+  user: number
+  seconds: number
+}
+
+export type Speaker = CurrentSpeaker | HistoricSpeaker

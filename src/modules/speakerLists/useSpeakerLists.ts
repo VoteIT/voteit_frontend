@@ -1,39 +1,34 @@
+import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
-import { dateify } from '@/utils'
+import { mapFilter } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { SpeakerHistoryEntry, SpeakerList, SpeakerOrderUpdate, SpeakerSystem, SpeakerStartStopMessage } from './types'
+import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem, Speaker, TimesSpokenEntry, HistoricSpeaker, CurrentSpeaker } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
-export const currentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map list pk to current speaker messages
-const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartStopMessage>>(new Map()) // Map system pk to current speaker messages
+// export const currentlySpeaking = reactive<Map<number, SpeakerStartedMessage>>(new Map()) // Map list pk to current speaker messages
+// const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartedMessage>>(new Map()) // Map system pk to current speaker messages
+// const speakerHistory = reactive<Map<number, SpeakerStoppedMessage>>(new Map()) // Stopped speakers. Filter to get messages for specific list.
 export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
-const speakerHistory = reactive<Map<number, SpeakerHistoryEntry[]>>(new Map()) // Map list pk to history entries
+const timesSpoken = reactive<Map<number, TimesSpokenEntry[]>>(new Map()) // Map list pk to list of times spoken entries
+const speakers = reactive<Map<number, Speaker>>(new Map())
 
 speakerSystemType.updateMap(speakerSystems)
 
 speakerListType
   .updateMap(speakerLists)
-  .on<SpeakerOrderUpdate>('order', ({ pk, queue, history }) => {
+  // eslint-disable-next-line camelcase
+  .on<SpeakerOrderUpdate>('order', ({ pk, queue, times_spoken }) => {
     speakerQueues.set(pk, queue)
-    speakerHistory.set(pk, history)
+    timesSpoken.set(pk, times_spoken)
   })
 
 speakerType
-  .on<SpeakerStartStopMessage>('started', payload => {
-    currentlySpeaking.set(payload.speaker_list, dateify(payload, 'started'))
-    const list = speakerLists.get(payload.speaker_list)
-    if (list) systemCurrentlySpeaking.set(list.speaker_system, payload)
-  })
-  .on<SpeakerStartStopMessage>('stopped', payload => {
-    currentlySpeaking.delete(payload.speaker_list)
-    const list = speakerLists.get(payload.speaker_list)
-    if (list) systemCurrentlySpeaking.delete(list.speaker_system)
-  })
+  .updateMap(speakers)
 
 function * iterSpeakerLists (filter: (list: SpeakerList) => boolean): Generator<SpeakerList, void> {
   for (const list of speakerLists.values()) {
@@ -47,11 +42,19 @@ function * iterSpeakerSystems (filter: (system: SpeakerSystem) => boolean): Gene
   }
 }
 
-function getCurrent (list: number) {
-  return currentlySpeaking.get(list)
+function isCurrentSpeaker (speaker: Speaker): speaker is CurrentSpeaker {
+  return !speaker.seconds
+}
+
+export function getCurrent (list: number) {
+  for (const speaker of speakers.values()) {
+    if (speaker.speaker_list === list && isCurrentSpeaker(speaker)) return speaker
+  }
 }
 function getHistory (list: number) {
-  return speakerHistory.get(list) ?? []
+  return orderBy([...mapFilter(
+    speakers, speaker => speaker.speaker_list === list && !isCurrentSpeaker(speaker)
+  )], ['started'], ['desc']) as HistoricSpeaker[]
 }
 function getList (pk: number) {
   return speakerLists.get(pk)
@@ -64,6 +67,10 @@ function getSystems (meeting: number, filter?: (system: SpeakerSystem) => boolea
   return [...iterSpeakerSystems(
     s => s.meeting === meeting && (!filter || filter(s))
   )]
+}
+
+function getTimesSpoken (list: number) {
+  return new Map(timesSpoken.get(list))
 }
 
 function getQueue (list: number) {
@@ -85,8 +92,10 @@ export default function useSpeakerLists () {
     )]
   }
 
-  function getSystemActiveSpeaker (system: SpeakerSystem): SpeakerStartStopMessage | undefined {
-    return systemCurrentlySpeaking.get(system.pk)
+  function getSystemActiveSpeaker (system: SpeakerSystem): Speaker | undefined {
+    if (!system.active_list) return
+    const speakerList = speakerLists.get(system.active_list)
+    return speakerList && getCurrent(speakerList.pk)
   }
 
   function makeUniqueListName (title: string): string {
@@ -170,15 +179,16 @@ export default function useSpeakerLists () {
   }
 
   return {
+    getAgendaSpeakerLists,
+    getCurrent,
     getHistory,
+    getList,
     getSystem,
     getSystemActiveSpeaker,
     getSystems,
     getSystemSpeakerLists,
-    getList,
+    getTimesSpoken,
     getQueue,
-    getCurrent,
-    getAgendaSpeakerLists,
     enterList,
     leaveList,
     moderatorEnterList,

@@ -4,7 +4,7 @@ import { isActiveMeeting, isModerator } from '../meetings/rules'
 import { Meeting, MeetingRole } from '../meetings/types'
 
 import { SpeakerList, SpeakerListState, SpeakerSystem, SpeakerSystemRole, SpeakerSystemState } from './types'
-import { currentlySpeaking, speakerLists, speakerSystems } from './useSpeakerLists'
+import { getCurrent, speakerLists, speakerSystems } from './useSpeakerLists'
 
 const { hasRole } = useContextRoles<SpeakerSystemRole>('speaker_system')
 const meetingRoles = useContextRoles<MeetingRole>('meeting')
@@ -37,7 +37,7 @@ export function isSystemSpeaker (system: SpeakerSystem, user?: number): boolean 
 
 function hasActiveSpeaker (system: SpeakerSystem) {
   const active = getActiveList(system)
-  return !!(active && currentlySpeaking.get(active.pk))
+  return !!(active && getCurrent(active.pk))
 }
 
 export function canAddSpeakerSystem (meeting: Meeting): boolean {
@@ -65,7 +65,7 @@ function isOpenList (list: SpeakerList): boolean {
 }
 
 function isCurrentlySpeaking (list: SpeakerList): boolean {
-  return currentlySpeaking.get(list.pk) === user.value?.pk
+  return getCurrent(list.pk) === user.value?.pk
 }
 
 export function canChangeSpeakerList (list: SpeakerList): boolean {

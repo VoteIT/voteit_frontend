@@ -12,7 +12,7 @@ export default function useSpeakerSystem (systemId: Ref<number>, agendaItem?: Re
   const currentlySpeaking = computed(() => systemActiveList.value && getCurrent(systemActiveList.value.pk))
   const currentSpeakerQueue = computed(() => systemActiveList.value && getQueue(systemActiveList.value.pk))
   const isModerator = computed(() => !!speakerSystem.value && isSystemModerator(speakerSystem.value))
-  const speakerLists = computed(() => systemId.value && getSystemSpeakerLists(systemId.value, agendaItem?.value))
+  const speakerLists = computed(() => systemId.value ? getSystemSpeakerLists(systemId.value, agendaItem?.value) : [])
 
   return {
     canManageSystem: computed(() => speakerSystem.value && canManageSystem(speakerSystem.value)),

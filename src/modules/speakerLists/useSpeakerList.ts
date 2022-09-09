@@ -5,12 +5,15 @@ import { useI18n } from 'vue-i18n'
 import { SpeakerGroup, SpeakerSystemMethod } from './types'
 import useSpeakerLists from './useSpeakerLists'
 
-const { getHistory, getQueue, getList, getCurrent, getSystem } = useSpeakerLists()
+const { getHistory, getQueue, getList, getCurrent, getSystem, getTimesSpoken } = useSpeakerLists()
 
 export default function useSpeakerList (list: Ref<number | undefined>) {
   const { t } = useI18n()
 
-  const speakerHistory = computed(() => list.value ? getHistory(list.value) : [])
+  const speakerHistory = computed(() => {
+    if (!list.value) throw new Error('Speaker history requires list value')
+    return getHistory(list.value)
+  })
   const speakerList = computed(() => list.value ? getList(list.value) : undefined)
   const speakerQueue = computed(() => list.value ? getQueue(list.value) : [])
   const speakerSystem = computed(() => speakerList.value && getSystem(speakerList.value.speaker_system))
@@ -19,7 +22,7 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
   const annotatedSpeakerQueue = computed(() => {
     return speakerQueue.value.map(user => ({
       user,
-      timesSpoken: (speakerHistory.value ?? []).filter(([pk]) => pk === user).length
+      timesSpoken: timesSpokenMap.value.get(user) || 0
     }))
   })
 
@@ -64,6 +67,11 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
       })
     }
     return groups
+  })
+
+  const timesSpokenMap = computed(() => {
+    if (!list.value) throw new Error('Times spoken requires list id')
+    return getTimesSpoken(list.value)
   })
 
   return {
