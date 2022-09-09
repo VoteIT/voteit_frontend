@@ -1,21 +1,6 @@
 import { Proposal } from '@/modules/proposals/types'
 import { DefineComponent, PropType } from '@vue/runtime-core'
-
-export enum InputType {
-  Checkbox = 'checkbox',
-  Checkboxes = 'checkboxes',
-  Email = 'email',
-  Number = 'number',
-  Select = 'select',
-  Text = 'text'
-}
-
-export interface SchemaInput {
-  name: string
-  type: InputType
-  label?: string
-  settings?: object
-}
+import { FormSchema } from '../types'
 
 export interface SchemaButton {
   name: string
@@ -39,4 +24,4 @@ export interface InputDefaultsComponent {
 export type SchemaGenerator = (
   t: (key: string) => string,
   proposals: Proposal[]
-) => SchemaInput[]
+) => FormSchema

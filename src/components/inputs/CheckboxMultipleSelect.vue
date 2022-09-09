@@ -7,7 +7,6 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive, watch } from 'vue'
-import { InputComponent } from './types'
 
 type ChoiceRecord = Record<string, boolean>
 
@@ -23,7 +22,6 @@ function toOutputValue (obj: ChoiceRecord): string[] {
 }
 
 export default defineComponent({
-  emits: ['update:modelValue'],
   props: {
     modelValue: {
       type: Array as PropType<string[]>,
@@ -58,7 +56,7 @@ export default defineComponent({
       val
     }
   }
-}) as InputComponent
+})
 </script>
 
 <style lang="sass" scoped>

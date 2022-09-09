@@ -15,16 +15,18 @@
 </template>
 
 <script lang="ts">
-import { Component, ComponentPublicInstance, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, DefineComponent, defineComponent, PropType, reactive, ref, watch } from 'vue'
 
 import { parseRestError } from '@/utils/restApi'
 
-import CheckboxMultipleSelectVue from './inputs/CheckboxMultipleSelect.vue'
+import CheckboxMultipleSelect from './inputs/CheckboxMultipleSelect.vue'
+import DurationInput from './inputs/DurationInput.vue'
 import type { FieldRule, FieldType, FormSchema } from './types'
 
-const componentNames: Record<FieldType, string | Component> = {
+const componentNames: Record<FieldType, string | DefineComponent<any, any, any>> = {
   checkbox: 'v-checkbox',
-  checkbox_multiple: CheckboxMultipleSelectVue,
+  checkbox_multiple: CheckboxMultipleSelect,
+  duration: DurationInput,
   number: 'v-text-field', // ?
   select: 'v-select',
   switch: 'v-switch',

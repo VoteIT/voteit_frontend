@@ -84,6 +84,7 @@ export interface Tab {
 export enum FieldType {
   Checkbox = 'checkbox',
   CheckboxMultiple = 'checkbox_multiple',
+  Duration = 'duration',
   Number = 'number',
   Select = 'select',
   Switch = 'switch',
@@ -118,6 +119,11 @@ interface CheckboxMultipleField extends SchemaField<boolean> {
   requiredValues?: string[]
 }
 
+// Duration in seconds, hence number
+interface DurationField extends SchemaField<number> {
+  type: FieldType.Duration
+}
+
 interface NumberField extends SchemaField<number> {
   type: FieldType.Number
 }
@@ -142,7 +148,7 @@ interface TextAreaField extends SchemaField<string> {
   type: FieldType.TextArea
 }
 
-export type FormField = CheckboxField | CheckboxMultipleField | NumberField | SelectField | SwitchField | TextField | TextAreaField
+export type FormField = CheckboxField | CheckboxMultipleField | DurationField | NumberField | SelectField | SwitchField | TextField | TextAreaField
 export type FormSchema = FormField[]
 
 export interface RoleMatrixColDescription {

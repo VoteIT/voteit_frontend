@@ -97,19 +97,19 @@ import useAlert from '@/composables/useAlert'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useProposals from '@/modules/proposals/useProposals'
 
-import SchemaForm from '@/components/inputs/SchemaForm.vue'
+import SchemaForm from '@/components/SchemaForm.vue'
+import usePermission from '@/composables/usePermission'
+import { FieldType, FormSchema } from '@/components/types'
 
-import { ProposalState } from '@/modules/proposals/types'
-import usePolls, { polls } from '@/modules/polls/usePolls'
-import { InputType } from '@/components/inputs/types'
+import useMeetingTitle from '../meetings/useMeetingTitle'
+import { ProposalState } from '../proposals/types'
+import usePolls, { polls } from '../polls/usePolls'
 
 import { pollMethods as implementedMethods } from './methods'
 import { Conditional, PollStartData, PollMethodSettings, Poll, PollMethodName } from './methods/types'
 import methodSchemas from './methods/schemas'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
-import useMeetingTitle from '../meetings/useMeetingTitle'
-import usePermission from '@/composables/usePermission'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -198,12 +198,12 @@ export default defineComponent({
       working.value = false
     }
 
-    const methodSchema = computed(() => {
+    const methodSchema = computed<FormSchema | undefined>(() => {
       if (!methodSelected.value) return
       const getter = methodSchemas[methodSelected.value]
       const specifics = getter?.(t, selectedProposals.value) || []
       return [{
-        type: InputType.Text,
+        type: FieldType.Text,
         name: 'title',
         required: true,
         label: t('title')

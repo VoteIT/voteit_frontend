@@ -1,10 +1,11 @@
-import { InputType, SchemaGenerator } from '@/components/inputs/types'
+import { SchemaGenerator } from '@/components/inputs/types'
+import { FieldType } from '@/components/types'
 import { PollMethodName } from './types'
 
 const getSTVSchema: SchemaGenerator = (t, proposals) => {
   return [{
     name: 'winners',
-    type: InputType.Number,
+    type: FieldType.Number,
     label: t('winners'),
     required: true,
     settings: {
@@ -14,7 +15,7 @@ const getSTVSchema: SchemaGenerator = (t, proposals) => {
   },
   {
     name: 'allow_random',
-    type: InputType.Checkbox,
+    type: FieldType.Checkbox,
     label: t('poll.allowRandomTiebreaker')
   }]
 }
@@ -22,7 +23,7 @@ const getSTVSchema: SchemaGenerator = (t, proposals) => {
 const getInstantRunoffSchema: SchemaGenerator = (t) => {
   return [{
     name: 'allow_random',
-    type: InputType.Checkbox,
+    type: FieldType.Checkbox,
     label: t('poll.allowRandomTiebreaker')
   }]
 }
@@ -31,7 +32,7 @@ const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
   return [
     {
       name: 'stars',
-      type: InputType.Number,
+      type: FieldType.Number,
       label: t('poll.schulze.numberOfStars'),
       required: true,
       settings: {
@@ -41,7 +42,7 @@ const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
     },
     {
       name: 'deny_proposal',
-      type: InputType.Checkbox,
+      type: FieldType.Checkbox,
       required: proposals.length < 3,
       label: t('poll.schulze.addDenyProposal')
     }
@@ -52,7 +53,7 @@ const getRepeatedSchulzeSchema: SchemaGenerator = (t, proposals) => {
   return [
     {
       name: 'winners',
-      type: InputType.Number,
+      type: FieldType.Number,
       label: t('winners'),
       required: true,
       settings: {
@@ -72,7 +73,7 @@ const getDuttSchema: SchemaGenerator = (t, proposals) => {
       : proposals.length
     return {
       name,
-      type: InputType.Number,
+      type: FieldType.Number,
       label: t(`poll.dutt.${name}`),
       hint: t('poll.dutt.minMaxHint'),
       settings: {
