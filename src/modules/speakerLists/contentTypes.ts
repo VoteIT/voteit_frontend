@@ -5,6 +5,7 @@ import { speakerListStates, speakerSystemStates } from './workflowStates'
 
 export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRole>({
   name: 'speaker_system',
+  channels: ['sls'],
   restEndpoint: 'speaker-list-systems/',
   states: speakerSystemStates,
   hasRoles: true
@@ -20,7 +21,6 @@ export const speakerListType = new ContentType<SpeakerList>({
 export const speakerType = new ContentType<Speaker>({
   name: 'speaker',
   restEndpoint: 'speakers/',
-  channels: ['sls'],
   dateFields: ['started']
 })
 

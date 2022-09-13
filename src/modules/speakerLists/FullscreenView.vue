@@ -46,6 +46,7 @@
 </template>
 
 <script lang="ts">
+import useChannel from '@/composables/useChannel'
 import { computed, defineComponent, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -64,11 +65,13 @@ export default defineComponent({
     provide('context', 'meeting')
     const { t } = useI18n()
     const route = useRoute()
-    const { getState } = speakerListType.useWorkflows()
+    const speakerSystemId = computed(() => Number(route.params.system))
     useMeetingChannel()
-    const { getUser } = useUserDetails()
+    useChannel('sls', speakerSystemId)
 
-    const { systemActiveList, systemActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(computed(() => Number(route.params.system)))
+    const { getState } = speakerListType.useWorkflows()
+    const { getUser } = useUserDetails()
+    const { systemActiveList, systemActiveListId, speakerSystem, currentSpeakerQueue, currentlySpeaking } = useSpeakerSystem(speakerSystemId)
     const { speakerGroups } = useSpeakerList(systemActiveListId)
 
     useMeetingTitle(computed(() => t('speaker.fullscreenSystem', { ...speakerSystem.value })))

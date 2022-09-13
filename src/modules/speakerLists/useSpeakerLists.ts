@@ -1,34 +1,25 @@
-import { orderBy } from 'lodash'
+import { countBy, orderBy } from 'lodash'
 import { reactive } from 'vue'
 
 import { mapFilter } from '@/utils'
 
 import useAuthentication from '../../composables/useAuthentication'
 
-import { SpeakerList, SpeakerOrderUpdate, SpeakerSystem, Speaker, TimesSpokenEntry, HistoricSpeaker, CurrentSpeaker } from './types'
+import { SpeakerList, SpeakerSystem, Speaker, HistoricSpeaker, CurrentSpeaker } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
-// export const currentlySpeaking = reactive<Map<number, SpeakerStartedMessage>>(new Map()) // Map list pk to current speaker messages
-// const systemCurrentlySpeaking = reactive<Map<number, SpeakerStartedMessage>>(new Map()) // Map system pk to current speaker messages
-// const speakerHistory = reactive<Map<number, SpeakerStoppedMessage>>(new Map()) // Stopped speakers. Filter to get messages for specific list.
-export const speakerQueues = reactive<Map<number, number[]>>(new Map()) // Map list pk to a list of user pks
-const timesSpoken = reactive<Map<number, TimesSpokenEntry[]>>(new Map()) // Map list pk to list of times spoken entries
 const speakers = reactive<Map<number, Speaker>>(new Map())
 
-speakerSystemType.updateMap(speakerSystems)
-
-speakerListType
-  .updateMap(speakerLists)
-  // eslint-disable-next-line camelcase
-  .on<SpeakerOrderUpdate>('order', ({ pk, queue, times_spoken }) => {
-    speakerQueues.set(pk, queue)
-    timesSpoken.set(pk, times_spoken)
+speakerSystemType
+  .updateMap(speakerSystems)
+  .getChannel('sls').onLeave(uri => {
+    console.log('leaving', uri, 'TODO: Clean up speakerLists, but only if they\'re not protected from other channels. This will need some architecture.')
   })
 
-speakerType
-  .updateMap(speakers)
+speakerListType.updateMap(speakerLists)
+speakerType.updateMap(speakers)
 
 function * iterSpeakerLists (filter: (list: SpeakerList) => boolean): Generator<SpeakerList, void> {
   for (const list of speakerLists.values()) {
@@ -43,7 +34,11 @@ function * iterSpeakerSystems (filter: (system: SpeakerSystem) => boolean): Gene
 }
 
 function isCurrentSpeaker (speaker: Speaker): speaker is CurrentSpeaker {
-  return !speaker.seconds
+  return !speaker.seconds && !!speaker.started
+}
+
+function isHistoricSpeaker (speaker: Speaker): speaker is HistoricSpeaker {
+  return !!(speaker.seconds && speaker.started)
 }
 
 export function getCurrent (list: number) {
@@ -53,7 +48,7 @@ export function getCurrent (list: number) {
 }
 function getHistory (list: number) {
   return orderBy([...mapFilter(
-    speakers, speaker => speaker.speaker_list === list && !isCurrentSpeaker(speaker)
+    speakers, speaker => speaker.speaker_list === list && isHistoricSpeaker(speaker)
   )], ['started'], ['desc']) as HistoricSpeaker[]
 }
 function getList (pk: number) {
@@ -70,11 +65,8 @@ function getSystems (meeting: number, filter?: (system: SpeakerSystem) => boolea
 }
 
 function getTimesSpoken (list: number) {
-  return new Map(timesSpoken.get(list))
-}
-
-function getQueue (list: number) {
-  return speakerQueues.get(list) || []
+  const spokenUserIds = getHistory(list).map(({ user }) => user)
+  return countBy(spokenUserIds)
 }
 
 export default function useSpeakerLists () {
@@ -119,10 +111,7 @@ export default function useSpeakerLists () {
     return speakerListType.methodCall('leave', { pk: list.pk })
   }
   function userInList (list: SpeakerList) {
-    const queue = speakerQueues.get(list.pk)
-    if (user.value) {
-      return queue?.includes(user.value.pk)
-    }
+    return !!user.value && list.queue.includes(user.value.pk)
   }
 
   function moderatorEnterList (list: SpeakerList, user: number) {
@@ -140,7 +129,7 @@ export default function useSpeakerLists () {
 
   // Start by user pk, or first in queue
   function startSpeaker (list: SpeakerList, user?: number) {
-    user = user || getQueue(list.pk)[0]
+    user = user || list.queue[0]
     speakerListType.methodCall('start_user', {
       pk: list.pk,
       user
@@ -188,7 +177,6 @@ export default function useSpeakerLists () {
     getSystems,
     getSystemSpeakerLists,
     getTimesSpoken,
-    getQueue,
     enterList,
     leaveList,
     moderatorEnterList,

@@ -1,18 +1,18 @@
 <template>
   <v-card class="speaker-list mb-2" :title="list.title" :border="isActive" :flat="!isActive" :subtitle="isActive ? t('speaker.listActive') : t('speaker.list')">
     <v-card-text>
-      <p v-if="currentSpeaker" class="mb-2">
+      <p v-if="list.current" class="mb-2">
         {{ t('speaker.currentlySpeaking') }}:
-        <strong><User :pk="currentSpeaker.user" /></strong>
+        <strong><User :pk="list.current" /></strong>
       </p>
       <h3>
         {{ t('speaker.queue') }}
-        <v-btn :class="{ expanded: expandQueue }" variant="text" size="small" v-if="speakerQueue.length > 1 && (speakerQueue.length !== 2 || speakerQueue[1] !== user.pk)" @click="expandQueue = !expandQueue" icon="mdi-chevron-down" />
+        <v-btn :class="{ expanded: expandQueue }" variant="text" size="small" v-if="list.queue.length > 1 && (list.queue.length !== 2 || list.queue[1] !== user?.pk)" @click="expandQueue = !expandQueue" icon="mdi-chevron-down" />
       </h3>
-      <div v-if="speakerQueue.length">
-        <template v-for="(userPk, i) in speakerQueue" :key="userPk">
+      <div v-if="list.queue.length">
+        <template v-for="(userPk, i) in list.queue" :key="userPk">
           <v-expand-transition>
-            <div :class="{ self: userPk === user.pk }" v-show="expandQueue || i === 0 || userPk === user.pk">
+            <div :class="{ self: userPk === user?.pk }" v-show="expandQueue || i === 0 || userPk === user?.pk">
               {{ i+1 }}. <User :pk="userPk"/>
             </div>
           </v-expand-transition>
@@ -47,7 +47,6 @@ import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 import useMeeting from '@/modules/meetings/useMeeting'
 import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
 import { SpeakerList, SpeakerListState } from './types'
-import useSpeakerList from './useSpeakerList'
 
 interface EnterLeaveBtn {
   icon: string
@@ -68,7 +67,6 @@ export default defineComponent({
     const { t } = useI18n()
     const speakers = useSpeakerLists()
     const { meetingId, meetingPath } = useMeeting()
-    const { currentSpeaker, speakerQueue } = useSpeakerList(computed(() => props.list.pk))
 
     const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
     const inList = computed(() => speakers.userInList(props.list))
@@ -106,8 +104,6 @@ export default defineComponent({
       isActive,
       isOpen,
       fullscreenPath: computed(() => isActive.value && `/speakers/${meetingId.value}/${props.list.speaker_system}`),
-      speakerQueue,
-      currentSpeaker,
       inList,
       enterLeaveBtn,
       meetingPath,

@@ -42,15 +42,8 @@ export interface SpeakerList extends BaseContent {
   state: SpeakerListState
   readonly speaker_system: number
   readonly agenda_item: number
-}
-
-export type TimesSpokenEntry = [number, number] // [user pk, times spoken]
-
-export interface SpeakerOrderUpdate {
-  readonly pk: number // Speaker list
-  queue: number[] // Current order
-  current: number // Current speaker
-  times_spoken: TimesSpokenEntry[] // [user pk, times spoken]
+  readonly queue: number[]
+  readonly current: number | null
 }
 
 // Historical speaker data, for a meeting or speaker_system
@@ -72,11 +65,18 @@ export interface SpeakerListAddMessage {
   agenda_item: number
 }
 
-// At time of writing, Speaker will only be sent when started or stopped
-export interface CurrentSpeaker {
+export interface QueuedSpeaker {
   pk: number
   speaker_list: number
   started: Date
+  user: number
+  seconds: null
+}
+
+export interface CurrentSpeaker {
+  pk: number
+  speaker_list: number
+  started: null
   user: number
   seconds: null
 }
@@ -89,4 +89,4 @@ export interface HistoricSpeaker {
   seconds: number
 }
 
-export type Speaker = CurrentSpeaker | HistoricSpeaker
+export type Speaker = QueuedSpeaker | CurrentSpeaker | HistoricSpeaker

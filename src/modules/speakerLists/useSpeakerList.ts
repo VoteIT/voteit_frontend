@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { SpeakerGroup, SpeakerSystemMethod } from './types'
 import useSpeakerLists from './useSpeakerLists'
 
-const { getHistory, getQueue, getList, getCurrent, getSystem, getTimesSpoken } = useSpeakerLists()
+const { getHistory, getList, getCurrent, getSystem, getTimesSpoken } = useSpeakerLists()
 
 export default function useSpeakerList (list: Ref<number | undefined>) {
   const { t } = useI18n()
@@ -15,14 +15,14 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
     return getHistory(list.value)
   })
   const speakerList = computed(() => list.value ? getList(list.value) : undefined)
-  const speakerQueue = computed(() => list.value ? getQueue(list.value) : [])
+  const speakerQueue = computed(() => speakerList.value?.queue ?? [])
   const speakerSystem = computed(() => speakerList.value && getSystem(speakerList.value.speaker_system))
   const currentSpeaker = computed(() => list.value ? getCurrent(list.value) : undefined)
   // Annotate speaker queue with times spoken
   const annotatedSpeakerQueue = computed(() => {
     return speakerQueue.value.map(user => ({
       user,
-      timesSpoken: timesSpokenMap.value.get(user) || 0
+      timesSpoken: timesSpokenMap.value[user] || 0
     }))
   })
 
