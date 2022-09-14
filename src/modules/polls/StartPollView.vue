@@ -67,7 +67,7 @@
               <h3 class="my-2">
                 {{ t('options') }}
               </h3>
-              <SchemaForm v-if="methodSchema" :key="`options-${name}`" :schema="methodSchema" v-model="methodSettings" v-model:valid="settingsValid" />
+              <SchemaForm v-if="methodSchema" :key="`options-${name}`" :schema="methodSchema" v-model="methodSettings" @update:valid="settingsValid = $event" />
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
