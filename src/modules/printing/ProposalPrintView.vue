@@ -83,6 +83,7 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
+// See https://stackoverflow.com/questions/20408033/how-to-get-page-break-inside-avoid-to-work-nicely-with-flex-wrap-wrap
 .proposal-container
   break-after: always
 </style>
