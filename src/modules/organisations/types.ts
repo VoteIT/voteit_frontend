@@ -5,12 +5,13 @@ export enum OrganisationRole {
 }
 
 export interface Organisation {
-  pk: number
-  title: string
+  readonly pk: number
+  readonly title: string
+  page_title: string
   body: string
-  login_url: string | null
-  id_host: string | null
-  scope: string[]
+  readonly login_url: string | null
+  readonly id_host: string | null
+  readonly scope: string[]
 }
 
 export enum UserState {

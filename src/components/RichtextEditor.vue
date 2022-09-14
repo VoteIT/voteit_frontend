@@ -103,7 +103,7 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const { t } = useI18n()
-    const tags = inject(TagsKey) || ref(new Set<string>())
+    const tags = inject(TagsKey, ref(new Set<string>()))
     let editor: Quill | null = null
     const editorElement = ref<HTMLElement | null>(null)
     const rootElement = ref<HTMLElement | null>(null)

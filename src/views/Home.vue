@@ -2,7 +2,7 @@
   <v-row v-if="organisation" class="home mt-4 mb-4">
     <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
       <v-btn block v-if="organisation.login_url" color="primary" :href="idLoginURL" prepend-icon="mdi-login">
-        {{ t('organization.loginTo', organisation) }}
+        {{ t('organization.loginTo', { ...organisation }) }}
       </v-btn>
     </v-col>
     <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
@@ -10,11 +10,7 @@
       <v-window v-model="currentTab">
         <v-window-item value="default">
           <header class="d-flex">
-            <div class="flex-grow-1">
-              <h1>
-                {{ organisation.title }}
-              </h1>
-            </div>
+            <Headline v-model="changeForm.page_title" :editing="editing" class="flex-grow-1" />
             <Menu :items="menu" />
           </header>
           <Richtext v-model="changeForm.body" :editing="editing" @edit-done="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
@@ -96,7 +92,7 @@ import { slugify } from '@/utils'
 import AddMeeting from '@/modules/meetings/AddMeetingModal.vue'
 import Counter from '@/components/examples/Counter.vue'
 import GetSchema from '@/components/examples/GetSchema.vue'
-// import Headline from '@/components/Headline.vue'
+import Headline from '@/components/Headline.vue'
 import Menu from '@/components/Menu.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
@@ -162,11 +158,11 @@ export default defineComponent({
 
     const editing = ref(false)
     const changeForm = reactive({
-      // title: organisation.value?.title ?? '',
+      page_title: organisation.value?.page_title ?? '',
       body: organisation.value?.body ?? ''
     })
     watch(organisation, org => {
-      // changeForm.title = org?.title ?? ''
+      changeForm.page_title = org?.page_title ?? ''
       changeForm.body = org?.body ?? ''
     })
     const menu = computed<MenuItem[]>(() => {
@@ -235,7 +231,7 @@ export default defineComponent({
     AddMeeting,
     Counter,
     GetSchema,
-    // Headline,
+    Headline,
     Invite,
     Menu,
     Richtext,
