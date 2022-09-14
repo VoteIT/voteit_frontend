@@ -94,6 +94,9 @@
               </span>
             </template>
           </v-list-item>
+          <v-btn v-if="speakerHistoryExpandable" block variant="text" @click="speakerHistoryExpanded = !speakerHistoryExpanded" :append-icon="`mdi-chevron-${speakerHistoryExpanded ? 'up' : 'down'}`">
+            {{ speakerHistoryExpanded ? t('collapse') : t('expand') }}
+          </v-btn>
         </v-list>
       </div>
     </v-col>
@@ -188,6 +191,8 @@ import useSpeakerSystems from './useSpeakerSystems'
 
 import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
 import useAlert from '@/composables/useAlert'
+
+const SPEAKER_HISTORY_CAP = 3
 
 const timeSpokenSchema: FormSchema = [
   {
@@ -318,8 +323,13 @@ export default defineComponent({
       participantNumberInput.value = ''
     }
 
+    const speakerHistoryExpanded = ref(false)
+    const speakerHistoryExpandable = computed(() => speakerHistory.value.length > SPEAKER_HISTORY_CAP)
     const annotatedSpeakerHistory = computed(() => {
-      return speakerHistory.value.map(({ pk, user, seconds }) => {
+      const history = speakerHistoryExpanded.value
+        ? speakerHistory.value
+        : speakerHistory.value.slice(0, SPEAKER_HISTORY_CAP)
+      return history.map(({ pk, user, seconds }) => {
         return {
           pk,
           user,
@@ -357,9 +367,11 @@ export default defineComponent({
       speakerQueue,
       participantNumberInput,
       speakers,
-      speakerSystem,
+      speakerHistoryExpanded,
+      speakerHistoryExpandable,
       speakerLists,
       speakerListType,
+      speakerSystem,
       timeSpokenSchema,
       meetingId,
       meetingPath,
