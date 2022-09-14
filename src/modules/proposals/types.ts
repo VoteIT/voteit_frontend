@@ -1,3 +1,6 @@
+import { DefineComponent } from 'vue'
+import { MeetingPlugin } from '../meetings/PluginHandler'
+
 /* eslint-disable camelcase */
 export enum ProposalState {
   Published = 'published',
@@ -37,3 +40,7 @@ export interface DiffProposal extends BaseProposal {
 export type Proposal = RichtextProposal | DiffProposal
 type PreviewOmitted = 'created' | 'author' | 'pk' | 'prop_id'
 export type PreviewProposal = Omit<Proposal, PreviewOmitted>
+
+export interface ProposalButtonPlugin extends MeetingPlugin {
+  component: DefineComponent<{ proposal: Proposal }, any, any, any, any, any, any, any, any, any>
+}

@@ -35,6 +35,9 @@ const locale = 'sv'
 
 moment.locale(locale)
 
+// PLUGINS
+require('@/modules/printing')
+
 /* LOCKED TO 'sv' */
 // async function loadLocaleMessages (i18n: I18n, locale: string) {
 //   const messages = await import(

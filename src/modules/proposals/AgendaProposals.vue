@@ -1,7 +1,10 @@
 <template>
   <Proposal v-for="p in proposals" :key="p.pk" :p="p" class="mb-4">
-    <template v-slot:buttons>
-      <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">{{ btn.title }}</ReactionButton>
+    <template #buttons>
+      <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'proposal', object_id: p.pk }">
+        {{ btn.title }}
+      </ReactionButton>
+      <component v-for="{ component }, i in plugins" :key="i" :is="component" :proposal="p" />
     </template>
   </Proposal>
 </template>
@@ -18,6 +21,7 @@ import useMeeting from '../meetings/useMeeting'
 
 import { Proposal } from './types'
 import { proposalType } from './contentTypes'
+import { proposalButtonPlugins } from './registry'
 
 export default defineComponent({
   components: {
@@ -31,7 +35,7 @@ export default defineComponent({
   },
   setup () {
     const { t } = useI18n()
-    const { meetingId } = useMeeting()
+    const { meeting, meetingId } = useMeeting()
     const { agendaId } = useAgenda(meetingId)
     const { canAddProposal } = useAgendaItem(agendaId)
     const { getMeetingButtons } = useReactions()
@@ -46,11 +50,13 @@ export default defineComponent({
 
     const addComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
     const reactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
+    const plugins = computed(() => meeting.value ? proposalButtonPlugins.getActivePlugins(meeting.value) : [])
 
     return {
       t,
       addComponent,
       canAddProposal,
+      plugins,
       reactions,
       submit
     }
