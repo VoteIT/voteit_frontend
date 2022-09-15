@@ -1,5 +1,9 @@
 /* eslint-disable camelcase */
+import { MenuItem } from '@/utils/types'
 import { ComponentPublicInstance, ComputedRef } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
+import { MeetingPlugin } from '../meetings/PluginHandler'
+import { Meeting } from '../meetings/types'
 import { ProposalState } from '../proposals/types'
 
 export enum AgendaState {
@@ -30,3 +34,13 @@ export interface Filter {
 }
 
 export type AgendaFilterComponent = ComponentPublicInstance<{ setTag:(tag: string) => void, isModified: ComputedRef<boolean>, clearFilters: () => {} }>
+
+export interface AgendaMenuPlugin extends MeetingPlugin {
+  getItems (context: {
+    agendaItem: AgendaItem,
+    agendaItemPath: string,
+    meeting: Meeting,
+    menu: string,
+    t: ComposerTranslation
+  }): MenuItem[]
+}

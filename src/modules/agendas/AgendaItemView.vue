@@ -129,6 +129,7 @@ import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { canAddPoll } from '../polls/rules'
 import { agendaItemType, lastReadType } from './contentTypes'
+import { agendaMenuPlugins } from './registry'
 
 export default defineComponent({
   name: 'AgendaItem',
@@ -138,9 +139,9 @@ export default defineComponent({
     const discussions = useDiscussions()
     const proposals = useProposals()
     const { getAiPolls } = usePolls()
-    const { meetingPath, meetingId } = useMeeting()
+    const { meetingPath, meetingId, meeting } = useMeeting()
     const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
-    const { agendaItem, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem(agendaId)
+    const { agendaItem, agendaItemPath, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem(agendaId)
 
     useChannel('agenda_item', agendaId)
 
@@ -213,6 +214,17 @@ export default defineComponent({
 
     const toNewPoll = computed(() => `${meetingPath.value}/polls/new/${agendaId.value}`)
 
+    function getAgendaMenuContext (menu: string) {
+      if (!agendaItem.value || !meeting.value || !agendaItemPath.value) throw new Error('Agenda menu context requies agenda item and menu data')
+      return {
+        agendaItem: agendaItem.value,
+        agendaItemPath: agendaItemPath.value,
+        meeting: meeting.value,
+        menu,
+        t
+      }
+    }
+
     const menuItems = computed<MenuItem[]>(() => {
       if (!agendaItem.value) return []
       const items: MenuItem[] = []
@@ -245,8 +257,17 @@ export default defineComponent({
           })
         })
       }
-      if (managingSpeakerSystems.value.length) {
-        items.push('---')
+      // Extra menu items from plugins
+      if (!meeting.value || !agendaItem.value) return items
+      const pluginMenuItems = agendaMenuPlugins
+        .getActivePlugins(meeting.value)
+        .flatMap(plugin => plugin.getItems(getAgendaMenuContext('main')))
+      if (pluginMenuItems.length || managingSpeakerSystems.value.length) {
+        if (items.length) items.push('---')
+        Array.prototype.push.apply(items, pluginMenuItems)
+        // for (const item of pluginMenuItems) {
+        //   items.push(item)
+        // }
         for (const system of managingSpeakerSystems.value) {
           items.push({
             title: t('speaker.manageSystem', { ...system }),
