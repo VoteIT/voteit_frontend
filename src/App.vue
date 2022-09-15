@@ -101,7 +101,12 @@ html.v-overlay-scroll-blocked
   position: initial !important
   overflow-y: auto !important
 
-.v-main
-  @media print
+@media print
+  .v-main
     padding: 0 !important
+
+  .v-row,
+  .v-application__wrap,
+  .v-layout
+    display: block !important
 </style>

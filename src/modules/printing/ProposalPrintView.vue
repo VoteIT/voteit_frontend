@@ -2,15 +2,39 @@
   <v-row>
     <v-col v-bind="cols.default">
       <v-sheet class="d-print-none pa-4 mb-8" border rounded>
-        <h2>
-          Select proposals
-        </h2>
+        <div class="d-flex">
+          <h2>
+            Select proposals
+          </h2>
+          <v-fade-transition>
+            <v-btn
+              v-show="!allSelected"
+              color="primary"
+              prepend-icon="mdi-check-all"
+              class="mx-4"
+              size="small"
+              @click="allSelected = true"
+            >
+              Select all
+            </v-btn>
+          </v-fade-transition>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            icon="mdi-printer"
+            :disabled="!selectedProposals.length"
+            @click="print()"
+          />
+        </div>
         <v-chip-group v-model="propIds" multiple column>
           <v-chip v-for="{ pk, prop_id } in proposals" :key="pk" :value="pk" color="primary">
-            {{ prop_id }}
+            #{{ prop_id }}
           </v-chip>
         </v-chip-group>
       </v-sheet>
+      <v-alert type="info" class="my-8 d-print-none">
+        Proposals will be printed one per page. Use the printing dialog in your browser to disable page headers and footers.
+      </v-alert>
       <div v-for="{ pk, author, meetingGroup, body, body_diff, created, prop_id } in selectedProposals" :key="pk" class="proposal-container mb-12">
         <p class="mb-2 text-h4">
           #{{ prop_id }}
@@ -69,21 +93,32 @@ export default defineComponent({
       }))
     })
 
-    onMounted(() => {
-      if (selectedProposals.value.length) window.print()
+    const allSelected = computed({
+      get () {
+        return propIds.value.length === proposals.value.length
+      },
+      set (value) {
+        if (value) propIds.value = proposals.value.map(p => p.pk)
+      }
     })
 
+    function print () {
+      if (selectedProposals.value.length) window.print()
+    }
+    onMounted(print)
+
     return {
+      allSelected,
       propIds,
       proposals,
-      selectedProposals
+      selectedProposals,
+      print
     }
   }
 })
 </script>
 
 <style lang="sass" scoped>
-// See https://stackoverflow.com/questions/20408033/how-to-get-page-break-inside-avoid-to-work-nicely-with-flex-wrap-wrap
 .proposal-container
   break-after: always
 </style>
