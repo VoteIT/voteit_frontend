@@ -46,7 +46,8 @@ export default defineComponent({
       type: Array as PropType<FormSchema>,
       required: true
     },
-    handler: Function as PropType<(data: object) => Promise<any>>
+    handler: Function as PropType<(data: object) => Promise<any>>,
+    validateImmediately: Boolean
   },
   setup (props, { emit }) {
     const valid = ref<boolean | null>(null)
@@ -110,6 +111,12 @@ export default defineComponent({
       fieldErrors.value = {}
       emit('update:modelValue', value)
     })
+
+    if (props.validateImmediately) {
+      watch(form, form => {
+        form?.validate()
+      })
+    }
 
     watch(valid, value => {
       emit('update:valid', value)
