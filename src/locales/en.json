@@ -457,6 +457,12 @@
     "presentCount": "No participants present | One present participant | {count} present participants",
     "recentlyClosedChecks": "Recently closed presence checks"
   },
+  "printing": {
+    "proposalHelpText": "Proposals will be printed one per page. Use the printing dialog in your browser to disable page headers and footers.",
+    "proposals": "Print proposals",
+    "selectAll": "Select all",
+    "selectProposals": "Select proposals"
+  },
   "profile": {
     "editProfileHelp": "You can only add email addresses you've validated already. Go to handle account to validate a new adress.",
     "changeUserid": "Change user ID",

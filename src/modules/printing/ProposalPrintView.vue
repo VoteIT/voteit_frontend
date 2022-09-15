@@ -4,7 +4,7 @@
       <v-sheet class="d-print-none pa-4 mb-8" border rounded>
         <div class="d-flex">
           <h2>
-            Select proposals
+            {{ t('printing.selectProposals') }}
           </h2>
           <v-fade-transition>
             <v-btn
@@ -15,7 +15,7 @@
               size="small"
               @click="allSelected = true"
             >
-              Select all
+              {{ t('printing.selectAll') }}
             </v-btn>
           </v-fade-transition>
           <v-spacer />
@@ -32,9 +32,7 @@
           </v-chip>
         </v-chip-group>
       </v-sheet>
-      <v-alert type="info" class="my-8 d-print-none">
-        Proposals will be printed one per page. Use the printing dialog in your browser to disable page headers and footers.
-      </v-alert>
+      <v-alert type="info" class="my-8 d-print-none" :text="t('printing.proposalHelpText')" />
       <div v-for="{ pk, author, meetingGroup, body, body_diff, created, prop_id } in selectedProposals" :key="pk" class="proposal-container mb-12">
         <p class="mb-2 text-h4">
           #{{ prop_id }}
@@ -54,16 +52,19 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import { ProposalState } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
 
 export default defineComponent({
   inject: ['cols'],
   setup () {
+    const { t } = useI18n()
     const { meetingId } = useMeeting()
     const { getMeetingGroup } = useMeetingGroups(meetingId)
     const agendaId = computed(() => Number(route.params.aid))
@@ -82,7 +83,7 @@ export default defineComponent({
         router.replace(value.join(','))
       }
     })
-    const proposals = computed(() => getAgendaProposals(agendaId.value))
+    const proposals = computed(() => getAgendaProposals(agendaId.value, p => p.state !== ProposalState.Retracted))
     const selectedProposals = computed(() => {
       return getAgendaProposals(
         agendaId.value,
@@ -108,6 +109,7 @@ export default defineComponent({
     onMounted(print)
 
     return {
+      t,
       allSelected,
       propIds,
       proposals,
@@ -121,4 +123,6 @@ export default defineComponent({
 <style lang="sass" scoped>
 .proposal-container
   break-after: always
+  &:last-child
+    break-after: unset
 </style>
