@@ -21,13 +21,14 @@ import { parseRestError } from '@/utils/restApi'
 
 import CheckboxMultipleSelect from './inputs/CheckboxMultipleSelect.vue'
 import DurationInput from './inputs/DurationInput.vue'
-import type { FieldRule, FieldType, FormSchema } from './types'
+import { FieldType } from './types'
+import type { FieldRule, FormSchema } from './types'
 
 const componentNames: Record<FieldType, string | DefineComponent<any, any, any>> = {
   checkbox: 'v-checkbox',
   checkbox_multiple: CheckboxMultipleSelect,
   duration: DurationInput,
-  number: 'v-text-field', // ?
+  number: 'v-text-field',
   select: 'v-select',
   switch: 'v-switch',
   text: 'v-text-field',
@@ -35,7 +36,7 @@ const componentNames: Record<FieldType, string | DefineComponent<any, any, any>>
 }
 
 export default defineComponent({
-  emits: ['update:modelValue', 'saved', 'submit'],
+  emits: ['update:modelValue', 'update:valid', 'saved', 'submit'],
   props: {
     modelValue: {
       type: Object as PropType<Record<string, string | boolean | number>>,
@@ -45,7 +46,8 @@ export default defineComponent({
       type: Array as PropType<FormSchema>,
       required: true
     },
-    handler: Function as PropType<(data: object) => Promise<any>>
+    handler: Function as PropType<(data: object) => Promise<any>>,
+    validateImmediately: Boolean
   },
   setup (props, { emit }) {
     const valid = ref<boolean | null>(null)
@@ -57,17 +59,19 @@ export default defineComponent({
     const fieldErrors = ref<Record<string, string[] | undefined>>({})
     const fields = props.schema.map(({ name, rules, type, ...props }) => {
       const fieldValidators = rules?.map(r => r.validate).filter(v => v)
+      // Special case for numbers
+      if (type === FieldType.Number) Object.assign(props, { type: 'number' })
       for (const rule of rules || []) {
         Object.assign(props, rule.props)
       }
       return {
         component: componentNames[type],
         name,
-        rules,
         props: {
           rules: fieldValidators,
           ...props
-        }
+        },
+        rules
       }
     })
 
@@ -106,6 +110,16 @@ export default defineComponent({
     watch(formData, (value) => {
       fieldErrors.value = {}
       emit('update:modelValue', value)
+    })
+
+    if (props.validateImmediately) {
+      watch(form, form => {
+        form?.validate()
+      })
+    }
+
+    watch(valid, value => {
+      emit('update:valid', value)
     })
 
     return {

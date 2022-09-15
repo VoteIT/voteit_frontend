@@ -1,5 +1,6 @@
 import { SchemaGenerator } from '@/components/inputs/types'
 import { FieldType } from '@/components/types'
+import { required } from '@/utils/rules'
 import { PollMethodName } from './types'
 
 const getSTVSchema: SchemaGenerator = (t, proposals) => {
@@ -7,11 +8,9 @@ const getSTVSchema: SchemaGenerator = (t, proposals) => {
     name: 'winners',
     type: FieldType.Number,
     label: t('winners'),
-    required: true,
-    settings: {
-      min: 1,
-      max: proposals.length - 1
-    }
+    min: 1,
+    max: proposals.length - 1,
+    rules: [required]
   },
   {
     name: 'allow_random',
@@ -34,16 +33,16 @@ const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
       name: 'stars',
       type: FieldType.Number,
       label: t('poll.schulze.numberOfStars'),
-      required: true,
-      settings: {
-        min: 3,
-        max: 20
-      }
+      rules: [required],
+      min: 3,
+      max: 20
     },
     {
       name: 'deny_proposal',
       type: FieldType.Checkbox,
-      required: proposals.length < 3,
+      rules: proposals.length < 3
+        ? [required]
+        : [],
       label: t('poll.schulze.addDenyProposal')
     }
   ]
@@ -55,11 +54,9 @@ const getRepeatedSchulzeSchema: SchemaGenerator = (t, proposals) => {
       name: 'winners',
       type: FieldType.Number,
       label: t('winners'),
-      required: true,
-      settings: {
-        min: 1,
-        max: proposals.length
-      }
+      min: 1,
+      max: proposals.length,
+      rules: [required]
     },
     ...getSchulzeSchema(t, proposals)
   ]
@@ -76,10 +73,8 @@ const getDuttSchema: SchemaGenerator = (t, proposals) => {
       type: FieldType.Number,
       label: t(`poll.dutt.${name}`),
       hint: t('poll.dutt.minMaxHint'),
-      settings: {
-        min: 0,
-        max
-      }
+      min: 0,
+      max
     }
   })
 }
