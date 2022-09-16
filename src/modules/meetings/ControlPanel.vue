@@ -21,11 +21,10 @@
             <v-icon sm :icon="icon" class="mr-2" />
             {{ t(translationKey) }}
           </v-card-title>
-          <!-- Won't work on linked
           <v-divider v-if="quickComponent" />
           <v-card-text v-if="quickComponent">
             <component :is="quickComponent" />
-          </v-card-text> -->
+          </v-card-text>
         </v-card>
       </router-link>
       <v-card v-else>

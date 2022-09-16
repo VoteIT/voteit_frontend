@@ -12,7 +12,7 @@
     </form>
     <div v-else-if="erOptions" class="pa-12 text-center">
       <v-btn color="primary" size="large" prepend-icon="mdi-book-account" @click="editing = true">
-        Ändra metod för röstlängder
+        {{ t('electoralRegister.changeMethod') }}
       </v-btn>
     </div>
   </div>

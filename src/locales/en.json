@@ -130,6 +130,7 @@
     "active": "Active",
     "activeDescription": "Electoral registers used in ongoing polls",
     "activeMethod": "Active method: {method}",
+    "changeMethod": "Change method for electoral registers",
     "create": "Create electoral register",
     "createHelp": "Pick users from potential voters to create a new electoral register.",
     "electoralRegister": "Electoral register",

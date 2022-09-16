@@ -1,5 +1,6 @@
 import AccessPolicies from './accessPolicies/ControlPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
+import ERQuick from './electoralRegisters/QuickPanel.vue'
 import Agenda from '../agendas/ControlPanel.vue'
 // import PresenceChecks from '../presence/ControlPanel.vue'
 import Reactions from '../reactions/ControlPanel.vue'
@@ -23,6 +24,7 @@ meetingSettingsPlugins.register({
 meetingSettingsPlugins.register({
   id: 'ers',
   component: ElectoralRegisters,
+  quickComponent: ERQuick,
   icon: 'mdi-vote',
   translationKey: 'electoralRegister.plural'
 })
