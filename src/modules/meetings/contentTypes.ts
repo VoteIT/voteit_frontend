@@ -2,8 +2,8 @@ import { MeetingRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import { MeetingAccessPolicy } from '@/contentTypes/types'
 import { ElectoralRegister } from './electoralRegisters/types'
-import { Meeting, MeetingGroup, MeetingInvite, MeetingRole } from './types'
-import { meetingInviteStates, meetingStates } from './workflowStates'
+import { ComponentBase, Meeting, MeetingGroup, MeetingInvite, MeetingRole } from './types'
+import { meetingComponentStates, meetingInviteStates, meetingStates } from './workflowStates'
 
 export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
   name: 'access_policy',
@@ -45,4 +45,10 @@ export const meetingGroupType = new ContentType<MeetingGroup>({
   restEndpoint: 'meeting-groups/',
   name: 'meeting_group',
   dateFields: ['created', 'modified']
+})
+
+export const meetingComponentType = new ContentType<ComponentBase>({
+  restEndpoint: 'meeting-components/',
+  name: 'meeting_component',
+  states: meetingComponentStates
 })

@@ -128,9 +128,6 @@ import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
 
 export default defineComponent({
-  translationKey: 'agenda.agenda',
-  path: 'agenda',
-  icon: 'mdi-clipboard-list',
   components: {
     Draggable,
     Headline

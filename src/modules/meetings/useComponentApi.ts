@@ -1,0 +1,53 @@
+import { computed, onUnmounted, ref, Ref } from 'vue'
+import { meetingComponentType } from './contentTypes'
+import { ComponentBase } from './types'
+
+const meetingComponents = ref<ComponentBase[]>([])
+
+export default function useComponentApi<T extends ComponentBase = ComponentBase> (meeting: Ref<number>, name?: string) {
+  const components = computed(() => meetingComponents.value.filter(c => !name || c.component_name === name) as T[])
+  const component = computed(() => {
+    if (!name || name === '') return // Javascript, I hate you!
+    return components.value[0]
+  })
+
+  async function fetchComponents () {
+    const { data } = await meetingComponentType.api.list({ meeting: meeting.value })
+    meetingComponents.value = data
+  }
+
+  function clearComponents () {
+    meetingComponents.value = []
+  }
+
+  async function addComponent (settings: T['settings'], activate = false) {
+    if (!meeting.value) throw new Error('Can\'t create meeting component without meeting id')
+    const { data } = await meetingComponentType.api.add({
+      component_name: name,
+      meeting: meeting.value,
+      settings
+    })
+    meetingComponents.value.push(data)
+    if (activate) setComponentState(data as T, true)
+    return data
+  }
+
+  async function setComponentState (component: T, state: boolean) {
+    const { data } = await meetingComponentType.api.transition(
+      component.pk,
+      state
+        ? 'enable'
+        : 'disable'
+    )
+    Object.assign(component, data)
+  }
+
+  return {
+    component, // Only if called by name
+    components,
+    addComponent,
+    clearComponents,
+    setComponentState,
+    fetchComponents
+  }
+}

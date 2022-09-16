@@ -1,5 +1,5 @@
 import { WorkflowState } from '@/contentTypes/types'
-import { MeetingInviteState, MeetingState } from './types'
+import { MeetingComponentState, MeetingInviteState, MeetingState } from './types'
 
 export const meetingStates: WorkflowState<MeetingState>[] = [
   {
@@ -57,5 +57,18 @@ export const meetingInviteStates: WorkflowState<MeetingInviteState>[] = [
     icon: 'mdi-clock-alert',
     state: MeetingInviteState.Expired,
     isFinal: true
+  }
+]
+
+export const meetingComponentStates: WorkflowState<MeetingComponentState>[] = [
+  {
+    icon: 'mdi-todo', // TODO
+    state: MeetingComponentState.Off,
+    transition: 'disable'
+  },
+  {
+    icon: 'mdi-todo', // TODO
+    state: MeetingComponentState.On,
+    transition: 'enable'
   }
 ]

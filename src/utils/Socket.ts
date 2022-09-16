@@ -143,7 +143,10 @@ class Socket {
   }
 
   private handleTypeMessage (msg: ChannelsMessage) {
-    if (msg.t) this.typeListeners.get(msg.t.split('.')[0])?.(msg)
+    if (!msg.t) return
+    const type = msg.t.split('.')[0]
+    if (!this.typeListeners.has(type)) console.warn(`No handler for message of type '${type}'`)
+    this.typeListeners.get(type)?.(msg)
   }
 
   public close () {

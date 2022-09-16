@@ -457,6 +457,7 @@
     "recentlyClosedChecks": "Nyligen stängda närvarokontroller"
   },
   "printing": {
+    "enable": "Aktivera snabbutskrift av förslag",
     "proposalHelpText": "Förslagen skrivs ut ett per sida. Använd utskriftsdialogen i din webbläsare för att stänga av sidhuvud och sidfot.",
     "proposals": "Skriv ut förslag",
     "selectAll": "Välj alla",

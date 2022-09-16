@@ -2,7 +2,7 @@
   <v-row>
     <v-col>
       <header>
-        <h1>{{ t('meeting.settings.for', meeting) }}</h1>
+        <h1>{{ t('meeting.settings.for', { ...meeting }) }}</h1>
         <v-breadcrumbs v-if="breadcrumbs.length" :items="breadcrumbs" />
         <v-btn color="primary" v-if="currentComponent" prepend-icon="mdi-chevron-left" :to="`${meetingPath}/settings`">
           {{ t('meeting.settings.all') }}
@@ -14,48 +14,72 @@
     <v-col v-if="currentComponent">
       <component :is="currentComponent"/>
     </v-col>
-    <v-col v-else v-for="p in panels" :key="p.name" sm="6" md="4" lg="3" cols="12" class="panels">
-      <router-link :to="`${meetingPath}/settings/${p.path}`">
+    <v-col v-else v-for="{ icon, id, component, translationKey, quickComponent } in panelPlugins" :key="id" sm="6" md="4" lg="3" cols="12" class="panels">
+      <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
         <v-card>
           <v-card-title>
-            <v-icon v-if="p.icon" sm :icon="p.icon" class="mr-2" />
-            {{ t(p.translationKey) }}
+            <v-icon sm :icon="icon" class="mr-2" />
+            {{ t(translationKey) }}
           </v-card-title>
-          <v-card-text v-if="p.description">
-            {{ p.description }}
-          </v-card-text>
+          <!-- Won't work on linked
+          <v-divider v-if="quickComponent" />
+          <v-card-text v-if="quickComponent">
+            <component :is="quickComponent" />
+          </v-card-text> -->
         </v-card>
       </router-link>
+      <v-card v-else>
+        <v-card-title>
+          <v-icon sm :icon="icon" class="mr-2" />
+          {{ t(translationKey) }}
+        </v-card-title>
+        <v-divider v-if="quickComponent" />
+        <v-card-text v-if="quickComponent">
+          <component :is="quickComponent" />
+        </v-card-text>
+      </v-card>
     </v-col>
   </v-row>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onBeforeMount, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import usePermission from '@/composables/usePermission'
 import useMeeting from '@/modules/meetings/useMeeting'
 
-import controlPanels from './controlPanels'
-import { useTitle } from '@vueuse/core'
-import usePermission from '@/composables/usePermission'
+import { meetingSettingsPlugins } from './registry'
+import useMeetingTitle from './useMeetingTitle'
+import useComponentApi from './useComponentApi'
+import useLoader from '@/composables/useLoader'
+
+require('./controlPanels')
 
 export default defineComponent({
-  name: 'ControlPanel',
   setup () {
     const { t } = useI18n()
     const route = useRoute()
-    const { isModerator, meeting, meetingPath } = useMeeting()
+    const { isModerator, meeting, meetingId, meetingPath } = useMeeting()
 
-    useTitle(computed(() => `${t('settings')} | ${meeting.value?.title}`))
+    useMeetingTitle(t('settings'))
     usePermission(isModerator, { to: meetingPath })
+    const { fetchComponents, clearComponents } = useComponentApi(meetingId)
+    const loader = useLoader('ControlPanel')
 
-    const panels = computed(() => {
-      return Object.values(controlPanels)
+    onBeforeMount(() => {
+      loader.call(fetchComponents)
     })
-    const currentPanel = computed(() => route.params.panel as string)
-    const currentComponent = computed(() => Object.values(controlPanels).find(p => p.path === route.params.panel))
+    onUnmounted(clearComponents)
+
+    const panelPlugins = computed(() => {
+      if (!meeting.value) return []
+      return meetingSettingsPlugins
+        .getActivePlugins(meeting.value)
+    })
+    const currentPanel = computed(() => route.params.panel as string | undefined)
+    const currentComponent = computed(() => panelPlugins.value.find(p => p.id === route.params.panel)?.component)
 
     const breadcrumbs = computed(() => {
       if (currentPanel.value || !currentComponent.value) return []
@@ -74,7 +98,7 @@ export default defineComponent({
       breadcrumbs,
       meeting,
       meetingPath,
-      panels,
+      panelPlugins,
       currentPanel,
       currentComponent
     }

@@ -99,9 +99,6 @@ const NON_MODIFIABLE_ROLES = [
 ]
 
 export default defineComponent({
-  translationKey: 'accessPolicy.plural',
-  path: 'aps',
-  icon: 'mdi-key',
   setup () {
     const { t } = useI18n()
     const { meetingId, meeting, meetingPath, meetingUrl } = useMeeting()

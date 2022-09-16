@@ -126,7 +126,7 @@ export default class ContentAPI<T, K=number> {
     return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/`, { data: actionOrData })
   }
 
-  public transition (pk: number, name: string): AxiosPromise {
+  public transition (pk: number, name: string): AxiosPromise<Partial<T>> {
     // Cannot handle K = string
     if (this.workflowStates) {
       return this.action(pk, 'transitions', {

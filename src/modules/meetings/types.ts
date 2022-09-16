@@ -48,6 +48,11 @@ export interface MeetingInvite {
   used_by: null | number
 }
 
+export enum MeetingComponentState {
+  On = 'on',
+  Off = 'off'
+}
+
 export enum MeetingState {
   Upcoming = 'upcoming',
   Ongoing = 'ongoing',
@@ -83,3 +88,15 @@ export interface MeetingGroup extends BaseContent {
 type UserAuthor = { author: number, meeting_group: null }
 type GroupAuthor = { author: number | null, meeting_group: number }
 export type Author = UserAuthor | GroupAuthor
+
+export interface ComponentBase<N = string> {
+  readonly pk: number
+  state: 'on' | 'off'
+  meeting: number
+  component_name: N
+  settings: unknown
+}
+
+export interface NoSettingsComponent<N = string> extends ComponentBase<N> {
+  settings: null
+}

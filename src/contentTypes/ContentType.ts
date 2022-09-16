@@ -4,7 +4,7 @@ import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
-import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesAvailableMessage, RolesGetMessage } from './messages'
+import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesGetMessage } from './messages'
 import { ChannelConfig, WorkflowState } from './types'
 import useWorkflows from './useWorkflows'
 

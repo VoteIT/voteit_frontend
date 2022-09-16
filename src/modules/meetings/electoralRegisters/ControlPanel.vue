@@ -30,9 +30,6 @@ import useElectoralRegisters from './useElectoralRegisters'
 import useAlert from '@/composables/useAlert'
 
 export default defineComponent({
-  translationKey: 'electoralRegister.plural',
-  path: 'ers',
-  icon: 'mdi-vote',
   components: {
     SelectVue
   },

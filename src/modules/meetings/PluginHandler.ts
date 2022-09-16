@@ -1,7 +1,7 @@
 import { Meeting } from './types'
 
 export interface MeetingPlugin {
-  checkActive: (meeting: Meeting) => boolean
+  checkActive?: (meeting: Meeting) => boolean
 }
 
 export default class PluginHandler<P extends MeetingPlugin> {
@@ -16,6 +16,6 @@ export default class PluginHandler<P extends MeetingPlugin> {
   }
 
   public getActivePlugins (meeting: Meeting): P[] {
-    return this.plugins.filter(p => p.checkActive(meeting))
+    return this.plugins.filter(p => !p.checkActive || p.checkActive(meeting))
   }
 }

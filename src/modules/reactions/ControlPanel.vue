@@ -62,9 +62,6 @@ import { ReactionButton } from './types'
 import { reactionButtonType } from './contentTypes'
 
 export default defineComponent({
-  translationKey: 'reaction.buttons',
-  path: 'reactions',
-  icon: 'mdi-thumb-up',
   setup () {
     const { t } = useI18n()
     const reactions = useReactions()

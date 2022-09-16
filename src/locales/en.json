@@ -458,6 +458,7 @@
     "recentlyClosedChecks": "Recently closed presence checks"
   },
   "printing": {
+    "enable": "Enable quick proposal printing",
     "proposalHelpText": "Proposals will be printed one per page. Use the printing dialog in your browser to disable page headers and footers.",
     "proposals": "Print proposals",
     "selectAll": "Select all",

@@ -164,9 +164,6 @@ export default defineComponent({
     SelectVue,
     UserSearch
   },
-  translationKey: 'speaker.systems',
-  path: 'speakers',
-  icon: 'mdi-account-voice',
   setup () {
     const { t } = useI18n()
     const { meetingId, meeting, roleLabels } = useMeeting()
