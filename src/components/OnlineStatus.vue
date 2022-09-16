@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isAuthenticated" :class="{ disconnected }" id="socket-info">
-    <span>{{ displayText }}</span>
+  <div v-if="isAuthenticated" :class="{ disconnected }" id="socket-info" class="d-flex align-center">
+    <span class="mx-4">{{ displayText }}</span>
     <v-progress-circular v-if="connecting" size="small" indeterminate />
     <v-btn v-if="retryBtn" v-bind="retryBtn">
       {{ t('tryAgain') }}
@@ -118,11 +118,6 @@ export default defineComponent({
   background-color: #000
   color: rgb(var(--v-theme-on-error))
   transition: top 1s ease-in, background-color 250ms
-  display: flex
-  justify-content: flex-start
-  align-items: center
-  span
-    margin: 0 2em
   &.disconnected
     top: 0
     background-color: rgb(var(--v-theme-error))
