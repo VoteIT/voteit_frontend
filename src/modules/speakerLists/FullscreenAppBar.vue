@@ -16,7 +16,7 @@
         </v-btn>
       </v-fade-transition>
     </v-app-bar-title>
-    <Menu v-if="systemsMenu" position="bottom" :items="systemsMenu" icon="mdi-chevron-down" />
+    <DropdownMenu v-if="systemsMenu" position="bottom" :items="systemsMenu" icon="mdi-chevron-down" />
   </v-app-bar>
 </template>
 

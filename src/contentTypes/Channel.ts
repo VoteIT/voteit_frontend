@@ -98,20 +98,9 @@ export default class Channel {
     return socket.call<RT>(uri, data, config)
   }
 
-  // public post<RT=unknown> (uri: string, data?: object, config?: ChannelConfig) {
-  //   return this.call<RT>(uri, data, config)
-  // }
-
-  // public send (type: string, payloadOrUri: string | object) {
-  //   return socket.send(type, payloadOrUri)
-  // }
-
-  // public methodCall (method: string, data: object, config?: ChannelConfig) {
-  //   return this.call(`${this.name}.${method}`, data, config)
-  // }
-
   // eslint-disable-next-line camelcase
   public getSchema (message_type: string, type: SchemaType = SchemaType.Incoming): Promise<SuccessMessage<{ message_schema: object }>> {
+    // eslint-disable-next-line camelcase
     return this.call(`schema.get_${type}`, { message_type })
   }
 }

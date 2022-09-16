@@ -49,7 +49,7 @@
         <slot name="buttons" />
       </div>
       <v-spacer />
-      <Menu :items="menuItems" size="small" />
+      <DropdownMenu :items="menuItems" size="small" />
     </footer>
   </v-sheet>
 </template>

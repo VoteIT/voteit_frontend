@@ -7,7 +7,7 @@
             <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
             <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
           </div>
-          <Menu float :items="menuItems" />
+          <DropdownMenu float :items="menuItems" />
         </div>
         <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" :maxHeight="collapsedBodyHeight" />
         <TextDocuments />

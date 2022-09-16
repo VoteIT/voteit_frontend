@@ -6,7 +6,7 @@
           <WorkflowState :admin="canChange" :contentType="meetingType" :object="meeting" />
           <Headline v-model="content.title" :editing="editing" @edit-done="submit()" />
         </div>
-        <Menu float :items="menuItems" />
+        <DropdownMenu :items="menuItems" />
       </header>
       <Richtext v-model="content.body" :editing="editing" @edit-done="submit()" variant="full" />
     </v-col>

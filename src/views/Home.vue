@@ -11,7 +11,7 @@
         <v-window-item value="default">
           <header class="d-flex">
             <Headline v-model="changeForm.page_title" :editing="editing" class="flex-grow-1" />
-            <Menu :items="menu" />
+            <DropdownMenu :items="menu" />
           </header>
           <Richtext v-model="changeForm.body" :editing="editing" @edit-done="save()" variant="full" :maxHeight="collapsedBodyHeightMobile" />
         </v-window-item>
@@ -93,7 +93,6 @@ import AddMeeting from '@/modules/meetings/AddMeetingModal.vue'
 import Counter from '@/components/examples/Counter.vue'
 import GetSchema from '@/components/examples/GetSchema.vue'
 import Headline from '@/components/Headline.vue'
-import Menu from '@/components/Menu.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
@@ -233,7 +232,6 @@ export default defineComponent({
     GetSchema,
     Headline,
     Invite,
-    Menu,
     Richtext,
     RoleMatrix,
     UserSearch

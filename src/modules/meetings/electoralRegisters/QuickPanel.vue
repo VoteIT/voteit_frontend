@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts" setup>
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 

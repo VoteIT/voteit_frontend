@@ -12,18 +12,8 @@ import { canAddPresenceCheck } from './rules'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
-// const presenceCount = reactive<Map<number, number>>(new Map())
-
-// interface PresenceCheckStatusMessage {
-//   pk: number
-//   present: number
-// }
 
 presenceCheckType.updateMap(presenceChecks)
-  // .on<PresenceCheckStatusMessage>('status', ({ pk, present }) => {
-  //   presenceCount.set(pk, present)
-  // })
-
 presenceType.updateMap(presence)
 
 useBubbles().register(PresenceCheckBubble)
@@ -60,6 +50,7 @@ export default function usePresence (meetingId: Ref<number>) {
   // eslint-disable-next-line camelcase
   function changePresence (presence_check: number, present: boolean) {
     return presenceType.methodCall('change', {
+      // eslint-disable-next-line camelcase
       presence_check,
       present
     })

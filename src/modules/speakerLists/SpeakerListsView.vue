@@ -33,7 +33,7 @@
               <v-card-title class="flex-grow-1 flex-shrink-1">
                 {{ list.title }}
               </v-card-title>
-              <Menu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
+              <DropdownMenu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
             </div>
             <v-card-text>
               {{ t('speaker.speakerCount', list.queue.length) }}

@@ -9,8 +9,8 @@
       </router-link>
     </v-app-bar-title>
     <div class="flex-shrink-0">
-      <Menu position="bottom" icon="mdi-star" :items="pollMenu" />
-      <Menu position="bottom" :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
+      <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
+      <DropdownMenu position="bottom" :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
         <template v-slot:top>
           <v-item-group multiple v-model="stateFilter">
             <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
@@ -25,7 +25,7 @@
             </v-item>
           </v-item-group>
         </template>
-      </Menu>
+      </DropdownMenu>
       <template v-if="agendaItem">
         <v-btn variant="text" :disabled="!previousAgendaItem" :to="previousAgendaItem ? `/p/${meetingId}/${previousAgendaItem.pk}` : '/'" icon="mdi-chevron-left" />
         <v-btn variant="text" :disabled="!nextAgendaItem" :to="nextAgendaItem ? `/p/${meetingId}/${nextAgendaItem.pk}` : '/'" icon="mdi-chevron-right" />

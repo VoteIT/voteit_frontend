@@ -34,7 +34,7 @@
               </v-tooltip>
             </p>
           </div>
-          <Menu :items="menuItems" />
+          <DropdownMenu :items="menuItems" />
         </header>
         <p v-if="poll.body">{{ poll.body }}</p>
         <template v-if="isOngoing">

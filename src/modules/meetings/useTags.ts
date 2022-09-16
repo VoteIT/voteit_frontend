@@ -1,4 +1,4 @@
-import { InjectionKey, onMounted, onUpdated, Ref, watch } from '@vue/runtime-core'
+import { InjectionKey, onMounted, onUpdated, Ref, watch } from 'vue'
 import stringToHSL from '@/utils/stringToHSL'
 import { tagify } from '@/utils'
 import TypedEvent from '@/utils/TypedEvent'

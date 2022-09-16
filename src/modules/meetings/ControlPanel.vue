@@ -14,12 +14,12 @@
     <v-col v-if="currentComponent">
       <component :is="currentComponent"/>
     </v-col>
-    <v-col v-else v-for="{ icon, id, component, translationKey, quickComponent } in panelPlugins" :key="id" sm="6" md="4" lg="3" cols="12" class="panels">
+    <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" md="4" lg="3" cols="12" class="panels">
       <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
         <v-card>
           <v-card-title>
             <v-icon sm :icon="icon" class="mr-2" />
-            {{ t(translationKey) }}
+            {{ title }}
           </v-card-title>
           <v-divider v-if="quickComponent" />
           <v-card-text v-if="quickComponent">
@@ -30,7 +30,7 @@
       <v-card v-else>
         <v-card-title>
           <v-icon sm :icon="icon" class="mr-2" />
-          {{ t(translationKey) }}
+          {{ title }}
         </v-card-title>
         <v-divider v-if="quickComponent" />
         <v-card-text v-if="quickComponent">
@@ -53,6 +53,7 @@ import { meetingSettingsPlugins } from './registry'
 import useMeetingTitle from './useMeetingTitle'
 import useComponentApi from './useComponentApi'
 import useLoader from '@/composables/useLoader'
+import { orderBy } from 'lodash'
 
 require('./controlPanels')
 
@@ -74,8 +75,14 @@ export default defineComponent({
 
     const panelPlugins = computed(() => {
       if (!meeting.value) return []
-      return meetingSettingsPlugins
+      return orderBy(meetingSettingsPlugins
         .getActivePlugins(meeting.value)
+        .map(panel => {
+          return {
+            title: t(panel.translationKey),
+            ...panel
+          }
+        }), ['title'])
     })
     const currentPanel = computed(() => route.params.panel as string | undefined)
     const currentComponent = computed(() => panelPlugins.value.find(p => p.id === route.params.panel)?.component)

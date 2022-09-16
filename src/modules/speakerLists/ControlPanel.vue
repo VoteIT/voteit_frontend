@@ -42,49 +42,12 @@
         </template>
       </v-dialog>
     </div>
-    <!-- <v-table class="my-4" id="speaker-systems-table">
-      <thead>
-        <tr>
-          <th width="33%">
-            {{ t('title' )}}
-          </th>
-          <th>
-            {{ t('speaker.systemMethod') }}
-          </th>
-          <th>
-            {{ t('speaker.safePositions') }}
-          </th>
-          <th colspan="2">
-            {{ t('speaker.speakerRoles') }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="{ system, menu } in systems" :key="system.pk">
-          <td>
-            {{ system.title }}
-          </td>
-          <td>
-            {{ t(`speaker.orderMethod.${system.method_name}`) }}
-          </td>
-          <td>
-            {{ system.safe_positions ?? t('speaker.noSafePositions') }}
-          </td>
-          <td>
-            {{ system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ') }}
-          </td>
-          <td class="text-right">
-            <Menu :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
-          </td>
-        </tr>
-      </tbody>
-    </v-table> -->
     <Widget class="speaker-system my-4" v-for="{ system, menu, data, userSearch } in systems" :key="system.pk">
       <div class="d-flex">
         <h2 class="flex-grow-1">
           {{ system.title }}
         </h2>
-        <Menu float :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
+        <DropdownMenu :items="menu" show-transitions :content-type="speakerSystemType" :object="system"/>
       </div>
       <v-list density="comfortable">
         <v-list-item v-for="{ key, value } in data" :key="key" :title="key" :subtitle="value" />

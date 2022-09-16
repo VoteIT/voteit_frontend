@@ -73,6 +73,7 @@ export default defineComponent({
       const allowed_models = value
         ? [contentType, ...button.allowed_models]
         : button.allowed_models.filter(ct => ct !== contentType)
+      // eslint-disable-next-line camelcase
       await reactionButtonType.api.patch(button.pk, { allowed_models })
     }
 

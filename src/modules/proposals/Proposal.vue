@@ -43,7 +43,7 @@
           <slot name="buttons"/>
         </div>
         <v-spacer />
-        <Menu size="small" :items="menuItems" />
+        <DropdownMenu size="small" :items="menuItems" />
         <v-dialog v-model="editDialog">
           <AddTextProposalModal v-if="p.shortname === 'diff_proposal'" @close="editDialog = false" :proposal="p" />
           <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
