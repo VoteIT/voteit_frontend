@@ -1,6 +1,6 @@
 <template>
   <div class="context-menu d-inline-block">
-    <v-overlay v-model="isOpen" :scrim="false" location-strategy="connected" location="bottom end" v-if="items.length || $slots.top || $slots.bottom || showTransitions" :transition="false">
+    <v-overlay v-model="isOpen" :scrim="false" scroll-strategy="close" location-strategy="connected" location="bottom end" v-if="items.length || $slots.top || $slots.bottom || showTransitions" :transition="false">
       <template #activator="{ props }">
         <v-badge :model-value="!!currentState?.icon" color="secondary" :icon="currentState?.icon">
           <v-btn v-bind="{ ...props, ...openerAttrs }" />
