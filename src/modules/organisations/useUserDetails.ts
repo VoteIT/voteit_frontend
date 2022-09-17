@@ -35,8 +35,8 @@ export default function useUserDetails () {
     loading = true
     try {
       const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(endpoint, { params })
-      for (const r of data) {
-        userDetails.set(r.user.pk, r.user)
+      for (const { user } of data) {
+        userDetails.set(user.pk, user)
       }
     } catch {}
     loading = false

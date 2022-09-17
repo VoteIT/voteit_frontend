@@ -105,7 +105,12 @@
     "newItem": "New Agenda Item",
     "order": "Order Agenda Items",
     "setTo": "Set to",
-    "showAs": "Show as"
+    "showAs": "Show as",
+    "proposalBlocked": {
+      "blocked": "Proposals are blocked",
+      "closed": "This agenda item is closed",
+      "nonProposer": "You don't have proposal permissions"
+    }
   },
   "auth": {
     "loggedInAs": "Logged in as {username}",

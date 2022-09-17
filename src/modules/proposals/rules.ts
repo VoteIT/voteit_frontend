@@ -57,6 +57,12 @@ function isUsedInPoll (proposal: Proposal): boolean {
   return false
 }
 
+export function getProposalBlockReason (agendaItem: AgendaItem) {
+  if (isFinishedAI(agendaItem)) return 'closed'
+  if (isProposalBlocked(agendaItem)) return 'blocked'
+  if (!isProposer(agendaItem.meeting)) return 'nonProposer'
+}
+
 export function canAddProposal (agendaItem: AgendaItem): boolean {
   return !isFinishedAI(agendaItem) && (
     !!isModerator(agendaItem.meeting) || (

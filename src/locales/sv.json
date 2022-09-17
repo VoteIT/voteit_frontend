@@ -105,7 +105,12 @@
     "newItem": "Ny dagordningspunkt",
     "order": "Sortera dagordningspunkterna",
     "setTo": "Sätt som",
-    "showAs": "Visa som"
+    "showAs": "Visa som",
+    "proposalBlocked": {
+      "blocked": "Förslag är blockerade",
+      "closed": "Dagordningspunkten är avslutad",
+      "nonProposer": "Du har inte förslagsrätt"
+    }
   },
   "auth": {
     "loggedInAs": "Inloggad som {username}",

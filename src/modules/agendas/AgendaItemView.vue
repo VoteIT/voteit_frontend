@@ -60,6 +60,13 @@
             <AddProposalModal @close="isActive.value = false" />
           </template>
         </v-dialog>
+        <v-tooltip v-else :text="t(`agenda.proposalBlocked.${proposalBlockReason}`)">
+          <template #activator="{ props }">
+            <v-btn v-bind="props" prepend-icon="mdi-text-box-plus-outline" color="primary" variant="tonal">
+              {{ t('proposal.add') }}
+            </v-btn>
+          </template>
+        </v-tooltip>
         <v-spacer />
         <AgendaFilters ref="filterComponent" />
         <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
@@ -162,7 +169,7 @@ export default defineComponent({
     const { getAiPolls } = usePolls()
     const { meetingPath, meetingId, meeting } = useMeeting()
     const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
-    const { agendaItem, agendaItemPath, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem } = useAgendaItem(agendaId)
+    const { agendaItem, agendaItemPath, canAddProposal, canAddDiscussionPost, canAddDocument, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
 
     useChannel('agenda_item', agendaId)
 
@@ -372,6 +379,7 @@ export default defineComponent({
       menuItems,
       hasProposals,
       pollCount,
+      proposalBlockReason,
       sortedProposals,
       sortedDiscussions,
       speakerLists,
