@@ -507,6 +507,7 @@
   "reaction": {
     "active": "Aktiv (användare kan reagera)",
     "addButton": "Ny reaktionsknapp",
+    "buttonCount": "Du kan lägga till reaktionsknappar på förslag och diskussioner | Mötet har en reaktionsknapp | Mötet har {count} reaktionsknappar",
     "buttons": "Reaktionsknappar",
     "deleteButtonConfirmation": "Du håller på att radera knappen permanent.\nÄr du säker?",
     "editButton": "Ändra reaktionsknapp",

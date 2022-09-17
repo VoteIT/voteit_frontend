@@ -508,6 +508,7 @@
   "reaction": {
     "active": "Active (users can react)",
     "addButton": "New Reaction Button",
+    "buttonCount": "You can add reaction buttons to proposals and discussions | This meeting has one reaction button | This meeting has {count} reaction buttons",
     "buttons": "Reaction buttons",
     "deleteButtonConfirmation": "You are about to delete a button permanently.\nAre you sure?",
     "editButton": "Edit Reaction Button",

@@ -37,6 +37,7 @@ moment.locale(locale)
 
 // PLUGINS
 require('@/modules/agendas')
+require('@/modules/reactions')
 require('@/modules/printing')
 
 /* LOCKED TO 'sv' */

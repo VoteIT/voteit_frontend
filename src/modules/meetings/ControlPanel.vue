@@ -14,7 +14,7 @@
     <v-col v-if="currentComponent">
       <component :is="currentComponent"/>
     </v-col>
-    <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" lg="4" xl="3" cols="12" class="panels">
+    <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" lg="4" xl="3" cols="12">
       <v-card>
         <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
           <v-card-title class="d-flex text-black">

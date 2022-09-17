@@ -3,12 +3,15 @@
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
-        <v-btn :prepend-icon="formData.icon" size="small" @click="previewActive = !previewActive" :variant="previewActive ? 'elevated' : 'text'" :color="formData.color">
-          {{ formData.title }}
-        </v-btn>
-        <v-btn variant="text" flat size="small" class="reaction-count">
-          {{ previewActive ? 100 : 99 }}
-        </v-btn>
+        <RealReactionButton
+          :button="formData"
+          v-model="previewActive"
+          :count="previewActive ? 100 : 99"
+        >
+          <template #userList>
+            <UserList v-if="user" :user-ids="[user.pk]" />
+          </template>
+        </RealReactionButton>
       </Widget>
       <form @submit.prevent="save()" class="mt-4">
         <v-text-field dark required :label="t('title')" v-model="formData.title" />
@@ -69,22 +72,28 @@ import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 
 import { dialogQuery } from '@/utils'
+import { closeModalEvent } from '@/utils/events'
 
+import useAuthentication from '@/composables/useAuthentication'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useMeeting from '@/modules/meetings/useMeeting'
+import UserList from '@/components/UserList.vue'
 import { ReactionButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
-import { closeModalEvent } from '@/utils/events'
+import RealReactionButton from './RealReactionButton.vue'
 
 export default defineComponent({
   components: {
-    CheckboxMultipleSelect
-  },
+    CheckboxMultipleSelect,
+    RealReactionButton,
+    UserList
+},
   props: {
     data: Object as PropType<ReactionButton>
   },
   setup (props) {
     const { t } = useI18n()
+    const { user } = useAuthentication()
     const { meetingId, roleLabels } = useMeeting()
     const formData = reactive<Partial<ReactionButton>>({ ...(props.data || { color: 'primary', meeting: meetingId.value }) })
     const previewActive = ref(true)
@@ -145,6 +154,7 @@ export default defineComponent({
       ReactionIcon,
       roleLabels,
       ThemeColor,
+      user,
       close,
       deleteButton,
       save
