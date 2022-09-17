@@ -15,17 +15,17 @@
       <component :is="currentComponent"/>
     </v-col>
     <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" md="4" lg="3" cols="12" class="panels">
-      <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
-        <v-card>
-          <v-card-title>
+      <v-card>
+        <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
+          <v-card-title class="d-flex text-black">
             <v-icon sm :icon="icon" class="mr-2" />
-            {{ title }}
+            <span class="flex-grow-1">
+              {{ title }}
+            </span>
+            <v-icon icon="mdi-chevron-right" />
           </v-card-title>
-          <component v-if="quickComponent" :is="quickComponent" />
-        </v-card>
-      </router-link>
-      <v-card v-else>
-        <v-card-title>
+        </router-link>
+        <v-card-title v-else>
           <v-icon sm :icon="icon" class="mr-2" />
           {{ title }}
         </v-card-title>
@@ -110,9 +110,4 @@ export default defineComponent({
 #setting-panels
   a
     text-decoration: none
-  .panels
-    .v-card
-      transition: transform .5s
-      &:hover
-        transform: scale(1.03)
 </style>

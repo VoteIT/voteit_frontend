@@ -66,8 +66,9 @@
                   prepend-icon="mdi-content-copy"
                   :color="copied ? 'success' : 'primary'"
                   variant="elevated"
-                  @click="copy(meetingUrl)">
-                  Kopiera möteslänk
+                  @click="copy(meetingUrl)"
+                >
+                  {{ t('meeting.copyUrl') }}
                 </v-btn>
               </template>
             </v-tooltip>

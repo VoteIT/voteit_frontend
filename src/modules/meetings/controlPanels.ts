@@ -1,7 +1,7 @@
 import AccessPolicies from './accessPolicies/ControlPanel.vue'
+import APQuick from './accessPolicies/QuickPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import ERQuick from './electoralRegisters/QuickPanel.vue'
-import Agenda from '../agendas/ControlPanel.vue'
 // import PresenceChecks from '../presence/ControlPanel.vue'
 import Reactions from '../reactions/ControlPanel.vue'
 import SpeakerSystems from '../speakerLists/ControlPanel.vue'
@@ -10,15 +10,9 @@ import { meetingSettingsPlugins } from './registry'
 meetingSettingsPlugins.register({
   id: 'aps',
   component: AccessPolicies,
+  quickComponent: APQuick,
   icon: 'mdi-key',
   translationKey: 'accessPolicy.plural'
-})
-
-meetingSettingsPlugins.register({
-  id: 'agenda',
-  component: Agenda,
-  icon: 'mdi-clipboard-list',
-  translationKey: 'agenda.agenda'
 })
 
 meetingSettingsPlugins.register({

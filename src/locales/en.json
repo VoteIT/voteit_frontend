@@ -77,6 +77,7 @@
   "accessPolicies": {
     "automatic": {
       "add": "Configure automatic access",
+      "isActive": "Automatic access is active",
       "title": "Automatic",
       "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles. Existing participants will not be affected."
     }
@@ -99,6 +100,7 @@
     "helpNoComments": "You can get first post on this agenda item!",
     "hiddenProposals": "{count} proposals hidden by filter",
     "item": "Agenda item",
+    "itemCount": "The meeting has {count} agenda items",
     "nested": "Nested",
     "newItem": "New Agenda Item",
     "order": "Order Agenda Items",
@@ -194,6 +196,7 @@
     "agenda": "Agenda",
     "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
     "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
+    "copyUrl": "Copy meeting link",
     "participants": "Participants",
     "create": "Start a new meeting",
     "createTitleHint": "At least 5 characters",

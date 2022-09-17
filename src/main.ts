@@ -36,6 +36,7 @@ const locale = 'sv'
 moment.locale(locale)
 
 // PLUGINS
+require('@/modules/agendas')
 require('@/modules/printing')
 
 /* LOCKED TO 'sv' */
