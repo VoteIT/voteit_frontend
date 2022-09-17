@@ -100,7 +100,7 @@
     "helpNoComments": "You can get first post on this agenda item!",
     "hiddenProposals": "{count} proposals hidden by filter",
     "item": "Agenda item",
-    "itemCount": "The meeting has {count} agenda items",
+    "itemCount": "The meeting has no agenda items | The meeting has one agenda item | The meeting has {count} agenda items",
     "nested": "Nested",
     "newItem": "New Agenda Item",
     "order": "Order Agenda Items",

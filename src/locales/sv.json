@@ -100,7 +100,7 @@
     "helpNoComments": "Du kan göra det första inlägget på den här dagordningspunkten!",
     "hiddenProposals": "{count} bortfiltrerade förslag",
     "item": "Dagordningspunkt",
-    "itemCount": "Mötet har {count} dagordningspunkter",
+    "itemCount": "Mötet har inga dagordningspunkter | Mötet har en dagordningspunkt | Mötet har {count} dagordningspunkter",
     "nested": "Nästlad",
     "newItem": "Ny dagordningspunkt",
     "order": "Sortera dagordningspunkterna",
