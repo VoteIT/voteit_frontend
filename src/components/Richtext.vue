@@ -12,13 +12,16 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, ref, watch } from 'vue'
+import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
 
 import useTags from '@/modules/meetings/useTags'
 import RichtextEditor from './RichtextEditor.vue'
 import { QuillVariant } from './types'
 import { useElementBounding } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+
+const EXTERNAL_ICON_CLASSES = ['mdi-open-in-new', 'mdi', 'v-icon', 'notranslate', 'v-theme--light', 'v-icon--size-x-small']
 
 export default defineComponent({
   name: 'Richtext',
@@ -44,6 +47,8 @@ export default defineComponent({
   emits: ['edit-done', 'update:modelValue'],
   setup (props, { emit }) {
     const { t } = useI18n()
+    const router = useRouter()
+
     function getContent (): string {
       if (props.object) return props.object[props.contentAttribute]
       if (typeof props.modelValue === 'string') return props.modelValue
@@ -72,10 +77,8 @@ export default defineComponent({
       if (props.editing) return
       content.value = getContent()
     })
-    // watch(() => props.editing, value => {
-    //   if (!value) submit()
-    // })
     watch(content, value => {
+      nextTick(addExternalIcons)
       emit('update:modelValue', value)
     })
 
@@ -92,6 +95,41 @@ export default defineComponent({
           ? '80000px'
           : `${(props.maxHeight || 0)}px`
       }
+    })
+
+    function isExternal (anchor: HTMLAnchorElement): boolean {
+      return anchor.host !== location.host
+    }
+
+    function addExternalIcons () {
+      if (!contentElem.value) return
+      for (const anchor of contentElem.value.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+        if (!isExternal(anchor)) continue
+        const icon = document.createElement('sup')
+        EXTERNAL_ICON_CLASSES.forEach(c => icon.classList.add(c))
+        anchor.append(icon)
+      }
+    }
+
+    // Force external links to open in new tab
+    watch(contentElem, el => {
+      if (!el) return
+      function getAnchorElement (current: HTMLElement | null): HTMLAnchorElement | undefined {
+        // Move up the tree until we get to container or an anchor
+        while (current && current !== el) {
+          if (current.tagName === 'A' && 'href' in current) return current as HTMLAnchorElement
+          current = current.parentElement
+        }
+      }
+      el.addEventListener('click', event => {
+        const anchor = getAnchorElement(event.target as HTMLElement)
+        if (!anchor) return
+        event.preventDefault()
+        if (isExternal(anchor)) return window.open(anchor.href, '_blank')
+        const url = new URL(anchor.href)
+        router.push(url.pathname)
+      })
+      addExternalIcons()
     })
 
     return {
