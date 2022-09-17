@@ -137,6 +137,7 @@
     "activeDescription": "Röstlängder som används i pågående omröstningar",
     "activeMethod": "Aktiv metod: {method}",
     "changeMethod": "Ändra metod för röstlängder",
+    "confirmMethodChange": "Är du säker på att du vill ändra metod för röstlängder till {name}?",
     "create": "Skapa röstlängd",
     "createHelp": "Välj från mötets potentiella röstare för att skapa en ny röstlängd.",
     "electoralRegister": "Röstlängd",

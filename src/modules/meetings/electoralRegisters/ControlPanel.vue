@@ -1,94 +1,82 @@
 <template>
   <div>
     <h2>{{ t('electoralRegister.settings') }}</h2>
-    <v-alert v-if="erInfo" class="my-4" v-bind="erInfo" />
-    <form v-if="editing" @submit.prevent="save()">
-      <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="settings.er_policy_name" :options="erOptions" />
-      <div class="text-right">
-        <v-btn type="submit" :disabled="disabled" color="primary">
-          {{ t('save') }}
-        </v-btn>
-      </div>
-    </form>
-    <div v-else-if="erOptions" class="pa-12 text-center">
-      <v-btn color="primary" size="large" prepend-icon="mdi-book-account" @click="editing = true">
-        {{ t('electoralRegister.changeMethod') }}
-      </v-btn>
-    </div>
+    <v-card
+      v-for="{ description, name, props, title } in methods"
+      :key="name"
+      :title="title"
+      :text="description"
+      class="my-4"
+      v-bind="props"
+      @click="currentName = name"
+    />
   </div>
 </template>
 
-<script lang="ts">
-import { computed, ref, reactive, defineComponent, watch } from 'vue'
+<script lang="ts" setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import axios from 'axios'
 
-import useMeeting from '@/modules/meetings/useMeeting'
-import SelectVue from '@/components/inputs/Select.vue'
-import { meetingType } from '../contentTypes'
-import { Meeting } from '../types'
-import useElectoralRegisters from './useElectoralRegisters'
+import { openDialogEvent } from '@/utils/events'
 import useAlert from '@/composables/useAlert'
+import { meetingType } from '../contentTypes'
+import useMeeting from '../useMeeting'
 
-export default defineComponent({
-  components: {
-    SelectVue
+import useElectoralRegisters from './useElectoralRegisters'
+import { dialogQuery } from '@/utils'
+
+const { t } = useI18n()
+const { meeting, meetingId } = useMeeting()
+const { erMethods } = useElectoralRegisters(meetingId)
+const { alert } = useAlert()
+const api = meetingType.getContentApi({ alertOnError: false })
+
+const currentName = computed({
+  get () {
+    return meeting.value?.er_policy_name
   },
-  setup () {
-    const { t } = useI18n()
-    const { meeting, meetingId } = useMeeting()
-    const { erMethods } = useElectoralRegisters(meetingId)
-    const settings = reactive<Pick<Meeting, 'er_policy_name'>>({ er_policy_name: meeting.value?.er_policy_name })
-    const { alert } = useAlert()
-
-    const editing = ref(!!meeting.value && !meeting.value.er_policy_name)
-    const submitting = ref(false)
-
-    const erOptions = computed(() => {
-      return Object.fromEntries(erMethods.map(({ name }) => [name, t(`erMethods.${name}.title`)]))
-    })
-
-    const erInfo = computed(() => {
-      const name = meeting.value?.er_policy_name
-      if (!name) return
-      return {
-        title: t('electoralRegister.activeMethod', { method: t(`erMethods.${name}.title`) }),
-        text: t(`erMethods.${name}.description`),
-        type: name === 'auto_always'
-          ? 'warning'
-          : 'info'
+  async set (name) {
+    if (!name || isCurrent(name)) return
+    if (!await dialogQuery(t('electoralRegister.confirmMethodChange', { name: t(`erMethods.${name}.title`) }))) return
+    try {
+      await api.patch(meetingId.value, { er_policy_name: name })
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        if (!e.response) return alert('^Could not reach server')
+        return openDialogEvent.emit({
+          title: e.response.data.er_policy_name.join('\n'),
+          no: false,
+          yes: t('ok'),
+          resolve () {}
+        })
       }
-    })
-
-    async function save () {
-      submitting.value = true
-      try {
-        await meetingType.api.patch(meetingId.value, settings)
-      } catch {
-        alert('*Could not save method for electoral register.')
-      }
-      submitting.value = false
-    }
-
-    const disabled = computed(() => {
-      return submitting.value || !settings.er_policy_name
-    })
-
-    watch(meeting, m => {
-      if (!m) return
-      settings.er_policy_name = m.er_policy_name
-      editing.value = !m.er_policy_name
-    })
-
-    return {
-      t,
-      erInfo,
-      editing,
-      disabled,
-      erOptions,
-      settings,
-      submitting,
-      save
+      alert('^Unknown error')
     }
   }
+})
+
+function isCurrent (name: string) {
+  return name === currentName.value
+}
+
+function getColor (name: string) {
+  if (!isCurrent(name)) return
+  return name === 'auto_always' ? 'warning' : 'info'
+}
+
+const methods = computed(() => {
+  return erMethods.map(({ name }) => ({
+    description: t(`erMethods.${name}.description`),
+    name,
+    props: {
+      elevation: isCurrent(name) ? 6 : 0,
+      color: getColor(name),
+      class: {
+        'pa-4': isCurrent(name)
+      }
+    },
+    title: t(`erMethods.${name}.title`)
+  }))
 })
 </script>
