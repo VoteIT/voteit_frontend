@@ -19,7 +19,28 @@
           </template>
           <PollList :agendaItem="agendaId" class="ml-4" />
         </Dropdown>
-        <Dropdown v-if="speakerLists.length" :title="t('speaker.lists', speakerLists.length)" modelValue>
+        <Dropdown v-if="speakerLists.length || manageSpeakerListsMenu.length" :title="t('speaker.lists', speakerLists.length)" modelValue>
+          <template #actions v-if="manageSpeakerListsMenu.length">
+            <v-tooltip :text="t('speaker.manageLists')">
+              <template #activator="{ props }">
+                <DropdownMenu
+                  v-if="manageSpeakerListsMenu.length > 1"
+                  v-bind="props"
+                  :items="manageSpeakerListsMenu"
+                  icon="mdi-bullhorn"
+                  size="small"
+                />
+                <v-btn
+                  v-else
+                  v-bind="props"
+                  size="small"
+                  variant="text"
+                  :to="manageSpeakerListsMenu[0].to"
+                  icon="mdi-bullhorn"
+                />
+              </template>
+            </v-tooltip>
+          </template>
           <SpeakerList v-for="list in speakerLists" :key="list.pk" :list="list" />
         </Dropdown>
       </v-col>
@@ -262,21 +283,19 @@ export default defineComponent({
       const pluginMenuItems = agendaMenuPlugins
         .getActivePlugins(meeting.value)
         .flatMap(plugin => plugin.getItems(getAgendaMenuContext('main')))
-      if (pluginMenuItems.length || managingSpeakerSystems.value.length) {
+      if (pluginMenuItems.length) {
         if (items.length) items.push('---')
         Array.prototype.push.apply(items, pluginMenuItems)
-        // for (const item of pluginMenuItems) {
-        //   items.push(item)
-        // }
-        for (const system of managingSpeakerSystems.value) {
-          items.push({
-            title: t('speaker.manageSystem', { ...system }),
-            icon: 'mdi-bullhorn',
-            to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
-          })
-        }
       }
       return items
+    })
+
+    const manageSpeakerListsMenu = computed(() => {
+      return managingSpeakerSystems.value.map(system => ({
+        title: t('speaker.manageSystem', { ...system }),
+        icon: 'mdi-bullhorn',
+        to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
+      }))
     })
 
     const hasProposals = computed(() => proposals.agendaItemHasProposals(agendaId.value))
@@ -320,8 +339,8 @@ export default defineComponent({
 
     const editing = ref(false)
     const content = reactive({
-      title: agendaItem.value?.title,
-      body: agendaItem.value?.body
+      title: agendaItem.value?.title ?? '',
+      body: agendaItem.value?.body ?? ''
     })
     function submit () {
       editing.value = false
@@ -347,6 +366,8 @@ export default defineComponent({
       filterComponent,
       filterTag,
       hiddenProposals,
+      manageSpeakerListsMenu,
+      managingSpeakerSystems,
       meetingPath,
       menuItems,
       hasProposals,

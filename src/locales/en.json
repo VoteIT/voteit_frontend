@@ -561,6 +561,7 @@
     "listActive": "Active speaker list",
     "lists": "No speaker lists | Speaker list | Speaker lists",
     "lockedPositions": "Locked positions",
+    "manageLists": "Manage speaker lists",
     "manageSystem": "Manage speakers ({title})",
     "noActiveList": "No active speaker list",
     "queue": "Speaker queue",

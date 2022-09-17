@@ -548,6 +548,7 @@
     "listNumber": "Lista {count}",
     "lists": "Inga talarlistor | Talarlista | Talarlistor",
     "lockedPositions": "Låsta platser",
+    "manageLists": "Hantera talarlistor",
     "manageSystem": "Hantera talare ({title})",
     "noActiveList": "Ingen aktiv talarlista",
     "queue": "Talarkö",
