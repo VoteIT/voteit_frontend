@@ -2,7 +2,7 @@
   <v-card-text>
     {{ t('reaction.buttonCount', meetingButtons.length) }}
   </v-card-text>
-  <v-card-actions>
+  <v-card-actions v-if="meetingButtons.length">
     <RealReactionButton
       v-for="button in meetingButtons"
       :key="button.pk"
