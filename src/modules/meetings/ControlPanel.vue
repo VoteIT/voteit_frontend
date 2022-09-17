@@ -21,10 +21,7 @@
             <v-icon sm :icon="icon" class="mr-2" />
             {{ title }}
           </v-card-title>
-          <v-divider v-if="quickComponent" />
-          <v-card-text v-if="quickComponent">
-            <component :is="quickComponent" />
-          </v-card-text>
+          <component v-if="quickComponent" :is="quickComponent" />
         </v-card>
       </router-link>
       <v-card v-else>
@@ -32,10 +29,7 @@
           <v-icon sm :icon="icon" class="mr-2" />
           {{ title }}
         </v-card-title>
-        <v-divider v-if="quickComponent" />
-        <v-card-text v-if="quickComponent">
-          <component :is="quickComponent" />
-        </v-card-text>
+        <component v-if="quickComponent" :is="quickComponent" />
       </v-card>
     </v-col>
   </v-row>

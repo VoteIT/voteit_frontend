@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <v-card-text>
     <v-switch
       :label="t('printing.enable')"
       color="primary"
       hide-details
       v-model="active"
     />
-  </div>
+  </v-card-text>
 </template>
 
 <script lang="ts" setup>

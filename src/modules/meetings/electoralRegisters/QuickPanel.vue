@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <v-card-text>
     {{ t('electoralRegister.activeMethod', { method: policyName }) }}
-  </div>
+  </v-card-text>
 </template>
 
 <script lang="ts" setup>
