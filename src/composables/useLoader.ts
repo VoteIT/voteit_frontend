@@ -9,7 +9,8 @@ import { InitState } from './types'
 
 const { isAuthenticated } = useAuthentication()
 
-let callbacks: (() => Promise<unknown>)[] = []
+export type LoaderCallback = () => Promise<unknown>
+let callbacks: LoaderCallback[] = []
 
 const initState = ref(InitState.Loading)
 const initFailed = computed(() => initState.value === InitState.Failed)

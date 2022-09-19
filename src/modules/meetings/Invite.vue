@@ -1,15 +1,17 @@
 <template>
   <v-card :title="invite.meeting_title" elevation="4">
-    <v-list-subheader>
-      {{ t('meeting.invites.invitedAs') }}:
-    </v-list-subheader>
-    <v-list-item :prepend-icon="icon" :title="invite.invite_data" :subtitle="t(`meeting.invites.types.${invite.type}`)" />
+    <v-list density="compact">
+      <v-list-subheader>
+        {{ t('meeting.invites.invitedAs') }}:
+      </v-list-subheader>
+      <v-list-item :prepend-icon="icon" :title="invite.invite_data" :subtitle="t(`meeting.invites.types.${invite.type}`)" />
+    </v-list>
     <v-card-actions class="flex-wrap">
       <v-spacer />
-      <v-btn variant="text" color="warning" prepend-icon="mdi-close" :disabled="submitting" @click="rejectInvite(invite)">
+      <v-btn color="warning" prepend-icon="mdi-close" :disabled="submitting" @click="rejectInvite(invite)">
         {{ t('join.rejectInvite') }}
       </v-btn>
-      <v-btn color="primary" prepend-icon="mdi-door-open" :disabled="submitting" @click="acceptInvite(invite)">
+      <v-btn variant="elevated" color="primary" prepend-icon="mdi-door-open" :disabled="submitting" @click="acceptInvite(invite)">
         {{ t('join.acceptInvite') }}
       </v-btn>
     </v-card-actions>

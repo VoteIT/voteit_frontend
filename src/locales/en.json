@@ -79,7 +79,8 @@
       "add": "Configure automatic access",
       "isActive": "Automatic access is active",
       "title": "Automatic",
-      "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles. Existing participants will not be affected."
+      "description": "Allows for public access to the meeting. With this policy active, anyone will be able to join your meeting, and will immediately receive selected roles. Existing participants will not be affected.",
+      "joinDescription": "This meeting is open to everyone in the organisation. Om you join the meeting, other participants will be able to see you, and you'll get the following roles:"
     }
   },
   "agenda": {

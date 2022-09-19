@@ -121,11 +121,11 @@ const organisationIcons: Record<OrganisationRole, string> = {
 export default defineComponent({
   setup () {
     const { t } = useI18n()
-    const { orderedMeetings, fetchMeetings, clearMeetings } = useMeetings()
     const { logout, isAuthenticated, user } = useAuthentication()
     const { fetchOrganisations } = useOrganisations()
     const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
     const loader = useLoader('Home')
+    const { orderedMeetings } = useMeetings(loader.call)
 
     const currentTab = ref('default')
     const subscribeOrganisationId = computed(() => {
@@ -137,16 +137,13 @@ export default defineComponent({
     useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
     watch(user, value => {
-      clearMeetings()
       clearInvites()
       if (value) {
-        fetchMeetings()
         fetchInvites()
       }
     })
 
     onBeforeMount(() => {
-      if (isAuthenticated.value) loader.call(fetchMeetings, fetchInvites)
       // App.vue loads organisation data at first load
       // Call again to update page content
       if (loader.initDone.value) fetchOrganisations()

@@ -1,7 +1,9 @@
-import { computed, reactive } from 'vue'
+import { orderBy } from 'lodash'
+import { computed, onBeforeMount, reactive, watch } from 'vue'
 
-import { orderBy } from '@/utils'
-import { user } from '@/composables/useAuthentication'
+import useAuthentication, { user } from '@/composables/useAuthentication'
+import type { LoaderCallback } from '@/composables/useLoader'
+
 import { meetingType } from './contentTypes'
 import { Meeting } from './types'
 
@@ -11,9 +13,11 @@ meetingType.updateMap(meetings)
 
 const meetingRoles = meetingType.useContextRoles()
 
-export default function useMeetings () {
+const { isAuthenticated } = useAuthentication()
+
+export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) => void) {
   const orderedMeetings = computed(() => {
-    return orderBy([...meetings.values()], 'title')
+    return orderBy([...meetings.values()], ['title'])
   })
 
   function setMeeting (meeting: Meeting) {
@@ -38,6 +42,19 @@ export default function useMeetings () {
 
   function clearMeetings () {
     meetings.clear()
+  }
+
+  if (loader) {
+    onBeforeMount(() => {
+      if (isAuthenticated) loader(fetchMeetings)
+    })
+    // User could be logged in/out or switched directly. Always clear meetings first.
+    watch(user, value => {
+      clearMeetings()
+      if (value) {
+        fetchMeetings()
+      }
+    })
   }
 
   return {

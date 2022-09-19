@@ -79,7 +79,8 @@
       "add": "Konfigurera automatisk åtkomst",
       "isActive": "Automatisk åtkomst är aktiv",
       "title": "Automatisk åtkomst",
-      "description": "Tillåter publik tillgång till mötet. Med den här policyn aktiv kan vem som helst gå med i ditt mötet, och får genast de valda rollerna. Existerande användare påverkas inte."
+      "description": "Tillåter publik tillgång till mötet. Med den här policyn aktiv kan vem som helst gå med i ditt mötet, och får genast de valda rollerna. Existerande användare påverkas inte.",
+      "joinDescription": "Det här mötet är öppet för alla i organisationen. Om du går med kommer andra användare i mötet att kunna se dig, och du kommer få följande roller:"
     }
   },
   "agenda": {
@@ -186,7 +187,7 @@
     "asModeratorDescription": " Som administratör kan du gå med I alla möten som moderator. Detta gör dig till en synlig deltagare i mötet.\nVill du gå med som moderator?",
     "invites": "Mötesinbjudan | Mötesinbjudningar",
     "joinAMeeting": "Gå med i ett möte",
-    "meeting": "Gå med I mötet: {title}",
+    "meeting": "Gå med I möte: {title}",
     "noAccess": "Du kan inte gå med i det här mötet just nu",
     "now": "Gå med nu!",
     "rejectInvite": "Neka",

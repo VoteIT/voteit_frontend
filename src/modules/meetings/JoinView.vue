@@ -1,6 +1,6 @@
 <template>
   <v-row id="join-meeting" v-if="meeting">
-    <v-col>
+    <v-col v-bind="cols.default">
       <h1>{{ t('join.meeting', { ...meeting }) }}</h1>
       <Richtext :object="meeting" class="mb-8" />
       <div class="btn-controls" v-if="canBecomeModeratorMeeting" @click="joinAsModerator()">
@@ -39,12 +39,12 @@ import { canBecomeModerator } from './rules'
 
 export default defineComponent({
   components: { Richtext },
-  name: 'JoinMeeting',
+  inject: ['cols'],
   setup () {
     const { t } = useI18n()
-    const { meeting, meetingId, meetingPath } = useMeeting()
-    const { fetchMeeting } = useMeetings()
+    const { meetingId, meetingPath } = useMeeting()
     const loader = useLoader('JoinMeeting')
+    const { meetings } = useMeetings(loader.call)
     const router = useRouter()
     const policies = ref<AccessPolicy[]>([])
 
@@ -57,9 +57,8 @@ export default defineComponent({
         }))
     })
 
-    const canBecomeModeratorMeeting = computed(() => {
-      return meeting.value && canBecomeModerator()
-    })
+    const meeting = computed(() => meetings.get(meetingId.value))
+    const canBecomeModeratorMeeting = computed(() => meeting.value && canBecomeModerator())
 
     async function joinAsModerator () {
       if (!user.value) return console.warn('Anonymous tried to join as moderator')
@@ -73,21 +72,10 @@ export default defineComponent({
     }
 
     onBeforeMount(() => {
-      loader.call(
-        async () => {
-          try {
-            await fetchMeeting(meetingId.value)
-          } catch {
-            console.warn(`Failed fetching meeting ${meetingId.value}`)
-            if (!canBecomeModeratorMeeting.value) router.push('/')
-            // FIXME: Don't display read permission error here
-          }
-        },
-        async () => {
-          const { data } = await accessPolicyType.api.retrieve(meetingId.value)
-          policies.value = data.policies
-        }
-      )
+      loader.call(async () => {
+        const { data } = await accessPolicyType.api.retrieve(meetingId.value)
+        policies.value = data.policies
+      })
     })
 
     return {
