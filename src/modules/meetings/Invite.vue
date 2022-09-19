@@ -1,5 +1,5 @@
 <template>
-  <v-card :title="invite.meeting_title" elevation="4">
+  <v-card :title="invite.meeting_title" elevation="4" class="rounded-te-xl rounded-bs-xl">
     <v-list density="compact">
       <v-list-subheader>
         {{ t('meeting.invites.invitedAs') }}:
@@ -18,8 +18,8 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, PropType, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -38,55 +38,40 @@ const TYPE_ICONS = {
   email: 'mdi-email'
 }
 
-export default defineComponent({
-  props: {
-    invite: {
-      type: Object as PropType<MeetingInvite>,
-      required: true
-    }
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const router = useRouter()
-
-    const submitting = ref(false)
-    async function acceptInvite (inv: MeetingInvite) {
-      submitting.value = true
-      try {
-        await matchedInviteType.api.action(inv.pk, 'accept')
-        await fetchMeetings()
-        router.push(`/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`)
-      } catch {
-        submitting.value = false
-      }
-    }
-    async function rejectInvite (inv: MeetingInvite) {
-      if (!await dialogQuery({
-        title: t('join.rejectInviteQuery'),
-        theme: ThemeColor.Warning
-      })) return
-      submitting.value = true
-      try {
-        await matchedInviteType.api.action(inv.pk, 'reject')
-        fetchInvites()
-      } catch {
-        submitting.value = false
-      }
-    }
-
-    return {
-      t,
-      icon: computed(() => TYPE_ICONS[props.invite.type]),
-      submitting,
-      acceptInvite,
-      rejectInvite
-    }
+const props = defineProps({
+  invite: {
+    type: Object as PropType<MeetingInvite>,
+    required: true
   }
 })
-</script>
 
-<style lang="sass" scoped>
-.v-card
-  border-top-right-radius: 14px
-  border-bottom-left-radius: 14px
-</style>
+const { t } = useI18n()
+const router = useRouter()
+
+const submitting = ref(false)
+async function acceptInvite (inv: MeetingInvite) {
+  submitting.value = true
+  try {
+    await matchedInviteType.api.action(inv.pk, 'accept')
+    await fetchMeetings()
+    router.push(`/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`)
+  } catch {
+    submitting.value = false
+  }
+}
+async function rejectInvite (inv: MeetingInvite) {
+  if (!await dialogQuery({
+    title: t('join.rejectInviteQuery'),
+    theme: ThemeColor.Warning
+  })) return
+  submitting.value = true
+  try {
+    await matchedInviteType.api.action(inv.pk, 'reject')
+    fetchInvites()
+  } catch {
+    submitting.value = false
+  }
+}
+
+const icon = computed(() => TYPE_ICONS[props.invite.type])
+</script>
