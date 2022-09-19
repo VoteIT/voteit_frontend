@@ -1,4 +1,4 @@
-import { computed, onUnmounted, ref, Ref } from 'vue'
+import { computed, ref, Ref } from 'vue'
 import { meetingComponentType } from './contentTypes'
 import { ComponentBase } from './types'
 
@@ -32,14 +32,23 @@ export default function useComponentApi<T extends ComponentBase = ComponentBase>
     return data
   }
 
-  async function setComponentState (component: T, state: boolean) {
+  function setReactiveState (pk: number, state: T['state']) {
+    for (const component of meetingComponents.value) {
+      if (component.pk === pk) {
+        component.state = state
+        return
+      }
+    }
+  }
+
+  async function setComponentState ({ pk }: T, state: boolean) {
     const { data } = await meetingComponentType.api.transition(
-      component.pk,
+      pk,
       state
         ? 'enable'
         : 'disable'
     )
-    Object.assign(component, data)
+    if (data.state) setReactiveState(pk, data.state)
   }
 
   return {
