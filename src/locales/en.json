@@ -405,8 +405,8 @@
         "dutt": "Select the proposals you prefer.",
         "majority": "Vote for your favorite proposal.",
         "scottish_stv": "Select the proposals you want to vote for in order of preference.",
-        "schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
-        "repeated_schulze": "Rate proposals by setting one to five stars. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal."
+        "schulze": "Rate proposals with stars - more is better. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
+        "repeated_schulze": "Rate proposals with stars - more is better. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal."
       }
     },
     "result": {
