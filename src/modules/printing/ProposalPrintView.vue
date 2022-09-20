@@ -50,8 +50,8 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue'
+<script lang="ts" setup>
+import { computed, inject, nextTick, onBeforeMount, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -61,63 +61,62 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import { ProposalState } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
 
-export default defineComponent({
-  inject: ['cols'],
-  setup () {
-    const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { getMeetingGroup } = useMeetingGroups(meetingId)
-    const agendaId = computed(() => Number(route.params.aid))
-    const { getAgendaProposals } = useProposals()
-    useMeetingTitle('Printing') // TODO
-    const route = useRoute()
-    const router = useRouter()
-    const propIds = computed<number[]>({
-      get () {
-        if (typeof route.params.propIds !== 'string') return []
-        return route.params.propIds
-          .split(',')
-          .map(Number)
-      },
-      set (value) {
-        router.replace(value.join(','))
-      }
-    })
-    const proposals = computed(() => getAgendaProposals(agendaId.value, p => p.state !== ProposalState.Retracted))
-    const selectedProposals = computed(() => {
-      return getAgendaProposals(
-        agendaId.value,
-        ({ pk }) => propIds.value.includes(pk)
-      ).map(p => ({
-        meetingGroup: p.meeting_group && getMeetingGroup(p.meeting_group),
-        ...p
-      }))
-    })
+import usePrinting from './usePrinting'
 
-    const allSelected = computed({
-      get () {
-        return propIds.value.length === proposals.value.length
-      },
-      set (value) {
-        if (value) propIds.value = proposals.value.map(p => p.pk)
-      }
-    })
+const cols = inject('cols', { default: {} })
 
-    function print () {
-      if (selectedProposals.value.length) window.print()
-    }
-    onMounted(print)
-
-    return {
-      t,
-      allSelected,
-      propIds,
-      proposals,
-      selectedProposals,
-      print
-    }
+const { t } = useI18n()
+useMeetingTitle('Printing') // TODO
+const { meetingId } = useMeeting()
+const { getMeetingGroup } = useMeetingGroups(meetingId)
+const agendaId = computed(() => Number(route.params.aid))
+const { getAgendaProposals } = useProposals()
+const route = useRoute()
+const router = useRouter()
+const propIds = computed<number[]>({
+  get () {
+    if (typeof route.params.propIds !== 'string') return []
+    return route.params.propIds
+      .split(',')
+      .map(Number)
+  },
+  set (value) {
+    router.replace(value.join(','))
   }
 })
+const proposals = computed(() => getAgendaProposals(agendaId.value, p => p.state !== ProposalState.Retracted))
+const selectedProposals = computed(() => {
+  return getAgendaProposals(
+    agendaId.value,
+    ({ pk }) => propIds.value.includes(pk)
+  ).map(p => ({
+    meetingGroup: p.meeting_group && getMeetingGroup(p.meeting_group),
+    ...p
+  }))
+})
+
+const allSelected = computed({
+  get () {
+    return propIds.value.length === proposals.value.length
+  },
+  set (value) {
+    if (value) propIds.value = proposals.value.map(p => p.pk)
+  }
+})
+
+function print () {
+  if (selectedProposals.value.length) window.print()
+}
+function backAfterPrint () {
+  if (!backOnPrinted.value) return
+  backOnPrinted.value = false
+  nextTick(router.back)
+}
+
+const { backOnPrinted } = usePrinting()
+onBeforeMount(() => window.addEventListener('afterprint', backAfterPrint))
+onBeforeUnmount(() => window.removeEventListener('afterprint', backAfterPrint))
+onMounted(print)
 </script>
 
 <style lang="sass" scoped>
