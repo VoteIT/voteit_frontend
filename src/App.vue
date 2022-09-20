@@ -7,7 +7,7 @@
         <router-view/>
       </v-container>
     </v-main>
-    <OnlineStatus/>
+    <OnlineStatus class="d-print-none" />
     <Modal/>
     <Dialogs/>
     <Loader/>

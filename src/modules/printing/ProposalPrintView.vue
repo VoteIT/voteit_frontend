@@ -121,7 +121,7 @@ onMounted(print)
 
 <style lang="sass" scoped>
 .proposal-container
-  break-after: always
+  break-after: page
   &:last-child
     break-after: unset
 </style>
