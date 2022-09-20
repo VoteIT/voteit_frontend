@@ -565,7 +565,7 @@
     "selectAIList": "Välj lista att sköta",
     "setActiveList": "Välj som aktiv lista",
     "settings": "Inställningar för talarlistor",
-    "settingsHelp": "Ett system för talarlistor kan bara ha en aktiv talarlista. Om du har parallella utskott i ett möte kan du sätta upp ett system mer utskott.",
+    "settingsHelp": "Ett system för talarlistor kan bara ha en aktiv talarlista. Om du har parallella utskott i ett möte kan du sätta upp ett system per utskott.",
     "speakerCount": "Inga talare i kö | En talare i kö | {count} talare i kö",
     "system": "System för talarlistor",
     "systems": "System för talarlistor",
