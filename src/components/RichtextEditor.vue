@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable camelcase */
 import Quill from 'quill'
 import 'quill-mention'
 import { defineComponent, inject, onMounted, PropType, ref } from 'vue'
@@ -23,6 +24,7 @@ import { useI18n } from 'vue-i18n'
 import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 import { meetingRoleType } from '@/modules/meetings/contentTypes'
 import { tagify } from '@/utils'
+import { User } from '@/modules/organisations/types'
 
 const mentionOptions = {
   allowedChars: /^[0-9A-Za-z\-_\sÅÄÖåäö]*$/,
@@ -120,6 +122,13 @@ export default defineComponent({
       }
     }
 
+    function getDisplayName ({ full_name, userid }: User) {
+      if (full_name.length && userid && userid.length) return `${full_name} (${userid})`
+      if (full_name.length) return full_name
+      if (userid && userid.length) return userid
+      return '- unknown -'
+    }
+
     async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) {
       switch (mentionChar) {
         case '#':
@@ -128,20 +137,20 @@ export default defineComponent({
             ...filterTagObjects(tag => tag.startsWith(searchTerm) && tag !== searchTerm)
           ])
           break
-        case '@':
+        case '@': {
           if (!searchTerm.length) return renderList([])
-          // eslint-disable-next-line no-case-declarations
           const { data } = await meetingRoleType.api.list({
             search: searchTerm.toLowerCase(),
-            context: meetingId.value
+            meeting: meetingId.value
           })
           renderList(data.map(({ user }) => {
             return {
               id: user.pk,
-              value: user.userid || user.full_name
+              value: getDisplayName(user)
             }
           }))
           break
+        }
       }
     }
 
