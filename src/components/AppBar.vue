@@ -32,21 +32,23 @@
                     <v-btn class="mt-n2 mr-n2" icon="mdi-close" @click="isActive.value = false" />
                   </div>
                   <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
-                  <SchemaForm v-if="profileSchema" :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
-                    <template #buttons="{ disabled, submitting }">
-                      <div class="text-right">
-                        <v-btn variant="text" @click="isActive.value = false">
-                          {{ t('cancel') }}
-                        </v-btn>
-                        <v-btn color="primary" variant="elevated" type="submit" :loading="submitting" :disabled="disabled">
-                          {{ t('save') }}
-                        </v-btn>
-                      </div>
-                    </template>
-                  </SchemaForm>
-                  <div v-else class="text-center">
-                    <v-progress-circular indeterminate color="primary" />
-                  </div>
+                  <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
+                    <SchemaForm v-if="profileSchema" :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
+                      <template #buttons="{ disabled, submitting }">
+                        <div class="text-right">
+                          <v-btn variant="text" @click="isActive.value = false">
+                            {{ t('cancel') }}
+                          </v-btn>
+                          <v-btn color="primary" variant="elevated" type="submit" :loading="submitting" :disabled="disabled">
+                            {{ t('save') }}
+                          </v-btn>
+                        </div>
+                      </template>
+                    </SchemaForm>
+                    <div v-else class="text-center">
+                      <v-progress-circular indeterminate color="primary" />
+                    </div>
+                  </v-defaults-provider>
                 </v-sheet>
               </template>
             </v-dialog>

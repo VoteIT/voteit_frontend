@@ -1,11 +1,5 @@
 <template>
   <v-select :label="label" :items="items" v-model="value" />
-  <!-- <v-field active model-value="value" :label="label">
-    <select :id="name" :required="required" v-model="value" class="v-field__input">
-      <option v-if="!required" :value="undefined">---</option>
-      <option v-for="[value, name] in Object.entries(options)" :key="value" :value="value">{{ name }}</option>
-    </select>
-  </v-field> -->
 </template>
 
 <script lang="ts">
@@ -46,12 +40,6 @@ export default defineComponent({
     const items = computed(() => {
       if (!props.options) throw new Error('Select requires :options="Record<string, string>"')
       return Object.values(props.options)
-      // const list = Object.entries(props.options)
-      //   .map(([value, text]) => ({ value, text }))
-      // if (props.required) return list
-      // return [{
-      //   text: '---'
-      // }, ...list]
     })
 
     return {

@@ -1,6 +1,6 @@
 <template>
   <main>
-    <form @submit.prevent="addMeeting()">
+    <v-form @submit.prevent="addMeeting()">
       <v-text-field :label="t('title')" autocomplete="off" v-model="formData.title" :hint="t('meeting.createTitleHint')" />
       <SelectVue name="er_select" :label="t('electoralRegister.method')" required v-model="formData.er_policy_name" :options="erOptions" />
       <div>
@@ -14,7 +14,7 @@
           {{ t('create') }}
         </v-btn>
       </div>
-    </form>
+    </v-form>
   </main>
 </template>
 

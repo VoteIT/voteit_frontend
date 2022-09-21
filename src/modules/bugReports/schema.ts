@@ -1,9 +1,10 @@
+import { FieldType } from '@/components/types'
 import { required } from '@/utils/rules'
 
 export default [
   {
     name: 'function',
-    type: 'select',
+    type: FieldType.Select,
     label: 'Funktion',
     items: [
       { title: 'Deltagar- och användarhantering', value: 'participants' },
@@ -18,7 +19,7 @@ export default [
   },
   {
     name: 'description',
-    type: 'textarea',
+    type: FieldType.TextArea,
     label: 'Beskrivning',
     rules: [required],
     messages: ['Beskriv vad du gjorde när felet uppkom, vad du försökte åstadkomma och vad konsekvensen blev.']

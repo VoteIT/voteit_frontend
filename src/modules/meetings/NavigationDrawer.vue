@@ -20,7 +20,9 @@
       </template>
     </MenuTree>
     <template #append>
-      <BugReports class="ma-2" />
+      <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
+        <BugReports class="ma-2" />
+      </v-defaults-provider>
     </template>
   </v-navigation-drawer>
 </template>
