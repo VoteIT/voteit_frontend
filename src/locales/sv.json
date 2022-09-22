@@ -404,8 +404,8 @@
         "dutt": "Markera de förslag du föredrar.",
         "majority": "Rösta på det förslag du föredrar.",
         "scottish_stv": "Välj de förslag du vill rösta på i prioriteringsordning.",
-        "schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag.",
-        "repeated_schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna två eller fler förslag lika så väl lika många stjärnor. Du behöver inte rangordna alla förslag."
+        "schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna förslag lika väljer du lika många stjärnor. Du behöver inte rangordna alla förslag.",
+        "repeated_schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna förslag lika väljer du lika många stjärnor. Du behöver inte rangordna alla förslag."
       }
     },
     "result": {
