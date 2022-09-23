@@ -226,6 +226,7 @@ export default defineComponent({
     const { meetingId, meetingPath } = useMeeting()
     const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
     const systemId = computed(() => Number(route.params.system))
+    useChannel('agenda_item', agendaId)
     useChannel('sls', systemId)
     const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
     const { allSpeakerSystems } = useSpeakerSystems(meetingId)
