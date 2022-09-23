@@ -388,6 +388,7 @@
       "majority": "Contraproposal",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
+      "schulzeAddDeny": "Schulze (add deny)",
       "scottish_stv": "Scottish STV",
       "simple": "Simple majority",
       "irv": "Instant Runoff-Voting",
