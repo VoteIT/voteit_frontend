@@ -37,9 +37,9 @@
       <template v-if="pickMethod">
         <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
-          <v-expansion-panel v-for="{ name, criterion, descriptionType } in availableMethods" :key="name" :title="t(`poll.method.${name}`)" :value="name">
+          <v-expansion-panel v-for="{ id, criterion, discouraged } in availableMethods" :key="id" :title="t(`poll.method.${id}`)" :value="id">
             <v-expansion-panel-text>
-              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" :type="descriptionType ?? 'info'">
+              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" :type="discouraged ? 'warning' : 'info'">
                 {{ t(`poll.method.description.${methodSelected}`) }}
               </v-alert>
               <h3 class="my-2">
@@ -69,7 +69,7 @@
               </h3>
               <SchemaForm
                 v-if="methodSchema"
-                :key="`options-${name}`"
+                :key="`options-${id}`"
                 :schema="methodSchema"
                 v-model="methodSettings"
                 @update:valid="settingsValid = $event"
@@ -110,13 +110,12 @@ import { FieldType, FormSchema } from '@/components/types'
 
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import { ProposalState } from '../proposals/types'
-import usePolls, { polls } from '../polls/usePolls'
+import { polls } from '../polls/usePolls'
 
-import { pollMethods as implementedMethods } from './methods'
-import { Conditional, PollStartData, PollMethodSettings, Poll, PollMethodName } from './methods/types'
-import methodSchemas from './methods/schemas'
+import { Conditional, PollStartData, PollMethodSettings, Poll } from './methods/types'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
+import { pollPlugins } from './registry'
 
 export default defineComponent({
   name: 'StartPoll',
@@ -127,7 +126,6 @@ export default defineComponent({
     const { t } = useI18n()
     const router = useRouter()
     const proposals = useProposals()
-    const { getPollMethods } = usePolls()
     const { isModerator, meetingPath, meetingId } = useMeeting()
     const { agendaId, agendaItem, agenda } = useAgenda(meetingId)
     const { alert } = useAlert()
@@ -161,13 +159,18 @@ export default defineComponent({
     }
 
     const pickMethod = ref(false)
-    const availableMethods = computed(() => getPollMethods(selectedProposals.value.length))
+    const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length))
 
-    const methodSelected = ref<PollMethodName | null>(null)
+    const methodSelected = ref<Poll['method_name'] | null>(null)
+    const methodSelectedPlugin = computed(() => methodSelected.value && pollPlugins.getPlugin(methodSelected.value))
     const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
     watch(methodSelected, name => {
-      const method = availableMethods.value.find(m => m.name === name)
-      methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value ?? '' }
+      if (!name) return
+      const initial = methodSelectedPlugin.value?.initialSettings || {}
+      methodSettings.value = {
+        ...initial,
+        title: nextTitle.value ?? ''
+      }
     })
 
     const working = ref(false)
@@ -183,7 +186,7 @@ export default defineComponent({
 
     async function createPoll (start = false) {
       if (!methodSelected.value) return
-      if (!(methodSelected.value in implementedMethods)) return alert(`*${methodSelected.value} not implemented`)
+      if (!pollPlugins.getPlugin(methodSelected.value)) return alert(`*${methodSelected.value} not implemented`)
 
       working.value = true
       const { title, ...settings } = methodSettings.value
@@ -207,8 +210,9 @@ export default defineComponent({
 
     const methodSchema = computed<FormSchema | undefined>(() => {
       if (!methodSelected.value) return
-      const getter = methodSchemas[methodSelected.value]
-      const specifics = getter?.(t, selectedProposals.value) || []
+      // const getter = methodSchemas[methodSelected.value]
+      const specifics = methodSelectedPlugin.value?.getSchema?.(t, selectedProposals.value.length) || []
+      // getter?.(t, selectedProposals.value) || []
       return [{
         type: FieldType.Text,
         name: 'title',
@@ -309,6 +313,5 @@ export default defineComponent({
         top: -15px
         right: 0
   .locked .proposal
-    // border-color: rgb(var(--v-theme-secondary))
     background-color: rgba(var(--v-theme-secondary), .1)
 </style>

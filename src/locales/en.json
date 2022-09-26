@@ -335,7 +335,6 @@
     "viewAndChangeVote": "View and change vote",
     "votedProgress": "Noone has voted | {percentage} % has voted ({voted} / {total}) | {percentage} % has voted ({voted} / {total})",
     "voteAddedInfo": "Your vote has been accepted.\nYou can change your vote at any time until the poll is closed.",
-    "votingComplete": "Voting complete",
     "watchVoting": "Watch voting",
     "youHaveVoted": "You have voted",
     "youHaveNotVoted": "You have not voted",

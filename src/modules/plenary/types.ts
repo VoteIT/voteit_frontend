@@ -1,11 +1,9 @@
 /* eslint-disable camelcase */
 
-import { PollMethod, PollMethodSettings } from '../polls/methods/types'
+import type { PollMethodSettings } from '../polls/methods/types'
+import type { PollPlugin } from '../polls/registry'
 
-export interface QuickStartMethod {
-  method: PollMethod,
-  proposalsMin: number
-  proposalsExact?: number
+export interface QuickStartMethod extends PollPlugin {
   settings: PollMethodSettings | null
   title: string,
 }

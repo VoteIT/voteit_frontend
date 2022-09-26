@@ -79,17 +79,18 @@ export default defineComponent({
         }), ['title'])
     })
     const currentPanel = computed(() => route.params.panel as string | undefined)
-    const currentComponent = computed(() => panelPlugins.value.find(p => p.id === route.params.panel)?.component)
+    const currentPlugin = computed(() => currentPanel.value ? meetingSettingsPlugins.getPlugin(currentPanel.value) : undefined)
+    const currentComponent = computed(() => currentPlugin.value?.component)
 
     const breadcrumbs = computed(() => {
-      if (currentPanel.value || !currentComponent.value) return []
+      if (!currentPlugin.value) return []
       return [{
         text: t('settings'),
         to: `${meetingPath.value}/settings`
       },
       {
-        text: t(currentComponent.value.translationKey),
-        to: `${meetingPath.value}/settings/${currentComponent.value.path}`
+        text: t(currentPlugin.value.translationKey),
+        to: `${meetingPath.value}/settings/${currentPlugin.value.id}`
       }]
     })
 

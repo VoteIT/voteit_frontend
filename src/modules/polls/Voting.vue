@@ -2,7 +2,7 @@
   <header>
     <h1>{{ data.title }}</h1>
     <p class="meta">{{ t('poll.method.name') }}: {{ t(`poll.method.${data.method_name}`) }}</p>
-    <template v-if="data.body" v-html="data.body"/>
+    <!-- <div v-if="data.body" v-html="data.body" /> -->
   </header>
   <main id="voting-proposals">
     <h2 v-if="abstained">{{ t('poll.abstainRegistered') }}</h2>
@@ -22,19 +22,18 @@
 </template>
 
 <script lang="ts">
-import { Component, computed, defineComponent, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAlert from '@/composables/useAlert'
 import useProposals from '@/modules/proposals/useProposals'
-
-import { pollMethods } from './methods'
 
 import usePolls from '@/modules/polls/usePolls'
 import { Poll } from './methods/types'
 import { Proposal } from '../proposals/types'
 import { voteType } from './contentTypes'
 import { socket } from '@/utils/Socket'
+import { pollPlugins } from './registry'
 
 export default defineComponent({
   name: 'VotingModal',
@@ -57,7 +56,8 @@ export default defineComponent({
 
     const proposals = computed<Proposal[]>(() => getPollProposals(props.data))
 
-    const methodComponent = computed<Component | undefined>(() => pollMethods[props.data.method_name])
+    const methodPlugin = computed(() => pollPlugins.getPlugin(props.data.method_name))
+    const methodComponent = computed(() => methodPlugin.value?.resultComponent)
 
     const userVote = getUserVote(props.data)
     const currentAbstained = ref(userVote?.abstain)

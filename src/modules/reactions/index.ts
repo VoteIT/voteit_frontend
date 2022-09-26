@@ -14,5 +14,6 @@ meetingSettingsPlugins.register({
 })
 
 proposalButtonPlugins.register({
+  id: 'reactions',
   component: ProposalButtons
 })

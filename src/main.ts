@@ -37,6 +37,7 @@ moment.locale(locale)
 
 // PLUGINS
 require('@/modules/agendas')
+require('@/modules/polls/methods')
 require('@/modules/reactions')
 require('@/modules/printing')
 
