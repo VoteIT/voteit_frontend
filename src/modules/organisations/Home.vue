@@ -74,24 +74,17 @@
       </div>
     </v-col>
   </v-row>
-  <v-row v-if="debug">
-    <v-col class="text-center">
-      <counter class="mt-12 mb-1" />
-      <get-schema/>
-    </v-col>
-  </v-row>
+
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeMount, reactive, ref, watch } from 'vue'
+<script lang="ts" setup>
+import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 
 import AddMeeting from '@/modules/meetings/AddMeetingModal.vue'
-import Counter from '@/components/examples/Counter.vue'
-import GetSchema from '@/components/examples/GetSchema.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
@@ -118,120 +111,81 @@ const organisationIcons: Record<OrganisationRole, string> = {
   org_manager: 'mdi-account-supervisor-circle'
 }
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { logout, isAuthenticated, user } = useAuthentication()
-    const { fetchOrganisations } = useOrganisations()
-    const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
-    const loader = useLoader('Home')
-    const { orderedMeetings } = useMeetings(loader.call)
+const { t } = useI18n()
+const { isAuthenticated, user } = useAuthentication()
+const { fetchOrganisations } = useOrganisations()
+const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
+const loader = useLoader('Home')
+const { orderedMeetings } = useMeetings(loader.call)
 
-    const currentTab = ref('default')
-    const subscribeOrganisationId = computed(() => {
-      if (currentTab.value !== 'roles') return
-      return organisationId.value
-    })
-    useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
+const currentTab = ref('default')
+const subscribeOrganisationId = computed(() => {
+  if (currentTab.value !== 'roles') return
+  return organisationId.value
+})
+useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
 
-    useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
+useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
-    watch(user, value => {
-      clearInvites()
-      if (value) {
-        fetchInvites()
-      }
-    })
-
-    onBeforeMount(() => {
-      // App.vue loads organisation data at first load
-      // Call again to update page content
-      if (loader.initDone.value) fetchOrganisations()
-    })
-
-    const participatingMeetings = computed(() => orderedMeetings.value.filter(m => m.current_user_roles))
-    const otherMeetings = computed(() => orderedMeetings.value.filter(m => !m.current_user_roles))
-
-    const editing = ref(false)
-    const changeForm = reactive({
-      page_title: organisation.value?.page_title ?? '',
-      body: organisation.value?.body ?? ''
-    })
-    watch(organisation, org => {
-      changeForm.page_title = org?.page_title ?? ''
-      changeForm.body = org?.body ?? ''
-    })
-    const menu = computed<MenuItem[]>(() => {
-      if (!organisation.value || !canChangeOrganisation.value) return []
-      return [
-        {
-          title: t('edit'),
-          icon: 'mdi-pencil',
-          onClick: async () => { editing.value = true }
-        }
-      ]
-    })
-    const tabs = computed(() => {
-      if (!canChangeOrganisation.value) return
-      return [
-        {
-          value: 'default',
-          title: 'Hem'
-        },
-        {
-          value: 'roles',
-          title: 'Roller'
-        }
-      ]
-    })
-
-    async function save () {
-      if (!organisation.value) throw new Error('No organisation')
-      await organisationType.api.patch(organisation.value.pk, changeForm)
-      editing.value = false
-    }
-
-    function addUser (user: ContextRoles) {
-      if (!organisation.value) return
-      organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
-    }
-
-    return {
-      t,
-      canAddMeeting,
-      canChangeOrganisation,
-      changeForm,
-      currentTab,
-      debug: false,
-      editing,
-      idLoginURL,
-      isAuthenticated,
-      userMeetingInvites,
-      menu,
-      otherMeetings,
-      organisation,
-      organisationIcons,
-      organisationType,
-      participatingMeetings,
-      tabs,
-      user,
-
-      addUser,
-      logout,
-      save,
-      slugify,
-      ...useDefaults()
-    }
-  },
-  components: {
-    AddMeeting,
-    Counter,
-    GetSchema,
-    Headline,
-    Invite,
-    Richtext,
-    RoleMatrix,
-    UserSearch
+watch(user, value => {
+  clearInvites()
+  if (value) {
+    fetchInvites()
   }
 })
+
+onBeforeMount(() => {
+  // App.vue loads organisation data at first load
+  // Call again to update page content
+  if (loader.initDone.value) fetchOrganisations()
+})
+
+const participatingMeetings = computed(() => orderedMeetings.value.filter(m => m.current_user_roles))
+const otherMeetings = computed(() => orderedMeetings.value.filter(m => !m.current_user_roles))
+
+const editing = ref(false)
+const changeForm = reactive({
+  page_title: organisation.value?.page_title ?? '',
+  body: organisation.value?.body ?? ''
+})
+watch(organisation, org => {
+  changeForm.page_title = org?.page_title ?? ''
+  changeForm.body = org?.body ?? ''
+})
+const menu = computed<MenuItem[]>(() => {
+  if (!organisation.value || !canChangeOrganisation.value) return []
+  return [
+    {
+      title: t('edit'),
+      icon: 'mdi-pencil',
+      onClick: async () => { editing.value = true }
+    }
+  ]
+})
+const tabs = computed(() => {
+  if (!canChangeOrganisation.value) return
+  return [
+    {
+      value: 'default',
+      title: 'Hem'
+    },
+    {
+      value: 'roles',
+      title: 'Roller'
+    }
+  ]
+})
+
+async function save () {
+  if (!organisation.value) throw new Error('No organisation')
+  await organisationType.api.patch(organisation.value.pk, changeForm)
+  editing.value = false
+}
+
+function addUser (user: ContextRoles) {
+  if (!organisation.value) return
+  organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
+}
+
+const { dialogDefaults, collapsedBodyHeightMobile } = useDefaults()
 </script>
