@@ -6,7 +6,7 @@ import { Organisation } from './types'
 const organisations = reactive<Map<number, Organisation>>(new Map())
 
 export default function useOrganisations () {
-  // TODO Error handle
+  // Handle errors in calling function
   async function fetchOrganisations () {
     const { data } = await organisationType.api.list()
     data.forEach(org => {

@@ -1,14 +1,12 @@
 import { Component } from 'vue'
 
 import { SchemaGenerator } from '@/components/inputs/types'
-import PluginHandler, { MeetingPlugin } from '../meetings/PluginHandler'
+import PluginHandler, { OrganisationPlugin } from '../organisations/PluginHandler'
 import { PollMethodCriterion, PollMethodSettings } from './methods/types'
 
-export interface PollPlugin extends MeetingPlugin {
-  // checkAvailable (proposalCaount: number): boolean
+export interface PollPlugin extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
-  // losersMin?: number
   getSchema?: SchemaGenerator
   initialSettings?: PollMethodSettings
   multipleWinners?: boolean
@@ -16,13 +14,12 @@ export interface PollPlugin extends MeetingPlugin {
   proposalsMin: number
   resultComponent: Component
   voteComponent: Component
-  // winnersMin?: number
 }
 
 class PollPluginHandler extends PluginHandler<PollPlugin> {
   public getAvailableMethods (proposalCount: number) {
     // Get poll methods available for number of proposals
-    return [...this.iterPlugins(({ proposalsMax, proposalsMin }) => proposalCount >= proposalsMin && (!proposalsMax || proposalCount <= proposalsMax))]
+    return this.getActivePlugins(({ proposalsMax, proposalsMin }) => proposalCount >= proposalsMin && (!proposalsMax || proposalCount <= proposalsMax))
   }
 }
 

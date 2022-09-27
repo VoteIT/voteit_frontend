@@ -1,4 +1,4 @@
-import PluginHandler from '../meetings/PluginHandler'
+import MeetingPluginHandler from '../meetings/PluginHandler'
 import { AgendaMenuPlugin } from './types'
 
-export const agendaMenuPlugins = new PluginHandler<AgendaMenuPlugin>()
+export const agendaMenuPlugins = new MeetingPluginHandler<AgendaMenuPlugin>()

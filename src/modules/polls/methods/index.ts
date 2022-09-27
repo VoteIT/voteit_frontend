@@ -1,6 +1,7 @@
 import { FieldType } from '@/components/types'
 import { SchemaGenerator } from '@/components/inputs/types'
 import { required } from '@/utils/rules'
+import useOrganisation from '@/modules/organisations/useOrganisation'
 import { pollPlugins } from '../registry'
 
 import Dutt from './Dutt.vue'
@@ -12,9 +13,12 @@ import Schulze from './Schulze.vue'
 import DuttResult from './DuttResult.vue'
 import MajorityResult from './MajorityResult.vue'
 import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
+import RepeatedIRVResult from './RepeatedIRVResult.vue'
 import SimpleResult from './SimpleResult.vue'
 import SchulzeResult from './SchulzeResult.vue'
 import STVResult from './STVResult.vue'
+
+const { getOrganisationComponent } = useOrganisation()
 
 const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
   return [
@@ -208,4 +212,41 @@ pollPlugins.register({
   proposalsMin: 3,
   resultComponent: DuttResult,
   voteComponent: Dutt
+})
+
+pollPlugins.register({
+  id: 'repeated_irv',
+  criterion: {
+    cloneProof: true,
+    mutualMajority: true,
+    majorityLoser: false,
+    majorityWinner: false,
+    proportional: false
+  },
+  discouraged: true,
+  checkActive: () => !!getOrganisationComponent('repeated_irv'),
+  getSchema (t, proposals) {
+    return [
+      {
+        name: 'winners',
+        type: FieldType.Number,
+        label: t('winners'),
+        min: 2,
+        max: proposals,
+        rules: [required]
+      },
+      {
+        name: 'allow_random',
+        type: FieldType.Checkbox,
+        label: t('poll.allowRandomTiebreaker')
+      }
+    ]
+  },
+  initialSettings: {
+    allow_random: true,
+    winners: 2
+  },
+  proposalsMin: 3,
+  resultComponent: RepeatedIRVResult,
+  voteComponent: RankedVoting
 })

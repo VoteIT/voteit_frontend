@@ -129,7 +129,8 @@ import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery, slugify } from '@/utils'
-import { parseSocketError, socket } from '@/utils/Socket'
+import { socket } from '@/utils/Socket'
+import { openAlertEvent } from '@/utils/events'
 
 export default defineComponent({
   name: 'PollView',
@@ -162,11 +163,10 @@ export default defineComponent({
         vote: validVote.value
       }
       try {
-        await socket.call(`${poll.value.method_name}_vote.add`, msg, { alertOnError: true })
+        await socket.call(`${poll.value.method_name}_vote.add`, msg)
         votingComplete.value = true
       } catch (e) {
-        // TODO
-        console.error(parseSocketError(e as Error))
+        openAlertEvent.emit('^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!')
       }
       submitting.value = false
     }
@@ -189,8 +189,7 @@ export default defineComponent({
         votingComplete.value = true
         validVote.value = undefined // Forget vote
       } catch (e) {
-        // TODO
-        console.error(parseSocketError(e as Error))
+        openAlertEvent.emit('^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!')
       }
       submitting.value = false
     }
