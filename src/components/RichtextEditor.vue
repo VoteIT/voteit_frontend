@@ -67,7 +67,7 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
           [{ script: 'sub' }, { script: 'super' }],
           [{ indent: '-1' }, { indent: '+1' }],
           [QuillFormat.BlockQuote],
-          [QuillFormat.Image, QuillFormat.Video], // TODO: Embed img by url
+          [QuillFormat.Image, QuillFormat.Video],
           [{ align: [] }],
           ['clean']
         ],
@@ -100,7 +100,7 @@ export default defineComponent({
     placeholder: String,
     variant: {
       type: String as PropType<QuillVariant>,
-      default: QuillVariant.Restricted
+      default: 'restricted'
     }
   },
   setup (props, { emit }) {

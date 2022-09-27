@@ -30,8 +30,8 @@
   </BtnDropdown>
 </template>
 
-<script lang="ts">
-import { ComponentPublicInstance, defineComponent, reactive, ref, watch } from 'vue'
+<script lang="ts" setup>
+import { ComponentPublicInstance, inject, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 
@@ -39,9 +39,9 @@ import BtnDropdown from '@/components/BtnDropdown.vue'
 
 import { DEFAULT_FILTER_STATES, proposalStates } from '@/modules/proposals/workflowStates'
 
-// import { TagsKey } from '@/modules/meetings/useTags'
 import useAgendaFilter from './useAgendaFilter'
 import { ProposalState } from '../proposals/types'
+import { agendaIdKey } from './injectionKeys'
 
 interface FilterDescription {
   id: string
@@ -49,53 +49,39 @@ interface FilterDescription {
   active?: boolean
 }
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { activeFilter, isModified } = useAgendaFilter()
-    const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
-    onClickOutside(root, () => root.value?.close())
+const { t } = useI18n()
+const agendaId = inject(agendaIdKey)
+if (!agendaId) throw new Error('AgendaFilters required agendaId context')
 
-    const orders = ref<FilterDescription[]>([
-      {
-        id: 'created',
-        label: t('oldestFirst')
-      },
-      {
-        id: '-created',
-        label: t('newestFirst')
-      }
-    ])
-    const states = reactive<FilterDescription[]>(proposalStates.map(state => ({
-      id: state.state,
-      label: t(`workflowState.${state.state}`),
-      active: activeFilter.value.states.has(state.state)
-    })))
+const { activeFilter, isModified } = useAgendaFilter(agendaId)
+const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
+onClickOutside(root, () => root.value?.close())
 
-    function clearFilters () {
-      activeFilter.value.order = 'created'
-      for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
-      // for (const t of tagFilters) t.active = false
-      activeFilter.value.tags.clear()
-    }
-
-    watch(states, (value: FilterDescription[]) => {
-      activeFilter.value.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
-    })
-
-    return {
-      t,
-      activeFilter,
-      isModified,
-      orders,
-      root,
-      states,
-      clearFilters
-    }
+const orders = ref<FilterDescription[]>([
+  {
+    id: 'created',
+    label: t('oldestFirst')
   },
-  components: {
-    BtnDropdown
+  {
+    id: '-created',
+    label: t('newestFirst')
   }
+])
+const states = reactive<FilterDescription[]>(proposalStates.map(state => ({
+  id: state.state,
+  label: t(`workflowState.${state.state}`),
+  active: activeFilter.value.states.has(state.state)
+})))
+
+function clearFilters () {
+  activeFilter.value.order = 'created'
+  for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
+  // for (const t of tagFilters) t.active = false
+  activeFilter.value.tags.clear()
+}
+
+watch(states, (value: FilterDescription[]) => {
+  activeFilter.value.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
 })
 </script>
 

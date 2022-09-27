@@ -40,7 +40,7 @@ export default defineComponent({
     editing: Boolean,
     variant: {
       type: String as PropType<QuillVariant>,
-      default: QuillVariant.Restricted
+      default: 'restricted'
     },
     maxHeight: Number
   },

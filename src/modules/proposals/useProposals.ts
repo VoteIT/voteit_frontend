@@ -1,6 +1,5 @@
+import { orderBy } from 'lodash'
 import { reactive } from 'vue'
-
-import { orderBy } from '@/utils'
 
 import { agendaDeletedEvent } from '../agendas/events'
 import { agendaItems } from '../agendas/useAgenda'
@@ -50,17 +49,18 @@ export default function useProposals () {
     return false
   }
 
-  function getAgendaProposals (ai: number, filter?: ProposalFilter, order = 'created', reversed = false): Proposal[] {
+  function getAgendaProposals (ai: number, filter?: ProposalFilter, order = 'created', direction: 'asc' | 'desc' = 'asc'): Proposal[] {
     return orderBy([...iterProposals(
       p => p.agenda_item === ai && (!filter || filter(p))
-    )], order, reversed)
+    )], [order], [direction])
   }
 
   function getPollProposals (poll: Poll): Proposal[] {
     return orderBy(
       poll.proposals
         .map(prop => proposals.get(prop))
-        .filter(p => p) as Proposal[]
+        .filter(p => p) as Proposal[],
+      ['created']
     )
   }
 

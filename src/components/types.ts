@@ -7,11 +7,7 @@ export type EditorComponent = ComponentPublicInstance<{
   clear: () => void
 }>
 
-export enum QuillVariant {
-  Restricted = 'restricted',
-  Full = 'full'
-}
-
+export type QuillVariant = 'restricted' | 'full'
 export enum QuillFormat {
   // Inline
   BackgroundColor = 'background',

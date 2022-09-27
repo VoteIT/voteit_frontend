@@ -58,8 +58,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, nextTick, PropType, ref } from 'vue'
+<script lang="ts" setup>
+import { ComponentPublicInstance, computed, nextTick, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -68,135 +68,101 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import Comments from '@/modules/discussions/Comments.vue'
-
-import useMeeting from '@/modules/meetings/useMeeting'
-import useAgendaItem from '@/modules/agendas/useAgendaItem'
 import useUnread from '@/composables/useUnread'
 
-import useTags from '../meetings/useTags'
-import useMeetingGroups from '../meetings/useMeetingGroups'
+import useAgendaItem from '../agendas/useAgendaItem'
+import useAgendaFilter from '../agendas/useAgendaFilter'
+import Comments from '../discussions/Comments.vue'
 import useDiscussions from '../discussions/useDiscussions'
+import useMeeting from '../meetings/useMeeting'
+import useMeetingGroups from '../meetings/useMeetingGroups'
+import useTags from '../meetings/useTags'
+
 import { proposalType } from './contentTypes'
 import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rules'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
 
-export default defineComponent({
-  name: 'Proposal',
-  props: {
-    p: {
-      type: Object as PropType<Proposal>,
-      required: true
-    },
-    readOnly: Boolean
+const props = defineProps({
+  p: {
+    type: Object as PropType<Proposal>,
+    required: true
   },
-  components: {
-    AddProposalModal,
-    AddTextProposalModal,
-    Comments,
-    Richtext,
-    Moment,
-    WorkflowState
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const { isModerator, meetingId } = useMeeting()
-    const { agendaItem, canAddDiscussionPost } = useAgendaItem(computed(() => props.p.agenda_item))
-    const { getHTMLTags } = useTags()
-    const showComments = ref(false)
-    const { getProposalDiscussions } = useDiscussions()
-    const workflows = proposalType.useWorkflows()
-    const { getMeetingGroup } = useMeetingGroups(meetingId)
+  readOnly: Boolean
+})
 
-    const wfState = computed(() => {
-      return workflows.getState(props.p.state)
+const { t } = useI18n()
+const { isModerator, meetingId } = useMeeting()
+const agendaId = computed(() => props.p.agenda_item)
+const { orderContent } = useAgendaFilter(agendaId)
+const { canAddDiscussionPost } = useAgendaItem(agendaId)
+const { getHTMLTags } = useTags()
+const showComments = ref(false)
+const { getProposalDiscussions } = useDiscussions()
+const { getMeetingGroup } = useMeetingGroups(meetingId)
+
+const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
+const { isUnread } = useUnread(props.p.created)
+
+async function queryDelete () {
+  if (await dialogQuery({
+    title: t('proposal.deletePrompt'),
+    theme: ThemeColor.Warning
+  })) proposalType.api.delete(props.p.pk)
+}
+
+async function retract () {
+  if (await dialogQuery({
+    title: t('proposal.retractPrompt'),
+    theme: ThemeColor.Warning
+  })) proposalType.api.transition(props.p.pk, 'retract')
+}
+
+const discussionPosts = computed(() => {
+  if (props.readOnly) return []
+  return orderContent(getProposalDiscussions(props.p))
+})
+const commentsComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
+async function comment () {
+  showComments.value = true
+  await nextTick()
+  // eslint-disable-next-line no-unused-expressions
+  commentsComponent.value?.focus()
+}
+
+const editDialog = ref(false)
+const menuItems = computed<MenuItem[]>(() => {
+  const items: MenuItem[] = []
+  if (canChangeProposal(props.p)) {
+    items.push({
+      title: t('edit'),
+      icon: 'mdi-pencil',
+      onClick: async () => { editDialog.value = true }
     })
-
-    const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
-    const { isUnread } = useUnread(props.p.created)
-
-    async function queryDelete () {
-      if (await dialogQuery({
-        title: t('proposal.deletePrompt'),
-        theme: ThemeColor.Warning
-      })) proposalType.api.delete(props.p.pk)
-    }
-
-    async function retract () {
-      if (await dialogQuery({
-        title: t('proposal.retractPrompt'),
-        theme: ThemeColor.Warning
-      })) proposalType.api.transition(props.p.pk, 'retract')
-    }
-
-    const discussionPosts = computed(() => {
-      if (props.readOnly) return []
-      return getProposalDiscussions(props.p)
-    })
-    const commentsComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-    async function comment () {
-      showComments.value = true
-      await nextTick()
-      // eslint-disable-next-line no-unused-expressions
-      commentsComponent.value?.focus()
-    }
-
-    const editDialog = ref(false)
-    const menuItems = computed<MenuItem[]>(() => {
-      const items: MenuItem[] = []
-      if (canChangeProposal(props.p)) {
-        items.push({
-          title: t('edit'),
-          icon: 'mdi-pencil',
-          onClick: async () => { editDialog.value = true }
-        })
-      }
-      if (canRetractProposal(props.p)) {
-        items.push({
-          title: t('proposal.retract'),
-          icon: 'mdi-undo',
-          onClick: retract,
-          color: ThemeColor.Warning
-        })
-      }
-      if (canDeleteProposal(props.p)) {
-        items.push({
-          title: t('delete'),
-          icon: 'mdi-delete',
-          onClick: queryDelete,
-          color: ThemeColor.Warning
-        })
-      }
-      return items
-    })
-
-    const extraTags = computed(() => {
-      const docTags = getHTMLTags(props.p.body)
-      return props.p.tags.filter(tag => !docTags.has(tag) && tag !== props.p.prop_id)
-    })
-
-    return {
-      t,
-      agendaItem,
-      commentsComponent,
-      canAddDiscussionPost,
-      discussionPosts,
-      editDialog,
-      extraTags,
-      isUnread,
-      isModerator,
-      proposalType,
-      showComments,
-      meetingGroup,
-      menuItems,
-      wfState,
-      comment,
-      retract,
-      queryDelete
-    }
   }
+  if (canRetractProposal(props.p)) {
+    items.push({
+      title: t('proposal.retract'),
+      icon: 'mdi-undo',
+      onClick: retract,
+      color: ThemeColor.Warning
+    })
+  }
+  if (canDeleteProposal(props.p)) {
+    items.push({
+      title: t('delete'),
+      icon: 'mdi-delete',
+      onClick: queryDelete,
+      color: ThemeColor.Warning
+    })
+  }
+  return items
+})
+
+const extraTags = computed(() => {
+  const docTags = getHTMLTags(props.p.body)
+  return props.p.tags.filter(tag => !docTags.has(tag) && tag !== props.p.prop_id)
 })
 </script>
 

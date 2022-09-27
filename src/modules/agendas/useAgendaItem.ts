@@ -1,9 +1,12 @@
 import { computed, Ref } from 'vue'
 
 import { slugify } from '@/utils'
-import useMeeting from '@/modules/meetings/useMeeting'
-import { canAddProposal as _canAddProposal, canAddDocument as _canAddDocument, getProposalBlockReason } from '@/modules/proposals/rules'
-import { canAddDiscussionPost as _canAddDiscussionPost } from '@/modules/discussions/rules'
+
+import useMeeting from '../meetings/useMeeting'
+import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
+import { canAddPoll as _canAddPoll } from '../polls/rules'
+import { canAddProposal as _canAddProposal, canAddDocument as _canAddDocument, getProposalBlockReason } from '../proposals/rules'
+
 import { canChangeAgendaItem as canChange } from './rules'
 
 import useAgenda from './useAgenda'
@@ -33,6 +36,8 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
     return canChange(agendaItem.value)
   })
 
+  const canAddPoll = computed(() => agendaItem.value && _canAddPoll(agendaItem.value))
+
   const canAddProposal = computed(() => {
     if (!agendaItem.value) return false
     return _canAddProposal(agendaItem.value)
@@ -58,6 +63,7 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
     agendaItemPath,
     canAddDiscussionPost,
     canAddDocument,
+    canAddPoll,
     canAddProposal,
     canChangeAgendaItem,
     nextPollTitle,
