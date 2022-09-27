@@ -1,6 +1,9 @@
-import { mapFilter, orderBy } from '@/utils'
+import { orderBy } from 'lodash'
 import { reactive } from 'vue'
+
+import { mapFilter } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
+
 import { reactionButtonType, reactionType } from './contentTypes'
 import { Reaction, ReactionButton, ReactionCountMessage, ReactionListMessage, ReactionRelation } from './types'
 
@@ -27,7 +30,7 @@ export default function useReactions () {
       reactionButtons,
       b => b.meeting === meeting && (!contentType || b.allowed_models.includes(contentType))
     )]
-    return orderBy(buttons, 'order')
+    return orderBy(buttons, ['order'])
   }
 
   function getButtonReactionCount (button: ReactionButton, relation: ReactionRelation): number {

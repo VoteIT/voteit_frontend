@@ -36,21 +36,6 @@ export function dateify<T> (obj: any, attributes: string | string[] = 'created')
   return obj
 }
 
-export function orderBy<T> (objects: T[], getter: (object: T) => any, reversed?: boolean): T[]
-export function orderBy<T> (objects: T[], attribute?: string, reversed?: boolean): T[]
-export function orderBy<T> (objects: T[], attributeOrGetter: ((object: T) => any) | string = 'created', reversed?: boolean): T[] {
-  const direction = reversed ? -1 : 1
-  const getter = typeof attributeOrGetter === 'string' ? (object: any) => object[attributeOrGetter] : attributeOrGetter
-  objects.sort((objA: T, objB: T) => {
-    const valA = getter(objA)
-    const valB = getter(objB)
-    if (valA > valB) return direction
-    if (valA < valB) return -direction
-    return 0
-  })
-  return objects
-}
-
 export function stripHTML (html: string) {
   const tmp = document.createElement('div')
   tmp.innerHTML = html

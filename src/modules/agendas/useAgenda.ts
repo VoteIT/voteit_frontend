@@ -1,7 +1,8 @@
+import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { dateify, orderBy } from '@/utils'
+import { dateify } from '@/utils'
 
 import { AgendaItem } from '@/modules/agendas/types'
 import { agendaItemType, lastReadType } from './contentTypes'
@@ -67,7 +68,7 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     // Filter on meetingId
     return orderBy(
       [...iterAgenda(ai => ai.meeting === meetingId.value)],
-      'order'
+      ['order']
     )
   })
 

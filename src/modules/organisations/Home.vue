@@ -124,7 +124,6 @@ const subscribeOrganisationId = computed(() => {
   return organisationId.value
 })
 useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
-
 useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
 watch(user, value => {
@@ -181,7 +180,7 @@ async function save () {
 }
 
 function addUser (user: ContextRoles) {
-  if (!organisation.value) return
+  if (!organisation.value) throw new Error('No organisation')
   organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
 }
 
