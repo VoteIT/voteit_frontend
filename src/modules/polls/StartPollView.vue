@@ -98,19 +98,21 @@ import { useI18n } from 'vue-i18n'
 import { isEmpty } from 'lodash'
 
 import { slugify } from '@/utils'
+import { required, maxLength } from '@/utils/rules'
 
-import useAgenda from '@/modules/agendas/useAgenda'
 import useAlert from '@/composables/useAlert'
-import useMeeting from '@/modules/meetings/useMeeting'
-import useProposals from '@/modules/proposals/useProposals'
 
 import SchemaForm from '@/components/SchemaForm.vue'
 import usePermission from '@/composables/usePermission'
 import { FieldType, FormSchema } from '@/components/types'
 
+import useAgenda from '../agendas/useAgenda'
+import useAgendaItem from '../agendas/useAgendaItem'
+import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import useProposals from '../proposals/useProposals'
 import { ProposalState } from '../proposals/types'
-import usePolls, { polls } from '../polls/usePolls'
+import usePolls from '../polls/usePolls'
 
 import { pollMethods as implementedMethods } from './methods'
 import { Conditional, PollStartData, PollMethodSettings, Poll, PollMethodName } from './methods/types'
@@ -129,7 +131,8 @@ export default defineComponent({
     const proposals = useProposals()
     const { getPollMethods } = usePolls()
     const { isModerator, meetingPath, meetingId } = useMeeting()
-    const { agendaId, agendaItem, agenda } = useAgenda(meetingId)
+    const { agendaId, agenda } = useAgenda(meetingId)
+    const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
     const { alert } = useAlert()
 
     usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future
@@ -167,7 +170,7 @@ export default defineComponent({
     const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
     watch(methodSelected, name => {
       const method = availableMethods.value.find(m => m.name === name)
-      methodSettings.value = { ...(method?.initialSettings || {}), title: nextTitle.value ?? '' }
+      methodSettings.value = { ...(method?.initialSettings || {}), title: nextPollTitle.value }
     })
 
     const working = ref(false)
@@ -212,22 +215,9 @@ export default defineComponent({
       return [{
         type: FieldType.Text,
         name: 'title',
-        required: true,
+        rules: [required, maxLength(70)],
         label: t('title')
       }, ...specifics]
-    })
-
-    const nextTitle = computed(() => {
-      if (!agendaItem.value) return
-      // eslint-disable-next-line no-labels
-      outer: for (let n = 1; true; n++) {
-        const title = `${agendaItem.value?.title} ${n}`
-        for (const poll of polls.values()) {
-          // eslint-disable-next-line no-labels
-          if (poll.title === title) continue outer
-        }
-        return title
-      }
     })
 
     watch(agendaId, () => {
@@ -251,7 +241,6 @@ export default defineComponent({
       pollableAgendaItems,
       readyToCreate,
       settingsValid,
-      nextTitle,
 
       createPoll,
       toggleAll,

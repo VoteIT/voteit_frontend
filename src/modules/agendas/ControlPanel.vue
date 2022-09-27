@@ -40,7 +40,7 @@
                 <v-icon size="small" :icon="getState(ai.state)?.icon" />
               </td>
               <td>
-                <Headline :modelValue="ai.title" tag="h4" clickToEdit @update:modelValue="setTitle(ai, $event)" />
+                <Headline :modelValue="ai.title" tag="h4" maxlength="100" clickToEdit @update:modelValue="setTitle(ai, $event)" />
               </td>
               <td>
                 <v-chip-group disabled>
@@ -98,7 +98,7 @@
       <v-divider class="mt-6 mb-2" />
       <h2>{{ t('agenda.newItem') }}</h2>
       <form @submit.prevent="addAgendaItem()" id="agenda-add-form" class="d-flex mb-2">
-        <v-text-field :label="t('title')" required v-model="newAgendaTitle" hide-details class="flex-grow-1 hide-details" />
+        <v-text-field :label="t('title')" required maxlength="100" v-model="newAgendaTitle" hide-details class="flex-grow-1 hide-details" />
         <v-btn prepend-icon="mdi-plus" type="submit" :disabled="!newAgendaTitle" color="primary">{{ t('add') }}</v-btn>
       </form>
     </v-window-item>

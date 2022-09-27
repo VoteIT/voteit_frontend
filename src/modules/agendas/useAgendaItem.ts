@@ -12,6 +12,11 @@ import { canChangeAgendaItem as canChange } from './rules'
 import useAgenda from './useAgenda'
 import usePolls from '../polls/usePolls'
 
+function ellipsisTitle (title: string, length: number) {
+  if (title.length <= length) return title
+  return title.slice(0, length - 1) + '…'
+}
+
 export default function useAgendaItem (agendaId: Ref<number | undefined>) {
   const { meetingId, meetingPath } = useMeeting()
   const { getAgendaItem } = useAgenda(meetingId)
@@ -24,9 +29,10 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
   })
 
   const nextPollTitle = computed(() => {
-    if (!agendaItem.value) return
+    if (!agendaItem.value) return ''
     for (let n = 1; true; n++) {
-      const title = `${agendaItem.value?.title} ${n}`
+      const addLength = String(n).length + 1 // Add room for space char
+      const title = `${ellipsisTitle(agendaItem.value.title, 70 - addLength)} ${n}`
       if (!allPollTitles.value.includes(title)) return title
     }
   })

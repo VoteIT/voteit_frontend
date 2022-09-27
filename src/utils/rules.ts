@@ -38,6 +38,15 @@ export function minLength (length: number) {
   }
 }
 
+export function maxLength (length: number) {
+  return {
+    props: {
+      maxlength: length
+    },
+    validate: (value: string) => value.length <= length || `Must not be longer than ${length} characters`
+  }
+}
+
 // export const containsEmail: FieldRule<string> = {
 //   props: { required: true },
 //   validate: v => (v && v.length > 5 && v.includes('@')) || 'must contain at least one e-mail address'

@@ -93,6 +93,7 @@ export interface FieldRule<T> {
     required?: boolean,
     disabled?: boolean,
     type?: 'email' | 'password', // TODO More types
+    maxlength?: number
   }
   clean?: (value: T) => T
   validate?: (value: T) => true | string
