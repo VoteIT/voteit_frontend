@@ -18,7 +18,7 @@
             <th>
               <v-tooltip :text="t('agenda.helpEditTags')" location="top">
                 <template #activator="{ props }">
-                  <span v-bind="props">
+                  <span v-bind="props" class="text-no-wrap">
                     {{ t('tags') }}
                     <v-icon icon="mdi-help-circle" />
                   </span>
