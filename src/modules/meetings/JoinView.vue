@@ -1,7 +1,7 @@
 <template>
   <v-row id="join-meeting" v-if="meeting">
     <v-col v-bind="cols.default">
-      <h1>{{ t('join.meeting', { ...meeting }) }}</h1>
+      <h1>{{ t('join.meetingTitle', { ...meeting }) }}</h1>
       <Richtext :object="meeting" class="mb-8" />
       <div class="btn-controls" v-if="canBecomeModeratorMeeting" @click="joinAsModerator()">
         <v-btn color="warning" prepend-icon="mdi-gavel">

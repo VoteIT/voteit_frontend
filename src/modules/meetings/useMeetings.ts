@@ -5,7 +5,8 @@ import useAuthentication, { user } from '@/composables/useAuthentication'
 import type { LoaderCallback } from '@/composables/useLoader'
 
 import { meetingType } from './contentTypes'
-import { Meeting } from './types'
+import { Meeting, MeetingState } from './types'
+import { dateify, mapFilter } from '@/utils'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
@@ -15,10 +16,37 @@ const meetingRoles = meetingType.useContextRoles()
 
 const { isAuthenticated } = useAuthentication()
 
+function getMeetingList (state: MeetingState, order: keyof Meeting = 'title') {
+  return orderBy(
+    [...mapFilter(
+      meetings,
+      m => m.state === state && !!m.current_user_roles
+    )],
+    [order]
+  )
+}
+
+function filterMeetings (states: MeetingState[], order: keyof Meeting, search: string, year: number | null) {
+  return orderBy(
+    [...mapFilter(
+      meetings,
+      m => states.includes(m.state) && m.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()) && (!year || m.start_time?.getFullYear() === year)
+    )],
+    [order]
+  )
+}
+
 export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) => void) {
-  const orderedMeetings = computed(() => {
-    return orderBy([...meetings.values()], ['title'])
-  })
+  // const orderedMeetings = computed(() => {
+  //   return orderBy([...meetings.values()], ['title'])
+  // })
+
+  // const otherOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing, false))
+  // const otherUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming, false))
+  const participatingOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing))
+  const participatingUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming))
+  const otherMeetingsExist = computed(() => meetings.size > (participatingOngoingMeetings.value.length + participatingUpcomingMeetings.value.length))
+  const existingMeetingYears = computed(() => [...new Set([...meetings.values()].map(m => m.start_time?.getFullYear()))])
 
   function setMeeting (meeting: Meeting) {
     meetings.set(meeting.pk, meeting)
@@ -36,7 +64,7 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
   async function fetchMeetings () {
     const { data } = await meetingType.api.list()
     for (const m of data) {
-      meetings.set(m.pk, m)
+      meetings.set(m.pk, dateify(m, ['created', 'start_time', 'end_time']))
     }
   }
 
@@ -59,9 +87,16 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
 
   return {
     meetings,
+    // otherOngoingMeetings,
+    // otherUpcomingMeetings,
+    existingMeetingYears,
+    otherMeetingsExist,
+    participatingOngoingMeetings,
+    participatingUpcomingMeetings,
     fetchMeeting,
     fetchMeetings,
-    clearMeetings,
-    orderedMeetings
+    filterMeetings,
+    clearMeetings
+    // orderedMeetings
   }
 }
