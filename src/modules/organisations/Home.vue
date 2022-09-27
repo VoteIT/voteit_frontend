@@ -83,26 +83,26 @@ import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
+import { MenuItem } from '@/utils/types'
 
-import AddMeeting from '@/modules/meetings/AddMeetingModal.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
-
 import useAuthentication from '@/composables/useAuthentication'
-import useLoader from '@/composables/useLoader'
-import useMeetings from '@/modules/meetings/useMeetings'
-import useMeetingInvites from '@/modules/meetings/useMeetingInvites'
-import useOrganisations from '@/modules/organisations/useOrganisations'
-import Invite from '@/modules/meetings/Invite.vue'
-import { MenuItem } from '@/utils/types'
-import { organisationType } from '@/modules/organisations/contentTypes'
-import useOrganisation from '@/modules/organisations/useOrganisation'
-import useDefaults from '@/composables/useDefaults'
-import { OrganisationRole } from '@/modules/organisations/types'
-import { ContextRoles } from '@/composables/types'
 import useChannel from '@/composables/useChannel'
+import useDefaults from '@/composables/useDefaults'
+import useLoader from '@/composables/useLoader'
+import { ContextRoles } from '@/composables/types'
+
+import AddMeeting from '../meetings/AddMeetingModal.vue'
+import useMeetings from '../meetings/useMeetings'
+import useMeetingInvites from '../meetings/useMeetingInvites'
+import Invite from '../meetings/Invite.vue'
+import useOrganisation from './useOrganisation'
+import useOrganisations from './useOrganisations'
+import { organisationType } from './contentTypes'
+import { OrganisationRole } from './types'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -129,9 +129,7 @@ useTitle(computed(() => organisation.value ? `${organisation.value.title} | Vote
 
 watch(user, value => {
   clearInvites()
-  if (value) {
-    fetchInvites()
-  }
+  if (value) fetchInvites()
 })
 
 onBeforeMount(() => {
