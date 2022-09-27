@@ -37,7 +37,7 @@
                 <input type="checkbox" :checked="isSelected" @change.prevent="toggle()" class="mr-2">
               </td>
               <td class="state">
-                <v-icon size="small" :icon="getState(ai.state).icon" />
+                <v-icon size="small" :icon="getState(ai.state)?.icon" />
               </td>
               <td>
                 <Headline :modelValue="ai.title" tag="h4" clickToEdit @update:modelValue="setTitle(ai, $event)" />
@@ -106,7 +106,7 @@
       <Draggable v-model="agendaItems" item-key="pk" >
         <template #item="{ element }">
           <div>
-            <v-icon size="small" :icon="getState(element.state).icon" />
+            <v-icon size="small" :icon="getState(element.state)?.icon" />
             <span>{{ element.title }}</span>
             <v-icon size="small" icon="mdi-drag-horizontal"/>
           </div>
