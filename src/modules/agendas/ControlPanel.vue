@@ -20,6 +20,7 @@
                 <template #activator="{ props }">
                   <span v-bind="props">
                     {{ t('tags') }}
+                    <v-icon icon="mdi-help-circle" />
                   </span>
                 </template>
               </v-tooltip>
