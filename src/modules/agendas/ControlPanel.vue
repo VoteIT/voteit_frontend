@@ -15,7 +15,15 @@
             </th>
             <th>{{ t('state') }}</th>
             <th width="100%">{{ t('title') }}</th>
-            <th>{{ t('tags') }}</th>
+            <th>
+              <v-tooltip :text="t('agenda.helpEditTags')" location="top">
+                <template #activator="{ props }">
+                  <span v-bind="props">
+                    {{ t('tags') }}
+                  </span>
+                </template>
+              </v-tooltip>
+            </th>
             <th>{{ t('proposal.proposals') }}</th>
             <th>{{ t('discussion.discussions') }}</th>
             <th/>
@@ -62,7 +70,7 @@
             {{ t('delete') }}
           </v-btn>
           <div class="my-2">
-            <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaStates.filter(s => s.transition)" :key="state.name" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
+            <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaItemType.workflowStates?.filter(s => s.transition)" :key="state.state" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
           </div>
           <div class="my-2">
             <v-btn color="success-darken-2" class="mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
@@ -75,9 +83,12 @@
           <div class="my-2">
             <v-combobox v-model="bulkTags" :items="agendaTags" hide-details multiple :label="t('tags')">
               <template #chip="{ item, props }">
-                <v-chip v-bind="props" :color="isBulkAllSelected(item) ? 'primary' : 'secondary'" @click.self.stop="tagBulkAdd(item)" closable @click:close.prevent="tagBulkRemove(item)">
-                  {{ item }}
-                </v-chip>
+                <v-chip
+                  v-bind="props"
+                  :color="isBulkAllSelected(item.value) ? 'primary' : 'secondary'"
+                  @click.self.stop="tagBulkAdd(item.value)"
+                  closable
+                />
               </template>
             </v-combobox>
           </div>
@@ -104,10 +115,10 @@
   </v-window>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import Axios from 'axios'
-import { isEqual } from 'lodash'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { difference } from 'lodash'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
@@ -127,211 +138,174 @@ import { AgendaItem } from './types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
 
-export default defineComponent({
-  components: {
-    Draggable,
-    Headline
+const { t } = useI18n()
+const agendaTag = ref<string | undefined>(undefined)
+const { meetingId } = useMeeting()
+const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
+const { getState } = agendaItemType.useWorkflows()
+const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
+
+const agendaItems = computed({
+  get: () => agenda.value,
+  set: (agendaItems: AgendaItem[]) => {
+    meetingType.api.action(meetingId.value, 'set_agenda_order', { order: agendaItems.map(ai => ai.pk) })
+  }
+})
+
+const editModes = computed(() => {
+  return [{
+    value: 'default',
+    title: t('agenda.edit')
   },
-  setup () {
-    const { t } = useI18n()
-    const agendaTag = ref<string | undefined>(undefined)
-    const { meetingId } = useMeeting()
-    const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
-    const { getState } = agendaItemType.useWorkflows()
-    const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
+  {
+    value: 'order',
+    title: t('agenda.order')
+  }]
+})
+const editMode = ref('default')
 
-    const agendaItems = computed({
-      get: () => agenda.value,
-      set: (agendaItems: AgendaItem[]) => {
-        meetingType.api.action(meetingId.value, 'set_agenda_order', { order: agendaItems.map(ai => ai.pk) })
-      }
-    })
+const newAgendaTitle = ref('')
+async function addAgendaItem () {
+  await agendaApi.add({
+    meeting: meetingId.value,
+    title: newAgendaTitle.value
+  })
+  newAgendaTitle.value = ''
+}
 
-    const editModes = computed(() => {
-      return [{
-        value: 'default',
-        title: t('agenda.edit')
-      },
-      {
-        value: 'order',
-        title: t('agenda.order')
-      }]
-    })
-    const editMode = ref('default')
+async function deleteItem (ai: AgendaItem) {
+  if (await dialogQuery({
+    title: t('agenda.deleteItemConfirm'),
+    theme: ThemeColor.Warning
+  })) agendaApi.delete(ai.pk)
+}
 
-    const newAgendaTitle = ref('')
-    async function addAgendaItem () {
-      await agendaApi.add({
-        meeting: meetingId.value,
-        title: newAgendaTitle.value
-      })
-      newAgendaTitle.value = ''
-    }
-
-    async function deleteItem (ai: AgendaItem) {
-      if (await dialogQuery({
-        title: t('agenda.deleteItemConfirm'),
-        theme: ThemeColor.Warning
-      })) agendaApi.delete(ai.pk)
-    }
-
-    const editSelected = ref<number[]>([])
-    const selectedAgendaItems = computed(() => filteredAgenda.value.filter(ai => editSelected.value.includes(ai.pk)))
-    const selectedSingularState = computed(() => {
-      const states = new Set(selectedAgendaItems.value.map(ai => ai?.state))
-      if (states.size !== 1) return
-      return states.values().next().value
-    })
-    const editManyWorking = ref(false)
-    const editIsAllSelected = computed({
-      get: () => selectedAgendaItems.value.length === filteredAgenda.value.length,
-      set: (value: boolean) => {
-        if (value) {
-          editSelected.value = filteredAgenda.value.map(ai => ai.pk)
-        } else {
-          editSelected.value = []
-        }
-      }
-    })
-
-    function isRejected (settled: PromiseSettledResult<any>): settled is PromiseRejectedResult {
-      return settled.status === 'rejected'
-    }
-
-    function getRejectedDescriptions (settled: PromiseSettledResult<any>[]) {
-      const rejectedDescriptions = settled
-        .filter(isRejected)
-        .map(({ reason }) => {
-          if (Axios.isAxiosError(reason)) return Object.values(reason.response?.data ?? {})[0]
-          return t('error.unknown')
-        })
-      return [...new Set(rejectedDescriptions)]
-    }
-
-    async function actionOnSelected (fn: (ai: AgendaItem) => Promise<any>, confirm?: string) {
-      if (editManyWorking.value) return
-      editManyWorking.value = true
-      if (confirm && !await dialogQuery({
-        title: confirm,
-        theme: ThemeColor.Warning
-      })) {
-        editManyWorking.value = false
-        return
-      }
-      const settled = await Promise.allSettled(selectedAgendaItems.value.map(fn))
-      const rejectedDescriptions = getRejectedDescriptions(settled)
-      if (rejectedDescriptions.length) {
-        openAlertEvent.emit({
-          title: t('error.error'),
-          level: AlertLevel.Error,
-          sticky: true,
-          text: t('agenda.changeManyFailed', {
-            reason: rejectedDescriptions.join(', ')
-          }, rejectedDescriptions.length)
-        })
-      }
-      editManyWorking.value = false
-    }
-
-    function deleteSelected () {
-      actionOnSelected(
-        ai => agendaApi.delete(ai.pk),
-        t('agenda.deleteSelectedConfirm', { count: editSelected.value.length }, editSelected.value.length)
-      )
-    }
-
-    function setStateSelected (state: WorkflowState) {
-      actionOnSelected(ai => {
-        if (ai.state === state.state) return Promise.resolve()
-        if (!state.transition) return Promise.reject(new Error('No transition'))
-        return agendaApi.transition(ai.pk, state.transition)
-      })
-    }
-
-    function patchAgendaItem (ai: AgendaItem, data: Partial<AgendaItem>) {
-      agendaApi.patch(ai.pk, data)
-    }
-
-    function patchSelected (data: Partial<AgendaItem>) {
-      actionOnSelected(ai => agendaApi.patch(ai.pk, data))
-    }
-
-    /* TAGS */
-    const { agendaTags } = useAgendaTags(agendaItems)
-    const allSelectedTags = useAgendaTags(selectedAgendaItems).agendaTags
-    const bulkTags = ref(allSelectedTags.value)
-    watch(allSelectedTags, tags => {
-      // Avoid unnecessary modification
-      if (isEqual(new Set(bulkTags.value), new Set(tags))) return
-      bulkTags.value = tags
-    })
-    // Deep watch, because v-model won't trigger computed setter
-    watch(bulkTags, (tags) => {
-      // Compare to all selected tags to find what's changed
-      // Can't use reactive allSelectedTags for some reason
-      const allSelected = new Set(selectedAgendaItems.value.flatMap(ai => ai.tags))
-      const added = tags.filter(tag => !allSelected.has(tag))
-      const removed = [...allSelected].filter(tag => !tags.includes(tag))
-      added.map(tagBulkAdd)
-      removed.map(tagBulkRemove)
-    }, { deep: true })
-
-    function isBulkAllSelected (tag: string) {
-      return selectedAgendaItems.value.every(ai => ai.tags.includes(tag))
-    }
-    function tagBulkRemove (tag: string) {
-      actionOnSelected(
-        ({ tags, pk }) => {
-          if (!tags.includes(tag)) return Promise.resolve()
-          return agendaItemType.api.patch(pk, { tags: tags.filter(t => t !== tag) })
-        }
-      )
-    }
-    function tagBulkAdd (tag: string) {
-      actionOnSelected(
-        ({ tags, pk }) => {
-          if (tags.includes(tag)) return Promise.resolve()
-          return agendaItemType.api.patch(pk, { tags: [...tags, tag] })
-        }
-      )
-    }
-    /* END TAGS */
-
-    async function setTitle ({ pk }: AgendaItem, title: string) {
-      agendaItemType.api.patch(pk, { title })
-    }
-
-    return {
-      t,
-      agendaTag,
-      agendaTags,
-      bulkTags,
-      editManyWorking,
-      editMode,
-      editModes,
-      filteredAgenda,
-      agendaItems,
-      newAgendaTitle,
-      editIsAllSelected,
-      editSelected,
-      agendaStates: agendaItemType.workflowStates,
-      selectedAgendaItems,
-      selectedSingularState,
-      addAgendaItem,
-      canDeleteAgendaItem,
-      deleteItem,
-      deleteSelected,
-      getState,
-      patchAgendaItem,
-      patchSelected,
-      setStateSelected,
-      setTitle,
-      isBulkAllSelected,
-      tagBulkAdd,
-      tagBulkRemove
+const editSelected = ref<number[]>([])
+const selectedAgendaItems = computed(() => filteredAgenda.value.filter(ai => editSelected.value.includes(ai.pk)))
+const selectedSingularState = computed(() => {
+  const states = new Set(selectedAgendaItems.value.map(ai => ai?.state))
+  if (states.size !== 1) return
+  return states.values().next().value
+})
+const editManyWorking = ref(false)
+const editIsAllSelected = computed({
+  get: () => selectedAgendaItems.value.length === filteredAgenda.value.length,
+  set: (value: boolean) => {
+    if (value) {
+      editSelected.value = filteredAgenda.value.map(ai => ai.pk)
+    } else {
+      editSelected.value = []
     }
   }
 })
+
+// eslint-disable-next-line no-undef
+function isRejected (settled: PromiseSettledResult<unknown>): settled is PromiseRejectedResult {
+  return settled.status === 'rejected'
+}
+
+// eslint-disable-next-line no-undef
+function getRejectedDescriptions (settled: PromiseSettledResult<unknown>[]) {
+  const rejectedDescriptions = settled
+    .filter(isRejected)
+    .map(({ reason }) => {
+      if (Axios.isAxiosError(reason)) return Object.values(reason.response?.data ?? {})[0]
+      return t('error.unknown')
+    })
+  return [...new Set(rejectedDescriptions)]
+}
+
+async function actionOnSelected (fn: (ai: AgendaItem) => Promise<any>, confirm?: string) {
+  if (editManyWorking.value) return
+  editManyWorking.value = true
+  if (confirm && !await dialogQuery({
+    title: confirm,
+    theme: ThemeColor.Warning
+  })) {
+    editManyWorking.value = false
+    return
+  }
+  const settled = await Promise.allSettled(selectedAgendaItems.value.map(fn))
+  const rejectedDescriptions = getRejectedDescriptions(settled)
+  if (rejectedDescriptions.length) {
+    openAlertEvent.emit({
+      title: t('error.error'),
+      level: AlertLevel.Error,
+      sticky: true,
+      text: t('agenda.changeManyFailed', {
+        reason: rejectedDescriptions.join(', ')
+      }, rejectedDescriptions.length)
+    })
+  }
+  editManyWorking.value = false
+}
+
+function deleteSelected () {
+  actionOnSelected(
+    ai => agendaApi.delete(ai.pk),
+    t('agenda.deleteSelectedConfirm', { count: editSelected.value.length }, editSelected.value.length)
+  )
+}
+
+function setStateSelected (state: WorkflowState) {
+  actionOnSelected(ai => {
+    if (ai.state === state.state) return Promise.resolve()
+    if (!state.transition) return Promise.reject(new Error('No transition'))
+    return agendaApi.transition(ai.pk, state.transition)
+  })
+}
+
+function patchAgendaItem (ai: AgendaItem, data: Partial<AgendaItem>) {
+  agendaApi.patch(ai.pk, data)
+}
+
+function patchSelected (data: Partial<AgendaItem>) {
+  actionOnSelected(ai => agendaApi.patch(ai.pk, data))
+}
+
+/* TAGS */
+const { agendaTags } = useAgendaTags(agendaItems)
+const allSelectedTags = useAgendaTags(selectedAgendaItems).agendaTags
+// const bulkTags = ref(allSelectedTags.value)
+const bulkTags = computed({
+  get () {
+    return allSelectedTags.value
+  },
+  set (tags) {
+    // Make sure to remove filter if filtered tag is removed
+    if (agendaTag.value && !tags.includes(agendaTag.value)) agendaTag.value = undefined
+    // Compare to all selected tags to find what's changed
+    difference(allSelectedTags.value, tags)
+      .map(tagBulkRemove)
+    difference(tags, allSelectedTags.value)
+      .map(tagBulkAdd)
+  }
+})
+
+function isBulkAllSelected (tag: string) {
+  return selectedAgendaItems.value.every(ai => ai.tags.includes(tag))
+}
+function tagBulkRemove (tag: string) {
+  actionOnSelected(
+    ({ tags, pk }) => {
+      if (!tags.includes(tag)) return Promise.resolve()
+      return agendaItemType.api.patch(pk, { tags: tags.filter(t => t !== tag) })
+    }
+  )
+}
+function tagBulkAdd (tag: string) {
+  actionOnSelected(
+    ({ tags, pk }) => {
+      if (tags.includes(tag)) return Promise.resolve()
+      return agendaItemType.api.patch(pk, { tags: [...tags, tag] })
+    }
+  )
+}
+/* END TAGS */
+
+async function setTitle ({ pk }: AgendaItem, title: string) {
+  agendaItemType.api.patch(pk, { title })
+}
 </script>
 
 <style lang="sass" scoped>
@@ -359,19 +333,4 @@ export default defineComponent({
     border-top-left-radius: 0
     border-bottom-left-radius: 0
     height: auto
-
-// #agenda-edit
-//   width: 100%
-//   border-spacing: 0
-//   td, th
-//     padding: .4em
-//   th
-//     text-align: left
-//   .title
-//     width: 100%
-//   td.state
-//     text-align: center
-//   tbody
-//     tr:nth-child(odd)
-//       background-color: rgb(var(--v-theme-surface))
 </style>

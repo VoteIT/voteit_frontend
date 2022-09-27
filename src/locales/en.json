@@ -96,6 +96,7 @@
     "deleteSelectedConfirm": "You are about to delete {count} Agenda Items permanently.\nAre you sure?",
     "edit": "Edit agenda",
     "filteringOnTag": "Filtering on",
+    "helpEditTags": "Select agenda items to the left to edit tags",
     "helpNoProposals": "This agenda item has no proposals yet.",
     "helpNoProposalsInFilter": "There are proposals on this agenda item that are not shown because of your filter settings.",
     "helpNoComments": "You can get first post on this agenda item!",
