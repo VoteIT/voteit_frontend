@@ -52,7 +52,7 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
 
   async function fetchMeeting (pk: number) {
     const { data } = await meetingType.api.retrieve(pk)
-    setMeeting(data)
+    setMeeting(dateify(data, ['created', 'start_time', 'end_time']))
     return !!data.current_user_roles
   }
 
