@@ -14,9 +14,9 @@
     </div>
   </template>
   <main v-else>
-    {{ t(`workflowState.${poll.state}`) }}
+    {{ t(`workflowState.${poll?.state}`) }}
     <div v-if="isFinished" class="my-6">
-      <component :is="resultComponent" :result="poll.result" />
+      <component :is="resultComponent" :result="poll?.result" :abstain-count="poll?.abstain_count" />
     </div>
   </main>
 </template>
