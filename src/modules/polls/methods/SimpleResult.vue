@@ -1,11 +1,16 @@
 <template>
   <v-list bg-color="background">
-    <v-list-item disabled v-for="{ proposal, choices } in results" :key="proposal?.pk">
+    <v-list-item v-for="{ proposal, choices } in results" :key="proposal?.pk">
       <v-list-item-title class="mb-1">
         <Tag :name="proposal ? proposal.prop_id : t('proposal.unknown')" />
       </v-list-item-title>
-      <div class="btn-group">
-        <v-btn v-for="{ key, value, btn } in choices" :key="key" size="small" v-bind="btn">{{ value }}</v-btn>
+      <div>
+        <v-btn v-for="{ btn, key, percentage, value } in choices" :key="key" v-bind="btn" class="mb-3">
+          {{ value }}
+          <small v-if="percentage" class="ml-1">
+            ({{ percentage }} %)
+          </small>
+        </v-btn>
       </div>
     </v-list-item>
   </v-list>
@@ -25,9 +30,10 @@ interface ProposalResult {
   proposal?: Proposal
   choices: {
     key: string
+    percentage?: number
     value: number
     btn: {
-      variant?: 'text'
+      variant: 'text' | 'elevated'
       color: ThemeColor
       prependIcon: string
     }
@@ -55,6 +61,7 @@ export default defineComponent({
     }
     function transformResult ([_pk, result]: [string, SimpleProposalResult]): ProposalResult {
       const pk = Number(_pk)
+      const total = result[SimpleChoice.Yes] + result[SimpleChoice.No]
       return {
         proposal: getProposal(pk),
         choices: simpleChoices
@@ -64,12 +71,16 @@ export default defineComponent({
             const value = c.value === SimpleChoice.Abstain
               ? result[c.value] + props.abstainCount
               : result[c.value]
+            const percentage = c.value === SimpleChoice.Abstain
+              ? undefined
+              : Math.round(value / total * 100)
             return {
               key: c.value,
+              percentage,
               value,
               btn: {
                 variant: activeChoice === c.value
-                  ? undefined
+                  ? 'elevated'
                   : 'text',
                 color: c.color,
                 prependIcon: c.icon
