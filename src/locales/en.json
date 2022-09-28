@@ -270,9 +270,12 @@
     "warningMeetingNotFinished": "This meeting is not finished. You should close the meeting before printing or copying the minutes."
   },
   "organization": {
+    "allYears": "All years",
     "loginTo": "Log in to {title}",
     "noLogin": "No login available",
-    "requires": "Requires"
+    "requires": "Requires",
+    "searchArchivedMeetings": "Include archived meetings",
+    "showMore": "Show more"
   },
   "participantNumber": {
     "alreadyInList": "Participant number {ids} is already in speaker queue | Participant numbers {ids} are already in speaker queue",

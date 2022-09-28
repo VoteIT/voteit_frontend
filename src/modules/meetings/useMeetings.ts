@@ -37,12 +37,7 @@ function filterMeetings (states: MeetingState[], order: keyof Meeting, search: s
 }
 
 export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) => void) {
-  // const orderedMeetings = computed(() => {
-  //   return orderBy([...meetings.values()], ['title'])
-  // })
-
-  // const otherOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing, false))
-  // const otherUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming, false))
+  const participatingClosedMeetings = computed(() => getMeetingList(MeetingState.Closed))
   const participatingOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing))
   const participatingUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming))
   const otherMeetingsExist = computed(() => meetings.size > (participatingOngoingMeetings.value.length + participatingUpcomingMeetings.value.length))
@@ -87,16 +82,14 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
 
   return {
     meetings,
-    // otherOngoingMeetings,
-    // otherUpcomingMeetings,
     existingMeetingYears,
     otherMeetingsExist,
+    participatingClosedMeetings,
     participatingOngoingMeetings,
     participatingUpcomingMeetings,
     fetchMeeting,
     fetchMeetings,
     filterMeetings,
     clearMeetings
-    // orderedMeetings
   }
 }

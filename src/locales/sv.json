@@ -270,9 +270,12 @@
     "warningMeetingNotFinished": "Mötet är inte avslutat. Du bör avsluta mötet innan du skriver ut eller kopierar protokollet."
   },
   "organization": {
+    "allYears": "Alla år",
     "loginTo": "Logga in till {title}",
     "noLogin": "Ingen inloggning tillgänglig",
-    "requires": "Kräver"
+    "requires": "Kräver",
+    "searchArchivedMeetings": "Inkludera arkiverade möten",
+    "showMore": "Visa fler"
   },
   "participantNumber": {
     "alreadyInList": "Deltagarnummer {ids} står redan på talarlistan | Deltagarnumren {ids} står redan på talarlistan",

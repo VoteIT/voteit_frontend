@@ -29,21 +29,35 @@
         </h2>
         <Invite v-for="inv in userMeetingInvites" :key="inv.pk" :invite="inv" />
       </div>
-      <h2>
-        {{ t('home.yourMeetings', participatingOngoingMeetings.length) }}
+      <h2 class="mb-3">
+        {{ t('home.yourMeetings', meetingCount) }}
       </h2>
-      <v-list v-if="participatingOngoingMeetings.length" class="my-4" border rounded>
-        <template v-if="participatingOngoingMeetings.length">
-          <v-list-subheader :title="t('workflowState.ongoing')" />
-          <v-list-item v-for="{ pk, title, current_user_roles } in participatingOngoingMeetings" :key="pk" :to="`/m/${pk}/${slugify(title)}`" :title="title" :subtitle="current_user_roles?.map(r => t(`role.${r}`)).join(', ')" />
-        </template>
-        <v-divider v-if="participatingOngoingMeetings.length && participatingUpcomingMeetings.length" class="my-3" />
-        <template v-if="participatingUpcomingMeetings.length">
-          <v-list-subheader :title="t('workflowState.upcoming')" />
-          <v-list-item v-for="{ pk, title, current_user_roles } in participatingUpcomingMeetings" :key="pk" :to="`/m/${pk}/${slugify(title)}`" :title="title" :subtitle="current_user_roles?.map(r => t(`role.${r}`)).join(', ')" />
-        </template>
-      </v-list>
-      <p v-else class="mb-4"><em>{{ t('home.noCurrentMeetings') }}</em></p>
+      <div v-for="{ expandable, meetings, title } in meetingGroups" :key="title">
+        <h3>
+          {{ title }}
+        </h3>
+        <v-list class="my-3" border rounded>
+          <v-list-item
+            v-for="{ pk, start_time, title, current_user_roles } in meetings"
+            :key="pk"
+            :to="`/m/${pk}/${slugify(title)}`"
+            :title="title"
+            :subtitle="start_time?.toLocaleDateString()"
+          >
+            <template #append>
+              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+                <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
+                  <v-icon v-bind="props" :icon="icon" />
+                </template>
+              </v-tooltip>
+            </template>
+          </v-list-item>
+          <v-btn block v-if="expandable && !groupsExpanded" @click="groupsExpanded = true" variant="text">
+            {{ t('organization.showMore') }}
+          </v-btn>
+        </v-list>
+      </div>
+      <p v-if="!meetingGroups.length" class="mb-4"><em>{{ t('home.noCurrentMeetings') }}</em></p>
       <v-dialog v-if="canAddMeeting">
         <template #activator="{ props }">
           <v-btn
@@ -73,71 +87,57 @@
           <v-btn
             v-bind="props"
             block
-            variant="text"
+            variant="elevated"
             color="primary"
             prepend-icon="mdi-calendar-plus"
+            size="x-large"
           >
             {{ t('meeting.find') }}
           </v-btn>
         </template>
-        <v-sheet class="pa-4" v-bind="dialogDefaults" min-height="60vh">
-          <h2 class="mb-2">
-            {{ t('meeting.find') }}
-          </h2>
-          <div class="d-flex">
-            <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" />
-            <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" />
-          </div>
-          <v-chip-group v-model="searchFilter.states" multiple>
-            <v-chip
-              v-for="state in Object.values(MeetingState)"
-              :key="state"
-              :value="state"
-              :text="t(`workflowState.${state}`)"
+        <template #default="{ isActive }">
+          <v-sheet class="pa-4" v-bind="dialogDefaults" min-height="60vh">
+            <div class="d-flex mb-2">
+              <h2 class="flex-grow-1">
+                {{ t('meeting.find') }}
+              </h2>
+              <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" size="small" class="mt-n1 mr-n1" />
+            </div>
+            <div class="d-flex">
+              <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
+              <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
+            </div>
+            <v-switch
+              :label="t('organization.searchArchivedMeetings')"
+              v-model="searchFilter.includeArchived"
               color="primary"
             />
-          </v-chip-group>
-          <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
-          <v-list>
-            <v-list-item
-              v-for="{ pk, title, state, current_user_roles } in searchedMeetings[currentSearchPage - 1]"
-              :key="pk"
-              :title="title"
-              :subtitle="t(`workflowState.${state}`)"
-            >
-              <template #append>
-                <v-btn
-                  v-if="current_user_roles"
-                  color="success-darken-2"
-                  :to="`/m/${pk}/${slugify(title)}`"
-                  append-icon="mdi-arrow-right-bold"
+            <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
+            <v-list>
+              <v-list-item
+                v-for="{ pk, title, state, current_user_roles } in searchedMeetings[currentSearchPage - 1]"
+                :key="pk"
+                :title="title"
+                :subtitle="t(`workflowState.${state}`)"
+                :to="current_user_roles ? `/m/${pk}/${slugify(title)}` : undefined"
                 >
-                  {{ t('meeting.to') }}
-                </v-btn>
-                <v-btn
-                  v-else
-                  color="primary"
-                  :to="`/join/${pk}/${slugify(title)}`"
-                  append-icon="mdi-door-open"
-                >
-                  {{ t('join.meeting') }}
-                </v-btn>
-              </template>
-            </v-list-item>
-          </v-list>
-        </v-sheet>
+                <template #append v-if="current_user_roles">
+                  <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+                    <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
+                      <v-icon v-bind="props" :icon="icon" />
+                    </template>
+                  </v-tooltip>
+                </template>
+                <template v-else #append>
+                  <v-btn :to="`/join/${pk}/${slugify(title)}`" append-icon="mdi-arrow-right-circle" color="primary" variant="tonal">
+                    {{ t('join.meeting') }}
+                  </v-btn>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-sheet>
+        </template>
       </v-dialog>
-      <!-- <div v-if="otherOngoingMeetings.length">
-        <h2>
-          {{ t('join.joinAMeeting', otherOngoingMeetings.length) }}
-        </h2>
-        <v-list v-if="otherOngoingMeetings.length" class="mb-4">
-          <v-list-item v-for="meeting in otherOngoingMeetings" :key="meeting.pk" :to="`/join/${meeting.pk}/${slugify(meeting.title)}`" :title="meeting.title" :subtitle="t('workflowState.ongoing')" />
-        </v-list>
-        <p v-if="!otherOngoingMeetings.length"><em>
-          {{ t('home.noCurrentMeetings') }}
-        </em></p>
-      </div> -->
     </v-col>
   </v-row>
 
@@ -169,7 +169,7 @@ import useOrganisation from './useOrganisation'
 import useOrganisations from './useOrganisations'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
-import { Meeting, MeetingState } from '../meetings/types'
+import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 import { chunk } from 'lodash'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
@@ -184,7 +184,7 @@ const { isAuthenticated, user } = useAuthentication()
 const { fetchOrganisations } = useOrganisations()
 const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
 const loader = useLoader('Home')
-const { existingMeetingYears, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
+const { existingMeetingYears, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -254,17 +254,59 @@ function addUser (user: ContextRoles) {
 
 const { dialogDefaults, collapsedBodyHeightMobile } = useDefaults()
 
-const yearItems = computed(() => existingMeetingYears.value.map(value => ({ value: value || null, title: value ? String(value) : '-' })))
-const searchFilter = reactive<{ search: string, year: number | null, states: MeetingState[], order: keyof Meeting }>({
-  search: '',
-  year: null,
-  states: [MeetingState.Ongoing, MeetingState.Upcoming],
-  order: 'title'
+/* Meetings listed upfront */
+const groupRules = [
+  {
+    meetings: participatingOngoingMeetings,
+    translationString: 'workflowState.plural.ongoing'
+  },
+  {
+    meetings: participatingUpcomingMeetings,
+    translationString: 'workflowState.plural.upcoming'
+  },
+  {
+    meetings: participatingClosedMeetings,
+    translationString: 'workflowState.plural.closed',
+    maxLength: 3
+  }
+]
+const meetingGroups = computed(() => {
+  return groupRules
+    .map(({ maxLength, meetings, translationString }) => {
+      return {
+        meetings: maxLength && !groupsExpanded.value
+          ? meetings.value.slice(0, maxLength)
+          : meetings.value,
+        title: t(translationString),
+        expandable: !!maxLength && meetings.value.length > maxLength
+      }
+    })
+    .filter(({ meetings }) => meetings.length)
 })
+const groupsExpanded = ref(false)
+const displayRoles = [
+  { role: MeetingRole.PotentialVoter, icon: 'mdi-star-outline' },
+  { role: MeetingRole.Moderator, icon: 'mdi-gavel' }
+]
+const meetingCount = computed(() => groupRules.reduce((acc, { meetings }) => acc + meetings.value.length, 0))
+
+/* Meeting search */
+const yearItems = computed(() => existingMeetingYears.value.map(value => ({ value: value || null, title: value ? String(value) : t('organization.allYears') })))
+const searchFilter = reactive<{ includeArchived: boolean, search: string, year: number | null, order: keyof Meeting }>({
+  includeArchived: false,
+  order: 'title',
+  search: '',
+  year: null
+})
+function getSearchStates () {
+  return searchFilter.includeArchived
+    ? Object.values(MeetingState)
+    : [MeetingState.Upcoming, MeetingState.Ongoing, MeetingState.Closed]
+}
 
 const currentSearchPage = ref(1)
 const searchedMeetings = computed(() => {
-  const meetings = filterMeetings(searchFilter.states, searchFilter.order, searchFilter.search, searchFilter.year)
+  const meetings = filterMeetings(getSearchStates(), searchFilter.order, searchFilter.search, searchFilter.year)
   return chunk(meetings, 8)
 })
 watch(searchedMeetings, () => { currentSearchPage.value = 1 })
