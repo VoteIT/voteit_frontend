@@ -159,9 +159,9 @@
   </v-row>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { duration } from 'moment'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -176,8 +176,8 @@ import { FieldType, FormSchema } from '@/components/types'
 import useAgenda from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
-import { User } from '../organisations/types'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
+import type { User } from '../organisations/types'
 
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useChannel from '@/composables/useChannel'
@@ -209,189 +209,145 @@ interface AgendaNav {
   title?: string
 }
 
+const { t } = useI18n()
+const route = useRoute()
 const { alert } = useAlert()
 
-export default defineComponent({
-  components: {
-    Moment,
-    SchemaForm,
-    UserSearch
+const { user } = useAuthentication()
+const speakers = useSpeakerLists()
+const { meetingId, meetingPath } = useMeeting()
+const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
+const systemId = computed(() => Number(route.params.system))
+useChannel('agenda_item', agendaId)
+useChannel('sls', systemId)
+const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
+const { allSpeakerSystems } = useSpeakerSystems(meetingId)
+const currentList = computed<SpeakerList | undefined>({
+  get () {
+    if (systemActiveList.value?.agenda_item !== agendaId.value) return
+    return systemActiveList.value
   },
-  setup () {
-    const { t } = useI18n()
-    const route = useRoute()
-
-    const { user } = useAuthentication()
-    const speakers = useSpeakerLists()
-    const { meetingId, meetingPath } = useMeeting()
-    const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
-    const systemId = computed(() => Number(route.params.system))
-    useChannel('agenda_item', agendaId)
-    useChannel('sls', systemId)
-    const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
-    const { allSpeakerSystems } = useSpeakerSystems(meetingId)
-    const currentList = computed<SpeakerList | undefined>({
-      get () {
-        if (systemActiveList.value?.agenda_item !== agendaId.value) return
-        return systemActiveList.value
-      },
-      async set (list?: SpeakerList) {
-        if (!list) return
-        if (canActivateList(list)) speakers.setActiveList(list)
-        else if (await dialogQuery(t('speaker.confirmStopActiveSpeaker', { ...list }))) speakers.setActiveList(list, true)
-      }
-    })
-    const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerHistory, speakerQueue } = useSpeakerList(systemActiveListId)
-    function isSelf (userId: number) {
-      return user.value?.pk === userId
-    }
-
-    function makeNavigation (icon: string, toAgendaItem?: AgendaItem): AgendaNav {
-      return {
-        icon,
-        to: toAgendaItem ? `${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}` : route.path, // Vuetify alpha.11 does not accept change to undef
-        disabled: !toAgendaItem || toAgendaItem === agendaItem.value,
-        title: toAgendaItem?.title
-      }
-    }
-
-    const navigation = computed<AgendaNav[]>(() => {
-      if (!agendaItem.value) return []
-      return [
-        makeNavigation('mdi-page-first', agenda.value[0]),
-        makeNavigation('mdi-chevron-left', getPreviousAgendaItem(agendaItem.value)),
-        makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value)),
-        makeNavigation('mdi-page-last', agenda.value[agenda.value.length - 1])
-      ]
-    })
-
-    function addSpeakerList (system: SpeakerSystem) {
-      if (!agendaItem.value) return
-      const listData: SpeakerListAddMessage = {
-        title: speakers.makeUniqueListName(agendaItem.value.title),
-        speaker_system: system.pk,
-        agenda_item: agendaItem.value.pk
-      }
-      speakerListType.api.add(listData)
-    }
-
-    // For user search
-    // Filter on users that are speakers but not already in queue
-    function userSearchFilter (user: User): boolean {
-      if (!speakerQueue.value || !speakerSystem.value) return false
-      if (speakerQueue.value.includes(user.pk)) return false
-      return !!isSystemSpeaker(speakerSystem.value, user.pk)
-    }
-    function addSpeaker (user: User | number) {
-      if (!currentList.value) return
-      if (typeof user === 'number') speakers.moderatorEnterList(currentList.value, user)
-      else speakers.moderatorEnterList(currentList.value, user.pk)
-    }
-
-    async function deleteList (list: SpeakerList) {
-      if (await dialogQuery({
-        title: t('speaker.confirmListDeletion'),
-        theme: ThemeColor.Warning
-      })) await speakerListType.api.delete(list.pk)
-    }
-
-    function getListMenu (list: SpeakerList): MenuItem[] {
-      if (canDeleteSpeakerList(list)) {
-        return [{
-          title: t('delete'),
-          icon: 'mdi-delete',
-          onClick: () => deleteList(list),
-          color: ThemeColor.Warning
-        }]
-      }
-      return []
-    }
-
-    const { participantNumbers } = useParticipantNumbers(meetingId)
-    const participantNumberInput = ref('')
-    async function addParticipantNumbers () {
-      const numbers = participantNumberInput.value.split(/[^\d]+/).filter(n => n).map(Number)
-      const inList: number[] = []
-      const missing: number[] = []
-      for (const n of numbers) {
-        const user = participantNumbers.value.find(pn => pn.number === n)?.user
-        if (!user) missing.push(n)
-        else if (speakerQueue.value?.includes(user)) inList.push(n)
-        else addSpeaker(user)
-      }
-      if (missing.length) openAlertEvent.emit('*' + t('participantNumber.doesNotExist', { ids: missing.join(', ') }, missing.length))
-      if (inList.length) openAlertEvent.emit('*' + t('participantNumber.alreadyInList', { ids: inList.join(', ') }, inList.length))
-      participantNumberInput.value = ''
-    }
-
-    const speakerHistoryExpanded = ref(false)
-    const speakerHistoryExpandable = computed(() => speakerHistory.value.length > SPEAKER_HISTORY_CAP)
-    const annotatedSpeakerHistory = computed(() => {
-      const history = speakerHistoryExpanded.value
-        ? speakerHistory.value
-        : speakerHistory.value.slice(0, SPEAKER_HISTORY_CAP)
-      return history.map(({ pk, user, seconds }) => {
-        return {
-          pk,
-          user,
-          seconds,
-          time: durationToString(duration({ seconds }))
-        }
-      })
-    })
-
-    function timeSpokenHandler (pk: number) {
-      return (data: { seconds: number }) => {
-        return speakerType.update(pk, data)
-      }
-    }
-
-    async function deleteHistory (pk: number) {
-      if (!await dialogQuery(t('speaker.confirmSpeakerDeletion'))) return
-      try {
-        await speakerType.api.delete(pk)
-      } catch {
-        alert('^Could not delete spoken time entry')
-      }
-    }
-
-    return {
-      t,
-      agendaItem,
-      allSpeakerSystems,
-      annotatedSpeakerHistory,
-      annotatedSpeakerQueue,
-      canManageSystem,
-      currentList,
-      currentSpeaker,
-      speakerGroups,
-      speakerQueue,
-      participantNumberInput,
-      speakers,
-      speakerHistoryExpanded,
-      speakerHistoryExpandable,
-      speakerLists,
-      speakerListType,
-      speakerSystem,
-      timeSpokenSchema,
-      meetingId,
-      meetingPath,
-      navigation,
-      addParticipantNumbers,
-      addSpeaker,
-      addSpeakerList,
-      canChangeSpeakerList,
-      canStartSpeaker,
-      deleteHistory,
-      isSelf,
-      getListMenu,
-      timeSpokenHandler,
-      userSearchFilter,
-      ...useParticipantNumbers(meetingId),
-      ...useDefaults()
-    }
+  async set (list?: SpeakerList) {
+    if (!list) return
+    if (canActivateList(list)) speakers.setActiveList(list)
+    else if (await dialogQuery(t('speaker.confirmStopActiveSpeaker', { ...list }))) speakers.setActiveList(list, true)
   }
 })
+const { annotatedSpeakerQueue, currentSpeaker, speakerGroups, speakerHistory, speakerQueue } = useSpeakerList(systemActiveListId)
+function isSelf (userId: number) {
+  return user.value?.pk === userId
+}
+
+function makeNavigation (icon: string, toAgendaItem?: AgendaItem): AgendaNav {
+  return {
+    icon,
+    to: toAgendaItem ? `${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}` : route.path, // Vuetify alpha.11 does not accept change to undef
+    disabled: !toAgendaItem || toAgendaItem === agendaItem.value,
+    title: toAgendaItem?.title
+  }
+}
+
+const navigation = computed<AgendaNav[]>(() => {
+  if (!agendaItem.value) return []
+  return [
+    makeNavigation('mdi-page-first', agenda.value[0]),
+    makeNavigation('mdi-chevron-left', getPreviousAgendaItem(agendaItem.value)),
+    makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value)),
+    makeNavigation('mdi-page-last', agenda.value[agenda.value.length - 1])
+  ]
+})
+
+function addSpeakerList (system: SpeakerSystem) {
+  if (!agendaItem.value) return
+  const listData: SpeakerListAddMessage = {
+    title: speakers.makeUniqueListName(agendaItem.value.title),
+    speaker_system: system.pk,
+    agenda_item: agendaItem.value.pk
+  }
+  speakerListType.api.add(listData)
+}
+
+// For user search
+// Filter on users that are speakers but not already in queue
+function userSearchFilter (user: User): boolean {
+  if (!speakerQueue.value || !speakerSystem.value) return false
+  if (speakerQueue.value.includes(user.pk)) return false
+  return !!isSystemSpeaker(speakerSystem.value, user.pk)
+}
+function addSpeaker (user: User | number) {
+  if (!currentList.value) return
+  if (typeof user === 'number') speakers.moderatorEnterList(currentList.value, user)
+  else speakers.moderatorEnterList(currentList.value, user.pk)
+}
+
+async function deleteList (list: SpeakerList) {
+  if (await dialogQuery({
+    title: t('speaker.confirmListDeletion'),
+    theme: ThemeColor.Warning
+  })) await speakerListType.api.delete(list.pk)
+}
+
+function getListMenu (list: SpeakerList): MenuItem[] {
+  if (canDeleteSpeakerList(list)) {
+    return [{
+      title: t('delete'),
+      icon: 'mdi-delete',
+      onClick: () => deleteList(list),
+      color: ThemeColor.Warning
+    }]
+  }
+  return []
+}
+
+const { hasParticipantNumbers, participantNumbers } = useParticipantNumbers(meetingId)
+const participantNumberInput = ref('')
+async function addParticipantNumbers () {
+  const numbers = participantNumberInput.value.split(/[^\d]+/).filter(n => n).map(Number)
+  const inList: number[] = []
+  const missing: number[] = []
+  for (const n of numbers) {
+    const user = participantNumbers.value.find(pn => pn.number === n)?.user
+    if (!user) missing.push(n)
+    else if (speakerQueue.value?.includes(user)) inList.push(n)
+    else addSpeaker(user)
+  }
+  if (missing.length) openAlertEvent.emit('*' + t('participantNumber.doesNotExist', { ids: missing.join(', ') }, missing.length))
+  if (inList.length) openAlertEvent.emit('*' + t('participantNumber.alreadyInList', { ids: inList.join(', ') }, inList.length))
+  participantNumberInput.value = ''
+}
+
+const speakerHistoryExpanded = ref(false)
+const speakerHistoryExpandable = computed(() => speakerHistory.value.length > SPEAKER_HISTORY_CAP)
+const annotatedSpeakerHistory = computed(() => {
+  const history = speakerHistoryExpanded.value
+    ? speakerHistory.value
+    : speakerHistory.value.slice(0, SPEAKER_HISTORY_CAP)
+  return history.map(({ pk, user, seconds }) => {
+    return {
+      pk,
+      user,
+      seconds,
+      time: durationToString(duration({ seconds }))
+    }
+  })
+})
+
+function timeSpokenHandler (pk: number) {
+  return (data: { seconds: number }) => {
+    return speakerType.update(pk, data)
+  }
+}
+
+async function deleteHistory (pk: number) {
+  if (!await dialogQuery(t('speaker.confirmSpeakerDeletion'))) return
+  try {
+    await speakerType.api.delete(pk)
+  } catch {
+    alert('^Could not delete spoken time entry')
+  }
+}
+
+const { dialogDefaults } = useDefaults()
 </script>
 
 <style lang="sass">
