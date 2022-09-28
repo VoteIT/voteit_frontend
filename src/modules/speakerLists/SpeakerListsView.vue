@@ -109,7 +109,7 @@
           <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
         </div>
         <div class="d-flex" v-if="canManageSystem">
-          <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="{ meeting: meetingId }" instant small class="flex-grow-1" />
+          <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="userSearchParams" instant small class="flex-grow-1" />
           <template v-if="hasParticipantNumbers">
             <div style="width: 10px;" />
             <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
@@ -181,7 +181,7 @@ import type { User } from '../organisations/types'
 
 import { MenuItem, ThemeColor } from '@/utils/types'
 import useChannel from '@/composables/useChannel'
-import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker, isSystemSpeaker } from './rules'
+import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker } from './rules'
 import { speakerType, speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
 import useSpeakerList from './useSpeakerList'
@@ -268,12 +268,18 @@ function addSpeakerList (system: SpeakerSystem) {
 }
 
 // For user search
+const userSearchParams = computed(() => {
+  return {
+    meeting: meetingId.value,
+    any_roles: speakerSystem.value?.meeting_roles_to_speaker.join(',')
+  }
+})
 // Filter on users that are speakers but not already in queue
 function userSearchFilter (user: User): boolean {
   if (!speakerQueue.value || !speakerSystem.value) return false
-  if (speakerQueue.value.includes(user.pk)) return false
-  return !!isSystemSpeaker(speakerSystem.value, user.pk)
+  return !speakerQueue.value.includes(user.pk)
 }
+
 function addSpeaker (user: User | number) {
   if (!currentList.value) return
   if (typeof user === 'number') speakers.moderatorEnterList(currentList.value, user)
