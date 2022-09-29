@@ -1,13 +1,13 @@
 <template>
   <div>
-    <v-overlay :modelValue="!!results.length" location-strategy="connected" location="bottom" :scrim="false" :transition="false">
+    <v-overlay :modelValue="!!results.length" location-strategy="connected" location="bottom" scroll-strategy="close" :scrim="false" :transition="false" @click:outside="clickOutside()">
       <template #activator="{ props }">
-        <form v-bind="props" class="user-search" :class="{ instant }" @submit.prevent="submit()">
+        <v-form v-bind="props" class="user-search d-flex" :class="{ instant }" @submit.prevent="submit()">
           <v-text-field v-bind="fieldBind" :hint="hint" type="search" ref="inputField" autocomplete="off" v-model="query" hide-details class="hide-details" />
-          <v-btn v-if="!instant" type="submit" v-bind="btnBind" color="primary">
+          <v-btn v-if="!instant" type="submit" v-bind="btnProps" color="primary" class="rounded-s-0">
             {{ buttonText || t('add') }}
           </v-btn>
-        </form>
+        </v-form>
       </template>
       <v-list elevation="4" rounded>
         <v-list-item v-for="result in results" :key="result.pk" @click="select(result)" @keydown.enter="select(result)">
@@ -25,116 +25,100 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { ComponentPublicInstance, computed, PropType, ref, watch } from 'vue'
 import { userType } from '@/modules/organisations/contentTypes'
 import { User } from '@/modules/organisations/types'
-import { ComponentPublicInstance, computed, defineComponent, PropType, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const TYPE_DELAY = 250 // delay in ms
 let typeTimeout: number
 
-export default defineComponent({
-  name: 'SearchUser',
-  props: {
-    buttonIcon: {
-      type: String,
-      default: 'mdi-plus'
-    },
-    buttonText: String,
-    params: {
-      type: Object,
-      default: () => ({})
-    },
-    filter: Function as PropType<(user: User) => boolean>,
-    label: String,
-    hint: String,
-    small: Boolean,
-    instant: Boolean
+const props = defineProps({
+  buttonIcon: {
+    type: String,
+    default: 'mdi-plus'
   },
-  emits: ['submit'],
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const query = ref('')
-    const results = ref<User[]>([])
-    const selected = ref<User | null>(null)
-
-    async function search () {
-      if (!query.value) {
-        results.value = []
-        return
-      }
-      const { data } = await userType.api.list({
-        ...props.params,
-        search: query.value
-      })
-      if (props.filter) results.value = data.filter(props.filter)
-      else results.value = data
-    }
-
-    function select (user: User) {
-      selected.value = user
-      results.value = []
-      query.value = user.full_name
-      if (props.instant) submit()
-    }
-
-    watch(query, () => {
-      if (selected.value) return // Never search when selected
-      clearTimeout(typeTimeout)
-      typeTimeout = setTimeout(() => {
-        search()
-      }, TYPE_DELAY)
-    })
-
-    function deSelect () {
-      query.value = ''
-      selected.value = null
-    }
-
-    const fieldBind = computed(() => ({
-      prependInnerIcon: props.small ? undefined : 'mdi-account',
-      label: props.label ?? t('searchUser'),
-      class: { selected: !!selected.value },
-      onFocus: deSelect
-    }))
-
-    const inputField = ref<ComponentPublicInstance | null>(null)
-    function submit () {
-      emit('submit', selected.value)
-      deSelect()
-      if (props.instant) inputField.value?.$el.focus()
-    }
-
-    const btnBind = computed(() => ({
-      prependIcon: props.small ? undefined : props.buttonIcon,
-      disabled: !selected.value
-    }))
-
-    return {
-      t,
-      btnBind,
-      fieldBind,
-      inputField,
-      selected,
-      results,
-      query,
-      select,
-      deSelect,
-      submit
-    }
-  }
+  buttonText: String,
+  params: {
+    type: Object,
+    default: () => ({})
+  },
+  filter: Function as PropType<(user: User) => boolean>,
+  label: String,
+  hint: String,
+  small: Boolean,
+  instant: Boolean
 })
+const emit = defineEmits(['submit'])
+
+const { t } = useI18n()
+const query = ref('')
+const results = ref<User[]>([])
+const selected = ref<User | null>(null)
+
+async function search () {
+  if (!query.value) {
+    results.value = []
+    return
+  }
+  const { data } = await userType.api.list({
+    ...props.params,
+    search: query.value
+  })
+  if (props.filter) results.value = data.filter(props.filter)
+  else results.value = data
+}
+
+function select (user: User) {
+  selected.value = user
+  results.value = []
+  query.value = user.full_name
+  if (props.instant) submit()
+}
+
+watch(query, () => {
+  if (selected.value) return // Never search when selected
+  clearTimeout(typeTimeout)
+  typeTimeout = setTimeout(() => {
+    search()
+  }, TYPE_DELAY)
+})
+
+function deSelect () {
+  query.value = ''
+  selected.value = null
+}
+
+const fieldBind = computed(() => ({
+  prependInnerIcon: props.small ? undefined : 'mdi-account',
+  label: props.label ?? t('searchUser'),
+  class: { selected: !!selected.value },
+  onFocus: deSelect
+}))
+
+const inputField = ref<ComponentPublicInstance | null>(null)
+function submit () {
+  emit('submit', selected.value)
+  deSelect()
+  if (props.instant) inputField.value?.$el.focus()
+}
+
+const btnProps = computed(() => ({
+  prependIcon: props.small ? undefined : props.buttonIcon,
+  disabled: !selected.value
+}))
+
+function clickOutside () {
+  query.value = ''
+}
 </script>
 
 <style lang="sass">
 .user-search
-  display: flex
   max-width: 480px
   &:not(.instant) .v-field__control
     border-top-right-radius: 0
   .v-btn
     height: auto !important
-    border-top-left-radius: 0
-    border-bottom-left-radius: 0
 </style>

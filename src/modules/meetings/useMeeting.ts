@@ -15,6 +15,14 @@ export default function useMeeting () {
   const meetingRoles = meetingType.useContextRoles()
   const { t } = useI18n()
 
+  const roleItems = computed(() => {
+    return Object.values(MeetingRole)
+      .map(value => ({
+        value,
+        title: t(`role.${value}`)
+      }))
+  })
+
   function getRoleLabels (filter: (k: string) => boolean = () => true) {
     return Object.fromEntries(
       Object.values(MeetingRole)
@@ -24,7 +32,6 @@ export default function useMeeting () {
   }
 
   const roleLabels = computed(() => getRoleLabels())
-
   const meetingId = computed(() => Number(route.params.id))
   const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value))
   const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
@@ -49,6 +56,7 @@ export default function useMeeting () {
     meetingPath,
     meetingUrl,
     meetingJoinPath,
+    roleItems,
     roleLabels,
     userRoles,
     getRoleLabels,

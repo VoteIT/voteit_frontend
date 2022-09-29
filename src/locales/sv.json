@@ -201,6 +201,7 @@
     "failed": "Laddning misslyckades"
   },
   "meeting": {
+    "addParticipant": "Lägg till deltagare",
     "agenda": "Dagordning",
     "cantRemoveSelfModerator": "Du kan inte ta bort moderator- eller deltagarroller från din egen användare.",
     "confirmRemoveParticipant": "Detta kommer att ta bort användaren från detta möte.\nÄr du säker?",

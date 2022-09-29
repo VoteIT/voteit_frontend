@@ -11,7 +11,7 @@
         </li>
       </ul>
     </v-alert>
-
+    <slot name="filter" />
     <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
     <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed, admin }">
       <thead>
@@ -54,9 +54,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { orderBy as _orderBy } from 'lodash'
-import { computed, defineComponent, onBeforeMount, PropType, ref } from 'vue'
+import { computed, onBeforeMount, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
@@ -67,131 +67,107 @@ import { RoleMatrixCol, RoleMatrixColDescription } from './types'
 
 const USERS_PER_PAGE = 50
 
-export default defineComponent({
-  props: {
-    contentType: {
-      type: Object as PropType<ContentType>,
-      required: true
-    },
-    icons: {
-      type: Object,
-      required: true
-    },
-    pk: {
-      type: Number,
-      required: true
-    },
-    admin: Boolean,
-    removeConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
-    addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
-    cols: Array as PropType<RoleMatrixCol[]>
+const props = defineProps({
+  contentType: {
+    type: Object as PropType<ContentType>,
+    required: true
   },
-  setup (props) {
-    const { t } = useI18n()
-    const { getUser } = useUserDetails()
-    const loader = useLoader('RoleMatrix')
-    const columns = ref<RoleMatrixColDescription[]>([])
-    const contextRoles = props.contentType.useContextRoles()
+  icons: {
+    type: Object,
+    required: true
+  },
+  pk: {
+    type: Number,
+    required: true
+  },
+  filter: Function as PropType<(userRoles: UserContextRoles) => boolean>,
+  admin: Boolean,
+  removeConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
+  addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
+  cols: Array as PropType<RoleMatrixCol[]>
+})
 
-    function roleToCol ({ name }: ContextRole): RoleMatrixColDescription {
-      return {
-        count: () => contextRoles.getRoleCount(props.pk, name),
-        hasRole: (user) => user.assigned.has(name),
-        icon: props.icons[name],
-        name,
-        title: t(`role.${name}`)
-      }
-    }
+const { t } = useI18n()
+const { getUser } = useUserDetails()
+const loader = useLoader('RoleMatrix')
+const columns = ref<RoleMatrixColDescription[]>([])
+const contextRoles = props.contentType.useContextRoles()
 
-    onBeforeMount(() => {
-      loader.call(
-        async () => {
-          const roles = await props.contentType.getAvailableRoles()
-          // roles.value = data
-          if (props.cols) {
-            columns.value = props.cols.map(col => {
-              if (typeof col === 'string') return roleToCol(roles.find(r => r.name === col) as ContextRole)
-              return col
-            })
-          } else {
-            columns.value = roles.map(roleToCol)
-          }
-        },
-        () => props.contentType.fetchRoles(props.pk)
-      )
-    })
-
-    async function addRole (user: number, role: string) {
-      if (!props.admin) return
-      if (props.addConfirm && !await props.addConfirm(user, role)) return
-      props.contentType.addRoles(props.pk, user, role)
-    }
-    async function removeRole (user: number, role: string) {
-      if (!props.admin) return
-      if (props.removeConfirm && !await props.removeConfirm(user, role)) return
-      props.contentType.removeRoles(props.pk, user, role)
-    }
-
-    const orderBy = ref<string | null>(null)
-    const orderReversed = ref(false)
-
-    function orderUsers (role: string) {
-      if (orderBy.value === role) orderReversed.value = !orderReversed.value
-      else orderBy.value = role
-    }
-
-    function roleCount (role: string) {
-      return contextRoles.getRoleCount(props.pk, role)
-    }
-
-    const getRow = (userRoles: UserContextRoles) => [userRoles.user, ...columns.value.map(c => c.hasRole(userRoles))]
-
-    const userMatrix = computed(() => {
-      const userRoles = contextRoles.getAll<string>(props.pk)
-      const matrix = userRoles.map(getRow)
-      const orderByName = orderBy.value === null
-      // Ordering function
-      const ordering = orderByName
-        ? ([user]: [number]) => getUser(user)?.full_name
-        : columns.value.findIndex(c => c.name === orderBy.value) + 1
-      // Ordering direction
-      const order = (orderReversed.value !== orderByName) // XOR
-        ? 'asc'
-        : 'desc'
-      return _orderBy(
-        matrix,
-        ordering,
-        [order]
-      )
-    })
-
-    function getRoleIcon (role: string): string {
-      return props.icons[role]
-    }
-
-    const currentPage = ref(1)
-    const pageCount = computed(() => Math.ceil(userMatrix.value.length / USERS_PER_PAGE))
-    const pageUsers = computed(() => {
-      return userMatrix.value.slice(USERS_PER_PAGE * (currentPage.value - 1), USERS_PER_PAGE * currentPage.value)
-    })
-
-    return {
-      t,
-      columns,
-      currentPage,
-      getUser,
-      orderBy,
-      orderReversed,
-      pageCount,
-      pageUsers,
-      userMatrix,
-      addRole,
-      getRoleIcon,
-      orderUsers,
-      removeRole,
-      roleCount
-    }
+function roleToCol ({ name }: ContextRole): RoleMatrixColDescription {
+  return {
+    count: () => contextRoles.getRoleCount(props.pk, name),
+    hasRole: (user) => user.assigned.has(name),
+    icon: props.icons[name],
+    name,
+    title: t(`role.${name}`)
   }
+}
+
+onBeforeMount(() => {
+  loader.call(
+    async () => {
+      const roles = await props.contentType.getAvailableRoles()
+      // roles.value = data
+      if (props.cols) {
+        columns.value = props.cols.map(col => {
+          if (typeof col === 'string') return roleToCol(roles.find(r => r.name === col) as ContextRole)
+          return col
+        })
+      } else {
+        columns.value = roles.map(roleToCol)
+      }
+    },
+    () => props.contentType.fetchRoles(props.pk)
+  )
+})
+
+async function addRole (user: number, role: string) {
+  if (!props.admin) return
+  if (props.addConfirm && !await props.addConfirm(user, role)) return
+  props.contentType.addRoles(props.pk, user, role)
+}
+async function removeRole (user: number, role: string) {
+  if (!props.admin) return
+  if (props.removeConfirm && !await props.removeConfirm(user, role)) return
+  props.contentType.removeRoles(props.pk, user, role)
+}
+
+const orderBy = ref<string | null>(null)
+const orderReversed = ref(false)
+
+function orderUsers (role: string | null) {
+  if (orderBy.value === role) orderReversed.value = !orderReversed.value
+  else orderBy.value = role
+}
+
+function getRow (userRoles: UserContextRoles) {
+  return [userRoles.user, ...columns.value.map(c => c.hasRole(userRoles))]
+}
+
+const userMatrix = computed(() => {
+  let userRoles = contextRoles.getAll<string>(props.pk)
+  if (props.filter) userRoles = userRoles.filter(props.filter)
+  const matrix = userRoles.map(getRow)
+  const orderByName = orderBy.value === null
+  // Ordering function
+  const ordering = orderByName
+    ? ([user]: [number]) => getUser(user)?.full_name
+    : columns.value.findIndex(c => c.name === orderBy.value) + 1
+  // Ordering direction
+  const order = (orderReversed.value !== orderByName) // XOR
+    ? 'asc'
+    : 'desc'
+  return _orderBy(
+    matrix,
+    ordering,
+    [order]
+  )
+})
+
+const currentPage = ref(1)
+const pageCount = computed(() => Math.ceil(userMatrix.value.length / USERS_PER_PAGE))
+const pageUsers = computed(() => {
+  return userMatrix.value.slice(USERS_PER_PAGE * (currentPage.value - 1), USERS_PER_PAGE * currentPage.value)
 })
 </script>
 

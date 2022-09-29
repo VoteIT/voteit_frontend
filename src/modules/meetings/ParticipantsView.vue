@@ -5,9 +5,23 @@
       <v-window v-model="currentTab">
 
         <v-window-item value="default">
-          <h1>{{ t('meeting.participants') }}</h1>
-          <UserSearch v-if="canChangeRoles" class="mb-6" @submit="addUser" :filter="searchFilter" />
-          <RoleMatrix :remove-confirm="removeConfirm" :admin="canChangeRoles" :contentType="meetingType" :pk="meetingId" :icons="meetingIcons" :cols="matrixCols" />
+          <RoleMatrix
+            :remove-confirm="removeConfirm"
+            :admin="canChangeRoles"
+            :contentType="meetingType"
+            :pk="meetingId"
+            :icons="meetingIcons"
+            :cols="matrixCols"
+            :filter="filterParticipants"
+          >
+            <template #filter>
+              <div class="d-flex">
+                <v-text-field label="Sök" class="mr-1" clearable v-model="participantFilter.search" />
+                <v-select :items="roleItems.slice(1)" class="ml-1" multiple label="Begränsa till roller" clearable v-model="participantFilter.roles" />
+              </div>
+            </template>
+          </RoleMatrix>
+          <UserSearch v-if="canChangeRoles" :label="t('meeting.addParticipant')" class="mt-6" @submit="addUser" :filter="searchFilter" />
         </v-window-item>
 
         <v-window-item value="groups">
@@ -43,8 +57,8 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -54,7 +68,7 @@ import UserList from '@/components/UserList.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import { RoleMatrixCol } from '@/components/types'
-import { ContextRoles } from '@/composables/types'
+import { ContextRoles, UserContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
 
@@ -68,10 +82,10 @@ import { presenceType } from '../presence/contentTypes'
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
-import useMeetingGroups from './useMeetingGroups'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
+import useUserDetails from '../organisations/useUserDetails'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -81,143 +95,122 @@ const meetingIcons: Record<MeetingRole, string> = {
   potential_voter: 'mdi-star-outline'
 }
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { user } = useAuthentication()
-    const { meetingId, canChangeRoles, canViewMeetingInvite, roleLabels } = useMeeting()
-    const { getUserIds } = meetingType.useContextRoles()
-    const { currentElectoralRegister } = useElectoralRegisters(meetingId)
-    const { meetingGroups } = useMeetingGroups(meetingId)
-    const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
-    const { canManagePresence, closedPresenceChecks, presenceCheck, presentUserIds } = usePresence(meetingId)
-    const { alert } = useAlert()
+const { t } = useI18n()
+const { user } = useAuthentication()
+const { meetingId, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
+const { getUserIds } = meetingType.useContextRoles()
+const { getUser } = useUserDetails()
+const { currentElectoralRegister } = useElectoralRegisters(meetingId)
+const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
+const { canManagePresence, presenceCheck, presentUserIds } = usePresence(meetingId)
+const { alert } = useAlert()
 
-    useMeetingTitle(t('meeting.participants'))
+useMeetingTitle(t('meeting.participants'))
 
-    const matrixCols: RoleMatrixCol[] = [
-      'participant',
-      'moderator',
-      'potential_voter',
-      {
-        count: () => currentElectoralRegister.value?.weights.length ?? 0,
-        hasRole: ({ user }) => !!currentElectoralRegister.value?.weights.find(v => v.user === user),
-        icon: 'mdi-star',
-        name: 'voter',
-        readonly: true,
-        title: t('electoralRegister.inCurrent')
-      },
-      'proposer',
-      'discusser'
-    ]
-
-    function addRole (user: number, role: string) {
-      meetingType.addRoles(meetingId.value, user, role)
-    }
-
-    function addUser (user: ContextRoles) {
-      addRole(user.pk, MeetingRole.Participant)
-    }
-
-    async function removeConfirm (userPk: number, role: string) {
-      if (userPk === user.value?.pk && ['moderator', 'participant'].includes(role)) {
-        openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
-        return false
-      }
-      if (role === 'participant' && !await dialogQuery({
-        title: t('meeting.confirmRemoveParticipant'),
-        theme: ThemeColor.Warning
-      })) return false
-      return true
-    }
-
-    const omitIds = computed(() => getUserIds(meetingId.value))
-    function searchFilter (user: User): boolean {
-      return !omitIds.value.includes(user.pk)
-    }
-
-    const currentTab = ref('default')
-    const tabs = computed(() => {
-      const tabs = [
-        {
-          value: 'default',
-          title: t('meeting.participants')
-        },
-        {
-          value: 'groups',
-          title: t('meeting.groups.groups')
-        }
-      ]
-      if (canManagePresence.value) {
-        tabs.push({
-          value: 'presence',
-          title: t('presence.presence')
-        })
-      }
-      if (hasSpeakerSystems.value) {
-        tabs.push({
-          value: 'speakerHistory',
-          title: t('speaker.history')
-        })
-      }
-      if (canViewMeetingInvite.value) {
-        tabs.push({
-          value: 'invites',
-          title: t('meeting.invites.invites')
-        })
-      }
-      return tabs
-    })
-
-    function changePresence (user: number, present: boolean) {
-      if (!presenceCheck.value) return
-      try {
-        presenceType.methodCall('change', {
-          presence_check: presenceCheck.value.pk,
-          present,
-          user
-        })
-      } catch {
-        alert(`Cound not ${present ? 'add' : 'remove'} presence`)
-      }
-    }
-
-    function presenceFilter ({ pk }: User) {
-      return !presentUserIds.value.includes(pk)
-    }
-
-    return {
-      t,
-      canChangeRoles,
-      canManagePresence,
-      canViewMeetingInvite,
-      closedPresenceChecks,
-      currentTab,
-      hasSpeakerSystems,
-      roleLabels,
-      matrixCols,
-      meetingType,
-      meetingGroups,
-      meetingIcons,
-      meetingId,
-      presenceCheck,
-      presentUserIds,
-      tabs,
-      addUser,
-      changePresence,
-      getUserIds,
-      presenceFilter,
-      removeConfirm,
-      searchFilter
-    }
+const matrixCols: RoleMatrixCol[] = [
+  'participant',
+  'moderator',
+  'potential_voter',
+  {
+    count: () => currentElectoralRegister.value?.weights.length ?? 0,
+    hasRole: ({ user }) => !!currentElectoralRegister.value?.weights.find(v => v.user === user),
+    icon: 'mdi-star',
+    name: 'voter',
+    readonly: true,
+    title: t('electoralRegister.inCurrent')
   },
-  components: {
-    InvitationsTab,
-    MeetingGroupsTab,
-    RoleMatrix,
-    SpeakerHistory,
-    UserList,
-    UserSearch
+  'proposer',
+  'discusser'
+]
+
+function addRole (user: number, role: string) {
+  meetingType.addRoles(meetingId.value, user, role)
+}
+
+function addUser (user: ContextRoles) {
+  addRole(user.pk, MeetingRole.Participant)
+}
+
+async function removeConfirm (userPk: number, role: string) {
+  if (userPk === user.value?.pk && ['moderator', 'participant'].includes(role)) {
+    openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
+    return false
   }
+  if (role === 'participant' && !await dialogQuery({
+    title: t('meeting.confirmRemoveParticipant'),
+    theme: ThemeColor.Warning
+  })) return false
+  return true
+}
+
+const omitIds = computed(() => getUserIds(meetingId.value))
+function searchFilter (user: User): boolean {
+  return !omitIds.value.includes(user.pk)
+}
+
+const currentTab = ref('default')
+const tabs = computed(() => {
+  const tabs = [
+    {
+      value: 'default',
+      title: t('meeting.participants')
+    },
+    {
+      value: 'groups',
+      title: t('meeting.groups.groups')
+    }
+  ]
+  if (canManagePresence.value) {
+    tabs.push({
+      value: 'presence',
+      title: t('presence.presence')
+    })
+  }
+  if (hasSpeakerSystems.value) {
+    tabs.push({
+      value: 'speakerHistory',
+      title: t('speaker.history')
+    })
+  }
+  if (canViewMeetingInvite.value) {
+    tabs.push({
+      value: 'invites',
+      title: t('meeting.invites.invites')
+    })
+  }
+  return tabs
 })
+
+function changePresence (user: number, present: boolean) {
+  if (!presenceCheck.value) return
+  try {
+    presenceType.methodCall('change', {
+      presence_check: presenceCheck.value.pk,
+      present,
+      user
+    })
+  } catch {
+    alert(`Cound not ${present ? 'add' : 'remove'} presence`)
+  }
+}
+
+function presenceFilter ({ pk }: User) {
+  return !presentUserIds.value.includes(pk)
+}
+
+/* Filter for RoleMatrix */
+const participantFilter = reactive({
+  roles: [],
+  search: ''
+})
+function filterParticipants ({ user, assigned }: UserContextRoles) {
+  const { roles, search } = participantFilter
+  if (search) {
+    const u = getUser(user)
+    if (!u) return false
+    const joined = `${u.full_name} ${u.email}`.toLocaleLowerCase()
+    if (!joined.includes(search.toLocaleLowerCase())) return false
+  }
+  return roles.every(r => assigned.has(r))
+}
 </script>
