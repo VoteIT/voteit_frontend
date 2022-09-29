@@ -146,7 +146,7 @@
 <script lang="ts" setup>
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useTitle } from '@vueuse/core'
+import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import { MenuItem } from '@/utils/types'
@@ -194,19 +194,26 @@ const subscribeOrganisationId = computed(() => {
 useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
 useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
-watch(user, value => {
+function fetchInvitesIfAuthenticated () {
+  if (user.value) fetchInvites()
+}
+
+watch(user, () => {
   clearInvites()
-  if (value) fetchInvites()
+  fetchInvitesIfAuthenticated()
 })
+const { idle } = useIdle()
+useIntervalFn(
+  fetchInvitesIfAuthenticated,
+  computed(() => idle.value ? 600_000 : 15_000),
+  { immediateCallback: true }
+)
 
 onBeforeMount(() => {
   // App.vue loads organisation data at first load
   // Call again to update page content
   if (loader.initDone.value) fetchOrganisations()
 })
-
-// const participatingMeetings = computed(() => orderedMeetings.value.filter(m => m.current_user_roles))
-// const otherMeetings = computed(() => orderedMeetings.value.filter(m => !m.current_user_roles))
 
 const editing = ref(false)
 const changeForm = reactive({
