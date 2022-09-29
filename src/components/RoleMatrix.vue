@@ -13,16 +13,16 @@
     </v-alert>
     <slot name="filter" />
     <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
-    <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed, admin }">
+    <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed: ordering.reversed, admin }">
       <thead>
         <tr>
-          <th @click="orderUsers(null)" :class="{ orderBy: !orderBy }">
+          <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
             {{ t('name') }}
           </th>
           <th v-if="admin">
             {{ t('Email')}}
           </th>
-          <th v-for="col in columns" class="text-center" :key="col.name" @click="orderUsers(col.name)" :class="{ orderBy: col.name === orderBy }">
+          <th v-for="col in columns" class="text-center" :key="col.name" @click="orderUsers(col.name)" :class="{ orderBy: col.name === ordering.column }">
             <v-tooltip :text="col.title" location="top">
               <template #activator="{ props }">
                 <v-icon v-bind="props" :icon="col.icon" />
@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="[user, ...cols] in pageUsers" :key="user">
+        <tr v-for="{ user, row } in pageUsers" :key="user">
           <td><User :pk="user" userid /></td>
           <td v-if="admin">
             <small>
@@ -41,7 +41,7 @@
             </small>
           </td>
           <td v-for="({ name, readonly }, i) in columns" :key="name" class="text-center">
-            <v-btn v-if="cols[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
+            <v-btn v-if="row[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
               <v-icon icon="mdi-check" />
             </v-btn>
             <v-btn v-else variant="text" :disabled="readonly || !admin" color="warning" @click="addRole(user, name)">
@@ -56,14 +56,15 @@
 
 <script lang="ts" setup>
 import { orderBy as _orderBy } from 'lodash'
-import { computed, onBeforeMount, PropType, ref } from 'vue'
+import { computed, onBeforeMount, PropType, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
 import { ContextRole, UserContextRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import useUserDetails from '@/modules/organisations/useUserDetails'
-import { RoleMatrixCol, RoleMatrixColDescription } from './types'
+
+import type { RoleMatrixCol, RoleMatrixColDescription } from './types'
 
 const USERS_PER_PAGE = 50
 
@@ -132,34 +133,43 @@ async function removeRole (user: number, role: string) {
   props.contentType.removeRoles(props.pk, user, role)
 }
 
-const orderBy = ref<string | null>(null)
-const orderReversed = ref(false)
+const ordering = reactive<{ column: string | null, reversed: boolean }>({
+  column: null,
+  reversed: false
+})
+// const orderBy = ref<string | null>(null)
+// const orderReversed = ref(false)
 
-function orderUsers (role: string | null) {
-  if (orderBy.value === role) orderReversed.value = !orderReversed.value
-  else orderBy.value = role
+function orderUsers (column: string | null) {
+  if (ordering.column === column) ordering.reversed = !ordering.reversed
+  else ordering.column = column
 }
 
 function getRow (userRoles: UserContextRoles) {
-  return [userRoles.user, ...columns.value.map(c => c.hasRole(userRoles))]
+  return {
+    user: userRoles.user,
+    row: columns.value.map(c => c.hasRole(userRoles))
+  }
 }
 
 const userMatrix = computed(() => {
   let userRoles = contextRoles.getAll<string>(props.pk)
   if (props.filter) userRoles = userRoles.filter(props.filter)
   const matrix = userRoles.map(getRow)
-  const orderByName = orderBy.value === null
+  const orderByName = ordering.column === null
+  const orderColumn = columns.value.findIndex(c => c.name === ordering.column)
   // Ordering function
-  const ordering = orderByName
-    ? ([user]: [number]) => getUser(user)?.full_name
-    : columns.value.findIndex(c => c.name === orderBy.value) + 1
+  const _ordering: (roles: { user: number, row: boolean[] }) => string | boolean | undefined = orderByName
+    // Get user full name to order by
+    ? ({ user }) => getUser(user)?.full_name
+    : ({ row }) => row[orderColumn]
   // Ordering direction
-  const order = (orderReversed.value !== orderByName) // XOR
+  const order = (ordering.reversed !== orderByName) // XOR
     ? 'asc'
     : 'desc'
   return _orderBy(
     matrix,
-    ordering,
+    [_ordering],
     [order]
   )
 })
