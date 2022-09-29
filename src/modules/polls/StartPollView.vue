@@ -91,8 +91,8 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
+<script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { isEmpty } from 'lodash'
@@ -118,140 +118,106 @@ import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 import { pollPlugins } from './registry'
 
-export default defineComponent({
-  name: 'StartPoll',
-  components: {
-    SchemaForm
-  },
-  setup () {
-    const { t } = useI18n()
-    const router = useRouter()
-    const proposals = useProposals()
-    const { isModerator, meetingPath, meetingId } = useMeeting()
-    const { agendaId, agenda } = useAgenda(meetingId)
-    const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
-    const { alert } = useAlert()
+const { t } = useI18n()
+const router = useRouter()
+const proposals = useProposals()
+const { isModerator, meetingPath, meetingId } = useMeeting()
+const { agendaId, agenda } = useAgenda(meetingId)
+const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
+const { alert } = useAlert()
 
-    usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future
+usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future
 
-    useMeetingTitle(t('poll.start'))
+useMeetingTitle(t('poll.start'))
 
-    const selectedProposalIds = ref<number[]>([])
-    function getPublishedProposals (agendaItem: number) {
-      return proposals.getAgendaProposals(agendaItem, p => p.state === ProposalState.Published)
-    }
-    const pollableAgendaItems = computed(() => {
-      return agenda.value
-        .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
-        .map(ai => ({
-          ai,
-          to: `${meetingPath.value}/polls/new/${ai.pk}`,
-          title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
-        }))
-    })
-    const availableProposals = computed(() => getPublishedProposals(agendaId.value))
-    const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.value.includes(p.pk)))
+const selectedProposalIds = ref<number[]>([])
+function getPublishedProposals (agendaItem: number) {
+  return proposals.getAgendaProposals(agendaItem, p => p.state === ProposalState.Published)
+}
+const pollableAgendaItems = computed(() => {
+  return agenda.value
+    .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
+    .map(ai => ({
+      ai,
+      to: `${meetingPath.value}/polls/new/${ai.pk}`,
+      title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
+    }))
+})
+const availableProposals = computed(() => getPublishedProposals(agendaId.value))
+const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.value.includes(p.pk)))
 
-    function toggleAll () {
-      if (selectedProposals.value.length === availableProposals.value.length) {
-        selectedProposalIds.value.length = 0
-      } else {
-        selectedProposalIds.value = availableProposals.value.map(p => p.pk)
-      }
-    }
-
-    const pickMethod = ref(false)
-    const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length))
-
-    const methodSelected = ref<Poll['method_name'] | null>(null)
-    const methodSelectedPlugin = computed(() => methodSelected.value && pollPlugins.getPlugin(methodSelected.value))
-    const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
-    watch(methodSelected, name => {
-      if (!name) return
-      const initial = methodSelectedPlugin.value?.initialSettings || {}
-      methodSettings.value = {
-        ...initial,
-        title: nextPollTitle.value
-      }
-    })
-
-    const working = ref(false)
-    const settingsValid = ref(false)
-    const readyToCreate = computed(() => {
-      return methodSelected.value && !working.value && settingsValid.value
-    })
-
-    function settingsOrNull (settings: PollMethodSettings | {}): PollMethodSettings | null {
-      if (isEmpty(settings)) return null
-      return settings as PollMethodSettings
-    }
-
-    async function createPoll (start = false) {
-      if (!methodSelected.value) return
-      if (!pollPlugins.getPlugin(methodSelected.value)) return alert(`*${methodSelected.value} not implemented`)
-
-      working.value = true
-      const { title, ...settings } = methodSettings.value
-      // For Repeated Schulze
-      if ('winners' in settings && settings.winners === selectedProposals.value.length) settings.winners = null
-      const pollData: PollStartData = {
-        agenda_item: agendaId.value,
-        meeting: meetingId.value,
-        title,
-        proposals: [...selectedProposalIds.value],
-        method_name: methodSelected.value,
-        start,
-        settings: settingsOrNull(settings)
-      }
-      try {
-        const { data } = await pollType.api.add(pollData as Partial<Poll>)
-        router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
-      } catch {}
-      working.value = false
-    }
-
-    const methodSchema = computed<FormSchema | undefined>(() => {
-      if (!methodSelected.value) return
-      // const getter = methodSchemas[methodSelected.value]
-      const specifics = methodSelectedPlugin.value?.getSchema?.(t, selectedProposals.value.length) || []
-      // getter?.(t, selectedProposals.value) || []
-      return [{
-        type: FieldType.Text,
-        name: 'title',
-        rules: [required, maxLength(70)],
-        label: t('title')
-      }, ...specifics]
-    })
-
-    watch(agendaId, () => {
-      pickMethod.value = false
-      selectedProposalIds.value.length = 0
-    })
-
-    return {
-      t,
-      agendaId,
-      agendaItem,
-      availableProposals,
-      Conditional,
-      selectedProposalIds,
-      selectedProposals,
-      pickMethod,
-      availableMethods,
-      methodSchema,
-      methodSelected,
-      methodSettings,
-      pollableAgendaItems,
-      readyToCreate,
-      settingsValid,
-
-      createPoll,
-      toggleAll,
-
-      ...useMeeting(),
-      ...proposals
-    }
+function toggleAll () {
+  if (selectedProposals.value.length === availableProposals.value.length) {
+    selectedProposalIds.value.length = 0
+  } else {
+    selectedProposalIds.value = availableProposals.value.map(p => p.pk)
   }
+}
+
+const pickMethod = ref(false)
+const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length))
+
+const methodSelected = ref<Poll['method_name'] | null>(null)
+const methodSelectedPlugin = computed(() => methodSelected.value && pollPlugins.getPlugin(methodSelected.value))
+const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
+watch(methodSelected, name => {
+  if (!name) return
+  const initial = methodSelectedPlugin.value?.initialSettings || {}
+  methodSettings.value = {
+    ...initial,
+    title: nextPollTitle.value
+  }
+})
+
+const working = ref(false)
+const settingsValid = ref(false)
+const readyToCreate = computed(() => {
+  return methodSelected.value && !working.value && settingsValid.value
+})
+
+function settingsOrNull (settings: PollMethodSettings | {}): PollMethodSettings | null {
+  if (isEmpty(settings)) return null
+  return settings as PollMethodSettings
+}
+
+async function createPoll (start = false) {
+  if (!methodSelected.value) return
+  if (!pollPlugins.getPlugin(methodSelected.value)) return alert(`*${methodSelected.value} not implemented`)
+
+  working.value = true
+  const { title, ...settings } = methodSettings.value
+  // For Repeated Schulze
+  if ('winners' in settings && settings.winners === selectedProposals.value.length) settings.winners = null
+  const pollData: PollStartData = {
+    agenda_item: agendaId.value,
+    meeting: meetingId.value,
+    title,
+    proposals: [...selectedProposalIds.value],
+    method_name: methodSelected.value,
+    start,
+    settings: settingsOrNull(settings)
+  }
+  try {
+    const { data } = await pollType.api.add(pollData as Partial<Poll>)
+    router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
+  } catch {}
+  working.value = false
+}
+
+const methodSchema = computed<FormSchema | undefined>(() => {
+  if (!methodSelected.value) return
+  const specifics = methodSelectedPlugin.value?.getSchema?.(t, selectedProposals.value.length) || []
+  return [{
+    type: FieldType.Text,
+    name: 'title',
+    rules: [required, maxLength(70)],
+    label: t('title')
+  }, ...specifics]
+})
+
+watch(agendaId, () => {
+  pickMethod.value = false
+  selectedProposalIds.value.length = 0
 })
 </script>
 
