@@ -47,7 +47,6 @@ export default defineComponent({
     })
     const progressText = computed(() => {
       if (!pollStatus.value) return ''
-      if (complete.value) return t('poll.votingComplete')
       return t('poll.numVoted', pollStatus.value as Record<string, any>, pollStatus.value.voted)
     })
     const progressBar = computed(() => {

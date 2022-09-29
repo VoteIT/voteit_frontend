@@ -4,11 +4,12 @@ import { useI18n } from 'vue-i18n'
 import useProposals from '../proposals/useProposals'
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
 import { canChangePoll, canDeletePoll, canVote as _canVote, isPollVoter } from './rules'
-import { pollMethods, pollResults } from './methods'
+// import { pollMethods, pollResults } from './methods'
 import usePolls from './usePolls'
 import { PollState } from './types'
 
 import type { Proposal } from '../proposals/types'
+import { pollPlugins } from './registry'
 
 const polls = usePolls()
 const { getProposal } = useProposals()
@@ -61,8 +62,9 @@ export default function usePoll (pollRef: Ref<number>) {
   const canDelete = computed(() => poll.value && canDeletePoll(poll.value))
   const canVote = computed(() => poll.value && _canVote(poll.value))
 
-  const voteComponent = computed(() => poll.value && pollMethods[poll.value.method_name])
-  const resultComponent = computed(() => poll.value && pollResults[poll.value.method_name])
+  const pollPlugin = computed(() => poll.value && pollPlugins.getPlugin(poll.value.method_name))
+  const voteComponent = computed(() => pollPlugin.value?.voteComponent)
+  const resultComponent = computed(() => pollPlugin.value?.resultComponent)
 
   const proposals = computed(() => {
     if (!poll.value) return []

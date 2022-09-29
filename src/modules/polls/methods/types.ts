@@ -3,16 +3,6 @@ import { BaseContent } from '@/contentTypes/types'
 import { ThemeColor } from '@/utils/types'
 import { PollState } from '../types'
 
-export enum PollMethodName {
-  CombinedSimple = 'combined_simple',
-  Dutt = 'dutt',
-  InstantRunoff = 'irv',
-  Majority = 'majority',
-  RepeatedSchulze = 'repeated_schulze',
-  Schulze = 'schulze',
-  ScottishSTV = 'scottish_stv'
-}
-
 enum PollCriteria {
   MajorityWinner = 'majorityWinner',
   MajorityLoser = 'majorityLoser',
@@ -24,7 +14,7 @@ enum PollCriteria {
 }
 
 export const Conditional = Symbol('conditional')
-type PollMethodCriterias = Partial<Record<PollCriteria, boolean | typeof Conditional>>
+export type PollMethodCriterion = Partial<Record<PollCriteria, boolean | typeof Conditional>>
 
 interface VoteResult {
   approved: number[]
@@ -136,30 +126,16 @@ export interface ScottishSTVSettings {
   allow_random: boolean
 }
 
-interface InstantRunoffSettings {
+export interface InstantRunoffSettings {
   allow_random: boolean
 }
 
-interface SchulzeSettings {
+export interface SchulzeSettings {
   stars?: number
   deny_proposal?: boolean
 }
 
 export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings | DuttSettings
-
-// Internal poll description
-export interface PollMethod {
-  name: PollMethodName
-  criterion: PollMethodCriterias
-  descriptionType?: 'success' | 'info' | 'warning' | 'error'
-  multipleWinners?: boolean
-  proposalsMax?: number
-  proposalsMin: number
-  winnersMin?: number
-  losersMin?: number
-  initialSettings?: PollMethodSettings
-  settingsValidator?: (settings: PollMethodSettings) => PollMethodSettings
-}
 
 // Poll format from API
 interface BasePoll extends BaseContent {
@@ -170,44 +146,46 @@ interface BasePoll extends BaseContent {
   electoral_register?: number
   initial_electoral_register?: number
   meeting: number
-  method_name: PollMethodName
+  method_name: string
   proposals: number[]
+  result: unknown
+  settings: unknown
   state: PollState
   started: Date | null
 }
 
 export interface SimplePoll extends BasePoll {
-  method_name: PollMethodName.CombinedSimple
+  method_name: 'combined_simple'
   result: CombinedSimpleResult
   settings: null
 }
 
 export interface SchulzePoll extends BasePoll {
-  method_name: PollMethodName.Schulze
+  method_name: 'schulze'
   result: SchulzeResult
   settings: SchulzeSettings
 }
 
 export interface MajorityPoll extends BasePoll {
-  method_name: PollMethodName.Majority
+  method_name: 'majority'
   result: MajorityResult
   settings: null
 }
 
 export interface RepeatedSchulzePoll extends BasePoll {
-  method_name: PollMethodName.RepeatedSchulze
+  method_name: 'repeated_schulze'
   result: RepeatedSchulzeResult
   settings: RepeatedSchulzeSettings
 }
 
 export interface ScottishSTVPoll extends BasePoll {
-  method_name: PollMethodName.ScottishSTV
+  method_name: 'scottish_stv'
   result: ScottishSTVResult
   settings: ScottishSTVSettings
 }
 
 export interface InstantRunoffPoll extends BasePoll {
-  method_name: PollMethodName.InstantRunoff
+  method_name: 'irv'
   result: ScottishSTVResult // TODO: Rename to something more general
   settings: InstantRunoffSettings
 }
@@ -224,7 +202,7 @@ export interface DuttResult extends VoteResult {
 }
 
 export interface DuttPoll extends BasePoll {
-  method_name: PollMethodName.Dutt
+  method_name: 'dutt'
   result: DuttResult
   settings: DuttSettings
 }

@@ -17,11 +17,13 @@ function checkActive (meeting: Meeting) {
 }
 
 proposalButtonPlugins.register({
+  id: 'printing',
   checkActive,
   component: ProposalPrintButton
 })
 
 agendaMenuPlugins.register({
+  id: 'printing',
   checkActive,
   getItems ({ agendaItemPath, menu, t }) {
     if (menu !== 'main') return []

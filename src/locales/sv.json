@@ -343,7 +343,6 @@
     "viewAndChangeVote": "Visa och ändra röst",
     "votedProgress": "Ingen har röstat | {percentage} % har röstat ({voted} / {total}) | {percentage} % har röstat ({voted} / {total})",
     "voteAddedInfo": "Din röst har accepterats.\nDu kan ändra din röst fram till omröstningen avslutas.",
-    "votingComplete": "Omröstningen är klar",
     "watchVoting": "Visa resultat",
     "youHaveVoted": "Du har röstat",
     "youHaveNotVoted": "Du har inte röstat",
@@ -387,7 +386,8 @@
       "validVoteHelpText": "Din röst är giltig."
     },
     "IRV": {
-      "numRounds": "IRV, en omgång | IRV, {count} omgångar"
+      "numRounds": "IRV, en omgång | IRV, {count} omgångar",
+      "repeatedRoundResult": "IRV är inte en metod som är avsedd för att utse flera vinnare. Varje omgång i en upprepad IRV är en enkel IRV, med tidigare omgångars vinnare borttagna. Eftersom varje enkel IRV har flera omgångar finns det inget svar på hur många röster ett förslag fått, men i slutändan har det uppnått en majoritet av rösterna. Hur många omgångar som krävdes är irrelevant."
     },
     "method": {
       "name": "Omröstningsmetod",
@@ -400,10 +400,12 @@
       "scottish_stv": "Skotsk STV",
       "simple": "Majoritetsomröstning",
       "irv": "IRV",
+      "repeated_irv": "Upprepad IRV",
       "description": {
         "combined_simple": "Varje förslag behandlas individuellt, med alternativen bifall, avslag och avstå.",
         "dutt": "Duttmetoden ska användas för opinionsmätningar eller vägledande yttringar; aldrig för riktiga beslut. Detta är nästan alltid fel metod för exempelvis styrelseval.",
         "irv": "Rangordnad omröstning med en vinnare. De röstande rangordnar förslag efter preferens. De förslag som fått minst antal röster exckluderas och röster överförs tills ett förslag fått mer än 50 % av rösterna.",
+        "repeated_irv": "Enkel IRV upprepas tills alla vinnare utsetts, eller tills inget förslag längre kan uppnå majoritet. Repeterad IRV är lätt att manipulera genom att synkronisera röster och bör undvikas.",
         "majority": "De röstande väljer mellan två förslag. Det förslag som fått mest röster vinner.",
         "scottish_stv": "Rangordnad omröstning med flera vinnare. De röstande rangordnar förslag efter preferens. När ett förslag vunnit eller exkluderats överförs överskott respektive hel röst till nästa i ordning för att minska bortkastade röster.",
         "schulze": "Rangordna förslag med stjärnor - fler är bättre. Det förslag som föredras i parvis jämförelse med alla andra förslag vinner.",
@@ -412,7 +414,9 @@
       "help": {
         "combined_simple": "Rösta bifall eller avslag på varje förslag.",
         "dutt": "Markera de förslag du föredrar.",
+        "irv": "Välj de förslag du vill rösta på i prioriteringsordning.",
         "majority": "Rösta på det förslag du föredrar.",
+        "repeated_irv": "Välj de förslag du vill rösta på i prioriteringsordning.",
         "scottish_stv": "Välj de förslag du vill rösta på i prioriteringsordning.",
         "schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna förslag lika väljer du lika många stjärnor. Du behöver inte rangordna alla förslag.",
         "repeated_schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna förslag lika väljer du lika många stjärnor. Du behöver inte rangordna alla förslag."
