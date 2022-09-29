@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isOngoing">
+  <template v-if="poll && isOngoing">
     <main>
       <p>{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
       <ProgressBar v-if="progressBar" v-bind="progressBar" absolute class="mt-8" />
