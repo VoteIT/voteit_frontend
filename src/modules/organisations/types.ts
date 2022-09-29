@@ -4,6 +4,15 @@ export enum OrganisationRole {
   MeetingCreator = 'meeting_creator',
 }
 
+interface OrganisationComponent<Settings = null> {
+  readonly pk: number
+  readonly is_valid: boolean
+  readonly settings: Settings
+  readonly component_name: string
+  readonly state: 'on' | 'off'
+  readonly organisation: number
+}
+
 export interface Organisation {
   readonly pk: number
   readonly title: string
@@ -12,6 +21,7 @@ export interface Organisation {
   readonly login_url: string | null
   readonly id_host: string | null
   readonly scope: string[]
+  readonly components: OrganisationComponent[]
 }
 
 export enum UserState {

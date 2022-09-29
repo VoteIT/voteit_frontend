@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { ComponentPublicInstance, DefineComponent, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, Component, defineComponent, PropType, reactive, ref, watch } from 'vue'
 
 import { parseRestError } from '@/utils/restApi'
 
@@ -24,7 +24,7 @@ import DurationInput from './inputs/DurationInput.vue'
 import { FieldType } from './types'
 import type { FieldRule, FormSchema } from './types'
 
-const componentNames: Record<FieldType, string | DefineComponent<any, any, any>> = {
+const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
   checkbox_multiple: CheckboxMultipleSelect,
   duration: DurationInput,

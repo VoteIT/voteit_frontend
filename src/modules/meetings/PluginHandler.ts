@@ -1,21 +1,14 @@
+import PluginHandler from '@/utils/PluginHandler'
+
 import { Meeting } from './types'
 
 export interface MeetingPlugin {
+  id: string,
   checkActive?: (meeting: Meeting) => boolean
 }
 
-export default class PluginHandler<P extends MeetingPlugin> {
-  private plugins: P[]
-
-  constructor () {
-    this.plugins = []
-  }
-
-  public register (plugin: P) {
-    this.plugins.push(plugin)
-  }
-
+export default class MeetingPluginHandler<P extends MeetingPlugin> extends PluginHandler<P> {
   public getActivePlugins (meeting: Meeting): P[] {
-    return this.plugins.filter(p => !p.checkActive || p.checkActive(meeting))
+    return [...this.iterPlugins(p => !p.checkActive || p.checkActive(meeting))]
   }
 }

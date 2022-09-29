@@ -53,11 +53,12 @@ import { ProposalState } from '../proposals/types'
 import { pollType } from '../polls/contentTypes'
 import usePolls from '../polls/usePolls'
 import { PollState } from '../polls/types'
-import { Poll, PollMethod, PollMethodName, PollMethodSettings, PollStartData } from '../polls/methods/types'
+import { Poll, PollMethodSettings, PollStartData } from '../polls/methods/types'
 
 import usePlenary from './usePlenary'
 import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
+import { PollPlugin } from '../polls/registry'
 
 const { getState } = pollType.useWorkflows()
 
@@ -104,14 +105,14 @@ export default defineComponent({
     })
 
     const working = ref(false)
-    async function createPoll (method: PollMethod, settings: PollMethodSettings | null) {
+    async function createPoll (method: Poll['method_name'], settings: PollMethodSettings | null) {
       working.value = true
       const pollData: PollStartData = {
         agenda_item: agendaId.value,
         meeting: meetingId.value,
         title: nextPollTitle.value as string,
         proposals: [...selectedProposalIds],
-        method_name: method.name,
+        method_name: method,
         start: true,
         settings: settings
       }
@@ -134,46 +135,42 @@ export default defineComponent({
     const pollMethodMenu = computed<MenuItem[]>(() => {
       const quickStartMethods: QuickStartMethod[] = [
         {
-          method: getPollMethod(PollMethodName.CombinedSimple),
+          ...getPollMethod('combined_simple') as PollPlugin,
           settings: null,
-          proposalsMin: 1,
           title: t('poll.method.combined_simple')
         },
         {
-          method: getPollMethod(PollMethodName.Majority),
+          ...getPollMethod('majority') as PollPlugin,
           settings: null,
-          proposalsMin: 2,
-          proposalsExact: 2,
           title: t('poll.method.majority')
         },
         {
-          method: getPollMethod(PollMethodName.Schulze),
+          ...getPollMethod('schulze') as PollPlugin,
+          proposalsMin: 3,
           settings: null,
-          proposalsMin: 3, // This here is the reason we need to replicate this from pollMethods
           title: t('poll.method.schulze')
         },
         {
-          method: getPollMethod(PollMethodName.Schulze),
+          ...getPollMethod('schulze') as PollPlugin,
           settings: { deny_proposal: true },
-          proposalsMin: 2,
           title: t('poll.method.schulzeAddDeny')
         }
       ]
-      return quickStartMethods.map(({ method, settings, title, ...opts }) => {
-        let disabled, subtitle
-        if (opts.proposalsExact) {
-          disabled = selectedProposals.value.length !== opts.proposalsExact
-          if (disabled) subtitle = t('plenary.selectExactProposals', opts.proposalsExact)
-        } else {
-          disabled = opts.proposalsMin > selectedProposals.value.length
-          if (disabled) subtitle = t('plenary.selectMinProposals', opts.proposalsMin)
-        }
+      return quickStartMethods.map(({ id, proposalsMax, proposalsMin, settings, title }) => {
+        const proposalsExact = proposalsMin === proposalsMax
+        const proposalCount = selectedProposals.value.length
+        const disabled = !(proposalCount >= proposalsMin && (!proposalsMax || proposalCount <= proposalsMax))
+        const subtitle = disabled
+          ? proposalsExact
+            ? t('plenary.selectExactProposals', proposalsMin)
+            : t('plenary.selectMinProposals', proposalsMin)
+          : undefined
         return {
           disabled,
           icon: 'mdi-vote',
           subtitle,
           title,
-          onClick: () => createPoll(method, settings)
+          onClick: () => createPoll(id as Poll['method_name'], settings)
         }
       })
     })

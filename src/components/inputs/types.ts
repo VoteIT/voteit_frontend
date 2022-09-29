@@ -1,6 +1,8 @@
+import { Component, PropType } from 'vue'
+
 import { Proposal } from '@/modules/proposals/types'
-import { DefineComponent, PropType } from '@vue/runtime-core'
 import { FormSchema } from '../types'
+import { ComposerTranslation } from 'vue-i18n'
 
 export interface SchemaButton {
   name: string
@@ -8,7 +10,7 @@ export interface SchemaButton {
   icon?: string
 }
 
-export type InputComponent = DefineComponent<{
+export type InputComponent = Component<{
   modelValue: any,
   name: PropType<string>,
   required: PropType<boolean>,
@@ -22,6 +24,6 @@ export interface InputDefaultsComponent {
 }
 
 export type SchemaGenerator = (
-  t: (key: string) => string,
-  proposals: Proposal[]
+  t: ComposerTranslation,
+  proposals: number
 ) => FormSchema

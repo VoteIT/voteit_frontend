@@ -1,4 +1,4 @@
-import { DefineComponent } from 'vue'
+import { Component } from 'vue'
 
 import PluginHandler from './PluginHandler'
 
@@ -6,11 +6,10 @@ import type { MeetingPlugin } from './PluginHandler'
 import type { Meeting } from './types'
 
 interface SettingsPlugin extends MeetingPlugin {
-  id: string
   icon: string
-  component?: DefineComponent<{}, any, any, any, any, any, any, any, any, any, any>
+  component?: Component<any, { path: string, translationKey: string }>
   translationKey: string
-  quickComponent?: DefineComponent<{}, any, any, any, any, any, any, any, any, any, any>
+  quickComponent?: Component
   isConfigured?: (meeting: Meeting) => boolean
 }
 

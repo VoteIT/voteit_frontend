@@ -15,12 +15,27 @@ export default function useOrganisation () {
     return `${organisation.value.id_host}/login-to/${location.hostname}`
   })
 
+  const organisationComponents = computed(() => {
+    if (!organisation.value) return []
+    return organisation.value.components.filter(
+      c => c.is_valid && c.state === 'on'
+    )
+  })
+
+  // Assumes singleton components
+  function getOrganisationComponent (name: string) {
+    for (const component of organisationComponents.value) {
+      if (component.component_name === name) return component
+    }
+  }
+
   return {
     canAddMeeting: computed(() => canAddMeeting()),
     canChangeOrganisation: computed(() => !!organisation.value && canChangeOrganisation(organisation.value)),
     organisation,
     organisationId: computed(() => organisation.value?.pk),
     manageAccountURL,
-    idLoginURL
+    idLoginURL,
+    getOrganisationComponent
   }
 }

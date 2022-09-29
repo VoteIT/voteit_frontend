@@ -1,4 +1,4 @@
-import { DefineComponent } from 'vue'
+import { Component } from 'vue'
 import { MeetingPlugin } from '../meetings/PluginHandler'
 
 /* eslint-disable camelcase */
@@ -42,5 +42,5 @@ type PreviewOmitted = 'created' | 'author' | 'pk' | 'prop_id'
 export type PreviewProposal = Omit<Proposal, PreviewOmitted>
 
 export interface ProposalButtonPlugin extends MeetingPlugin {
-  component: DefineComponent<{ proposal: Proposal }, any, any, any, any, any, any, any, any, any>
+  component: Component<{ proposal: Proposal }>
 }
