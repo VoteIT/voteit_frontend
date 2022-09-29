@@ -83,6 +83,12 @@ function clearFilters () {
 watch(states, (value: FilterDescription[]) => {
   activeFilter.value.states = new Set(value.filter(f => f.active).map(f => f.id) as ProposalState[])
 })
+
+// Expose clearFilters function to parent component
+defineExpose({
+  isModified,
+  clearFilters
+})
 </script>
 
 <style lang="sass">

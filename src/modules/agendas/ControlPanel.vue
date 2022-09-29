@@ -40,7 +40,7 @@
                 <v-icon size="small" :icon="getState(ai.state)?.icon" />
               </td>
               <td>
-                <Headline :modelValue="ai.title" tag="h4" maxlength="100" clickToEdit @update:modelValue="setTitle(ai, $event)" />
+                <Headline :modelValue="ai.title" tag="h4" :maxlength="100" clickToEdit @update:modelValue="setTitle(ai, $event)" />
               </td>
               <td>
                 <v-chip-group disabled>

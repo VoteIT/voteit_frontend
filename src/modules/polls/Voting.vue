@@ -8,7 +8,7 @@
     <h2 v-if="abstained">{{ t('poll.abstainRegistered') }}</h2>
     <h2 v-else-if="done">{{ t('poll.voteRegistered') }}</h2>
     <template v-else>
-      <component ref="method" :is="methodComponent" :poll="data" :proposals="proposals" v-model="validVote" />
+      <component :is="methodComponent" :poll="data" :proposals="proposals" v-model="validVote" />
       <div class="buttons btn-controls">
         <v-btn prepend-icon="mdi-vote" color="primary" :disabled="!validVote || waiting" @click="castVote()">
           {{ t('poll.castVote') }}
@@ -50,7 +50,6 @@ export default defineComponent({
     const { getUserVote } = usePolls()
     const { alert } = useAlert()
 
-    const method = ref(null)
     const waiting = ref(false)
     const abstained = ref(false)
     const done = ref(false)
@@ -100,7 +99,6 @@ export default defineComponent({
       t,
       proposals,
       methodComponent,
-      method,
       waiting,
       abstained,
       done,

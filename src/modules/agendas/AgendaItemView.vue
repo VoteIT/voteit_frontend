@@ -97,7 +97,7 @@
           <div class="flex-grow-1 mb-2">
             {{ t('agenda.helpNoProposalsInFilter') }}
           </div>
-          <v-btn size="small" v-if="filterComponent && filterComponent.isModified" @click="filterComponent?.clearFilters()" prepend-icon="mdi-undo-variant">
+          <v-btn size="small" v-if="filterComponent?.isModified" @click="filterComponent?.clearFilters()" prepend-icon="mdi-undo-variant">
             {{ t('defaultFilters') }}
           </v-btn>
         </v-alert>
