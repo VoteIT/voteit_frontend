@@ -20,7 +20,7 @@
             {{ t('name') }}
           </th>
           <th v-if="admin">
-            {{ t('Email')}}
+            {{ t('email')}}
           </th>
           <th v-for="col in columns" class="text-center" :key="col.name" @click="orderUsers(col.name)" :class="{ orderBy: col.name === ordering.column }">
             <v-tooltip :text="col.title" location="top">

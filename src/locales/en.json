@@ -20,6 +20,7 @@
   "delete": "Delete",
   "dismissAll": "Dismiss all",
   "edit": "Edit",
+  "email": "Email",
   "expand": "Expand",
   "filter": "Filter",
   "icon": "Icon",
@@ -538,16 +539,16 @@
     "proposer": "Proposer",
     "speaker": "Speaker",
     "help": {
-      "intro": "Sort the list by clicking an icon or name below. The icons represent a role that enables you to do certain things.",
-      "discusser": "Allowed to add discussion posts if discussion is allowed and the meeting hasn't closed.",
+      "intro": "Order list by clicking an icon or name in the table header below. The icons represent roles that decide what a user can do.",
+      "discusser": "Allowed to add discussion posts if discussion is allowed, and the meeting hasn't closed.",
       "list_moderator": "Handles speaker lists.",
       "meeting_creator": "Can add new meetings.",
       "moderator": "May do most things within a meeting, including add other moderators.",
       "org_manager": "Highest level within the organisation.",
       "participant": "Can view the meeting and other participants.",
-      "potential_voter": "Someone that could possibly become a voter if certain conditions are met. This depends on the method for creating an electoral register.",
+      "potential_voter": "Can become a voter if certain conditions are met. This depends on the method for creating an electoral register.",
       "proposer": "Allowed to add proposals if proposals are allowed and the meeting hasn't closed.",
-      "speaker": "Speakers may enter open speaker lists.",
+      "speaker": "Speakers may enter open speaker lists, even if user doesn't have a required role.",
       "voter": "Exists as a voter within the latest electoral register. However, older polls may use older registers."
     }
   },

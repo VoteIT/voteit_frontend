@@ -20,6 +20,7 @@
   "delete": "Radera",
   "dismissAll": "Avfärda alla",
   "edit": "Redigera",
+  "email": "E-post",
   "expand": "Fäll ut",
   "filter": "Filtrera",
   "icon": "Ikon",
@@ -541,7 +542,20 @@
     "participant": "Deltagare",
     "potential_voter": "Potentiell röstare",
     "proposer": "Förslagsläggare",
-    "speaker": "Talare"
+    "speaker": "Talare",
+    "help": {
+      "intro": "Ändra ordning genom att klicka på titel eller ikon i tabellhuvudet nedan. Ikonerna representerar roller som bestämmer vad en användare får lov att göra.",
+      "discusser": "Får skriva diskussionsinlägg där diskussion tillåts, så länge mötet inte är stängt.",
+      "list_moderator": "Hanterar talarlistor.",
+      "meeting_creator": "Får skapa nya möten.",
+      "moderator": "Får göra det mesta i ett möte, inklusive lägga till fler moderatorer.",
+      "org_manager": "Högsta nivå i organisationen.",
+      "participant": "Kan se mötet och dess deltagare.",
+      "potential_voter": "Kan få rösträtt om vissa kriterier uppfylls. Kriterierna bestäms av mötets metod för röstlängd.",
+      "proposer": "Får lägga till förslag där förslag tillåts, så länge mötet inte är stängt.",
+      "speaker": "Får sätta upp sig på talarlisa, även om användaren inte har en krävd roll.",
+      "voter": "Har rösträtt enligt mötets senaste röstlängd. Gamla omröstningar kan fortfarande ha en annan röstlängd."
+    }
   },
   "socket": {
     "connected": "Uppkopplad",
