@@ -27,9 +27,10 @@
 
 <script lang="ts" setup>
 import { ComponentPublicInstance, computed, PropType, ref, watch } from 'vue'
-import { userType } from '@/modules/organisations/contentTypes'
-import { User } from '@/modules/organisations/types'
 import { useI18n } from 'vue-i18n'
+
+import { userType } from '@/modules/organisations/contentTypes'
+import type { User } from '@/modules/organisations/types'
 
 const TYPE_DELAY = 250 // delay in ms
 let typeTimeout: number
