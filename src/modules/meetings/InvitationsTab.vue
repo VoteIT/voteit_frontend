@@ -1,11 +1,7 @@
 <template>
   <div class="mb-4">
     <v-alert class="mb-4" :title="t('meeting.invites.helpTextTitle')" :text="t('meeting.invites.helpTextBody')" color="primary" icon="mdi-email-off" />
-    <div class="d-flex">
-      <h1 class="text-truncate">
-        {{ t('meeting.invites.existing') }}
-      </h1>
-      <v-spacer />
+    <v-toolbar color="secondary" :title="t('meeting.invites.existing')" class="mb-2">
       <v-tooltip :modelValue="copied" location="top" :text="t('copied')">
         <template #activator="{ props }">
           <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('meeting.invites.copyMatchingTooltip')">
@@ -18,11 +14,9 @@
       </v-btn>
       <v-dialog v-model="inviteDialogOpen">
         <template #activator="{ props }">
-          <div class="text-right mb-2">
-            <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
-              {{ t('meeting.invites.add') }}
-            </v-btn>
-          </div>
+          <v-btn v-bind="props" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
+            {{ t('meeting.invites.add') }}
+          </v-btn>
         </template>
         <v-sheet class="pa-4">
           <div class="d-flex mb-2">
@@ -36,7 +30,7 @@
               <v-progress-linear v-if="disabled" indeterminate />
             </template>
           </SchemaForm> -->
-          <form @submit.prevent="submitInvites()">
+          <v-form @submit.prevent="submitInvites()">
             <v-textarea v-model="inviteData.invite_data" :error="!!inviteErrors.__root__" :messages="inviteErrors.__root__" rows="10" :label="t('meeting.invites.emails')" :hint="t('meeting.invites.emailsHint')" />
             <CheckboxMultipleSelect v-model="inviteData.roles" :settings="{ options: roleLabels }" :label="t('meeting.invites.roles')" :requiredValues="['participant']" />
             <div class="text-right">
@@ -47,10 +41,10 @@
                 {{ t('add') }}
               </v-btn>
             </div>
-          </form>
+          </v-form>
         </v-sheet>
       </v-dialog>
-    </div>
+    </v-toolbar>
     <v-expand-transition>
       <v-sheet v-show="filterMenu" rounded border>
         <div class="ma-4">
