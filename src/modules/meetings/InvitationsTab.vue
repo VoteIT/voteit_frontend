@@ -77,7 +77,7 @@
         <template v-slot="{ isSelected, toggle }">
           <tr @click="toggle()">
             <td>
-              <input type="checkbox" :checked="isSelected" />
+              <input type="checkbox" :checked="(isSelected)" />
             </td>
             <td>
               <v-icon :icon="invite.typeIcon" class="mr-2" />
@@ -116,8 +116,8 @@
   </v-expand-transition>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, reactive, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, reactive, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { isEqual } from 'lodash'
@@ -142,190 +142,160 @@ const meetingIcons: Record<MeetingRole, string> = {
   potential_voter: 'mdi-star-outline'
 }
 
-export default defineComponent({
-  emits: ['denied'],
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { isModerator, meetingId, roleLabels } = useMeeting()
-    const { meetingInvites } = useMeetingInvites(meetingId)
-    const { copy, copied } = useClipboard()
+const emit = defineEmits(['denied'])
 
-    usePermission(isModerator, {}, () => { emit('denied') })
+const { t } = useI18n()
+const { isModerator, meetingId, roleLabels } = useMeeting()
+const { meetingInvites } = useMeetingInvites(meetingId)
+const { copy, copied } = useClipboard()
 
-    useChannel(
-      'invites',
-      meetingId
-    )
-    // const inviteSchema = computed<FormSchema>(() => {
-    //   return [{
-    //     name: 'invite_data',
-    //     label: t('meeting.invites.emails'),
-    //     type: FieldType.TextArea,
-    //     rules: [containsEmail]
-    //   },
-    //   {
-    //     name: 'roles',
-    //     label: t('meeting.invites.roles'),
-    //     type: FieldType.CheckboxMultiple,
-    //     options: roleLabels.value
-    //   }]
-    // })
-    const inviteData = reactive({
-      invite_data: '',
-      roles: ['participant']
-    })
-    function checkInviteData (): boolean {
-      for (const line of inviteData.invite_data.split('\n')) {
-        if (line.includes('@')) return true
-      }
-      return false
-    }
-    const submittingInvites = ref(false)
-    const invitesReady = computed(() => !submittingInvites.value && checkInviteData())
-    const inviteDialogOpen = ref(false)
-    const inviteErrors = ref<Record<string, string[]>>({})
+usePermission(isModerator, {}, () => { emit('denied') })
 
-    async function submitInvites () {
-      inviteErrors.value = {}
-      submittingInvites.value = true
-      try {
-        await socket.call('invites.add', {
-          invite_data: inviteData.invite_data.split('\n'),
-          meeting: meetingId.value,
-          roles: inviteData.roles
-        }, { alertOnError: false })
-        inviteDialogOpen.value = false
-        inviteData.invite_data = ''
-        inviteData.roles = ['participant']
-      } catch (e) {
-        inviteErrors.value = parseSocketError(e as Error)
-      }
-      submittingInvites.value = false
-    }
+useChannel(
+  'invites',
+  meetingId
+)
+// const inviteSchema = computed<FormSchema>(() => {
+//   return [{
+//     name: 'invite_data',
+//     label: t('meeting.invites.emails'),
+//     type: FieldType.TextArea,
+//     rules: [containsEmail]
+//   },
+//   {
+//     name: 'roles',
+//     label: t('meeting.invites.roles'),
+//     type: FieldType.CheckboxMultiple,
+//     options: roleLabels.value
+//   }]
+// })
+const inviteData = reactive({
+  invite_data: '',
+  roles: ['participant']
+})
+function checkInviteData (): boolean {
+  for (const line of inviteData.invite_data.split('\n')) {
+    if (line.includes('@')) return true
+  }
+  return false
+}
+const submittingInvites = ref(false)
+const invitesReady = computed(() => !submittingInvites.value && checkInviteData())
+const inviteDialogOpen = ref(false)
+const inviteErrors = ref<Record<string, string[]>>({})
 
-    function getRoleIcon (role: MeetingRole) {
-      return meetingIcons[role]
-    }
-    function getTypeIcon (type: string) {
-      // TODO
-      return {
-        email: 'mdi-email'
-      }[type]
-    }
+async function submitInvites () {
+  inviteErrors.value = {}
+  submittingInvites.value = true
+  try {
+    await socket.call('invites.add', {
+      invite_data: inviteData.invite_data.split('\n'),
+      meeting: meetingId.value,
+      roles: inviteData.roles
+    }, { alertOnError: false })
+    inviteDialogOpen.value = false
+    inviteData.invite_data = ''
+    inviteData.roles = ['participant']
+  } catch (e) {
+    inviteErrors.value = parseSocketError(e as Error)
+  }
+  submittingInvites.value = false
+}
 
-    const inviteFilter = reactive({
-      roles: ['participant'],
-      exactRoles: false,
-      states: ['open']
-    })
-    const stateLabels = computed(() => {
-      return { // TODO ts
-        open: 'Öppen',
-        expired: 'Utgången',
-        revoked: 'Tillbakadragen',
-        accepted: 'Accepterad',
-        rejected: 'Avvisad'
-      }
-    })
-    const selectedInviteIds = ref<number[]>([])
-    const selectedInvites = computed(() => filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk)))
-    const selectedHasDeletable = computed(() => selectedInvites.value.some(canDeleteMeetingInvite))
+function getRoleIcon (role: MeetingRole) {
+  return meetingIcons[role]
+}
+function getTypeIcon (type: string) {
+  // TODO
+  return {
+    email: 'mdi-email'
+  }[type]
+}
 
-    const allInvitesSelected = computed({
-      get () {
-        if (!filteredInvites.value.length) return false
-        return filteredInvites.value.every(inv => selectedInviteIds.value.includes(inv.pk))
-      },
-      set (value) {
-        selectedInviteIds.value = value
-          ? filteredInvites.value.map(inv => inv.pk)
-          : []
-      }
-    })
-
-    const filteredInvites = computed(() => {
-      const roleSet = new Set(inviteFilter.roles)
-      const roleFilter = inviteFilter.exactRoles
-        ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
-        : (invite: MeetingInvite) => inviteFilter.roles.every((role) => invite.roles.includes(role as MeetingRole))
-      return meetingInvites.value
-        .filter(inv => roleFilter(inv) && inviteFilter.states.includes(inv.state))
-        .map(inv => {
-          return {
-            ...inv,
-            typeIcon: getTypeIcon(inv.type),
-            rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
-            stateLabel: stateLabels.value[inv.state]
-          }
-        })
-    })
-
-    function copyFilteredData () {
-      copy(filteredInvites.value.map(i => i.invite_data).join('\n') + '\n')
-    }
-
-    async function deleteSelected () {
-      // Delete any selected deletable invites
-      // TODO Confirm dialog
-      // TODO Warn if any were not deletable
-      for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-        meetingInviteType.api.delete(pk)
-      }
-    }
-
-    async function revokeSelected () {
-      // Revoke any selected deletable invites (same as revokable?)
-      // TODO Warn if any were not revokable
-      for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-        meetingInviteType.api.transition(pk, 'revoke')
-      }
-    }
-
-    const inviteHelp = computed(() => {
-      if (!meetingInvites.value.length) {
-          return {
-          type: 'info',
-          text: t('meeting.invites.noInvitesHelp')
-        }
-      }
-      if (!filteredInvites.value.length) {
-        return {
-          type: 'info',
-          text: t('meeting.invites.noFilteredInvitesHelp'),
-          icon: 'mdi-filter-off'
-        }
-      }
-      return undefined
-    })
-
-    return {
-      t,
-      allInvitesSelected,
-      copied,
-      filterMenu: ref(false),
-      filteredInvites,
-      inviteDialogOpen,
-      inviteData,
-      inviteErrors,
-      inviteFilter,
-      inviteHelp,
-      roleLabels,
-      meetingInvites,
-      invitesReady,
-      selectedInviteIds,
-      selectedInvites,
-      selectedHasDeletable,
-      stateLabels,
-      submittingInvites,
-      copyFilteredData,
-      deleteSelected,
-      revokeSelected,
-      submitInvites
-    }
-  },
-  components: {
-    CheckboxMultipleSelect
-    // SchemaForm
+const inviteFilter = reactive({
+  roles: ['participant'],
+  exactRoles: false,
+  states: ['open']
+})
+const stateLabels = computed(() => {
+  return { // TODO ts
+    open: 'Öppen',
+    expired: 'Utgången',
+    revoked: 'Tillbakadragen',
+    accepted: 'Accepterad',
+    rejected: 'Avvisad'
   }
 })
+const selectedInviteIds = ref<number[]>([])
+const selectedInvites = computed(() => filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk)))
+const selectedHasDeletable = computed(() => selectedInvites.value.some(canDeleteMeetingInvite))
+
+const allInvitesSelected = computed({
+  get () {
+    if (!filteredInvites.value.length) return false
+    return filteredInvites.value.every(inv => selectedInviteIds.value.includes(inv.pk))
+  },
+  set (value) {
+    selectedInviteIds.value = value
+      ? filteredInvites.value.map(inv => inv.pk)
+      : []
+  }
+})
+
+const filteredInvites = computed(() => {
+  const roleSet = new Set(inviteFilter.roles)
+  const roleFilter = inviteFilter.exactRoles
+    ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
+    : (invite: MeetingInvite) => inviteFilter.roles.every((role) => invite.roles.includes(role as MeetingRole))
+  return meetingInvites.value
+    .filter(inv => roleFilter(inv) && inviteFilter.states.includes(inv.state))
+    .map(inv => {
+      return {
+        ...inv,
+        typeIcon: getTypeIcon(inv.type),
+        rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
+        stateLabel: stateLabels.value[inv.state]
+      }
+    })
+})
+
+function copyFilteredData () {
+  copy(filteredInvites.value.map(i => i.invite_data).join('\n') + '\n')
+}
+
+async function deleteSelected () {
+  // Delete any selected deletable invites
+  // TODO Confirm dialog
+  // TODO Warn if any were not deletable
+  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
+    meetingInviteType.api.delete(pk)
+  }
+}
+
+async function revokeSelected () {
+  // Revoke any selected deletable invites (same as revokable?)
+  // TODO Warn if any were not revokable
+  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
+    meetingInviteType.api.transition(pk, 'revoke')
+  }
+}
+
+const inviteHelp = computed(() => {
+  if (!meetingInvites.value.length) {
+      return {
+      type: 'info',
+      text: t('meeting.invites.noInvitesHelp')
+    }
+  }
+  if (!filteredInvites.value.length) {
+    return {
+      type: 'info',
+      text: t('meeting.invites.noFilteredInvitesHelp'),
+      icon: 'mdi-filter-off'
+    }
+  }
+  return undefined
+})
+
+const filterMenu = ref(false)
 </script>
