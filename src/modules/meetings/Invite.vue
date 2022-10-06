@@ -4,7 +4,11 @@
       <v-list-subheader>
         {{ t('invites.invitedAs') }}:
       </v-list-subheader>
-      <v-list-item :prepend-icon="icon" :title="invite.invite_data" :subtitle="t(`invites.${invite.type}.typeLabel`)" />
+      <v-list-item
+        :prepend-icon="scopePlugin?.icon || 'mdi-help'"
+        :title="scopePlugin?.transformData?.(invite.invite_data) || invite.invite_data"
+        :subtitle="t(`invites.${invite.type}.typeLabel`)"
+      />
     </v-list>
     <v-card-actions class="flex-wrap">
       <v-spacer />
@@ -30,13 +34,10 @@ import slugify from 'slugify'
 import useMeetings from './useMeetings'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
+import { invitationScopes } from '../organisations/registry'
 
 const { fetchInvites } = useMeetingInvites()
 const { fetchMeetings } = useMeetings()
-
-const TYPE_ICONS = {
-  email: 'mdi-email'
-}
 
 const props = defineProps({
   invite: {
@@ -73,5 +74,5 @@ async function rejectInvite (inv: MeetingInvite) {
   }
 }
 
-const icon = computed(() => TYPE_ICONS[props.invite.type])
+const scopePlugin = computed(() => invitationScopes.getPlugin(props.invite.type))
 </script>

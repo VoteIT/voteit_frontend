@@ -44,7 +44,7 @@ export interface MeetingInvite {
   organisation_pk: number
   roles: MeetingRole[]
   state: MeetingInviteState
-  type: 'email'
+  type: 'email' | 'swedish_ssn'
   used_by: null | number
 }
 

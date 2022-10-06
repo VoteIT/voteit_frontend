@@ -27,7 +27,7 @@
         <h2 class="mb-2">
           {{ t('join.invites', userMeetingInvites.length) }}
         </h2>
-        <Invite v-for="inv in userMeetingInvites" :key="inv.pk" :invite="inv" />
+        <Invite v-for="inv in userMeetingInvites" :key="inv.pk" :invite="inv" class="mb-4" />
       </div>
       <h2 class="mb-3">
         {{ t('home.yourMeetings', meetingCount) }}

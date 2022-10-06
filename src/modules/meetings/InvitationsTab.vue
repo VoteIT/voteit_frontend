@@ -292,6 +292,7 @@ const filteredInvites = computed(() => {
     .map(inv => {
       return {
         ...inv,
+        invite_data: invitationScopes.getPlugin(inv.type)?.transformData?.(inv.invite_data) || inv.invite_data,
         typeIcon: typeIcons.value[inv.type],
         rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
         stateLabel: stateLabels.value[inv.state]

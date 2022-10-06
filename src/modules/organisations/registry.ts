@@ -7,6 +7,7 @@ const { organisation } = useOrganisations()
 interface InvitationScope {
   id: string
   icon: string
+  transformData?: (data: string) => string
 }
 
 class InvitationScopePluginHandler extends PluginHandler<InvitationScope> {
@@ -24,5 +25,8 @@ invitationScopes.register({
 
 invitationScopes.register({
   id: 'swedish_ssn',
-  icon: 'mdi-account-card-details'
+  icon: 'mdi-card-account-details',
+  transformData (ssn) {
+    return `${ssn.slice(0, 8)} ••••`
+  }
 })
