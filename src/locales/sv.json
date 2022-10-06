@@ -184,6 +184,43 @@
     "noCurrentMeetings": "Inga möten",
     "yourMeetings": "Ditt möte | Dina möten"
   },
+  "invites": {
+    "add": "Lägg till inbjudningar",
+    "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
+    "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
+    "data": "Inbjuden data",
+    "emails": "E-postadresser att lägga till",
+    "emailsHint": "Lägg till en e-postadress per rad",
+    "existing": "Existerande inbjudningar",
+    "filterOnRoles": "Filtrera på roller",
+    "filterMatchRoles": "Matcha roller exakt",
+    "filterOnStatus": "Filtrera på status",
+    "helpTextTitle": "Vill du skicka ut inbjudningarna?",
+    "helpTextBody": "En inbjudan innebär att användare med rätt mejladress kan gå med i ert möte. Men VoteIT skickar inte ut några mejl - det behöver du göra själv. Använd kopieringsknappen nedan för att kopiera alla mejladresser i listan.",
+    "invites": "Inbjudningar",
+    "invitedAs": "Inbjuden som",
+    "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
+    "noFilteredInvitesHelp": "Inga inbjudningar matchar ditt filter.",
+    "revoke": "Dra tillbaka",
+    "roles": "Bjud in med roller",
+    "typeLabel": "Typ av personuppgifter",
+    "email": {
+      "invalid": "Ogiltig e-postadress",
+      "label": "Klistra in e-postadresser",
+      "hint": "En e-postadress per rad",
+      "typeLabel": "E-post"
+    },
+    "swedish_ssn": {
+      "invalid": "Ogiltigt personnummer",
+      "label": "Klistra in personnummer",
+      "hint": "Ett personnummer per rad",
+      "typeLabel": "Personnummer"
+    },
+    "undefined": {
+      "label": "Välj typ för att lägga till inbjudningar",
+      "hint": ""
+    }
+  },
   "join": {
     "acceptInvite": "Acceptera",
     "asModerator": "Hantera möte",
@@ -229,29 +266,6 @@
       "modify": "Ändra grupp",
       "new": "Ny grupp",
       "noMembers": "Den här gruppern har inga medlemmar."
-    },
-    "invites": {
-      "add": "Lägg till inbjudningar",
-      "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
-      "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
-      "data": "Inbjuden data",
-      "emails": "E-postadresser att lägga till",
-      "emailsHint": "Lägg till en e-postadress per rad",
-      "existing": "Existerande inbjudningar",
-      "filterOnRoles": "Filtrera på roller",
-      "filterMatchRoles": "Matcha roller exakt",
-      "filterOnStatus": "Filtrera på status",
-      "helpTextTitle": "Vill du skicka ut inbjudningarna?",
-      "helpTextBody": "En inbjudan innebär att användare med rätt mejladress kan gå med i ert möte. Men VoteIT skickar inte ut några mejl - det behöver du göra själv. Använd kopieringsknappen nedan för att kopiera alla mejladresser i listan.",
-      "invites": "Inbjudningar",
-      "invitedAs": "Inbjuden som",
-      "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
-      "noFilteredInvitesHelp": "Inga inbjudningar matchar ditt filter.",
-      "revoke": "Dra tillbaka",
-      "roles": "Bjud in med roller",
-      "types": {
-        "email": "E-post"
-      }
     },
     "settings": {
       "all": "Alla inställningar",

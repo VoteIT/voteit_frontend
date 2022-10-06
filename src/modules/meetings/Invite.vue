@@ -2,9 +2,9 @@
   <v-card :title="invite.meeting_title" elevation="4" class="rounded-te-xl rounded-bs-xl">
     <v-list density="compact">
       <v-list-subheader>
-        {{ t('meeting.invites.invitedAs') }}:
+        {{ t('invites.invitedAs') }}:
       </v-list-subheader>
-      <v-list-item :prepend-icon="icon" :title="invite.invite_data" :subtitle="t(`meeting.invites.types.${invite.type}`)" />
+      <v-list-item :prepend-icon="icon" :title="invite.invite_data" :subtitle="t(`invites.${invite.type}.typeLabel`)" />
     </v-list>
     <v-card-actions class="flex-wrap">
       <v-spacer />

@@ -175,7 +175,7 @@ const tabs = computed(() => {
   if (canViewMeetingInvite.value) {
     tabs.push({
       value: 'invites',
-      title: t('meeting.invites.invites')
+      title: t('invites.invites')
     })
   }
   return tabs
