@@ -27,13 +27,13 @@ export function tagify (text: string) {
   return text.toLocaleLowerCase().replace(TAG_DISALLOW_UNICODE, '-').replace(/^-/, '').replace(/-$/, '')
 }
 
-export function dateify<T> (obj: any, attributes: string | string[] = 'created'): T {
-  if (typeof attributes === 'string') attributes = [attributes]
-  attributes.forEach(attrName => {
-    // Respect null dates
-    obj[attrName] = obj[attrName] && new Date(obj[attrName])
+export function dateify<T extends object> (obj: T, ...attributes: (keyof T)[]): T {
+  const dateFields: Partial<Record<keyof T, Date>> = {}
+  attributes.forEach(attr => {
+    const value = obj[attr]
+    if (typeof value === 'string') dateFields[attr] = new Date(value)
   })
-  return obj
+  return { ...obj, ...dateFields }
 }
 
 export function stripHTML (html: string) {

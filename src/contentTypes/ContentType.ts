@@ -1,5 +1,6 @@
 import { ContextRole, RestApiConfig } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
+import { dateify } from '@/utils'
 import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
 import Channel from './Channel'
@@ -40,13 +41,10 @@ export default class ContentType<T extends Record<string, any> = object, R exten
     if (handler) handler(msg.p)
   }
 
-  private dateify (obj: Record<string, unknown>): T {
-    if (!this.contentType.dateFields) return obj as T
-    for (const field of this.contentType.dateFields) {
-      const value = obj[field]
-      if (typeof value === 'string') obj[field] = new Date(value)
-    }
-    return obj as T
+  private dateify (obj: T): T {
+    return this.contentType.dateFields
+      ? dateify(obj, ...this.contentType.dateFields)
+      : obj
   }
 
   public updateMap (map: Map<number, T>, cb?: (obj: T, old?: T) => void) {
