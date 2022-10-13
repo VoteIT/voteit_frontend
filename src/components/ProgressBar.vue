@@ -71,12 +71,12 @@ export default defineComponent({
     overflow: hidden
   .progress
     box-sizing: border-box
-    background-color: rgb(var(--v-theme-success))
+    background-color: rgb(var(--v-theme-success-lighten-2))
     height: 3px
     transition: background-color .2s, width .1s
   .buffer
     box-sizing: border-box
-    background-color: rgba(var(--v-theme-success-lighten-2), .75)
+    background-color: rgba(var(--v-theme-success-lighten-4), .75)
     height: 3px
   .meta
     display: flex

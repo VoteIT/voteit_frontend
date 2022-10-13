@@ -41,7 +41,7 @@
             </small>
           </td>
           <td v-for="({ name, readonly }, i) in columns" :key="name" class="text-center">
-            <v-btn v-if="row[i]" :disabled="readonly || !admin" variant="text" color="success-darken-2" @click="removeRole(user, name)">
+            <v-btn v-if="row[i]" :disabled="readonly || !admin" variant="text" color="success" @click="removeRole(user, name)">
               <v-icon icon="mdi-check" />
             </v-btn>
             <v-btn v-else variant="text" :disabled="readonly || !admin" color="warning" @click="addRole(user, name)">

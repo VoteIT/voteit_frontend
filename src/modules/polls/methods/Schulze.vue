@@ -3,7 +3,7 @@
     <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
       <template #vote>
         <div class="text-center">
-          <v-rating :length="stars" clearable v-model="grades[p.pk]" active-color="success-darken-2" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center" />
+          <v-rating :length="stars" clearable v-model="grades[p.pk]" active-color="success" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center" />
         </div>
       </template>
     </Proposal>

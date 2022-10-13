@@ -82,7 +82,7 @@ export enum ThemeColor {
   Error = 'error',
   Info = 'info',
   Warning = 'warning',
-  Success = 'success-darken-2',
+  Success = 'success',
 }
 
 interface MenuItemBase {

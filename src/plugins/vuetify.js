@@ -26,9 +26,9 @@ const light = {
     error: colors.deepOrange.base,
     info: colors.lightBlue.base,
     'info-lighten-2': colors.lightBlue.lighten2,
-    success: '#6ce498',
-    'success-lighten-2': '#cbf6db',
-    'success-darken-2': '#1da475',
+    success: '#1da475',
+    'success-lighten-2': '#6ce498',
+    'success-lighten-4': '#cbf6db',
     warning: colors.red.darken2
   }
 }

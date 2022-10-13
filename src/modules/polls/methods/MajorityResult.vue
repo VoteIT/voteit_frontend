@@ -38,7 +38,7 @@ export default defineComponent({
     const { getProposal } = useProposals()
 
     function getIcon (proposal: number): { icon: string, color: string } {
-      if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: 'success-darken-2' }
+      if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success }
       if (props.result.denied.includes(proposal)) return { icon: 'mdi-thumb-down', color: ThemeColor.Warning }
       return { icon: 'mdi-question', color: ThemeColor.Secondary }
     }

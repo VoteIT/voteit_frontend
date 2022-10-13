@@ -51,7 +51,7 @@
                     <v-icon start>mdi-help-circle</v-icon>
                     {{ t(`poll.criterion.${criteria}.title`) }}
                   </v-chip>
-                  <v-chip v-else-if="value" color="success-darken-2" class="ma-1" v-bind="props">
+                  <v-chip v-else-if="value" color="success" class="ma-1" v-bind="props">
                     <v-icon start>mdi-check-circle</v-icon>
                     {{ t(`poll.criterion.${criteria}.title`) }}
                   </v-chip>

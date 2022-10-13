@@ -119,7 +119,7 @@ export default defineComponent({
     text-decoration: line-through
     font-weight: 700
   .text-diff-added
-    color: rgb(var(--v-theme-success-darken-2))
+    color: rgb(var(--v-theme-success))
     font-weight: 700
     text-decoration: underline
 </style>

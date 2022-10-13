@@ -74,11 +74,11 @@
             <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaItemType.workflowStates?.filter(s => s.transition)" :key="state.state" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
           </div>
           <div class="my-2">
-            <v-btn color="success-darken-2" class="mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
+            <v-btn color="success" class="mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>
             <v-btn color="warning" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: true })">{{ t('agenda.blockProposals') }}</v-btn>
           </div>
           <div class="my-2">
-            <v-btn color="success-darken-2" class="mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
+            <v-btn color="success" class="mr-1" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: false })">{{ t('agenda.allowDiscussion') }}</v-btn>
             <v-btn color="warning" prepend-icon="mdi-comment-outline" @click="patchSelected({ block_discussion: true })">{{ t('agenda.blockDiscussion') }}</v-btn>
           </div>
           <div class="my-2">
