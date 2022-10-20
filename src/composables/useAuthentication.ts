@@ -56,14 +56,10 @@ export default function useAuthentication () {
   async function logout () {
     if (!isAuthenticated.value) return
     console.log('Logging out')
-    try {
-      await profileType.api.action('logout')
-      isAuthenticated.value = false
-      user.value = null
-      alternateUsers.value = []
-    } catch {
-      // TODO
-    }
+    await profileType.api.action('logout')
+    isAuthenticated.value = false
+    user.value = null
+    alternateUsers.value = []
   }
 
   async function updateProfile (profile: Pick<User, 'userid'>) {

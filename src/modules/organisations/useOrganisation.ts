@@ -10,6 +10,10 @@ export default function useOrganisation () {
     if (!organisation.value) return
     return `${organisation.value.id_host}/`
   })
+  const proxyLogoutURL = computed(() => {
+    if (!organisation.value) return
+    return `${organisation.value.id_host}/log-out`
+  })
   const idLoginURL = computed(() => {
     if (!organisation.value || !organisation.value.id_host) return
     return `${organisation.value.id_host}/login-to/${location.hostname}`
@@ -32,10 +36,11 @@ export default function useOrganisation () {
   return {
     canAddMeeting: computed(() => canAddMeeting()),
     canChangeOrganisation: computed(() => !!organisation.value && canChangeOrganisation(organisation.value)),
+    idLoginURL,
     organisation,
     organisationId: computed(() => organisation.value?.pk),
     manageAccountURL,
-    idLoginURL,
+    proxyLogoutURL,
     getOrganisationComponent
   }
 }

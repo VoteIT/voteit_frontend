@@ -68,7 +68,7 @@
                     <v-list-item
                       v-for="user in alternateUsers"
                       :key="user.pk"
-                      @click="switchUser(user)"
+                      @click="auth.switchUser(user)"
                     >
                       <template #prepend>
                         <UserAvatar :user="user" />
@@ -97,14 +97,12 @@
   </v-app-bar>
 </template>
 
-<script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
-import { ThemeColor } from '@/utils/types'
 
 import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
@@ -119,100 +117,78 @@ import { profileType } from '@/modules/organisations/contentTypes'
 
 import type { FormSchema } from './types'
 
-export default defineComponent({
-  components: { SchemaForm },
-  setup () {
-    const { t } = useI18n()
-    const router = useRouter()
-    const route = useRoute()
-    const auth = useAuthentication()
-    const { manageAccountURL } = useOrganisation()
-    const { alert } = useAlert()
+const { t } = useI18n()
+const router = useRouter()
+const route = useRoute()
+const { dialogDefaults } = useDefaults()
+const auth = useAuthentication()
+const { user, alternateUsers } = auth // For template
+const { manageAccountURL, proxyLogoutURL } = useOrganisation()
+const { alert } = useAlert()
 
-    const userMenuOpen = ref(false)
-    const userMenuComponent = ref<ComponentPublicInstance | null>(null)
+const userMenuOpen = ref(false)
 
-    async function logout () {
-      userMenuOpen.value = false
-      if (!await dialogQuery({
-        title: t('auth.logoutPrompt'),
-        theme: ThemeColor.Warning
-      })) return
-      auth.logout()
-      router.push('/')
-    }
+async function logout () {
+  userMenuOpen.value = false
+  await auth.logout()
+  if (proxyLogoutURL.value) location.assign(proxyLogoutURL.value)
+  else router.push({ name: 'home' })
+}
 
-    const hasNavDrawer = computed(() => {
-      return !!route.matched[0]?.components?.navigationDrawer
-    })
+const hasNavDrawer = computed(() => {
+  return !!route.matched[0]?.components?.navigationDrawer
+})
 
-    function updateProfile (data: Pick<User, 'userid' | 'first_name' | 'last_name' | 'email'>) {
-      return auth.updateProfile(data)
-    }
+function updateProfile (data: Pick<User, 'userid' | 'first_name' | 'last_name' | 'email'>) {
+  return auth.updateProfile(data)
+}
 
-    const emailChoices = ref<string[] | null>(null)
-    async function fetchEmailChoices () {
-      try {
-        const { data } = await profileType.api.getAction<{ emails: string[] }>('email_choices')
-        emailChoices.value = data.emails
-      } catch {
-        alert('^Could not load email address options')
-      }
-    }
-
-    const profileSchema = computed<FormSchema | undefined>(() => {
-      if (!emailChoices.value) {
-        fetchEmailChoices()
-        return
-      }
-      return [
-        {
-          name: 'first_name',
-          label: 'Förnamn',
-          type: FieldType.Text,
-          rules: [rules.required]
-        },
-        {
-          name: 'last_name',
-          label: 'Efternamn',
-          type: FieldType.Text,
-          rules: [rules.required]
-        },
-        {
-          name: 'email',
-          label: 'E-post',
-          type: FieldType.Select,
-          rules: [rules.required],
-          items: emailChoices.value.map(v => ({ value: v, title: v }))
-        },
-        {
-          name: 'userid',
-          label: 'Användar-ID',
-          type: FieldType.Text,
-          rules: [rules.slug, rules.required]
-        }
-      ]
-    })
-
-    const canSwitchUser = computed(() => {
-      return !!auth.alternateUsers.value.length
-    })
-
-    return {
-      t,
-      ...auth,
-      ...useDefaults(),
-      canSwitchUser,
-      hasNavDrawer,
-      manageAccountURL,
-      profileSchema,
-      toggleNavDrawerEvent,
-      userMenuComponent,
-      userMenuOpen,
-      logout,
-      updateProfile
-    }
+const emailChoices = ref<string[] | null>(null)
+async function fetchEmailChoices () {
+  try {
+    const { data } = await profileType.api.getAction<{ emails: string[] }>('email_choices')
+    emailChoices.value = data.emails
+  } catch {
+    alert('^Could not load email address options')
   }
+}
+
+const profileSchema = computed<FormSchema | undefined>(() => {
+  if (!emailChoices.value) {
+    fetchEmailChoices()
+    return
+  }
+  return [
+    {
+      name: 'first_name',
+      label: 'Förnamn',
+      type: FieldType.Text,
+      rules: [rules.required]
+    },
+    {
+      name: 'last_name',
+      label: 'Efternamn',
+      type: FieldType.Text,
+      rules: [rules.required]
+    },
+    {
+      name: 'email',
+      label: 'E-post',
+      type: FieldType.Select,
+      rules: [rules.required],
+      items: emailChoices.value.map(v => ({ value: v, title: v }))
+    },
+    {
+      name: 'userid',
+      label: 'Användar-ID',
+      type: FieldType.Text,
+      rules: [rules.slug, rules.required]
+    }
+  ]
+})
+
+const canSwitchUser = computed(() => {
+  return !!auth.alternateUsers.value.length
 })
 </script>
 
