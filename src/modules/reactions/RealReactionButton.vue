@@ -3,24 +3,14 @@
     <v-btn :prepend-icon="button.icon" size="small" :variant="disabled ? 'tonal' : 'text'" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click="emit('update:modelValue', !modelValue)">
       {{ button.title }}
     </v-btn>
-    <v-dialog @update:modelValue="$event && emit('listOpen')">
+    <DefaultDialog @update:modelValue="$event && emit('listOpen')" :title="t('reaction.peopleReacted')">
       <template #activator="{ props }">
         <v-btn variant="text" flat size="small" v-bind="props" :disabled="listDisabled || !count" class="reaction-count">
           {{ count }}
         </v-btn>
       </template>
-      <template v-slot="{ isActive }">
-        <v-sheet class="pa-4">
-          <div class="d-flex mb-2">
-            <h2 class="flex-grow-1">
-              {{ t('reaction.peopleReacted') }}
-            </h2>
-            <v-btn icon="mdi-close" flat @click="isActive.value = false" class="mt-n2 mr-n2" />
-          </div>
-          <slot name="userList" />
-        </v-sheet>
-      </template>
-    </v-dialog>
+      <slot name="userList" />
+    </DefaultDialog>
   </span>
 </template>
 
@@ -28,6 +18,7 @@
 import { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import { ReactionButton } from './types'
 
 defineProps({

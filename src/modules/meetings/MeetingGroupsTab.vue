@@ -48,25 +48,14 @@
           </td>
           <td>
             {{ group.members.length || '-' }}
-            <v-dialog v-if="group.members.length">
+            <DefaultDialog v-if="group.members.length" :title="t('meeting.groups.membersIn', { ...group })">
               <template #activator="{ props }">
                 <v-btn v-bind="props" size="small" color="secondary" class="ml-2">
                   {{ t('show') }}
                 </v-btn>
               </template>
-              <template #default="{ isActive }">
-                <v-sheet rounded class="pa-4" v-bind="dialogDefaults">
-                  <div class="d-flex">
-                    <h2>
-                      {{ t('meeting.groups.membersIn', { ...group }) }}
-                    </h2>
-                    <v-spacer />
-                    <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" class="mt-n2 mr-n2" />
-                  </div>
-                  <UserList :userIds="group.members" />
-                </v-sheet>
-              </template>
-            </v-dialog>
+              <UserList :userIds="group.members" />
+            </DefaultDialog>
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog :title="t('meeting.groups.modify')">
@@ -133,8 +122,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, Ref, ref } from 'vue'
+<script lang="ts" setup>
+import { Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { required } from '@/utils/rules'
@@ -148,84 +137,55 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import useMeeting from './useMeeting'
 
 import useMeetingGroups from './useMeetingGroups'
-import { meetingGroupType, meetingType } from './contentTypes'
+import { meetingGroupType } from './contentTypes'
 import { MeetingGroup } from './types'
-import useDefaults from '@/composables/useDefaults'
 import { User } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { getUser } = useUserDetails()
-    const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
-    const { user } = useAuthentication()
+const { t } = useI18n()
+const { meetingId } = useMeeting()
+const { getUser } = useUserDetails()
+const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
+const { user } = useAuthentication()
 
-    const groupSchema = [
-      {
-        name: 'title',
-        type: 'text',
-        label: t('name'),
-        rules: [required]
-      }
-    ]
-    async function createGroup (data: Partial<MeetingGroup>) {
-      if (!user.value) throw new Error('User not authenticated')
-      await meetingGroupType.api.add({
-        ...data,
-        meeting: meetingId.value
-        // body: '',
-        // tags: [],
-        // members: []
-      })
-    }
-    function changeGroup (pk: number) {
-      return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
-    }
-    async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
-      try {
-        await meetingGroupType.api.delete(group.pk)
-        isActive.value = false
-      } catch {
-        alert('Couldn\'t delete group')
-      }
-    }
-
-    const addUser = ref(null)
-    function getMembers (group: MeetingGroup) {
-      return group.members.map(pk => getUser(pk) ?? { pk })
-    }
-    function addMember (group: MeetingGroup, user: User) {
-      meetingGroupType.api.patch(group.pk, { members: [...group.members, user.pk] })
-    }
-    function removeMember (group: MeetingGroup, user: User) {
-      meetingGroupType.api.patch(group.pk, { members: group.members.filter(pk => pk !== user.pk) })
-    }
-
-    return {
-      t,
-      ...useDefaults(),
-      addUser,
-      canChangeMeeting,
-      groupSchema,
-      meetingId,
-      meetingType,
-      meetingGroups,
-      addMember,
-      changeGroup,
-      createGroup,
-      deleteGroup,
-      getMembers,
-      removeMember
-    }
-  },
-  components: {
-    UserSearch,
-    SchemaForm,
-    UserList,
-    DefaultDialog,
-    QueryDialog
+const groupSchema = [
+  {
+    name: 'title',
+    type: 'text',
+    label: t('name'),
+    rules: [required]
+  }
+]
+async function createGroup (data: Partial<MeetingGroup>) {
+  if (!user.value) throw new Error('User not authenticated')
+  await meetingGroupType.api.add({
+    ...data,
+    meeting: meetingId.value
+    // body: '',
+    // tags: [],
+    // members: []
+  })
 }
-})
+function changeGroup (pk: number) {
+  return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
+}
+async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
+  try {
+    await meetingGroupType.api.delete(group.pk)
+    isActive.value = false
+  } catch {
+    alert('Couldn\'t delete group')
+  }
+}
+
+const addUser = ref(null)
+function getMembers (group: MeetingGroup) {
+  return group.members.map(pk => getUser(pk) ?? { pk })
+}
+function addMember (group: MeetingGroup, user: User) {
+  meetingGroupType.api.patch(group.pk, { members: [...group.members, user.pk] })
+}
+function removeMember (group: MeetingGroup, user: User) {
+  meetingGroupType.api.patch(group.pk, { members: group.members.filter(pk => pk !== user.pk) })
+}
 </script>

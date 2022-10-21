@@ -62,35 +62,31 @@
             </v-list-item-subtitle>
             <template #append>
               <span class="btn-group d-flex flex-nowrap">
-                <v-dialog>
+                <DefaultDialog :title="t('speaker.editSpeakerTime')">
                   <template #activator="{ props }">
                     <v-btn size="x-small" color="secondary" v-bind="props">
                       <v-icon icon="mdi-pencil" />
                     </v-btn>
                   </template>
-                  <template v-slot="{ isActive }">
-                    <v-sheet v-bind="dialogDefaults" class="pa-4">
-                      <div class="d-flex mb-4">
-                        <h2 class="flex-grow-1">
-                          Change speaker time
-                        </h2>
-                        <v-btn @click="isActive.value = false" icon="mdi-close" variant="text" class="mt-n2 mr-n2" />
-                      </div>
-                      <SchemaForm :schema="timeSpokenSchema" :handler="timeSpokenHandler(pk)" @saved="isActive.value = false" :modelValue="{ seconds }">
-                        <template #buttons>
-                          <div class="text-right">
-                            <v-btn type="submit" color="primary">
-                              {{ t('save') }}
-                            </v-btn>
-                          </div>
-                        </template>
-                      </SchemaForm>
-                    </v-sheet>
+                  <template #default="{ close }">
+                    <SchemaForm :schema="timeSpokenSchema" :handler="timeSpokenHandler(pk)" @saved="close" :modelValue="{ seconds }">
+                      <template #buttons>
+                        <div class="text-right">
+                          <v-btn type="submit" color="primary">
+                            {{ t('save') }}
+                          </v-btn>
+                        </div>
+                      </template>
+                    </SchemaForm>
                   </template>
-                </v-dialog>
-                <v-btn size="x-small" color="warning" @click="deleteHistory(pk)">
-                  <v-icon icon="mdi-delete" />
-                </v-btn>
+                </DefaultDialog>
+                <QueryDialog @confirmed="deleteHistory(pk)" :text="t('speaker.confirmSpeakerDeletion')" color="warning">
+                  <template #activator="{ props }">
+                    <v-btn size="x-small" color="warning" v-bind="props">
+                      <v-icon icon="mdi-delete" />
+                    </v-btn>
+                  </template>
+                </QueryDialog>
               </span>
             </template>
           </v-list-item>
@@ -166,8 +162,10 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, durationToString } from '@/utils'
+import useAlert from '@/composables/useAlert'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 import useAuthentication from '@/composables/useAuthentication'
-import useDefaults from '@/composables/useDefaults'
 import Moment from '@/components/Moment.vue'
 import SchemaForm from '@/components/SchemaForm.vue'
 import UserSearch from '@/components/UserSearch.vue'
@@ -190,7 +188,6 @@ import { openAlertEvent } from '@/utils/events'
 import useSpeakerSystems from './useSpeakerSystems'
 
 import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
-import useAlert from '@/composables/useAlert'
 
 const SPEAKER_HISTORY_CAP = 3
 
@@ -345,15 +342,12 @@ function timeSpokenHandler (pk: number) {
 }
 
 async function deleteHistory (pk: number) {
-  if (!await dialogQuery(t('speaker.confirmSpeakerDeletion'))) return
   try {
     await speakerType.api.delete(pk)
   } catch {
     alert('^Could not delete spoken time entry')
   }
 }
-
-const { dialogDefaults } = useDefaults()
 </script>
 
 <style lang="sass">

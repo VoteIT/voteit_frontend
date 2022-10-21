@@ -79,48 +79,40 @@
         <v-btn v-for="{ props, title } in buttons" :key="title" v-bind="props" class="mr-1 mb-1">
           {{ title }}
         </v-btn>
-        <v-dialog v-if="isFinished && isPollVoter">
+        <DefaultDialog v-if="isFinished && isPollVoter" :title="t('poll.yourVote')">
           <template #activator="{ props }">
             <v-btn v-bind="props" color="secondary mb-1" prepend-icon="mdi-vote">
               {{ t('poll.showVote') }}
             </v-btn>
           </template>
-          <template v-slot="{ isActive }">
-            <v-sheet v-bind="dialogDefaults" class="pa-4 d-flex flex-column">
-              <div class="d-flex mb-2">
-                <h2 class="flex-grow-1">
-                  {{ t('poll.yourVote') }}
-                </h2>
-                <v-btn class="ma-n2" icon="mdi-close" variant="text" @click="isActive.value = false" />
-              </div>
-              <p v-if="!userVote">
-                {{ t('poll.didNotVote') }}
-              </p>
-              <p v-else-if="userVote.abstain">
-                {{ t('poll.abstained') }}
-              </p>
-              <component v-else class="voting-component" disabled :is="voteComponent" :poll="poll" :modelValue="userVote.vote" />
-              <v-spacer />
-              <div class="text-right">
-                <v-btn color="primary" @click="isActive.value = false">
-                  {{ t('close') }}
-                </v-btn>
-              </div>
-            </v-sheet>
+          <template v-slot="{ close }">
+            <p v-if="!userVote">
+              {{ t('poll.didNotVote') }}
+            </p>
+            <p v-else-if="userVote.abstain">
+              {{ t('poll.abstained') }}
+            </p>
+            <component v-else class="voting-component" disabled :is="voteComponent" :poll="poll" :modelValue="userVote.vote" />
+            <v-spacer />
+            <div class="text-right">
+              <v-btn color="primary" @click="close">
+                {{ t('close') }}
+              </v-btn>
+            </div>
           </template>
-        </v-dialog>
+        </DefaultDialog>
       </div>
     </v-col>
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
+<script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import useDefaults from '@/composables/useDefaults'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
@@ -132,156 +124,117 @@ import { dialogQuery, slugify } from '@/utils'
 import { socket } from '@/utils/Socket'
 import { openAlertEvent } from '@/utils/events'
 
-export default defineComponent({
-  name: 'PollView',
-  components: {
-    WorkflowState
-  },
-  setup () {
-    const { t } = useI18n()
-    const route = useRoute()
-    const router = useRouter()
-    const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
-    const { meetingPath, meetingId } = useMeeting()
-    const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
-    useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
+const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
+const { meetingPath, meetingId } = useMeeting()
+const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
+useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
-    const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
-    const votingComplete = ref(!!userVote.value) // Set to false to allow changing vote
-    watch(userVote, (value) => {
-      // Reset voting values if user vote is updated. This is also triggered on poll change.
-      votingComplete.value = !!value
-      validVote.value = value?.vote
-    })
+const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
+const votingComplete = ref(!!userVote.value) // Set to false to allow changing vote
+watch(userVote, (value) => {
+  // Reset voting values if user vote is updated. This is also triggered on poll change.
+  votingComplete.value = !!value
+  validVote.value = value?.vote
+})
 
-    const submitting = ref(false)
-    async function castVote () {
-      if (!validVote.value || !poll.value) return
-      submitting.value = true
-      const msg = {
-        poll: poll.value.pk,
-        vote: validVote.value
-      }
-      try {
-        await socket.call(`${poll.value.method_name}_vote.add`, msg)
-        votingComplete.value = true
-      } catch (e) {
-        openAlertEvent.emit('^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!')
-      }
-      submitting.value = false
-    }
+const submitting = ref(false)
+async function castVote () {
+  if (!validVote.value || !poll.value) return
+  submitting.value = true
+  const msg = {
+    poll: poll.value.pk,
+    vote: validVote.value
+  }
+  try {
+    await socket.call(`${poll.value.method_name}_vote.add`, msg)
+    votingComplete.value = true
+  } catch (e) {
+    openAlertEvent.emit('^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!')
+  }
+  submitting.value = false
+}
 
-    async function abstainVote () {
-      if (!poll.value) return
-      if (validVote.value) {
-        if (!await dialogQuery({
-          title: t('poll.abstainValidVoteConfirm'),
-          no: t('cancel'),
-          yes: t('poll.abstain'),
-          theme: ThemeColor.Warning
-        })) {
-          return
-        }
-      }
-      submitting.value = true
-      try {
-        await voteType.methodCall('abstain', { poll: poll.value.pk })
-        votingComplete.value = true
-        validVote.value = undefined // Forget vote
-      } catch (e) {
-        openAlertEvent.emit('^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!')
-      }
-      submitting.value = false
-    }
-
-    async function deletePoll () {
-      if (!canDelete.value || !poll.value) return
-      if (!await dialogQuery({
-        title: t('poll.confirmDeleteQuery'),
-        theme: ThemeColor.Warning
-      })) return
-      await pollType.api.delete(poll.value.pk)
-      router.push({
-        name: 'polls',
-        params: { id: meetingId.value }
-      })
-    }
-
-    const menuItems = computed<MenuItem[]>(() => {
-      if (!canDelete.value) return []
-      return [{
-        title: t('delete'),
-        icon: 'mdi-delete',
-        color: ThemeColor.Warning,
-        onClick: deletePoll
-      }]
-    })
-
-    const allPollsPath = computed(() => `${meetingPath.value}/polls`)
-    const buttons = computed(() => {
-      const btns: { props: object, title: string }[] = [{
-        props: {
-          color: ThemeColor.Primary,
-          to: `${meetingPath.value}/polls`,
-          prependIcon: 'mdi-chevron-double-left'
-        },
-        title: t('poll.all')
-      }]
-      if (votingComplete.value && canVote.value) {
-        btns.push({
-          props: {
-            color: ThemeColor.Secondary,
-            onClick: () => { votingComplete.value = false },
-            prependIcon: 'mdi-vote'
-          },
-          title: t('poll.viewAndChangeVote')
-        })
-      }
-      if (nextUnvoted.value) {
-        btns.push({
-          props: {
-            color: ThemeColor.Primary,
-            to: `${meetingPath.value}/polls/${nextUnvoted.value.pk}/${slugify(nextUnvoted.value.title)}`,
-            prependIcon: 'mdi-star'
-          },
-          title: t('poll.nextUnvoted', { ...nextUnvoted.value })
-        })
-      }
-      return btns
-    })
-    const methodName = computed(() => poll.value && t(`poll.method.${poll.value.method_name}`))
-
-    return {
-      t,
-      agendaItem,
-      agendaItemPath,
-      allPollsPath,
-      approved,
-      buttons,
-      canChange,
-      canVote,
-      denied,
-      electoralRegister,
-      isOngoing,
-      isFinished,
-      isPollVoter,
-      menuItems,
-      methodName,
-      poll,
-      pollType,
-      resultComponent,
-      userVote,
-      validVote,
-      voteComponent,
-      submitting,
-      votingComplete,
-      voteCount,
-      abstainVote,
-      castVote,
-      ...useDefaults()
+async function abstainVote () {
+  if (!poll.value) return
+  if (validVote.value) {
+    if (!await dialogQuery({
+      title: t('poll.abstainValidVoteConfirm'),
+      no: t('cancel'),
+      yes: t('poll.abstain'),
+      theme: ThemeColor.Warning
+    })) {
+      return
     }
   }
+  submitting.value = true
+  try {
+    await voteType.methodCall('abstain', { poll: poll.value.pk })
+    votingComplete.value = true
+    validVote.value = undefined // Forget vote
+  } catch (e) {
+    openAlertEvent.emit('^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!')
+  }
+  submitting.value = false
+}
+
+async function deletePoll () {
+  if (!canDelete.value || !poll.value) return
+  if (!await dialogQuery({
+    title: t('poll.confirmDeleteQuery'),
+    theme: ThemeColor.Warning
+  })) return
+  await pollType.api.delete(poll.value.pk)
+  router.push({
+    name: 'polls',
+    params: { id: meetingId.value }
+  })
+}
+
+const menuItems = computed<MenuItem[]>(() => {
+  if (!canDelete.value) return []
+  return [{
+    title: t('delete'),
+    icon: 'mdi-delete',
+    color: ThemeColor.Warning,
+    onClick: deletePoll
+  }]
 })
+
+const buttons = computed(() => {
+  const btns: { props: object, title: string }[] = [{
+    props: {
+      color: ThemeColor.Primary,
+      to: `${meetingPath.value}/polls`,
+      prependIcon: 'mdi-chevron-double-left'
+    },
+    title: t('poll.all')
+  }]
+  if (votingComplete.value && canVote.value) {
+    btns.push({
+      props: {
+        color: ThemeColor.Secondary,
+        onClick: () => { votingComplete.value = false },
+        prependIcon: 'mdi-vote'
+      },
+      title: t('poll.viewAndChangeVote')
+    })
+  }
+  if (nextUnvoted.value) {
+    btns.push({
+      props: {
+        color: ThemeColor.Primary,
+        to: `${meetingPath.value}/polls/${nextUnvoted.value.pk}/${slugify(nextUnvoted.value.title)}`,
+        prependIcon: 'mdi-star'
+      },
+      title: t('poll.nextUnvoted', { ...nextUnvoted.value })
+    })
+  }
+  return btns
+})
+const methodName = computed(() => poll.value && t(`poll.method.${poll.value.method_name}`))
 </script>
 
 <style lang="sass">

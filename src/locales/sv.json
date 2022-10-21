@@ -580,6 +580,7 @@
     "addByName": "Sök namn",
     "addByParticipantNumber": "Lägg till deltagarnummer",
     "addListToSystem": "Ny lista",
+    "editSpeakerTime": "Ändra talartid",
     "speakerRoles": "Roller som tillåts tala",
     "cantManageList": "Du har inte rättigheter att hantera den här listan.",
     "confirmSpeakerDeletion": "Du håller på att radera talarhistorik.\nÄr du säker?",
