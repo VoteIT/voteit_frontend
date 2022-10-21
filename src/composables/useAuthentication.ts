@@ -23,7 +23,7 @@ export default function useAuthentication () {
     isAuthenticated.value = true
     organizationRoles.set(_user.organisation, _user.pk, _user.organisation_roles)
     fetchAlternateUsers() // Do not await
-}
+  }
 
   async function fetchAuthenticatedUser (tries = 3): Promise<User | undefined> {
     try {

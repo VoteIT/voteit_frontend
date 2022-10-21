@@ -15,58 +15,50 @@
     <v-btn class="mr-2 d-md-none" :variant="filterMenu ? 'elevated' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'secondary-lighten-2' : undefined" >
       <v-icon>mdi-filter-menu</v-icon>
     </v-btn>
-    <v-dialog v-if="scopeItems" v-model="inviteDialogOpen">
+    <DefaultDialog v-if="scopeItems" :title="t('invites.add')" v-model="inviteDialogOpen">
       <template #activator="{ props }">
         <v-btn v-bind="props" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
           {{ t('invites.add') }}
         </v-btn>
       </template>
-      <v-sheet class="pa-4">
-        <div class="d-flex mb-2">
-          <h2 class="flex-grow-1">
-            {{ t('invites.add') }}
-          </h2>
-          <v-btn class="mt-n2 mr-n2" icon="mdi-close" variant="text" @click="inviteDialogOpen = false" />
+      <v-form @submit.prevent="submitInvites()" v-model="inviteData.valid">
+        <v-select
+          v-if="scopeItems?.length !== 1"
+          class="mb-2"
+          :label="t('invites.typeLabel')"
+          :items="scopeItems"
+          :error-messages="inviteErrors.type"
+          v-model="inviteData.type"
+          :rules="[rules.required]"
+        />
+        <v-textarea
+          v-model="inviteData.invite_data"
+          class="mb-2"
+          :disabled="!inviteData.type"
+          :error-messages="inviteErrors.__root__"
+          rows="10"
+          v-bind="inviteInputProps"
+        />
+        <CheckboxMultipleSelect
+          v-model="inviteData.roles"
+          :settings="{ options: roleLabels }"
+          :label="t('accessPolicy.rolesGiven')"
+          :requiredValues="['participant']"
+        />
+        <div class="text-right">
+          <v-btn
+            type="submit"
+            color="primary"
+            prepend-icon="mdi-account-multiple-plus"
+            :loading="submittingInvites"
+            :disabled="!inviteData.valid || submittingInvites"
+            variant="elevated"
+          >
+            {{ t('add') }}
+          </v-btn>
         </div>
-        <v-form @submit.prevent="submitInvites()" v-model="inviteData.valid">
-          <v-select
-            v-if="scopeItems?.length !== 1"
-            class="mb-2"
-            :label="t('invites.typeLabel')"
-            :items="scopeItems"
-            :error-messages="inviteErrors.type"
-            v-model="inviteData.type"
-            :rules="[rules.required]"
-          />
-          <v-textarea
-            v-model="inviteData.invite_data"
-            class="mb-2"
-            :disabled="!inviteData.type"
-            :error-messages="inviteErrors.__root__"
-            rows="10"
-            v-bind="inviteInputProps"
-          />
-          <CheckboxMultipleSelect
-            v-model="inviteData.roles"
-            :settings="{ options: roleLabels }"
-            :label="t('accessPolicy.rolesGiven')"
-            :requiredValues="['participant']"
-          />
-          <div class="text-right">
-            <v-btn
-              type="submit"
-              color="primary"
-              prepend-icon="mdi-account-multiple-plus"
-              :loading="submittingInvites"
-              :disabled="!inviteData.valid || submittingInvites"
-              variant="elevated"
-            >
-              {{ t('add') }}
-            </v-btn>
-          </div>
-        </v-form>
-      </v-sheet>
-    </v-dialog>
+      </v-form>
+    </DefaultDialog>
   </v-toolbar>
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
@@ -149,6 +141,8 @@ import { chunk, isEqual } from 'lodash'
 
 import { parseSocketError, socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+// import QueryDialog from '@/components/QueryDialog.vue'
 
 import useChannel from '@/composables/useChannel'
 import usePermission from '@/composables/usePermission'

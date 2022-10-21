@@ -8,35 +8,27 @@
         {{ t('meeting.groups.groups') }}
       </h1>
       <v-spacer />
-      <v-dialog v-if="canChangeMeeting">
+      <DefaultDialog v-if="canChangeMeeting" :title="t('meeting.groups.new')">
         <template #activator="{ props }">
           <v-btn color="primary" prepend-icon="mdi-account-multiple-plus" v-bind="props">
             {{ t('meeting.groups.create') }}
           </v-btn>
         </template>
         <template #default="{ isActive }">
-          <v-sheet rounded class="pa-4">
-            <div class="d-flex mb-2">
-              <h2 class="flex-grow-1">
-                {{ t('meeting.groups.new') }}
-              </h2>
-              <v-btn class="mt-n2 mr-n2" icon="mdi-close" variant="text" @click="isActive.value = false" />
-            </div>
-            <SchemaForm :schema="groupSchema" :handler="createGroup" @saved="isActive.value = false">
-              <template #buttons="{ disabled, submitting }">
-                <div class="text-right">
-                  <v-btn variant="text" @click="isActive.value = false">
-                    {{ t('cancel') }}
-                  </v-btn>
-                  <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
-                    {{ t('meeting.groups.create') }}
-                  </v-btn>
-                </div>
-              </template>
-            </SchemaForm>
-          </v-sheet>
+          <SchemaForm :schema="groupSchema" :handler="createGroup" @saved="isActive.value = false">
+            <template #buttons="{ disabled, submitting }">
+              <div class="text-right">
+                <v-btn variant="text" @click="isActive.value = false">
+                  {{ t('cancel') }}
+                </v-btn>
+                <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
+                  {{ t('meeting.groups.create') }}
+                </v-btn>
+              </div>
+            </template>
+          </SchemaForm>
         </template>
-      </v-dialog>
+      </DefaultDialog>
     </div>
     <v-table>
       <thead>
@@ -77,69 +69,63 @@
             </v-dialog>
           </td>
           <td class="text-right" v-if="canChangeMeeting">
-            <v-dialog>
+            <DefaultDialog :title="t('meeting.groups.modify')">
               <template #activator="{ props }">
                 <v-btn size="small" color="primary" v-bind="props">
                   {{ t('edit') }}
                 </v-btn>
               </template>
               <template #default="{ isActive }">
-                <v-sheet rounded class="pa-4" v-bind="dialogDefaults">
-                  <div class="d-flex mb-2">
-                    <h2 class="flex-grow-1">
-                      {{ t('meeting.groups.modify') }}
-                    </h2>
-                    <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" class="mt-n2 mr-n2" />
-                  </div>
-                  <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title }" @saved="isActive.value = false">
-                    <template #buttons="{ disabled, submitting }">
-                      <div class="text-right">
-                        <v-btn @click="isActive.value = false" variant="text">
-                          {{ t('cancel') }}
-                        </v-btn>
-                        <v-btn @click="deleteGroup(group).then((done) => { isActive.value = !done })" variant="text" color="warning">
-                          {{ t('delete') }}
-                        </v-btn>
-                        <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled">
-                          {{ t('save') }}
-                        </v-btn>
-                      </div>
+                <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title }" @saved="isActive.value = false">
+                  <template #buttons="{ disabled, submitting }">
+                    <div class="text-right">
+                      <v-btn @click="isActive.value = false" variant="text">
+                        {{ t('cancel') }}
+                      </v-btn>
+                      <QueryDialog :text="t('meeting.groups.deleteConfirm', { ...group })" color="warning" @confirmed="deleteGroup(group, isActive)">
+                        <template #activator="{ props }">
+                          <v-btn variant="text" color="warning" v-bind="props">
+                            {{ t('delete') }}
+                          </v-btn>
+                        </template>
+                      </QueryDialog>
+                      <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled">
+                        {{ t('save') }}
+                      </v-btn>
+                    </div>
+                  </template>
+                </SchemaForm>
+                <v-divider class="my-4" />
+                <h2 class="mb-2">
+                  {{ t('meeting.groups.members') }}
+                </h2>
+                <UserSearch
+                  v-model="addUser" :params="{ meeting: meetingId }"
+                  :filter="(user) => !group.members.includes(user.pk)"
+                  :label="t('meeting.groups.addMember')"
+                  @submit="addMember(group, $event)" instant
+                />
+                <v-list v-if="group.members.length">
+                  <v-list-item
+                    v-for="user in getMembers(group)" :key="user.pk"
+                  >
+                    <template #prepend>
+                      <UserAvatar popup :user="user" />
                     </template>
-                  </SchemaForm>
-                  <v-divider class="my-4" />
-                  <h2 class="mb-2">
-                    {{ t('meeting.groups.members') }}
-                  </h2>
-                  <UserSearch
-                    v-model="addUser" :params="{ meeting: meetingId }"
-                    :filter="(user) => !group.members.includes(user.pk)"
-                    :label="t('meeting.groups.addMember')"
-                    @submit="addMember(group, $event)" instant
-                  />
-                  <v-list v-if="group.members.length">
-                    <v-list-item
-                      v-for="user in getMembers(group)" :key="user.pk"
-                    >
-                      <template #prepend>
-                        <UserAvatar popup :user="user" />
-                      </template>
-                      <v-list-item-header>
-                        <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
-                          {{ user.full_name ?? `- ${t('unknownUser')} -` }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ user.userid }}
-                        </v-list-item-subtitle>
-                      </v-list-item-header>
-                      <template #append>
-                        <v-btn icon="mdi-close" color="secondary" variant="text" @click="removeMember(group, user)" />
-                      </template>
-                    </v-list-item>
-                  </v-list>
-                  <v-alert v-else type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />
-                </v-sheet>
+                    <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
+                      {{ user.full_name ?? `- ${t('unknownUser')} -` }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ user.userid }}
+                    </v-list-item-subtitle>
+                    <template #append>
+                      <v-btn icon="mdi-close" color="secondary" variant="text" @click="removeMember(group, user)" />
+                    </template>
+                  </v-list-item>
+                </v-list>
+                <v-alert v-else type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />
               </template>
-            </v-dialog>
+            </DefaultDialog>
           </td>
         </tr>
       </tbody>
@@ -148,16 +134,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
 import { required } from '@/utils/rules'
-import { ThemeColor } from '@/utils/types'
 import UserSearch from '@/components/UserSearch.vue'
 import SchemaForm from '@/components/SchemaForm.vue'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 import useMeeting from './useMeeting'
 
@@ -197,16 +183,12 @@ export default defineComponent({
     function changeGroup (pk: number) {
       return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
     }
-    async function deleteGroup (group: MeetingGroup) {
-      if (!await dialogQuery({
-        title: t('meeting.groups.deleteConfirm', { ...group }),
-        theme: ThemeColor.Warning
-      })) return false
+    async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
       try {
         await meetingGroupType.api.delete(group.pk)
-        return true
+        isActive.value = false
       } catch {
-        return false
+        alert('Couldn\'t delete group')
       }
     }
 
@@ -241,7 +223,9 @@ export default defineComponent({
   components: {
     UserSearch,
     SchemaForm,
-    UserList
-  }
+    UserList,
+    DefaultDialog,
+    QueryDialog
+}
 })
 </script>

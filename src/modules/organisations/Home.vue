@@ -58,7 +58,7 @@
         </v-list>
       </div>
       <p v-if="!meetingGroups.length" class="mb-4"><em>{{ t('home.noCurrentMeetings') }}</em></p>
-      <v-dialog v-if="canAddMeeting">
+      <DefaultDialog v-if="canAddMeeting" :title="t('meeting.create')">
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
@@ -71,18 +71,10 @@
           </v-btn>
         </template>
         <template v-slot="{ isActive }">
-          <v-sheet class="pa-4" v-bind="dialogDefaults">
-            <div class="d-flex mb-2">
-              <h2 class="flex-grow-1">
-                {{ t('meeting.create') }}
-              </h2>
-              <v-btn class="mt-n2 mr-n2" icon="mdi-close" variant="text" @click="isActive.value=false" />
-            </div>
-            <AddMeeting @close="isActive.value=false" />
-          </v-sheet>
+          <AddMeeting @close="isActive.value=false" />
         </template>
-      </v-dialog>
-      <v-dialog v-if="otherMeetingsExist">
+      </DefaultDialog>
+      <DefaultDialog v-if="otherMeetingsExist" :title="t('meeting.find')">
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
@@ -95,49 +87,39 @@
             {{ t('meeting.find') }}
           </v-btn>
         </template>
-        <template #default="{ isActive }">
-          <v-sheet class="pa-4" v-bind="dialogDefaults" min-height="60vh">
-            <div class="d-flex mb-2">
-              <h2 class="flex-grow-1">
-                {{ t('meeting.find') }}
-              </h2>
-              <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" size="small" class="mt-n1 mr-n1" />
-            </div>
-            <div class="d-flex">
-              <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
-              <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
-            </div>
-            <v-switch
-              :label="t('organization.searchArchivedMeetings')"
-              v-model="searchFilter.includeArchived"
-              color="primary"
-            />
-            <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
-            <v-list>
-              <v-list-item
-                v-for="{ pk, title, state, current_user_roles } in searchedMeetings[currentSearchPage - 1]"
-                :key="pk"
-                :title="title"
-                :subtitle="t(`workflowState.${state}`)"
-                :to="current_user_roles ? `/m/${pk}/${slugify(title)}` : undefined"
-                >
-                <template #append v-if="current_user_roles">
-                  <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
-                    <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
-                      <v-icon v-bind="props" :icon="icon" />
-                    </template>
-                  </v-tooltip>
+        <div class="d-flex">
+          <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
+          <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
+        </div>
+        <v-switch
+          :label="t('organization.searchArchivedMeetings')"
+          v-model="searchFilter.includeArchived"
+          color="primary"
+        />
+        <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
+        <v-list>
+          <v-list-item
+            v-for="{ pk, title, state, current_user_roles } in searchedMeetings[currentSearchPage - 1]"
+            :key="pk"
+            :title="title"
+            :subtitle="t(`workflowState.${state}`)"
+            :to="current_user_roles ? `/m/${pk}/${slugify(title)}` : undefined"
+            >
+            <template #append v-if="current_user_roles">
+              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+                <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
+                  <v-icon v-bind="props" :icon="icon" />
                 </template>
-                <template v-else #append>
-                  <v-btn :to="`/join/${pk}/${slugify(title)}`" append-icon="mdi-arrow-right-circle" color="primary" variant="tonal">
-                    {{ t('join.meeting') }}
-                  </v-btn>
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-sheet>
-        </template>
-      </v-dialog>
+              </v-tooltip>
+            </template>
+            <template v-else #append>
+              <v-btn :to="`/join/${pk}/${slugify(title)}`" append-icon="mdi-arrow-right-circle" color="primary" variant="tonal">
+                {{ t('join.meeting') }}
+              </v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+      </DefaultDialog>
     </v-col>
   </v-row>
 
@@ -171,6 +153,7 @@ import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 import { chunk } from 'lodash'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -259,7 +242,7 @@ function addUser (user: ContextRoles) {
   organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
 }
 
-const { dialogDefaults, collapsedBodyHeightMobile } = useDefaults()
+const { collapsedBodyHeightMobile } = useDefaults()
 
 /* Meetings listed upfront */
 const groupRules = [

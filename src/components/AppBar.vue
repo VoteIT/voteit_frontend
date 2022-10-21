@@ -103,18 +103,17 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { toggleNavDrawerEvent } from '@/utils/events'
-
+import * as rules from '@/utils/rules'
 import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
-import useOrganisation from '@/modules/organisations/useOrganisation'
-import SchemaForm from './SchemaForm.vue'
-import { User } from '@/modules/organisations/types'
-import { FieldType } from './types'
 
-import * as rules from '@/utils/rules'
 import { profileType } from '@/modules/organisations/contentTypes'
+import useOrganisation from '@/modules/organisations/useOrganisation'
+import { User } from '@/modules/organisations/types'
 
+import SchemaForm from './SchemaForm.vue'
+import { FieldType } from './types'
 import type { FormSchema } from './types'
 
 const { t } = useI18n()

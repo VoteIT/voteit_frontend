@@ -4,9 +4,6 @@
       <header>
         <h1>{{ t('meeting.settings.for', { ...meeting }) }}</h1>
         <v-breadcrumbs v-if="breadcrumbs.length" :items="breadcrumbs" />
-        <v-btn color="primary" v-if="currentComponent" prepend-icon="mdi-chevron-left" :to="`${meetingPath}/settings`">
-          {{ t('meeting.settings.all') }}
-        </v-btn>
       </header>
     </v-col>
   </v-row>
