@@ -56,7 +56,23 @@
                 <v-switch :modelValue="!ai.block_discussion" hide-details color="primary" @update:modelValue="patchAgendaItem(ai, { block_discussion: !$event })" />
               </td>
               <td>
-                <v-btn v-if="canDeleteAgendaItem(ai)" color="warning" prepend-icon="mdi-delete" size="small" @click="deleteItem(ai)">{{ t('delete') }}</v-btn>
+                <QueryDialog
+                  v-if="canDeleteAgendaItem(ai)"
+                  color="warning"
+                  :text="t('agenda.deleteItemConfirm')"
+                  @confirmed="agendaApi.delete(ai.pk)"
+                >
+                  <template #activator="{ props }">
+                    <v-btn
+                      color="warning"
+                      prepend-icon="mdi-delete"
+                      size="small"
+                      v-bind="props"
+                    >
+                      {{ t('delete') }}
+                    </v-btn>
+                  </template>
+                </QueryDialog>
               </td>
             </tr>
           </v-item>
@@ -67,9 +83,13 @@
           <h2 class="my-2">
             {{ t('agenda.changeMany', selectedAgendaItems.length) }}
           </h2>
-          <v-btn color="warning" prepend-icon="mdi-delete" @click="deleteSelected()">
-            {{ t('delete') }}
-          </v-btn>
+          <QueryDialog :text="t('agenda.deleteSelectedConfirm', editSelected.length)" color="warning" @confirmed="deleteSelected">
+            <template #activator="{ props }">
+              <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
+                {{ t('delete') }}
+              </v-btn>
+            </template>
+          </QueryDialog>
           <div class="my-2">
             <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaItemType.workflowStates?.filter(s => s.transition)" :key="state.state" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
           </div>
@@ -129,6 +149,7 @@ import { ThemeColor } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
 import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 import useMeeting from '../meetings/useMeeting'
 import { meetingType } from '../meetings/contentTypes'
@@ -172,13 +193,6 @@ async function addAgendaItem () {
     title: newAgendaTitle.value
   })
   newAgendaTitle.value = ''
-}
-
-async function deleteItem (ai: AgendaItem) {
-  if (await dialogQuery({
-    title: t('agenda.deleteItemConfirm'),
-    theme: ThemeColor.Warning
-  })) agendaApi.delete(ai.pk)
 }
 
 const editSelected = ref<number[]>([])
@@ -242,10 +256,7 @@ async function actionOnSelected (fn: (ai: AgendaItem) => Promise<any>, confirm?:
 }
 
 function deleteSelected () {
-  actionOnSelected(
-    ai => agendaApi.delete(ai.pk),
-    t('agenda.deleteSelectedConfirm', { count: editSelected.value.length }, editSelected.value.length)
-  )
+  actionOnSelected(ai => agendaApi.delete(ai.pk))
 }
 
 function setStateSelected (state: WorkflowState) {

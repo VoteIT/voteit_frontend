@@ -95,7 +95,7 @@
     "changeManyFailed": "Åtgärden misslyckades för en dagordningspunkt ({reason}) | Åtgärden misslyckades för {count} dagordningspunkter ({reason})",
     "columns": "Kolumner",
     "deleteItemConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker?",
-    "deleteSelectedConfirm": "Du är på väg att radera {count} dagordningspunkter.\nÄr du säker?",
+    "deleteSelectedConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker? | Du är på väg att radera {count} dagordningspunkter.\nÄr du säker?",
     "edit": "Redigera dagordning",
     "filteringOnTag": "Filtrerar på",
     "helpEditTags": "Välj dagordningspunkter till vänster för att redigera taggar",

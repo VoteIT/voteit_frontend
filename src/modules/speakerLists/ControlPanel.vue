@@ -6,41 +6,33 @@
         {{ t('speaker.settings') }}
       </h2>
       <v-spacer />
-      <v-dialog v-model="createDialogOpen">
+      <DefaultDialog v-model="createDialogOpen" :title="t('speaker.systemAdd')">
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props" prepend-icon="mdi-plus">{{ t('speaker.systemAdd') }}</v-btn>
         </template>
-        <template v-slot="{ isActive }">
-          <v-sheet v-bind="dialogDefaults" class="pa-4">
-            <div class="d-flex mb-2">
-              <h2 class="flex-grow-1">
-                {{ t('speaker.systemAdd') }}
-              </h2>
-              <v-btn class="mr-n2 mt-n2" icon="mdi-close" variant="text" @click="isActive.value = false" />
-            </div>
-            <v-form @submit.prevent="createSystem()">
-              <v-text-field :label="t('title')" v-model="systemData.title" />
-              <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
-    <!-- TODO Better dynamic forms -->
-              <v-expand-transition>
-                <div v-if="createSystemSettings">
-                  <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
-                </div>
-              </v-expand-transition>
-              <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" />
-              <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
-              <div class="text-right">
-                <v-btn variant="text" @click="isActive.value = false">
-                  {{ t('cancel') }}
-                </v-btn>
-                <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
-                  {{ t('add') }}
-                </v-btn>
+        <template v-slot="{ close }">
+          <v-form @submit.prevent="createSystem()">
+            <v-text-field :label="t('title')" v-model="systemData.title" />
+            <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
+  <!-- TODO Better dynamic forms -->
+            <v-expand-transition>
+              <div v-if="createSystemSettings">
+                <v-text-field v-for="field in createSystemSettings" :key="field.name" v-bind="field" />
               </div>
-            </v-form>
-          </v-sheet>
+            </v-expand-transition>
+            <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="systemData.safe_positions" />
+            <CheckboxMultipleSelect v-model="systemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
+            <div class="text-right">
+              <v-btn variant="text" @click="close()">
+                {{ t('cancel') }}
+              </v-btn>
+              <v-btn type="submit" color="primary" prepend-icon="mdi-plus" :disabled="!createReady">
+                {{ t('add') }}
+              </v-btn>
+            </div>
+          </v-form>
         </template>
-      </v-dialog>
+      </DefaultDialog>
     </div>
     <Widget class="speaker-system my-4" v-for="{ system, menu, data, userSearch } in systems" :key="system.pk">
       <div class="d-flex">
@@ -55,248 +47,206 @@
       <UserSearch class="mt-4" v-bind="userSearch" />
       <RoleMatrix class="mt-2" admin :contentType="speakerSystemType" :pk="system.pk" :icons="systemIcons" />
     </Widget>
-    <v-dialog v-model="editDialogOpen">
-      <template v-slot="{ isActive }">
-        <v-sheet v-bind="dialogDefaults" class="pa-4">
-          <div class="d-flex mb-2">
-            <h2 class="flex-grow-1">
-              {{ t('speaker.systemEdit') }}
-            </h2>
-            <v-btn class="mt-n2 mr-n2" variant="text" @click="isActive.value = false" icon="mdi-close" />
-          </div>
-          <v-form @submit.prevent="saveSystem()">
-            <v-text-field :label="t('title')" v-model="editSystemData.title" />
-            <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
-    <!-- TODO Better dynamic forms -->
-            <v-expand-transition>
-              <div v-if="editSystemSettings">
-                <v-text-field v-for="field in editSystemSettings" :key="field.name" v-bind="field" />
-              </div>
-            </v-expand-transition>
-            <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" />
-            <CheckboxMultipleSelect v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
-            <div class="text-right">
-              <v-btn variant="text" @click="isActive.value = false">
-                {{ t('cancel') }}
-              </v-btn>
-              <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!editSystemReady">
-                {{ t('save') }}
-              </v-btn>
+    <DefaultDialog v-model="editDialogOpen" :title="t('speaker.systemEdit')">
+      <template #default="{ close }">
+        <v-form @submit.prevent="saveSystem()">
+          <v-text-field :label="t('title')" v-model="editSystemData.title" />
+          <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
+  <!-- TODO Better dynamic forms -->
+          <v-expand-transition>
+            <div v-if="editSystemSettings">
+              <v-text-field v-for="field in editSystemSettings" :key="field.name" v-bind="field" />
             </div>
-          </v-form>
-        </v-sheet>
+          </v-expand-transition>
+          <v-text-field type="number" :label="t('speaker.safePositions')" min="0" max="2" v-model="editSystemData.safe_positions" />
+          <CheckboxMultipleSelect v-model="editSystemData.meeting_roles_to_speaker" :settings="{ options: roleLabels }" :label="t('speaker.speakerRoles')" />
+          <div class="text-right">
+            <v-btn variant="text" @click="close()">
+              {{ t('cancel') }}
+            </v-btn>
+            <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!editSystemReady">
+              {{ t('save') }}
+            </v-btn>
+          </div>
+        </v-form>
       </template>
-    </v-dialog>
+    </DefaultDialog>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeMount, reactive, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, onBeforeMount, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
+import { MenuItem, ThemeColor } from '@/utils/types'
 
 import useLoader from '@/composables/useLoader'
-import useMeeting from '@/modules/meetings/useMeeting'
-
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import SelectVue from '@/components/inputs/Select.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserSearch from '@/components/UserSearch.vue'
-import useDefaults from '@/composables/useDefaults'
-
 import { ContextRole } from '@/composables/types'
-import { MenuItem, ThemeColor } from '@/utils/types'
+
+import useMeeting from '../meetings/useMeeting'
+import type { User } from '../organisations/types'
 
 import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
 import useSpeakerSystems from './useSpeakerSystems'
 
-import type { User } from '../organisations/types'
-
 const systemIcons = {
   speaker: 'mdi-chat',
   list_moderator: 'mdi-gavel'
 }
 
-export default defineComponent({
-  components: {
-    CheckboxMultipleSelect,
-    RoleMatrix,
-    SelectVue,
-    UserSearch
-  },
-  setup () {
-    const { t } = useI18n()
-    const { meetingId, meeting, roleLabels } = useMeeting()
-    const loader = useLoader('SpeakerSystems panel')
-    const systemRoles = ref<ContextRole[]>([])
-    const { getUserIds } = speakerSystemType.useContextRoles()
-    const { allSpeakerSystems } = useSpeakerSystems(meetingId)
+const { t } = useI18n()
 
-    onBeforeMount(() => {
-      loader.call(async () => {
-        systemRoles.value = await speakerSystemType.getAvailableRoles()
-      })
-    })
+const { meetingId, roleLabels } = useMeeting()
+const loader = useLoader('SpeakerSystems panel')
+const systemRoles = ref<ContextRole[]>([])
+const { getUserIds } = speakerSystemType.useContextRoles()
+const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 
-    const systemData = reactive<Partial<SpeakerSystem>>({
-      title: t('speaker.system'),
-      safe_positions: 1,
-      meeting_roles_to_speaker: []
-    })
-    const createSystemSettings = computed<Record<string, any>[] | undefined>(() => getMethodSettings(systemData))
-    const createDialogOpen = ref(false)
-    const creating = ref(false)
-    const createReady = computed(() => !creating.value && systemData.title && systemData.method_name && systemData.meeting_roles_to_speaker?.length)
+onBeforeMount(() => {
+  loader.call(async () => {
+    systemRoles.value = await speakerSystemType.getAvailableRoles()
+  })
+})
 
-    async function createSystem () {
-      creating.value = true
-      try {
-        await speakerSystemType.api.add({ ...systemData, meeting: meetingId.value })
-        systemData.title = t('speaker.system')
-        systemData.safe_positions = 1
-        delete systemData.method_name
-        createDialogOpen.value = false
-      } catch (e) {
-        console.error(e)
-      }
-      creating.value = false
-    }
+const systemData = reactive<Partial<SpeakerSystem>>({
+  title: t('speaker.system'),
+  safe_positions: 1,
+  meeting_roles_to_speaker: []
+})
+const createSystemSettings = computed<Record<string, any>[] | undefined>(() => getMethodSettings(systemData))
+const createDialogOpen = ref(false)
+const creating = ref(false)
+const createReady = computed(() => !creating.value && systemData.title && systemData.method_name && systemData.meeting_roles_to_speaker?.length)
 
-    function getMethodSettings (data: Partial<SpeakerSystem>) {
-      if (data.method_name === SpeakerSystemMethod.Priority) { // TODO BETTER
-        if (!data.settings) data.settings = { max_times: 0 }
-        return [{
-          type: 'number',
-          min: 0,
-          modelValue: data.settings.max_times,
-          // eslint-disable-next-line camelcase
-          'onUpdate:modelValue': (max_times: number) => { data.settings = { max_times } },
-          label: t('speaker.orderMethod.maxTimes'),
-          hint: t('speaker.orderMethod.maxTimesHint')
-        }]
-      }
-      // If no settings, ensure there's no setting data
-      delete data.settings
-    }
-
-    const editDialogOpen = ref(false)
-    const editSystemPk = ref<number | null>(null)
-    const editSystemData = reactive<Partial<SpeakerSystem>>({})
-    const editSystemReady = computed(() => editSystemData.title && editSystemData.meeting_roles_to_speaker?.length)
-    const editSystemSettings = computed<Record<string, any>[] | undefined>(() => getMethodSettings(editSystemData))
-    function editSystem (system: SpeakerSystem) {
-      Object.assign(editSystemData, system)
-      editSystemPk.value = system.pk
-      editDialogOpen.value = true
-    }
-    async function saveSystem () {
-      if (!editSystemPk.value) return
-      try {
-        await speakerSystemType.api.patch(editSystemPk.value, { ...editSystemData })
-        editDialogOpen.value = false
-      } catch (e) {
-        console.error(e)
-      }
-    }
-
-    async function deleteSystem (system: SpeakerSystem) {
-      if (await dialogQuery({
-        title: t('speaker.confirmSystemDeletion'),
-        theme: ThemeColor.Warning
-      })) speakerSystemType.api.delete(system.pk)
-    }
-
-    function getSystemMenu (s: SpeakerSystem): MenuItem[] {
-      const items = []
-      if (canChangeSpeakerSystem(s)) {
-        items.push({
-          title: t('edit'),
-          icon: 'mdi-pencil',
-          onClick: async () => editSystem(s)
-        })
-      }
-      if (canDeleteSpeakerSystem(s)) {
-        items.push({
-          title: t('delete'),
-          icon: 'mdi-delete',
-          onClick: async () => deleteSystem(s),
-          color: ThemeColor.Warning
-        })
-      }
-      return items
-    }
-
-    function getSystemData (system: SpeakerSystem): {key: string, value: string | number }[] {
-      return [
-        {
-          key: t('state'),
-          value: t(`workflowState.${system.state}`)
-        },
-        {
-          key: t('speaker.systemMethod'),
-          value: t(`speaker.orderMethod.${system.method_name}`)
-        },
-        {
-          key: t('speaker.safePositions'),
-          value: String(system.safe_positions) ?? t('speaker.noSafePositions')
-        },
-        {
-          key: t('speaker.speakerRoles'),
-          value: system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ')
-        }
-      ]
-    }
-
-    const systems = computed(() => {
-      return allSpeakerSystems.value
-        .map(system => {
-          const userIds = getUserIds(system.pk)
-          return {
-            system,
-            menu: getSystemMenu(system),
-            data: getSystemData(system),
-            userSearch: {
-              params: { meeting: meetingId.value },
-              filter: (user: User) => !userIds.includes(user.pk),
-              onSubmit: (user: User) => speakerSystemType.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
-            }
-          }
-        })
-    })
-
-    const orderMethods = computed(() => {
-      return Object.fromEntries(
-        Object.values(SpeakerSystemMethod)
-          .map(name => [name, t(`speaker.orderMethod.${name}`)])
-      )
-    })
-
-    return {
-      t,
-      createDialogOpen,
-      createReady,
-      createSystemSettings,
-      editDialogOpen,
-      editSystemData,
-      editSystemSettings,
-      editSystemReady,
-      meeting,
-      orderMethods,
-      roleLabels,
-      systems,
-      systemData,
-      systemRoles,
-      speakerSystemType,
-      systemIcons,
-      createSystem,
-      deleteSystem,
-      saveSystem,
-      ...useDefaults()
-    }
+async function createSystem () {
+  creating.value = true
+  try {
+    await speakerSystemType.api.add({ ...systemData, meeting: meetingId.value })
+    systemData.title = t('speaker.system')
+    systemData.safe_positions = 1
+    delete systemData.method_name
+    createDialogOpen.value = false
+  } catch (e) {
+    console.error(e)
   }
+  creating.value = false
+}
+
+function getMethodSettings (data: Partial<SpeakerSystem>) {
+  if (data.method_name === SpeakerSystemMethod.Priority) { // TODO BETTER
+    if (!data.settings) data.settings = { max_times: 0 }
+    return [{
+      type: 'number',
+      min: 0,
+      modelValue: data.settings.max_times,
+      // eslint-disable-next-line camelcase
+      'onUpdate:modelValue': (max_times: number) => { data.settings = { max_times } },
+      label: t('speaker.orderMethod.maxTimes'),
+      hint: t('speaker.orderMethod.maxTimesHint')
+    }]
+  }
+  // If no settings, ensure there's no setting data
+  delete data.settings
+}
+
+const editDialogOpen = ref(false)
+const editSystemPk = ref<number | null>(null)
+const editSystemData = reactive<Partial<SpeakerSystem>>({})
+const editSystemReady = computed(() => editSystemData.title && editSystemData.meeting_roles_to_speaker?.length)
+const editSystemSettings = computed<Record<string, any>[] | undefined>(() => getMethodSettings(editSystemData))
+function editSystem (system: SpeakerSystem) {
+  Object.assign(editSystemData, system)
+  editSystemPk.value = system.pk
+  editDialogOpen.value = true
+}
+async function saveSystem () {
+  if (!editSystemPk.value) return
+  try {
+    await speakerSystemType.api.patch(editSystemPk.value, { ...editSystemData })
+    editDialogOpen.value = false
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+async function deleteSystem (system: SpeakerSystem) {
+  if (await dialogQuery({
+    title: t('speaker.confirmSystemDeletion'),
+    theme: ThemeColor.Warning
+  })) speakerSystemType.api.delete(system.pk)
+}
+
+function getSystemMenu (s: SpeakerSystem): MenuItem[] {
+  const items = []
+  if (canChangeSpeakerSystem(s)) {
+    items.push({
+      title: t('edit'),
+      icon: 'mdi-pencil',
+      onClick: async () => editSystem(s)
+    })
+  }
+  if (canDeleteSpeakerSystem(s)) {
+    items.push({
+      title: t('delete'),
+      icon: 'mdi-delete',
+      onClick: async () => deleteSystem(s),
+      color: ThemeColor.Warning
+    })
+  }
+  return items
+}
+
+function getSystemData (system: SpeakerSystem): {key: string, value: string | number }[] {
+  return [
+    {
+      key: t('state'),
+      value: t(`workflowState.${system.state}`)
+    },
+    {
+      key: t('speaker.systemMethod'),
+      value: t(`speaker.orderMethod.${system.method_name}`)
+    },
+    {
+      key: t('speaker.safePositions'),
+      value: String(system.safe_positions) ?? t('speaker.noSafePositions')
+    },
+    {
+      key: t('speaker.speakerRoles'),
+      value: system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ')
+    }
+  ]
+}
+
+const systems = computed(() => {
+  return allSpeakerSystems.value
+    .map(system => {
+      const userIds = getUserIds(system.pk)
+      return {
+        system,
+        menu: getSystemMenu(system),
+        data: getSystemData(system),
+        userSearch: {
+          params: { meeting: meetingId.value },
+          filter: (user: User) => !userIds.includes(user.pk),
+          onSubmit: (user: User) => speakerSystemType.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
+        }
+      }
+    })
+})
+
+const orderMethods = computed(() => {
+  return Object.fromEntries(
+    Object.values(SpeakerSystemMethod)
+      .map(name => [name, t(`speaker.orderMethod.${name}`)])
+  )
 })
 </script>
 

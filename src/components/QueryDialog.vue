@@ -26,7 +26,7 @@
             @click="close"
             class="mr-1"
           >
-            {{ t('cancel') }}
+            {{ t('no') }}
           </v-btn>
           <v-btn
             variant="flat"

@@ -17,16 +17,16 @@
             <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
           </v-card-text>
           <v-card-actions v-if="canAddProposal">
-            <v-dialog>
+            <DefaultDialog color="background" persistent>
               <template #activator="{ props }">
                 <v-btn size="small" variant="elevated" prepend-icon="mdi-text-box-plus-outline" color="primary" v-bind="props">
                   {{ t('proposal.change') }}
                 </v-btn>
               </template>
-              <template v-slot="{ isActive }">
-                <AddTextProposalModal :paragraph="p" @close="isActive.value = false" />
+              <template #default="{ close }">
+                <AddTextProposalModal :paragraph="p" @close="close" />
               </template>
-            </v-dialog>
+            </DefaultDialog>
           </v-card-actions>
         </template>
       </div>
@@ -34,75 +34,55 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
 import { openModalEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+
 import { ProposalText, proposalTextType } from './contentTypes'
 import useProposals from './useProposals'
 import useTextDocument from './useTextDocument'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 
-export default defineComponent({
-  props: {
-    document: {
-      type: Object as PropType<ProposalText>,
-      required: true
-    }
-  },
-  components: {
-    AddTextProposalModal
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const { getAgendaProposals } = useProposals()
-    const proposalCount = computed(() => {
-      const mapping: Record<string, number> = {}
-      for (const p of props.document.paragraphs) {
-        mapping[p.tag] = getAgendaProposals(props.document.agenda_item, prop => prop.tags.includes(p.tag)).length
-      }
-      return mapping
-    })
-
-    function editDocument () {
-      openModalEvent.emit({
-        title: t('proposal.textModify'),
-        component: EditTextDocumentModal,
-        data: props.document
-      })
-    }
-    async function deleteDocument () {
-      if (await dialogQuery({
-        title: t('proposal.textDeleteConfirm'),
-        theme: ThemeColor.Warning
-      })) proposalTextType.api.delete(props.document.pk)
-    }
-
-    // function addProposal (data: TextParagraph) {
-    //   openModalEvent.emit({
-    //     title: t('proposal.change'),
-    //     component: AddTextProposalModal,
-    //     data
-    //   })
-    // }
-
-    const collapsed = ref(false)
-
-    return {
-      t,
-      collapsed,
-      proposalCount,
-      // addProposal,
-      deleteDocument,
-      editDocument,
-      ...useTextDocument(ref(props.document))
-    }
+const props = defineProps({
+  document: {
+    type: Object as PropType<ProposalText>,
+    required: true
   }
 })
+
+const { t } = useI18n()
+
+const { getAgendaProposals } = useProposals()
+const proposalCount = computed(() => {
+  const mapping: Record<string, number> = {}
+  for (const p of props.document.paragraphs) {
+    mapping[p.tag] = getAgendaProposals(props.document.agenda_item, prop => prop.tags.includes(p.tag)).length
+  }
+  return mapping
+})
+
+function editDocument () {
+  openModalEvent.emit({
+    title: t('proposal.textModify'),
+    component: EditTextDocumentModal,
+    data: props.document
+  })
+}
+async function deleteDocument () {
+  if (await dialogQuery({
+    title: t('proposal.textDeleteConfirm'),
+    theme: ThemeColor.Warning
+  })) proposalTextType.api.delete(props.document.pk)
+}
+
+const collapsed = ref(false)
+const { canAddProposal, canChangeDocument, canDeleteDocument } = useTextDocument(ref(props.document))
 </script>
 
 <style lang="sass">

@@ -19,71 +19,53 @@
               <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
             </v-list-item>
             <v-divider class="my-3" />
-            <v-dialog>
+            <DefaultDialog :title="t('profile.changeUserid')">
               <template #activator="{ props }">
                 <v-list-item prepend-icon="mdi-account" :title="t('profile.profile')" v-bind="props" />
               </template>
-              <template v-slot="{ isActive }">
-                <v-sheet class="pa-4" v-bind="dialogDefaults">
-                  <div class="d-flex">
-                    <h2 class="mb-2 flex-grow-1">
-                      {{ t('profile.changeUserid') }}
-                    </h2>
-                    <v-btn class="mt-n2 mr-n2" icon="mdi-close" @click="isActive.value = false" />
+              <template v-slot="{ close }">
+                <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
+                <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
+                  <SchemaForm v-if="profileSchema" :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="close">
+                    <template #buttons="{ disabled, submitting }">
+                      <div class="text-right">
+                        <v-btn variant="text" @click="close">
+                          {{ t('cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" variant="elevated" type="submit" :loading="submitting" :disabled="disabled">
+                          {{ t('save') }}
+                        </v-btn>
+                      </div>
+                    </template>
+                  </SchemaForm>
+                  <div v-else class="text-center">
+                    <v-progress-circular indeterminate color="primary" />
                   </div>
-                  <v-alert :text="t('profile.editProfileHelp')" type="info" class="my-4" />
-                  <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
-                    <SchemaForm v-if="profileSchema" :schema="profileSchema" :modelValue="user" :handler="updateProfile" @saved="isActive.value = false">
-                      <template #buttons="{ disabled, submitting }">
-                        <div class="text-right">
-                          <v-btn variant="text" @click="isActive.value = false">
-                            {{ t('cancel') }}
-                          </v-btn>
-                          <v-btn color="primary" variant="elevated" type="submit" :loading="submitting" :disabled="disabled">
-                            {{ t('save') }}
-                          </v-btn>
-                        </div>
-                      </template>
-                    </SchemaForm>
-                    <div v-else class="text-center">
-                      <v-progress-circular indeterminate color="primary" />
-                    </div>
-                  </v-defaults-provider>
-                </v-sheet>
+                </v-defaults-provider>
               </template>
-            </v-dialog>
-            <v-dialog v-if="canSwitchUser">
+            </DefaultDialog>
+            <DefaultDialog v-if="canSwitchUser" :title="t('profile.switchUser')">
               <template #activator="{ props }">
                 <v-list-item prepend-icon="mdi-account-switch" :title="t('profile.switchUser')" v-bind="props" />
               </template>
-              <template v-slot="{ isActive }">
-                <v-sheet class="pa-4" v-bind="dialogDefaults">
-                  <div class="d-flex">
-                    <h2 class="mb-2 flex-grow-1">
-                      {{ t('profile.switchUser') }}
-                    </h2>
-                    <v-btn class="mt-n2 mr-n2" icon="mdi-close" @click="isActive.value = false" />
-                  </div>
-                  <v-list>
-                    <v-list-item
-                      v-for="user in alternateUsers"
-                      :key="user.pk"
-                      @click="auth.switchUser(user)"
-                    >
-                      <template #prepend>
-                        <UserAvatar :user="user" />
-                      </template>
-                      <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
-                        {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{ user.userid }}
-                      </v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list>
-                </v-sheet>
-              </template>
-            </v-dialog>
+              <v-list>
+                <v-list-item
+                  v-for="user in alternateUsers"
+                  :key="user.pk"
+                  @click="auth.switchUser(user)"
+                >
+                  <template #prepend>
+                    <UserAvatar :user="user" />
+                  </template>
+                  <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
+                    {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ user.userid }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+            </DefaultDialog>
           </v-list>
           <template v-slot:append>
             <v-list nav density="comfortable">
@@ -106,12 +88,12 @@ import { toggleNavDrawerEvent } from '@/utils/events'
 import * as rules from '@/utils/rules'
 import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
-import useDefaults from '@/composables/useDefaults'
 
 import { profileType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { User } from '@/modules/organisations/types'
 
+import DefaultDialog from './DefaultDialog.vue'
 import SchemaForm from './SchemaForm.vue'
 import { FieldType } from './types'
 import type { FormSchema } from './types'
@@ -119,7 +101,6 @@ import type { FormSchema } from './types'
 const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
-const { dialogDefaults } = useDefaults()
 const auth = useAuthentication()
 const { user, alternateUsers } = auth // For template
 const { manageAccountURL, proxyLogoutURL } = useOrganisation()

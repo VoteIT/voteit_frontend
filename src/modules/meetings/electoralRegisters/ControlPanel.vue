@@ -1,15 +1,25 @@
 <template>
   <div>
     <h2>{{ t('electoralRegister.settings') }}</h2>
-    <v-card
-      v-for="{ description, name, props, title } in methods"
-      :key="name"
-      :title="title"
-      :text="description"
-      class="my-4"
-      v-bind="props"
-      @click="currentName = name"
-    />
+    <template v-for="{ description, isCurrent, name, props, title } in methods" :key="name">
+      <v-card
+        v-if="isCurrent"
+        :title="title"
+        :text="description"
+        class="my-4"
+        v-bind="props"
+      />
+      <QueryDialog v-else :text="t('electoralRegister.confirmMethodChange', { name: t(`erMethods.${name}.title`) })" @confirmed="currentName = name">
+        <template #activator="activator">
+          <v-card
+            :title="title"
+            :text="description"
+            class="my-4"
+            v-bind="{ ...props, ...activator.props }"
+          />
+        </template>
+      </QueryDialog>
+    </template>
   </div>
 </template>
 
@@ -19,12 +29,12 @@ import { useI18n } from 'vue-i18n'
 import axios from 'axios'
 
 import { openDialogEvent } from '@/utils/events'
+import QueryDialog from '@/components/QueryDialog.vue'
 import useAlert from '@/composables/useAlert'
 import { meetingType } from '../contentTypes'
 import useMeeting from '../useMeeting'
 
 import useElectoralRegisters from './useElectoralRegisters'
-import { dialogQuery } from '@/utils'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -38,7 +48,6 @@ const currentName = computed({
   },
   async set (name) {
     if (!name || isCurrent(name)) return
-    if (!await dialogQuery(t('electoralRegister.confirmMethodChange', { name: t(`erMethods.${name}.title`) }))) return
     try {
       await api.patch(meetingId.value, { er_policy_name: name })
     } catch (e) {
@@ -68,6 +77,7 @@ function getColor (name: string) {
 const methods = computed(() => {
   return erMethods.map(({ name }) => ({
     description: t(`erMethods.${name}.description`),
+    isCurrent: isCurrent(name),
     name,
     props: {
       elevation: isCurrent(name) ? 6 : 0,

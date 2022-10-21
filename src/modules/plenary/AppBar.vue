@@ -8,7 +8,7 @@
         {{ agendaItem.title }}
       </router-link>
     </v-app-bar-title>
-    <div class="flex-shrink-0">
+    <div class="flex-shrink-0 d-flex">
       <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
       <DropdownMenu position="bottom" :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
         <template v-slot:top>

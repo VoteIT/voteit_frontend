@@ -1,5 +1,5 @@
 <template>
-  <v-sheet color="background" class="pa-4 d-flex flex-column overflow-y-auto" v-bind="dialogDefaults">
+  <div class="d-flex flex-column">
     <v-expand-transition>
       <form @submit.prevent="preview()" v-show="!done">
         <slot name="editor">
@@ -42,7 +42,7 @@
         {{ proposal ? t('update') : t('publish') }}
       </v-btn>
     </div>
-  </v-sheet>
+  </div>
 </template>
 
 <script lang="ts">

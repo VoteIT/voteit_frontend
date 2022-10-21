@@ -72,7 +72,13 @@
                 </v-btn>
               </template>
             </v-tooltip>
-            <v-btn color="warning" prepend-icon="mdi-delete" @click="deletePolicy(p)">{{ t('delete') }}</v-btn>
+            <QueryDialog :text="t('accessPolicy.confirmDelete')" color="warning" @confirmed="deletePolicy(p)">
+              <template #activator="{ props }">
+                <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
+                  {{ t('delete') }}
+                </v-btn>
+              </template>
+            </QueryDialog>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -80,85 +86,62 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script lang="ts" setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClipboard } from '@vueuse/core'
 
-import { dialogQuery } from '@/utils'
 import useAlert from '@/composables/useAlert'
-import { AccessPolicy, AccessPolicyType } from '@/contentTypes/types'
+import { AccessPolicyType } from '@/contentTypes/types'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import useAccessPolicies from './useAccessPolicies'
 import { MeetingRole } from '../types'
 import { meetingType } from '../contentTypes'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 const NON_MODIFIABLE_ROLES = [
   'participant',
   'moderator'
 ]
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { meetingId, meeting, meetingPath, meetingUrl } = useMeeting()
-    const { alert } = useAlert()
-    const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
+const { t } = useI18n()
+const { meetingId, meeting, meetingPath, meetingUrl } = useMeeting()
+const { alert } = useAlert()
+const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
 
-    async function addAutomaticAccess () {
-      await addPolicy({
-        meeting: meetingId.value,
-        name: AccessPolicyType.Automatic,
-        roles_given: [MeetingRole.Participant]
+async function addAutomaticAccess () {
+  await addPolicy({
+    meeting: meetingId.value,
+    name: AccessPolicyType.Automatic,
+    roles_given: [MeetingRole.Participant]
+  })
+}
+
+const meetingListed = computed<boolean>({
+  get () {
+    return !!meeting.value && meeting.value.visible_in_lists
+  },
+  set (value) {
+    try {
+      meetingType.api.patch(meetingId.value, {
+        visible_in_lists: value
       })
-    }
-
-    async function _delete (p: AccessPolicy) {
-      if (!await dialogQuery(t('accessPolicy.confirmDelete'))) return
-      await deletePolicy(p)
-    }
-
-    const meetingListed = computed<boolean>({
-      get () {
-        return !!meeting.value && meeting.value.visible_in_lists
-      },
-      set (value) {
-        try {
-          meetingType.api.patch(meetingId.value, {
-            visible_in_lists: value
-          })
-        } catch {
-          alert('*Could not set meeting visible_in_lists status')
-        }
-      }
-    })
-
-    const roles = computed(() => {
-      return Object.values(MeetingRole)
-        .filter(
-          r => r
-        )
-        .map(
-          r => ({ text: t(`role.${r}`), value: r, disabled: NON_MODIFIABLE_ROLES.includes(r) })
-        )
-    })
-
-    return {
-      t,
-      accessPolicies,
-      hasActivePolicy,
-      meetingPath,
-      meetingListed,
-      meetingUrl,
-      roles,
-      addAutomaticAccess,
-      alert,
-      deletePolicy: _delete,
-      setActive,
-      setRoles,
-      ...useClipboard()
+    } catch {
+      alert('*Could not set meeting visible_in_lists status')
     }
   }
 })
+
+const roles = computed(() => {
+  return Object.values(MeetingRole)
+    .filter(
+      r => r
+    )
+    .map(
+      r => ({ text: t(`role.${r}`), value: r, disabled: NON_MODIFIABLE_ROLES.includes(r) })
+    )
+})
+
+const { copy, copied } = useClipboard()
 </script>

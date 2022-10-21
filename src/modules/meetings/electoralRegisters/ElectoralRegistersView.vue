@@ -6,46 +6,38 @@
           {{ t('electoralRegister.plural') }}
         </h1>
         <div v-if="canManagePresence && erMethod?.allowManual">
-          <v-dialog @update:modelValue="$event && fetchRoles()">
+          <DefaultDialog :title="t('electoralRegister.create')" @update:modelValue="$event && fetchRoles()">
             <template #activator="{ props }">
               <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-plus">
                 {{ t('electoralRegister.create') }}
               </v-btn>
             </template>
-            <template v-slot="{ isActive }">
-              <v-sheet v-bind="dialogDefaults" class="pa-4">
-                <div class="d-flex mb-2">
-                  <h2 class="flex-grow-1">
-                    {{ t('electoralRegister.create') }}
-                  </h2>
-                  <v-btn icon="mdi-close" variant="text" @click="isActive.value = false" class="mt-n2 mr-n2" />
-                </div>
-                <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
-                <div class="d-flex align-center">
-                  <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
-                  <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
-                  <v-spacer />
-                  <v-switch v-model="setVoteWeight" color="primary" label="Använd viktade röster" hide-details class="flex-grow-0" />
-                </div>
-                <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
-                  <template #appendItem="{ user, isSelected }">
-                    <div v-if="isSelected" @click.stop>
-                      <v-text-field v-if="setVoteWeight" density="compact" required :min="minWeight" :step="minWeight" :label="t('electoralRegister.weight')" type="number" :model-value="createSelection.get(user)" @update:modelValue="createSelection.set(user, round($event))" hide-details />
-                      <v-icon v-else>mdi-check-circle</v-icon>
-                    </div>
-                  </template>
-                </UserList>
-                <div class="text-right">
-                  <v-btn variant="text" @click="isActive.value = false">
-                    {{ t('cancel') }}
-                  </v-btn>
-                  <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister(isActive)" :disabled="createSelection.size === 0">
-                    {{ t('create') }}
-                  </v-btn>
-                </div>
-              </v-sheet>
+            <template #default="{ close }">
+              <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
+              <div class="d-flex align-center">
+                <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
+                <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
+                <v-spacer />
+                <v-switch v-model="setVoteWeight" color="primary" label="Använd viktade röster" hide-details class="flex-grow-0" />
+              </div>
+              <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
+                <template #appendItem="{ user, isSelected }">
+                  <div v-if="isSelected" @click.stop>
+                    <v-text-field v-if="setVoteWeight" density="compact" required :min="minWeight" :step="minWeight" :label="t('electoralRegister.weight')" type="number" :model-value="createSelection.get(user)" @update:modelValue="createSelection.set(user, round($event))" hide-details />
+                    <v-icon v-else>mdi-check-circle</v-icon>
+                  </div>
+                </template>
+              </UserList>
+              <div class="text-right">
+                <v-btn variant="text" @click="close">
+                  {{ t('cancel') }}
+                </v-btn>
+                <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister().then(close)" :disabled="createSelection.size === 0">
+                  {{ t('create') }}
+                </v-btn>
+              </div>
             </template>
-          </v-dialog>
+          </DefaultDialog>
         </div>
       </div>
       <template v-for="{ description, title, registers } in groups" :key="title">
@@ -89,17 +81,19 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount, onBeforeUnmount, reactive, Ref, ref, watch } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
+import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
-import useMeeting from '../useMeeting'
 import usePresence from '@/modules/presence/usePresence'
 import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
 import { PollState } from '@/modules/polls/types'
-import useDefaults from '@/composables/useDefaults'
+
+import useMeeting from '../useMeeting'
 import useMeetingTitle from '../useMeetingTitle'
 import { MeetingRole } from '../types'
 import { electoralRegisterType, meetingType } from '../contentTypes'
@@ -194,19 +188,20 @@ watch(setVoteWeight, value => {
   }
 })
 
-function createRegister (isActive: Ref<boolean>) {
+async function createRegister () {
   if (!erMethod.value) return
   const weights = [...createSelection.entries()]
     .map(([user, weight]) => ({ user, weight: toInteger(weight) }))
   try {
-    electoralRegisterType.methodCall('manual_create', {
+    await electoralRegisterType.methodCall('manual_create', {
       meeting: meetingId.value,
       weights
     })
-    isActive.value = false
+    return true
   } catch {
     // TODO
     alert('*Could not create electoral register')
+    return false
   }
 }
 
@@ -222,5 +217,5 @@ function fetchRoles () {
   meetingType.fetchRoles(meetingId.value)
 }
 
-const { cols, dialogDefaults } = useDefaults()
+const { cols } = useDefaults()
 </script>

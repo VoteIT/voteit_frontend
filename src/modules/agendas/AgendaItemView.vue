@@ -48,7 +48,7 @@
     <v-divider class="my-4" />
     <v-row :key="`agenda-filters-${agendaId}`">
       <v-col class="d-flex">
-        <v-dialog v-if="canAddProposal" persistent>
+        <DefaultDialog v-if="canAddProposal" persistent>
           <template #activator="{ props }">
             <slot name="activator" :props="props">
               <v-btn :prepend-icon="agendaItem.block_proposals ? 'mdi-lock-outline' : 'mdi-text-box-plus-outline'" color="primary" v-bind="props">
@@ -56,10 +56,10 @@
               </v-btn>
             </slot>
           </template>
-          <template v-slot="{ isActive }">
-            <AddProposalModal @close="isActive.value = false" />
+          <template #default="{ close }">
+            <AddProposalModal @close="close" />
           </template>
-        </v-dialog>
+        </DefaultDialog>
         <v-tooltip v-else :text="t(`agenda.proposalBlocked.${proposalBlockReason}`)">
           <template #activator="{ props }">
             <v-btn v-bind="props" prepend-icon="mdi-text-box-plus-outline" color="primary" variant="tonal">
@@ -156,6 +156,7 @@ import useAgendaItem from './useAgendaItem'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 const { t } = useI18n()
 const discussions = useDiscussions()

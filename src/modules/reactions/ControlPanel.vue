@@ -3,9 +3,16 @@
     <div class="d-flex mb-4">
       <h2>{{ t('reaction.settings') }}</h2>
       <v-spacer />
-      <v-btn color="primary" prepend-icon="mdi-gesture-tap-button" @click="editReaction()">
-        {{ t('reaction.addButton') }}
-      </v-btn>
+      <DefaultDialog :title="t('reaction.addButton')" persistent>
+        <template #activator="{ props }">
+          <v-btn color="primary" prepend-icon="mdi-gesture-tap-button" v-bind="props">
+            {{ t('reaction.addButton') }}
+          </v-btn>
+        </template>
+        <template #default="{ close }">
+          <ReactionEditModal @close="close" />
+        </template>
+      </DefaultDialog>
     </div>
     <v-table>
       <thead>
@@ -46,9 +53,16 @@
             <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event)" />
           </td>
           <td class="text-right">
-            <v-btn prepend-icon="mdi-pencil" @click="editReaction(button)" size="small" color="primary">
-              {{ t('edit') }}
-            </v-btn>
+            <DefaultDialog :title="t('reaction.editButton')" persistent>
+              <template #activator="{ props }">
+                <v-btn prepend-icon="mdi-pencil" size="small" color="primary" v-bind="props">
+                  {{ t('edit') }}
+                </v-btn>
+              </template>
+              <template #default="{ close }">
+                <ReactionEditModal :data="button" @close="close" />
+              </template>
+            </DefaultDialog>
           </td>
         </tr>
       </tbody>
@@ -60,14 +74,15 @@
 import { computed, inject, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { openModalEvent } from '@/utils/events'
+// import { openModalEvent } from '@/utils/events'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import { meetingIdKey } from '../meetings/injectionKeys'
 
 import useReactions from './useReactions'
-import ReactionEditModalVue from './ReactionEditModal.vue'
+import ReactionEditModal from './ReactionEditModal.vue'
 import { ReactionButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
@@ -93,16 +108,16 @@ async function setActive (button: ReactionButton, active: boolean) {
   await reactionButtonType.api.patch(button.pk, { active })
 }
 
-function editReaction (button?: ReactionButton) {
-  openModalEvent.emit({
-    component: ReactionEditModalVue,
-    data: button,
-    title: button
-      ? t('reaction.editButton')
-      : t('reaction.addButton'),
-    dismissable: false
-  })
-}
+// function editReaction (button?: ReactionButton) {
+//   openModalEvent.emit({
+//     component: ReactionEditModal,
+//     data: button,
+//     title: button
+//       ? t('reaction.editButton')
+//       : t('reaction.addButton'),
+//     dismissable: false
+//   })
+// }
 
 const model = reactive<Record<number, boolean>>({})
 </script>

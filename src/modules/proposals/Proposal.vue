@@ -44,10 +44,10 @@
         </div>
         <v-spacer />
         <DropdownMenu size="small" :items="menuItems" />
-        <v-dialog v-model="editDialog">
+        <DefaultDialog v-model="editDialog" color="background" persistent>
           <AddTextProposalModal v-if="p.shortname === 'diff_proposal'" @close="editDialog = false" :proposal="p" />
           <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
-        </v-dialog>
+        </DefaultDialog>
       </footer>
       <slot name="bottom"/>
     </v-sheet>
@@ -83,6 +83,7 @@ import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rule
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 const props = defineProps({
   p: {

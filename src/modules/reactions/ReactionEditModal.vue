@@ -49,9 +49,13 @@
             {{ t('cancel') }}
           </v-btn>
           <template v-if="formData.pk">
-            <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" @click="deleteButton()">
-              {{ t('delete') }}
-            </v-btn>
+            <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton()">
+              <template #activator="{ props }">
+                <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" v-bind="props">
+                  {{ t('delete') }}
+                </v-btn>
+              </template>
+            </QueryDialog>
             <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
               {{ t('update') }}
             </v-btn>
@@ -65,14 +69,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, PropType, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
-
-import { dialogQuery } from '@/utils'
-import { closeModalEvent } from '@/utils/events'
 
 import useAuthentication from '@/composables/useAuthentication'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
@@ -81,86 +82,61 @@ import UserList from '@/components/UserList.vue'
 import { ReactionButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 
-export default defineComponent({
-  components: {
-    CheckboxMultipleSelect,
-    RealReactionButton,
-    UserList
-},
-  props: {
-    data: Object as PropType<ReactionButton>
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const { user } = useAuthentication()
-    const { meetingId, roleLabels } = useMeeting()
-    const formData = reactive<Partial<ReactionButton>>({ ...(props.data || { color: 'primary', meeting: meetingId.value }) })
-    const previewActive = ref(true)
-    const submitting = ref(false)
-    function close () {
-      closeModalEvent.emit()
+const { t } = useI18n()
+const emit = defineEmits(['close'])
+const props = defineProps({
+  data: Object as PropType<ReactionButton>
+})
+
+const { user } = useAuthentication()
+const { meetingId, roleLabels } = useMeeting()
+const formData = reactive<Partial<ReactionButton>>({ ...(props.data || { color: 'primary', meeting: meetingId.value }) })
+const previewActive = ref(true)
+const submitting = ref(false)
+function close () {
+  emit('close')
+}
+const isValid = computed(() => {
+  return formData.title && formData.icon && formData.color && formData.change_roles?.length && formData.list_roles?.length
+})
+
+async function save () {
+  submitting.value = true
+  try {
+    if (formData.pk) {
+      await reactionButtonType.api.patch(formData.pk, formData)
+    } else {
+      await reactionButtonType.api.add(formData)
     }
-    const isValid = computed(() => {
-      return formData.title && formData.icon && formData.color && formData.change_roles?.length && formData.list_roles?.length
-    })
+    // closeModalEvent.emit()
+    emit('close')
+  } catch (err) {
+    submitting.value = false
+    console.error(err)
+  }
+}
 
-    async function save () {
-      submitting.value = true
-      try {
-        if (formData.pk) {
-          await reactionButtonType.api.patch(formData.pk, formData)
-        } else {
-          await reactionButtonType.api.add(formData)
-        }
-        closeModalEvent.emit()
-      } catch (err) {
-        submitting.value = false
-        console.error(err)
-      }
-    }
-
-    /* Checkboxes options */
-    const contentTypeLabels = computed(() => {
-      return {
-        discussion_post: t('discussion.discussions'),
-        proposal: t('proposal.proposals')
-      }
-    })
-
-    async function deleteButton () {
-      if (!formData.pk) return
-      if (!await dialogQuery({
-        title: t('reaction.deleteButtonConfirmation'),
-        theme: ThemeColor.Warning
-      })) return
-      submitting.value = true
-      try {
-        await reactionButtonType.api.delete(formData.pk)
-        closeModalEvent.emit()
-      } catch (err) {
-        submitting.value = false
-        console.error(err)
-      }
-    }
-
-    return {
-      t,
-      contentTypeLabels,
-      isValid,
-      formData,
-      previewActive,
-      submitting,
-      ReactionIcon,
-      roleLabels,
-      ThemeColor,
-      user,
-      close,
-      deleteButton,
-      save
-    }
+/* Checkboxes options */
+const contentTypeLabels = computed(() => {
+  return {
+    discussion_post: t('discussion.discussions'),
+    proposal: t('proposal.proposals')
   }
 })
+
+async function deleteButton () {
+  if (!formData.pk) return
+  submitting.value = true
+  try {
+    await reactionButtonType.api.delete(formData.pk)
+    emit('close')
+  } catch (err) {
+    submitting.value = false
+    console.error(err)
+  }
+}
 </script>
 
 <style lang="sass" scoped>

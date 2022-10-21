@@ -84,7 +84,7 @@ export enum ThemeColor {
   Warning = 'warning',
   Success = 'success',
 }
-export type Color = 'accent' | 'primary' | 'secondary' | 'error' | 'info' | 'warning' | 'success'
+export type Color = 'accent' | 'background' | 'primary' | 'secondary' | 'error' | 'info' | 'warning' | 'success'
 
 interface MenuItemBase {
   title: string
