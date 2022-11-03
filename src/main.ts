@@ -1,5 +1,5 @@
-import { createApp, nextTick } from 'vue'
-import { createI18n, I18n } from 'vue-i18n'
+import { createApp } from 'vue'
+import { createI18n } from 'vue-i18n'
 import App from './App.vue'
 // import './registerServiceWorker'
 import router from './router'
