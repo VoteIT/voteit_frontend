@@ -9,6 +9,8 @@ export default function useElectoralRegister (pk: Ref<number | undefined>) {
     if (!pk.value) return
     return getRegister(pk.value)
   })
+  const isWeighted = computed(() => electoralRegister.value?.weights.some(w => w.weight > 1))
+  const totalWeight = computed(() => electoralRegister.value?.weights.reduce((acc, { weight }) => acc + weight, 0))
 
   const erMethod = computed(() => erMethods.find(erm => erm.name === electoralRegister.value?.source))
   const erWeightDecimals = computed(() => 0)
@@ -26,6 +28,8 @@ export default function useElectoralRegister (pk: Ref<number | undefined>) {
     erMethod,
     erWeightDecimals,
     erWeightMultiplier,
+    isWeighted,
+    totalWeight,
     toInteger,
     toFractions
   }

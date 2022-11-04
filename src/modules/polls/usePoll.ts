@@ -18,18 +18,20 @@ export default function usePoll (pollRef: Ref<number>) {
   const { t } = useI18n()
 
   const poll = computed(() => polls.getPoll(pollRef.value))
-  const { electoralRegister } = useElectoralRegister(computed(() => poll.value?.electoral_register))
+  const { electoralRegister, isWeighted, totalWeight } = useElectoralRegister(computed(() => poll.value?.electoral_register))
   const voteCount = computed(() => {
     if (!poll.value) return {}
     const abstains = poll.value.abstain_count ?? 0
     const votes = poll.value.result?.vote_count ?? 0
     const voted = votes + abstains
     if (electoralRegister.value) {
-      const total = electoralRegister.value.weights.length
+      const total = totalWeight.value ?? 0
       return {
         abstains,
         percentage: Math.round(voted / total * 100),
-        text: t('poll.finalVoteCount', { abstains, votes, total }),
+        text: isWeighted
+          ? t('poll.finalVoteCountWeighted', { abstains, votes, total })
+          : t('poll.finalVoteCount', { abstains, votes, total }),
         voted,
         votes,
         total
