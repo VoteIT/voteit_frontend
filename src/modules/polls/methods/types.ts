@@ -148,7 +148,7 @@ interface BasePoll extends BaseContent {
   meeting: number
   method_name: string
   proposals: number[]
-  result: unknown
+  result: VoteResult
   settings: unknown
   state: PollState
   started: Date | null

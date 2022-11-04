@@ -1,58 +1,111 @@
 <template>
   <div>
-    <v-expansion-panels class="my-4" multiple>
-      <v-expansion-panel v-for="{ proposal, votes } in results" :key="proposal.pk">
-        <v-expansion-panel-title>
-          <div class="d-flex flex-grow-1">
-            <Tag :name="proposal.prop_id" />
-            <div class="text-center flex-grow-1 text-secondary">
-              {{ t('poll.result.voteCount', votes) }}
-            </div>
-          </div>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <Proposal :p="proposal" readOnly />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
+    <Proposal
+      v-for="{ icon, proposal, votes } in results"
+      :key="proposal.pk"
+      :p="proposal"
+      readOnly
+      class="my-4"
+    >
+      <template #bottom-right>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black">
+          {{ t('poll.result.voteCount', votes) }}
+          <v-tooltip location="top right">
+            <template #activator="{ props }">
+              <v-icon :icon="icon.icon" v-bind="props" :color="icon.color" />
+            </template>
+            {{ icon.text }}
+          </v-tooltip>
+        </p>
+      </template>
+    </Proposal>
     <v-alert :text="t('poll.method.description.dutt')" type="warning" class="my-2" />
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+import { orderBy } from 'lodash'
+import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import Tag from '@/components/Tag.vue'
 import useProposals from '../../proposals/useProposals'
-import { DuttResult } from './types'
+import type { Proposal } from '../../proposals/types'
+import type { DuttResult } from './types'
 
+const { t } = useI18n()
 const { getProposal } = useProposals()
 
-export default defineComponent({
-  components: {
-    Tag
-  },
-  props: {
-    result: {
-      type: Object as PropType<DuttResult>,
-      required: true
-    }
-  },
-  setup (props) {
-    const { t } = useI18n()
+const PARTIAL_ICONS = [
+  'mdi-circle-slice-1',
+  'mdi-circle-slice-2',
+  'mdi-circle-slice-3',
+  'mdi-circle-slice-5',
+  'mdi-circle-slice-6',
+  'mdi-circle-slice-7'
+]
 
-    return {
-      t,
-      results: computed(() => {
-        return props.result.results.map(({ proposal, votes }) => {
-          return {
-            proposal: getProposal(proposal),
-            votes
-          }
-        })
-      })
-    }
+function getFractionIcon (fraction: number) {
+  switch (fraction) {
+    case 0:
+      return 'mdi-circle-outline'
+    case 0.5:
+      return 'mdi-circle-slice-4'
+    case 1:
+      return 'mdi-circle-slice-8'
   }
+  return PARTIAL_ICONS[Math.floor(fraction * 6)]
+}
+
+const props = defineProps({
+  abstainCount: {
+    type: Number,
+    required: true
+  },
+  proposals: {
+    type: Array as PropType<number[]>,
+    required: true
+  },
+  result: {
+    type: Object as PropType<DuttResult>,
+    required: true
+  }
+})
+
+function isProposal (p?: Proposal): p is Proposal {
+  return !!p
+}
+
+function getIcon (votes: number) {
+  const fraction = votes / props.result.vote_count
+  const majority = fraction > 0.5
+  return {
+    color: majority
+      ? 'success'
+      : 'warning',
+    icon: getFractionIcon(fraction),
+    text: majority
+      ? t('poll.dutt.majorityProposal')
+      : t('poll.dutt.minorityProposal')
+  }
+}
+
+function proposalToResult (proposal: Proposal) {
+  const votes = props.result.results.find(r => r.proposal === proposal.pk)?.votes || 0
+  return {
+    icon: getIcon(votes),
+    proposal,
+    votes
+  }
+}
+
+const results = computed(() => {
+  return orderBy(
+    props.proposals
+      .map(getProposal)
+      .filter(isProposal)
+      .map(proposalToResult),
+    ['votes'],
+    ['desc']
+  )
 })
 </script>

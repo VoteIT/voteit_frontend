@@ -51,7 +51,7 @@
         <h3>
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
-        <component :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" class="mb-8" />
+        <component :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
         <Dropdown v-if="approved.length" :title="t('poll.numApproved', approved.length )">
           <div class="proposals approved mb-4">
             <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />

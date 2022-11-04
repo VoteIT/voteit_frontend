@@ -393,6 +393,8 @@
       }
     },
     "dutt": {
+      "majorityProposal": "A majority of the voters selected the proposal",
+      "minorityProposal": "The proposal was not selected by a majority",
       "max": "Require max proposals",
       "maxHelpText": "Select one less proposal for a valid vote | Select {count} fewer proposals for a valid vote",
       "min": "Require min proposals",
@@ -441,7 +443,7 @@
       "runtime": "Calculation time",
       "quota": "Quota",
       "versus": "Versus",
-      "voteCount": "{count} vote | {count} votes",
+      "voteCount": "No votes | One vote | {count} votes",
       "approveThis": "Approve",
       "tie": "Tie",
       "approveOther": "Approve other proposal"

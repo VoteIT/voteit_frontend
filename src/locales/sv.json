@@ -393,6 +393,8 @@
       }
     },
     "dutt": {
+      "majorityProposal": "En majoritet av de röstande valde förslaget",
+      "minorityProposal": "Förslaget valdes inte av en majoritet",
       "max": "Max antal förslag att välja",
       "maxHelpText": "Välj bort ett förslag för en giltig röst | Välj bort {count} förslag för en giltig röst",
       "min": "Lägst antal förslag att välja",
@@ -446,7 +448,7 @@
       "runtime": "Beräkningstid",
       "method": "Resultat ({method})",
       "versus": "Mot",
-      "voteCount": "{count} röst | {count} röster",
+      "voteCount": "Inga röster | En röst | {count} röster",
       "approveThis": "Bifall",
       "tie": "Oavgjort",
       "approveOther": "Motstående förslag"

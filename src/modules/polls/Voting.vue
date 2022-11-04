@@ -56,7 +56,7 @@ export default defineComponent({
     const proposals = computed<Proposal[]>(() => getPollProposals(props.data))
 
     const methodPlugin = computed(() => pollPlugins.getPlugin(props.data.method_name))
-    const methodComponent = computed(() => methodPlugin.value?.resultComponent)
+    const methodComponent = computed(() => methodPlugin.value?.voteComponent)
 
     const userVote = getUserVote(props.data)
     const currentAbstained = ref(userVote?.abstain)

@@ -16,7 +16,7 @@
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
-      <div class="author text-secondary">
+      <div class="author text-secondary d-flex flex-wrap align-end">
         <v-icon v-if="meetingGroup" size="small" class="mr-1" style="position: relative; top: -1px;">mdi-account-multiple</v-icon>
         <span>{{ t('by') }}
           <span v-if="meetingGroup">
@@ -25,6 +25,8 @@
           <User v-else :pk="p.author" userid />
         </span>
         <Moment :date="p.created" class="ml-6" />
+        <v-spacer />
+        <slot name="bottom-right" />
       </div>
       <v-sheet v-if="$slots.vote" class="vote-slot">
         <slot name="vote"/>

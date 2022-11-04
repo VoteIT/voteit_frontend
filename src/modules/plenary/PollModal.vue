@@ -13,10 +13,10 @@
       </v-btn>
     </div>
   </template>
-  <main v-else>
-    {{ t(`workflowState.${poll?.state}`) }}
+  <main v-else-if="poll">
+    {{ t(`workflowState.${poll.state}`) }}
     <div v-if="isFinished" class="my-6">
-      <component :is="resultComponent" :result="poll?.result" :abstain-count="poll?.abstain_count" />
+      <component :is="resultComponent" :result="poll.result" :abstain-count="poll.abstain_count" :proposals="poll.proposals" />
     </div>
   </main>
 </template>
