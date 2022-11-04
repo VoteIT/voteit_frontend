@@ -421,7 +421,7 @@
       "irv": "Instant Runoff-Voting",
       "description": {
         "combined_simple": "Each proposal will be voted individually, with the options to approve, deny or abstain.",
-        "dutt": "Preliminary checks or time budgets, never for actual decisions.  This is almost always the wrong choice for board elections for instance.",
+        "dutt": "This poll methos shows which proposals has the highest approval, but can't appoint majority winners or losers. If a proposal was selected by a majority of voters, it's likely, but not certain, that the proposal is supported by a majority. It could also be the result of tactical voting or mandatory amount of selections. The method can be used for opinion surveys and guiding polls, but should be avoided for making real decisions.",
         "irv": "Ranked poll with a single winner. Voters rank proposals by order of preference. Proposals with least amount of votes will be excluded and votes transfered until one proposal has more than 50 % of the votes.",
         "majority": "Voters choose between two proposals. The one with the most votes wins.",
         "scottish_stv": "Ranked poll with multiple winners. Voters rank proposals by order of preference. Surplus or discarded votes are transferred to reduce wasted votes.",

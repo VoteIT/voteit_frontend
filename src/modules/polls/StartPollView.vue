@@ -39,7 +39,7 @@
         <v-expansion-panels v-model="methodSelected">
           <v-expansion-panel v-for="{ id, criterion, discouraged } in availableMethods" :key="id" :title="t(`poll.method.${id}`)" :value="id">
             <v-expansion-panel-text>
-              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" :type="discouraged ? 'warning' : 'info'">
+              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" type="info" :icon="discouraged && 'mdi-alert-decagram'">
                 {{ t(`poll.method.description.${methodSelected}`) }}
               </v-alert>
               <h3 class="my-2">

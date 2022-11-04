@@ -423,7 +423,7 @@
       "repeated_irv": "Upprepad IRV",
       "description": {
         "combined_simple": "Varje förslag behandlas individuellt, med alternativen bifall, avslag och avstå.",
-        "dutt": "Duttmetoden ska användas för opinionsmätningar eller vägledande yttringar; aldrig för riktiga beslut. Detta är nästan alltid fel metod för exempelvis styrelseval.",
+        "dutt": "Denna omröstningsmetod är till för att visa vilka förslag som har störst acceptans bland de röstande, men kan inte utse majoritetsvinnare eller -förlorare. Om ett förslag kryssats av en majoritet av de röstande är det troligt, men inte säkert, att förslaget har majoritetsstöd - det kan också vara resultatet av taktikröstande eller obligatoriskt antal kryss. Metoden kan användas för opinionsmätningar och vägledande yttringar, men bör undvikas för riktiga beslut.",
         "irv": "Rangordnad omröstning med en vinnare. De röstande rangordnar förslag efter preferens. De förslag som fått minst antal röster exckluderas och röster överförs tills ett förslag fått mer än 50 % av rösterna.",
         "repeated_irv": "Enkel IRV upprepas tills alla vinnare utsetts, eller tills inget förslag längre kan uppnå majoritet. Repeterad IRV är lätt att manipulera genom att synkronisera röster och bör undvikas.",
         "majority": "De röstande väljer mellan två förslag. Det förslag som fått mest röster vinner.",

@@ -19,7 +19,7 @@
         </p>
       </template>
     </Proposal>
-    <v-alert :text="t('poll.method.description.dutt')" type="warning" class="my-2" />
+    <v-alert :text="t('poll.method.description.dutt')" type="info" icon="mdi-alert-decagram" class="my-2" />
   </div>
 </template>
 
