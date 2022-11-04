@@ -47,7 +47,12 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-alert',
     state: PollState.Failed,
     isFinal: true,
-    requiresRole: MeetingRole.Moderator,
     priority: 7
+  },
+  {
+    icon: 'mdi-cancel',
+    state: PollState.NoResult,
+    isFinal: true,
+    priority: 8
   }
 ]

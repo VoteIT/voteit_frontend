@@ -6,7 +6,8 @@ export enum PollState {
   Closed = 'closed',
   Finished = 'finished',
   Canceled = 'canceled',
-  Failed = 'failed'
+  Failed = 'failed',
+  NoResult = 'no_result'
 }
 
 export enum PollIcon {
@@ -16,7 +17,8 @@ export enum PollIcon {
   Closed = 'mdi-gavel',
   Finished = 'mdi-check',
   Canceled = 'mdi-cancel',
-  Failed = 'mdi-alert'
+  Failed = 'mdi-alert',
+  NoResult = 'mdi-cancel'
 }
 
 export enum PollTransition {

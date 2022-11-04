@@ -649,6 +649,7 @@
     "unhandled": "Unhandled",
     "upcoming": "Upcoming",
     "voting": "Locked for vote",
+    "no_result": "No result",
     "plural": {
       "approved": "Approved",
       "archived": "Archived",
@@ -667,7 +668,8 @@
       "retracted": "Retracted",
       "unhandled": "Unhandled",
       "upcoming": "Upcoming",
-      "voting": "Locked for vote"
+      "voting": "Locked for vote",
+      "no_result": "No result"
     }
   }
 }

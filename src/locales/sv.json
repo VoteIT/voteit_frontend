@@ -656,6 +656,7 @@
     "unhandled": "Ohanterat",
     "upcoming": "Kommande",
     "voting": "Låst för omröstning",
+    "no_result": "Inget resultat",
     "plural": {
       "approved": "Bifallna",
       "archived": "Arkiverade",
@@ -674,7 +675,8 @@
       "retracted": "Tillbakadragna",
       "unhandled": "Ohanterade",
       "upcoming": "Kommande",
-      "voting": "Låsta för omröstning"
+      "voting": "Låsta för omröstning",
+      "no_result": "Inget resultat"
     }
   }
 }
