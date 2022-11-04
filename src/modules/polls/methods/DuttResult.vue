@@ -39,12 +39,14 @@ const PARTIAL_ICONS = [
   'mdi-circle-slice-1',
   'mdi-circle-slice-2',
   'mdi-circle-slice-3',
+  // 50 % only on exactly half of the votes
   'mdi-circle-slice-5',
   'mdi-circle-slice-6',
   'mdi-circle-slice-7'
 ]
 
 function getFractionIcon (fraction: number) {
+  // Empty, half and full circles, only for exact values.
   switch (fraction) {
     case 0:
       return 'mdi-circle-outline'
@@ -53,6 +55,7 @@ function getFractionIcon (fraction: number) {
     case 1:
       return 'mdi-circle-slice-8'
   }
+  // Otherwise use a fractional icon.
   return PARTIAL_ICONS[Math.floor(fraction * 6)]
 }
 

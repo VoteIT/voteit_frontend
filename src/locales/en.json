@@ -405,6 +405,9 @@
     "IRV": {
       "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
     },
+    "majority": {
+      "tiedResult": "The poll got a tied result."
+    },
     "method": {
       "name": "Poll method",
       "combined_simple": "Accept / Reject / Abstain",
@@ -509,8 +512,10 @@
   },
   "proposal": {
     "add": "Add proposal",
+    "approved": "Approved",
     "change": "Propose change",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
+    "denied": "Denied",
     "postAs": "Post as",
     "previewBeforePublish": "You need to preview your proposal before you can publish it.",
     "proposal": "Proposal",
@@ -529,7 +534,8 @@
     "textBaseTagDefault": "paragraph",
     "textModify": "Modify proposal text",
     "textChangeProposal": "Change proposal",
-    "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?"
+    "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?",
+    "tied": "Tied"
   },
   "reaction": {
     "active": "Active (users can react)",

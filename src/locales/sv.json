@@ -406,6 +406,9 @@
       "numRounds": "IRV, en omgång | IRV, {count} omgångar",
       "repeatedRoundResult": "IRV är inte en metod som är avsedd för att utse flera vinnare. Varje omgång i en upprepad IRV är en enkel IRV, med tidigare omgångars vinnare borttagna. Eftersom varje enkel IRV har flera omgångar finns det inget svar på hur många röster ett förslag fått, men i slutändan har det uppnått en majoritet av rösterna. Hur många omgångar som krävdes är irrelevant."
     },
+    "majority": {
+      "tiedResult": "Omröstningen fick ett oavgjort resultat."
+    },
     "method": {
       "name": "Omröstningsmetod",
       "combined_simple": "Bifall / Avslag / Avstå",
@@ -514,8 +517,10 @@
   },
   "proposal": {
     "add": "Lägg ett förslag",
+    "approved": "Bifallet",
     "change": "Föreslå ändring",
     "deletePrompt": "Du håller på att permanent radera ett förslag.\nÄr du säker?",
+    "denied": "Avslaget",
     "previewBeforePublish": "Du behöver förhandsgranska ditt förslag innan du kan publicera det.",
     "postAs": "Posta som",
     "proposal": "Förslag",
@@ -534,7 +539,8 @@
     "textBaseTagDefault": "stycke",
     "textModify": "Ändra förslagstext",
     "textChangeProposal": "Ändra förslag",
-    "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?"
+    "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?",
+    "tied": "Oavgjort"
   },
   "reaction": {
     "active": "Aktiv (användare kan reagera)",

@@ -1,60 +1,79 @@
 <template>
-  <v-list bg-color="background">
-    <v-list-item disabled v-for="{ icon, proposal, votes } in proposalResults" :key="proposal?.pk">
-      <template #prepend>
-        <v-icon size="x-large" v-bind="icon" class="mr-4" />
+  <div>
+    <v-alert v-if="pollTied" type="info" class="mt-4 mb-8" :text="t('poll.majority.tiedResult')" />
+    <Proposal
+      v-for="{ icon, proposal, votes } in proposalResults"
+      :key="proposal.pk"
+      :p="proposal"
+      readOnly
+      class="my-4"
+    >
+      <template #bottom-right>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black">
+          {{ t('poll.result.voteCount', votes) }}
+          <v-tooltip location="top right">
+            <template #activator="{ props }">
+              <v-icon :icon="icon.icon" v-bind="props" :color="icon.color" />
+            </template>
+            {{ icon.text }}
+          </v-tooltip>
+        </p>
       </template>
-      <v-list-item-title>
-        <Tag :name="proposal ? proposal.prop_id : t('proposal.unknown')" />
-      </v-list-item-title>
-      <v-list-item-subtitle>
-        {{ t('poll.result.voteCount', votes) }}
-      </v-list-item-subtitle>
-    </v-list-item>
-  </v-list>
+    </Proposal>
+  </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+import { orderBy } from 'lodash'
+import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 import useProposals from '@/modules/proposals/useProposals'
-import { MajorityResult } from './types'
+import type { MajorityResult } from './types'
+import type { Proposal } from '@/modules/proposals/types'
 
-export default defineComponent({
-  props: {
-    abstainCount: {
-      type: Number,
-      required: true
-    },
-    result: {
-      type: Object as PropType<MajorityResult>,
-      required: true
-    }
+const { t } = useI18n()
+const { getProposal } = useProposals()
+
+const props = defineProps({
+  abstainCount: {
+    type: Number,
+    required: true
   },
-  setup (props) {
-    const { t } = useI18n()
-    const { getProposal } = useProposals()
-
-    function getIcon (proposal: number): { icon: string, color: string } {
-      if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success }
-      if (props.result.denied.includes(proposal)) return { icon: 'mdi-thumb-down', color: ThemeColor.Warning }
-      return { icon: 'mdi-question', color: ThemeColor.Secondary }
-    }
-
-    const proposalResults = computed(() => {
-      return props.result.results
-        .map(res => ({
-          ...res,
-          proposal: getProposal(res.proposal),
-          icon: getIcon(res.proposal)
-        }))
-    })
-    return {
-      t,
-      proposalResults
-    }
+  proposals: {
+    type: Array as PropType<number[]>,
+    required: true
+  },
+  result: {
+    type: Object as PropType<MajorityResult>,
+    required: true
   }
+})
+
+function getIcon (proposal: number) {
+  if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success, text: t('proposal.approved') }
+  if (props.result.denied.includes(proposal)) return { icon: 'mdi-thumb-down', color: ThemeColor.Warning, text: t('proposal.denied') }
+  return { icon: 'mdi-help-rhombus', color: ThemeColor.Secondary, text: t('proposal.tied') }
+}
+
+function isProposal (prop?: Proposal): prop is Proposal {
+  return !!prop
+}
+
+const pollTied = computed(() => props.result.approved.length === 0)
+
+const proposalResults = computed(() => {
+  return orderBy(
+    props.proposals
+      .map(getProposal)
+      .filter(isProposal)
+      .map(proposal => ({
+        proposal,
+        votes: props.result.results.find(r => r.proposal === proposal.pk)?.votes || 0,
+        icon: getIcon(proposal.pk)
+      })),
+    ['votes'], ['desc']
+  )
 })
 </script>
