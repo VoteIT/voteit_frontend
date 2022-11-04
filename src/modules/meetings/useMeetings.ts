@@ -69,7 +69,7 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
 
   if (loader) {
     onBeforeMount(() => {
-      if (isAuthenticated) loader(fetchMeetings)
+      if (isAuthenticated.value) loader(fetchMeetings)
     })
     // User could be logged in/out or switched directly. Always clear meetings first.
     watch(user, value => {
