@@ -192,7 +192,6 @@ import { openAlertEvent } from '@/utils/events'
 import useSpeakerSystems from './useSpeakerSystems'
 
 import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
-import restApi from '@/utils/restApi'
 
 const SPEAKER_HISTORY_CAP = 3
 
@@ -302,25 +301,16 @@ async function deleteList (list: SpeakerList) {
   })) await speakerListType.api.delete(list.pk)
 }
 
-function getListMenu (list: SpeakerList) {
-  const items: MenuItem[] = [{
-    title: `${t('speaker.history')} (CSV)`,
-    prependIcon: 'mdi-file-download',
-    href: `${restApi.defaults.baseURL}export-speakers/${list.pk}/csv/`
-  }, {
-    title: `${t('speaker.history')} (JSON)`,
-    prependIcon: 'mdi-file-download',
-    href: `${restApi.defaults.baseURL}export-speakers/${list.pk}/json/`
-  }]
+function getListMenu (list: SpeakerList): MenuItem[] {
   if (canDeleteSpeakerList(list)) {
-    items.push({
+    return [{
       title: t('delete'),
       prependIcon: 'mdi-delete',
       onClick: () => deleteList(list),
       color: ThemeColor.Warning
-    })
+    }]
   }
-  return items
+  return []
 }
 
 const { hasParticipantNumbers, participantNumbers } = useParticipantNumbers(meetingId)
