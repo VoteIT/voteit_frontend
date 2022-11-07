@@ -160,10 +160,18 @@ const groups = computed(() => {
   ]
 })
 
+function getInitialSelection () {
+  return new Map(
+    currentElectoralRegister.value?.weights
+      .filter(w => potentialVoters.value.includes(w.user))
+      .map(w => [w.user, w.weight])
+  )
+}
+
 const decimalPlaces = ref(0) // Maybe TODO
 const setVoteWeight = ref(!currentElectoralRegister.value || hasWeightedVotes(currentElectoralRegister.value))
 const potentialVoters = computed(() => getRoleUserIds(meetingId.value, MeetingRole.PotentialVoter))
-const createSelection = reactive(new Map(currentElectoralRegister.value?.weights.map(w => [w.user, w.weight]) ?? []))
+const createSelection = reactive(getInitialSelection())
 const selectedUsers = computed({
   get () {
     return [...createSelection.keys()]
@@ -183,7 +191,7 @@ const weightMultiplier = computed(() => {
 })
 const toFractions = (weight: number) => weight / weightMultiplier.value
 const toInteger = (weight: number) => Math.round(weight * weightMultiplier.value)
-const round = (weight: number) => weight ? Number(weight.toFixed(decimalPlaces.value)) : 1
+const round = (weight: number | string) => weight ? Number(Number(weight).toFixed(decimalPlaces.value)) : 1
 const minWeight = computed(() => toFractions(1))
 
 watch(decimalPlaces, () => {
@@ -191,14 +199,19 @@ watch(decimalPlaces, () => {
     createSelection.set(user, round(weight))
   }
 })
-watch(currentElectoralRegister, register => {
+
+// Update create selection if current ER or potential voter list changes (usually when initially loaded)
+function updateCreateSelection () {
   createSelection.clear()
-  if (!register) return
-  for (const w of register.weights) {
-    createSelection.set(w.user, toFractions(w.weight))
+  if (!currentElectoralRegister.value) return
+  for (const { user, weight } of currentElectoralRegister.value.weights) {
+    if (potentialVoters.value.includes(user)) createSelection.set(user, toFractions(weight))
   }
-  setVoteWeight.value = hasWeightedVotes(register)
-})
+  setVoteWeight.value = hasWeightedVotes(currentElectoralRegister.value)
+}
+watch(currentElectoralRegister, updateCreateSelection)
+watch(potentialVoters, updateCreateSelection)
+
 watch(setVoteWeight, value => {
   if (value) return
   for (const user of createSelection.keys()) {
