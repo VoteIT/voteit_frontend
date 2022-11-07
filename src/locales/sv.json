@@ -555,7 +555,9 @@
     "modelsAllowed": "Visa på innehållstyper",
     "peopleReacted": "Reaktioner",
     "rolesRequired": "Roller som krävs för att reagera",
-    "settings": "Inställningar för reaktionsknappar"
+    "settings": "Inställningar för reaktionsknappar",
+    "threshold": "Tröskelvärde",
+    "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv."
   },
   "role": {
     "discusser": "Debattör",
@@ -580,6 +582,11 @@
       "speaker": "Får sätta upp sig på talarlisa, även om användaren inte har en krävd roll.",
       "voter": "Har rösträtt enligt mötets senaste röstlängd. Gamla omröstningar kan fortfarande ha en annan röstlängd."
     }
+  },
+  "rules": {
+    "maxValue": "Får inte vara högre än {count}",
+    "minValue": "Får inte vara lägre än {count}",
+    "required": "Krävd"
   },
   "socket": {
     "connected": "Uppkopplad",

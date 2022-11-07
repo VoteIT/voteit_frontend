@@ -550,7 +550,9 @@
     "modelsAllowed": "Show on content types",
     "peopleReacted": "Reactions",
     "rolesRequired": "Roles allowed to react",
-    "settings": "Reaction Button settings"
+    "settings": "Reaction Button settings",
+    "threshold": "Threshold",
+    "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active."
   },
   "role": {
     "discusser": "Discusser",
@@ -575,6 +577,11 @@
       "speaker": "Speakers may enter open speaker lists, even if user doesn't have a required role.",
       "voter": "Exists as a voter within the latest electoral register. However, older polls may use older registers."
     }
+  },
+  "rules": {
+    "maxValue": "Can't be higher than {count}",
+    "minValue": "Must be at least {count}",
+    "required": "Required"
   },
   "socket": {
     "connected": "Connected",

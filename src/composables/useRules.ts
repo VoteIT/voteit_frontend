@@ -10,7 +10,15 @@ export default function useRules (t: ComposerTranslation) {
   }
 
   function required (value: unknown) {
-    return !!value || t('required')
+    return !!value || t('rules.required')
+  }
+
+  function max (max: number) {
+    return (value: string) => !value || Number(value) <= max || t('rules.maxValue', max)
+  }
+
+  function min (min: number) {
+    return (value: string) => !value || Number(value) >= min || t('rules.minValue', min)
   }
 
   function multiLineEmail (value: string) {
@@ -34,6 +42,8 @@ export default function useRules (t: ComposerTranslation) {
   return {
     email,
     required,
+    max,
+    min,
     multiLineEmail,
     multiLineSwedishSSN,
     swedishSSN

@@ -1,6 +1,6 @@
 <template>
   <span class="text-no-wrap">
-    <v-btn :prepend-icon="button.icon" size="small" :variant="disabled ? 'tonal' : 'text'" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click="emit('update:modelValue', !modelValue)">
+    <v-btn :prepend-icon="button.icon" size="small" :variant="variant" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click="emit('update:modelValue', !modelValue)">
       {{ button.title }}
     </v-btn>
     <DefaultDialog @update:modelValue="$event && emit('listOpen')" :title="t('reaction.peopleReacted')">
@@ -15,13 +15,13 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { ReactionButton } from './types'
 
-defineProps({
+const props = defineProps({
   button: {
     type: Object as PropType<ReactionButton>,
     required: true
@@ -38,6 +38,15 @@ defineProps({
 const emit = defineEmits(['update:modelValue', 'listOpen'])
 
 const { t } = useI18n()
+
+const meetsTarget = computed(() => !!props.button.target && props.count >= props.button.target)
+const variant = computed(() => {
+  return meetsTarget.value
+    ? 'flat'
+    : props.disabled
+      ? 'tonal'
+      : 'text'
+})
 </script>
 
 <style lang="sass" scoped>

@@ -28,14 +28,15 @@ export interface ReactionListMessage extends ReactionMessage {
 export type ReactionRelation = Pick<Reaction, 'content_type' | 'object_id'>
 
 export interface ReactionButton extends BaseContent {
-  meeting: number
-  icon: string
-  color: string
-  order: number
-  change_roles: MeetingRole[]
-  list_roles: MeetingRole[]
   active: boolean
   allowed_models: string[]
+  change_roles: MeetingRole[]
+  color: string
+  icon: string
+  list_roles: MeetingRole[]
+  meeting: number
+  order: number
+  target: null | number
 }
 
 export enum ReactionIcon {
