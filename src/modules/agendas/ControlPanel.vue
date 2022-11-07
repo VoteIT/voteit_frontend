@@ -1,5 +1,5 @@
 <template>
-  <v-tabs :items="editModes" v-model="editMode" end class="mb-4" />
+  <v-tabs :items="editModes" v-model="editMode" align-tabs="end" class="mb-4" />
   <v-window v-model="editMode">
     <v-window-item value="default">
       <v-chip-group v-model="agendaTag">

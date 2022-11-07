@@ -57,7 +57,7 @@ export default defineComponent({
       if (canChange.value) {
         items.push({
           title: t('edit'),
-          icon: 'mdi-pencil',
+          prependIcon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
@@ -66,7 +66,7 @@ export default defineComponent({
         for (const system of activeSpeakerSystems.value) {
           items.push({
             title: t('speaker.fullscreenSystem', { ...system }),
-            icon: 'mdi-projector-screen-outline',
+            prependIcon: 'mdi-projector-screen-outline',
             to: `/speakers/${meetingId.value}/${system.pk}`
           })
         }

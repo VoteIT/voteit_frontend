@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col>
-      <v-tabs v-model="currentTab" :items="tabs" end class="mb-4" />
+      <v-tabs v-model="currentTab" :items="tabs" align-tabs="end" class="mb-4" />
       <v-window v-model="currentTab">
 
         <v-window-item value="default">
@@ -21,7 +21,20 @@
               </div>
             </template>
           </RoleMatrix>
-          <UserSearch v-if="canChangeRoles" :label="t('meeting.addParticipant')" class="mt-6" @submit="addUser" :filter="searchFilter" />
+          <div v-if="canChangeRoles" class="d-flex flex-wrap mt-6">
+            <UserSearch :label="t('meeting.addParticipant')" class="flex-grow-1" @submit="addUser" :filter="searchFilter" />
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn v-bind="props" prepend-icon="mdi-download" variant="tonal" color="primary">
+                  {{ t('download') }}
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item :href="getDownloadUrl('csv')" append-icon="mdi-file-download" :title="`${t('meeting.participants')} (CSV)`" />
+                <v-list-item :href="getDownloadUrl('json')" append-icon="mdi-file-download" :title="`${t('meeting.participants')} (JSON)`" />
+              </v-list>
+            </v-menu>
+          </div>
         </v-window-item>
 
         <v-window-item value="groups">
@@ -62,6 +75,7 @@ import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
+import restApi from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import { openAlertEvent } from '@/utils/events'
 import UserList from '@/components/UserList.vue'
@@ -106,6 +120,10 @@ const { canManagePresence, presenceCheck, presentUserIds } = usePresence(meeting
 const { alert } = useAlert()
 
 useMeetingTitle(t('meeting.participants'))
+
+function getDownloadUrl (type: 'csv' | 'json') {
+  return `${restApi.defaults.baseURL}export-participants/${meetingId.value}/${type}/`
+}
 
 const matrixCols: RoleMatrixCol[] = [
   'participant',

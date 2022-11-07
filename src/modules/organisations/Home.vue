@@ -6,7 +6,7 @@
       </v-btn>
     </v-col>
     <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
-      <v-tabs v-if="tabs" v-model="currentTab" :items="tabs" end class="mb-4" />
+      <v-tabs v-if="tabs" v-model="currentTab" :items="tabs" align-tabs="end" class="mb-4" />
       <v-window v-model="currentTab">
         <v-window-item value="default">
           <header class="d-flex">
@@ -212,7 +212,7 @@ const menu = computed<MenuItem[]>(() => {
   return [
     {
       title: t('edit'),
-      icon: 'mdi-pencil',
+      prependIcon: 'mdi-pencil',
       onClick: async () => { editing.value = true }
     }
   ]

@@ -231,26 +231,26 @@ const menuItems = computed<MenuItem[]>(() => {
   if (canAddPoll.value) {
     items.push({
       title: t('poll.new'),
-      icon: 'mdi-star-plus',
+      prependIcon: 'mdi-star-plus',
       to: toNewPoll.value
     })
   }
   if (canChangeAgendaItem.value) {
     items.push({
       title: t('edit'),
-      icon: 'mdi-pencil',
+      prependIcon: 'mdi-pencil',
       onClick: async () => { editing.value = true }
     })
     items.push({
       title: t('plenary.view'),
-      icon: 'mdi-gavel',
+      prependIcon: 'mdi-gavel',
       to: `/p/${meetingId.value}/${agendaId.value}`
     })
   }
   if (canAddDocument.value) {
     items.push({
       title: t('proposal.textAdd'),
-      icon: 'mdi-text-box-plus-outline',
+      prependIcon: 'mdi-text-box-plus-outline',
       onClick: async () => openModalEvent.emit({
         title: t('proposal.textAdd'),
         component: EditTextDocumentModalVue
@@ -272,7 +272,7 @@ const menuItems = computed<MenuItem[]>(() => {
 const manageSpeakerListsMenu = computed(() => {
   return managingSpeakerSystems.value.map(system => ({
     title: t('speaker.manageSystem', { ...system }),
-    icon: 'mdi-bullhorn',
+    prependIcon: 'mdi-bullhorn',
     to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
   }))
 })

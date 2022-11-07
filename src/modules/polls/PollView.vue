@@ -197,7 +197,7 @@ const menuItems = computed<MenuItem[]>(() => {
   if (!canDelete.value) return []
   return [{
     title: t('delete'),
-    icon: 'mdi-delete',
+    prependIcon: 'mdi-delete',
     color: ThemeColor.Warning,
     onClick: deletePoll
   }]

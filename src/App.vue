@@ -3,6 +3,7 @@
     <router-view name="appBar" />
     <v-main>
       <router-view name="navigationDrawer"/>
+      <div id="toolbar" />
       <v-container>
         <router-view/>
       </v-container>

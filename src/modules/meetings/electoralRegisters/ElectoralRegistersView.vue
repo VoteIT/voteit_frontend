@@ -65,6 +65,19 @@
               </small>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
+              <div v-if="isModerator" class="text-right">
+                <v-menu>
+                  <template #activator="{ props }">
+                    <v-btn v-bind="props" prepend-icon="mdi-download" color="primary" variant="tonal">
+                      {{ t('download') }}
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item :href="getDownloadUrl(pk, 'csv')" prepend-icon="mdi-file-download" :title="`${t('electoralRegister.electoralRegister')} (CSV)`" />
+                    <v-list-item :href="getDownloadUrl(pk, 'json')" prepend-icon="mdi-file-download" :title="`${t('electoralRegister.electoralRegister')} (JSON)`" />
+                  </v-list>
+                </v-menu>
+              </div>
               <UserList :userIds="weights.map(v => v.user)">
                 <template #appendItem="{ user }" v-if="source === 'manual'">
                   <v-chip>
@@ -84,6 +97,7 @@
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import restApi from '@/utils/restApi'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useDefaults from '@/composables/useDefaults'
@@ -103,13 +117,17 @@ import type { ElectoralRegister } from './types'
 
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
-const { meetingId } = useMeeting()
+const { isModerator, meetingId } = useMeeting()
 const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, hasWeightedVotes } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
 const { canManagePresence } = usePresence(meetingId)
 const { filterPolls } = usePolls()
 
 useMeetingTitle(t('electoralRegister.plural'))
+
+function getDownloadUrl (register: number, type: 'csv' | 'json') {
+  return `${restApi.defaults.baseURL}export-electoral-register/${register}/${type}/`
+}
 
 const registerGroups = computed(() => {
   const ongoing: ElectoralRegister[] = []

@@ -1,8 +1,10 @@
 <template>
-  <v-dialog :modelValue="!!active" style="z-index: 2020" v-bind="dialogDefaults">
+  <v-dialog v-model="isActive" style="z-index: 2020" v-bind="dialogDefaults" :persistent="!dismissible">
     <v-sheet id="dialog" elevation="16" ref="window" v-if="active" @keyup.esc="deny()" class="pa-4">
       <v-btn v-if="dismissible" variant="text" icon="mdi-close" class="closer" @click="deny()" />
-      <p>{{ active.title }}</p>
+      <p class="ml-2 mr-10">
+        {{ active.title }}
+      </p>
       <div class="btn-controls justify-end">
         <v-btn v-if="active.no" variant="text" @click="deny()">{{ active.no }}</v-btn>
         <v-btn v-if="active.yes" :color="active.theme ?? 'primary'" @click="accept()">{{ active.yes }}</v-btn>
@@ -17,7 +19,6 @@ import { useI18n } from 'vue-i18n'
 
 import { openDialogEvent } from '@/utils/events'
 import { Dialog } from '@/composables/types'
-import { onClickOutside } from '@vueuse/core'
 import useDefaults from '@/composables/useDefaults'
 
 const { t } = useI18n()
@@ -27,6 +28,12 @@ const window = ref<ComponentPublicInstance | null>(null)
 let savedFocusEl: HTMLElement | null
 const queue = reactive<Dialog[]>([])
 const active = computed<Dialog | undefined>(() => queue[0])
+const isActive = computed({
+  get: () => !!active.value,
+  set (active) {
+    if (!active) deny()
+  }
+})
 const dismissible = computed(() => active.value?.dismissible)
 
 function close () {
@@ -36,8 +43,6 @@ function close () {
     savedFocusEl = null
   }
 }
-
-onClickOutside(window, close)
 
 function deny () {
   if (!dismissible.value) return

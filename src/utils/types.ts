@@ -89,13 +89,18 @@ export type Color = 'accent' | 'background' | 'primary' | 'secondary' | 'error' 
 interface MenuItemBase {
   title: string
   subtitle?: string
-  icon?: string
+  appendIcon?: string
+  prependIcon?: string
   disabled?: boolean
   color?: ThemeColor
 }
 
-interface MenuSubheader {
+export interface MenuSubheader {
   subheader: string
+}
+
+export interface MenuItemHref extends MenuItemBase {
+  href: string
 }
 
 export interface MenuItemTo extends MenuItemBase {
@@ -106,7 +111,7 @@ export interface MenuItemOnClick extends MenuItemBase {
   onClick: () => Promise<void>
 }
 
-export type MenuItem = '---' | MenuItemOnClick | MenuItemTo | MenuSubheader
+export type MenuItem = '---' | MenuItemOnClick | MenuItemTo | MenuItemHref | MenuSubheader
 
 export interface TreeMenuLink {
   title: string

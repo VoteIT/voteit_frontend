@@ -140,14 +140,14 @@ const menuItems = computed<MenuItem[]>(() => {
   if (canChangeProposal(props.p)) {
     items.push({
       title: t('edit'),
-      icon: 'mdi-pencil',
+      prependIcon: 'mdi-pencil',
       onClick: async () => { editDialog.value = true }
     })
   }
   if (canRetractProposal(props.p)) {
     items.push({
       title: t('proposal.retract'),
-      icon: 'mdi-undo',
+      prependIcon: 'mdi-undo',
       onClick: retract,
       color: ThemeColor.Warning
     })
@@ -155,7 +155,7 @@ const menuItems = computed<MenuItem[]>(() => {
   if (canDeleteProposal(props.p)) {
     items.push({
       title: t('delete'),
-      icon: 'mdi-delete',
+      prependIcon: 'mdi-delete',
       onClick: queryDelete,
       color: ThemeColor.Warning
     })

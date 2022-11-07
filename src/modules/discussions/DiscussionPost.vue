@@ -120,14 +120,14 @@ export default defineComponent({
       if (canChangeDiscussionPost(props.p)) {
         menu.push({
           title: t('edit'),
-          icon: 'mdi-pencil',
+          prependIcon: 'mdi-pencil',
           onClick: async () => { editing.value = true }
         })
       }
       if (canDeleteDiscussionPost(props.p)) {
         menu.push({
           title: t('delete'),
-          icon: 'mdi-delete',
+          prependIcon: 'mdi-delete',
           color: ThemeColor.Warning,
           onClick: queryDelete
         })

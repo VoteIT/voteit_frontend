@@ -10,7 +10,7 @@
         </v-form>
       </template>
       <v-list elevation="4" rounded>
-        <v-list-item v-for="result in results" :key="result.pk" @click="select(result)" @keydown.enter="select(result)">
+        <v-list-item v-for="result in results" :key="result.pk" @click="select(result)" @keydown.enter="select(result)" link>
           <template #prepend>
             <UserAvatar :user="result" />
           </template>

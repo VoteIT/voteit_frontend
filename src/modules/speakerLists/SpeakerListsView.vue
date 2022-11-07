@@ -1,28 +1,23 @@
 <template>
-  <v-row>
-    <v-col cols="12" lg="10" offset-lg="1" v-if="agendaItem">
-      <header>
-        <div class="d-flex">
-          <div class="btn-group navigation">
-            <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" variant="text" size="small" />
-          </div>
-          <v-tabs v-if="speakerSystem && allSpeakerSystems.length > 1" class="mb-2 flex-grow-1" end>
-            <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
-              {{ title }}
-              <v-tooltip v-if="state === 'inactive'" :text="t('inactive')" location="top">
-                <template #activator="{ props }">
-                  <v-icon v-bind="props" end color="secondary" start>mdi-eye-off</v-icon>
-                </template>
-              </v-tooltip>
-            </v-tab>
-          </v-tabs>
-        </div>
-        <h1>
-          {{ agendaItem.title }}
-        </h1>
-      </header>
-    </v-col>
-  </v-row>
+  <Teleport to="#toolbar">
+    <v-toolbar :title="agendaItem?.title" color="secondary-lighten-2" elevation="1">
+      <div class="mr-2">
+        <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="black" />
+      </div>
+      <template #extension v-if="agendaItem && speakerSystem && allSpeakerSystems.length > 1">
+        <v-tabs color="black" align-tabs="end" class="flex-grow-1">
+          <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
+            {{ title }}
+            <v-tooltip v-if="state === 'inactive'" :text="t('inactive')" location="top">
+              <template #activator="{ props }">
+                <v-icon v-bind="props" end color="secondary" start>mdi-eye-off</v-icon>
+              </template>
+            </v-tooltip>
+          </v-tab>
+        </v-tabs>
+      </template>
+    </v-toolbar>
+  </Teleport>
   <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="5" lg="4" class="speaker-lists">
       <h2>{{ t('speaker.listChoices') }}</h2>
@@ -188,6 +183,7 @@ import { openAlertEvent } from '@/utils/events'
 import useSpeakerSystems from './useSpeakerSystems'
 
 import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
+import restApi from '@/utils/restApi'
 
 const SPEAKER_HISTORY_CAP = 3
 
@@ -290,16 +286,25 @@ async function deleteList (list: SpeakerList) {
   })) await speakerListType.api.delete(list.pk)
 }
 
-function getListMenu (list: SpeakerList): MenuItem[] {
+function getListMenu (list: SpeakerList) {
+  const items: MenuItem[] = [{
+    title: `${t('speaker.history')} (CSV)`,
+    prependIcon: 'mdi-file-download',
+    href: `${restApi.defaults.baseURL}export-speakers/${list.pk}/csv/`
+  }, {
+    title: `${t('speaker.history')} (JSON)`,
+    prependIcon: 'mdi-file-download',
+    href: `${restApi.defaults.baseURL}export-speakers/${list.pk}/json/`
+  }]
   if (canDeleteSpeakerList(list)) {
-    return [{
+    items.push({
       title: t('delete'),
-      icon: 'mdi-delete',
+      prependIcon: 'mdi-delete',
       onClick: () => deleteList(list),
       color: ThemeColor.Warning
-    }]
+    })
   }
-  return []
+  return items
 }
 
 const { hasParticipantNumbers, participantNumbers } = useParticipantNumbers(meetingId)
