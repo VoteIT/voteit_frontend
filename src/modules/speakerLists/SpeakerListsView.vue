@@ -137,7 +137,7 @@
               </v-list-item-title>
               <template #append>
                 <span class="btn-group d-flex flex-nowrap">
-                  <v-btn color="primary" :disabled="canStartSpeaker" @click="speakers.startSpeaker(currentList, user)" size="x-small">
+                  <v-btn color="primary" :disabled="!canStartSpeaker(currentList)" @click="speakers.startSpeaker(currentList, user)" size="x-small">
                     <v-icon icon="mdi-play"/>
                   </v-btn>
                   <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small">

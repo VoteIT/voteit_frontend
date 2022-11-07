@@ -3,7 +3,7 @@
     <div class="d-flex">
       <v-tabs :items="systemTabs" v-model="currentTab" />
       <v-spacer />
-      <v-menu v-if="speakerSystem">
+      <v-menu v-if="speakerSystem && isModerator">
         <template #activator="{ props }">
           <v-btn v-bind="props" prepend-icon="mdi-download" variant="tonal" color="primary" :disabled="!annotatedHistory?.length">
             {{ t('download') }}
@@ -66,7 +66,7 @@ function getDownloadUrl (system: number, type: 'csv' | 'json') {
 }
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const { isModerator, meetingId } = useMeeting()
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 const currentTab = ref('default')
 const speakerSystem = computed(() => {
