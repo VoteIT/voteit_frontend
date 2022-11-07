@@ -1,10 +1,10 @@
 <template>
-  <v-app-bar app flat>
+  <v-app-bar app flat color="app-bar">
     <router-link :to="agendaItemPath" :title="t('home.home')" class="mr-4">
       <img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" />
     </router-link>
     <v-app-bar-title class="text-truncate">
-      <router-link v-if="agendaItem" :to="agendaItemPath">
+      <router-link v-if="agendaItem" :to="agendaItemPath" class="text-white text-decoration-none">
         {{ agendaItem.title }}
       </router-link>
     </v-app-bar-title>
@@ -14,14 +14,13 @@
         <template v-slot:top>
           <v-item-group multiple v-model="stateFilter">
             <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
-              <v-list-item @click="toggle()" :prepend-icon="state.icon" :active="isSelected">
-                <v-list-item-title>
-                  {{ t(`workflowState.${state.state}`) }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ t('proposal.proposalCount', { count }, count) }}
-                </v-list-item-subtitle>
-              </v-list-item>
+              <v-list-item
+                @click="toggle()"
+                :prepend-icon="state.icon"
+                :active="isSelected"
+                :title="t(`workflowState.${state.state}`)"
+                :subtitle="t('proposal.proposalCount', { count }, count)"
+              />
             </v-item>
           </v-item-group>
         </template>

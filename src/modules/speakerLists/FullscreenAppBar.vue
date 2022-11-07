@@ -1,10 +1,10 @@
 <template>
-  <v-app-bar app flat>
+  <v-app-bar app flat color="app-bar">
     <router-link :to="meetingPath" :title="t('home.home')" class="mr-4">
       <img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" />
     </router-link>
     <v-app-bar-title v-if="meeting">
-      <router-link :to="meetingPath">
+      <router-link :to="meetingPath" class="text-white text-decoration-none">
         {{ meeting.title }}
         <small v-if="speakerSystem">
           ({{ speakerSystem.title }})

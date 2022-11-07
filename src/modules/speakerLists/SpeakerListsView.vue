@@ -1,7 +1,12 @@
 <template>
   <Teleport to="#toolbar">
-    <v-toolbar :title="agendaItem?.title" color="secondary-lighten-2" elevation="1">
+    <v-toolbar :title="agendaItem?.title" color="secondary-lighten-2" elevation="1" class="text-black">
       <div class="mr-2">
+        <v-fade-transition>
+          <v-btn v-if="activeListPath" :to="activeListPath" variant="tonal" class="d-none d-md-inline-flex mr-4">
+            Aktiv talarlista
+          </v-btn>
+        </v-fade-transition>
         <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="black" />
       </div>
       <template #extension v-if="agendaItem && speakerSystem && allSpeakerSystems.length > 1">
@@ -132,8 +137,12 @@
               </v-list-item-title>
               <template #append>
                 <span class="btn-group d-flex flex-nowrap">
-                  <v-btn color="primary" @click="speakers.startSpeaker(currentList, user)" size="x-small"><v-icon icon="mdi-play"/></v-btn>
-                  <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small"><v-icon icon="mdi-delete"/></v-btn>
+                  <v-btn color="primary" :disabled="canStartSpeaker" @click="speakers.startSpeaker(currentList, user)" size="x-small">
+                    <v-icon icon="mdi-play"/>
+                  </v-btn>
+                  <v-btn color="warning" @click="speakers.moderatorLeaveList(currentList, user)" size="x-small">
+                    <v-icon icon="mdi-delete"/>
+                  </v-btn>
                 </span>
               </template>
             </v-list-item>
@@ -209,7 +218,7 @@ const { alert } = useAlert()
 const { user } = useAuthentication()
 const speakers = useSpeakerLists()
 const { meetingId, meetingPath } = useMeeting()
-const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem, agenda } = useAgenda(meetingId)
+const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem } = useAgenda(meetingId)
 const systemId = computed(() => Number(route.params.system))
 useChannel('agenda_item', agendaId)
 useChannel('sls', systemId)
@@ -243,11 +252,18 @@ function makeNavigation (icon: string, toAgendaItem?: AgendaItem): AgendaNav {
 const navigation = computed<AgendaNav[]>(() => {
   if (!agendaItem.value) return []
   return [
-    makeNavigation('mdi-page-first', agenda.value[0]),
+    // makeNavigation('mdi-page-first', agenda.value[0]),
     makeNavigation('mdi-chevron-left', getPreviousAgendaItem(agendaItem.value)),
-    makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value)),
-    makeNavigation('mdi-page-last', agenda.value[agenda.value.length - 1])
+    makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value))
+    // makeNavigation('mdi-page-last', agenda.value[agenda.value.length - 1])
   ]
+})
+
+// Link to handle Agenda Item with current active list
+const activeListPath = computed(() => {
+  const ai = systemActiveList.value?.agenda_item
+  if (!ai || ai === agendaId.value) return // Only if not current
+  return `${meetingPath.value}/lists/${systemId.value}/${ai}`
 })
 
 function addSpeakerList (system: SpeakerSystem) {

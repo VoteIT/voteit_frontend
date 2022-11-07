@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app flat class="d-print-none">
+  <v-app-bar app flat class="d-print-none" color="app-bar">
     <v-app-bar-nav-icon v-show="hasNavDrawer" class="d-md-none" variant="text" color="background" @click.stop="toggleNavDrawerEvent.emit()" />
     <router-link to="/" :title="t('home.home')">
       <img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" id="navbar-logo" />
@@ -173,14 +173,6 @@ const canSwitchUser = computed(() => {
 </script>
 
 <style lang="sass">
-.v-toolbar
-  background-color: rgb(var(--v-theme-app-bar)) !important
-  color: rgb(var(--v-theme-on-app-bar))
-  a,
-  button
-    color: rgb(var(--v-theme-on-app-bar))
-    text-decoration: none
-
 #navbar-logo
   width: 64px
   height: auto
