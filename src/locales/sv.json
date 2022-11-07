@@ -250,7 +250,7 @@
     "createTitleHint": "Minst 5 tecken",
     "find": "Hitta möte",
     "meeting": "Möte",
-    "visibleInLists": "Visa mötet på organisationens startsida.",
+    "visibleInLists": "Sökbart för alla i organisationen",
     "subscriptionFailedMessage": "Kunde inte ladda mötet.",
     "subscriptionFailedButton": "Till startsidan",
     "to": "Till möte",

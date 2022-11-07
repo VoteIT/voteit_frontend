@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="mt-4">
     <div class="d-flex">
       <v-tabs :items="systemTabs" v-model="currentTab" />
       <v-spacer />
       <v-menu v-if="speakerSystem">
         <template #activator="{ props }">
-          <v-btn v-bind="props" prepend-icon="mdi-download" variant="tonal" color="primary">
+          <v-btn v-bind="props" prepend-icon="mdi-download" variant="tonal" color="primary" :disabled="!annotatedHistory?.length">
             {{ t('download') }}
           </v-btn>
         </template>
@@ -67,19 +67,14 @@ function getDownloadUrl (system: number, type: 'csv' | 'json') {
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
-const speakerSystem = ref<number | undefined>(undefined)
-const { history } = useSpeakerHistory(meetingId, speakerSystem)
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
-
-const currentTab = computed({
-  get () {
-    return String(speakerSystem.value ?? 'default')
-  },
-  set (value) {
-    if (value === 'default') speakerSystem.value = undefined
-    else speakerSystem.value = Number(value)
-  }
+const currentTab = ref('default')
+const speakerSystem = computed(() => {
+  if (allSpeakerSystems.value.length === 1) return allSpeakerSystems.value[0].pk
+  return Number(currentTab.value) || undefined
 })
+// const speakerSystem = ref<number | undefined>(undefined)
+const { history } = useSpeakerHistory(meetingId, speakerSystem)
 
 const digits = (n: number) => n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
 

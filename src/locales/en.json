@@ -250,7 +250,7 @@
     "create": "Start a new meeting",
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
-    "visibleInLists": "Show meeting on organisation start page.",
+    "visibleInLists": "Searchable for all organisation members",
     "subscriptionFailedMessage": "Couldn't load meeting.",
     "subscriptionFailedButton": "To start page",
     "to": "To meeting",
