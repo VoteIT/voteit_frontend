@@ -11,7 +11,7 @@ export default function useSpeakerHistory (meeting: Ref<number>, speakerSystem: 
     if (speakerSystem.value) return `${meeting.value}/${speakerSystem.value}`
     return String(meeting.value)
   })
-  const history = computed(() => key.value && speakerHistory.get(key.value))
+  const history = computed(() => typeof key.value === 'string' ? speakerHistory.get(key.value) : undefined)
 
   watch(key, async (key) => {
     if (!key) return
