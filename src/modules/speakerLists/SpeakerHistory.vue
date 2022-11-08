@@ -100,6 +100,6 @@ const systemTabs = computed(() => {
 })
 
 const totalTime = computed(() => history.value && secondsToTimeDisplay(sum(history.value.map(e => e.seconds_spoken))))
-const totalTimes = computed(() => history.value && sum(history.value.map(e => e.times_spoken)))
+const totalTimes = computed(() => history.value ? sum(history.value.map(e => e.times_spoken)) : 0)
 const annotatedHistory = computed(() => history.value && history.value.map(e => ({ ...e, timeSpoken: secondsToTimeDisplay(e.seconds_spoken) })))
 </script>
