@@ -631,10 +631,10 @@
     "toMeeting": "To meeting",
     "visible": "Visible to all participants",
     "orderMethod": {
-      "priority": "Prioritize first-time speakers",
-      "simple": "Simple",
-      "maxTimes": "Number of low priority lists",
-      "maxTimesHint": "Maximum times recurring speakers will be deprioritized, in favor of speakers that has spoken fewer times. 0 means no limit."
+      "priority": "Prioritize speakers who've spoken less",
+      "simple": "Chronological",
+      "maxTimes": "Priority limit",
+      "maxTimesHint": "Maximum times recurring speakers will be deprioritized, in favor of speakers that have spoken fewer times. 0 = no limit."
     }
   },
   "workflowState": {

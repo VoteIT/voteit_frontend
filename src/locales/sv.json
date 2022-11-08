@@ -597,9 +597,9 @@
     "addByName": "Sök namn",
     "addByParticipantNumber": "Lägg till deltagarnummer",
     "addListToSystem": "Ny lista",
-    "editSpeakerTime": "Ändra talartid",
+    "editSpeakerTime": "Ändra talad tid",
     "speakerRoles": "Roller som tillåts tala",
-    "cantManageList": "Du har inte rättigheter att hantera den här listan.",
+    "cantManageList": "Du har inte rätt att hantera den här listan.",
     "confirmSpeakerDeletion": "Du håller på att radera talarhistorik.\nÄr du säker?",
     "confirmSystemDeletion": "Du håller på att radera det här talarsystemet.\nÄr du säker?",
     "confirmListDeletion": "Du håller på att radera den här talarlistan.\nÄr du säker?",
@@ -638,10 +638,10 @@
     "toMeeting": "Till mötet",
     "visible": "Visa för alla deltagare",
     "orderMethod": {
-      "priority": "Prioritera förstagångstalare",
-      "simple": "Enkel",
-      "maxTimes": "Antal lågpriotalarlistor",
-      "maxTimesHint": "Maximalt antal gånger som återkommande talare nedprioriteras till förmån för talare som talat färre gånger. 0 betyder ingen gräns."
+      "priority": "Prioritera talare som talat mindre",
+      "simple": "Kronologisk",
+      "maxTimes": "Prioriteringsgräns",
+      "maxTimesHint": "Antal gånger återkommande talare nedprioriteras till förmån för talare som talat färre gånger. 0 = ingen gräns."
     }
   },
   "workflowState": {
