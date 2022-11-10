@@ -23,7 +23,7 @@ export enum SocketEvent {
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 
 const DEFAULT_CONFIG: ChannelsConfig = {
-  timeout: 5_000 // 5s
+  timeout: 20_000 // 20 s, longer than server's 15 s
 }
 let heartbeatInterval: number
 const HEARTBEAT_MS = 30_000
