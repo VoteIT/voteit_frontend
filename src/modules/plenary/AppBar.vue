@@ -113,7 +113,7 @@ export default defineComponent({
         proposals: [...selectedProposalIds],
         method_name: method,
         start: true,
-        settings: settings
+        settings
       }
       if (protectedProposalStates.value.length) {
         const states = [...new Set(protectedProposalStates.value)].map(s => t(`workflowState.${s}`).toLowerCase()).join(', ')

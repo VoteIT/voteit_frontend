@@ -39,7 +39,7 @@ meetingSettingsPlugins.register({
   id: 'printing',
   icon: 'mdi-printer',
   translationKey: 'printing.proposals',
-  isConfigured (meeting) {
+  isConfigured () {
     return false
   },
   quickComponent: ControlPanel

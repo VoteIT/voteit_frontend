@@ -36,7 +36,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
   }
 
   private handleMessage (msg: ChannelsMessage) {
-    const [name, method] = msg.t.split('.')
+    const method = msg.t.split('.')[1]
     const handler = this.methodHandlers.get(method)
     if (handler) handler(msg.p)
   }

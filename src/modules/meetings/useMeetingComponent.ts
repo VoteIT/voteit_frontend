@@ -1,4 +1,4 @@
-import { computed, reactive, ref, Ref } from 'vue'
+import { computed, reactive, Ref } from 'vue'
 
 import { meetingComponentType } from './contentTypes'
 import { ComponentBase } from './types'

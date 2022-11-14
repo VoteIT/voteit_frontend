@@ -72,7 +72,7 @@ export default defineComponent({
       }
       isOpen.value = !isOpen.value
       if (isOpen.value) {
-        if (!transitionsAvailable.value) transitionsAvailable.value = await contentApi.getTransitions(props.object.pk, props.object.state)
+        if (!transitionsAvailable.value) transitionsAvailable.value = await contentApi.getTransitions(props.object.pk)
         nextTick(() => focusFirst(menu.value?.$el, '.v-list-item'))
       } else if (focus) { // If clicked out, don't shift that focus
         focusFirst(root.value)
