@@ -166,6 +166,9 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, durationToString } from '@/utils'
+import { MenuItem, ThemeColor } from '@/utils/types'
+import useChannel from '@/composables/useChannel'
+import useLoader from '@/composables/useLoader'
 import useAlert from '@/composables/useAlert'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
@@ -181,8 +184,6 @@ import useMeeting from '../meetings/useMeeting'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import type { User } from '../organisations/types'
 
-import { MenuItem, ThemeColor } from '@/utils/types'
-import useChannel from '@/composables/useChannel'
 import { canActivateList, canChangeSpeakerList, canDeleteSpeakerList, canStartSpeaker } from './rules'
 import { speakerType, speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
@@ -219,8 +220,11 @@ const speakers = useSpeakerLists()
 const { meetingId, meetingPath } = useMeeting()
 const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem } = useAgenda(meetingId)
 const systemId = computed(() => Number(route.params.system))
-useChannel('agenda_item', agendaId)
-useChannel('sls', systemId)
+useLoader(
+  'SpeakerListsView',
+  useChannel('agenda_item', agendaId),
+  useChannel('sls', systemId)
+)
 const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 const currentList = computed<SpeakerList | undefined>({

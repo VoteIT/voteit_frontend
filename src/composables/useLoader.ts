@@ -53,7 +53,7 @@ function reset () {
   performLoad()
 }
 
-export default function useLoader (name: string) {
+export default function useLoader (name: string, ...promises: Promise<unknown>[]) {
   function setLoaded (success = true) {
     if (success) _success()
     else _failure(name)
@@ -74,6 +74,8 @@ export default function useLoader (name: string) {
       })
     })
   }
+
+  call(() => Promise.all(promises))
 
   return {
     initDone,

@@ -1,4 +1,4 @@
-import { computed, onUnmounted, Ref, watch } from 'vue'
+import { computed, onUnmounted, ref, Ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Channel from '@/contentTypes/Channel'
@@ -8,7 +8,7 @@ import { channelSubscribedEvent } from './events'
 import { ThemeColor } from '@/utils/types'
 import { useRouter } from 'vue-router'
 
-export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
+export default async function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
   const { t } = useI18n()
   const router = useRouter()
 
@@ -43,11 +43,18 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
         }
       }
     }
-  }, { immediate: true })
+  })//, { immediate: true })
 
   if (config?.leaveOnUnmount) {
     onUnmounted(() => {
       if (channelUri.value) channel.leave(channelUri.value)
     })
+  }
+
+  // Function is async (=returns promise). If channelUri can be established, resolve with response to subscription request. Errors should be propagated.
+  if (channelUri.value) {
+    const response = await channel.subscribe(channelUri.value)
+    channelSubscribedEvent.emit(channelUri.value)
+    return response
   }
 }

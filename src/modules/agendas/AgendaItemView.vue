@@ -128,6 +128,9 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import usePermission from '@/composables/usePermission'
+import { LastReadKey } from '@/composables/useUnread'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import useLoader from '@/composables/useLoader'
 
 import AgendaDiscussions from '../discussions/AgendaDiscussions.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
@@ -149,14 +152,12 @@ import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 
 import useAgenda from './useAgenda'
 import AgendaFilters from './AgendaFilters.vue'
-import { LastReadKey } from '@/composables/useUnread'
 import useAgendaFilter from './useAgendaFilter'
 import { AgendaFilterComponent, AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
-import DefaultDialog from '@/components/DefaultDialog.vue'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
@@ -167,7 +168,10 @@ const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingI
 const { activeFilter, sortOrder, orderContent } = useAgendaFilter(agendaId)
 const { agendaItem, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
 
-useChannel('agenda_item', agendaId)
+useLoader(
+  'AgendaItem',
+  useChannel('agenda_item', agendaId)
+)
 provide(agendaIdKey, agendaId)
 
 const agendaItemExists = computed(() => {

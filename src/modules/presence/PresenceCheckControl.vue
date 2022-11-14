@@ -22,14 +22,14 @@
 import { computed, defineComponent, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import usePresence from '@/modules/presence/usePresence'
-
 import Moment from '@/components/Moment.vue'
+import useChannel from '@/composables/useChannel'
+import useLoader from '@/composables/useLoader'
+import useMeeting from '../meetings/useMeeting'
 
+import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckClosed } from './events'
-import useChannel from '@/composables/useChannel'
-import useMeeting from '../meetings/useMeeting'
 
 export default defineComponent({
   components: { Moment },
@@ -51,13 +51,10 @@ export default defineComponent({
       submitting.value = false
     }
 
-    useChannel('presence_check', computed(() => presenceCheck.value?.pk))
-    // onBeforeMount(() => {
-    //   props.subscribe && presenceCheck.value && presenceCheckType.channel.subscribe(presenceCheck.value.pk)
-    // })
-    // onBeforeUnmount(() => {
-    //   props.subscribe && presenceCheck.value && presenceCheckType.channel.leave(presenceCheck.value.pk)
-    // })
+    useLoader(
+      'PresenceCheckControl',
+      useChannel('presence_check', computed(() => presenceCheck.value?.pk))
+    )
 
     const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
 

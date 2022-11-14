@@ -46,11 +46,12 @@
 </template>
 
 <script lang="ts">
-import useChannel from '@/composables/useChannel'
 import { computed, defineComponent, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
+import useChannel from '@/composables/useChannel'
+import useLoader from '@/composables/useLoader'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useUserDetails from '../organisations/useUserDetails'
@@ -67,7 +68,10 @@ export default defineComponent({
     const route = useRoute()
     const speakerSystemId = computed(() => Number(route.params.system))
     useMeetingChannel()
-    useChannel('sls', speakerSystemId)
+    useLoader(
+      'FullscreenView',
+      useChannel('sls', speakerSystemId)
+    )
 
     const { getState } = speakerListType.useWorkflows()
     const { getUser } = useUserDetails()

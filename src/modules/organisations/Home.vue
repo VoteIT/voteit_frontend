@@ -174,7 +174,10 @@ const subscribeOrganisationId = computed(() => {
   if (currentTab.value !== 'roles') return
   return organisationId.value
 })
-useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
+useLoader(
+  'Home',
+  useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
+)
 useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
 function fetchInvitesIfAuthenticated () {
