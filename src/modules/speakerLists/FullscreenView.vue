@@ -5,11 +5,11 @@
         <h1 class="text-center">
           {{ list.title }}
         </h1>
-        <p class="text-center mb-4">
+        <p class="text-center mb-4" v-if="listState">
           <v-icon :icon="listState.icon" :color="listState.color" />
           {{ t(`workflowState.${listState.state}`) }}
         </p>
-        <p v-if="!queue.length" class="text-secondary text-center">
+        <p v-if="!queue?.length" class="text-secondary text-center">
           {{ t('speaker.queueEmpty') }}
         </p>
         <v-list bg-color="background">
