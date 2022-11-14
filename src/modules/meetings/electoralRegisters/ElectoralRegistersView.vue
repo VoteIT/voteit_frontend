@@ -22,8 +22,21 @@
               </div>
               <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
                 <template #appendItem="{ user, isSelected }">
-                  <div v-if="isSelected" @click.stop>
-                    <v-text-field v-if="setVoteWeight" density="compact" required :min="minWeight" :step="minWeight" :label="t('electoralRegister.weight')" type="number" :model-value="createSelection.get(user)" @update:modelValue="createSelection.set(user, round($event))" hide-details />
+                  <div v-if="isSelected">
+                    <v-text-field
+                      v-if="setVoteWeight"
+                      density="compact"
+                      hide-details
+                      type="number"
+                      required
+                      :label="t('electoralRegister.weight')"
+                      :min="minWeight"
+                      :model-value="createSelection.get(user)"
+                      :step="minWeight"
+                      @update:modelValue="createSelection.set(user, round($event))"
+                      @click.stop
+                      @keydown.stop
+                    />
                     <v-icon v-else>mdi-check-circle</v-icon>
                   </div>
                 </template>
