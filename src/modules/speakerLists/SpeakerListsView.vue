@@ -292,10 +292,9 @@ function userSearchFilter (user: User): boolean {
   return !speakerQueue.value.includes(user.pk)
 }
 
-function addSpeaker (user: User | number) {
+function addSpeaker (user: number) {
   if (!currentList.value) return
-  if (typeof user === 'number') speakers.moderatorEnterList(currentList.value, user)
-  else speakers.moderatorEnterList(currentList.value, user.pk)
+  speakers.moderatorEnterList(currentList.value, user)
 }
 
 async function deleteList (list: SpeakerList) {

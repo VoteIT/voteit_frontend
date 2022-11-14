@@ -92,7 +92,8 @@
                   v-model="addUser" :params="{ meeting: meetingId }"
                   :filter="(user) => !group.members.includes(user.pk)"
                   :label="t('meeting.groups.addMember')"
-                  @submit="addMember(group, $event)" instant
+                  @submit="addMember(group, $event)"
+                  instant
                 />
                 <v-list v-if="group.members.length">
                   <v-list-item
@@ -182,8 +183,8 @@ const addUser = ref(null)
 function getMembers (group: MeetingGroup) {
   return group.members.map(pk => getUser(pk) ?? { pk })
 }
-function addMember (group: MeetingGroup, user: User) {
-  meetingGroupType.api.patch(group.pk, { members: [...group.members, user.pk] })
+function addMember (group: MeetingGroup, user: number) {
+  meetingGroupType.api.patch(group.pk, { members: [...group.members, user] })
 }
 function removeMember (group: MeetingGroup, user: User) {
   meetingGroupType.api.patch(group.pk, { members: group.members.filter(pk => pk !== user.pk) })

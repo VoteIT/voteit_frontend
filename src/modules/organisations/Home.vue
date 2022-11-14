@@ -141,7 +141,6 @@ import useAuthentication from '@/composables/useAuthentication'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
-import { ContextRoles } from '@/composables/types'
 
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
@@ -240,9 +239,9 @@ async function save () {
   editing.value = false
 }
 
-function addUser (user: ContextRoles) {
+function addUser (user: number) {
   if (!organisation.value) throw new Error('No organisation')
-  organisationType.addRoles(organisation.value.pk, user.pk, OrganisationRole.MeetingCreator)
+  organisationType.addRoles(organisation.value.pk, user, OrganisationRole.MeetingCreator)
 }
 
 const { collapsedBodyHeightMobile } = useDefaults()

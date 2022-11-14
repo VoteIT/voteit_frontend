@@ -48,7 +48,7 @@
             <h2 class="mb-4">
               {{ t('presence.presentCount', presentUserIds.length) }}
             </h2>
-            <UserSearch class="mb-6" @submit="changePresence($event.pk, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
+            <UserSearch class="mb-6" @submit="changePresence($event, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
             <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-2" bgColor="background" density="default">
               <template #appendItem="{ user }">
                 <v-btn size="small" variant="text" icon="mdi-close" @click="changePresence(user, false)" />
@@ -82,7 +82,7 @@ import UserList from '@/components/UserList.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import { RoleMatrixCol } from '@/components/types'
-import { ContextRoles, UserContextRoles } from '@/composables/types'
+import { UserContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
 
@@ -145,8 +145,8 @@ function addRole (user: number, role: string) {
   meetingType.addRoles(meetingId.value, user, role)
 }
 
-function addUser (user: ContextRoles) {
-  addRole(user.pk, MeetingRole.Participant)
+function addUser (user: number) {
+  addRole(user, MeetingRole.Participant)
 }
 
 async function removeConfirm (userPk: number, role: string) {

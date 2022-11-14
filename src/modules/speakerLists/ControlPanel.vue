@@ -236,7 +236,7 @@ const systems = computed(() => {
         userSearch: {
           params: { meeting: meetingId.value },
           filter: (user: User) => !userIds.includes(user.pk),
-          onSubmit: (user: User) => speakerSystemType.addRoles(system.pk, user.pk, SpeakerSystemRole.Speaker)
+          onSubmit: (user: number) => speakerSystemType.addRoles(system.pk, user, SpeakerSystemRole.Speaker)
         }
       }
     })
