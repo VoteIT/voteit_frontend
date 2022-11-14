@@ -55,8 +55,7 @@ const props = defineProps({
   params: {
     type: Object,
     default: () => ({})
-  },
-  small: Boolean
+  }
 })
 const emit = defineEmits(['submit'])
 
@@ -100,7 +99,7 @@ function submit () {
 }
 
 const btnProps = computed(() => ({
-  prependIcon: props.small ? undefined : props.buttonIcon,
+  prependIcon: props.buttonIcon,
   disabled: !selected.value
 }))
 

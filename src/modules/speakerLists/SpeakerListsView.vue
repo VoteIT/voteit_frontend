@@ -105,7 +105,7 @@
           <v-btn color="primary" :disabled="!speakerQueue.length" @click="speakers.shuffleList(currentList)"><v-icon icon="mdi-shuffle-variant"/></v-btn>
         </div>
         <div class="d-flex" v-if="canManageSystem">
-          <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="userSearchParams" instant small class="flex-grow-1" />
+          <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="userSearchParams" instant class="flex-grow-1" />
           <template v-if="hasParticipantNumbers">
             <div style="width: 10px;" />
             <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
