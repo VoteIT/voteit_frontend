@@ -76,7 +76,7 @@ export interface QueuedSpeaker {
 export interface CurrentSpeaker {
   pk: number
   speaker_list: number
-  started: null
+  started: Date
   user: number
   seconds: null
 }

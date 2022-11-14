@@ -5,7 +5,8 @@
 <script lang="ts">
 import moment from 'moment'
 import { AxiosResponse } from 'axios'
-import { onBeforeUnmount, onBeforeMount, ref, defineComponent, PropType } from 'vue'
+import { ref, defineComponent, PropType } from 'vue'
+import { useIntervalFn } from '@vueuse/shared'
 
 import restApi from '@/utils/restApi'
 import { durationToString } from '@/utils'
@@ -36,7 +37,6 @@ export default defineComponent({
     inSeconds: Boolean
   },
   setup (props) {
-    let intervalId: number
     const fromNow = ref('')
 
     // Adjust serverAhead value if we got a date in the future.
@@ -63,15 +63,8 @@ export default defineComponent({
       }
     }
 
-    onBeforeMount(() => {
-      adjustServerAhead()
-      updateFromNow()
-      intervalId = setInterval(updateFromNow, props.inSeconds ? 1000 : 60000)
-    })
-
-    onBeforeUnmount(() => {
-      clearInterval(intervalId)
-    })
+    adjustServerAhead()
+    useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, { immediateCallback: true })
 
     return {
       fromNow
