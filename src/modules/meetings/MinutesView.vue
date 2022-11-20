@@ -31,6 +31,11 @@
         <v-switch color="primary" hide-details v-model="settings.showSeparators" :label="t('minutes.showSeparators')" />
         <v-switch color="primary" hide-details v-model="settings.showMeetingBody" :label="t('minutes.showMeetingBody')" />
         <v-switch color="primary" hide-details v-model="settings.showAgendaBody" :label="t('minutes.showAIBody')" />
+        <div class="text-right">
+          <v-btn  size="large" value="minutes" prepend-icon="mdi-printer" onclick="window.print()">
+            {{ t('minutes.print') }}
+          </v-btn>
+        </div>
       </v-sheet>
     </v-expand-transition>
     <template v-if="baseSetting">
