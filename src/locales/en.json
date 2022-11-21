@@ -186,6 +186,10 @@
     "noCurrentMeetings": "You have no meetings.",
     "yourMeetings": "Your meeting | Your meetings"
   },
+  "input": {
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
   "invites": {
     "add": "Invite participants",
     "bulkChange": "Change one invite | Change {count} invites",

@@ -185,6 +185,10 @@
     "noCurrentMeetings": "Inga möten",
     "yourMeetings": "Ditt möte | Dina möten"
   },
+  "input": {
+    "minutes": "Minuter",
+    "seconds": "Sekunder"
+  },
   "invites": {
     "add": "Lägg till inbjudningar",
     "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
