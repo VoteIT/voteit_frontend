@@ -21,7 +21,7 @@
     </MenuTree>
     <template #append>
       <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
-        <BugReports class="ma-2" />
+        <BugReports v-if="isModerator" class="ma-2" />
       </v-defaults-provider>
     </template>
   </v-navigation-drawer>
@@ -214,7 +214,8 @@ export default defineComponent({
       isOpen,
       initDone,
       menu,
-      toggleDrawer
+      toggleDrawer,
+      isModerator
     }
   }
 })

@@ -3,6 +3,12 @@ import { required } from '@/utils/rules'
 
 export default [
   {
+    name: 'confirm',
+    type: FieldType.Checkbox,
+    label: 'Jag är ok med att mina uppgifter sparas',
+    rules: [required]
+  },
+  {
     name: 'function',
     type: FieldType.Select,
     label: 'Funktion',
