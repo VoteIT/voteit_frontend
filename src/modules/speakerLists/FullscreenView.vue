@@ -70,7 +70,7 @@ export default defineComponent({
     useMeetingChannel()
     useLoader(
       'FullscreenView',
-      useChannel('sls', speakerSystemId)
+      useChannel('sls', speakerSystemId).promise
     )
 
     const { getState } = speakerListType.useWorkflows()

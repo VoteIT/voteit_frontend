@@ -53,26 +53,26 @@ function reset () {
   performLoad()
 }
 
+async function subscribe (channel: Channel, uriOrPk: string | number) {
+  // If isReady, load is already performed. Therefore, call immediately.
+  if (isReady.value) return channel.subscribe(uriOrPk)
+  return new Promise<void>((resolve, reject) => {
+    callbacks.push(async () => {
+      try {
+        await channel.subscribe(uriOrPk, true)
+        resolve()
+      } catch (err) {
+        reject(err) // Fail in promise
+        throw err // Fail in loader
+      }
+    })
+  })
+}
+
 export default function useLoader (name: string, ...promises: Promise<unknown>[]) {
   function setLoaded (success = true) {
     if (success) _success()
     else _failure(name)
-  }
-
-  async function subscribe (channel: Channel, uriOrPk: string | number) {
-    // If isReady, load is already performed. Therefore, call immediately.
-    if (isReady.value) return channel.subscribe(uriOrPk)
-    return new Promise<void>((resolve, reject) => {
-      callbacks.push(async () => {
-        try {
-          await channel.subscribe(uriOrPk, true)
-          resolve()
-        } catch (err) {
-          reject(err) // Fail in promise
-          throw err // Fail in loader
-        }
-      })
-    })
   }
 
   call(() => Promise.all(promises))

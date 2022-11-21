@@ -21,8 +21,8 @@ export default async function useMeetingChannel () {
 
   const loader = useLoader(
     'useMeetingChannel',
-    useChannel('meeting', meetingId, channelConfig),
-    useChannel(roleChannel, meetingId, { ...channelConfig, leaveDelay: 500 })
+    useChannel('meeting', meetingId, channelConfig).promise,
+    useChannel(roleChannel, meetingId, { ...channelConfig, leaveDelay: 500 }).promise
   )
 
   onBeforeMount(() => {

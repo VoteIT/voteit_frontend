@@ -175,7 +175,7 @@ const subscribeOrganisationId = computed(() => {
 })
 useLoader(
   'Home',
-  useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true })
+  useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true }).promise
 )
 useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 

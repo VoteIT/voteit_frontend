@@ -1,4 +1,4 @@
-import { computed, onUnmounted, Ref, watch } from 'vue'
+import { computed, onUnmounted, ref, Ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Channel from '@/contentTypes/Channel'
@@ -8,9 +8,11 @@ import { channelSubscribedEvent } from './events'
 import { ThemeColor } from '@/utils/types'
 import { useRouter } from 'vue-router'
 
-export default async function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
+export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
   const { t } = useI18n()
   const router = useRouter()
+
+  const isSubscribed = ref(false)
 
   // Critical subscription errors handled here
   if (config?.critical) config.alertOnError = false
@@ -24,26 +26,30 @@ export default async function useChannel (name: string | Ref<string | undefined>
     return `${channel}/${pk.value}`
   })
 
-  watch(channelUri, async (to, from) => {
-    if (from) channel.leave(from)
-    if (to) {
-      try {
-        await channel.subscribe(to)
-        channelSubscribedEvent.emit(to)
-      } catch {
-        if (config?.critical) {
-          openDialogEvent.emit({
-            dismissible: false,
-            title: t('meeting.subscriptionFailedMessage'),
-            theme: ThemeColor.Error,
-            no: false,
-            yes: t('meeting.subscriptionFailedButton'),
-            resolve: async () => { router.push('/') }
-          })
-        }
+  async function subscribe (uri: string) {
+    try {
+      await channel.subscribe(uri)
+      channelSubscribedEvent.emit(uri)
+      isSubscribed.value = true
+    } catch {
+      if (config?.critical) {
+        openDialogEvent.emit({
+          dismissible: false,
+          title: t('meeting.subscriptionFailedMessage'),
+          theme: ThemeColor.Error,
+          no: false,
+          yes: t('meeting.subscriptionFailedButton'),
+          resolve: async () => { router.push('/') }
+        })
       }
     }
-  })//, { immediate: true })
+  }
+
+  watch(channelUri, (to, from) => {
+    isSubscribed.value = false
+    if (from) channel.leave(from)
+    if (to) subscribe(to)
+  })
 
   if (config?.leaveOnUnmount) {
     onUnmounted(() => {
@@ -51,10 +57,10 @@ export default async function useChannel (name: string | Ref<string | undefined>
     })
   }
 
-  // Function is async (=returns promise). If channelUri can be established, resolve with response to subscription request. Errors should be propagated.
-  if (channelUri.value) {
-    const response = await channel.subscribe(channelUri.value)
-    channelSubscribedEvent.emit(channelUri.value)
-    return response
+  return {
+    isSubscribed,
+    promise: channelUri.value
+      ? subscribe(channelUri.value)
+      : Promise.resolve()
   }
 }

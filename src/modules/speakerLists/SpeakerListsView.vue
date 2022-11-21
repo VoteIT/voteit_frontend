@@ -222,8 +222,8 @@ const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem } = useAg
 const systemId = computed(() => Number(route.params.system))
 useLoader(
   'SpeakerListsView',
-  useChannel('agenda_item', agendaId),
-  useChannel('sls', systemId)
+  useChannel('agenda_item', agendaId).promise,
+  useChannel('sls', systemId).promise
 )
 const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)

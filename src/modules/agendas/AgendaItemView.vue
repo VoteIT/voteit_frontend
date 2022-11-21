@@ -107,7 +107,10 @@
         </Dropdown>
       </v-col>
       <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
-        <h2 class="mb-2">{{ t('discussion.discussions') }}</h2>
+        <h2 class="mb-2">
+          {{ t('discussion.discussions') }}
+        </h2>
+        <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
         <AgendaDiscussions :discussionPosts="sortedDiscussions" />
       </v-col>
     </v-row>
@@ -168,9 +171,10 @@ const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingI
 const { activeFilter, sortOrder, orderContent } = useAgendaFilter(agendaId)
 const { agendaItem, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
 
+const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader(
   'AgendaItem',
-  useChannel('agenda_item', agendaId)
+  promise
 )
 provide(agendaIdKey, agendaId)
 

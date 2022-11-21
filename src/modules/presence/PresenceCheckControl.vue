@@ -62,7 +62,7 @@ async function open () {
 
 useLoader(
   'PresenceCheckControl',
-  useChannel('presence_check', computed(() => presenceCheck.value?.pk))
+  useChannel('presence_check', computed(() => presenceCheck.value?.pk)).promise
 )
 
 const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))

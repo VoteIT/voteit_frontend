@@ -56,8 +56,8 @@ export default class Channel {
     clearTimeout(leaveTimeouts.get(uri))
     if (subscriptions.has(uri)) return
     subscriptions.add(uri)
-    if (socket.isOpen) return subscribeChannel(uri, this.config)
-    if (fail) throw new Error('Socket closed. Cannot subscribe.')
+    if (socket.isOpen) return await subscribeChannel(uri, this.config)
+    else if (fail) throw new Error('Socket closed. Cannot subscribe.')
   }
 
   private performLeave (uri: string): void {
