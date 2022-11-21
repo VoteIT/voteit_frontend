@@ -7,7 +7,7 @@
       <p class="my-2">
         {{ t('presence.presenceNoted') }}
       </p>
-      <v-btn @click="togglePresence()" color="primary" prepend-icon="mdi-undo-variant" :disabled="working">
+      <v-btn @click="togglePresence()" color="primary" prepend-icon="mdi-undo-variant" :disabled="working" :loading="working">
         {{ t('undo') }}
       </v-btn>
     </template>
@@ -15,7 +15,7 @@
       <p class="my-2">
         {{ t('presence.notePresent') }}
       </p>
-      <v-btn @click="togglePresence()" color="primary" prepend-icon="mdi-hand-wave" :disabled="working">
+      <v-btn @click="togglePresence()" color="primary" prepend-icon="mdi-hand-wave" :disabled="working" :loading="working">
         {{ t('presence.imHere') }}
       </v-btn>
     </template>

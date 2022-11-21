@@ -7,19 +7,19 @@
     <p class="my-2">
       {{ t('presence.presentCount', presenceCount) }}
     </p>
-    <v-btn :disabled="submitting" v-if="canChange" @click="close()" color="warning" prepend-icon="mdi-stop">
+    <v-btn :disabled="submitting" :loading="submitting" v-if="canChange" @click="close()" color="warning" prepend-icon="mdi-stop">
       {{ t('presence.closeCheck') }}
     </v-btn>
   </div>
   <div v-else class="text-center my-8">
-    <v-btn size="large" color="primary" @click="openCheck()" prepend-icon="mdi-hand-wave">
+    <v-btn :disabled="submitting" :loading="submitting" size="large" color="primary" @click="open()" prepend-icon="mdi-hand-wave">
       {{ t('presence.newCheck') }}
     </v-btn>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
@@ -31,44 +31,41 @@ import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckClosed } from './events'
 
-export default defineComponent({
-  components: { Moment },
-  setup () {
-    const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence(meetingId)
-    const submitting = ref(false)
+const { t } = useI18n()
+const { meetingId } = useMeeting()
+const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence(meetingId)
 
-    async function close () {
-      if (submitting.value || !presenceCheck.value) return
-      submitting.value = true
-      try {
-        await closeCheck()
-        presenceCheckClosed.emit(presenceCheck.value)
-      } catch (err) {
-        console.error(err)
-      }
-      submitting.value = false
-    }
+const submitting = ref(false)
 
-    useLoader(
-      'PresenceCheckControl',
-      useChannel('presence_check', computed(() => presenceCheck.value?.pk))
-    )
-
-    const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
-
-    return {
-      t,
-      canChange,
-      presenceCheck,
-      presenceCount,
-      submitting,
-      close,
-      openCheck
-    }
+async function close () {
+  if (submitting.value || !presenceCheck.value) return
+  submitting.value = true
+  try {
+    await closeCheck()
+    presenceCheckClosed.emit(presenceCheck.value)
+  } catch (err) {
+    console.error(err)
   }
-})
+  submitting.value = false
+}
+
+async function open () {
+  if (submitting.value || presenceCheck.value) return
+  submitting.value = true
+  try {
+    await openCheck()
+  } catch (err) {
+    console.error(err)
+  }
+  submitting.value = false
+}
+
+useLoader(
+  'PresenceCheckControl',
+  useChannel('presence_check', computed(() => presenceCheck.value?.pk))
+)
+
+const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
 </script>
 
 <style lang="sass" scoped>
