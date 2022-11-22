@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash'
+import { isNumber, orderBy, sortBy } from 'lodash'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 
 import useAuthentication, { user } from '@/composables/useAuthentication'
@@ -7,6 +7,7 @@ import type { LoaderCallback } from '@/composables/useLoader'
 import { meetingType } from './contentTypes'
 import { Meeting, MeetingState } from './types'
 import { dateify, mapFilter } from '@/utils'
+import { ifilter, imap } from 'itertools'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
@@ -36,37 +37,46 @@ function filterMeetings (states: MeetingState[], order: keyof Meeting, search: s
   )
 }
 
+const participatingClosedMeetings = computed(() => getMeetingList(MeetingState.Closed))
+const participatingOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing))
+const participatingUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming))
+const otherMeetingsExist = computed(() => meetings.size > (participatingOngoingMeetings.value.length + participatingUpcomingMeetings.value.length))
+const existingMeetingYears = computed(() => {
+  return sortBy(
+    [...new Set(
+      ifilter(
+        imap(meetings.values(), m => m.start_time?.getFullYear()),
+        isNumber
+      )
+    )] as number[]
+  )
+})
+
+function setMeeting (meeting: Meeting) {
+  meetings.set(meeting.pk, meeting)
+  if (meeting.current_user_roles && user.value) {
+    meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
+  }
+}
+
+async function fetchMeeting (pk: number) {
+  const { data } = await meetingType.api.retrieve(pk)
+  setMeeting(dateify(data, 'start_time', 'end_time'))
+  return !!data.current_user_roles
+}
+
+async function fetchMeetings () {
+  const { data } = await meetingType.api.list()
+  for (const m of data) {
+    meetings.set(m.pk, dateify(m, 'start_time', 'end_time'))
+  }
+}
+
+function clearMeetings () {
+  meetings.clear()
+}
+
 export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) => void) {
-  const participatingClosedMeetings = computed(() => getMeetingList(MeetingState.Closed))
-  const participatingOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing))
-  const participatingUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming))
-  const otherMeetingsExist = computed(() => meetings.size > (participatingOngoingMeetings.value.length + participatingUpcomingMeetings.value.length))
-  const existingMeetingYears = computed(() => [...new Set([...meetings.values()].map(m => m.start_time?.getFullYear()))])
-
-  function setMeeting (meeting: Meeting) {
-    meetings.set(meeting.pk, meeting)
-    if (meeting.current_user_roles && user.value) {
-      meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
-    }
-  }
-
-  async function fetchMeeting (pk: number) {
-    const { data } = await meetingType.api.retrieve(pk)
-    setMeeting(dateify(data, 'start_time', 'end_time'))
-    return !!data.current_user_roles
-  }
-
-  async function fetchMeetings () {
-    const { data } = await meetingType.api.list()
-    for (const m of data) {
-      meetings.set(m.pk, dateify(m, 'start_time', 'end_time'))
-    }
-  }
-
-  function clearMeetings () {
-    meetings.clear()
-  }
-
   if (loader) {
     onBeforeMount(() => {
       if (isAuthenticated.value) loader(fetchMeetings)

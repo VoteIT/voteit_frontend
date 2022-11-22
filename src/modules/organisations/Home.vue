@@ -283,7 +283,15 @@ const displayRoles = [
 const meetingCount = computed(() => groupRules.reduce((acc, { meetings }) => acc + meetings.value.length, 0))
 
 /* Meeting search */
-const yearItems = computed(() => existingMeetingYears.value.map(value => ({ value: value || null, title: value ? String(value) : t('organization.allYears') })))
+const yearItems = computed(() => {
+  return [
+    {
+      value: null,
+      title: t('organization.allYears')
+    },
+    ...existingMeetingYears.value.map(value => ({ value, title: value.toFixed() }))
+  ]
+})
 const searchFilter = reactive<{ includeArchived: boolean, search: string, year: number | null, order: keyof Meeting }>({
   includeArchived: false,
   order: 'title',
