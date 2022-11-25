@@ -37,7 +37,7 @@ const { meeting, meetingPath } = useMeeting()
 useMeetingTitle(t('poll.all'))
 
 const pollStatesOpen = ref(history.state.pollStatesOpen as PollState[] || [PollState.Ongoing])
-watch(pollStatesOpen, value => { history.replaceState({ pollStatesOpen: [...value] }, '') })
+watch(pollStatesOpen, value => { history.replaceState({ ...history.state, pollStatesOpen: [...value] }, '') })
 
 const canAddPoll = computed(() => meeting.value && rules.canAddPoll(meeting.value))
 const toAddPoll = computed(() => meetingPath.value + '/polls/new')
