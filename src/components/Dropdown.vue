@@ -17,31 +17,20 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
+<script lang="ts" setup>
+import { ref } from 'vue'
 
-export default defineComponent({
-  props: {
-    modelValue: Boolean,
-    tag: {
-      type: String,
-      default: 'h2'
-    },
-    title: String
-  },
-  setup (props, { emit }) {
-    const isOpen = ref(props.modelValue)
-    function toggle () {
-      isOpen.value = !isOpen.value
-      emit('update:modelValue', isOpen.value)
-    }
-
-    return {
-      isOpen,
-      toggle
-    }
-  }
+const props = defineProps({
+  modelValue: Boolean,
+  title: String
 })
+const emit = defineEmits(['update:modelValue'])
+
+const isOpen = ref(props.modelValue)
+function toggle () {
+  isOpen.value = !isOpen.value
+  emit('update:modelValue', isOpen.value)
+}
 </script>
 
 <style lang="sass">

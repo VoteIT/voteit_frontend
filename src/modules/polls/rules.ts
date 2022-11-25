@@ -14,7 +14,7 @@ import { Poll } from './methods/types'
 const { user } = useAuthentication()
 const { getRegister } = useElectoralRegisters()
 
-const PERMISSIVE_STATES = [PollState.Private, PollState.Upcoming, PollState.Ongoing] // States where moderators can make changes
+const PERMISSIVE_STATES = [PollState.Private, PollState.Upcoming] // States where moderators can make changes
 
 export function isPollVoter (poll: Poll): boolean {
   if (!poll.electoral_register || !user.value) return false

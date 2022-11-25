@@ -40,7 +40,6 @@ export const pollStates: WorkflowState<PollState>[] = [
     transition: PollTransition.Cancel,
     icon: 'mdi-cancel',
     state: PollState.Canceled,
-    isFinal: true,
     priority: 6
   },
   {

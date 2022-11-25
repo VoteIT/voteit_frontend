@@ -10,7 +10,7 @@
         </v-btn>
       </header>
       <v-divider />
-      <PollList groupClass="mt-4">
+      <PollList groupClass="mt-4" pollClass="my-3" v-model="pollStatesOpen">
         <template v-slot="{ empty }">
           <p v-if="empty">
             <em>{{ t('poll.noPublishedPolls') }}</em>
@@ -21,30 +21,24 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script lang="ts" setup>
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 
 import PollList from './PollList.vue'
-import { canAddPoll } from './rules'
+import * as rules from './rules'
+import { PollState } from './types'
 
-export default defineComponent({
-  components: {
-    PollList
-  },
-  setup () {
-    const { t } = useI18n()
-    const { meeting, meetingPath } = useMeeting()
-    useMeetingTitle(t('poll.all'))
+const { t } = useI18n()
+const { meeting, meetingPath } = useMeeting()
+useMeetingTitle(t('poll.all'))
 
-    return {
-      t,
-      canAddPoll: computed(() => meeting.value && canAddPoll(meeting.value)),
-      toAddPoll: computed(() => meetingPath.value + '/polls/new')
-    }
-  }
-})
+const pollStatesOpen = ref(history.state.pollStatesOpen as PollState[] || [PollState.Ongoing])
+watch(pollStatesOpen, value => { history.replaceState({ pollStatesOpen: [...value] }, '') })
+
+const canAddPoll = computed(() => meeting.value && rules.canAddPoll(meeting.value))
+const toAddPoll = computed(() => meetingPath.value + '/polls/new')
 </script>

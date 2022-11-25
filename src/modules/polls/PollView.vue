@@ -5,7 +5,7 @@
         <header class="d-flex">
           <div class="flex-grow-1">
             <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
-            <WorkflowState :admin="canChange" :contentType="pollType" :object="poll" />
+            <WorkflowState :admin="isModerator" :contentType="pollType" :object="poll" />
             <h1>{{ poll.title }}</h1>
             <p class="text-secondary">
               {{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}
@@ -127,8 +127,8 @@ import { openAlertEvent } from '@/utils/events'
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canChange, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
-const { meetingPath, meetingId } = useMeeting()
+const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(computed(() => Number(route.params.pid)))
+const { isModerator, meetingPath, meetingId } = useMeeting()
 const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
