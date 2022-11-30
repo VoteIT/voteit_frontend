@@ -8,10 +8,10 @@ Document notable changes here.
 - PollsView (listing) now keeps open poll states in history, making back navigation nicer.
 
 ### Fixed
-- Reset vote data when switching poll, fixes [#217](https://github.com/VoteIT/voteit_frontend/issues/217)
+- Reset vote data when switching poll, fixed [#217](https://github.com/VoteIT/voteit_frontend/issues/217)
 
 ## 0.9.5
-Skipped minor version numbers, due to high number of changes.
+Skipped patch version numbers, due to high number of changes.
 
 ### Changed
 - Loader now waits for channel subscriptions [#140](https://github.com/VoteIT/voteit_frontend/issues/140)
