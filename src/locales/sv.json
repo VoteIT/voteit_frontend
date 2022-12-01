@@ -259,6 +259,7 @@
     "subscriptionFailedButton": "Till startsidan",
     "to": "Till möte",
     "yearStarted": "Startades år",
+    "markedForDeleteWarn": "Mötet kommer att raderas",
     "groups": {
       "help": "Medlemmar i en grupp kan lägga förslag i den gruppens namn, förutsatt att personen har rätt att lägga förslag. Det är användbart för att lägga till förslag från ett utskott, styrelse eller annan grupp, som inte ska anses vara personliga förslag.",
       "addMember": "Lägg till medlem",
@@ -296,7 +297,9 @@
     "loginTo": "Logga in till {title}",
     "noLogin": "Ingen inloggning tillgänglig",
     "requires": "Kräver",
-    "searchArchivedMeetings": "Inkludera arkiverade möten",
+    "searchClosedMeetings": "Visa avslutade",
+    "searchDeletingMeetings": "Ska raderas",
+    "searchArchivedMeetings": "Arkiverade",
     "showMore": "Visa fler"
   },
   "participantNumber": {
@@ -671,6 +674,7 @@
     "upcoming": "Kommande",
     "voting": "Låst för omröstning",
     "no_result": "Inget resultat",
+    "deleting": "Raderas",
     "plural": {
       "approved": "Bifallna",
       "archived": "Arkiverade",
@@ -690,7 +694,8 @@
       "unhandled": "Ohanterade",
       "upcoming": "Kommande",
       "voting": "Låsta för omröstning",
-      "no_result": "Inget resultat"
+      "no_result": "Inget resultat",
+      "deleting": "Raderas"
     }
   }
 }

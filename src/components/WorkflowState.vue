@@ -47,6 +47,18 @@
   >
     {{ t(`workflowState.${currentState.state}`) }}
   </v-btn>
+  <v-btn
+    v-else
+    :prepend-icon="'mdi-help'"
+    class="text-no-wrap"
+    :color="'secondary'"
+    disabled
+    size="x-small"
+    variant="flat"
+    v-bind="props"
+  >
+    {{ `Unknown state: ${props.object.state}` }}
+  </v-btn>
 </template>
 
 <script lang="ts" setup>

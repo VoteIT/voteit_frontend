@@ -58,7 +58,8 @@ export enum MeetingState {
   Ongoing = 'ongoing',
   Closed = 'closed',
   Archiving = 'archiving',
-  Archived = 'archived'
+  Archived = 'archived',
+  Deleting = 'deleting'
 }
 
 export interface Meeting extends BaseContent {

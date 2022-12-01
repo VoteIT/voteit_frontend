@@ -8,6 +8,7 @@
         </div>
         <DropdownMenu :items="menuItems" />
       </header>
+      <v-alert v-if="(meeting.state == MeetingState.Deleting)" :text="t('meeting.markedForDeleteWarn')" type="warning" class="my-2" />
       <Richtext v-model="content.body" :editing="editing" @edit-done="submit()" variant="full" />
     </v-col>
   </v-row>
@@ -26,6 +27,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { MenuItem } from '@/utils/types'
 import { meetingType } from './contentTypes'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
+import { MeetingState } from './types'
 
 export default defineComponent({
   inject: ['cols'],
@@ -83,11 +85,13 @@ export default defineComponent({
     return {
       canChange,
       content,
+      MeetingState,
       meetingType,
       meeting,
       menuItems,
       editing,
-      submit
+      submit,
+      t
     }
   }
 })

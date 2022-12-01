@@ -91,11 +91,23 @@
           <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
           <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
         </div>
-        <v-switch
-          :label="t('organization.searchArchivedMeetings')"
-          v-model="searchFilter.includeArchived"
-          color="primary"
-        />
+        <div class="d-flex">
+          <v-switch
+            :label="t('organization.searchClosedMeetings')"
+            v-model="searchFilter.includeClosed"
+            color="primary"
+          />
+          <v-switch
+            :label="t('organization.searchDeletingMeetings')"
+            v-model="searchFilter.includeDeleting"
+            color="primary"
+          />
+          <v-switch
+            :label="t('organization.searchArchivedMeetings')"
+            v-model="searchFilter.includeArchived"
+            color="primary"
+          />
+        </div>
         <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
         <v-list>
           <v-list-item
@@ -292,22 +304,30 @@ const yearItems = computed(() => {
     ...existingMeetingYears.value.map(value => ({ value, title: value.toFixed() }))
   ]
 })
-const searchFilter = reactive<{ includeArchived: boolean, search: string, year: number | null, order: keyof Meeting }>({
+const searchFilter = reactive<{ includeArchived: boolean, includeClosed: boolean, includeDeleting: boolean, search: string, year: number | null, order: keyof Meeting }>({
   includeArchived: false,
+  includeClosed: false,
+  includeDeleting: false,
   order: 'title',
   search: '',
   year: null
 })
 function getSearchStates () {
-  return searchFilter.includeArchived
-    ? Object.values(MeetingState)
-    : [MeetingState.Upcoming, MeetingState.Ongoing, MeetingState.Closed]
+  const states: MeetingState[] = Object.values(MeetingState)
+  // I'm sure there's a smarter way to do this :P
+  if (!searchFilter.includeArchived) {
+    states.splice(states.indexOf(MeetingState.Archived), 1)
+    states.splice(states.indexOf(MeetingState.Archiving), 1)
+  }
+  if (!searchFilter.includeClosed) states.splice(states.indexOf(MeetingState.Closed), 1)
+  if (!searchFilter.includeDeleting) states.splice(states.indexOf(MeetingState.Deleting), 1)
+  return states
 }
 
 const currentSearchPage = ref(1)
 const searchedMeetings = computed(() => {
   const meetings = filterMeetings(getSearchStates(), searchFilter.order, searchFilter.search, searchFilter.year)
-  return chunk(meetings, 8)
+  return chunk(meetings, 10)
 })
 watch(searchedMeetings, () => { currentSearchPage.value = 1 })
 </script>

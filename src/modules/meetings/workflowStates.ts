@@ -1,4 +1,5 @@
 import { WorkflowState } from '@/contentTypes/types'
+import { ThemeColor } from '@/utils/types'
 import { MeetingComponentState, MeetingInviteState, MeetingState } from './types'
 
 export const meetingStates: WorkflowState<MeetingState>[] = [
@@ -27,6 +28,17 @@ export const meetingStates: WorkflowState<MeetingState>[] = [
     icon: 'mdi-archive',
     state: MeetingState.Archived,
     isFinal: true
+  },
+  {
+    transition: 'request_delete',
+    icon: 'mdi-delete',
+    state: MeetingState.Deleting
+  },
+  {
+    transition: 'abort_delete',
+    icon: 'mdi-undo',
+    state: MeetingState.Deleting, // FIXME Why this here?
+    color: ThemeColor.Warning // FIXME not displayed
   }
 ]
 
