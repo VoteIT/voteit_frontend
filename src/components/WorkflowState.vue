@@ -49,10 +49,10 @@
   </v-btn>
   <v-btn
     v-else
-    :prepend-icon="'mdi-help'"
     class="text-no-wrap"
-    :color="'secondary'"
+    color="secondary"
     disabled
+    prepend-icon="mdi-help"
     size="x-small"
     variant="flat"
     v-bind="props"

@@ -91,21 +91,24 @@
           <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
           <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
         </div>
-        <div class="d-flex">
+        <div class="d-flex flex-wrap">
           <v-switch
             :label="t('organization.searchClosedMeetings')"
-            v-model="searchFilter.includeClosed"
             color="primary"
+            hide-details
+            v-model="searchFilter.includeStates.closed"
           />
           <v-switch
             :label="t('organization.searchDeletingMeetings')"
-            v-model="searchFilter.includeDeleting"
             color="primary"
+            hide-details
+            v-model="searchFilter.includeStates.deleting"
           />
           <v-switch
             :label="t('organization.searchArchivedMeetings')"
-            v-model="searchFilter.includeArchived"
             color="primary"
+            hide-details
+            v-model="searchFilter.includeStates.archived"
           />
         </div>
         <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
@@ -304,24 +307,31 @@ const yearItems = computed(() => {
     ...existingMeetingYears.value.map(value => ({ value, title: value.toFixed() }))
   ]
 })
-const searchFilter = reactive<{ includeArchived: boolean, includeClosed: boolean, includeDeleting: boolean, search: string, year: number | null, order: keyof Meeting }>({
-  includeArchived: false,
-  includeClosed: false,
-  includeDeleting: false,
+const INCLUDE_STATES = [MeetingState.Ongoing, MeetingState.Upcoming]
+function getInitialStates () {
+  return Object.fromEntries(
+    Object.values(MeetingState)
+      .map(state => [state, INCLUDE_STATES.includes(state)])
+  ) as Record<MeetingState, boolean>
+}
+const searchFilter = reactive<{ includeStates: Record<MeetingState, boolean>, search: string, year: number | null, order: keyof Meeting }>({
+  includeStates: getInitialStates(),
   order: 'title',
   search: '',
   year: null
 })
+const STATE_ALIASES: Partial<Record<MeetingState, MeetingState>> = {
+  archived: MeetingState.Archiving
+}
+function checkStateAlias (state: MeetingState) {
+  const alias = STATE_ALIASES[state]
+  return !!alias && searchFilter.includeStates[alias]
+}
+
 function getSearchStates () {
-  const states: MeetingState[] = Object.values(MeetingState)
-  // I'm sure there's a smarter way to do this :P
-  if (!searchFilter.includeArchived) {
-    states.splice(states.indexOf(MeetingState.Archived), 1)
-    states.splice(states.indexOf(MeetingState.Archiving), 1)
-  }
-  if (!searchFilter.includeClosed) states.splice(states.indexOf(MeetingState.Closed), 1)
-  if (!searchFilter.includeDeleting) states.splice(states.indexOf(MeetingState.Deleting), 1)
-  return states
+  return Object.entries(searchFilter.includeStates)
+    .filter(([state, value]) => value || checkStateAlias(state as MeetingState))
+    .map(e => e[0]) as MeetingState[]
 }
 
 const currentSearchPage = ref(1)

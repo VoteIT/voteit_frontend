@@ -8,7 +8,7 @@
         </div>
         <DropdownMenu :items="menuItems" />
       </header>
-      <v-alert v-if="(meeting.state == MeetingState.Deleting)" :text="t('meeting.markedForDeleteWarn')" type="warning" class="my-2" />
+      <v-alert v-if="meeting.state == MeetingState.Deleting" :text="t('meeting.markedForDeleteWarn')" type="warning" class="my-2" />
       <Richtext v-model="content.body" :editing="editing" @edit-done="submit()" variant="full" />
     </v-col>
   </v-row>

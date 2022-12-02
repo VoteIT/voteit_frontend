@@ -2,6 +2,12 @@
 
 Document notable changes here.
 
+Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
+
+## 0.10.0
+- Add `deleting` state to meetings
+- Allow filtering on `deleting`, `archiving/archived` and `closed` meetings in Find meeting
+
 ## 0.9.6
 
 ### Changed
