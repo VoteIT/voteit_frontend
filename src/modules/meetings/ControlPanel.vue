@@ -9,7 +9,7 @@
       <component :is="currentComponent"/>
     </v-col>
     <v-col class="grid" v-else>
-      <v-card v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id">
+      <v-card v-for="{ icon, id, component, description, title, quickComponent } in panelPlugins" :key="id">
         <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
           <v-card-title class="d-flex text-black">
             <v-icon sm :icon="icon" class="mr-2" />
@@ -24,26 +24,11 @@
           {{ title }}
         </v-card-title>
         <component v-if="quickComponent" :is="quickComponent" />
+        <v-card-text v-if="description">
+          {{ description }}
+        </v-card-text>
       </v-card>
     </v-col>
-    <!-- <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" lg="4" xl="3" cols="12">
-      <v-card>
-        <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
-          <v-card-title class="d-flex text-black">
-            <v-icon sm :icon="icon" class="mr-2" />
-            <span class="flex-grow-1">
-              {{ title }}
-            </span>
-            <v-icon icon="mdi-chevron-right" />
-          </v-card-title>
-        </router-link>
-        <v-card-title v-else>
-          <v-icon sm :icon="icon" class="mr-2" />
-          {{ title }}
-        </v-card-title>
-        <component v-if="quickComponent" :is="quickComponent" />
-      </v-card>
-    </v-col> -->
   </v-row>
 </template>
 
@@ -83,6 +68,7 @@ const panelPlugins = computed(() => {
     .getActivePlugins(meeting.value)
     .map(panel => {
       return {
+        description: panel.getDescription && panel.getDescription(t),
         title: t(panel.translationKey),
         ...panel
       }

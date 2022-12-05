@@ -26,6 +26,7 @@ meetingSettingsPlugins.register({
 meetingSettingsPlugins.register({
   id: 'speakers',
   component: SpeakerSystems,
+  getDescription: (t) => t('speaker.settings'),
   icon: 'mdi-account-voice',
   translationKey: 'speaker.systems'
 })

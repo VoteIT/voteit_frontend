@@ -1,7 +1,7 @@
 <template>
   <v-alert class="mb-4" :title="t('invites.helpTextTitle')" :text="t('invites.helpTextBody')" color="primary" icon="mdi-email-off" />
   <v-toolbar color="secondary" :title="t('invites.existing')">
-    <v-tooltip :modelValue="copied" location="top" :text="t('copied')">
+    <v-tooltip :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
       <template #activator="{ props }">
         <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('invites.copyMatchingTooltip')">
           <v-icon>mdi-content-copy</v-icon>
