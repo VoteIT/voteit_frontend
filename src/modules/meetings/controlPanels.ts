@@ -22,6 +22,7 @@ meetingSettingsPlugins.register({
   translationKey: 'electoralRegister.plural'
 })
 
+// TODO Move registration to module
 meetingSettingsPlugins.register({
   id: 'speakers',
   component: SpeakerSystems,

@@ -1,18 +1,15 @@
 <template>
-  <v-row>
-    <v-col>
-      <header>
-        <h1>{{ t('meeting.settings.for', { ...meeting }) }}</h1>
-        <v-breadcrumbs v-if="breadcrumbs.length" :items="breadcrumbs" />
-      </header>
-    </v-col>
-  </v-row>
+  <teleport to="#toolbar">
+    <v-toolbar :title="t('meeting.settings.for', { ...meeting })" color="secondary-lighten-2" elevation="1" class="text-black">
+      <v-breadcrumbs v-if="breadcrumbs.length" :items="breadcrumbs" />
+    </v-toolbar>
+  </teleport>
   <v-row id="setting-panels">
     <v-col v-if="currentComponent">
       <component :is="currentComponent"/>
     </v-col>
-    <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" lg="4" xl="3" cols="12">
-      <v-card>
+    <v-col class="grid" v-else>
+      <v-card v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id">
         <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
           <v-card-title class="d-flex text-black">
             <v-icon sm :icon="icon" class="mr-2" />
@@ -29,11 +26,29 @@
         <component v-if="quickComponent" :is="quickComponent" />
       </v-card>
     </v-col>
+    <!-- <v-col v-else v-for="{ icon, id, component, title, quickComponent } in panelPlugins" :key="id" sm="6" lg="4" xl="3" cols="12">
+      <v-card>
+        <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
+          <v-card-title class="d-flex text-black">
+            <v-icon sm :icon="icon" class="mr-2" />
+            <span class="flex-grow-1">
+              {{ title }}
+            </span>
+            <v-icon icon="mdi-chevron-right" />
+          </v-card-title>
+        </router-link>
+        <v-card-title v-else>
+          <v-icon sm :icon="icon" class="mr-2" />
+          {{ title }}
+        </v-card-title>
+        <component v-if="quickComponent" :is="quickComponent" />
+      </v-card>
+    </v-col> -->
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeMount, onUnmounted } from 'vue'
+<script lang="ts" setup>
+import { computed, onBeforeMount, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -48,64 +63,64 @@ import { orderBy } from 'lodash'
 
 require('./controlPanels')
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const route = useRoute()
-    const { isModerator, meeting, meetingId, meetingPath } = useMeeting()
+const { t } = useI18n()
+const route = useRoute()
+const { isModerator, meeting, meetingId, meetingPath } = useMeeting()
 
-    useMeetingTitle(t('settings'))
-    usePermission(isModerator, { to: meetingPath })
-    const { fetchComponents, clearComponents } = useComponentApi(meetingId)
-    const loader = useLoader('ControlPanel')
+useMeetingTitle(t('settings'))
+usePermission(isModerator, { to: meetingPath })
+const { fetchComponents, clearComponents } = useComponentApi(meetingId)
+const loader = useLoader('ControlPanel')
 
-    onBeforeMount(() => {
-      loader.call(fetchComponents)
-    })
-    onUnmounted(clearComponents)
+onBeforeMount(() => {
+  loader.call(fetchComponents)
+})
+onUnmounted(clearComponents)
 
-    const panelPlugins = computed(() => {
-      if (!meeting.value) return []
-      return orderBy(meetingSettingsPlugins
-        .getActivePlugins(meeting.value)
-        .map(panel => {
-          return {
-            title: t(panel.translationKey),
-            ...panel
-          }
-        }), ['title'])
-    })
-    const currentPanel = computed(() => route.params.panel as string | undefined)
-    const currentPlugin = computed(() => currentPanel.value ? meetingSettingsPlugins.getPlugin(currentPanel.value) : undefined)
-    const currentComponent = computed(() => currentPlugin.value?.component)
+const panelPlugins = computed(() => {
+  if (!meeting.value) return []
+  return orderBy(meetingSettingsPlugins
+    .getActivePlugins(meeting.value)
+    .map(panel => {
+      return {
+        title: t(panel.translationKey),
+        ...panel
+      }
+    }), ['title'])
+})
+const currentPanel = computed(() => route.params.panel as string | undefined)
+const currentPlugin = computed(() => currentPanel.value ? meetingSettingsPlugins.getPlugin(currentPanel.value) : undefined)
+const currentComponent = computed(() => currentPlugin.value?.component)
 
-    const breadcrumbs = computed(() => {
-      if (!currentPlugin.value) return []
-      return [{
-        text: t('settings'),
-        to: `${meetingPath.value}/settings`
-      },
-      {
-        text: t(currentPlugin.value.translationKey),
-        to: `${meetingPath.value}/settings/${currentPlugin.value.id}`
-      }]
-    })
-
-    return {
-      t,
-      breadcrumbs,
-      meeting,
-      meetingPath,
-      panelPlugins,
-      currentPanel,
-      currentComponent
-    }
-  }
+const breadcrumbs = computed(() => {
+  if (!currentPlugin.value) return []
+  return [{
+    text: t('settings'),
+    to: `${meetingPath.value}/settings`
+  },
+  {
+    text: t(currentPlugin.value.translationKey),
+    to: `${meetingPath.value}/settings/${currentPlugin.value.id}`
+  }]
 })
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
+@import ~vuetify/lib/styles/tools/display
+
 #setting-panels
   a
     text-decoration: none
+
+.grid
+  display: grid
+  width: 100%
+  gap: 1rem
+  grid-template-columns: repeat(var(--cols, 1), 1fr)
+  +media-breakpoint-up(sm)
+    --cols: 2
+  +media-breakpoint-up(lg)
+    --cols: 3
+  +media-breakpoint-up(xl)
+    --cols: 4
 </style>

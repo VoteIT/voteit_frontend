@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="#toolbar">
+  <teleport to="#toolbar">
     <v-toolbar :title="agendaItem?.title" color="secondary-lighten-2" elevation="1" class="text-black">
       <div class="mr-2">
         <v-fade-transition>
@@ -22,7 +22,7 @@
         </v-tabs>
       </template>
     </v-toolbar>
-  </Teleport>
+  </teleport>
   <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="5" lg="4" class="speaker-lists">
       <h2>{{ t('speaker.listChoices') }}</h2>

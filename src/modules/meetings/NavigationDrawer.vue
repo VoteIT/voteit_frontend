@@ -193,7 +193,8 @@ export default defineComponent({
       }]
       if (canChangeMeeting(meeting.value)) {
         items[0].items.push({
-          title: t('settings'),
+          icons: ['mdi-cog'],
+          title: t('meeting.controlPanel'),
           to: `${meetingPath.value}/settings`
         })
       }

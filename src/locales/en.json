@@ -252,6 +252,7 @@
     "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
     "copyUrl": "Copy meeting link",
     "participants": "Participants",
+    "controlPanel": "Control panel",
     "create": "Start a new meeting",
     "createTitleHint": "At least 5 characters",
     "meeting": "Meeting",
