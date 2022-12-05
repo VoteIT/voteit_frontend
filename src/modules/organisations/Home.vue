@@ -99,6 +99,7 @@
             v-model="searchFilter.includeStates.closed"
           />
           <v-switch
+            v-if="canChangeOrganisation"
             :label="t('organization.searchDeletingMeetings')"
             color="primary"
             hide-details
@@ -112,7 +113,7 @@
           />
         </div>
         <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
-        <v-list>
+        <v-list v-if="searchedMeetings.length">
           <v-list-item
             v-for="{ pk, title, state, current_user_roles } in searchedMeetings[currentSearchPage - 1]"
             :key="pk"
@@ -133,6 +134,9 @@
               </v-btn>
             </template>
           </v-list-item>
+        </v-list>
+        <v-list v-else>
+          <v-list-item :title="t('home.noVisibleMeetings')" />
         </v-list>
       </DefaultDialog>
     </v-col>

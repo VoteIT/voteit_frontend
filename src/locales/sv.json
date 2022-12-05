@@ -183,6 +183,7 @@
   "home": {
     "home": "Hem",
     "noCurrentMeetings": "Inga möten",
+    "noVisibleMeetings": "Inga synliga möten.",
     "yourMeetings": "Ditt möte | Dina möten"
   },
   "input": {

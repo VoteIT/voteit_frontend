@@ -184,6 +184,7 @@
   "home": {
     "home": "Home",
     "noCurrentMeetings": "You have no meetings.",
+    "noVisibleMeetings": "No visible meetings.",
     "yourMeetings": "Your meeting | Your meetings"
   },
   "input": {
