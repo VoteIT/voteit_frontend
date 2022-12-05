@@ -36,10 +36,12 @@ const locale = 'sv'
 moment.locale(locale)
 
 // PLUGINS
+require('@/modules/meetings')
 require('@/modules/agendas')
 require('@/modules/polls/methods')
 require('@/modules/reactions')
 require('@/modules/printing')
+require('@/modules/speakerLists')
 
 /* LOCKED TO 'sv' */
 // async function loadLocaleMessages (i18n: I18n, locale: string) {

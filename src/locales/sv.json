@@ -254,6 +254,8 @@
     "controlPanel": "Kontrollpanel",
     "create": "Starta ett nytt möte",
     "createTitleHint": "Minst 5 tecken",
+    "exports": "Exportera möte",
+    "exportsDescription": "Här kan du ladda ner deltagarlista, talarstatistik, med mera.",
     "find": "Hitta möte",
     "meeting": "Möte",
     "visibleInLists": "Sökbart för alla i organisationen",

@@ -7,7 +7,7 @@ import type { Meeting } from './types'
 import { ComposerTranslation } from 'vue-i18n'
 
 interface ExportsPlugin extends MeetingPlugin {
-  component: Component
+  getExports (t: ComposerTranslation, meetingId: number): { title?: string, formats: { format: string, url: string }[] }[]
   getTitle (t: ComposerTranslation): string
 }
 
@@ -20,5 +20,5 @@ interface SettingsPlugin extends MeetingPlugin {
   isConfigured?: (meeting: Meeting) => boolean
 }
 
-export const meetingExportPlugind = new PluginHandler<ExportsPlugin>()
+export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()
 export const meetingSettingsPlugins = new PluginHandler<SettingsPlugin>()

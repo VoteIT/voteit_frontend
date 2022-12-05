@@ -1,5 +1,6 @@
 import AccessPolicies from './accessPolicies/ControlPanel.vue'
 import APQuick from './accessPolicies/QuickPanel.vue'
+import ExportsControlPanel from './ExportsControlPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import ERQuick from './electoralRegisters/QuickPanel.vue'
 // import PresenceChecks from '../presence/ControlPanel.vue'
@@ -20,6 +21,16 @@ meetingSettingsPlugins.register({
   quickComponent: ERQuick,
   icon: 'mdi-vote',
   translationKey: 'electoralRegister.plural'
+})
+
+meetingSettingsPlugins.register({
+  id: 'exports',
+  component: ExportsControlPanel,
+  getDescription (t) {
+    return t('meeting.exportsDescription')
+  },
+  icon: 'mdi-file-download',
+  translationKey: 'meeting.exports'
 })
 
 // TODO Move registration to module
