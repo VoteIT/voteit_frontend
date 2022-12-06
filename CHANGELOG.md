@@ -7,6 +7,8 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.10.0
 - Add `deleting` state to meetings
 - Allow filtering on `deleting`, `archiving/archived` and `closed` meetings in Find meeting
+- Rename Settings to Control panel
+- Add Export from meeting in Control panel, closed [#218](https://github.com/VoteIT/voteit_frontend/issues/218)
 
 ## 0.9.6
 
