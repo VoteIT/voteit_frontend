@@ -1,16 +1,16 @@
 import { getApiLink } from '@/utils/restApi'
 
-import { meetingExportPlugins } from './registry'
+import { meetingExportPlugins } from '../meetings/registry'
 
-function getDownloadFormat (meetingId: number, format: 'csv' | 'json') {
+function getDownloadFormat (meeting: number, format: 'csv' | 'json') {
   return {
     format,
-    url: getApiLink(`export-participants/${meetingId}/${format}/`)
+    url: getApiLink(`export-proposals/${meeting}/${format}/`)
   }
 }
 
 meetingExportPlugins.register({
-  id: 'participants',
+  id: 'proposals',
   getExports (t, meetingId) {
     return [{
       formats: [
@@ -20,6 +20,6 @@ meetingExportPlugins.register({
     }]
   },
   getTitle (t) {
-    return t('meeting.participantsList')
+    return t('proposal.proposals')
   }
 })

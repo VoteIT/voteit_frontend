@@ -1,13 +1,23 @@
 <template>
   <div>
-    <h1>
-      {{ t('meeting.exports') }}
-    </h1>
-    <v-table class="my-2">
+    <header class="mb-6">
+      <h1>
+        {{ t('meeting.exports') }}
+      </h1>
+      <i18n-t keypath="meeting.exportsLongDescription">
+        <template #csv>
+          <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank">CSV</a>
+        </template>
+        <template #json>
+          <a href="https://en.wikipedia.org/wiki/JSON" target="_blank">JSON</a>
+        </template>
+      </i18n-t>
+    </header>
+    <v-table class="my-2" >
       <thead>
         <tr>
           <th colspan="2">
-            Export
+            {{ t('meeting.exports') }}
           </th>
         </tr>
       </thead>
@@ -17,15 +27,13 @@
             {{ title }}
           </td>
           <td class="text-right">
-            <v-menu>
+            <v-menu location="bottom right">
               <template #activator="{ props }">
                 <v-btn v-bind="props" append-icon="mdi-download" variant="tonal" color="primary">
                   {{ t('download') }}
                 </v-btn>
               </template>
               <v-list>
-                <template v-for="e, i in exports" :key="i">
-                </template>
                 <v-list-item
                   v-for="{ title, url } in exports" :key="url"
                   append-icon="mdi-file-download"

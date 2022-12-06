@@ -10,6 +10,10 @@ export function parseRestError (e: unknown) {
   return { __root__: ['Unkown error'] }
 }
 
+export function getApiLink (path: string) {
+  return restApi.defaults.baseURL + path
+}
+
 const restApi = axios.create({
   baseURL: `${location.protocol}//${hostname}/api/`,
   withCredentials: true,

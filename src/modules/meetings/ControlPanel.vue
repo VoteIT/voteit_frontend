@@ -1,7 +1,10 @@
 <template>
   <teleport to="#toolbar">
-    <v-toolbar :title="t('meeting.settings.for', { ...meeting })" color="secondary-lighten-2" elevation="1" class="text-black">
-      <v-breadcrumbs v-if="breadcrumbs.length" :items="breadcrumbs" />
+    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black">
+      <v-breadcrumbs v-if="breadcrumbs" :items="breadcrumbs" />
+      <v-toolbar-title v-else>
+        {{ t('meeting.controlPanel') }}
+      </v-toolbar-title>
     </v-toolbar>
   </teleport>
   <v-row id="setting-panels">
@@ -79,9 +82,9 @@ const currentPlugin = computed(() => currentPanel.value ? meetingSettingsPlugins
 const currentComponent = computed(() => currentPlugin.value?.component)
 
 const breadcrumbs = computed(() => {
-  if (!currentPlugin.value) return []
+  if (!currentPlugin.value) return
   return [{
-    text: t('settings'),
+    text: t('meeting.controlPanel'),
     to: `${meetingPath.value}/settings`
   },
   {
