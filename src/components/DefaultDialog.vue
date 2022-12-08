@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isActive" v-bind="dialogDefaults" :persistent="persistent">
+  <v-dialog v-model="isActive" v-bind="dialogDefaults" :persistent="persistent" :height="height">
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs" />
     </template>
@@ -37,6 +37,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const props = defineProps({
   color: String as PropType<Color>,
+  height: [String, Number],
   modelValue: Boolean,
   persistent: Boolean,
   title: String

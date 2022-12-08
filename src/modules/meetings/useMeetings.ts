@@ -1,4 +1,4 @@
-import { isNumber, orderBy, sortBy } from 'lodash'
+import { countBy, isNumber, orderBy, sortBy } from 'lodash'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 
 import useAuthentication, { user } from '@/composables/useAuthentication'
@@ -76,6 +76,8 @@ function clearMeetings () {
   meetings.clear()
 }
 
+const meetingStateCount = computed(() => countBy([...meetings.values()], 'state') as Partial<Record<MeetingState, number>>)
+
 export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) => void) {
   if (loader) {
     onBeforeMount(() => {
@@ -93,6 +95,7 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
   return {
     meetings,
     existingMeetingYears,
+    meetingStateCount,
     otherMeetingsExist,
     participatingClosedMeetings,
     participatingOngoingMeetings,

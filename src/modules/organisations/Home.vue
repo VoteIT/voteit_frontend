@@ -74,7 +74,7 @@
           <AddMeeting @close="isActive.value=false" />
         </template>
       </DefaultDialog>
-      <DefaultDialog v-if="otherMeetingsExist" :title="t('meeting.find')">
+      <DefaultDialog v-if="otherMeetingsExist" :title="t('meeting.find')" height="80vh">
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
@@ -87,31 +87,12 @@
             {{ t('meeting.find') }}
           </v-btn>
         </template>
-        <div class="d-flex">
+        <v-select :label="t('state')" chips closable-chips density="comfortable" :items="stateItems" v-model="searchFilter.states" multiple hide-details class="mb-1" />
+        <div class="d-flex mb-1">
           <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
           <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
         </div>
-        <div class="d-flex flex-wrap">
-          <v-switch
-            :label="t('organization.searchClosedMeetings')"
-            color="primary"
-            hide-details
-            v-model="searchFilter.includeStates.closed"
-          />
-          <v-switch
-            v-if="canChangeOrganisation"
-            :label="t('organization.searchDeletingMeetings')"
-            color="primary"
-            hide-details
-            v-model="searchFilter.includeStates.deleting"
-          />
-          <v-switch
-            :label="t('organization.searchArchivedMeetings')"
-            color="primary"
-            hide-details
-            v-model="searchFilter.includeStates.archived"
-          />
-        </div>
+
         <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
         <v-list v-if="searchedMeetings.length">
           <v-list-item
@@ -185,7 +166,7 @@ const { isAuthenticated, user } = useAuthentication()
 const { fetchOrganisations } = useOrganisations()
 const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
 const loader = useLoader('Home')
-const { existingMeetingYears, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
+const { existingMeetingYears, meetingStateCount, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -311,36 +292,28 @@ const yearItems = computed(() => {
     ...existingMeetingYears.value.map(value => ({ value, title: value.toFixed() }))
   ]
 })
+const stateItems = computed(() => {
+  return Object.values(MeetingState)
+    .filter(state => state in meetingStateCount.value)
+    .map(state => ({ value: state, title: t(`workflowState.plural.${state}`) + ` (${meetingStateCount.value[state]})` }))
+})
 const INCLUDE_STATES = [MeetingState.Ongoing, MeetingState.Upcoming]
-function getInitialStates () {
-  return Object.fromEntries(
-    Object.values(MeetingState)
-      .map(state => [state, INCLUDE_STATES.includes(state)])
-  ) as Record<MeetingState, boolean>
-}
-const searchFilter = reactive<{ includeStates: Record<MeetingState, boolean>, search: string, year: number | null, order: keyof Meeting }>({
-  includeStates: getInitialStates(),
+const searchFilter = reactive<{ search: string, states: MeetingState[], year: number | null, order: keyof Meeting }>({
   order: 'title',
   search: '',
+  states: [],
   year: null
 })
-const STATE_ALIASES: Partial<Record<MeetingState, MeetingState>> = {
-  archived: MeetingState.Archiving
-}
-function checkStateAlias (state: MeetingState) {
-  const alias = STATE_ALIASES[state]
-  return !!alias && searchFilter.includeStates[alias]
-}
-
-function getSearchStates () {
-  return Object.entries(searchFilter.includeStates)
-    .filter(([state, value]) => value || checkStateAlias(state as MeetingState))
-    .map(e => e[0]) as MeetingState[]
-}
+watch(meetingStateCount, value => {
+  // If no ongoing or upcoming meetings, default to showing closed meetings
+  searchFilter.states = MeetingState.Ongoing in value || MeetingState.Upcoming in value
+    ? INCLUDE_STATES.filter(s => s in value)
+    : [MeetingState.Closed].filter(s => s in value)
+})
 
 const currentSearchPage = ref(1)
 const searchedMeetings = computed(() => {
-  const meetings = filterMeetings(getSearchStates(), searchFilter.order, searchFilter.search, searchFilter.year)
+  const meetings = filterMeetings(searchFilter.states, searchFilter.order, searchFilter.search, searchFilter.year)
   return chunk(meetings, 10)
 })
 watch(searchedMeetings, () => { currentSearchPage.value = 1 })
