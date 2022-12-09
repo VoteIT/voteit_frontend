@@ -10,6 +10,7 @@ export default function useRules (t: ComposerTranslation) {
   }
 
   function required (value: unknown) {
+    if (Array.isArray(value)) return !!value.length || t('rules.required')
     return !!value || t('rules.required')
   }
 

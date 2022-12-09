@@ -87,16 +87,18 @@
             {{ t('meeting.find') }}
           </v-btn>
         </template>
-        <v-select :label="t('state')" chips closable-chips density="comfortable" :items="stateItems" v-model="searchFilter.states" multiple hide-details class="mb-1" />
+        <v-select :label="t('state')" chips closable-chips density="comfortable" :items="stateItems" v-model="searchFilter.states" multiple hide-details class="mb-1" :rules="[rules.required]" />
         <div class="d-flex mb-1">
           <v-text-field :label="t('search')" v-model="searchFilter.search" class="mr-1" hide-details clearable />
           <v-select :label="t('meeting.yearStarted')" :items="yearItems" v-model="searchFilter.year" hide-details />
         </div>
 
-        <v-pagination v-if="searchedMeetings.length > 1" v-model="currentSearchPage" :length="searchedMeetings.length" />
-        <v-list v-if="searchedMeetings.length">
+        <v-alert v-if="searchInfo" class="mt-4" prominent v-bind="searchInfo" />
+
+        <v-pagination v-if="chunkedMeetings.length > 1" v-model="currentSearchPage" :length="chunkedMeetings.length" />
+        <v-list v-if="chunkedMeetings.length">
           <v-list-item
-            v-for="{ pk, title, state, current_user_roles } in searchedMeetings[currentSearchPage - 1]"
+            v-for="{ pk, title, state, current_user_roles } in chunkedMeetings[currentSearchPage - 1]"
             :key="pk"
             :title="title"
             :subtitle="t(`workflowState.${state}`)"
@@ -115,9 +117,6 @@
               </v-btn>
             </template>
           </v-list-item>
-        </v-list>
-        <v-list v-else>
-          <v-list-item :title="t('home.noVisibleMeetings')" />
         </v-list>
       </DefaultDialog>
     </v-col>
@@ -153,6 +152,7 @@ import { OrganisationRole } from './types'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 import { chunk } from 'lodash'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import useRules from '@/composables/useRules'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -166,7 +166,8 @@ const { isAuthenticated, user } = useAuthentication()
 const { fetchOrganisations } = useOrganisations()
 const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
 const loader = useLoader('Home')
-const { existingMeetingYears, meetingStateCount, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
+const { existingMeetingYears, meetings, meetingStateCount, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
+const rules = useRules(t)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -312,9 +313,27 @@ watch(meetingStateCount, value => {
 })
 
 const currentSearchPage = ref(1)
-const searchedMeetings = computed(() => {
-  const meetings = filterMeetings(searchFilter.states, searchFilter.order, searchFilter.search, searchFilter.year)
-  return chunk(meetings, 10)
-})
+const searchedMeetings = computed(() => filterMeetings(searchFilter.states, searchFilter.order, searchFilter.search, searchFilter.year))
+const chunkedMeetings = computed(() => chunk(searchedMeetings.value, 10))
 watch(searchedMeetings, () => { currentSearchPage.value = 1 })
+
+const searchInfo = computed(() => {
+  if (searchedMeetings.value.length) return
+  if (!meetings.size) {
+    return {
+      type: 'info',
+      text: t('home.noVisibleMeetings')
+    }
+  }
+  if (!searchFilter.states.length) {
+    return {
+      type: 'warning',
+      text: t('home.noMeetingStates')
+    }
+  }
+  return {
+    type: 'info',
+    text: t('home.noMatchingMeetings')
+  }
+})
 </script>

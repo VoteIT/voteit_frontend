@@ -183,7 +183,9 @@
   "home": {
     "home": "Hem",
     "noCurrentMeetings": "Inga möten",
-    "noVisibleMeetings": "Inga synliga möten.",
+    "noVisibleMeetings": "Du har inte tillgång att se några möten just nu.",
+    "noMeetingStates": "Du måste välja åtminstone en status för att hitta möten.",
+    "noMatchingMeetings": "Hittar inga möten som matchar dina filter.",
     "yourMeetings": "Ditt möte | Dina möten"
   },
   "input": {
@@ -257,7 +259,7 @@
     "createTitleHint": "Minst 5 tecken",
     "exports": "Exportera från möte",
     "exportsDescription": "Ladda ner deltagarlista, talarstatistik, med mera",
-    "exportsLongDescription": "Här kan du ladda ner data from mötet i {json}- eller {csv}-format. De exporterade filerna kan användas för att föra över data från mötet till andra program.",
+    "exportsLongDescription": "Här kan du ladda ner data från mötet i {json}- eller {csv}-format. De exporterade filerna kan användas för att föra över data från mötet till andra program.",
     "find": "Hitta möte",
     "meeting": "Möte",
     "visibleInLists": "Sökbart för alla i organisationen",

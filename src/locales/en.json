@@ -184,7 +184,9 @@
   "home": {
     "home": "Home",
     "noCurrentMeetings": "You have no meetings.",
-    "noVisibleMeetings": "No visible meetings.",
+    "noVisibleMeetings": "You currently don't have any visible meetings in this organisation.",
+    "noMeetingStates": "You must pick at least one state to find any meetings.",
+    "noMatchingMeetings": "Found no meetings that match your filter.",
     "yourMeetings": "Your meeting | Your meetings"
   },
   "input": {
