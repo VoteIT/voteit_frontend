@@ -3,7 +3,7 @@
     <v-col v-bind="cols.default">
       <header class="d-flex">
         <div class="flex-grow-1">
-          <WorkflowState :admin="canChange" :contentType="meetingType" :object="meeting" />
+          <WorkflowState :admin="isModerator" :contentType="meetingType" :object="meeting" />
           <Headline v-model="content.title" :editing="editing" @edit-done="submit()" />
         </div>
         <DropdownMenu :items="menuItems" />
@@ -34,7 +34,7 @@ const { t } = useI18n()
 const { cols } = useDefaults()
 
 const editing = ref(false)
-const { meeting, meetingId, canChange } = useMeeting()
+const { meeting, meetingId, canChange, isModerator } = useMeeting()
 const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
 
 useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
