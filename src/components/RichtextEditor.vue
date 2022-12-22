@@ -13,11 +13,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 /* eslint-disable camelcase */
 import Quill from 'quill'
 import 'quill-mention'
-import { defineComponent, inject, onMounted, PropType, ref } from 'vue'
+import { inject, onMounted, PropType, ref } from 'vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { useI18n } from 'vue-i18n'
@@ -81,152 +81,131 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
   }
 }
 
-export default defineComponent({
-  emits: ['blur', 'focus', 'submit', 'update:modelValue'],
-  props: {
-    errors: Array as PropType<string[]>,
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    setFocus: Boolean,
-    submit: Boolean,
-    disabled: Boolean,
-    submitText: String,
-    submitIcon: {
-      type: String,
-      default: 'mdi-check'
-    },
-    placeholder: String,
-    variant: {
-      type: String as PropType<QuillVariant>,
-      default: 'restricted'
-    }
+const emit = defineEmits(['blur', 'focus', 'submit', 'update:modelValue'])
+const props = defineProps({
+  errors: Array as PropType<string[]>,
+  modelValue: {
+    type: String,
+    default: ''
   },
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const tags = inject(TagsKey, ref(new Set<string>()))
-    let editor: Quill | null = null
-    const editorElement = ref<HTMLElement | null>(null)
-    const rootElement = ref<HTMLElement | null>(null)
+  setFocus: Boolean,
+  submit: Boolean,
+  disabled: Boolean,
+  submitText: String,
+  submitIcon: {
+    type: String,
+    default: 'mdi-check'
+  },
+  placeholder: String,
+  variant: {
+    type: String as PropType<QuillVariant>,
+    default: 'restricted'
+  }
+})
 
-    const { meetingId } = useMeeting()
+const { t } = useI18n()
+const tags = inject(TagsKey, ref(new Set<string>()))
+let editor: Quill | null = null
+const editorElement = ref<HTMLElement | null>(null)
+const rootElement = ref<HTMLElement | null>(null)
 
-    function tagObject (tagName: string): TagObject {
-      return { id: tagName, value: tagName }
-    }
+const { meetingId } = useMeeting()
 
-    function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObject, void> {
-      for (const tag of tags.value) {
-        if (filter(tag)) yield tagObject(tag)
-      }
-    }
+function toTagObject (tagName: string): TagObject {
+  return { id: tagName, value: tagName }
+}
 
-    function getDisplayName ({ full_name, userid }: User) {
-      if (full_name.length && userid && userid.length) return `${full_name} (${userid})`
-      if (full_name.length) return full_name
-      if (userid && userid.length) return userid
-      return '- unknown -'
-    }
+function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObject, void> {
+  for (const tag of tags.value) {
+    if (filter(tag)) yield toTagObject(tag)
+  }
+}
 
-    async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) {
-      switch (mentionChar) {
-        case '#':
-          renderList([
-            tagObject(tagify(searchTerm)),
-            ...filterTagObjects(tag => tag.startsWith(searchTerm) && tag !== searchTerm)
-          ])
-          break
-        case '@': {
-          if (!searchTerm.length) return renderList([])
-          const { data } = await meetingRoleType.api.list({
-            search: searchTerm.toLowerCase(),
-            meeting: meetingId.value
-          })
-          renderList(data.map(({ user }) => {
-            return {
-              id: user.pk,
-              value: getDisplayName(user)
-            }
-          }))
-          break
+function getDisplayName ({ full_name, userid }: User) {
+  if (full_name.length && userid && userid.length) return `${full_name} (${userid})`
+  if (full_name.length) return full_name
+  if (userid && userid.length) return userid
+  return '- unknown -'
+}
+
+async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) {
+  switch (mentionChar) {
+    case '#':
+      renderList([
+        toTagObject(tagify(searchTerm)),
+        ...filterTagObjects(tag => tag.startsWith(searchTerm) && tag !== searchTerm)
+      ])
+      break
+    case '@': {
+      if (!searchTerm.length) return renderList([])
+      const { data } = await meetingRoleType.api.list({
+        search: searchTerm.toLowerCase(),
+        meeting: meetingId.value
+      })
+      renderList(data.map(({ user }) => {
+        return {
+          id: user.pk,
+          value: getDisplayName(user)
         }
-      }
-    }
-
-    onMounted(() => {
-      if (editorElement.value) {
-        editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
-        const config: QuillOptions = {
-          ...variants[props.variant],
-          placeholder: props.placeholder
-        }
-        if (props.submit) {
-          config.modules.keyboard.bindings.submit = {
-            key: 'Enter',
-            ctrlKey: true,
-            handler: () => emit('submit')
-          }
-        }
-        if (config.modules.toolbar && 'handlers' in config.modules.toolbar) {
-          config.modules.toolbar.handlers.image = () => {
-            if (!editor) return
-            const range = editor.getSelection()
-            if (!range) return
-            const value = prompt('please copy paste the image url here.')
-            if (value) {
-                editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
-            }
-          }
-        }
-        config.modules.mention.source = mentionSource
-        editor = new Quill(editorElement.value, config)
-        editor.on('text-change', () => {
-          emit('update:modelValue', editor?.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Disallow non-beaking spaces - they often show up by accident
-        })
-        if (props.setFocus) {
-          focus()
-        }
-        editor.root.addEventListener('focus', () => emit('focus'))
-        editor.root.addEventListener('blur', () => emit('blur'))
-      }
-    })
-
-    function focus () {
-      if (editor) {
-        editor.focus()
-        editor.setSelection(editor.getLength(), editor.getLength())
-        // eslint-disable-next-line no-unused-expressions
-        rootElement.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      }
-    }
-
-    function clear () {
-      editor && editor.setText('')
-    }
-
-    function setText (value: string) {
-      editor && (editor.root.innerHTML = value)
-    }
-
-    useTags(editorElement)
-
-    // watch(editorElement, elem => {
-    //   if (!elem) return
-    //   const editor = elem.querySelector('#quillEditor')?.firstChild as HTMLElement | undefined
-    //   console.log(elem, editor)
-    //   editor?.addEventListener('focus', () => alert('focus'))
-    // }, { immediate: true })
-
-    return {
-      t,
-      editorElement,
-      rootElement,
-      focus,
-      clear,
-      setText
+      }))
+      break
     }
   }
+}
+
+onMounted(() => {
+  if (editorElement.value) {
+    editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
+    const config: QuillOptions = {
+      ...variants[props.variant],
+      placeholder: props.placeholder
+    }
+    if (props.submit) {
+      config.modules.keyboard.bindings.submit = {
+        key: 'Enter',
+        ctrlKey: true,
+        handler: () => emit('submit')
+      }
+    }
+    if (config.modules.toolbar && 'handlers' in config.modules.toolbar) {
+      config.modules.toolbar.handlers.image = () => {
+        if (!editor) return
+        const range = editor.getSelection()
+        if (!range) return
+        const value = prompt('please copy paste the image url here.')
+        if (value) {
+            editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
+        }
+      }
+    }
+    config.modules.mention.source = mentionSource
+    editor = new Quill(editorElement.value, config)
+    editor.on('text-change', () => {
+      emit('update:modelValue', editor?.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Disallow non-beaking spaces - they often show up by accident
+    })
+    if (props.setFocus) focus()
+    editor.root.addEventListener('focus', () => emit('focus'))
+    editor.root.addEventListener('blur', () => emit('blur'))
+  }
+})
+
+function focus () {
+  if (!editor) return
+  editor.focus()
+  editor.setSelection(editor.getLength(), editor.getLength())
+  rootElement.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+}
+
+function setText (value: string = '') {
+  if (!editor) return
+  editor.root.innerHTML = value
+}
+
+useTags(editorElement)
+
+defineExpose({
+  focus,
+  setText
 })
 </script>
 
@@ -252,11 +231,6 @@ export default defineComponent({
   margin-bottom: .5em !important
   &:last-child
     margin-bottom: 0 !important
-
-// .ql-placeholder-content
-//   background-color: #eef
-//   padding-left: .2em
-//   border-bottom: 1px solid #cce
 
 ul.ql-mention-list
   padding: 0 !important
