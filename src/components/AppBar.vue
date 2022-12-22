@@ -4,11 +4,13 @@
     <router-link to="/" :title="t('home.home')">
       <img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" id="navbar-logo" />
     </router-link>
-    <v-spacer />
+    <v-app-bar-title>
+      {{ title || organisation?.title }}
+    </v-app-bar-title>
     <div v-if="user">
       <v-btn class="user-menu" :class="{ open: userMenuOpen }" variant="text" @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
-        <span class="ml-2">{{ user.full_name || user.userid }}</span>
+        <span class="ml-2 d-none d-sm-inline">{{ user.full_name || user.userid }}</span>
       </v-btn>
       <teleport to="main.v-main">
         <v-navigation-drawer location="right" v-model="userMenuOpen" disable-resize-watcher temporary>
@@ -98,12 +100,16 @@ import SchemaForm from './SchemaForm.vue'
 import { FieldType } from './types'
 import type { FormSchema } from './types'
 
+defineProps({
+  title: String
+})
+
 const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthentication()
 const { user, alternateUsers } = auth // For template
-const { manageAccountURL, proxyLogoutURL } = useOrganisation()
+const { manageAccountURL, organisation, proxyLogoutURL } = useOrganisation()
 const { alert } = useAlert()
 
 const userMenuOpen = ref(false)

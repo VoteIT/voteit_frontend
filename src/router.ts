@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import PageNotFoundView from '@/views/PageNotFoundView.vue'
-import AppBar from '@/components/AppBar.vue'
+import appBar from '@/components/AppBar.vue'
 
 import speakerFullscreen from '@/modules/speakerLists/fullscreenRouter'
 import plenary from '@/modules/plenary/router'
@@ -16,7 +16,7 @@ const routes = [
     name: 'home',
     components: {
       default: Home,
-      appBar: AppBar
+      appBar
     }
   },
   meeting,
@@ -28,7 +28,7 @@ const routes = [
     name: 'JoinMeeting',
     components: {
       default: JoinMeeting,
-      appBar: AppBar
+      appBar
     }
   },
   // Other pages, do a 404
@@ -37,7 +37,7 @@ const routes = [
     name: '404',
     components: {
       default: PageNotFoundView,
-      appBar: AppBar
+      appBar
     }
   }
 ]
