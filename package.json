@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint --ext .ts,.vue --ignore-path .gitignore --fix src",
     "extractLocales": "vue-i18n-extract report -v './src/**/*.?(js|vue)' -l './src/locales/*.json'"
   },
   "dependencies": {
@@ -13,7 +13,6 @@
     "@vueuse/core": "^9.3.0",
     "axios": "^0.21.4",
     "caniuse-lite": "^1.0.30001431",
-    "core-js": "^3.25.1",
     "itertools": "^1.7.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
@@ -33,12 +32,7 @@
     "@types/quill": "^2.0.9",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
-    "@vue/cli-plugin-babel": "^5.0.8",
-    "@vue/cli-plugin-eslint": "^5.0.8",
-    "@vue/cli-plugin-pwa": "^5.0.8",
-    "@vue/cli-plugin-router": "^5.0.8",
-    "@vue/cli-plugin-typescript": "^5.0.8",
-    "@vue/cli-service": "^5.0.8",
+    "@vitejs/plugin-vue": "^4.0.0",
     "@vue/compiler-sfc": "^3.2.39",
     "@vue/eslint-config-standard": "^8.0.1",
     "@vue/eslint-config-typescript": "^11.0.2",
@@ -49,9 +43,8 @@
     "eslint-plugin-standard": "^5.0.0",
     "eslint-plugin-vue": "^9.7.0",
     "sass": "^1.54.9",
-    "sass-loader": "^12.6.0",
     "typescript": "^4.8.3",
-    "vue-cli-plugin-vuetify": "^2.5.8",
+    "vite": "^4.0.4",
     "vue-i18n-extract": "^1.2.3"
   }
 }

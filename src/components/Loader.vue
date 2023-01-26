@@ -1,7 +1,7 @@
 <template>
   <transition name="fade">
     <main v-if="visible" :class="{ initFailed, initDone }">
-      <img :src="require('@/assets/voteit-logo.svg')" class="logo" />
+      <img src="@/assets/voteit-logo.svg" class="logo" />
       <transition name="fade">
         <h1 v-if="!initDone">{{ message }}</h1>
       </transition>

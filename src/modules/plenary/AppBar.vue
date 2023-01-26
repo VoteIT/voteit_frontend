@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app flat color="app-bar">
     <router-link :to="agendaItemPath" :title="t('home.home')" class="mr-4">
-      <img :src="require('@/assets/voteit-logo.svg')" alt="VoteIT" />
+      <img src="@/assets/voteit-logo.svg" alt="VoteIT" />
     </router-link>
     <v-app-bar-title class="text-truncate">
       <router-link v-if="agendaItem" :to="agendaItemPath" class="text-white text-decoration-none">

@@ -1,5 +1,5 @@
-const hostname = process.env.VUE_APP_BACKEND_PORT
-  ? `${location.hostname}:${process.env.VUE_APP_BACKEND_PORT}`
+const hostname = import.meta.env.VITE_BACKEND_PORT
+  ? `${location.hostname}:${import.meta.env.VITE_BACKEND_PORT}`
   : location.host
 
 export default hostname

@@ -210,10 +210,11 @@ defineExpose({
 </script>
 
 <style lang="sass">
-@import '~quill/dist/quill.core.css'
-@import '~quill/dist/quill.bubble.css'
-@import '~quill/dist/quill.snow.css'
-@import '~quill-mention/dist/quill.mention.css'
+@import quill/dist/quill.core.css
+@import quill/dist/quill.bubble.css
+@import quill/dist/quill.snow.css
+@import quill-mention/dist/quill.mention.css
+
 .richtext-editor
   .btn-controls
     justify-content: flex-end

@@ -71,8 +71,8 @@
         <AgendaFilters ref="filterComponent" />
         <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
           <span class="text-secondary">{{ t('agenda.showAs') }}</span>
-          <v-btn :title="t(`agenda.${mode}`)" v-for="mode in ['columns', 'nested']" variant="text" :key="mode" :class="{ active: displayMode === mode }" @click="displayMode = mode">
-            <img :src="require(`@/assets/agenda-display-${mode}.svg`)"/>
+          <v-btn :title="t(`agenda.${id}`)" v-for="{ id, img } in DISPLAY_MODES" variant="text" :key="id" :class="{ active: displayMode === id }" @click="displayMode = id">
+            <img :src="img" />
           </v-btn>
         </div>
       </v-col>
@@ -161,6 +161,17 @@ import useAgendaItem from './useAgendaItem'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
+
+const DISPLAY_MODES = [
+  {
+    id: 'columns',
+    img: new URL('/src/assets/agenda-display-columns.svg', import.meta.url).href
+  },
+  {
+    id: 'nested',
+    img: new URL('/src/assets/agenda-display-nested.svg', import.meta.url).href
+  }
+]
 
 const { t } = useI18n()
 const discussions = useDiscussions()

@@ -49,7 +49,7 @@ import useComponentApi from './useComponentApi'
 import useLoader from '@/composables/useLoader'
 import { orderBy } from 'lodash'
 
-require('./controlPanels')
+import './controlPanels'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -95,7 +95,7 @@ const breadcrumbs = computed(() => {
 </script>
 
 <style lang="sass" scoped>
-@import ~vuetify/lib/styles/tools/display
+@import vuetify/lib/styles/tools/display
 
 #setting-panels
   a

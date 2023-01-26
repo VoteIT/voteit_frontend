@@ -22,6 +22,16 @@ import Proposal from './modules/proposals/Proposal.vue'
 import en from './locales/en.json'
 import sv from './locales/sv.json'
 
+// REGISTER PLUGINS
+import './modules/meetings'
+import './modules/agendas'
+import './modules/discussions'
+import './modules/polls/methods'
+import './modules/proposals'
+import './modules/reactions'
+import './modules/printing'
+import './modules/speakerLists'
+
 // const availableLanguages = ['en', 'sv'] // FIXME somewhere else
 // function resolveLocale (languages: readonly string[]): string {
 //   for (const lang of languages) {
@@ -35,20 +45,10 @@ const locale = 'sv'
 
 moment.locale(locale)
 
-// PLUGINS
-require('@/modules/meetings')
-require('@/modules/agendas')
-require('@/modules/discussions')
-require('@/modules/polls/methods')
-require('@/modules/proposals')
-require('@/modules/reactions')
-require('@/modules/printing')
-require('@/modules/speakerLists')
-
 /* LOCKED TO 'sv' */
 // async function loadLocaleMessages (i18n: I18n, locale: string) {
 //   const messages = await import(
-//     /* webpackChunkName: "locale-[request]" */ `./locales/${locale}.json`
+//     `./locales/${locale}.json`
 //   )
 //   i18n.global.setLocaleMessage(locale, messages)
 //   return nextTick()

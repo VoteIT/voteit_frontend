@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import { duration } from 'moment'
+import moment from 'moment'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -344,7 +344,7 @@ const annotatedSpeakerHistory = computed(() => {
       pk,
       user,
       seconds,
-      time: durationToString(duration({ seconds }))
+      time: durationToString(moment.duration({ seconds }))
     }
   })
 })
