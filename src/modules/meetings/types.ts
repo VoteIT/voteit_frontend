@@ -62,10 +62,28 @@ export enum MeetingState {
   Deleting = 'deleting'
 }
 
+interface MeetingDialectDefinition {
+  description: string
+  er_policy_name: string
+  group_votes_active: boolean
+  group_roles_active: boolean
+  installable: boolean
+  name: string
+  roles: {
+    can_discuss_as: boolean
+    can_propose_as: boolean
+    title: string
+    role_id: string
+    roles: MeetingRole[]
+  }[]
+  title: string
+}
+
 export interface Meeting extends BaseContent {
   state: MeetingState
   body: string
   current_user_roles?: MeetingRole[]
+  dialect: MeetingDialectDefinition | null
   end_time: Date | null
   er_policy_name?: string
   public: boolean
