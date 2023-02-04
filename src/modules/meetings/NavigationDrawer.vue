@@ -166,7 +166,7 @@ export default defineComponent({
           to: meetingPath.value
         }, {
           title: t('meeting.participants'),
-          to: `${meetingPath.value}/participants`
+          to: `${meetingPath.value}/p`
         }, {
           title: t('electoralRegister.plural'),
           to: `${meetingPath.value}/er`

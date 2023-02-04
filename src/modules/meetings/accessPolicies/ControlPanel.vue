@@ -11,7 +11,7 @@
           </p>
           <v-btn
             color="primary"
-            :to="`${meetingPath}/participants`"
+            :to="`${meetingPath}/p`"
             prepend-icon="mdi-account">
             {{ t('meeting.participants') }}
           </v-btn>

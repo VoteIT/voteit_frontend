@@ -42,8 +42,13 @@ export default {
       }]
     },
     {
-      path: 'participants',
+      path: 'p',
       name: 'participants',
+      component: ParticipantsView
+    },
+    {
+      path: 'p/:tabId',
+      name: 'participantsTab',
       component: ParticipantsView
     },
     {
