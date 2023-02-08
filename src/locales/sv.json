@@ -603,6 +603,7 @@
   "rules": {
     "maxValue": "Får inte vara högre än {count}",
     "minValue": "Får inte vara lägre än {count}",
+    "multilineFailed": "Fel på rad {count}",
     "required": "Krävd"
   },
   "socket": {

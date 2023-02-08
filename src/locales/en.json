@@ -594,6 +594,7 @@
   "rules": {
     "maxValue": "Can't be higher than {count}",
     "minValue": "Must be at least {count}",
+    "multilineFailed": "Error on row {count}",
     "required": "Required"
   },
   "socket": {

@@ -202,8 +202,8 @@ const inviteInputProps = computed(() => {
     rules: type
       ? {
           // TODO put this in scope components
-          email: [rules.multiLineEmail, rules.required],
-          swedish_ssn: [rules.multiLineSwedishSSN, rules.required]
+          email: [rules.multiline(rules.email), rules.required],
+          swedish_ssn: [rules.multiline(rules.swedishSSN), rules.required]
         }[type]
       : [rules.required]
   }
