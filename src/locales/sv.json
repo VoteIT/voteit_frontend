@@ -24,6 +24,7 @@
   "email": "E-post",
   "expand": "Fäll ut",
   "filter": "Filtrera",
+  "handle": "Hantera",
   "icon": "Ikon",
   "inactive": "Inaktiv",
   "login": "Logga in",
@@ -275,12 +276,15 @@
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Skapa grupp",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
+      "removeUserConfirm": "Du håller på att ta bort {user} från den här gruppen.\nÄr du säker?",
       "groups": "Grupper",
       "members": "Medlemmar",
       "membersIn": "Medlemmar i {title}",
       "modify": "Ändra grupp",
       "new": "Ny grupp",
-      "noMembers": "Den här gruppern har inga medlemmar."
+      "noMembers": "Den här gruppern har inga medlemmar.",
+      "noRole": "Ingen roll",
+      "votes": "Röster"
     },
     "settings": {
       "all": "Alla inställningar",

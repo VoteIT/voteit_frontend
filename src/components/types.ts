@@ -90,10 +90,11 @@ export enum FieldType {
 
 export interface FieldRule<T> {
   props?: {
-    required?: boolean,
-    disabled?: boolean,
-    type?: 'email' | 'password', // TODO More types
+    required?: boolean
+    disabled?: boolean
+    type?: 'email' | 'password' // TODO More types
     maxlength?: number
+    min?: number
   }
   clean?: (value: T) => T
   validate?: (value: T) => true | string
@@ -121,7 +122,7 @@ interface DurationField extends SchemaField<number> {
   type: FieldType.Duration
 }
 
-interface NumberField extends SchemaField<number> {
+interface NumberField extends SchemaField<string> {
   type: FieldType.Number
 }
 

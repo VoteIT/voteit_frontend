@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -85,6 +85,7 @@ import { RoleMatrixCol } from '@/components/types'
 import { UserContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
+import useTabPath from '@/composables/useTabPath'
 
 import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
@@ -111,7 +112,7 @@ const meetingIcons: Record<MeetingRole, string> = {
 
 const { t } = useI18n()
 const { user } = useAuthentication()
-const { meetingId, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
+const { meetingId, meetingPath, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
 const { currentElectoralRegister } = useElectoralRegisters(meetingId)
@@ -166,7 +167,7 @@ function searchFilter (user: User): boolean {
   return !omitIds.value.includes(user.pk)
 }
 
-const currentTab = ref('default')
+const { currentTab } = useTabPath(meetingPath)
 const tabs = computed(() => {
   const tabs = [
     {

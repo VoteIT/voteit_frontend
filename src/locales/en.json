@@ -24,6 +24,7 @@
   "email": "Email",
   "expand": "Expand",
   "filter": "Filter",
+  "handle": "Handle",
   "icon": "Icon",
   "inactive": "Inactive",
   "login": "Log in",
@@ -278,7 +279,10 @@
       "membersIn": "Members in {title}",
       "modify": "Modify group",
       "new": "New group",
-      "noMembers": "This group has no members."
+      "noMembers": "This group has no members.",
+      "noRole": "No role",
+      "removeUserConfirm": "You're about to remove {user} from this group.\nAre you sure?",
+      "votes": "Votes"
     },
     "settings": {
       "all": "All settings",

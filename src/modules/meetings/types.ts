@@ -86,6 +86,8 @@ export interface Meeting extends BaseContent {
   dialect: MeetingDialectDefinition | null
   end_time: Date | null
   er_policy_name?: string
+  group_votes_active: boolean
+  group_roles_active: boolean
   public: boolean
   visible_in_lists: boolean
   start_time: Date | null
@@ -101,7 +103,23 @@ export interface MeetingGroup extends BaseContent {
   last_modified_by: number | null
   meeting: number
   mentions: number[]
-  members: number[]
+  votes: null | number
+}
+
+export interface GroupRole extends BaseContent {
+  roles: MeetingRole[]
+  can_discuss_as: boolean
+  can_propose_as: boolean
+  role_id: string
+  meeting: number
+}
+
+export interface GroupMembership {
+  meeting_group: number
+  pk: number
+  role: null | number
+  user: number
+  votes: null | number
 }
 
 type UserAuthor = { author: number, meeting_group: null }

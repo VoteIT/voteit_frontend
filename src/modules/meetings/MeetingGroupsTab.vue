@@ -36,9 +36,13 @@
           <th>
             {{ t('name') }}
           </th>
-          <th :colspan="canChangeMeeting ? 2 : 1">
+          <th>
             {{ t('meeting.groups.members') }}
           </th>
+          <th v-if="meeting?.group_votes_active">
+            {{ t('meeting.groups.votes') }}
+          </th>
+          <th v-if="canChangeMeeting"></th>
         </tr>
       </thead>
       <tbody>
@@ -48,24 +52,31 @@
           </td>
           <td>
             {{ group.members.length || '-' }}
-            <DefaultDialog v-if="group.members.length" :title="t('meeting.groups.membersIn', { ...group })">
+            <DefaultDialog v-if="group.members.length || canChangeMeeting" :title="t('meeting.groups.membersIn', { ...group })">
               <template #activator="{ props }">
                 <v-btn v-bind="props" size="small" color="secondary" class="ml-2">
-                  {{ t('show') }}
+                  {{ canChangeMeeting ? t('handle') : t('show') }}
                 </v-btn>
               </template>
-              <UserList :userIds="group.members" />
+              <GroupMemberships
+                :group="group.pk"
+                :members="group.memberships"
+                :editable="canChangeMeeting"
+              />
             </DefaultDialog>
           </td>
+          <td v-if="meeting?.group_votes_active">
+            {{ group.votes }}
+          </td>
           <td class="text-right" v-if="canChangeMeeting">
-            <DefaultDialog :title="t('meeting.groups.modify')">
+            <DefaultDialog>
               <template #activator="{ props }">
                 <v-btn size="small" color="primary" v-bind="props">
                   {{ t('edit') }}
                 </v-btn>
               </template>
               <template #default="{ isActive }">
-                <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title }" @saved="isActive.value = false">
+                <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title, votes: group.votes || 0 }" @saved="isActive.value = false">
                   <template #buttons="{ disabled, submitting }">
                     <div class="text-right">
                       <v-btn @click="isActive.value = false" variant="text">
@@ -84,36 +95,6 @@
                     </div>
                   </template>
                 </SchemaForm>
-                <v-divider class="my-4" />
-                <h2 class="mb-2">
-                  {{ t('meeting.groups.members') }}
-                </h2>
-                <UserSearch
-                  v-model="addUser" :params="{ meeting: meetingId }"
-                  :filter="(user) => !group.members.includes(user.pk)"
-                  :label="t('meeting.groups.addMember')"
-                  @submit="addMember(group, $event)"
-                  instant
-                />
-                <v-list v-if="group.members.length">
-                  <v-list-item
-                    v-for="user in getMembers(group)" :key="user.pk"
-                  >
-                    <template #prepend>
-                      <UserAvatar popup :user="user" />
-                    </template>
-                    <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
-                      {{ user.full_name ?? `- ${t('unknownUser')} -` }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ user.userid }}
-                    </v-list-item-subtitle>
-                    <template #append>
-                      <v-btn icon="mdi-close" color="secondary" variant="text" @click="removeMember(group, user)" />
-                    </template>
-                  </v-list-item>
-                </v-list>
-                <v-alert v-else type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />
               </template>
             </DefaultDialog>
           </td>
@@ -124,13 +105,10 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref } from 'vue'
+import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { required } from '@/utils/rules'
-import UserSearch from '@/components/UserSearch.vue'
 import SchemaForm from '@/components/SchemaForm.vue'
-import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
@@ -140,23 +118,45 @@ import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { meetingGroupType } from './contentTypes'
 import { MeetingGroup } from './types'
-import { User } from '../organisations/types'
-import useUserDetails from '../organisations/useUserDetails'
+import { FieldType, FormSchema } from '@/components/types'
+import GroupMemberships from './GroupMemberships.vue'
+import useRules from '@/composables/useRules'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
-const { getUser } = useUserDetails()
+const { meeting, meetingId } = useMeeting()
 const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const { user } = useAuthentication()
+const rules = useRules(t)
 
-const groupSchema = [
-  {
+const groupSchema = computed(() => {
+  const schema: FormSchema = [{
     name: 'title',
-    type: 'text',
+    type: FieldType.Text,
     label: t('name'),
-    rules: [required]
+    rules: [{
+      props: {
+        maxlength: 100,
+        required: true
+      },
+      validate: rules.required
+    }]
+  }]
+  if (meeting.value?.group_votes_active) {
+    schema.push({
+      name: 'votes',
+      type: FieldType.Number,
+      label: t('meeting.groups.votes'),
+      rules: [{
+        props: {
+          min: 0
+        },
+        validate: rules.min(0)
+      }]
+    })
   }
-]
+  return schema
+})
+
 async function createGroup (data: Partial<MeetingGroup>) {
   if (!user.value) throw new Error('User not authenticated')
   await meetingGroupType.api.add({
@@ -164,7 +164,6 @@ async function createGroup (data: Partial<MeetingGroup>) {
     meeting: meetingId.value
     // body: '',
     // tags: [],
-    // members: []
   })
 }
 function changeGroup (pk: number) {
@@ -175,18 +174,7 @@ async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
     await meetingGroupType.api.delete(group.pk)
     isActive.value = false
   } catch {
-    alert('Couldn\'t delete group')
+    alert("Couldn't delete group")
   }
-}
-
-const addUser = ref(null)
-function getMembers (group: MeetingGroup) {
-  return group.members.map(pk => getUser(pk) ?? { pk })
-}
-function addMember (group: MeetingGroup, user: number) {
-  meetingGroupType.api.patch(group.pk, { members: [...group.members, user] })
-}
-function removeMember (group: MeetingGroup, user: User) {
-  meetingGroupType.api.patch(group.pk, { members: group.members.filter(pk => pk !== user.pk) })
 }
 </script>
