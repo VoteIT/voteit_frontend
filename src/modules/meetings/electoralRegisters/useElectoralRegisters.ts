@@ -15,22 +15,6 @@ electoralRegisterType
   .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
 
 const erMethods = ref<ErMethod[] | null>(null)
-// const erMethods: ErDefinition[] = [
-//   {
-//     name: 'auto_before_poll'
-//   },
-//   {
-//     allowManual: true,
-//     name: 'presence_check'
-//   },
-//   {
-//     allowManual: true,
-//     name: 'manual'
-//   },
-//   {
-//     name: 'auto_always'
-//   }
-// ]
 
 function isAvailableMethod (method: ErMethod) {
   return method.available

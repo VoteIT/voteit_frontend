@@ -10,7 +10,7 @@ export interface ElectoralRegister {
 }
 
 export interface ErMethod {
-  // allowManual?: boolean
+  allow_manual: boolean
   available: boolean
   description: string
   handles_group_vote: boolean
