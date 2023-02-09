@@ -13,7 +13,7 @@
         <template v-slot="{ close }">
           <v-form @submit.prevent="createSystem()">
             <v-text-field :label="t('title')" v-model="systemData.title" />
-            <SelectVue required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :options="orderMethods" />
+            <v-select required :label="t('speaker.systemMethod')" v-model="systemData.method_name" :items="orderMethods" />
   <!-- TODO Better dynamic forms -->
             <v-expand-transition>
               <div v-if="createSystemSettings">
@@ -51,7 +51,7 @@
       <template #default="{ close }">
         <v-form @submit.prevent="saveSystem()">
           <v-text-field :label="t('title')" v-model="editSystemData.title" />
-          <SelectVue required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :options="orderMethods" />
+          <v-select required :label="t('speaker.systemMethod')" v-model="editSystemData.method_name" :items="orderMethods" />
   <!-- TODO Better dynamic forms -->
           <v-expand-transition>
             <div v-if="editSystemSettings">
@@ -84,7 +84,6 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import useLoader from '@/composables/useLoader'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
-import SelectVue from '@/components/inputs/Select.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import { ContextRole } from '@/composables/types'
@@ -243,10 +242,13 @@ const systems = computed(() => {
 })
 
 const orderMethods = computed(() => {
-  return Object.fromEntries(
-    Object.values(SpeakerSystemMethod)
-      .map(name => [name, t(`speaker.orderMethod.${name}`)])
-  )
+  return Object.values(SpeakerSystemMethod)
+    .map(name => {
+      return {
+        value: name,
+        title: t(`speaker.orderMethod.${name}`)
+      }
+    })
 })
 </script>
 
