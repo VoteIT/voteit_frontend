@@ -58,7 +58,7 @@ defineEmits(['close'])
 
 const { t } = useI18n()
 const router = useRouter()
-const { erMethods } = useElectoralRegisters()
+const { availableErMethods } = useElectoralRegisters()
 const { installableDialects } = useDialects()
 const rules = useRules(t)
 
@@ -76,7 +76,7 @@ watch(() => formData.install_dialect, value => {
 const submitting = ref(false)
 
 const erOptions = computed(() => {
-  return erMethods.map(({ name }) => ({ value: name, title: t(`erMethods.${name}.title`) }))
+  return availableErMethods.value?.map(({ name, title }) => ({ value: name, title }))
 })
 
 const dialectOptions = computed(() => {
