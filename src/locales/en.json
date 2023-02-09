@@ -258,6 +258,8 @@
     "create": "Start a new meeting",
     "createTitleHint": "At least 5 characters",
     "dialect": "Meeting dialect",
+    "dialectHint": "If in doubt, start the meeting without choosing a dialect.",
+    "erHint": "Not available for meetings with dialects.",
     "exports": "Export from meeting",
     "exportsDescription": "Download Participant list, speaker stats, and more",
     "exportsLongDescription": "You can download data from the meeting in {json} or {csv} format. Exported files can be used to transfer data from VoteIT to other applications.",
@@ -596,7 +598,9 @@
     }
   },
   "rules": {
+    "maxLength": "Must not be longer than {count} characters",
     "maxValue": "Can't be higher than {count}",
+    "minLength": "Must be at least {count} characters",
     "minValue": "Must be at least {count}",
     "multilineFailed": "Error on row {count}",
     "required": "Required"

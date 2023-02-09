@@ -62,7 +62,7 @@ export enum MeetingState {
   Deleting = 'deleting'
 }
 
-interface MeetingDialectDefinition {
+export interface MeetingDialectDefinition {
   description: string
   er_policy_name: string
   group_votes_active: boolean

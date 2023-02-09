@@ -257,6 +257,8 @@
     "create": "Starta ett nytt möte",
     "createTitleHint": "Minst 5 tecken",
     "dialect": "Mötesdialekt",
+    "dialectHint": "Om du är osäker, starta mötet utan att välja dialekt.",
+    "erHint": "Ej tillgängligt för möten med mötesdialekt.",
     "exports": "Exportera från möte",
     "exportsDescription": "Ladda ner deltagarlista, talarstatistik, med mera",
     "exportsLongDescription": "Här kan du ladda ner data från mötet i {json}- eller {csv}-format. De exporterade filerna kan användas för att föra över data från mötet till andra program.",
@@ -605,7 +607,9 @@
     }
   },
   "rules": {
+    "maxLength": "Får inte vara längre än {count} tecken",
     "maxValue": "Får inte vara högre än {count}",
+    "minLength": "Måste vara minst {count} tecken",
     "minValue": "Får inte vara lägre än {count}",
     "multilineFailed": "Fel på rad {count}",
     "required": "Krävd"

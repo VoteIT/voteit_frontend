@@ -20,8 +20,16 @@ export default function useRules (t: ComposerTranslation) {
     return (value: string) => !value || Number(value) <= max || t('rules.maxValue', max)
   }
 
+  function maxLength (max: number) {
+    return (value: string) => value.length <= max || t('rules.maxLength', max)
+  }
+
   function min (min: number) {
     return (value: string) => !value || Number(value) >= min || t('rules.minValue', min)
+  }
+
+  function minLength (min: number) {
+    return (value: string) => value.length >= min || t('rules.minLength', min)
   }
 
   function multiline (rule: Rule): Rule {
@@ -51,7 +59,9 @@ export default function useRules (t: ComposerTranslation) {
     email,
     required,
     max,
+    maxLength,
     min,
+    minLength,
     multiline,
     or,
     swedishSSN
