@@ -23,7 +23,7 @@ test('rules', () => {
   const rules = useRules(((key: string) => key) as ComposerTranslation)
 
   const multiEmail = rules.multiline(rules.email)
-  const multiMix = rules.multiline(rules.email, rules.swedishSSN)
+  const multiMix = rules.multiline(rules.or(rules.email, rules.swedishSSN))
   const multiSSN = rules.multiline(rules.swedishSSN)
 
   expect(multiEmail(correctEmails)).toBe(true)

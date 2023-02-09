@@ -24,16 +24,22 @@ export default function useRules (t: ComposerTranslation) {
     return (value: string) => !value || Number(value) >= min || t('rules.minValue', min)
   }
 
-  function multiline (...rules: Rule[]) {
+  function multiline (rule: Rule): Rule {
     /**
      * @returns true means incorrect line was found
      */
     function failChecker (line: string) {
-      return !!line.length && rules.every(rule => typeof rule(line) === 'string')
+      return !!line.length && typeof rule(line) === 'string'
     }
     return (value: string) => {
       const errLine = value.split('\n').findIndex(failChecker)
       return errLine === -1 || t('rules.multilineFailed', errLine + 1)
+    }
+  }
+
+  function or (...rules: Rule[]): Rule {
+    return (value: string) => {
+      return rules.some(rule => rule(value) === true) || t('rules.noMatch')
     }
   }
 
@@ -47,6 +53,7 @@ export default function useRules (t: ComposerTranslation) {
     max,
     min,
     multiline,
+    or,
     swedishSSN
   }
 }
