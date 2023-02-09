@@ -14,11 +14,11 @@
           @click="close"
         />
       </div>
-      <slot>
-        <p class="mx-4 text-h6">
+      <p class="mx-4 text-h6">
+        <slot>
           {{ text }}
-        </p>
-      </slot>
+        </slot>
+      </p>
       <div class="text-right mt-4">
         <slot name="buttons" :close="close">
           <v-btn

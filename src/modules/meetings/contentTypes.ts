@@ -1,7 +1,7 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import { MeetingAccessPolicy } from '@/contentTypes/types'
-import { ElectoralRegister } from './electoralRegisters/types'
+import { ElectoralRegister, ErMethod } from './electoralRegisters/types'
 import { ComponentBase, GroupMembership, GroupRole, Meeting, MeetingDialectDefinition, MeetingGroup, MeetingInvite, MeetingRole } from './types'
 import { meetingComponentStates, meetingInviteStates, meetingStates } from './workflowStates'
 
@@ -14,6 +14,11 @@ export const electoralRegisterType = new ContentType<ElectoralRegister>({
   name: 'er',
   restEndpoint: 'electoral-registers/',
   dateFields: ['created']
+})
+
+export const erMethodType = new ContentType<ErMethod>({
+  name: 'er-policy',
+  restEndpoint: 'electoral-register-policies/'
 })
 
 export const meetingRoleType = new ContentType<MeetingRoles>({

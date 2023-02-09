@@ -38,7 +38,7 @@ import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
-const { erMethods } = useElectoralRegisters(meetingId)
+const { availableErMethods } = useElectoralRegisters(meetingId)
 const { alert } = useAlert()
 const api = meetingType.getContentApi({ alertOnError: false })
 
@@ -47,7 +47,7 @@ const currentName = computed({
     return meeting.value?.er_policy_name
   },
   async set (name) {
-    if (!name || isCurrent(name)) return
+    if (name === meeting.value?.er_policy_name) return
     try {
       await api.patch(meetingId.value, { er_policy_name: name })
     } catch (e) {
@@ -65,28 +65,22 @@ const currentName = computed({
   }
 })
 
-function isCurrent (name: string) {
-  return name === currentName.value
-}
-
-function getColor (name: string) {
-  if (!isCurrent(name)) return
-  return name === 'auto_always' ? 'warning' : 'info'
-}
-
 const methods = computed(() => {
-  return erMethods.map(({ name }) => ({
-    description: t(`erMethods.${name}.description`),
-    isCurrent: isCurrent(name),
-    name,
-    props: {
-      elevation: isCurrent(name) ? 6 : 0,
-      color: getColor(name),
-      class: {
-        'pa-4': isCurrent(name)
-      }
-    },
-    title: t(`erMethods.${name}.title`)
-  }))
+  return availableErMethods.value?.map(method => {
+    const isCurrent = method.name === currentName.value
+    return {
+      ...method,
+      description: method.description || t(`erMethods.${method.name}.description`),
+      isCurrent,
+      props: {
+        elevation: isCurrent ? 6 : 0,
+        color: isCurrent ? 'info' : undefined,
+        class: {
+          'pa-4': isCurrent
+        }
+      },
+      title: method.title || t(`erMethods.${method.name}.title`)
+    }
+  })
 })
 </script>

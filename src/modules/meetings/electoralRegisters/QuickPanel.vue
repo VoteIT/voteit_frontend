@@ -9,13 +9,14 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../useMeeting'
+import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()
-const { meeting } = useMeeting()
-const policy = computed(() => meeting.value?.er_policy_name)
+const { meetingId } = useMeeting()
+const { erMethod } = useElectoralRegisters(meetingId)
+
 const policyName = computed(() => {
-  return policy.value
-    ? t(`erMethods.${policy.value}.title`)
-    : '-'
+  if (!erMethod.value) return '-'
+  return erMethod.value.title || t(`erMethods.${erMethod.value.name}.title`)
 })
 </script>

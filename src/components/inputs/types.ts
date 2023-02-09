@@ -1,6 +1,5 @@
 import { Component, PropType } from 'vue'
 
-import { Proposal } from '@/modules/proposals/types'
 import { FormSchema } from '../types'
 import { ComposerTranslation } from 'vue-i18n'
 

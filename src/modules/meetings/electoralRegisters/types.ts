@@ -9,7 +9,13 @@ export interface ElectoralRegister {
   }[]
 }
 
-export interface ErDefinition {
-  allowManual?: boolean
+export interface ErMethod {
+  // allowManual?: boolean
+  available: boolean
+  description: string
+  handles_group_vote: boolean
+  handles_personal_vote: boolean
+  handles_vote_weight: boolean
   name: string
+  title: string
 }

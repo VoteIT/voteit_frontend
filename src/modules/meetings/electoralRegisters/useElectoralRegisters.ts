@@ -1,11 +1,12 @@
 import { orderBy } from 'lodash'
-import { computed, reactive, Ref } from 'vue'
+import { computed, reactive, ref, Ref } from 'vue'
 
 import { dateify } from '@/utils'
-import { electoralRegisterType } from '../contentTypes'
+import { electoralRegisterType, erMethodType } from '../contentTypes'
 import { meetings } from '../useMeetings'
 
-import type { ElectoralRegister, ErDefinition } from './types'
+import type { ElectoralRegister, ErMethod } from './types'
+import { filter } from 'itertools'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
@@ -13,29 +14,53 @@ const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
 electoralRegisterType
   .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
 
-const erMethods: ErDefinition[] = [
-  {
-    name: 'auto_before_poll'
-  },
-  {
-    allowManual: true,
-    name: 'presence_check'
-  },
-  {
-    allowManual: true,
-    name: 'manual'
-  },
-  {
-    name: 'auto_always'
-  }
-]
+const erMethods = ref<ErMethod[] | null>(null)
+// const erMethods: ErDefinition[] = [
+//   {
+//     name: 'auto_before_poll'
+//   },
+//   {
+//     allowManual: true,
+//     name: 'presence_check'
+//   },
+//   {
+//     allowManual: true,
+//     name: 'manual'
+//   },
+//   {
+//     name: 'auto_always'
+//   }
+// ]
+
+function isAvailableMethod (method: ErMethod) {
+  return method.available
+}
+
+async function fetchErMethods () {
+  try {
+    const { data } = await erMethodType.api.list()
+    erMethods.value = data
+  } catch {} // TODO
+}
 
 export default function useElectoralRegisters (meetingId?: Ref<number>) {
-  const erMethod = computed<ErDefinition | undefined>(() => {
+  const meeting = computed(() => meetingId && meetings.get(meetingId.value))
+
+  // eslint-disable-next-line vue/return-in-computed-property
+  const availableErMethods = computed(() => {
+    if (erMethod.value && erMethodLocked.value) return [erMethod.value]
+    if (erMethods.value) return filter(erMethods.value, isAvailableMethod)
+    fetchErMethods()
+  })
+
+  const erMethod = computed<ErMethod | undefined>(() => {
     if (!meetingId) return
-    const m = meetings.get(meetingId.value)
-    if (!m) return
-    return erMethods.find(erm => erm.name === m.er_policy_name)
+    if (!erMethods.value) fetchErMethods()
+    return erMethods.value?.find(erm => erm.name === meeting.value?.er_policy_name)
+  })
+
+  const erMethodLocked = computed(() => {
+    return !erMethod.value?.available
   })
 
   async function fetchRegister (pk: number) {
@@ -83,8 +108,10 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   }
 
   return {
+    availableErMethods,
     currentElectoralRegister,
     erMethod,
+    erMethodLocked,
     erMethods,
     sortedRegisters,
     clearRegisters,
