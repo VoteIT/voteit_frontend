@@ -87,6 +87,18 @@
       "joinDescription": "This meeting is open to everyone in the organisation. Om you join the meeting, other participants will be able to see you, and you'll get the following roles:"
     }
   },
+  "activeUsers": {
+    "confirmDismiss": "Choosing to retain inactive status in a meeting may affect voting rights in polls.\nAre you sure?",
+    "description": "Users will be asked if they're active in meeting.",
+    "enable": "Activate active users system",
+    "active": "Active in meeting",
+    "dialogDescription": "The meeting officials wants to know if you're currently active in this meeting.",
+    "dialogInformation": "The information can be used to determine voting permissions, and other participants will be able to se who's active. You can change this later using the control in the bottom of the meeting menu.",
+    "dialogTitle": "Active in meeting?",
+    "inacive": "Not active!",
+    "title": "Active users",
+    "yesImActive": "Yes, I'm active"
+  },
   "agenda": {
     "agenda": "Agenda",
     "allowProposals": "Allow proposals",

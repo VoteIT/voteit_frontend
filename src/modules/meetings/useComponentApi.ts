@@ -2,10 +2,15 @@ import { computed, ref, Ref } from 'vue'
 import { meetingComponentType } from './contentTypes'
 import { ComponentBase } from './types'
 
+// TODO: Deprecate? This seems to hugely double for useMeetingComponent?
 const meetingComponents = ref<ComponentBase[]>([])
 
 export default function useComponentApi<T extends ComponentBase = ComponentBase> (meeting: Ref<number>, name?: string) {
-  const components = computed(() => meetingComponents.value.filter(c => !name || c.component_name === name) as T[])
+  function isNamedComponent (component: ComponentBase): component is T {
+    return !name || component.component_name === name
+  }
+
+  const components = computed(() => meetingComponents.value.filter(isNamedComponent))
   const component = computed(() => {
     if (!name || name === '') return // Javascript, I hate you!
     return components.value[0]

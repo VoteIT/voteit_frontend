@@ -87,6 +87,18 @@
       "joinDescription": "Det här mötet är öppet för alla i organisationen. Om du går med kommer andra användare i mötet att kunna se dig, och du kommer få följande roller:"
     }
   },
+  "activeUsers": {
+    "confirmDismiss": "Valet att stå som inaktiv i mötet kan påverka rösträtt i omröstningar.\nÄr du säker?",
+    "description": "Användare uppmanas svara på om de är aktiva i mötet.",
+    "enable": "Aktivera system för aktiva användare",
+    "active": "Aktiv i mötet",
+    "dialogDescription": "Mötesledningen vill veta om du är aktiv i mötet.",
+    "dialogInformation": "Informationen kan användas för att fastställa röstlängd. Andra deltagare kan också se vilka som är aktiva i mötet. Du kan ändra din status senare med kontrollen i botten av mötesmenyn.",
+    "dialogTitle": "Aktiv i mötet?",
+    "inactive": "Ej aktiv!",
+    "title": "Aktiva användare",
+    "yesImActive": "Ja, jag är aktiv"
+  },
   "agenda": {
     "agenda": "Dagordning",
     "allowProposals": "Tillåt förslag",

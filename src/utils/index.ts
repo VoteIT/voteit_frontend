@@ -83,3 +83,11 @@ export function durationToString (duration: Duration): string {
     ? `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
     : `${duration.minutes()}:${digits(duration.seconds())}`
 }
+
+/**
+ * Awaitable sleep function
+ * @param delay Sleep time in milliseconds
+ */
+export function sleep (delay: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, delay))
+}

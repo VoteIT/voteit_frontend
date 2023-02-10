@@ -20,6 +20,10 @@
       </template>
     </MenuTree>
     <template #append>
+      <component
+        v-for="{ component, id } in appendComponents" :key="id"
+        :is="component"
+      />
       <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
         <BugReports v-if="isModerator" class="ma-2" />
       </v-defaults-provider>
@@ -27,9 +31,9 @@
   </v-navigation-drawer>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { orderBy } from 'lodash'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
@@ -54,6 +58,7 @@ import useMeeting from './useMeeting'
 import { canChangeMeeting } from './rules'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { channelSubscribedEvent } from '@/composables/events'
+import { meetingSlotPlugins } from './registry'
 
 const agendaLoadedEvent = new TypedEvent()
 channelSubscribedEvent.on(uri => {
@@ -62,164 +67,147 @@ channelSubscribedEvent.on(uri => {
   if (['participants', 'moderators'].includes(channelName)) agendaLoadedEvent.emit()
 })
 
-export default defineComponent({
-  name: 'Agenda',
-  components: {
-    MenuTree,
-    BugReports
-  },
-  setup () {
-    const { t } = useI18n()
-    const agendaTag = ref<string | undefined>(undefined)
-    const { mobile } = useDisplay()
-    const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
-    const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
-    const { agendaTags } = useAgendaTags(agenda)
-    const agendaWorkflows = agendaItemType.useWorkflows()
-    // const pollWorkflows = pollType.useWorkflows()
-    const { getAiPolls, getUnvotedPolls } = usePolls()
-    const { getAgendaProposals } = useProposals()
-    const { initDone } = useLoader('Agenda')
+const { t } = useI18n()
+const agendaTag = ref<string | undefined>(undefined)
+const { mobile } = useDisplay()
+const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
+const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
+const { agendaTags } = useAgendaTags(agenda)
+const agendaWorkflows = agendaItemType.useWorkflows()
+// const pollWorkflows = pollType.useWorkflows()
+const { getAiPolls, getUnvotedPolls } = usePolls()
+const { getAgendaProposals } = useProposals()
+const { initDone } = useLoader('Agenda')
 
-    function getAiPath (ai: AgendaItem) {
-      return `${meetingPath.value}/a/${ai.pk}/${slugify(ai.title)}`
-    }
+function getAiPath (ai: AgendaItem) {
+  return `${meetingPath.value}/a/${ai.pk}/${slugify(ai.title)}`
+}
 
-    function getAiType (state: string) {
-      return filteredAgenda.value.filter(ai => ai.state === state)
-    }
+function getAiType (state: string) {
+  return filteredAgenda.value.filter(ai => ai.state === state)
+}
 
-    const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
-      s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
-    ))
+const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
+  s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
+))
 
-    function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
-      return getAiType(s.state).map(ai => ({
-          title: ai.title,
-          to: getAiPath(ai),
-          icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
-          count: getAgendaProposals(ai.pk).length || undefined,
-          hasNewItems: hasNewItems(ai)
-        })
-      )
-    }
-
-    const aiMenus = computed<TreeMenuItem[]>(() => {
-      const menus: TreeMenuItem[] = []
-      if (isModerator.value) {
-        menus.push({
-          title: t('agenda.edit'),
-          to: meetingPath.value + '/settings/agenda',
-          icons: ['mdi-pencil']
-        })
-      }
-      for (const s of aiGroups.value) {
-        menus.push({
-          items: getAIMenuItems(s),
-          title: t(`workflowState.plural.${s.state}`),
-          showCount: true,
-          showCountTotal: agenda.value.filter(ai => ai.state === s.state).length,
-          loadedEvent: agendaLoadedEvent
-        })
-      }
-      return menus
+function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
+  return getAiType(s.state).map(ai => ({
+      title: ai.title,
+      to: getAiPath(ai),
+      icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
+      count: getAgendaProposals(ai.pk).length || undefined,
+      hasNewItems: hasNewItems(ai)
     })
+  )
+}
 
-    const unvotedPolls = computed(() => orderBy(getUnvotedPolls(meetingId.value), ['started']))
-    const hasUnvotedPolls = computed(() => !!unvotedPolls.value.length)
-    const openPollMenuEvent = new TypedEvent()
-    watch(hasUnvotedPolls, (value, oldValue) => {
-      if (value && !oldValue) openPollMenuEvent.emit()
+const aiMenus = computed<TreeMenuItem[]>(() => {
+  const menus: TreeMenuItem[] = []
+  if (isModerator.value) {
+    menus.push({
+      title: t('agenda.edit'),
+      to: meetingPath.value + '/settings/agenda',
+      icons: ['mdi-pencil']
     })
-
-    const pollMenus = computed<TreeMenuItem[]>(() => {
-      const menus: TreeMenuItem[] = [{
-        title: t('poll.all'),
-        to: `${meetingPath.value}/polls`
-      }]
-      if (meeting.value && canAddPoll(meeting.value)) {
-        menus.push({
-          title: t('poll.new'),
-          to: `${meetingPath.value}/polls/new`,
-          icons: ['mdi-star-plus']
-        })
-      }
-      if (unvotedPolls.value.length) {
-        menus.push({
-          title: t('poll.unvoted'),
-          items: unvotedPolls.value.map(p => ({
-            title: p.title,
-            to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`,
-            icons: ['mdi-star']
-          })),
-          defaultOpen: true
-        })
-      }
-      return menus
-    })
-
-    const menu = computed<TreeMenu[]>(() => {
-      const items: TreeMenu[] = [{
-        title: t('meeting.meeting'),
-        items: [{
-          title: t('start'),
-          to: meetingPath.value
-        }, {
-          title: t('meeting.participants'),
-          to: `${meetingPath.value}/p`
-        }, {
-          title: t('electoralRegister.plural'),
-          to: `${meetingPath.value}/er`
-        }, {
-          title: t('minutes.documents'),
-          to: `${meetingPath.value}/minutes`
-        }],
-        icon: 'mdi-home-variant-outline'
-      },
-      {
-        title: t('poll.polls'),
-        items: pollMenus.value,
-        icon: hasUnvotedPolls.value ? 'mdi-star' : 'mdi-star-outline',
-        openEvent: openPollMenuEvent
-      },
-      {
-        title: t('meeting.agenda'),
-        items: aiMenus.value,
-        defaultOpen: true,
-        icon: 'mdi-format-list-bulleted',
-        openFirstNonEmpty: true,
-        loadedEvent: agendaLoadedEvent,
-        slotBefore: 'tagFilter'
-      }]
-      if (canChangeMeeting(meeting.value)) {
-        items[0].items.push({
-          icons: ['mdi-cog'],
-          title: t('meeting.controlPanel'),
-          to: `${meetingPath.value}/settings`
-        })
-      }
-      return items
-    })
-
-    const isOpen = ref(!mobile.value)
-    function toggleDrawer () {
-      if (mobile.value) isOpen.value = !isOpen.value
-    }
-    toggleNavDrawerEvent.on(toggleDrawer)
-
-    return {
-      t,
-      filterMenuOpen: ref(false),
-      agendaTag,
-      agendaTags,
-      isOpen,
-      initDone,
-      menu,
-      toggleDrawer,
-      isModerator
-    }
   }
+  for (const s of aiGroups.value) {
+    menus.push({
+      items: getAIMenuItems(s),
+      title: t(`workflowState.plural.${s.state}`),
+      showCount: true,
+      showCountTotal: agenda.value.filter(ai => ai.state === s.state).length,
+      loadedEvent: agendaLoadedEvent
+    })
+  }
+  return menus
 })
+
+const unvotedPolls = computed(() => orderBy(getUnvotedPolls(meetingId.value), ['started']))
+const hasUnvotedPolls = computed(() => !!unvotedPolls.value.length)
+const openPollMenuEvent = new TypedEvent()
+watch(hasUnvotedPolls, (value, oldValue) => {
+  if (value && !oldValue) openPollMenuEvent.emit()
+})
+
+const pollMenus = computed<TreeMenuItem[]>(() => {
+  const menus: TreeMenuItem[] = [{
+    title: t('poll.all'),
+    to: `${meetingPath.value}/polls`
+  }]
+  if (meeting.value && canAddPoll(meeting.value)) {
+    menus.push({
+      title: t('poll.new'),
+      to: `${meetingPath.value}/polls/new`,
+      icons: ['mdi-star-plus']
+    })
+  }
+  if (unvotedPolls.value.length) {
+    menus.push({
+      title: t('poll.unvoted'),
+      items: unvotedPolls.value.map(p => ({
+        title: p.title,
+        to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`,
+        icons: ['mdi-star']
+      })),
+      defaultOpen: true
+    })
+  }
+  return menus
+})
+
+const menu = computed<TreeMenu[]>(() => {
+  const items: TreeMenu[] = [{
+    title: t('meeting.meeting'),
+    items: [{
+      title: t('start'),
+      to: meetingPath.value
+    }, {
+      title: t('meeting.participants'),
+      to: `${meetingPath.value}/p`
+    }, {
+      title: t('electoralRegister.plural'),
+      to: `${meetingPath.value}/er`
+    }, {
+      title: t('minutes.documents'),
+      to: `${meetingPath.value}/minutes`
+    }],
+    icon: 'mdi-home-variant-outline'
+  },
+  {
+    title: t('poll.polls'),
+    items: pollMenus.value,
+    icon: hasUnvotedPolls.value ? 'mdi-star' : 'mdi-star-outline',
+    openEvent: openPollMenuEvent
+  },
+  {
+    title: t('meeting.agenda'),
+    items: aiMenus.value,
+    defaultOpen: true,
+    icon: 'mdi-format-list-bulleted',
+    openFirstNonEmpty: true,
+    loadedEvent: agendaLoadedEvent,
+    slotBefore: 'tagFilter'
+  }]
+  if (canChangeMeeting(meeting.value)) {
+    items[0].items.push({
+      icons: ['mdi-cog'],
+      title: t('meeting.controlPanel'),
+      to: `${meetingPath.value}/settings`
+    })
+  }
+  return items
+})
+
+const isOpen = ref(!mobile.value)
+function toggleDrawer () {
+  if (mobile.value) isOpen.value = !isOpen.value
+}
+toggleNavDrawerEvent.on(toggleDrawer)
+
+const filterMenuOpen = ref(false)
+
+const appendComponents = computed(() => meetingSlotPlugins.getActivePlugins(meeting.value))
 </script>
 
 <style lang="sass">

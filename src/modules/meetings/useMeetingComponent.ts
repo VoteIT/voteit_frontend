@@ -1,3 +1,4 @@
+import { filter } from 'itertools'
 import { computed, reactive, Ref } from 'vue'
 
 import { meetingComponentType } from './contentTypes'
@@ -7,17 +8,17 @@ const meetingComponents = reactive(new Map<number, ComponentBase>())
 
 meetingComponentType.updateMap(meetingComponents)
 
-function * filterComponents (meeting: number, filter: (component: ComponentBase) => boolean) {
-  for (const component of meetingComponents.values()) {
-    if (component.meeting === meeting && filter(component)) yield component
-  }
-}
-
 export default function useMeetingComponents<T extends ComponentBase> (meeting: Ref<number>, name: string) {
-  const components = computed(() => [...filterComponents(meeting.value, c => c.component_name === name)] as T[])
+  function isNamedComponent (component: ComponentBase): component is T {
+    return component.meeting === meeting.value && component.component_name === name
+  }
+  const components = computed(() => filter(meetingComponents.values(), isNamedComponent))
   const component = computed(() => components.value[0] as T | undefined)
 
+  const componentActive = computed(() => component.value?.state === 'on')
+
   return {
-    component
+    component,
+    componentActive
   }
 }

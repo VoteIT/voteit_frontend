@@ -20,5 +20,11 @@ interface SettingsPlugin extends MeetingPlugin {
   isConfigured?: (meeting: Meeting) => boolean
 }
 
+interface MeetingSlotPlugin extends MeetingPlugin {
+  slot: 'appendMenu'
+  component: Component
+}
+
 export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()
 export const meetingSettingsPlugins = new PluginHandler<SettingsPlugin>()
+export const meetingSlotPlugins = new PluginHandler<MeetingSlotPlugin>()
