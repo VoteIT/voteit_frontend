@@ -1,4 +1,5 @@
-import { countBy, isNumber, orderBy, sortBy } from 'lodash'
+import { filter, ifilter, imap } from 'itertools'
+import { countBy, isNumber, sortBy } from 'lodash'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 
 import useAuthentication, { user } from '@/composables/useAuthentication'
@@ -6,8 +7,7 @@ import type { LoaderCallback } from '@/composables/useLoader'
 
 import { meetingType } from './contentTypes'
 import { Meeting, MeetingState } from './types'
-import { dateify, mapFilter } from '@/utils'
-import { ifilter, imap } from 'itertools'
+import { dateify } from '@/utils'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
@@ -18,22 +18,26 @@ const meetingRoles = meetingType.useContextRoles()
 const { isAuthenticated } = useAuthentication()
 
 function getMeetingList (state: MeetingState, order: keyof Meeting = 'title') {
-  return orderBy(
-    [...mapFilter(
-      meetings,
+  return sortBy(
+    filter(
+      meetings.values(),
       m => m.state === state && !!m.current_user_roles
-    )],
-    [order]
+    ),
+    order
   )
 }
 
 function filterMeetings (states: MeetingState[], order: keyof Meeting, search: string, year: number | null) {
-  return orderBy(
-    [...mapFilter(
-      meetings,
-      m => states.includes(m.state) && m.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()) && (!year || m.start_time?.getFullYear() === year)
-    )],
-    [order]
+  return sortBy(
+    filter(
+      meetings.values(),
+      m => (
+        states.includes(m.state) &&
+        m.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()) &&
+        (!year || m.start_time?.getFullYear() === year)
+      )
+    ),
+    order
   )
 }
 

@@ -1,6 +1,5 @@
+import { filter } from 'itertools'
 import { reactive } from 'vue'
-
-import { mapFilter } from '@/utils'
 
 import { agendaItemType } from '../agendas/contentTypes'
 import { agendaDeletedEvent } from '../agendas/events'
@@ -26,21 +25,21 @@ agendaDeletedEvent.on(deleteForAgendaItem)
 // Automatically clear proposals for agenda item when unsubscribed
 agendaItemType.channel.onLeave(deleteForAgendaItem)
 
+function getAgendaDiscussions (agendaItem: number, _filter?: (d: DiscussionPost) => boolean) {
+  return filter(
+    discussions.values(),
+    post => post.agenda_item === agendaItem && (!_filter || _filter(post))
+  )
+}
+
+function getProposalDiscussions (proposal: Proposal) {
+  return filter(
+    discussions.values(),
+    post => post.tags.includes(proposal.prop_id)
+  )
+}
+
 export default function useDiscussions () {
-  function getAgendaDiscussions (agendaItem: number, filter?: (d: DiscussionPost) => boolean) {
-    return [...mapFilter(
-      discussions,
-      post => post.agenda_item === agendaItem && (!filter || filter(post))
-    )]
-  }
-
-  function getProposalDiscussions (proposal: Proposal) {
-    return [...mapFilter(
-      discussions,
-      post => post.tags.includes(proposal.prop_id)
-    )]
-  }
-
   return {
     getAgendaDiscussions,
     getProposalDiscussions

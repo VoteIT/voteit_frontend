@@ -2,8 +2,6 @@ import { filter } from 'itertools'
 import { countBy, orderBy } from 'lodash'
 import { reactive } from 'vue'
 
-import { mapFilter } from '@/utils'
-
 import { user } from '@/composables/useAuthentication'
 
 import { SpeakerList, SpeakerSystem, Speaker, HistoricSpeaker, CurrentSpeaker } from './types'
@@ -36,9 +34,13 @@ export function getCurrent (list: number) {
   }
 }
 function getHistory (list: number) {
-  return orderBy([...mapFilter(
-    speakers, speaker => speaker.speaker_list === list && isHistoricSpeaker(speaker)
-  )], ['started'], ['desc']) as HistoricSpeaker[]
+  return orderBy(
+    filter(
+      speakers.values(),
+      speaker => speaker.speaker_list === list && isHistoricSpeaker(speaker)
+    ),
+    ['started'], ['desc']
+  ) as HistoricSpeaker[]
 }
 function getList (pk: number) {
   return speakerLists.get(pk)

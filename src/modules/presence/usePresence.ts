@@ -1,6 +1,6 @@
+import { filter, ifilter, map } from 'itertools'
 import { computed, reactive, Ref } from 'vue'
 
-import { mapFilter } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
 import useBubbles from '../meetings/useBubbles'
@@ -21,12 +21,10 @@ useBubbles().register(PresenceCheckBubble)
 const { user } = useAuthentication()
 
 export default function usePresence (meetingId: Ref<number>) {
-  const closedPresenceChecks = computed(() => {
-    return [...mapFilter(
-      presenceChecks,
-      pc => pc.meeting === meetingId.value && pc.state === PresenceCheckState.Closed
-    )]
-  })
+  const closedPresenceChecks = computed(() => filter(
+    presenceChecks.values(),
+    pc => pc.meeting === meetingId.value && pc.state === PresenceCheckState.Closed
+  ))
 
   function getUserPresence (check: number, userPk?: number): Presence | undefined {
     userPk = userPk || user.value?.pk
@@ -65,7 +63,7 @@ export default function usePresence (meetingId: Ref<number>) {
       }
     }
   })
-  const presentUserIds = computed(() => [...mapFilter(presence, p => p.presence_check === presenceCheck.value?.pk)].map(p => p.user))
+  const presentUserIds = computed(() => map(ifilter(presence.values(), p => p.presence_check === presenceCheck.value?.pk), p => p.user))
   const userPresence = computed(() => presenceCheck.value && getUserPresence(presenceCheck.value.pk))
   const isPresent = computed(() => presenceCheck.value && !!userPresence.value) // undefined or boolean
 

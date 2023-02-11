@@ -60,18 +60,6 @@ export async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | strin
   })
 }
 
-export function * mapFilter<T> (map: Map<unknown, T>, filter: (obj: T) => boolean | undefined) {
-  for (const o of map.values()) {
-    if (filter(o)) yield o
-  }
-}
-
-export function mapFind<T> (map: Map<unknown, T>, filter: (obj: T) => boolean) {
-  for (const o of map.values()) {
-    if (filter(o)) return o
-  }
-}
-
 // Pad number with 0 to always display 2 digits
 function digits (n: number) {
   return n.toLocaleString(undefined, { minimumIntegerDigits: 2 })

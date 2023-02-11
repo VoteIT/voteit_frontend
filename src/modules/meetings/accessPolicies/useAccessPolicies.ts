@@ -1,5 +1,5 @@
+import { filter, ifilter } from 'itertools'
 import { computed, onBeforeMount, reactive, Ref } from 'vue'
-import { mapFilter } from '@/utils'
 import useAlert from '@/composables/useAlert'
 import ContentType from '@/contentTypes/ContentType'
 import { AccessPolicy, AccessPolicyType } from '@/contentTypes/types'
@@ -16,7 +16,10 @@ const contentTypes: Partial<Record<AccessPolicyType, ContentType<AccessPolicy>>>
 const { alert } = useAlert()
 
 export default function useAccessPolicies (meetingId: Ref<number>) {
-  const accessPolicies = computed(() => [...mapFilter(policyStore, p => p.meeting === meetingId.value)])
+  const accessPolicies = computed(() => filter(
+    policyStore.values(),
+    p => p.meeting === meetingId.value
+  ))
 
   function getContentType (p: Pick<AccessPolicy, 'name'>) {
     const ct = contentTypes[p.name]
@@ -73,7 +76,10 @@ export default function useAccessPolicies (meetingId: Ref<number>) {
       const { data } = await accessPolicyType.api.retrieve(meeting)
       // Start by removing any policies in store that's not in response
       const newPks = data.policies.map(p => p.pk)
-      for (const { pk } of mapFilter(policyStore, p => p.meeting === meeting && !newPks.includes(p.pk))) {
+      for (const { pk } of ifilter(
+        policyStore.values(),
+        p => p.meeting === meeting && !newPks.includes(p.pk)
+      )) {
         policyStore.delete(pk)
       }
       for (const p of data.policies) {

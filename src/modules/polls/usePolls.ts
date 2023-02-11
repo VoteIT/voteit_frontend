@@ -1,6 +1,6 @@
+import { dropwhile, filter, first, ifilter } from 'itertools'
 import { reactive, computed } from 'vue'
 
-import { mapFilter } from '@/utils'
 import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '../agendas/events'
 import useBubbles from '../meetings/useBubbles'
@@ -70,21 +70,21 @@ const allPollTitles = computed(() => {
 })
 
 function getPolls (meeting: number, state?: PollState) {
-  return [...mapFilter(
-    polls,
+  return filter(
+    polls.values(),
     p => p.meeting === meeting && (!state || p.state === state)
-  )]
+  )
 }
 
-function filterPolls (filter: (poll: Poll) => boolean) {
-  return mapFilter(polls, filter)
+function filterPolls (_filter: (poll: Poll) => boolean) {
+  return filter(polls.values(), _filter)
 }
 
 function getAiPolls (agendaItem: number, state?: PollState) {
-  return [...mapFilter(
-    polls,
+  return filter(
+    polls.values(),
     p => p.agenda_item === agendaItem && (!state || p.state === state)
-  )]
+  )
 }
 
 function getPoll (pk: number) {
@@ -105,28 +105,34 @@ function getUserVote (poll: Poll): Vote | undefined {
   }
 }
 
-function iterUnvotedPolls (meeting: number) {
-  return mapFilter(polls, p => {
-    return p.meeting === meeting &&
-      p.state === PollState.Ongoing &&
-      canVote(p) &&
-      !getUserVote(p)
-  })
+function isUnvotedPoll (poll: Poll) {
+  return (
+    poll.state === PollState.Ongoing &&
+    canVote(poll) &&
+    !getUserVote(poll)
+  )
+}
+
+function getMeetingUnvotedFilter (meeting: number) {
+  return (poll: Poll) => poll.meeting === meeting && isUnvotedPoll(poll)
 }
 
 function getNextUnvotedPoll (meeting: number, poll?: Poll) {
+  const isUnvoted = getMeetingUnvotedFilter(meeting)
   if (poll) {
-    let found = false
-    for (const p of iterUnvotedPolls(meeting)) {
-      if (found) return p
-      if (p.pk === poll.pk) found = true
+    const isOther = ({ pk }: Poll) => pk !== poll.pk
+    for (const p of ifilter(dropwhile(polls.values(), isOther), isUnvoted)) {
+      if (isOther(p)) return p
     }
   }
-  return iterUnvotedPolls(meeting).next().value
+  return first(filter(polls.values(), isUnvoted))
 }
 
 function getUnvotedPolls (meeting: number) {
-  return [...iterUnvotedPolls(meeting)]
+  return filter(
+    polls.values(),
+    getMeetingUnvotedFilter(meeting)
+  )
 }
 
 export default function usePolls () {
