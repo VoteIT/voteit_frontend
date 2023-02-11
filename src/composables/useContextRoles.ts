@@ -1,9 +1,10 @@
+import { map } from 'itertools'
+import { defer } from 'lodash'
 import { reactive } from 'vue'
 
 import useAuthentication from './useAuthentication'
 import { ContextRoles, UserContextRoles } from './types'
 import ContentType from '@/contentTypes/ContentType'
-import { defer } from 'lodash'
 
 const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
@@ -57,10 +58,6 @@ export default function useContextRoles<T extends string> (contentType: string) 
     return count
   }
 
-  function * iterUserIds (pk: number, filter?: (roles: Set<T>) => boolean): Generator<number, void> {
-    for (const { user } of iterRoles(pk, filter)) yield user
-  }
-
   function getUserRoles (pk: number, userId?: number) {
     userId = userId ?? user.value?.pk
     if (!userId) return
@@ -69,7 +66,7 @@ export default function useContextRoles<T extends string> (contentType: string) 
   }
 
   function getRoleCount (pk: number, role: T) {
-    const generator = iterRoles(pk, (roles) => roles.has(role))
+    const generator = iterRoles(pk, roles => roles.has(role))
     let res = generator.next()
     while (!res.done) res = generator.next()
     return res.value
@@ -77,10 +74,10 @@ export default function useContextRoles<T extends string> (contentType: string) 
 
   // User ids that match any role
   function getRoleUserIds (pk: number, ...anyRoles: T[]) {
-    return [...iterUserIds(
-      pk,
-      (roles) => anyRoles.some(role => roles.has(role))
-    )]
+    return map(
+      iterRoles(pk, (roles) => anyRoles.some(role => roles.has(role))),
+      role => role.user
+    )
   }
 
   function set (pk: number, userId: number, roles: T[]) {
@@ -109,7 +106,10 @@ export default function useContextRoles<T extends string> (contentType: string) 
   }
 
   function getUserIds (pk: number) {
-    return [...iterUserIds(pk)]
+    return map(
+      iterRoles(pk),
+      role => role.user
+    )
   }
 
   return {

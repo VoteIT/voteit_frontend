@@ -12,7 +12,7 @@ interface InvitationScope {
 
 class InvitationScopePluginHandler extends PluginHandler<InvitationScope> {
   public getActivePlugins () {
-    return [...this.iterPlugins(({ id }) => organisation.value?.scope.includes(id) || false)]
+    return this.getPlugins(({ id }) => organisation.value?.scope.includes(id) || false)
   }
 }
 

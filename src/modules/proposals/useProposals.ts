@@ -1,3 +1,4 @@
+import { filter, first } from 'itertools'
 import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
@@ -13,10 +14,12 @@ import { proposalType } from './contentTypes'
 type ProposalFilter = (p: Proposal) => boolean
 
 const proposals = reactive<Map<number, Proposal>>(new Map())
-/* Used to figure out whether to mark agenda item as read */
-const userReadProposals = new Set<number>() // Track read proposals through since last reload
 
 proposalType.updateMap(proposals)
+
+function proposalExists (prop?: Proposal): prop is Proposal {
+  return !!prop
+}
 
 // Automatically clear proposals for meeting when leaving.
 meetingType.channel.onLeave(meeting => {
@@ -35,67 +38,71 @@ agendaDeletedEvent.on(pk => {
   }
 })
 
-export default function useProposals () {
-  function * iterProposals (filter: ProposalFilter): Generator<Proposal, void> {
-    for (const p of proposals.values()) {
-      if (filter(p)) yield p
-    }
+function * iterProposals (filter: ProposalFilter): Generator<Proposal, void> {
+  for (const p of proposals.values()) {
+    if (filter(p)) yield p
   }
+}
 
-  function agendaItemHasProposals (ai: number): boolean {
-    for (const p of proposals.values()) {
-      if (p.agenda_item === ai) return true
-    }
-    return false
+function agendaItemHasProposals (ai: number): boolean {
+  for (const p of proposals.values()) {
+    if (p.agenda_item === ai) return true
   }
+  return false
+}
 
-  function getAgendaProposals (ai: number, filter?: ProposalFilter, order = 'created', direction: 'asc' | 'desc' = 'asc'): Proposal[] {
-    return orderBy([...iterProposals(
-      p => p.agenda_item === ai && (!filter || filter(p))
-    )], [order], [direction])
-  }
+function getAgendaProposals (ai: number, _filter?: ProposalFilter, order = 'created', direction: 'asc' | 'desc' = 'asc'): Proposal[] {
+  return orderBy(
+    filter(
+      proposals.values(),
+      p => p.agenda_item === ai && (!_filter || _filter(p))
+    ),
+    [order], [direction]
+  )
+}
 
-  function getPollProposals (poll: Poll): Proposal[] {
-    return orderBy(
-      poll.proposals
-        .map(prop => proposals.get(prop))
-        .filter(p => p) as Proposal[],
-      ['created']
+function getPollProposals (poll: Poll): Proposal[] {
+  return orderBy(
+    poll.proposals
+      .map(prop => proposals.get(prop))
+      .filter(proposalExists),
+    ['created']
+  )
+}
+
+function getProposal (pk: number) {
+  return proposals.get(pk)
+}
+
+/**
+ * Create a filter function for proposals, matching Agenda Item and optional last read Date.
+ * Ignore retracted, denied or unhandled proposals (states not in default filter)
+ */
+function getLastReadFilter (ai: number, lastRead?: Date) {
+  return (p: Proposal) => {
+    return (
+      p.agenda_item === ai &&
+      (!lastRead || p.created > lastRead) &&
+      DEFAULT_FILTER_STATES.includes(p.state)
     )
   }
+}
 
-  function getProposal (pk: number) {
-    return proposals.get(pk)
-  }
+function filterHidesUnread (ai: number, lastRead: Date | undefined, filter: ProposalFilter): boolean {
+  return !!first(
+    proposals.values(),
+    p => getLastReadFilter(ai, lastRead)(p) && filter(p)
+  )
+}
 
-  function setProposalRead (p: Proposal) {
-    userReadProposals.add(p.pk)
-  }
+function agendaItemAllRead (ai: number, lastRead?: Date): boolean {
+  return !!first(
+    proposals.values(),
+    getLastReadFilter(ai, lastRead)
+  )
+}
 
-  /* Ignore retracted, denied or unhandled proposals (states not in default filter) */
-  function filterHidesUnread (ai: number, lastRead: Date | undefined, filter: ProposalFilter): boolean {
-    for (const p of iterProposals(p => p.agenda_item === ai)) {
-      if (
-        (lastRead && p.created > lastRead) &&
-        DEFAULT_FILTER_STATES.includes(p.state) &&
-        !filter(p)
-      ) return true
-    }
-    return false
-  }
-
-  /* Ignore retracted, denied or unhandled proposals (states not in default filter) */
-  function agendaItemAllRead (ai: number, lastRead?: Date): boolean {
-    for (const p of iterProposals(p => p.agenda_item === ai)) {
-      if (
-        (lastRead && p.created > lastRead) &&
-        !userReadProposals.has(p.pk) &&
-        DEFAULT_FILTER_STATES.includes(p.state)
-      ) return false
-    }
-    return true
-  }
-
+export default function useProposals () {
   return {
     agendaItemHasProposals,
     agendaItemAllRead,
@@ -103,7 +110,6 @@ export default function useProposals () {
     getAgendaProposals,
     getPollProposals,
     getProposal,
-    iterProposals,
-    setProposalRead
+    iterProposals
   }
 }

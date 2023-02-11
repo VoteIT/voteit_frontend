@@ -9,6 +9,6 @@ export interface MeetingPlugin {
 
 export default class MeetingPluginHandler<P extends MeetingPlugin> extends PluginHandler<P> {
   public getActivePlugins (meeting: Meeting): P[] {
-    return [...this.iterPlugins(p => !p.checkActive || p.checkActive(meeting))]
+    return this.getPlugins(p => !p.checkActive || p.checkActive(meeting))
   }
 }

@@ -1,3 +1,4 @@
+import { filter } from 'itertools'
 import { computed, reactive, readonly, Ref } from 'vue'
 
 import { ProposalText, proposalTextType } from './contentTypes'
@@ -8,14 +9,8 @@ proposalTextType.updateMap(proposalTexts)
 
 type DocFilter = (document: ProposalText) => boolean
 
-function * iterDocuments (filter: DocFilter): Generator<ProposalText, void> {
-  for (const doc of proposalTexts.values()) {
-    if (filter(doc)) yield doc
-  }
-}
-
-function getDocuments (filter: DocFilter) {
-  return readonly([...iterDocuments(filter)])
+function getDocuments (_filter: DocFilter) {
+  return readonly(filter(proposalTexts.values(), _filter))
 }
 
 function getParagraph (pk: number) {

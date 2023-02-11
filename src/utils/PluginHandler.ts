@@ -1,3 +1,5 @@
+import { filter } from 'itertools'
+
 export interface BasePlugin {
   id: string
 }
@@ -9,14 +11,8 @@ export default class PluginHandler<P extends BasePlugin> {
     this.plugins = new Map()
   }
 
-  public * iterPlugins (filter: (p: P) => boolean) {
-    for (const p of this.plugins.values()) {
-      if (filter(p)) yield p
-    }
-  }
-
-  public register (plugin: P) {
-    this.plugins.set(plugin.id, plugin)
+  public getPlugins (_filter: (p: P) => boolean) {
+    return filter(this.plugins.values(), _filter)
   }
 
   public getPlugin (id: string) {
@@ -25,5 +21,9 @@ export default class PluginHandler<P extends BasePlugin> {
 
   public hasPlugin (id: string) {
     return this.plugins.has(id)
+  }
+
+  public register (plugin: P) {
+    this.plugins.set(plugin.id, plugin)
   }
 }

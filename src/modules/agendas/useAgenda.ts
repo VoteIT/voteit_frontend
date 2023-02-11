@@ -1,3 +1,4 @@
+import { filter } from 'itertools'
 import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -60,14 +61,13 @@ lastReadType
 export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | undefined>) {
   const route = useRoute()
 
-  function * iterAgenda (filter: (ai: AgendaItem) => boolean): Generator<AgendaItem> {
-    for (const ai of agendaItems.values()) if (filter(ai)) yield ai
-  }
-
   const agenda = computed(() => {
     // Filter on meetingId
     return orderBy(
-      [...iterAgenda(ai => ai.meeting === meetingId.value)],
+      filter(
+        agendaItems.values(),
+        ai => ai.meeting === meetingId.value
+      ),
       ['order']
     )
   })
@@ -83,9 +83,9 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     return agendaItemStates.map(state => {
       return {
         state,
-        items: orderBy(
-          [...iterAgenda(ai => ai.meeting === meetingId.value && ai.state === state.state)],
-          'order'
+        items: filter(
+          agenda.value,
+          ai => ai.state === state.state
         )
       }
     })
