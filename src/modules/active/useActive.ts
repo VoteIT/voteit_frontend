@@ -63,8 +63,9 @@ export default function useActive (meetingId: Ref<number>) {
   }
 
   return {
-    isActive,
+    activeUserIds: computed(() => meetingActiveUsers.get(meetingId.value) || []),
     componentActive,
+    isActive,
     setActive
   }
 }

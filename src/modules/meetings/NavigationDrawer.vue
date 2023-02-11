@@ -20,10 +20,7 @@
       </template>
     </MenuTree>
     <template #append>
-      <component
-        v-for="{ component, id } in appendComponents" :key="id"
-        :is="component"
-      />
+      <ComponentSlot name="appendMenu" />
       <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
         <BugReports v-if="isModerator" class="ma-2" />
       </v-defaults-provider>
@@ -58,7 +55,7 @@ import useMeeting from './useMeeting'
 import { canChangeMeeting } from './rules'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { channelSubscribedEvent } from '@/composables/events'
-import { meetingSlotPlugins } from './registry'
+import ComponentSlot from './ComponentSlot.vue'
 
 const agendaLoadedEvent = new TypedEvent()
 channelSubscribedEvent.on(uri => {
@@ -206,8 +203,6 @@ function toggleDrawer () {
 toggleNavDrawerEvent.on(toggleDrawer)
 
 const filterMenuOpen = ref(false)
-
-const appendComponents = computed(() => meetingSlotPlugins.getActivePlugins(meeting.value))
 </script>
 
 <style lang="sass">

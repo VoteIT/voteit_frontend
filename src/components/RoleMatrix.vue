@@ -11,7 +11,7 @@
         </li>
       </ul>
     </v-alert>
-    <slot name="filter" />
+    <slot name="filter"></slot>
     <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
     <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed: ordering.reversed, admin }">
       <thead>

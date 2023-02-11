@@ -42,19 +42,21 @@
         </v-window-item>
 
         <v-window-item value="presence" v-if="canManagePresence">
-          <PresenceCheckControl class="text-center" />
-          <template v-if="presenceCheck">
-            <v-divider class="my-4" />
-            <h2 class="mb-4">
-              {{ t('presence.presentCount', presentUserIds.length) }}
-            </h2>
-            <UserSearch class="mb-6" @submit="changePresence($event, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
-            <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-2" bgColor="background" density="default">
-              <template #appendItem="{ user }">
-                <v-btn size="small" variant="text" icon="mdi-close" @click="changePresence(user, false)" />
-              </template>
-            </UserList>
-          </template>
+          <ComponentSlot name="presenceMain">
+            <PresenceCheckControl class="text-center" />
+            <template v-if="presenceCheck">
+              <v-divider class="my-4" />
+              <h2 class="mb-4">
+                {{ t('presence.presentCount', presentUserIds.length) }}
+              </h2>
+              <UserSearch class="mb-6" @submit="changePresence($event, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
+              <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-2" bgColor="background" density="default">
+                <template #appendItem="{ user }">
+                  <v-btn size="small" variant="text" icon="mdi-close" @click="changePresence(user, false)" />
+                </template>
+              </UserList>
+            </template>
+          </ComponentSlot>
         </v-window-item>
 
         <v-window-item value="speakerHistory" v-if="hasSpeakerSystems">
@@ -101,6 +103,7 @@ import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import useUserDetails from '../organisations/useUserDetails'
+import ComponentSlot from './ComponentSlot.vue'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',

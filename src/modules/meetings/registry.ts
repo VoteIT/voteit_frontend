@@ -21,7 +21,7 @@ interface SettingsPlugin extends MeetingPlugin {
 }
 
 interface MeetingSlotPlugin extends MeetingPlugin {
-  slot: 'appendMenu'
+  slot: 'appendMenu' | 'presenceMain'
   component: Component
 }
 

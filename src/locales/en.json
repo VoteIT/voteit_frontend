@@ -96,6 +96,8 @@
     "dialogInformation": "The information can be used to determine voting permissions, and other participants will be able to se who's active. You can change this later using the control in the bottom of the meeting menu.",
     "dialogTitle": "Active in meeting?",
     "inacive": "Not active!",
+    "listDescription": "An active user is any participant in the meeting that's marked themselves as active.",
+    "listEmpty": "This meeting doesn't have any active users yet.",
     "title": "Active users",
     "yesImActive": "Yes, I'm active"
   },
