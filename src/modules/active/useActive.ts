@@ -6,11 +6,8 @@ import { meetingType } from '../meetings/contentTypes'
 import { NoSettingsComponent } from '../meetings/types'
 import useMeetingComponents from '../meetings/useMeetingComponent'
 
-// FIXME Drop this
-const MEETING_ID = 103
-
 interface ActiveUsersMsg {
-  // meeting: number
+  meeting: number
   users: number[]
 }
 
@@ -18,12 +15,12 @@ const meetingActiveUsers = reactive(new Map<number, number[]>())
 activeUserType
   .on<ActiveUsersMsg>('all', msg => {
     // FIXME get meeting
-    meetingActiveUsers.set(MEETING_ID, msg.users)
+    meetingActiveUsers.set(msg.meeting, msg.users)
   })
   .onChanged(msg => {
-    const active = meetingActiveUsers.get(MEETING_ID) || []
+    const active = meetingActiveUsers.get(msg.meeting) || []
     meetingActiveUsers.set(
-      MEETING_ID,
+      msg.meeting,
       msg.active
         ? [...active, msg.user]
         : active.filter(pk => pk !== msg.user)

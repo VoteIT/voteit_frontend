@@ -2,7 +2,7 @@ import ContentType from '@/contentTypes/ContentType'
 
 interface ActiveChangedMsg {
   active: boolean
-  // meeting: number
+  meeting: number
   user: number
 }
 
