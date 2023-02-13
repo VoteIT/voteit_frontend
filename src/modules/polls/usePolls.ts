@@ -1,4 +1,4 @@
-import { dropwhile, filter, first, ifilter } from 'itertools'
+import { dropwhile, filter, first, ifilter, Predicate } from 'itertools'
 import { reactive, computed } from 'vue'
 
 import { Vote } from '@/contentTypes/types'
@@ -65,26 +65,33 @@ agendaDeletedEvent.on(pk => {
   }
 })
 
+/**
+ * Used to compute a unique poll title
+ */
 const allPollTitles = computed(() => {
   return [...polls.values()].map(p => p.title)
 })
 
 function getPolls (meeting: number, state?: PollState) {
-  return filter(
-    polls.values(),
-    p => p.meeting === meeting && (!state || p.state === state)
-  )
+  return filterPolls(p => p.meeting === meeting && (!state || p.state === state))
 }
 
+/**
+ * Get all polls that matches filter
+ */
 function filterPolls (_filter: (poll: Poll) => boolean) {
   return filter(polls.values(), _filter)
 }
 
+/**
+ * Get first poll that matches filter
+ */
+function firstPoll (filter: (poll: Poll) => boolean) {
+  return first(polls.values(), filter)
+}
+
 function getAiPolls (agendaItem: number, state?: PollState) {
-  return filter(
-    polls.values(),
-    p => p.agenda_item === agendaItem && (!state || p.state === state)
-  )
+  return filterPolls(p => p.agenda_item === agendaItem && (!state || p.state === state))
 }
 
 function getPoll (pk: number) {
@@ -99,10 +106,11 @@ function getPollStatus (pk: number) {
   return pollStatuses.get(pk)
 }
 
-function getUserVote (poll: Poll): Vote | undefined {
-  for (const vote of userVotes.values()) {
-    if (vote.poll === poll.pk) return vote
-  }
+function getUserVote (poll: Poll) {
+  return first(
+    userVotes.values(),
+    vote => vote.poll === poll.pk
+  )
 }
 
 function isUnvotedPoll (poll: Poll) {
@@ -113,12 +121,19 @@ function isUnvotedPoll (poll: Poll) {
   )
 }
 
-function getMeetingUnvotedFilter (meeting: number) {
+/**
+ * Generate a predicate to filter on current users unvoted polls in meeting.
+ */
+function getMeetingUnvotedPredicate (meeting: number): Predicate<Poll> {
   return (poll: Poll) => poll.meeting === meeting && isUnvotedPoll(poll)
 }
 
+/**
+ * Get first ongoing poll in a meeting that current user hasn't voted in.
+ * @param poll If provided, function will return next unvoted poll in order
+ */
 function getNextUnvotedPoll (meeting: number, poll?: Poll) {
-  const isUnvoted = getMeetingUnvotedFilter(meeting)
+  const isUnvoted = getMeetingUnvotedPredicate(meeting)
   if (poll) {
     const isOther = ({ pk }: Poll) => pk !== poll.pk
     for (const p of ifilter(dropwhile(polls.values(), isOther), isUnvoted)) {
@@ -129,16 +144,13 @@ function getNextUnvotedPoll (meeting: number, poll?: Poll) {
 }
 
 function getUnvotedPolls (meeting: number) {
-  return filter(
-    polls.values(),
-    getMeetingUnvotedFilter(meeting)
-  )
+  return filterPolls(getMeetingUnvotedPredicate(meeting))
 }
 
 export default function usePolls () {
   return {
     allPollTitles,
-    filterPolls,
+    firstPoll,
     getPolls,
     getAiPolls,
     getPoll,

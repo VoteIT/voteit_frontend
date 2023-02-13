@@ -77,7 +77,7 @@ const props = defineProps({
   addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
   cols: Array as PropType<string[]>,
   contentType: {
-    type: Object as PropType<ContentType>,
+    type: ContentType as PropType<ContentType<any, any>>,
     required: true
   },
   filter: Function as PropType<(userRoles: UserContextRoles) => boolean>,

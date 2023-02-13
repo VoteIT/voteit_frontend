@@ -76,7 +76,7 @@ const props = defineProps({
     required: true
   },
   contentType: {
-    type: ContentType,
+    type: ContentType as PropType<ContentType<any>>,
     required: true
   },
   right: Boolean

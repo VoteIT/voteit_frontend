@@ -107,6 +107,7 @@
 </template>
 
 <script lang="ts" setup>
+import { partition } from 'itertools'
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -126,15 +127,13 @@ import { MeetingRole } from '../types'
 import { electoralRegisterType, meetingType } from '../contentTypes'
 import useElectoralRegisters from './useElectoralRegisters'
 
-import type { ElectoralRegister } from './types'
-
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
 const { isModerator, meetingId } = useMeeting()
 const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, hasWeightedVotes } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
 const { canManagePresence } = usePresence(meetingId)
-const { filterPolls } = usePolls()
+const { firstPoll } = usePolls()
 
 useMeetingTitle(t('electoralRegister.plural'))
 
@@ -143,15 +142,10 @@ function getDownloadUrl (register: number, type: 'csv' | 'json') {
 }
 
 const registerGroups = computed(() => {
-  const ongoing: ElectoralRegister[] = []
-  const historic: ElectoralRegister[] = []
-  sortedRegisters.value
-    .slice(1) // Exclude latest from this group
-    .forEach(er => {
-      const hasOngoing = !filterPolls(poll => poll.meeting === meetingId.value && poll.state === PollState.Ongoing && poll.electoral_register === er.pk).next().done
-      if (hasOngoing) ongoing.push(er)
-      else historic.push(er)
-    })
+  const [ongoing, historic] = partition(
+    sortedRegisters.value,
+    er => !!firstPoll(poll => poll.state === PollState.Ongoing && poll.electoral_register === er.pk)
+  )
   return { ongoing, historic }
 })
 

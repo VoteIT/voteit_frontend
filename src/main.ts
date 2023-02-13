@@ -80,7 +80,7 @@ createApp(App)
   .component('Dropdown', Dropdown)
   .component('UserAvatar', UserAvatar)
   .component('Widget', Widget)
-  // Bubble requires this to be registered here, dunno why
+  // Bubble requires this to be registered here, dunno why (circular?)
   .component('PresenceCheckControl', PresenceCheckControl)
   .component('Proposal', Proposal)
   .mount('#app')
