@@ -1,8 +1,13 @@
 <template>
+  <teleport to="#toolbar">
+    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black">
+      <v-spacer />
+      <v-tabs v-model="currentTab" :items="tabs" />
+    </v-toolbar>
+  </teleport>
   <v-row>
     <v-col>
-      <v-tabs v-model="currentTab" :items="tabs" align-tabs="end" class="mb-4" />
-      <v-window v-model="currentTab">
+      <v-window v-model="currentTab" :touch="false">
 
         <v-window-item value="default">
           <RoleMatrix
