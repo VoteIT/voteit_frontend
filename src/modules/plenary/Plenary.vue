@@ -11,7 +11,7 @@
         <template #top>
           <div class="text-right">
             <span class="btn-group mr-2">
-              <v-btn v-for="s in getProposalStates(p)" :key="s.name" :color="p.state === s.state ? s.color : 'background'"
+              <v-btn v-for="s in getProposalStates(p)" :key="s.transition" :color="p.state === s.state ? s.color : 'background'"
                     @click="makeTransition(p, s)">
                 <v-icon :icon="s.icon" />
               </v-btn>
@@ -41,8 +41,8 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
+<script lang="ts" setup>
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { flatten } from 'lodash'
 
@@ -51,7 +51,8 @@ import { WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useProposals from '../proposals/useProposals'
-import { Proposal, ProposalState } from '../proposals/types'
+import type { Proposal } from '../proposals/types'
+import { ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
 import useTextDocuments from '../proposals/useTextDocuments'
 import { proposalStates } from '../proposals/workflowStates'
@@ -66,63 +67,47 @@ const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, Propo
 const { getAgendaProposals } = useProposals()
 const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
 
-export default defineComponent({
-  setup () {
-    provide('context', 'meeting')
-    const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { agendaId } = useAgenda(meetingId)
-    const { agendaItem } = useAgendaItem(agendaId)
-    const { aiProposalTexts } = useTextDocuments(agendaId)
+provide('context', 'meeting')
+const { t } = useI18n()
+const { meetingId } = useMeeting()
+const { agendaId } = useAgenda(meetingId)
+const { agendaItem } = useAgendaItem(agendaId)
+const { aiProposalTexts } = useTextDocuments(agendaId)
 
-    useMeetingChannel()
-    provide(LastReadKey, ref(new Date()))
+useMeetingChannel()
+provide(LastReadKey, ref(new Date()))
 
-    watch(agendaItem, clearSelected)
-    function getProposalStates (p: Proposal) {
-      return proposalStates.filter(s => AVAILABLE_STATES.includes(s.state) || p.state === s.state)
-    }
+watch(agendaItem, clearSelected)
+function getProposalStates (p: Proposal) {
+  return proposalStates.filter(s => AVAILABLE_STATES.includes(s.state) || p.state === s.state)
+}
 
-    const pool = computed(() => getAgendaProposals(
-      agendaId.value,
-      p => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
-    ))
-    const hasProposals = computed(() => !!getAgendaProposals(agendaId.value).length)
+const pool = computed(() => getAgendaProposals(
+  agendaId.value,
+  p => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
+))
+const hasProposals = computed(() => !!getAgendaProposals(agendaId.value).length)
 
-    const textProposalTags = computed(() => flatten(aiProposalTexts.value.map(doc => doc.paragraphs.map(p => p.tag))))
-    // eslint-disable-next-line vue/return-in-computed-property
-    const nextTextProposalTag = computed(() => {
-      for (const tag of textProposalTags.value) {
-        if (pool.value.some(prop => prop.tags.includes(tag))) return tag
-      }
-    })
+function tagInPool (tag: string) {
+  return pool.value.some(({ tags }) => tags.includes(tag))
+}
 
-    async function makeTransition (p: Proposal, state: WorkflowState) {
-      if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
-      if (state.state === p.state) return // No need to change state then is there?
-      await proposalType.api.transition(p.pk, state.transition)
-    }
-    onMounted(() => {
-      tagClickEvent.on(selectTag)
-      clearSelected()
-    })
-    onBeforeUnmount(() => {
-      tagClickEvent.off(selectTag)
-    })
+const textProposalTags = computed(() => flatten(aiProposalTexts.value.map(doc => doc.paragraphs.map(p => p.tag))))
+// eslint-disable-next-line vue/return-in-computed-property
+const nextTextProposalTag = computed(() => {
+  return textProposalTags.value.find(tagInPool)
+})
 
-    return {
-      t,
-      agendaItem,
-      hasProposals,
-      nextTextProposalTag,
-      pool,
-      proposalStates,
-      selectedProposals,
-      deselectProposal,
-      getProposalStates,
-      makeTransition,
-      selectProposal
-    }
-  }
+async function makeTransition (p: Proposal, state: WorkflowState) {
+  if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
+  if (state.state === p.state) return // No need to change state then is there?
+  await proposalType.api.transition(p.pk, state.transition)
+}
+onMounted(() => {
+  tagClickEvent.on(selectTag)
+  clearSelected()
+})
+onBeforeUnmount(() => {
+  tagClickEvent.off(selectTag)
 })
 </script>

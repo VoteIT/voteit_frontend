@@ -3,7 +3,7 @@ import { computed, reactive, readonly, ref } from 'vue'
 import { ProposalState, Proposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
 
-const { getProposal, iterProposals } = useProposals()
+const { getProposal, forProposals } = useProposals()
 
 const stateFilter = ref([ProposalState.Published])
 const selectedProposalIds = reactive<number[]>([])
@@ -27,9 +27,11 @@ export default function usePlenary () {
 
   function selectTag (tagName: string) {
     selectedProposalIds.length = 0
-    for (const p of iterProposals(p => p.tags.includes(tagName))) {
-      selectedProposalIds.push(p.pk)
-    }
+    console.log(tagName)
+    forProposals(
+      ({ tags }) => tags.includes(tagName),
+      ({ pk }) => { selectedProposalIds.push(pk) }
+    )
   }
 
   return {

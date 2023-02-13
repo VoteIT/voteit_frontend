@@ -1,4 +1,4 @@
-import { any, filter, Predicate } from 'itertools'
+import { any, filter, ifilter, map, Predicate } from 'itertools'
 import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
@@ -10,8 +10,6 @@ import { Poll } from '../polls/methods/types'
 
 import { Proposal } from './types'
 import { proposalType } from './contentTypes'
-
-type ProposalFilter = (p: Proposal) => boolean
 
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
@@ -38,12 +36,6 @@ agendaDeletedEvent.on(pk => {
   }
 })
 
-function * iterProposals (filter: ProposalFilter): Generator<Proposal, void> {
-  for (const p of proposals.values()) {
-    if (filter(p)) yield p
-  }
-}
-
 function agendaItemHasProposals (ai: number): boolean {
   for (const p of proposals.values()) {
     if (p.agenda_item === ai) return true
@@ -51,11 +43,11 @@ function agendaItemHasProposals (ai: number): boolean {
   return false
 }
 
-function getAgendaProposals (ai: number, _filter?: ProposalFilter, order = 'created', direction: 'asc' | 'desc' = 'asc'): Proposal[] {
+function getAgendaProposals (ai: number, predicate?: Predicate<Proposal>, order = 'created', direction: 'asc' | 'desc' = 'asc'): Proposal[] {
   return orderBy(
     filter(
       proposals.values(),
-      p => p.agenda_item === ai && (!_filter || _filter(p))
+      p => p.agenda_item === ai && (!predicate || predicate(p))
     ),
     [order], [direction]
   )
@@ -88,28 +80,40 @@ function getLastReadFilter (ai: number, lastRead?: Date): Predicate<Proposal> {
   }
 }
 
-function filterHidesUnread (ai: number, lastRead: Date | undefined, filter: ProposalFilter): boolean {
+function anyProposal (filter: Predicate<Proposal>): boolean {
   return any(
     proposals.values(),
-    p => getLastReadFilter(ai, lastRead)(p) && filter(p)
+    filter
   )
 }
 
-function agendaItemAllRead (ai: number, lastRead?: Date): boolean {
-  return any(
-    proposals.values(),
-    getLastReadFilter(ai, lastRead)
+function forProposals (predicate: Predicate<Proposal>, fn: (proposal: Proposal) => void) {
+  map(
+    ifilter(
+      proposals.values(),
+      predicate
+    ),
+    fn
   )
+}
+
+function filterHidesUnread (ai: number, lastRead: Date | undefined, filter: Predicate<Proposal>): boolean {
+  return anyProposal(p => getLastReadFilter(ai, lastRead)(p) && filter(p))
+}
+
+function agendaItemAllRead (ai: number, lastRead?: Date): boolean {
+  return anyProposal(getLastReadFilter(ai, lastRead))
 }
 
 export default function useProposals () {
   return {
     agendaItemHasProposals,
     agendaItemAllRead,
+    anyProposal,
     filterHidesUnread,
+    forProposals,
     getAgendaProposals,
     getPollProposals,
-    getProposal,
-    iterProposals
+    getProposal
   }
 }

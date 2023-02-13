@@ -10,18 +10,17 @@ import { polls } from '../polls/usePolls'
 import { isAuthor } from '@/contentTypes/rules'
 import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
 
-const { iterProposals } = useProposals()
+const { anyProposal } = useProposals()
 const { proposalTexts } = useTextDocuments()
 
 /* Proposal texts / documents */
 
 export function documentHasProposals (doc: ProposalText): boolean {
   const tags = doc.paragraphs.map(p => p.tag)
-  const generator = iterProposals(prop => {
-    return prop.agenda_item === doc.agenda_item &&
-           tags.some(tag => prop.tags.includes(tag))
-  })
-  return !!generator.next().value
+  return anyProposal(prop => (
+    prop.agenda_item === doc.agenda_item &&
+    tags.some(tag => prop.tags.includes(tag))
+  ))
 }
 
 function agendaItemHasDocuments (ai: AgendaItem): boolean {
