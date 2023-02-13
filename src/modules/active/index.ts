@@ -1,12 +1,12 @@
-import { ref } from 'vue'
+import { ref, toRef } from 'vue'
 
-import { meetingSettingsPlugins, meetingSlotPlugins } from '../meetings/registry'
+import { meetingRolePlugins, meetingSettingsPlugins, meetingSlotPlugins } from '../meetings/registry'
 import useMeetingComponents from '../meetings/useMeetingComponent'
 import type { Meeting, NoSettingsComponent } from '../meetings/types'
 
 import ControlPanel from './ControlPanel.vue'
-import ManageActive from './ManageActive.vue'
 import MenuPlugin from './MenuPlugin.vue'
+import useActive from './useActive'
 
 const COMPONENT_NAME = 'active_users'
 
@@ -32,9 +32,28 @@ meetingSlotPlugins.register({
   slot: 'appendMenu'
 })
 
-meetingSlotPlugins.register({
+meetingRolePlugins.register({
   checkActive,
-  component: ManageActive,
-  id: 'active_users.controls',
-  slot: 'presenceMain'
+  contentType: 'meeting',
+  id: COMPONENT_NAME,
+  transform (columns, meeting) {
+    const { activeUserIds } = useActive(toRef(meeting, 'pk'))
+    return [
+      ...columns,
+      {
+        getCount () {
+          return activeUserIds.value.length
+        },
+        getTitle (t) {
+          return t('activeUsers.active')
+        },
+        getValue ({ user }) {
+          return activeUserIds.value.includes(user)
+        },
+        icon: 'mdi-account-network',
+        name: COMPONENT_NAME,
+        readonly: true
+      }
+    ]
+  }
 })

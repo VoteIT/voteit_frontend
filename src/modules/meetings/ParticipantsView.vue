@@ -42,21 +42,19 @@
         </v-window-item>
 
         <v-window-item value="presence" v-if="canManagePresence">
-          <ComponentSlot name="presenceMain">
-            <PresenceCheckControl class="text-center" />
-            <template v-if="presenceCheck">
-              <v-divider class="my-4" />
-              <h2 class="mb-4">
-                {{ t('presence.presentCount', presentUserIds.length) }}
-              </h2>
-              <UserSearch class="mb-6" @submit="changePresence($event, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
-              <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-2" bgColor="background" density="default">
-                <template #appendItem="{ user }">
-                  <v-btn size="small" variant="text" icon="mdi-close" @click="changePresence(user, false)" />
-                </template>
-              </UserList>
-            </template>
-          </ComponentSlot>
+          <PresenceCheckControl class="text-center" />
+          <template v-if="presenceCheck">
+            <v-divider class="my-4" />
+            <h2 class="mb-4">
+              {{ t('presence.presentCount', presentUserIds.length) }}
+            </h2>
+            <UserSearch class="mb-6" @submit="changePresence($event, true)" instant :filter="presenceFilter" :params="{ meeting: meetingId }" :label="t('content.addName', { name: t('presence.presence').toLowerCase() })" />
+            <UserList v-if="presentUserIds.length" :userIds="presentUserIds" class="my-2" bgColor="background" density="default">
+              <template #appendItem="{ user }">
+                <v-btn size="small" variant="text" icon="mdi-close" @click="changePresence(user, false)" />
+              </template>
+            </UserList>
+          </template>
         </v-window-item>
 
         <v-window-item value="speakerHistory" v-if="hasSpeakerSystems">
@@ -83,7 +81,6 @@ import { openAlertEvent } from '@/utils/events'
 import UserList from '@/components/UserList.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
-import { RoleMatrixCol } from '@/components/types'
 import { UserContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
@@ -101,9 +98,7 @@ import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
-import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import useUserDetails from '../organisations/useUserDetails'
-import ComponentSlot from './ComponentSlot.vue'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -118,7 +113,6 @@ const { user } = useAuthentication()
 const { meetingId, meetingPath, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
-const { currentElectoralRegister } = useElectoralRegisters(meetingId)
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
 const { canManagePresence, presenceCheck, presentUserIds } = usePresence(meetingId)
 const { alert } = useAlert()
@@ -129,21 +123,22 @@ function getDownloadUrl (type: 'csv' | 'json') {
   return `${restApi.defaults.baseURL}export-participants/${meetingId.value}/${type}/`
 }
 
-const matrixCols: RoleMatrixCol[] = [
-  'participant',
+const DEFAULT_COLUMNS = [
   'moderator',
   'potential_voter',
-  {
-    count: () => currentElectoralRegister.value?.weights.length ?? 0,
-    hasRole: ({ user }) => !!currentElectoralRegister.value?.weights.find(v => v.user === user),
-    icon: 'mdi-star',
-    name: 'voter',
-    readonly: true,
-    title: t('electoralRegister.inCurrent')
-  },
   'proposer',
   'discusser'
 ]
+const MODERATOR_COLUMNS = [
+  'participant',
+  ...DEFAULT_COLUMNS
+]
+
+const matrixCols = computed(() => {
+  return canChangeRoles.value
+    ? MODERATOR_COLUMNS
+    : DEFAULT_COLUMNS
+})
 
 function addRole (user: number, role: string) {
   meetingType.addRoles(meetingId.value, user, role)

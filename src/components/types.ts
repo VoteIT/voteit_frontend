@@ -1,5 +1,6 @@
 import { UserContextRoles } from '@/composables/types'
 import { ComponentPublicInstance } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
 
 export type EditorComponent = ComponentPublicInstance<{
   setText: (text: string) => void,
@@ -149,12 +150,26 @@ interface TextAreaField extends SchemaField<string> {
 export type FormField = CheckboxField | CheckboxMultipleField | DurationField | NumberField | SelectField | SwitchField | TextField | TextAreaField
 export type FormSchema = FormField[]
 
-export interface RoleMatrixColDescription {
-  count: () => number
-  hasRole: (userRoles: UserContextRoles) => boolean
+export interface RoleMatrixColumn {
+  getCount (): number
+  getDescription? (t: ComposerTranslation): string
+  getTitle (t: ComposerTranslation): string
+  getValue (userRoles: UserContextRoles): boolean
+  setValue? (user: number, value: boolean): void
   icon: string
   name: string
-  readonly?: boolean
-  title: string
 }
-export type RoleMatrixCol = RoleMatrixColDescription | string
+export interface DescribedColumn extends RoleMatrixColumn {
+  getDescription (t: ComposerTranslation): string
+}
+export type ColumnOrRole = RoleMatrixColumn | string
+
+/**
+ * Determine if column is a string value representing a role, or a full column description.
+ */
+export function isColumn (col?: ColumnOrRole): col is RoleMatrixColumn {
+  return typeof col === 'object'
+}
+export function isDescribedColumn (col: RoleMatrixColumn): col is DescribedColumn {
+  return typeof col.getDescription === 'function'
+}

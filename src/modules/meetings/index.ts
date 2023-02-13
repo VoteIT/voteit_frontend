@@ -1,6 +1,9 @@
+import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
+import { toRef } from 'vue'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
-import { meetingExportPlugins } from './registry'
+import { meetingExportPlugins, meetingRolePlugins } from './registry'
 
 function getDownloadFormat (meetingId: number, format: 'csv' | 'json') {
   return {
@@ -21,5 +24,52 @@ meetingExportPlugins.register({
   },
   getTitle (t) {
     return t('meeting.participantsList')
+  }
+})
+
+function insertAfter (columns: RoleMatrixColumn[], name: string, column: RoleMatrixColumn) {
+  const index = (columns.findIndex(col => col.name === name) + 1) || columns.length
+  return [
+    ...columns.slice(0, index),
+    column,
+    ...columns.slice(index)
+  ]
+}
+
+meetingRolePlugins.register({
+  contentType: 'meeting',
+  id: 'voter',
+  transform (columns, meeting) {
+    const { currentElectoralRegister } = useElectoralRegisters(toRef(meeting, 'pk'))
+
+    // Partial column defintion, for updating or inserting with new name
+    const columnDefinition: Omit<RoleMatrixColumn, 'name'> = {
+      getCount () {
+        return currentElectoralRegister.value?.weights.length ?? 0
+      },
+      getDescription (t) {
+        return t('role.help.voter')
+      },
+      getTitle (t) {
+        return t('electoralRegister.inCurrent')
+      },
+      getValue ({ user }) {
+        return !!currentElectoralRegister.value?.weights.find(v => v.user === user)
+      },
+      icon: 'mdi-star'
+    }
+
+    return meeting.er_policy_name === 'auto_always'
+      // Replace parts of potential_voter column
+      ? columns.map(c => {
+        return c.name === 'potential_voter'
+          ? { ...c, ...columnDefinition }
+          : c
+      })
+      // Insert with new name
+      : insertAfter(columns, 'potential_voter', {
+        ...columnDefinition,
+        name: 'voter'
+      })
   }
 })

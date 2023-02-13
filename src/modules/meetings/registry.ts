@@ -5,6 +5,7 @@ import PluginHandler from './PluginHandler'
 import type { MeetingPlugin } from './PluginHandler'
 import type { Meeting } from './types'
 import { ComposerTranslation } from 'vue-i18n'
+import { RoleMatrixColumn } from '@/components/types'
 
 interface ExportsPlugin extends MeetingPlugin {
   getExports (t: ComposerTranslation, meetingId: number): { title?: string, formats: { format: string, url: string }[] }[]
@@ -25,6 +26,9 @@ interface MeetingSlotPlugin extends MeetingPlugin {
   component: Component
 }
 
+type MeetingRolePlugin = MeetingPlugin & { transform (columns: RoleMatrixColumn[], meeting: Meeting): RoleMatrixColumn[], contentType: string }
+
 export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()
 export const meetingSettingsPlugins = new PluginHandler<SettingsPlugin>()
 export const meetingSlotPlugins = new PluginHandler<MeetingSlotPlugin>()
+export const meetingRolePlugins = new PluginHandler<MeetingRolePlugin>()
