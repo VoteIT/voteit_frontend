@@ -133,7 +133,7 @@ const { isModerator, meetingId } = useMeeting()
 const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, hasWeightedVotes } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
 const { canManagePresence } = usePresence(meetingId)
-const { firstPoll } = usePolls()
+const { anyPoll } = usePolls()
 
 useMeetingTitle(t('electoralRegister.plural'))
 
@@ -141,15 +141,11 @@ function getDownloadUrl (register: number, type: 'csv' | 'json') {
   return `${restApi.defaults.baseURL}export-electoral-register/${register}/${type}/`
 }
 
-const registerGroups = computed(() => {
-  const [ongoing, historic] = partition(
-    sortedRegisters.value,
-    er => !!firstPoll(poll => poll.state === PollState.Ongoing && poll.electoral_register === er.pk)
-  )
-  return { ongoing, historic }
-})
-
 const groups = computed(() => {
+  const [ongoing, historic] = partition(
+    sortedRegisters.value.slice(1),
+    er => anyPoll(poll => poll.state === PollState.Ongoing && poll.electoral_register === er.pk)
+  )
   return [
     {
       title: t('electoralRegister.latest'),
@@ -158,11 +154,11 @@ const groups = computed(() => {
     {
       title: t('electoralRegister.active'),
       description: t('electoralRegister.activeDescription'),
-      registers: registerGroups.value.ongoing
+      registers: ongoing
     },
     {
       title: t('electoralRegister.previous'),
-      registers: registerGroups.value.historic
+      registers: historic
     }
   ]
 })

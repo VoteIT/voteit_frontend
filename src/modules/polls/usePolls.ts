@@ -1,4 +1,4 @@
-import { dropwhile, filter, first, ifilter, Predicate } from 'itertools'
+import { any, dropwhile, filter, first, ifilter, Predicate } from 'itertools'
 import { reactive, computed } from 'vue'
 
 import { Vote } from '@/contentTypes/types'
@@ -84,10 +84,10 @@ function filterPolls (_filter: (poll: Poll) => boolean) {
 }
 
 /**
- * Get first poll that matches filter
+ * Check if any poll matches filter
  */
-function firstPoll (filter: (poll: Poll) => boolean) {
-  return first(polls.values(), filter)
+function anyPoll (filter: (poll: Poll) => boolean) {
+  return any(polls.values(), filter)
 }
 
 function getAiPolls (agendaItem: number, state?: PollState) {
@@ -150,7 +150,7 @@ function getUnvotedPolls (meeting: number) {
 export default function usePolls () {
   return {
     allPollTitles,
-    firstPoll,
+    anyPoll,
     getPolls,
     getAiPolls,
     getPoll,
