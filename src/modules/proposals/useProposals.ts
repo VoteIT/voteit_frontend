@@ -1,4 +1,4 @@
-import { filter, first } from 'itertools'
+import { any, filter, Predicate } from 'itertools'
 import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
@@ -78,7 +78,7 @@ function getProposal (pk: number) {
  * Create a filter function for proposals, matching Agenda Item and optional last read Date.
  * Ignore retracted, denied or unhandled proposals (states not in default filter)
  */
-function getLastReadFilter (ai: number, lastRead?: Date) {
+function getLastReadFilter (ai: number, lastRead?: Date): Predicate<Proposal> {
   return (p: Proposal) => {
     return (
       p.agenda_item === ai &&
@@ -89,14 +89,14 @@ function getLastReadFilter (ai: number, lastRead?: Date) {
 }
 
 function filterHidesUnread (ai: number, lastRead: Date | undefined, filter: ProposalFilter): boolean {
-  return !!first(
+  return any(
     proposals.values(),
     p => getLastReadFilter(ai, lastRead)(p) && filter(p)
   )
 }
 
 function agendaItemAllRead (ai: number, lastRead?: Date): boolean {
-  return !!first(
+  return any(
     proposals.values(),
     getLastReadFilter(ai, lastRead)
   )

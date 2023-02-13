@@ -1,5 +1,5 @@
 import useAuthentication from '@/composables/useAuthentication'
-import { filter, first } from 'itertools'
+import { any, filter } from 'itertools'
 import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { groupMembershipType, groupRoleType, meetingGroupType } from './contentTypes'
@@ -34,7 +34,16 @@ export default function useMeetingGroups (meetingId: Ref<number>) {
     return orderBy(
       filter(
         meetingGroups.values(),
-        group => group.meeting === meetingId.value && (isModerator.value || (!!user.value && !!first(groupMemberships.values(), g => g.user === user.value?.pk)))
+        group => (
+          group.meeting === meetingId.value &&
+          (
+            isModerator.value ||
+            any(
+              groupMemberships.values(),
+              g => g.user === user.value?.pk
+            )
+          )
+        )
       ),
       ['title']
     )
