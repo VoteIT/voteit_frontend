@@ -9,7 +9,7 @@
         class="my-4"
         v-bind="props"
       />
-      <QueryDialog v-else :text="t('electoralRegister.confirmMethodChange', { name: t(`erMethods.${name}.title`) })" @confirmed="currentName = name">
+      <QueryDialog v-else @confirmed="currentName = name">
         <template #activator="activator">
           <v-card
             :title="title"
@@ -18,6 +18,13 @@
             v-bind="{ ...props, ...activator.props }"
           />
         </template>
+        <i18n-t keypath="electoralRegister.confirmMethodChange">
+          <template #name>
+            <strong>
+              {{ title }}
+            </strong>
+          </template>
+        </i18n-t>
       </QueryDialog>
     </template>
   </div>
