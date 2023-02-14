@@ -1,5 +1,5 @@
 import path from 'path'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
@@ -13,5 +13,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  server: { port: 8080 }
+  server: { port: 8080 },
+  test: {
+    environment: 'happy-dom'
+  }
 })

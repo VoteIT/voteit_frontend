@@ -9,10 +9,12 @@ const TAG_DISALLOW_UNICODE = /[^_0-9A-Za-z\u00AA\u00B5\u00BA\u00C0-\u00D6\u00D8-
 
 export function uriToPayload (uri: string): SubscribePayload {
   // Convert internal resource identifier to subscription payload object
-  const [ct, pk] = uri.split('/')
+  const [ct, _pk] = uri.split('/')
+  const pk = Number(_pk)
+  if (!ct || !pk) throw new Error(`Bad subscribe payload: ${uri}`)
   return {
     channel_type: ct,
-    pk: Number(pk)
+    pk
   }
 }
 
