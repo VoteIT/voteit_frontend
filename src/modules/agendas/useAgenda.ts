@@ -10,6 +10,7 @@ import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
 import { agendaDeletedEvent } from './events'
+import { Maybe } from 'itertools/types'
 
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
@@ -95,7 +96,7 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     return agendaItems.get(agendaItem)
   }
 
-  function getRelativeAgendaItem (agendaItem: AgendaItem, positions = 1) {
+  function getRelativeAgendaItem (agendaItem: AgendaItem, positions = 1): Maybe<AgendaItem> {
     const index = agenda.value.indexOf(agendaItem)
     return agenda.value[index + positions]
   }
