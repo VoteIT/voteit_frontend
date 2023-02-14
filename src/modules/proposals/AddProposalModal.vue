@@ -5,6 +5,7 @@
         <slot name="editor">
           <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
         </slot>
+        <TagEdit v-model="extraTags" class="mb-2" />
         <div class="d-flex flex-column flex-md-row">
           <PostAs v-if="canPostAs" v-model="author" />
           <v-spacer />
@@ -53,6 +54,7 @@ import { stripHTML } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
 
 import RichtextEditor from '@/components/RichtextEditor.vue'
+import TagEdit from '@/components/TagEdit.vue'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
 import PostAs from '../meetings/PostAs.vue'
@@ -61,6 +63,7 @@ import type { Author } from '../meetings/types'
 
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
+import useTags from '../meetings/useTags'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: number
@@ -83,15 +86,22 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
+const { meetingId } = useMeeting()
+const { agendaId } = useAgenda(meetingId)
+const { canPostAs } = useMeetingGroups(meetingId)
+const { getHTMLTags } = useTags()
 
 const body = ref(
   props.proposal
     ? props.proposal.body
     : props.modelValue
 )
-const { meetingId } = useMeeting()
-const { agendaId } = useAgenda(meetingId)
-const { canPostAs } = useMeetingGroups(meetingId)
+function getExtraTags (proposal?: Proposal) {
+  if (!proposal) return []
+  const docTags = getHTMLTags(proposal.body)
+  return proposal.tags.filter(tag => !docTags.has(tag) && tag !== proposal.prop_id)
+}
+const extraTags = ref(getExtraTags(props.proposal))
 
 const author = ref<Partial<Author> | undefined>(
   props.proposal && {
@@ -103,7 +113,8 @@ const author = ref<Partial<Author> | undefined>(
 function getPatchData (): Partial<Proposal> {
   return {
     body: body.value,
-    ...(author.value || {})
+    ...(author.value || {}),
+    tags: extraTags.value
   }
 }
 
@@ -171,6 +182,7 @@ function setPreviewTimeout () {
 
 watch(author, preview)
 watch(body, setPreviewTimeout)
+watch(extraTags, preview)
 watch(() => props.modelValue, value => { // React when used as subcomponent, i.e. in AddTextProposalModal
   body.value = value
 })

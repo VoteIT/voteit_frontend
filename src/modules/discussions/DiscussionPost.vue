@@ -46,7 +46,7 @@
     </div>
     <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
       <div class="d-flex flex-wrap">
-        <slot name="buttons" />
+        <slot name="buttons"></slot>
       </div>
       <v-spacer />
       <DropdownMenu :items="menuItems" size="small" />
@@ -54,9 +54,8 @@
   </v-sheet>
 </template>
 
-<script lang="ts">
-/* eslint-disable camelcase */
-import { computed, defineComponent, PropType, ref } from 'vue'
+<script lang="ts" setup>
+import { computed, PropType, ref } from 'vue'
 
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
@@ -77,113 +76,86 @@ import { Author } from '../meetings/types'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 
-export default defineComponent({
-  props: {
-    p: {
-      type: Object as PropType<DiscussionPost>,
-      required: true
-    },
-    readOnly: Boolean
+const props = defineProps({
+  p: {
+    type: Object as PropType<DiscussionPost>,
+    required: true
   },
-  components: {
-    Richtext,
-    Moment,
-    PostAs,
-    RichtextEditor,
-    TagEdit
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const { getHTMLTags } = useTags()
-    const { meetingId } = useMeeting()
-    const { getMeetingGroup, canPostAs } = useMeetingGroups(meetingId)
-
-    const editing = ref(false)
-    const saving = ref(false)
-    const body = ref(props.p.body)
-    const author = ref({
-      author: props.p.author,
-      meeting_group: props.p.meeting_group
-    } as Author)
-    const { isUnread } = useUnread(props.p.created as Date)
-    const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
-
-    async function queryDelete () {
-      if (await dialogQuery({
-        title: t('discussion.deletePrompt'),
-        theme: ThemeColor.Warning
-      })) discussionPostType.api.delete(props.p.pk)
-    }
-
-    const menuItems = computed<MenuItem[]>(() => {
-      const menu: MenuItem[] = []
-      if (canChangeDiscussionPost(props.p)) {
-        menu.push({
-          title: t('edit'),
-          prependIcon: 'mdi-pencil',
-          onClick: async () => { editing.value = true }
-        })
-      }
-      if (canDeleteDiscussionPost(props.p)) {
-        menu.push({
-          title: t('delete'),
-          prependIcon: 'mdi-delete',
-          color: ThemeColor.Warning,
-          onClick: queryDelete
-        })
-      }
-      return menu
-    })
-
-    const extraTags = computed(() => {
-      const docTags = getHTMLTags(props.p.body)
-      return props.p.tags.filter(tag => !docTags.has(tag))
-    })
-
-    const tags = ref(props.p.tags)
-
-    function cancel () {
-      editing.value = false
-      body.value = props.p.body
-      tags.value = props.p.tags
-      author.value = {
-        author: props.p.author,
-        meeting_group: props.p.meeting_group
-      } as Author
-    }
-
-    async function save () {
-      saving.value = true
-      discussionPostType.api.patch(
-        props.p.pk,
-        {
-          body: body.value,
-          tags: tags.value,
-          ...author.value
-        }
-      )
-      editing.value = false
-      saving.value = false
-    }
-
-    return {
-      t,
-      author,
-      body,
-      canPostAs,
-      editing,
-      extraTags,
-      isUnread,
-      meetingGroup,
-      menuItems,
-      postAsExpanded: ref(false),
-      saving,
-      tags,
-      cancel,
-      save
-    }
-  }
+  readOnly: Boolean
 })
+
+const { t } = useI18n()
+const { getHTMLTags } = useTags()
+const { meetingId } = useMeeting()
+const { getMeetingGroup, canPostAs } = useMeetingGroups(meetingId)
+
+const editing = ref(false)
+const saving = ref(false)
+const body = ref(props.p.body)
+const author = ref({
+  author: props.p.author,
+  meeting_group: props.p.meeting_group
+} as Author)
+const { isUnread } = useUnread(props.p.created as Date)
+const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
+
+async function queryDelete () {
+  if (await dialogQuery({
+    title: t('discussion.deletePrompt'),
+    theme: ThemeColor.Warning
+  })) discussionPostType.api.delete(props.p.pk)
+}
+
+const menuItems = computed<MenuItem[]>(() => {
+  const menu: MenuItem[] = []
+  if (canChangeDiscussionPost(props.p)) {
+    menu.push({
+      title: t('edit'),
+      prependIcon: 'mdi-pencil',
+      onClick: async () => { editing.value = true }
+    })
+  }
+  if (canDeleteDiscussionPost(props.p)) {
+    menu.push({
+      title: t('delete'),
+      prependIcon: 'mdi-delete',
+      color: ThemeColor.Warning,
+      onClick: queryDelete
+    })
+  }
+  return menu
+})
+
+const extraTags = computed(() => {
+  const docTags = getHTMLTags(props.p.body)
+  return props.p.tags.filter(tag => !docTags.has(tag))
+})
+
+const tags = ref(props.p.tags)
+
+function cancel () {
+  editing.value = false
+  body.value = props.p.body
+  tags.value = props.p.tags
+  author.value = {
+    author: props.p.author,
+    meeting_group: props.p.meeting_group
+  } as Author
+}
+
+async function save () {
+  saving.value = true
+  discussionPostType.api.patch(
+    props.p.pk,
+    {
+      body: body.value,
+      tags: tags.value,
+      ...author.value
+    }
+  )
+  editing.value = false
+  saving.value = false
+}
 </script>
 
 <style lang="sass" scoped>
