@@ -34,7 +34,7 @@
                 :active="!role"
                 :disabled="!role"
                 link
-                :title="t('meeting.groups.noRole')"
+                title="---"
                 @click="setRole(null, pk)"
               />
             </v-list>
@@ -139,7 +139,7 @@ function getRoleTitle (role: number | null) {
   const _role = groupRoles.value.find(r => r.pk === role)
   return _role
     ? _role.title
-    : t('meeting.groups.noRole')
+    : '---'
 }
 
 function removeMember (pk: number) {

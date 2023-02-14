@@ -296,7 +296,6 @@
       "modify": "Modify group",
       "new": "New group",
       "noMembers": "This group has no members.",
-      "noRole": "No role",
       "removeUserConfirm": "You're about to remove {user} from this group.\nAre you sure?",
       "votes": "Votes"
     },
