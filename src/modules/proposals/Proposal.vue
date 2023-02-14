@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-sheet v-if="p" rounded elevation="4" class="proposal" :class="{ isUnread }">
-      <slot name="top" />
+      <slot name="top"></slot>
       <div class="meta">
         <div>
           <span class="content-type">{{ t('proposal.proposal') }}</span>
@@ -26,10 +26,10 @@
         </span>
         <Moment :date="p.created" class="ml-6" />
         <v-spacer />
-        <slot name="bottom-right" />
+        <slot name="bottom-right"></slot>
       </div>
       <v-sheet v-if="$slots.vote" class="vote-slot">
-        <slot name="vote"/>
+        <slot name="vote"></slot>
       </v-sheet>
       <footer v-if="!readOnly" class="mt-2 d-flex">
         <div class="d-flex flex-wrap">
@@ -42,7 +42,7 @@
           <v-btn prepend-icon="mdi-chevron-down" size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
             {{ t('discussion.comments', { count: discussionPosts.length }) }}
           </v-btn>
-          <slot name="buttons"/>
+          <slot name="buttons"></slot>
         </div>
         <v-spacer />
         <DropdownMenu size="small" :items="menuItems" />
@@ -51,7 +51,7 @@
           <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
         </DefaultDialog>
       </footer>
-      <slot name="bottom"/>
+      <slot name="bottom"></slot>
     </v-sheet>
     <v-sheet rounded elevation="2" v-else class="proposal">
       <em>{{ t('proposal.notFound') }}</em>
@@ -192,19 +192,6 @@ const extraTags = computed(() => {
 
   .author
     font-size: 10.5pt
-
-  // &.isUnread .richtext
-  //   position: relative
-  //   &::after
-  //     content: ''
-  //     display: block
-  //     position: absolute
-  //     left: -1.2em
-  //     top: .5em
-  //     background-color: rgba(var(--v-theme-primary), .5)
-  //     height: 6px
-  //     width: 6px
-  //     border-radius: 50%
 
   footer
     border-top: 1px solid rgba(var(--v-border-color), .4)
