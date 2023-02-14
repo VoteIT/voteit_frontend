@@ -5,7 +5,6 @@ import { reactive } from 'vue'
 import { agendaDeletedEvent } from '../agendas/events'
 import { agendaItems } from '../agendas/useAgenda'
 import { meetingType } from '../meetings/contentTypes'
-import { DEFAULT_FILTER_STATES } from '../proposals/workflowStates'
 import { Poll } from '../polls/methods/types'
 
 import { Proposal } from './types'
@@ -66,24 +65,10 @@ function getProposal (pk: number) {
   return proposals.get(pk)
 }
 
-/**
- * Create a filter function for proposals, matching Agenda Item and optional last read Date.
- * Ignore retracted, denied or unhandled proposals (states not in default filter)
- */
-function getLastReadFilter (ai: number, lastRead?: Date): Predicate<Proposal> {
-  return (p: Proposal) => {
-    return (
-      p.agenda_item === ai &&
-      (!lastRead || p.created > lastRead) &&
-      DEFAULT_FILTER_STATES.includes(p.state)
-    )
-  }
-}
-
-function anyProposal (filter: Predicate<Proposal>): boolean {
+function anyProposal (predicate: Predicate<Proposal>): boolean {
   return any(
     proposals.values(),
-    filter
+    predicate
   )
 }
 
@@ -97,20 +82,10 @@ function forProposals (predicate: Predicate<Proposal>, fn: (proposal: Proposal) 
   )
 }
 
-function filterHidesUnread (ai: number, lastRead: Date | undefined, filter: Predicate<Proposal>): boolean {
-  return anyProposal(p => getLastReadFilter(ai, lastRead)(p) && filter(p))
-}
-
-function agendaItemAllRead (ai: number, lastRead?: Date): boolean {
-  return anyProposal(getLastReadFilter(ai, lastRead))
-}
-
 export default function useProposals () {
   return {
     agendaItemHasProposals,
-    agendaItemAllRead,
     anyProposal,
-    filterHidesUnread,
     forProposals,
     getAgendaProposals,
     getPollProposals,

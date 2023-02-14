@@ -64,7 +64,7 @@ import usePlenary from './usePlenary'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
-const { getAgendaProposals } = useProposals()
+const { anyProposal, getAgendaProposals } = useProposals()
 const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
 
 provide('context', 'meeting')
@@ -78,6 +78,11 @@ useMeetingChannel()
 provide(LastReadKey, ref(new Date()))
 
 watch(agendaItem, clearSelected)
+
+/**
+ * Get list of state transitions that should be visible in state selection.
+ * (Published, approved, denied, <other current state>)
+ */
 function getProposalStates (state: ProposalState) {
   return proposalStates.filter(s => AVAILABLE_STATES.includes(s.state) || state === s.state)
 }
@@ -86,7 +91,7 @@ const pool = computed(() => getAgendaProposals(
   agendaId.value,
   p => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
 ))
-const hasProposals = computed(() => !!getAgendaProposals(agendaId.value).length)
+const hasProposals = computed(() => anyProposal(p => p.agenda_item === agendaId.value))
 
 function tagInPool (tag: string) {
   return pool.value.some(({ tags }) => tags.includes(tag))
