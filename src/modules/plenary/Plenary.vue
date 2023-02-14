@@ -11,7 +11,7 @@
         <template #top>
           <div class="text-right">
             <span class="btn-group mr-2">
-              <v-btn v-for="s in getProposalStates(p)" :key="s.transition" :color="p.state === s.state ? s.color : 'background'"
+              <v-btn v-for="s in getProposalStates(p.state)" :key="s.state" :color="p.state === s.state ? s.color : 'background'"
                     @click="makeTransition(p, s)">
                 <v-icon :icon="s.icon" />
               </v-btn>
@@ -78,8 +78,8 @@ useMeetingChannel()
 provide(LastReadKey, ref(new Date()))
 
 watch(agendaItem, clearSelected)
-function getProposalStates (p: Proposal) {
-  return proposalStates.filter(s => AVAILABLE_STATES.includes(s.state) || p.state === s.state)
+function getProposalStates (state: ProposalState) {
+  return proposalStates.filter(s => AVAILABLE_STATES.includes(s.state) || state === s.state)
 }
 
 const pool = computed(() => getAgendaProposals(
@@ -98,7 +98,7 @@ const nextTextProposalTag = computed(() => {
   return textProposalTags.value.find(tagInPool)
 })
 
-async function makeTransition (p: Proposal, state: WorkflowState) {
+async function makeTransition (p: Pick<Proposal, 'state' | 'pk'>, state: WorkflowState) {
   if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
   if (state.state === p.state) return // No need to change state then is there?
   await proposalType.api.transition(p.pk, state.transition)

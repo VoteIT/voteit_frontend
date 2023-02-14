@@ -11,10 +11,10 @@ const selectedProposalIds = reactive<number[]>([])
 export default function usePlenary () {
   const filterProposalStates = (p: Proposal) => !stateFilter.value.length || stateFilter.value.includes(p.state)
 
-  function selectProposal (p: Proposal) {
+  function selectProposal (p: Pick<Proposal, 'pk'>) {
     selectedProposalIds.push(p.pk)
   }
-  function deselectProposal (p: Proposal) {
+  function deselectProposal (p: Pick<Proposal, 'pk'>) {
     const index = selectedProposalIds.indexOf(p.pk)
     if (index !== -1) selectedProposalIds.splice(index, 1)
   }
