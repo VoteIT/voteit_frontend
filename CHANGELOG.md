@@ -4,6 +4,15 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.10.2
+- Tag editing for proposals now work as for discussion posts [#238](https://github.com/VoteIT/voteit_frontend/issues/238)
+- Plenary view subscribes to AI channel (fixes problem with proposal text tags availability) [#237](https://github.com/VoteIT/voteit_frontend/issues/237)
+- Dev migrated from Webpack to Vite [234](https://github.com/VoteIT/voteit_frontend/issues/234)
+
+## 0.10.1
+- Organisation or meeting title in app bar
+- User API logic to determine of moderator can change meeting state
+
 ## 0.10.0
 - Add `deleting` state to meetings
 - Allow filtering on meeting states in Find meeting [#219](https://github.com/VoteIT/voteit_frontend/issues/219)
