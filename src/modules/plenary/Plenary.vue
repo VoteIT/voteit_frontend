@@ -46,6 +46,7 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, provide, ref, wa
 import { useI18n } from 'vue-i18n'
 import { flatten } from 'lodash'
 
+import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 import { WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
@@ -76,6 +77,7 @@ export default defineComponent({
     const { aiProposalTexts } = useTextDocuments(agendaId)
 
     useMeetingChannel()
+    useChannel('agenda_item', agendaId)
     provide(LastReadKey, ref(new Date()))
 
     watch(agendaItem, clearSelected)
