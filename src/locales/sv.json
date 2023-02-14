@@ -160,6 +160,7 @@
     "confirmMethodChange": "Är du säker på att du vill ändra metod för röstlängder till {name}?",
     "create": "Skapa röstlängd",
     "createHelp": "Välj från mötets potentiella röstare för att skapa en ny röstlängd.",
+    "dialectChangeMethodDisallowed": "Du kan inte ändra metod för röstlängd i det här mötet, eftersom mötets dialekt kräver en specifik metod för röstlängder.",
     "electoralRegister": "Röstlängd",
     "latest": "Aktuell",
     "plural": "Röstlängder",

@@ -16,7 +16,7 @@
         <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
           <v-card-title class="d-flex text-black">
             <v-icon sm :icon="icon" class="mr-2" />
-            <span class="flex-grow-1">
+            <span class="flex-grow-1 text-truncate">
               {{ title }}
             </span>
             <v-icon icon="mdi-chevron-right" />

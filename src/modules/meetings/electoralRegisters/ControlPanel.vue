@@ -1,6 +1,13 @@
 <template>
   <div>
     <h2>{{ t('electoralRegister.settings') }}</h2>
+    <v-alert
+      v-if="erMethodLocked"
+      icon="mdi-cancel"
+      :text="t('electoralRegister.dialectChangeMethodDisallowed')"
+      color="secondary"
+      class="my-4"
+    />
     <template v-for="{ description, isCurrent, name, props, title } in methods" :key="name">
       <v-card
         v-if="isCurrent"
@@ -45,7 +52,7 @@ import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
-const { availableErMethods } = useElectoralRegisters(meetingId)
+const { availableErMethods, erMethodLocked } = useElectoralRegisters(meetingId)
 const { alert } = useAlert()
 const api = meetingType.getContentApi({ alertOnError: false })
 
