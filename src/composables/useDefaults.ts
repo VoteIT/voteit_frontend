@@ -15,8 +15,6 @@ export default function useDefaults () {
   const dialogDefaults = computed(() => {
     return {
       width: 640
-      // minHeight: 400,
-      // maxHeight: '70vh'
     }
   })
 

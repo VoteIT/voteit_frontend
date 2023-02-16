@@ -2,6 +2,8 @@
 import { BaseContent } from '@/contentTypes/types'
 import { Component } from 'vue'
 
+import type { voteManagementComponents } from './dialects/index'
+
 export type BubbleComponent = Component & { id: string, icon: string, order: number }
 
 export interface BubbleInfo {
@@ -76,7 +78,10 @@ export interface MeetingDialectDefinition {
     role_id: string
     roles: MeetingRole[]
   }[]
-  title: string
+  title: string,
+  view_components: {
+    votes_management: keyof typeof voteManagementComponents
+  }
 }
 
 export interface Meeting extends BaseContent {

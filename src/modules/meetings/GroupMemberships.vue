@@ -124,6 +124,9 @@ const annotatedMembers = computed(() => {
   })
 })
 
+/**
+ * Used as filter function for UserSearch
+ */
 function filterUser (user: User) {
   return !props.members.find(m => m.user === user.pk)
 }

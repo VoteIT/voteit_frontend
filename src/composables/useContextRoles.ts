@@ -2,7 +2,7 @@ import { map } from 'itertools'
 import { defer } from 'lodash'
 import { reactive } from 'vue'
 
-import useAuthentication from './useAuthentication'
+import { user } from './useAuthentication'
 import { ContextRoles, UserContextRoles } from './types'
 import ContentType from '@/contentTypes/ContentType'
 
@@ -40,8 +40,6 @@ new ContentType<ContextRoles>({ name: 'roles' })
   })
 
 export default function useContextRoles<T extends string> (contentType: string) {
-  const { user } = useAuthentication()
-
   function * iterRoles (pk: number, filter?: (roles: Set<T>) => boolean): Generator<UserContextRoles, number> {
     const contextKey = getRoleKey(contentType, pk, '')
     let count = 0

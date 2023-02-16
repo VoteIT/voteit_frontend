@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { dateify, tagify, uriToPayload } from '.'
+import { dateify, stripHTML, tagify, uriToPayload } from '.'
 
 test('uriToPayload', () => {
   expect(uriToPayload('test/123')).toStrictEqual({ channel_type: 'test', pk: 123 })
@@ -21,6 +21,10 @@ test('tagify', () => {
 test('dateify', () => {
   expect(dateify({ date: null }, 'date').date).toBe(null)
   expect(dateify({ date: '2012-12-12T12:12:12.000Z' }, 'date').date).toBeInstanceOf(Date)
-  expect(dateify({ date: '2012-12-12T12:12:12.000Z' }, 'date').date.getFullYear()).toBe(2012)
+  expect((dateify({ date: '2012-12-12T12:12:12.000Z' }, 'date').date as unknown as Date).getFullYear()).toBe(2012)
   expect(dateify({ date: '2012-12-12T12:12:12.000Z', null: null }, 'null').date).toBeTypeOf('string')
+})
+
+test('stripHTML', () => {
+  expect(stripHTML('  <div>I\'m a <em>test pilot</em>.</div>  ')).toBe('I\'m a test pilot.')
 })

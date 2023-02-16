@@ -22,6 +22,7 @@ interface CType<S> {
   useSocketApi?: boolean
 }
 
+// TODO T should not extend Record<string, any>.
 export default class ContentType<T extends Record<string, any> = object, R extends string=string, K extends string | number=number> {
   contentType: CType<T['state']>
   methodHandlers: Map<string, MethodHandler<any>>
@@ -43,7 +44,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
 
   private dateify (obj: T): T {
     return this.contentType.dateFields
-      ? dateify(obj, ...this.contentType.dateFields)
+      ? dateify(obj, ...this.contentType.dateFields as []) // TODO Proper typing here
       : obj
   }
 

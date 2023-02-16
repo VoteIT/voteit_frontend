@@ -39,7 +39,7 @@
           <th>
             {{ t('meeting.groups.members') }}
           </th>
-          <th v-if="meeting?.group_votes_active">
+          <th v-if="voteManagementComponent">
             {{ t('meeting.groups.votes') }}
           </th>
           <th v-if="canChangeMeeting"></th>
@@ -65,8 +65,8 @@
               />
             </DefaultDialog>
           </td>
-          <td v-if="meeting?.group_votes_active">
-            {{ group.votes }}
+          <td v-if="voteManagementComponent">
+            <component :is="voteManagementComponent" :group="group" />
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>
@@ -121,12 +121,18 @@ import { MeetingGroup } from './types'
 import { FieldType, FormSchema } from '@/components/types'
 import GroupMemberships from './GroupMemberships.vue'
 import useRules from '@/composables/useRules'
+import { voteManagementComponents } from './dialects'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const { user } = useAuthentication()
 const rules = useRules(t)
+
+const voteManagementComponent = computed(() => {
+  const cName = meeting.value?.dialect?.view_components.votes_management
+  return cName && voteManagementComponents[cName]
+})
 
 const groupSchema = computed(() => {
   const schema: FormSchema = [{
@@ -166,9 +172,11 @@ async function createGroup (data: Partial<MeetingGroup>) {
     // tags: [],
   })
 }
+
 function changeGroup (pk: number) {
   return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
 }
+
 async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
   try {
     await meetingGroupType.api.delete(group.pk)
