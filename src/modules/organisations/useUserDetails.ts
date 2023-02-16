@@ -8,7 +8,7 @@ import { User } from './types'
 const userDetails = reactive(new Map<number, User>())
 
 const fetchQueue = new Set<number>(new Set())
-let fetchTimeout: number
+let fetchTimeout: NodeJS.Timeout
 let loading = false
 const TIMEOUT = 50
 
@@ -53,9 +53,13 @@ export default function useUserDetails () {
     }
   }
 
-  function getUser (user: number): User | undefined {
-    // Return user object if found in meeting participants
-    // Otherwise queue for fetch
+  /**
+   * To be used in computed objects. Returns user object if in storage.
+   * If not in storage, fetch user from API, using queue system.
+   * @param user User primary key
+   */
+  function getUser (user: number) {
+    // Queue for fetch if not in store
     if (!userDetails.has(user)) fetchUserDetails(user)
     return userDetails.get(user)
   }
