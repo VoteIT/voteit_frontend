@@ -12,6 +12,7 @@ test('Mount component', () => {
     legacy: false,
     messages: { en: {} }
   })
+  // This does not test management, only number display
   const wrapper = mount(
     SFSVoteManagement,
     {
@@ -21,10 +22,15 @@ test('Mount component', () => {
       props: {
         group: {
           votes: 123,
-          memberships: [{ votes: 3 }]
+          memberships: [
+            { votes: 3 },
+            { votes: 2 }
+          ]
         }
       }
     }
   )
-  expect(wrapper.text()).toContain('3/123')
+  expect(wrapper.html()).toMatchSnapshot()
+  expect(wrapper.text()).toContain('5/123')
+  expect(wrapper.html()).not.toContain('</button>')
 })

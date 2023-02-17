@@ -71,6 +71,7 @@ const allAssigned = computed(() => props.group.votes === assignedVotes.value)
 const leaderRoleId = computed(() => groupRoles.value.find(g => g.role_id === 'leader')?.pk)
 
 const canAssignVotes = computed(() => {
+  if (!user.value) return false
   return (
     isModerator ||
     props.group.memberships.some(member => member.user === user.value?.pk && member.role === leaderRoleId.value)
