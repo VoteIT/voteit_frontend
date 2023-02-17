@@ -33,7 +33,11 @@ import useDefaults from '@/composables/useDefaults'
 
 const { dialogDefaults } = useDefaults()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits([
+  'close',
+  'open',
+  'update:modelValue'
+])
 
 const props = defineProps({
   color: String as PropType<Color>,
@@ -49,6 +53,9 @@ function close () {
   isActive.value = false
 }
 
-watch(isActive, value => emit('update:modelValue', value))
+watch(isActive, value => {
+  emit(value ? 'open' : 'close')
+  emit('update:modelValue', value)
+})
 watch(() => props.modelValue, value => { isActive.value = value })
 </script>

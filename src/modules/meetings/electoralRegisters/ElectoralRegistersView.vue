@@ -1,58 +1,91 @@
 <template>
+  <teleport to="#toolbar">
+    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black">
+      <v-toolbar-title>
+        {{ t('electoralRegister.plural') }}
+      </v-toolbar-title>
+      <DefaultDialog
+        v-if="canTriggerERCreation"
+        :title="t('electoralRegister.establish')"
+        @open="triggerERCreation"
+      >
+        <template #activator="{ props }">
+          <v-btn v-bind="props" color="primary" variant="tonal" prepend-icon="mdi-account-plus">
+            {{ t('electoralRegister.establish') }}
+          </v-btn>
+        </template>
+        <template #default="{ close }">
+          <div class="text-center py-4" v-if="erTriggerResult === 'waiting'">
+            <v-progress-circular color="primary" indeterminate />
+          </div>
+          <v-alert
+            v-else
+            class="mb-2"
+            :icon="erTriggerResult === 'failed' ? undefined : 'mdi-vote'"
+            :type="erTriggerResult === 'failed' ? 'warning' : undefined"
+            :title="erTriggerResultText"
+            :text="currentERText"
+          />
+          <div class="text-right">
+            <v-btn color="primary" :disabled="erTriggerResult === 'waiting'" @click="close" prepend-icon="mdi-close">
+              {{ t('close') }}
+            </v-btn>
+          </div>
+        </template>
+      </DefaultDialog>
+      <DefaultDialog
+        v-if="canManagePresence && erMethod?.allow_manual"
+        :title="t('electoralRegister.create')"
+        @open="fetchRoles"
+      >
+        <template #activator="{ props }">
+          <v-btn v-bind="props" variant="tonal" prepend-icon="mdi-account-plus">
+            {{ t('electoralRegister.create') }}
+          </v-btn>
+        </template>
+        <template #default="{ close }">
+          <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
+          <div class="d-flex align-center">
+            <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
+            <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
+            <v-spacer />
+            <v-switch v-model="setVoteWeight" color="primary" label="Använd viktade röster" hide-details class="flex-grow-0" />
+          </div>
+          <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
+            <template #appendItem="{ user, isSelected }">
+              <div v-if="isSelected">
+                <v-text-field
+                  v-if="setVoteWeight"
+                  density="compact"
+                  hide-details
+                  type="number"
+                  required
+                  :label="t('electoralRegister.weight')"
+                  :min="minWeight"
+                  :model-value="createSelection.get(user)"
+                  :step="minWeight"
+                  @update:modelValue="createSelection.set(user, round($event))"
+                  @click.stop
+                  @keydown.stop
+                />
+                <v-icon v-else>mdi-check-circle</v-icon>
+              </div>
+            </template>
+          </UserList>
+          <div class="text-right">
+            <v-btn variant="text" @click="close">
+              {{ t('cancel') }}
+            </v-btn>
+            <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister().then(close)" :disabled="createSelection.size === 0">
+              {{ t('create') }}
+            </v-btn>
+          </div>
+        </template>
+      </DefaultDialog>
+    </v-toolbar>
+  </teleport>
   <v-row>
     <v-col v-bind="cols.default">
-      <div class="d-flex">
-        <h1 class="flex-grow-1">
-          {{ t('electoralRegister.plural') }}
-        </h1>
-        <div v-if="canManagePresence && erMethod?.allow_manual">
-          <DefaultDialog :title="t('electoralRegister.create')" @update:modelValue="$event && fetchRoles()">
-            <template #activator="{ props }">
-              <v-btn v-bind="props" color="primary" prepend-icon="mdi-account-plus">
-                {{ t('electoralRegister.create') }}
-              </v-btn>
-            </template>
-            <template #default="{ close }">
-              <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
-              <div class="d-flex align-center">
-                <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
-                <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
-                <v-spacer />
-                <v-switch v-model="setVoteWeight" color="primary" label="Använd viktade röster" hide-details class="flex-grow-0" />
-              </div>
-              <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
-                <template #appendItem="{ user, isSelected }">
-                  <div v-if="isSelected">
-                    <v-text-field
-                      v-if="setVoteWeight"
-                      density="compact"
-                      hide-details
-                      type="number"
-                      required
-                      :label="t('electoralRegister.weight')"
-                      :min="minWeight"
-                      :model-value="createSelection.get(user)"
-                      :step="minWeight"
-                      @update:modelValue="createSelection.set(user, round($event))"
-                      @click.stop
-                      @keydown.stop
-                    />
-                    <v-icon v-else>mdi-check-circle</v-icon>
-                  </div>
-                </template>
-              </UserList>
-              <div class="text-right">
-                <v-btn variant="text" @click="close">
-                  {{ t('cancel') }}
-                </v-btn>
-                <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister().then(close)" :disabled="createSelection.size === 0">
-                  {{ t('create') }}
-                </v-btn>
-              </div>
-            </template>
-          </DefaultDialog>
-        </div>
-      </div>
       <template v-for="{ description, title, registers } in groups" :key="title">
         <h2 class="mt-6">
           {{ title }}
@@ -112,6 +145,7 @@ import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from '
 import { useI18n } from 'vue-i18n'
 
 import restApi from '@/utils/restApi'
+import { socket } from '@/utils/Socket'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useDefaults from '@/composables/useDefaults'
@@ -250,6 +284,40 @@ onBeforeUnmount(() => {
 function fetchRoles () {
   meetingType.fetchRoles(meetingId.value)
 }
+
+// Trigger ER creation for some ER methods (w allow_trigger)
+const canTriggerERCreation = computed(() => !!(isModerator.value && erMethod.value?.allow_trigger))
+const erTriggerResult = ref<'waiting' | 'created' | 'up2date' | 'failed'>('waiting')
+async function triggerERCreation () {
+  if (!canTriggerERCreation.value) throw new Error('ER creation not allowed')
+  erTriggerResult.value = 'waiting'
+  try {
+    const { p } = await socket.call<{ created: boolean }>('er.trigger_create', { meeting: meetingId.value })
+    erTriggerResult.value = p.created
+      ? 'created'
+      : 'up2date'
+  } catch {
+    erTriggerResult.value = 'failed'
+  }
+}
+const erTriggerResultText = computed(() => {
+  switch (erTriggerResult.value) {
+    case 'created':
+      return t('electoralRegister.created')
+    case 'failed':
+      return t('electoralRegister.failed')
+    case 'up2date':
+      return t('electoralRegister.upToDate')
+  }
+  return undefined
+})
+const currentERText = computed(() => {
+  if (!currentElectoralRegister.value || erTriggerResult.value === 'failed') return
+  const { weights } = currentElectoralRegister.value
+  return hasWeightedVotes(currentElectoralRegister.value)
+    ? t('electoralRegister.weightedVoterCount', { count: weights.length, total: weights.reduce((curr, w) => curr + w.weight, 0) })
+    : t('electoralRegister.voterCount', weights.length)
+})
 
 const { cols } = useDefaults()
 </script>

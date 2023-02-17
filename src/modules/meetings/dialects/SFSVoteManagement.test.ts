@@ -23,8 +23,8 @@ test('Mount component', () => {
         group: {
           votes: 123,
           memberships: [
-            { votes: 3 },
-            { votes: 2 }
+            { votes: 3, role: 1 },
+            { votes: 2, role: 1 }
           ]
         }
       }
