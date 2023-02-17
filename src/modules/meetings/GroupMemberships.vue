@@ -76,6 +76,7 @@
     <UserSearch
       v-if="editable"
       :filter="filterUser"
+      :params="{ meeting: meetingId }"
       immediate
       @submit="addUser"
     />
