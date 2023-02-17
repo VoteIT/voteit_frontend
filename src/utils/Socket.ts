@@ -25,7 +25,7 @@ const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: ChannelsConfig = {
   timeout: 20_000 // 20 s, longer than server's 15 s
 }
-let heartbeatInterval: number
+let heartbeatInterval: NodeJS.Timeout
 const HEARTBEAT_MS = 30_000
 
 export const socketState = ref(false)
@@ -211,7 +211,7 @@ class Socket {
     }))
     sessionStorage.socketMessageCounter = Number(messageId) + 1
     return new ProgressPromise((resolve, reject, progress) => {
-      let timeoutId: number
+      let timeoutId: NodeJS.Timeout
       const setRejectTimeout = () => {
         if (!myConfig.timeout) return
         timeoutId = setTimeout(() => {
