@@ -1,78 +1,87 @@
 <template>
   <div>
-    <v-list v-if="members.length" class="mb-2">
-      <v-list-item
-        v-for="{ pk, role, user } in annotatedMembers" :key="pk"
-        :title="user?.full_name"
-        :subtitle="user?.userid || undefined"
-      >
-        <template #append>
-          <v-menu
-            v-if="editable && groupRoles.length"
-          >
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                append-icon="mdi-chevron-down"
-                class="mr-1"
-                color="secondary"
-                size="small"
-              >
-                {{ getRoleTitle(role) }}
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="grole in groupRoles" :key="grole.role_id"
-                :active="grole.pk === role"
-                :disabled="grole.pk === role"
-                link
-                :title="grole.title"
-                @click="setRole(grole.pk, pk)"
-              />
-              <v-list-item
-                :active="!role"
-                :disabled="!role"
-                link
-                title="---"
-                @click="setRole(null, pk)"
-              />
-            </v-list>
-          </v-menu>
-          <v-btn
-            v-else-if="groupRoles.length"
-            class="mr-1"
-            color="secondary"
-            size="small"
-            variant="tonal"
-          >
-            {{ getRoleTitle(role) }}
-          </v-btn>
-          <QueryDialog
-            v-if="editable"
-            @confirmed="removeMember(pk)"
-          >
-            <template #activator="{ props }">
-              <v-btn
-                v-if="editable"
-                v-bind="props"
-                color="warning"
-                icon="mdi-close"
-                size="x-small"
-                variant="tonal"
-              />
-            </template>
-            <i18n-t keypath="meeting.groups.removeUserConfirm">
-              <template #user>
-                <strong>
-                  {{ user?.full_name }}
-                </strong>
+    <v-table v-if="members.length" class="mb-2">
+      <thead>
+        <tr>
+          <th>
+            {{ t('name') }}
+          </th>
+          <th v-if="groupRoles.length">
+            {{ t('meeting.groups.role') }}
+          </th>
+          <th v-if="componentActive">
+            {{ t('activeUsers.active') }}
+          </th>
+          <th v-if="editable"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="{ isActive, pk, role, user } in annotatedMembers" :key="pk">
+          <td>
+            {{ user?.full_name }}
+            <small v-if="user?.userid" class="text-secondary">({{ user.userid }})</small>
+          </td>
+          <td v-if="groupRoles.length">
+            <v-menu v-if="editable">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  append-icon="mdi-chevron-down"
+                  color="secondary"
+                  size="small"
+                >
+                  {{ getRoleTitle(role) }}
+                </v-btn>
               </template>
-            </i18n-t>
-          </QueryDialog>
-        </template>
-      </v-list-item>
-    </v-list>
+              <v-list>
+                <v-list-item
+                  v-for="grole in groupRoles" :key="grole.role_id"
+                  :active="grole.pk === role"
+                  :disabled="grole.pk === role"
+                  link
+                  :title="grole.title"
+                  @click="setRole(grole.pk, pk)"
+                />
+                <v-list-item
+                  :active="!role"
+                  :disabled="!role"
+                  link
+                  title="---"
+                  @click="setRole(null, pk)"
+                />
+              </v-list>
+            </v-menu>
+            <span v-else>
+              {{ getRoleTitle(role) }}
+            </span>
+          </td>
+          <td v-if="componentActive">
+            <v-icon v-if="isActive" icon="mdi-check" color="success" v-bind="props" />
+          </td>
+          <td v-if="editable">
+            <QueryDialog @confirmed="removeMember(pk)">
+              <template #activator="{ props }">
+                <v-btn
+                  v-if="editable"
+                  v-bind="props"
+                  color="warning"
+                  icon="mdi-close"
+                  size="x-small"
+                  variant="tonal"
+                />
+              </template>
+              <i18n-t keypath="meeting.groups.removeUserConfirm">
+                <template #user>
+                  <strong>
+                    {{ user?.full_name }}
+                  </strong>
+                </template>
+              </i18n-t>
+            </QueryDialog>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
     <UserSearch
       v-if="editable"
       :filter="filterUser"
@@ -97,6 +106,7 @@ import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { groupMembershipType } from './contentTypes'
 import type { GroupMembership } from './types'
+import useActive from '../active/useActive'
 
 const { t } = useI18n()
 
@@ -115,11 +125,13 @@ const props = defineProps({
 const { getUser } = useUserDetails()
 const { meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
+const { activeUserIds, componentActive } = useActive(meetingId)
 
 const annotatedMembers = computed(() => {
   return props.members.map(m => {
     return {
       ...m,
+      isActive: activeUserIds.value.includes(m.user),
       user: getUser(m.user)
     }
   })

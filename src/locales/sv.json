@@ -288,18 +288,19 @@
     "visibleInLists": "Sökbart för alla i organisationen",
     "yearStarted": "Startades år",
     "groups": {
-      "help": "Medlemmar i en grupp kan lägga förslag i den gruppens namn, förutsatt att personen har rätt att lägga förslag. Det är användbart för att lägga till förslag från ett utskott, styrelse eller annan grupp, som inte ska anses vara personliga förslag.",
       "addMember": "Lägg till medlem",
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Skapa grupp",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
-      "removeUserConfirm": "Du håller på att ta bort {user} från den här gruppen.\nÄr du säker?",
       "groups": "Grupper",
+      "help": "Medlemmar i en grupp kan lägga förslag i den gruppens namn, förutsatt att personen har rätt att lägga förslag. Det är användbart för att lägga till förslag från ett utskott, styrelse eller annan grupp, som inte ska anses vara personliga förslag.",
       "members": "Medlemmar",
       "membersIn": "Medlemmar i {title}",
       "modify": "Ändra grupp",
       "new": "Ny grupp",
       "noMembers": "Den här gruppern har inga medlemmar.",
+      "removeUserConfirm": "Du håller på att ta bort {user} från den här gruppen.\nÄr du säker?",
+      "role": "Roll",
       "votes": "Röster"
     },
     "settings": {
