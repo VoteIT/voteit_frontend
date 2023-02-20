@@ -12,7 +12,7 @@ export default function useElectoralRegister (pk: Ref<number | undefined>) {
   const isWeighted = computed(() => electoralRegister.value?.weights.some(w => w.weight > 1))
   const totalWeight = computed(() => electoralRegister.value?.weights.reduce((acc, { weight }) => acc + weight, 0))
 
-  const erMethod = computed(() => erMethods.find(erm => erm.name === electoralRegister.value?.source))
+  const erMethod = computed(() => erMethods.value?.find(erm => erm.name === electoralRegister.value?.source))
   const erWeightDecimals = computed(() => 0)
   const erWeightMultiplier = computed(() => {
     return erWeightDecimals.value === 0

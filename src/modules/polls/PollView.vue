@@ -28,7 +28,7 @@
                   </span>
                 </template>
                 <span>
-                  {{ electoralRegister.source && t(`erMethods.${electoralRegister.source}.title`) }}
+                  {{ erMethod?.title }}
                   (ID: {{ electoralRegister.pk }})
                 </span>
               </v-tooltip>
@@ -127,7 +127,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { approved, denied, electoralRegister, erMethod, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meetingPath, meetingId } = useMeeting()
 const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))

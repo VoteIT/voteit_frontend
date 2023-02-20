@@ -104,7 +104,7 @@
               </span>
               <small class="text-secondary flex-grow-1">
                 <span v-if="source">
-                  {{ t(`erMethods.${source}.title`) }},
+                  {{ getErMethod(source)?.title }},
                 </span>
                 {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
                 {{ created.toLocaleString(undefined, { timeStyle: 'short' }) }}
@@ -164,7 +164,7 @@ import useElectoralRegisters from './useElectoralRegisters'
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
 const { isModerator, meetingId } = useMeeting()
-const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, hasWeightedVotes } = useElectoralRegisters(meetingId)
+const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, getErMethod, hasWeightedVotes } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
 const { canManagePresence } = usePresence(meetingId)
 const { anyPoll } = usePolls()

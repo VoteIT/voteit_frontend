@@ -14,7 +14,7 @@ const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
 electoralRegisterType
   .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
 
-const erMethods = ref<ErMethod[] | null>(null)
+const _erMethods = ref<ErMethod[] | null>(null)
 
 function isAvailableMethod (method: ErMethod) {
   return method.available
@@ -23,39 +23,50 @@ function isAvailableMethod (method: ErMethod) {
 async function fetchErMethods () {
   try {
     const { data } = await erMethodType.api.list()
-    erMethods.value = data
+    _erMethods.value = data
   } catch {} // TODO
 }
+
+function clearRegisters () {
+  registers.clear()
+}
+
+function getErMethod (name: string) {
+  return _erMethods.value?.find(erm => erm.name === name)
+}
+
+async function fetchRegister (pk: number) {
+  registers.set(pk, null) // If it has any value, will not fetch again
+  try {
+    const { data } = await electoralRegisterType.api.retrieve(pk)
+    registers.set(pk, dateify(data, 'created'))
+  } catch {
+    registers.delete(pk) // Enables trying again.
+  }
+}
+
+const erMethods = computed<ErMethod[] | null>(() => {
+  if (!_erMethods.value) fetchErMethods()
+  return _erMethods.value
+})
 
 export default function useElectoralRegisters (meetingId?: Ref<number>) {
   const meeting = computed(() => meetingId && meetings.get(meetingId.value))
 
-  // eslint-disable-next-line vue/return-in-computed-property
   const availableErMethods = computed(() => {
     if (erMethod.value && erMethodLocked.value) return [erMethod.value]
-    if (erMethods.value) return filter(erMethods.value, isAvailableMethod)
-    fetchErMethods()
+    if (!erMethods.value) return
+    return filter(erMethods.value, isAvailableMethod)
   })
 
-  const erMethod = computed<ErMethod | undefined>(() => {
+  const erMethod = computed(() => {
     if (!meetingId) return
-    if (!erMethods.value) fetchErMethods()
     return erMethods.value?.find(erm => erm.name === meeting.value?.er_policy_name)
   })
 
   const erMethodLocked = computed(() => {
     return !erMethod.value?.available
   })
-
-  async function fetchRegister (pk: number) {
-    registers.set(pk, null) // If it has any value, will not fetch again
-    try {
-      const { data } = await electoralRegisterType.api.retrieve(pk)
-      registers.set(pk, dateify(data, 'created'))
-    } catch {
-      registers.delete(pk) // Enables trying again.
-    }
-  }
 
   async function fetchRegisters () {
     if (!meetingId) throw new Error('Call using useElectoralRegisters(Ref<meetingId>) to fetch meeting registers')
@@ -67,19 +78,19 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     } catch {} // TODO
   }
 
-  function clearRegisters () {
-    registers.clear()
+  function isMeetingER (er: ElectoralRegister | null): er is ElectoralRegister {
+    return er?.meeting === meetingId?.value
   }
 
   const sortedRegisters = computed(() => {
     if (!meetingId) return []
     return orderBy(
-      [...registers.values()].filter(er => er?.meeting === meetingId.value),
+      [...registers.values()].filter(isMeetingER),
       ['created'], ['desc']
-    ) as ElectoralRegister[]
+    )
   })
   const currentElectoralRegister = computed(() => {
-    return sortedRegisters.value[0] as ElectoralRegister | undefined
+    return sortedRegisters.value.at(0)
   })
 
   function getRegister (pk: number) {
@@ -99,8 +110,9 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     erMethods,
     sortedRegisters,
     clearRegisters,
-    hasWeightedVotes,
+    getErMethod,
     getRegister,
+    hasWeightedVotes,
     fetchRegisters
   }
 }

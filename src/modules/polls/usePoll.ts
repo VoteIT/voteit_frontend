@@ -18,7 +18,7 @@ export default function usePoll (pollRef: Ref<number>) {
   const { t } = useI18n()
 
   const poll = computed(() => polls.getPoll(pollRef.value))
-  const { electoralRegister, isWeighted, totalWeight } = useElectoralRegister(computed(() => poll.value?.electoral_register))
+  const { electoralRegister, erMethod, isWeighted, totalWeight } = useElectoralRegister(computed(() => poll.value?.electoral_register))
   const voteCount = computed(() => {
     if (!poll.value) return {}
     const abstains = poll.value.abstain_count ?? 0
@@ -91,6 +91,7 @@ export default function usePoll (pollRef: Ref<number>) {
     approved,
     denied,
     electoralRegister,
+    erMethod,
     canChange,
     canDelete,
     canVote,
