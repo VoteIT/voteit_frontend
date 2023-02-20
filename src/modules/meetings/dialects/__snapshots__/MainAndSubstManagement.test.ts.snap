@@ -1,0 +1,7 @@
+// Vitest Snapshot v1
+
+exports[`Mount component 1`] = `
+"<span class=\\"text-warning\\" aria-describedby=\\"v-tooltip-0\\">1/2</span>
+<!--teleport start-->
+<!--teleport end-->"
+`;

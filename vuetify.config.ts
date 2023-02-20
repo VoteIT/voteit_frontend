@@ -1,1 +1,5 @@
-global.CSS = { supports: () => false }
+global.CSS = {
+  supports () {
+    return false
+  }
+}

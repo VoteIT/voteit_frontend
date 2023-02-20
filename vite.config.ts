@@ -19,7 +19,7 @@ export default defineConfig({
       inline: ['vuetify']
     },
     environment: 'happy-dom',
-    // globals: true,
+    globals: true,
     setupFiles: 'vuetify.config.ts'
   }
 })

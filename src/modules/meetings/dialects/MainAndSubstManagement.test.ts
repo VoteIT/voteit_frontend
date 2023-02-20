@@ -1,36 +1,44 @@
 import { mount } from '@vue/test-utils'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import { createI18n } from 'vue-i18n'
 
 import router from '@/router'
 import vuetify from '@/plugins/vuetify'
-import SFSVoteManagement from './SFSVoteManagement.vue'
+import MainAndSubstManagement from './MainAndSubstManagement.vue'
+
+vi.mock('@/modules/active/useActive', () => {
+  return {
+    default () {
+      return {
+        activeUserIds: { value: [1] }
+      }
+    }
+  }
+})
 
 test('Mount component', () => {
-  expect(SFSVoteManagement).toBeTruthy()
+  expect(MainAndSubstManagement).toBeTruthy()
   const i18n = createI18n({
     legacy: false,
     messages: { en: {} }
   })
-  // This does not test management, only number display
   const wrapper = mount(
-    SFSVoteManagement,
+    MainAndSubstManagement,
     {
       global: {
         plugins: [i18n, router, vuetify]
       },
       props: {
         group: {
-          votes: 123,
+          votes: 2,
           memberships: [
-            { votes: 3, role: 1 },
-            { votes: 2, role: 1 }
+            { user: 1, role: 1 },
+            { user: 2, role: 1 }
           ]
         }
       }
     }
   )
   expect(wrapper.html()).toMatchSnapshot()
-  expect(wrapper.text()).toContain('5/123')
-  expect(wrapper.html()).not.toContain('</button>')
+  expect(wrapper.text()).toContain('1/2')
 })
