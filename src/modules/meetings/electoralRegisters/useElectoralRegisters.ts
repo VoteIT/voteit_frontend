@@ -45,6 +45,15 @@ async function fetchRegister (pk: number) {
   }
 }
 
+function getRegister (pk: number) {
+  if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
+  return registers.get(pk) as ElectoralRegister | null
+}
+
+function hasWeightedVotes ({ weights }: ElectoralRegister) {
+  return weights.some(({ weight }) => weight !== 1)
+}
+
 const erMethods = computed<ErMethod[] | null>(() => {
   if (!_erMethods.value) fetchErMethods()
   return _erMethods.value
@@ -92,15 +101,6 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   const currentElectoralRegister = computed(() => {
     return sortedRegisters.value.at(0)
   })
-
-  function getRegister (pk: number) {
-    if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
-    return registers.get(pk) as ElectoralRegister | null
-  }
-
-  function hasWeightedVotes ({ weights }: ElectoralRegister) {
-    return weights.some(({ weight }) => weight !== 1)
-  }
 
   return {
     availableErMethods,
