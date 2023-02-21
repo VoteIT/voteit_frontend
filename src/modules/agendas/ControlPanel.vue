@@ -2,11 +2,16 @@
   <v-tabs :items="editModes" v-model="editMode" align-tabs="end" class="mb-4" />
   <v-window v-model="editMode">
     <v-window-item value="default">
-      <v-chip-group v-model="agendaTag">
-        <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small" color="primary">
-          {{ tag }}
+      <div class="d-flex align-center">
+        <v-chip-group v-model="agendaTag">
+          <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small" color="primary">
+            {{ tag }}
+          </v-chip>
+        </v-chip-group>
+        <v-chip v-if="agendaTag" size="small" @click="agendaTag = undefined" prepend-icon="mdi-close" color="warning">
+          {{ t('clear') }}
         </v-chip>
-      </v-chip-group>
+      </div>
       <v-table id="agenda-edit">
         <thead>
           <tr>
@@ -43,8 +48,8 @@
                 <Headline :modelValue="ai.title" tag="h4" :maxlength="100" clickToEdit @update:modelValue="setTitle(ai, $event)" />
               </td>
               <td>
-                <v-chip-group disabled>
-                  <v-chip v-for="tag in ai.tags" :key="tag" size="small">
+                <v-chip-group v-model="agendaTag">
+                  <v-chip v-for="tag in ai.tags" :key="tag" :value="tag" size="small" color="primary">
                     {{ tag }}
                   </v-chip>
                 </v-chip-group>
@@ -132,14 +137,25 @@
           </div>
         </template>
       </Draggable>
+      <div class="text-right">
+        <v-btn
+          class="my-1"
+          color="primary"
+          :disabled="!agendaOrderChanged"
+          :loading="orderSaving"
+          @click="saveAgendaOrder"
+        >
+          {{ t('save') }}
+        </v-btn>
+      </div>
     </v-window-item>
   </v-window>
 </template>
 
 <script lang="ts" setup>
 import Axios from 'axios'
-import { difference } from 'lodash'
-import { computed, ref } from 'vue'
+import { difference, isEqual } from 'lodash'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
@@ -163,16 +179,43 @@ import { agendaItemType } from './contentTypes'
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
 const { meetingId } = useMeeting()
-const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
+const { agenda, filteredAgenda, getAgendaItem } = useAgenda(meetingId, agendaTag)
 const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 
+/*
+/* START agenda ordering
+ */
+function isAI (ai?: AgendaItem): ai is AgendaItem {
+  return !!ai
+}
+const actualAgendaOrder = computed(() => agenda.value.map(ai => ai.pk))
+const agendaItemOrder = ref(actualAgendaOrder.value)
+const agendaOrderChanged = computed(() => !isEqual(agendaItemOrder.value, actualAgendaOrder.value))
 const agendaItems = computed({
-  get: () => agenda.value,
+  get: () => agendaItemOrder.value.map(getAgendaItem).filter(isAI),
   set: (agendaItems: AgendaItem[]) => {
-    meetingType.api.action(meetingId.value, 'set_agenda_order', { order: agendaItems.map(ai => ai.pk) })
+    agendaItemOrder.value = agendaItems.map(ai => ai.pk)
   }
 })
+const orderSaving = ref(false)
+async function saveAgendaOrder () {
+  orderSaving.value = true
+  try {
+    await meetingType.api.action(meetingId.value, 'set_agenda_order', { order: agendaItemOrder.value })
+  } catch {
+    alert('^Couldn\'t save agenda order')
+  }
+  orderSaving.value = false
+}
+watch(agenda, agendaItems => {
+  for (const ai of agendaItems) {
+    if (!agendaItemOrder.value.includes(ai.pk)) agendaItemOrder.value = [...agendaItemOrder.value, ai.pk]
+  }
+})
+/*
+/* END agenda ordering
+ */
 
 const editModes = computed(() => {
   return [{
