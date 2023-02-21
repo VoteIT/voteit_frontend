@@ -2,8 +2,7 @@
   <v-card class="my-2 proposal-text" border>
     <v-card-title class="d-flex">
       <!-- Empty title not really allowed, so no translation needed here -->
-      {{ document.title || '-- text document --' }}
-      <v-spacer/>
+      <span class="text-truncate flex-grow-1">{{ document.title || '-- text document --' }}</span>
       <v-btn v-if="canChangeDocument" icon="mdi-pencil" variant="text" @click="editDocument()" />
       <v-btn v-if="canDeleteDocument" icon="mdi-delete" variant="text" color="warning" @click="deleteDocument()" />
       <v-btn variant="text" icon="mdi-chevron-up" :class="{ collapsed }" @click="collapsed = !collapsed" />
