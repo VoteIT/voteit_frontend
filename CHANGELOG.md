@@ -4,6 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.10.3
+- Show "Add user" in meeting only for organisation managers [242](https://github.com/VoteIT/voteit_frontend/issues/242)
+- Add save to agenda item ordering [244](https://github.com/VoteIT/voteit_frontend/issues/244)
+- Auto-truncate long text proposal titles [233](https://github.com/VoteIT/voteit_frontend/issues/233)
+- Fix long ordered lists (ol) in rich text [230](https://github.com/VoteIT/voteit_frontend/issues/230)
+
 ## 0.10.2
 - Tag editing for proposals now work as for discussion posts [#238](https://github.com/VoteIT/voteit_frontend/issues/238)
 - Plenary view subscribes to AI channel (fixes problem with proposal text tags availability) [#237](https://github.com/VoteIT/voteit_frontend/issues/237)
