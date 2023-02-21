@@ -149,8 +149,8 @@ export default defineComponent({
 <style lang="sass">
 .richtext
   margin: .4em 0
-  ol, ul
-    padding-left: 1.2em
+  ul, ol
+    padding-left: 2.5em
   blockquote
     border-left: 3px solid rgb(var(--v-border-color))
     padding: .2em 0 .2em .6em
