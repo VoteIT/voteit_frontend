@@ -30,6 +30,7 @@
         {{ buttonText || t('add') }}
       </v-btn>
     </v-form>
+    <slot name="hint"></slot>
   </div>
 </template>
 
@@ -50,6 +51,7 @@ const props = defineProps({
   },
   buttonText: String,
   filter: Function as PropType<(user: User) => boolean>,
+  hint: String,
   instant: Boolean,
   label: String,
   params: {
