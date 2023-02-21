@@ -215,6 +215,7 @@
   },
   "invites": {
     "add": "Lägg till inbjudningar",
+    "addUserInvitesWarning": "Använd med försiktighet! Deltagare ska i första hand läggas till genom inbjudningar.",
     "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
     "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
     "data": "Inbjuden data",
@@ -226,8 +227,9 @@
     "filterOnStatus": "Filtrera på status",
     "helpTextTitle": "Vill du skicka ut inbjudningarna?",
     "helpTextBody": "En inbjudan innebär att användare med rätt mejladress kan gå med i ert möte. Men VoteIT skickar inte ut några mejl - det behöver du göra själv. Använd kopieringsknappen nedan för att kopiera alla mejladresser i listan.",
-    "invites": "Inbjudningar",
     "invitedAs": "Inbjuden som",
+    "invites": "Inbjudningar",
+    "invitesGoTo": "För att bjuda in användare, gå till {link}",
     "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
     "noFilteredInvitesHelp": "Inga inbjudningar matchar ditt filter.",
     "revoke": "Dra tillbaka",

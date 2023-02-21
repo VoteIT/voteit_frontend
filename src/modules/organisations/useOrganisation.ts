@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 
-import { canAddMeeting, canChangeOrganisation } from './rules'
+import * as orgRules from './rules'
 import useOrganisations from './useOrganisations'
 
 const { organisation } = useOrganisations()
@@ -26,6 +26,9 @@ export default function useOrganisation () {
     )
   })
 
+  const isOrganisationManager = computed(() => orgRules.isOrganisationManager(organisation.value?.pk))
+  const canChangeOrganisation = computed(() => organisation.value && orgRules.canChangeOrganisation(organisation.value))
+
   // Assumes singleton components
   function getOrganisationComponent (name: string) {
     for (const component of organisationComponents.value) {
@@ -34,9 +37,10 @@ export default function useOrganisation () {
   }
 
   return {
-    canAddMeeting: computed(() => canAddMeeting()),
-    canChangeOrganisation: computed(() => !!organisation.value && canChangeOrganisation(organisation.value)),
+    canAddMeeting: computed(() => orgRules.canAddMeeting()),
+    canChangeOrganisation,
     idLoginURL,
+    isOrganisationManager,
     organisation,
     organisationId: computed(() => organisation.value?.pk),
     manageAccountURL,

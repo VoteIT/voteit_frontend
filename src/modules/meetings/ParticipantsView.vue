@@ -27,7 +27,26 @@
             </template>
           </RoleMatrix>
           <div v-if="canChangeRoles" class="d-flex flex-wrap mt-6">
-            <UserSearch :label="t('meeting.addParticipant')" class="flex-grow-1" @submit="addUser" :filter="searchFilter" />
+            <UserSearch
+              v-if="isOrganisationManager"
+              :label="t('meeting.addParticipant')"
+              class="flex-grow-1"
+              @submit="addUser"
+              :filter="searchFilter"
+            >
+              <template #hint>
+                {{ t('invites.addUserInvitesWarning') }}
+              </template>
+            </UserSearch>
+            <div v-else class="flex-grow-1">
+              <i18n-t keypath="invites.invitesGoTo">
+                <template #link>
+                  <router-link to="participants" @click.prevent="currentTab = 'invites'">
+                    {{ t('invites.invites').toLocaleLowerCase() }}
+                  </router-link>
+                </template>
+              </i18n-t>
+            </div>
             <v-menu>
               <template #activator="{ props }">
                 <v-btn v-bind="props" prepend-icon="mdi-download" variant="tonal" color="primary">
@@ -104,6 +123,7 @@ import useMeetingTitle from './useMeetingTitle'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import useUserDetails from '../organisations/useUserDetails'
+import useOrganisation from '../organisations/useOrganisation'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',
@@ -121,6 +141,7 @@ const { getUser } = useUserDetails()
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
 const { canManagePresence, presenceCheck, presentUserIds } = usePresence(meetingId)
 const { alert } = useAlert()
+const { isOrganisationManager } = useOrganisation()
 
 useMeetingTitle(t('meeting.participants'))
 
