@@ -104,7 +104,7 @@
               </span>
               <small class="text-secondary flex-grow-1">
                 <span v-if="source">
-                  {{ getErMethod(source)?.title }},
+                  {{ getErMethod(source)?.title || source}},
                 </span>
                 {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
                 {{ created.toLocaleString(undefined, { timeStyle: 'short' }) }}
