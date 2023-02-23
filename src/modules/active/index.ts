@@ -1,8 +1,8 @@
 import { ref, toRef } from 'vue'
 
-import { meetingRolePlugins, meetingSettingsPlugins, meetingSlotPlugins } from '../meetings/registry'
+import { meetingGroupTablePlugins, meetingRolePlugins, meetingSettingsPlugins, meetingSlotPlugins } from '../meetings/registry'
 import useMeetingComponents from '../meetings/useMeetingComponent'
-import type { Meeting, NoSettingsComponent } from '../meetings/types'
+import { Meeting, MeetingState, NoSettingsComponent } from '../meetings/types'
 
 import ControlPanel from './ControlPanel.vue'
 import MenuPlugin from './MenuPlugin.vue'
@@ -53,6 +53,33 @@ meetingRolePlugins.register({
         icon: 'mdi-account-network',
         name: COMPONENT_NAME,
         readonly: true
+      }
+    ]
+  }
+})
+
+meetingGroupTablePlugins.register({
+  checkActive,
+  id: COMPONENT_NAME,
+  transform (columns, meeting) {
+    if (![MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state)) return columns
+    const { activeUserIds } = useActive(toRef(meeting, 'pk'))
+    return [
+      ...columns,
+      {
+        name: COMPONENT_NAME,
+        getDescription (t) {
+          return t('testing.tester')
+        },
+        getValue (group) {
+          return group.memberships.reduce(
+            (acc, { user }) => acc + Number(activeUserIds.value.includes(user)),
+            0
+          )
+        },
+        getTitle (t) {
+          return t('activeUsers.active')
+        }
       }
     ]
   }
