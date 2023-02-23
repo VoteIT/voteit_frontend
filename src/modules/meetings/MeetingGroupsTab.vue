@@ -39,17 +39,25 @@
           <th>
             {{ t('meeting.groups.members') }}
           </th>
-          <th v-for="{ description, name, title } in columns" :key="name">
+          <th v-for="{ description, name, title } in columns" :key="name" class="text-truncate">
+            <span>
+              {{ title }}
+            </span>
             <v-tooltip v-if="description" :text="description" location="top">
               <template #activator="{ props }">
-                <span v-bind="props">
+                <v-icon icon="mdi-help-circle" v-bind="props" class="ml-1 my-n2" />
+              </template>
+            </v-tooltip>
+            <!-- <v-tooltip v-if="description" :text="description" location="top">
+              <template #activator="{ props }">
+                <span v-bind="props" class="text-truncate">
                   {{ title }}
                 </span>
               </template>
             </v-tooltip>
-            <span v-else>
+            <span v-else class="text-truncate">
               {{ title }}
-            </span>
+            </span> -->
           </th>
           <th v-if="canChangeMeeting"></th>
         </tr>
@@ -110,11 +118,24 @@
           </td>
         </tr>
       </tbody>
+      <tfoot v-if="hasCountColumns">
+        <tr>
+          <th></th>
+          <th>
+            {{ memberCount }}
+          </th>
+          <th v-for="{ name, getCount } in columns" :key="name">
+            {{ getCount?.() || '-' }}
+          </th>
+          <th></th>
+        </tr>
+      </tfoot>
     </v-table>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { any } from 'itertools'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -135,7 +156,7 @@ import { meetingGroupTablePlugins } from './registry'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
-const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
+const { meetingGroups, canChangeMeeting, memberCount } = useMeetingGroups(meetingId)
 const { user } = useAuthentication()
 const rules = useRules(t)
 
@@ -153,6 +174,7 @@ const columns = computed(() => {
     title: col.getTitle(t)
   }))
 })
+const hasCountColumns = computed(() => any(columns.value, c => !!c.getCount))
 
 const groupSchema = computed(() => {
   const schema: FormSchema = [{

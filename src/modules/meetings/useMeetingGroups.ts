@@ -49,6 +49,10 @@ export default function useMeetingGroups (meetingId: Ref<number>) {
     )
   })
 
+  const _meetingGroups = computed(() => filter(meetingGroups.values(), group => group.meeting === meetingId.value))
+  const allGroupMembers = computed(() => filter(groupMemberships.values(), m => any(_meetingGroups.value, g => g.pk === m.meeting_group)))
+  const memberCount = computed(() => allGroupMembers.value.length)
+  const voteCount = computed(() => allGroupMembers.value.reduce((acc, { votes }) => acc + (votes || 0), 0))
   const canPostAs = computed(() => isModerator.value || userGroups.value.length)
   const roles = computed(() => filter(groupRoles.values(), ({ meeting }) => meetingId.value === meeting))
 
@@ -57,10 +61,7 @@ export default function useMeetingGroups (meetingId: Ref<number>) {
    */
   const orderedGroups = computed(() => {
     return orderBy(
-      filter(
-        meetingGroups.values(),
-        group => group.meeting === meetingId.value
-      ),
+      _meetingGroups.value,
       ['title']
     )
       .map(g => {
@@ -79,6 +80,7 @@ export default function useMeetingGroups (meetingId: Ref<number>) {
   })
 
   return {
+    allGroupMembers,
     canChangeMeeting: computed(() => {
       const meeting = meetings.get(meetingId.value)
       if (!meeting) return false
@@ -87,6 +89,8 @@ export default function useMeetingGroups (meetingId: Ref<number>) {
     canPostAs,
     groupRoles: roles,
     meetingGroups: orderedGroups,
+    memberCount,
+    voteCount,
     userGroups,
     getMeetingGroup
   }

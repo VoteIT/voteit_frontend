@@ -40,10 +40,14 @@ meetingType.channel.onLeave(uri => {
 export default function useActive (meetingId: Ref<number>) {
   const { componentActive } = useMeetingComponents<NoSettingsComponent<'active_users'>>(meetingId, 'active_users')
 
+  function checkActive (user: number) {
+    return !!meetingActiveUsers.get(meetingId.value)?.includes(user)
+  }
+
   const isActive = computed({
     get () {
       if (!user.value) return false
-      return !!meetingActiveUsers.get(meetingId.value)?.includes(user.value.pk)
+      return checkActive(user.value.pk)
     },
     set (value) {
       setActive(value)
@@ -63,6 +67,7 @@ export default function useActive (meetingId: Ref<number>) {
     activeUserIds: computed(() => meetingActiveUsers.get(meetingId.value) || []),
     componentActive,
     isActive,
+    checkActive,
     setActive
   }
 }

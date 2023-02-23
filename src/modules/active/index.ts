@@ -2,11 +2,13 @@ import { ref, toRef } from 'vue'
 
 import { meetingGroupTablePlugins, meetingRolePlugins, meetingSettingsPlugins, meetingSlotPlugins } from '../meetings/registry'
 import useMeetingComponents from '../meetings/useMeetingComponent'
-import { Meeting, MeetingState, NoSettingsComponent } from '../meetings/types'
+import { GroupMembership, Meeting, MeetingState, NoSettingsComponent } from '../meetings/types'
 
 import ControlPanel from './ControlPanel.vue'
 import MenuPlugin from './MenuPlugin.vue'
 import useActive from './useActive'
+// import useMeetingGroups from '../meetings/useMeetingGroups'
+import { Predicate } from 'itertools'
 
 const COMPONENT_NAME = 'active_users'
 
@@ -58,27 +60,33 @@ meetingRolePlugins.register({
   }
 })
 
+function countActive (memberships: GroupMembership[], checkActive: Predicate<number>) {
+  return memberships.reduce((acc, { user }) => acc + Number(checkActive(user)), 0)
+}
+
 meetingGroupTablePlugins.register({
   checkActive,
   id: COMPONENT_NAME,
   transform (columns, meeting) {
     if (![MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state)) return columns
-    const { activeUserIds } = useActive(toRef(meeting, 'pk'))
+    const meetingId = toRef(meeting, 'pk')
+    const { checkActive } = useActive(meetingId)
+    // const { allGroupMembers } = useMeetingGroups(meetingId)
     return [
       ...columns,
       {
         name: COMPONENT_NAME,
+        // getCount () {
+        //   return countActive(allGroupMembers.value, checkActive)
+        // },
         getDescription (t) {
-          return t('testing.tester')
+          return t('activeUsers.groupActiveDescription')
         },
         getValue (group) {
-          return group.memberships.reduce(
-            (acc, { user }) => acc + Number(activeUserIds.value.includes(user)),
-            0
-          )
+          return countActive(group.memberships, checkActive)
         },
         getTitle (t) {
-          return t('activeUsers.active')
+          return t('activeUsers.activePlural')
         }
       }
     ]

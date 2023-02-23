@@ -24,6 +24,7 @@ import sv from './locales/sv.json'
 
 // REGISTER PLUGINS
 import './modules/meetings'
+import './modules/meetings/dialects'
 import './modules/active'
 import './modules/agendas'
 import './modules/discussions'
