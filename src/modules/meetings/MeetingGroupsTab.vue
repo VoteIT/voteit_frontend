@@ -39,8 +39,17 @@
           <th>
             {{ t('meeting.groups.members') }}
           </th>
-          <th v-if="voteManagementComponent">
-            {{ t('meeting.groups.votes') }}
+          <th v-for="{ description, name, title } in columns" :key="name">
+            <v-tooltip v-if="description" :text="description" location="top">
+              <template #activator="{ props }">
+                <span v-bind="props">
+                  {{ title }}
+                </span>
+              </template>
+            </v-tooltip>
+            <span v-else>
+              {{ title }}
+            </span>
           </th>
           <th v-if="canChangeMeeting"></th>
         </tr>
@@ -65,8 +74,8 @@
               />
             </DefaultDialog>
           </td>
-          <td v-if="voteManagementComponent">
-            <component :is="voteManagementComponent" :group="group" />
+          <td v-for="{ name, getValue } in columns" :key="name">
+            {{ getValue(group) }}
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>
@@ -117,11 +126,11 @@ import useMeeting from './useMeeting'
 
 import useMeetingGroups from './useMeetingGroups'
 import { meetingGroupType } from './contentTypes'
-import { MeetingGroup } from './types'
+import { MeetingGroup, MeetingGroupColumn } from './types'
 import { FieldType, FormSchema } from '@/components/types'
 import GroupMemberships from './GroupMemberships.vue'
 import useRules from '@/composables/useRules'
-import { voteManagementComponents } from './dialects'
+import { meetingGroupTablePlugins } from './registry'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -129,9 +138,19 @@ const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const { user } = useAuthentication()
 const rules = useRules(t)
 
-const voteManagementComponent = computed(() => {
-  const cName = meeting.value?.dialect?.view_components.votes_management
-  return cName && voteManagementComponents[cName]
+const columns = computed(() => {
+  if (!meeting.value) return []
+  const plugins = meetingGroupTablePlugins.getActivePlugins(meeting.value)
+  let columns: MeetingGroupColumn[] = []
+  for (const plugin of plugins) {
+    columns = plugin.transform(columns, meeting.value)
+  }
+  return columns.map(col => ({
+    ...col,
+    count: col.getCount?.(),
+    description: col.getDescription?.(t),
+    title: col.getTitle(t)
+  }))
 })
 
 const groupSchema = computed(() => {

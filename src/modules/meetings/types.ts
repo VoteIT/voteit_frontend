@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { BaseContent } from '@/contentTypes/types'
 import { Component } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
 
 import type { voteManagementComponents } from './dialects/index'
 
@@ -141,4 +142,14 @@ export interface ComponentBase<N = string> {
 
 export interface NoSettingsComponent<N = string> extends ComponentBase<N> {
   settings: null
+}
+
+export interface MeetingGroupColumn {
+  // Add component eventually
+  // component?: Component
+  name: string
+  getCount? (): number
+  getDescription? (t: ComposerTranslation): string
+  getTitle (t: ComposerTranslation): string
+  getValue (group: MeetingGroup & { memberships: GroupMembership[] }): string | number
 }
