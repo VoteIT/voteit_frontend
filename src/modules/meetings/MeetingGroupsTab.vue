@@ -74,8 +74,9 @@
               />
             </DefaultDialog>
           </td>
-          <td v-for="{ name, getValue } in columns" :key="name">
-            {{ getValue(group) }}
+          <td v-for="{ component, name, getValue } in columns" :key="name">
+            {{ getValue?.(group) }}
+            <component v-if="component" :is="component" :group="group" />
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>

@@ -144,12 +144,15 @@ export interface NoSettingsComponent<N = string> extends ComponentBase<N> {
   settings: null
 }
 
+type AnnotatedMeetingGroup = MeetingGroup & { memberships: GroupMembership[] }
+type ColumnComponent = Component<{ group: AnnotatedMeetingGroup }>
+
 export interface MeetingGroupColumn {
   // Add component eventually
-  // component?: Component
+  component?: ColumnComponent
   name: string
   getCount? (): number
   getDescription? (t: ComposerTranslation): string
   getTitle (t: ComposerTranslation): string
-  getValue (group: MeetingGroup & { memberships: GroupMembership[] }): string | number
+  getValue? (group: MeetingGroup & { memberships: GroupMembership[] }): string | number
 }
