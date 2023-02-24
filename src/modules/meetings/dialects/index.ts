@@ -9,7 +9,7 @@ import SFSVoteManagement from './SFSVoteManagement.vue'
 
 export const voteManagementComponents: Partial<Record<string, MeetingGroupColumn['component']>> = {
   // Currently not neccessary
-  // main_subst: MainAndSubstManagement,
+  // ordinarie_och_ersattare: MainAndSubstManagement,
   sfsfum: SFSVoteManagement
 } as const
 
@@ -45,7 +45,10 @@ meetingGroupTablePlugins.register({
 meetingGroupTablePlugins.register({
   id: 'mainAndSubst',
   checkActive (meeting) {
-    return [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) && meeting.dialect?.name === 'ordinarie_och_ersattare'
+    return (
+      [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) &&
+      meeting.er_policy_name === 'main_subst_active'
+    )
   },
   transform (columns, meeting) {
     const { voteCount } = useMeetingGroups(toRef(meeting, 'pk'))
