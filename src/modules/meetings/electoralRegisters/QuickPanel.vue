@@ -2,7 +2,7 @@
   <v-card-text>
     {{ t('electoralRegister.activeMethod', { method: policyName }) }}
   </v-card-text>
-  <v-card-text>
+  <v-card-text v-if="erMethodLocked">
     <v-chip>
       <v-icon icon="mdi-lock" color="secondary" class="mr-1" />
       {{ t('electoralRegister.locked') }}
