@@ -154,7 +154,7 @@ import { meetingGroupTablePlugins } from './registry'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
-const { meetingGroups, canChangeMeeting, memberCount } = useMeetingGroups(meetingId)
+const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const { user } = useAuthentication()
 const rules = useRules(t)
 

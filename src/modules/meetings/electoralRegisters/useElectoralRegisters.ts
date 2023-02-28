@@ -72,6 +72,7 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     if (!meetingId) return
     return erMethods.value?.find(erm => erm.name === meeting.value?.er_policy_name)
   })
+  const erMethodWeighted = computed(() => erMethod.value?.handles_vote_weight)
 
   const erMethodLocked = computed(() => {
     return !erMethod.value?.available
@@ -94,7 +95,12 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   const sortedRegisters = computed(() => {
     if (!meetingId) return []
     return orderBy(
-      [...registers.values()].filter(isMeetingER),
+      [...registers.values()]
+        .filter(isMeetingER)
+        .map(er => ({
+          ...er,
+          hasWeightedVotes: hasWeightedVotes(er)
+        })),
       ['created'], ['desc']
     )
   })
@@ -107,6 +113,7 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     currentElectoralRegister,
     erMethod,
     erMethodLocked,
+    erMethodWeighted,
     erMethods,
     sortedRegisters,
     clearRegisters,

@@ -45,17 +45,15 @@
         </template>
         <template #default="{ close }">
           <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
-          <div class="d-flex align-center">
+          <div>
             <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
             <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
-            <v-spacer />
-            <v-switch v-model="setVoteWeight" color="primary" label="Använd viktade röster" hide-details class="flex-grow-0" />
           </div>
           <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
             <template #appendItem="{ user, isSelected }">
               <div v-if="isSelected">
                 <v-text-field
-                  v-if="setVoteWeight"
+                  v-if="erMethodWeighted"
                   density="compact"
                   hide-details
                   type="number"
@@ -97,14 +95,14 @@
           {{ t('electoralRegister.none') }}
         </em></p>
         <v-expansion-panels class="mt-3">
-          <v-expansion-panel v-for="{ pk, created, weights, source } in registers" :key="pk">
+          <v-expansion-panel v-for="{ pk, created, hasWeightedVotes, weights, source } in registers" :key="pk">
             <v-expansion-panel-title class="d-flex">
               <span class="text-left mr-2" style="min-width: 92px;">
                 {{ t('electoralRegister.voterCount', weights.length) }}
               </span>
               <small class="text-secondary flex-grow-1">
                 <span v-if="source">
-                  {{ getErMethod(source)?.title || source}},
+                  {{ getErMethod(source)?.title || source }},
                 </span>
                 {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
                 {{ created.toLocaleString(undefined, { timeStyle: 'short' }) }}
@@ -125,7 +123,7 @@
                 </v-menu>
               </div>
               <UserList :userIds="weights.map(v => v.user)">
-                <template #appendItem="{ user }" v-if="source === 'manual'">
+                <template #appendItem="{ user }" v-if="hasWeightedVotes">
                   <v-chip>
                     {{ t('electoralRegister.weight') }}: {{ weights.find(w => w.user === user)?.weight }}
                   </v-chip>
@@ -164,7 +162,7 @@ import useElectoralRegisters from './useElectoralRegisters'
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
 const { isModerator, meetingId } = useMeeting()
-const { sortedRegisters, currentElectoralRegister, erMethod, fetchRegisters, getErMethod, hasWeightedVotes } = useElectoralRegisters(meetingId)
+const { sortedRegisters, currentElectoralRegister, erMethod, erMethodWeighted, fetchRegisters, getErMethod, hasWeightedVotes } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
 const { canManagePresence } = usePresence(meetingId)
 const { anyPoll } = usePolls()
@@ -206,7 +204,6 @@ function getInitialSelection () {
 }
 
 const decimalPlaces = ref(0) // Maybe TODO
-const setVoteWeight = ref(!currentElectoralRegister.value || hasWeightedVotes(currentElectoralRegister.value))
 const potentialVoters = computed(() => getRoleUserIds(meetingId.value, MeetingRole.PotentialVoter))
 const createSelection = reactive(getInitialSelection())
 const selectedUsers = computed({
@@ -244,17 +241,9 @@ function updateCreateSelection () {
   for (const { user, weight } of currentElectoralRegister.value.weights) {
     if (potentialVoters.value.includes(user)) createSelection.set(user, toFractions(weight))
   }
-  setVoteWeight.value = hasWeightedVotes(currentElectoralRegister.value)
 }
 watch(currentElectoralRegister, updateCreateSelection)
 watch(potentialVoters, updateCreateSelection)
-
-watch(setVoteWeight, value => {
-  if (value) return
-  for (const user of createSelection.keys()) {
-    createSelection.set(user, 1)
-  }
-})
 
 async function createRegister () {
   if (!erMethod.value) return
