@@ -12,8 +12,8 @@
           <th v-if="componentActive">
             {{ t('activeUsers.active') }}
           </th>
-          <th>
-            {{ erMethodWeighted ? t('meeting.groups.assignedVotes') : t('meeting.groups.assignedVote') }}
+          <th v-if="displayGroupVotes">
+            {{ t('meeting.groups.votes') }}
           </th>
           <th>
             {{ t('electoralRegister.inCurrent') }}
@@ -62,13 +62,16 @@
             </span>
           </td>
           <td v-if="componentActive">
-            <v-icon v-if="isActive" icon="mdi-check" color="success" v-bind="props" />
+            <v-icon v-if="isActive" icon="mdi-check" color="success" />
           </td>
-          <td v-for="(value, i) in [votes, currentWeight]" :key="i">
-            <span v-if="erMethodWeighted" icon="mdi-check" color="success" v-bind="props">
-              {{ value }}
+          <td v-if="displayGroupVotes">
+            {{ votes }}
+          </td>
+          <td>
+            <span v-if="erMethodWeighted">
+              {{ currentWeight }}
             </span>
-            <v-icon v-else-if="value" icon="mdi-check" color="success" v-bind="props" />
+            <v-icon v-else-if="currentWeight" color="success "/>
           </td>
           <td v-if="editable">
             <QueryDialog @confirmed="removeMember(pk)">
@@ -136,7 +139,7 @@ const props = defineProps({
 })
 
 const { getUser } = useUserDetails()
-const { meetingId } = useMeeting()
+const { meeting, meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
 const { activeUserIds, componentActive } = useActive(meetingId)
 const { erMethodWeighted, getWeightInCurrent } = useElectoralRegisters(meetingId)
@@ -151,6 +154,8 @@ const annotatedMembers = computed(() => {
     }
   })
 })
+
+const displayGroupVotes = computed(() => !!meeting.value?.dialect?.group_votes_active && erMethodWeighted)
 
 /**
  * Used as filter function for UserSearch
