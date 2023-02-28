@@ -12,11 +12,17 @@
           <th v-if="componentActive">
             {{ t('activeUsers.active') }}
           </th>
+          <th>
+            {{ erMethodWeighted ? t('meeting.groups.assignedVotes') : t('meeting.groups.assignedVote') }}
+          </th>
+          <th>
+            {{ t('electoralRegister.inCurrent') }}
+          </th>
           <th v-if="editable"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="{ isActive, pk, role, user } in annotatedMembers" :key="pk">
+        <tr v-for="{ currentWeight, isActive, pk, role, user, votes } in annotatedMembers" :key="pk">
           <td>
             {{ user?.full_name }}
             <small v-if="user?.userid" class="text-secondary">({{ user.userid }})</small>
@@ -57,6 +63,12 @@
           </td>
           <td v-if="componentActive">
             <v-icon v-if="isActive" icon="mdi-check" color="success" v-bind="props" />
+          </td>
+          <td v-for="(value, i) in [votes, currentWeight]" :key="i">
+            <span v-if="erMethodWeighted" icon="mdi-check" color="success" v-bind="props">
+              {{ value }}
+            </span>
+            <v-icon v-else-if="value" icon="mdi-check" color="success" v-bind="props" />
           </td>
           <td v-if="editable">
             <QueryDialog @confirmed="removeMember(pk)">
@@ -107,6 +119,7 @@ import useMeetingGroups from './useMeetingGroups'
 import { groupMembershipType } from './contentTypes'
 import type { GroupMembership } from './types'
 import useActive from '../active/useActive'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 const { t } = useI18n()
 
@@ -126,13 +139,15 @@ const { getUser } = useUserDetails()
 const { meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
 const { activeUserIds, componentActive } = useActive(meetingId)
+const { erMethodWeighted, getWeightInCurrent } = useElectoralRegisters(meetingId)
 
 const annotatedMembers = computed(() => {
   return props.members.map(m => {
     return {
       ...m,
       isActive: activeUserIds.value.includes(m.user),
-      user: getUser(m.user)
+      user: getUser(m.user),
+      currentWeight: getWeightInCurrent(m.user)
     }
   })
 })

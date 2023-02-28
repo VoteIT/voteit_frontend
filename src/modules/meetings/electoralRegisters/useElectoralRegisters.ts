@@ -92,6 +92,10 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     return er?.meeting === meetingId?.value
   }
 
+  function getWeightInCurrent (user: number) {
+    return currentElectoralRegister.value?.weights.find(w => w.user === user)?.weight
+  }
+
   const sortedRegisters = computed(() => {
     if (!meetingId) return []
     return orderBy(
@@ -119,6 +123,7 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     clearRegisters,
     getErMethod,
     getRegister,
+    getWeightInCurrent,
     hasWeightedVotes,
     fetchRegisters
   }

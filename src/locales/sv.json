@@ -300,6 +300,8 @@
     "groups": {
       "addMember": "Lägg till medlem",
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
+      "assignedVote": "Rösträtt",
+      "assignedVotes": "Antal röster",
       "create": "Skapa grupp",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
       "groups": "Grupper",
