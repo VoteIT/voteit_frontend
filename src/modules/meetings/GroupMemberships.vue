@@ -155,7 +155,7 @@ const annotatedMembers = computed(() => {
   })
 })
 
-const displayGroupVotes = computed(() => !!meeting.value?.dialect?.group_votes_active && erMethodWeighted)
+const displayGroupVotes = computed(() => erMethodWeighted.value && !!meeting.value?.dialect?.group_votes_active)
 
 /**
  * Used as filter function for UserSearch
