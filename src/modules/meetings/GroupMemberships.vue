@@ -71,7 +71,7 @@
             <span v-if="erMethodWeighted">
               {{ currentWeight }}
             </span>
-            <v-icon v-else-if="currentWeight" color="success "/>
+            <v-icon v-else-if="currentWeight" icon="mdi-check" color="success "/>
           </td>
           <td v-if="editable">
             <QueryDialog @confirmed="removeMember(pk)">
