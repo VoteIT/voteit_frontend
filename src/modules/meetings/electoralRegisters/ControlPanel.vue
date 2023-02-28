@@ -84,7 +84,7 @@ const methods = computed(() => {
     const isCurrent = method.name === currentName.value
     return {
       ...method,
-      description: method.description || t(`erMethods.${method.name}.description`),
+      description: method.description,
       isCurrent,
       props: {
         elevation: isCurrent ? 6 : 0,
@@ -93,7 +93,7 @@ const methods = computed(() => {
           'pa-4': isCurrent
         }
       },
-      title: method.title || t(`erMethods.${method.name}.title`)
+      title: method.title
     }
   })
 })

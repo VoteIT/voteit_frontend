@@ -121,9 +121,7 @@
       <tfoot v-if="hasCountColumns">
         <tr>
           <th></th>
-          <th>
-            {{ memberCount }}
-          </th>
+          <th></th>
           <th v-for="{ name, getCount } in columns" :key="name">
             {{ getCount?.() || '-' }}
           </th>
