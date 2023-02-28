@@ -166,6 +166,7 @@
     "dialectChangeMethodDisallowed": "You can't change this setting in this meeting, because it has a dialect setting that requires a specific electoral register method.",
     "electoralRegister": "Electoral register",
     "latest": "Latest",
+    "locked": "Locked method for electoral registers",
     "plural": "Electoral registers",
     "previous": "Previous",
     "method": "Method for electoral register",

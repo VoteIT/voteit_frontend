@@ -168,6 +168,7 @@
     "establish": "Fastställ röstlängd",
     "failed": "Misslyckades med att skapa en ny röstlängd. Försök igen senare, eller kontakta supporten.",
     "latest": "Aktuell",
+    "locked": "Låst metod för röstlängder",
     "plural": "Röstlängder",
     "previous": "Tidigare",
     "method": "Metod för röstlängder",
