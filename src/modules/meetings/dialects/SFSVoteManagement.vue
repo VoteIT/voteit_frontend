@@ -25,6 +25,7 @@
       <v-alert class="mb-2" :color="editUnassignedVotes ? 'secondary' : undefined">
         {{ editUnassignedVotes }} röster kvar att fördela
       </v-alert>
+      <v-alert v-if="errorMessage" :text="errorMessage" type="error" class="mb-2" />
       <div class="text-right">
         <v-btn variant="text" :disabled="working" @click="editing = false">
           {{ t('cancel') }}
@@ -43,11 +44,12 @@ import { computed, PropType, reactive, ref, watch } from 'vue'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { user } from '@/composables/useAuthentication'
+import useErrorHandler from '@/composables/useErrorHandler'
+import useRules from '@/composables/useRules'
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 import useMeeting from '../useMeeting'
 import UserList from '@/components/UserList.vue'
-import useRules from '@/composables/useRules'
 import { useI18n } from 'vue-i18n'
 import { socket } from '@/utils/Socket'
 
@@ -62,6 +64,7 @@ const { t } = useI18n()
 const { isModerator, meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
 const rules = useRules(t)
+const { errorMessage, clearErrors, handleSocketError } = useErrorHandler()
 
 interface RoleMembership extends GroupMembership { role: number }
 function isRoleMembership (membership: GroupMembership): membership is RoleMembership {
@@ -94,7 +97,7 @@ const editUnassignedVotes = computed(() => groupVotes.value - sum(editUserVotes.
 
 // Make sure we have the latest values when editing
 watch(editing, value => {
-  if (!value) return
+  if (!value) return clearErrors()
   for (const { user, votes } of roleMemberships.value) {
     editUserVotes.set(user, votes ?? 0)
   }
@@ -107,6 +110,7 @@ watch(editing, value => {
 const working = ref(false)
 async function saveUserVotes () {
   if (editUnassignedVotes.value) throw new Error('Cannot save user votes, becuase not all votes assigned')
+  clearErrors()
   working.value = true
   try {
     await socket.call('sfs.set_delegation_voters', {
@@ -116,8 +120,8 @@ async function saveUserVotes () {
         .filter(({ weight }) => weight)
     })
     editing.value = false
-  } catch {
-    alert('Couln\'t save user votes!')
+  } catch (e) {
+    handleSocketError(e)
   }
   working.value = false
 }

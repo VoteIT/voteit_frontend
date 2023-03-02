@@ -5,7 +5,7 @@ import { uriToPayload } from '@/utils'
 import hostname from '@/utils/hostname'
 import { AlertLevel } from '@/composables/types'
 
-import { State } from './types'
+import { isValidationErrorPayload, State } from './types'
 import { DocumentVisibleEvent, openAlertEvent } from './events'
 import DefaultMap from './DefaultMap'
 import ProgressPromise from './ProgressPromise'
@@ -30,7 +30,7 @@ const HEARTBEAT_MS = 30_000
 
 export const socketState = ref(false)
 
-class ValidationError extends Error {
+export class ValidationError extends Error {
   errors: PydanticError[]
 
   constructor (msg: string, errors: PydanticError[]) {
@@ -38,6 +38,10 @@ class ValidationError extends Error {
     this.name = 'ValidationError'
     this.errors = errors
   }
+}
+
+export function isValidationError (error: unknown): error is ValidationError {
+  return error instanceof ValidationError
 }
 
 export function parseSocketError (error: Error | ValidationError) {
@@ -242,7 +246,11 @@ class Socket {
                 sticky: true
               })
             }
-            reject(new ValidationError(data.p.msg, data.p.errors))
+            reject(
+              isValidationErrorPayload(data.p)
+                ? new ValidationError(data.p.msg, data.p.errors)
+                : new Error(data.p.msg)
+            )
             break
           case State.Waiting:
           case State.Queued:

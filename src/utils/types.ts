@@ -44,14 +44,22 @@ export interface PydanticError {
   type: string
 }
 
-interface ValidationError {
+export interface ErrorPayload {
+  msg: string
+}
+
+export interface ValidationErrorPayload extends ErrorPayload {
   msg: string
   errors: PydanticError[]
 }
 
 export interface FailedMessage extends BaseChannelsMessage {
   s: State.Failed
-  p: ValidationError
+  p: ValidationErrorPayload | ErrorPayload
+}
+
+export function isValidationErrorPayload (p: FailedMessage['p']): p is ValidationErrorPayload {
+  return 'errors' in p
 }
 
 export interface SubscribePayload {
