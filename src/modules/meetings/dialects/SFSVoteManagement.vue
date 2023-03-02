@@ -41,17 +41,19 @@
 <script lang="ts" setup>
 import { sum } from 'itertools'
 import { computed, PropType, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+import { socket } from '@/utils/Socket'
+import UserList from '@/components/UserList.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { user } from '@/composables/useAuthentication'
 import useErrorHandler from '@/composables/useErrorHandler'
 import useRules from '@/composables/useRules'
+
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 import useMeeting from '../useMeeting'
-import UserList from '@/components/UserList.vue'
-import { useI18n } from 'vue-i18n'
-import { socket } from '@/utils/Socket'
+import { isFinishedMeeting } from '../rules'
 
 const props = defineProps({
   group: {
@@ -81,11 +83,17 @@ const assignedVotes = computed(() => {
 const allAssigned = computed(() => props.group.votes === assignedVotes.value)
 const leaderRoleId = computed(() => groupRoles.value.find(g => g.role_id === 'leader')?.pk)
 
+/**
+ * Meeting is in active state (upcoming, ongoing), and user is moderator or group manager,
+ */
 const canAssignVotes = computed(() => {
   if (!user.value || !props.group.votes || !roleMemberships.value.length) return false
   return (
-    isModerator ||
-    props.group.memberships.some(member => member.user === user.value?.pk && member.role === leaderRoleId.value)
+    !isFinishedMeeting(meetingId.value) &&
+    (
+      isModerator ||
+      props.group.memberships.some(member => member.user === user.value?.pk && member.role === leaderRoleId.value)
+    )
   )
 })
 
