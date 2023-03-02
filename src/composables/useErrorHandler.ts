@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
 import { isValidationError, parseSocketError } from '@/utils/Socket'
+import { parseRestError } from '@/utils/restApi'
 
 interface HandlerOptions {
   target: 'alert' | 'dialog' | 'none'
@@ -29,14 +30,19 @@ export default function useErrorHandler (opts: HandlerOptions = DEFAULT_OPTIONS)
     if (opts.target === 'alert') openAlertEvent.emit(`^${message}`)
   }
 
-  function handleSocketError (e: unknown) {
+  function handleError (e: unknown, parse: (e: Error) => Dictionary<string[]>) {
     if (!(e instanceof Error)) throw e
     errorMessage.value = e.message
-    fieldErrors.value = isValidationError(e)
-      ? parseSocketError(e)
-      : {}
-
+    fieldErrors.value = parse(e)
     displayError(e.message)
+  }
+
+  function handleSocketError (e: unknown) {
+    handleError(e, parseSocketError)
+  }
+
+  function handleRestError (e: unknown) {
+    handleError(e, parseRestError)
   }
 
   return {
@@ -44,6 +50,7 @@ export default function useErrorHandler (opts: HandlerOptions = DEFAULT_OPTIONS)
     fieldErrors,
     hasError,
     clearErrors,
-    handleSocketError
+    handleSocketError,
+    handleRestError
   }
 }

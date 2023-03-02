@@ -1,13 +1,14 @@
-import hostname from './hostname'
 import axios from 'axios'
+import type { Dictionary } from 'lodash'
 
-export function parseRestError (e: unknown) {
-  // TODO
+import hostname from './hostname'
+
+export function parseRestError (e: unknown): Dictionary<string[]> {
   if (axios.isAxiosError(e)) {
-    if (!e.response) return { __root__: ['Unkown error'] }
-    return e.response.data as Record<string, string[]>
+    if (!e.response) return { __root__: ['No response from server'] }
+    return e.response.data
   }
-  return { __root__: ['Unkown error'] }
+  return { __root__: ['Unknown error'] }
 }
 
 export function getApiLink (path: string) {

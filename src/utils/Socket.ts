@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { last } from 'lodash'
+import { Dictionary, last } from 'lodash'
 
 import { uriToPayload } from '@/utils'
 import hostname from '@/utils/hostname'
@@ -44,8 +44,8 @@ export function isValidationError (error: unknown): error is ValidationError {
   return error instanceof ValidationError
 }
 
-export function parseSocketError (error: Error | ValidationError) {
-  if (!('errors' in error)) throw error
+export function parseSocketError (error: Error | ValidationError): Dictionary<string[]> {
+  if (!isValidationError(error)) return {}
   const locErrors: Record<string, string[]> = {}
   for (const e of error.errors) {
     const loc = last(e.loc) as string // Should not be empty
