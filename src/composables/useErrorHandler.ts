@@ -2,7 +2,7 @@ import type { Dictionary } from 'lodash'
 import { computed, ref } from 'vue'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
-import { isValidationError, parseSocketError } from '@/utils/Socket'
+import { parseSocketError } from '@/utils/Socket'
 import { parseRestError } from '@/utils/restApi'
 
 interface HandlerOptions {

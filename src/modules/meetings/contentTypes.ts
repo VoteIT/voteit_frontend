@@ -49,7 +49,10 @@ export const meetingInviteType = new ContentType<MeetingInvite>({
 export const meetingGroupType = new ContentType<MeetingGroup>({
   restEndpoint: 'meeting-groups/',
   name: 'meeting_group',
-  dateFields: ['created', 'modified']
+  dateFields: ['created', 'modified'],
+  restConfig: {
+    alertOnError: false
+  }
 })
 
 export const meetingComponentType = new ContentType<ComponentBase>({

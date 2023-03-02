@@ -15,7 +15,11 @@
           </v-btn>
         </template>
         <template #default="{ isActive }">
-          <SchemaForm :schema="groupSchema" :handler="createGroup" @saved="isActive.value = false">
+          <SchemaForm
+            :schema="groupSchema"
+            :handler="createGroup"
+            @saved="isActive.value = false"
+          >
             <template #buttons="{ disabled, submitting }">
               <div class="text-right">
                 <v-btn variant="text" @click="isActive.value = false">
@@ -48,16 +52,6 @@
                 <v-icon icon="mdi-help-circle" v-bind="props" class="ml-1 my-n2" />
               </template>
             </v-tooltip>
-            <!-- <v-tooltip v-if="description" :text="description" location="top">
-              <template #activator="{ props }">
-                <span v-bind="props" class="text-truncate">
-                  {{ title }}
-                </span>
-              </template>
-            </v-tooltip>
-            <span v-else class="text-truncate">
-              {{ title }}
-            </span> -->
           </th>
           <th v-if="canChangeMeeting"></th>
         </tr>
@@ -94,7 +88,12 @@
                 </v-btn>
               </template>
               <template #default="{ isActive }">
-                <SchemaForm :schema="groupSchema" :handler="changeGroup(group.pk)" :modelValue="{ title: group.title, votes: group.votes || 0 }" @saved="isActive.value = false">
+                <SchemaForm
+                  :schema="groupSchema"
+                  :handler="changeGroup(group.pk)"
+                  :modelValue="{ title: group.title, votes: group.votes || 0 }"
+                  @saved="isActive.value = false"
+                >
                   <template #buttons="{ disabled, submitting }">
                     <div class="text-right">
                       <v-btn @click="isActive.value = false" variant="text">
@@ -151,6 +150,7 @@ import { FieldType, FormSchema } from '@/components/types'
 import GroupMemberships from './GroupMemberships.vue'
 import useRules from '@/composables/useRules'
 import { meetingGroupTablePlugins } from './registry'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -217,12 +217,13 @@ function changeGroup (pk: number) {
   return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
 }
 
+const { handleRestError } = useErrorHandler({ target: 'alert' })
 async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
   try {
     await meetingGroupType.api.delete(group.pk)
     isActive.value = false
-  } catch {
-    alert("Couldn't delete group")
+  } catch (e) {
+    handleRestError(e)
   }
 }
 </script>
