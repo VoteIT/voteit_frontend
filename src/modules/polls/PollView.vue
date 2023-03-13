@@ -52,25 +52,15 @@
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
         <component :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
-        <Dropdown v-if="approved.length" :title="t('poll.numApproved', approved.length )">
-          <div class="proposals approved mb-4">
-            <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />
-          </div>
-        </Dropdown>
-        <Dropdown v-if="denied.length" :title="t('poll.numDenied', denied.length )">
-          <div class="proposals denied mb-4">
-            <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
-          </div>
-        </Dropdown>
       </div>
-      <template v-if="!votingComplete">
+      <template v-else-if="!votingComplete">
         <v-divider />
         <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote">
-          <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote()" prepend-icon="mdi-vote">
+          <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
           </v-btn>
-          <v-btn color="warning" :disabled="submitting" @click="abstainVote()" prepend-icon="mdi-cancel">
+          <v-btn color="warning" :disabled="submitting" @click="abstainVote" prepend-icon="mdi-cancel">
             {{ t('poll.abstain') }}
           </v-btn>
         </div>
@@ -128,7 +118,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { electoralRegister, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meetingPath, meetingId } = useMeeting()
 const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))

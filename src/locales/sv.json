@@ -464,6 +464,7 @@
     },
     "result": {
       "complete": "Fullständigt resultat",
+      "electionRounds": "En valomgång | {count} valomgångar",
       "quota": "Kvot",
       "randomized": "Slumpmässig utslagsröst",
       "round": "Runda",

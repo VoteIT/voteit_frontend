@@ -452,6 +452,7 @@
     },
     "result": {
       "complete": "Complete result",
+      "electionRounds": "One election round | {count} election rounds",
       "method": "Result ({method})",
       "randomized": "Random tiebreaker used",
       "round": "Round",
