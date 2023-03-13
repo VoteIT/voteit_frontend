@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { expect, test, vi } from 'vitest'
+import { expect, test } from 'vitest'
 
 import { dateify, dialogQuery, durationToString, sleep, slugify, stripHTML, tagify, uriToPayload } from '.'
 import { openDialogEvent } from './events'
