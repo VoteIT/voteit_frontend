@@ -3,13 +3,15 @@
     <v-list bg-color="background">
       <v-list-item v-for="(proposal, i) in approved" :key="i">
         <template #prepend>
-          <span class="text-h6 mr-4">{{ i + 1 }}.</span>
+          <span class="text-h6 mr-4 mt-n3">
+            {{ i + 1 }}.
+          </span>
         </template>
         <v-list-item-title v-if="!proposal">
           - unknown proposal -
         </v-list-item-title>
         <template v-else>
-          <v-list-item-title>
+          <v-list-item-title class="mb-1">
             <Tag disabled :name="proposal.prop_id" />
           </v-list-item-title>
           <v-list-item-subtitle>
@@ -37,16 +39,20 @@
       <v-expansion-panel v-for="round in rounds" :key="round.title">
         <v-expansion-panel-title>
           <div class="text-truncate">
-            {{ round.title }}: {{ round.status }}
+            {{ round.title }}: {{ round.statusText }}
             <Tag disabled :name="id" v-for="id in round.proposalIds" :key="id" class="mx-1" />
           </div>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <v-list>
-            <template v-for="{ id, text } in round.voteCount" :key="id">
+            <template v-for="{ pk, id, text } in round.voteCount" :key="id">
               <v-divider v-if="round.divideBefore === id" />
-              <v-list-item>
+              <v-list-item :disabled="!round.selected.includes(pk)">
                 <Tag disabled :name="id" class="mr-2" /> {{ text }}
+                <template v-if="round.selected.includes(pk)" #append>
+                  <v-icon v-if="round.status === 'Elected'" icon="mdi-check" color="success" />
+                  <v-icon v-else icon="mdi-minus" color="warning" />
+                </template>
               </v-list-item>
             </template>
           </v-list>
@@ -121,9 +127,9 @@ const rounds = computed(() => {
       ? voteCount.find(({ pk }) => !round.selected.includes(pk))?.id
       : voteCount.at(-1)?.id
     return {
+      ...round,
       divideBefore,
-      status: translate(round.status),
-      method: translate(round.method),
+      statusText: translate(round.status),
       title: `${t('poll.result.round')} ${i + 1}`,
       proposalIds: round.selected.map(pkToPropId),
       voteCount
