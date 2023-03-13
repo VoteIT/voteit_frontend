@@ -21,6 +21,7 @@ export function uriToPayload (uri: string): SubscribePayload {
 export function slugify (text: string) {
   return _slugify(text, {
     lower: true,
+    strict: true,
     locale: document.documentElement.lang
   })
 }

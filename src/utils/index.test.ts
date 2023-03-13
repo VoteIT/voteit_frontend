@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { dateify, stripHTML, tagify, uriToPayload } from '.'
+import { dateify, slugify, stripHTML, tagify, uriToPayload } from '.'
 
 test('uriToPayload', () => {
   expect(uriToPayload('test/123')).toStrictEqual({ channel_type: 'test', pk: 123 })
@@ -9,6 +9,13 @@ test('uriToPayload', () => {
   expect(() => uriToPayload('test/')).toThrowError()
   expect(() => uriToPayload('/123')).toThrowError()
   expect(() => uriToPayload('')).toThrowError()
+})
+
+test('slugify', () => {
+  expect(slugify(' ABC  123 ')).toEqual('abc-123')
+  expect(slugify('1. Meeting opening')).toEqual('1-meeting-opening')
+  expect(slugify('åäö ÅÄÖ')).toEqual('aao-aao')
+  expect(slugify('!?~^---"\'Hello')).toEqual('hello')
 })
 
 test('tagify', () => {
