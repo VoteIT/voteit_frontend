@@ -51,7 +51,16 @@
         <h3>
           {{ t('poll.result.method', { method: methodName }) }}
         </h3>
-        <component :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
+        <component v-if="resultComponent" :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
+        <div v-else class="mt-4">
+          <h2>
+            {{ t('poll.numApproved', approved.length) }}
+          </h2>
+          <Proposal readOnly v-for="proposal in approved" :key="proposal.pk" :p="proposal" class="my-3" />
+          <Dropdown :title="t('poll.numDenied', approved.length)">
+            <Proposal readOnly v-for="proposal in denied" :key="proposal.pk" :p="proposal" class="my-3" />
+          </Dropdown>
+        </div>
       </div>
       <template v-else-if="!votingComplete">
         <v-divider />
@@ -113,12 +122,14 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery, slugify } from '@/utils'
 import { socket } from '@/utils/Socket'
 import { openAlertEvent } from '@/utils/events'
+import Proposal from '../proposals/Proposal.vue'
+import Dropdown from '@/components/Dropdown.vue'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { electoralRegister, erMethod, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { approved, denied, electoralRegister, erMethod, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meetingPath, meetingId } = useMeeting()
 const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))

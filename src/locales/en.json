@@ -456,6 +456,7 @@
       "majority": "Contraproposal",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
+      "schulze_stv": "Schulze STV (historical)",
       "schulzeAddDeny": "Schulze (add deny)",
       "scottish_stv": "Scottish STV",
       "simple": "Simple majority",
@@ -481,7 +482,7 @@
     "result": {
       "complete": "Complete result",
       "electionRounds": "One election round | {count} election rounds",
-      "method": "Result ({method})",
+      "method": "Result using {method}",
       "randomized": "Random tiebreaker used",
       "round": "Round",
       "roundNum": "Round {count}",
