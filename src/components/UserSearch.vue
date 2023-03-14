@@ -42,7 +42,7 @@ import { userType } from '@/modules/organisations/contentTypes'
 import type { User } from '@/modules/organisations/types'
 
 const TYPE_DELAY = 250 // delay in ms
-let typeTimeout: number
+let typeTimeout: ReturnType<typeof setTimeout>
 
 const props = defineProps({
   buttonIcon: {
@@ -90,6 +90,7 @@ watch(query, () => {
 function deSelect () {
   selected.value = null
   query.value = ''
+  results.value = []
 }
 
 const inputField = ref<ComponentPublicInstance | null>(null)
