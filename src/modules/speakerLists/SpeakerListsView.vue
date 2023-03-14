@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import moment from 'moment'
+import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -344,7 +344,7 @@ const annotatedSpeakerHistory = computed(() => {
       pk,
       user,
       seconds,
-      time: durationToString(moment.duration({ seconds }))
+      time: durationToString(Duration.fromMillis(seconds * 1000))
     }
   })
 })

@@ -4,8 +4,6 @@ import App from './App.vue'
 // import './registerServiceWorker'
 import router from './router'
 
-import moment from 'moment'
-
 import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 
@@ -44,8 +42,6 @@ import './modules/speakerLists'
 // }
 // const locale = resolveLocale(navigator.languages)
 const locale = 'sv'
-
-moment.locale(locale)
 
 /* LOCKED TO 'sv' */
 // async function loadLocaleMessages (i18n: I18n, locale: string) {

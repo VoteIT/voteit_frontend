@@ -1,4 +1,4 @@
-import moment from 'moment'
+import { Duration } from 'luxon'
 import { expect, test } from 'vitest'
 
 import { dateify, dialogQuery, durationToString, sleep, slugify, stripHTML, tagify, uriToPayload } from '.'
@@ -47,13 +47,12 @@ test('dialogQuery', () => {
 })
 
 test('durationToString', () => {
-  // Moment js should be deprecated
-  expect(durationToString(moment.duration(299, 'minutes'))).toEqual('4:59:00')
-  expect(durationToString(moment.duration(123, 'minutes'))).toEqual('2:03:00')
-  expect(durationToString(moment.duration(59, 'minutes'))).toEqual('59:00')
-  expect(durationToString(moment.duration(60, 'seconds'))).toEqual('1:00')
-  expect(durationToString(moment.duration(59, 'seconds'))).toEqual('0:59')
-  expect(durationToString(moment.duration(1, 'second'))).toEqual('0:01')
+  expect(durationToString(Duration.fromObject({ minutes: 299 }))).toEqual('4:59:00')
+  expect(durationToString(Duration.fromObject({ minutes: 123 }))).toEqual('2:03:00')
+  expect(durationToString(Duration.fromObject({ minutes: 59 }))).toEqual('59:00')
+  expect(durationToString(Duration.fromObject({ seconds: 60 }))).toEqual('1:00')
+  expect(durationToString(Duration.fromObject({ seconds: 59 }))).toEqual('0:59')
+  expect(durationToString(Duration.fromObject({ second: 1 }))).toEqual('0:01')
 })
 
 test('sleep', async () => {

@@ -50,11 +50,12 @@
 </template>
 
 <script lang="ts" setup>
-import { sum } from 'lodash'
-import moment from 'moment'
+import { imap, sum } from 'itertools'
+import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { durationToString } from '@/utils'
 import restApi from '@/utils/restApi'
 import useMeeting from '../meetings/useMeeting'
 
@@ -73,15 +74,10 @@ const speakerSystem = computed(() => {
   if (allSpeakerSystems.value.length === 1) return allSpeakerSystems.value[0].pk
   return Number(currentTab.value) || undefined
 })
-// const speakerSystem = ref<number | undefined>(undefined)
 const { history } = useSpeakerHistory(meetingId, speakerSystem)
 
-const digits = (n: number) => n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
-
 function secondsToTimeDisplay (seconds: number) {
-  const duration = moment.duration(seconds * 1000)
-  if (duration.hours()) return `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
-  return `${duration.minutes()}:${digits(duration.seconds())}`
+  return durationToString(Duration.fromMillis(seconds * 1000))
 }
 
 const systemTabs = computed(() => {
@@ -100,6 +96,6 @@ const systemTabs = computed(() => {
 })
 
 const totalTime = computed(() => history.value && secondsToTimeDisplay(sum(history.value.map(e => e.seconds_spoken))))
-const totalTimes = computed(() => history.value ? sum(history.value.map(e => e.times_spoken)) : 0)
+const totalTimes = computed(() => history.value ? sum(imap(history.value, e => e.times_spoken)) : 0)
 const annotatedHistory = computed(() => history.value && history.value.map(e => ({ ...e, timeSpoken: secondsToTimeDisplay(e.seconds_spoken) })))
 </script>

@@ -1,5 +1,5 @@
 import _slugify from 'slugify'
-import type { Duration } from 'moment'
+import { Duration } from 'luxon'
 
 import { Dialog } from '@/composables/types'
 import { Nullable, PickByType, SubscribePayload } from './types'
@@ -63,16 +63,11 @@ export async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | strin
   })
 }
 
-// Pad number with 0 to always display 2 digits
-function digits (n: number) {
-  return n.toLocaleString(undefined, { minimumIntegerDigits: 2 })
-}
-
-// Moment duration object to time string, i.e. 1:23:45, 12:34, 1:23 or 0:12.
+// Luxon Duration object to time string, i.e. 1:23:45, 12:34, 1:23 or 0:12.
 export function durationToString (duration: Duration): string {
-  return duration.hours()
-    ? `${duration.hours()}:${digits(duration.minutes())}:${digits(duration.seconds())}`
-    : `${duration.minutes()}:${digits(duration.seconds())}`
+  return duration < Duration.fromObject({ hour: 1 })
+    ? duration.toFormat('m:ss')
+    : duration.toFormat('h:mm:ss')
 }
 
 /**
