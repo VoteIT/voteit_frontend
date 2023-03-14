@@ -47,6 +47,7 @@ test('dialogQuery', () => {
 })
 
 test('durationToString', () => {
+  expect(durationToString(Duration.fromObject({ day: 1, seconds: 42 }))).toEqual('24:00:42')
   expect(durationToString(Duration.fromObject({ minutes: 299 }))).toEqual('4:59:00')
   expect(durationToString(Duration.fromObject({ minutes: 123 }))).toEqual('2:03:00')
   expect(durationToString(Duration.fromObject({ minutes: 59 }))).toEqual('59:00')
@@ -57,8 +58,8 @@ test('durationToString', () => {
 
 test('sleep', async () => {
   const start = performance.now()
-  await sleep(1)
+  await sleep(100)
   const duration = performance.now() - start
-  expect(duration).toBeGreaterThan(1)
-  expect(duration).toBeLessThan(10) // This will never be very exact. As long as it's at least 1s and stops at some point, it's ok.
+  expect(duration).toBeGreaterThan(100)
+  expect(duration).toBeLessThan(1000) // This will never be very exact. As long as it's at least 1s and stops at some point, it's ok.
 })
