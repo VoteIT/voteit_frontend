@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import { createI18n } from 'vue-i18n'
 import App from './App.vue'
 // import './registerServiceWorker'
 import router from './router'
@@ -17,9 +16,6 @@ import Widget from './components/Widget.vue'
 import PresenceCheckControl from './modules/presence/PresenceCheckControl.vue'
 import Proposal from './modules/proposals/Proposal.vue'
 
-import en from './locales/en.json'
-import sv from './locales/sv.json'
-
 // REGISTER PLUGINS
 import './modules/meetings'
 import './modules/meetings/dialects'
@@ -31,39 +27,7 @@ import './modules/proposals'
 import './modules/reactions'
 import './modules/printing'
 import './modules/speakerLists'
-
-// const availableLanguages = ['en', 'sv'] // FIXME somewhere else
-// function resolveLocale (languages: readonly string[]): string {
-//   for (const lang of languages) {
-//     const short = lang.split('-')[0]
-//     if (availableLanguages.includes(short)) return short
-//   }
-//   return 'en'
-// }
-// const locale = resolveLocale(navigator.languages)
-const locale = 'sv'
-
-/* LOCKED TO 'sv' */
-// async function loadLocaleMessages (i18n: I18n, locale: string) {
-//   const messages = await import(
-//     `./locales/${locale}.json`
-//   )
-//   i18n.global.setLocaleMessage(locale, messages)
-//   return nextTick()
-// }
-
-const i18n = createI18n({
-  legacy: false,
-  locale,
-  fallbackLocale: 'en',
-  messages: {
-    en,
-    sv
-  }
-})
-
-/* LOCKED TO 'sv' */
-// if (locale !== 'sv') loadLocaleMessages(i18n, locale)
+import { i18n } from './locales'
 
 createApp(App)
   .use(i18n)

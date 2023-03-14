@@ -68,11 +68,33 @@
                 </v-list-item>
               </v-list>
             </DefaultDialog>
+            <DefaultDialog>
+              <template #activator="{ props }">
+                <v-list-item prepend-icon="mdi-translate" :title="t('language.choose')" v-bind="props" />
+              </template>
+              <template #default="{ close }">
+                <h2>
+                  {{ t('language.choose') }}
+                </h2>
+                <p class="my-2">
+                  {{ t('language.disclaimer') }}
+                </p>
+                <v-list class="my-4" color="primary">
+                  <v-list-item
+                    v-for="{ locale, name } in languages" :key="locale"
+                    :active="locale === currentLocale"
+                    :disabled="locale === currentLocale"
+                    :title="name"
+                    @click="currentLocale = locale; close()"
+                  />
+                </v-list>
+              </template>
+            </DefaultDialog>
           </v-list>
           <template v-slot:append>
             <v-list nav density="comfortable">
               <v-list-item prepend-icon="mdi-account" :href="manageAccountURL" :title="t('auth.manageAccount')" />
-              <v-list-item prepend-icon="mdi-logout" @click="logout()" :title="t('auth.logout')" />
+              <v-list-item prepend-icon="mdi-logout" @click="logout" :title="t('auth.logout')" />
             </v-list>
           </template>
         </v-navigation-drawer>
@@ -90,6 +112,7 @@ import { toggleNavDrawerEvent } from '@/utils/events'
 import * as rules from '@/utils/rules'
 import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
+import { languages, currentLocale } from '@/locales'
 
 import { profileType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'

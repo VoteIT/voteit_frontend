@@ -268,6 +268,10 @@
     "rejectInviteQuery": "Du håller på att avvisa den här inbjudan. Inbjudan kommer inte längre att fungera.\nÄr du säker?",
     "userHasInvites": "Du har en inbjudan till det här mötet | Du har inbjudningar till det här mötet"
   },
+  "language": {
+    "choose": "Välj språk",
+    "disclaimer": "Ditt språkval påverkar själva VoteIT - vad det står i knappar och menyer, med mera. Det påverkar inte innehåll från användare i dina möten."
+  },
   "loader": {
     "loading": "Laddar",
     "failed": "Laddning misslyckades"

@@ -264,6 +264,10 @@
     "rejectInviteQuery": "You're about to reject this invitation. The invitation will no longer be usable.\nAre you sure?",
     "userHasInvites": "You have an invitation to this meeting | You have invitations to this meeting"
   },
+  "language": {
+    "choose": "Choose language",
+    "disclaimer": "Your choice of language affects VoteIT itself - the contents of buttons, menus, etc. It will not affect user submitted content in your meetings."
+  },
   "loader": {
     "loading": "Loading",
     "failed": "Loading failed"

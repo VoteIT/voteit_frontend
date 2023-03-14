@@ -61,5 +61,5 @@ test('sleep', async () => {
   await sleep(100)
   const duration = performance.now() - start
   expect(duration).toBeGreaterThan(100)
-  expect(duration).toBeLessThan(1000) // This will never be very exact. As long as it's at least 1s and stops at some point, it's ok.
+  expect(duration).toBeLessThan(1000) // This will never be very exact. As long as it's at least 100 ms and stops at some point, it's ok.
 })
