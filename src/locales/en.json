@@ -4,7 +4,6 @@
   "addTag": "Add tag",
   "all": "All",
   "allDone": "All done!",
-  "back": "Back",
   "block": "Block",
   "by": "by",
   "cancel": "Cancel",
@@ -12,7 +11,6 @@
   "close": "Close",
   "collapse": "Collapse",
   "color": "Color",
-  "continue": "Continue",
   "copied": "Copied",
   "create": "Create",
   "created": "Created",
@@ -328,6 +326,10 @@
     "showAIBody": "Show text body from agenda items",
     "warningAIUnresolved": "This agenda item has unresolved proposals",
     "warningMeetingNotFinished": "This meeting is not finished. You should close the meeting before printing or copying the minutes."
+  },
+  "navigation": {
+    "back": "Back",
+    "continue": "Continue"
   },
   "organization": {
     "allYears": "All years",

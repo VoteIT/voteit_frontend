@@ -30,7 +30,7 @@
             {{ t('all') }}
           </v-btn>
           <v-btn prepend-icon="mdi-arrow-right-bold" color="primary" :disabled="!selectedProposals.length" @click="pickMethod=true">
-            {{ t('continue') }}
+            {{ t('navigation.continue') }}
           </v-btn>
         </div>
       </template>
@@ -79,8 +79,8 @@
           </v-expansion-panel>
         </v-expansion-panels>
         <div class="btn-group mt-3">
-          <v-btn prepend-icon="mdi-undo-variant" @click="pickMethod=false" color="primary">{{ t('back') }}</v-btn>
-          <v-btn prepend-icon="mdi-check" color="primary" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</v-btn>
+          <v-btn prepend-icon="mdi-undo-variant" @click="pickMethod = false" color="primary">{{ t('navigation.back') }}</v-btn>
+          <v-btn prepend-icon="mdi-check" color="primary" :disabled="!readyToCreate" @click="createPoll">{{ t('create') }}</v-btn>
           <v-btn v-if="agendaItem?.state === 'ongoing'" prepend-icon="mdi-play" color="primary" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</v-btn>
         </div>
       </template>

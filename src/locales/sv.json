@@ -4,7 +4,6 @@
   "addTag": "Lägg till tagg",
   "all": "Allt",
   "allDone": "Klart!",
-  "back": "Tillbaka",
   "block": "Blockera",
   "by": "av",
   "cancel": "Avbryt",
@@ -12,7 +11,6 @@
   "close": "Stäng",
   "collapse": "Fäll ihop",
   "color": "Färg",
-  "continue": "Fortsätt",
   "copied": "Kopierad till urklipp",
   "create": "Skapa",
   "created": "Skapad",
@@ -336,6 +334,10 @@
     "showAIBody": "Visa brödtext från dagordningspunkter",
     "warningAIUnresolved": "Denna dagordningspunkt har olösta förslag",
     "warningMeetingNotFinished": "Mötet är inte avslutat. Du bör avsluta mötet innan du skriver ut eller kopierar protokollet."
+  },
+  "navigation": {
+    "back": "Tillbaka",
+    "continue": "Fortsätt"
   },
   "organization": {
     "allYears": "Alla år",
