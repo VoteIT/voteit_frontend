@@ -74,7 +74,7 @@
                       size="small"
                       v-bind="props"
                     >
-                      {{ t('delete') }}
+                      {{ t('content.delete') }}
                     </v-btn>
                   </template>
                 </QueryDialog>
@@ -91,7 +91,7 @@
           <QueryDialog :text="t('agenda.deleteSelectedConfirm', editSelected.length)" color="warning" @confirmed="deleteSelected">
             <template #activator="{ props }">
               <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
-                {{ t('delete') }}
+                {{ t('content.delete') }}
               </v-btn>
             </template>
           </QueryDialog>

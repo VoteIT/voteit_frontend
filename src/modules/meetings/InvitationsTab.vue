@@ -126,7 +126,7 @@
           {{ t('invites.revoke') }}
         </v-btn>
         <v-btn prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected()">
-          {{ t('delete') }}
+          {{ t('content.delete') }}
         </v-btn>
       </div>
     </v-sheet>

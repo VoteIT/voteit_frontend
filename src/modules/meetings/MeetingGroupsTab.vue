@@ -102,7 +102,7 @@
                       <QueryDialog :text="t('meeting.groups.deleteConfirm', { ...group })" color="warning" @confirmed="deleteGroup(group, isActive)">
                         <template #activator="{ props }">
                           <v-btn variant="text" color="warning" v-bind="props">
-                            {{ t('delete') }}
+                            {{ t('content.delete') }}
                           </v-btn>
                         </template>
                       </QueryDialog>

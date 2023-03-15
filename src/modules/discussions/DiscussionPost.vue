@@ -117,7 +117,7 @@ const menuItems = computed<MenuItem[]>(() => {
   }
   if (canDeleteDiscussionPost(props.p)) {
     menu.push({
-      title: t('delete'),
+      title: t('content.delete'),
       prependIcon: 'mdi-delete',
       color: ThemeColor.Warning,
       onClick: queryDelete

@@ -201,7 +201,7 @@ async function deletePoll () {
 const menuItems = computed<MenuItem[]>(() => {
   if (!canDelete.value) return []
   return [{
-    title: t('delete'),
+    title: t('content.delete'),
     prependIcon: 'mdi-delete',
     color: ThemeColor.Warning,
     onClick: deletePoll

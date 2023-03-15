@@ -307,7 +307,7 @@ async function deleteList (list: SpeakerList) {
 function getListMenu (list: SpeakerList): MenuItem[] {
   if (canDeleteSpeakerList(list)) {
     return [{
-      title: t('delete'),
+      title: t('content.delete'),
       prependIcon: 'mdi-delete',
       onClick: () => deleteList(list),
       color: ThemeColor.Warning

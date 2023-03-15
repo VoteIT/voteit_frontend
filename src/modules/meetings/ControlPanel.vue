@@ -90,7 +90,7 @@ const breadcrumbs = computed(() => {
     to: `${meetingPath.value}/settings`
   },
   {
-    text: t(currentPlugin.value.getTitle(t)),
+    text: currentPlugin.value.getTitle(t),
     to: `${meetingPath.value}/settings/${currentPlugin.value.id}`
   }]
 })

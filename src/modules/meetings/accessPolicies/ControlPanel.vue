@@ -75,7 +75,7 @@
             <QueryDialog :text="t('accessPolicy.confirmDelete')" color="warning" @confirmed="deletePolicy(p)">
               <template #activator="{ props }">
                 <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
-                  {{ t('delete') }}
+                  {{ t('content.delete') }}
                 </v-btn>
               </template>
             </QueryDialog>

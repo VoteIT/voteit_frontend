@@ -17,7 +17,6 @@
   "create": "Create",
   "created": "Created",
   "defaultFilters": "Default Filters",
-  "delete": "Delete",
   "dismissAll": "Dismiss all",
   "download": "Download",
   "edit": "Edit",
@@ -274,7 +273,6 @@
   },
   "meeting": {
     "addUser": "Add participant",
-    "agenda": "Agenda",
     "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
     "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
     "copyUrl": "Copy meeting link",

@@ -17,7 +17,6 @@
   "create": "Skapa",
   "created": "Skapad",
   "defaultFilters": "Nollställ filter",
-  "delete": "Radera",
   "dismissAll": "Avfärda alla",
   "download": "Ladda ner",
   "edit": "Redigera",
@@ -142,6 +141,7 @@
   },
   "content": {
     "addName": "Lägg till {name}",
+    "delete": "Radera",
     "warnShorterThan": "Ditt inlägg är färre än {length} tecken.\nÄr du säker?"
   },
   "discussion": {
@@ -278,7 +278,6 @@
   },
   "meeting": {
     "addParticipant": "Lägg till deltagare",
-    "agenda": "Dagordning",
     "cantRemoveSelfModerator": "Du kan inte ta bort moderator- eller deltagarroller från din egen användare.",
     "confirmRemoveParticipant": "Detta kommer att ta bort användaren från detta möte.\nÄr du säker?",
     "copyUrl": "Kopiera möteslänk",

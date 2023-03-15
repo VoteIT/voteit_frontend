@@ -53,7 +53,7 @@
             <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton()">
               <template #activator="{ props }">
                 <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" v-bind="props">
-                  {{ t('delete') }}
+                  {{ t('content.delete') }}
                 </v-btn>
               </template>
             </QueryDialog>

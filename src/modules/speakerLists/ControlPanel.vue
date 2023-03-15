@@ -194,7 +194,7 @@ function getSystemMenu (s: SpeakerSystem): MenuItem[] {
   }
   if (canDeleteSpeakerSystem(s)) {
     items.push({
-      title: t('delete'),
+      title: t('content.delete'),
       icon: 'mdi-delete',
       onClick: async () => deleteSystem(s),
       color: ThemeColor.Warning

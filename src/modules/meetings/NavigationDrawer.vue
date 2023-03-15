@@ -178,7 +178,7 @@ const menu = computed<TreeMenu[]>(() => {
     openEvent: openPollMenuEvent
   },
   {
-    title: t('meeting.agenda'),
+    title: t('agenda.agenda'),
     items: aiMenus.value,
     defaultOpen: true,
     icon: 'mdi-format-list-bulleted',
