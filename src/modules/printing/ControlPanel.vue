@@ -1,34 +1,11 @@
 <template>
-  <v-card-text>
-    <v-switch
-      :label="t('printing.enable')"
-      color="primary"
-      hide-details
-      v-model="active"
-    />
-  </v-card-text>
+  <ComponentQuickPanel component-name="proposal_print" :switch-label="t('printing.enable')"/>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NoSettingsComponent } from '../meetings/types'
 
-import useMeeting from '../meetings/useMeeting'
-import useComponentApi from '../meetings/useComponentApi'
+import ComponentQuickPanel from '../meetings/ComponentQuickPanel.vue'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
-const { component, addComponent, setComponentState } = useComponentApi<NoSettingsComponent<'proposal_print'>>(meetingId, 'proposal_print')
-
-const active = computed({
-  get () {
-    return component.value?.state === 'on'
-  },
-  set (value) {
-    if (!component.value) return addComponent(null, true)
-    // TODO error handling here
-    setComponentState(component.value, value)
-  }
-})
 </script>

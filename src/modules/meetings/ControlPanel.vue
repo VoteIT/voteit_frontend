@@ -36,6 +36,7 @@
 </template>
 
 <script lang="ts" setup>
+import { sortBy } from 'lodash'
 import { computed, onBeforeMount, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -47,7 +48,6 @@ import { meetingSettingsPlugins } from './registry'
 import useMeetingTitle from './useMeetingTitle'
 import useComponentApi from './useComponentApi'
 import useLoader from '@/composables/useLoader'
-import { orderBy } from 'lodash'
 
 import './controlPanels'
 
@@ -67,7 +67,7 @@ onUnmounted(clearComponents)
 
 const panelPlugins = computed(() => {
   if (!meeting.value) return []
-  return orderBy(meetingSettingsPlugins
+  return sortBy(meetingSettingsPlugins
     .getActivePlugins(meeting.value)
     .map(panel => {
       return {
@@ -75,7 +75,7 @@ const panelPlugins = computed(() => {
         title: t(panel.translationKey),
         ...panel
       }
-    }), ['title'])
+    }), 'title')
 })
 const currentPanel = computed(() => route.params.panel as string | undefined)
 const currentPlugin = computed(() => currentPanel.value ? meetingSettingsPlugins.getPlugin(currentPanel.value) : undefined)
