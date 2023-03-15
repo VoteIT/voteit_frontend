@@ -16,7 +16,7 @@ interface SettingsPlugin extends MeetingPlugin {
   icon: string
   component?: Component<any, { path: string, translationKey: string }>
   getDescription? (t: ComposerTranslation): string
-  translationKey: string
+  getTitle (t: ComposerTranslation): string
   quickComponent?: Component
   isConfigured?: (meeting: Meeting) => boolean
 }

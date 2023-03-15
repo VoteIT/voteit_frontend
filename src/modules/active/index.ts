@@ -20,9 +20,8 @@ function checkActive (meeting: Meeting) {
 meetingSettingsPlugins.register({
   id: COMPONENT_NAME,
   icon: 'mdi-account-network',
-  translationKey: 'activeUsers.title',
-  isConfigured () {
-    return false
+  getTitle (t) {
+    return t('activeUsers.title')
   },
   quickComponent: ControlPanel
 })

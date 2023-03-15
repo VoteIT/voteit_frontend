@@ -10,7 +10,9 @@ meetingSettingsPlugins.register({
   component: ControlPanel,
   quickComponent: QuickPanel,
   icon: 'mdi-clipboard-list',
-  translationKey: 'agenda.agenda'
+  getTitle (t) {
+    return t('agenda.agenda')
+  }
 })
 
 function getDownloadFormat (meeting: number, format: 'csv' | 'json') {

@@ -542,6 +542,7 @@
     "view": "Plenumvy"
   },
   "presence": {
+    "activateSystem": "Aktivera system för närvarokontroll",
     "check": "Närvarokontroll",
     "checks": "Närvarokontroller",
     "closeCheck": "Avsluta närvarokontroll",
@@ -556,7 +557,8 @@
     "presence": "Närvaro",
     "presenceNoted": "Vi har noterat din närvaro",
     "presentCount": "Inga närvarande deltagare | En närvarande deltagare | {count} närvarande deltagare",
-    "recentlyClosedChecks": "Nyligen stängda närvarokontroller"
+    "recentlyClosedChecks": "Nyligen stängda närvarokontroller",
+    "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället."
   },
   "printing": {
     "enable": "Aktivera snabbutskrift av förslag",

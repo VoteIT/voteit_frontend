@@ -72,7 +72,7 @@ const panelPlugins = computed(() => {
     .map(panel => {
       return {
         description: panel.getDescription && panel.getDescription(t),
-        title: t(panel.translationKey),
+        title: panel.getTitle(t),
         ...panel
       }
     }), 'title')
@@ -88,7 +88,7 @@ const breadcrumbs = computed(() => {
     to: `${meetingPath.value}/settings`
   },
   {
-    text: t(currentPlugin.value.translationKey),
+    text: t(currentPlugin.value.getTitle(t)),
     to: `${meetingPath.value}/settings/${currentPlugin.value.id}`
   }]
 })

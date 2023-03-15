@@ -38,11 +38,10 @@ agendaMenuPlugins.register({
 meetingSettingsPlugins.register({
   id: 'printing',
   icon: 'mdi-printer',
-  translationKey: 'printing.proposals',
-  isConfigured () {
-    return false
-  },
-  quickComponent: ControlPanel
+  quickComponent: ControlPanel,
+  getTitle (t) {
+    return t('printing.proposals')
+  }
 })
 
 router.addRoute('Meeting', {

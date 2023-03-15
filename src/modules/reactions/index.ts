@@ -10,7 +10,9 @@ meetingSettingsPlugins.register({
   component: ControlPanel,
   quickComponent: QuickPanel,
   icon: 'mdi-thumb-up',
-  translationKey: 'reaction.buttons'
+  getTitle (t) {
+    return t('reaction.buttons')
+  }
 })
 
 proposalButtonPlugins.register({

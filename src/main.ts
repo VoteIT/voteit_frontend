@@ -5,6 +5,7 @@ import router from './router'
 
 import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
+import { i18n } from './locales'
 
 import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'
@@ -25,9 +26,9 @@ import './modules/discussions'
 import './modules/polls/methods'
 import './modules/proposals'
 import './modules/reactions'
+import './modules/presence'
 import './modules/printing'
 import './modules/speakerLists'
-import { i18n } from './locales'
 
 createApp(App)
   .use(i18n)
