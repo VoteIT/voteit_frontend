@@ -1,6 +1,6 @@
+import { toRef } from 'vue'
 import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
-import { toRef } from 'vue'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 import { meetingExportPlugins, meetingRolePlugins } from './registry'

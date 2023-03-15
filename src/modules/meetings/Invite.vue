@@ -27,12 +27,11 @@ import { computed, PropType, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery, slugify } from '@/utils'
 import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 import useMeetingInvites from './useMeetingInvites'
-import slugify from 'slugify'
 import useMeetings from './useMeetings'
-import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
 

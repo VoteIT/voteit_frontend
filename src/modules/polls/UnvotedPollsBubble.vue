@@ -12,64 +12,45 @@
         v-for="{ pk, title, subtitle, to } in unvoted" :key="pk"
         append-icon="mdi-chevron-right"
         :title="title" :subtitle="subtitle"
-        :to="to" @click="$emit('update:open', false)"
+        :to="to" @click="$emit('update:modelValue', false)"
       />
     </v-list>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, watch } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import slugify from 'slugify'
+import { slugify } from '@/utils'
 
 import useMeeting from '../meetings/useMeeting'
 import usePolls from './usePolls'
 
-export default defineComponent({
-  icon: 'mdi-vote',
-  id: 'unvoted-polls',
-  order: 0,
-  props: {
-    modelValue: Boolean
-  },
-  emits: ['update:modelValue', 'update:open', 'update:attention'],
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { meeting, meetingId } = useMeeting()
-    const { getNextUnvotedPoll, getUnvotedPolls } = usePolls()
-    const hasUnvoted = computed(() => !!getNextUnvotedPoll(meetingId.value))
+defineProps({
+  modelValue: Boolean
+})
+defineEmits(['update:modelValue'])
 
-    const unvoted = computed(() => {
-      return getUnvotedPolls(meetingId.value)
-        .map(poll => {
-          if (!meeting.value) return poll
-          return {
-            ...poll,
-            subtitle: t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`) }, poll.proposals.length),
-            to: {
-              name: 'poll',
-              params: {
-                id: meetingId.value,
-                slug: slugify(meeting.value.title),
-                pid: poll.pk,
-                pslug: slugify(poll.title)
-              }
-            }
+const { t } = useI18n()
+const { meeting, meetingId } = useMeeting()
+const { getUnvotedPolls } = usePolls()
+
+const unvoted = computed(() => {
+  return getUnvotedPolls(meetingId.value)
+    .map(poll => {
+      return {
+        ...poll,
+        subtitle: t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`) }, poll.proposals.length),
+        to: {
+          name: 'poll',
+          params: {
+            id: meetingId.value,
+            slug: slugify(meeting.value?.title || '-'),
+            pid: poll.pk,
+            pslug: slugify(poll.title)
           }
-        })
+        }
+      }
     })
-
-    watch(hasUnvoted, value => {
-      emit('update:modelValue', value)
-      emit('update:attention', true)
-    })
-
-    return {
-      t,
-      unvoted,
-      close
-    }
-  }
 })
 </script>

@@ -2,63 +2,59 @@
   <div style="height: 64px" />
   <div id="bubbles" class="d-print-none">
     <v-overlay
-      v-for="component in bubbles" :key="component.id"
+      v-for="{ component, id, icon, requireAttention } in bubbles" :key="id"
       eager
       transition="bubble-content"
       scroll-strategy="reposition" location-strategy="connected" location="bottom end" anchor="top end"
       :scrim="false"
-      :modelValue="component.id === openBubble" @update:modelValue="setOpen(component, $event)"
+      :modelValue="id === openBubble" @update:modelValue="setOpen(id, $event)"
     >
       <template #activator="{ props, isActive }">
         <v-btn
-          v-show="activeBubbles[component.id]"
           v-bind="props"
-          :icon="component.icon"
+          :icon="icon"
           class="activator"
-          :class="{ open: isActive, attention: !isActive && attentionBubbles[component.id] }"
+          :class="{ open: isActive, attention: requireAttention }"
         />
       </template>
       <v-sheet rounded class="pa-4 mb-3" elevation="8">
         <component
           :is="component"
-          v-model="activeBubbles[component.id]"
-          v-model:attention="attentionBubbles[component.id]"
-          @update:open="setOpen(component, $event)"
+          @update:modelValue="setOpen(id, $event)"
         />
       </v-sheet>
     </v-overlay>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+<script setup lang="ts">
+import { sortBy } from 'lodash'
+import { computed, ref } from 'vue'
 
-import { BubbleComponent } from './types'
-import useBubbles from './useBubbles'
+import { meetingBubblePlugins } from './registry'
 
-const { bubbles } = useBubbles()
+import useMeeting from './useMeeting'
 
-export default defineComponent({
-  setup () {
-    const openBubble = ref<string | null>(null)
-    const activeBubbles = reactive<Record<string, boolean>>(Object.fromEntries(bubbles.map(b => [b.id, false])))
-    const attentionBubbles = reactive<Record<string, boolean>>(Object.fromEntries(bubbles.map(b => [b.id, false])))
+const { meeting } = useMeeting()
+const activePlugins = computed(() => meeting.value
+  ? sortBy(meetingBubblePlugins.getActivePlugins(meeting.value), 'order')
+  : []
+)
 
-    function setOpen (component: BubbleComponent, value: boolean) {
-      openBubble.value = value
-        ? component.id
-        : null
-    }
-
-    return {
-      activeBubbles,
-      attentionBubbles,
-      bubbles,
-      openBubble,
-      setOpen
-    }
+const bubbles = computed(() => activePlugins.value.map(plugin => {
+  return {
+    ...plugin,
+    requireAttention: plugin.requireAttention.value
   }
-})
+}))
+
+const openBubble = ref<string | null>(null)
+
+function setOpen (id: string, value: boolean) {
+  openBubble.value = value
+    ? id
+    : null
+}
 </script>
 
 <style lang="sass">

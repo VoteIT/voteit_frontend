@@ -8,7 +8,7 @@ const meetingComponents = reactive(new Map<number, ComponentBase>())
 
 meetingComponentType.updateMap(meetingComponents)
 
-export default function useMeetingComponents<T extends ComponentBase> (meeting: Ref<number>, name: string) {
+export default function useMeetingComponent<T extends ComponentBase> (meeting: Ref<number>, name: string) {
   function isNamedComponent (component: ComponentBase): component is T {
     return component.meeting === meeting.value && component.component_name === name
   }

@@ -12,7 +12,7 @@ export default function useComponentApi<T extends ComponentBase = ComponentBase>
 
   const components = computed(() => meetingComponents.value.filter(isNamedComponent))
   const component = computed(() => {
-    if (!name || name === '') return // Javascript, I hate you!
+    if (!name || name === '') return // JavaScript, I hate you!
     return components.value[0]
   })
 

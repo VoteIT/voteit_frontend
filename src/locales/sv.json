@@ -283,6 +283,7 @@
     "confirmRemoveParticipant": "Detta kommer att ta bort användaren från detta möte.\nÄr du säker?",
     "copyUrl": "Kopiera möteslänk",
     "controlPanel": "Kontrollpanel",
+    "componentBlocked": "Ej tillgängligt i denna mötesdialekt",
     "componentRequired": "Bör vara aktiverad i detta möte",
     "create": "Starta ett nytt möte",
     "createTitleHint": "Minst 5 tecken",

@@ -1,13 +1,19 @@
 <template>
-  <v-card-text>
+  <v-card-text v-if="isBlocked">
+    <em>
+      {{ t('meeting.componentBlocked') }}
+    </em>
+  </v-card-text>
+  <v-card-text v-else>
     <slot></slot>
     <v-switch
-      :label="switchLabel"
+      v-if="!isBlocked"
       color="primary"
       hide-details
+      :label="switchLabel"
       v-model="active"
     />
-    <div v-if="componentRequired" class="mt-2">
+    <div v-if="isRequired" class="mt-2">
       <v-chip>
         <v-icon
           :color="warnRequired ? 'warning' : 'secondary'"
@@ -43,8 +49,9 @@ const props = defineProps({
 const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
-const componentRequired = computed(() => isActiveMeeting(meeting.value) && (meeting.value?.dialect?.configure_components || []).some(({ name }) => name === props.componentName))
-const warnRequired = computed(() => !active.value && componentRequired.value)
+const isBlocked = computed(() => meeting.value?.dialect?.block_components?.includes(props.componentName))
+const isRequired = computed(() => isActiveMeeting(meeting.value) && (meeting.value?.dialect?.configure_components || []).some(({ name }) => name === props.componentName))
+const warnRequired = computed(() => !active.value && isRequired.value)
 const { component, addComponent, setComponentState } = useComponentApi<NoSettingsComponent<string>>(meetingId, props.componentName)
 
 const active = computed({

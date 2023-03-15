@@ -12,7 +12,7 @@
       <component :is="currentComponent"/>
     </v-col>
     <v-col class="grid" v-else>
-      <v-card v-for="{ icon, id, component, description, title, quickComponent } in panelPlugins" :key="id">
+      <v-card v-for="{ icon, id, component, description, disabled, title, quickComponent } in panelPlugins" :key="id" :disabled="disabled">
         <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
           <v-card-title class="d-flex text-black">
             <v-icon sm :icon="icon" class="mr-2" />
@@ -50,6 +50,7 @@ import useComponentApi from './useComponentApi'
 import useLoader from '@/composables/useLoader'
 
 import './controlPanels'
+import type { Meeting } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -72,6 +73,7 @@ const panelPlugins = computed(() => {
     .map(panel => {
       return {
         description: panel.getDescription && panel.getDescription(t),
+        disabled: !!panel.isDisabled?.(meeting.value as Meeting),
         title: panel.getTitle(t),
         ...panel
       }

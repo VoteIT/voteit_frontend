@@ -279,6 +279,7 @@
     "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
     "copyUrl": "Copy meeting link",
     "controlPanel": "Control panel",
+    "componentBlocked": "Not available in this meeting dialect",
     "componentRequired": "Should be activated in this meeting",
     "create": "Start a new meeting",
     "createTitleHint": "At least 5 characters",

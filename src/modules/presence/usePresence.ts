@@ -3,11 +3,9 @@ import { computed, reactive, Ref } from 'vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
-import useBubbles from '../meetings/useBubbles'
 
 import { PresenceCheckState } from './workflowStates'
 import { presenceCheckType, presenceType } from './contentTypes'
-import PresenceCheckBubble from './PresenceCheckBubble.vue'
 import { canAddPresenceCheck } from './rules'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
@@ -15,8 +13,6 @@ const presence = reactive<Map<number, Presence>>(new Map())
 
 presenceCheckType.updateMap(presenceChecks)
 presenceType.updateMap(presence)
-
-useBubbles().register(PresenceCheckBubble)
 
 const { user } = useAuthentication()
 
