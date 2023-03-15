@@ -1,3 +1,4 @@
+import restApi from '@/utils/restApi'
 import { useStorage } from '@vueuse/core'
 import { computed, nextTick, watch } from 'vue'
 import { createI18n, I18n } from 'vue-i18n'
@@ -18,39 +19,40 @@ export const languages = [
 ] as const
 type Locale = typeof languages[number]['locale']
 
-function isLocale (language: string): language is Locale {
-  const short = language.split('-')[0]
-  return languages.some(({ locale }) => locale === short)
+function isLocale (value: string): value is Locale {
+  return languages.some(({ locale }) => value === locale)
 }
 
 function resolveLocale (): Locale {
-  for (const language of navigator.languages) {
+  for (let language of navigator.languages) {
+    // We only work with short locale names now, i.e. ['en', 'sv', ...]
+    language = language.split('-')[0]
     if (isLocale(language)) return language
   }
   return defaultLanguage
 }
 
-export const browserLocale = resolveLocale()
+const browserLocale = resolveLocale()
 
-const _currentLocale = useStorage<Locale>('currentLocale', browserLocale)
+const selectedLocale = useStorage<Locale | ''>('selectedLocale', '')
 export const currentLocale = computed({
   get () {
-    return _currentLocale.value
+    return selectedLocale.value || browserLocale
   },
   set (locale: string) {
     if (!isLocale(locale)) throw new Error(`"${locale}" is not a valid locale`)
-    _currentLocale.value = locale
+    selectedLocale.value = locale
   }
 })
 
 export function setLocale (locale: Locale) {
   if (!isLocale(locale)) throw new Error(`"${locale}" is not a valid locale`)
-  _currentLocale.value = locale
+  selectedLocale.value = locale
 }
 
 export const i18n = createI18n({
   legacy: false,
-  locale: _currentLocale.value,
+  locale: currentLocale.value,
   fallbackLocale: 'en',
   messages: {
     en
@@ -63,10 +65,17 @@ async function loadLocaleMessages (i18n: I18n, locale: string) {
   )
   i18n.global.setLocaleMessage(locale, messages)
   await nextTick()
-  i18n.global.locale.value = locale
 }
 
-watch(currentLocale, locale => {
-  if (!i18n.global.availableLocales.includes(locale)) loadLocaleMessages(i18n, locale)
-  else i18n.global.locale.value = locale
+/**
+ * Set Axios header if locale is selected (not empty string)
+ */
+watch(selectedLocale, locale => {
+  if (locale) restApi.defaults.headers['Accept-Language'] = locale
+}, { immediate: true })
+
+watch(currentLocale, async (locale) => {
+  // Load messages if not available
+  if (!i18n.global.availableLocales.includes(locale)) await loadLocaleMessages(i18n, locale)
+  i18n.global.locale.value = locale
 }, { immediate: true })
