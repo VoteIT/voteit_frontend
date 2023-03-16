@@ -5,7 +5,7 @@ import router from './router'
 
 import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
-import { i18n } from './locales'
+import { i18n } from './utils/locales'
 
 import Menu from './components/Menu.vue'
 import ProgressBar from './components/ProgressBar.vue'

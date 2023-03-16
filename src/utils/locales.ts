@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 import { computed, nextTick, watch } from 'vue'
 import { createI18n, I18n } from 'vue-i18n'
 
-import en from './en.json'
+import en from '../locales/en.json'
 
 const defaultLanguage = 'en'
 
@@ -35,7 +35,7 @@ function resolveLocale (): Locale {
 const browserLocale = resolveLocale()
 
 const selectedLocale = useStorage<Locale | ''>('selectedLocale', '')
-export const currentLocale = computed({
+export const currentLocale = computed<Locale>({
   get () {
     return selectedLocale.value || browserLocale
   },
@@ -61,7 +61,7 @@ export const i18n = createI18n({
 
 async function loadLocaleMessages (i18n: I18n, locale: string) {
   const messages = await import(
-    `./${locale}.json`
+    `@/locales/${locale}.json`
   )
   i18n.global.setLocaleMessage(locale, messages)
   await nextTick()

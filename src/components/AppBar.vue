@@ -112,7 +112,7 @@ import { toggleNavDrawerEvent } from '@/utils/events'
 import * as rules from '@/utils/rules'
 import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
-import { languages, currentLocale } from '@/locales'
+import { languages, currentLocale } from '@/utils/locales'
 
 import { profileType } from '@/modules/organisations/contentTypes'
 import useOrganisation from '@/modules/organisations/useOrganisation'
