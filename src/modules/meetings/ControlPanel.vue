@@ -13,14 +13,12 @@
     </v-col>
     <v-col class="grid" v-else>
       <v-card v-for="{ icon, id, component, description, disabled, title, quickComponent } in panelPlugins" :key="id" :disabled="disabled">
-        <router-link v-if="component" :to="`${meetingPath}/settings/${id}`">
-          <v-card-title class="d-flex text-black">
-            <v-icon sm :icon="icon" class="mr-2" />
-            <span class="flex-grow-1 text-truncate">
-              {{ title }}
-            </span>
-            <v-icon icon="mdi-chevron-right" />
-          </v-card-title>
+        <router-link v-if="component" :to="`${meetingPath}/settings/${id}`" class="v-card-title d-flex text-black">
+          <v-icon sm :icon="icon" class="mr-2" />
+          <span class="flex-grow-1 text-truncate">
+            {{ title }}
+          </span>
+          <v-icon icon="mdi-chevron-right" />
         </router-link>
         <v-card-title v-else>
           <v-icon sm :icon="icon" class="mr-2" />

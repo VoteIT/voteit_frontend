@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasAutomatic">
+  <template v-if="hasAutomatic">
     <v-card-text>
       {{ t('accessPolicies.automatic.isActive') }}
     </v-card-text>
@@ -18,7 +18,10 @@
         </template>
       </v-tooltip>
     </v-card-actions>
-  </div>
+  </template>
+  <v-card-text v-else>
+    {{ t('accessPolicy.settings') }}
+  </v-card-text>
 </template>
 
 <script lang="ts" setup>
