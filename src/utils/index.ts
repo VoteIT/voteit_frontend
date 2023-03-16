@@ -42,7 +42,7 @@ export function dateify<T extends object> (obj: T, ...attributes: readonly (keyo
 export function stripHTML (html: string) {
   const tmp = document.createElement('div')
   tmp.innerHTML = html
-  return (tmp.textContent || tmp.innerText || '').trim()
+  return (tmp.textContent || tmp.innerText).trim()
 }
 
 export async function dialogQuery (text: string): Promise<undefined>
