@@ -138,6 +138,7 @@ export interface SchulzeSettings {
 export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings | DuttSettings
 
 // Poll format from API
+// TODO: Rename to Poll and drop other Poll below
 interface BasePoll extends BaseContent {
   abstain_count?: number // Only finished polls
   agenda_item: number
@@ -207,5 +208,6 @@ export interface DuttPoll extends BasePoll {
   settings: DuttSettings
 }
 
+// TODO: Remove this when BasePoll renamed
 export type Poll = MajorityPoll | SchulzePoll | RepeatedSchulzePoll | SimplePoll | ScottishSTVPoll | InstantRunoffPoll | DuttPoll
 export type PollStartData = Pick<Poll, 'agenda_item' | 'meeting' | 'method_name' | 'proposals' | 'settings' | 'title'> & { start: boolean }

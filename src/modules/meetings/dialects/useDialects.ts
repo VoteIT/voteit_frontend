@@ -1,13 +1,8 @@
-import { filter } from 'itertools'
 import { computed, ref } from 'vue'
 import { meetingDialectType } from '../contentTypes'
 import { MeetingDialectDefinition } from '../types'
 
 const dialectStore = ref<MeetingDialectDefinition[] | null>(null)
-
-function isInstallable (dialect: MeetingDialectDefinition) {
-  return dialect.installable
-}
 
 async function loadDialects () {
   const { data } = await meetingDialectType.api.list()
@@ -16,7 +11,7 @@ async function loadDialects () {
 
 const installableDialects = computed(() => {
   if (dialectStore.value === null) loadDialects()
-  return dialectStore.value && filter(dialectStore.value, isInstallable)
+  return dialectStore.value
 })
 
 export default function useDialects () {
