@@ -1,14 +1,14 @@
 import { onBeforeMount, computed } from 'vue'
-
-import useMeeting from './useMeeting'
 import { useRouter } from 'vue-router'
+
 import useLoader from '@/composables/useLoader'
-import useMeetings from './useMeetings'
 import useChannel from '@/composables/useChannel'
+import useMeeting from './useMeeting'
+import useMeetings from './useMeetings'
 
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
-export default async function useMeetingChannel () {
+export default function useMeetingChannel () {
   const { isModerator, meetingId, meeting, meetingJoinPath } = useMeeting()
   const { fetchMeeting } = useMeetings()
   const router = useRouter()
@@ -19,10 +19,14 @@ export default async function useMeetingChannel () {
     return isModerator.value ? 'moderators' : 'participants'
   })
 
+  const channels = [
+    useChannel('meeting', meetingId, channelConfig),
+    useChannel(roleChannel, meetingId, { ...channelConfig, leaveDelay: 500 })
+  ]
+
   const loader = useLoader(
     'useMeetingChannel',
-    useChannel('meeting', meetingId, channelConfig).promise,
-    useChannel(roleChannel, meetingId, { ...channelConfig, leaveDelay: 500 }).promise
+    ...channels.map(ch => ch.promise)
   )
 
   onBeforeMount(() => {
@@ -35,4 +39,10 @@ export default async function useMeetingChannel () {
       }
     })
   })
+
+  const isLoaded = computed(() => !!meeting.value && channels.every(ch => ch.isSubscribed.value))
+
+  return {
+    isLoaded
+  }
 }

@@ -1,6 +1,11 @@
 <template>
-  <router-view />
-  <Bubbles />
+  <template v-if="isLoaded">
+    <router-view />
+    <Bubbles />
+  </template>
+  <div v-else class="my-8 text-center">
+    <v-progress-circular indeterminate />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -26,7 +31,8 @@ const props = defineProps({
 const meetingId = computed(() => props.meetingId)
 const { canViewMeeting } = useMeeting()
 const { clearRegisters } = useElectoralRegisters(meetingId)
-useMeetingChannel()
+const { isLoaded } = useMeetingChannel()
+
 usePermission(canViewMeeting)
 provide(LastReadKey, null)
 provide('context', 'meeting')
