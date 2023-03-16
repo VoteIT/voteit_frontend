@@ -181,6 +181,7 @@ import { FieldType, FormSchema } from '@/components/types'
 import useAgenda from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
+import useMeetingTitle from '../meetings/useMeetingTitle'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import type { User } from '../organisations/types'
 
@@ -220,11 +221,14 @@ const speakers = useSpeakerLists()
 const { meetingId, meetingPath } = useMeeting()
 const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem } = useAgenda(meetingId)
 const systemId = computed(() => Number(route.params.system))
+
 useLoader(
   'SpeakerListsView',
   useChannel('agenda_item', agendaId).promise,
   useChannel('sls', systemId).promise
 )
+useMeetingTitle(t('speaker.manageLists'))
+
 const { canManageSystem, speakerSystem, speakerLists, systemActiveList, systemActiveListId } = useSpeakerSystem(systemId, agendaId)
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 const currentList = computed<SpeakerList | undefined>({
