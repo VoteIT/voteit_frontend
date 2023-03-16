@@ -57,7 +57,7 @@ export const i18n = createI18n({
   messages: {
     en
   }
-})
+}) as I18n
 
 async function loadLocaleMessages (i18n: I18n, locale: string) {
   const messages = await import(
@@ -77,5 +77,7 @@ watch(selectedLocale, locale => {
 watch(currentLocale, async (locale) => {
   // Load messages if not available
   if (!i18n.global.availableLocales.includes(locale)) await loadLocaleMessages(i18n, locale)
-  i18n.global.locale.value = locale
+  // This should be a ref, not a string, but check anyway
+  if (typeof i18n.global.locale === 'string') i18n.global.locale = locale
+  else i18n.global.locale.value = locale
 }, { immediate: true })
