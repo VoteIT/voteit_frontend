@@ -91,7 +91,7 @@
               </template>
             </DefaultDialog>
           </v-list>
-          <template v-slot:append>
+          <template #append>
             <v-list nav density="comfortable">
               <v-list-item prepend-icon="mdi-account" :href="manageAccountURL" :title="t('auth.manageAccount')" />
               <v-list-item prepend-icon="mdi-logout" @click="logout" :title="t('auth.logout')" />

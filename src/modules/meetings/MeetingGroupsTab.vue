@@ -14,15 +14,15 @@
             {{ t('meeting.groups.create') }}
           </v-btn>
         </template>
-        <template #default="{ isActive }">
+        <template #default="{ close }">
           <SchemaForm
             :schema="groupSchema"
             :handler="createGroup"
-            @saved="isActive.value = false"
+            @saved="close"
           >
             <template #buttons="{ disabled, submitting }">
               <div class="text-right">
-                <v-btn variant="text" @click="isActive.value = false">
+                <v-btn variant="text" @click="close">
                   {{ t('cancel') }}
                 </v-btn>
                 <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
@@ -87,19 +87,19 @@
                   {{ t('edit') }}
                 </v-btn>
               </template>
-              <template #default="{ isActive }">
+              <template #default="{ close }">
                 <SchemaForm
                   :schema="groupSchema"
                   :handler="changeGroup(group.pk)"
                   :modelValue="{ title: group.title, votes: group.votes || 0 }"
-                  @saved="isActive.value = false"
+                  @saved="close"
                 >
                   <template #buttons="{ disabled, submitting }">
                     <div class="text-right">
-                      <v-btn @click="isActive.value = false" variant="text">
+                      <v-btn @click="close" variant="text">
                         {{ t('cancel') }}
                       </v-btn>
-                      <QueryDialog :text="t('meeting.groups.deleteConfirm', { ...group })" color="warning" @confirmed="deleteGroup(group, isActive)">
+                      <QueryDialog :text="t('meeting.groups.deleteConfirm', { ...group })" color="warning" @confirmed="deleteGroup(group, close)">
                         <template #activator="{ props }">
                           <v-btn variant="text" color="warning" v-bind="props">
                             {{ t('content.delete') }}
@@ -218,10 +218,10 @@ function changeGroup (pk: number) {
 }
 
 const { handleRestError } = useErrorHandler({ target: 'alert' })
-async function deleteGroup (group: MeetingGroup, isActive: Ref<boolean>) {
+async function deleteGroup (group: MeetingGroup, close: () => void) {
   try {
     await meetingGroupType.api.delete(group.pk)
-    isActive.value = false
+    close()
   } catch (e) {
     handleRestError(e)
   }

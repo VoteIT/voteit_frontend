@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
-import type { ComponentPublicInstance, Component, PropType } from 'vue'
+import type { ComponentPublicInstance, Component } from 'vue'
 
 import useErrorHandler from '@/composables/useErrorHandler'
 import CheckboxMultipleSelect from './inputs/CheckboxMultipleSelect.vue'
@@ -35,17 +35,15 @@ const componentNames: Record<FieldType, string | Component> = {
   textarea: 'v-textarea'
 }
 
-const props = defineProps({
-  modelValue: {
-    type: Object as PropType<Record<string, string | boolean | number>>,
-    default: () => ({})
-  },
-  schema: {
-    type: Array as PropType<FormSchema>,
-    required: true
-  },
-  handler: Function as PropType<(data: object) => Promise<any>>,
-  validateImmediately: Boolean
+interface Props {
+  modelValue?: any
+  schema: FormSchema
+  handler? (data: any): Promise<void>
+  validateImmediately?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => ({})
 })
 const emit = defineEmits(['update:modelValue', 'update:valid', 'saved', 'submit'])
 

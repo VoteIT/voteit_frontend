@@ -47,7 +47,7 @@ export default function useAuthentication () {
     }
   }
 
-  async function switchUser (user: User) {
+  async function switchUser (user: { readonly pk: number }) {
     await profileType.api.action(user.pk, 'switch')
     // setAuthenticatedUser(user)
     location.reload()

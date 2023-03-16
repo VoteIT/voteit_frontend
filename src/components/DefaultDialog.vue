@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isActive" v-bind="dialogDefaults" :persistent="persistent" :height="height">
     <template #activator="attrs">
-      <slot name="activator" v-bind="attrs" />
+      <slot name="activator" v-bind="attrs"></slot>
     </template>
     <template #default="attrs">
       <v-sheet class="pa-4" :color="color">
@@ -19,7 +19,7 @@
             @click="close"
           />
         </div>
-        <slot v-bind="attrs" :close="close" />
+        <slot v-bind="attrs" :close="close"></slot>
       </v-sheet>
     </template>
   </v-dialog>

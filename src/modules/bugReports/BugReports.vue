@@ -27,7 +27,7 @@
           <p class="my-2">
             Genom att skicka denna felrapport godkänner du att vi sparar ditt användarnamn tillsammans med felrapporten som längst ett år.
           </p>
-          <SchemaForm :schema="schema" class="mt-4" :handler="submit" @saved="submitted = true">
+          <SchemaForm :schema="schema as FormSchema" class="mt-4" :handler="submit" @saved="submitted = true">
             <template #buttons="{ disabled, submitting }">
               <div class="text-right">
                 <v-btn variant="text" @click="close" :disabled="submitting">
@@ -56,6 +56,7 @@ import schema from './schema'
 import useMeeting from '../meetings/useMeeting'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { FormSchema } from '@/components/types'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
