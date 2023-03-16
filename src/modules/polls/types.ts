@@ -1,3 +1,5 @@
+import { BaseContent } from '@/contentTypes/types'
+
 /* eslint-disable camelcase */
 export enum PollState {
   Private = 'private',
@@ -34,4 +36,26 @@ export interface PollStatus {
   pk: number
   voted: number
   total: number
+}
+
+export interface VoteResult {
+  approved: number[]
+  denied: number[]
+  vote_count: number
+}
+
+export interface Poll extends BaseContent {
+  abstain_count?: number // Only finished polls
+  agenda_item: number
+  body: string | null
+  closed: Date | null
+  electoral_register?: number
+  initial_electoral_register?: number
+  meeting: number
+  method_name: string
+  proposals: number[]
+  result: VoteResult
+  settings: unknown
+  state: PollState
+  started: Date | null
 }

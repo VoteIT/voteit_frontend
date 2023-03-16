@@ -5,7 +5,7 @@ import { reactive } from 'vue'
 import { agendaDeletedEvent } from '../agendas/events'
 import { agendaItems } from '../agendas/useAgenda'
 import { meetingType } from '../meetings/contentTypes'
-import { Poll } from '../polls/methods/types'
+import { Poll } from '../polls/types'
 
 import { Proposal } from './types'
 import { proposalType } from './contentTypes'

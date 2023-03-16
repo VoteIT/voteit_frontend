@@ -25,14 +25,15 @@
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useAlert from '@/composables/useAlert'
-import useProposals from '@/modules/proposals/useProposals'
-
-import usePolls from '@/modules/polls/usePolls'
-import { Poll } from './methods/types'
-import { Proposal } from '../proposals/types'
-import { voteType } from './contentTypes'
 import { socket } from '@/utils/Socket'
+import useAlert from '@/composables/useAlert'
+
+import useProposals from '../proposals/useProposals'
+import { Proposal } from '../proposals/types'
+
+import { voteType } from './contentTypes'
+import usePolls from './usePolls'
+import { Poll } from './types'
 import { pollPlugins } from './registry'
 
 export default defineComponent({

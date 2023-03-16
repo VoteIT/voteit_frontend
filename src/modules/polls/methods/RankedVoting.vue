@@ -52,7 +52,8 @@ import { useI18n } from 'vue-i18n'
 import useProposals from '@/modules/proposals/useProposals'
 import { Proposal } from '@/modules/proposals/types'
 
-import { Poll, RankedVote } from './types'
+import { Poll } from '../types'
+import { RankedVote } from './types'
 
 export default defineComponent({
   name: 'ScottishSTVPoll',

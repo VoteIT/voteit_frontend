@@ -5,10 +5,9 @@ import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '../agendas/events'
 import { meetingType } from '../meetings/contentTypes'
 
-import { Poll } from './methods/types'
 import { pollType, voteType } from './contentTypes'
 import { canVote } from './rules'
-import { PollState, PollStatus } from './types'
+import { Poll, PollState, PollStatus } from './types'
 import { pollStartedEvent } from './events'
 import { pollPlugins } from './registry'
 
