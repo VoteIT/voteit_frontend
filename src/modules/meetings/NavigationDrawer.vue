@@ -189,7 +189,6 @@ const menu = computed<TreeMenu[]>(() => {
   }]
   if (canChangeMeeting(meeting.value)) {
     items[0].items.push({
-      exactActive: true,
       icons: ['mdi-cog'],
       title: t('meeting.controlPanel'),
       to: `${meetingPath.value}/settings`
