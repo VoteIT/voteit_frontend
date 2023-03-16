@@ -54,10 +54,10 @@ import type { Meeting } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
-const { isModerator, meeting, meetingId, meetingPath, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 
 useMeetingTitle(t('settings'))
-usePermission(isModerator, { to: meetingPath })
+usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
 const { fetchComponents, clearComponents } = useComponentApi(meetingId)
 const loader = useLoader('ControlPanel')
 
@@ -92,11 +92,11 @@ const breadcrumbs = computed(() => {
   if (!currentPlugin.value) return
   return [{
     text: t('meeting.controlPanel'),
-    to: `${meetingPath.value}/settings`
+    to: getMeetingRoute('settings')
   },
   {
     text: currentPlugin.value.getTitle(t),
-    to: `${meetingPath.value}/settings/${currentPlugin.value.id}`
+    to: getMeetingRoute('controlPanel', { panel: currentPlugin.value.id })
   }]
 })
 </script>

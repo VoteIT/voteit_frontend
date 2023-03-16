@@ -170,6 +170,7 @@ import { ThemeColor } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
 import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
+import usePermission from '@/composables/usePermission'
 import QueryDialog from '@/components/QueryDialog.vue'
 
 import useMeeting from '../meetings/useMeeting'
@@ -183,10 +184,12 @@ import { agendaItemType } from './contentTypes'
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
-const { meetingId } = useMeeting()
+const { isModerator, meetingId, getMeetingRoute } = useMeeting()
 const { agenda, filteredAgenda, getAgendaItem } = useAgenda(meetingId, agendaTag)
 const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
+
+usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
 
 /*
 /* START agenda ordering
