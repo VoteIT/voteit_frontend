@@ -3,8 +3,15 @@
     <li v-if="slotBefore && $slots[slotBefore]">
       <slot :name="slotBefore" />
     </li>
-    <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: item.to }">
-      <router-link @click="$emit('navigation')" class="menu-item" :class="{ 'has-new': item.hasNewItems }" v-if="item.to" :to="item.to" v-ripple>
+    <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: isTreeLink(item) }">
+      <router-link
+        v-if="isTreeLink(item)"
+        @click="$emit('navigation')"
+        class="menu-item"
+        :class="{ 'has-new': item.hasNewItems, 'router-link-exact-only': item.exactActive }"
+        :to="item.to"
+        v-ripple
+      >
         <div>
           {{ item.title }}
         </div>
@@ -22,105 +29,92 @@
           <template v-if="item.showCount && item.showCountTotal !== undefined && item.showCountTotal !== item.items.length">({{ item.items.length }}/{{ item.showCountTotal }})</template>
           <template v-else-if="item.showCount">({{ item.items.length }})</template>
         </div>
-        <span v-if="item.count">{{ item.count }}</span>
         <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
       </a>
       <v-expand-transition>
-        <MenuTree v-if="item.items" @hasActive="childHasActive(i)" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)">
-          <template v-for="component, slot in $slots" :key="slot" v-slot:[slot]>
+        <MenuTree v-if="isTreeMenu(item)" @hasActive="childHasActive(i)" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)">
+          <template v-for="(component, slot) in $slots" :key="slot" v-slot:[slot]>
             <component :is="component" />
           </template>
         </MenuTree>
       </v-expand-transition>
     </li>
     <li v-if="slotAfter">
-      <slot :name="slotAfter" />
+      <slot :name="slotAfter"></slot>
     </li>
   </ul>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { defer } from 'lodash'
-import { computed, defineComponent, PropType, reactive, watch } from 'vue'
+import { computed, PropType, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { TreeMenu, TreeMenuItem } from '@/utils/types'
+import { isTreeLink, isTreeMenu, TreeMenuItem } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
 
-export default defineComponent({
-  emits: ['navigation', 'hasActive'],
-  props: {
-    title: String,
-    items: {
-      type: Array as PropType<TreeMenuItem[]>,
-      required: true
-    },
-    defaultOpen: Boolean,
-    openFirstNonEmpty: Boolean,
-    showCount: Boolean,
-    icon: String,
-    openEvent: Object as PropType<TypedEvent>,
-    loadedEvent: Object as PropType<TypedEvent>,
-    slotAfter: String,
-    slotBefore: String,
-    level: {
-      type: Number,
-      default: 0
-    }
+const emit = defineEmits(['navigation', 'hasActive'])
+const props = defineProps({
+  title: String,
+  items: {
+    type: Array as PropType<TreeMenuItem[]>,
+    required: true
   },
-  setup (props, { emit }) {
-    const route = useRoute()
-    const openMenus = reactive<Set<number>>(new Set())
-
-    // Typescript-check if item is a submenu
-    const isSubMenu = (item: TreeMenuItem): item is TreeMenu => 'items' in item
-
-    // Menus can be set to open by default
-    props.items.forEach((item, index) => {
-      if (!isSubMenu(item)) return
-      if (item.defaultOpen) openMenus.add(index)
-      // Listen to opening events
-      item.openEvent?.on(() => openMenus.add(index))
-    })
-    props.loadedEvent?.on(() => {
-      if (props.openFirstNonEmpty) defer(openFirstNonEmpty)
-    })
-    // Default open on new items?
-    watch(() => props.items, (items, oldItems) => {
-      items.forEach((item, index) => {
-        if (isSubMenu(item) && !oldItems.includes(item) && item.defaultOpen) openMenus.add(index)
-      })
-    })
-    function toggleMenu (index: number) {
-      if (openMenus.has(index)) return openMenus.delete(index)
-      openMenus.add(index)
-    }
-
-    function openFirstNonEmpty () {
-      // Only if none open already
-      if (openMenus.size) return
-      for (const [index, item] of props.items.entries()) {
-        if ('items' in item && item.items.length) return openMenus.add(index)
-      }
-    }
-
-    const hasActive = computed(() => props.items.some(item => 'to' in item && item.to === route.path))
-    watch(hasActive, value => {
-      if (value) emit('hasActive')
-    }, { immediate: true })
-
-    function childHasActive (index: number) {
-      openMenus.add(index)
-      emit('hasActive')
-    }
-
-    return {
-      openMenus,
-      childHasActive,
-      toggleMenu
-    }
+  defaultOpen: Boolean,
+  openFirstNonEmpty: Boolean,
+  showCount: Boolean,
+  icon: String,
+  openEvent: Object as PropType<TypedEvent>,
+  loadedEvent: Object as PropType<TypedEvent>,
+  slotAfter: String,
+  slotBefore: String,
+  level: {
+    type: Number,
+    default: 0
   }
 })
+
+const route = useRoute()
+const openMenus = reactive<Set<number>>(new Set())
+
+// Menus can be set to open by default
+props.items.forEach((item, index) => {
+  if (!isTreeMenu(item)) return
+  if (item.defaultOpen) openMenus.add(index)
+  // Listen to opening events
+  item.openEvent?.on(() => openMenus.add(index))
+})
+props.loadedEvent?.on(() => {
+  if (props.openFirstNonEmpty) defer(openFirstNonEmpty)
+})
+// Default open on new items?
+watch(() => props.items, (items, oldItems) => {
+  items.forEach((item, index) => {
+    if (isTreeMenu(item) && !oldItems.includes(item) && item.defaultOpen) openMenus.add(index)
+  })
+})
+function toggleMenu (index: number) {
+  if (openMenus.has(index)) return openMenus.delete(index)
+  openMenus.add(index)
+}
+
+function openFirstNonEmpty () {
+  // Only if none open already
+  if (openMenus.size) return
+  for (const [index, item] of props.items.entries()) {
+    if ('items' in item && item.items.length) return openMenus.add(index)
+  }
+}
+
+const hasActive = computed(() => props.items.some(item => 'to' in item && item.to === route.path))
+watch(hasActive, value => {
+  if (value) emit('hasActive')
+}, { immediate: true })
+
+function childHasActive (index: number) {
+  openMenus.add(index)
+  emit('hasActive')
+}
 </script>
 
 <style lang="sass">
@@ -153,7 +147,8 @@ ul.menu-tree
     display: flex
     font-size: 10.5pt !important
     transition: background-color .2s
-    &.router-link-exact-active
+    &.router-link-exact-active,
+    &.router-link-active:not(.router-link-exact-only)
       background-color: rgb(var(--v-theme-app-bar-active))
     :first-child
       flex: 1 1 auto

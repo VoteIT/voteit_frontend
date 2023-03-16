@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { RouteLocationRaw } from 'vue-router'
 
 import TypedEvent from './TypedEvent'
 
@@ -128,11 +129,12 @@ export interface MenuItemOnClick extends MenuItemBase {
 export type MenuItem = '---' | MenuItemOnClick | MenuItemTo | MenuItemHref | MenuSubheader
 
 export interface TreeMenuLink {
-  title: string
-  to: string // Can only be string, not route object, for matching purposes.
-  icons?: string[]
   count?: number
+  exactActive?: boolean // Only show as active if exact-active
   hasNewItems?: boolean
+  icons?: string[]
+  title: string
+  to: RouteLocationRaw // Can only be string, not route object, for matching purposes.
 }
 
 export interface TreeMenu {
@@ -150,6 +152,14 @@ export interface TreeMenu {
 }
 
 export type TreeMenuItem = TreeMenuLink | TreeMenu
+
+export function isTreeLink (item: TreeMenuItem): item is TreeMenuLink {
+  return 'to' in item
+}
+
+export function isTreeMenu (item: TreeMenuItem): item is TreeMenu {
+  return 'items' in item
+}
 
 export interface LastRead {
   timestamp: string

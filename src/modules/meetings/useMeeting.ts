@@ -1,3 +1,4 @@
+import { Dictionary } from 'lodash'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -43,6 +44,17 @@ export default function useMeeting () {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
 
+  function getMeetingRoute (name: string, extraParams?: Dictionary<string | number>) {
+    return {
+      name,
+      params: {
+        id: meetingId.value,
+        slug: slugify(meeting.value?.title ?? '-'),
+        ...extraParams
+      }
+    }
+  }
+
   return {
     canChange: computed(() => canChangeMeeting(meeting.value)),
     canChangeRoles: computed(() => meeting.value && canChangeRolesMeeting(meeting.value)),
@@ -59,6 +71,7 @@ export default function useMeeting () {
     roleItems,
     roleLabels,
     userRoles,
+    getMeetingRoute,
     getRoleLabels,
     hasRole
   }

@@ -12,17 +12,19 @@
       <component :is="currentComponent"/>
     </v-col>
     <v-col class="grid" v-else>
-      <v-card v-for="{ icon, id, component, description, disabled, title, quickComponent } in panelPlugins" :key="id" :disabled="disabled">
-        <router-link v-if="component" :to="`${meetingPath}/settings/${id}`" class="v-card-title d-flex text-black">
+      <v-card
+        v-for="{ icon, id, description, disabled, title, to, quickComponent } in panelPlugins"
+        class="d-flex flex-column"
+        :disabled="disabled"
+        :key="id"
+        :to="to"
+      >
+        <v-card-title class="d-flex">
           <v-icon sm :icon="icon" class="mr-2" />
           <span class="flex-grow-1 text-truncate">
             {{ title }}
           </span>
-          <v-icon icon="mdi-chevron-right" />
-        </router-link>
-        <v-card-title v-else>
-          <v-icon sm :icon="icon" class="mr-2" />
-          {{ title }}
+          <v-icon icon="mdi-chevron-right" v-if="to" />
         </v-card-title>
         <component v-if="quickComponent" :is="quickComponent" />
         <v-card-text v-if="description">
@@ -52,7 +54,7 @@ import type { Meeting } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
-const { isModerator, meeting, meetingId, meetingPath } = useMeeting()
+const { isModerator, meeting, meetingId, meetingPath, getMeetingRoute } = useMeeting()
 
 useMeetingTitle(t('settings'))
 usePermission(isModerator, { to: meetingPath })
@@ -73,6 +75,11 @@ const panelPlugins = computed(() => {
         description: panel.getDescription && panel.getDescription(t),
         disabled: !!panel.isDisabled?.(meeting.value as Meeting),
         title: panel.getTitle(t),
+        to: panel.route
+          ? getMeetingRoute(panel.route.name, panel.route.params)
+          : panel.component
+            ? getMeetingRoute('controlPanel', { panel: panel.id })
+            : undefined,
         ...panel
       }
     }), 'title')

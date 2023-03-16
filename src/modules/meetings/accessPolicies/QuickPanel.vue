@@ -11,7 +11,7 @@
             variant="elevated"
             prepend-icon="mdi-content-copy"
             :color="copied ? 'success' : 'primary'"
-            @click="copy(meetingUrl)"
+            @click.prevent="copy(meetingUrl)"
           >
             {{ t('meeting.copyUrl') }}
           </v-btn>

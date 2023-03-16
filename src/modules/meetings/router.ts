@@ -1,3 +1,4 @@
+import AgendaEditView from '@/modules/agendas/AgendaEditView.vue'
 import AgendaItemView from '@/modules/agendas/AgendaItemView.vue'
 import navigationDrawer from '@/modules/meetings/NavigationDrawer.vue'
 import appBar from './AppBar.vue'
@@ -37,19 +38,26 @@ export default {
       component: ControlPanelView,
       children: [{
         path: ':panel',
-        name: 'settings-tab',
+        name: 'controlPanel',
         component: ControlPanelView
       }]
     },
     {
-      path: 'p',
-      name: 'participants',
-      component: ParticipantsView
+      path: 'agenda',
+      name: 'agendaEdit',
+      component: AgendaEditView
     },
     {
-      path: 'p/:tabId',
-      name: 'participantsTab',
-      component: ParticipantsView
+      path: 'p',
+      name: 'participants',
+      component: ParticipantsView,
+      children: [
+        {
+          path: ':tabId',
+          name: 'participantsTab',
+          component: ParticipantsView
+        }
+      ]
     },
     {
       path: 'er',

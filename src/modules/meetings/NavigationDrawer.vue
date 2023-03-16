@@ -67,11 +67,10 @@ channelSubscribedEvent.on(uri => {
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
 const { mobile } = useDisplay()
-const { meeting, meetingId, meetingPath, hasRole, isModerator } = useMeeting()
+const { meeting, meetingId, meetingPath, hasRole, isModerator, getMeetingRoute } = useMeeting()
 const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
 const { agendaTags } = useAgendaTags(agenda)
 const agendaWorkflows = agendaItemType.useWorkflows()
-// const pollWorkflows = pollType.useWorkflows()
 const { getAiPolls, getUnvotedPolls } = usePolls()
 const { getAgendaProposals } = useProposals()
 const { initDone } = useLoader('Agenda')
@@ -104,7 +103,7 @@ const aiMenus = computed<TreeMenuItem[]>(() => {
   if (isModerator.value) {
     menus.push({
       title: t('agenda.edit'),
-      to: meetingPath.value + '/settings/agenda',
+      to: getMeetingRoute('agendaEdit'),
       icons: ['mdi-pencil']
     })
   }
@@ -129,6 +128,7 @@ watch(hasUnvotedPolls, (value, oldValue) => {
 
 const pollMenus = computed<TreeMenuItem[]>(() => {
   const menus: TreeMenuItem[] = [{
+    exactActive: true,
     title: t('poll.all'),
     to: `${meetingPath.value}/polls`
   }]
@@ -157,6 +157,7 @@ const menu = computed<TreeMenu[]>(() => {
   const items: TreeMenu[] = [{
     title: t('meeting.meeting'),
     items: [{
+      exactActive: true,
       title: t('start'),
       to: meetingPath.value
     }, {
@@ -188,6 +189,7 @@ const menu = computed<TreeMenu[]>(() => {
   }]
   if (canChangeMeeting(meeting.value)) {
     items[0].items.push({
+      exactActive: true,
       icons: ['mdi-cog'],
       title: t('meeting.controlPanel'),
       to: `${meetingPath.value}/settings`

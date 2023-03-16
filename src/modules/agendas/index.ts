@@ -1,15 +1,19 @@
 import { getApiLink } from '@/utils/restApi'
 
 import { meetingExportPlugins, meetingSettingsPlugins } from '../meetings/registry'
+import useMeeting from '../meetings/useMeeting'
 
-import ControlPanel from './ControlPanel.vue'
-import QuickPanel from './QuickPanel.vue'
+import useAgenda from './useAgenda'
 
 meetingSettingsPlugins.register({
   id: 'agenda',
-  component: ControlPanel,
-  quickComponent: QuickPanel,
+  route: { name: 'agendaEdit' },
   icon: 'mdi-clipboard-list',
+  getDescription (t) {
+    const { meetingId } = useMeeting()
+    const { agenda } = useAgenda(meetingId)
+    return t('agenda.itemCount', agenda.value.length)
+  },
   getTitle (t) {
     return t('agenda.agenda')
   }

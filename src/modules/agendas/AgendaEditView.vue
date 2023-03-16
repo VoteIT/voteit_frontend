@@ -1,5 +1,10 @@
 <template>
-  <v-tabs :items="editModes" v-model="editMode" align-tabs="end" class="mb-4" />
+  <teleport to="#toolbar">
+    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black" :title="t('agenda.agenda')">
+      <v-spacer />
+      <v-tabs :items="editModes" v-model="editMode" />
+    </v-toolbar>
+  </teleport>
   <v-window v-model="editMode">
     <v-window-item value="default">
       <div class="d-flex align-center">
@@ -220,11 +225,13 @@ watch(agenda, agendaItems => {
 const editModes = computed(() => {
   return [{
     value: 'default',
-    title: t('agenda.edit')
+    title: t('edit'),
+    prependIcon: 'mdi-pencil'
   },
   {
     value: 'order',
-    title: t('agenda.order')
+    title: t('order'),
+    prependIcon: 'mdi-reorder-horizontal'
   }]
 })
 const editMode = ref('default')

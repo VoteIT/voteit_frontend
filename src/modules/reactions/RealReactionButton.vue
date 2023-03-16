@@ -1,11 +1,11 @@
 <template>
   <span class="text-no-wrap">
-    <v-btn :prepend-icon="button.icon" size="small" :variant="variant" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click="emit('update:modelValue', !modelValue)">
+    <v-btn :prepend-icon="button.icon" size="small" :variant="variant" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click.prevent="emit('update:modelValue', !modelValue)">
       {{ button.title }}
     </v-btn>
     <DefaultDialog @update:modelValue="$event && emit('listOpen')" :title="t('reaction.peopleReacted')">
       <template #activator="{ props }">
-        <v-btn variant="text" flat size="small" v-bind="props" :disabled="listDisabled || !count" class="reaction-count">
+        <v-btn variant="text" flat size="small" v-bind="props" @click.prevent :disabled="listDisabled || !count" class="reaction-count">
           {{ count }}
         </v-btn>
       </template>

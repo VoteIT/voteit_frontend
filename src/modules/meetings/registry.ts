@@ -1,3 +1,4 @@
+import { Dictionary } from 'lodash'
 import { Component, ComputedRef } from 'vue'
 
 import PluginHandler from './PluginHandler'
@@ -20,13 +21,17 @@ interface ExportsPlugin extends MeetingPlugin {
 }
 
 interface SettingsPlugin extends MeetingPlugin {
+  component?: Component<any, { path: string, translationKey: string }>
+  quickComponent?: Component
   icon: string
+  route?: {
+    name: string
+    params?: Dictionary<string | number>
+  }
   isConfigured? (meeting: Meeting): boolean
   isDisabled? (meeting: Meeting): boolean
-  component?: Component<any, { path: string, translationKey: string }>
   getDescription? (t: ComposerTranslation): string
   getTitle (t: ComposerTranslation): string
-  quickComponent?: Component
 }
 
 interface MeetingSlotPlugin extends MeetingPlugin {
