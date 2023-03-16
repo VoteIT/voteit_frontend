@@ -69,6 +69,7 @@ export interface MeetingDialectDefinition {
   configure_components?: { name: string }[]
   description: string
   er_policy_name: string
+  globally_available: boolean
   group_votes_active: boolean
   group_roles_active: boolean
   installable: boolean
