@@ -162,6 +162,8 @@
     "createHelp": "Pick users from potential voters to create a new electoral register.",
     "dialectChangeMethodDisallowed": "You can't change this setting in this meeting, because it has a dialect setting that requires a specific electoral register method.",
     "electoralRegister": "Electoral register",
+    "establish": "Establish Electoral Register",
+    "failed": "Failed creating new Electoral Register. Try later, or contact support.",
     "latest": "Latest",
     "locked": "Locked method for electoral registers",
     "plural": "Electoral registers",
@@ -171,6 +173,7 @@
     "saved": "Electoral register method now set to {er_policy_name}.",
     "selectMethod": "You haven't selected a method for setting electoral registers in this meeting.\nElectoral registers are used to determine which users can vote in polls. Setting a method is required for you to be able to start a meeting.",
     "settings": "Settings for Electoral Registers",
+    "upToDate": "No need to update Electoral Register",
     "voterCount": "No voters | 1 voter | {count} voters",
     "weight": "Weight",
     "inCurrent": "In current electoral register"

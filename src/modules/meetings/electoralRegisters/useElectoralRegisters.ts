@@ -1,7 +1,6 @@
 import { orderBy } from 'lodash'
 import { computed, reactive, ref, Ref } from 'vue'
 
-import { dateify } from '@/utils'
 import { electoralRegisterType, erMethodType } from '../contentTypes'
 import { meetings } from '../useMeetings'
 
@@ -39,7 +38,7 @@ async function fetchRegister (pk: number) {
   registers.set(pk, null) // If it has any value, will not fetch again
   try {
     const { data } = await electoralRegisterType.api.retrieve(pk)
-    registers.set(pk, dateify(data, 'created'))
+    registers.set(pk, data)
   } catch {
     registers.delete(pk) // Enables trying again.
   }
@@ -83,7 +82,7 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     try {
       const { data } = await electoralRegisterType.api.list({ meeting: meetingId.value })
       for (const er of data) {
-        registers.set(er.pk, dateify(er, 'created'))
+        registers.set(er.pk, er)
       }
     } catch {} // TODO
   }

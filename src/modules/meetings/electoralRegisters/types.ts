@@ -1,6 +1,6 @@
 export interface ElectoralRegister {
   pk: number
-  created: Date
+  created: string
   meeting: number
   source?: string
   weights: {

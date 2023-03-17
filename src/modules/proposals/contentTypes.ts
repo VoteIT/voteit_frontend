@@ -13,8 +13,8 @@ export interface TextParagraph {
 export interface ProposalText {
   title: string
   body: string
-  created: Date
-  modified: Date
+  created: string
+  modified: string
   pk: number
   agenda_item: number
   paragraphs: TextParagraph[]

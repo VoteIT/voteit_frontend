@@ -30,10 +30,10 @@
       <PostAs v-show="canPostAs" v-model="author" class="my-2" />
       <div class="d-flex mt-1">
         <v-spacer />
-        <v-btn @click="cancel()" variant="text" size="small">
+        <v-btn @click="cancel" variant="text" size="small">
           {{ t('cancel') }}
         </v-btn>
-        <v-btn type="submit" color="primary" @click="save()" size="small">
+        <v-btn type="submit" color="primary" @click="save" size="small">
           {{ t('save') }}
         </v-btn>
       </div>
@@ -96,7 +96,7 @@ const author = ref({
   author: props.p.author,
   meeting_group: props.p.meeting_group
 } as Author)
-const { isUnread } = useUnread(props.p.created as Date)
+const { isUnread } = useUnread(new Date(props.p.created))
 const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
 
 async function queryDelete () {

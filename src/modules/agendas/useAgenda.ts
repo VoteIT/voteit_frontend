@@ -3,8 +3,6 @@ import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { dateify } from '@/utils'
-
 import { AgendaItem } from '@/modules/agendas/types'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
@@ -16,7 +14,7 @@ export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
 const channel = agendaItemType
-  .onChanged(agendaItem => agendaItems.set(agendaItem.pk, dateify(agendaItem, 'related_modified')))
+  .onChanged(agendaItem => agendaItems.set(agendaItem.pk, agendaItem))
   .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
   .channel
 
@@ -112,7 +110,7 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     if (!agendaItem.related_modified) return false
     const lastRead = agendaItemsLastRead.get(agendaItem.pk)
     // Else, if no lastRead or set to earlier time, there are new items
-    return !lastRead || agendaItem.related_modified > lastRead
+    return !lastRead || new Date(agendaItem.related_modified) > lastRead
   }
 
   const agendaId = computed(() => Number(route.params.aid))

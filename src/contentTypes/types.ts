@@ -46,15 +46,15 @@ export interface PresenceCheck {
   meeting: number
   presence_system: number
   state: PresenceCheckState
-  opened: string | Date
-  closed: string | Date
+  opened: string
+  closed: string
 }
 
 export interface Presence {
   pk: number
   user: number
   presence_check: number
-  created: string | Date
+  created: string
 }
 
 export interface Vote {

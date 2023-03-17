@@ -106,7 +106,7 @@ const { getProposalDiscussions } = useDiscussions()
 const { getMeetingGroup } = useMeetingGroups(meetingId)
 
 const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
-const { isUnread } = useUnread(props.p.created)
+const { isUnread } = useUnread(new Date(props.p.created))
 
 async function queryDelete () {
   if (await dialogQuery({

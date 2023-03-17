@@ -21,7 +21,7 @@ export interface AgendaItem {
   body: string
   meeting: number
   readonly order: number
-  readonly related_modified: Date | null
+  readonly related_modified: string | null
   state: AgendaState
   tags: string[]
   title: string

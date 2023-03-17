@@ -42,7 +42,7 @@
             :key="pk"
             :to="`/m/${pk}/${slugify(title)}`"
             :title="title"
-            :subtitle="start_time?.toLocaleDateString()"
+            :subtitle="start_time && DateTime.fromISO(start_time).toLocaleString()"
           >
             <template #append>
               <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
@@ -125,6 +125,7 @@
 </template>
 
 <script lang="ts" setup>
+import { DateTime } from 'luxon'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'

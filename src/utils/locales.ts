@@ -1,5 +1,6 @@
 import restApi from '@/utils/restApi'
 import { useStorage } from '@vueuse/core'
+import { Settings } from 'luxon'
 import { computed, nextTick, watch } from 'vue'
 import { createI18n, I18n } from 'vue-i18n'
 
@@ -71,7 +72,9 @@ async function loadLocaleMessages (i18n: I18n, locale: string) {
  * Set Axios header if locale is selected (not empty string)
  */
 watch(selectedLocale, locale => {
-  if (locale) restApi.defaults.headers['Accept-Language'] = locale
+  if (!locale) return
+  restApi.defaults.headers['Accept-Language'] = locale
+  Settings.defaultLocale = locale
 }, { immediate: true })
 
 watch(currentLocale, async (locale) => {

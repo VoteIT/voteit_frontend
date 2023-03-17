@@ -22,8 +22,7 @@
                   <span v-bind="props">
                     {{ t('electoralRegister.electoralRegister') }}:
                     <span class="text-secondary">
-                      {{ electoralRegister.created.toLocaleString(undefined, { dateStyle: 'long' }) }},
-                      {{ electoralRegister.created.toLocaleString(undefined, { timeStyle: 'short' }) }}
+                      {{ DateTime.fromISO(electoralRegister.created).toLocaleString(DateTime.DATETIME_SHORT) }}
                     </span>
                   </span>
                 </template>
@@ -106,6 +105,7 @@
 </template>
 
 <script lang="ts" setup>
+import { DateTime } from 'luxon'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'

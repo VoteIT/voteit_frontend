@@ -42,7 +42,7 @@
             {{ meetingGroup.title }}
           </span>
           <User v-else :pk="author" userid />
-          - {{ created.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) }}
+          - {{ DateTime.fromISO(created).toLocaleString(DateTime.DATETIME_SHORT) }}
         </p>
         <div v-html="body_diff || body" class="text-h4 proposal-text-paragraph my-2" />
       </div>
@@ -51,6 +51,7 @@
 </template>
 
 <script lang="ts" setup>
+import { DateTime } from 'luxon'
 import { computed, inject, nextTick, onBeforeMount, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'

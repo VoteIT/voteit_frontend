@@ -1,6 +1,6 @@
 <template>
   <main>
-    <v-form @submit.prevent="addMeeting()" v-model="formReady">
+    <v-form @submit.prevent="addMeeting" v-model="formReady">
       <v-text-field
         :label="t('title')"
         autocomplete="off"

@@ -102,8 +102,7 @@
                 <span v-if="source">
                   {{ getErMethod(source)?.title || source }},
                 </span>
-                {{ created.toLocaleString(undefined, { dateStyle: 'long' }) }},
-                {{ created.toLocaleString(undefined, { timeStyle: 'short' }) }}
+                {{ DateTime.fromISO(created).toLocaleString(DateTime.DATETIME_SHORT) }}
               </small>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -137,6 +136,7 @@
 
 <script lang="ts" setup>
 import { partition } from 'itertools'
+import { DateTime } from 'luxon'
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 

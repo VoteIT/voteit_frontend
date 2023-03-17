@@ -142,7 +142,7 @@ async function preview () {
     const { data } = await api.action<PreviewProposal>('preview', getCreateData())
     proposalPreview.value = {
       ...data,
-      created: new Date(),
+      created: new Date().toISOString(),
       pk: 0,
       shortname: props.shortname
     }

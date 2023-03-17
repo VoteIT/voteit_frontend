@@ -7,7 +7,6 @@ import type { LoaderCallback } from '@/composables/useLoader'
 
 import { meetingType } from './contentTypes'
 import { Meeting, MeetingState } from './types'
-import { dateify } from '@/utils'
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
@@ -65,14 +64,14 @@ function setMeeting (meeting: Meeting) {
 
 async function fetchMeeting (pk: number) {
   const { data } = await meetingType.api.retrieve(pk)
-  setMeeting(dateify(data, 'start_time', 'end_time'))
+  setMeeting(data)
   return !!data.current_user_roles
 }
 
 async function fetchMeetings () {
   const { data } = await meetingType.api.list()
   for (const m of data) {
-    meetings.set(m.pk, dateify(m, 'start_time', 'end_time'))
+    meetings.set(m.pk, m)
   }
 }
 

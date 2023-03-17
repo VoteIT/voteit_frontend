@@ -48,7 +48,7 @@ export interface Poll extends BaseContent {
   abstain_count?: number // Only finished polls
   agenda_item: number
   body: string | null
-  closed: Date | null
+  closed: string | null
   electoral_register?: number
   initial_electoral_register?: number
   meeting: number
@@ -57,5 +57,5 @@ export interface Poll extends BaseContent {
   result: VoteResult
   settings: unknown
   state: PollState
-  started: Date | null
+  started: string | null
 }

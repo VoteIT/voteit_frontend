@@ -39,7 +39,7 @@ export default function useAgendaFilter (agendaId: Ref<number>) {
     }
   })
 
-  function orderContent<T extends { created: Date }> (content: T[]) {
+  function orderContent<T extends { created: string }> (content: T[]) {
     const { order, direction } = sortOrder.value
     return orderBy(content, [order], [direction])
   }

@@ -5,11 +5,12 @@
 <script setup lang="ts">
 import { DateTime, Duration } from 'luxon'
 import { AxiosResponse } from 'axios'
-import { ref, PropType } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
 
 import restApi from '@/utils/restApi'
 import { durationToString } from '@/utils'
+import { currentLocale } from '@/utils/locales'
 
 const ABSOLUTE_BREAKPOINT = Duration.fromObject({ days: 6 }) // After 6 days, display absolute time
 let serverAhead = Duration.fromMillis(0) // In ms
@@ -27,7 +28,7 @@ interceptorId = restApi.interceptors.response.use(interceptTime)
 
 const props = defineProps({
   date: {
-    type: Date as PropType<Date>,
+    type: String,
     required: true
   },
   ordinary: Boolean,
@@ -39,7 +40,7 @@ const fromNow = ref('')
 
 // Adjust serverAhead value if we got a date in the future.
 function adjustServerAhead () {
-  const date = DateTime.fromJSDate(props.date)
+  const date = DateTime.fromISO(props.date)
   const msAhead = date.diff(DateTime.now())
   if (msAhead > serverAhead) {
     console.log(`Adjusting serverAhead to ${msAhead} ms ahead`)
@@ -49,7 +50,7 @@ function adjustServerAhead () {
 
 function updateFromNow () {
   // Can not be computed(), because time is not reactive
-  const date = DateTime.fromJSDate(props.date)
+  const date = DateTime.fromISO(props.date)
   const serverDate = DateTime.now().plus(serverAhead)
   const serverDiff = serverDate.diff(date)
   if (props.inSeconds) {
@@ -63,6 +64,8 @@ function updateFromNow () {
 
 adjustServerAhead()
 useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, { immediateCallback: true })
+watch(() => props.date, updateFromNow)
+watch(currentLocale, () => nextTick(updateFromNow))
 </script>
 
 <style lang="sass">

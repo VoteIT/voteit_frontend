@@ -30,15 +30,6 @@ export function tagify (text: string) {
   return text.toLocaleLowerCase().replace(TAG_DISALLOW_UNICODE, '-').replace(/^-/, '').replace(/-$/, '')
 }
 
-export function dateify<T extends object> (obj: T, ...attributes: readonly (keyof PickByType<T, Nullable<string | Date>>)[]): T {
-  const dateFields: Partial<Record<keyof T, Date>> = {}
-  attributes.forEach(attr => {
-    const value = obj[attr]
-    if (typeof value === 'string') dateFields[attr] = new Date(value)
-  })
-  return { ...obj, ...dateFields }
-}
-
 export function stripHTML (html: string) {
   const tmp = document.createElement('div')
   tmp.innerHTML = html

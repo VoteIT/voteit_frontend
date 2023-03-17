@@ -90,20 +90,20 @@ export interface Meeting extends BaseContent {
   body: string
   current_user_roles?: MeetingRole[]
   dialect: MeetingDialectDefinition | null
-  end_time: Date | null
+  end_time: string | null
   er_policy_name?: string
   group_votes_active: boolean
   group_roles_active: boolean
   public: boolean
   visible_in_lists: boolean
-  start_time: Date | null
+  start_time: string | null
 }
 
 export interface MeetingGroup extends BaseContent {
   groupid: string
   body: string
-  created: Date
-  modified: Date
+  created: string
+  modified: string
   tags: string[]
   author: number
   last_modified_by: number | null
