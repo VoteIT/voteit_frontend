@@ -133,7 +133,7 @@
 
 <script lang="ts" setup>
 import { any } from 'itertools'
-import { computed, Ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import SchemaForm from '@/components/SchemaForm.vue'

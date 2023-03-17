@@ -1,5 +1,4 @@
 import { expect, test, vi } from 'vitest'
-import { nextTick } from 'vue'
 
 import { socketState } from '@/utils/Socket'
 import useAuthentication from './useAuthentication'
