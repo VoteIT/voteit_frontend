@@ -1,28 +1,26 @@
 <template>
-  <teleport to="#toolbar">
-    <v-toolbar :title="agendaItem?.title" color="secondary-lighten-2" elevation="1" class="text-black">
-      <div class="mr-2">
-        <v-fade-transition>
-          <v-btn v-if="activeListPath" :to="activeListPath" variant="tonal" class="d-none d-md-inline-flex mr-4">
-            Aktiv talarlista
-          </v-btn>
-        </v-fade-transition>
-        <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="black" />
-      </div>
-      <template #extension v-if="agendaItem && speakerSystem && allSpeakerSystems.length > 1">
-        <v-tabs color="black" align-tabs="end" class="flex-grow-1">
-          <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
-            {{ title }}
-            <v-tooltip v-if="state === 'inactive'" :text="t('inactive')" location="top">
-              <template #activator="{ props }">
-                <v-icon v-bind="props" end color="secondary" start>mdi-eye-off</v-icon>
-              </template>
-            </v-tooltip>
-          </v-tab>
-        </v-tabs>
-      </template>
-    </v-toolbar>
-  </teleport>
+  <MeetingToolbar :title="agendaItem?.title">
+    <div class="mr-2">
+      <v-fade-transition>
+        <v-btn v-if="activeListPath" :to="activeListPath" variant="tonal" class="d-none d-md-inline-flex mr-4">
+          Aktiv talarlista
+        </v-btn>
+      </v-fade-transition>
+      <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="black" />
+    </div>
+    <template #extension v-if="agendaItem && speakerSystem && allSpeakerSystems.length > 1">
+      <v-tabs color="black" align-tabs="end" class="flex-grow-1">
+        <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
+          {{ title }}
+          <v-tooltip v-if="state === 'inactive'" :text="t('inactive')" location="top">
+            <template #activator="{ props }">
+              <v-icon v-bind="props" end color="secondary" start>mdi-eye-off</v-icon>
+            </template>
+          </v-tooltip>
+        </v-tab>
+      </v-tabs>
+    </template>
+  </MeetingToolbar>
   <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="5" lg="4" class="speaker-lists">
       <h2>{{ t('speaker.listChoices') }}</h2>
@@ -182,6 +180,7 @@ import useAgenda from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import type { User } from '../organisations/types'
 

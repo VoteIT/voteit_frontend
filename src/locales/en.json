@@ -529,6 +529,7 @@
     "view": "Plenary view"
   },
   "presence": {
+    "activateSystem": "Activate presence check system",
     "check": "Presence check",
     "checks": "Presence checks",
     "closeCheck": "Close presence check",
@@ -543,7 +544,8 @@
     "presence": "Presence",
     "presenceNoted": "We have noted your presence",
     "presentCount": "No participants present | One present participant | {count} present participants",
-    "recentlyClosedChecks": "Recently closed presence checks"
+    "recentlyClosedChecks": "Recently closed presence checks",
+    "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead."
   },
   "printing": {
     "enable": "Enable quick proposal printing",

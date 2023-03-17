@@ -1,87 +1,85 @@
 <template>
-  <teleport to="#toolbar">
-    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black">
-      <v-toolbar-title>
-        {{ t('electoralRegister.plural') }}
-      </v-toolbar-title>
-      <DefaultDialog
-        v-if="canTriggerERCreation"
-        :title="t('electoralRegister.establish')"
-        @open="triggerERCreation"
-      >
-        <template #activator="{ props }">
-          <v-btn v-bind="props" color="primary" variant="tonal" prepend-icon="mdi-account-plus">
-            {{ t('electoralRegister.establish') }}
+  <MeetingToolbar>
+    <v-toolbar-title>
+      {{ t('electoralRegister.plural') }}
+    </v-toolbar-title>
+    <DefaultDialog
+      v-if="canTriggerERCreation"
+      :title="t('electoralRegister.establish')"
+      @open="triggerERCreation"
+    >
+      <template #activator="{ props }">
+        <v-btn v-bind="props" color="primary" variant="tonal" prepend-icon="mdi-account-plus">
+          {{ t('electoralRegister.establish') }}
+        </v-btn>
+      </template>
+      <template #default="{ close }">
+        <div class="text-center py-4" v-if="erTriggerResult === 'waiting'">
+          <v-progress-circular color="primary" indeterminate />
+        </div>
+        <v-alert
+          v-else
+          class="mb-2"
+          :icon="erTriggerResult === 'failed' ? undefined : 'mdi-vote'"
+          :type="erTriggerResult === 'failed' ? 'warning' : undefined"
+          :title="erTriggerResultText"
+          :text="currentERText"
+        />
+        <div class="text-right">
+          <v-btn color="primary" :disabled="erTriggerResult === 'waiting'" @click="close" prepend-icon="mdi-close">
+            {{ t('close') }}
           </v-btn>
-        </template>
-        <template #default="{ close }">
-          <div class="text-center py-4" v-if="erTriggerResult === 'waiting'">
-            <v-progress-circular color="primary" indeterminate />
-          </div>
-          <v-alert
-            v-else
-            class="mb-2"
-            :icon="erTriggerResult === 'failed' ? undefined : 'mdi-vote'"
-            :type="erTriggerResult === 'failed' ? 'warning' : undefined"
-            :title="erTriggerResultText"
-            :text="currentERText"
-          />
-          <div class="text-right">
-            <v-btn color="primary" :disabled="erTriggerResult === 'waiting'" @click="close" prepend-icon="mdi-close">
-              {{ t('close') }}
-            </v-btn>
-          </div>
-        </template>
-      </DefaultDialog>
-      <DefaultDialog
-        v-if="canManagePresence && erMethod?.allow_manual"
-        :title="t('electoralRegister.create')"
-        @open="fetchRoles"
-      >
-        <template #activator="{ props }">
-          <v-btn v-bind="props" variant="tonal" prepend-icon="mdi-account-plus">
-            {{ t('electoralRegister.create') }}
+        </div>
+      </template>
+    </DefaultDialog>
+    <DefaultDialog
+      v-if="canManagePresence && erMethod?.allow_manual"
+      :title="t('electoralRegister.create')"
+      @open="fetchRoles"
+    >
+      <template #activator="{ props }">
+        <v-btn v-bind="props" variant="tonal" prepend-icon="mdi-account-plus">
+          {{ t('electoralRegister.create') }}
+        </v-btn>
+      </template>
+      <template #default="{ close }">
+        <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
+        <div>
+          <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
+          <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
+        </div>
+        <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
+          <template #appendItem="{ user, isSelected }">
+            <div v-if="isSelected">
+              <v-text-field
+                v-if="erMethodWeighted"
+                density="compact"
+                hide-details
+                type="number"
+                required
+                :label="t('electoralRegister.weight')"
+                :min="minWeight"
+                :model-value="createSelection.get(user)"
+                :step="minWeight"
+                @update:modelValue="createSelection.set(user, round($event))"
+                @click.stop
+                @keydown.stop
+              />
+              <v-icon v-else>mdi-check-circle</v-icon>
+            </div>
+          </template>
+        </UserList>
+        <div class="text-right">
+          <v-btn variant="text" @click="close">
+            {{ t('cancel') }}
           </v-btn>
-        </template>
-        <template #default="{ close }">
-          <v-alert type="info" class="my-2" :text="t('electoralRegister.createHelp')" />
-          <div>
-            <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
-            <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
-          </div>
-          <UserList multiple :userIds="potentialVoters" v-model="selectedUsers" density="default" class="mb-4">
-            <template #appendItem="{ user, isSelected }">
-              <div v-if="isSelected">
-                <v-text-field
-                  v-if="erMethodWeighted"
-                  density="compact"
-                  hide-details
-                  type="number"
-                  required
-                  :label="t('electoralRegister.weight')"
-                  :min="minWeight"
-                  :model-value="createSelection.get(user)"
-                  :step="minWeight"
-                  @update:modelValue="createSelection.set(user, round($event))"
-                  @click.stop
-                  @keydown.stop
-                />
-                <v-icon v-else>mdi-check-circle</v-icon>
-              </div>
-            </template>
-          </UserList>
-          <div class="text-right">
-            <v-btn variant="text" @click="close">
-              {{ t('cancel') }}
-            </v-btn>
-            <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister().then(close)" :disabled="createSelection.size === 0">
-              {{ t('create') }}
-            </v-btn>
-          </div>
-        </template>
-      </DefaultDialog>
-    </v-toolbar>
-  </teleport>
+          <v-btn prepend-icon="mdi-account-plus" color="primary" @click="createRegister().then(close)" :disabled="createSelection.size === 0">
+            {{ t('create') }}
+          </v-btn>
+        </div>
+      </template>
+    </DefaultDialog>
+  </MeetingToolbar>
   <v-row>
     <v-col v-bind="cols.default">
       <template v-for="{ description, title, registers } in groups" :key="title">
@@ -157,6 +155,7 @@ import useMeeting from '../useMeeting'
 import useMeetingTitle from '../useMeetingTitle'
 import { MeetingRole } from '../types'
 import { electoralRegisterType, meetingType } from '../contentTypes'
+import MeetingToolbar from '../MeetingToolbar.vue'
 import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()

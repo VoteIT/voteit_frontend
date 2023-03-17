@@ -1,12 +1,10 @@
 <template>
-  <teleport to="#toolbar">
-    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black">
-      <v-breadcrumbs v-if="breadcrumbs" :items="breadcrumbs" />
-      <v-toolbar-title v-else>
-        {{ t('meeting.controlPanel') }}
-      </v-toolbar-title>
-    </v-toolbar>
-  </teleport>
+  <MeetingToolbar>
+    <v-breadcrumbs v-if="breadcrumbs" :items="breadcrumbs" />
+    <v-toolbar-title v-else>
+      {{ t('meeting.controlPanel') }}
+    </v-toolbar-title>
+  </MeetingToolbar>
   <v-row id="setting-panels">
     <v-col v-if="currentComponent">
       <component :is="currentComponent"/>
@@ -41,13 +39,14 @@ import { computed, onBeforeMount, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import useLoader from '@/composables/useLoader'
 import usePermission from '@/composables/usePermission'
-import useMeeting from '@/modules/meetings/useMeeting'
 
 import { meetingSettingsPlugins } from './registry'
+import MeetingToolbar from './MeetingToolbar.vue'
+import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
 import useComponentApi from './useComponentApi'
-import useLoader from '@/composables/useLoader'
 
 import './controlPanels'
 import type { Meeting } from './types'

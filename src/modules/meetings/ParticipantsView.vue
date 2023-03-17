@@ -1,10 +1,8 @@
 <template>
-  <teleport to="#toolbar">
-    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black">
-      <v-spacer />
-      <v-tabs v-model="currentTab" :items="tabs" />
-    </v-toolbar>
-  </teleport>
+  <MeetingToolbar>
+    <v-spacer />
+    <v-tabs v-model="currentTab" :items="tabs" />
+  </MeetingToolbar>
   <v-row>
     <v-col>
       <v-window v-model="currentTab" :touch="false">
@@ -110,20 +108,21 @@ import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
 import useTabPath from '@/composables/useTabPath'
 
-import useMeeting from '../meetings/useMeeting'
 import { User } from '../organisations/types'
-import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
-import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
+import useUserDetails from '../organisations/useUserDetails'
+import useOrganisation from '../organisations/useOrganisation'
 import usePresence from '../presence/usePresence'
 import { presenceType } from '../presence/contentTypes'
+import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
+import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
+import useMeeting from './useMeeting'
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
 import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
-import useUserDetails from '../organisations/useUserDetails'
-import useOrganisation from '../organisations/useOrganisation'
+import MeetingToolbar from './MeetingToolbar.vue'
 
 const meetingIcons: Record<MeetingRole, string> = {
   participant: 'mdi-eye',

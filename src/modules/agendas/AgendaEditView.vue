@@ -1,10 +1,8 @@
 <template>
-  <teleport to="#toolbar">
-    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black" :title="t('agenda.agenda')">
-      <v-spacer />
-      <v-tabs :items="editModes" v-model="editMode" />
-    </v-toolbar>
-  </teleport>
+  <MeetingToolbar :title="t('agenda.agenda')">
+    <v-spacer />
+    <v-tabs :items="editModes" v-model="editMode" />
+  </MeetingToolbar>
   <v-window v-model="editMode">
     <v-window-item value="default">
       <div class="d-flex align-center">
@@ -173,6 +171,7 @@ import { AlertLevel } from '@/composables/types'
 import usePermission from '@/composables/usePermission'
 import QueryDialog from '@/components/QueryDialog.vue'
 
+import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
 import { meetingType } from '../meetings/contentTypes'
 
