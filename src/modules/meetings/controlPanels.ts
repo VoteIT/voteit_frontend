@@ -4,12 +4,14 @@ import ExportsControlPanel from './ExportsControlPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import ERQuick from './electoralRegisters/QuickPanel.vue'
 import DialectQuick from './dialects/QuickPanel.vue'
+import DialectControlPanel from './dialects/ControlPanel.vue'
 // import PresenceChecks from '../presence/ControlPanel.vue'
 import SpeakerSystems from '../speakerLists/ControlPanel.vue'
 import { meetingSettingsPlugins } from './registry'
 
 meetingSettingsPlugins.register({
   id: 'dialect',
+  component: DialectControlPanel,
   quickComponent: DialectQuick,
   icon: 'mdi-brush-variant',
   getTitle (t) {

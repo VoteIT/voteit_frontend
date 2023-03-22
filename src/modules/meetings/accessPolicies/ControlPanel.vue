@@ -30,7 +30,7 @@
         <div class="my-12 text-center">
           <v-btn
             v-if="!accessPolicies.length"
-            @click="addAutomaticAccess()"
+            @click="addAutomaticAccess"
             prepend-icon="mdi-account-cog"
             size="large"
             color="primary">
@@ -106,7 +106,7 @@ const NON_MODIFIABLE_ROLES = [
 ]
 
 const { t } = useI18n()
-const { meetingId, meeting, meetingPath, meetingUrl } = useMeeting()
+const { meetingId, meeting, meetingDialect, meetingPath, meetingUrl } = useMeeting()
 const { alert } = useAlert()
 const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
 
@@ -136,7 +136,7 @@ const meetingListed = computed<boolean>({
 const roles = computed(() => {
   return Object.values(MeetingRole)
     .filter(
-      r => r
+      r => !meetingDialect.value?.block_roles?.includes(r)
     )
     .map(
       r => ({ text: t(`role.${r}`), value: r, disabled: NON_MODIFIABLE_ROLES.includes(r) })

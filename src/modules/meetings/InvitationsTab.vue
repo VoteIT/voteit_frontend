@@ -3,7 +3,7 @@
   <v-toolbar color="secondary" :title="t('invites.existing')">
     <v-tooltip :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
       <template #activator="{ props }">
-        <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('invites.copyMatchingTooltip')">
+        <v-btn class="mr-2" v-bind="props" @click="copyFilteredData" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('invites.copyMatchingTooltip')">
           <v-icon>mdi-content-copy</v-icon>
         </v-btn>
       </template>
@@ -21,7 +21,7 @@
           {{ t('invites.add') }}
         </v-btn>
       </template>
-      <v-form @submit.prevent="submitInvites()" v-model="inviteData.valid">
+      <v-form @submit.prevent="submitInvites" v-model="inviteData.valid">
         <v-select
           v-if="scopeItems?.length !== 1"
           class="mb-2"
@@ -41,7 +41,7 @@
         />
         <CheckboxMultipleSelect
           v-model="inviteData.roles"
-          :settings="{ options: roleLabels }"
+          :settings="{ options: roleLabelsEditable }"
           :label="t('accessPolicy.rolesGiven')"
           :requiredValues="['participant']"
         />
@@ -65,7 +65,7 @@
       <div class="pa-4">
         <v-text-field :label="t('search')" v-model="inviteFilter.search" clearable />
         <CheckboxMultipleSelect v-model="inviteFilter.states" :settings="{ options: stateLabels }" :label="t('invites.filterOnStatus')" />
-        <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabels }" :label="t('invites.filterOnRoles')" :requiredValues="['participant']" />
+        <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabelsEditable }" :label="t('invites.filterOnRoles')" :requiredValues="['participant']" />
         <v-switch v-model="inviteFilter.exactRoles" :label="t('invites.filterMatchRoles')" />
       </div>
     </v-sheet>
@@ -91,7 +91,7 @@
     <v-item-group tag="tbody" v-model="selectedInviteIds" multiple>
       <v-item v-for="invite in pages[currentPage - 1]" :key="invite.pk" :value="invite.pk">
         <template v-slot="{ isSelected, toggle }">
-          <tr @click="toggle()" :class="{ 'bg-secondary-lighten-2': isSelected }">
+          <tr @click="toggle" :class="{ 'bg-secondary-lighten-2': isSelected }">
             <td>
               <input type="checkbox" :checked="(isSelected)" />
             </td>
@@ -115,17 +115,17 @@
     </v-item-group>
   </v-table>
   <v-pagination v-if="pages.length > 1" v-model="currentPage" :length="pages.length" />
-  <v-alert v-if="inviteHelp" v-bind="inviteHelp" class="my-4" />
+  <v-alert v-if="inviteHelp" type="info" v-bind="inviteHelp" class="my-4" />
   <v-expand-transition>
     <v-sheet rounded border v-show="selectedInvites.length">
       <div class="ma-4">
         <h2 class="mb-2">
           {{ t('invites.bulkChange', selectedInvites.length) }}
         </h2>
-        <v-btn prepend-icon="mdi-undo" color="primary" :disabled="!selectedHasDeletable" @click="revokeSelected()" class="mr-1">
+        <v-btn prepend-icon="mdi-undo" color="primary" :disabled="!selectedHasDeletable" @click="revokeSelected" class="mr-1">
           {{ t('invites.revoke') }}
         </v-btn>
-        <v-btn prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected()">
+        <v-btn prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected">
           {{ t('content.delete') }}
         </v-btn>
       </div>
@@ -168,7 +168,7 @@ const meetingIcons: Record<MeetingRole, string> = {
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meetingId, roleLabels } = useMeeting()
+const { isModerator, meetingId, roleLabelsEditable } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { copy, copied } = useClipboard()
 const rules = useRules(t)
@@ -321,13 +321,11 @@ async function revokeSelected () {
 const inviteHelp = computed(() => {
   if (!meetingInvites.value.length) {
       return {
-      type: 'info',
       text: t('invites.noInvitesHelp')
     }
   }
   if (!filteredInvites.value.length) {
     return {
-      type: 'info',
       text: t('invites.noFilteredInvitesHelp'),
       icon: 'mdi-filter-off'
     }

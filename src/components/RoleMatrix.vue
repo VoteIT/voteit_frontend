@@ -57,8 +57,8 @@
 
 <script lang="ts" setup>
 import { ifilter } from 'itertools'
-import { orderBy as _orderBy } from 'lodash'
-import { computed, onBeforeMount, PropType, reactive, ref } from 'vue'
+import { Dictionary, orderBy as _orderBy } from 'lodash'
+import { computed, onBeforeMount, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
@@ -72,24 +72,20 @@ import useMeeting from '@/modules/meetings/useMeeting'
 
 const USERS_PER_PAGE = 50
 
-const props = defineProps({
-  admin: Boolean,
-  addConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>,
-  cols: Array as PropType<string[]>,
-  contentType: {
-    type: ContentType as PropType<ContentType<any, any>>,
-    required: true
-  },
-  filter: Function as PropType<(userRoles: UserContextRoles) => boolean>,
-  icons: {
-    type: Object,
-    required: true
-  },
-  pk: {
-    type: Number,
-    required: true
-  },
-  removeConfirm: Function as PropType<(user: number, role: string) => Promise<boolean>>
+interface Props {
+  admin: boolean
+  addConfirm? (user: number, role: string): Promise<boolean>
+  cols?: string[]
+  contentType: ContentType<any, any>
+  filter? (userRoles: UserContextRoles): boolean
+  icons: Dictionary<string>
+  pk: number
+  readonlyRoles?: Dictionary<string>
+  removeConfirm? (user: number, role: string): Promise<boolean>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  readonlyRoles: () => ({})
 })
 
 const { t } = useI18n()
@@ -102,7 +98,7 @@ const contextRoles = props.contentType.useContextRoles()
  * Create a full column definition from role name.
  */
 function roleToCol (name: string): DescribedColumn {
-  return {
+  const readonlyColumn: DescribedColumn = {
     getCount () {
       return contextRoles.getRoleCount(props.pk, name)
     },
@@ -110,17 +106,24 @@ function roleToCol (name: string): DescribedColumn {
       return t(`role.help.${name}`)
     },
     getTitle (t) {
-      return t(`role.${name}`)
+      const title = t(`role.${name}`)
+      return name in props.readonlyRoles
+        ? `${title} (${props.readonlyRoles[name]})`
+        : title
     },
     getValue (user) {
       return user.assigned.has(name)
     },
+    icon: props.icons[name],
+    name
+  }
+  if (name in props.readonlyRoles) return readonlyColumn
+  return {
+    ...readonlyColumn,
     setValue (user, value) {
       if (value) addRole(user, name)
       else removeRole(user, name)
-    },
-    icon: props.icons[name],
-    name
+    }
   }
 }
 

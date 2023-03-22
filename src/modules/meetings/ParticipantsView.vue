@@ -16,6 +16,7 @@
             :icons="meetingIcons"
             :cols="matrixCols"
             :filter="filterParticipants"
+            :readonly-roles="readonlyRoles"
           >
             <template #filter>
               <div class="d-flex">
@@ -134,7 +135,7 @@ const meetingIcons: Record<MeetingRole, string> = {
 
 const { t } = useI18n()
 const { user } = useAuthentication()
-const { meetingId, meetingPath, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
+const { meetingId, meetingDialect, meetingPath, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
@@ -172,6 +173,13 @@ function addRole (user: number, role: string) {
 function addUser (user: number) {
   addRole(user, MeetingRole.Participant)
 }
+
+const readonlyRoles = computed(() => {
+  if (!meetingDialect.value?.block_roles) return
+  return Object.fromEntries(
+    meetingDialect.value.block_roles.map(role => [role, t('meeting.dialectReadonlyRole')])
+  )
+})
 
 async function removeConfirm (userPk: number, role: string) {
   if (userPk === user.value?.pk && ['moderator', 'participant'].includes(role)) {

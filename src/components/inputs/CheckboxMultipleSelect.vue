@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+import { Dictionary } from 'lodash'
 import { defineComponent, PropType, reactive, watch } from 'vue'
 
 type ChoiceRecord = Record<string, boolean>
@@ -28,7 +29,7 @@ export default defineComponent({
       default: () => []
     },
     settings: {
-      type: Object as PropType<{ options?: Record<string, string> }>,
+      type: Object as PropType<{ options: Dictionary<string> }>,
       required: true
     },
     label: String,

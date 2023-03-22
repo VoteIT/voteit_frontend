@@ -24,7 +24,7 @@ export default function useMeeting () {
       }))
   })
 
-  function getRoleLabels (filter: (k: string) => boolean = () => true) {
+  function getRoleLabels (filter: (k: MeetingRole) => boolean = () => true) {
     return Object.fromEntries(
       Object.values(MeetingRole)
         .filter(filter)
@@ -33,11 +33,13 @@ export default function useMeeting () {
   }
 
   const roleLabels = computed(() => getRoleLabels())
+  const roleLabelsEditable = computed(() => getRoleLabels(role => !meetingDialect.value?.block_roles?.includes(role)))
   const meetingId = computed(() => Number(route.params.id))
   const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value))
+  const meetingDialect = computed(() => meeting.value?.dialect)
+  const meetingJoinPath = computed(() => `/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
   const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
   const meetingUrl = computed(() => `${location.origin}${meetingPath.value}`)
-  const meetingJoinPath = computed(() => `/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
 
   const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value))
   function hasRole (role: MeetingRole, user?: number) {
@@ -63,13 +65,15 @@ export default function useMeeting () {
     canViewMeetingInvite: computed(() => meeting.value && canViewMeetingInvite(meeting.value)),
     isFinishedMeeting: computed(() => isFinishedMeeting(meeting.value)),
     isModerator: computed(() => isModerator(meeting.value)),
-    meetingId,
     meeting,
+    meetingId,
+    meetingDialect,
+    meetingJoinPath,
     meetingPath,
     meetingUrl,
-    meetingJoinPath,
     roleItems,
     roleLabels,
+    roleLabelsEditable,
     userRoles,
     getMeetingRoute,
     getRoleLabels,

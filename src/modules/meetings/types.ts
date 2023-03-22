@@ -66,6 +66,7 @@ export enum MeetingState {
 
 export interface MeetingDialectDefinition {
   block_components?: string[]
+  block_roles?: MeetingRole[]
   configure_components?: { name: string }[]
   description: string
   er_policy_name: string
