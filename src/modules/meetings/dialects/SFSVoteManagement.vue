@@ -91,7 +91,7 @@ const canAssignVotes = computed(() => {
   return (
     !isFinishedMeeting(meetingId.value) &&
     (
-      isModerator ||
+      !isModerator.value ||
       props.group.memberships.some(member => member.user === user.value?.pk && member.role === leaderRoleId.value)
     )
   )
