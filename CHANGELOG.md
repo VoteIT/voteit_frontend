@@ -16,7 +16,7 @@ Support for meeting dialects and using meeting groups to define voting rights an
 - Allow manually triggering Electoral Register creation [#241](https://github.com/VoteIT/voteit_frontend/issues/241)
 - Major overhaul of Control Panel (Multiple issues)
 - Presence check is now a component (default off) [#260](https://github.com/VoteIT/voteit_frontend/issues/260)
-- Allow user to select language (en and sv supported)
+- Allow user to select language (en and sv supported) [#222](https://github.com/VoteIT/voteit_frontend/issues/222)
 - Improved visaualization of STV results
 
 ## 0.10.3
