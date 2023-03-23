@@ -12,7 +12,7 @@
         </div>
       </div>
       <Richtext v-if="p.shortname === 'proposal'" :object="p" class="my-3" />
-      <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3" />
+      <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3"></div>
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
@@ -33,7 +33,7 @@
       </v-sheet>
       <footer v-if="!readOnly" class="mt-2 d-flex">
         <div class="d-flex flex-wrap">
-          <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment()">
+          <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment">
             {{ t('discussion.comment') }}
           </v-btn>
           <v-btn prepend-icon="mdi-chevron-up" size="small" variant="text" v-if="showComments" @click="showComments = false">
@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ComponentPublicInstance, computed, nextTick, PropType, ref } from 'vue'
+import { ComponentPublicInstance, computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -87,13 +87,7 @@ import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
-const props = defineProps({
-  p: {
-    type: Object as PropType<Proposal>,
-    required: true
-  },
-  readOnly: Boolean
-})
+const props = defineProps<{ p: Proposal, readOnly?: boolean }>()
 
 const { t } = useI18n()
 const { isModerator, meetingId } = useMeeting()

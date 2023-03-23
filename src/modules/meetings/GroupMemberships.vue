@@ -109,7 +109,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import UserSearch from '@/components/UserSearch.vue'
@@ -126,17 +126,12 @@ import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 const { t } = useI18n()
 
-const props = defineProps({
-  editable: Boolean,
-  group: {
-    type: Number,
-    required: true
-  },
-  members: {
-    type: Array as PropType<GroupMembership[]>,
-    required: true
-  }
-})
+interface Props {
+  editable?: boolean
+  group: number
+  members: GroupMembership[]
+}
+const props = defineProps<Props>()
 
 const { getUser } = useUserDetails()
 const { meeting, meetingId } = useMeeting()

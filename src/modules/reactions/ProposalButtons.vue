@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, PropType } from 'vue'
+import { computed, inject } from 'vue'
 
 import { meetingIdKey } from '../meetings/injectionKeys'
 import { Proposal } from '../proposals/types'
@@ -17,12 +17,7 @@ const meetingId = inject(meetingIdKey)
 if (!meetingId) throw new Error('Reaction buttons requires meeting context')
 const { getMeetingButtons } = useReactions()
 
-defineProps({
-  proposal: {
-    type: Object as PropType<Proposal>,
-    required: true
-  }
-})
+defineProps<{ proposal: Proposal }>()
 
 const reactions = computed(() => getMeetingButtons(meetingId.value, 'proposal'))
 </script>

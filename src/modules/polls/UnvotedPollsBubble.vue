@@ -26,9 +26,7 @@ import { slugify } from '@/utils'
 import useMeeting from '../meetings/useMeeting'
 import usePolls from './usePolls'
 
-defineProps({
-  modelValue: Boolean
-})
+defineProps<{ modelValue?: boolean }>()
 defineEmits(['update:modelValue'])
 
 const { t } = useI18n()

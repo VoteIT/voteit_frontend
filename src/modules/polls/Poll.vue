@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
@@ -63,16 +63,11 @@ import useMeeting from '../meetings/useMeeting'
 
 import { slugify } from '@/utils'
 import { pollType } from './contentTypes'
-import { Poll } from './methods/types'
 import usePoll from './usePoll'
 import useChannel from '@/composables/useChannel'
+import { Poll } from './types'
 
-const props = defineProps({
-  poll: {
-    type: Object as PropType<Poll>,
-    required: true
-  }
-})
+const props = defineProps<{ poll: Poll }>()
 
 const { t } = useI18n()
 const { isModerator, meetingPath } = useMeeting()

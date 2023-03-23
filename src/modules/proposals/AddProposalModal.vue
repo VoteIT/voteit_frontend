@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column">
     <v-expand-transition>
-      <form @submit.prevent="preview()" v-show="!done">
+      <form @submit.prevent="preview" v-show="!done">
         <slot name="editor">
           <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
         </slot>
@@ -9,7 +9,7 @@
         <div class="d-flex flex-column flex-md-row">
           <PostAs v-if="canPostAs" v-model="author" />
           <v-spacer />
-          <slot name="actions" />
+          <slot name="actions"></slot>
         </div>
       </form>
     </v-expand-transition>
@@ -39,7 +39,7 @@
       <v-btn variant="text" @click="$emit('close')">
         {{ t('cancel') }}
       </v-btn>
-      <v-btn color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal()">
+      <v-btn color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal">
         {{ proposal ? t('update') : t('publish') }}
       </v-btn>
     </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { stripHTML } from '@/utils'
@@ -66,24 +66,22 @@ import type { PreviewProposal, Proposal } from './types'
 import useTags from '../meetings/useTags'
 
 const previewDelay = 500 // Wait 1 s before preview
-let previewTimeout: number
+let previewTimeout: ReturnType<typeof setTimeout>
 
-defineEmits(['close'])
-const props = defineProps({
-  shortname: {
-    type: String as PropType<Proposal['shortname']>,
-    default: 'proposal'
+interface Props {
+  extra: Partial<Proposal>
+  modelValue: string
+  proposal?: Proposal
+  shortname: Proposal['shortname']
+}
+const props = withDefaults(defineProps<Props>(), {
+  extra () {
+    return {}
   },
-  extra: {
-    type: Object as PropType<Partial<Proposal>>,
-    default: () => ({})
-  },
-  modelValue: {
-    type: String,
-    default: ''
-  },
-  proposal: Object as PropType<Proposal>
+  modelValue: '',
+  shortname: 'proposal'
 })
+defineEmits(['close'])
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()

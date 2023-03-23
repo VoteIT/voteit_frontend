@@ -21,16 +21,16 @@
         </v-list-item-title>
       </v-list-item>
     </v-list>
-    <slot/>
+    <slot></slot>
   </div>
 </template>
 
 <script lang="ts" setup>
 import useProposals from '@/modules/proposals/useProposals'
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ScottishSTVResult } from './types'
+import { ResultProps, ScottishSTVResult } from './types'
 
 const translationMapping: Record<string, string | undefined> = {
   Direct: 'poll.STV.direct',
@@ -40,12 +40,7 @@ const translationMapping: Record<string, string | undefined> = {
   'No competition left': 'poll.STV.noCompetition'
 }
 
-const props = defineProps({
-  result: {
-    type: Object as PropType<ScottishSTVResult>,
-    required: true
-  }
-})
+const props = defineProps<ResultProps<ScottishSTVResult>>()
 
 const { getProposal } = useProposals()
 const { t } = useI18n()

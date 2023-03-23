@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useDefaults from '@/composables/useDefaults'
@@ -53,15 +53,16 @@ const { dialogDefaults } = useDefaults()
 
 const emit = defineEmits(['confirmed'])
 
-const props = defineProps({
-  confirmText: String,
-  modelValue: Boolean,
-  persistent: Boolean,
-  text: String,
-  color: {
-    type: String as PropType<Color>,
-    default: 'primary'
-  }
+interface Props {
+  confirmText?: string
+  modelValue?: boolean
+  persistent?: boolean
+  text?: string
+  color: Color
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  color: 'primary'
 })
 
 const isActive = ref(props.modelValue)

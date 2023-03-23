@@ -123,9 +123,7 @@ import SchemaForm from './SchemaForm.vue'
 import { FieldType } from './types'
 import type { FormSchema } from './types'
 
-defineProps({
-  title: String
-})
+defineProps<{ title?: string }>()
 
 const { t } = useI18n()
 const router = useRouter()

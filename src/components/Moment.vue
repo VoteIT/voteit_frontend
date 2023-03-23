@@ -26,15 +26,14 @@ function interceptTime (response: AxiosResponse): AxiosResponse {
 }
 interceptorId = restApi.interceptors.response.use(interceptTime)
 
-const props = defineProps({
-  date: {
-    type: String,
-    required: true
-  },
-  ordinary: Boolean,
-  prepend: String,
-  inSeconds: Boolean
-})
+interface Props {
+  date: string
+  ordinary?: boolean
+  prepend?: string
+  inSeconds?: boolean
+}
+
+const props = defineProps<Props>()
 
 const fromNow = ref('')
 

@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, PropType, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, stripHTML } from '@/utils'
@@ -44,28 +44,22 @@ import RichtextEditor from './RichtextEditor.vue'
 import { EditorComponent } from './types'
 import TagEdit from './TagEdit.vue'
 
-const props = defineProps({
-  name: String,
-  handler: {
-    type: Function as PropType<(post: Partial<DiscussionPost>) => Promise<void>>,
-    required: true
-  },
-  modelValue: {
-    type: String,
-    default: ''
-  },
-  submitText: String,
-  submitIcon: String,
-  placeholder: String,
-  minLength: {
-    type: Number,
-    default: 1
-  },
-  warnLength: {
-    type: Number,
-    default: 10
-  },
-  setTag: String
+interface Props {
+  name?: string
+  handler (post: Partial<DiscussionPost>): Promise<void>
+  modelValue: string
+  submitIcon?: string
+  submitText?: string
+  placeholder?: string
+  minLength: number
+  warnLength: number
+  setTag?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  minLength: 1,
+  warnLength: 10
 })
 
 const emit = defineEmits(['update:modelValue'])

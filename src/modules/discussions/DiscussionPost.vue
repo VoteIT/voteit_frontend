@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
@@ -76,13 +76,7 @@ import { Author } from '../meetings/types'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 
-const props = defineProps({
-  p: {
-    type: Object as PropType<DiscussionPost>,
-    required: true
-  },
-  readOnly: Boolean
-})
+const props = defineProps<{ p: DiscussionPost, readOnly?: boolean }>()
 
 const { t } = useI18n()
 const { getHTMLTags } = useTags()

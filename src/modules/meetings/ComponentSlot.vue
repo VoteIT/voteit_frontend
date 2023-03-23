@@ -15,12 +15,7 @@ import useMeeting from './useMeeting'
 
 const { meeting } = useMeeting()
 
-const props = defineProps({
-  name: {
-    type: String,
-    required: true
-  }
-})
+const props = defineProps<{ name: string }>()
 
 const components = computed(() => {
   return filter(

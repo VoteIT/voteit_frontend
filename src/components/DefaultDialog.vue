@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 import { Color } from '@/utils/types'
 import useDefaults from '@/composables/useDefaults'
@@ -39,13 +39,15 @@ const emit = defineEmits([
   'update:modelValue'
 ])
 
-const props = defineProps({
-  color: String as PropType<Color>,
-  height: [String, Number],
-  modelValue: Boolean,
-  persistent: Boolean,
-  title: String
-})
+interface Props {
+  color?: Color
+  height?: string | number
+  modelValue?: boolean
+  persistent?: boolean
+  title?: string
+}
+
+const props = defineProps<Props>()
 
 const isActive = ref(props.modelValue)
 

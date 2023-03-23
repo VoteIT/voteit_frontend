@@ -5,7 +5,7 @@
     :disabled="!canReact"
     :list-disabled="!canListReactions"
     v-model="reacted"
-    @list-open="fetchUsers()"
+    @list-open="fetchUsers"
   >
     <template #userList>
       <UserList :userIds="reactionUsers" />
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import UserList from '@/components/UserList.vue'
 
@@ -23,16 +23,7 @@ import { canAddReaction, canDeleteReaction, canListReactions as canList } from '
 import { ReactionButton, ReactionRelation } from './types'
 import RealReactionButton from './RealReactionButton.vue'
 
-const props = defineProps({
-  button: {
-    type: Object as PropType<ReactionButton>,
-    required: true
-  },
-  relation: {
-    type: Object as PropType<ReactionRelation>,
-    required: true
-  }
-})
+const props = defineProps<{ button: ReactionButton, relation: ReactionRelation }>()
 
 const { fetchReactions, getUserReaction, setUserReacted, removeUserReacted, getButtonReactionCount } = useReactions()
 const reaction = computed(() => getUserReaction(props.button, props.relation))

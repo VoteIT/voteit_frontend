@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import { Proposal } from '../proposals/types'
@@ -14,12 +14,7 @@ import usePrinting from './usePrinting'
 
 const { backOnPrinted } = usePrinting()
 
-const props = defineProps({
-  proposal: {
-    type: Object as PropType<Proposal>,
-    required: true
-  }
-})
+const props = defineProps<{ proposal: Proposal }>()
 
 const { agendaItemPath } = useAgendaItem(ref(props.proposal.agenda_item))
 const to = computed(() => `${agendaItemPath.value}/print/${props.proposal.pk}`)

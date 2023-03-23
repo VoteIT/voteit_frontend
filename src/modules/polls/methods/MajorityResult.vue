@@ -25,31 +25,18 @@
 
 <script lang="ts" setup>
 import { orderBy } from 'lodash'
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 import useProposals from '@/modules/proposals/useProposals'
-import type { MajorityResult } from './types'
+import type { MajorityResult, ResultProps } from './types'
 import type { Proposal } from '@/modules/proposals/types'
 
 const { t } = useI18n()
 const { getProposal } = useProposals()
 
-const props = defineProps({
-  abstainCount: {
-    type: Number,
-    required: true
-  },
-  proposals: {
-    type: Array as PropType<number[]>,
-    required: true
-  },
-  result: {
-    type: Object as PropType<MajorityResult>,
-    required: true
-  }
-})
+const props = defineProps<ResultProps<MajorityResult>>()
 
 function getIcon (proposal: number) {
   if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success, text: t('proposal.approved') }

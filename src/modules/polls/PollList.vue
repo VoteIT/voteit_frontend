@@ -1,6 +1,6 @@
 <template>
   <div>
-    <slot :empty="tabStates.length === 0" />
+    <slot :empty="tabStates.length === 0"></slot>
     <Dropdown v-for="{ state, polls } in tabStates" :key="state" :title="`${t(`workflowState.plural.${state}`)} (${polls.length})`" v-model="dropdowns[state]" :class="groupClass">
       <PollCard :poll="p" v-for="p in polls" :key="p.pk" :class="pollClass" />
     </Dropdown>
@@ -8,34 +8,33 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, reactive, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { orderBy } from 'lodash'
+import { computed, reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../meetings/useMeeting'
 import PollCard from '../polls/Poll.vue'
 import usePolls from '../polls/usePolls'
 
 import { pollType } from './contentTypes'
-import { PollState } from './types'
-import type { Poll } from './methods/types'
+import { Poll, PollState } from './types'
 
 const STATE_ORDERS: Partial<Record<PollState, [keyof Poll, 'asc' | 'desc']>> = {
   ongoing: ['started', 'asc'],
   finished: ['closed', 'desc']
 }
 
-const props = defineProps({
-  agendaItem: Number,
-  groupClass: [String, Object],
-  pollClass: {
-    type: [String, Object],
-    default: 'my-1'
+interface Props {
+  agendaItem?: number
+  groupClass?: string | object
+  modelValue: PollState[]
+  pollClass: string | object
+}
+const props = withDefaults(defineProps<Props>(), {
+  modelValue () {
+    return [PollState.Ongoing]
   },
-  modelValue: {
-    type: Array as PropType<PollState[]>,
-    default: () => [PollState.Ongoing]
-  }
+  pollClass: 'my-1'
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -58,7 +57,7 @@ const tabStates = computed(() => {
         : getPolls(meetingId.value, s.state)
       return {
         ...s,
-        polls: orderBy(polls, [attr], [direction])
+        polls: orderBy(polls, attr, direction)
       }
     })
     .filter(s => s.polls.length)

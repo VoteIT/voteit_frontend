@@ -7,19 +7,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 
 import useMeeting from '../meetings/useMeeting'
 
 import { proposalButtonPlugins } from './registry'
 import type { Proposal } from './types'
 
-defineProps({
-  proposals: {
-    type: Array as PropType<Proposal[]>,
-    required: true
-  }
-})
+defineProps<{ proposals: Proposal[] }>()
 
 const { meeting } = useMeeting()
 

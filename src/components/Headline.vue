@@ -1,6 +1,6 @@
 <template>
   <component :is="tag" class="editable-headline" @click="onClick">
-    <input ref="inputEl" v-if="editActive" v-model="content" :maxlength="maxlength" @keydown.ctrl.enter="done()" @keydown.enter.exact="done()" />
+    <input ref="inputEl" v-if="editActive" v-model="content" :maxlength="maxlength" @keydown.ctrl.enter="done" @keydown.enter.exact="done" />
     <template v-else>{{ content }}</template>
   </component>
 </template>
@@ -9,21 +9,17 @@
 import { onClickOutside } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'
 
-const emit = defineEmits(['update:modelValue', 'update:editing', 'edit-done'])
-const props = defineProps({
-  modelValue: {
-    type: String,
-    required: true
-  },
-  tag: {
-    type: String,
-    default: 'h1',
-    validator: (value: string) => /^[hH][1-6]$/.test(value)
-  },
-  editing: Boolean,
-  clickToEdit: Boolean,
-  maxlength: Number
+interface Props {
+  modelValue: string
+  tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  editing?: boolean
+  clickToEdit?: boolean
+  maxlength?: number
+}
+const props = withDefaults(defineProps<Props>(), {
+  tag: 'h1'
 })
+const emit = defineEmits(['update:modelValue', 'update:editing', 'edit-done'])
 
 const content = ref(props.modelValue)
 const editActive = ref(props.editing)

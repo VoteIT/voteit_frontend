@@ -35,16 +35,7 @@ import useComponentApi from './useComponentApi'
 import { isActiveMeeting } from './rules'
 import type { NoSettingsComponent } from './types'
 
-const props = defineProps({
-  componentName: {
-    type: String,
-    required: true
-  },
-  switchLabel: {
-    type: String,
-    required: true
-  }
-})
+const props = defineProps<{ componentName: string, switchLabel: string }>()
 
 const { t } = useI18n()
 

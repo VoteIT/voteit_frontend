@@ -47,31 +47,29 @@
 
 <script setup lang="ts">
 import { defer } from 'lodash'
-import { computed, PropType, reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { isTreeLink, isTreeMenu, TreeMenuItem } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
 
+interface Props {
+  defaultOpen?: boolean
+  icon?: string,
+  items: TreeMenuItem[]
+  level: number
+  loadedEvent?: TypedEvent
+  openEvent?: TypedEvent
+  openFirstNonEmpty?: boolean
+  showCount?: boolean
+  slotAfter?: string
+  slotBefore?: string
+  title?: string
+}
+
 const emit = defineEmits(['navigation', 'hasActive'])
-const props = defineProps({
-  title: String,
-  items: {
-    type: Array as PropType<TreeMenuItem[]>,
-    required: true
-  },
-  defaultOpen: Boolean,
-  openFirstNonEmpty: Boolean,
-  showCount: Boolean,
-  icon: String,
-  openEvent: Object as PropType<TypedEvent>,
-  loadedEvent: Object as PropType<TypedEvent>,
-  slotAfter: String,
-  slotBefore: String,
-  level: {
-    type: Number,
-    default: 0
-  }
+const props = withDefaults(defineProps<Props>(), {
+  level: 0
 })
 
 const route = useRoute()

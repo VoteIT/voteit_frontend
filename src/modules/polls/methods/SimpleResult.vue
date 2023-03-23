@@ -22,13 +22,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
 import useProposals from '@/modules/proposals/useProposals'
 import type { Proposal } from '@/modules/proposals/types'
 
-import { simpleChoices, SimpleChoice, CombinedSimpleResult } from './types'
+import { simpleChoices, SimpleChoice, CombinedSimpleResult, ResultProps } from './types'
 
 interface ProposalResult {
   proposal: Proposal
@@ -44,20 +44,7 @@ interface ProposalResult {
   }[]
 }
 
-const props = defineProps({
-  abstainCount: {
-    type: Number,
-    required: true
-  },
-  proposals: {
-    type: Array as PropType<number[]>,
-    required: true
-  },
-  result: {
-    type: Object as PropType<CombinedSimpleResult>,
-    required: true
-  }
-})
+const props = defineProps<ResultProps<CombinedSimpleResult>>()
 
 const { getProposal } = useProposals()
 

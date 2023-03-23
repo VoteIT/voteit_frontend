@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 
 import useActive from '@/modules/active/useActive'
 import { GroupMembership, MeetingGroup } from '../types'
@@ -17,12 +17,7 @@ import useMeeting from '../useMeeting'
 
 import { isRoleMembership } from './types'
 
-const props = defineProps({
-  group: {
-    type: Object as PropType<MeetingGroup & { memberships: GroupMembership[] }>,
-    required: true
-  }
-})
+const props = defineProps<{ group: MeetingGroup & { memberships: GroupMembership[] }}>()
 
 const { meetingId } = useMeeting()
 const { activeUserIds } = useActive(meetingId)

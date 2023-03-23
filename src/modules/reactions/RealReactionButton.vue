@@ -9,31 +9,26 @@
           {{ count }}
         </v-btn>
       </template>
-      <slot name="userList" />
+      <slot name="userList"></slot>
     </DefaultDialog>
   </span>
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { ReactionButton } from './types'
 
-const props = defineProps({
-  button: {
-    type: Object as PropType<ReactionButton>,
-    required: true
-  },
-  count: {
-    type: Number,
-    required: true
-  },
-  disabled: Boolean,
-  listDisabled: Boolean,
-  modelValue: Boolean
-})
+interface Props {
+  button: ReactionButton
+  count: number
+  disabled?: boolean,
+  listDisabled?: boolean,
+  modelValue?: boolean
+}
+const props = defineProps<Props>()
 
 const emit = defineEmits(['update:modelValue', 'listOpen'])
 

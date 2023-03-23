@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -28,12 +28,7 @@ import type { AccessPolicy } from '@/contentTypes/types'
 import useMeeting from '../useMeeting'
 import { automaticAccessType } from './contentTypes'
 
-const props = defineProps({
-  policy: {
-    type: Object as PropType<AccessPolicy>,
-    required: true
-  }
-})
+const props = defineProps<{ policy: AccessPolicy }>()
 
 const { t } = useI18n()
 const { alert } = useAlert()

@@ -31,10 +31,7 @@ import { canChangePresenceCheck } from './rules'
 import useAlert from '@/composables/useAlert'
 import useMeeting from '../meetings/useMeeting'
 
-defineProps({
-  modelValue: Boolean
-})
-
+defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()

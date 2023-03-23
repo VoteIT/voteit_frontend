@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 import { sum } from 'itertools'
-import { computed, PropType, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { socket } from '@/utils/Socket'
@@ -55,12 +55,7 @@ import useMeetingGroups from '../useMeetingGroups'
 import useMeeting from '../useMeeting'
 import { isFinishedMeeting } from '../rules'
 
-const props = defineProps({
-  group: {
-    type: Object as PropType<MeetingGroup & { memberships: GroupMembership[] }>,
-    required: true
-  }
-})
+const props = defineProps<{ group: MeetingGroup & { memberships: GroupMembership[] }}>()
 
 const { t } = useI18n()
 const { isModerator, meetingId } = useMeeting()

@@ -3,8 +3,8 @@
     <v-card-title class="d-flex">
       <!-- Empty title not really allowed, so no translation needed here -->
       <span class="text-truncate flex-grow-1">{{ document.title || '-- text document --' }}</span>
-      <v-btn v-if="canChangeDocument" icon="mdi-pencil" variant="text" @click="editDocument()" />
-      <v-btn v-if="canDeleteDocument" icon="mdi-delete" variant="text" color="warning" @click="deleteDocument()" />
+      <v-btn v-if="canChangeDocument" icon="mdi-pencil" variant="text" @click="editDocument" />
+      <v-btn v-if="canDeleteDocument" icon="mdi-delete" variant="text" color="warning" @click="deleteDocument" />
       <v-btn variant="text" icon="mdi-chevron-up" :class="{ collapsed }" @click="collapsed = !collapsed" />
     </v-card-title>
     <v-expand-transition>
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -48,12 +48,7 @@ import useTextDocument from './useTextDocument'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 
-const props = defineProps({
-  document: {
-    type: Object as PropType<ProposalText>,
-    required: true
-  }
-})
+const props = defineProps<{ document: ProposalText }>()
 
 const { t } = useI18n()
 

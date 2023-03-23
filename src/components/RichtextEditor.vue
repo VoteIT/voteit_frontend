@@ -1,10 +1,10 @@
 <template>
   <div class="richtext-editor" ref="rootElement">
-    <div ref="editorElement" />
+    <div ref="editorElement"></div>
     <p v-if="errors" class="text-error">
       {{ errors.join(', ') }}
     </p>
-    <slot name="controls" />
+    <slot name="controls"></slot>
     <div class="btn-controls" v-if="submit && !$slots.controls">
       <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
         {{ submitText || t('save') }}
@@ -17,7 +17,7 @@
 /* eslint-disable camelcase */
 import Quill from 'quill'
 import 'quill-mention'
-import { inject, onMounted, PropType, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { useI18n } from 'vue-i18n'
@@ -81,27 +81,24 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
   }
 }
 
-const emit = defineEmits(['blur', 'focus', 'submit', 'update:modelValue'])
-const props = defineProps({
-  errors: Array as PropType<string[]>,
-  modelValue: {
-    type: String,
-    default: ''
-  },
-  setFocus: Boolean,
-  submit: Boolean,
-  disabled: Boolean,
-  submitText: String,
-  submitIcon: {
-    type: String,
-    default: 'mdi-check'
-  },
-  placeholder: String,
-  variant: {
-    type: String as PropType<QuillVariant>,
-    default: 'restricted'
-  }
+interface Props {
+  disabled?: boolean
+  errors?: string[]
+  modelValue: string
+  placeholder?: string
+  setFocus?: boolean
+  submit?: boolean
+  submitIcon: string
+  submitText?: string
+  variant: QuillVariant
+}
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  submitIcon: 'mdi-check',
+  variant: 'restricted'
 })
+
+const emit = defineEmits(['blur', 'focus', 'submit', 'update:modelValue'])
 
 const { t } = useI18n()
 const tags = inject(TagsKey, ref(new Set<string>()))

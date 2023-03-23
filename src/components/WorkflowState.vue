@@ -62,25 +62,20 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAlert from '@/composables/useAlert'
 import { StateContent, Transition } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
-const props = defineProps({
-  admin: Boolean,
-  object: {
-    type: Object as PropType<StateContent>,
-    required: true
-  },
-  contentType: {
-    type: ContentType as PropType<ContentType<any>>,
-    required: true
-  },
-  right: Boolean
-})
+interface Props {
+  admin: boolean
+  object: StateContent
+  contentType: ContentType<any>
+  right?: boolean
+}
+const props = withDefaults(defineProps<Props>(), { admin: false })
 
 const { t } = useI18n()
 const contentApi = props.contentType.getContentApi()

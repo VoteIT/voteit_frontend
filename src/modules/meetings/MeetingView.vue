@@ -21,12 +21,7 @@ import usePermission from '@/composables/usePermission'
 import useMeeting from './useMeeting'
 import { meetingIdKey } from './injectionKeys'
 
-const props = defineProps({
-  meetingId: {
-    type: Number,
-    required: true
-  }
-})
+const props = defineProps<{ meetingId: number }>()
 
 const meetingId = computed(() => props.meetingId)
 const { canViewMeeting } = useMeeting()

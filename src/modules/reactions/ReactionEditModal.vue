@@ -13,7 +13,7 @@
           </template>
         </RealReactionButton>
       </Widget>
-      <v-form @submit.prevent="save()" class="mt-4" v-model="formValid" ref="form">
+      <v-form @submit.prevent="save" class="mt-4" v-model="formValid" ref="form">
         <v-text-field dark required :label="t('title')" v-model="formData.title" :rules="[rules.required]" />
         <div>
           <label>{{ t('color') }}</label>
@@ -46,11 +46,11 @@
         <v-text-field type="number" v-model="formData.target" :label="t('reaction.threshold')" :rules="[rules.min(0)]" :hint="t('reaction.thresholdHint')" />
         <div class="btn-controls submit mt-4">
           <v-spacer />
-          <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close()">
+          <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close">
             {{ t('cancel') }}
           </v-btn>
           <template v-if="formData.pk">
-            <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton()">
+            <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton">
               <template #activator="{ props }">
                 <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" v-bind="props">
                   {{ t('content.delete') }}
@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ComponentPublicInstance, computed, PropType, reactive, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
@@ -90,9 +90,7 @@ import useRules from '@/composables/useRules'
 const { t } = useI18n()
 const rules = useRules(t)
 const emit = defineEmits(['close'])
-const props = defineProps({
-  data: Object as PropType<ReactionButton>
-})
+const props = defineProps<{ data: ReactionButton }>()
 
 const { user } = useAuthentication()
 const { meetingId, roleLabels } = useMeeting()

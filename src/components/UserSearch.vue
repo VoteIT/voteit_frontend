@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ComponentPublicInstance, computed, PropType, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { userType } from '@/modules/organisations/contentTypes'
@@ -44,19 +44,19 @@ import type { User } from '@/modules/organisations/types'
 const TYPE_DELAY = 250 // delay in ms
 let typeTimeout: ReturnType<typeof setTimeout>
 
-const props = defineProps({
-  buttonIcon: {
-    type: String,
-    default: 'mdi-plus'
-  },
-  buttonText: String,
-  filter: Function as PropType<(user: User) => boolean>,
-  hint: String,
-  instant: Boolean,
-  label: String,
-  params: {
-    type: Object,
-    default: () => ({})
+interface Props {
+  buttonIcon: string
+  buttonText?: string
+  filter? (user: User): boolean
+  hint?: string
+  instant?: boolean
+  label?: string
+  params: object
+}
+const props = withDefaults(defineProps<Props>(), {
+  buttonIcon: 'mdi-plus',
+  params () {
+    return {}
   }
 })
 const emit = defineEmits(['submit'])

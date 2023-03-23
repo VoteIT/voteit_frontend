@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <v-text-field type="number" min="0" :label="t('input.minutes')" v-model="duration.minutes" />
-    <div class="mr-1" />
+    <div class="mr-1"></div>
     <v-text-field type="number" min="0" max="59" :label="t('input.seconds')" v-model="duration.seconds" />
   </div>
 </template>
@@ -10,11 +10,8 @@
 import { reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const props = defineProps({
-  modelValue: {
-    type: Number,
-    default: 0
-  }
+const props = withDefaults(defineProps<{ modelValue: number }>(), {
+  modelValue: 0
 })
 const emit = defineEmits(['update:modelValue'])
 

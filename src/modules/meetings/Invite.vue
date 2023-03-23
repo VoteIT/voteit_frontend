@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -38,12 +38,7 @@ import { invitationScopes } from '../organisations/registry'
 const { fetchInvites } = useMeetingInvites()
 const { fetchMeetings } = useMeetings()
 
-const props = defineProps({
-  invite: {
-    type: Object as PropType<MeetingInvite>,
-    required: true
-  }
-})
+const props = defineProps<{ invite: MeetingInvite }>()
 
 const { t } = useI18n()
 const router = useRouter()

@@ -26,31 +26,29 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import ContentType from '@/contentTypes/ContentType'
 import { StateContent, Transition } from '@/contentTypes/types'
 import { MenuItem, MenuSubheader } from '@/utils/types'
 
-const props = defineProps({
-  items: {
-    type: Array as PropType<MenuItem[]>,
-    default: () => []
+interface Props {
+  color?: string
+  contentType?: ContentType
+  float?: boolean
+  icon: string
+  items: MenuItem[]
+  object?: StateContent
+  position: 'auto' | 'top' | 'bottom'
+  showTransitions?: boolean
+  size?: 'small' | 'x-small'
+}
+const props = withDefaults(defineProps<Props>(), {
+  icon: 'mdi-dots-vertical',
+  items () {
+    return []
   },
-  color: String,
-  icon: {
-    type: String,
-    default: 'mdi-dots-vertical'
-  },
-  size: String as PropType<'small' | 'x-small'>,
-  showTransitions: Boolean,
-  object: Object as PropType<StateContent>,
-  contentType: Object as PropType<ContentType>,
-  float: Boolean,
-  position: {
-    type: String as PropType<'auto' | 'top' | 'bottom'>,
-    default: 'auto'
-  }
+  position: 'auto'
 })
 
 const isOpen = ref(false)

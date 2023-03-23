@@ -25,12 +25,12 @@
 
 <script lang="ts" setup>
 import { orderBy } from 'lodash'
-import { computed, PropType } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '../../proposals/useProposals'
 import type { Proposal } from '../../proposals/types'
-import type { DuttResult } from './types'
+import type { DuttResult, ResultProps } from './types'
 
 const { t } = useI18n()
 const { getProposal } = useProposals()
@@ -59,20 +59,7 @@ function getFractionIcon (fraction: number) {
   return PARTIAL_ICONS[Math.floor(fraction * 6)]
 }
 
-const props = defineProps({
-  abstainCount: {
-    type: Number,
-    required: true
-  },
-  proposals: {
-    type: Array as PropType<number[]>,
-    required: true
-  },
-  result: {
-    type: Object as PropType<DuttResult>,
-    required: true
-  }
-})
+const props = defineProps<ResultProps<DuttResult>>()
 
 function isProposal (p?: Proposal): p is Proposal {
   return !!p
