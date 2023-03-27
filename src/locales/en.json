@@ -706,10 +706,12 @@
     "canceled": "Canceled",
     "closed": "Closed",
     "closing": "Closing",
+    "deleting": "Deleting",
     "denied": "Denied",
     "failed": "Failed",
     "finished": "Finished",
     "inactive": "Inactive",
+    "no_result": "No result",
     "ongoing": "Ongoing",
     "open": "Open",
     "private": "Private",
@@ -718,8 +720,6 @@
     "unhandled": "Unhandled",
     "upcoming": "Upcoming",
     "voting": "Locked for vote",
-    "no_result": "No result",
-    "deleting": "Deleting",
     "plural": {
       "approved": "Approved",
       "archived": "Archived",
@@ -728,9 +728,11 @@
       "canceled": "Canceled",
       "closed": "Closed",
       "closing": "Closing",
+      "deleting": "Deleting",
       "denied": "Denied",
       "failed": "Failed",
       "finished": "Finished",
+      "no_result": "No result",
       "ongoing": "Ongoing",
       "open": "Open",
       "private": "Private",
@@ -738,8 +740,7 @@
       "retracted": "Retracted",
       "unhandled": "Unhandled",
       "upcoming": "Upcoming",
-      "voting": "Locked for vote",
-      "no_result": "No result"
+      "voting": "Locked for vote"
     }
   }
 }

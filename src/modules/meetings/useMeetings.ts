@@ -33,7 +33,7 @@ function filterMeetings (states: MeetingState[], order: keyof Meeting, search: s
       m => (
         states.includes(m.state) &&
         m.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()) &&
-        (!year || m.start_time?.getFullYear() === year)
+        (!year || (!!m.start_time && new Date(m.start_time).getFullYear() === year))
       )
     ),
     order
@@ -48,7 +48,7 @@ const existingMeetingYears = computed(() => {
   return sortBy(
     [...new Set(
       ifilter(
-        imap(meetings.values(), m => m.start_time?.getFullYear()),
+        imap(meetings.values(), m => m.start_time && new Date(m.start_time).getFullYear()),
         isNumber
       )
     )] as number[]

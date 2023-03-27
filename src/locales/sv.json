@@ -719,10 +719,12 @@
     "canceled": "Avbruten",
     "closed": "Avslutat",
     "closing": "Avslutar",
+    "deleting": "Raderas",
     "denied": "Avslaget",
     "failed": "Misslyckad",
     "finished": "Avslutad",
     "inactive": "Inaktivt",
+    "no_result": "Inget resultat",
     "ongoing": "Pågående",
     "open": "Öppen",
     "private": "Privat",
@@ -731,8 +733,6 @@
     "unhandled": "Ohanterat",
     "upcoming": "Kommande",
     "voting": "Låst för omröstning",
-    "no_result": "Inget resultat",
-    "deleting": "Raderas",
     "plural": {
       "approved": "Bifallna",
       "archived": "Arkiverade",
@@ -741,9 +741,11 @@
       "canceled": "Avbrutna",
       "closed": "Stängda",
       "closing": "Stänger",
+      "deleting": "Raderas",
       "denied": "Avslagna",
       "failed": "Misslyckade",
       "finished": "Avslutade",
+      "no_result": "Inget resultat",
       "ongoing": "Pågående",
       "open": "Öppna",
       "private": "Privata",
@@ -751,9 +753,7 @@
       "retracted": "Tillbakadragna",
       "unhandled": "Ohanterade",
       "upcoming": "Kommande",
-      "voting": "Låsta för omröstning",
-      "no_result": "Inget resultat",
-      "deleting": "Raderas"
+      "voting": "Låsta för omröstning"
     }
   }
 }
