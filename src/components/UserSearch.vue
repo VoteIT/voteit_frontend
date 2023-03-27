@@ -45,13 +45,13 @@ const TYPE_DELAY = 250 // delay in ms
 let typeTimeout: ReturnType<typeof setTimeout>
 
 interface Props {
-  buttonIcon: string
+  buttonIcon?: string
   buttonText?: string
   filter? (user: User): boolean
   hint?: string
   instant?: boolean
   label?: string
-  params: object
+  params?: object
 }
 const props = withDefaults(defineProps<Props>(), {
   buttonIcon: 'mdi-plus',

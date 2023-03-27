@@ -36,10 +36,10 @@ interface Props {
   color?: string
   contentType?: ContentType
   float?: boolean
-  icon: string
-  items: MenuItem[]
+  icon?: string
+  items?: MenuItem[]
   object?: StateContent
-  position: 'auto' | 'top' | 'bottom'
+  position?: 'auto' | 'top' | 'bottom'
   showTransitions?: boolean
   size?: 'small' | 'x-small'
 }

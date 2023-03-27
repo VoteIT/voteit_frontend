@@ -84,13 +84,13 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
 interface Props {
   disabled?: boolean
   errors?: string[]
-  modelValue: string
+  modelValue?: string
   placeholder?: string
   setFocus?: boolean
   submit?: boolean
-  submitIcon: string
+  submitIcon?: string
   submitText?: string
-  variant: QuillVariant
+  variant?: QuillVariant
 }
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',

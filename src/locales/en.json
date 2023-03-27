@@ -292,6 +292,7 @@
     "exports": "Export from meeting",
     "exportsDescription": "Download Participant list, speaker stats, and more",
     "exportsLongDescription": "You can download data from the meeting in {json} or {csv} format. Exported files can be used to transfer data from VoteIT to other applications.",
+    "find": "Find meeting",
     "meeting": "Meeting",
     "participants": "Participants",
     "subscriptionFailedMessage": "Couldn't load meeting.",

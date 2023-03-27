@@ -70,7 +70,7 @@ import { StateContent, Transition } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
 interface Props {
-  admin: boolean
+  admin?: boolean
   object: StateContent
   contentType: ContentType<any>
   right?: boolean

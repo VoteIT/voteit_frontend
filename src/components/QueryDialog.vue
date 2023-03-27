@@ -58,7 +58,7 @@ interface Props {
   modelValue?: boolean
   persistent?: boolean
   text?: string
-  color: Color
+  color?: Color
 }
 
 const props = withDefaults(defineProps<Props>(), {

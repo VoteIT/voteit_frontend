@@ -69,10 +69,10 @@ const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>
 
 interface Props {
-  extra: Partial<Proposal>
-  modelValue: string
+  extra?: Partial<Proposal>
+  modelValue?: string
   proposal?: Proposal
-  shortname: Proposal['shortname']
+  shortname?: Proposal['shortname']
 }
 const props = withDefaults(defineProps<Props>(), {
   extra () {

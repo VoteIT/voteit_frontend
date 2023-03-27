@@ -27,8 +27,8 @@ const STATE_ORDERS: Partial<Record<PollState, [keyof Poll, 'asc' | 'desc']>> = {
 interface Props {
   agendaItem?: number
   groupClass?: string | object
-  modelValue: PollState[]
-  pollClass: string | object
+  modelValue?: PollState[]
+  pollClass?: string | object
 }
 const props = withDefaults(defineProps<Props>(), {
   modelValue () {

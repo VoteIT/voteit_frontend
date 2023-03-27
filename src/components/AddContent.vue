@@ -47,12 +47,12 @@ import TagEdit from './TagEdit.vue'
 interface Props {
   name?: string
   handler (post: Partial<DiscussionPost>): Promise<void>
-  modelValue: string
+  modelValue?: string
   submitIcon?: string
   submitText?: string
   placeholder?: string
-  minLength: number
-  warnLength: number
+  minLength?: number
+  warnLength?: number
   setTag?: string
 }
 

@@ -57,7 +57,7 @@ interface Props {
   defaultOpen?: boolean
   icon?: string,
   items: TreeMenuItem[]
-  level: number
+  level?: number
   loadedEvent?: TypedEvent
   openEvent?: TypedEvent
   openFirstNonEmpty?: boolean
