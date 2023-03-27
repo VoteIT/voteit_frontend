@@ -36,7 +36,8 @@ import type { Proposal } from '@/modules/proposals/types'
 const { t } = useI18n()
 const { getProposal } = useProposals()
 
-const props = defineProps<ResultProps<MajorityResult>>()
+interface Props extends ResultProps { result: MajorityResult }
+const props = defineProps<Props>()
 
 function getIcon (proposal: number) {
   if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success, text: t('proposal.approved') }

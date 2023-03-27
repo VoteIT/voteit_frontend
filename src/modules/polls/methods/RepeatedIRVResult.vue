@@ -40,7 +40,8 @@ const translationMapping: Record<string, string | undefined> = {
   'No competition left': 'poll.STV.noCompetition'
 }
 
-const props = defineProps<ResultProps<ScottishSTVResult>>()
+interface Props extends ResultProps { result: ScottishSTVResult }
+const props = defineProps<Props>()
 
 const { getProposal } = useProposals()
 const { t } = useI18n()

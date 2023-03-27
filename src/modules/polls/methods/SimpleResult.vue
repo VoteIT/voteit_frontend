@@ -44,7 +44,8 @@ interface ProposalResult {
   }[]
 }
 
-const props = defineProps<ResultProps<CombinedSimpleResult>>()
+interface Props extends ResultProps { result: CombinedSimpleResult }
+const props = defineProps<Props>()
 
 const { getProposal } = useProposals()
 

@@ -59,7 +59,8 @@ function getFractionIcon (fraction: number) {
   return PARTIAL_ICONS[Math.floor(fraction * 6)]
 }
 
-const props = defineProps<ResultProps<DuttResult>>()
+interface Props extends ResultProps { result: DuttResult }
+const props = defineProps<Props>()
 
 function isProposal (p?: Proposal): p is Proposal {
   return !!p

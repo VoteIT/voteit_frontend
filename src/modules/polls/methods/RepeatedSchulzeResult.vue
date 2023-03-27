@@ -8,50 +8,33 @@
     <v-expansion-panels>
       <v-expansion-panel v-for="(round, i) in result.rounds" :key="i" :title="t('poll.result.roundNum', i+1)">
         <v-expansion-panel-text>
-          <SchulzeResult :result="round" :abstainCount="abstainCount" />
+          <SchulzeResult :proposals="round.candidates" :result="round" :abstainCount="abstainCount" />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
+import type { Proposal } from '@/modules/proposals/types'
 
-import { RepeatedSchulzeResult } from './types'
-import SchulzeResultVue from './SchulzeResult.vue'
+import { RepeatedSchulzeResult, ResultProps } from './types'
+import SchulzeResult from './SchulzeResult.vue'
 
-export default defineComponent({
-  props: {
-    abstainCount: {
-      type: Number,
-      required: true
-    },
-    result: {
-      type: Object as PropType<RepeatedSchulzeResult>,
-      required: true
-    }
-  },
-  components: {
-    SchulzeResult: SchulzeResultVue
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const { getProposal } = useProposals()
+interface Props extends ResultProps { result: RepeatedSchulzeResult }
+const props = defineProps<Props>()
 
-    const orderedProposals = computed(() => {
-      return props.result.rounds
-        .map(round => getProposal(round.winner))
-        .filter(p => p)
-    })
-    return {
-      t,
-      orderedProposals
-    }
-  }
+const { t } = useI18n()
+const { getProposal } = useProposals()
+
+const orderedProposals = computed(() => {
+  return props.result.rounds
+    .map(round => getProposal(round.winner))
+    .filter((p?: Proposal): p is Proposal => !!p)
 })
 </script>
 

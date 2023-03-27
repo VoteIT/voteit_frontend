@@ -37,120 +37,102 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
 
 import { ThemeColor } from '@/utils/types'
-import { SchulzeResult } from './types'
+import { ResultProps, SchulzeResult } from './types'
 
-export default defineComponent({
-  props: {
-    abstainCount: {
-      type: Number,
-      required: true
-    },
-    result: {
-      type: Object as PropType<SchulzeResult>,
-      required: true
-    }
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const { getProposal } = useProposals()
+interface Props extends ResultProps { result: SchulzeResult }
+const props = defineProps<Props>()
 
-    const tiedWinners = computed(() => {
-      if (!props.result.tied_winners) return []
-      return props.result.tied_winners.map(pk => {
-        const prop = getProposal(pk)
-        return prop
-          ? prop.prop_id
-          : t('proposal.unknown')
-      })
-    })
+const { t } = useI18n()
+const { getProposal } = useProposals()
 
-    const strengthMap = computed(() => {
-      const record: Record<number, Record<number, number>> = {}
-      for (const [pair, strength] of props.result.pairs) {
-        if (!record[pair[0]]) record[pair[0]] = {}
-        record[pair[0]][pair[1]] = strength
-      }
-      return record
-    })
+const tiedWinners = computed(() => {
+  if (!props.result.tied_winners) return []
+  return props.result.tied_winners.map(pk => {
+    const prop = getProposal(pk)
+    return prop
+      ? prop.prop_id
+      : t('proposal.unknown')
+  })
+})
 
-    const sortedProposals = computed(() => {
-      const proposals = [...props.result.approved, ...props.result.denied]
-      return proposals.length === props.result.candidates.length
-        ? proposals
-        : props.result.candidates
-    })
-
-    const proposalCombinations = computed(() => {
-      // All possible combinations of proposals
-      return sortedProposals.value.flatMap(
-        (one, i) => sortedProposals.value.slice(i + 1).map(other => [one, other])
-      )
-    })
-
-    const voteCount = computed(() => {
-      // If no vote count from backend, calculate minimum value for this poll.
-      // (To handle historic repeated schulze rounds)
-      return props.result.vote_count
-        ? props.result.vote_count
-        : Math.max(...proposalCombinations.value.map(([one, other]) => strengthMap.value[one][other] + strengthMap.value[other][one]))
-    })
-
-    function mapProposal (proposals: number[]) {
-      return proposals.map(pk => {
-        return {
-          proposal: getProposal(pk),
-          btn: props.result.winner === pk
-            ? { icon: 'mdi-thumb-up', color: ThemeColor.Success }
-            : { icon: 'mdi-thumb-down', color: ThemeColor.Warning },
-          pairs: props.result.candidates
-            .filter(n => n !== pk)
-            .map(other => {
-              const myStrength = strengthMap.value[pk][other]
-              const otherStrength = strengthMap.value[other][pk]
-              const tiedStrength = voteCount.value - myStrength - otherStrength
-              return {
-                proposal: getProposal(other),
-                approve: myStrength,
-                tie: tiedStrength,
-                deny: otherStrength,
-                // Percentages
-                results: [
-                  {
-                    percentage: myStrength / voteCount.value * 100,
-                    color: ThemeColor.Success
-                  },
-                  {
-                    percentage: tiedStrength / voteCount.value * 100,
-                    color: ThemeColor.Secondary
-                  },
-                  {
-                    percentage: otherStrength / voteCount.value * 100,
-                    color: ThemeColor.Warning
-                  }
-                ]
-              }
-            })
-        }
-      })
-    }
-
-    const proposalPairs = computed(() => {
-      return mapProposal(sortedProposals.value)
-    })
-
-    return {
-      t,
-      proposalPairs,
-      tiedWinners,
-      getProposal
-    }
+const strengthMap = computed(() => {
+  const record: Record<number, Record<number, number>> = {}
+  for (const [pair, strength] of props.result.pairs) {
+    if (!record[pair[0]]) record[pair[0]] = {}
+    record[pair[0]][pair[1]] = strength
   }
+  return record
+})
+
+const sortedProposals = computed(() => {
+  const proposals = [...props.result.approved, ...props.result.denied]
+  return proposals.length === props.result.candidates.length
+    ? proposals
+    : props.result.candidates
+})
+
+const proposalCombinations = computed(() => {
+  // All possible combinations of proposals
+  return sortedProposals.value.flatMap(
+    (one, i) => sortedProposals.value.slice(i + 1).map(other => [one, other])
+  )
+})
+
+const voteCount = computed(() => {
+  // If no vote count from backend, calculate minimum value for this poll.
+  // (To handle historic repeated schulze rounds)
+  return props.result.vote_count
+    ? props.result.vote_count
+    : Math.max(...proposalCombinations.value.map(([one, other]) => strengthMap.value[one][other] + strengthMap.value[other][one]))
+})
+
+function mapProposal (proposals: number[]) {
+  return proposals.map(pk => {
+    return {
+      proposal: getProposal(pk),
+      btn: props.result.winner === pk
+        ? { icon: 'mdi-thumb-up', color: ThemeColor.Success }
+        : { icon: 'mdi-thumb-down', color: ThemeColor.Warning },
+      pairs: props.result.candidates
+        .filter(n => n !== pk)
+        .map(other => {
+          const myStrength = strengthMap.value[pk][other]
+          const otherStrength = strengthMap.value[other][pk]
+          const tiedStrength = voteCount.value - myStrength - otherStrength
+          return {
+            proposal: getProposal(other),
+            approve: myStrength,
+            tie: tiedStrength,
+            deny: otherStrength,
+            // Percentages
+            results: [
+              {
+                percentage: myStrength / voteCount.value * 100,
+                color: ThemeColor.Success
+              },
+              {
+                percentage: tiedStrength / voteCount.value * 100,
+                color: ThemeColor.Secondary
+              },
+              {
+                percentage: otherStrength / voteCount.value * 100,
+                color: ThemeColor.Warning
+              }
+            ]
+          }
+        })
+    }
+  })
+}
+
+const proposalPairs = computed(() => {
+  return mapProposal(sortedProposals.value)
 })
 </script>
