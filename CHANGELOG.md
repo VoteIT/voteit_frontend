@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.12.1
+Bugfix release
+
+- Fixed date conversion problem causing issues for "find meeting" function
+
 ## 0.12.0
 Support for meeting dialects and using meeting groups to define voting rights and setting Electoral Register. (Skipping 0.11 to sync with backend version)
 

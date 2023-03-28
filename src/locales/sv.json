@@ -63,6 +63,7 @@
   "tryAgain": "Försök igen",
   "update": "Uppdatera",
   "undo": "Ångra",
+  "unknown": "Okänd",
   "unknownUser": "okänd",
   "winners": "Vinnare",
   "yes": "Ja",
@@ -605,7 +606,8 @@
     "textModify": "Ändra förslagstext",
     "textChangeProposal": "Ändra förslag",
     "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?",
-    "tied": "Oavgjort"
+    "tied": "Oavgjort",
+    "unknown": "Okänt förslag"
   },
   "reaction": {
     "active": "Aktiv (användare kan reagera)",
@@ -685,6 +687,7 @@
     "manageLists": "Hantera talarlistor",
     "manageSystem": "Hantera talare ({title})",
     "noActiveList": "Ingen aktiv talarlista",
+    "noSafePositions": "Inga säkra positioner",
     "queue": "Talarkö",
     "queueEmpty": "Inga talare i kön",
     "safePositions": "Säkra positioner",

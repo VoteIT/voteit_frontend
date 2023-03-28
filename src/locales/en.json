@@ -63,6 +63,7 @@
   "tryAgain": "Try again",
   "update": "Update",
   "undo": "Undo",
+  "unknown": "Unknown",
   "unknownUser": "unknown",
   "winners": "Winners",
   "yes": "Yes",
@@ -139,6 +140,7 @@
   },
   "content": {
     "addName": "Add {name}",
+    "delete": "Radera",
     "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
   },
   "discussion": {
@@ -159,6 +161,7 @@
     "changeMethod": "Change method for electoral registers",
     "confirmMethodChange": "Are you sure you want to change method for electoral registers to {name}?",
     "create": "Create electoral register",
+    "created": "A new Electoral Register was created",
     "createHelp": "Pick users from potential voters to create a new electoral register.",
     "dialectChangeMethodDisallowed": "You can't change this setting in this meeting, because it has a dialect setting that requires a specific electoral register method.",
     "electoralRegister": "Electoral register",
@@ -176,6 +179,7 @@
     "upToDate": "No need to update Electoral Register",
     "voterCount": "No voters | 1 voter | {count} voters",
     "weight": "Weight",
+    "weightedVoterCount": "No voters | One voter ({total} votes) | {count} voters ({total} votes)",
     "inCurrent": "In current electoral register"
   },
   "erMethods": {
@@ -375,7 +379,7 @@
     "didNotVote": "You did not vote in this poll.",
     "finalVoteCount": "{votes} of {total} voted ({abstains} abstained actively)",
     "finalVoteCountWeighted": "{votes} of {total} votes ({abstains} abstains)",
-    "finalVoteCountNoER": "{votes} voted, {abstains} abstained actively, no electoral register",
+    "finalVoteCountNoEr": "{votes} voted, {abstains} abstained actively, no electoral register",
     "finished": "Finished",
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",
@@ -594,7 +598,8 @@
     "textModify": "Modify proposal text",
     "textChangeProposal": "Change proposal",
     "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?",
-    "tied": "Tied"
+    "tied": "Tied",
+    "unknown": "Unknown proposal"
   },
   "reaction": {
     "active": "Active (users can react)",
@@ -672,6 +677,7 @@
     "manageLists": "Manage speaker lists",
     "manageSystem": "Manage speakers ({title})",
     "noActiveList": "No active speaker list",
+    "noSafePositions": "No safe positions",
     "queue": "Speaker queue",
     "queueEmpty": "No speakers in queue",
     "safePositions": "Safe positions",
