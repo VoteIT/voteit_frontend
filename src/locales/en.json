@@ -471,28 +471,32 @@
       "name": "Poll method",
       "combined_simple": "Accept / Reject / Abstain",
       "dutt": "Acceptance poll",
+      "irv": "Instant Runoff-Voting",
       "majority": "Contraproposal",
+      "repeated_irv": "Repeated IRV",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
       "schulze_stv": "Schulze STV (historical)",
       "schulzeAddDeny": "Schulze (add deny)",
       "scottish_stv": "Scottish STV",
       "simple": "Simple majority",
-      "irv": "Instant Runoff-Voting",
       "description": {
         "combined_simple": "Each proposal will be voted individually, with the options to approve, deny or abstain.",
         "dutt": "This poll methos shows which proposals has the highest approval, but can't appoint majority winners or losers. If a proposal was selected by a majority of voters, it's likely, but not certain, that the proposal is supported by a majority. It could also be the result of tactical voting or mandatory amount of selections. The method can be used for opinion surveys and guiding polls, but should be avoided for making real decisions.",
         "irv": "Ranked poll with a single winner. Voters rank proposals by order of preference. Proposals with least amount of votes will be excluded and votes transfered until one proposal has more than 50 % of the votes.",
         "majority": "Voters choose between two proposals. The one with the most votes wins.",
+        "repeated_irv": "Simple IRV is repeated until all winners are elected, or until no proposal can get a majority. Repeated IRV can easily be manipulated by syncronizing votes, and should be avoided.",
+        "repeated_schulze": "A regular Schulze poll is repeated until all candidates have a ranking. The result is non-proportional, and each stage produces the Condorcet winner within the remaining candidates. Voters rank proposals with stars.",
         "scottish_stv": "Ranked poll with multiple winners. Voters rank proposals by order of preference. Surplus or discarded votes are transferred to reduce wasted votes.",
-        "schulze": "Rank proposals with stars - more is better. The proposal that is prefered in pairwise comparison to every other proposal wins.",
-        "repeated_schulze": "A regular Schulze poll is repeated until all candidates have a ranking. The result is non-proportional, and each stage produces the Condorcet winner within the remaining candidates. Voters rank proposals with stars."
+        "schulze": "Rank proposals with stars - more is better. The proposal that is prefered in pairwise comparison to every other proposal wins."
       },
       "help": {
         "combined_simple": "Vote approve or deny for each proposal.",
         "dutt": "Select the proposals you prefer.",
+        "irv": "Select the proposals you want to vote for in order of preference.",
         "majority": "Vote for your favorite proposal.",
         "scottish_stv": "Select the proposals you want to vote for in order of preference.",
+        "repeated_irv": "Select the proposals you want to vote for in order of preference.",
         "schulze": "Rate proposals with stars - more is better. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal.",
         "repeated_schulze": "Rate proposals with stars - more is better. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal."
       }
