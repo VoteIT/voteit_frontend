@@ -1,0 +1,238 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DuttResult component 1`] = `
+"<div>
+  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
+    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
+      <div class=\\"meta\\" data-v-4b57e0f3=\\"\\">
+        <div data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
+          <tag data-v-4b57e0f3=\\"\\"></tag>
+        </div>
+        <div data-v-4b57e0f3=\\"\\">
+          <!--v-if-->
+        </div>
+      </div>
+      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+        <div class=\\"overflow-hidden position-relative\\">
+          <div class=\\"richtext\\">
+            <p>Proposal 3</p>
+          </div>
+          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> </span>
+        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 15 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-0\\"></i>
+          <!--teleport start-->
+          <!--teleport end-->
+        </p>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
+  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
+    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
+      <div class=\\"meta\\" data-v-4b57e0f3=\\"\\">
+        <div data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
+          <tag data-v-4b57e0f3=\\"\\"></tag>
+        </div>
+        <div data-v-4b57e0f3=\\"\\">
+          <!--v-if-->
+        </div>
+      </div>
+      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+        <div class=\\"overflow-hidden position-relative\\">
+          <div class=\\"richtext\\">
+            <p>Proposal 2</p>
+          </div>
+          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> </span>
+        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-1\\"></i>
+          <!--teleport start-->
+          <!--teleport end-->
+        </p>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
+  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
+    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
+      <div class=\\"meta\\" data-v-4b57e0f3=\\"\\">
+        <div data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
+          <tag data-v-4b57e0f3=\\"\\"></tag>
+        </div>
+        <div data-v-4b57e0f3=\\"\\">
+          <!--v-if-->
+        </div>
+      </div>
+      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+        <div class=\\"overflow-hidden position-relative\\">
+          <div class=\\"richtext\\">
+            <p>Proposal 1</p>
+          </div>
+          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> </span>
+        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-2\\"></i>
+          <!--teleport start-->
+          <!--teleport end-->
+        </p>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
+  <div class=\\"v-alert v-theme--light bg-info v-alert--density-default v-alert--variant-flat my-2\\" role=\\"alert\\">
+    <!----><span class=\\"v-alert__underlay\\"></span>
+    <!---->
+    <div class=\\"v-alert__prepend\\"><i class=\\"mdi-alert-decagram mdi v-icon notranslate v-theme--light\\" style=\\"font-size: 28px; height: 28px; width: 28px;\\" aria-hidden=\\"true\\"></i></div>
+    <div class=\\"v-alert__content\\">
+      <!---->poll.method.description.dutt
+      <!---->
+    </div>
+    <!---->
+    <!---->
+  </div>
+</div>"
+`;
+
+exports[`SimpleResult component 1`] = `
+"<div>
+  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
+    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
+      <div class=\\"meta\\" data-v-4b57e0f3=\\"\\">
+        <div data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
+          <tag data-v-4b57e0f3=\\"\\"></tag>
+        </div>
+        <div data-v-4b57e0f3=\\"\\">
+          <!--v-if-->
+        </div>
+      </div>
+      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+        <div class=\\"overflow-hidden position-relative\\">
+          <div class=\\"richtext\\">
+            <p>Proposal 1</p>
+          </div>
+          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> </span>
+        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+        <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (67 %) </small></span>
+            <!---->
+            <!---->
+          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-warning v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">3 <small class=\\"ml-1\\"> (33 %) </small></span>
+            <!---->
+            <!---->
+          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">4 <!--v-if--></span>
+            <!---->
+            <!---->
+          </button></div>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
+  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
+    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
+      <div class=\\"meta\\" data-v-4b57e0f3=\\"\\">
+        <div data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
+          <tag data-v-4b57e0f3=\\"\\"></tag>
+        </div>
+        <div data-v-4b57e0f3=\\"\\">
+          <!--v-if-->
+        </div>
+      </div>
+      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+        <div class=\\"overflow-hidden position-relative\\">
+          <div class=\\"richtext\\">
+            <p>Proposal 2</p>
+          </div>
+          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> </span>
+        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+        <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">3 <small class=\\"ml-1\\"> (33 %) </small></span>
+            <!---->
+            <!---->
+          </button><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-warning v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (67 %) </small></span>
+            <!---->
+            <!---->
+          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">4 <!--v-if--></span>
+            <!---->
+            <!---->
+          </button></div>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
+  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
+    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
+      <div class=\\"meta\\" data-v-4b57e0f3=\\"\\">
+        <div data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
+          <tag data-v-4b57e0f3=\\"\\"></tag>
+        </div>
+        <div data-v-4b57e0f3=\\"\\">
+          <!--v-if-->
+        </div>
+      </div>
+      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+        <div class=\\"overflow-hidden position-relative\\">
+          <div class=\\"richtext\\">
+            <p>Proposal 3</p>
+          </div>
+          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> </span>
+        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+        <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">2 <small class=\\"ml-1\\"> (25 %) </small></span>
+            <!---->
+            <!---->
+          </button><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-warning v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (75 %) </small></span>
+            <!---->
+            <!---->
+          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">5 <!--v-if--></span>
+            <!---->
+            <!---->
+          </button></div>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
+</div>"
+`;
