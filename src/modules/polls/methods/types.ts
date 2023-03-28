@@ -183,9 +183,3 @@ export interface DuttPoll extends Poll {
 }
 
 export type PollStartData = Pick<Poll, 'agenda_item' | 'meeting' | 'method_name' | 'proposals' | 'settings' | 'title'> & { start: boolean }
-
-export interface ResultProps {
-  abstainCount: number
-  proposals: number[]
-  result: VoteResult
-}

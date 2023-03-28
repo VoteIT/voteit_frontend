@@ -44,10 +44,13 @@ import { useI18n } from 'vue-i18n'
 import useProposals from '@/modules/proposals/useProposals'
 
 import { ThemeColor } from '@/utils/types'
-import { ResultProps, SchulzeResult } from './types'
+import { SchulzeResult } from './types'
 
-interface Props extends ResultProps { result: SchulzeResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: SchulzeResult
+}>()
 
 const { t } = useI18n()
 const { getProposal } = useProposals()

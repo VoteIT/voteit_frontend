@@ -22,11 +22,14 @@ import { useI18n } from 'vue-i18n'
 import useProposals from '@/modules/proposals/useProposals'
 import type { Proposal } from '@/modules/proposals/types'
 
-import { RepeatedSchulzeResult, ResultProps } from './types'
+import { RepeatedSchulzeResult } from './types'
 import SchulzeResult from './SchulzeResult.vue'
 
-interface Props extends ResultProps { result: RepeatedSchulzeResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: RepeatedSchulzeResult
+}>()
 
 const { t } = useI18n()
 const { getProposal } = useProposals()

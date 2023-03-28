@@ -30,14 +30,17 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 import useProposals from '@/modules/proposals/useProposals'
-import type { MajorityResult, ResultProps } from './types'
+import type { MajorityResult } from './types'
 import type { Proposal } from '@/modules/proposals/types'
 
 const { t } = useI18n()
 const { getProposal } = useProposals()
 
-interface Props extends ResultProps { result: MajorityResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: MajorityResult
+}>()
 
 function getIcon (proposal: number) {
   if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success, text: t('proposal.approved') }

@@ -8,7 +8,7 @@
           </span>
         </template>
         <v-list-item-title v-if="!proposal">
-          - unknown proposal -
+          - {{ t('proposal.unknown') }} -
         </v-list-item-title>
         <template v-else>
           <v-list-item-title class="mb-1">
@@ -68,7 +68,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import { ResultProps, ScottishSTVResult } from './types'
+import { ScottishSTVResult } from './types'
 
 const translationMapping: Record<string, string | undefined> = {
   Direct: 'poll.STV.direct',
@@ -78,8 +78,11 @@ const translationMapping: Record<string, string | undefined> = {
   'No competition left': 'poll.STV.noCompetition'
 }
 
-interface Props extends ResultProps { result: ScottishSTVResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: ScottishSTVResult
+}>()
 
 const { getProposal } = useProposals()
 const { t } = useI18n()

@@ -30,7 +30,7 @@ import useProposals from '@/modules/proposals/useProposals'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ResultProps, ScottishSTVResult } from './types'
+import { ScottishSTVResult } from './types'
 
 const translationMapping: Record<string, string | undefined> = {
   Direct: 'poll.STV.direct',
@@ -40,8 +40,11 @@ const translationMapping: Record<string, string | undefined> = {
   'No competition left': 'poll.STV.noCompetition'
 }
 
-interface Props extends ResultProps { result: ScottishSTVResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: ScottishSTVResult
+}>()
 
 const { getProposal } = useProposals()
 const { t } = useI18n()

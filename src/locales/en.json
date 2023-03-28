@@ -462,7 +462,8 @@
       "validVoteHelpText": "Your vote is valid."
     },
     "IRV": {
-      "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds"
+      "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds",
+      "repeatedRoundResult": "IRV is not a method deisgned to elect multiple winenrs. Each round in a repeated IRV is a simple IRV, with the winners from previous rounds omited. Because each simple IRV has several rounds, there is no simple answer to how many votes a proposal got, other than that it would have at some point got a mojority of the votes. How many rounds that took is irrelevant."
     },
     "majority": {
       "tiedResult": "The poll got a tied result."

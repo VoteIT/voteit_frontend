@@ -22,7 +22,7 @@
           <span v-if="meetingGroup">
             {{ meetingGroup.title }}
           </span>
-          <User v-else :pk="p.author" userid />
+          <User v-else-if="p.author" :pk="p.author" userid />
         </span>
         <Moment :date="p.created" class="ml-6" />
         <v-spacer />
@@ -70,6 +70,7 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
+import User from '@/components/User.vue'
 import useUnread from '@/composables/useUnread'
 
 import useAgendaItem from '../agendas/useAgendaItem'

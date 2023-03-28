@@ -28,9 +28,10 @@ import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '../../proposals/useProposals'
-import type { Proposal } from '../../proposals/types'
-import type { DuttResult, ResultProps } from './types'
+import useProposals from '@/modules/proposals/useProposals'
+import Proposal from '@/modules/proposals/Proposal.vue'
+import type { Proposal as P } from '../../proposals/types'
+import type { DuttResult } from './types'
 
 const { t } = useI18n()
 const { getProposal } = useProposals()
@@ -59,10 +60,13 @@ function getFractionIcon (fraction: number) {
   return PARTIAL_ICONS[Math.floor(fraction * 6)]
 }
 
-interface Props extends ResultProps { result: DuttResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: DuttResult
+}>()
 
-function isProposal (p?: Proposal): p is Proposal {
+function isProposal (p?: P): p is P {
   return !!p
 }
 
@@ -80,7 +84,7 @@ function getIcon (votes: number) {
   }
 }
 
-function proposalToResult (proposal: Proposal) {
+function proposalToResult (proposal: P) {
   const votes = props.result.results.find(r => r.proposal === proposal.pk)?.votes || 0
   return {
     icon: getIcon(votes),
@@ -95,8 +99,8 @@ const results = computed(() => {
       .map(getProposal)
       .filter(isProposal)
       .map(proposalToResult),
-    ['votes'],
-    ['desc']
+    'votes',
+    'desc'
   )
 })
 </script>

@@ -26,12 +26,13 @@ import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
 import useProposals from '@/modules/proposals/useProposals'
-import type { Proposal } from '@/modules/proposals/types'
+import Proposal from '@/modules/proposals/Proposal.vue'
+import type { Proposal as P } from '@/modules/proposals/types'
 
-import { simpleChoices, SimpleChoice, CombinedSimpleResult, ResultProps } from './types'
+import { simpleChoices, SimpleChoice, CombinedSimpleResult } from './types'
 
 interface ProposalResult {
-  proposal: Proposal
+  proposal: P
   choices: {
     key: string
     percentage?: number
@@ -44,12 +45,15 @@ interface ProposalResult {
   }[]
 }
 
-interface Props extends ResultProps { result: CombinedSimpleResult }
-const props = defineProps<Props>()
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: CombinedSimpleResult
+}>()
 
 const { getProposal } = useProposals()
 
-function isProposal (prop?: Proposal): prop is Proposal {
+function isProposal (prop?: P): prop is P {
   return !!prop
 }
 
@@ -58,7 +62,7 @@ function getActiveChoice (pk: number): SimpleChoice | undefined {
   if (props.result.denied.includes(pk)) return SimpleChoice.No
 }
 
-function transformResult (proposal: Proposal): ProposalResult {
+function transformResult (proposal: P): ProposalResult {
   const pk = proposal.pk
   const result = props.result.results[pk]
   const total = result[SimpleChoice.Yes] + result[SimpleChoice.No]
