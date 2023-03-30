@@ -8,27 +8,42 @@
       color="secondary"
       class="my-4"
     />
-    <template v-for="{ description, isCurrent, name, props, title } in methods" :key="name">
+    <template v-for="method in methods" :key="method.name">
       <v-card
-        v-if="isCurrent"
-        :title="title"
-        :text="description"
+        v-if="method.isCurrent"
+        :title="method.title"
         class="my-4"
-        v-bind="props"
-      />
-      <QueryDialog v-else @confirmed="currentName = name">
+        v-bind="method.props">
+      <v-card-text>
+        <p>
+          <span v-if="method.handles_active_check">Active check</span>
+          <span v-if="method.handles_vote_weight">Weighted votes</span>
+          <span v-if="method.group_votes_active">Votes from groups</span>
+        </p>
+        {{ method.description }}
+      </v-card-text>
+        </v-card>
+      <QueryDialog v-else @confirmed="currentName = method.name">
         <template #activator="activator">
           <v-card
-            :title="title"
-            :text="description"
+            :title="method.title"
             class="my-4"
-            v-bind="{ ...props, ...activator.props }"
-          />
+            v-bind="{ ...method.props, ...activator.props }"
+          >
+          <v-card-text>
+            <p>
+              <span v-if="method.handles_active_check">Active check</span>
+              <span v-if="method.handles_vote_weight">Weighted votes</span>
+              <span v-if="method.group_votes_active">Votes from groups</span>
+            </p>
+            {{ method.description }}
+          </v-card-text>
+        </v-card>
         </template>
         <i18n-t keypath="electoralRegister.confirmMethodChange">
           <template #name>
             <strong>
-              {{ title }}
+              {{ method.title }}
             </strong>
           </template>
         </i18n-t>
@@ -93,6 +108,9 @@ const methods = computed(() => {
           'pa-4': isCurrent
         }
       },
+      handles_active_check: method.handles_active_check,
+      handles_vote_weight: method.handles_vote_weight,
+      group_votes_active: method.group_votes_active,
       title: method.title
     }
   })
