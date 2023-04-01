@@ -5,7 +5,10 @@ import { createI18n } from 'vue-i18n'
 import router from '@/router'
 import vuetify from '@/plugins/vuetify'
 import DuttResult from './DuttResult.vue'
+import MajorityResult from './MajorityResult.vue'
+import RepeatedIRVResult from './RepeatedIRVResult.vue'
 import SimpleResult from './SimpleResult.vue'
+import { nextTick } from 'vue'
 
 const i18n = createI18n({
   legacy: false,
@@ -24,7 +27,7 @@ vi.mock('@/modules/proposals/useProposals', () => {
           return {
             pk,
             body: `<p>Proposal ${pk}</p>`,
-            proposal_id: `prop-${pk}`,
+            prop_id: `prop-${pk}`,
             shortname: 'proposal',
             tags: []
           }
@@ -60,6 +63,76 @@ test('DuttResult component', () => {
   expect(wrapper.html()).toMatchSnapshot()
   expect(wrapper.text()).toContain('Proposal 1')
   expect(wrapper.text()).toContain('Vote count: 12')
+})
+
+test('MajorityResult component', () => {
+  expect(MajorityResult).toBeTruthy()
+  const wrapper = mount(
+    MajorityResult,
+    {
+      global,
+      props: {
+        abstainCount: 3,
+        proposals: [1, 2],
+        result: {
+          approved: [2],
+          denied: [1],
+          results: [
+            {
+              proposal: 1,
+              votes: 12
+            },
+            {
+              proposal: 2,
+              votes: 13
+            }
+          ]
+        }
+      }
+    }
+  )
+  expect(wrapper.html()).toMatchSnapshot()
+  expect(wrapper.text()).toContain('Proposal 1')
+  expect(wrapper.text()).toContain('Vote count: 12')
+})
+
+test('RepeatedIRVResult component', async () => {
+  expect(RepeatedIRVResult).toBeTruthy()
+  const wrapper = mount(
+    RepeatedIRVResult,
+    {
+      global,
+      props: {
+        abstainCount: 3,
+        proposals: [1, 2, 3],
+        result: {
+          approved: [1, 2],
+          denied: [3],
+          quota: 123,
+          complete: true,
+          randomized: false,
+          rounds: [
+            {
+              status: 'Elected',
+              selected: [1],
+              method: 'Direct'
+            },
+            {
+              status: 'Elected',
+              selected: [2],
+              method: 'Direct'
+            }
+          ],
+          runtime: 0.0123
+        }
+      }
+    }
+  )
+  expect(wrapper.html()).toMatchSnapshot()
+  expect(wrapper.text()).toContain('#prop-1')
+  wrapper.find('button').trigger('click')
+  await nextTick()
+  expect(wrapper.text()).toContain('poll.IRV.repeatedRoundResult')
 })
 
 test('SimpleResult component', () => {

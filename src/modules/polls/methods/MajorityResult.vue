@@ -30,8 +30,9 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 import useProposals from '@/modules/proposals/useProposals'
+import Proposal from '@/modules/proposals/Proposal.vue'
 import type { MajorityResult } from './types'
-import type { Proposal } from '@/modules/proposals/types'
+import type { Proposal as P } from '@/modules/proposals/types'
 
 const { t } = useI18n()
 const { getProposal } = useProposals()
@@ -48,7 +49,7 @@ function getIcon (proposal: number) {
   return { icon: 'mdi-help-rhombus', color: ThemeColor.Secondary, text: t('proposal.tied') }
 }
 
-function isProposal (prop?: Proposal): prop is Proposal {
+function isProposal (prop?: P): prop is P {
   return !!prop
 }
 

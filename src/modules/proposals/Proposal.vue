@@ -69,8 +69,9 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
+import Tag from '@/components/Tag.vue'
 import User from '@/components/User.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
 import useUnread from '@/composables/useUnread'
 
 import useAgendaItem from '../agendas/useAgendaItem'

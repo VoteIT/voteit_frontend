@@ -30,6 +30,7 @@ import useProposals from '@/modules/proposals/useProposals'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import Tag from '@/components/Tag.vue'
 import { ScottishSTVResult } from './types'
 
 const translationMapping: Record<string, string | undefined> = {
