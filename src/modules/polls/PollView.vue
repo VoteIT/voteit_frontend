@@ -111,6 +111,8 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import Dropdown from '@/components/Dropdown.vue'
+import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
@@ -123,7 +125,6 @@ import { dialogQuery, slugify } from '@/utils'
 import { socket } from '@/utils/Socket'
 import { openAlertEvent } from '@/utils/events'
 import Proposal from '../proposals/Proposal.vue'
-import Dropdown from '@/components/Dropdown.vue'
 
 const { t } = useI18n()
 const route = useRoute()

@@ -10,7 +10,7 @@
         <v-window-item value="default">
           <RoleMatrix
             :remove-confirm="removeConfirm"
-            :admin="canChangeRoles"
+            :admin="!!canChangeRoles"
             :contentType="meetingType"
             :pk="meetingId"
             :icons="meetingIcons"
@@ -113,6 +113,7 @@ import { User } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 import useOrganisation from '../organisations/useOrganisation'
 import usePresence from '../presence/usePresence'
+import PresenceCheckControl from '../presence/PresenceCheckControl.vue'
 import { presenceType } from '../presence/contentTypes'
 import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'

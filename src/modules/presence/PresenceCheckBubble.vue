@@ -26,10 +26,11 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import usePresence from './usePresence'
-import { canChangePresenceCheck } from './rules'
 import useAlert from '@/composables/useAlert'
 import useMeeting from '../meetings/useMeeting'
+import usePresence from './usePresence'
+import { canChangePresenceCheck } from './rules'
+import PresenceCheckControl from './PresenceCheckControl.vue'
 
 defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits(['update:modelValue'])
