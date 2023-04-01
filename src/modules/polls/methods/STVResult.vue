@@ -67,6 +67,7 @@ import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import Tag from '@/components/Tag.vue'
 import useProposals from '@/modules/proposals/useProposals'
 import { ScottishSTVResult } from './types'
 

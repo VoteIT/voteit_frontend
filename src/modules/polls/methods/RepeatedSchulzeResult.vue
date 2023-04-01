@@ -20,7 +20,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import type { Proposal } from '@/modules/proposals/types'
+import Proposal from '@/modules/proposals/Proposal.vue'
+import type { Proposal as P } from '@/modules/proposals/types'
 
 import { RepeatedSchulzeResult } from './types'
 import SchulzeResult from './SchulzeResult.vue'
@@ -37,7 +38,7 @@ const { getProposal } = useProposals()
 const orderedProposals = computed(() => {
   return props.result.rounds
     .map(round => getProposal(round.winner))
-    .filter((p?: Proposal): p is Proposal => !!p)
+    .filter((p?: P): p is P => !!p)
 })
 </script>
 
