@@ -1,4 +1,4 @@
-import { izip } from 'itertools'
+import { enumerate, izip } from 'itertools'
 import { ComposerTranslation } from 'vue-i18n'
 
 type Rule = (value: string) => string | true
@@ -34,15 +34,20 @@ export default function useRules (t: ComposerTranslation) {
   }
 
   function multiline (rule: Rule): Rule {
-    /**
-     * @returns true means incorrect line was found
-     */
-    function failChecker (line: string) {
-      return !!line.length && typeof rule(line) === 'string'
-    }
+    // /**
+    //  * @returns true means incorrect line was found
+    //  */
+    // function failChecker (line: string) {
+    //   return !!line.length && typeof rule(line) === 'string'
+    // }
     return (value: string) => {
-      const errLine = value.split('\n').findIndex(failChecker)
-      return errLine === -1 || t('rules.multilineFailed', errLine + 1)
+      for (const [i, line] of enumerate(value.split('\n'), 1)) {
+        const result = rule(line)
+        if (line && typeof result === 'string') return `${t('rules.multilineFailed', i)}: ${result}`
+      }
+      return true
+      // const errLine = value.split('\n').findIndex(failChecker)
+      // return errLine === -1 || `${t('rules.multilineFailed', errLine + 1)}: ${}`
     }
   }
 
