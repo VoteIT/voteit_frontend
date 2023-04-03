@@ -15,7 +15,7 @@ export interface ErMethod {
   available: boolean
   description: string
   // If boolean, it requires the same setting on the meeting
-  group_votes_active?: boolean
+  group_votes_active: boolean | null
   handles_active_check: boolean
   handles_vote_weight: boolean
   name: string

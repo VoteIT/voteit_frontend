@@ -14,15 +14,15 @@
         :title="method.title"
         class="my-4"
         v-bind="method.props">
-      <v-card-text>
-        <p>
-          <span v-if="method.handles_active_check">Active check</span>
-          <span v-if="method.handles_vote_weight">Weighted votes</span>
-          <span v-if="method.group_votes_active">Votes from groups</span>
-        </p>
-        {{ method.description }}
-      </v-card-text>
-        </v-card>
+        <v-card-text>
+          {{ method.description }}
+        </v-card-text>
+        <v-card-actions v-if="method.attributes.length">
+          <v-chip v-for="{ icon, text } in method.attributes" :key="text" :prepend-icon="icon" class="mr-1">
+            {{ text }}
+          </v-chip>
+        </v-card-actions>
+      </v-card>
       <QueryDialog v-else @confirmed="currentName = method.name">
         <template #activator="activator">
           <v-card
@@ -31,13 +31,13 @@
             v-bind="{ ...method.props, ...activator.props }"
           >
           <v-card-text>
-            <p>
-              <span v-if="method.handles_active_check">Active check</span>
-              <span v-if="method.handles_vote_weight">Weighted votes</span>
-              <span v-if="method.group_votes_active">Votes from groups</span>
-            </p>
             {{ method.description }}
           </v-card-text>
+          <v-card-actions v-if="method.attributes.length">
+            <v-chip v-for="{ icon, text } in method.attributes" :key="text" :prepend-icon="icon" class="mr-1">
+              {{ text }}
+            </v-chip>
+          </v-card-actions>
         </v-card>
         </template>
         <i18n-t keypath="electoralRegister.confirmMethodChange">
@@ -64,6 +64,7 @@ import { meetingType } from '../contentTypes'
 import useMeeting from '../useMeeting'
 
 import useElectoralRegisters from './useElectoralRegisters'
+import { ErMethod } from './types'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -94,12 +95,18 @@ const currentName = computed({
   }
 })
 
+function * getAttributes (method: ErMethod) {
+  if (method.handles_active_check) yield { icon: 'mdi-account-network', text: t('electoralRegister.handlesActiveCheck') }
+  if (method.handles_vote_weight) yield { icon: 'mdi-account-plus', text: t('electoralRegister.handlesVoteWeight') }
+  if (method.group_votes_active) yield { icon: 'mdi-account-group', text: t('electoralRegister.groupVotesActive') }
+}
+
 const methods = computed(() => {
   return availableErMethods.value?.map(method => {
     const isCurrent = method.name === currentName.value
     return {
       ...method,
-      description: method.description,
+      attributes: [...getAttributes(method)],
       isCurrent,
       props: {
         elevation: isCurrent ? 6 : 0,
@@ -107,11 +114,7 @@ const methods = computed(() => {
         class: {
           'pa-4': isCurrent
         }
-      },
-      handles_active_check: method.handles_active_check,
-      handles_vote_weight: method.handles_vote_weight,
-      group_votes_active: method.group_votes_active,
-      title: method.title
+      }
     }
   })
 })
