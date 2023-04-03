@@ -27,6 +27,31 @@ meetingExportPlugins.register({
   }
 })
 
+function getGroupDownloadFormat (meetingId: number, format: 'csv' | 'json') {
+  return {
+    format,
+    url: getApiLink(`export-meeting-groups/${meetingId}/${format}/`)
+  }
+}
+
+meetingExportPlugins.register({
+  id: 'meetingGroups',
+  checkActive (meeting) {
+    return meeting.group_votes_active
+  },
+  getExports (t, meetingId) {
+    return [{
+      formats: [
+        getGroupDownloadFormat(meetingId, 'csv'),
+        getGroupDownloadFormat(meetingId, 'json')
+      ]
+    }]
+  },
+  getTitle (t) {
+    return t('meeting.groups.groups')
+  }
+})
+
 function insertAfter (columns: RoleMatrixColumn[], name: string, column: RoleMatrixColumn) {
   const index = (columns.findIndex(col => col.name === name) + 1) || columns.length
   return [

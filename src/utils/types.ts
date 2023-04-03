@@ -36,7 +36,7 @@ export interface SuccessMessage<T> extends BaseChannelsMessage {
 
 export interface ProgressMessage extends BaseChannelsMessage {
   s: State.Running | State.Waiting | State.Queued
-  p: Progress
+  p: Progress | null
 }
 
 export interface PydanticError {

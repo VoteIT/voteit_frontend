@@ -23,6 +23,7 @@ import CheckboxMultipleSelect from './inputs/CheckboxMultipleSelect.vue'
 import DurationInput from './inputs/DurationInput.vue'
 import { FieldType } from './types'
 import type { FieldRule, FormSchema } from './types'
+import { isValidationError } from '@/utils/Socket'
 
 const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
@@ -47,7 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits(['update:modelValue', 'update:valid', 'saved', 'submit'])
 
-const { fieldErrors, clearErrors, handleRestError } = useErrorHandler()
+const { fieldErrors, clearErrors, handleRestError, handleSocketError } = useErrorHandler()
 
 const valid = ref<boolean | null>(null)
 const formData = reactive(
@@ -100,7 +101,8 @@ async function submit () {
     Object.assign(formData, props.modelValue) // Updates values from props
     emit('saved')
   } catch (e) {
-    handleRestError(e)
+    if (isValidationError(e)) handleSocketError(e)
+    else handleRestError(e)
   }
   submitting.value = false
 }

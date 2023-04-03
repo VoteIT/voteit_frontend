@@ -3,37 +3,69 @@
     <v-alert type="info" class="mb-4">
       {{ t('meeting.groups.help') }}
     </v-alert>
-    <div class="d-flex mb-4">
-      <h1>
-        {{ t('meeting.groups.groups') }}
-      </h1>
-      <v-spacer />
-      <DefaultDialog v-if="canChangeMeeting" :title="t('meeting.groups.new')">
-        <template #activator="{ props }">
-          <v-btn color="primary" prepend-icon="mdi-account-multiple-plus" v-bind="props">
-            {{ t('meeting.groups.create') }}
-          </v-btn>
-        </template>
-        <template #default="{ close }">
-          <SchemaForm
-            :schema="groupSchema"
-            :handler="createGroup"
-            @saved="close"
-          >
-            <template #buttons="{ disabled, submitting }">
-              <div class="text-right">
-                <v-btn variant="text" @click="close">
-                  {{ t('cancel') }}
-                </v-btn>
-                <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
-                  {{ t('meeting.groups.create') }}
-                </v-btn>
-              </div>
-            </template>
-          </SchemaForm>
-        </template>
-      </DefaultDialog>
-    </div>
+    <v-toolbar :title="t('meeting.groups.groups')" color="secondary">
+      <template v-if="canChangeMeeting">
+        <DefaultDialog :title="t('meeting.groups.import')">
+          <template #activator="{ props }">
+            <v-btn prepend-icon="mdi-file-import" v-bind="props">
+              {{ t('meeting.groups.import') }}
+            </v-btn>
+          </template>
+          <template #default="{ close }">
+            <v-alert type="info" class="mb-2" :text="meeting?.group_votes_active ? t('meeting.groups.importWithVotesHelp') : t('meeting.groups.importHelp')" />
+            <SchemaForm
+             :schema="importSchema"
+             :handler="createGroups"
+             @saved="close"
+            >
+              <template #buttons="{ disabled, submitting }">
+                <div class="text-right">
+                  <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-send">
+                    {{ t('meeting.groups.import') }}
+                  </v-btn>
+                </div>
+              </template>
+            </SchemaForm>
+          </template>
+        </DefaultDialog>
+        <v-menu v-if="meetingGroups.length">
+          <template #activator="{ props }">
+            <v-btn prepend-icon="mdi-download" v-bind="props">
+              {{ t('download') }}
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item append-icon="mdi-file-download" :title="t('meeting.groups.groups') + ' (CSV)'" :href="getApiLink(`export-meeting-groups/${meetingId}/csv/`)" />
+            <v-list-item append-icon="mdi-file-download" :title="t('meeting.groups.groups') + ' (JSON)'" :href="getApiLink(`export-meeting-groups/${meetingId}/json/`)" />
+          </v-list>
+        </v-menu>
+        <DefaultDialog :title="t('meeting.groups.new')">
+          <template #activator="{ props }">
+            <v-btn prepend-icon="mdi-account-multiple-plus" v-bind="props">
+              {{ t('meeting.groups.create') }}
+            </v-btn>
+          </template>
+          <template #default="{ close }">
+            <SchemaForm
+              :schema="groupSchema"
+              :handler="createGroup"
+              @saved="close"
+            >
+              <template #buttons="{ disabled, submitting }">
+                <div class="text-right">
+                  <v-btn variant="text" @click="close">
+                    {{ t('cancel') }}
+                  </v-btn>
+                  <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
+                    {{ t('meeting.groups.create') }}
+                  </v-btn>
+                </div>
+              </template>
+            </SchemaForm>
+          </template>
+        </DefaultDialog>
+      </template>
+    </v-toolbar>
     <v-table>
       <thead>
         <tr>
@@ -151,6 +183,7 @@ import GroupMemberships from './GroupMemberships.vue'
 import useRules from '@/composables/useRules'
 import { meetingGroupTablePlugins } from './registry'
 import useErrorHandler from '@/composables/useErrorHandler'
+import { getApiLink } from '@/utils/restApi'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -173,6 +206,37 @@ const columns = computed(() => {
   }))
 })
 const hasCountColumns = computed(() => any(columns.value, c => !!c.getCount))
+
+const importSchema = computed<FormSchema>(() => {
+  const validate = rules.multiline(
+    rules.or(
+      rules.tabSeparated(rules.minLength(1), rules.minLength(1)),
+      rules.tabSeparated(rules.minLength(1), rules.minLength(1), rules.min(0))
+    )
+  )
+  return [
+    {
+      label: t('meeting.groups.groups'),
+      name: 'groups',
+      type: FieldType.TextArea,
+      rules: [{
+        props: {
+          required: true
+        },
+        validate
+      }]
+    }
+  ]
+})
+/**
+ * Socket call to import groups.
+ */
+function createGroups (data: { groups: string }) {
+  return meetingGroupType.methodCall('bulk_create', {
+    meeting: meetingId.value,
+    ...data
+  })
+}
 
 const groupSchema = computed(() => {
   const schema: FormSchema = [{

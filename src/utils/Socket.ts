@@ -257,7 +257,7 @@ class Socket {
           case State.Running:
             // If we get progress, we reset timeout watcher
             setRejectTimeout()
-            progress(data.p)
+            if (data.p) progress(data.p)
             break
           case State.Success:
             this.callbacks.delete(messageId)

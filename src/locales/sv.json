@@ -311,10 +311,13 @@
     "groups": {
       "addMember": "Lägg till medlem",
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
-      "create": "Skapa grupp",
+      "create": "Ny grupp",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
       "groups": "Grupper",
       "help": "Medlemmar i en grupp kan lägga förslag i den gruppens namn, förutsatt att personen har rätt att lägga förslag. Det är användbart för att lägga till förslag från ett utskott, styrelse eller annan grupp, som inte ska anses vara personliga förslag.",
+      "import": "Importera",
+      "importHelp": "Klistra in grupper med gruppnamn och id (tabb-separerat). Kopiera och klistra in från ett kalkylblad.",
+      "importWithVotesHelp": "Klistra in grupper med gruppnamn, id och antal röster (tabb-separerat). Kopiera och klistra in från ett kalkylblad.",
       "members": "Medlemmar",
       "membersIn": "Medlemmar i {title}",
       "modify": "Ändra grupp",
@@ -657,8 +660,9 @@
     "minLength": "Måste vara minst {count} tecken",
     "minValue": "Får inte vara lägre än {count}",
     "multilineFailed": "Fel på rad {count}",
+    "noMatch": "Felaktigt format",
     "required": "Krävd",
-    "tabSeparatedBadLength": "Kräver {count} värden (tab-separerat)"
+    "tabSeparatedBadLength": "Kräver {count} värden (tabb-separerat)"
   },
   "socket": {
     "connected": "Uppkopplad",
