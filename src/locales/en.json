@@ -654,7 +654,8 @@
     "minLength": "Must be at least {count} characters",
     "minValue": "Must be at least {count}",
     "multilineFailed": "Error on row {count}",
-    "required": "Required"
+    "required": "Required",
+    "tabSeparatedBadLength": "Requires {count} values (tab-separated)"
   },
   "socket": {
     "connected": "Connected",

@@ -97,3 +97,13 @@ x212121212
   expect(multiSSN(incorrectSSN)).toBe(invalid)
   expect(multiSSN(correctMix)).toBe(invalid)
 })
+
+test('TabSeparated', () => {
+  const mixRule = rules.tabSeparated(rules.minLength(1), rules.email, rules.swedishSSN)
+
+  expect(mixRule('One\ttwo')).toEqual('rules.tabSeparatedBadLength')
+  expect(mixRule('\ttwo\tthree')).toEqual('rules.minLength')
+  expect(mixRule('One\ttwo\tthree')).toEqual('invites.email.invalid')
+  expect(mixRule('One\ttest@example.com\tthree')).toEqual('invites.swedish_ssn.invalid')
+  expect(mixRule('One\ttest@example.com\t1212121212')).toEqual(true)
+})

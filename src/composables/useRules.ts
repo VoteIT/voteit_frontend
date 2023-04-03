@@ -1,3 +1,4 @@
+import { izip } from 'itertools'
 import { ComposerTranslation } from 'vue-i18n'
 
 type Rule = (value: string) => string | true
@@ -55,6 +56,18 @@ export default function useRules (t: ComposerTranslation) {
     return !value.length || swedishSSNPattern.test(value) || t('invites.swedish_ssn.invalid')
   }
 
+  function tabSeparated (...rules: Rule[]): Rule {
+    return (value: string) => {
+      const values = value.split('\t')
+      if (values.length !== rules.length) return t('rules.tabSeparatedBadLength', rules.length)
+      for (const [value, rule] of izip(values, rules)) {
+        const result = rule(value.trim())
+        if (typeof result === 'string') return result
+      }
+      return true
+    }
+  }
+
   return {
     email,
     required,
@@ -64,6 +77,7 @@ export default function useRules (t: ComposerTranslation) {
     minLength,
     multiline,
     or,
-    swedishSSN
+    swedishSSN,
+    tabSeparated
   }
 }

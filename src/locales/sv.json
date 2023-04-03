@@ -657,7 +657,8 @@
     "minLength": "Måste vara minst {count} tecken",
     "minValue": "Får inte vara lägre än {count}",
     "multilineFailed": "Fel på rad {count}",
-    "required": "Krävd"
+    "required": "Krävd",
+    "tabSeparatedBadLength": "Kräver {count} värden (tab-separerat)"
   },
   "socket": {
     "connected": "Uppkopplad",
