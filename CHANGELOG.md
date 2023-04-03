@@ -5,7 +5,7 @@ Document notable changes here.
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
 ## 0.12.4
-- Emport and export of meeting groups [#265](https://github.com/VoteIT/voteit_frontend/issues/265)
+- Import and export of meeting groups [#265](https://github.com/VoteIT/voteit_frontend/issues/265)
 
 ## 0.12.3
 - Simplify selection of Electoral Register [#266](https://github.com/VoteIT/voteit_frontend/issues/266)
