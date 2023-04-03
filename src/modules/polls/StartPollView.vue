@@ -113,7 +113,9 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposals from '../proposals/useProposals'
 import { ProposalState } from '../proposals/types'
 
-import { Conditional, PollStartData, PollMethodSettings, Poll } from './methods/types'
+import { Conditional } from './methods/types'
+import type { PollStartData, PollMethodSettings } from './methods/types'
+import type { Poll } from './types'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 import { pollPlugins } from './registry'
@@ -121,7 +123,7 @@ import { pollPlugins } from './registry'
 const { t } = useI18n()
 const router = useRouter()
 const proposals = useProposals()
-const { isModerator, meetingPath, meetingId } = useMeeting()
+const { isModerator, meetingPath, meetingId, getMeetingRoute } = useMeeting()
 const { agendaId, agenda } = useAgenda(meetingId)
 const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
 const { alert } = useAlert()
@@ -158,7 +160,7 @@ const pickMethod = ref(false)
 const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length))
 
 const methodSelected = ref<Poll['method_name'] | null>(null)
-const methodSelectedPlugin = computed(() => methodSelected.value && pollPlugins.getPlugin(methodSelected.value))
+const methodSelectedPlugin = computed(() => pollPlugins.getPlugin(methodSelected.value || ''))
 const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
 watch(methodSelected, name => {
   if (!name) return
@@ -199,7 +201,7 @@ async function createPoll (start = false) {
   }
   try {
     const { data } = await pollType.api.add(pollData as Partial<Poll>)
-    router.push(`${meetingPath.value}/polls/${data.pk}/${slugify(data.title)}`)
+    router.push(getMeetingRoute('poll', { pid: data.pk, pslug: slugify(data.title) }))
   } catch {}
   working.value = false
 }

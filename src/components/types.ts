@@ -1,6 +1,6 @@
-import { UserContextRoles } from '@/composables/types'
 import { ComponentPublicInstance } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
+import { UserContextRoles } from '@/composables/types'
 
 export type EditorComponent = ComponentPublicInstance<{
   setText: (text: string) => void,
@@ -89,13 +89,15 @@ export enum FieldType {
   TextArea = 'textarea',
 }
 
-export interface FieldRule<T> {
+export interface FieldRule<T = string> {
   props?: {
     required?: boolean
     disabled?: boolean
     type?: 'email' | 'password' // TODO More types
+    max?: number
     maxlength?: number
     min?: number
+    minlength?: number
   }
   clean?: (value: T) => T
   validate?: (value: T) => true | string

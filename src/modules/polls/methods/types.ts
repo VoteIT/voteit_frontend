@@ -110,6 +110,7 @@ export interface DuttSettings {
 }
 
 export interface RepeatedSchulzeSettings {
+  stars?: number
   winners: number | null
 }
 

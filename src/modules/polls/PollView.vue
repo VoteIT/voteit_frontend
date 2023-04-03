@@ -62,7 +62,6 @@
         </div>
       </div>
       <template v-else-if="!votingComplete">
-        <v-divider />
         <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote">
           <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote" prepend-icon="mdi-vote">

@@ -1,6 +1,6 @@
-import { FieldType } from '@/components/types'
-import { SchemaGenerator } from '@/components/inputs/types'
-import { required } from '@/utils/rules'
+import { ComposerTranslation } from 'vue-i18n'
+
+import createFormSchema from '@/utils/createFormSchema'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { pollPlugins } from '../registry'
 
@@ -20,25 +20,24 @@ import STVResult from './STVResult.vue'
 
 const { getOrganisationComponent } = useOrganisation()
 
-const getSchulzeSchema: SchemaGenerator = (t, proposals) => {
-  return [
-    {
-      name: 'stars',
-      type: FieldType.Number,
-      label: t('poll.schulze.numberOfStars'),
-      rules: [required],
-      min: 3,
-      max: 20
+function getSchulzeSchema (t: ComposerTranslation, proposals: number) {
+  return {
+    properties: {
+      stars: {
+        type: 'number',
+        label: t('poll.schulze.numberOfStars'),
+        maximum: 20,
+        minimum: 3
+      },
+      deny_proposal: {
+        type: 'boolean',
+        label: t('poll.schulze.addDenyProposal')
+      }
     },
-    {
-      name: 'deny_proposal',
-      type: FieldType.Checkbox,
-      rules: proposals < 3
-        ? [required]
-        : [],
-      label: t('poll.schulze.addDenyProposal')
-    }
-  ]
+    required: proposals < 3
+      ? ['deny_proposal', 'stars']
+      : ['stars']
+  } as const
 }
 
 pollPlugins.register({
@@ -62,7 +61,9 @@ pollPlugins.register({
     majorityWinner: true,
     mutualMajority: true
   },
-  getSchema: getSchulzeSchema,
+  getSchema (t, proposals) {
+    return createFormSchema(t, getSchulzeSchema(t, proposals))
+  },
   initialSettings: {
     stars: 5
   },
@@ -94,17 +95,19 @@ pollPlugins.register({
     proportional: false
   },
   getSchema (t, proposals) {
-    return [
-      {
-        name: 'winners',
-        type: FieldType.Number,
-        label: t('winners'),
-        min: 1,
-        max: proposals,
-        rules: [required]
+    const { properties, required } = getSchulzeSchema(t, proposals)
+    return createFormSchema(t, {
+      properties: {
+        winners: {
+          type: 'number',
+          label: t('winners'),
+          minimum: 1,
+          maximum: proposals
+        },
+        ...properties
       },
-      ...getSchulzeSchema(t, proposals)
-    ]
+      required: [...required]
+    })
   },
   initialSettings: {
     winners: 2,
@@ -127,30 +130,30 @@ pollPlugins.register({
     majorityWinner: false
   },
   getSchema (t, proposals) {
-    return [{
-      name: 'winners',
-      type: FieldType.Number,
-      label: t('winners'),
-      min: 1,
-      max: proposals - 1,
-      rules: [required]
-    },
-    {
-      name: 'allow_random',
-      type: FieldType.Checkbox,
-      label: t('poll.allowRandomTiebreaker')
-    }]
+    return createFormSchema(t, {
+      properties: {
+        winners: {
+          type: 'number',
+          label: t('winners'),
+          minimum: 1,
+          maximum: proposals - 1
+        },
+        allow_random: {
+          type: 'boolean',
+          label: t('poll.allowRandomTiebreaker')
+        }
+      },
+      required: ['winners']
+    })
   },
   initialSettings: {
     winners: 2,
     allow_random: true
   },
-  // losersMin: 1,
   multipleWinners: true,
   proposalsMin: 3,
   resultComponent: STVResult,
   voteComponent: RankedVoting
-  // winnersMin: 2
 })
 
 pollPlugins.register({
@@ -163,11 +166,14 @@ pollPlugins.register({
     proportional: false
   },
   getSchema (t) {
-    return [{
-      name: 'allow_random',
-      type: FieldType.Checkbox,
-      label: t('poll.allowRandomTiebreaker')
-    }]
+    return createFormSchema(t, {
+      properties: {
+        allow_random: {
+          type: 'boolean',
+          label: t('poll.allowRandomTiebreaker')
+        }
+      }
+    })
   },
   initialSettings: {
     allow_random: true
@@ -190,18 +196,23 @@ pollPlugins.register({
   },
   discouraged: true,
   getSchema (t, proposals) {
-    return ['min', 'max'].map(name => {
-      // Don't allow requiring to select all proposals
-      const max = name === 'min'
-        ? proposals - 1
-        : proposals
-      return {
-        name,
-        type: FieldType.Number,
-        label: t(`poll.dutt.${name}`),
-        hint: t('poll.dutt.minMaxHint'),
-        min: 0,
-        max
+    return createFormSchema(t, {
+      properties: {
+        min: {
+          type: 'number',
+          label: t('poll.dutt.min'),
+          minimum: 0,
+          // Don't allow requiring to select all proposals
+          maximum: proposals - 1,
+          hint: t('poll.dutt.minMaxHint')
+        },
+        max: {
+          type: 'number',
+          label: t('poll.dutt.max'),
+          minimum: 0,
+          maximum: proposals,
+          hint: t('poll.dutt.minMaxHint')
+        }
       }
     })
   },
@@ -226,21 +237,21 @@ pollPlugins.register({
   discouraged: true,
   checkActive: () => !!getOrganisationComponent('repeated_irv'),
   getSchema (t, proposals) {
-    return [
-      {
-        name: 'winners',
-        type: FieldType.Number,
-        label: t('winners'),
-        min: 2,
-        max: proposals,
-        rules: [required]
+    return createFormSchema(t, {
+      properties: {
+        winners: {
+          type: 'number',
+          label: t('winners'),
+          minimum: 2,
+          maximum: proposals
+        },
+        allow_random: {
+          type: 'boolean',
+          label: t('poll.allowRandomTiebreaker')
+        }
       },
-      {
-        name: 'allow_random',
-        type: FieldType.Checkbox,
-        label: t('poll.allowRandomTiebreaker')
-      }
-    ]
+      required: ['winners']
+    })
   },
   initialSettings: {
     allow_random: true,
