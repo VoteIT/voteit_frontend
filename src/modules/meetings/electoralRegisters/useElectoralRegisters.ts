@@ -5,7 +5,6 @@ import { electoralRegisterType, erMethodType } from '../contentTypes'
 import { meetings } from '../useMeetings'
 
 import type { ElectoralRegister, ErMethod } from './types'
-import { filter } from 'itertools'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
@@ -14,10 +13,6 @@ electoralRegisterType
   .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
 
 const _erMethods = ref<ErMethod[] | null>(null)
-
-function isAvailableMethod (method: ErMethod) {
-  return method.available
-}
 
 async function fetchErMethods () {
   try {
@@ -64,7 +59,12 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   const availableErMethods = computed(() => {
     if (erMethod.value && erMethodLocked.value) return [erMethod.value]
     if (!erMethods.value) return
-    return filter(erMethods.value, isAvailableMethod)
+    return erMethods.value.filter(method => {
+      console.log(method, meeting.value?.group_votes_active)
+      if (!method.available) return false
+      if (method.group_votes_active === null) return true
+      return !!meeting.value?.group_votes_active === method.group_votes_active
+    })
   })
 
   const erMethod = computed(() => {
@@ -73,8 +73,11 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   })
   const erMethodWeighted = computed(() => erMethod.value?.handles_vote_weight)
 
+  /**
+   * If meeting has a dialect, and that dialect dictates an ER method, consider this to be locked
+   */
   const erMethodLocked = computed(() => {
-    return !erMethod.value?.available
+    return !!meeting.value?.dialect?.er_policy_name
   })
 
   async function fetchRegisters () {

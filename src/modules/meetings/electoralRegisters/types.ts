@@ -14,8 +14,9 @@ export interface ErMethod {
   allow_trigger: boolean
   available: boolean
   description: string
-  handles_group_vote: boolean
-  handles_personal_vote: boolean
+  // If boolean, it requires the same setting on the meeting
+  group_votes_active: boolean | null
+  handles_active_check: boolean
   handles_vote_weight: boolean
   name: string
   title: string
