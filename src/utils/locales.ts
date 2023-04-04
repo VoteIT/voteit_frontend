@@ -75,4 +75,6 @@ watch(currentLocale, async (locale) => {
   // This should be a ref, not a string, but check anyway
   if (typeof i18n.global.locale === 'string') i18n.global.locale = locale
   else i18n.global.locale.value = locale
+  // Update DOM
+  document.querySelector('html')?.setAttribute('lang', locale)
 }, { immediate: true })
