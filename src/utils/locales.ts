@@ -8,20 +8,22 @@ import en from '../locales/en.json'
 
 const defaultLanguage = 'en'
 
-export const languages = [
-  {
-    locale: 'en',
-    name: 'English'
-  },
-  {
-    locale: 'sv',
-    name: 'Svenska'
-  }
-] as const
-type Locale = typeof languages[number]['locale']
+const locales = import.meta.glob('@/locales/*.json', { as: 'raw' })
+export const languages = Object.keys(locales).map(path => path.split('/').at(-1)!.split('.').at(0)!)
+// export const languages = [
+//   {
+//     locale: 'en',
+//     name: 'English'
+//   },
+//   {
+//     locale: 'sv',
+//     name: 'Svenska'
+//   }
+// ] as const
+type Locale = typeof languages[number]
 
 function isLocale (value: string): value is Locale {
-  return languages.some(({ locale }) => value === locale)
+  return languages.includes(value)
 }
 
 function resolveLocale (): Locale {
@@ -61,10 +63,8 @@ export const i18n = createI18n({
 }) as I18n
 
 async function loadLocaleMessages (i18n: I18n, locale: string) {
-  const messages = await import(
-    `@/locales/${locale}.json`
-  )
-  i18n.global.setLocaleMessage(locale, messages)
+  const raw = await locales[`/src/locales/${locale}.json`]()
+  i18n.global.setLocaleMessage(locale, JSON.parse(raw))
   await nextTick()
 }
 

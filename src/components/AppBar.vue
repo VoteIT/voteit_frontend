@@ -68,26 +68,28 @@
                 </v-list-item>
               </v-list>
             </DefaultDialog>
-            <DefaultDialog>
+            <DefaultDialog :title="t('language.choose')">
               <template #activator="{ props }">
                 <v-list-item prepend-icon="mdi-translate" :title="t('language.choose')" v-bind="props" />
               </template>
               <template #default="{ close }">
-                <h2>
-                  {{ t('language.choose') }}
-                </h2>
                 <p class="my-2">
                   {{ t('language.disclaimer') }}
                 </p>
                 <v-list class="my-4" color="primary">
                   <v-list-item
-                    v-for="{ locale, name } in languages" :key="locale"
+                    v-for="locale in languages" :key="locale"
                     :active="locale === currentLocale"
                     :disabled="locale === currentLocale"
-                    :title="name"
+                    :title="new Intl.DisplayNames([locale], { type: 'language' }).of(locale)"
                     @click="currentLocale = locale; close()"
                   />
                 </v-list>
+                <div class="text-right">
+                  <v-btn @click="close" variant="text">
+                    {{ t('cancel') }}
+                  </v-btn>
+                </div>
               </template>
             </DefaultDialog>
           </v-list>
