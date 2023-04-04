@@ -10,16 +10,6 @@ const defaultLanguage = 'en'
 
 const locales = import.meta.glob('@/locales/*.json', { as: 'raw' })
 export const languages = Object.keys(locales).map(path => path.split('/').at(-1)!.split('.').at(0)!)
-// export const languages = [
-//   {
-//     locale: 'en',
-//     name: 'English'
-//   },
-//   {
-//     locale: 'sv',
-//     name: 'Svenska'
-//   }
-// ] as const
 type Locale = typeof languages[number]
 
 function isLocale (value: string): value is Locale {
@@ -63,7 +53,9 @@ export const i18n = createI18n({
 }) as I18n
 
 async function loadLocaleMessages (i18n: I18n, locale: string) {
-  const raw = await locales[`/src/locales/${locale}.json`]()
+  const loader = locales[`/src/locales/${locale}.json`] as () => Promise<string>
+  if (!loader) throw new Error(`Locale ${locale} not found!`)
+  const raw = await loader()
   i18n.global.setLocaleMessage(locale, JSON.parse(raw))
   await nextTick()
 }
