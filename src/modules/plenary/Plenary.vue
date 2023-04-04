@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { flatten } from 'lodash'
 
@@ -66,7 +66,6 @@ import useMeetingChannel from '../meetings/useMeetingChannel'
 import { tagClickEvent } from '../meetings/useTags'
 
 import usePlenary from './usePlenary'
-import { reactive } from 'vue'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 

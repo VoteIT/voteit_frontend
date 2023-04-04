@@ -21,7 +21,7 @@
           {{ t('invites.add') }}
         </v-btn>
       </template>
-      <v-form @submit.prevent="submitInvites" v-model="inviteData.valid">
+      <v-form @submit.prevent="submitInvites" v-model="inviteData.valid" ref="invitationsForm">
         <v-select
           v-if="scopeItems?.length !== 1"
           class="mb-2"
@@ -134,7 +134,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch, ComponentPublicInstance } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { chunk, isEqual } from 'lodash'
@@ -142,7 +142,6 @@ import { chunk, isEqual } from 'lodash'
 import { parseSocketError, socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-// import QueryDialog from '@/components/QueryDialog.vue'
 
 import useChannel from '@/composables/useChannel'
 import usePermission from '@/composables/usePermission'
@@ -207,6 +206,13 @@ const inviteInputProps = computed(() => {
         }[type]
       : [rules.required]
   }
+})
+
+// Redo validation if type was changed
+const invitationsForm = ref<ComponentPublicInstance<{ resetValidation(): void, validate(): void }> | null>(null)
+watch(() => inviteData.type, async () => {
+  inviteErrors.value = {}
+  invitationsForm.value?.validate()
 })
 // Reset server sent errors on form update
 watch(() => inviteData.invite_data, () => {
