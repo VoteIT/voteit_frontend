@@ -15,7 +15,7 @@
                 v-for="s in getProposalStates(p.state)" :key="s.state"
                 :color="p.state === s.state ? s.color : 'background'"
                 @click="makeTransition(p, s)"
-                :loading="p.state !== s.state && p.pk === transitioning"
+                :loading="p.state !== s.state && transitioning.has(p.pk)"
               >
                 <v-icon :icon="s.icon" />
               </v-btn>
@@ -66,6 +66,7 @@ import useMeetingChannel from '../meetings/useMeetingChannel'
 import { tagClickEvent } from '../meetings/useTags'
 
 import usePlenary from './usePlenary'
+import { reactive } from 'vue'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
@@ -109,15 +110,15 @@ const nextTextProposalTag = computed(() => {
   return textProposalTags.value.find(tagInPool)
 })
 
-const transitioning = ref<number | null>(null)
+const transitioning = reactive(new Set<number>())
 async function makeTransition (p: Pick<Proposal, 'state' | 'pk'>, state: WorkflowState) {
   if (!state.transition) throw new Error(`Proposal state ${state.state} has no registered transition`)
   if (state.state === p.state) return // No need to change state then is there?
-  transitioning.value = p.pk
+  transitioning.add(p.pk)
   try {
     await proposalType.api.transition(p.pk, state.transition)
   } catch {}
-  transitioning.value = null
+  transitioning.delete(p.pk)
 }
 onMounted(() => {
   tagClickEvent.on(selectTag)
