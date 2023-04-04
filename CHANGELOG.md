@@ -4,6 +4,15 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.12.5
+Bugfix release
+
+- Fixed problem with locale imports and missing translation keys due to vite export method
+- Implemented form validation rules for startpoll settings [#269](https://github.com/VoteIT/voteit_frontend/issues/269)
+- Fixed issue where invitation form stayed disabled when modified [#236](https://github.com/VoteIT/voteit_frontend/issues/236)
+- Added Loading indication to invites page [#212](https://github.com/VoteIT/voteit_frontend/issues/212)
+- Protect from double-click on transitions in plenary view [#255](https://github.com/VoteIT/voteit_frontend/issues/255)
+
 ## 0.12.4
 - Import and export of meeting groups [#265](https://github.com/VoteIT/voteit_frontend/issues/265)
 
