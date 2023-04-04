@@ -115,7 +115,10 @@
     </v-item-group>
   </v-table>
   <v-pagination v-if="pages.length > 1" v-model="currentPage" :length="pages.length" />
-  <v-alert v-if="inviteHelp" type="info" v-bind="inviteHelp" class="my-4" />
+  <div v-if="!isSubscribed" class="text-center my-6">
+    <v-progress-circular indeterminate />
+  </div>
+  <v-alert v-else-if="inviteHelp" type="info" v-bind="inviteHelp" class="my-4" />
   <v-expand-transition>
     <v-sheet rounded border v-show="selectedInvites.length">
       <div class="ma-4">
@@ -172,7 +175,7 @@ const { meetingInvites } = useMeetingInvites(meetingId)
 const { copy, copied } = useClipboard()
 const rules = useRules(t)
 
-useChannel('invites', meetingId)
+const { isSubscribed } = useChannel('invites', meetingId)
 usePermission(isModerator, {}, () => { emit('denied') })
 
 const scopeItems = computed(() => {
