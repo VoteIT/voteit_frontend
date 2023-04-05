@@ -73,6 +73,7 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   })
   const erMethodWeighted = computed(() => erMethod.value?.handles_vote_weight)
 
+  const erMethodAllowsManual = computed(() => erMethod.value?.allow_manual)
   /**
    * If meeting has a dialect, and that dialect dictates an ER method, consider this to be locked
    */
@@ -118,6 +119,7 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     availableErMethods,
     currentElectoralRegister,
     erMethod,
+    erMethodAllowsManual,
     erMethodLocked,
     erMethodWeighted,
     erMethods,

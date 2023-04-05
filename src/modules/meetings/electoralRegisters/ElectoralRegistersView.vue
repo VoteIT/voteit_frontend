@@ -9,7 +9,7 @@
       @open="triggerERCreation"
     >
       <template #activator="{ props }">
-        <v-btn v-bind="props" color="primary" variant="tonal" prepend-icon="mdi-account-plus">
+        <v-btn v-bind="props" color="primary" variant="tonal" prepend-icon="mdi-star-check">
           {{ t('electoralRegister.establish') }}
         </v-btn>
       </template>
@@ -33,13 +33,13 @@
       </template>
     </DefaultDialog>
     <DefaultDialog
-      v-if="canManagePresence && erMethod?.allow_manual"
-      :title="t('electoralRegister.create')"
+      v-if="erMethodAllowsManual"
+      :title="t('electoralRegister.createManual')"
       @open="fetchRoles"
     >
       <template #activator="{ props }">
-        <v-btn v-bind="props" variant="tonal" prepend-icon="mdi-account-plus">
-          {{ t('electoralRegister.create') }}
+        <v-btn v-bind="props" variant="tonal" prepend-icon="mdi-book-open-variant">
+          {{ t('electoralRegister.createManual') }}
         </v-btn>
       </template>
       <template #default="{ close }">
@@ -146,7 +146,6 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
-import usePresence from '@/modules/presence/usePresence'
 import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
 import { PollState } from '@/modules/polls/types'
@@ -161,9 +160,8 @@ import useElectoralRegisters from './useElectoralRegisters'
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
 const { isModerator, meetingId } = useMeeting()
-const { sortedRegisters, currentElectoralRegister, erMethod, erMethodWeighted, fetchRegisters, getErMethod, hasWeightedVotes } = useElectoralRegisters(meetingId)
+const { sortedRegisters, currentElectoralRegister, erMethod, erMethodWeighted, fetchRegisters, getErMethod, hasWeightedVotes, erMethodAllowsManual } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
-const { canManagePresence } = usePresence(meetingId)
 const { anyPoll } = usePolls()
 
 useMeetingTitle(t('electoralRegister.plural'))
