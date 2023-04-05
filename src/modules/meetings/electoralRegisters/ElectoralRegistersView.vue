@@ -33,7 +33,7 @@
       </template>
     </DefaultDialog>
     <DefaultDialog
-      v-if="erMethodAllowsManual"
+      v-if="erMethodAllowsManual && isModerator"
       :title="t('electoralRegister.createManual')"
       @open="fetchRoles"
     >
