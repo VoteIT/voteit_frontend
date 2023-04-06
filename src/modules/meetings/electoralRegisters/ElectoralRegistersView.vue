@@ -33,7 +33,7 @@
       </template>
     </DefaultDialog>
     <DefaultDialog
-      v-if="erMethodAllowsManual && isModerator"
+      v-if="erMethodAllowsManual && isModerator && isActiveMeeting"
       :title="t('electoralRegister.createManual')"
       @open="fetchRoles"
     >
@@ -159,7 +159,7 @@ import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
-const { isModerator, meetingId } = useMeeting()
+const { isActiveMeeting, isModerator, meetingId } = useMeeting()
 const { sortedRegisters, currentElectoralRegister, erMethod, erMethodWeighted, fetchRegisters, getErMethod, hasWeightedVotes, erMethodAllowsManual } = useElectoralRegisters(meetingId)
 const loader = useLoader('ElectoralRegisters')
 const { anyPoll } = usePolls()
@@ -272,7 +272,7 @@ function fetchRoles () {
 }
 
 // Trigger ER creation for some ER methods (w allow_trigger)
-const canTriggerERCreation = computed(() => !!(isModerator.value && erMethod.value?.allow_trigger))
+const canTriggerERCreation = computed(() => !!(isModerator.value && erMethod.value?.allow_trigger && isActiveMeeting.value))
 const erTriggerResult = ref<'waiting' | 'created' | 'up2date' | 'failed'>('waiting')
 async function triggerERCreation () {
   if (!canTriggerERCreation.value) throw new Error('ER creation not allowed')
