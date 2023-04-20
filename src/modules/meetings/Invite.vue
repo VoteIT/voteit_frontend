@@ -6,9 +6,14 @@
       </v-list-subheader>
       <v-list-item
         :prepend-icon="scopePlugin?.icon || 'mdi-help'"
-        :title="scopePlugin?.transformData?.(invite.invite_data) || invite.invite_data"
-        :subtitle="t(`invites.${invite.type}.typeLabel`)"
+        :title="invite.user_data"
+
       />
+      <!-- FIXME
+        :title="scopePlugin?.transformData?.(invite.user_data) || invite.user_data"
+          :subtitle="t(`invites.${invite.type}.typeLabel`)"
+
+      -->
     </v-list>
     <v-card-actions class="flex-wrap">
       <v-spacer />

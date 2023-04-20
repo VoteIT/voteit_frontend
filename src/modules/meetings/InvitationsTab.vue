@@ -32,7 +32,7 @@
           :rules="[rules.required]"
         />
         <v-textarea
-          v-model="inviteData.invite_data"
+          v-model="inviteData.user_data"
           class="mb-2"
           :disabled="!inviteData.type"
           :error-messages="inviteErrors.__root__"
@@ -97,7 +97,7 @@
             </td>
             <td>
               <v-icon :icon="invite.typeIcon" class="mr-2" />
-              {{ invite.invite_data }}
+              {{ invite.user_data }}
             </td>
             <td>
               <v-tooltip location="top" v-for="{ title, icon } in invite.rolesDescription" :key="icon" :text="title">
@@ -188,7 +188,7 @@ const inviteData = reactive({
   type: scopeItems.value?.length === 1
     ? scopeItems.value[0].value
     : undefined,
-  invite_data: '',
+  user_data: '',
   roles: ['participant'],
   valid: false
 })
@@ -218,7 +218,7 @@ watch(() => inviteData.type, async () => {
   invitationsForm.value?.validate()
 })
 // Reset server sent errors on form update
-watch(() => inviteData.invite_data, () => {
+watch(() => inviteData.user_data, () => {
   inviteErrors.value = {}
 })
 
@@ -227,13 +227,13 @@ async function submitInvites () {
   submittingInvites.value = true
   try {
     await socket.call('invites.add', {
-      invite_data: inviteData.invite_data.split('\n'),
+      user_data: inviteData.user_data,
       meeting: meetingId.value,
       roles: inviteData.roles,
       type: inviteData.type
     }, { alertOnError: false })
     inviteDialogOpen.value = false
-    inviteData.invite_data = ''
+    inviteData.user_data = ''
     inviteData.roles = ['participant']
   } catch (e) {
     inviteErrors.value = parseSocketError(e as Error)
@@ -282,7 +282,7 @@ const allInvitesSelected = computed({
 })
 
 function search (inv: MeetingInvite) {
-  return !inviteFilter.search || inv.invite_data.toLocaleLowerCase().includes(inviteFilter.search.toLocaleLowerCase())
+  return !inviteFilter.search || inv.user_data.toLocaleLowerCase().includes(inviteFilter.search.toLocaleLowerCase())
 }
 
 const filteredInvites = computed(() => {
@@ -295,8 +295,9 @@ const filteredInvites = computed(() => {
     .map(inv => {
       return {
         ...inv,
-        invite_data: invitationScopes.getPlugin(inv.type)?.transformData?.(inv.invite_data) || inv.invite_data,
-        typeIcon: typeIcons.value[inv.type],
+        user_data: inv.user_data, // FIXME invitationScopes.getPlugin(inv.type)?.transformData?.(inv.user_data) || inv.user_data,
+        // typeIcon: typeIcons.value[inv.type], #FIXME
+        typeIcon: typeIcons.value.email,
         rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
         stateLabel: stateLabels.value[inv.state]
       }
@@ -307,7 +308,7 @@ const pages = computed(() => chunk(filteredInvites.value, PAGE_LENGTH))
 const currentPage = ref(1)
 
 function copyFilteredData () {
-  copy(filteredInvites.value.map(i => i.invite_data).join('\n') + '\n')
+  copy(filteredInvites.value.map(i => i.user_data).join('\n') + '\n')
 }
 
 async function deleteSelected () {
