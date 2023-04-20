@@ -77,8 +77,8 @@
         <th>
           <input type="checkbox" v-model="allInvitesSelected">
         </th>
-        <th>
-          {{ t('invites.data') }}
+        <th v-for="typ in existingInviteTypes" :key="typ">
+          {{ t(`invites.${typ}.typeLabel`) }}
         </th>
         <th>
           {{ t('accessPolicy.rolesGiven') }}
@@ -95,9 +95,9 @@
             <td>
               <input type="checkbox" :checked="(isSelected)" />
             </td>
-            <td>
-              <v-icon :icon="invite.typeIcon" class="mr-2" />
-              {{ invite.user_data }}
+            <td v-for="typ in existingInviteTypes" :key="typ">
+              <v-icon v-if="invite.user_data[typ]" :icon="invite.typeIcon" class="mr-2" />
+              {{ invite.user_data[typ] }}
             </td>
             <td>
               <v-tooltip location="top" v-for="{ title, icon } in invite.rolesDescription" :key="icon" :text="title">
@@ -140,7 +140,7 @@
 import { computed, reactive, ref, watch, ComponentPublicInstance } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { chunk, isEqual } from 'lodash'
+import { chunk, isEqual, orderBy } from 'lodash'
 
 import { parseSocketError, socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
@@ -282,8 +282,17 @@ const allInvitesSelected = computed({
 })
 
 function search (inv: MeetingInvite) {
-  return !inviteFilter.search || inv.user_data.toLocaleLowerCase().includes(inviteFilter.search.toLocaleLowerCase())
+  const searchLower = inviteFilter.search.toLocaleLowerCase()
+  return !searchLower || Object.values(inv.user_data).some(data => data.toLocaleLowerCase().includes(searchLower))
 }
+
+const existingInviteTypes = computed(() => {
+  const types = new Set<keyof MeetingInvite['user_data']>()
+  for (const invite of meetingInvites.value) {
+    Object.keys(invite.user_data).map(t => types.add(t as keyof MeetingInvite['user_data']))
+  }
+  return orderBy([...types])
+})
 
 const filteredInvites = computed(() => {
   const roleSet = new Set(inviteFilter.roles)
