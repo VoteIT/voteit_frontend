@@ -115,7 +115,7 @@ export default defineComponent({
 
     watch(search, async (search: string) => {
       // Only moderators can switch user
-      if (!isModerator) return
+      if (!isModerator.value) return
       if (!search.length) {
         userOptions.value = preserveCurrentAuthor()
         return
@@ -130,7 +130,7 @@ export default defineComponent({
       userOptions.value = preserveCurrentAuthor(newOptions)
     })
     const options = computed(() => {
-      if (!isModerator || !userGroups.value.length) return
+      if (!isModerator.value || !userGroups.value.length) return
       return [
         user.value
           ? userToAutocomplete(user.value)
