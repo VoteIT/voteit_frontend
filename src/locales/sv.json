@@ -60,6 +60,7 @@
   "tag": "Tagg",
   "tags": "Taggar",
   "title": "Titel",
+  "total": "Totalt",
   "tryAgain": "Försök igen",
   "update": "Uppdatera",
   "undo": "Ångra",
@@ -309,6 +310,8 @@
     "to": "Till möte",
     "visibleInLists": "Sökbart för alla i organisationen",
     "yearStarted": "Startades år",
+    "yourGroups": "Dina mötesgrupper",
+    "yourRoles": "Dina mötesroller",
     "groups": {
       "addMember": "Lägg till medlem",
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",

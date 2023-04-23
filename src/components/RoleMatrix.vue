@@ -32,7 +32,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="{ user, row } in pageUsers" :key="user">
+        <tr v-for="{ user, row } in pageUsers" :key="user" :class="{ currentUser: isCurrentUser({ user }) }">
           <td><User :pk="user" userid /></td>
           <td v-if="admin">
             <small>
@@ -69,6 +69,7 @@ import useUserDetails from '@/modules/organisations/useUserDetails'
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import { meetingRolePlugins } from '@/modules/meetings/registry'
 import useMeeting from '@/modules/meetings/useMeeting'
+import { user } from '@/composables/useAuthentication'
 
 const USERS_PER_PAGE = 50
 
@@ -203,6 +204,10 @@ function getRow (userRoles: UserContextRoles) {
   }
 }
 
+function isCurrentUser (roles: { user: number }): boolean {
+  return roles.user === user.value?.pk
+}
+
 const userMatrix = computed(() => {
   let userRoles = contextRoles.getAll<string>(props.pk)
   if (props.filter) userRoles = userRoles.filter(props.filter)
@@ -220,8 +225,8 @@ const userMatrix = computed(() => {
     : 'desc'
   return _orderBy(
     matrix,
-    [_ordering],
-    [order]
+    [isCurrentUser, _ordering],
+    ['desc', order]
   )
 })
 
@@ -249,6 +254,9 @@ const pageUsers = computed(() => {
   &.orderReversed
     th::after
       transform: rotate(180deg)
+
+.currentUser
+  background-color: rgb(var(--v-theme-secondary-lighten-2))
 </style>
 
 <style lang="sass">

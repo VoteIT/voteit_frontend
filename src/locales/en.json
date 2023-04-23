@@ -60,6 +60,7 @@
   "tag": "Tag",
   "tags": "Tags",
   "title": "Title",
+  "total": "Total",
   "tryAgain": "Try again",
   "update": "Update",
   "undo": "Undo",
@@ -308,6 +309,8 @@
     "to": "To meeting",
     "visibleInLists": "Searchable for all organisation members",
     "yearStarted": "Year (started)",
+    "yourGroups": "Your meeting roles",
+    "yourRoles": "Your meeting groups",
     "groups": {
       "addMember": "Add member",
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",

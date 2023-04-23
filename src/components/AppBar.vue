@@ -20,6 +20,8 @@
               <v-list-item-title class="text-h6">{{ user.full_name }}</v-list-item-title>
               <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
             </v-list-item>
+            <v-divider v-if="$slots.prependProfile" class="my-3" />
+            <slot name="prependProfile"></slot>
             <v-divider class="my-3" />
             <DefaultDialog :title="t('profile.changeUserid')">
               <template #activator="{ props }">

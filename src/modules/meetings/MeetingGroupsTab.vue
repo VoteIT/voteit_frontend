@@ -151,7 +151,7 @@
       </tbody>
       <tfoot v-if="hasCountColumns">
         <tr>
-          <th></th>
+          <th>{{ t('total') }}</th>
           <th></th>
           <th v-for="{ name, getCount } in columns" :key="name">
             {{ getCount?.() || '-' }}

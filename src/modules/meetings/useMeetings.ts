@@ -6,7 +6,15 @@ import useAuthentication, { user } from '@/composables/useAuthentication'
 import type { LoaderCallback } from '@/composables/useLoader'
 
 import { meetingType } from './contentTypes'
-import { Meeting, MeetingState } from './types'
+import { Meeting, MeetingRole, MeetingState } from './types'
+
+const MEETING_ROLE_ICONS: Record<MeetingRole, string> = {
+  participant: 'mdi-eye',
+  moderator: 'mdi-gavel',
+  proposer: 'mdi-note-plus',
+  discusser: 'mdi-comment-outline',
+  potential_voter: 'mdi-star-outline'
+}
 
 export const meetings = reactive<Map<number, Meeting>>(new Map())
 
@@ -24,6 +32,10 @@ function getMeetingList (state: MeetingState, order: keyof Meeting = 'title') {
     ),
     order
   )
+}
+
+function getMeetingRoleIcon (role: MeetingRole) {
+  return MEETING_ROLE_ICONS[role]
 }
 
 function filterMeetings (states: MeetingState[], order: keyof Meeting, search: string, year: number | null) {
@@ -106,6 +118,7 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
     fetchMeeting,
     fetchMeetings,
     filterMeetings,
+    getMeetingRoleIcon,
     clearMeetings
   }
 }

@@ -41,7 +41,7 @@ export default function useMeeting () {
   const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
   const meetingUrl = computed(() => `${location.origin}${meetingPath.value}`)
 
-  const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value))
+  const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value) as Set<MeetingRole> | undefined)
   function hasRole (role: MeetingRole, user?: number) {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
