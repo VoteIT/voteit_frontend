@@ -8,7 +8,7 @@
   <v-row v-else>
     <v-col cols="7" md="8" lg="9">
       <Proposal v-for="p in selectedProposals" :key="p.pk" readOnly :p="p" class="mb-4">
-        <template #top>
+        <template #actions>
           <div class="text-right">
             <v-btn-group class="mr-2">
               <v-btn
@@ -45,7 +45,7 @@
   </v-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { flatten } from 'lodash'

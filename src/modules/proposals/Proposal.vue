@@ -2,14 +2,14 @@
   <div>
     <v-sheet v-if="p" rounded elevation="4" class="proposal" :class="{ isUnread }">
       <slot name="top"></slot>
-      <div class="meta">
-        <div>
+      <div class="meta d-flex">
+        <div class="flex-grow-1">
           <span class="content-type">{{ t('proposal.proposal') }}</span>
           <Tag :name="p.prop_id"/>
         </div>
-        <div>
+        <slot name="actions">
           <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
-        </div>
+        </slot>
       </div>
       <Richtext v-if="p.shortname === 'proposal'" :object="p" class="my-3" />
       <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3"></div>
@@ -178,8 +178,6 @@ const extraTags = computed(() => {
       font-weight: 700
       text-transform: uppercase
       letter-spacing: .03em
-    display: flex
-    justify-content: space-between
     color: var(--disabled-text)
     div > span
       margin-right: 1em

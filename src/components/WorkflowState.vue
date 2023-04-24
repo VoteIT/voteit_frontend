@@ -6,7 +6,6 @@
   >
     <template #activator="{ props }">
       <v-btn
-        :color="currentState.color || 'secondary'"
         :disabled="working"
         :prepend-icon="currentState.icon"
         append-icon="mdi-chevron-down"
@@ -14,6 +13,7 @@
         size="x-small"
         variant="flat"
         v-bind="props"
+        :color="currentState.color || color"
       >
         {{ t(`workflowState.${currentState.state}`) }}
       </v-btn>
@@ -39,23 +39,21 @@
     v-else-if="currentState"
     :prepend-icon="currentState.icon"
     class="text-no-wrap"
-    :color="currentState.color || 'secondary'"
     disabled
     size="x-small"
     variant="flat"
-    v-bind="props"
+    :color="currentState.color || color"
   >
     {{ t(`workflowState.${currentState.state}`) }}
   </v-btn>
   <v-btn
     v-else
     class="text-no-wrap"
-    color="secondary"
     disabled
     prepend-icon="mdi-help"
     size="x-small"
     variant="flat"
-    v-bind="props"
+    :color="color"
   >
     {{ `Unknown state: ${props.object.state}` }}
   </v-btn>
@@ -65,17 +63,19 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { Color } from '@/utils/types'
 import useAlert from '@/composables/useAlert'
 import { StateContent, Transition } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
 interface Props {
   admin?: boolean
+  color?: Color
   object: StateContent
   contentType: ContentType<any>
   right?: boolean
 }
-const props = withDefaults(defineProps<Props>(), { admin: false })
+const props = withDefaults(defineProps<Props>(), { admin: false, color: 'secondary' })
 
 const { t } = useI18n()
 const contentApi = props.contentType.getContentApi()
