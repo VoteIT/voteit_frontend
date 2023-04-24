@@ -305,6 +305,10 @@ const filteredInvites = computed(() => {
 
 const pages = computed(() => chunk(filteredInvites.value, PAGE_LENGTH))
 const currentPage = ref(1)
+// When filtering, the number of pages might change. Make sure currentPage is never higher than number of pages.
+watch(pages, value => {
+  if (currentPage.value > value.length) currentPage.value = value.length
+})
 
 function copyFilteredData () {
   copy(filteredInvites.value.map(i => i.invite_data).join('\n') + '\n')
