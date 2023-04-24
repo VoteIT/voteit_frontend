@@ -98,8 +98,12 @@
     "dialogTitle": "Active in meeting?",
     "groupActiveDescription": "Number of active group members. Participants may be counted in multiple groups.",
     "inacive": "Not active!",
+    "inactiveHours": "Number of hours of inactivity",
     "listDescription": "An active user is any participant in the meeting that's marked themselves as active.",
     "listEmpty": "This meeting doesn't have any active users yet.",
+    "purgedCount": "No users were marked as inactive | One user was marked as inactive | {count} users were marked as inactive",
+    "purgeInactive": "Purge inactive",
+    "purgeInactiveHelp": "You can clear active status for participants in this meeting that hasn't shown any activity for selected amount of hours.",
     "title": "Active users",
     "yesImActive": "Yes, I'm active"
   },

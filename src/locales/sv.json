@@ -98,8 +98,12 @@
     "dialogTitle": "Aktiv i mötet?",
     "groupActiveDescription": "Antal aktiva medlemmar i gruppen. Samma deltagare kan räknas i flera grupper.",
     "inactive": "Ej aktiv!",
+    "inactiveHours": "Antal timmar av inaktivitet",
     "listDescription": "Deltagare i mötet som själva angett att de är aktiva.",
     "listEmpty": "Det här mötet har inga aktiva användare ännu.",
+    "purgedCount": "Inga användare markerades som inaktiva | En användare markerades som inaktiv | {count} användare markerades som inaktiva",
+    "purgeInactive": "Rensa inaktiva",
+    "purgeInactiveHelp": "Du kan rensa aktiv-status på deltagare i mötet som inte visat någon aktivitet på ett visst antal timmar.",
     "title": "Aktiva användare",
     "yesImActive": "Ja, jag är aktiv"
   },
