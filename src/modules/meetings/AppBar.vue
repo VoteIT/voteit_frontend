@@ -11,7 +11,7 @@
         <v-list-subheader>
           {{ t('meeting.yourGroups') }}
         </v-list-subheader>
-        <v-list-item v-for="{ pk, title } in userGroups" :key="pk" :title="title" prependIcon="mdi-account-group" density="compact" />
+        <v-list-item v-for="props in groupList" :key="props.title" v-bind="props" density="compact" />
       </template>
     </template>
   </AppBar>
@@ -21,6 +21,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { user } from '@/composables/useAuthentication'
 import AppBar from '@/components/AppBar.vue'
 
 import useMeeting from './useMeeting'
@@ -32,14 +33,26 @@ import useMeetingGroups from './useMeetingGroups'
 const { t } = useI18n()
 const { meeting, meetingId, userRoles } = useMeeting()
 const { getMeetingRoleIcon } = useMeetings()
-const { userGroups } = useMeetingGroups(meetingId)
+const { groupRoles, userGroups } = useMeetingGroups(meetingId)
 
 const roleList = computed(() => {
   return (DEFAULT_ROLE_ORDER as MeetingRole[])
     .filter((role) => userRoles.value?.has(role))
     .map(role => ({
-      title: t(`role.${role}`),
-      prependIcon: getMeetingRoleIcon(role)
+      prependIcon: getMeetingRoleIcon(role),
+      title: t(`role.${role}`)
     }))
+})
+
+const groupList = computed(() => {
+  return userGroups.value.map(({ title, memberships }) => {
+    const groupRole = memberships.find(membership => membership.user === user.value?.pk)?.role
+    console.log(groupRoles.value, groupRole)
+    return {
+      prependIcon: 'mdi-account-group',
+      subtitle: groupRoles.value.find(({ pk }) => pk === groupRole)?.title,
+      title
+    }
+  })
 })
 </script>
