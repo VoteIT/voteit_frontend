@@ -47,7 +47,6 @@ const roleList = computed(() => {
 const groupList = computed(() => {
   return userGroups.value.map(({ title, memberships }) => {
     const groupRole = memberships.find(membership => membership.user === user.value?.pk)?.role
-    console.log(groupRoles.value, groupRole)
     return {
       prependIcon: 'mdi-account-group',
       subtitle: groupRoles.value.find(({ pk }) => pk === groupRole)?.title,
