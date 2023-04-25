@@ -24,6 +24,7 @@ import DurationInput from './inputs/DurationInput.vue'
 import { FieldType } from './types'
 import type { FieldRule, FormSchema } from './types'
 import { isValidationError } from '@/utils/Socket'
+import TagEdit from './TagEdit.vue'
 
 const componentNames: Record<FieldType, string | Component> = {
   checkbox: 'v-checkbox',
@@ -32,6 +33,7 @@ const componentNames: Record<FieldType, string | Component> = {
   number: 'v-text-field',
   select: 'v-select',
   switch: 'v-switch',
+  tags: TagEdit,
   text: 'v-text-field',
   textarea: 'v-textarea'
 }
@@ -39,7 +41,7 @@ const componentNames: Record<FieldType, string | Component> = {
 interface Props {
   modelValue?: any
   schema: FormSchema
-  handler? (data: any): Promise<void>
+  handler? (data: any): Promise<unknown>
   validateImmediately?: boolean
 }
 
@@ -92,7 +94,8 @@ function cleanForm () {
 const submitting = ref(false)
 async function submit () {
   cleanForm()
-  form.value?.validate()
+  if (!form.value) return
+  await form.value.validate()
   if (!valid.value) return
   if (!props.handler) return emit('submit', formData.value)
   submitting.value = true
@@ -107,7 +110,7 @@ async function submit () {
   submitting.value = false
 }
 
-const form = ref<ComponentPublicInstance<{ validate:() => void }> | null>(null)
+const form = ref<ComponentPublicInstance<{ validate(): Promise<unknown> }> | null>(null)
 
 watch(formData, (value) => {
   clearErrors()

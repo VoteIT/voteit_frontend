@@ -85,6 +85,7 @@ export enum FieldType {
   Number = 'number',
   Select = 'select',
   Switch = 'switch',
+  Tags = 'tags',
   Text = 'text',
   TextArea = 'textarea',
 }
@@ -149,7 +150,11 @@ interface TextAreaField extends SchemaField<string> {
   type: FieldType.TextArea
 }
 
-export type FormField = CheckboxField | CheckboxMultipleField | DurationField | NumberField | SelectField | SwitchField | TextField | TextAreaField
+interface TagsField extends SchemaField<string[]> {
+  type: FieldType.Tags
+}
+
+export type FormField = CheckboxField | CheckboxMultipleField | DurationField | NumberField | SelectField | SwitchField | TagsField | TextField | TextAreaField
 export type FormSchema = FormField[]
 
 export interface RoleMatrixColumn {
