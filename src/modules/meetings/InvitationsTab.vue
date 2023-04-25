@@ -77,8 +77,9 @@
         <th>
           <input type="checkbox" v-model="allInvitesSelected">
         </th>
-        <th v-for="typ in existingInviteTypes" :key="typ">
-          {{ t(`invites.${typ}.typeLabel`) }}
+        <th v-for="{ id, icon } in existingInviteScopes" :key="id">
+          <v-icon :icon="icon" />
+          {{ t(`invites.${id}.typeLabel`) }}
         </th>
         <th>
           {{ t('accessPolicy.rolesGiven') }}
@@ -95,9 +96,8 @@
             <td>
               <input type="checkbox" :checked="(isSelected)" />
             </td>
-            <td v-for="typ in existingInviteTypes" :key="typ">
-              <v-icon v-if="invite.user_data[typ]" :icon="invite.typeIcon" class="mr-2" />
-              {{ invite.user_data[typ] }}
+            <td v-for="{ id } in existingInviteScopes" :key="id">
+              {{ invite.user_data[id] }}
             </td>
             <td>
               <v-tooltip location="top" v-for="{ title, icon } in invite.rolesDescription" :key="icon" :text="title">
@@ -140,7 +140,7 @@
 import { computed, reactive, ref, watch, ComponentPublicInstance } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { chunk, isEqual, orderBy } from 'lodash'
+import { chunk, isEqual } from 'lodash'
 
 import { parseSocketError, socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
@@ -244,12 +244,6 @@ async function submitInvites () {
 function getRoleIcon (role: MeetingRole) {
   return meetingIcons[role]
 }
-const typeIcons = computed(() => {
-  return Object.fromEntries(
-    invitationScopes.getActivePlugins().map(is => [is.id, is.icon])
-  )
-})
-
 const inviteFilter = reactive({
   roles: ['participant'],
   exactRoles: false,
@@ -286,13 +280,21 @@ function search (inv: MeetingInvite) {
   return !searchLower || Object.values(inv.user_data).some(data => data.toLocaleLowerCase().includes(searchLower))
 }
 
-const existingInviteTypes = computed(() => {
-  const types = new Set<keyof MeetingInvite['user_data']>()
-  for (const invite of meetingInvites.value) {
-    Object.keys(invite.user_data).map(t => types.add(t as keyof MeetingInvite['user_data']))
-  }
-  return orderBy([...types])
+const existingInviteScopes = computed(() => {
+  return invitationScopes.getActivePlugins()
+    .filter(scope => meetingInvites.value.some(inv => scope.id in inv.user_data))
 })
+
+function transformUserdata (userData: MeetingInvite['user_data']) {
+  return Object.fromEntries(Object.entries(userData).map(([scope, value]) => {
+    const plugin = invitationScopes.getPlugin(scope)
+    if (!plugin) throw new Error(`Bad user data scope: ${scope}`)
+    return [
+      scope,
+      plugin.transformData?.(value) || value
+    ]
+  }))
+}
 
 const filteredInvites = computed(() => {
   const roleSet = new Set(inviteFilter.roles)
@@ -304,9 +306,7 @@ const filteredInvites = computed(() => {
     .map(inv => {
       return {
         ...inv,
-        user_data: inv.user_data, // FIXME invitationScopes.getPlugin(inv.type)?.transformData?.(inv.user_data) || inv.user_data,
-        // typeIcon: typeIcons.value[inv.type], #FIXME
-        typeIcon: typeIcons.value.email,
+        user_data: transformUserdata(inv.user_data),
         rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
         stateLabel: stateLabels.value[inv.state]
       }
