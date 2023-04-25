@@ -5,73 +5,61 @@
       <header v-if="modal.title">
         <h1>{{ modal.title }}</h1>
       </header>
-      <component v-if="modal.component" :is="modal.component" :data="modal.data" />
-      <main v-else v-html="modal.html"></main>
+      <component v-if="isComponentModal(modal)" :is="modal.component" :data="modal.data" />
+      <main v-else-if="isHTMLModal(modal)" v-html="modal.html"></main>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
+<script setup lang="ts">
+import { computed, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
 
 import { openModalEvent, closeModalEvent } from '@/utils/events'
 
-import { Modal } from '@/composables/types'
+import { Modal, isComponentModal, isHTMLModal } from '@/composables/types'
 
 const defaults: Partial<Modal> = {
   dismissable: true
 }
 
-export default defineComponent({
-  name: 'Modal',
-  setup () {
-    const modalQueue = reactive<Modal[]>([])
-    let savedFocusEl: HTMLElement | null = null
-    const windowEl = ref<HTMLElement | null>(null)
-    const isOpen = computed(() => !!modalQueue.length)
-    const modal = computed(() => modalQueue[0])
+const modalQueue = reactive<Modal[]>([])
+let savedFocusEl: HTMLElement | null = null
+const windowEl = ref<HTMLElement | null>(null)
+const isOpen = computed(() => !!modalQueue.length)
+const modal = computed(() => modalQueue[0])
 
-    function open (modal: Modal) {
-      if (!modalQueue.length) {
-        savedFocusEl = document.querySelector(':focus')
-      }
-      document.body.classList.add('no-scroll')
-      modalQueue.push(markRaw({ ...defaults, ...modal }))
-      nextTick(() => {
-        // eslint-disable-next-line no-unused-expressions
-        windowEl.value?.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
-      })
-    }
-
-    function close () {
-      modalQueue.shift()
-      if (!modalQueue.length) {
-        if (savedFocusEl) {
-          savedFocusEl.focus()
-          savedFocusEl = null
-        }
-        document.body.classList.remove('no-scroll')
-      }
-    }
-
-    function dismiss () {
-      if (modal.value.dismissable) {
-        close()
-      }
-    }
-
-    onMounted(() => {
-      openModalEvent.on(open)
-      closeModalEvent.on(close)
-    })
-
-    return {
-      windowEl,
-      isOpen,
-      modal,
-      dismiss
-    }
+function open (modal: Modal) {
+  if (!modalQueue.length) {
+    savedFocusEl = document.querySelector(':focus')
   }
+  document.body.classList.add('no-scroll')
+  modalQueue.push(markRaw({ ...defaults, ...modal }))
+  nextTick(() => {
+    // eslint-disable-next-line no-unused-expressions
+    windowEl.value?.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
+  })
+}
+
+function close () {
+  modalQueue.shift()
+  if (!modalQueue.length) {
+    if (savedFocusEl) {
+      savedFocusEl.focus()
+      savedFocusEl = null
+    }
+    document.body.classList.remove('no-scroll')
+  }
+}
+
+function dismiss () {
+  if (modal.value.dismissable) {
+    close()
+  }
+}
+
+onMounted(() => {
+  openModalEvent.on(open)
+  closeModalEvent.on(close)
 })
 </script>
 
