@@ -27,51 +27,56 @@
         <h2 class="flex-grow-1">
           {{ t('speaker.listChoices') }}
         </h2>
-        <DefaultDialog>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :disabled="!canManageSystem"
-              class="mr-1"
-              prepend-icon="mdi-plus"
-              variant="tonal"
-            >
-              {{ t('speaker.addWithName') }}
-            </v-btn>
-          </template>
-          <template #default="{ close }">
-            <div class="d-flex mb-2">
-              <h2 class="flex-grow-1">
-                {{ t('speaker.addWithName') }}
-              </h2>
-              <v-btn @click="close" class="mt-n2 mr-n2" icon="mdi-close" size="small" variant="text" />
-            </div>
-            <SchemaForm :schema="speakerListSchema" :model-value="{ title: nextSpeakerListName }" :handler="addSpeakerList" @saved="close">
-              <template #buttons="{ disabled }">
-                <div class="text-right">
-                  <v-btn @click="close" variant="text">
-                    {{ t('cancel') }}
-                  </v-btn>
-                  <v-btn color="primary" :disabled="disabled" type="submit">
-                    {{ t('save') }}
-                  </v-btn>
-                </div>
-              </template>
-            </SchemaForm>
-          </template>
-        </DefaultDialog>
-        <v-tooltip :text="t('speaker.addQuick')">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :disabled="!canManageSystem"
-              icon="mdi-plus"
-              size="small"
-              variant="tonal"
-              @click="addSpeakerList()"
-            />
-          </template>
-        </v-tooltip>
+        <v-btn-group>
+          <v-btn
+            color="primary"
+            :disabled="!canManageSystem"
+            prepend-icon="mdi-plus"
+            @click="addSpeakerList()"
+            size="small"
+          >
+            {{ t('speaker.newList') }}
+          </v-btn>
+          <v-menu :text="t('speaker.addQuick')" location="bottom right">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                color="primary"
+                :disabled="!canManageSystem"
+                size="small"
+              >
+                <v-icon icon="mdi-chevron-down" />
+              </v-btn>
+            </template>
+            <v-list>
+              <DefaultDialog>
+                <template #activator="{ props }">
+                  <v-list-item v-bind="props" :title="t('speaker.addWithName')" />
+                </template>
+                <template #default="{ close }">
+                  <div class="d-flex mb-2">
+                    <h2 class="flex-grow-1">
+                      {{ t('speaker.newList') }}
+                    </h2>
+                    <v-btn @click="close" class="mt-n2 mr-n2" icon="mdi-close" size="small" variant="text" />
+                  </div>
+                  <SchemaForm :schema="speakerListSchema" :model-value="{ title: nextSpeakerListName }" :handler="addSpeakerList" @saved="close">
+                    <template #buttons="{ disabled }">
+                      <div class="text-right">
+                        <v-btn @click="close" variant="text">
+                          {{ t('cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" :disabled="disabled" type="submit">
+                          {{ t('save') }}
+                        </v-btn>
+                      </div>
+                    </template>
+                  </SchemaForm>
+                </template>
+              </DefaultDialog>
+            </v-list>
+          </v-menu>
+        </v-btn-group>
       </div>
       <v-item-group v-model="currentList">
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, toggle }">

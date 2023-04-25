@@ -702,6 +702,7 @@
     "lockedPositions": "Locked positions",
     "manageLists": "Manage speaker lists",
     "manageSystem": "Manage speakers ({title})",
+    "newList": "New speaker list",
     "noActiveList": "No active speaker list",
     "noSafePositions": "No safe positions",
     "queue": "Speaker queue",
