@@ -4,6 +4,14 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.12.6
+- User roles and meeting groups now displayed in user menu when in meetings [#277](https://github.com/VoteIT/voteit_frontend/issues/277)
+- Edit and display text body and tags for meeting groups [#273](https://github.com/VoteIT/voteit_frontend/issues/273)
+- Action to purge active status for inactive users in control panel [#267](https://github.com/VoteIT/voteit_frontend/issues/267)
+- Add control for workflow state to Plenary view [#257](https://github.com/VoteIT/voteit_frontend/issues/257)
+- Add named speaker lists and edit spekar list names in speaker management view [#271](https://github.com/VoteIT/voteit_frontend/issues/271)
+- Bugfix: All users got choice to post as all groups [#278](https://github.com/VoteIT/voteit_frontend/issues/278)
+
 ## 0.12.5
 Bugfix release
 

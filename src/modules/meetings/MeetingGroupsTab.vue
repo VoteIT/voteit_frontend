@@ -85,6 +85,9 @@
               </template>
             </v-tooltip>
           </th>
+          <th v-if="allTags.size">
+            {{ t('tags') }}
+          </th>
           <th v-if="canChangeMeeting"></th>
         </tr>
       </thead>
@@ -102,8 +105,7 @@
                 </v-btn>
               </template>
               <GroupMemberships
-                :group="group.pk"
-                :members="group.memberships"
+                :group="group"
                 :editable="canChangeMeeting"
               />
             </DefaultDialog>
@@ -111,6 +113,9 @@
           <td v-for="{ component, name, getValue } in columns" :key="name">
             {{ getValue?.(group) }}
             <component v-if="component" :is="component" :group="group" />
+          </td>
+          <td v-if="allTags.size">
+            <Tag v-for="tag in group.tags" :key="tag" :name="tag" class="mr-1" disabled />
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>
@@ -123,7 +128,7 @@
                 <SchemaForm
                   :schema="groupSchema"
                   :handler="changeGroup(group.pk)"
-                  :modelValue="{ title: group.title, votes: group.votes || 0 }"
+                  :modelValue="{ ...group }"
                   @saved="close"
                 >
                   <template #buttons="{ disabled, submitting }">
@@ -151,12 +156,13 @@
       </tbody>
       <tfoot v-if="hasCountColumns">
         <tr>
-          <th></th>
+          <th>{{ t('total') }}</th>
           <th></th>
           <th v-for="{ name, getCount } in columns" :key="name">
             {{ getCount?.() || '-' }}
           </th>
-          <th></th>
+          <th v-if="allTags.size"></th>
+          <th v-if="canChangeMeeting"></th>
         </tr>
       </tfoot>
     </v-table>
@@ -164,26 +170,28 @@
 </template>
 
 <script lang="ts" setup>
-import { any } from 'itertools'
-import { computed } from 'vue'
+import { any, flatmap } from 'itertools'
+import { computed, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { getApiLink } from '@/utils/restApi'
 import SchemaForm from '@/components/SchemaForm.vue'
+import Tag from '@/components/Tag.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useRules from '@/composables/useRules'
+import useErrorHandler from '@/composables/useErrorHandler'
+import { FieldType, FormSchema } from '@/components/types'
 
 import useMeeting from './useMeeting'
 
 import useMeetingGroups from './useMeetingGroups'
 import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
-import { FieldType, FormSchema } from '@/components/types'
 import GroupMemberships from './GroupMemberships.vue'
-import useRules from '@/composables/useRules'
 import { meetingGroupTablePlugins } from './registry'
-import useErrorHandler from '@/composables/useErrorHandler'
-import { getApiLink } from '@/utils/restApi'
+import { TagsKey } from './useTags'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -231,26 +239,42 @@ const importSchema = computed<FormSchema>(() => {
 /**
  * Socket call to import groups.
  */
-function createGroups (data: { groups: string }) {
-  return meetingGroupType.methodCall('bulk_create', {
+async function createGroups (data: { groups: string }) {
+  await meetingGroupType.methodCall('bulk_create', {
     meeting: meetingId.value,
     ...data
   })
 }
 
+// Provide tag autocompletion
+const allTags = computed(() => new Set(flatmap(meetingGroups.value, group => group.tags)))
+provide(TagsKey, allTags)
+
 const groupSchema = computed(() => {
-  const schema: FormSchema = [{
-    name: 'title',
-    type: FieldType.Text,
-    label: t('name'),
-    rules: [{
-      props: {
-        maxlength: 100,
-        required: true
-      },
-      validate: rules.required
-    }]
-  }]
+  const schema: FormSchema = [
+    {
+      name: 'title',
+      type: FieldType.Text,
+      label: t('name'),
+      rules: [{
+        props: {
+          maxlength: 100,
+          required: true
+        },
+        validate: rules.required
+      }]
+    },
+    {
+      name: 'body',
+      type: FieldType.TextArea,
+      label: t('textBody')
+    },
+    {
+      name: 'tags',
+      type: FieldType.Tags,
+      label: t('tags')
+    }
+  ]
   if (meeting.value?.group_votes_active) {
     schema.push({
       name: 'votes',

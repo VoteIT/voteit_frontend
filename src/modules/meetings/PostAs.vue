@@ -42,7 +42,7 @@ export default defineComponent({
     const { t } = useI18n()
     const { user } = useAuthentication()
     const { meetingId, isModerator } = useMeeting()
-    const { userGroups } = useMeetingGroups(meetingId)
+    const { meetingGroups, userGroups } = useMeetingGroups(meetingId)
     const { getUser } = useUserDetails()
 
     // This means we're editing existing content
@@ -115,7 +115,7 @@ export default defineComponent({
 
     watch(search, async (search: string) => {
       // Only moderators can switch user
-      if (!isModerator) return
+      if (!isModerator.value) return
       if (!search.length) {
         userOptions.value = preserveCurrentAuthor()
         return
@@ -130,7 +130,10 @@ export default defineComponent({
       userOptions.value = preserveCurrentAuthor(newOptions)
     })
     const options = computed(() => {
-      if (!isModerator || !userGroups.value.length) return
+      const groups = isModerator.value
+        ? meetingGroups
+        : userGroups
+      if (!groups.value.length) return
       return [
         user.value
           ? userToAutocomplete(user.value)
@@ -138,7 +141,7 @@ export default defineComponent({
             value: null,
             title: 'self'
           },
-        ...userGroups.value.map(({ pk, title }) => ({ value: `group:${pk}`, title })),
+        ...groups.value.map(({ pk, title }) => ({ value: `group:${pk}`, title })),
         ...userOptions.value
       ]
     })

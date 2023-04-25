@@ -1,6 +1,12 @@
 <template>
   <div>
-    <v-table v-if="members.length" class="mb-2">
+    <p v-if="group.body" class="mb-6">
+      {{ group.body }}
+    </p>
+    <div v-if="group.tags.length" class="mt-n3 mb-3">
+      <Tag v-for="tag in group.tags" :key="tag" :name="tag" class="mr-1" disabled />
+    </div>
+    <v-table v-if="group.memberships.length" class="mb-2">
       <thead>
         <tr>
           <th>
@@ -104,7 +110,7 @@
       immediate
       @submit="addUser"
     />
-    <v-alert v-if="editable && !members.length" type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />
+    <v-alert v-if="editable && !group.memberships.length" type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />
   </div>
 </template>
 
@@ -112,6 +118,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import Tag from '@/components/Tag.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useUserDetails from '../organisations/useUserDetails'
@@ -120,18 +127,16 @@ import type { User } from '../organisations/types'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { groupMembershipType } from './contentTypes'
-import type { GroupMembership } from './types'
+import type { GroupMembership, MeetingGroup } from './types'
 import useActive from '../active/useActive'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 const { t } = useI18n()
 
-interface Props {
+const props = defineProps<{
   editable?: boolean
-  group: number
-  members: GroupMembership[]
-}
-const props = defineProps<Props>()
+  group: MeetingGroup & { memberships: GroupMembership[] }
+}>()
 
 const { getUser } = useUserDetails()
 const { meeting, meetingId } = useMeeting()
@@ -140,7 +145,7 @@ const { activeUserIds, componentActive } = useActive(meetingId)
 const { erMethodWeighted, getWeightInCurrent } = useElectoralRegisters(meetingId)
 
 const annotatedMembers = computed(() => {
-  return props.members.map(m => {
+  return props.group.memberships.map(m => {
     return {
       ...m,
       isActive: activeUserIds.value.includes(m.user),
@@ -156,12 +161,12 @@ const displayGroupVotes = computed(() => erMethodWeighted.value && !!meeting.val
  * Used as filter function for UserSearch
  */
 function filterUser (user: User) {
-  return !props.members.find(m => m.user === user.pk)
+  return !props.group.memberships.find(m => m.user === user.pk)
 }
 
 function addUser (user: number) {
   groupMembershipType.api.add({
-    meeting_group: props.group,
+    meeting_group: props.group.pk,
     user
   })
 }

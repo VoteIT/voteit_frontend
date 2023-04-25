@@ -118,6 +118,7 @@ import { presenceType } from '../presence/contentTypes'
 import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
+import { DEFAULT_ROLE_ORDER } from './constants'
 import useMeeting from './useMeeting'
 import { MeetingRole } from './types'
 import { meetingType } from './contentTypes'
@@ -150,21 +151,10 @@ function getDownloadUrl (type: 'csv' | 'json') {
   return `${restApi.defaults.baseURL}export-participants/${meetingId.value}/${type}/`
 }
 
-const DEFAULT_COLUMNS = [
-  'moderator',
-  'potential_voter',
-  'proposer',
-  'discusser'
-]
-const MODERATOR_COLUMNS = [
-  'participant',
-  ...DEFAULT_COLUMNS
-]
-
 const matrixCols = computed(() => {
   return canChangeRoles.value
-    ? MODERATOR_COLUMNS
-    : DEFAULT_COLUMNS
+    ? DEFAULT_ROLE_ORDER
+    : DEFAULT_ROLE_ORDER.slice(1)
 })
 
 function addRole (user: number, role: string) {

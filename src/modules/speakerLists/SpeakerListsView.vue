@@ -3,7 +3,7 @@
     <div class="mr-2">
       <v-fade-transition>
         <v-btn v-if="activeListPath" :to="activeListPath" variant="tonal" class="d-none d-md-inline-flex mr-4">
-          Aktiv talarlista
+          {{ t('speaker.activeList') }}
         </v-btn>
       </v-fade-transition>
       <v-btn v-for="nav, i in navigation" :key="i" v-bind="nav" color="black" />
@@ -23,7 +23,61 @@
   </MeetingToolbar>
   <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="5" lg="4" class="speaker-lists">
-      <h2>{{ t('speaker.listChoices') }}</h2>
+      <div class="d-flex mb-3">
+        <h2 class="flex-grow-1">
+          {{ t('speaker.listChoices') }}
+        </h2>
+        <v-btn-group>
+          <v-btn
+            color="primary"
+            :disabled="!canManageSystem"
+            prepend-icon="mdi-plus"
+            @click="addSpeakerList()"
+            size="small"
+          >
+            {{ t('speaker.newList') }}
+          </v-btn>
+          <v-menu :text="t('speaker.addQuick')" location="bottom right">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                color="primary"
+                :disabled="!canManageSystem"
+                size="small"
+              >
+                <v-icon icon="mdi-chevron-down" />
+              </v-btn>
+            </template>
+            <v-list>
+              <DefaultDialog>
+                <template #activator="{ props }">
+                  <v-list-item v-bind="props" :title="t('speaker.addWithName')" />
+                </template>
+                <template #default="{ close }">
+                  <div class="d-flex mb-2">
+                    <h2 class="flex-grow-1">
+                      {{ t('speaker.newList') }}
+                    </h2>
+                    <v-btn @click="close" class="mt-n2 mr-n2" icon="mdi-close" size="small" variant="text" />
+                  </div>
+                  <SchemaForm :schema="speakerListSchema" :model-value="{ title: nextSpeakerListName }" :handler="addSpeakerList" @saved="close">
+                    <template #buttons="{ disabled }">
+                      <div class="text-right">
+                        <v-btn @click="close" variant="text">
+                          {{ t('cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" :disabled="disabled" type="submit">
+                          {{ t('save') }}
+                        </v-btn>
+                      </div>
+                    </template>
+                  </SchemaForm>
+                </template>
+              </DefaultDialog>
+            </v-list>
+          </v-menu>
+        </v-btn-group>
+      </div>
       <v-item-group v-model="currentList">
         <v-item v-for="list in speakerLists" :key="list.pk" :value="list" v-slot="{ isSelected, toggle }">
           <v-card :color="isSelected ? 'success' : undefined" class="mb-4" @click="toggle()">
@@ -31,7 +85,39 @@
               <v-card-title class="flex-grow-1 flex-shrink-1">
                 {{ list.title }}
               </v-card-title>
-              <DropdownMenu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list" />
+              <DropdownMenu :items="getListMenu(list)" :show-transitions="canChangeSpeakerList(list)" :content-type="speakerListType" :object="list">
+                <template #top v-if="canManageSystem">
+                  <DefaultDialog>
+                    <template #activator="{ props }">
+                      <v-list-item
+                        v-bind="props"
+                        prepend-icon="mdi-pencil"
+                        :title="t('edit')"
+                      />
+                    </template>
+                    <template #default="{ close }">
+                      <div class="d-flex mb-2">
+                        <h2 class="flex-grow-1">
+                          {{ t('speaker.editList') }}
+                        </h2>
+                        <v-btn @click="close" class="mt-n2 mr-n2" icon="mdi-close" size="small" variant="text" />
+                      </div>
+                      <SchemaForm :schema="speakerListSchema" :model-value="{ title: list.title }" :handler="createEditHandler(list.pk)" @saved="close">
+                        <template #buttons="{ disabled }">
+                          <div class="text-right">
+                            <v-btn @click="close" variant="text">
+                              {{ t('cancel') }}
+                            </v-btn>
+                            <v-btn color="primary" :disabled="disabled" type="submit">
+                              {{ t('save') }}
+                            </v-btn>
+                          </div>
+                        </template>
+                      </SchemaForm>
+                    </template>
+                  </DefaultDialog>
+                </template>
+              </DropdownMenu>
             </div>
             <v-card-text>
               {{ t('speaker.speakerCount', list.queue.length) }}
@@ -39,10 +125,6 @@
           </v-card>
         </v-item>
       </v-item-group>
-      <v-btn prepend-icon="mdi-plus" color="primary" class="mt-2" size="small"
-             @click="addSpeakerList(speakerSystem)" :disabled="!canManageSystem">
-        {{ t('speaker.addListToSystem', speakerSystem) }}
-      </v-btn>
       <div v-if="currentList && annotatedSpeakerHistory.length" class="mt-4">
         <h2>
           {{ t('speaker.history') }}
@@ -105,7 +187,7 @@
         <div class="d-flex" v-if="canManageSystem">
           <UserSearch :label="t('speaker.addByName')" :filter="userSearchFilter" @submit="addSpeaker" :params="userSearchParams" instant class="flex-grow-1" />
           <template v-if="hasParticipantNumbers">
-            <div style="width: 10px;" />
+            <div style="width: 10px;"></div>
             <v-text-field :label="t('speaker.addByParticipantNumber')" class="mb-0 flex-grow-1" v-model="participantNumberInput" @keydown.enter="addParticipantNumbers()" />
           </template>
         </div>
@@ -165,6 +247,7 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, durationToString } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
+import createFormSchema from '@/utils/createFormSchema'
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
 import useAlert from '@/composables/useAlert'
@@ -192,7 +275,7 @@ import useSpeakerSystem from './useSpeakerSystem'
 import { openAlertEvent } from '@/utils/events'
 import useSpeakerSystems from './useSpeakerSystems'
 
-import type { SpeakerList, SpeakerSystem, SpeakerListAddMessage } from './types'
+import type { SpeakerList, SpeakerListAddMessage } from './types'
 
 const SPEAKER_HISTORY_CAP = 3
 
@@ -272,14 +355,32 @@ const activeListPath = computed(() => {
   return `${meetingPath.value}/lists/${systemId.value}/${ai}`
 })
 
-function addSpeakerList (system: SpeakerSystem) {
+const speakerListSchema: FormSchema = createFormSchema(t, {
+  properties: {
+    title: {
+      label: t('name'),
+      type: 'string',
+      minLength: 3
+    }
+  },
+  required: ['title']
+})
+
+const nextSpeakerListName = computed(() => agendaItem.value ? speakers.makeUniqueListName(agendaItem.value.title) : '')
+async function addSpeakerList (data?: { title: string }) {
   if (!agendaItem.value) return
   const listData: SpeakerListAddMessage = {
-    title: speakers.makeUniqueListName(agendaItem.value.title),
-    speaker_system: system.pk,
-    agenda_item: agendaItem.value.pk
+    title: nextSpeakerListName.value, // Default / fallback value
+    speaker_system: systemId.value,
+    agenda_item: agendaItem.value.pk,
+    ...data
   }
-  speakerListType.api.add(listData)
+  await speakerListType.api.add(listData)
+}
+function createEditHandler (list: number) {
+  return async (data: { title: string }) => {
+    await speakerListType.api.patch(list, data)
+  }
 }
 
 // For user search
@@ -312,7 +413,9 @@ function getListMenu (list: SpeakerList): MenuItem[] {
     return [{
       title: t('content.delete'),
       prependIcon: 'mdi-delete',
-      onClick: () => deleteList(list),
+      async onClick () {
+        await deleteList(list)
+      },
       color: ThemeColor.Warning
     }]
   }

@@ -29,12 +29,14 @@ import { meetingType } from './contentTypes'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 import { MeetingState } from './types'
 import useDefaults from '@/composables/useDefaults'
+import useAgenda from '../agendas/useAgenda'
 
 const { t } = useI18n()
 const { cols } = useDefaults()
 
 const editing = ref(false)
 const { meeting, meetingId, canChange, isModerator } = useMeeting()
+const { agenda } = useAgenda(meetingId)
 const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
 
 useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
@@ -58,8 +60,9 @@ const menuItems = computed<MenuItem[]>(() => {
       onClick: async () => { editing.value = true }
     })
   }
+  const hasPlenary = canChange.value && !!agenda.value.length
+  if (activeSpeakerSystems.value.length || hasPlenary) items.push('---')
   if (activeSpeakerSystems.value.length) {
-    items.push('---')
     for (const system of activeSpeakerSystems.value) {
       items.push({
         title: t('speaker.fullscreenSystem', { ...system }),
@@ -67,6 +70,19 @@ const menuItems = computed<MenuItem[]>(() => {
         to: `/speakers/${meetingId.value}/${system.pk}`
       })
     }
+  }
+  if (hasPlenary) {
+    items.push({
+      title: t('plenary.view'),
+      prependIcon: 'mdi-gavel',
+      to: {
+        name: 'Plenary',
+        params: {
+          id: meetingId.value,
+          aid: agenda.value[0].pk
+        }
+      }
+    })
   }
   return items
 })

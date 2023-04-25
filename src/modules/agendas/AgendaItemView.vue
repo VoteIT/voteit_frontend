@@ -263,7 +263,13 @@ const menuItems = computed<MenuItem[]>(() => {
     items.push({
       title: t('plenary.view'),
       prependIcon: 'mdi-gavel',
-      to: `/p/${meetingId.value}/${agendaId.value}`
+      to: {
+        name: 'Plenary',
+        params: {
+          id: meetingId.value,
+          aid: agendaId.value
+        }
+      }
     })
   }
   if (canAddDocument.value) {

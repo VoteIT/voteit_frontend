@@ -24,6 +24,9 @@
       </v-chip>
     </div>
   </v-card-text>
+  <v-card-actions v-if="$slots.actions && active">
+    <slot name="actions"></slot>
+  </v-card-actions>
 </template>
 
 <script setup lang="ts">

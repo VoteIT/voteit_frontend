@@ -9,21 +9,29 @@ export interface RestApiConfig extends AxiosRequestConfig {
   alertOnError?: boolean
 }
 
-interface BaseModal {
-  title?: string
+export interface Modal {
+  component?: Component
+  data?: object
   dismissable?: boolean
+  html?: string
+  title?: string
 }
 
-interface ComponentModal extends BaseModal {
+interface ComponentModal extends Modal {
   component: Component
   data?: object
 }
 
-interface HtmlModal extends BaseModal {
+interface HTMLModal extends Modal {
   html: string
 }
 
-export type Modal = ComponentModal | HtmlModal
+export function isComponentModal (modal: Modal): modal is ComponentModal {
+  return !!modal.component
+}
+export function isHTMLModal (modal: Modal): modal is HTMLModal {
+  return !!modal.html
+}
 
 export enum AlertLevel {
   Info = 'info',

@@ -119,7 +119,7 @@ export interface MenuItemHref extends MenuItemBase {
 }
 
 export interface MenuItemTo extends MenuItemBase {
-  to: string
+  to: RouteLocationRaw
 }
 
 export interface MenuItemOnClick extends MenuItemBase {
