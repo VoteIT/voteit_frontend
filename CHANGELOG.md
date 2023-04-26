@@ -4,6 +4,9 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.12.7
+- Bugfix: Server ahead calculation based on Date header used incorrect date format and did not handle parsing errors.
+
 ## 0.12.6
 - User roles and meeting groups now displayed in user menu when in meetings [#277](https://github.com/VoteIT/voteit_frontend/issues/277)
 - Edit and display text body and tags for meeting groups [#273](https://github.com/VoteIT/voteit_frontend/issues/273)
