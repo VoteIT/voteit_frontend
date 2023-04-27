@@ -3,69 +3,41 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime, Duration } from 'luxon'
-import { AxiosResponse } from 'axios'
-import { nextTick, ref, watch } from 'vue'
+import { Duration } from 'luxon'
+import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
 
-import restApi from '@/utils/restApi'
 import { durationToString } from '@/utils'
 import { currentLocale } from '@/utils/locales'
+import useServerDateTime from '@/composables/useServerDateTime'
 
 const ABSOLUTE_BREAKPOINT = Duration.fromObject({ days: 6 }) // After 6 days, display absolute time
-let serverAhead = Duration.fromMillis(0)
-let interceptorId: number | null = null
 
-// Intercept server time until we can calculate a valid serverAhead value
-function interceptTime (response: AxiosResponse): AxiosResponse {
-  const serverTime = DateTime.fromRFC2822(response.headers.date)
-  if (!serverTime.isValid) return response
-  // Go ahead with diff calculation
-  serverAhead = serverTime.diff(DateTime.now())
-  console.log(`Server is ${Math.abs(serverAhead.milliseconds)} ms ${serverAhead.milliseconds > 0 ? 'ahead of' : 'behind'} you`)
-  if (typeof interceptorId === 'number') restApi.interceptors.response.eject(interceptorId)
-  return response
-}
-interceptorId = restApi.interceptors.response.use(interceptTime)
-
-interface Props {
+const props = defineProps<{
   date: string
   ordinary?: boolean
   prepend?: string
   inSeconds?: boolean
-}
+}>()
 
-const props = defineProps<Props>()
-
+const { dateTime, serverNow } = useServerDateTime(computed(() => props.date))
 const fromNow = ref('')
-
-// Adjust serverAhead value if we got a date in the future.
-function adjustServerAhead () {
-  const date = DateTime.fromISO(props.date)
-  const msAhead = date.diff(DateTime.now())
-  if (msAhead > serverAhead) {
-    console.log(`Adjusting serverAhead to ${msAhead} ms ahead`)
-    serverAhead = msAhead
-  }
-}
 
 function updateFromNow () {
   // Can not be computed(), because time is not reactive
-  const date = DateTime.fromISO(props.date)
-  const serverDate = DateTime.now().plus(serverAhead)
-  const serverDiff = serverDate.diff(date)
+  const serverDateTime = serverNow()
+  const serverDiff = serverDateTime.diff(dateTime.value)
   if (props.inSeconds) {
     fromNow.value = durationToString(serverDiff)
   } else {
     fromNow.value = serverDiff > ABSOLUTE_BREAKPOINT
-      ? date.toLocaleString()
-      : date.toRelative({ base: serverDate }) || ''
+      ? dateTime.value.toLocaleString()
+      : dateTime.value.toRelative({ base: serverDateTime }) || ''
   }
 }
 
-adjustServerAhead()
 useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, { immediateCallback: true })
-watch(() => props.date, updateFromNow)
+watchEffect(updateFromNow)
 watch(currentLocale, () => nextTick(updateFromNow))
 </script>
 
