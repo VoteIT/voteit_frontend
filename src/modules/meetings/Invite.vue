@@ -5,9 +5,11 @@
         {{ t('invites.invitedAs') }}:
       </v-list-subheader>
       <v-list-item
-        :prepend-icon="scopePlugin?.icon || 'mdi-help'"
-        :title="scopePlugin?.transformData?.(invite.invite_data) || invite.invite_data"
-        :subtitle="t(`invites.${invite.type}.typeLabel`)"
+        v-for="{icon, scope, subtitle, title} in invitedUserdata" :key="scope"
+        :prepend-icon="icon"
+        :subtitle="subtitle"
+        :title="title"
+
       />
     </v-list>
     <v-card-actions class="flex-wrap">
@@ -68,5 +70,17 @@ async function rejectInvite (inv: MeetingInvite) {
   }
 }
 
-const scopePlugin = computed(() => invitationScopes.getPlugin(props.invite.type))
+const invitedUserdata = computed(() => {
+  return invitationScopes.getActivePlugins()
+    .filter(scope => scope.id in props.invite.user_data)
+    .map(scope => {
+      const value = props.invite.user_data[scope.id as keyof MeetingInvite['user_data']]!
+      return {
+        icon: scope.icon,
+        scope: scope.id,
+        subtitle: t(`invites.${scope.id}.typeLabel`),
+        title: scope.transformData?.(value) || value
+      }
+    })
+})
 </script>

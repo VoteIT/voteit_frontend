@@ -39,14 +39,18 @@ export enum MeetingInviteState {
 
 export interface MeetingInvite {
   pk: number
-  created_by: number
-  invite_data: string
+  created: string
+  user_data: {
+    email?: string
+    swedish_ssn?: string
+  }
   meeting: number
   meeting_title: string
+  modified: string
   organisation_pk: number
   roles: MeetingRole[]
   state: MeetingInviteState
-  type: 'email' | 'swedish_ssn'
+  used_at: null | string
   used_by: null | number
 }
 
