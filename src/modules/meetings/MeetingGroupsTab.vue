@@ -172,7 +172,7 @@
 
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
-import { computed, provide, ref } from 'vue'
+import { computed, provide, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getApiLink } from '@/utils/restApi'
@@ -194,7 +194,6 @@ import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
 import { TagsKey } from './useTags'
 import { chunk } from 'lodash'
-import { watch } from 'vue'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
