@@ -5,6 +5,7 @@ import { MeetingGroupColumn, MeetingState } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 
 import SFSVoteManagement from './SFSVoteManagement.vue'
+import GroupDelegationManagement from './GroupDelegationManagement.vue'
 // import MainAndSubstManagement from './MainAndSubstManagement.vue'
 
 export const voteManagementComponents: Partial<Record<string, MeetingGroupColumn['component']>> = {
@@ -64,6 +65,25 @@ meetingGroupTablePlugins.register({
         },
         getValue (group) {
           return group.memberships.reduce((acc, { votes }) => acc + (votes || 0), 0)
+        }
+      }
+    ]
+  }
+})
+
+meetingGroupTablePlugins.register({
+  id: 'group_delegations',
+  checkActive (meeting) {
+    return !!meeting.dialect?.groups_can_delegate
+  },
+  transform (columns) {
+    return [
+      ...columns,
+      {
+        component: GroupDelegationManagement,
+        name: 'delegate_to',
+        getTitle (t) {
+          return t('meeting.groups.delegations')
         }
       }
     ]

@@ -7,11 +7,17 @@ import { parseRestError } from '@/utils/restApi'
 
 interface HandlerOptions {
   target: 'alert' | 'dialog' | 'none'
+  showField?: string
 }
 
 const DEFAULT_OPTIONS: HandlerOptions = {
   target: 'none'
 } as const
+
+function getSpecifiedFieldErrorMessage (errors: Dictionary<string[]>, field: string) {
+  const fieldErrors = errors[field] || errors.non_field_errors || ['Unkown error']
+  return fieldErrors.join(', ')
+}
 
 export default function useErrorHandler (opts: HandlerOptions = DEFAULT_OPTIONS) {
   opts = { ...DEFAULT_OPTIONS, ...opts }
@@ -34,7 +40,10 @@ export default function useErrorHandler (opts: HandlerOptions = DEFAULT_OPTIONS)
     if (!(e instanceof Error)) throw e
     errorMessage.value = e.message
     fieldErrors.value = parse(e)
-    displayError(e.message)
+    displayError(opts.showField
+      ? getSpecifiedFieldErrorMessage(fieldErrors.value, opts.showField)
+      : e.message
+    )
   }
 
   function handleSocketError (e: unknown) {

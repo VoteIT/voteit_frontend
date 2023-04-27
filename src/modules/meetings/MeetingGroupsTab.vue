@@ -66,6 +66,7 @@
         </DefaultDialog>
       </template>
     </v-toolbar>
+    <v-pagination v-if="groupChunks.length > 1" v-model="currentPage" :length="groupChunks.length" />
     <v-table>
       <thead>
         <tr>
@@ -92,7 +93,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="group in meetingGroups" :key="group.pk">
+        <tr v-for="group in groupChunks[currentPage - 1]" :key="group.pk">
           <td>
             {{ group.title }}
           </td>
@@ -171,7 +172,7 @@
 
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
-import { computed, provide } from 'vue'
+import { computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getApiLink } from '@/utils/restApi'
@@ -192,6 +193,8 @@ import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
 import { TagsKey } from './useTags'
+import { chunk } from 'lodash'
+import { watch } from 'vue'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -245,6 +248,15 @@ async function createGroups (data: { groups: string }) {
     ...data
   })
 }
+
+// Paginate
+const GROUPS_PER_PAGE = 20
+const currentPage = ref(1)
+const groupChunks = computed(() => chunk(meetingGroups.value, GROUPS_PER_PAGE))
+watch(groupChunks, chunks => {
+  const maxPage = chunks.length + 1
+  if (currentPage.value > maxPage) currentPage.value = maxPage
+})
 
 // Provide tag autocompletion
 const allTags = computed(() => new Set(flatmap(meetingGroups.value, group => group.tags)))

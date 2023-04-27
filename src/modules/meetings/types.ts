@@ -70,8 +70,9 @@ export interface MeetingDialectDefinition {
   configure_components?: { name: string }[]
   description: string
   er_policy_name: string
-  group_votes_active: boolean
-  group_roles_active: boolean
+  group_votes_active: boolean | null // null = dialect does not dictate
+  group_roles_active: boolean | null
+  groups_can_delegate: boolean // Only dialect can activate this
   name: string
   roles: {
     can_discuss_as: boolean
@@ -104,10 +105,10 @@ export interface MeetingGroup extends BaseContent {
   groupid: string
   body: string
   created: string
+  delegate_to: number | null
   modified: string
   tags: string[]
   author: number
-  last_modified_by: number | null
   meeting: number
   mentions: number[]
   votes: null | number

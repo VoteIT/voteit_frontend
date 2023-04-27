@@ -60,7 +60,6 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     if (erMethod.value && erMethodLocked.value) return [erMethod.value]
     if (!erMethods.value) return
     return erMethods.value.filter(method => {
-      console.log(method, meeting.value?.group_votes_active)
       if (!method.available) return false
       if (method.group_votes_active === null) return true
       return !!meeting.value?.group_votes_active === method.group_votes_active
