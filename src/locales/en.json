@@ -254,6 +254,12 @@
       "hint": "One email address per row",
       "typeLabel": "Email"
     },
+    "mixed": {
+      "helpText": "In order to invite using mixed user data, you'll need to copy and paste from a spreadsheet document. The first row must be headers that defines the type of user data in that column, according to the table below.",
+      "helpTitle": "Paste from spreadsheet",
+      "label": "Paste user data",
+      "typeLabel": "Multiple user data"
+    },
     "swedish_ssn": {
       "invalid": "Invalid swedish personnummer",
       "label": "Paste swedish personnummer",

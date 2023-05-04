@@ -34,50 +34,44 @@
     <v-btn class="mr-2 d-md-none" :variant="filterMenu ? 'elevated' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'secondary-lighten-2' : undefined" >
       <v-icon>mdi-filter-menu</v-icon>
     </v-btn>
-    <DefaultDialog v-if="scopeItems" :title="t('invites.add')" v-model="inviteDialogOpen">
+    <DefaultDialog v-if="scopeItems.length === 1" :title="t('invites.add')">
       <template #activator="{ props }">
         <v-btn v-bind="props" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
           {{ t('invites.add') }}
         </v-btn>
       </template>
-      <v-form @submit.prevent="submitInvites" v-model="inviteData.valid" ref="invitationsForm">
-        <v-select
-          v-if="scopeItems?.length !== 1"
-          class="mb-2"
-          :label="t('invites.typeLabel')"
-          :items="scopeItems"
-          :error-messages="inviteErrors.type"
-          v-model="inviteData.type"
-          :rules="[rules.required]"
-        />
-        <v-textarea
-          v-model="inviteData.user_data"
-          class="mb-2"
-          :disabled="!inviteData.type"
-          :error-messages="inviteErrors.__root__"
-          rows="10"
-          v-bind="inviteInputProps"
-        />
-        <CheckboxMultipleSelect
-          v-model="inviteData.roles"
-          :settings="{ options: roleLabelsEditable }"
-          :label="t('accessPolicy.rolesGiven')"
-          :requiredValues="['participant']"
-        />
-        <div class="text-right">
-          <v-btn
-            type="submit"
-            color="primary"
-            prepend-icon="mdi-account-multiple-plus"
-            :loading="submittingInvites"
-            :disabled="!inviteData.valid || submittingInvites"
-            variant="elevated"
-          >
-            {{ t('add') }}
-          </v-btn>
-        </div>
-      </v-form>
+      <template #default="{ close }">
+        <InvitationModal :type="scopeItems[0].value" :meeting="meetingId" @done="close" />
+      </template>
     </DefaultDialog>
+    <v-menu v-else-if="scopeItems.length > 1">
+      <template #activator="{ props }">
+        <v-btn v-bind="props" append-icon="mdi-chevron-down" class="text-no-wrap">
+          {{ t('invites.add') }}
+        </v-btn>
+      </template>
+      <v-list>
+        <DefaultDialog
+          v-for="{ icon, title, value } in scopeItems" :key="value"
+          :title="t('invites.add')"
+        >
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" :title="title" :prepend-icon="icon" />
+          </template>
+          <template #default="{ close }">
+            <InvitationModal :type="value" :meeting="meetingId" @done="close" />
+          </template>
+        </DefaultDialog>
+        <DefaultDialog :title="t('invites.add')">
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" :title="t('invites.mixed.typeLabel')" prepend-icon="mdi-account-star" />
+          </template>
+          <template #default="{ close }">
+            <InvitationMixedModal :meeting="meetingId" @done="close" />
+          </template>
+        </DefaultDialog>
+      </v-list>
+    </v-menu>
   </v-toolbar>
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
@@ -156,18 +150,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, watch, ComponentPublicInstance } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { chunk, isEqual } from 'lodash'
 
-import { parseSocketError, socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
 import useChannel from '@/composables/useChannel'
 import usePermission from '@/composables/usePermission'
-import useRules from '@/composables/useRules'
 
 import useMeeting from './useMeeting'
 import useMeetingInvites from './useMeetingInvites'
@@ -175,6 +167,8 @@ import { canDeleteMeetingInvite } from './rules'
 import { meetingInviteType } from './contentTypes'
 import { MeetingInvite, MeetingRole } from './types'
 import { invitationScopes } from '../organisations/registry'
+import InvitationModal from './InvitationModal.vue'
+import InvitationMixedModal from './InvitationMixedModal.vue'
 
 const PAGE_LENGTH = 25
 
@@ -192,73 +186,18 @@ const { t } = useI18n()
 const { isModerator, meetingId, roleLabelsEditable } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { copy, copied } = useClipboard()
-const rules = useRules(t)
 
 const { isSubscribed } = useChannel('invites', meetingId)
 usePermission(isModerator, {}, () => { emit('denied') })
 
 const scopeItems = computed(() => {
   const activeScopes = invitationScopes.getActivePlugins()
-  if (!activeScopes.length) return
-  return activeScopes.map(({ id }) => ({ value: id, title: t(`invites.${id}.typeLabel`) }))
+  return activeScopes.map(({ icon, id }) => ({
+    icon,
+    title: t(`invites.${id}.typeLabel`),
+    value: id
+  }))
 })
-
-const inviteData = reactive({
-  type: scopeItems.value?.length === 1
-    ? scopeItems.value[0].value
-    : undefined,
-  user_data: '',
-  roles: ['participant'],
-  valid: false
-})
-const submittingInvites = ref(false)
-const inviteDialogOpen = ref(false)
-const inviteErrors = ref<Partial<Record<string, string[]>>>({})
-const inviteInputProps = computed(() => {
-  // TODO HERE, dynamic translation strings and even rules
-  const { type } = inviteData
-  return {
-    label: t(`invites.${type}.label`),
-    hint: t(`invites.${type}.hint`),
-    rules: type
-      ? {
-          // TODO put this in scope components
-          email: [rules.multiline(rules.email), rules.required],
-          swedish_ssn: [rules.multiline(rules.swedishSSN), rules.required]
-        }[type]
-      : [rules.required]
-  }
-})
-
-// Redo validation if type was changed
-const invitationsForm = ref<ComponentPublicInstance<{ resetValidation(): void, validate(): void }> | null>(null)
-watch(() => inviteData.type, async () => {
-  inviteErrors.value = {}
-  invitationsForm.value?.validate()
-})
-// Reset server sent errors on form update
-watch(() => inviteData.user_data, () => {
-  inviteErrors.value = {}
-})
-
-async function submitInvites () {
-  inviteErrors.value = {}
-  submittingInvites.value = true
-  try {
-    await socket.call('invites.add', {
-      user_data: inviteData.user_data,
-      meeting: meetingId.value,
-      roles: inviteData.roles,
-      type: inviteData.type
-    }, { alertOnError: false })
-    inviteDialogOpen.value = false
-    inviteData.user_data = ''
-    inviteData.roles = ['participant']
-  } catch (e) {
-    inviteErrors.value = parseSocketError(e as Error)
-  }
-  submittingInvites.value = false
-}
 
 function getRoleIcon (role: MeetingRole) {
   return meetingIcons[role]
