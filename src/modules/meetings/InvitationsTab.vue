@@ -1,13 +1,32 @@
 <template>
   <v-alert class="mb-4" :title="t('invites.helpTextTitle')" :text="t('invites.helpTextBody')" color="primary" icon="mdi-email-off" />
   <v-toolbar color="secondary" :title="t('invites.existing')">
-    <v-tooltip :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
+    <v-tooltip v-if="existingInviteScopes.length === 1" :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
       <template #activator="{ props }">
-        <v-btn class="mr-2" v-bind="props" @click="copyFilteredData" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('invites.copyMatchingTooltip')">
+        <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('invites.copyMatchingTooltip')">
           <v-icon>mdi-content-copy</v-icon>
         </v-btn>
       </template>
     </v-tooltip>
+    <v-menu v-else-if="existingInviteScopes.length > 1">
+      <template #activator="{ props }">
+        <v-btn v-bind="props" append-icon="mdi-chevron-down">
+          <v-tooltip :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
+            <template #activator="{ props }">
+              <v-icon v-bind="props">mdi-content-copy</v-icon>
+            </template>
+          </v-tooltip>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="{ icon, id } in existingInviteScopes" :key="id"
+          :prepend-icon="icon"
+          :title="t(`invites.${id}.typeLabel`)"
+          @click="copyFilteredData(id)"
+        />
+      </v-list>
+    </v-menu>
     <v-btn class="mr-2 d-none d-md-inline" :variant="filterMenu ? 'elevated' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'secondary-lighten-2' : undefined" >
       <v-icon start>mdi-filter-menu</v-icon>
       {{ t('filter') }}
@@ -320,8 +339,11 @@ watch(pages, value => {
   if (currentPage.value > value.length) currentPage.value = value.length || 1
 })
 
-function copyFilteredData () {
-  copy(filteredInvites.value.map(i => i.user_data).join('\n') + '\n')
+function copyFilteredData (scope?: string) {
+  copy(filteredInvites.value
+    .map(i => i.user_data[scope || existingInviteScopes.value[0].id])
+    .filter(Boolean)
+    .join('\n') + '\n')
 }
 
 async function deleteSelected () {
