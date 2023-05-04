@@ -253,6 +253,12 @@
       "hint": "En e-postadress per rad",
       "typeLabel": "E-post"
     },
+    "mixed": {
+      "helpText": "För att bjuda in med blandade användaruppgifter behöver du kopiera och klistra in från ett kalkylblad. Den översta raden ska bestå av rubriker som definierar vilken typ av användardata kolumnen innehåller, enligt tabellen nedan.",
+      "helpTitle": "Klistra in från kalkylblad",
+      "label": "Klistra in användaruppgifter",
+      "typeLabel": "Flera användaruppgifter"
+    },
     "swedish_ssn": {
       "invalid": "Ogiltigt personnummer",
       "label": "Klistra in personnummer",
