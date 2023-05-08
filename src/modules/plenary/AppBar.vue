@@ -74,7 +74,7 @@ const { t } = useI18n()
 const { meetingId, meetingPath } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, agendaItemPath, canChangeAgendaItem, nextPollTitle } = useAgendaItem(agendaId)
-const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary()
+const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary(agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 

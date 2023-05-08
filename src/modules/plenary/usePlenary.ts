@@ -1,4 +1,4 @@
-import { computed, reactive, readonly, ref } from 'vue'
+import { ComputedRef, computed, reactive, readonly, ref } from 'vue'
 
 import { ProposalState, Proposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
@@ -8,7 +8,7 @@ const { getProposal, forProposals } = useProposals()
 const stateFilter = ref([ProposalState.Published])
 const selectedProposalIds = reactive<number[]>([])
 
-export default function usePlenary () {
+export default function usePlenary (agendaItem: ComputedRef<number>) {
   const filterProposalStates = (p: Proposal) => !stateFilter.value.length || stateFilter.value.includes(p.state)
 
   function selectProposal (p: Pick<Proposal, 'pk'>) {
@@ -21,15 +21,12 @@ export default function usePlenary () {
   function clearSelected () {
     selectedProposalIds.length = 0
   }
-  const selectedProposals = computed(() => {
-    return readonly(selectedProposalIds.map(pk => getProposal(pk)).filter(Boolean) as Proposal[])
-  })
+  const selectedProposals = computed(() => readonly(selectedProposalIds.map(getProposal).filter((p): p is Proposal => !!p)))
 
   function selectTag (tagName: string) {
     selectedProposalIds.length = 0
-    console.log(tagName)
     forProposals(
-      ({ tags }) => tags.includes(tagName),
+      (p) => p.agenda_item === agendaItem.value && p.tags.includes(tagName),
       ({ pk }) => { selectedProposalIds.push(pk) }
     )
   }
