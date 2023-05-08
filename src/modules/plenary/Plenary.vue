@@ -54,7 +54,6 @@ import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 import { WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
-import useAgendaItem from '../agendas/useAgendaItem'
 import useProposals from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
 import { ProposalState } from '../proposals/types'
@@ -76,7 +75,6 @@ const { t } = useI18n()
 const { anyProposal, getAgendaProposals } = useProposals()
 const { meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
-const { agendaItem } = useAgendaItem(agendaId)
 const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary(agendaId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
 
@@ -102,10 +100,7 @@ function tagInPool (tag: string) {
 }
 
 const textProposalTags = computed(() => flatten(aiProposalTexts.value.map(doc => doc.paragraphs.map(p => p.tag))))
-// eslint-disable-next-line vue/return-in-computed-property
-const nextTextProposalTag = computed(() => {
-  return textProposalTags.value.find(tagInPool)
-})
+const nextTextProposalTag = computed(() => textProposalTags.value.find(tagInPool))
 
 const transitioning = reactive(new Set<number>())
 async function makeTransition (p: Pick<Proposal, 'state' | 'pk'>, state: WorkflowState) {
