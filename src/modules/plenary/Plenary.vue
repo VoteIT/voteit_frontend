@@ -69,21 +69,19 @@ import usePlenary from './usePlenary'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
-const { anyProposal, getAgendaProposals } = useProposals()
-const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary()
-
 provide('context', 'meeting')
+provide(LastReadKey, ref(new Date()))
+
 const { t } = useI18n()
+const { anyProposal, getAgendaProposals } = useProposals()
 const { meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
 const { agendaItem } = useAgendaItem(agendaId)
+const { filterProposalStates, selectedProposalIds, selectedProposals, selectProposal, selectTag, deselectProposal, clearSelected } = usePlenary(agendaId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
 
 useMeetingChannel()
 useChannel('agenda_item', agendaId)
-provide(LastReadKey, ref(new Date()))
-
-watch(agendaItem, clearSelected)
 
 /**
  * Get list of state transitions that should be visible in state selection.
@@ -119,9 +117,10 @@ async function makeTransition (p: Pick<Proposal, 'state' | 'pk'>, state: Workflo
   } catch {}
   transitioning.delete(p.pk)
 }
+
+watch(agendaId, clearSelected, { immediate: true })
 onMounted(() => {
   tagClickEvent.on(selectTag)
-  clearSelected()
 })
 onBeforeUnmount(() => {
   tagClickEvent.off(selectTag)

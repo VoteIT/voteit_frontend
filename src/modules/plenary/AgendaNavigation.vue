@@ -18,8 +18,8 @@
   </v-navigation-drawer>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { toggleNavDrawerEvent } from '@/utils/events'
@@ -31,51 +31,40 @@ import useProposals from '../proposals/useProposals'
 
 import usePlenary from './usePlenary'
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { agendaStates } = useAgenda(meetingId)
-    const { filterProposalStates } = usePlenary()
-    const { getAgendaProposals } = useProposals()
-    const isOpen = ref(false)
+const { t } = useI18n()
+const { meetingId } = useMeeting()
+const { agendaId, agendaStates } = useAgenda(meetingId)
+const { filterProposalStates } = usePlenary(agendaId)
+const { getAgendaProposals } = useProposals()
+const isOpen = ref(false)
 
-    function toggle () {
-        isOpen.value = !isOpen.value
-    }
+function toggle () {
+    isOpen.value = !isOpen.value
+}
 
-    function getURL (ai: AgendaItem) {
-      return `/p/${meetingId.value}/${ai.pk}`
-    }
+function getURL (ai: AgendaItem) {
+  return `/p/${meetingId.value}/${ai.pk}`
+}
 
-    const annotatedAgendaStates = computed(() => {
-      return agendaStates.value.map(({ state, items }) => {
-        return {
-          state,
-          items: items.map(ai => ({
-            ...ai,
-            proposals: {
-              filtered: getAgendaProposals(ai.pk, filterProposalStates).length,
-              total: getAgendaProposals(ai.pk).length
-            }
-          }))
-        }
-      })
-    })
-
-    onMounted(() => {
-      toggleNavDrawerEvent.on(toggle)
-    })
-    onBeforeUnmount(() => {
-      toggleNavDrawerEvent.off(toggle)
-    })
-
+const annotatedAgendaStates = computed(() => {
+  return agendaStates.value.map(({ state, items }) => {
     return {
-      t,
-      isOpen,
-      annotatedAgendaStates,
-      getURL
+      state,
+      items: items.map(ai => ({
+        ...ai,
+        proposals: {
+          filtered: getAgendaProposals(ai.pk, filterProposalStates).length,
+          total: getAgendaProposals(ai.pk).length
+        }
+      }))
     }
-  }
+  })
+})
+
+onMounted(() => {
+  toggleNavDrawerEvent.on(toggle)
+})
+onBeforeUnmount(() => {
+  toggleNavDrawerEvent.off(toggle)
 })
 </script>
