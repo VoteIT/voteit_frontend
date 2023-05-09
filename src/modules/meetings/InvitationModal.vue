@@ -32,8 +32,8 @@ watch(() => inviteData.user_data, () => {
 })
 
 const ruleMapping = {
-  email: [rules.multiline(rules.email), rules.required],
-  swedish_ssn: [rules.multiline(rules.swedishSSN), rules.required]
+  email: [rules.multiline(rules.trimmed(rules.email)), rules.required],
+  swedish_ssn: [rules.multiline(rules.trimmed(rules.swedishSSN)), rules.required]
 }
 
 // Dynamic translation strings and rules
