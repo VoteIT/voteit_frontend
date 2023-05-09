@@ -107,3 +107,11 @@ test('TabSeparated', () => {
   expect(mixRule('One\ttest@example.com\tthree')).toEqual('invites.swedish_ssn.invalid')
   expect(mixRule('One\ttest@example.com\t1212121212')).toEqual(true)
 })
+
+test('trimmed', () => {
+  const trimmedEmail = rules.trimmed(rules.email)
+
+  expect(trimmedEmail('test@example.com')).toEqual(true)
+  expect(trimmedEmail(' test@example.com ')).toEqual(true)
+  expect(trimmedEmail(' test at example.com ')).toEqual('invites.email.invalid')
+})
