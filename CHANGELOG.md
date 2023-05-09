@@ -4,6 +4,15 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.14.2
+
+### Changed
+- Select type of invitation before adding invites (error handling + prepares for mixed invites) [#290](https://github.com/VoteIT/voteit_frontend/issues/290)
+
+### Fixed
+- Modifying Agenda Item or adding/removing proposals deselected proposals in Plenary View [#291](https://github.com/VoteIT/voteit_frontend/issues/291)
+- Tag clicks in Plenary View selected proposals from other Agenda Items [#292](https://github.com/VoteIT/voteit_frontend/issues/292)
+
 ## 0.14.1
 - Bugfix: Copy invitation user data updated to match new data structure (supports multiple types of user data)
 
