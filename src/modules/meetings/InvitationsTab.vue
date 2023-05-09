@@ -62,14 +62,14 @@
             <InvitationModal :type="value" :meeting="meetingId" @done="close" />
           </template>
         </DefaultDialog>
-        <DefaultDialog :title="t('invites.add')">
+        <!-- <DefaultDialog :title="t('invites.add')">
           <template #activator="{ props }">
             <v-list-item v-bind="props" :title="t('invites.mixed.typeLabel')" prepend-icon="mdi-account-star" />
           </template>
           <template #default="{ close }">
             <InvitationMixedModal :meeting="meetingId" @done="close" />
           </template>
-        </DefaultDialog>
+        </DefaultDialog> -->
       </v-list>
     </v-menu>
   </v-toolbar>
@@ -168,7 +168,7 @@ import { meetingInviteType } from './contentTypes'
 import { MeetingInvite, MeetingRole } from './types'
 import { invitationScopes } from '../organisations/registry'
 import InvitationModal from './InvitationModal.vue'
-import InvitationMixedModal from './InvitationMixedModal.vue'
+// import InvitationMixedModal from './InvitationMixedModal.vue'
 
 const PAGE_LENGTH = 25
 
