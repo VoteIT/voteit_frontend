@@ -43,11 +43,11 @@ async function submitInvites () {
     .map(row => row.split('\t'))
   const columns = rows.shift()
   try {
-    await socket.call('invites.add_mixed', {
+    await socket.call('invites.add', {
       columns,
+      meeting: props.meeting,
       rows,
-      roles: inviteData.roles,
-      ...props
+      roles: inviteData.roles
     }, { alertOnError: false })
     emit('done')
     inviteData.user_data = ''

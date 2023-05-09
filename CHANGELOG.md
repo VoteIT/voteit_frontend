@@ -8,6 +8,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ### Changed
 - Select type of invitation before adding invites (error handling + prepares for mixed invites) [#290](https://github.com/VoteIT/voteit_frontend/issues/290)
+- New API data structure for adding invitations
 
 ### Fixed
 - Modifying Agenda Item or adding/removing proposals deselected proposals in Plenary View [#291](https://github.com/VoteIT/voteit_frontend/issues/291)
