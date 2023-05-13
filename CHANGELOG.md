@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.14.3 (2023-05-13)
+- Bugfix: Speaker priority max value off by one (historic reasons)
+- Bugfix: Tag click in plenary should use state filter
+
 ## 0.14.2
 
 ### Changed
