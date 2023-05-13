@@ -42,7 +42,7 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
     const annotatedRestQueue = annotatedSpeakerQueue.value.slice(safePositions)
     // TODO: Move this into plugin architecture
     if (speakerSystem.value.method_name === SpeakerSystemMethod.Priority) {
-      const max = (speakerSystem.value.settings?.max_times ?? 0) - 1
+      const max = speakerSystem.value.settings?.max_times ?? 0
       // A speaker system can have a maximum amount of lists. This will get spoken times up to that max value.
       function maxListValue ({ timesSpoken }: { timesSpoken: number }) {
         return max >= 0
