@@ -28,7 +28,7 @@ export interface AgendaItem {
 }
 
 export interface Filter {
-  order: string
+  order: 'asc' | 'desc'
   states: Set<ProposalState>
   tags: Set<string>
 }

@@ -18,7 +18,12 @@
         <v-divider/>
       </template>
       <v-list-subheader>{{ t('orderBy')}}</v-list-subheader>
-      <v-list-item :prepend-icon="activeFilter.order === f.id ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'" v-for="f in orders" :key="f.id" @click="activeFilter.order = f.id" @keydown.space.enter.prevent="activeFilter.order = f.id">
+      <v-list-item
+        v-for="f in orders" :key="f.id"
+        :prepend-icon="activeFilter.order === f.id ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'"
+        @click="activeFilter.order = f.id"
+        @keydown.space.enter.prevent="activeFilter.order = f.id"
+      >
         {{ f.label }}
       </v-list-item>
       <v-divider/>
@@ -43,8 +48,8 @@ import useAgendaFilter from './useAgendaFilter'
 import { ProposalState } from '../proposals/types'
 import { agendaIdKey } from './injectionKeys'
 
-interface FilterDescription {
-  id: string
+interface FilterDescription<V extends string = string> {
+  id: V
   label: string
   active?: boolean
 }
@@ -57,13 +62,13 @@ const { activeFilter, isModified } = useAgendaFilter(agendaId)
 const root = ref<ComponentPublicInstance<{ close:() => void }> | null>(null)
 onClickOutside(root, () => root.value?.close())
 
-const orders = ref<FilterDescription[]>([
+const orders = ref<FilterDescription<'asc'| 'desc'>[]>([
   {
-    id: 'created',
+    id: 'asc',
     label: t('oldestFirst')
   },
   {
-    id: '-created',
+    id: 'desc',
     label: t('newestFirst')
   }
 ])
@@ -74,7 +79,7 @@ const states = reactive<FilterDescription[]>(proposalStates.map(state => ({
 })))
 
 function clearFilters () {
-  activeFilter.value.order = 'created'
+  activeFilter.value.order = 'asc'
   for (const s of states) s.active = DEFAULT_FILTER_STATES.includes(s.id as ProposalState)
   // for (const t of tagFilters) t.active = false
   activeFilter.value.tags.clear()
