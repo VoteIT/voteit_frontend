@@ -18,13 +18,13 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
   const speakerQueue = computed(() => speakerList.value?.queue ?? [])
   const speakerSystem = computed(() => speakerList.value && getSystem(speakerList.value.speaker_system))
   const currentSpeaker = computed(() => list.value ? getCurrent(list.value) : undefined)
-  // Annotate speaker queue with times spoken
-  const annotatedSpeakerQueue = computed(() => {
-    return speakerQueue.value.map(user => ({
-      user,
-      timesSpoken: timesSpokenMap.value[user] || 0
-    }))
-  })
+  /**
+   * Speaker queue as objects, with user and timesSpoken
+  */
+  const annotatedSpeakerQueue = computed(() => speakerQueue.value.map(user => ({
+    user,
+    timesSpoken: timesSpokenMap.value[user] || 0
+  })))
 
   const speakerGroups = computed(() => {
     // Support priority lists
