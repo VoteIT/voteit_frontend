@@ -107,6 +107,9 @@
         <th>
           {{ t('accessPolicy.rolesGiven') }}
         </th>
+        <th v-if="hasAnnotations">
+          {{ t('invites.annotate.annotated') }}
+        </th>
         <th>
           {{ t('state') }}
         </th>
@@ -129,6 +132,21 @@
                 </template>
               </v-tooltip>
             </td>
+            <th v-if="hasAnnotations">
+              <DefaultDialog v-if="invite.has_annotations" :title="t('invites.annotate.annotatedTitle')">
+                <template #activator="{ props }">
+                  <v-icon v-bind="props" icon="mdi-badge-account" />
+                </template>
+                <template #default="{ close }">
+                  <InvitationAnnotation :invite="invite" />
+                  <div class="text-right">
+                    <v-btn @click="close" color="primary">
+                      {{ t('close') }}
+                    </v-btn>
+                  </div>
+                </template>
+              </DefaultDialog>
+            </th>
             <td>
               {{ invite.stateLabel }}
             </td>
@@ -180,6 +198,7 @@ import { invitationScopes } from '../organisations/registry'
 import InvitationModal from './InvitationModal.vue'
 import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationMixedModal from './InvitationMixedModal.vue'
+import InvitationAnnotation from './InvitationAnnotation.vue'
 
 const PAGE_LENGTH = 25
 
@@ -329,4 +348,5 @@ const inviteHelp = computed(() => {
 })
 
 const filterMenu = ref(false)
+const hasAnnotations = computed(() => meetingInvites.value.some(inv => inv.has_annotations))
 </script>
