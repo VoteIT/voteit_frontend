@@ -248,6 +248,14 @@
     "revoke": "Revoke",
     "roles": "Invite with roles",
     "typeLabel": "Type of user data",
+    "annotate": {
+      "annotatedType": "Annotated one invite ({name}) | Annotated {count} invites ({name})",
+      "done": "Done!",
+      "helpText": "This form is for adding additional functions to your invites. Copy and paste from a spreadsheet like in the template below. To be able to annotate invites, there must be existing invites to this meeting with the user data that you're annotating.",
+      "helpTitle": "What's an annotated invite?",
+      "title": "Annotate invites",
+      "working": "Annotating invites ..."
+    },
     "email": {
       "invalid": "Invalid email",
       "label": "Paste email addresses",

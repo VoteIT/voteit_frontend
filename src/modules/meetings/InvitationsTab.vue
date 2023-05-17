@@ -72,6 +72,16 @@
         </DefaultDialog>
       </v-list>
     </v-menu>
+    <DefaultDialog :title="t('invites.annotate.title')">
+      <template #activator="{ props }">
+        <v-btn prepend-icon="mdi-badge-account" v-bind="props">
+          {{ t('invites.annotate.title') }}
+        </v-btn>
+      </template>
+      <template #default="{ close }">
+        <InvitationAnnotationsModal :meeting="meetingId" @close="close" />
+      </template>
+    </DefaultDialog>
   </v-toolbar>
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
@@ -168,6 +178,7 @@ import { meetingInviteType } from './contentTypes'
 import { MeetingInvite, MeetingRole } from './types'
 import { invitationScopes } from '../organisations/registry'
 import InvitationModal from './InvitationModal.vue'
+import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationMixedModal from './InvitationMixedModal.vue'
 
 const PAGE_LENGTH = 25

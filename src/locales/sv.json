@@ -247,6 +247,14 @@
     "revoke": "Dra tillbaka",
     "roles": "Bjud in med roller",
     "typeLabel": "Typ av personuppgifter",
+    "annotate": {
+      "annotatedType": "Utökade en inbjudan ({name}) | Utökade {count} inbjudningar ({name})",
+      "done": "Färdigt!",
+      "helpText": "Här kan du koppla ytterligare funktioner till dina inbjudningar. Kopiera och klistra in från ett kalkylblad som följer mallen nedan. För att kunna utöka inbjudningar behöver du först se till att den användardata du vill utöka har en befintlig inbjudan till mötet.",
+      "helpTitle": "Vad är en utökad inbjudan?",
+      "title": "Utöka inbjudningar",
+      "working": "Utökar inbjudningar ..."
+    },
     "email": {
       "invalid": "Ogiltig e-postadress",
       "label": "Klistra in e-postadresser",

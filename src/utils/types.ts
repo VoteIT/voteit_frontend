@@ -82,7 +82,7 @@ export interface BatchPayload {
 
 export type ChannelsMessage<T=unknown> = SuccessMessage<T> | ProgressMessage | FailedMessage
 
-export type ProgressHandler = (progress: Progress) => void
+export type ProgressHandler<PT extends Progress=Progress> = (progress: PT) => void
 
 // For Socket.ts
 export interface ChannelsConfig {

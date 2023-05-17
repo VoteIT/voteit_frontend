@@ -39,9 +39,9 @@ const scopes = computed(() => {
 async function submitInvites () {
   inviteErrors.value = {}
   submittingInvites.value = true
-  const rows = inviteData.user_data.split('\n')
+  const [columns, ...rows] = inviteData.user_data
+    .split('\n')
     .map(row => row.split('\t'))
-  const columns = rows.shift()
   try {
     await socket.call('invites.add_mixed', {
       columns,
@@ -65,7 +65,7 @@ async function submitInvites () {
       <p class="mb-3">
         {{ t('invites.mixed.helpText') }}
       </p>
-      <v-table density="compact" >
+      <v-table density="compact">
         <tbody>
           <tr>
             <td v-for="scope in scopes" :key="scope">

@@ -5,7 +5,7 @@ import { uriToPayload } from '@/utils'
 import hostname from '@/utils/hostname'
 import { AlertLevel } from '@/composables/types'
 
-import { isValidationErrorPayload, State } from './types'
+import { isValidationErrorPayload, Progress, State } from './types'
 import { DocumentVisibleEvent, openAlertEvent } from './events'
 import DefaultMap from './DefaultMap'
 import ProgressPromise from './ProgressPromise'
@@ -45,7 +45,7 @@ export function isValidationError (error: unknown): error is ValidationError {
 }
 
 export function parseSocketError (error: Error | ValidationError): Dictionary<string[]> {
-  if (!isValidationError(error)) return {}
+  if (!isValidationError(error)) return { __root__: [error.message] }
   const locErrors: Record<string, string[]> = {}
   for (const e of error.errors) {
     const loc = first(e.loc) as string // Should not be empty
@@ -197,9 +197,9 @@ class Socket {
     if (this.ws?.readyState !== WebSocket.OPEN) throw new Error('Socket closed')
   }
 
-  public call<T> (type: string, payload?: object, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>>
-  public call<T> (type: string, uri: string, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>>
-  public call<T> (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>> {
+  public call<T, PT extends Progress = Progress> (type: string, payload?: object, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>, PT>
+  public call<T, PT extends Progress = Progress> (type: string, uri: string, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>, PT>
+  public call<T, PT extends Progress = Progress> (type: string, payloadOrUri?: string | object, config?: ChannelsConfig): ProgressPromise<SuccessMessage<T>, PT> {
     // Registers a response listener and returns promise that resolves or rejects depeding on subsequent
     // socket data, or times out.
     this.assertOpen()
@@ -257,7 +257,7 @@ class Socket {
           case State.Running:
             // If we get progress, we reset timeout watcher
             setRejectTimeout()
-            if (data.p) progress(data.p)
+            if (data.p) progress(data.p as PT)
             break
           case State.Success:
             this.callbacks.delete(messageId)
