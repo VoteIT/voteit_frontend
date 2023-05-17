@@ -20,7 +20,7 @@ meetingGroupTablePlugins.register({
     return meeting.group_votes_active
   },
   transform (columns, meeting) {
-    const component = voteManagementComponents[meeting.dialect?.name as string] // Weird annotation, but undefined works as key
+    const component = voteManagementComponents[meeting.dialect?.view_components?.votes_management as string] // Weird annotation, but undefined works as key
     const { meetingGroups } = useMeetingGroups(toRef(meeting, 'pk'))
     return [
       ...columns,

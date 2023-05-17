@@ -9,9 +9,7 @@ import useRules from '@/composables/useRules'
 import useMeeting from './useMeeting'
 import { invitationScopes } from '../organisations/registry'
 
-const props = defineProps<{
-  meeting: number
-}>()
+const props = defineProps<{ meeting: number }>()
 
 const emit = defineEmits<{(e: 'done'): void}>()
 
@@ -43,11 +41,11 @@ async function submitInvites () {
     .split('\n')
     .map(row => row.split('\t'))
   try {
-    await socket.call('invites.add_mixed', {
+    await socket.call('invites.add', {
       columns,
+      meeting: props.meeting,
       rows,
-      roles: inviteData.roles,
-      ...props
+      roles: inviteData.roles
     }, { alertOnError: false })
     emit('done')
     inviteData.user_data = ''

@@ -32,8 +32,8 @@ watch(() => inviteData.user_data, () => {
 })
 
 const ruleMapping = {
-  email: [rules.multiline(rules.email), rules.required],
-  swedish_ssn: [rules.multiline(rules.swedishSSN), rules.required]
+  email: [rules.multiline(rules.trimmed(rules.email)), rules.required],
+  swedish_ssn: [rules.multiline(rules.trimmed(rules.swedishSSN)), rules.required]
 }
 
 // Dynamic translation strings and rules
@@ -48,9 +48,10 @@ async function submitInvites () {
   submittingInvites.value = true
   try {
     await socket.call('invites.add', {
-      user_data: inviteData.user_data,
-      roles: inviteData.roles,
-      ...props
+      columns: [props.type],
+      meeting: props.meeting,
+      rows: inviteData.user_data,
+      roles: inviteData.roles
     }, { alertOnError: false })
     emit('done')
     inviteData.user_data = ''
@@ -67,7 +68,7 @@ async function submitInvites () {
     <v-textarea
       v-model="inviteData.user_data"
       class="mb-2"
-      :error-messages="inviteErrors.user_data || inviteErrors.__root__"
+      :error-messages="inviteErrors.columns || inviteErrors.rows || inviteErrors.__root__"
       rows="10"
       v-bind="inviteInputProps"
     />

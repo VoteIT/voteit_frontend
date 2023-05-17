@@ -40,6 +40,7 @@ export enum MeetingInviteState {
 export interface MeetingInvite {
   pk: number
   created: string
+  has_annotations: boolean
   user_data: {
     email?: string
     swedish_ssn?: string

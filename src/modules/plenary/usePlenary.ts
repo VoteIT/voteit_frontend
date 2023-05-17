@@ -9,7 +9,9 @@ const stateFilter = ref([ProposalState.Published])
 const selectedProposalIds = reactive<number[]>([])
 
 export default function usePlenary (agendaItem: ComputedRef<number>) {
-  const filterProposalStates = (p: Proposal) => !stateFilter.value.length || stateFilter.value.includes(p.state)
+  function filterProposalStates (p: Proposal) {
+    return !stateFilter.value.length || stateFilter.value.includes(p.state)
+  }
 
   function selectProposal (p: Pick<Proposal, 'pk'>) {
     selectedProposalIds.push(p.pk)
@@ -26,7 +28,11 @@ export default function usePlenary (agendaItem: ComputedRef<number>) {
   function selectTag (tagName: string) {
     selectedProposalIds.length = 0
     forProposals(
-      (p) => p.agenda_item === agendaItem.value && p.tags.includes(tagName),
+      p => (
+        p.agenda_item === agendaItem.value &&
+        filterProposalStates(p) &&
+        p.tags.includes(tagName)
+      ),
       ({ pk }) => { selectedProposalIds.push(pk) }
     )
   }

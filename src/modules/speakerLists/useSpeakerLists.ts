@@ -39,7 +39,7 @@ function getHistory (list: number) {
       speakers.values(),
       speaker => speaker.speaker_list === list && isHistoricSpeaker(speaker)
     ),
-    ['started'], ['desc']
+    'started', 'desc'
   ) as HistoricSpeaker[]
 }
 function getList (pk: number) {

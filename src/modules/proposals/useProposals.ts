@@ -48,7 +48,7 @@ function getAgendaProposals (ai: number, predicate?: Predicate<Proposal>, order 
       proposals.values(),
       p => p.agenda_item === ai && (!predicate || predicate(p))
     ),
-    [order], [direction]
+    order, direction
   )
 }
 

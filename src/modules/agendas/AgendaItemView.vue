@@ -179,14 +179,11 @@ const proposals = useProposals()
 const { getAiPolls } = usePolls()
 const { meetingPath, meetingId, meeting } = useMeeting()
 const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
-const { activeFilter, sortOrder, orderContent } = useAgendaFilter(agendaId)
+const { activeFilter, orderContent } = useAgendaFilter(agendaId)
 const { agendaItem, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
 
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
-useLoader(
-  'AgendaItem',
-  promise
-)
+useLoader('AgendaItem', promise)
 provide(agendaIdKey, agendaId)
 
 const agendaItemExists = computed(() => {
@@ -201,14 +198,8 @@ function proposalFilter (p: Proposal): boolean {
   if (tags.size && p.tags.every(t => !tags.has(t))) return false
   return states.has(p.state)
 }
-const sortedProposals = computed(() => {
-  const { order, direction } = sortOrder.value
-  return proposals.getAgendaProposals(agendaId.value, proposalFilter, order, direction)
-})
-const hiddenProposals = computed(() => {
-  const { order, direction } = sortOrder.value
-  return proposals.getAgendaProposals(agendaId.value, p => !proposalFilter(p), order, direction)
-})
+const sortedProposals = computed(() => proposals.getAgendaProposals(agendaId.value, proposalFilter, 'created', activeFilter.value.order))
+const hiddenProposals = computed(() => proposals.getAgendaProposals(agendaId.value, p => !proposalFilter(p), 'created', activeFilter.value.order))
 const pollCount = computed(() => getAiPolls(agendaId.value).length)
 
 function discussionFilter (d: DiscussionPost): boolean {

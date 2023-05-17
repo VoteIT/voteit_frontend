@@ -65,6 +65,10 @@ export default function useRules (t: ComposerTranslation) {
     }
   }
 
+  function trimmed (rule: Rule): Rule {
+    return (value: string) => rule(value.trim())
+  }
+
   return {
     email,
     required,
@@ -75,6 +79,7 @@ export default function useRules (t: ComposerTranslation) {
     multiline,
     or,
     swedishSSN,
-    tabSeparated
+    tabSeparated,
+    trimmed
   }
 }
