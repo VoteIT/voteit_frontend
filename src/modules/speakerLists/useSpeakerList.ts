@@ -27,6 +27,7 @@ export default function useSpeakerList (list: Ref<number | undefined>) {
   })))
 
   const speakerGroups = computed(() => {
+    // TODO: Use groupBy logic, so that backend order of speakers is always the truth also in frontend.
     // Support priority lists
     if (!speakerSystem.value) return
     const safePositions = speakerSystem.value.safe_positions ?? 0
