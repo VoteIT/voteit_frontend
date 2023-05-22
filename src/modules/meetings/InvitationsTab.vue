@@ -72,16 +72,42 @@
         </DefaultDialog>
       </v-list>
     </v-menu>
-    <DefaultDialog :title="t('invites.annotate.title')">
-      <template #activator="{ props }">
-        <v-btn prepend-icon="mdi-badge-account" v-bind="props">
-          {{ t('invites.annotate.title') }}
-        </v-btn>
-      </template>
-      <template #default="{ close }">
-        <InvitationAnnotationsModal :meeting="meetingId" @close="close" />
-      </template>
-    </DefaultDialog>
+    <v-btn-group variant="text" color="white" density="compact">
+      <DefaultDialog :title="t('invites.annotate.title')">
+        <template #activator="{ props }">
+          <v-btn prepend-icon="mdi-badge-account" v-bind="props">
+            {{ t('invites.annotate.title') }}
+          </v-btn>
+        </template>
+        <template #default="{ close }">
+          <InvitationAnnotationsModal :meeting="meetingId" @close="close" />
+        </template>
+      </DefaultDialog>
+      <v-menu v-if="hasAnnotations">
+        <template #activator="{ props }">
+          <v-btn v-bind="props" size="small">
+            <v-icon icon="mdi-chevron-down" />
+          </v-btn>
+        </template>
+        <v-list v-if="clearableDataTypes.length">
+          <QueryDialog
+            v-for="{ name, title } in clearableDataTypes"
+            :key="name"
+            :text="t('invites.annotate.confirmClearType', { title })"
+            color="warning"
+            @confirmed="clearAnnotationType(name)"
+          >
+            <template #activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-delete-forever"
+                :title="t('invites.annotate.clearType', { title })"
+              />
+            </template>
+          </QueryDialog>
+        </v-list>
+      </v-menu>
+    </v-btn-group>
   </v-toolbar>
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
@@ -199,6 +225,9 @@ import InvitationModal from './InvitationModal.vue'
 import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationMixedModal from './InvitationMixedModal.vue'
 import InvitationAnnotation from './InvitationAnnotation.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import useInviteAnnotations from './useInviteAnnotations'
+import { socket } from '@/utils/Socket'
 
 const PAGE_LENGTH = 25
 
@@ -215,6 +244,7 @@ const emit = defineEmits(['denied'])
 const { t } = useI18n()
 const { isModerator, meetingId, roleLabelsEditable } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
+const { clearableDataTypes } = useInviteAnnotations()
 const { copy, copied } = useClipboard()
 
 const { isSubscribed } = useChannel('invites', meetingId)
@@ -349,4 +379,11 @@ const inviteHelp = computed(() => {
 
 const filterMenu = ref(false)
 const hasAnnotations = computed(() => meetingInvites.value.some(inv => inv.has_annotations))
+
+async function clearAnnotationType (type: string) {
+  await socket.call('invites.clear_annotations', {
+    meeting: meetingId.value,
+    types: [type]
+  })
+}
 </script>

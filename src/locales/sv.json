@@ -252,6 +252,8 @@
       "annotatedData": "Utökad information",
       "annotatedTitle": "Utökad inbjudan",
       "annotatedType": "Utökade en inbjudan ({name}) | Utökade {count} inbjudningar ({name})",
+      "clearType": "Rensa {title}",
+      "confirmClearType": "Om du fortsätter kommer {title} att rensas från alla utökade inbjudningar.\nÄr du säker?",
       "done": "Färdigt!",
       "helpText": "Här kan du koppla ytterligare funktioner till dina inbjudningar. Kopiera och klistra in från ett kalkylblad som följer mallen nedan. För att kunna utöka inbjudningar behöver du först se till att den användardata du vill utöka har en befintlig inbjudan till mötet.",
       "helpTitle": "Vad är en utökad inbjudan?",

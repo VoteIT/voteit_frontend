@@ -21,7 +21,7 @@ function filterDataTypes (filter?: (dt: InviteDataType) => boolean) {
 // Filtered data types or empty lists if not fetched yet.
 const allDataTypes = computed(() => filterDataTypes())
 const annotationDataTypes = computed(() => filterDataTypes(dt => dt.is_annotation))
-const clearableDataTypes = computed(() => filterDataTypes(dt => dt.is_annotation))
+const clearableDataTypes = computed(() => filterDataTypes(dt => dt.is_clearable))
 
 export default function useInviteAnnotations () {
   const fetchFailed = ref(false)
