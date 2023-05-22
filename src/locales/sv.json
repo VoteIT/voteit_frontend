@@ -249,6 +249,7 @@
     "typeLabel": "Typ av personuppgifter",
     "annotate": {
       "annotated": "Utökad",
+      "annotatedData": "Utökad information",
       "annotatedTitle": "Utökad inbjudan",
       "annotatedType": "Utökade en inbjudan ({name}) | Utökade {count} inbjudningar ({name})",
       "done": "Färdigt!",
@@ -341,6 +342,7 @@
       "delegateTo": "Delegera röster",
       "delegations": "Delegationer",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
+      "group": "Grupp",
       "groups": "Grupper",
       "help": "Medlemmar i en grupp kan lägga förslag i den gruppens namn, förutsatt att personen har rätt att lägga förslag. Det är användbart för att lägga till förslag från ett utskott, styrelse eller annan grupp, som inte ska anses vara personliga förslag.",
       "import": "Importera",

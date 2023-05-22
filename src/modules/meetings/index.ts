@@ -3,7 +3,8 @@ import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
-import { meetingExportPlugins, meetingRolePlugins } from './registry'
+import { MeetingInviteAnnotationPlugin, meetingExportPlugins, meetingInviteAnnotationPlugins, meetingRolePlugins } from './registry'
+import useMeetingGroups from './useMeetingGroups'
 
 function getDownloadFormat (meetingId: number, format: 'csv' | 'json') {
   return {
@@ -98,3 +99,17 @@ meetingRolePlugins.register({
       })
   }
 })
+
+meetingInviteAnnotationPlugins.register({
+  id: 'group',
+  getTranslator (t, meeting) {
+    const { getMeetingGroup, groupRoles } = useMeetingGroups(meeting)
+    return (annotation: { name: 'group', meeting_group: number, role?: number }) => {
+      const group = getMeetingGroup(annotation.meeting_group)
+      return {
+        subtitle: groupRoles.value.find(role => role.pk === annotation.role)?.title,
+        title: `${t('meeting.groups.group')}: ${group?.title || t('unknown')}`
+      }
+    }
+  }
+} as MeetingInviteAnnotationPlugin)

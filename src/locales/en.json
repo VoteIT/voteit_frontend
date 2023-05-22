@@ -249,6 +249,9 @@
     "roles": "Invite with roles",
     "typeLabel": "Type of user data",
     "annotate": {
+      "annotated": "Annotated",
+      "annotatedData": "Annotated data",
+      "annotatedTitle": "Annotated invite",
       "annotatedType": "Annotated one invite ({name}) | Annotated {count} invites ({name})",
       "done": "Done!",
       "helpText": "This form is for adding additional functions to your invites. Copy and paste from a spreadsheet like in the template below. To be able to annotate invites, there must be existing invites to this meeting with the user data that you're annotating.",
@@ -335,6 +338,7 @@
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
       "deleteConfirm": "You're about to permanently delete the group {title}.\nAre you sure?",
+      "group": "Group",
       "groups": "Groups",
       "help": "Members in a group can post proposals in that groups name, wherever the user has permission to add proposals. This is useful for adding proposals from a committee or other group, that should not be considered personal proposals.",
       "import": "Import",

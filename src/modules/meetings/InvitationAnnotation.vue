@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import { MeetingInvite } from './types'
-import { Dictionary } from 'lodash'
 import restApi from '@/utils/restApi'
+import { meetingInviteAnnotationPlugins } from './registry'
+import useMeeting from './useMeeting'
+import { MeetingInvite } from './types'
+import { invitationScopes } from '../organisations/registry'
 
-type Annotations = Dictionary<number>
+const { t } = useI18n()
+const { meetingId } = useMeeting()
+
+type Annotation = { name: string }
 
 const props = defineProps<{ invite: MeetingInvite }>()
-const annotations = ref<Annotations | null>(null)
+const annotations = ref<Annotation[] | null>(null)
 const error = ref(false)
 
 async function fetchAnnotations () {
   error.value = false
   try {
-    const { data } = await restApi.get<{ annotations: Annotations }>(`meeting-invites/${props.invite.pk}/`)
+    const { data } = await restApi.get<{ annotations: Annotation[] }>(`meeting-invites/${props.invite.pk}/`)
     annotations.value = data.annotations
   } catch {
     error.value = true
@@ -22,9 +28,39 @@ async function fetchAnnotations () {
 }
 
 onMounted(fetchAnnotations)
+
+const annotationList = computed(() => {
+  if (!annotations.value) return
+  return annotations.value.map(annotation => {
+    const translator = meetingInviteAnnotationPlugins.getPlugin(annotation.name)?.getTranslator(t, meetingId)
+    return translator
+      ? translator(annotation)
+      : { title: t('unknown') }
+  })
+})
+
+const inviteData = computed(() => {
+  return Object.entries(props.invite.user_data)
+    .map(([type, data]) => {
+      const scopePlugin = invitationScopes.getPlugin(type)!
+      return {
+        prependIcon: scopePlugin.icon,
+        title: scopePlugin.transformData?.(data) ?? data
+      }
+    })
+})
 </script>
 
 <template>
+  <v-list>
+    <v-list-subheader>
+      {{ t('invites.data') }}
+    </v-list-subheader>
+    <v-list-item
+      v-for="props, i in inviteData" :key="i"
+      v-bind="props"
+    />
+  </v-list>
   <div v-if="error" class="my-3 text-center">
     <p class="test-warning mb-3">
       Something went wrong
@@ -33,9 +69,15 @@ onMounted(fetchAnnotations)
       Try again
     </v-btn>
   </div>
-  <div v-else-if="annotations" class="text-pre">
-    {{ annotations }}
-  </div>
+  <v-list v-else-if="annotationList">
+    <v-list-subheader>
+      {{ t('invites.annotate.annotatedData') }}
+    </v-list-subheader>
+    <v-list-item
+      v-for="props, i in annotationList" :key="i"
+      v-bind="props"
+    />
+  </v-list>
   <div v-else class="my-3 text-center">
     <v-progress-circular indeterminate color="primary" />
   </div>

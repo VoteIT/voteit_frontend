@@ -1,5 +1,5 @@
 import { Dictionary } from 'lodash'
-import { Component, ComputedRef } from 'vue'
+import { Component, ComputedRef, Ref } from 'vue'
 
 import PluginHandler from './PluginHandler'
 
@@ -42,9 +42,14 @@ interface MeetingSlotPlugin extends MeetingPlugin {
 type MeetingRolePlugin = MeetingPlugin & { transform (columns: RoleMatrixColumn[], meeting: Meeting): RoleMatrixColumn[], contentType: string }
 type MeetingGroupTablePlugin = MeetingPlugin & { transform (columns: MeetingGroupColumn[], meeting: Meeting): MeetingGroupColumn[] }
 
+export interface MeetingInviteAnnotationPlugin<T extends { name: string } = { name: string }> extends MeetingPlugin {
+  getTranslator (t: ComposerTranslation, meeting: Ref<number>): (annotation: T) => { subtitle?: string, title: string }
+}
+
 export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()
 export const meetingSettingsPlugins = new PluginHandler<SettingsPlugin>()
 export const meetingSlotPlugins = new PluginHandler<MeetingSlotPlugin>()
 export const meetingRolePlugins = new PluginHandler<MeetingRolePlugin>()
 export const meetingGroupTablePlugins = new PluginHandler<MeetingGroupTablePlugin>()
 export const meetingBubblePlugins = new PluginHandler<MeetingBubblePlugin>()
+export const meetingInviteAnnotationPlugins = new PluginHandler<MeetingInviteAnnotationPlugin>()
