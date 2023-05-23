@@ -13,7 +13,6 @@ interface AnnotationProgress extends Progress {
   changed: number,
   existed: number,
   name: string,
-  newly_annotated_invites: number[]
 }
 
 function isAnnotationProgress (p: AnnotationProgress | Progress): p is AnnotationProgress {
