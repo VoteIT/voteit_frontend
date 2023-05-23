@@ -230,7 +230,6 @@
     "addUserInvitesWarning": "Använd med försiktighet! Deltagare ska i första hand läggas till genom inbjudningar.",
     "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
     "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
-    "data": "Inbjuden data",
     "emails": "E-postadresser att lägga till",
     "emailsHint": "Lägg till en e-postadress per rad",
     "existing": "Existerande inbjudningar",

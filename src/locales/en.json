@@ -231,7 +231,6 @@
     "addUserInvitesWarning": "Use with precaution! Participants should normaly be added using invitations.",
     "bulkChange": "Change one invite | Change {count} invites",
     "copyMatchingTooltip": "Copies all invitations matching filter",
-    "data": "Invite data",
     "emails": "Emails to add",
     "emailsHint": "Add one email address per row",
     "existing": "Existing invitations",

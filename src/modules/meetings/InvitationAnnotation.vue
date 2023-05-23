@@ -53,9 +53,6 @@ const inviteData = computed(() => {
 
 <template>
   <v-list>
-    <v-list-subheader>
-      {{ t('invites.data') }}
-    </v-list-subheader>
     <v-list-item
       v-for="props, i in inviteData" :key="i"
       v-bind="props"
