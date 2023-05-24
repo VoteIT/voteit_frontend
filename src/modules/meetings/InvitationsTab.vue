@@ -131,7 +131,7 @@
           {{ t(`invites.${id}.typeLabel`) }}
         </th>
         <th>
-          {{ t('accessPolicy.rolesGiven') }}
+          {{ t('roles') }}
         </th>
         <th v-if="hasAnnotations">
           {{ t('invites.annotate.annotated') }}

@@ -49,7 +49,7 @@
               {{ t(`accessPolicies.${p.name}.description`) }}
             </p>
             <h2 class="text-h6 mb-2">
-              {{ t('accessPolicy.rolesGiven') }}
+              {{ t('selectRoles') }}
             </h2>
             <div>
               <v-chip-group :modelValue="p.roles_given" @update:modelValue="setRoles(p, $event)" multiple>

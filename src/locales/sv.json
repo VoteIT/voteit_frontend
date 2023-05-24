@@ -69,6 +69,8 @@
   "unknownUser": "okänd",
   "winners": "Vinnare",
   "yes": "Ja",
+  "roles": "Roller",
+  "selectRoles": "Välj roller",
   "accessPolicy": {
     "confirmDelete": "Du håller nu på att radera den här åtkomstregeln.\nÄr du säker?",
     "invitationsAlert": "Du kan även bjuda in deltagare direkt. Det kräver inga andra åtkomstregler. En person som är inbjuden kommer se mötet när hen loggat in.",
@@ -76,8 +78,7 @@
     "noAccessPoliciesAlert": "Mötet är nu synligt för alla, men det finns inget sätt för användare att gå med. Skapa och aktivera en åtkomstregel om du vill att en användare ska kunna gå med utan inbjudan.",
     "plural": "Åtkomstregler",
     "listedMeetingHelp": "Är det okej att visa mötet för användare på organisationens startsida? Det går bara att se grundläggande information om mötet.",
-    "settings": "Inställningar för åtkomst till mötet",
-    "rolesGiven": "Välj roller"
+    "settings": "Inställningar för åtkomst till mötet"
   },
   "accessPolicies": {
     "automatic": {
@@ -245,7 +246,6 @@
     "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
     "noFilteredInvitesHelp": "Inga inbjudningar matchar ditt filter.",
     "revoke": "Dra tillbaka",
-    "roles": "Bjud in med roller",
     "typeLabel": "Typ av personuppgifter",
     "annotate": {
       "annotated": "Utökad",

@@ -136,7 +136,7 @@ async function submitInvites () {
     <CheckboxMultipleSelect
       v-model="inviteData.roles"
       :settings="{ options: roleLabelsEditable }"
-      :label="t('accessPolicy.rolesGiven')"
+      :label="t('selectRoles')"
       :requiredValues="rolesRequired"
     />
     <div class="text-right">

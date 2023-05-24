@@ -69,6 +69,8 @@
   "unknownUser": "unknown",
   "winners": "Winners",
   "yes": "Yes",
+  "roles": "Roles",
+  "selectRoles": "Select roles",
   "accessPolicy": {
     "confirmDelete": "You're about to delete this access policy.\nAre you sure?",
     "invitationsAlert": "You can invite participants directly. That does not require any other access policies. Invited users will see the meeting when they log in.",
@@ -76,8 +78,7 @@
     "noAccessPoliciesAlert": "The meeting is visible to everyone, but there is no way to join it. Create and activate and access policy if you want users to be able to join without an invitation.",
     "plural": "Access policies",
     "listedMeetingHelp": "Is it okay to show this meeting to users on the organisation start page? They will only be able to access basic details if they aren't participants.",
-    "settings": "Access Policy settings",
-    "rolesGiven": "Select roles"
+    "settings": "Access Policy settings"
   },
   "accessPolicies": {
     "automatic": {
@@ -246,7 +247,6 @@
     "noInvitesHelp": "Noone has been invited to this meeting yet.",
     "noFilteredInvitesHelp": "No invites matches your filter.",
     "revoke": "Revoke",
-    "roles": "Invite with roles",
     "typeLabel": "Type of user data",
     "annotate": {
       "annotated": "Annotated",
