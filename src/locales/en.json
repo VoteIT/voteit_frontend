@@ -15,6 +15,7 @@
   "create": "Create",
   "created": "Created",
   "defaultFilters": "Default Filters",
+  "description": "Description",
   "dismissAll": "Dismiss all",
   "download": "Download",
   "edit": "Edit",
@@ -67,6 +68,7 @@
   "undo": "Undo",
   "unknown": "Unknown",
   "unknownUser": "unknown",
+  "value": "Value",
   "winners": "Winners",
   "yes": "Yes",
   "roles": "Roles",
@@ -258,6 +260,7 @@
       "done": "Done!",
       "helpText": "This form is for adding additional functions to your invites. Copy and paste from a spreadsheet like in the template below. To be able to annotate invites, there must be existing invites to this meeting with the user data that you're annotating.",
       "helpTitle": "What's an annotated invite?",
+      "possibleValuesFor": "Possible values for \"{name}\"",
       "title": "Annotate invites",
       "working": "Annotating invites ..."
     },

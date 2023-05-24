@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { Dictionary } from 'lodash'
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { parseSocketError, socket } from '@/utils/Socket'
 import { Progress } from '@/utils/types'
 import useRules from '@/composables/useRules'
 import useInviteAnnotations from './useInviteAnnotations'
+import useMeeting from './useMeeting'
+import { meetingInviteAnnotationPlugins } from './registry'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 interface AnnotationProgress extends Progress {
   added: number,
@@ -22,6 +25,15 @@ function isAnnotationProgress (p: AnnotationProgress | Progress): p is Annotatio
 const { t } = useI18n()
 const rules = useRules(t)
 const { allDataTypes } = useInviteAnnotations()
+const { meeting } = useMeeting()
+
+const annotatedDataTypes = computed(() => {
+  return allDataTypes.value.map(dt => {
+    if (!meeting.value) throw new Error('Meeting is missing')
+    const possibleValues = meetingInviteAnnotationPlugins.getPlugin(dt.name)?.getPossibleValues?.(meeting.value)
+    return { ...dt, possibleValues }
+  })
+})
 
 const props = defineProps<{ meeting: number }>()
 defineEmits<{(e: 'close'): void}>()
@@ -116,15 +128,43 @@ function getSum (result: AnnotationProgress) {
       <v-table density="compact">
         <thead>
           <tr>
-            <th v-for="{ name } in allDataTypes" :key="name">
+            <th v-for="{ name } in annotatedDataTypes" :key="name">
               {{ name }}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th v-for="{ name } in allDataTypes" :key="name">
-              ...
+            <th v-for="{ name, possibleValues } in annotatedDataTypes" :key="name">
+              <DefaultDialog v-if="possibleValues" :title="t('invites.annotate.possibleValuesFor', { name })">
+                <template #activator="{ props }">
+                  <v-btn variant="tonal" size="x-small" icon="mdi-help" v-bind="props" />
+                </template>
+                <template #default="{ close }">
+                  <v-table>
+                    <thead>
+                      <tr>
+                        <th>{{ t('value') }}</th>
+                        <th>{{ t('description') }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="{ description, value } in possibleValues" :key="value">
+                        <td><strong>{{ value }}</strong></td>
+                        <td class="text-secondary">{{ description || '-' }}</td>
+                      </tr>
+                    </tbody>
+                  </v-table>
+                  <div class="text-right">
+                    <v-btn variant="elevated" color="primary" @click="close">
+                      {{ t('close') }}
+                    </v-btn>
+                  </div>
+                </template>
+              </DefaultDialog>
+              <span v-else>
+                ...
+              </span>
             </th>
           </tr>
         </tbody>

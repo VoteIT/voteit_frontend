@@ -43,7 +43,8 @@ type MeetingRolePlugin = MeetingPlugin & { transform (columns: RoleMatrixColumn[
 type MeetingGroupTablePlugin = MeetingPlugin & { transform (columns: MeetingGroupColumn[], meeting: Meeting): MeetingGroupColumn[] }
 
 export interface MeetingInviteAnnotationPlugin<T extends { name: string } = { name: string }> extends MeetingPlugin {
-  getTranslator (t: ComposerTranslation, meeting: Ref<number>): (annotation: T) => { subtitle?: string, title: string }
+  getTranslator? (t: ComposerTranslation, meeting: Ref<number>): (annotation: T) => { subtitle?: string, title: string }
+  getPossibleValues? (meeting: Meeting): { value: string, description?: string }[]
 }
 
 export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()

@@ -32,7 +32,7 @@ onMounted(fetchAnnotations)
 const annotationList = computed(() => {
   if (!annotations.value) return
   return annotations.value.map(annotation => {
-    const translator = meetingInviteAnnotationPlugins.getPlugin(annotation.name)?.getTranslator(t, meetingId)
+    const translator = meetingInviteAnnotationPlugins.getPlugin(annotation.name)?.getTranslator?.(t, meetingId)
     return translator
       ? translator(annotation)
       : { title: t('unknown') }

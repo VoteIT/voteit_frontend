@@ -102,6 +102,10 @@ meetingRolePlugins.register({
 
 meetingInviteAnnotationPlugins.register({
   id: 'group',
+  getPossibleValues (meeting) {
+    const { meetingGroups } = useMeetingGroups(toRef(meeting, 'pk'))
+    return meetingGroups.value.map(g => ({ value: g.groupid, description: g.title }))
+  },
   getTranslator (t, meeting) {
     const { getMeetingGroup, groupRoles } = useMeetingGroups(meeting)
     return (annotation: { name: 'group', meeting_group: number, role?: number }) => {
@@ -113,3 +117,10 @@ meetingInviteAnnotationPlugins.register({
     }
   }
 } as MeetingInviteAnnotationPlugin)
+
+meetingInviteAnnotationPlugins.register({
+  id: 'grouprole',
+  getPossibleValues (meeting) {
+    return meeting.dialect?.roles.map(role => ({ value: role.role_id, description: role.title })) ?? []
+  }
+})
