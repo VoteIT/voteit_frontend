@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { Dictionary } from 'lodash'
-import { reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { parseSocketError, socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useRules from '@/composables/useRules'
+import { invitationScopes } from '../organisations/registry'
 import useMeeting from './useMeeting'
 
+interface InviteResult {
+  added: number
+  changed: number
+  existed: number
+}
+
+defineEmits<{(e: 'done'): void}>()
 const props = defineProps<{
-  type: string
+  type?: string
   meeting: number
 }>()
-
-const emit = defineEmits<{(e: 'done'): void}>()
 
 const { t } = useI18n()
 const rules = useRules(t)
@@ -37,25 +43,35 @@ const ruleMapping = {
 }
 
 // Dynamic translation strings and rules
-const inviteInputProps = {
-  label: t(`invites.${props.type}.label`),
-  hint: t(`invites.${props.type}.hint`),
-  rules: ruleMapping[props.type as keyof typeof ruleMapping] || [rules.required]
-}
+const inviteInputProps = props.type
+  ? {
+    label: t(`invites.${props.type}.label`),
+    hint: t(`invites.${props.type}.hint`),
+    rules: ruleMapping[props.type as keyof typeof ruleMapping] || [rules.required]
+  }
+  : {
+    label: t('invites.mixed.label'),
+    rules: [rules.required]
+  }
 
+const scopes = computed(() => invitationScopes.getActivePlugins().map(({ id }) => id))
+
+const result = ref<null | InviteResult>(null)
 async function submitInvites () {
   inviteErrors.value = {}
   submittingInvites.value = true
+  const userData = inviteData.user_data.split('\n')
+  const [columns, ...rows] = props.type // If type is not supplied, get columns from first row
+    ? [[props.type], ...userData]
+    : userData.map(row => row.split('\t'))
   try {
-    await socket.call('invites.add', {
-      columns: [props.type],
+    const { p } = await socket.call<InviteResult>('invites.add', {
+      columns,
       meeting: props.meeting,
-      rows: inviteData.user_data,
+      rows,
       roles: inviteData.roles
     }, { alertOnError: false })
-    emit('done')
-    inviteData.user_data = ''
-    inviteData.roles = rolesRequired
+    result.value = p
   } catch (e) {
     inviteErrors.value = parseSocketError(e as Error)
   }
@@ -64,7 +80,52 @@ async function submitInvites () {
 </script>
 
 <template>
-  <v-form @submit.prevent="submitInvites" v-model="inviteData.valid" ref="invitationsForm">
+  <div v-if="result">
+    <p class="mb-3">
+      {{ t('invites.done') }}
+    </p>
+    <v-table>
+      <thead>
+        <tr>
+          <th>Added</th>
+          <th>Changed</th>
+          <th>Existed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ result.added }}</td>
+          <td>{{ result.changed }}</td>
+          <td>{{ result.existed }}</td>
+        </tr>
+      </tbody>
+    </v-table>
+    <div class="text-right">
+      <v-btn variant="elevated" color="primary" @click="$emit('done')">
+        {{ t('close') }}
+      </v-btn>
+    </div>
+  </div>
+  <v-form v-else @submit.prevent="submitInvites" v-model="inviteData.valid">
+    <v-alert v-if="!type" type="info" class="my-3" :title="t('invites.mixed.helpTitle')">
+      <p class="mb-3">
+        {{ t('invites.mixed.helpText') }}
+      </p>
+      <v-table density="compact">
+        <tbody>
+          <tr>
+            <td v-for="scope in scopes" :key="scope">
+              {{ scope }}
+            </td>
+          </tr>
+          <tr>
+            <td v-for="scope in scopes" :key="scope">
+              ...
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </v-alert>
     <v-textarea
       v-model="inviteData.user_data"
       class="mb-2"

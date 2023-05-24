@@ -231,6 +231,7 @@
     "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
     "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
     "data": "Inbjuden data",
+    "done": "Dina inbjudningar har lagts till.",
     "emails": "E-postadresser att lägga till",
     "emailsHint": "Lägg till en e-postadress per rad",
     "existing": "Existerande inbjudningar",

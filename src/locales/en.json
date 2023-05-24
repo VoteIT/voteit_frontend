@@ -232,6 +232,7 @@
     "bulkChange": "Change one invite | Change {count} invites",
     "copyMatchingTooltip": "Copies all invitations matching filter",
     "data": "Invite data",
+    "done": "Your invitations were added.",
     "emails": "Emails to add",
     "emailsHint": "Add one email address per row",
     "existing": "Existing invitations",

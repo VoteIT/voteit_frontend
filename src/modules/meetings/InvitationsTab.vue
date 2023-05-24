@@ -67,7 +67,7 @@
             <v-list-item v-bind="props" :title="t('invites.mixed.typeLabel')" prepend-icon="mdi-account-star" />
           </template>
           <template #default="{ close }">
-            <InvitationMixedModal :meeting="meetingId" @done="close" />
+            <InvitationModal :meeting="meetingId" @done="close" />
           </template>
         </DefaultDialog>
       </v-list>
@@ -223,7 +223,6 @@ import { MeetingInvite, MeetingRole } from './types'
 import { invitationScopes } from '../organisations/registry'
 import InvitationModal from './InvitationModal.vue'
 import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
-import InvitationMixedModal from './InvitationMixedModal.vue'
 import InvitationAnnotation from './InvitationAnnotation.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useInviteAnnotations from './useInviteAnnotations'
