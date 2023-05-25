@@ -48,12 +48,6 @@ export default defineComponent({
     }
 
     const grades = reactive<Record<number, number>>(getGrades())
-    // if (props.modelValue) {
-    //   for (const [key, value] of props.modelValue.ranking) {
-    //     grades[key] = value
-    //   }
-    // }
-
     const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
     const stars = computed(() => props.poll.settings?.stars ?? 5)
 

@@ -1,18 +1,28 @@
+import { sortBy } from 'lodash'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '../proposals/useProposals'
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
-import { canChangePoll, canDeletePoll, canVote as _canVote, isPollVoter } from './rules'
-// import { pollMethods, pollResults } from './methods'
-import usePolls from './usePolls'
-import { PollState } from './types'
-
+import useProposals from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
+
+import { canChangePoll, canDeletePoll, canVote as _canVote, isPollVoter } from './rules'
 import { pollPlugins } from './registry'
+import { PollState } from './types'
+import usePolls from './usePolls'
 
 const polls = usePolls()
 const { getProposal } = useProposals()
+
+function isProposal (p?: Proposal): p is Proposal {
+  return !!p
+}
+
+function getProposals (pks: number[]) {
+  return pks
+    .map(getProposal)
+    .filter(isProposal)
+}
 
 export default function usePoll (pollRef: Ref<number>) {
   const { t } = useI18n()
@@ -70,21 +80,15 @@ export default function usePoll (pollRef: Ref<number>) {
 
   const proposals = computed(() => {
     if (!poll.value) return []
-    return poll.value.proposals
-      .map(getProposal)
-      .filter(p => p) as Proposal[]
+    return sortBy(getProposals(poll.value.proposals), 'created')
   })
   const approved = computed(() => {
     if (!poll.value?.result) return []
-    return poll.value.result.approved
-      .map(getProposal)
-      .filter(p => p) as Proposal[]
+    return getProposals(poll.value.result.approved)
   })
   const denied = computed(() => {
     if (!poll.value?.result) return []
-    return poll.value.result.denied
-      .map(getProposal)
-      .filter(p => p) as Proposal[]
+    return getProposals(poll.value.result.denied)
   })
 
   return {

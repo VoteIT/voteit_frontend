@@ -5,7 +5,6 @@ import { reactive } from 'vue'
 import { agendaDeletedEvent } from '../agendas/events'
 import { agendaItems } from '../agendas/useAgenda'
 import { meetingType } from '../meetings/contentTypes'
-import { Poll } from '../polls/types'
 
 import { Proposal } from './types'
 import { proposalType } from './contentTypes'
@@ -13,10 +12,6 @@ import { proposalType } from './contentTypes'
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
 proposalType.updateMap(proposals)
-
-function proposalExists (prop?: Proposal): prop is Proposal {
-  return !!prop
-}
 
 // Automatically clear proposals for meeting when leaving.
 meetingType.channel.onLeave(meeting => {
@@ -52,15 +47,6 @@ function getAgendaProposals (ai: number, predicate?: Predicate<Proposal>, order 
   )
 }
 
-function getPollProposals (poll: Poll): Proposal[] {
-  return orderBy(
-    poll.proposals
-      .map(prop => proposals.get(prop))
-      .filter(proposalExists),
-    ['created']
-  )
-}
-
 function getProposal (pk: number) {
   return proposals.get(pk)
 }
@@ -88,7 +74,6 @@ export default function useProposals () {
     anyProposal,
     forProposals,
     getAgendaProposals,
-    getPollProposals,
     getProposal
   }
 }
