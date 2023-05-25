@@ -83,7 +83,7 @@
           <InvitationAnnotationsModal :meeting="meetingId" @close="close" />
         </template>
       </DefaultDialog>
-      <v-menu v-if="hasAnnotations">
+      <v-menu v-if="hasAnnotations" location="bottom right">
         <template #activator="{ props }">
           <v-btn v-bind="props" size="small">
             <v-icon icon="mdi-chevron-down" />
@@ -241,9 +241,9 @@ const meetingIcons: Record<MeetingRole, string> = {
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meetingId, roleLabelsEditable } = useMeeting()
+const { isModerator, meeting, meetingId, roleLabelsEditable } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
-const { clearableDataTypes } = useInviteAnnotations()
+const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
 
 const { isSubscribed } = useChannel('invites', meetingId)

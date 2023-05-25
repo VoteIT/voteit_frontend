@@ -24,8 +24,8 @@ function isAnnotationProgress (p: AnnotationProgress | Progress): p is Annotatio
 
 const { t } = useI18n()
 const rules = useRules(t)
-const { allDataTypes } = useInviteAnnotations()
 const { meeting } = useMeeting()
+const { allDataTypes } = useInviteAnnotations(meeting)
 
 const annotatedDataTypes = computed(() => {
   return allDataTypes.value.map(dt => {

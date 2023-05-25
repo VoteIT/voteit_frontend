@@ -1,6 +1,8 @@
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { Ref, computed, onBeforeMount, ref, watch } from 'vue'
 
 import restApi from '@/utils/restApi'
+import { Meeting } from './types'
+import { meetingInviteAnnotationPlugins } from './registry'
 
 interface InviteDataType {
   is_annotation: boolean
@@ -12,18 +14,19 @@ interface InviteDataType {
 
 const inviteDataTypes = ref<InviteDataType[] | null>(null)
 
-function filterDataTypes (filter?: (dt: InviteDataType) => boolean) {
-  if (!inviteDataTypes.value) return []
-  if (!filter) return inviteDataTypes.value
-  return inviteDataTypes.value.filter(filter)
+function filterDataTypes (meeting?: Meeting, filter: (dt: InviteDataType) => boolean = () => true) {
+  if (!meeting || !inviteDataTypes.value) return []
+  return inviteDataTypes.value.filter(dt => {
+    const isActive = meetingInviteAnnotationPlugins.getPlugin(dt.name)?.checkActive?.(meeting)
+    return (
+      // undefined or true is OK
+      isActive !== false &&
+      filter(dt)
+    )
+  })
 }
 
-// Filtered data types or empty lists if not fetched yet.
-const allDataTypes = computed(() => filterDataTypes())
-const annotationDataTypes = computed(() => filterDataTypes(dt => dt.is_annotation))
-const clearableDataTypes = computed(() => filterDataTypes(dt => dt.is_clearable))
-
-export default function useInviteAnnotations () {
+export default function useInviteAnnotations (meeting: Ref<Meeting | undefined>) {
   const fetchFailed = ref(false)
 
   async function fetchDataTypes () {
@@ -41,6 +44,11 @@ export default function useInviteAnnotations () {
     // If this changes, some fetch has succeeded
     fetchFailed.value = false
   })
+
+  // Filtered data types or empty lists if not fetched yet.
+  const allDataTypes = computed(() => filterDataTypes(meeting.value))
+  const annotationDataTypes = computed(() => filterDataTypes(meeting.value, dt => dt.is_annotation))
+  const clearableDataTypes = computed(() => filterDataTypes(meeting.value, dt => dt.is_clearable))
 
   return {
     allDataTypes,

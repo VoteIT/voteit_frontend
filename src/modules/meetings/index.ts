@@ -120,6 +120,9 @@ meetingInviteAnnotationPlugins.register({
 
 meetingInviteAnnotationPlugins.register({
   id: 'grouprole',
+  checkActive (meeting) {
+    return !!meeting.dialect?.roles?.length
+  },
   getPossibleValues (meeting) {
     return meeting.dialect?.roles.map(role => ({ value: role.role_id, description: role.title })) ?? []
   }
