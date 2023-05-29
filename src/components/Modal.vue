@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DefaultDialog v-model="isOpen" :title="modal?.title" :persistent="!modal?.dismissable" @close="close()">
+  <DefaultDialog :model-value="isOpen" :title="modal?.title" :persistent="!modal?.dismissable" @close="close()">
     <template v-if="modal">
       <component v-if="isComponentModal(modal)" :is="modal.component" :data="modal.data" />
       <main v-else-if="isHTMLModal(modal)" v-html="modal.html"></main>
