@@ -18,8 +18,11 @@
       />
       <div class="pa-3"></div>
       <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
-      <DropdownMenu position="bottom" :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'">
-        <template v-slot:top>
+      <v-menu location="bottom right">
+        <template #activator="{ props }">
+          <v-btn :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'" v-bind="props" />
+        </template>
+        <v-list>
           <v-item-group multiple v-model="stateFilter">
             <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
               <v-list-item
@@ -31,8 +34,8 @@
               />
             </v-item>
           </v-item-group>
-        </template>
-      </DropdownMenu>
+        </v-list>
+      </v-menu>
       <template v-if="agendaItem">
         <v-btn variant="text" :disabled="!previousAgendaItem" :to="previousAgendaItem ? `/p/${meetingId}/${previousAgendaItem.pk}` : '/'" icon="mdi-chevron-left" />
         <v-btn variant="text" :disabled="!nextAgendaItem" :to="nextAgendaItem ? `/p/${meetingId}/${nextAgendaItem.pk}` : '/'" icon="mdi-chevron-right" />
