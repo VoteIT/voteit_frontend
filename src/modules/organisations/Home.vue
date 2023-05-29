@@ -226,11 +226,11 @@ const tabs = computed(() => {
   return [
     {
       value: 'default',
-      title: 'Hem'
+      title: t('home.home')
     },
     {
       value: 'roles',
-      title: 'Roller'
+      title: t('roles')
     }
   ]
 })
