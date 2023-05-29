@@ -1,60 +1,25 @@
-<template>
-  <div id="modal-backdrop" :class="{ isOpen }" v-show="isOpen" @mousedown.self="dismiss">
-    <div id="modal-window" v-if="modal" ref="windowEl" @keyup.esc="dismiss">
-      <v-btn icon="mdi-close" size="large" class="closer" variant="text" @click="dismiss()" v-show="modal.dismissable" />
-      <header v-if="modal.title">
-        <h1>{{ modal.title }}</h1>
-      </header>
-      <component v-if="isComponentModal(modal)" :is="modal.component" :data="modal.data" />
-      <main v-else-if="isHTMLModal(modal)" v-html="modal.html"></main>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed, markRaw, nextTick, onMounted, reactive, ref } from 'vue'
+import { computed, markRaw, onMounted, reactive } from 'vue'
 
 import { openModalEvent, closeModalEvent } from '@/utils/events'
 
 import { Modal, isComponentModal, isHTMLModal } from '@/composables/types'
+import DefaultDialog from './DefaultDialog.vue'
 
 const defaults: Partial<Modal> = {
   dismissable: true
 }
 
 const modalQueue = reactive<Modal[]>([])
-let savedFocusEl: HTMLElement | null = null
-const windowEl = ref<HTMLElement | null>(null)
 const isOpen = computed(() => !!modalQueue.length)
 const modal = computed(() => modalQueue[0])
 
 function open (modal: Modal) {
-  if (!modalQueue.length) {
-    savedFocusEl = document.querySelector(':focus')
-  }
-  document.body.classList.add('no-scroll')
   modalQueue.push(markRaw({ ...defaults, ...modal }))
-  nextTick(() => {
-    // eslint-disable-next-line no-unused-expressions
-    windowEl.value?.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
-  })
 }
 
 function close () {
   modalQueue.shift()
-  if (!modalQueue.length) {
-    if (savedFocusEl) {
-      savedFocusEl.focus()
-      savedFocusEl = null
-    }
-    document.body.classList.remove('no-scroll')
-  }
-}
-
-function dismiss () {
-  if (modal.value.dismissable) {
-    close()
-  }
 }
 
 onMounted(() => {
@@ -63,51 +28,11 @@ onMounted(() => {
 })
 </script>
 
-<style lang="sass">
-#modal-backdrop
-  z-index: 1010
-  position: fixed
-  display: flex
-  justify-content: center
-  align-items: flex-start
-  padding-top: 10px
-  left: 0
-  top: 0
-  bottom: 0
-  right: 0
-  transition: background-color .2s
-  background-color: rgba(#000, 0)
-  &.isOpen
-    background-color: rgba(#000, .3)
-
-#modal-window
-  position: relative
-  width: calc(100vw - 20px)
-  max-width: 780px
-  background-color: rgb(var(--v-theme-background))
-  min-height: calc(50vh)
-  max-height: calc(100vh - 20px)
-  box-shadow: 2px 2px 8px rgba(#000, .5)
-  overflow-y: auto
-  border-radius: 3px
-  overflow-x: hidden
-  display: flex
-  flex-flow: column
-
-  .closer
-    position: absolute
-    top: 0
-    right: 0
-
-  header,
-  main
-    padding: 1rem
-  main
-    flex-grow: 1
-  header
-    border-bottom: 2px solid rgba(var(--v-border-color), .4)
-    .meta
-      color: rgb(var(--v-theme-secondary))
-  .actions
-    padding: .6rem
-</style>
+<template>
+  <DefaultDialog v-model="isOpen" :title="modal?.title" :persistent="!modal?.dismissable" @close="close()">
+    <template v-if="modal">
+      <component v-if="isComponentModal(modal)" :is="modal.component" :data="modal.data" />
+      <main v-else-if="isHTMLModal(modal)" v-html="modal.html"></main>
+    </template>
+  </DefaultDialog>
+</template>
