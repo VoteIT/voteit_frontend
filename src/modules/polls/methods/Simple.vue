@@ -12,69 +12,56 @@
   </form>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, reactive } from 'vue'
+<script setup lang="ts">
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { Proposal } from '@/modules/proposals/types'
+import type { Proposal } from '@/modules/proposals/types'
 
 import { SimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
-import usePoll from '../usePoll'
 import DefaultMap from '@/utils/DefaultMap'
 
-export default defineComponent({
-  name: 'SimplePoll',
-  props: {
-    poll: {
-      type: Object as PropType<SimplePoll>,
-      required: true
-    },
-    modelValue: {
-      type: Object as PropType<SimpleVote>
-    },
-    disabled: Boolean
-  },
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { proposals } = usePoll(computed(() => props.poll.pk))
-    const votes = reactive<Map<number, SimpleChoice>>(new Map())
+const props = defineProps<{
+  disabled?: boolean
+  modelValue?: SimpleVote
+  poll: SimplePoll
+  proposals: Proposal[]
+}>()
 
-    if (props.modelValue) {
-      for (const [choice, pks] of Object.entries(props.modelValue)) {
-        for (const pk of pks) {
-          votes.set(pk, choice as SimpleChoice)
-        }
-      }
-    }
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (e: 'update:modelValue', vote?: SimpleVote): void
+}>()
 
-    const options = proposals.value.length > 1 ? simpleChoices : simpleChoices.filter(c => c.value !== SimpleChoice.Abstain)
+const { t } = useI18n()
+const votes = reactive<Map<number, SimpleChoice>>(new Map())
 
-    const validVote = computed(() => {
-      // Return a valid vote, or undefined if not valid
-      const map = new DefaultMap<SimpleChoice, number[]>(() => [])
-      for (const prop of proposals.value) {
-        const vote = votes.get(prop.pk)
-        if (!vote) return
-        map.get(vote).push(prop.pk)
-      }
-      return Object.fromEntries(map)
-    })
-
-    function change (proposal: Proposal, opt: SimpleChoiceDesc) {
-      if (props.disabled) return
-      votes.set(proposal.pk, opt.value)
-      emit('update:modelValue', validVote.value)
-    }
-
-    return {
-      t,
-      votes,
-      options,
-      proposals,
-      change
+if (props.modelValue) {
+  for (const [choice, pks] of Object.entries(props.modelValue)) {
+    for (const pk of pks) {
+      votes.set(pk, choice as SimpleChoice)
     }
   }
+}
+
+const options = props.proposals.length > 1 ? simpleChoices : simpleChoices.filter(c => c.value !== SimpleChoice.Abstain)
+
+const validVote = computed(() => {
+  // Return a valid vote, or undefined if not valid
+  const map = new DefaultMap<SimpleChoice, number[]>(() => [])
+  for (const prop of props.proposals) {
+    const vote = votes.get(prop.pk)
+    if (!vote) return
+    map.get(vote).push(prop.pk)
+  }
+  return Object.fromEntries(map) as SimpleVote
 })
+
+function change (proposal: Proposal, opt: SimpleChoiceDesc) {
+  if (props.disabled) return
+  votes.set(proposal.pk, opt.value)
+  emit('update:modelValue', validVote.value)
+}
 </script>
 
 <style lang="sass">

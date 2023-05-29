@@ -12,47 +12,34 @@
   </form>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { Proposal } from '@/modules/proposals/types'
+import type { Proposal } from '@/modules/proposals/types'
 
 import { MajorityVote, SimpleChoice, simpleChoices, SimplePoll } from './types'
-import usePoll from '../usePoll'
 
-export default defineComponent({
-  name: 'SimplePoll',
-  props: {
-    poll: {
-      type: Object as PropType<SimplePoll>,
-      required: true
-    },
-    modelValue: {
-      type: Object as PropType<MajorityVote>
-    },
-    disabled: Boolean
-  },
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { proposals } = usePoll(computed(() => props.poll.pk))
-    const choice = ref<number | undefined>(props.modelValue?.choice)
+const props = defineProps<{
+  disabled?: boolean
+  modelValue?: MajorityVote
+  poll: SimplePoll
+  proposals: Proposal[]
+}>()
 
-    const option = simpleChoices.find(c => c.value === SimpleChoice.Yes)
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (e: 'update:modelValue', vote?: MajorityVote): void
+}>()
 
-    function select (proposal: Proposal) {
-      if (props.disabled) return
-      choice.value = proposal.pk
-      emit('update:modelValue', { choice: choice.value })
-    }
+const { t } = useI18n()
+const choice = ref<number | undefined>(props.modelValue?.choice)
 
-    return {
-      t,
-      choice,
-      option,
-      proposals,
-      select
-    }
-  }
-})
+const option = simpleChoices.find(c => c.value === SimpleChoice.Yes)!
+
+function select (proposal: Proposal) {
+  if (props.disabled) return
+  choice.value = proposal.pk
+  emit('update:modelValue', { choice: choice.value })
+}
 </script>

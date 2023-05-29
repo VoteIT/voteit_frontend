@@ -18,53 +18,42 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, reactive, watch } from 'vue'
+<script setup lang="ts">
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/modules/proposals/types'
+import type { Proposal } from '@/modules/proposals/types'
 
 import { SchulzePoll, SchulzeVote } from './types'
 
-export default defineComponent({
-  name: 'SchulzePoll',
-  props: {
-    poll: {
-      type: Object as PropType<SchulzePoll>,
-      required: true
-    },
-    modelValue: Object as PropType<SchulzeVote>,
-    disabled: Boolean
-  },
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { getProposal } = useProposals()
+const props = defineProps<{
+  disabled?: boolean
+  modelValue?: SchulzeVote
+  poll: SchulzePoll
+  proposals: Proposal[]
+}>()
 
-    function getGrades () {
-      if (props.modelValue) return Object.fromEntries(props.modelValue.ranking)
-      const deny = props.poll.settings.deny_proposal ? [0] : []
-      return Object.fromEntries([...props.poll.proposals, ...deny].map(id => [id, 0]))
-    }
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (e: 'update:modelValue', vote?: SchulzeVote): void
+}>()
 
-    const grades = reactive<Record<number, number>>(getGrades())
-    const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
-    const stars = computed(() => props.poll.settings?.stars ?? 5)
+const { t } = useI18n()
 
-    watch(grades, value => {
-      const valid = Object.values(value).some(n => n) // Any grade set to non-zero?
-      if (!valid) return emit('update:modelValue') // Clear vote on invalid
-      emit('update:modelValue', {
-        ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])
-      })
-    })
+function getGrades () {
+  if (props.modelValue) return Object.fromEntries(props.modelValue.ranking)
+  const deny = props.poll.settings.deny_proposal ? [0] : []
+  return Object.fromEntries([...props.poll.proposals, ...deny].map(id => [id, 0]))
+}
 
-    return {
-      t,
-      grades,
-      proposals,
-      stars
-    }
-  }
+const grades = reactive<Record<number, number>>(getGrades())
+const stars = computed(() => props.poll.settings?.stars ?? 5)
+
+watch(grades, value => {
+  const valid = Object.values(value).some(n => n) // Any grade set to non-zero?
+  if (!valid) return emit('update:modelValue') // Clear vote on invalid
+  emit('update:modelValue', {
+    ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])
+  })
 })
 </script>

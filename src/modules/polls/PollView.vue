@@ -62,7 +62,7 @@
         </div>
       </div>
       <template v-else-if="!votingComplete">
-        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" v-model="validVote" />
+        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote">
           <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
@@ -89,7 +89,7 @@
             <p v-else-if="userVote.abstain">
               {{ t('poll.abstained') }}
             </p>
-            <component v-else class="voting-component" disabled :is="voteComponent" :poll="poll" :modelValue="userVote.vote" />
+            <component v-else class="voting-component" disabled :is="voteComponent" :poll="poll" :proposals="proposals" :modelValue="userVote.vote" />
             <v-spacer />
             <div class="text-right">
               <v-btn color="primary" @click="close">
@@ -129,7 +129,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, erMethod, poll, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { approved, denied, electoralRegister, erMethod, poll, proposals, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meetingPath, meetingId } = useMeeting()
 const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))

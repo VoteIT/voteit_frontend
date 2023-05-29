@@ -10,6 +10,8 @@ import { canChangePoll, canDeletePoll, canVote as _canVote, isPollVoter } from '
 import { pollPlugins } from './registry'
 import { PollState } from './types'
 import usePolls from './usePolls'
+import { stripHTML } from '@/utils'
+import { getUserRandomSortValue, user } from '@/composables/useAuthentication'
 
 const polls = usePolls()
 const { getProposal } = useProposals()
@@ -52,7 +54,7 @@ export default function usePoll (pollRef: Ref<number>) {
       text: t('poll.finalVoteCountNoEr', { abstains, votes }),
       voted,
       votes
-  }
+    }
   })
 
   const pollStatus = computed(() => {
@@ -78,9 +80,23 @@ export default function usePoll (pollRef: Ref<number>) {
   const voteComponent = computed(() => pollPlugin.value?.voteComponent)
   const resultComponent = computed(() => pollPlugin.value?.resultComponent)
 
+  /**
+   * Get sorting value for proposal, based on poll settings
+   */
+  function getProposalSortValue (proposal: Proposal) {
+    switch (poll.value?.proposal_ordering) {
+      case 'alphabetical':
+        return stripHTML(proposal.body)
+      case 'random':
+        return getUserRandomSortValue(proposal.pk)
+      default:
+        return proposal.created
+    }
+  }
+
   const proposals = computed(() => {
     if (!poll.value) return []
-    return sortBy(getProposals(poll.value.proposals), 'created')
+    return sortBy(getProposals(poll.value.proposals), getProposalSortValue)
   })
   const approved = computed(() => {
     if (!poll.value?.result) return []

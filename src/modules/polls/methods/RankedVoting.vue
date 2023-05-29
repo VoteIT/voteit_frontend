@@ -45,68 +45,57 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/modules/proposals/types'
+import type { Proposal } from '@/modules/proposals/types'
 
 import { Poll } from '../types'
 import { RankedVote } from './types'
 
-export default defineComponent({
-  name: 'ScottishSTVPoll',
-  props: {
-    poll: {
-      type: Object as PropType<Poll>,
-      required: true
-    },
-    modelValue: Object as PropType<RankedVote>,
-    disabled: Boolean
-  },
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { getProposal } = useProposals()
+const props = defineProps<{
+  disabled?: boolean
+  modelValue?: RankedVote
+  poll: Poll
+  proposals: Proposal[]
+}>()
 
-    const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (e: 'update:modelValue', vote?: RankedVote): void
+}>()
 
-    function setOrder (order?: number[]) {
-      if (order) {
-        ranking.value = order
-      }
-      emit('update:modelValue', { ranking: ranking.value })
-    }
+const { t } = useI18n()
+const { getProposal } = useProposals()
 
-    // TODO: Allow setting min proposals to rank.
-    const minRanked = computed(() => 1)
+const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
 
-    function toggleSelected (proposal: Proposal) {
-      if (props.disabled) return
-      if (ranking.value.includes(proposal.pk)) {
-        ranking.value = ranking.value.filter(p => p !== proposal.pk)
-      } else {
-        ranking.value.push(proposal.pk)
-      }
-      if (ranking.value.length >= minRanked.value) {
-        setOrder()
-      } else {
-        emit('update:modelValue', null)
-      }
-    }
+function setOrder (order?: number[]) {
+  if (order) ranking.value = order
+  emit('update:modelValue', { ranking: ranking.value })
+}
 
-    const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
-    const rankedProposals = computed(() => ranking.value.map(getProposal) as Proposal[])
+// TODO: Allow setting min proposals to rank.
+const minRanked = computed(() => 1)
 
-    return {
-      t,
-      proposals,
-      ranking,
-      rankedProposals,
-      toggleSelected
-    }
+function toggleSelected (proposal: Proposal) {
+  if (props.disabled) return
+  if (ranking.value.includes(proposal.pk)) {
+    ranking.value = ranking.value.filter(p => p !== proposal.pk)
+  } else {
+    ranking.value.push(proposal.pk)
   }
-})
+  if (ranking.value.length >= minRanked.value) setOrder()
+  else emit('update:modelValue')
+}
+
+function isProposal (p?: Proposal): p is Proposal {
+  return !!p
+}
+
+const rankedProposals = computed(() => ranking.value.map(getProposal).filter(isProposal))
 </script>
 
 <style lang="sass">

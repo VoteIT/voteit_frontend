@@ -1,4 +1,4 @@
-function hasher (acc: number, chr: string): number {
+export function hasher (acc: number, chr: string): number {
   // (| 0) converts to 32bit integer
   return ((acc << 5) - acc + chr.charCodeAt(0)) | 0
 }

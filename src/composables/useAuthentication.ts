@@ -4,6 +4,7 @@ import { AxiosError } from 'axios'
 import useContextRoles from './useContextRoles'
 import { UserState, User } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
+import { hasher } from '@/utils/stringToHSL'
 
 export const user = ref<User | null>(null)
 const alternateUsers = ref<User[]>([])
@@ -11,6 +12,14 @@ const isAuthenticated = ref<boolean | undefined>(undefined)
 const organizationRoles = useContextRoles('organisation') // Avoid circular import
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+/**
+ * Turn number into a pseudo random sort value, based on user pk
+ */
+export function getUserRandomSortValue (number: number) {
+  const userPk = user.value?.pk ?? 1
+  return [...`${number ** (userPk % 16 + 2)}-voteit`].reduce(hasher, 0)
+}
 
 export default function useAuthentication () {
   async function fetchAlternateUsers () {

@@ -11,7 +11,7 @@
             {{ t('poll.showBallot') }}
           </v-btn>
         </template>
-        <component :is="voteComponent" :poll="poll" />
+        <component :is="voteComponent" :poll="poll" :proposals="proposals" />
       </DefaultDialog>
       <QueryDialog @confirmed="cancel" :text="t('poll.confirmCancel')" color="warning">
         <template #activator="{ props }">
@@ -47,7 +47,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 const props = defineProps<{ data: Poll }>()
 
 const { t } = useI18n()
-const { isOngoing, isFinished, poll, pollStatus, resultComponent, voteComponent } = usePoll(ref(props.data.pk))
+const { isOngoing, isFinished, poll, pollStatus, proposals, resultComponent, voteComponent } = usePoll(ref(props.data.pk))
 
 const complete = computed(() => {
   if (!pollStatus.value) return false
