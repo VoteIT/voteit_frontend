@@ -13,7 +13,7 @@ test('Error.message', () => {
   const { errorMessage, fieldErrors, clearErrors, handleSocketError, handleRestError } = useErrorHandler()
   handleSocketError(new Error('message'))
   expect(errorMessage.value).toBe('message')
-  expect(fieldErrors.value).toEqual({})
+  expect(fieldErrors.value).toEqual({ __root__: ['message'] })
   handleRestError(new Error('message'))
   expect(errorMessage.value).toBe('message')
   expect(fieldErrors.value).toEqual({

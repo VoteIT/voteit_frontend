@@ -18,7 +18,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
  */
 export function getUserRandomSortValue (number: number) {
   const userPk = user.value?.pk ?? 1
-  return [...`${number ** (userPk % 16 + 2)}-voteit`].reduce(hasher, 0)
+  return [...`${number ** (userPk % 16 + 2)}-voteit`].reduce(hasher, userPk)
 }
 
 export default function useAuthentication () {
