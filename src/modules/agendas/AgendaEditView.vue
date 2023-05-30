@@ -232,7 +232,7 @@ const editModes = computed(() => {
   },
   {
     value: 'order',
-    title: t('order'),
+    title: t('sort'),
     prependIcon: 'mdi-reorder-horizontal'
   }]
 })

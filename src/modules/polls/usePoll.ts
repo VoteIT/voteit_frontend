@@ -84,10 +84,10 @@ export default function usePoll (pollRef: Ref<number>) {
    * Get sorting value for proposal, based on poll settings
    */
   function getProposalSortValue (proposal: Proposal) {
-    switch (poll.value?.proposal_ordering) {
-      case 'alphabetical':
+    switch (poll.value?.p_ord) {
+      case 'a':
         return stripHTML(proposal.body)
-      case 'random':
+      case 'r':
         return getUserRandomSortValue(proposal.pk)
       default:
         return proposal.created

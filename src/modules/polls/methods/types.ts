@@ -104,6 +104,8 @@ export type InstantRunoffResult = ScottishSTVResult
 export type MajorityVote = { choice: number }
 export type SimpleVote = Record<SimpleChoice, number[]>
 
+export type PollBaseSettings = Pick<Poll, 'title' | 'p_ord'>
+
 export interface DuttSettings {
   min: number
   max: number
@@ -183,4 +185,4 @@ export interface DuttPoll extends Poll {
   settings: DuttSettings
 }
 
-export type PollStartData = Pick<Poll, 'agenda_item' | 'meeting' | 'method_name' | 'proposals' | 'settings' | 'title'> & { start: boolean }
+export type PollStartData = Pick<Poll, 'agenda_item' | 'meeting' | 'method_name' | 'p_ord' | 'proposals' | 'settings' | 'title'> & { start: boolean }

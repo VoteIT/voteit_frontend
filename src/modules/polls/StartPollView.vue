@@ -113,7 +113,7 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposals from '../proposals/useProposals'
 import { ProposalState } from '../proposals/types'
 
-import { Conditional } from './methods/types'
+import { Conditional, PollBaseSettings } from './methods/types'
 import type { PollStartData, PollMethodSettings } from './methods/types'
 import type { Poll } from './types'
 import { canAddPoll } from './rules'
@@ -161,13 +161,14 @@ const availableMethods = computed(() => pollPlugins.getAvailableMethods(selected
 
 const methodSelected = ref<Poll['method_name'] | null>(null)
 const methodSelectedPlugin = computed(() => pollPlugins.getPlugin(methodSelected.value || ''))
-const methodSettings = ref<{ title: string } | { title: string } & PollMethodSettings>({ title: '' })
+const methodSettings = ref<PollBaseSettings | PollBaseSettings & PollMethodSettings>({ title: '', p_ord: 'c' })
 watch(methodSelected, name => {
   if (!name) return
   const initial = methodSelectedPlugin.value?.initialSettings || {}
   methodSettings.value = {
     ...initial,
-    title: nextPollTitle.value
+    title: nextPollTitle.value,
+    p_ord: 'c'
   }
 })
 
@@ -187,13 +188,16 @@ async function createPoll (start = false) {
   if (!pollPlugins.getPlugin(methodSelected.value)) return alert(`*${methodSelected.value} not implemented`)
 
   working.value = true
-  const { title, ...settings } = methodSettings.value
+  // eslint-disable-next-line camelcase
+  const { title, p_ord, ...settings } = methodSettings.value
   // For Repeated Schulze
   if ('winners' in settings && settings.winners === selectedProposals.value.length) settings.winners = null
   const pollData: PollStartData = {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
     title,
+    // eslint-disable-next-line camelcase
+    p_ord,
     proposals: [...selectedProposalIds.value],
     method_name: methodSelected.value,
     start,
@@ -214,7 +218,18 @@ const methodSchema = computed<FormSchema | undefined>(() => {
     name: 'title',
     rules: [required, maxLength(70)],
     label: t('title')
-  }, ...specifics]
+  }, {
+    type: FieldType.Select,
+    name: 'p_ord',
+    rules: [required],
+    label: t('proposal.ordering'),
+    items: [
+      { title: t('order.chronological'), value: 'c' },
+      { title: t('order.alphabetical'), value: 'a' },
+      { title: t('order.random'), value: 'r' }
+    ]
+  },
+  ...specifics]
 })
 
 watch(agendaId, () => {

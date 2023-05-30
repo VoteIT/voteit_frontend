@@ -17,7 +17,7 @@
         </v-list-item>
         <v-divider/>
       </template>
-      <v-list-subheader>{{ t('orderBy')}}</v-list-subheader>
+      <v-list-subheader>{{ t('sortBy')}}</v-list-subheader>
       <v-list-item
         v-for="f in orders" :key="f.id"
         :prepend-icon="activeFilter.order === f.id ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'"

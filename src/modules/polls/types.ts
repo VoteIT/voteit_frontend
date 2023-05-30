@@ -54,7 +54,7 @@ export interface Poll extends BaseContent {
   meeting: number
   method_name: string
   proposals: number[]
-  proposal_ordering: 'alphabetical' | 'chronological' | 'random' // Early guesstimation of backend values
+  p_ord: 'a' | 'c' | 'r' // a: alphabetical, c: chronological (default), r: random
   result: VoteResult
   settings: unknown
   state: PollState
