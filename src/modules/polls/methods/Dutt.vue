@@ -15,70 +15,58 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '@/modules/proposals/useProposals'
-import { Proposal } from '@/modules/proposals/types'
+import type { Proposal } from '@/modules/proposals/types'
 
 import { DuttPoll, DuttVote } from './types'
 
-export default defineComponent({
-  name: 'ScottishSTVPoll',
-  props: {
-    poll: {
-      type: Object as PropType<DuttPoll>,
-      required: true
-    },
-    modelValue: Object as PropType<DuttVote>,
-    disabled: Boolean
-  },
-  setup (props, { emit }) {
-    const { t } = useI18n()
-    const { getProposal } = useProposals()
+const props = defineProps<{
+  disabled?: boolean
+  modelValue: DuttVote
+  poll: DuttPoll
+  proposals: Proposal[]
+}>()
 
-    const selected = ref<number[]>(props.modelValue?.choices ?? [])
-    const proposals = computed(() => props.poll.proposals.map(getProposal) as Proposal[])
+// eslint-disable-next-line func-call-spacing
+const emit = defineEmits<{
+  (e: 'update:modelValue', vote?: DuttVote): void
+}>()
 
-    // eslint-disable-next-line vue/return-in-computed-property
-    const missingProposals = computed(() => {
-      const len = selected.value.length
-      const { min } = props.poll.settings
-      if (min > 0 && len < min) return min - len
-    })
+const { t } = useI18n()
 
-    // eslint-disable-next-line vue/return-in-computed-property
-    const surplusProposals = computed(() => {
-      const len = selected.value.length
-      const { max } = props.poll.settings
-      if (max > 0 && len > max) return len - max
-    })
+const selected = ref<number[]>(props.modelValue?.choices ?? [])
 
-    const validVote = computed(() => {
-      if (missingProposals.value || surplusProposals.value) return
-      return {
-        choices: selected.value
-      }
-    })
+// eslint-disable-next-line vue/return-in-computed-property
+const missingProposals = computed(() => {
+  const len = selected.value.length
+  const { min } = props.poll.settings
+  if (min > 0 && len < min) return min - len
+})
 
-    watch(validVote, value => {
-      emit('update:modelValue', value)
-    })
+// eslint-disable-next-line vue/return-in-computed-property
+const surplusProposals = computed(() => {
+  const len = selected.value.length
+  const { max } = props.poll.settings
+  if (max > 0 && len > max) return len - max
+})
 
-    const validHelpText = computed(() => {
-      if (missingProposals.value) return t('poll.dutt.minHelpText', missingProposals.value)
-      if (surplusProposals.value) return t('poll.dutt.maxHelpText', surplusProposals.value)
-      return t('poll.dutt.validVoteHelpText')
-    })
-
-    return {
-      t,
-      selected,
-      proposals,
-      validHelpText,
-      validVote
-    }
+const validVote = computed(() => {
+  if (missingProposals.value || surplusProposals.value) return
+  return {
+    choices: selected.value
   }
+})
+
+watch(validVote, value => {
+  emit('update:modelValue', value)
+})
+
+const validHelpText = computed(() => {
+  if (missingProposals.value) return t('poll.dutt.minHelpText', missingProposals.value)
+  if (surplusProposals.value) return t('poll.dutt.maxHelpText', surplusProposals.value)
+  return t('poll.dutt.validVoteHelpText')
 })
 </script>
