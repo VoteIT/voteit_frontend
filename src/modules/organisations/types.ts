@@ -5,19 +5,20 @@ export enum OrganisationRole {
 }
 
 interface OrganisationComponent<Settings = null> {
-  readonly pk: number
-  readonly is_valid: boolean
-  readonly settings: Settings
   readonly component_name: string
-  readonly state: 'on' | 'off'
+  readonly is_valid: boolean
   readonly organisation: number
+  readonly pk: number
+  readonly settings: Settings
+  readonly state: 'on' | 'off'
 }
 
 export interface Organisation {
   readonly pk: number
   readonly title: string
-  page_title: string
   body: string
+  help_info: string
+  page_title: string
   readonly login_url: string | null
   readonly id_host: string | null
   readonly scope: string[]

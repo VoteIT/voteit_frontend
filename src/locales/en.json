@@ -217,7 +217,11 @@
     "error": "Error",
     "unknown": "Unknown error"
   },
+  "helpText": {
+    "defaultPlaceholder": "Add help text"
+  },
   "home": {
+    "helpInfoPlaceholder": "Add contact info, that participants can use to get help.",
     "home": "Home",
     "noCurrentMeetings": "You have no meetings.",
     "noVisibleMeetings": "You currently don't have any visible meetings in this organisation.",
