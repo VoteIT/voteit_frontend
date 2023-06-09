@@ -33,7 +33,7 @@
         </v-chip-group>
       </v-sheet>
       <v-alert type="info" class="my-8 d-print-none" :text="t('printing.proposalHelpText')" />
-      <div v-for="{ pk, author, meetingGroup, body, body_diff, created, prop_id } in selectedProposals" :key="pk" class="proposal-container mb-12">
+      <div v-for="{ pk, author, meetingGroup, body, body_diff_brief, created, prop_id } in selectedProposals" :key="pk" class="proposal-container mb-12">
         <p class="mb-2 text-h4">
           #{{ prop_id }}
         </p>
@@ -44,7 +44,7 @@
           <User v-else :pk="author" userid />
           - {{ DateTime.fromISO(created).toLocaleString(DateTime.DATETIME_SHORT) }}
         </p>
-        <div v-html="body_diff || body" class="text-h4 proposal-text-paragraph my-2" />
+        <div v-html="body_diff_brief || body" class="text-h4 proposal-text-paragraph my-2" />
       </div>
     </v-col>
   </v-row>

@@ -32,7 +32,6 @@ export interface RichtextProposal extends BaseProposal {
 
 export interface DiffProposal extends BaseProposal {
   shortname: 'diff_proposal'
-  body_diff: string
   body_diff_brief: string
   paragraph: number
 }
