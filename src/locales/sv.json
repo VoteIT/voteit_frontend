@@ -216,7 +216,11 @@
     "error": "Fel",
     "unknown": "Okänt fel"
   },
+  "helpText": {
+    "defaultPlaceholder": "Lägg till hjälptext"
+  },
   "home": {
+    "helpInfoPlaceholder": "Lägg till kontaktinfo dit deltagare kan vända sig för hjälp.",
     "home": "Hem",
     "noCurrentMeetings": "Inga möten",
     "noVisibleMeetings": "Du har inte tillgång att se några möten just nu.",

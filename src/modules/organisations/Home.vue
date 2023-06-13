@@ -4,6 +4,7 @@
       <v-btn block v-if="organisation.login_url" color="primary" :href="idLoginURL" prepend-icon="mdi-login">
         {{ t('organization.loginTo', { ...organisation }) }}
       </v-btn>
+      <EditableHelpText :modelValue="organisation.help_info" class="mt-3" />
     </v-col>
     <v-col cols="12" order-md="0" md="8" lg="6" offset-lg="1" xl="5" offset-xl="2">
       <v-tabs v-if="tabs" v-model="currentTab" :items="tabs" align-tabs="end" class="mb-4" />
@@ -42,7 +43,7 @@
             :key="pk"
             :to="`/m/${pk}/${slugify(title)}`"
             :title="title"
-            :subtitle="start_time && DateTime.fromISO(start_time).toLocaleString()"
+            :subtitle="start_time ? DateTime.fromISO(start_time).toLocaleString() : undefined"
           >
             <template #append>
               <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
@@ -119,12 +120,21 @@
           </v-list-item>
         </v-list>
       </DefaultDialog>
+
+      <EditableHelpText
+        :modelValue="organisation.help_info"
+        :editable="!!canChangeOrganisation"
+        :handler="saveHelpText"
+        :placeholder="t('home.helpInfoPlaceholder')"
+        class="mt-3"
+      />
     </v-col>
   </v-row>
 
 </template>
 
 <script lang="ts" setup>
+import { chunk } from 'lodash'
 import { DateTime } from 'luxon'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -141,6 +151,9 @@ import useAuthentication from '@/composables/useAuthentication'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import EditableHelpText from '@/components/EditableHelpText.vue'
+import useRules from '@/composables/useRules'
 
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
@@ -151,9 +164,6 @@ import useOrganisations from './useOrganisations'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
-import { chunk } from 'lodash'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import useRules from '@/composables/useRules'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -166,19 +176,20 @@ const { t } = useI18n()
 const { isAuthenticated, user } = useAuthentication()
 const { fetchOrganisations } = useOrganisations()
 const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
-const loader = useLoader('Home')
-const { existingMeetingYears, meetings, meetingStateCount, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
-const rules = useRules(t)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
   if (currentTab.value !== 'roles') return
   return organisationId.value
 })
-useLoader(
+const loader = useLoader(
   'Home',
   useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true }).promise
 )
+
+const { existingMeetingYears, meetings, meetingStateCount, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
+const rules = useRules(t)
+
 useTitle(computed(() => organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'))
 
 function fetchInvitesIfAuthenticated () {
@@ -204,13 +215,14 @@ onBeforeMount(() => {
 
 const editing = ref(false)
 const changeForm = reactive({
-  page_title: organisation.value?.page_title ?? '',
-  body: organisation.value?.body ?? ''
+  body: organisation.value?.body ?? '',
+  page_title: organisation.value?.page_title ?? ''
 })
 watch(organisation, org => {
-  changeForm.page_title = org?.page_title ?? ''
   changeForm.body = org?.body ?? ''
+  changeForm.page_title = org?.page_title ?? ''
 })
+
 const menu = computed<MenuItem[]>(() => {
   if (!organisation.value || !canChangeOrganisation.value) return []
   return [
@@ -236,9 +248,20 @@ const tabs = computed(() => {
 })
 
 async function save () {
-  if (!organisation.value) throw new Error('No organisation')
-  await organisationType.api.patch(organisation.value.pk, changeForm)
+  if (!organisationId.value) throw new Error('No organisation')
+  await organisationType.api.patch(
+    organisationId.value,
+    changeForm
+  )
   editing.value = false
+}
+
+async function saveHelpText (text: string) {
+  if (!organisationId.value) throw new Error('No organisation')
+  await organisationType.api.patch(
+    organisationId.value,
+    { help_info: text }
+  )
 }
 
 function addUser (user: number) {
