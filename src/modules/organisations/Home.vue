@@ -104,7 +104,7 @@
             :subtitle="t(`workflowState.${state}`)"
             :to="current_user_roles ? `/m/${pk}/${slugify(title)}` : undefined"
             >
-            <template #append v-if="current_user_roles">
+            <template #append v-if="current_user_roles && current_user_roles.length">
               <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
                 <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
                   <v-icon v-bind="props" :icon="icon" />

@@ -28,7 +28,7 @@ function getMeetingList (state: MeetingState, order: keyof Meeting = 'title') {
   return sortBy(
     filter(
       meetings.values(),
-      m => m.state === state && !!m.current_user_roles
+      m => m.state === state && !!m.current_user_roles && !!m.current_user_roles.length
     ),
     order
   )
