@@ -57,28 +57,35 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   const meeting = computed(() => meetingId && meetings.get(meetingId.value))
 
   const availableErMethods = computed(() => {
-    if (erMethod.value && erMethodLocked.value) return [erMethod.value]
     if (!erMethods.value) return
     return erMethods.value.filter(method => {
+      // Dialect defined method is always available
+      if (erDialectMethod.value && method.name === erDialectMethod.value.name) return true
       if (!method.available) return false
-      if (method.group_votes_active === null) return true
-      return !!meeting.value?.group_votes_active === method.group_votes_active
+      // If method requires a specific setting for group_votes active, only show if meetings has that setting
+      if (method.group_votes_active !== null) return !!meeting.value?.group_votes_active === method.group_votes_active
+      return true
     })
   })
 
-  const erMethod = computed(() => {
-    if (!meetingId) return
-    return erMethods.value?.find(erm => erm.name === meeting.value?.er_policy_name)
-  })
+  const erMethod = computed(() => erMethods.value?.find(erm => erm.name === meeting.value?.er_policy_name))
   const erMethodWeighted = computed(() => erMethod.value?.handles_vote_weight)
 
   const erMethodAllowsManual = computed(() => erMethod.value?.allow_manual)
   /**
-   * If meeting has a dialect, and that dialect dictates an ER method, consider this to be locked
+   * ER method recommended by meeting dialect?
    */
-  const erMethodLocked = computed(() => {
-    return !!meeting.value?.dialect?.er_policy_name
-  })
+  const erDialectMethod = computed(() => erMethods.value?.find(er => er.name === meeting.value?.dialect?.er_policy_name))
+  /**
+   * Used to warn if "wrong" ER method is selected, if meeting has a dialect with defined ER method
+   */
+  const erDialectMethodWarning = computed(() => !!erDialectMethod.value && erDialectMethod.value.name !== meeting.value?.er_policy_name)
+  // /**
+  //  * If meeting has a dialect, and that dialect dictates an ER method, consider this to be locked
+  //  */
+  // const erMethodLocked = computed(() => {
+  //   return !!meeting.value?.dialect?.er_policy_name
+  // })
 
   async function fetchRegisters () {
     if (!meetingId) throw new Error('Call using useElectoralRegisters(Ref<meetingId>) to fetch meeting registers')
@@ -117,9 +124,11 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
   return {
     availableErMethods,
     currentElectoralRegister,
+    erDialectMethod,
+    erDialectMethodWarning,
     erMethod,
     erMethodAllowsManual,
-    erMethodLocked,
+    // erMethodLocked,
     erMethodWeighted,
     erMethods,
     sortedRegisters,
