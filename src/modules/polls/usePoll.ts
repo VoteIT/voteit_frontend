@@ -11,7 +11,7 @@ import { pollPlugins } from './registry'
 import { PollState } from './types'
 import usePolls from './usePolls'
 import { stripHTML } from '@/utils'
-import { getUserRandomSortValue, user } from '@/composables/useAuthentication'
+import { getUserRandomSortValue } from '@/composables/useAuthentication'
 
 const polls = usePolls()
 const { getProposal } = useProposals()
@@ -68,8 +68,9 @@ export default function usePoll (pollRef: Ref<number>) {
     return next
   })
 
-  const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
   const isFinished = computed(() => poll.value?.state === PollState.Finished)
+  const isPrivateOrUpcoming = computed(() => poll.value && [PollState.Private, PollState.Upcoming].includes(poll.value.state))
+  const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
   const userVote = computed(() => poll.value && polls.getUserVote(poll.value))
 
   const canChange = computed(() => poll.value && canChangePoll(poll.value))
@@ -115,8 +116,9 @@ export default function usePoll (pollRef: Ref<number>) {
     canChange,
     canDelete,
     canVote,
-    isOngoing,
     isFinished,
+    isPrivateOrUpcoming,
+    isOngoing,
     isPollVoter: computed(() => poll.value && isPollVoter(poll.value)),
     poll,
     pollStatus,

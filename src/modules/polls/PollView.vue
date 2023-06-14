@@ -61,6 +61,16 @@
           </Dropdown>
         </div>
       </div>
+      <div v-else-if="isPrivateOrUpcoming">
+        <v-divider class="my-3" />
+        <h2>
+          {{ t('poll.ballot') }}
+        </h2>
+        <p class="text-secondary mb-4">
+          {{ t('proposal.ordering') }}: {{ proposalOrderingTitle }}
+        </p>
+        <component :is="voteComponent" :poll="poll" :proposals="proposals" disabled />
+      </div>
       <template v-else-if="!votingComplete">
         <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" />
         <div class="btn-controls mt-6" v-if="canVote">
@@ -109,6 +119,10 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
+import { MenuItem, ThemeColor } from '@/utils/types'
+import { dialogQuery, slugify } from '@/utils'
+import { socket } from '@/utils/Socket'
+import { openAlertEvent } from '@/utils/events'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -116,22 +130,20 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
+import Proposal from '../proposals/Proposal.vue'
+import useProposalOrdering from '../proposals/useProposalOrdering'
 
 import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
-import { MenuItem, ThemeColor } from '@/utils/types'
-import { dialogQuery, slugify } from '@/utils'
-import { socket } from '@/utils/Socket'
-import { openAlertEvent } from '@/utils/events'
-import Proposal from '../proposals/Proposal.vue'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, erMethod, poll, proposals, isOngoing, isFinished, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meetingPath, meetingId } = useMeeting()
 const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
+const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
 const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.

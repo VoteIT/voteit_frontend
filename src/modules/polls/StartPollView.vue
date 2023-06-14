@@ -111,6 +111,7 @@ import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposals from '../proposals/useProposals'
+import useProposalOrdering from '../proposals/useProposalOrdering'
 import { ProposalState } from '../proposals/types'
 
 import { Conditional, PollBaseSettings } from './methods/types'
@@ -127,6 +128,7 @@ const { isModerator, meetingPath, meetingId, getMeetingRoute } = useMeeting()
 const { agendaId, agenda } = useAgenda(meetingId)
 const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
 const { alert } = useAlert()
+const { proposalOrderingOptions } = useProposalOrdering(t)
 
 usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future
 
@@ -213,23 +215,21 @@ async function createPoll (start = false) {
 const methodSchema = computed<FormSchema | undefined>(() => {
   if (!methodSelected.value) return
   const specifics = methodSelectedPlugin.value?.getSchema?.(t, selectedProposals.value.length) || []
-  return [{
-    type: FieldType.Text,
-    name: 'title',
-    rules: [required, maxLength(70)],
-    label: t('title')
-  }, {
-    type: FieldType.Select,
-    name: 'p_ord',
-    rules: [required],
-    label: t('proposal.ordering'),
-    items: [
-      { title: t('order.chronological'), value: 'c' },
-      { title: t('order.alphabetical'), value: 'a' },
-      { title: t('order.random'), value: 'r' }
-    ]
-  },
-  ...specifics]
+  return [
+    {
+      type: FieldType.Text,
+      name: 'title',
+      rules: [required, maxLength(70)],
+      label: t('title')
+    }, {
+      type: FieldType.Select,
+      name: 'p_ord',
+      rules: [required],
+      label: t('proposal.ordering'),
+      items: proposalOrderingOptions.value
+    },
+    ...specifics
+  ]
 })
 
 watch(agendaId, () => {
