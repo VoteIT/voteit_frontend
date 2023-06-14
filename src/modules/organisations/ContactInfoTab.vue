@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { socket } from '@/utils/Socket'
-import { openAlertEvent } from '@/utils/events'
-import { AlertLevel } from '@/composables/types'
-import { useI18n } from 'vue-i18n'
 import SchemaForm from '@/components/SchemaForm.vue'
 import { FieldType, FormSchema } from '@/components/types'
 import useRules from '@/composables/useRules'
@@ -21,11 +19,6 @@ const rules = useRules(t)
 
 const contactForm: FormSchema = [
   {
-    type: FieldType.TextArea,
-    label: t('home.contactInfo.text'),
-    name: 'text'
-  },
-  {
     type: FieldType.Text,
     label: t('home.contactInfo.genericEmail'),
     name: 'generic_email',
@@ -33,6 +26,11 @@ const contactForm: FormSchema = [
       props: { type: 'email' },
       validate: rules.email
     }]
+  },
+  {
+    type: FieldType.TextArea,
+    label: t('home.contactInfo.text'),
+    name: 'text'
   },
   {
     type: FieldType.Text,
@@ -51,51 +49,64 @@ const contactForm: FormSchema = [
 ]
 
 const contactInfo = ref<ContactInfo | null>(null)
-const contactInfoModified = ref(false)
-watch(contactInfo, () => {
-  // When modified
-  contactInfoModified.value = true
+const changeForm = ref<ContactInfo | null>(null)
+const contactInfoModified = computed(() => {
+  if (!changeForm.value) return false
+  return Object.entries(changeForm.value)
+  .some(([key, value]) => contactInfo.value![key as keyof ContactInfo] !== value)
 })
 
+const fetchFailed = ref(false)
 async function fetchInfo () {
+  fetchFailed.value = false
   try {
     const { p } = await socket.call<ContactInfo>('contact_info.get')
     contactInfo.value = p
-    contactInfoModified.value = false
-  } catch (e) {
-    openAlertEvent.emit({
-      title: 'Contact Info',
-      text: 'Failed fetching organisation contact information',
-      level: AlertLevel.Error
-    })
+    changeForm.value = p
+  } catch {
+    fetchFailed.value = true
   }
 }
 
 async function saveHandler (data: ContactInfo) {
-  const { p } = await socket.call('contact_info.set', data)
-  console.log(p)
+  const { p } = await socket.call<ContactInfo>('contact_info.set', data)
+  contactInfo.value = p
 }
 
-onMou(fetchInfo)
+onBeforeMount(fetchInfo)
 </script>
 
 <template>
-  <SchemaForm v-if="contactForm" :schema="contactForm" v-model="contactInfo" :handler="saveHandler">
-    <template #buttons="{ disabled, submitting }">
-      <div class="text-right">
-        <v-btn
-          color="primary"
-          type="submit"
-          variant="elevated"
-          :loading="submitting"
-          :disabled="disabled"
-        >
-          {{ t('save') }}
-        </v-btn>
-      </div>
-    </template>
-  </SchemaForm>
-  <div v-else class="py-8 text-center">
-    <v-progress-circular indeterminate color="primary" />
+  <div v-if="fetchFailed" class="text-center">
+    <p class="my-4 text-warning">
+      Could not fetch contact info
+    </p>
+    <v-btn color="primary" @click="fetchInfo" prepend-icon="mdi-autorenew">
+      {{ t('tryAgain') }}
+    </v-btn>
+  </div>
+  <div v-else>
+    <v-alert type="info" :text="t('home.contactInfo.help')" class="my-3" />
+    <SchemaForm v-if="changeForm" :schema="contactForm" v-model="changeForm" :handler="saveHandler">
+      <template #buttons="{ disabled, submitting }">
+        <div class="d-flex">
+          <p v-if="contactInfoModified" class="text-secondary">
+            {{ t('home.contactInfo.modified') }}
+          </p>
+          <v-spacer/>
+          <v-btn
+            color="primary"
+            type="submit"
+            :loading="submitting"
+            :disabled="disabled || !contactInfoModified"
+          >
+            {{ t('save') }}
+          </v-btn>
+        </div>
+      </template>
+    </SchemaForm>
+    <div v-else class="py-8 text-center">
+      <v-progress-circular indeterminate color="primary" />
+    </div>
   </div>
 </template>

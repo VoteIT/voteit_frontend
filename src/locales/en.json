@@ -227,7 +227,16 @@
     "noVisibleMeetings": "You currently don't have any visible meetings in this organisation.",
     "noMeetingStates": "You must pick at least one state to find any meetings.",
     "noMatchingMeetings": "Found no meetings that match your filter.",
-    "yourMeetings": "Your meeting | Your meetings"
+    "yourMeetings": "Your meeting | Your meetings",
+    "contactInfo": {
+      "genericEmail": "Email for generic contact",
+      "invoiceEmail": "Email for invoices",
+      "invoiceInfo": "Invoice information (reference, ...)",
+      "help": "Please check that the contact information is accurate. This information will not be published. We use it to contact you about important changes or administrative issues.",
+      "modified": "You have unsaved changes",
+      "text": "Contact person, address, phone number, ...",
+      "title": "Contact info"
+    }
   },
   "input": {
     "minutes": "Minutes",

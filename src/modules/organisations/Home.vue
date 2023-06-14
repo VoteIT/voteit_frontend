@@ -111,7 +111,7 @@ const tabs = computed(() => {
     },
     {
       value: 'contactInfo',
-      title: t('home.contactInfo')
+      title: t('home.contactInfo.title')
     }
   ]
 })
