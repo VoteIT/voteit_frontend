@@ -2,10 +2,10 @@
   <v-card-text>
     {{ t('electoralRegister.activeMethod', { method: policyName }) }}
   </v-card-text>
-  <v-card-text v-if="erDialectMethodWarning">
+  <v-card-text v-if="erMethodLocked">
     <v-chip>
-      <v-icon icon="mdi-alert" color="secondary" class="mr-1" />
-      {{ t('electoralRegister.dialectMethodWarning') }}
+      <v-icon icon="mdi-lock" color="secondary" class="mr-1" />
+      {{ t('electoralRegister.locked') }}
     </v-chip>
   </v-card-text>
 </template>
@@ -19,7 +19,7 @@ import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
-const { erDialectMethodWarning, erMethod } = useElectoralRegisters(meetingId)
+const { erMethod, erMethodLocked } = useElectoralRegisters(meetingId)
 
 const policyName = computed(() => {
   if (!erMethod.value) return '-'

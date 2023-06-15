@@ -2,9 +2,10 @@
   <div>
     <h2>{{ t('electoralRegister.settings') }}</h2>
     <v-alert
-      v-if="erDialectMethodWarning"
-      type="warning"
-      :text="t('electoralRegister.dialectMethodRecommended', { ...erDialectMethod })"
+      v-if="erMethodLocked"
+      icon="mdi-cancel"
+      :text="t('electoralRegister.dialectChangeMethodDisallowed')"
+      color="secondary"
       class="my-4"
     />
     <template v-for="method in methods" :key="method.name">
@@ -22,7 +23,7 @@
           </v-chip>
         </v-card-actions>
       </v-card>
-      <QueryDialog v-else @confirmed="currentName = method.name" :color="method.warnRecommended ? 'warning' : 'primary'">
+      <QueryDialog v-else @confirmed="currentName = method.name">
         <template #activator="activator">
           <v-card
             :title="method.title"
@@ -39,7 +40,7 @@
           </v-card-actions>
         </v-card>
         </template>
-        <i18n-t :keypath="method.warnRecommended ? 'electoralRegister.confirmMethodChangeNotRecommended' : 'electoralRegister.confirmMethodChange'">
+        <i18n-t keypath="electoralRegister.confirmMethodChange">
           <template #name>
             <strong>
               {{ method.title }}
@@ -67,7 +68,7 @@ import { ErMethod } from './types'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
-const { availableErMethods, erDialectMethod, erDialectMethodWarning } = useElectoralRegisters(meetingId)
+const { availableErMethods, erMethodLocked } = useElectoralRegisters(meetingId)
 const { alert } = useAlert()
 const api = meetingType.getContentApi({ alertOnError: false })
 
@@ -109,7 +110,6 @@ const methods = computed(() => {
       ...method,
       attributes: [...getAttributes(method)],
       isCurrent,
-      warnRecommended: !!erDialectMethod.value && method.name !== erDialectMethod.value.name,
       props: {
         elevation: isCurrent ? 6 : 0,
         color: isCurrent ? 'info' : undefined,
