@@ -143,7 +143,6 @@ class Socket {
         if (isSubscribedMessage(msg)) msg.p.app_state?.forEach(this.handleTypeMessage.bind(this))
         // Else handle type message
         else this.handleTypeMessage(msg)
-        window.socket.debug(msg)
       })
       this.ws.addEventListener(SocketEvent.Close, () => {
         socketState.value = false
@@ -160,6 +159,7 @@ class Socket {
     const type = msg.t.split('.')[0]
     if (!this.typeListeners.has(type)) console.warn(`No handler for message of type '${type}'`)
     this.typeListeners.get(type)?.(msg)
+    window.socket.debug(msg)
   }
 
   public close () {

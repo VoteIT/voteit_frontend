@@ -17,7 +17,6 @@ interface CType<S> {
   restConfig?: RestApiConfig
   channels?: string[]
   hasRoles?: boolean
-  dateFields?: string[]
   useSocketApi?: boolean
 }
 

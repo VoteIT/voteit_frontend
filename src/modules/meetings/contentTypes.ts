@@ -12,8 +12,7 @@ export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
 
 export const electoralRegisterType = new ContentType<ElectoralRegister>({
   name: 'er',
-  restEndpoint: 'electoral-registers/',
-  dateFields: ['created']
+  restEndpoint: 'electoral-registers/'
 })
 
 export const erMethodType = new ContentType<ErMethod>({
@@ -31,8 +30,7 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
   name: 'meeting',
   channels: ['meeting', 'participants', 'moderators', 'invites'],
   restEndpoint: 'meetings/',
-  hasRoles: true,
-  dateFields: ['start_time', 'end_time']
+  hasRoles: true
 })
 
 export const matchedInviteType = new ContentType<MeetingInvite>({
@@ -49,7 +47,6 @@ export const meetingInviteType = new ContentType<MeetingInvite>({
 export const meetingGroupType = new ContentType<MeetingGroup>({
   restEndpoint: 'meeting-groups/',
   name: 'meeting_group',
-  dateFields: ['created', 'modified'],
   restConfig: {
     alertOnError: false
   }

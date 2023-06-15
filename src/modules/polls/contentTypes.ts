@@ -7,8 +7,7 @@ export const pollType = new ContentType<Poll>({
   states: pollStates,
   name: 'poll',
   channels: ['poll'],
-  restEndpoint: 'polls/',
-  dateFields: ['started', 'closed']
+  restEndpoint: 'polls/'
 })
 
 export const voteType = new ContentType<Vote>({

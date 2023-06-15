@@ -3,6 +3,5 @@ import { DiscussionPost } from './types'
 
 export const discussionPostType = new ContentType<DiscussionPost>({
   name: 'discussion_post',
-  restEndpoint: 'discussion-posts/',
-  dateFields: ['created']
+  restEndpoint: 'discussion-posts/'
 })

@@ -20,8 +20,7 @@ export const speakerListType = new ContentType<SpeakerList>({
 
 export const speakerType = new ContentType<Speaker>({
   name: 'speaker',
-  restEndpoint: 'speakers/',
-  dateFields: ['started']
+  restEndpoint: 'speakers/'
 })
 
 export const speakerHistoryType = new ContentType<SpeakerHistory>({
