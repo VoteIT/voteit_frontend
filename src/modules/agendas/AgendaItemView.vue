@@ -338,7 +338,7 @@ const content = reactive({
 })
 function submit () {
   editing.value = false
-  if (content.title === agendaItem.value?.title && content.body === agendaItem.value?.body) return
+  if (content.title === agendaItem.value?.title && content.body === agendaBody.value) return
   agendaItemType.update(agendaId.value, { ...content })
 }
 
