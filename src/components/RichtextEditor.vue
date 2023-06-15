@@ -18,13 +18,14 @@
 import Quill from 'quill'
 import 'quill-mention'
 import { inject, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { getFullName, tagify } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
-import { useI18n } from 'vue-i18n'
-import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 import { meetingRoleType } from '@/modules/meetings/contentTypes'
-import { tagify } from '@/utils'
 import { User } from '@/modules/organisations/types'
+import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 
 const mentionOptions = {
   allowedChars: /^[0-9A-Za-z\-_\sÅÄÖåäö]*$/,
@@ -118,10 +119,11 @@ function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObj
   }
 }
 
-function getDisplayName ({ full_name, userid }: User) {
-  if (full_name.length && userid && userid.length) return `${full_name} (${userid})`
-  if (full_name.length) return full_name
-  if (userid && userid.length) return userid
+function getDisplayName (user: Pick<User, 'first_name' | 'last_name' | 'userid'>) {
+  const fullName = getFullName(user)
+  if (fullName && user.userid) return `${fullName} (${user.userid})`
+  if (fullName) return fullName
+  if (user.userid) return user.userid
   return '- unknown -'
 }
 

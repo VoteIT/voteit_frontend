@@ -2,7 +2,7 @@ import { readonly, ref } from 'vue'
 import { AxiosError } from 'axios'
 
 import useContextRoles from './useContextRoles'
-import { UserState, User } from '@/modules/organisations/types'
+import { User } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
 import { hasher } from '@/utils/stringToHSL'
 
@@ -38,8 +38,6 @@ export default function useAuthentication () {
     try {
       const { data } = await profileType.api.list<User>()
       console.log('User authenticated', data.userid)
-      // TODO
-      if (data.state === UserState.Incomplete) console.warn('User is incomplete')
       setAuthenticatedUser(data)
       return data
     } catch (err) {

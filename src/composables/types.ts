@@ -64,14 +64,9 @@ export interface OrganisationRoles {
 
 export interface MeetingRoles {
   pk: number
-  user: User
+  user: Omit<User, 'organisation' | 'organisation_roles'>
   meeting: number
   assigned: MeetingRole[]
-}
-
-export interface UserMeetingRoles {
-  user: number
-  assigned: Set<MeetingRole>
 }
 
 export interface UserContextRoles<T=string> {

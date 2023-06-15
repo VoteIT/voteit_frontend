@@ -25,20 +25,15 @@ export interface Organisation {
   readonly components: OrganisationComponent[]
 }
 
-export enum UserState {
-  Incomplete = 'incomplete',
-  Active = 'active'
-}
-
+// TODO This needs to be synced with variants of backend serializers
+// Meeting user data can be based on this and be defined in ../meetings/types.ts
 export interface User {
   pk: number
   first_name: string
-  full_name: string
   img_url: string | null
   last_name: string
-  organisation: number
-  organisation_roles: OrganisationRole[]
-  state: UserState
+  organisation: number // Only for authenticated user
+  organisation_roles: OrganisationRole[] // Only when loading authenticated user from /api/user
   userid: string | null
   email: string
 }

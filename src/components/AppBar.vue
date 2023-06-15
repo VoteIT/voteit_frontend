@@ -10,14 +10,14 @@
     <div v-if="user">
       <v-btn class="user-menu" :class="{ open: userMenuOpen }" variant="text" @click="userMenuOpen = !userMenuOpen">
         <UserAvatar color="background" />
-        <span class="ml-2 d-none d-sm-inline">{{ user.full_name || user.userid }}</span>
+        <span class="ml-2 d-none d-sm-inline">{{ getFullName(user) || user.userid }}</span>
       </v-btn>
       <teleport to="main.v-main">
         <v-navigation-drawer location="right" v-model="userMenuOpen" disable-resize-watcher temporary>
           <v-list nav density="comfortable">
             <v-list-item class="no-prepend">
               <UserAvatar size="large" class="my-2" />
-              <v-list-item-title class="text-h6">{{ user.full_name }}</v-list-item-title>
+              <v-list-item-title class="text-h6">{{ getFullName(user) }}</v-list-item-title>
               <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
             </v-list-item>
             <v-divider v-if="$slots.prependProfile" class="my-3" />
@@ -61,8 +61,8 @@
                   <template #prepend>
                     <UserAvatar :user="user" />
                   </template>
-                  <v-list-item-title :class="{ 'text-secondary': !user.full_name }">
-                    {{ user.full_name ?? `- ${t('unknownUser')} (${user.pk}) -` }}
+                  <v-list-item-title :class="{ 'text-secondary': !getFullName(user) }">
+                    {{ getFullName(user) || `- ${t('unknownUser')} (${user.pk}) -` }}
                   </v-list-item-title>
                   <v-list-item-subtitle>
                     {{ user.userid }}
@@ -126,6 +126,7 @@ import DefaultDialog from './DefaultDialog.vue'
 import SchemaForm from './SchemaForm.vue'
 import { FieldType } from './types'
 import type { FormSchema } from './types'
+import { getFullName } from '@/utils'
 
 defineProps<{ title?: string }>()
 

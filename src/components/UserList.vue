@@ -1,19 +1,19 @@
 <template>
   <v-list :density="density" :bg-color="bgColor" active-color="primary">
     <v-item-group :multiple="multiple" :modelValue="modelValue" @update:modelValue="$emit('update:modelValue', $event)">
-      <v-item v-for="{ pk, full_name, userid } in users" :key="pk" :value="pk" v-slot="{ isSelected, toggle }">
+      <v-item v-for="user in users" :key="user.pk" :value="user.pk" v-slot="{ isSelected, toggle }">
       <v-list-item  @click="toggle()" :active="isSelected">
         <template #prepend>
-          <UserAvatar popup :pk="pk" />
+          <UserAvatar popup :pk="user.pk" />
         </template>
-        <v-list-item-title :class="{ 'text-secondary': !full_name }">
-          {{ full_name ?? `- ${t('unknownUser')} (${pk}) -` }}
+        <v-list-item-title :class="{ 'text-secondary': !getFullName(user) }">
+          {{ getFullName(user) ?? `- ${t('unknownUser')} (${user.pk}) -` }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ userid }}
+          {{ user.userid }}
         </v-list-item-subtitle>
         <template #append>
-          <slot name="appendItem" :user="pk" :isSelected="isSelected" />
+          <slot name="appendItem" :user="user.pk" :isSelected="isSelected" />
         </template>
       </v-list-item>
       </v-item>
@@ -21,66 +21,38 @@
   </v-list>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { orderBy } from 'lodash'
-import { computed, defineComponent, PropType } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { getFullName } from '@/utils'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 
-export default defineComponent({
-  emits: ['update:modelValue'],
-  props: {
-    bgColor: String,
-    userIds: {
-      type: Array as PropType<number[]>,
-      required: true
-    },
-    multiple: Boolean,
-    modelValue: [Number, Array] as PropType<number[] | number>, // Active user(s) pk, makes active list item
-    density: {
-      type: String as PropType<'default' | 'comfortable' | 'compact'>,
-      default: 'comfortable'
-    }
-  },
-  setup (props) {
-    if (props.multiple && typeof props.modelValue === 'number') throw new Error('Got multiple select but modelValue is not an array')
-    if (!props.multiple && typeof props.modelValue === 'object') throw new Error('Got single select but modelValue is not a number')
-    const { t } = useI18n()
-    const { getUser } = useUserDetails()
-    const users = computed(() => {
-      return orderBy(
-        props.userIds
-          .map(pk => getUser(pk) ?? { pk }),
-        ['full_name']
-      )
-    })
+defineEmits(['update:modelValue'])
 
-    // function isSelected (pk: number) {
-    //   if (typeof props.modelValue === 'number') return pk === props.modelValue
-    //   return props.modelValue?.includes(pk)
-    // }
-
-    // function itemClick (pk: number) {
-    //   const isArray = typeof props.modelValue === 'object'
-    //   emit(
-    //     'update:modelValue',
-    //     isSelected(pk)
-    //       ? isArray
-    //         ? props.modelValue?.filter(n => n !== pk)
-    //         : undefined
-    //       : isArray
-    //         ? [...props.modelValue, pk]
-    //         : pk
-    //   )
-    // }
-
-    return {
-      t,
-      users
-      // isSelected,
-      // itemClick
-    }
+const props = withDefaults(
+  defineProps<{
+    bgColor?: string
+    userIds: number[]
+    multiple?: boolean
+    modelValue?: number[] | number // Active user(s) pk, makes active list item
+    density: 'default' | 'comfortable' | 'compact'
+  }>(),
+  {
+    density: 'comfortable'
   }
+)
+
+if (props.multiple && typeof props.modelValue === 'number') throw new Error('Got multiple select but modelValue is not an array')
+if (!props.multiple && typeof props.modelValue === 'object') throw new Error('Got single select but modelValue is not a number')
+const { t } = useI18n()
+const { getUser } = useUserDetails()
+const users = computed(() => {
+  return orderBy(
+    props.userIds
+      .map(pk => getUser(pk) ?? { pk, first_name: '', last_name: '', userid: '' }),
+    getFullName
+  )
 })
 </script>

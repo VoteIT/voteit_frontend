@@ -5,7 +5,7 @@
         clearable
         hide-details
         hide-no-data
-        item-title="full_name"
+        item-title="fullName"
         item-value="pk"
         ref="inputField"
         v-model="selected"
@@ -17,7 +17,6 @@
           <v-list-item
             link
             :subtitle="item.raw.userid"
-            :title="item.raw.full_name"
             v-bind="props"
           >
             <template #prepend>
@@ -38,6 +37,7 @@
 import { ComponentPublicInstance, computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { getFullName } from '@/utils'
 import { userType } from '@/modules/organisations/contentTypes'
 import type { User } from '@/modules/organisations/types'
 
@@ -61,9 +61,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits(['submit'])
 
+type FullNameUser = User & { fullName: string }
+function annotateFullName (user: User) {
+  return {
+    ...user,
+    fullName: getFullName(user)
+  }
+}
+
 const { t } = useI18n()
 const query = ref('')
-const results = ref<User[]>([])
+const results = ref<FullNameUser[]>([])
 const selected = ref<User | null>(null)
 
 async function search () {
@@ -75,8 +83,10 @@ async function search () {
     ...props.params,
     search: query.value
   })
-  if (props.filter) results.value = data.filter(props.filter)
-  else results.value = data
+  results.value = (props.filter
+    ? data.filter(props.filter)
+    : data
+  ).map(annotateFullName)
 }
 
 watch(query, () => {

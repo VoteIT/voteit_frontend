@@ -97,7 +97,7 @@
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
+import { dialogQuery, getFullName } from '@/utils'
 import restApi from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import { openAlertEvent } from '@/utils/events'
@@ -249,7 +249,7 @@ function filterParticipants ({ user, assigned }: UserContextRoles) {
   if (search) {
     const u = getUser(user)
     if (!u) return false
-    const joined = `${u.full_name} ${u.email}`.toLocaleLowerCase()
+    const joined = `${getFullName(u)} ${u.email}`.toLocaleLowerCase()
     if (!joined.includes(search.toLocaleLowerCase())) return false
   }
   return roles.every(r => assigned.has(r))

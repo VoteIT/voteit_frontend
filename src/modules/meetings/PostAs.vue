@@ -24,6 +24,7 @@ import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { userType } from '../organisations/contentTypes'
 import { Author } from './types'
+import { getFullName } from '@/utils'
 
 interface AutocompleteItem {
   value: string
@@ -67,7 +68,7 @@ export default defineComponent({
 
     function userToAutocomplete (user: User): AutocompleteItem {
       return {
-        title: `${user.full_name} (${user.userid})`,
+        title: `${getFullName(user)} (${user.userid})`,
         value: `user:${user.pk}`
       }
     }

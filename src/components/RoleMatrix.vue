@@ -61,15 +61,16 @@ import { Dictionary, orderBy as _orderBy } from 'lodash'
 import { computed, onBeforeMount, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { getFullName } from '@/utils'
 import useLoader from '@/composables/useLoader'
 import { ContextRole, UserContextRoles } from '@/composables/types'
+import { user } from '@/composables/useAuthentication'
 import ContentType from '@/contentTypes/ContentType'
 import useUserDetails from '@/modules/organisations/useUserDetails'
-
-import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import { meetingRolePlugins } from '@/modules/meetings/registry'
 import useMeeting from '@/modules/meetings/useMeeting'
-import { user } from '@/composables/useAuthentication'
+
+import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 
 const USERS_PER_PAGE = 50
 
@@ -217,7 +218,10 @@ const userMatrix = computed(() => {
   // Ordering function
   const _ordering: (roles: { user: number, row: boolean[] }) => string | boolean | undefined = orderByName
     // Get user full name to order by
-    ? ({ user }) => getUser(user)?.full_name
+    ? ({ user }) => {
+      const _user = getUser(user)
+      if (_user) return getFullName(_user)
+    }
     : ({ row }) => row[orderColumn]
   // Ordering direction
   const order = (ordering.reversed !== orderByName) // XOR

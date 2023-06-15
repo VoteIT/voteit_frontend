@@ -12,7 +12,7 @@
       <v-card-item>
         <UserAvatar :user="user" size="large" class="mt-1" />
         <v-card-title>
-          {{ user.full_name }}
+          {{ getFullName(user) }}
         </v-card-title>
         <v-card-subtitle>
           {{ user.userid }}
@@ -27,17 +27,11 @@
   </v-overlay>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
-
+<script setup lang="ts">
+import { getFullName } from '@/utils'
 import { User } from '@/modules/organisations/types'
 
-export default defineComponent({
-  props: {
-    user: {
-      type: Object as PropType<User>,
-      required: true
-    }
-  }
-})
+defineProps<{
+  user: User
+}>()
 </script>

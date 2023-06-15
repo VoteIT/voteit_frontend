@@ -30,7 +30,7 @@
       <tbody>
         <tr v-for="{ currentWeight, isActive, pk, role, user, votes } in annotatedMembers" :key="pk">
           <td>
-            {{ user?.full_name }}
+            {{ user && getFullName(user) }}
             <small v-if="user?.userid" class="text-secondary">({{ user.userid }})</small>
           </td>
           <td v-if="groupRoles.length">
@@ -94,7 +94,7 @@
               <i18n-t keypath="meeting.groups.removeUserConfirm">
                 <template #user>
                   <strong>
-                    {{ user?.full_name }}
+                    {{ user && getFullName(user) }}
                   </strong>
                 </template>
               </i18n-t>
@@ -118,6 +118,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { getFullName } from '@/utils'
 import Tag from '@/components/Tag.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
