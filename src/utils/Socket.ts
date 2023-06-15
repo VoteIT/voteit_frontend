@@ -11,6 +11,14 @@ import DefaultMap from './DefaultMap'
 import ProgressPromise from './ProgressPromise'
 
 import type { BatchPayload, ChannelsConfig, ChannelsMessage, PydanticError, SubscribedPayload, SuccessMessage } from './types'
+import SocketDebug from './SocketDebug'
+
+declare global {
+  interface Window {
+    socket: SocketDebug
+  }
+}
+window.socket = new SocketDebug()
 
 type SocketEventHandler = (event: MessageEvent | Event | CloseEvent) => void
 export enum SocketEvent {
@@ -135,6 +143,7 @@ class Socket {
         if (isSubscribedMessage(msg)) msg.p.app_state?.forEach(this.handleTypeMessage.bind(this))
         // Else handle type message
         else this.handleTypeMessage(msg)
+        window.socket.debug(msg)
       })
       this.ws.addEventListener(SocketEvent.Close, () => {
         socketState.value = false
