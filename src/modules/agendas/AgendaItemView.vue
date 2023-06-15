@@ -180,7 +180,7 @@ const { getAiPolls } = usePolls()
 const { meetingPath, meetingId, meeting } = useMeeting()
 const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
 const { activeFilter, orderContent } = useAgendaFilter(agendaId)
-const { agendaItem, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
+const { agendaItem, agendaBody, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
 
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
@@ -306,12 +306,11 @@ function setLastRead (ai: AgendaItem, force = false) {
 }
 watch(agendaItem, (value, oldValue) => {
   // When leaving agenda item
+  // FIXME should react to agendaId or onRouteLeave
   if (oldValue) setLastRead(oldValue)
-  if (value) {
-    content.title = value.title
-    content.body = value.body
-  }
+  if (value) content.title = value.title
 })
+watch(agendaBody, value => { content.body = value ?? '' })
 
 const filterComponent = ref<AgendaFilterComponent | null>(null)
 async function toggleTag (tagName: string) {
@@ -335,7 +334,7 @@ onUnmounted(() => {
 const editing = ref(false)
 const content = reactive({
   title: agendaItem.value?.title ?? '',
-  body: agendaItem.value?.body ?? ''
+  body: agendaBody.value ?? ''
 })
 function submit () {
   editing.value = false

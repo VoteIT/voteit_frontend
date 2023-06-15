@@ -3,13 +3,14 @@ import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { AgendaItem } from '@/modules/agendas/types'
-import { agendaItemType, lastReadType } from './contentTypes'
+import { AgendaBody, AgendaItem } from '@/modules/agendas/types'
+import { agendaBodyType, agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
 import { meetingType } from '../meetings/contentTypes'
 import { agendaDeletedEvent } from './events'
 import { Maybe } from 'itertools/types'
 
+const agendaBodies = reactive<Map<number, AgendaBody>>(new Map())
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
@@ -21,8 +22,11 @@ const channel = agendaItemType
 // Delete as first event
 agendaDeletedEvent.on(pk => {
   agendaItems.delete(pk)
+  agendaBodies.delete(pk)
   channel.leave(pk, { leaveDelay: 0 })
 })
+
+agendaBodyType.updateMap(agendaBodies)
 
 /*
 ** Clear agenda when leaving meeting.
@@ -94,6 +98,10 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     return agendaItems.get(agendaItem)
   }
 
+  function getAgendaBody (agendaItem: number) {
+    return agendaBodies.get(agendaItem)
+  }
+
   function getRelativeAgendaItem (agendaItem: AgendaItem, positions = 1): Maybe<AgendaItem> {
     const index = agenda.value.indexOf(agendaItem)
     return agenda.value[index + positions]
@@ -129,6 +137,7 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     previousAgendaItem,
     nextAgendaItem,
     getAgendaItem,
+    getAgendaBody,
     getPreviousAgendaItem,
     getNextAgendaItem,
     hasNewItems

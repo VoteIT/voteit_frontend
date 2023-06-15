@@ -18,13 +18,17 @@ export interface AgendaItem {
   pk: number
   block_proposals: boolean
   block_discussion: boolean
-  body: string
   meeting: number
   readonly order: number
   readonly related_modified: string | null
   state: AgendaState
   tags: string[]
   title: string
+}
+
+export interface AgendaBody {
+  pk: number
+  body: string
 }
 
 export interface Filter {

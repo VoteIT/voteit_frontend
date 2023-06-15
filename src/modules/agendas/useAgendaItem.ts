@@ -19,8 +19,9 @@ function ellipsisTitle (title: string, length: number) {
 
 export default function useAgendaItem (agendaId: Ref<number | undefined>) {
   const { meetingId, meetingPath } = useMeeting()
-  const { getAgendaItem } = useAgenda(meetingId)
+  const { getAgendaItem, getAgendaBody } = useAgenda(meetingId)
   const agendaItem = computed(() => typeof agendaId.value === 'number' ? getAgendaItem(agendaId.value) : undefined)
+  const agendaBody = computed(() => typeof agendaId.value === 'number' ? getAgendaBody(agendaId.value)?.body : undefined)
   const { allPollTitles } = usePolls()
 
   const agendaItemPath = computed(() => {
@@ -66,6 +67,7 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
 
   return {
     agendaItem,
+    agendaBody,
     agendaItemPath,
     canAddDiscussionPost,
     canAddDocument,
