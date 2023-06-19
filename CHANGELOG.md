@@ -4,6 +4,19 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.17.0 (2023-06-19)
+Optimizations for large meetings.
+
+- Agenda Item body is now a separate content, sent on Agenda channel [#199](https://github.com/VoteIT/voteit_frontend/issues/199)
+- Unnecessary user data dropped from API (full name calculated) [#312](https://github.com/VoteIT/voteit_frontend/issues/312)
+
+## 0.16 (UNRELEASED)
+- Function to show ballot for poll in Plenary view [#90](https://github.com/VoteIT/voteit_frontend/issues/90)
+- Display ordering setting and disabled ballot for private and upcoming polls [#286](https://github.com/VoteIT/voteit_frontend/issues/286)
+- Allow selecting proporal order in start poll view [#307](https://github.com/VoteIT/voteit_frontend/issues/307)
+- Organisation managers can edit organisation contact information on organisation page tab [#308](https://github.com/VoteIT/voteit_frontend/issues/308)
+- Added editable contact info to organisation page [#309](https://github.com/VoteIT/voteit_frontend/issues/309)
+
 ## 0.15.0 (2023-05-25)
 
 ### Changed
