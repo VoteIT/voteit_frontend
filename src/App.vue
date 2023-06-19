@@ -18,6 +18,8 @@
 
 <script lang="ts">
 import { defineComponent, onBeforeMount, provide } from 'vue'
+import 'core-js/actual/array'
+import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
 import useAuthentication from './composables/useAuthentication'
 import useLoader from './composables/useLoader'
