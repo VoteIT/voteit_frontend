@@ -65,6 +65,21 @@ export default function useRules (t: ComposerTranslation) {
     }
   }
 
+  function tabSeparatedEqualColumns (min: number = 1, max?: number): Rule {
+    return (value: string) => {
+      if (!value.length) return true
+      const [firstRow] = value.split('\n', 1)
+      const columnCount = firstRow.split('\t').length
+      if (columnCount < min) return t('rules.tabSeparatedMinColumns', min)
+      if (max && columnCount > max) return t('rules.tabSeparatedMaxColumns', max)
+      for (const [i, row] of enumerate(value.split('\n'), 1)) {
+        if (!row.trim()) continue
+        if (row.split('\t').length !== columnCount) return t('rules.tabSeparatedBadColumnCount', i)
+      }
+      return true
+    }
+  }
+
   function trimmed (rule: Rule): Rule {
     return (value: string) => rule(value.trim())
   }
@@ -80,6 +95,7 @@ export default function useRules (t: ComposerTranslation) {
     or,
     swedishSSN,
     tabSeparated,
+    tabSeparatedEqualColumns,
     trimmed
   }
 }

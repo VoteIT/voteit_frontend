@@ -108,6 +108,21 @@ test('TabSeparated', () => {
   expect(mixRule('One\ttest@example.com\t1212121212')).toEqual(true)
 })
 
+test('TabSeparatedEqualColumns', () => {
+  const rule = rules.tabSeparatedEqualColumns(1, 2)
+
+  // Only first row OK
+  expect(rule('One\ttwo\n')).toEqual(true)
+  expect(rule('One\ttwo\nThree')).toEqual('rules.tabSeparatedBadColumnCount')
+  expect(rule('One\ntwo\tThree')).toEqual('rules.tabSeparatedBadColumnCount')
+  expect(rules.tabSeparatedEqualColumns(2, 2)('\n')).toEqual('rules.tabSeparatedMinColumns')
+  expect(rule('One\ttwo\tthree')).toEqual('rules.tabSeparatedMaxColumns')
+  // Correct format
+  expect(rule('One\ttwo\nthree\tfour')).toEqual(true)
+  // Empty rows OK
+  expect(rule('One\ttwo\n\nthree\tfour\n')).toEqual(true)
+})
+
 test('trimmed', () => {
   const trimmedEmail = rules.trimmed(rules.email)
 

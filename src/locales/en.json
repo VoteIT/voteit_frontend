@@ -713,7 +713,10 @@
     "multilineFailed": "Error on row {count}",
     "noMatch": "Bad format",
     "required": "Required",
-    "tabSeparatedBadLength": "Requires {count} values (tab-separated)"
+    "tabSeparatedBadLength": "Requires {count} values (tab-separated)",
+    "tabSeparatedMaxColumns": "Expected at most {count} columns",
+    "tabSeparatedMinColumns": "Expected at least {count} columns",
+    "tabSeparatedBadColumnCount": "Incorrect column count on line {count}"
   },
   "socket": {
     "connected": "Connected",

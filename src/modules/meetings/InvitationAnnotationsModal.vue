@@ -176,7 +176,7 @@ function getSum (result: AnnotationProgress) {
         class="mb-2"
         :error-messages="annotationForm.errors.columns || annotationForm.errors.rows || annotationForm.errors.__root__"
         rows="10"
-        :rules="[rules.required]"
+        :rules="[rules.required, rules.tabSeparatedEqualColumns(1, annotatedDataTypes.length)]"
       />
       <div class="text-right">
         <v-btn @click="$emit('close')" variant="text">

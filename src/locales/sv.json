@@ -719,7 +719,11 @@
     "multilineFailed": "Fel på rad {count}",
     "noMatch": "Felaktigt format",
     "required": "Krävd",
-    "tabSeparatedBadLength": "Kräver {count} värden (tabb-separerat)"
+    "tabSeparatedBadLength": "Kräver {count} värden (tabb-separerat)",
+    "tabSeparatedMaxColumns": "Kräver max {count} värden (tabb-separerat)",
+    "tabSeparatedMinColumns": "Kräver minst {count} värden (tabb-separerat)",
+    "tabSeparatedBadColumnCount": "Felaktigt antal värden på rad {count}"
+
   },
   "socket": {
     "connected": "Uppkopplad",
