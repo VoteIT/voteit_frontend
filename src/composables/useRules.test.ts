@@ -109,7 +109,7 @@ test('TabSeparated', () => {
 })
 
 test('TabSeparatedEqualColumns', () => {
-  const rule = rules.tabSeparatedEqualColumns(1, 2)
+  const rule = rules.tabSeparatedEqualColumns(2)
 
   // Only first row OK
   expect(rule('One\ttwo\n')).toEqual(true)

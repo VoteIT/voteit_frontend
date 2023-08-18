@@ -65,7 +65,12 @@ export default function useRules (t: ComposerTranslation) {
     }
   }
 
-  function tabSeparatedEqualColumns (min: number = 1, max?: number): Rule {
+  /**
+   * For CSV-like input, require equal columns over all non-empty rows.
+   * @param [max] Expect at most this many columns
+   * @param [min=1] Expect at least this many columns
+   */
+  function tabSeparatedEqualColumns (max: number, min: number = 1): Rule {
     return (value: string) => {
       if (!value.length) return true
       const [firstRow] = value.split('\n', 1)
