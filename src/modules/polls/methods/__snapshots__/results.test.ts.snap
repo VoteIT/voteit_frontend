@@ -2,19 +2,19 @@
 
 exports[`DuttResult component 1`] = `
 "<div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 3</p>
@@ -24,9 +24,9 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 15 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-0\\"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -37,19 +37,19 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 2</p>
@@ -59,9 +59,9 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-1\\"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -72,19 +72,19 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 1</p>
@@ -94,9 +94,9 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-2\\"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -124,19 +124,19 @@ exports[`DuttResult component 1`] = `
 exports[`MajorityResult component 1`] = `
 "<div>
   <!--v-if-->
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 2</p>
@@ -146,9 +146,9 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-0\\"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -159,19 +159,19 @@ exports[`MajorityResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 1</p>
@@ -181,9 +181,9 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" aria-describedby=\\"v-tooltip-1\\"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -203,8 +203,8 @@ exports[`RepeatedIRVResult component 1`] = `
     <div class=\\"v-expansion-panel\\" aria-expanded=\\"false\\">
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.round 1: poll.STV.elected <div class=\\"v-badge ml-2\\" data-v-1b13cba6=\\"\\">
-          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.round 1: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge ml-2\\">
+          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
           </div>
         </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
@@ -217,8 +217,8 @@ exports[`RepeatedIRVResult component 1`] = `
     <div class=\\"v-expansion-panel\\" aria-expanded=\\"false\\">
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.round 2: poll.STV.elected <div class=\\"v-badge ml-2\\" data-v-1b13cba6=\\"\\">
-          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.round 2: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge ml-2\\">
+          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
           </div>
         </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
@@ -269,19 +269,19 @@ exports[`RepeatedIRVResult component 1`] = `
 
 exports[`RepeatedSchulzeResult component 1`] = `
 "<div data-v-9cc52876=\\"\\">
-  <div selected=\\"true\\" class=\\"my-4\\" data-v-4b57e0f3=\\"\\" data-v-9cc52876=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\"><span class=\\"ordinal\\" data-v-9cc52876=\\"\\">1</span>
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" data-v-9cc52876=\\"\\" selected=\\"true\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\"><span data-v-9cc52876=\\"\\" class=\\"ordinal\\">1</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 1</p>
@@ -291,28 +291,28 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
       </div>
       <!--v-if-->
       <!--v-if-->
     </div>
     <!--v-if-->
   </div>
-  <div selected=\\"true\\" class=\\"my-4\\" data-v-4b57e0f3=\\"\\" data-v-9cc52876=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\"><span class=\\"ordinal\\" data-v-9cc52876=\\"\\">2</span>
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" data-v-9cc52876=\\"\\" selected=\\"true\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\"><span data-v-9cc52876=\\"\\" class=\\"ordinal\\">2</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 2</p>
@@ -322,20 +322,20 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
       </div>
       <!--v-if-->
       <!--v-if-->
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default\\" data-v-9cc52876=\\"\\">
-    <div class=\\"v-expansion-panel v-expansion-panel--active\\" aria-expanded=\\"true\\" data-v-9cc52876=\\"\\">
+  <div data-v-9cc52876=\\"\\" class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default\\">
+    <div data-v-9cc52876=\\"\\" class=\\"v-expansion-panel v-expansion-panel--active\\" aria-expanded=\\"true\\">
       <div class=\\"v-expansion-panel__shadow\\"></div><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.roundNum<span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
       <!---->
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\" data-v-9cc52876=\\"\\">
+      <transition-stub data-v-9cc52876=\\"\\" name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
         <div class=\\"v-expansion-panel-text\\">
           <div class=\\"v-expansion-panel-text__wrapper\\">
             <div data-v-9cc52876=\\"\\">
@@ -346,16 +346,16 @@ exports[`RepeatedSchulzeResult component 1`] = `
                   <div class=\\"v-expansion-panel__shadow\\"></div>
                   <!---->
                   <!----><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success mr-4\\" aria-hidden=\\"true\\"></i>
-                    <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-                      <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+                    <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+                      <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
                         <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                       </div>
                     </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
                   </button>
                   <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\" class=\\"my-2\\">
                     <div class=\\"v-expansion-panel-text\\">
-                      <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-                          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+                      <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+                          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
                             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                           </div>
                         </div>
@@ -370,8 +370,8 @@ exports[`RepeatedSchulzeResult component 1`] = `
                   </transition-stub>
                   <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\" class=\\"my-2\\">
                     <div class=\\"v-expansion-panel-text\\">
-                      <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-                          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+                      <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+                          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
                             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                           </div>
                         </div>
@@ -389,8 +389,8 @@ exports[`RepeatedSchulzeResult component 1`] = `
                   <div class=\\"v-expansion-panel__shadow\\"></div>
                   <!---->
                   <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-                    <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-                      <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+                    <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+                      <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
                         <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                       </div>
                     </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
@@ -410,8 +410,8 @@ exports[`RepeatedSchulzeResult component 1`] = `
                   <div class=\\"v-expansion-panel__shadow\\"></div>
                   <!---->
                   <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-                    <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-                      <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+                    <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+                      <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
                         <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                       </div>
                     </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
@@ -433,10 +433,10 @@ exports[`RepeatedSchulzeResult component 1`] = `
         </div>
       </transition-stub>
     </div>
-    <div class=\\"v-expansion-panel v-expansion-panel--after-active\\" aria-expanded=\\"false\\" data-v-9cc52876=\\"\\">
+    <div data-v-9cc52876=\\"\\" class=\\"v-expansion-panel v-expansion-panel--after-active\\" aria-expanded=\\"false\\">
       <div class=\\"v-expansion-panel__shadow\\"></div><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.roundNum<span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
       <!---->
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\" data-v-9cc52876=\\"\\">
+      <transition-stub data-v-9cc52876=\\"\\" name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
         <div class=\\"v-expansion-panel-text\\" style=\\"display: none;\\">
           <!---->
         </div>
@@ -459,8 +459,8 @@ exports[`STVResult component 1`] = `
         <!---->
         <!---->
         <div class=\\"v-list-item-title mb-1\\">
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+          <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
@@ -483,8 +483,8 @@ exports[`STVResult component 1`] = `
         <!---->
         <!---->
         <div class=\\"v-list-item-title mb-1\\">
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+          <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
@@ -541,8 +541,8 @@ exports[`STVResult component 1`] = `
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
       <!----><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>
-        <div class=\\"text-truncate\\">poll.result.round 1: poll.STV.elected <div class=\\"v-badge mx-1\\" data-v-1b13cba6=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+        <div class=\\"text-truncate\\">poll.result.round 1: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge mx-1\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
@@ -559,8 +559,8 @@ exports[`STVResult component 1`] = `
                 <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
                   <!---->
                   <!---->
-                  <div class=\\"v-badge mr-2\\" data-v-1b13cba6=\\"\\">
-                    <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+                  <div data-v-1b13cba6=\\"\\" class=\\"v-badge mr-2\\">
+                    <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
                       <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                     </div>
                   </div> Vote count: 200
@@ -577,8 +577,8 @@ exports[`STVResult component 1`] = `
                 <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
                   <!---->
                   <!---->
-                  <div class=\\"v-badge mr-2\\" data-v-1b13cba6=\\"\\">
-                    <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+                  <div data-v-1b13cba6=\\"\\" class=\\"v-badge mr-2\\">
+                    <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
                       <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                     </div>
                   </div> Vote count: 100
@@ -592,8 +592,8 @@ exports[`STVResult component 1`] = `
                 <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
                   <!---->
                   <!---->
-                  <div class=\\"v-badge mr-2\\" data-v-1b13cba6=\\"\\">
-                    <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+                  <div data-v-1b13cba6=\\"\\" class=\\"v-badge mr-2\\">
+                    <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
                       <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
                     </div>
                   </div> Vote count: 100
@@ -609,8 +609,8 @@ exports[`STVResult component 1`] = `
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
       <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>
-        <div class=\\"text-truncate\\">poll.result.round 2: poll.STV.elected <div class=\\"v-badge mx-1\\" data-v-1b13cba6=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+        <div class=\\"text-truncate\\">poll.result.round 2: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge mx-1\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
@@ -635,16 +635,16 @@ exports[`SchulzeResult component 1`] = `
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
       <!----><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success mr-4\\" aria-hidden=\\"true\\"></i>
-        <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+        <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
           </div>
         </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
       </button>
       <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\" class=\\"my-2\\">
         <div class=\\"v-expansion-panel-text\\">
-          <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-              <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+          <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+              <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
                 <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
               </div>
             </div>
@@ -659,8 +659,8 @@ exports[`SchulzeResult component 1`] = `
       </transition-stub>
       <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\" class=\\"my-2\\">
         <div class=\\"v-expansion-panel-text\\">
-          <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-              <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+          <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+              <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
                 <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
               </div>
             </div>
@@ -678,8 +678,8 @@ exports[`SchulzeResult component 1`] = `
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
       <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-        <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+        <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
           </div>
         </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
@@ -699,8 +699,8 @@ exports[`SchulzeResult component 1`] = `
       <div class=\\"v-expansion-panel__shadow\\"></div>
       <!---->
       <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-        <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\">
-          <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+        <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
+          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
             <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
           </div>
         </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
@@ -722,19 +722,19 @@ exports[`SchulzeResult component 1`] = `
 
 exports[`SimpleResult component 1`] = `
 "<div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-1 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 1</p>
@@ -744,9 +744,9 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (67 %) </small></span>
             <!---->
             <!---->
@@ -763,19 +763,19 @@ exports[`SimpleResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-2 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 2</p>
@@ -785,9 +785,9 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">3 <small class=\\"ml-1\\"> (33 %) </small></span>
             <!---->
             <!---->
@@ -804,19 +804,19 @@ exports[`SimpleResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"my-4\\" data-v-4b57e0f3=\\"\\">
-    <div class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\" data-v-4b57e0f3=\\"\\">
-      <div class=\\"meta d-flex\\" data-v-4b57e0f3=\\"\\">
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"><span class=\\"content-type\\" data-v-4b57e0f3=\\"\\">proposal.proposal</span>
-          <div class=\\"v-badge\\" data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\">
-            <div class=\\"v-badge__wrapper\\"><span class=\\"voteit-tag\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\" data-v-1b13cba6=\\"\\"><i class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\" data-v-1b13cba6=\\"\\"></i> #prop-3 <!--v-if--></span>
+  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
+    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
+          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
+            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
               <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div class=\\"my-3\\" data-v-4b57e0f3=\\"\\">
+      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
         <div class=\\"overflow-hidden position-relative\\">
           <div class=\\"richtext\\">
             <p>Proposal 3</p>
@@ -826,9 +826,9 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div class=\\"author text-secondary d-flex flex-wrap align-end\\" data-v-4b57e0f3=\\"\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span class=\\"time ml-6\\" data-v-4b57e0f3=\\"\\"> för 0 sekunder sedan</span>
-        <div class=\\"flex-grow-1\\" data-v-4b57e0f3=\\"\\"></div>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span data-v-4b57e0f3=\\"\\" class=\\"time ml-6\\"> för 0 sekunder sedan</span>
+        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"></div>
         <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">2 <small class=\\"ml-1\\"> (25 %) </small></span>
             <!---->
             <!---->
