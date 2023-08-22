@@ -187,7 +187,7 @@ class Socket {
       return
     }
     try {
-      await this.call('s.ping')
+      await this.call('s.ping', undefined, { alertOnError: false })
     } catch {
       this.heartbeat(false) // Stop pings
       socket.close() // This takes time to finish
