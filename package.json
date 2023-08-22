@@ -1,6 +1,6 @@
 {
   "name": "voteit_4_frontend",
-  "version": "0.1.0",
+  "version": "0.17.1",
   "private": true,
   "scripts": {
     "build": "vite build",

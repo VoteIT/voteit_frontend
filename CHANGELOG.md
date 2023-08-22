@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.17.1 (2023-08-22)
+- New validation rule for tabbed text imports (equal column count)
+- Disable alert for ping request timeout
+
 ## 0.17.0 (2023-06-19)
 Optimizations for large meetings.
 
