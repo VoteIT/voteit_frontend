@@ -16,6 +16,7 @@
     "axios": "^0.21.4",
     "caniuse-lite": "^1.0.30001431",
     "core-js": "^3.31.0",
+    "envelope-client": "github:VoteIT/envelope_client",
     "itertools": "^1.7.1",
     "lodash": "^4.17.21",
     "luxon": "^3.3.0",

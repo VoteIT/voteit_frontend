@@ -11,7 +11,7 @@ const DEFAULT_CONFIG: ChannelConfig = {
   leaveDelay: 10_000 // Delay before leaving channel in ms
 }
 
-const leaveTimeouts = new Map<string, number>()
+const leaveTimeouts = new Map<string, NodeJS.Timeout>()
 const leaveHandlers = new DefaultMap<string, LeaveHandler[]>(() => [])
 const subscriptions = new Set<string>()
 
