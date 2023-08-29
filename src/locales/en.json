@@ -394,6 +394,13 @@
     "back": "Back",
     "continue": "Continue"
   },
+  "network": {
+    "connected": "Connected",
+    "connecting": "Connecting to server...",
+    "noConnection": "Couldn't establish server connection",
+    "none": "No network",
+    "reconnecting": "Trying to reconnect... | Trying to reconnect in 1 second | Trying to reconnect in {s} seconds"
+  },
   "order": {
     "alphabetical": "Alphabetical",
     "chronological": "Chronological",
@@ -717,11 +724,6 @@
     "tabSeparatedMaxColumns": "Expected at most {count} columns",
     "tabSeparatedMinColumns": "Expected at least {count} columns",
     "tabSeparatedBadColumnCount": "Incorrect column count on line {count}"
-  },
-  "socket": {
-    "connected": "Connected",
-    "reconnecting": "Trying to reconnect... | Trying to reconnect in {s} second | Trying to reconnect in {s} seconds",
-    "reconnectingFailed": "Couldn't establish websocket connection"
   },
   "speaker": {
     "activeList": "Active list",

@@ -31,7 +31,7 @@ export default class ContentType<T extends Record<string, any> = object, R exten
   constructor (contentType: CType<T['state']>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
-    socket.registerTypeListener(this.name, this.handleMessage.bind(this))
+    socket.addTypeHandler(this.name, this.handleMessage.bind(this))
   }
 
   private handleMessage (msg: ChannelsMessage) {

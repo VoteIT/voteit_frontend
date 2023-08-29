@@ -58,10 +58,10 @@ import { channelSubscribedEvent } from '@/composables/events'
 import ComponentSlot from './ComponentSlot.vue'
 
 const agendaLoadedEvent = new TypedEvent()
-channelSubscribedEvent.on(uri => {
-  const channelName = uri.split('/')[0]
+// eslint-disable-next-line camelcase
+channelSubscribedEvent.on(({ channel_type }) => {
   // Agenda is loaded when "participants" or "moderators" channels are subscribed
-  if (['participants', 'moderators'].includes(channelName)) agendaLoadedEvent.emit()
+  if (['participants', 'moderators'].includes(channel_type)) agendaLoadedEvent.emit()
 })
 
 const { t } = useI18n()

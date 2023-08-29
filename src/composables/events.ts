@@ -1,3 +1,8 @@
 import TypedEvent from '@/utils/TypedEvent'
 
-export const channelSubscribedEvent = new TypedEvent<string>()
+interface Channel {
+  channel_type: string
+  pk: number
+}
+
+export const channelSubscribedEvent = new TypedEvent<Channel>()

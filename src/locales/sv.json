@@ -398,6 +398,13 @@
     "back": "Tillbaka",
     "continue": "Fortsätt"
   },
+  "network": {
+    "connected": "Uppkopplad",
+    "connecting": "Kopplar upp...",
+    "noConnection": "Kunde inte ansluta till webbservern",
+    "none": "Inget nätverk",
+    "reconnecting": "Försöker koppla upp... | Försöker koppla upp om 1 sekund | Försöker koppla upp om {s} sekunder"
+  },
   "order": {
     "alphabetical": "Alfabetisk",
     "chronological": "Kronologisk",
@@ -724,11 +731,6 @@
     "tabSeparatedMinColumns": "Kräver minst {count} värden (tabb-separerat)",
     "tabSeparatedBadColumnCount": "Felaktigt antal värden på rad {count}"
 
-  },
-  "socket": {
-    "connected": "Uppkopplad",
-    "reconnecting": "Försöker koppla upp... | Försöker koppla upp om 1 sekund | Försöker koppla upp om {s} sekunder",
-    "reconnectingFailed": "Kunde inte ansluta till webbservern"
   },
   "speaker": {
     "activeList": "Aktiv lista",

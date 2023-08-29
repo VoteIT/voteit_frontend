@@ -2,7 +2,7 @@ import { SubscribedPayload, SuccessMessage } from '@/utils/types'
 import DefaultMap from '@/utils/DefaultMap'
 
 import { ChannelConfig, SchemaType } from './types'
-import { socket, SocketEvent } from '@/utils/Socket'
+import { socket } from '@/utils/Socket'
 
 type LeaveHandler = (uriOrPk: string | number) => void
 
@@ -20,11 +20,11 @@ function subscribeChannel (uri: string, config: ChannelConfig) {
 }
 
 // Send all subscription messages on connect
-socket.addEventListener(SocketEvent.Open, () => {
-  for (const uri of subscriptions) {
-    subscribeChannel(uri, DEFAULT_CONFIG)
-  }
-})
+// socket.addEventListener(SocketEvent.Open, () => {
+//   for (const uri of subscriptions) {
+//     subscribeChannel(uri, DEFAULT_CONFIG)
+//   }
+// })
 
 export default class Channel {
   public name: string
