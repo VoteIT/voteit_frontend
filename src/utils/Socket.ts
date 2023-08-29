@@ -1,11 +1,8 @@
 import { ref } from 'vue'
 
-import Socket from 'envelope-client/src'
-import { SocketOptions } from 'envelope-client/src/types'
+import { Socket, SocketOptions } from 'envelope-client'
 
 import hostname from '@/utils/hostname'
-
-export { parseSocketError, isValidationError } from 'envelope-client/src/errors'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: SocketOptions['config'] = {

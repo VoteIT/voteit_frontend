@@ -31,19 +31,18 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
 
   async function subscribe () {
     // Must only be called if name and pk is set
-    // eslint-disable-next-line camelcase
-    const channel_type = unref(name)!
-    subscription = socket.channels.subscribe(channel_type, pk.value!)
+    const channelType = unref(name)!
+    subscription = socket.channels.subscribe(channelType, pk.value!)
     try {
       await subscription.promise
       channelSubscribedEvent.emit({
         // eslint-disable-next-line camelcase
-        channel_type,
+        channel_type: channelType,
         pk: pk.value!
       })
       isSubscribed.value = true
     } catch (e) {
-      console.error('failed for', channel_type, e)
+      console.error('failed for', channelType, e)
       if (config?.critical) {
         openDialogEvent.emit({
           dismissible: false,

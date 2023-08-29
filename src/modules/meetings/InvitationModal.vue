@@ -2,8 +2,9 @@
 import { Dictionary } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { parseSocketError } from 'envelope-client'
 
-import { parseSocketError, socket } from '@/utils/Socket'
+import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useRules from '@/composables/useRules'
 import { invitationScopes } from '../organisations/registry'

@@ -17,13 +17,13 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import type { ComponentPublicInstance, Component } from 'vue'
+import { isValidationError } from 'envelope-client'
 
 import useErrorHandler from '@/composables/useErrorHandler'
 import CheckboxMultipleSelect from './inputs/CheckboxMultipleSelect.vue'
 import DurationInput from './inputs/DurationInput.vue'
 import { FieldType } from './types'
 import type { FieldRule, FormSchema } from './types'
-import { isValidationError } from '@/utils/Socket'
 import TagEdit from './TagEdit.vue'
 
 const componentNames: Record<FieldType, string | Component> = {

@@ -1,8 +1,8 @@
 import type { Dictionary } from 'lodash'
 import { computed, ref } from 'vue'
+import { parseSocketError } from 'envelope-client'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
-import { parseSocketError } from '@/utils/Socket'
 import { parseRestError } from '@/utils/restApi'
 
 interface HandlerOptions {
