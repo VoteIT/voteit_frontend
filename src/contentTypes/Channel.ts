@@ -7,7 +7,6 @@ import { socket } from '@/utils/Socket'
 type LeaveHandler = (uriOrPk: string | number) => void
 
 const DEFAULT_CONFIG: ChannelConfig = {
-  alertOnError: true,
   leaveDelay: 10_000 // Delay before leaving channel in ms
 }
 

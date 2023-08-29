@@ -70,7 +70,7 @@ async function submitInvites () {
       meeting: props.meeting,
       rows,
       roles: inviteData.roles
-    }, { alertOnError: false })
+    })
     result.value = p
   } catch (e) {
     inviteErrors.value = parseSocketError(e as Error)
