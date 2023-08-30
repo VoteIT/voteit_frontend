@@ -61,7 +61,7 @@ function submitAnnotations () {
     columns,
     meeting: props.meeting,
     rows
-  }, { alertOnError: false })
+  })
     .onProgress(p => {
       if (isAnnotationProgress(p)) annotationForm.results.push(p)
       else annotationForm.expected = p.total
