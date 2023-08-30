@@ -13,8 +13,8 @@ const speakers = reactive<Map<number, Speaker>>(new Map())
 
 speakerSystemType
   .updateMap(speakerSystems)
-  .getChannel('sls').onLeave(uri => {
-    console.log('leaving', uri, 'TODO: Clean up speakerLists, but only if they\'re not protected from other channels. This will need some architecture.')
+  .getChannel('sls').onLeave(pk => {
+    console.log('leaving', pk, 'TODO: Clean up speakerLists, but only if they\'re not protected from other channels. This will need some architecture.')
   })
 
 speakerListType.updateMap(speakerLists)

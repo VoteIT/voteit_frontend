@@ -27,14 +27,9 @@ activeUserType
     )
   })
 
-function uriToNumber (uri: string | number) {
-  if (typeof uri === 'number') return uri
-  return Number(uri.split('/')[1])
-}
-
 // Drop list of active users when leaving meeting
-meetingType.channel.onLeave(uri => {
-  meetingActiveUsers.delete(uriToNumber(uri))
+meetingType.channel.onLeave(pk => {
+  meetingActiveUsers.delete(pk)
 })
 
 export default function useActive (meetingId: Ref<number>) {
