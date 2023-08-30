@@ -1,8 +1,10 @@
 import TypedEvent from '@/utils/TypedEvent'
 
-interface Channel {
-  channel_type: string
+interface PathedChannel {
+  channelType: string
   pk: number
+  path: string
 }
 
-export const channelSubscribedEvent = new TypedEvent<Channel>()
+export const channelLeftEvent = new TypedEvent<PathedChannel>()
+export const channelSubscribedEvent = new TypedEvent<PathedChannel>()

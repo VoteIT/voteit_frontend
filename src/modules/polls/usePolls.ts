@@ -29,9 +29,7 @@ pollType
       pollStatuses.set(item.pk, item)
     }
   })
-  .channel.onLeave(uri => {
-    // Assume uri 'poll/<pk>'
-    const pk = Number((uri as string).split('/')[1])
+  .channel.onLeave(pk => {
     pollStatuses.delete(pk)
   })
 

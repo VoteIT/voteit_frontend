@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { Socket, SocketOptions } from 'envelope-client'
 
 import hostname from '@/utils/hostname'
+import { channelLeftEvent, channelSubscribedEvent } from '@/composables/events'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: SocketOptions['config'] = {
@@ -40,3 +41,12 @@ socket.on(
     socketState.value = readyState
   }
 )
+
+socket.channels.onSubscriptionChanged(({ subscribed, ...channel }) => {
+  const pathedChannel = {
+    ...channel,
+    path: `${channel.channelType}/${channel.pk}`
+  }
+  if (subscribed) channelSubscribedEvent.emit(pathedChannel)
+  else channelLeftEvent.emit(pathedChannel)
+})

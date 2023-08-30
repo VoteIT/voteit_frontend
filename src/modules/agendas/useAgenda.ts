@@ -14,16 +14,14 @@ const agendaBodies = reactive<Map<number, AgendaBody>>(new Map())
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
-const channel = agendaItemType
+agendaItemType
   .onChanged(agendaItem => agendaItems.set(agendaItem.pk, agendaItem))
   .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
-  .channel
 
 // Delete as first event
 agendaDeletedEvent.on(pk => {
   agendaItems.delete(pk)
   agendaBodies.delete(pk)
-  channel.leave(pk, { leaveDelay: 0 })
 })
 
 agendaBodyType.updateMap(agendaBodies)
@@ -45,8 +43,7 @@ meetingType.channel
 ** Clear private agenda items when leaving moderators channel.
 */
 meetingType.getChannel('moderators')
-  .onLeave(uriOrPk => {
-    const pk = typeof uriOrPk === 'string' ? Number(uriOrPk.split('/')[1]) : uriOrPk
+  .onLeave(pk => {
     for (const agendaItem of agendaItems.values()) {
       if (agendaItem.meeting === pk && agendaItem.state === 'private') {
         agendaDeletedEvent.emit(agendaItem.pk)

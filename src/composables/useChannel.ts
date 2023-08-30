@@ -1,20 +1,24 @@
-import { computed, onUnmounted, ref, Ref, unref, watch } from 'vue'
+import { computed, onUnmounted, reactive, Ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ChannelConfig } from '@/contentTypes/types'
 import { openDialogEvent } from '@/utils/events'
-import { channelSubscribedEvent } from './events'
 import { ThemeColor } from '@/utils/types'
 import { useRouter } from 'vue-router'
 import { socket } from '@/utils/Socket'
 
+import { channelLeftEvent, channelSubscribedEvent } from './events'
+
 type SubscriptionObj = ReturnType<typeof socket['channels']['subscribe']>
+
+const subscribedChannels = reactive(new Set<string>())
+channelSubscribedEvent.on(channel => subscribedChannels.add(channel.path))
+channelLeftEvent.on(channel => subscribedChannels.delete(channel.path))
 
 export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
   const { t } = useI18n()
   const router = useRouter()
 
-  const isSubscribed = ref(false)
   let subscription: SubscriptionObj | undefined
 
   // Critical subscription errors handled here
@@ -24,10 +28,11 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
    * Use to know if channel is complete and watch for changes
    */
   const channelPath = computed(() => {
-    const channel = unref(name)
-    if (!channel || !pk.value) return
-    return `${channel}/${pk.value}`
+    const channelType = unref(name)
+    if (!channelType || !pk.value) return
+    return `${channelType}/${pk.value}`
   })
+  const isSubscribed = computed(() => channelPath.value && subscribedChannels.has(channelPath.value))
 
   async function subscribe () {
     // Must only be called if name and pk is set
@@ -35,14 +40,7 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
     subscription = socket.channels.subscribe(channelType, pk.value!)
     try {
       await subscription.promise
-      channelSubscribedEvent.emit({
-        // eslint-disable-next-line camelcase
-        channel_type: channelType,
-        pk: pk.value!
-      })
-      isSubscribed.value = true
     } catch (e) {
-      console.error('failed for', channelType, e)
       if (config?.critical) {
         openDialogEvent.emit({
           dismissible: false,
@@ -56,17 +54,14 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
     }
   }
 
-  watch(channelPath, (to, from) => {
-    isSubscribed.value = false
-    if (from) subscription?.leave()
+  watch(channelPath, to => {
+    subscription?.leave(config?.leaveDelay)
     if (to) subscribe()
   })
 
-  if (config?.leaveOnUnmount) {
-    onUnmounted(() => {
-      if (channelPath.value) subscription?.leave()
-    })
-  }
+  onUnmounted(() => {
+    subscription?.leave(config?.leaveDelay)
+  })
 
   return {
     isSubscribed,
