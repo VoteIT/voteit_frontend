@@ -115,7 +115,7 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
     if (!agendaItem.related_modified) return false
     const lastRead = agendaItemsLastRead.get(agendaItem.pk)
     // Else, if no lastRead or set to earlier time, there are new items
-    return !lastRead || new Date(agendaItem.related_modified) > lastRead
+    return !lastRead || (new Date(agendaItem.related_modified) > lastRead)
   }
 
   const agendaId = computed(() => Number(route.params.aid))

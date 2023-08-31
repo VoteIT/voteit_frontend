@@ -304,11 +304,11 @@ function setLastRead (ai: AgendaItem, force = false) {
     agenda_item: ai.pk
   })
 }
-watch(agendaItem, (value, oldValue) => {
+watch(agendaItem, (to, from) => {
   // When leaving agenda item
   // FIXME should react to agendaId or onRouteLeave
-  if (oldValue) setLastRead(oldValue)
-  if (value) content.title = value.title
+  if (from) setLastRead(from)
+  if (to) content.title = to.title // Body from agendaBody, see below
 })
 watch(agendaBody, value => { content.body = value ?? '' })
 

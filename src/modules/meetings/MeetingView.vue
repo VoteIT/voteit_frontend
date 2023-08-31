@@ -15,7 +15,6 @@ import Bubbles from '@/modules/meetings/Bubbles.vue'
 
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 
-import { LastReadKey } from '@/composables/useUnread'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import usePermission from '@/composables/usePermission'
 import useMeeting from './useMeeting'
@@ -29,7 +28,6 @@ const { clearRegisters } = useElectoralRegisters(meetingId)
 const { isLoaded } = useMeetingChannel()
 
 usePermission(canViewMeeting)
-provide(LastReadKey, null)
 provide('context', 'meeting')
 provide(meetingIdKey, meetingId)
 
