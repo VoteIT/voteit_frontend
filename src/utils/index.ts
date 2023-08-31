@@ -66,7 +66,7 @@ export function durationToString (duration: Duration): string {
  * Awaitable sleep function
  * @param delay Sleep time in milliseconds
  */
-export function sleep (delay: number): Promise<void> {
+export function sleep (delay = 0): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, delay))
 }
 

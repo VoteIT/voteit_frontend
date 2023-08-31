@@ -16,11 +16,13 @@ export default defineConfig({
   },
   server: { port: 8080 },
   test: {
-    deps: {
-      inline: ['vuetify']
+    server: {
+      deps: {
+        inline: ['vuetify']
+      }
     },
     environment: 'happy-dom',
     globals: true,
-    setupFiles: 'vuetify.config.ts'
+    setupFiles: 'vitest.setup.ts'
   }
 })

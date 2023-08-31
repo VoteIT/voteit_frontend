@@ -1,4 +1,4 @@
-import { ValidationError } from '@/utils/Socket'
+import { ValidationError } from 'envelope-client/src/errors'
 import { expect, test } from 'vitest'
 
 import useErrorHandler from './useErrorHandler'

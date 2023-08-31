@@ -1,9 +1,9 @@
 import { expect, test, vi } from 'vitest'
 
-import { socketState } from '@/utils/Socket'
 import useAuthentication from './useAuthentication'
 import useLoader from './useLoader'
 import { InitState } from './types'
+import { socket } from '@/utils/Socket'
 import { sleep } from '@/utils'
 
 const { isAuthenticated } = useAuthentication()
@@ -16,9 +16,12 @@ test('useLoader', async () => {
   expect(loader.initState.value).toBe(InitState.Loading)
   expect(callback).not.toHaveBeenCalled()
 
-  socketState.value = true
+  // Socket connects manually. In normal context it's handled by OnlineStatus component.
+  socket.connect()
+  // @ts-ignore
+  await global.WS.connected // Websocket connect, see vitest.config.ts
   isAuthenticated.value = true
-  await sleep(10) // Wait for loading to happen
+  await sleep() // nextTick
   expect(callback).toHaveBeenCalledOnce()
   expect(loader.initState.value).toBe(InitState.Done)
   expect(loader.initDone.value).toBe(true)
