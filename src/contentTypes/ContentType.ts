@@ -40,13 +40,9 @@ export default class ContentType<T extends Record<string, any> = object, R exten
     if (handler) handler(msg.p)
   }
 
-  public updateMap (map: Map<number, T>, cb?: (obj: T, old?: T) => void) {
+  public updateMap (map: Map<number, T>) {
     return this
-      .onChanged(item => {
-        const old = map.get(item.pk)
-        map.set(item.pk, item)
-        cb?.(item, old)
-      })
+      .onChanged(item => map.set(item.pk, item))
       .onDeleted(item => map.delete(item.pk))
   }
 

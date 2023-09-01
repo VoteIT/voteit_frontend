@@ -8,7 +8,6 @@ import { meetingType } from '../meetings/contentTypes'
 import { pollType, voteType } from './contentTypes'
 import { canVote } from './rules'
 import { Poll, PollState, PollStatus } from './types'
-import { pollStartedEvent } from './events'
 import { pollPlugins } from './registry'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
@@ -16,12 +15,7 @@ const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType
-  .updateMap(polls, (poll, old) => {
-    // Warn if we got an unknown poll method
-    if (!pollPlugins.hasPlugin(poll.method_name)) console.warn(`Unknown poll method: ${poll.method_name}`)
-    // Emit an event if started
-    if (poll.state === PollState.Ongoing && poll.state !== old?.state) pollStartedEvent.emit(poll)
-  })
+  .updateMap(polls)
   .on<PollStatus>('status', item => {
     const existing = pollStatuses.get(item.pk)
     // Throw away statuses with less votes - in case async order wrong
