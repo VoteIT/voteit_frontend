@@ -9,7 +9,7 @@ const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: SocketOptions['config'] = {
   timeout: 20_000 // 20 s, longer than server's 15 s
 }
-const OUTGOING_HEARTBEAT_MS = 30_000
+const OUTGOING_HEARTBEAT_MS = 60_000
 
 export const socketState = ref<number | undefined>()
 export const socket = new Socket(
