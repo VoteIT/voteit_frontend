@@ -568,6 +568,9 @@
         "repeated_schulze": "Rate proposals with stars - more is better. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal."
       }
     },
+    "repeated_schulze": {
+      "winnersHint": "Leave empty to get a result with all proposals sorted"
+    },
     "result": {
       "complete": "Complete result",
       "electionRounds": "One election round | {count} election rounds",

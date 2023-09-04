@@ -2,7 +2,7 @@
   <v-menu
     v-if="currentState && isUserModifiable"
     :location="right ? 'bottom end' : 'bottom start'"
-    @update:model-value="fetchTransitions"
+    @update:model-value="menuOpenChange"
   >
     <template #activator="{ props }">
       <v-btn
@@ -87,8 +87,8 @@ const currentState = computed(() => getState(props.object.state))
 const isUserModifiable = computed<boolean>(() => props.admin && !currentState.value?.isFinal)
 
 const fetching = ref(false)
-async function fetchTransitions () {
-  if (fetching.value || transitionsAvailable.value) return
+async function menuOpenChange (open: boolean) {
+  if (!open || fetching.value) return
   fetching.value = true
   try {
     transitionsAvailable.value = await contentApi.getTransitions(props.object.pk)
@@ -115,7 +115,7 @@ function unmetConditions (t: Transition) {
     .join(', ')
 }
 
-watch(() => props.object.state, () => {
+watch(() => props.object, () => {
   transitionsAvailable.value = null
 })
 </script>

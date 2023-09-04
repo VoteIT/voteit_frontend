@@ -50,6 +50,7 @@ export default function createFormSchema<Props extends string> (t: ComposerTrans
       ? [...generator]
       : []
     if (schema.required?.includes(name)) _rules.push({ props: { required: true }, validate: rules.required })
+    else _rules.push({ props: { clearable: true } })
     return _rules
   }
 

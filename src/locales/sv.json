@@ -574,6 +574,9 @@
         "repeated_schulze": "Rangordna förslag med stjärnor - fler är bättre. För att rangordna förslag lika väljer du lika många stjärnor. Du behöver inte rangordna alla förslag."
       }
     },
+    "repeated_schulze": {
+      "winnersHint": "Lämna tom för att få ett resultat med alla förslag sorterade"
+    },
     "result": {
       "complete": "Fullständigt resultat",
       "electionRounds": "En valomgång | {count} valomgångar",
