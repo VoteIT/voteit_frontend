@@ -92,8 +92,9 @@ export enum FieldType {
 
 export interface FieldRule<T = string> {
   props?: {
-    required?: boolean
+    clearable?: boolean
     disabled?: boolean
+    required?: boolean
     type?: 'email' | 'password' // TODO More types
     max?: number
     maxlength?: number
