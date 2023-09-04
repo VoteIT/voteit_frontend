@@ -1,7 +1,10 @@
-import { ContextRole, RestApiConfig } from '@/composables/types'
-import useContextRoles from '@/composables/useContextRoles'
+import { Dictionary } from 'lodash'
+
 import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
+import { ContextRole, RestApiConfig } from '@/composables/types'
+import useContextRoles from '@/composables/useContextRoles'
+
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
 import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesGetMessage } from './messages'
@@ -10,8 +13,11 @@ import useWorkflows from './useWorkflows'
 
 type MethodHandler<T> = (item: T) => void
 
-interface CType<S> {
-  states?: WorkflowState<S>[]
+interface CType<T extends Dictionary<unknown>> {
+  // TODO: Can we use something like this to delete data when leaving channels? Some sort of cleanup registry in contentCleanup.ts?
+  // Could get method on envelope-client Socket.channels to get current subscribed channels, to avoid dual registries.
+  // protectMap?: Record<string, keyof T>
+  states?: WorkflowState<T['state']>[]
   name: string // Content type name in channels
   restEndpoint?: string
   restConfig?: RestApiConfig
@@ -20,15 +26,15 @@ interface CType<S> {
   useSocketApi?: boolean
 }
 
-// TODO T should not extend Record<string, any>.
-export default class ContentType<T extends Record<string, any> = object, R extends string=string, K extends string | number=number> {
-  contentType: CType<T['state']>
+// TODO T should not extend Dictionary<any>. BaseContent? StateContent?
+export default class ContentType<T extends Dictionary<any> = object, R extends string=string, K extends string | number=number> {
+  readonly contentType: CType<T>
   methodHandlers: Map<string, MethodHandler<any>>
   rolesAvailable?: ContextRole[]
   private _api?: ContentAPI<T, K>
   private _channel?: Channel
 
-  constructor (contentType: CType<T['state']>) {
+  constructor (contentType: CType<T>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
     socket.addTypeHandler(this.name, this.handleMessage.bind(this))
