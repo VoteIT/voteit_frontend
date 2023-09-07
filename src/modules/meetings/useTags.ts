@@ -26,7 +26,7 @@ function getHTMLTags (html: string): Set<string> {
   const body = domParser.parseFromString(html, 'text/html')
   const docTags = new Set<string>()
   for (const tagElem of body.querySelectorAll<HTMLElement>('[data-denotation-char="#"]')) {
-    docTags.add(tagify(tagElem.dataset.value as string))
+    docTags.add(tagify(tagElem.dataset.value!))
   }
   return docTags
 }

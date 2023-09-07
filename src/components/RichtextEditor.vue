@@ -1,20 +1,4 @@
-<template>
-  <div class="richtext-editor" ref="rootElement">
-    <div ref="editorElement"></div>
-    <p v-if="errors" class="text-error">
-      {{ errors.join(', ') }}
-    </p>
-    <slot name="controls"></slot>
-    <div class="btn-controls" v-if="submit && !$slots.controls">
-      <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
-        {{ submitText || t('save') }}
-      </v-btn>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
-/* eslint-disable camelcase */
 import Quill from 'quill'
 import 'quill-mention'
 import { inject, onMounted, ref } from 'vue'
@@ -82,28 +66,36 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
   }
 }
 
-interface Props {
-  disabled?: boolean
-  errors?: string[]
-  modelValue?: string
-  placeholder?: string
-  setFocus?: boolean
-  submit?: boolean
-  submitIcon?: string
-  submitText?: string
-  variant?: QuillVariant
-}
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: '',
-  submitIcon: 'mdi-check',
-  variant: 'restricted'
-})
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean
+    errors?: string[]
+    modelValue?: string
+    placeholder?: string
+    setFocus?: boolean
+    submit?: boolean
+    submitIcon?: string
+    submitText?: string
+    variant?: QuillVariant
+  }>(),
+  {
+    modelValue: '',
+    submitIcon: 'mdi-check',
+    variant: 'restricted'
+  }
+)
 
-const emit = defineEmits(['blur', 'focus', 'submit', 'update:modelValue'])
+interface Emits {
+  (e: 'blur'): void
+  (e: 'focus'): void
+  (e: 'submit'): void
+  (e: 'update:modelValue', value: string): void
+}
+const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
 const tags = inject(TagsKey, ref(new Set<string>()))
-let editor: Quill | null = null
+let editor: Quill | undefined
 const editorElement = ref<HTMLElement | null>(null)
 const rootElement = ref<HTMLElement | null>(null)
 
@@ -153,39 +145,38 @@ async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]
 }
 
 onMounted(() => {
-  if (editorElement.value) {
-    editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
-    const config: QuillOptions = {
-      ...variants[props.variant],
-      placeholder: props.placeholder
-    }
-    if (props.submit) {
-      config.modules.keyboard.bindings.submit = {
-        key: 'Enter',
-        ctrlKey: true,
-        handler: () => emit('submit')
-      }
-    }
-    if (config.modules.toolbar && 'handlers' in config.modules.toolbar) {
-      config.modules.toolbar.handlers.image = () => {
-        if (!editor) return
-        const range = editor.getSelection()
-        if (!range) return
-        const value = prompt('please copy paste the image url here.')
-        if (value) {
-            editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
-        }
-      }
-    }
-    config.modules.mention.source = mentionSource
-    editor = new Quill(editorElement.value, config)
-    editor.on('text-change', () => {
-      emit('update:modelValue', editor?.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Disallow non-beaking spaces - they often show up by accident
-    })
-    if (props.setFocus) focus()
-    editor.root.addEventListener('focus', () => emit('focus'))
-    editor.root.addEventListener('blur', () => emit('blur'))
+  if (!editorElement.value) throw new Error('Richtext editor element not available')
+  editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
+  const config: QuillOptions = {
+    ...variants[props.variant],
+    placeholder: props.placeholder
   }
+  if (props.submit) {
+    config.modules.keyboard.bindings.submit = {
+      key: 'Enter',
+      ctrlKey: true,
+      handler: () => emit('submit')
+    }
+  }
+  if (config.modules.toolbar && 'handlers' in config.modules.toolbar) {
+    config.modules.toolbar.handlers.image = () => {
+      if (!editor) return
+      const range = editor.getSelection()
+      if (!range) return
+      const value = prompt('please copy paste the image url here.')
+      if (!value) return
+      editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
+    }
+  }
+  config.modules.mention.source = mentionSource
+  editor = new Quill(editorElement.value, config)
+  editor.on('text-change', async () => {
+    if (!editor) return console.error('Quill text-change event triggered, but editor is not available')
+    emit('update:modelValue', editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Replace all non-beaking spaces - they often show up by accident
+  })
+  if (props.setFocus) focus()
+  editor.root.addEventListener('focus', () => emit('focus'))
+  editor.root.addEventListener('blur', () => emit('blur'))
 })
 
 function focus () {
@@ -207,6 +198,21 @@ defineExpose({
   setText
 })
 </script>
+
+<template>
+  <div class="richtext-editor" ref="rootElement">
+    <div ref="editorElement"></div>
+    <p v-if="errors" class="text-error">
+      {{ errors.join(', ') }}
+    </p>
+    <slot name="controls"></slot>
+    <div class="btn-controls" v-if="submit && !$slots.controls">
+      <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
+        {{ submitText || t('save') }}
+      </v-btn>
+    </div>
+  </div>
+</template>
 
 <style lang="sass">
 @import quill/dist/quill.core.css
