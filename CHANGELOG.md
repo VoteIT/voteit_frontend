@@ -7,7 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.18.0 (UNRELEASED)
 - WebSocket / Envelope integration rewritten, using `envelope-client` library.
 
-## 0.17.3 (2023-??-??)
+## 0.17.3 (2023-09-07)
 - Add simple keyboard navigation to Plenary view
 
 ## 0.17.2 (2023-09-04)
