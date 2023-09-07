@@ -7,6 +7,9 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.18.0 (UNRELEASED)
 - WebSocket / Envelope integration rewritten, using `envelope-client` library.
 
+## 0.17.3 (2023-??-??)
+- Add simple keyboard navigation to Plenary view
+
 ## 0.17.2 (2023-09-04)
 - Fix Repeated Schulze creation form [#221](https://github.com/VoteIT/voteit_frontend/issues/221)
 - Always fetch available transitions when opening workflow menu [#316](https://github.com/VoteIT/voteit_frontend/issues/316)

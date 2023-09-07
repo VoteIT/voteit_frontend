@@ -65,6 +65,8 @@ import useMeetingChannel from '../meetings/useMeetingChannel'
 import { tagClickEvent } from '../meetings/useTags'
 
 import usePlenary from './usePlenary'
+import { onKeyStroke } from '@vueuse/core'
+import { map, range } from 'itertools'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
@@ -120,4 +122,21 @@ onMounted(() => {
 onBeforeUnmount(() => {
   tagClickEvent.off(selectTag)
 })
+
+// 1-9 selects or deselects (w altKey) proposals in order
+onKeyStroke(map(range(1, 10), String), e => {
+  e.preventDefault()
+  const num = Number(e.key) - 1
+  const proposal = e.altKey
+    ? selectedProposals.value.at(num)
+    : pool.value.at(num)
+  if (!proposal) return
+  if (e.altKey) deselectProposal(proposal)
+  else selectProposal(proposal)
+})
+
+// Esc to deselect all proposals
+onKeyStroke('Escape', clearSelected)
+// 'n' to select next proposal text tag
+onKeyStroke('n', () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value))
 </script>
