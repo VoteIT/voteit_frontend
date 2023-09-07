@@ -70,10 +70,13 @@ import usePlenary from './usePlenary'
 import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
 import { PollPlugin } from '../polls/registry'
+import { onKeyStroke } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 
 const { getState } = pollType.useWorkflows()
 
 const { t } = useI18n()
+const router = useRouter()
 const { meetingId, meetingPath } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, agendaItemPath, canChangeAgendaItem, nextPollTitle } = useAgendaItem(agendaId)
@@ -115,7 +118,7 @@ const protectedProposalStates = computed(() => {
 const working = ref(false)
 async function createPoll (method: Poll['method_name'], settings: PollMethodSettings | null) {
   working.value = true
-  const pollData: PollStartData = {
+  const pollData: Omit<PollStartData, 'p_ord'> = {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
     title: nextPollTitle.value as string,
@@ -194,4 +197,12 @@ const pollMenu = computed<MenuItem[]>(() => {
     ...pollStateToMenu(PollState.Finished)
   ]
 })
+
+/* Agenda navigation */
+function navigateAgendaItem (aid?: number) {
+  if (!agendaItem) return
+  router.push({ name: 'Plenary', params: { id: meetingId.value, aid } })
+}
+onKeyStroke('ArrowLeft', () => navigateAgendaItem(previousAgendaItem.value?.pk))
+onKeyStroke('ArrowRight', () => navigateAgendaItem(nextAgendaItem.value?.pk))
 </script>
