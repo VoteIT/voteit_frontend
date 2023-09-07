@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.17.3 (2023-??-??)
+## 0.17.3 (2023-09-07)
 - Add simple keyboard navigation to Plenary view
 
 ## 0.17.2 (2023-09-04)
