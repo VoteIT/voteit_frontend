@@ -240,9 +240,12 @@ function presenceFilter ({ pk }: User) {
 }
 
 /* Filter for RoleMatrix */
-const participantFilter = reactive({
+const participantFilter = reactive<{
+  roles: string[],
+  search: string | null
+}>({
   roles: [],
-  search: ''
+  search: null
 })
 function filterParticipants ({ user, assigned }: UserContextRoles) {
   const { roles, search } = participantFilter

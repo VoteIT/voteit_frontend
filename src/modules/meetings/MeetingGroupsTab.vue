@@ -4,6 +4,10 @@
       {{ t('meeting.groups.help') }}
     </v-alert>
     <v-toolbar :title="t('meeting.groups.groups')" color="secondary">
+      <v-btn class="mr-2 d-none d-md-inline" :variant="groupFilter.open ? 'elevated' : 'text'" @click="groupFilter.open = !groupFilter.open" :color="groupFilter.open ? 'secondary-lighten-2' : undefined" >
+        <v-icon start>mdi-filter-menu</v-icon>
+        {{ t('filter') }}
+      </v-btn>
       <template v-if="canChangeMeeting">
         <DefaultDialog :title="t('meeting.groups.import')">
           <template #activator="{ props }">
@@ -28,7 +32,7 @@
             </SchemaForm>
           </template>
         </DefaultDialog>
-        <v-menu v-if="meetingGroups.length">
+        <v-menu v-if="orderedMeetingGroups.length">
           <template #activator="{ props }">
             <v-btn prepend-icon="mdi-download" v-bind="props">
               {{ t('download') }}
@@ -66,6 +70,14 @@
         </DefaultDialog>
       </template>
     </v-toolbar>
+    <v-expand-transition>
+      <v-sheet v-show="groupFilter.open" color="secondary" class="rounded-b">
+        <div class="pa-4">
+          <v-text-field :label="t('search')" v-model="groupFilter.search" clearable />
+          <v-switch :label="t('meeting.groups.filterMine')" class="flex-grow-0" hide-details v-model="groupFilter.mine" />
+        </div>
+      </v-sheet>
+    </v-expand-transition>
     <v-pagination v-if="groupChunks.length > 1" v-model="currentPage" :length="groupChunks.length" />
     <v-table>
       <thead>
@@ -93,7 +105,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="group in groupChunks[currentPage - 1]" :key="group.pk">
+        <tr v-for="group in groupChunks[currentPage - 1]" :key="group.pk" :class="group.isMember ? 'bg-secondary-lighten-2' : undefined">
           <td>
             {{ group.title }}
           </td>
@@ -116,7 +128,7 @@
             <component v-if="component" :is="component" :group="group" />
           </td>
           <td v-if="allTags.size">
-            <Tag v-for="tag in group.tags" :key="tag" :name="tag" class="mr-1" disabled />
+            <Tag v-for="tag in group.tags" :key="tag" :name="tag" class="mr-1" />
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>
@@ -172,8 +184,8 @@
 
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
-import { chunk } from 'lodash'
-import { computed, provide, ref, watch } from 'vue'
+import { chunk, orderBy } from 'lodash'
+import { computed, onBeforeUnmount, onBeforeMount, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getApiLink } from '@/utils/restApi'
@@ -193,13 +205,69 @@ import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
-import { TagsKey } from './useTags'
+import { TagsKey, tagClickEvent } from './useTags'
+import useUserDetails from '../organisations/useUserDetails'
+import { getFullName } from '@/utils'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const { user } = useAuthentication()
+const { getUser } = useUserDetails()
 const rules = useRules(t)
+
+const groupFilter = reactive<{
+  mine: boolean,
+  open: boolean,
+  search: string | null
+}>({
+  mine: false,
+  open: false,
+  search: null
+})
+
+// Set search query on tag click
+function tagClick (tag: string) {
+  groupFilter.open = true
+  groupFilter.search = '#' + tag
+}
+onBeforeMount(() => tagClickEvent.on(tagClick))
+onBeforeUnmount(() => tagClickEvent.on(tagClick))
+
+function searchGroup ({ tags, title, members }: (typeof meetingGroups.value)[number]) {
+  if (!groupFilter.search) return true
+  const query = groupFilter.search.toLowerCase()
+  // Start by title search (cheapest)
+  if (title.toLowerCase().includes(query)) return true
+  // Tags are always lowercase
+  if (tags.some(tag => ('#' + tag).includes(query))) return true
+  // Lastly, search members
+  return (members.some(id => {
+    const user = getUser(id)
+    if (!user) return false
+    return (
+      !!user.userid?.includes(query) ||
+      getFullName(user).toLowerCase().includes(query)
+    )
+  }))
+}
+
+const orderedMeetingGroups = computed(() => {
+  return orderBy(
+    meetingGroups.value
+      .map(g => ({
+        ...g,
+        isMember: g.members.includes(user.value!.pk)
+      }))
+      .filter(g => {
+        if (groupFilter.mine && !g.isMember) return false
+        if (groupFilter.search && !searchGroup(g)) return false
+        return true
+      }),
+    'isMember',
+    'desc'
+  )
+})
 
 const columns = computed(() => {
   if (!meeting.value) return []
@@ -251,7 +319,7 @@ async function createGroups (data: { groups: string }) {
 // Paginate
 const GROUPS_PER_PAGE = 20
 const currentPage = ref(1)
-const groupChunks = computed(() => chunk(meetingGroups.value, GROUPS_PER_PAGE))
+const groupChunks = computed(() => chunk(orderedMeetingGroups.value, GROUPS_PER_PAGE))
 watch(groupChunks, chunks => {
   const maxPage = chunks.length + 1
   if (currentPage.value > maxPage) currentPage.value = maxPage
