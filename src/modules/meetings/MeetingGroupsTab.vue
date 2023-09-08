@@ -74,7 +74,7 @@
       <v-sheet v-show="groupFilter.open" color="secondary" class="rounded-b">
         <div class="pa-4">
           <v-text-field :label="t('search')" v-model="groupFilter.search" clearable />
-          <v-switch :label="t('meeting.groups.filterMine')" class="flex-grow-0" hide-details v-model="groupFilter.mine" />
+          <v-switch :label="t('meeting.groups.filterMine')" hide-details v-model="groupFilter.mine" />
         </div>
       </v-sheet>
     </v-expand-transition>
