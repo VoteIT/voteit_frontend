@@ -21,8 +21,22 @@ export const socket = new Socket(
   }
 )
 
+/**
+ * Ping the socket server to notify backend that user is still active.
+ * Only if page is visible, though.
+ */
+function sendPing () {
+  if (document.visibilityState === 'hidden') return
+  try {
+    socket.send('s.ping')
+  } catch {
+    // If it fails here, socket is probably dead. That's ok.
+  }
+}
+
+// TODO Drop this when backend is able to handle user connectivity on it's own
 socket.addHeartbeat(
-  () => socket.send('s.ping'),
+  sendPing,
   OUTGOING_HEARTBEAT_MS,
   'outgoing'
 )
