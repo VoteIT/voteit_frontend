@@ -261,10 +261,15 @@ const scopeItems = computed(() => {
 function getRoleIcon (role: MeetingRole) {
   return meetingIcons[role]
 }
-const inviteFilter = reactive({
+const inviteFilter = reactive<{
+  roles: string[],
+  exactRoles: boolean,
+  search: string | null,
+  states: string[]
+}>({
   roles: ['participant'],
   exactRoles: false,
-  search: '',
+  search: null,
   states: ['open']
 })
 const stateLabels = computed(() => {
@@ -293,7 +298,7 @@ const allInvitesSelected = computed({
 })
 
 function search (inv: MeetingInvite) {
-  const searchLower = inviteFilter.search.toLocaleLowerCase()
+  const searchLower = inviteFilter.search?.toLocaleLowerCase()
   return !searchLower || Object.values(inv.user_data).some(data => data.toLocaleLowerCase().includes(searchLower))
 }
 
