@@ -1,4 +1,4 @@
-import ContentType from '@/contentTypes/ContentType'
+import { BaseContentType } from '@/contentTypes/ContentType'
 
 interface ActiveChangedMsg {
   active: boolean
@@ -6,6 +6,6 @@ interface ActiveChangedMsg {
   user: number
 }
 
-export const activeUserType = new ContentType<ActiveChangedMsg>({
+export const activeUserType = new BaseContentType<ActiveChangedMsg>({
   name: 'active_user'
 })

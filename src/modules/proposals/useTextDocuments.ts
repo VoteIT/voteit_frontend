@@ -5,7 +5,10 @@ import { ProposalText, proposalTextType } from './contentTypes'
 
 const proposalTexts = reactive<Map<number, ProposalText>>(new Map())
 
-proposalTextType.updateMap(proposalTexts)
+proposalTextType.updateMap(
+  proposalTexts,
+  { agenda_item: 'agenda_item' }
+)
 
 type DocFilter = (document: ProposalText) => boolean
 

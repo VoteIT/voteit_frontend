@@ -18,12 +18,12 @@ enum HTTPMethod {
   Delete = 'delete'
 }
 
-export default class ContentAPI<T, K=number> {
+export default class ContentAPI<T extends { pk?: number, state?: string }, K=number> {
   private endpoint: string
-  private workflowStates?: WorkflowState[]
+  private workflowStates?: WorkflowState<T['state']>[]
   private config: RestApiConfig
 
-  constructor (endpoint: string, workflowStates?: WorkflowState[], config?: RestApiConfig) {
+  constructor (endpoint: string, workflowStates?: WorkflowState<T['state']>[], config?: RestApiConfig) {
     this.endpoint = endpoint
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
     this.workflowStates = workflowStates

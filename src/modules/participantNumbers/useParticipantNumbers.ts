@@ -3,9 +3,12 @@ import { computed, reactive, Ref } from 'vue'
 import { participantNumberType } from './contentTypes'
 import { ParticipantNumber } from './types'
 
-const participantNumberStore = reactive<Map<number, ParticipantNumber>>(new Map())
+const participantNumberStore = reactive(new Map<number, ParticipantNumber>())
 
-participantNumberType.updateMap(participantNumberStore)
+participantNumberType.updateMap(
+  participantNumberStore,
+  { meeting: 'meeting' }
+)
 
 export default function useParticipantNumbers (meeting: Ref<number>) {
   const participantNumbers = computed(() => filter(

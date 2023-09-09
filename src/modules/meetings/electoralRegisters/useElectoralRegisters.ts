@@ -9,8 +9,10 @@ import type { ElectoralRegister, ErMethod } from './types'
 // Needs reactive, so that permission checks are run again when an ER is inserted.
 const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
 
-electoralRegisterType
-  .updateMap(registers as Map<number, ElectoralRegister>) // Don't bother about that null value. That's ok.
+electoralRegisterType.updateMap(
+  registers as Map<number, ElectoralRegister>, // Don't bother about that null value. That's ok.
+  { meeting: 'meeting', test: 'pk' }
+)
 
 const _erMethods = ref<ErMethod[] | null>(null)
 
@@ -19,10 +21,6 @@ async function fetchErMethods () {
     const { data } = await erMethodType.api.list()
     _erMethods.value = data
   } catch {} // TODO
-}
-
-function clearRegisters () {
-  registers.clear()
 }
 
 function getErMethod (name: string) {
@@ -123,7 +121,6 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     erMethodWeighted,
     erMethods,
     sortedRegisters,
-    clearRegisters,
     getErMethod,
     getRegister,
     getWeightInCurrent,

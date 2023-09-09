@@ -11,14 +11,19 @@ export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
 const speakers = reactive<Map<number, Speaker>>(new Map())
 
-speakerSystemType
-  .updateMap(speakerSystems)
-  .getChannel('sls').onLeave(pk => {
-    console.log('leaving', pk, 'TODO: Clean up speakerLists, but only if they\'re not protected from other channels. This will need some architecture.')
-  })
+speakerSystemType.updateMap(
+  speakerSystems,
+  { meeting: 'meeting' }
+)
 
-speakerListType.updateMap(speakerLists)
-speakerType.updateMap(speakers)
+speakerListType.updateMap(
+  speakerLists,
+  { sls: 'speaker_system', agenda_item: 'agenda_item' }
+)
+speakerType.updateMap(
+  speakers
+  // FIXME Sent on sls channel, but has no attr to identify channel directly
+)
 
 function isCurrentSpeaker (speaker: Speaker): speaker is CurrentSpeaker {
   return !speaker.seconds && !!speaker.started

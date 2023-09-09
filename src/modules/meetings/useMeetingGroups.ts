@@ -11,13 +11,19 @@ import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 
 const meetingGroups = reactive(new Map<number, MeetingGroup>())
-meetingGroupType.updateMap(meetingGroups)
+meetingGroupType.updateMap(
+  meetingGroups,
+  { meeting: 'meeting' }
+)
 
 const groupRoles = reactive(new Map<number, GroupRole>())
 groupRoleType.updateMap(groupRoles)
 
 const groupMemberships = reactive(new Map<number, GroupMembership>())
-groupMembershipType.updateMap(groupMemberships)
+groupMembershipType.updateMap(
+  groupMemberships
+  // FIXME Sent on meeting channel, but has no attr to identify channel directly
+)
 
 function getMeetingGroup (pk: number) {
   return meetingGroups.get(pk)

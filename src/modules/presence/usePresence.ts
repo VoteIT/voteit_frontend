@@ -11,8 +11,14 @@ import { canAddPresenceCheck } from './rules'
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
 
-presenceCheckType.updateMap(presenceChecks)
-presenceType.updateMap(presence)
+presenceCheckType.updateMap(
+  presenceChecks,
+  { meeting: 'meeting' }
+)
+presenceType.updateMap(
+  presence,
+  { presence_check: 'presence_check' }
+)
 
 const { user } = useAuthentication()
 

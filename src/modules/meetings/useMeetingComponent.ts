@@ -6,7 +6,10 @@ import { ComponentBase } from './types'
 
 const meetingComponents = reactive(new Map<number, ComponentBase>())
 
-meetingComponentType.updateMap(meetingComponents)
+meetingComponentType.updateMap(
+  meetingComponents,
+  { meeting: 'meeting' }
+)
 
 export default function useMeetingComponent<T extends ComponentBase> (meeting: Ref<number>, name: string) {
   function isNamedComponent (component: ComponentBase): component is T {

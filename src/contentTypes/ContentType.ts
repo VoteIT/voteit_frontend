@@ -1,5 +1,3 @@
-import { Dictionary } from 'lodash'
-
 import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
 import { ContextRole, RestApiConfig } from '@/composables/types'
@@ -10,13 +8,12 @@ import ContentAPI from './ContentAPI'
 import { AvailableRolesPayload, ContextRolesPayload, RoleChangeMessage, RolesGetMessage } from './messages'
 import { ChannelConfig, WorkflowState } from './types'
 import useWorkflows from './useWorkflows'
+import contentCleanup, { ChannelMap } from './contentCleanup'
 
 type MethodHandler<T> = (item: T) => void
+type PKStateContent = { pk: number, state?: string }
 
-interface CType<T extends Dictionary<unknown>> {
-  // TODO: Can we use something like this to delete data when leaving channels? Some sort of cleanup registry in contentCleanup.ts?
-  // Could get method on envelope-client Socket.channels to get current subscribed channels, to avoid dual registries.
-  // protectMap?: Record<string, keyof T>
+interface CType<T extends Partial<PKStateContent>> {
   states?: WorkflowState<T['state']>[]
   name: string // Content type name in channels
   restEndpoint?: string
@@ -26,18 +23,23 @@ interface CType<T extends Dictionary<unknown>> {
   useSocketApi?: boolean
 }
 
-// TODO T should not extend Dictionary<any>. BaseContent? StateContent?
-export default class ContentType<T extends Dictionary<any> = object, R extends string=string, K extends string | number=number> {
-  readonly contentType: CType<T>
-  methodHandlers: Map<string, MethodHandler<any>>
-  rolesAvailable?: ContextRole[]
+/**
+ * Basic content type, providing a unified access to rest and socket api.
+ * Used for content that has no pk or state.
+ */
+export class BaseContentType<T extends {}, K extends string | number = number> {
+  protected readonly contentType: CType<T>
+  protected methodHandlers: Map<string, MethodHandler<any>>
   private _api?: ContentAPI<T, K>
-  private _channel?: Channel
 
   constructor (contentType: CType<T>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
     socket.addTypeHandler(this.name, this.handleMessage.bind(this))
+  }
+
+  public get name () {
+    return this.contentType.name
   }
 
   private handleMessage (msg: ChannelsMessage) {
@@ -46,49 +48,8 @@ export default class ContentType<T extends Dictionary<any> = object, R extends s
     if (handler) handler(msg.p)
   }
 
-  public updateMap (map: Map<number, T>) {
-    return this
-      .onChanged(item => map.set(item.pk, item))
-      .onDeleted(item => map.delete(item.pk))
-  }
-
-  public get name () {
-    return this.contentType.name
-  }
-
-  public get workflowStates () {
-    return this.contentType.states
-  }
-
-  public get api () {
-    // Cache an api instance with default settings
-    if (!this._api) this._api = this.getContentApi(this.contentType.restConfig)
-    return this._api
-  }
-
-  public get channel () {
-    // Cache default channel instance with default settings
-    if (!this._channel) this._channel = this.getChannel(this.name)
-    return this._channel
-  }
-
   public methodCall<RT=T> (method: string, data?: object, config?: ChannelConfig) {
     return socket.call<RT>(`${this.name}.${method}`, data, config)
-  }
-
-  public add (data: Partial<T>, config?: ChannelConfig) {
-    if (this.contentType.useSocketApi) return this.methodCall('add', data, config)
-    return this.api.add(data)
-  }
-
-  public update (pk: K, data: Partial<T>, config?: ChannelConfig) {
-    if (this.contentType.useSocketApi) return this.methodCall('change', { pk, kwargs: data }, config)
-    return this.api.patch(pk, data)
-  }
-
-  public delete (pk: K, config?: ChannelConfig) {
-    if (this.contentType.useSocketApi) return this.methodCall('delete', { pk }, config)
-    return this.api.delete(pk)
   }
 
   public on<LT=T> (method: string, fn: MethodHandler<LT>, override = true) {
@@ -106,15 +67,64 @@ export default class ContentType<T extends Dictionary<any> = object, R extends s
     return this.on('deleted', fn)
   }
 
-  public getChannel (name?: string, config?: ChannelConfig): Channel {
+  public getContentApi (config?: RestApiConfig) {
+    if (!this.contentType.restEndpoint) throw new Error(`Content Api not configured for Content Type ${this.name}`)
+    return new ContentAPI<T, K>(this.contentType.restEndpoint, this.contentType.states, config)
+  }
+
+  public get api () {
+    // Cache an api instance with default settings
+    if (!this._api) this._api = this.getContentApi(this.contentType.restConfig)
+    return this._api
+  }
+}
+
+/**
+ * Default content type, providing a unified access to rest and socket api, workflow states and possibly roles.
+ * Used for content that has pk and possibly state.
+ */
+export default class ContentType<T extends PKStateContent = { pk: number }, R extends string = string, K extends string | number = number> extends BaseContentType<T, K> {
+  rolesAvailable?: ContextRole[]
+  private _channel?: Channel
+
+  public updateMap (map: Map<number, T>, channelMap?: ChannelMap<T>) {
+    if (channelMap) {
+      contentCleanup.register(map, channelMap)
+    }
+    return this
+      .onChanged(item => map.set(item.pk, item))
+      .onDeleted(item => map.delete(item.pk))
+  }
+
+  public get workflowStates () {
+    return this.contentType.states
+  }
+
+  private getChannel (name?: string, config?: ChannelConfig): Channel {
     name = name ?? this.name
     if (!this.contentType.channels?.includes(name)) throw new Error(`Content Type "${this.name}" has no channel "${name}"`)
     return new Channel(name, config)
   }
 
-  public getContentApi (config?: RestApiConfig): ContentAPI<T, K> {
-    if (!this.contentType.restEndpoint) throw new Error(`Content Api not configured for Content Type ${this.name}`)
-    return new ContentAPI<T, K>(this.contentType.restEndpoint, this.contentType.states, config)
+  public get channel () {
+    // Cache default channel instance with default settings
+    if (!this._channel) this._channel = this.getChannel(this.name)
+    return this._channel
+  }
+
+  public add (data: Partial<T>, config?: ChannelConfig) {
+    if (this.contentType.useSocketApi) return this.methodCall('add', data, config)
+    return this.api.add(data)
+  }
+
+  public update (pk: K, data: Partial<T>, config?: ChannelConfig) {
+    if (this.contentType.useSocketApi) return this.methodCall('change', { pk, kwargs: data }, config)
+    return this.api.patch(pk, data)
+  }
+
+  public delete (pk: K, config?: ChannelConfig) {
+    if (this.contentType.useSocketApi) return this.methodCall('delete', { pk }, config)
+    return this.api.delete(pk)
   }
 
   public useWorkflows () {

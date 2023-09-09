@@ -58,7 +58,7 @@ export interface Presence {
 }
 
 export interface Vote {
-  pk: Number
+  pk: number
   abstain: boolean
   vote: object
   poll: number

@@ -1,8 +1,8 @@
 import { filter } from 'itertools'
 import { reactive } from 'vue'
 
-import { agendaItemType } from '../agendas/contentTypes'
-import { agendaDeletedEvent } from '../agendas/events'
+// import { agendaItemType } from '../agendas/contentTypes'
+// import { agendaDeletedEvent } from '../agendas/events'
 import { Proposal } from '../proposals/types'
 
 import { discussionPostType } from './contentTypes'
@@ -10,20 +10,23 @@ import { DiscussionPost } from './types'
 
 const discussions = reactive<Map<number, DiscussionPost>>(new Map())
 
-discussionPostType.updateMap(discussions)
+discussionPostType.updateMap(
+  discussions,
+  { agenda_item: 'agenda_item' }
+)
 
-function deleteForAgendaItem (uriOrPk: number | string) {
-  const pk = typeof uriOrPk === 'string' ? Number(uriOrPk.split('/')[1]) : uriOrPk
-  for (const post of discussions.values()) {
-    if (post.agenda_item === pk) {
-      discussions.delete(post.pk)
-    }
-  }
-}
-// Automatically clear proposals for deleted (or made private) agenda_items
-agendaDeletedEvent.on(deleteForAgendaItem)
-// Automatically clear proposals for agenda item when unsubscribed
-agendaItemType.channel.onLeave(deleteForAgendaItem)
+// function deleteForAgendaItem (uriOrPk: number | string) {
+//   const pk = typeof uriOrPk === 'string' ? Number(uriOrPk.split('/')[1]) : uriOrPk
+//   for (const post of discussions.values()) {
+//     if (post.agenda_item === pk) {
+//       discussions.delete(post.pk)
+//     }
+//   }
+// }
+// Automatically clear discussions for deleted (or made private) agenda_items
+// agendaDeletedEvent.on(deleteForAgendaItem)
+// Automatically clear discussions for agenda item when unsubscribed
+// agendaItemType.channel.onLeave(deleteForAgendaItem)
 
 function getAgendaDiscussions (agendaItem: number, _filter?: (d: DiscussionPost) => boolean) {
   return filter(

@@ -1,4 +1,4 @@
-import ContentType from '@/contentTypes/ContentType'
+import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import { LastRead } from '@/utils/types'
 import { AgendaItem, AgendaBody } from './types'
 import { agendaItemStates } from './workflowStates'
@@ -10,7 +10,7 @@ export const agendaItemType = new ContentType<AgendaItem>({
   restEndpoint: 'agenda-items/'
 })
 
-export const lastReadType = new ContentType<LastRead>({
+export const lastReadType = new BaseContentType<LastRead>({
   name: 'last_read',
   useSocketApi: true
 })

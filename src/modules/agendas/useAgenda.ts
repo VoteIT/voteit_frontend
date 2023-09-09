@@ -3,19 +3,22 @@ import { orderBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { AgendaBody, AgendaItem } from '@/modules/agendas/types'
+import { AgendaBody, AgendaItem, AgendaState } from '@/modules/agendas/types'
 import { agendaBodyType, agendaItemType, lastReadType } from './contentTypes'
 import { agendaItemStates } from './workflowStates'
-import { meetingType } from '../meetings/contentTypes'
 import { agendaDeletedEvent } from './events'
 import { Maybe } from 'itertools/types'
+import { channelLeftEvent } from '@/composables/events'
 
 const agendaBodies = reactive<Map<number, AgendaBody>>(new Map())
 export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
 agendaItemType
-  .onChanged(agendaItem => agendaItems.set(agendaItem.pk, agendaItem))
+  .updateMap(
+    agendaItems,
+    { meeting: 'meeting' }
+  )
   .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
 
 // Delete as first event
@@ -24,32 +27,35 @@ agendaDeletedEvent.on(pk => {
   agendaBodies.delete(pk)
 })
 
-agendaBodyType.updateMap(agendaBodies)
+agendaBodyType.updateMap(
+  agendaBodies,
+  { agenda_item: 'pk' }
+)
 
 /*
 ** Clear agenda when leaving meeting.
 */
-meetingType.channel
-  .onLeave(pk => {
-    for (const agendaItem of agendaItems.values()) {
-      if (agendaItem.meeting === pk) {
-        agendaDeletedEvent.emit(agendaItem.pk)
-        agendaItems.delete(agendaItem.pk)
-      }
-    }
-  })
+// meetingType.channel
+//   .onLeave(pk => {
+//     for (const agendaItem of agendaItems.values()) {
+//       if (agendaItem.meeting === pk) {
+//         agendaDeletedEvent.emit(agendaItem.pk)
+//         agendaItems.delete(agendaItem.pk)
+//       }
+//     }
+//   })
 
 /*
 ** Clear private agenda items when leaving moderators channel.
 */
-meetingType.getChannel('moderators')
-  .onLeave(pk => {
-    for (const agendaItem of agendaItems.values()) {
-      if (agendaItem.meeting === pk && agendaItem.state === 'private') {
-        agendaDeletedEvent.emit(agendaItem.pk)
-      }
+channelLeftEvent.on(({ channelType, pk }) => {
+  if (channelType !== 'moderators') return
+  for (const { meeting, state } of agendaItems.values()) {
+    if (meeting === pk && state === AgendaState.Private) {
+      agendaDeletedEvent.emit(pk)
     }
-  })
+  }
+})
 
 lastReadType
   .onChanged(payload => {

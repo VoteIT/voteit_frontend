@@ -17,8 +17,14 @@ const reactionCounts = reactive<Map<string, number>>(new Map())
 
 const { user } = useAuthentication()
 
-reactionButtonType.updateMap(reactionButtons)
-reactionType.updateMap(reactions)
+reactionButtonType.updateMap(
+  reactionButtons,
+  { meeting: 'meeting' }
+)
+reactionType.updateMap(
+  reactions,
+  { agenda_item: 'agenda_item' }
+)
   .on<ReactionCountMessage>('count', payload => {
     const key = getCountKey(payload.content_type, payload.object_id, payload.button)
     reactionCounts.set(key, payload.count)

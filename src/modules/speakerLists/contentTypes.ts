@@ -1,4 +1,4 @@
-import ContentType from '@/contentTypes/ContentType'
+import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 
 import { SpeakerHistory, SpeakerList, Speaker, SpeakerSystem, SpeakerSystemRole } from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
@@ -23,7 +23,7 @@ export const speakerType = new ContentType<Speaker>({
   restEndpoint: 'speakers/'
 })
 
-export const speakerHistoryType = new ContentType<SpeakerHistory>({
+export const speakerHistoryType = new BaseContentType<SpeakerHistory>({
   name: 'speaker_history',
   restEndpoint: 'speaker-history/'
 })

@@ -3,7 +3,6 @@ import { reactive, computed } from 'vue'
 
 import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '../agendas/events'
-import { meetingType } from '../meetings/contentTypes'
 
 import { pollType, voteType } from './contentTypes'
 import { canVote } from './rules'
@@ -15,7 +14,10 @@ const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType
-  .updateMap(polls)
+  .updateMap(
+    polls,
+    { participants: 'meeting', moderators: 'meeting' }
+  )
   .on<PollStatus>('status', item => {
     const existing = pollStatuses.get(item.pk)
     // Throw away statuses with less votes - in case async order wrong
@@ -29,16 +31,6 @@ pollType
 
 // This is not really a channel, per se...
 voteType.updateMap(userVotes)
-
-/*
-** Clear polls when leaving meeting.
-*/
-meetingType.channel
-  .onLeave(pk => {
-    for (const poll of polls.values()) {
-      if (poll.meeting === pk) polls.delete(poll.pk)
-    }
-  })
 
 /*
 ** Clear private polls when agenda item deleted.

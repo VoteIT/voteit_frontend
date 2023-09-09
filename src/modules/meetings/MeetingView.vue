@@ -9,13 +9,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, provide } from 'vue'
+import { computed, provide } from 'vue'
 
 import Bubbles from '@/modules/meetings/Bubbles.vue'
 
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 
-import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import usePermission from '@/composables/usePermission'
 import useMeeting from './useMeeting'
 import { meetingIdKey } from './injectionKeys'
@@ -24,12 +23,9 @@ const props = defineProps<{ meetingId: number }>()
 
 const meetingId = computed(() => props.meetingId)
 const { canViewMeeting } = useMeeting()
-const { clearRegisters } = useElectoralRegisters(meetingId)
 const { isLoaded } = useMeetingChannel()
 
 usePermission(canViewMeeting)
 provide('context', 'meeting')
 provide(meetingIdKey, meetingId)
-
-onBeforeUnmount(clearRegisters)
 </script>
