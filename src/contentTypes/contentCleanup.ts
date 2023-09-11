@@ -1,7 +1,7 @@
 import { channelLeftEvent } from '@/composables/events'
 import { socket } from '@/utils/Socket'
 
-// Utility type to allow only keys where the property has certain types
+// Utility type to get keys where the property has certain types
 type KeysOfType<T, Value> = keyof {
   [K in keyof T as T[K] extends Value ? K : never]: T[K]
 }
