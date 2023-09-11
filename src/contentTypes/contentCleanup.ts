@@ -2,9 +2,14 @@ import { Dictionary } from 'lodash'
 import { channelLeftEvent } from '@/composables/events'
 import { socket } from '@/utils/Socket'
 
+// Utility type to allow only keys where the property has certain types
+type PickByType<T, Value> = {
+  [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]
+}
+
 type PKContent = { pk: number }
-export type ChannelMap<T extends PKContent> = Dictionary<keyof T>
-type ChannelMapEntry<T extends PKContent> = { map: Map<number, T>, channelMap: ChannelMap<T> }
+export type ChannelMap<T extends PKContent> = Dictionary<keyof PickByType<T, number>>
+type ChannelMapEntry<T extends PKContent> = { channelMap: ChannelMap<T>, map: Map<number, T> }
 const channelMaps: ChannelMapEntry<any>[] = []
 
 /**
@@ -51,6 +56,7 @@ export default {
    */
   register<T extends { pk: number }> (map: Map<number, T>, channelMap: ChannelMap<T>) {
     channelMaps.push({
+      // @ts-expect-error
       channelMap,
       map
     })
