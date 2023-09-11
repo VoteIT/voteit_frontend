@@ -1,14 +1,14 @@
-import { Dictionary } from 'lodash'
 import { channelLeftEvent } from '@/composables/events'
 import { socket } from '@/utils/Socket'
 
 // Utility type to allow only keys where the property has certain types
-type PickByType<T, Value> = {
-  [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]
+type KeysOfType<T, Value> = keyof {
+  [K in keyof T as T[K] extends Value ? K : never]: T[K]
 }
+type Dictionary<T> = { [index: string]: T } // Use 'type' instead of 'interface' Dictionary here
 
 type PKContent = { pk: number }
-export type ChannelMap<T extends PKContent> = Dictionary<keyof PickByType<T, number>>
+export type ChannelMap<T extends PKContent> = Dictionary<KeysOfType<T, number>>
 type ChannelMapEntry<T extends PKContent> = { channelMap: ChannelMap<T>, map: Map<number, T> }
 const channelMaps: ChannelMapEntry<any>[] = []
 
@@ -54,9 +54,8 @@ export default {
    * @param map Map object, mapping the objects primary key to the full object
    * @param channelMap An object, mapping channel types to the attribute on the object pointing to a channels id (number)
    */
-  register<T extends { pk: number }> (map: Map<number, T>, channelMap: ChannelMap<T>) {
+  register<T extends PKContent> (map: Map<number, T>, channelMap: ChannelMap<T>) {
     channelMaps.push({
-      // @ts-expect-error
       channelMap,
       map
     })
