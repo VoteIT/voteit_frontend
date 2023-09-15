@@ -21,8 +21,8 @@ groupRoleType.updateMap(groupRoles)
 
 const groupMemberships = reactive(new Map<number, GroupMembership>())
 groupMembershipType.updateMap(
-  groupMemberships
-  // FIXME Sent on meeting channel, but has no attr to identify channel directly
+  groupMemberships,
+  { meeting: 'm' }
 )
 
 function getMeetingGroup (pk: number) {

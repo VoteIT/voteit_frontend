@@ -128,6 +128,7 @@ export interface GroupRole extends BaseContent {
 }
 
 export interface GroupMembership {
+  m: number // Meeting primary key
   meeting_group: number
   pk: number
   role: null | number

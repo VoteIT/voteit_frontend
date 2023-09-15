@@ -14,6 +14,7 @@ export enum ProposalState {
 interface BaseProposal {
   pk: number
   title: string
+  m: number // Meeting primary key
   name: string
   state: ProposalState
   agenda_item: number

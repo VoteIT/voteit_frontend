@@ -12,8 +12,8 @@ import { proposalType } from './contentTypes'
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
 proposalType.updateMap(
-  proposals
-  // FIXME Sent on meeting channel, but has no attr to identify channel directly
+  proposals,
+  { participants: 'm', moderators: 'm' }
 )
 
 // Automatically clear proposals for meeting when leaving.

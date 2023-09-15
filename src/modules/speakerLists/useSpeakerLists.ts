@@ -21,8 +21,8 @@ speakerListType.updateMap(
   { sls: 'speaker_system', agenda_item: 'agenda_item' }
 )
 speakerType.updateMap(
-  speakers
-  // FIXME Sent on sls channel, but has no attr to identify channel directly
+  speakers,
+  { sls: 'sls' }
 )
 
 function isCurrentSpeaker (speaker: Speaker): speaker is CurrentSpeaker {

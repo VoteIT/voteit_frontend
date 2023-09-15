@@ -10,7 +10,7 @@ type Dictionary<T> = { [index: string]: T } // Use 'type' instead of 'interface'
 type PKContent = { pk: number }
 export type ChannelMap<T extends PKContent> = Dictionary<KeysOfType<T, number>>
 type ChannelMapEntry<T extends PKContent> = { channelMap: ChannelMap<T>, map: Map<number, T> }
-const channelMaps: ChannelMapEntry<any>[] = []
+const channelMaps: ChannelMapEntry<any>[] = [] // Why any?
 
 /**
  * Check if any subscribed channel type and pk is mapped to an attribute of obj

@@ -67,6 +67,7 @@ export interface SpeakerListAddMessage {
 
 export interface QueuedSpeaker {
   pk: number
+  sls: number
   speaker_list: number
   started: string
   user: number
@@ -75,6 +76,7 @@ export interface QueuedSpeaker {
 
 export interface CurrentSpeaker {
   pk: number
+  sls: number
   speaker_list: number
   started: string
   user: number
@@ -83,6 +85,7 @@ export interface CurrentSpeaker {
 
 export interface HistoricSpeaker {
   pk: number
+  sls: number
   speaker_list: number
   started: string
   user: number
