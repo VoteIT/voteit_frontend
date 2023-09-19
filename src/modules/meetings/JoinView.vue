@@ -18,13 +18,14 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeMount, ref } from 'vue'
+<script setup lang="ts">
+import { computed, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
 import { user } from '@/composables/useAuthentication'
+import useDefaults from '@/composables/useDefaults'
 
 import Richtext from '@/components/Richtext.vue'
 import accessPolicies from '@/modules/meetings/accessPolicies'
@@ -37,55 +38,41 @@ import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 import { canBecomeModerator } from './rules'
 
-export default defineComponent({
-  components: { Richtext },
-  inject: ['cols'],
-  setup () {
-    const { t } = useI18n()
-    const { meetingId, meetingPath } = useMeeting()
-    const loader = useLoader('JoinMeeting')
-    const { meetings } = useMeetings(loader.call)
-    const router = useRouter()
-    const policies = ref<AccessPolicy[]>([])
+const { t } = useI18n()
+const { meetingId, meetingPath } = useMeeting()
+const loader = useLoader('JoinMeeting')
+const { meetings } = useMeetings(loader.call)
+const router = useRouter()
+const policies = ref<AccessPolicy[]>([])
+const { cols } = useDefaults()
 
-    const policyComponents = computed(() => {
-      return policies.value
-        .filter(ap => ap.active)
-        .map(policy => ({
-          component: accessPolicies[policy.name],
-          policy
-        }))
-    })
+const policyComponents = computed(() => {
+  return policies.value
+    .filter(ap => ap.active)
+    .map(policy => ({
+      component: accessPolicies[policy.name],
+      policy
+    }))
+})
 
-    const meeting = computed(() => meetings.get(meetingId.value))
-    const canBecomeModeratorMeeting = computed(() => meeting.value && canBecomeModerator())
+const meeting = computed(() => meetings.get(meetingId.value))
+const canBecomeModeratorMeeting = computed(() => meeting.value && canBecomeModerator())
 
-    async function joinAsModerator () {
-      if (!user.value) return console.warn('Anonymous tried to join as moderator')
-      if (await dialogQuery({
-        title: t('join.asModeratorDescription'),
-        theme: ThemeColor.Info
-      })) {
-        await meetingType.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
-        router.push(meetingPath.value)
-      }
-    }
-
-    onBeforeMount(() => {
-      loader.call(async () => {
-        const { data } = await accessPolicyType.api.retrieve(meetingId.value)
-        policies.value = data.policies
-      })
-    })
-
-    return {
-      t,
-      meeting,
-      policies,
-      policyComponents,
-      canBecomeModeratorMeeting,
-      joinAsModerator
-    }
+async function joinAsModerator () {
+  if (!user.value) return console.warn('Anonymous tried to join as moderator')
+  if (await dialogQuery({
+    title: t('join.asModeratorDescription'),
+    theme: ThemeColor.Info
+  })) {
+    await meetingType.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
+    router.push(meetingPath.value)
   }
+}
+
+onBeforeMount(() => {
+  loader.call(async () => {
+    const { data } = await accessPolicyType.api.retrieve(meetingId.value)
+    policies.value = data.policies
+  })
 })
 </script>

@@ -16,12 +16,13 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
-import { defineComponent, onBeforeMount, provide } from 'vue'
+import { onBeforeMount, provide } from 'vue'
 
+import { RoleContextKey } from './injectionKeys'
 import useAuthentication from './composables/useAuthentication'
 import useLoader from './composables/useLoader'
 
@@ -33,43 +34,32 @@ import OnlineStatus from './components/OnlineStatus.vue'
 import useOrganisations from './modules/organisations/useOrganisations'
 import { useRoute, useRouter } from 'vue-router'
 
-export default defineComponent({
-  components: {
-    OnlineStatus,
-    Loader,
-    Alerts,
-    Modal,
-    Dialogs
-  },
-  setup () {
-    const loader = useLoader('App')
-    const { fetchAuthenticatedUser } = useAuthentication()
-    const { fetchOrganisations } = useOrganisations()
-    const route = useRoute()
-    const router = useRouter()
+const loader = useLoader('App')
+const { fetchAuthenticatedUser } = useAuthentication()
+const { fetchOrganisations } = useOrganisations()
+const route = useRoute()
+const router = useRouter()
 
-    onBeforeMount(async () => {
-      try {
-        const [user] = await Promise.all([
-          fetchAuthenticatedUser(),
-          fetchOrganisations()
-        ])
-        if (!user) {
-          if (route.path !== '/') await router.push('/') // Reroute unauthenticated user to start page
-          loader.setLoaded()
-        }
-      } catch {
-        loader.setLoaded(false)
-      }
-    })
-    provide('context', 'organisation') // Default context name
-    provide('cols', {
-      default: {
-        cols: 12,
-        lg: 8,
-        offsetLg: 2
-      }
-    })
+onBeforeMount(async () => {
+  try {
+    const [user] = await Promise.all([
+      fetchAuthenticatedUser(),
+      fetchOrganisations()
+    ])
+    if (!user) {
+      if (route.path !== '/') await router.push('/') // Reroute unauthenticated user to start page
+      loader.setLoaded()
+    }
+  } catch {
+    loader.setLoaded(false)
+  }
+})
+provide(RoleContextKey, 'organisation') // Default context name
+provide('cols', {
+  default: {
+    cols: 12,
+    lg: 8,
+    offsetLg: 2
   }
 })
 </script>

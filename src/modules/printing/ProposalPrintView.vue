@@ -52,9 +52,11 @@
 
 <script lang="ts" setup>
 import { DateTime } from 'luxon'
-import { computed, inject, nextTick, onBeforeMount, onBeforeUnmount, onMounted } from 'vue'
+import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+
+import useDefaults from '@/composables/useDefaults'
 
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
@@ -64,10 +66,9 @@ import useProposals from '../proposals/useProposals'
 
 import usePrinting from './usePrinting'
 
-const cols = inject('cols', { default: {} })
-
 const { t } = useI18n()
 useMeetingTitle('Printing') // TODO
+const { cols } = useDefaults()
 const { meetingId } = useMeeting()
 const { getMeetingGroup } = useMeetingGroups(meetingId)
 const agendaId = computed(() => Number(route.params.aid))

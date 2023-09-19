@@ -49,10 +49,13 @@
 import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { flatten } from 'lodash'
+import { onKeyStroke } from '@vueuse/core'
 
+import { RoleContextKey } from '@/injectionKeys'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 import { WorkflowState } from '@/contentTypes/types'
+
 import useAgenda from '../agendas/useAgenda'
 import useProposals from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
@@ -65,12 +68,11 @@ import useMeetingChannel from '../meetings/useMeetingChannel'
 import { tagClickEvent } from '../meetings/useTags'
 
 import usePlenary from './usePlenary'
-import { onKeyStroke } from '@vueuse/core'
 import { map, range } from 'itertools'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 
-provide('context', 'meeting')
+provide(RoleContextKey, 'meeting')
 provide(LastReadKey, ref(new Date()))
 
 const { t } = useI18n()

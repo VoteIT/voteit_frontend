@@ -71,15 +71,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-// import { openModalEvent } from '@/utils/events'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
-import { meetingIdKey } from '../meetings/injectionKeys'
+import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
 import ReactionEditModal from './ReactionEditModal.vue'
@@ -89,35 +87,21 @@ import RealReactionButton from './RealReactionButton.vue'
 
 const { t } = useI18n()
 const { user } = useAuthentication()
-const meetingId = inject(meetingIdKey)
-if (!meetingId) throw new Error('Reaction buttons require meeting context')
+const { meetingId } = useMeeting()
 const reactions = useReactions()
 
 const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
 
 async function setContentType (button: ReactionButton, contentType: string, value: boolean) {
-  // eslint-disable-next-line camelcase
   const allowed_models = value
     ? [contentType, ...button.allowed_models]
     : button.allowed_models.filter(ct => ct !== contentType)
-  // eslint-disable-next-line camelcase
   await reactionButtonType.api.patch(button.pk, { allowed_models })
 }
 
 async function setActive (button: ReactionButton, active: boolean) {
   await reactionButtonType.api.patch(button.pk, { active })
 }
-
-// function editReaction (button?: ReactionButton) {
-//   openModalEvent.emit({
-//     component: ReactionEditModal,
-//     data: button,
-//     title: button
-//       ? t('reaction.editButton')
-//       : t('reaction.addButton'),
-//     dismissable: false
-//   })
-// }
 
 const model = reactive<Record<number, boolean>>({})
 </script>

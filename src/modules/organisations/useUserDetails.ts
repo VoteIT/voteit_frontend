@@ -1,3 +1,4 @@
+import { RoleContextKey } from '@/injectionKeys'
 import { MeetingRoles, OrganisationRoles } from '@/composables/types'
 import restApi from '@/utils/restApi'
 import { computed, inject, reactive, watch } from 'vue'
@@ -13,7 +14,7 @@ let loading = false
 const TIMEOUT = 50
 
 export default function useUserDetails () {
-  const context = inject<string>('context')
+  const context = inject(RoleContextKey, 'organisation')
   const { params } = useRoute()
   const contextId = computed(() => params.id ? Number(params.id) : undefined)
   const endpoint = `${context}-roles/`

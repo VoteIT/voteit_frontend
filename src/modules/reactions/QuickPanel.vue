@@ -20,13 +20,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
 import UserList from '@/components/UserList.vue'
 
-import { meetingIdKey } from '../meetings/injectionKeys'
+import useMeeting from '../meetings/useMeeting'
 
 import RealReactionButton from './RealReactionButton.vue'
 import useReactions from './useReactions'
@@ -34,8 +34,7 @@ import useReactions from './useReactions'
 const { t } = useI18n()
 
 const reactions = useReactions()
-const meetingId = inject(meetingIdKey)
-if (!meetingId) throw new Error('Meeting context required for Reaction Buttons')
+const { meetingId } = useMeeting()
 
 const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
 const model = reactive<Record<number, boolean>>({})

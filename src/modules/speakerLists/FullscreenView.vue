@@ -50,6 +50,7 @@ import { computed, defineComponent, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
+import { RoleContextKey } from '@/injectionKeys'
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
 import useMeetingChannel from '../meetings/useMeetingChannel'
@@ -63,7 +64,7 @@ import useSpeakerSystem from './useSpeakerSystem'
 
 export default defineComponent({
   setup () {
-    provide('context', 'meeting')
+    provide(RoleContextKey, 'meeting')
     const { t } = useI18n()
     const route = useRoute()
     const speakerSystemId = computed(() => Number(route.params.system))

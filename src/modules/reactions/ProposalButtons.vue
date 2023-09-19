@@ -5,16 +5,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 
-import { meetingIdKey } from '../meetings/injectionKeys'
+import useMeeting from '../meetings/useMeeting'
 import { Proposal } from '../proposals/types'
 
 import useReactions from './useReactions'
 import ReactionButton from './ReactionButton.vue'
 
-const meetingId = inject(meetingIdKey)
-if (!meetingId) throw new Error('Reaction buttons requires meeting context')
+const { meetingId } = useMeeting()
 const { getMeetingButtons } = useReactions()
 
 defineProps<{ proposal: Proposal }>()
