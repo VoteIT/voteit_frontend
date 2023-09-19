@@ -81,7 +81,7 @@ const subscribePk = computed(() => {
   if (isOngoing.value && following.value) return props.poll.pk
   return undefined
 })
-useChannel('poll', subscribePk, { leaveDelay: 0, leaveOnUnmount: true })
+useChannel('poll', subscribePk, { leaveDelay: 0 })
 
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
 const pollPath = computed(() => `${meetingPath.value}/polls/${props.poll.pk}/${slugify(props.poll.title)}`)

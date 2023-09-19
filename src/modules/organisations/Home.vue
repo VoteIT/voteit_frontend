@@ -49,7 +49,7 @@ const subscribeOrganisationId = computed(() => {
 })
 const loader = useLoader(
   'Home',
-  useChannel('organisation', subscribeOrganisationId, { leaveOnUnmount: true }).promise
+  useChannel('organisation', subscribeOrganisationId).promise
 )
 
 const { existingMeetingYears, meetings, meetingStateCount, participatingClosedMeetings, participatingOngoingMeetings, participatingUpcomingMeetings, otherMeetingsExist, filterMeetings } = useMeetings(loader.call)
