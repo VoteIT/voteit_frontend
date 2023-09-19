@@ -1,80 +1,25 @@
-<template>
-  <v-sheet rounded elevation="4" class="discussion rounded-ts-xl" :class="{ isUnread }">
-    <div class="d-flex" v-if="meetingGroup">
-      <v-avatar color="secondary" class="mr-2" icon="mdi-account-multiple" />
-      <div class="flex-grow-1">
-        {{ meetingGroup.title }}<br/>
-        <Moment :date="p.created" />
-      </div>
-    </div>
-    <div class="d-flex" v-else-if="p.author">
-      <UserAvatar popup :pk="p.author" class="mr-2" />
-      <div class="flex-grow-1">
-        <User :pk="p.author" /><br/>
-        <Moment :date="p.created" />
-      </div>
-    </div>
-    <div class="d-flex" v-else>
-      <v-avatar color="secondary" class="mr-2">
-        ?
-      </v-avatar>
-      <div class="flex-grow-1">
-        {{ t('unknownUser') }}<br/>
-        <Moment :date="p.created" />
-      </div>
-    </div>
-    <div v-if="editing">
-      <RichtextEditor v-if="editing" v-model="body" />
-      <TagEdit v-model="tags" />
-      <br/>
-      <PostAs v-show="canPostAs" v-model="author" class="my-2" />
-      <div class="d-flex mt-1">
-        <v-spacer />
-        <v-btn @click="cancel" variant="text" size="small">
-          {{ t('cancel') }}
-        </v-btn>
-        <v-btn type="submit" color="primary" @click="save" size="small">
-          {{ t('save') }}
-        </v-btn>
-      </div>
-    </div>
-    <div v-else>
-      <Richtext :object="p" />
-      <div class="mt-6 mb-3" v-if="extraTags.length">
-        <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
-      </div>
-    </div>
-    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
-      <div class="d-flex flex-wrap">
-        <slot name="buttons"></slot>
-      </div>
-      <v-spacer />
-      <DropdownMenu :items="menuItems" size="small" />
-    </footer>
-  </v-sheet>
-</template>
-
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-
-import Moment from '@/components/Moment.vue'
-import Richtext from '@/components/Richtext.vue'
+import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
-import { useI18n } from 'vue-i18n'
 import { MenuItem, ThemeColor } from '@/utils/types'
+import Moment from '@/components/Moment.vue'
+import Richtext from '@/components/Richtext.vue'
+import RichtextEditor from '@/components/RichtextEditor.vue'
+import TagEdit from '@/components/TagEdit.vue'
 import useUnread from '@/composables/useUnread'
+
 import useTags from '../meetings/useTags'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
+import PostAs from '../meetings/PostAs.vue'
 
 import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
 import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
-import PostAs from '../meetings/PostAs.vue'
-import { Author } from '../meetings/types'
-import RichtextEditor from '@/components/RichtextEditor.vue'
-import TagEdit from '@/components/TagEdit.vue'
+import type { Author } from '../meetings/types'
+import { watch } from 'vue'
 
 const props = defineProps<{ p: DiscussionPost, readOnly?: boolean }>()
 
@@ -120,17 +65,19 @@ const menuItems = computed<MenuItem[]>(() => {
   return menu
 })
 
-const extraTags = computed(() => {
+function getExtraTags () {
   const docTags = getHTMLTags(props.p.body)
   return props.p.tags.filter(tag => !docTags.has(tag))
+}
+const extraTags = ref(getExtraTags())
+watch(() => props.p.body, () => {
+  extraTags.value = getExtraTags()
 })
-
-const tags = ref(props.p.tags)
 
 function cancel () {
   editing.value = false
   body.value = props.p.body
-  tags.value = props.p.tags
+  extraTags.value = getExtraTags()
   author.value = {
     author: props.p.author,
     meeting_group: props.p.meeting_group
@@ -143,7 +90,7 @@ async function save () {
     props.p.pk,
     {
       body: body.value,
-      tags: tags.value,
+      tags: extraTags.value,
       ...author.value
     }
   )
@@ -151,6 +98,62 @@ async function save () {
   saving.value = false
 }
 </script>
+
+<template>
+  <v-sheet rounded elevation="4" class="discussion rounded-ts-xl" :class="{ isUnread }">
+    <div class="d-flex" v-if="meetingGroup">
+      <v-avatar color="secondary" class="mr-2" icon="mdi-account-multiple" />
+      <div class="flex-grow-1">
+        {{ meetingGroup.title }}<br/>
+        <Moment :date="p.created" />
+      </div>
+    </div>
+    <div class="d-flex" v-else-if="p.author">
+      <UserAvatar popup :pk="p.author" class="mr-2" />
+      <div class="flex-grow-1">
+        <User :pk="p.author" /><br/>
+        <Moment :date="p.created" />
+      </div>
+    </div>
+    <div class="d-flex" v-else>
+      <v-avatar color="secondary" class="mr-2">
+        ?
+      </v-avatar>
+      <div class="flex-grow-1">
+        {{ t('unknownUser') }}<br/>
+        <Moment :date="p.created" />
+      </div>
+    </div>
+    <div v-if="editing">
+      <RichtextEditor v-if="editing" v-model="body" />
+      <TagEdit v-model="extraTags" />
+      <br/>
+      <PostAs v-show="canPostAs" v-model="author" class="my-2" />
+      <div class="d-flex mt-1">
+        <v-spacer />
+        <v-btn @click="cancel" variant="text" size="small">
+          {{ t('cancel') }}
+        </v-btn>
+        <v-btn type="submit" color="primary" @click="save" size="small">
+          {{ t('save') }}
+        </v-btn>
+      </div>
+    </div>
+    <div v-else>
+      <Richtext :object="p" />
+      <div class="mt-6 mb-3" v-if="extraTags.length">
+        <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
+      </div>
+    </div>
+    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
+      <div class="d-flex flex-wrap">
+        <slot name="buttons"></slot>
+      </div>
+      <v-spacer />
+      <DropdownMenu :items="menuItems" size="small" />
+    </footer>
+  </v-sheet>
+</template>
 
 <style lang="sass" scoped>
 .discussion

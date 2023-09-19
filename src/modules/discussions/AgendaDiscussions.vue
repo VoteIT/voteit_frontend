@@ -1,3 +1,40 @@
+<script setup lang="ts">
+import { ComponentPublicInstance, computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import ReactionButton from '../reactions/ReactionButton.vue'
+import useReactions from '../reactions/useReactions'
+import useAgendaItem from '../agendas/useAgendaItem'
+import useAgenda from '../agendas/useAgenda'
+import useMeeting from '../meetings/useMeeting'
+
+import DiscussionPost from './DiscussionPost.vue'
+import DiscussionPostEditor from './DiscussionPostEditor.vue'
+import { discussionPostType } from './contentTypes'
+import type { DiscussionPost as IDiscussionPost } from './types'
+
+defineProps<{
+  discussionPosts: IDiscussionPost[]
+}>()
+
+const { t } = useI18n()
+const { meetingId } = useMeeting()
+const { agendaId } = useAgenda(meetingId)
+const { canAddDiscussionPost, agendaItem } = useAgendaItem(agendaId)
+const { getMeetingButtons } = useReactions()
+
+const submitIcon = computed(() => agendaItem.value?.block_discussion ? 'mdi-lock-outline' : 'mdi-comment-text-outline')
+async function submit (post: Partial<IDiscussionPost>) {
+  await discussionPostType.api.add({
+    agenda_item: agendaId.value,
+    ...post
+  })
+}
+
+const addComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
+const reactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
+</script>
+
 <template>
   <DiscussionPost :p="d" v-for="d in discussionPosts" :key="d.pk" class="mb-4">
     <template #buttons>
@@ -6,64 +43,13 @@
       </ReactionButton>
     </template>
   </DiscussionPost>
-  <AddContent v-if="canAddDiscussionPost" :name="t('discussion.discussion')"
-              :handler="submit" :placeholder="t('discussion.postPlaceholder')"
-              :submitText="t('post')" :submitIcon="submitIcon" ref="addComponent"/>
+  <DiscussionPostEditor
+    v-if="canAddDiscussionPost"
+    ref="addComponent"
+    :handler="submit"
+    :name="t('discussion.discussion')"
+    :placeholder="t('discussion.postPlaceholder')"
+    :submitIcon="submitIcon"
+    :submitText="t('post')"
+  />
 </template>
-
-<script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, PropType, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import AddContent from '@/components/AddContent.vue'
-import ReactionButton from '../reactions/ReactionButton.vue'
-import useReactions from '../reactions/useReactions'
-import useAgendaItem from '../agendas/useAgendaItem'
-import useMeeting from '../meetings/useMeeting'
-
-import DiscussionPostVue from './DiscussionPost.vue'
-import { DiscussionPost } from './types'
-import { discussionPostType } from './contentTypes'
-import useAgenda from '../agendas/useAgenda'
-
-export default defineComponent({
-  components: {
-    AddContent,
-    DiscussionPost: DiscussionPostVue,
-    ReactionButton
-  },
-  props: {
-    discussionPosts: {
-      type: Array as PropType<DiscussionPost[]>,
-      required: true
-    }
-  },
-  setup () {
-    const { t } = useI18n()
-    const { meetingId } = useMeeting()
-    const { agendaId } = useAgenda(meetingId)
-    const { canAddDiscussionPost, agendaItem } = useAgendaItem(agendaId)
-    const { getMeetingButtons } = useReactions()
-
-    const submitIcon = computed(() => agendaItem.value?.block_discussion ? 'mdi-lock-outline' : 'mdi-comment-text-outline')
-    async function submit (post: Partial<DiscussionPost>) {
-      await discussionPostType.api.add({
-        agenda_item: agendaId.value,
-        ...post
-      })
-    }
-
-    const addComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-    const reactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
-
-    return {
-      t,
-      addComponent,
-      canAddDiscussionPost,
-      reactions,
-      submitIcon,
-      submit
-    }
-  }
-})
-</script>
