@@ -50,11 +50,10 @@ const textLength = computed(() => stripHTML(text.value).length)
 if (!meetingId) throw new Error('AddContent requires provided meetingId')
 const { canPostAs } = useMeetingGroups(meetingId)
 
-function reset (soft = false) {
-  if (soft && stripHTML(text.value).length) return // For blur event, only reset if text is empty.
+function reset () {
   active.value = false
   postAsExpanded.value = false
-  text.value = ''
+  editorComponent.value?.setText('')
   tags.value = props.setTag
     ? [props.setTag]
     : []
@@ -85,8 +84,39 @@ watch(text, value => {
   emit('update:modelValue', value)
 })
 
+function textHasMention (id: number) {
+  const div = document.createElement('div')
+  div.innerHTML = text.value
+  return !!div.querySelector(`[data-id='${id}']`)
+}
+
 defineExpose({
-  focus: () => editorComponent.value?.focus()
+  focus: () => editorComponent.value?.focus(),
+  addTag (...addTags: string[]) {
+    for (const tag of addTags) {
+      if (tags.value.includes(tag)) continue
+      tags.value = [...tags.value, tag]
+    }
+  },
+  setMention ({ id, value }: { id: number, value: string }) {
+    if (textHasMention(id)) return
+    const mention = document.createElement('span')
+    mention.classList.add('mention')
+    Object.assign(mention.dataset, {
+      id,
+      index: 0,
+      denotationChar: '@',
+      value,
+    })
+    // No need to add inner span w contentEditable="false".
+    // Quill Mention will do that automatically.
+    mention.textContent = '@' + value
+    editorComponent.value?.setText(
+      textLength.value
+        ? `<p>${mention.outerHTML}</p>${text.value}`
+        : `<p>${mention.outerHTML} </p>`
+    )
+  }
 })
 </script>
 
@@ -96,7 +126,7 @@ defineExpose({
     <UserAvatar v-else size="small" class="mr-1" :pk="author?.author" />
     <RichtextEditor ref="editorComponent"
       :placeholder="placeholder"
-      :disabled="disabled" v-model="text" submit @submit="submit()"
+      :disabled="disabled" v-model="text" submit @submit="submit"
       @focus="active = true"
       class="flex-grow-1"
       >
@@ -108,10 +138,10 @@ defineExpose({
         <PostAs v-show="active && canPostAs" v-model="author" class="mt-1" />
         <div class="d-flex mt-1">
           <v-spacer />
-          <v-btn v-if="active" variant="text" @click="reset()" size="small">
+          <v-btn v-if="active" variant="text" @click="reset" size="small">
             {{ t('cancel') }}
           </v-btn>
-          <v-btn color="primary" :loading="submitting" :disabled="disabled" :prepend-icon="submitIcon" size="small" @click="submit()">
+          <v-btn color="primary" :loading="submitting" :disabled="disabled" :prepend-icon="submitIcon" size="small" @click="submit">
             {{ submitText }}
           </v-btn>
         </div>

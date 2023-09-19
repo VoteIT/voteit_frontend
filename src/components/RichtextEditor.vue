@@ -4,11 +4,10 @@ import 'quill-mention'
 import { inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getFullName, tagify } from '@/utils'
+import { getDisplayName, tagify } from '@/utils'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { meetingRoleType } from '@/modules/meetings/contentTypes'
-import { User } from '@/modules/organisations/types'
 import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 
 const mentionOptions = {
@@ -109,14 +108,6 @@ function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObj
   for (const tag of tags.value) {
     if (filter(tag)) yield toTagObject(tag)
   }
-}
-
-function getDisplayName (user: Pick<User, 'first_name' | 'last_name' | 'userid'>) {
-  const fullName = getFullName(user)
-  if (fullName && user.userid) return `${fullName} (${user.userid})`
-  if (fullName) return fullName
-  if (user.userid) return user.userid
-  return '- unknown -'
 }
 
 async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) {

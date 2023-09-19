@@ -111,7 +111,7 @@
           {{ t('discussion.discussions') }}
         </h2>
         <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
-        <AgendaDiscussions :discussionPosts="sortedDiscussions" />
+        <Comments :comments="sortedDiscussions" />
       </v-col>
     </v-row>
   </template>
@@ -135,7 +135,7 @@ import { LastReadKey } from '@/composables/useUnread'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import useLoader from '@/composables/useLoader'
 
-import AgendaDiscussions from '../discussions/AgendaDiscussions.vue'
+import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
 import SpeakerList from '../speakerLists/SpeakerList.vue'
 import TextDocuments from '../proposals/TextDocuments.vue'

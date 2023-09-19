@@ -47,13 +47,14 @@ function addTag (name?: string) {
 watch(tags, value => {
   emit('update:modelValue', [...value])
 })
-// !!! This causes infinite recursive updates
-// watch(() => props.modelValue, value => {
-//   tags.clear()
-//   for (const tag of value) {
-//     tags.add(tag)
-//   }
-// })
+watch(() => props.modelValue, value => {
+  for (const tag of value) {
+    tags.add(tag)
+  }
+  for (const existing of tags.values()) {
+    if (!value.includes(existing)) tags.delete(existing)
+  }
+})
 
 function detectTagClick (evt: Event) {
   if (

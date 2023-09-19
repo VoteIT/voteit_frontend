@@ -73,3 +73,11 @@ export function sleep (delay = 0): Promise<void> {
 export function getFullName (user: Pick<User, 'first_name' | 'last_name'>): string {
   return [user.first_name, user.last_name].filter(Boolean).join(' ')
 }
+
+export function getDisplayName (user: Pick<User, 'first_name' | 'last_name' | 'userid'>) {
+  const fullName = getFullName(user)
+  if (fullName && user.userid) return `${fullName} (${user.userid})`
+  if (fullName) return fullName
+  if (user.userid) return user.userid
+  return '- unknown -'
+}

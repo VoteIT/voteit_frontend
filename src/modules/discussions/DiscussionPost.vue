@@ -21,7 +21,10 @@ import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
 import type { Author } from '../meetings/types'
 import { watch } from 'vue'
 
-const props = defineProps<{ p: DiscussionPost, readOnly?: boolean }>()
+const props = defineProps<{
+  p: DiscussionPost,
+  readOnly?: boolean
+}>()
 
 const { t } = useI18n()
 const { getHTMLTags } = useTags()
@@ -145,11 +148,12 @@ async function save () {
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
     </div>
-    <footer v-if="!readOnly && ($slots.buttons || menuItems.length)" class="d-flex">
+    <footer v-if="!readOnly && ($slots.buttons || $slots.preMenu || menuItems.length)" class="d-flex">
       <div class="d-flex flex-wrap">
         <slot name="buttons"></slot>
       </div>
       <v-spacer />
+      <slot name="preMenu"></slot>
       <DropdownMenu :items="menuItems" size="small" />
     </footer>
   </v-sheet>

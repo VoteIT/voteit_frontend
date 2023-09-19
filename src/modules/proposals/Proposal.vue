@@ -56,7 +56,7 @@
     <v-sheet rounded elevation="2" v-else class="proposal">
       <em>{{ t('proposal.notFound') }}</em>
     </v-sheet>
-    <Comments class="proposal-comments mt-4 mb-8 ml-1 mr-4 mr-sm-8 mr-lg-12" v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" :comment-input="canAddDiscussionPost" />
+    <Comments class="proposal-comments mt-4 mb-8 ml-1 mr-4 mr-sm-8 mr-lg-12" v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" />
   </div>
 </template>
 
