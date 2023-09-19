@@ -1,5 +1,5 @@
 import { filter, ifilter, imap } from 'itertools'
-import { countBy, isNumber, sortBy } from 'lodash'
+import { countBy, isNumber, orderBy, sortBy } from 'lodash'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 
 import useAuthentication, { user } from '@/composables/useAuthentication'
@@ -24,13 +24,14 @@ const meetingRoles = meetingType.useContextRoles()
 
 const { isAuthenticated } = useAuthentication()
 
-function getMeetingList (state: MeetingState, order: keyof Meeting = 'title') {
-  return sortBy(
+function getMeetingList (state: MeetingState, order: keyof Meeting = 'title', direction: 'asc' | 'desc' = 'asc') {
+  return orderBy(
     filter(
       meetings.values(),
       m => m.state === state && !!m.current_user_roles && !!m.current_user_roles.length
     ),
-    order
+    order,
+    direction
   )
 }
 
@@ -52,7 +53,7 @@ function filterMeetings (states: MeetingState[], order: keyof Meeting, search: s
   )
 }
 
-const participatingClosedMeetings = computed(() => getMeetingList(MeetingState.Closed))
+const participatingClosedMeetings = computed(() => getMeetingList(MeetingState.Closed, 'end_time', 'desc'))
 const participatingOngoingMeetings = computed(() => getMeetingList(MeetingState.Ongoing))
 const participatingUpcomingMeetings = computed(() => getMeetingList(MeetingState.Upcoming))
 const otherMeetingsExist = computed(() => meetings.size > (participatingOngoingMeetings.value.length + participatingUpcomingMeetings.value.length))
