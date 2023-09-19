@@ -21,7 +21,6 @@ export default {
     appBar
   },
   props: {
-    default: (route: any) => ({ meetingId: Number(route.params.id) }),
     navigationDrawer: false,
     appBar: false
   },
