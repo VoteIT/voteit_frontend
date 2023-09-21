@@ -5,11 +5,11 @@
         <div class="d-flex">
           <div class="flex-grow-1">
             <WorkflowState :admin="canChangeAgendaItem" :content-type="agendaItemType" :object="agendaItem" />
-            <Headline :editing="editing" v-model="content.title" @edit-done="submit()" />
+            <Headline :editing="editing" v-model="content.title" @edit-done="submit" />
           </div>
           <DropdownMenu float :items="menuItems" />
         </div>
-        <Richtext :editing="editing" v-model="content.body" @edit-done="submit()" variant="full" class="mb-8" :maxHeight="collapsedBodyHeight" />
+        <Richtext :editing="editing" v-model="content.body" @edit-done="submit" variant="full" class="mb-8" :maxHeight="collapsedBodyHeight" />
         <TextDocuments />
       </v-col>
       <v-col cols="12" lg="4">
@@ -69,18 +69,13 @@
         </v-tooltip>
         <v-spacer />
         <AgendaFilters ref="filterComponent" />
-        <div id="agenda-display-mode" class="d-none d-md-block ml-8 text-no-wrap">
-          <span class="text-secondary">{{ t('agenda.showAs') }}</span>
-          <v-btn :title="t(`agenda.${id}`)" v-for="{ id, img } in DISPLAY_MODES" variant="text" :key="id" :class="{ active: displayMode === id }" @click="displayMode = id">
-            <img :src="img" />
-          </v-btn>
-        </div>
       </v-col>
     </v-row>
     <v-row :key="`agenda-content-${agendaId}`">
-      <v-col cols="12" :md="displayMode === 'columns' ? 7 : 12" :lg="displayMode === 'columns' ? 7 : 8" class="agenda-proposals">
-        <h2 v-if="displayMode === 'columns'" class="mb-2">{{ t('proposal.proposals') }}</h2>
-        <h2 v-else class="mb-2">{{ t('proposal.proposalsAndComments') }}</h2>
+      <v-col cols="12" md="7" class="agenda-proposals">
+        <h2 class="mb-2">
+          {{ t('proposal.proposals') }}
+        </h2>
         <v-alert type="info" icon="mdi-filter-outline" v-if="!hasProposals" class="mb-2">
           {{ t('agenda.helpNoProposals') }}
         </v-alert>
@@ -106,7 +101,7 @@
           <AgendaProposals :proposals="hiddenProposals" />
         </Dropdown>
       </v-col>
-      <v-col v-if="displayMode === 'columns'" cols="12" md="5" class="agenda-discussions">
+      <v-col cols="12" md="5" class="agenda-discussions">
         <h2 class="mb-2">
           {{ t('discussion.discussions') }}
         </h2>
@@ -162,17 +157,6 @@ import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
 
-const DISPLAY_MODES = [
-  {
-    id: 'columns',
-    img: new URL('/src/assets/agenda-display-columns.svg', import.meta.url).href
-  },
-  {
-    id: 'nested',
-    img: new URL('/src/assets/agenda-display-nested.svg', import.meta.url).href
-  }
-]
-
 const { t } = useI18n()
 const discussions = useDiscussions()
 const proposals = useProposals()
@@ -213,8 +197,6 @@ const speakerLists = computed(() => getAgendaSpeakerLists(
   agendaId.value,
   list => !!activeSpeakerSystems.value.find(system => system.pk === list.speaker_system)
 ))
-
-const displayMode = useStorage('agendaDisplayMode', 'columns')
 
 const allTags = computed<Set<string>>(() => {
   // Perl achievement unlocked (sry)
@@ -347,22 +329,3 @@ provide(TagsKey, allTags)
 
 const { collapsedBodyHeight } = useDefaults()
 </script>
-
-<style lang="sass">
-#agenda-display-mode
-  button
-    border-radius: 0
-    min-width: 40px
-    padding: 0
-    opacity: .5
-    margin-left: .5em
-    &.active
-      opacity: 1
-      border-bottom: 1px solid #000
-  span
-    vertical-align: middle
-    font-size: 12pt
-  img
-    width: 24px
-    height: auto
-</style>
