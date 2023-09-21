@@ -105,7 +105,7 @@
                 {{ DateTime.fromISO(created).toLocaleString(DateTime.DATETIME_SHORT) }}
               </small>
             </v-expansion-panel-title>
-            <v-expansion-panel-text>
+            <v-expansion-panel-text v-if="weights.length">
               <div v-if="isModerator" class="text-right">
                 <v-menu>
                   <template #activator="{ props }">
@@ -126,6 +126,11 @@
                   </v-chip>
                 </template>
               </UserList>
+            </v-expansion-panel-text>
+            <v-expansion-panel-text v-else class="pt-2 text-center">
+              <em>
+                - {{ t('electoralRegister.empty') }} -
+              </em>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
