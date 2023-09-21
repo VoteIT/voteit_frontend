@@ -10,7 +10,7 @@
     </div>
     <template #extension v-if="agendaItem && speakerSystem && allSpeakerSystems.length > 1">
       <v-tabs color="black" align-tabs="end" class="flex-grow-1">
-        <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="`${meetingPath}/lists/${pk}/${agendaItem.pk}`">
+        <v-tab v-for="{ pk, title, state } in allSpeakerSystems" :key="pk" :to="getRoute(pk, agendaId)">
           {{ title }}
           <v-tooltip v-if="state === 'inactive'" :text="t('inactive')" location="top">
             <template #activator="{ props }">
@@ -242,8 +242,9 @@
 <script lang="ts" setup>
 import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, RouteLocationRaw, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { onKeyStroke } from '@vueuse/core'
 
 import { dialogQuery, durationToString } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
@@ -276,6 +277,7 @@ import { openAlertEvent } from '@/utils/events'
 import useSpeakerSystems from './useSpeakerSystems'
 
 import type { SpeakerList, SpeakerListAddMessage } from './types'
+import { map, range } from 'itertools'
 
 const SPEAKER_HISTORY_CAP = 3
 
@@ -289,19 +291,20 @@ const timeSpokenSchema: FormSchema = [
 
 interface AgendaNav {
   icon: string
-  to?: string
+  to?: RouteLocationRaw
   disabled: boolean,
   title?: string
 }
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const { alert } = useAlert()
 
 const { user } = useAuthentication()
 const speakers = useSpeakerLists()
-const { meetingId, meetingPath } = useMeeting()
-const { agendaId, agendaItem, getPreviousAgendaItem, getNextAgendaItem } = useAgenda(meetingId)
+const { meetingId, getMeetingRoute } = useMeeting()
+const { agendaId, agendaItem, nextAgendaItem, previousAgendaItem } = useAgenda(meetingId)
 const systemId = computed(() => Number(route.params.system))
 
 useLoader(
@@ -329,30 +332,58 @@ function isSelf (userId: number) {
   return user.value?.pk === userId
 }
 
+function getRoute (system: number, aid: number) {
+  return getMeetingRoute('speakerLists', { system, aid })
+}
+
 function makeNavigation (icon: string, toAgendaItem?: AgendaItem): AgendaNav {
   return {
     icon,
-    to: toAgendaItem ? `${meetingPath.value}/lists/${systemId.value}/${toAgendaItem.pk}` : route.path, // Vuetify alpha.11 does not accept change to undef
+    to: toAgendaItem ? getRoute(systemId.value, toAgendaItem.pk) : route.path, // Vuetify alpha.11 does not accept change to undef
     disabled: !toAgendaItem || toAgendaItem === agendaItem.value,
     title: toAgendaItem?.title
   }
 }
 
+/*
+ * Navigation
+ */
 const navigation = computed<AgendaNav[]>(() => {
   if (!agendaItem.value) return []
   return [
     // makeNavigation('mdi-page-first', agenda.value[0]),
-    makeNavigation('mdi-chevron-left', getPreviousAgendaItem(agendaItem.value)),
-    makeNavigation('mdi-chevron-right', getNextAgendaItem(agendaItem.value))
+    makeNavigation('mdi-chevron-left', previousAgendaItem.value),
+    makeNavigation('mdi-chevron-right', nextAgendaItem.value)
     // makeNavigation('mdi-page-last', agenda.value[agenda.value.length - 1])
   ]
 })
+
+function onNonInputTarget (fn: (e: KeyboardEvent, speakerList: SpeakerList) => void) {
+  return (evt: KeyboardEvent) => {
+    if (!currentList.value || (evt.target as Element || null)?.tagName === 'INPUT') return
+    evt.preventDefault()
+    fn(evt, currentList.value)
+  }
+}
+onKeyStroke('ArrowLeft', onNonInputTarget(() => previousAgendaItem.value && router.push(getRoute(systemId.value, previousAgendaItem.value.pk))))
+onKeyStroke('ArrowRight', onNonInputTarget(() => nextAgendaItem.value && router.push(getRoute(systemId.value, nextAgendaItem.value.pk))))
+onKeyStroke(map(range(1,10), String), onNonInputTarget((e, list) => {
+  const speaker = speakerQueue.value[Number(e.key) - 1]
+  if (!speaker) return
+  speakers.startSpeaker(list, speaker)
+}))
+onKeyStroke('z', onNonInputTarget((e, list) => e.ctrlKey && speakers.undoSpeaker(list)))
+onKeyStroke('s', onNonInputTarget((_, list) => speakers.startSpeaker(list)))
+onKeyStroke('e', onNonInputTarget((_, list) => speakers.stopSpeaker(list)))
+/*
+ * End navigation
+ */
 
 // Link to handle Agenda Item with current active list
 const activeListPath = computed(() => {
   const ai = systemActiveList.value?.agenda_item
   if (!ai || ai === agendaId.value) return // Only if not current
-  return `${meetingPath.value}/lists/${systemId.value}/${ai}`
+  return getRoute(systemId.value, ai)
 })
 
 const speakerListSchema: FormSchema = createFormSchema(t, {
