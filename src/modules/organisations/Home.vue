@@ -25,7 +25,6 @@ import useMeetingInvites from '../meetings/useMeetingInvites'
 import Invite from '../meetings/Invite.vue'
 import ContactInfoTab from './ContactInfoTab.vue'
 import useOrganisation from './useOrganisation'
-import useOrganisations from './useOrganisations'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
@@ -39,8 +38,7 @@ const organisationIcons: Record<OrganisationRole, string> = {
 
 const { t } = useI18n()
 const { isAuthenticated, user } = useAuthentication()
-const { fetchOrganisations } = useOrganisations()
-const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId } = useOrganisation()
+const { canAddMeeting, canChangeOrganisation, idLoginURL, organisation, organisationId, organisationIsUnavailable, fetchOrganisation } = useOrganisation()
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -75,7 +73,7 @@ useIntervalFn(
 onBeforeMount(() => {
   // App.vue loads organisation data at first load
   // Call again to update page content
-  if (loader.initDone.value) fetchOrganisations()
+  if (loader.initDone.value) fetchOrganisation()
 })
 
 const editing = ref(false)
@@ -138,7 +136,7 @@ function addUser (user: number) {
   organisationType.addRoles(organisation.value.pk, user, OrganisationRole.MeetingCreator)
 }
 
-const { collapsedBodyHeightMobile } = useDefaults()
+const { collapsedBodyHeightMobile, cols } = useDefaults()
 
 /* Meetings listed upfront */
 const groupRules = [
@@ -370,5 +368,23 @@ const searchInfo = computed(() => {
       />
     </v-col>
   </v-row>
-
+  <v-row v-else-if="organisationIsUnavailable">
+    <v-col v-bind="cols">
+      <v-sheet class="py-8 px-4 text-center" border rounded>
+        <h1 class="mb-4 flex-grow-1">
+          {{ t('home.noOrganisationTitle') }}
+        </h1>
+        <p class="mb-12">
+          {{ t('home.noOrganisationDescription') }}
+        </p>
+        <p>
+          <i18n-t keypath="home.noOrganisationTryItOut">
+            <template #projectURL>
+              <a href="https://voteit.se">VoteIT.se</a>
+            </template>
+          </i18n-t>
+        </p>
+      </v-sheet>
+    </v-col>
+  </v-row>
 </template>

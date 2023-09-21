@@ -31,12 +31,12 @@ import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
-import useOrganisations from './modules/organisations/useOrganisations'
+import useOrganisation from './modules/organisations/useOrganisation'
 import { useRoute, useRouter } from 'vue-router'
 
 const loader = useLoader('App')
 const { fetchAuthenticatedUser } = useAuthentication()
-const { fetchOrganisations } = useOrganisations()
+const { fetchOrganisation } = useOrganisation()
 const route = useRoute()
 const router = useRouter()
 
@@ -44,7 +44,7 @@ onBeforeMount(async () => {
   try {
     const [user] = await Promise.all([
       fetchAuthenticatedUser(),
-      fetchOrganisations()
+      fetchOrganisation()
     ])
     if (!user) {
       if (route.path !== '/') await router.push('/') // Reroute unauthenticated user to start page

@@ -1,9 +1,9 @@
 import PluginHandler from '@/utils/PluginHandler'
 
 import { Organisation } from './types'
-import useOrganisations from './useOrganisations'
+import useOrganisation from './useOrganisation'
 
-const { organisation } = useOrganisations()
+const { organisation } = useOrganisation()
 
 export interface OrganisationPlugin {
   id: string,
