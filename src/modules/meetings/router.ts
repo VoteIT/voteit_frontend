@@ -60,18 +60,18 @@ export default {
     },
     {
       path: 'er',
-      name: 'electoral-registers',
+      name: 'electoralRegisters',
       component: ElectoralRegistersView
     },
     {
       path: 'minutes',
-      name: 'meeting-minutes',
+      name: 'meetingMinutes',
       component: MinutesView
     },
     polls,
     {
       path: 'a/:aid/:aslug',
-      name: 'agenda-item',
+      name: 'agendaItem',
       component: AgendaItemView
     }
   ]

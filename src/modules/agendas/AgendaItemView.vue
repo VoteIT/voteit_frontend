@@ -177,7 +177,7 @@ const { t } = useI18n()
 const discussions = useDiscussions()
 const proposals = useProposals()
 const { getAiPolls } = usePolls()
-const { meetingPath, meetingId, meeting } = useMeeting()
+const { meetingId, meeting, getMeetingRoute } = useMeeting()
 const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
 const { activeFilter, orderContent } = useAgendaFilter(agendaId)
 const { agendaItem, agendaBody, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
@@ -190,7 +190,7 @@ const agendaItemExists = computed(() => {
   if (!agenda.value.length) return
   return !agendaId.value || !!agendaItem.value
 })
-usePermission(agendaItemExists, { to: meetingPath })
+usePermission(agendaItemExists, { to: getMeetingRoute() })
 useMeetingTitle(computed(() => agendaItem.value?.title ?? t('agenda.item')))
 
 function proposalFilter (p: Proposal): boolean {
@@ -222,7 +222,7 @@ const allTags = computed<Set<string>>(() => {
   return new Set([...transform(proposals.getAgendaProposals), ...transform(discussions.getAgendaDiscussions)])
 })
 
-const toNewPoll = computed(() => `${meetingPath.value}/polls/new/${agendaId.value}`)
+const toNewPoll = computed(() => getMeetingRoute('pollStartAI', { aid: agendaId.value }))
 
 function getAgendaMenuContext (menu: string) {
   if (!agendaItem.value || !meeting.value || !agendaItemPath.value) throw new Error('Agenda menu context requies agenda item and menu data')
@@ -289,7 +289,7 @@ const manageSpeakerListsMenu = computed(() => {
   return managingSpeakerSystems.value.map(system => ({
     title: t('speaker.manageSystem', { ...system }),
     prependIcon: 'mdi-bullhorn',
-    to: `${meetingPath.value}/lists/${system.pk}/${agendaId.value}`
+    to: getMeetingRoute('speakerLists', { system: system.pk, aid: agendaId.value })
   }))
 })
 

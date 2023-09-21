@@ -6,7 +6,7 @@ import { slugify } from '@/utils'
 
 import { meetings } from './useMeetings'
 
-import { Meeting, MeetingRole } from './types'
+import { MeetingRole } from './types'
 import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite, canViewMeeting, isModerator, isFinishedMeeting, isActiveMeeting } from './rules'
 import { meetingType } from './contentTypes'
 import { useI18n } from 'vue-i18n'
@@ -35,7 +35,7 @@ export default function useMeeting () {
   const roleLabels = computed(() => getRoleLabels())
   const roleLabelsEditable = computed(() => getRoleLabels(role => !meetingDialect.value?.block_roles?.includes(role)))
   const meetingId = computed(() => Number(route.params.id))
-  const meeting = computed<Meeting | undefined>(() => meetings.get(meetingId.value))
+  const meeting = computed(() => meetings.get(meetingId.value))
   const meetingDialect = computed(() => meeting.value?.dialect)
   const meetingJoinPath = computed(() => `/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
   const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
@@ -46,7 +46,7 @@ export default function useMeeting () {
     return meetingRoles.hasRole(meetingId.value, role, user)
   }
 
-  function getMeetingRoute (name: string, extraParams?: Dictionary<string | number>) {
+  function getMeetingRoute (name: string = 'meeting', extraParams?: Dictionary<string | number>) {
     return {
       name,
       params: {

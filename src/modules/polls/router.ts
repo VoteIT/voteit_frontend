@@ -20,17 +20,17 @@ export default {
     },
     {
       path: 'new',
-      name: 'start-poll',
+      name: 'pollStart',
       component: StartPoll
     },
     {
       path: 'new/:aid',
-      name: 'start-poll-ai',
+      name: 'pollStartAI',
       component: StartPoll
     },
     {
       path: ':state',
-      name: 'poll-state',
+      name: 'pollState',
       component: Polls
     }
   ]
