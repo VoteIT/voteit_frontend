@@ -1,4 +1,4 @@
-import { isRef, ref, Ref, watch } from 'vue'
+import { ref, Ref, unref, watch } from 'vue'
 import { ComposerTranslation, useI18n } from 'vue-i18n'
 import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 
@@ -34,7 +34,7 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     )
     openDialogEvent.emit({
       title,
-      resolve: () => router.push(isRef(to) ? to.value : to),
+      resolve: () => router.push(unref(to)),
       dismissible: false,
       no: false,
       yes: t('ok'),
@@ -45,8 +45,8 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     if (isAuthenticated.value !== false) return strategies.default(options, router, t, changed)
     openDialogEvent.emit({
       title: options.message ?? t('permission.defaultLoginMessage'),
-      resolve: value => {
-        if (value) location.assign(idLoginURL.value!)
+      resolve: doLogin => {
+        if (doLogin) location.assign(idLoginURL.value!)
         else router.push({ name: 'home' })
       },
       dismissible: false,
