@@ -1,4 +1,4 @@
-import { ref, Ref, unref, watch } from 'vue'
+import { MaybeRef, ref, Ref, unref, watch } from 'vue'
 import { ComposerTranslation, useI18n } from 'vue-i18n'
 import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 
@@ -9,7 +9,7 @@ import useAuthentication from './useAuthentication'
 
 interface PermissionOptions {
   message?: string
-  to: RouteLocationRaw | Ref<RouteLocationRaw>
+  to: MaybeRef<RouteLocationRaw>
 }
 export enum PermissionDeniedStrategy {
   Default = 'default',
