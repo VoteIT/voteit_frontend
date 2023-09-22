@@ -11,7 +11,7 @@
       <v-list bg-color="background">
         <v-list-item v-show="!agendaId || agendaId === ai.pk" v-for="{ ai, ...bind } in pollableAgendaItems" :key="ai.pk" v-bind="bind">
           <template #append v-if="agendaId">
-            <v-btn size="small" variant="text" icon="mdi-close" :to="`${meetingPath}/polls/new`"/>
+            <v-btn size="small" variant="text" icon="mdi-close" :to="getMeetingRoute('pollStart')"/>
           </template>
         </v-list-item>
       </v-list>
@@ -124,13 +124,13 @@ import { pollPlugins } from './registry'
 const { t } = useI18n()
 const router = useRouter()
 const proposals = useProposals()
-const { isModerator, meetingPath, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meetingRoute, meetingId, getMeetingRoute } = useMeeting()
 const { agendaId, agenda } = useAgenda(meetingId)
 const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
 const { alert } = useAlert()
 const { proposalOrderingOptions } = useProposalOrdering(t)
 
-usePermission(isModerator, { to: meetingPath }) // TODO canAddPoll might be different in the future
+usePermission(isModerator, { to: meetingRoute }) // TODO canAddPoll might be different in the future
 
 useMeetingTitle(t('poll.start'))
 
@@ -143,7 +143,7 @@ const pollableAgendaItems = computed(() => {
     .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
     .map(ai => ({
       ai,
-      to: `${meetingPath.value}/polls/new/${ai.pk}`,
+      to: getMeetingRoute('pollStartAI', { aid: ai.pk }),
       title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
     }))
 })

@@ -11,7 +11,7 @@
           </p>
           <v-btn
             color="primary"
-            :to="`${meetingPath}/p`"
+            :to="getMeetingRoute('participants')"
             prepend-icon="mdi-account">
             {{ t('meeting.participants') }}
           </v-btn>
@@ -106,7 +106,7 @@ const NON_MODIFIABLE_ROLES = [
 ]
 
 const { t } = useI18n()
-const { meetingId, meeting, meetingDialect, meetingPath, meetingUrl } = useMeeting()
+const { meetingId, meeting, meetingDialect, meetingUrl, getMeetingRoute } = useMeeting()
 const { alert } = useAlert()
 const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
 

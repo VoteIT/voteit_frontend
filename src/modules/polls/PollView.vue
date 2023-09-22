@@ -10,9 +10,9 @@
             <p class="text-secondary">
               {{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}
             </p>
-            <p v-if="agendaItem && agendaItemPath">
+            <p v-if="agendaItem && agendaItemRoute">
               {{ t('agenda.item') }}:
-              <router-link :to="agendaItemPath">
+              <router-link :to="agendaItemRoute">
                 {{ agendaItem.title }}
               </router-link>
             </p>
@@ -141,8 +141,8 @@ const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
 const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
-const { isModerator, meetingPath, meetingId } = useMeeting()
-const { agendaItem, agendaItemPath } = useAgendaItem(computed(() => poll.value?.agenda_item))
+const { isModerator, meetingId, getMeetingRoute } = useMeeting()
+const { agendaItem, agendaItemRoute } = useAgendaItem(computed(() => poll.value?.agenda_item))
 const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
@@ -224,7 +224,7 @@ const buttons = computed(() => {
   const btns: { props: object, title: string }[] = [{
     props: {
       color: ThemeColor.Primary,
-      to: `${meetingPath.value}/polls`,
+      to: getMeetingRoute('polls'),
       prependIcon: 'mdi-chevron-double-left'
     },
     title: t('poll.all')
@@ -243,7 +243,7 @@ const buttons = computed(() => {
     btns.push({
       props: {
         color: ThemeColor.Primary,
-        to: `${meetingPath.value}/polls/${nextUnvoted.value.pk}/${slugify(nextUnvoted.value.title)}`,
+        to: getMeetingRoute('poll', { pid: nextUnvoted.value.pk, pslug: slugify(nextUnvoted.value.title) }),
         prependIcon: 'mdi-star'
       },
       title: t('poll.nextUnvoted', { ...nextUnvoted.value })

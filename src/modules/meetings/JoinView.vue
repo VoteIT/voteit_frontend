@@ -39,7 +39,7 @@ import useMeetings from './useMeetings'
 import { canBecomeModerator } from './rules'
 
 const { t } = useI18n()
-const { meetingId, meetingPath } = useMeeting()
+const { meetingId, meetingRoute } = useMeeting()
 const loader = useLoader('JoinMeeting')
 const { meetings } = useMeetings(loader.call)
 const router = useRouter()
@@ -65,7 +65,7 @@ async function joinAsModerator () {
     theme: ThemeColor.Info
   })) {
     await meetingType.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
-    router.push(meetingPath.value)
+    router.push(meetingRoute.value)
   }
 }
 

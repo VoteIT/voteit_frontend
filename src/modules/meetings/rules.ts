@@ -1,4 +1,4 @@
-import { user } from '@/composables/useAuthentication'
+import useAuthentication, { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 
 import { Meeting, MeetingInvite, MeetingInviteState, MeetingRole, MeetingState } from '@/modules/meetings/types'
@@ -16,7 +16,11 @@ const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
 type MeetingT = Meeting | number | undefined
 
+const { isAuthenticated } = useAuthentication()
+
 function hasMeetingRole (meeting: MeetingT, role: MeetingRole): boolean | undefined {
+  // isAuthenticated false means user is definitely not authenticated.
+  if (isAuthenticated.value === false) return false
   if (!meeting) return
   if (typeof meeting !== 'number') meeting = meeting.pk
   return hasRole(meeting, role)

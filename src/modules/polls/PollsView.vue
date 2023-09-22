@@ -33,12 +33,12 @@ import * as rules from './rules'
 import { PollState } from './types'
 
 const { t } = useI18n()
-const { meeting, meetingPath } = useMeeting()
+const { meeting, getMeetingRoute } = useMeeting()
 useMeetingTitle(t('poll.all'))
 
 const pollStatesOpen = ref(history.state.pollStatesOpen as PollState[] || [PollState.Ongoing])
 watch(pollStatesOpen, value => { history.replaceState({ ...history.state, pollStatesOpen: [...value] }, '') })
 
 const canAddPoll = computed(() => meeting.value && rules.canAddPoll(meeting.value))
-const toAddPoll = computed(() => meetingPath.value + '/polls/new')
+const toAddPoll = computed(() => getMeetingRoute('pollStart'))
 </script>

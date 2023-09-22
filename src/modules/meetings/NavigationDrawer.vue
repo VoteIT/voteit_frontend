@@ -44,7 +44,6 @@ import { WorkflowState } from '@/contentTypes/types'
 
 import useAgenda from '../agendas/useAgenda'
 import useAgendaTags from '../agendas/useAgendaTags'
-import { AgendaItem } from '../agendas/types'
 import { agendaItemType } from '../agendas/contentTypes'
 import usePolls from '../polls/usePolls'
 import useProposals from '../proposals/useProposals'
@@ -67,17 +66,13 @@ channelSubscribedEvent.on(({ channel_type }) => {
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
 const { mobile } = useDisplay()
-const { meeting, meetingId, meetingPath, hasRole, isModerator, getMeetingRoute } = useMeeting()
+const { meeting, meetingId, isModerator, meetingRoute, getMeetingRoute, hasRole } = useMeeting()
 const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
 const { agendaTags } = useAgendaTags(agenda)
 const agendaWorkflows = agendaItemType.useWorkflows()
 const { getAiPolls, getUnvotedPolls } = usePolls()
 const { getAgendaProposals } = useProposals()
 const { initDone } = useLoader('Agenda')
-
-function getAiPath (ai: AgendaItem) {
-  return `${meetingPath.value}/a/${ai.pk}/${slugify(ai.title)}`
-}
 
 function getAiType (state: string) {
   return filteredAgenda.value.filter(ai => ai.state === state)
@@ -90,7 +85,7 @@ const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStat
 function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
   return getAiType(s.state).map(ai => ({
       title: ai.title,
-      to: getAiPath(ai),
+      to: getMeetingRoute('agendaItem', { aid: ai.pk, aslug: slugify(ai.title) }),
       icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
       count: getAgendaProposals(ai.pk).length || undefined,
       hasNewItems: hasNewItems(ai)
@@ -130,12 +125,12 @@ const pollMenus = computed<TreeMenuItem[]>(() => {
   const menus: TreeMenuItem[] = [{
     exactActive: true,
     title: t('poll.all'),
-    to: `${meetingPath.value}/polls`
+    to: getMeetingRoute('polls')
   }]
   if (meeting.value && canAddPoll(meeting.value)) {
     menus.push({
       title: t('poll.new'),
-      to: `${meetingPath.value}/polls/new`,
+      to: getMeetingRoute('pollStart'),
       icons: ['mdi-star-plus']
     })
   }
@@ -144,7 +139,7 @@ const pollMenus = computed<TreeMenuItem[]>(() => {
       title: t('poll.unvoted'),
       items: unvotedPolls.value.map(p => ({
         title: p.title,
-        to: `${meetingPath.value}/polls/${p.pk}/${slugify(p.title)}`,
+        to: getMeetingRoute('poll', { pid: p.pk, pslug: slugify(p.title) }),
         icons: ['mdi-star']
       })),
       defaultOpen: true
@@ -159,16 +154,16 @@ const menu = computed<TreeMenu[]>(() => {
     items: [{
       exactActive: true,
       title: t('start'),
-      to: meetingPath.value
+      to: meetingRoute.value
     }, {
       title: t('meeting.participants'),
-      to: `${meetingPath.value}/p`
+      to: getMeetingRoute('participants')
     }, {
       title: t('electoralRegister.plural'),
-      to: `${meetingPath.value}/er`
+      to: getMeetingRoute('electoralRegisters')
     }, {
       title: t('minutes.documents'),
-      to: `${meetingPath.value}/minutes`
+      to: getMeetingRoute('meetingMinutes')
     }],
     icon: 'mdi-home-variant-outline'
   },
@@ -191,7 +186,7 @@ const menu = computed<TreeMenu[]>(() => {
     items[0].items.push({
       icons: ['mdi-cog'],
       title: t('meeting.controlPanel'),
-      to: `${meetingPath.value}/settings`
+      to: getMeetingRoute('settings')
     })
   }
   return items

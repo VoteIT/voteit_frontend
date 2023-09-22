@@ -1,7 +1,9 @@
 /* eslint-disable camelcase */
-import { MenuItem } from '@/utils/types'
 import { ComponentPublicInstance, ComputedRef } from 'vue'
+import { RouteLocationRaw } from 'vue-router'
 import { ComposerTranslation } from 'vue-i18n'
+
+import { MenuItem } from '@/utils/types'
 import { MeetingPlugin } from '../meetings/PluginHandler'
 import { Meeting } from '../meetings/types'
 import { ProposalState } from '../proposals/types'
@@ -42,7 +44,6 @@ export type AgendaFilterComponent = ComponentPublicInstance<{ setTag:(tag: strin
 export interface AgendaMenuPlugin extends MeetingPlugin {
   getItems (context: {
     agendaItem: AgendaItem,
-    agendaItemPath: string,
     meeting: Meeting,
     menu: string,
     t: ComposerTranslation

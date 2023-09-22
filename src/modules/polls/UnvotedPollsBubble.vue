@@ -43,7 +43,7 @@ const unvoted = computed(() => {
           name: 'poll',
           params: {
             id: meetingId.value,
-            slug: slugify(meeting.value?.title || '-'),
+            slug: slugify(meeting.value?.title),
             pid: poll.pk,
             pslug: slugify(poll.title)
           }

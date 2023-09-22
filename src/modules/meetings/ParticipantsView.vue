@@ -107,7 +107,7 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import { UserContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
-import useTabPath from '@/composables/useTabPath'
+import useTabRoute from '@/composables/useTabRoute'
 
 import { User } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
@@ -137,7 +137,7 @@ const meetingIcons: Record<MeetingRole, string> = {
 
 const { t } = useI18n()
 const { user } = useAuthentication()
-const { meetingId, meetingDialect, meetingPath, canChangeRoles, canViewMeetingInvite, roleItems } = useMeeting()
+const { meetingId, meetingDialect, canChangeRoles, canViewMeetingInvite, roleItems, getMeetingRoute } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
@@ -189,7 +189,7 @@ function searchFilter (user: User): boolean {
   return !omitIds.value.includes(user.pk)
 }
 
-const { currentTab } = useTabPath(meetingPath)
+const { currentTab } = useTabRoute(getMeetingRoute, 'participants', 'participantsTab')
 const tabs = computed(() => {
   const tabs = [
     {

@@ -1,10 +1,10 @@
 <template>
   <v-app-bar app flat color="app-bar">
-    <router-link :to="meetingPath">
+    <router-link :to="meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">
-      <router-link v-if="agendaItem && agendaItemPath" :to="agendaItemPath" class="text-white text-decoration-none">
+      <router-link v-if="agendaItem && agendaItemRoute" :to="agendaItemRoute" class="text-white text-decoration-none">
         {{ agendaItem.title }}
       </router-link>
     </v-app-bar-title>
@@ -77,9 +77,9 @@ const { getState } = pollType.useWorkflows()
 
 const { t } = useI18n()
 const router = useRouter()
-const { meetingId, meetingPath } = useMeeting()
+const { meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
-const { agendaItem, agendaItemPath, canChangeAgendaItem, nextPollTitle } = useAgendaItem(agendaId)
+const { agendaItem, agendaItemRoute, canChangeAgendaItem, nextPollTitle } = useAgendaItem(agendaId)
 const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary(agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()

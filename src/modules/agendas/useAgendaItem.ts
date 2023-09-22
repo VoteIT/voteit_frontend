@@ -1,3 +1,4 @@
+import type { Dictionary } from 'lodash'
 import { computed, Ref } from 'vue'
 
 import { slugify } from '@/utils'
@@ -18,16 +19,21 @@ function ellipsisTitle (title: string, length: number) {
 }
 
 export default function useAgendaItem (agendaId: Ref<number | undefined>) {
-  const { meetingId, meetingPath } = useMeeting()
+  const { meetingId, getMeetingRoute } = useMeeting()
   const { getAgendaItem, getAgendaBody } = useAgenda(meetingId)
   const agendaItem = computed(() => typeof agendaId.value === 'number' ? getAgendaItem(agendaId.value) : undefined)
   const agendaBody = computed(() => typeof agendaId.value === 'number' ? getAgendaBody(agendaId.value)?.body : undefined)
   const { allPollTitles } = usePolls()
 
-  const agendaItemPath = computed(() => {
+  function getAgendaItemRoute (name: string = 'agendaItem', params?: Dictionary<string | number>) {
     if (!agendaId.value) return
-    return `${meetingPath.value}/a/${agendaId.value}/${slugify(agendaItem.value ? agendaItem.value.title : '-')}`
-  })
+    return getMeetingRoute(name, {
+      aid: agendaId.value,
+      aslug: slugify(agendaItem.value?.title),
+      ...params
+    })
+  }
+  const agendaItemRoute = computed(() => getAgendaItemRoute())
 
   const nextPollTitle = computed(() => {
     if (!agendaItem.value) return ''
@@ -68,13 +74,14 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
   return {
     agendaItem,
     agendaBody,
-    agendaItemPath,
+    agendaItemRoute,
     canAddDiscussionPost,
     canAddDocument,
     canAddPoll,
     canAddProposal,
     canChangeAgendaItem,
     nextPollTitle,
-    proposalBlockReason
+    proposalBlockReason,
+    getAgendaItemRoute
   }
 }

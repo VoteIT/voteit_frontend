@@ -30,7 +30,8 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
   name: 'meeting',
   channels: ['meeting', 'participants', 'moderators', 'invites'],
   restEndpoint: 'meetings/',
-  hasRoles: true
+  restConfig: { alertOnError: false },
+  hasRoles: true,
 })
 
 export const matchedInviteType = new ContentType<MeetingInvite>({

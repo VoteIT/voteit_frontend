@@ -26,7 +26,7 @@
       <v-btn variant="elevated" :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <v-btn :to="`${meetingPath}/lists/${list.speaker_system}/${list.agenda_item}`" prepend-icon="mdi-bullhorn" v-if="canChange">
+      <v-btn :to="getMeetingRoute('speakerLists', {system: list.speaker_system, aid: list.agenda_item })" prepend-icon="mdi-bullhorn" v-if="canChange">
         {{ t('manage') }}
       </v-btn>
       <div class="d-flex flex-grow-1">
@@ -37,8 +37,8 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
@@ -55,63 +55,44 @@ interface EnterLeaveBtn {
   action: () => void
 }
 
-export default defineComponent({
-  name: 'SpeakerList',
-  props: {
-    list: {
-      type: Object as PropType<SpeakerList>,
-      required: true
-    }
-  },
-  setup (props) {
-    const { t } = useI18n()
-    const speakers = useSpeakerLists()
-    const { meetingId, meetingPath } = useMeeting()
+const props = defineProps<{
+  list: SpeakerList
+}>()
 
-    const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
-    const inList = computed(() => speakers.userInList(props.list))
-    // eslint-disable-next-line camelcase
-    const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
-    const isOpen = computed(() => props.list.state === SpeakerListState.Open)
-    const expandQueue = ref(false)
+const { t } = useI18n()
+const speakers = useSpeakerLists()
+const { meetingId, getMeetingRoute } = useMeeting()
 
-    const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
-      if (!inList.value && canEnterList(props.list)) {
-        return {
-          icon: 'mdi-playlist-plus',
-          title: t('speaker.enterList'),
-          color: 'primary',
-          action: () => speakers.enterList(props.list)
-        }
-      }
-      if (inList.value && canLeaveList(props.list)) {
-        return {
-          icon: 'mdi-playlist-remove',
-          title: t('speaker.leaveList'),
-          color: 'warning',
-          action: () => speakers.leaveList(props.list)
-        }
-      }
-      return null
-    })
+const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
+const inList = computed(() => speakers.userInList(props.list))
+// eslint-disable-next-line camelcase
+const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
+const isOpen = computed(() => props.list.state === SpeakerListState.Open)
+const expandQueue = ref(false)
 
-    const canChange = computed(() => canChangeSpeakerList(props.list))
-
+const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
+  if (!inList.value && canEnterList(props.list)) {
     return {
-      t,
-      canChange,
-      expandQueue,
-      isActive,
-      isOpen,
-      fullscreenPath: computed(() => isActive.value && `/speakers/${meetingId.value}/${props.list.speaker_system}`),
-      inList,
-      enterLeaveBtn,
-      meetingPath,
-      speakers,
-      user
+      icon: 'mdi-playlist-plus',
+      title: t('speaker.enterList'),
+      color: 'primary',
+      action: () => speakers.enterList(props.list)
     }
   }
+  if (inList.value && canLeaveList(props.list)) {
+    return {
+      icon: 'mdi-playlist-remove',
+      title: t('speaker.leaveList'),
+      color: 'warning',
+      action: () => speakers.leaveList(props.list)
+    }
+  }
+  return null
 })
+
+const canChange = computed(() => canChangeSpeakerList(props.list))
+
+const fullscreenPath = computed(() => isActive.value && `/speakers/${meetingId.value}/${props.list.speaker_system}`)
 </script>
 
 <style lang="sass">

@@ -424,6 +424,7 @@
     "doesNotExist": "Participant number {ids} does not exist in meeting | Participant numbers {ids} does not exist in meeting"
   },
   "permission": {
+    "defaultLoginMessage": "You need to log in to access this page.",
     "defaultMessage": "You don't have permission to view this page.",
     "defaultChangedMessage": "You no longer have permission to view this page."
   },

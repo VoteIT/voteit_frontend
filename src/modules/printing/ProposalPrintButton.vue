@@ -16,8 +16,8 @@ const { backOnPrinted } = usePrinting()
 
 const props = defineProps<{ proposal: Proposal }>()
 
-const { agendaItemPath } = useAgendaItem(ref(props.proposal.agenda_item))
-const to = computed(() => `${agendaItemPath.value}/print/${props.proposal.pk}`)
+const { getAgendaItemRoute } = useAgendaItem(ref(props.proposal.agenda_item))
+const to = computed(() => getAgendaItemRoute('printing:proposals', { propIds: props.proposal.pk }))
 
 function goTo () {
   backOnPrinted.value = true

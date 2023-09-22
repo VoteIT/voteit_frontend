@@ -1,6 +1,6 @@
 import { Dictionary } from 'lodash'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
 
@@ -11,8 +11,10 @@ import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMe
 import { meetingType } from './contentTypes'
 import { useI18n } from 'vue-i18n'
 
+
 export default function useMeeting () {
   const route = useRoute()
+  const router = useRouter()
   const meetingRoles = meetingType.useContextRoles()
   const { t } = useI18n()
 
@@ -37,9 +39,9 @@ export default function useMeeting () {
   const meetingId = computed(() => Number(route.params.id))
   const meeting = computed(() => meetings.get(meetingId.value))
   const meetingDialect = computed(() => meeting.value?.dialect)
-  const meetingJoinPath = computed(() => `/join/${meetingId.value}/${slugify(meeting.value?.title ?? '-')}`)
-  const meetingPath = computed(() => `/m/${meetingId.value}/${slugify(meeting.value ? meeting.value.title : '-')}`)
-  const meetingUrl = computed(() => `${location.origin}${meetingPath.value}`)
+  const meetingJoinRoute = computed(() => ({ name: 'meetingJoin', params: { id: meetingId.value, slug: slugify(meeting.value?.title) } }))
+  const meetingRoute = computed(() => getMeetingRoute())
+  const meetingUrl = computed(() => location.origin + router.resolve(meetingRoute.value).href)
 
   const userRoles = computed(() => meetingRoles.getUserRoles(meetingId.value) as Set<MeetingRole> | undefined)
   function hasRole (role: MeetingRole, user?: number) {
@@ -51,7 +53,7 @@ export default function useMeeting () {
       name,
       params: {
         id: meetingId.value,
-        slug: slugify(meeting.value?.title ?? '-'),
+        slug: slugify(meeting.value?.title),
         ...extraParams
       }
     }
@@ -69,8 +71,8 @@ export default function useMeeting () {
     meeting,
     meetingId,
     meetingDialect,
-    meetingJoinPath,
-    meetingPath,
+    meetingJoinRoute,
+    meetingRoute,
     meetingUrl,
     roleItems,
     roleLabels,

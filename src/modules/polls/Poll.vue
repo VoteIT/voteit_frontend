@@ -2,7 +2,7 @@
   <Widget class="poll">
     <header class="mb-1">
       <div class="d-flex">
-        <router-link :to="pollPath" class="flex-grow-1">
+        <router-link :to="pollRoute" class="flex-grow-1">
           <h3>
             {{ poll.title }}
             <small class="text-secondary ml-4">{{ methodName }}</small>
@@ -14,7 +14,7 @@
         </router-link>
         <div class="text-right d-flex flex-column">
           <WorkflowState v-if="isModerator" admin :object="poll" :contentType="pollType" right />
-          <router-link :to="pollPath">
+          <router-link :to="pollRoute">
             <v-icon size="xxx-large">mdi-chevron-right</v-icon>
           </router-link>
         </div>
@@ -71,7 +71,7 @@ import { Poll } from './types'
 const props = defineProps<{ poll: Poll }>()
 
 const { t } = useI18n()
-const { isModerator, meetingPath } = useMeeting()
+const { isModerator, getMeetingRoute } = useMeeting()
 const { getPollStatus, getUserVote } = usePolls()
 const { canVote, approved, denied, isOngoing, isFinished, voteCount } = usePoll(computed(() => props.poll.pk))
 
@@ -84,7 +84,7 @@ const subscribePk = computed(() => {
 useChannel('poll', subscribePk, { leaveDelay: 0 })
 
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
-const pollPath = computed(() => `${meetingPath.value}/polls/${props.poll.pk}/${slugify(props.poll.title)}`)
+const pollRoute = computed(() => getMeetingRoute('poll', { pid: props.poll.pk, pslug: slugify(props.poll.title) }))
 const userVote = computed(() => getUserVote(props.poll))
 const methodName = computed(() => t(`poll.method.${props.poll.method_name}`))
 </script>

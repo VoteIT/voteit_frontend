@@ -9,20 +9,22 @@
 </template>
 
 <script lang="ts" setup>
-import { provide } from 'vue'
+import { computed, provide } from 'vue'
 
 import { RoleContextKey } from '@/injectionKeys'
 import Bubbles from '@/modules/meetings/Bubbles.vue'
 
 import useMeetingChannel from '@/modules/meetings/useMeetingChannel'
 
-import usePermission from '@/composables/usePermission'
+import usePermission, { PermissionDeniedStrategy } from '@/composables/usePermission'
 import useMeeting from './useMeeting'
 
 const { canViewMeeting } = useMeeting()
-const { isLoaded } = useMeetingChannel()
+const { isLoaded, fetchFailed } = useMeetingChannel()
 
-usePermission(canViewMeeting)
+const viewPermission = computed(() => !fetchFailed.value && canViewMeeting.value)
+
+usePermission(viewPermission, undefined, PermissionDeniedStrategy.RequireLogin)
 
 provide(RoleContextKey, 'meeting')
 </script>

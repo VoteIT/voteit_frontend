@@ -164,7 +164,7 @@ const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
 const { agendaId, agenda, agendaItemLastRead, hasNewItems } = useAgenda(meetingId)
 const { activeFilter, orderContent } = useAgendaFilter(agendaId)
-const { agendaItem, agendaBody, agendaItemPath, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
+const { agendaItem, agendaBody, canAddDocument, canAddPoll, canAddProposal, canChangeAgendaItem, proposalBlockReason } = useAgendaItem(agendaId)
 
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
@@ -207,10 +207,9 @@ const allTags = computed<Set<string>>(() => {
 const toNewPoll = computed(() => getMeetingRoute('pollStartAI', { aid: agendaId.value }))
 
 function getAgendaMenuContext (menu: string) {
-  if (!agendaItem.value || !meeting.value || !agendaItemPath.value) throw new Error('Agenda menu context requies agenda item and menu data')
+  if (!agendaItem.value || !meeting.value) throw new Error('Agenda menu context requies agenda item and menu data')
   return {
     agendaItem: agendaItem.value,
-    agendaItemPath: agendaItemPath.value,
     meeting: meeting.value,
     menu,
     t

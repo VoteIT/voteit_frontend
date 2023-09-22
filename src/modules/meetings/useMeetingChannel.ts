@@ -1,17 +1,20 @@
-import { onBeforeMount, computed } from 'vue'
+import { onBeforeMount, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import useLoader from '@/composables/useLoader'
 import useChannel from '@/composables/useChannel'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
+import axios from 'axios'
 
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel () {
-  const { isModerator, meetingId, meeting, meetingJoinPath } = useMeeting()
+  const { isModerator, meetingId, meeting, meetingJoinRoute } = useMeeting()
   const { fetchMeeting } = useMeetings()
   const router = useRouter()
+
+  const fetchFailed = ref(false)
 
   const roleChannel = computed(() => {
     if (!meeting.value) return
@@ -32,10 +35,11 @@ export default function useMeetingChannel () {
   onBeforeMount(() => {
     loader.call(async () => {
       try {
-        if (!await fetchMeeting(meetingId.value)) await router.push(meetingJoinPath.value)
+        if (!await fetchMeeting(meetingId.value)) await router.push(meetingJoinRoute.value)
       } catch {
-        await router.push('/')
-        loader.reset()
+        fetchFailed.value = true
+        // await router.push({ name: 'home' })
+        // loader.reset()
       }
     })
   })
@@ -43,6 +47,7 @@ export default function useMeetingChannel () {
   const isLoaded = computed(() => !!meeting.value && channels.every(ch => ch.isSubscribed.value))
 
   return {
-    isLoaded
+    isLoaded,
+    fetchFailed
   }
 }

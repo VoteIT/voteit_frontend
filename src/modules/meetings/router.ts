@@ -1,78 +1,90 @@
-import AgendaEditView from '@/modules/agendas/AgendaEditView.vue'
-import AgendaItemView from '@/modules/agendas/AgendaItemView.vue'
-import navigationDrawer from '@/modules/meetings/NavigationDrawer.vue'
+import AgendaEditView from '../agendas/AgendaEditView.vue'
+import AgendaItemView from '../agendas/AgendaItemView.vue'
+import polls from '../polls/router'
+import speakerLists from '../speakerLists/router'
+
 import appBar from './AppBar.vue'
-import polls from '@/modules/polls/router'
-import speakerLists from '@/modules/speakerLists/router'
-
-import StartView from './StartView.vue'
-import ParticipantsView from './ParticipantsView.vue'
+import ControlPanelView from './ControlPanel.vue'
 import ElectoralRegistersView from './electoralRegisters/ElectoralRegistersView.vue'
-import MinutesView from './MinutesView.vue'
+import JoinMeeting from './JoinView.vue'
+import ParticipantsView from './ParticipantsView.vue'
+import StartView from './StartView.vue'
 import MeetingView from './MeetingView.vue'
-import ControlPanelView from '@/modules/meetings/ControlPanel.vue'
+import MinutesView from './MinutesView.vue'
+import navigationDrawer from './NavigationDrawer.vue'
 
-export default {
-  path: '/m/:id/:slug',
-  name: 'Meeting',
-  components: {
-    default: MeetingView,
-    navigationDrawer,
-    appBar
+export default [
+  {
+    path: '/m/:id/:slug',
+    name: 'MeetingRouterView',
+    components: {
+      default: MeetingView,
+      navigationDrawer,
+      appBar
+    },
+    props: {
+      navigationDrawer: false,
+      appBar: false
+    },
+    children: [
+      {
+        path: '',
+        name: 'meeting',
+        component: StartView
+      },
+      speakerLists,
+      {
+        path: 'settings',
+        name: 'settings',
+        component: ControlPanelView,
+        children: [{
+          path: ':panel',
+          name: 'controlPanel',
+          component: ControlPanelView
+        }]
+      },
+      {
+        path: 'agenda',
+        name: 'agendaEdit',
+        component: AgendaEditView
+      },
+      {
+        path: 'p',
+        name: 'participants',
+        component: ParticipantsView,
+        children: [
+          {
+            path: ':tabId',
+            name: 'participantsTab',
+            component: ParticipantsView
+          }
+        ]
+      },
+      {
+        path: 'er',
+        name: 'electoralRegisters',
+        component: ElectoralRegistersView
+      },
+      {
+        path: 'minutes',
+        name: 'meetingMinutes',
+        component: MinutesView
+      },
+      polls,
+      {
+        path: 'a/:aid/:aslug',
+        name: 'agendaItem',
+        component: AgendaItemView
+      }
+    ]
   },
-  props: {
-    navigationDrawer: false,
-    appBar: false
-  },
-  children: [
-    {
-      path: '',
-      name: 'meeting',
-      component: StartView
-    },
-    speakerLists,
-    {
-      path: 'settings',
-      name: 'settings',
-      component: ControlPanelView,
-      children: [{
-        path: ':panel',
-        name: 'controlPanel',
-        component: ControlPanelView
-      }]
-    },
-    {
-      path: 'agenda',
-      name: 'agendaEdit',
-      component: AgendaEditView
-    },
-    {
-      path: 'p',
-      name: 'participants',
-      component: ParticipantsView,
-      children: [
-        {
-          path: ':tabId',
-          name: 'participantsTab',
-          component: ParticipantsView
-        }
-      ]
-    },
-    {
-      path: 'er',
-      name: 'electoralRegisters',
-      component: ElectoralRegistersView
-    },
-    {
-      path: 'minutes',
-      name: 'meetingMinutes',
-      component: MinutesView
-    },
-    polls,
-    {
-      path: 'a/:aid/:aslug',
-      name: 'agendaItem',
-      component: AgendaItemView
+  // Join has url outside meeting, so users don't need meeting roles to visit this view.
+  {
+    path: '/join/:id/:slug',
+    name: 'meetingJoin',
+    components: {
+      default: JoinMeeting,
+      appBar
     }
-  ]
-}
+  },
+]

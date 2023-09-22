@@ -33,14 +33,14 @@ const props = defineProps<{ policy: AccessPolicy }>()
 const { t } = useI18n()
 const { alert } = useAlert()
 const router = useRouter()
-const { meetingPath } = useMeeting()
+const { meetingRoute } = useMeeting()
 const submitting = ref(false)
 
 async function joinNow () {
   submitting.value = true
   try {
     await automaticAccessType.api.action(props.policy.pk, 'join')
-    router.push(meetingPath.value)
+    router.push(meetingRoute.value)
   } catch {
     alert('^Could not join meeting')
   }

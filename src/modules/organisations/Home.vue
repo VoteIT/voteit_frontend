@@ -279,7 +279,7 @@ const searchInfo = computed(() => {
           <v-list-item
             v-for="{ pk, start_time, title, current_user_roles } in meetings"
             :key="pk"
-            :to="`/m/${pk}/${slugify(title)}`"
+            :to="{ name: 'meeting', params: { id: pk, slug: slugify(title)}}"
             :title="title"
             :subtitle="start_time ? DateTime.fromISO(start_time).toLocaleString() : undefined"
           >
@@ -341,7 +341,7 @@ const searchInfo = computed(() => {
             :key="pk"
             :title="title"
             :subtitle="t(`workflowState.${state}`)"
-            :to="current_user_roles ? `/m/${pk}/${slugify(title)}` : undefined"
+            :to="current_user_roles ? { name: 'meeting', params: { id: pk, slug: slugify(title) } } : undefined"
             >
             <template #append v-if="current_user_roles">
               <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
@@ -351,7 +351,7 @@ const searchInfo = computed(() => {
               </v-tooltip>
             </template>
             <template v-else #append>
-              <v-btn :to="`/join/${pk}/${slugify(title)}`" append-icon="mdi-arrow-right-circle" color="primary" variant="tonal">
+              <v-btn :to="{ name: 'meetingJoin', params: { id: pk, slug: slugify(title) } }" append-icon="mdi-arrow-right-circle" color="primary" variant="tonal">
                 {{ t('join.meeting') }}
               </v-btn>
             </template>

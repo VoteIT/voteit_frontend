@@ -361,7 +361,6 @@ const navigation = computed<AgendaNav[]>(() => {
 function onNonInputTarget (fn: (e: KeyboardEvent, speakerList: SpeakerList) => void) {
   return (evt: KeyboardEvent) => {
     if (!currentList.value || (evt.target as Element || null)?.tagName === 'INPUT') return
-    evt.preventDefault()
     fn(evt, currentList.value)
   }
 }

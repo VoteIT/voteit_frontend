@@ -1,10 +1,10 @@
 <template>
   <v-app-bar app flat color="app-bar">
-    <router-link :to="meetingPath" :title="t('home.home')" class="mr-4">
+    <router-link :to="meetingRoute" :title="t('home.home')" class="mr-4">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" />
     </router-link>
     <v-app-bar-title v-if="meeting">
-      <router-link :to="meetingPath" class="text-white text-decoration-none">
+      <router-link :to="meetingRoute" class="text-white text-decoration-none">
         {{ meeting.title }}
         <small v-if="speakerSystem">
           ({{ speakerSystem.title }})
@@ -20,7 +20,7 @@
   </v-app-bar>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -33,50 +33,39 @@ import useMeeting from '../meetings/useMeeting'
 import useSpeakerSystem from './useSpeakerSystem'
 import useSpeakerSystems from './useSpeakerSystems'
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const { idle } = useIdle(3000)
-    const route = useRoute()
+const { t } = useI18n()
+const { idle } = useIdle(3000)
+const route = useRoute()
 
-    const { meeting, meetingId, meetingPath } = useMeeting()
-    const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
-    const { speakerSystem, systemActiveList } = useSpeakerSystem(computed(() => Number(route.params.system)))
-    const { agendaItemPath } = useAgendaItem(computed(() => systemActiveList.value?.agenda_item))
+const { meeting, meetingId, meetingRoute } = useMeeting()
+const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
+const { speakerSystem, systemActiveList } = useSpeakerSystem(computed(() => Number(route.params.system)))
+const { agendaItemRoute } = useAgendaItem(computed(() => systemActiveList.value?.agenda_item))
 
-    const systemsMenu = computed<MenuItemTo[] | undefined>(() => {
-      if (activeSpeakerSystems.value.length <= 1) return
-      return activeSpeakerSystems.value
-        .filter(system => system.pk !== speakerSystem.value?.pk)
-        .map(system => {
-          return {
-            title: system.title,
-            to: `/speakers/${meetingId.value}/${system.pk}`
-          }
-        })
+const systemsMenu = computed<MenuItemTo[] | undefined>(() => {
+  if (activeSpeakerSystems.value.length <= 1) return
+  return activeSpeakerSystems.value
+    .filter(system => system.pk !== speakerSystem.value?.pk)
+    .map(system => {
+      return {
+        title: system.title,
+        to: `/speakers/${meetingId.value}/${system.pk}`
+      }
     })
+})
+
+const nav = computed(() => {
+  if (agendaItemRoute.value) {
     return {
-      t,
-      idle,
-      meeting,
-      meetingPath,
-      nav: computed(() => {
-        if (agendaItemPath.value) {
-          return {
-            icon: 'mdi-format-list-bulleted',
-            to: agendaItemPath.value,
-            title: t('speaker.toAgendaItem')
-          }
-        }
-        return {
-          icon: 'mdi-home-outline',
-          to: meetingPath.value,
-          title: t('speaker.toMeeting')
-        }
-      }),
-      speakerSystem,
-      systemsMenu
+      icon: 'mdi-format-list-bulleted',
+      to: agendaItemRoute.value,
+      title: t('speaker.toAgendaItem')
     }
+  }
+  return {
+    icon: 'mdi-home-outline',
+    to: meetingRoute.value,
+    title: t('speaker.toMeeting')
   }
 })
 </script>

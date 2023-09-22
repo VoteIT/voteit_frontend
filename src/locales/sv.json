@@ -430,6 +430,7 @@
     "doesNotExist": "Deltagarnummer {ids} finns inte i mötet | Deltagarnumren {ids} finns inte i mötet"
   },
   "permission": {
+    "defaultLoginMessage": "Du behöver vara inloggad för att se den här sidan.",
     "defaultMessage": "Du saknar behörighet att se den här sidan.",
     "defaultChangedMessage": "Du har inte längre behörighet att se den här sidan."
   },

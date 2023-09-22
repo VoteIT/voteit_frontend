@@ -4,25 +4,30 @@ import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
+import useOrganisation from '@/modules/organisations/useOrganisation'
+import useAuthentication from './useAuthentication'
 
 interface PermissionOptions {
   message?: string
   to: RouteLocationRaw | Ref<RouteLocationRaw>
 }
 export enum PermissionDeniedStrategy {
-  Default = 'default'
+  Default = 'default',
+  RequireLogin = 'requireLogin'
 }
 type PermissonValue = boolean | undefined
 type PermissionDeniedHandler = (options: PermissionOptions, router: Router, t: ComposerTranslation, changed: boolean) => void
 
 const DEFAULT_OPTIONS: PermissionOptions = {
-  to: '/'
+  to: { name: 'home' }
 }
 
+const { idLoginURL } = useOrganisation()
+const { isAuthenticated } = useAuthentication()
+
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
-  default (options, router, t, changed) {
-    const { message, to } = options
-    const title = message || t(
+  default ({ message, to }, router, t, changed) {
+    const title = message ?? t(
       changed
         ? 'permission.defaultChangedMessage'
         : 'permission.defaultMessage'
@@ -34,6 +39,20 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
       no: false,
       yes: t('ok'),
       theme: ThemeColor.Error
+    })
+  },
+  requireLogin (options, router, t, changed) {
+    if (isAuthenticated.value !== false) return strategies.default(options, router, t, changed)
+    openDialogEvent.emit({
+      title: options.message ?? t('permission.defaultLoginMessage'),
+      resolve: value => {
+        if (value) location.assign(idLoginURL.value!)
+        else router.push({ name: 'home' })
+      },
+      dismissible: false,
+      no: t('cancel'),
+      yes: t('login'),
+      theme: ThemeColor.Primary
     })
   }
 }

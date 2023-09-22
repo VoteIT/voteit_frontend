@@ -19,7 +19,8 @@ export function uriToPayload (uri: string): SubscribePayload {
   }
 }
 
-export function slugify (text: string) {
+export function slugify (text?: string) {
+  if (!text) return '-'
   return _slugify(text, {
     lower: true,
     strict: true,
