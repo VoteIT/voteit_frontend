@@ -358,22 +358,25 @@ const navigation = computed<AgendaNav[]>(() => {
   ]
 })
 
-function onNonInputTarget (fn: (e: KeyboardEvent, speakerList: SpeakerList) => void) {
+function onNonInputTarget (fn: (e: KeyboardEvent) => void) {
   return (evt: KeyboardEvent) => {
-    if (!currentList.value || (evt.target as Element || null)?.tagName === 'INPUT') return
-    fn(evt, currentList.value)
+    if ((evt.target as Element || null)?.tagName === 'INPUT') return
+    fn(evt)
   }
 }
-onKeyStroke('ArrowLeft', onNonInputTarget(() => previousAgendaItem.value && router.push(getRoute(systemId.value, previousAgendaItem.value.pk))))
-onKeyStroke('ArrowRight', onNonInputTarget(() => nextAgendaItem.value && router.push(getRoute(systemId.value, nextAgendaItem.value.pk))))
-onKeyStroke(map(range(1,10), String), onNonInputTarget((e, list) => {
+function toAgendaItem (ai?: AgendaItem) {
+  ai && router.push(getRoute(systemId.value, ai.pk))
+}
+onKeyStroke('ArrowLeft', onNonInputTarget(() => toAgendaItem(previousAgendaItem.value)))
+onKeyStroke('ArrowRight', onNonInputTarget(() => toAgendaItem(nextAgendaItem.value)))
+onKeyStroke(map(range(1,10), String), onNonInputTarget(e => {
   const speaker = speakerQueue.value[Number(e.key) - 1]
-  if (!speaker) return
-  speakers.startSpeaker(list, speaker)
+  if (!speaker || !currentList.value) return
+  speakers.startSpeaker(currentList.value, speaker)
 }))
-onKeyStroke('z', onNonInputTarget((e, list) => e.ctrlKey && speakers.undoSpeaker(list)))
-onKeyStroke('s', onNonInputTarget((_, list) => speakers.startSpeaker(list)))
-onKeyStroke('e', onNonInputTarget((_, list) => speakers.stopSpeaker(list)))
+onKeyStroke('z', onNonInputTarget(e => e.ctrlKey && currentList.value && speakers.undoSpeaker(currentList.value)))
+onKeyStroke('s', onNonInputTarget(() => currentList.value && speakers.startSpeaker(currentList.value)))
+onKeyStroke('e', onNonInputTarget(() => currentList.value && speakers.stopSpeaker(currentList.value)))
 /*
  * End navigation
  */
