@@ -174,6 +174,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
 import { meetingType } from '../meetings/contentTypes'
+import useMeetingTitle from '../meetings/useMeetingTitle'
 
 import useAgenda from './useAgenda'
 import useAgendaTags from './useAgendaTags'
@@ -189,6 +190,7 @@ const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 
 usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
+useMeetingTitle(t('agenda.agenda'))
 
 /*
 /* START agenda ordering
