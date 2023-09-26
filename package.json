@@ -6,7 +6,7 @@
     "build": "vite build",
     "coverage": "vitest run --coverage",
     "dev": "vite",
-    "extractLocales": "vue-i18n-extract report -v './src/**/*.?(js|vue)' -l './src/locales/*.json'",
+    "extractLocales": "vue-i18n-extract report -v './src/**/*.?(ts|js|vue)' -l './src/locales/*.json'",
     "lint": "eslint --ext .ts,.vue --ignore-path .gitignore --fix src",
     "test": "vitest --dom"
   },
