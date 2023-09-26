@@ -9,64 +9,51 @@
   </transition>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from '@/composables/useLoader'
 import { InitState } from '@/composables/types'
 
-let dotInterval: number
-let visibleTimeout: number
+let dotInterval: NodeJS.Timer
+let visibleTimeout: NodeJS.Timeout
 const DOT_INTERVAL = 333
 
-export default defineComponent({
-  name: 'Loader',
-  setup () {
-    const { t } = useI18n()
-    const dotCount = ref(0)
-    const { initDone, initFailed, initState } = useLoader('Loader')
-    const visible = ref(true)
+const { t } = useI18n()
+const dotCount = ref(0)
+const { initDone, initFailed, initState } = useLoader('Loader')
+const visible = ref(true)
 
-    function dotUp () {
-      dotCount.value = (dotCount.value + 1) % 4
-    }
+function dotUp () {
+  dotCount.value = (dotCount.value + 1) % 4
+}
 
-    onMounted(() => {
+onMounted(() => {
+  dotInterval = setInterval(dotUp, DOT_INTERVAL)
+})
+
+watch(initState, state => {
+  switch (state) {
+    case InitState.Done:
+      clearInterval(dotInterval)
+      visibleTimeout = setTimeout(() => { visible.value = false }, 500)
+      break
+    case InitState.Failed:
+      clearInterval(dotInterval)
+      break
+    case InitState.Loading:
+      clearTimeout(visibleTimeout)
+      visible.value = true
       dotInterval = setInterval(dotUp, DOT_INTERVAL)
-    })
-
-    watch(initState, state => {
-      switch (state) {
-        case InitState.Done:
-          clearInterval(dotInterval)
-          visibleTimeout = setTimeout(() => { visible.value = false }, 500)
-          break
-        case InitState.Failed:
-          clearInterval(dotInterval)
-          break
-        case InitState.Loading:
-          clearTimeout(visibleTimeout)
-          visible.value = true
-          dotInterval = setInterval(dotUp, DOT_INTERVAL)
-          break
-      }
-    })
-
-    const dots = computed(() => '.'.repeat(dotCount.value))
-    const message = computed(() => {
-      if (initState.value === InitState.Failed) return t('loader.failed')
-      return t('loader.loading') + dots.value
-    })
-
-    return {
-      t,
-      initFailed,
-      initDone,
-      message,
-      visible
-    }
+      break
   }
+})
+
+const dots = computed(() => '.'.repeat(dotCount.value))
+const message = computed(() => {
+  if (initState.value === InitState.Failed) return t('loader.failed')
+  return t('loader.loading') + dots.value
 })
 </script>
 
