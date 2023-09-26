@@ -1,64 +1,56 @@
 <template>
   <div class="progress-bar" :class="{ failed, done, disabled }">
     <div v-if="$slots.default" class="meta">
-      <slot />
+      <slot></slot>
     </div>
     <div v-else-if="textDisplay">
       <span>{{ textDisplay }}</span>
     </div>
     <div class="bar d-flex">
-      <div class="progress" :style="{ width: percentage + '%' }" />
-      <div class="buffer" v-if="buffer" :style="{ width: bufferPercentage + '%' }" />
+      <div class="progress" :style="{ width: percentage + '%' }"></div>
+      <div class="buffer" v-if="buffer" :style="{ width: bufferPercentage + '%' }"></div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 
-export default defineComponent({
-  name: 'Progress bar',
-  props: {
-    text: String,
-    absolute: Boolean,
-    failed: Boolean,
-    done: Boolean,
-    total: Number,
-    value: {
-      type: Number,
-      default: 0
-    },
-    buffer: {
-      type: Number,
-      default: 0
-    }
-  },
-  setup (props) {
-    const disabled = computed(() => {
-      return !props.total
-    })
-    const bufferPercentage = computed(() => {
-      if (!props.total) return 0
-      return props.buffer / props.total * 100
-    })
-    const percentage = computed(() => {
-      if (!props.total) return 0
-      return props.value / props.total * 100
-    })
-    const textDisplay = computed(() => {
-      if (props.text) return props.text
-      if (disabled.value) return
-      if (props.absolute) return `${props.value} / ${props.total}`
-      return `${Math.floor(percentage.value)} %`
-    })
-
-    return {
-      bufferPercentage,
-      disabled,
-      percentage,
-      textDisplay
-    }
+const props = withDefaults(
+  defineProps<{
+    text?: string,
+    absolute?: boolean,
+    failed?: boolean,
+    done?: boolean,
+    total?: number,
+    value: number,
+    buffer: number
+  }>(),
+  {
+    value: 0,
+    buffer: 0
   }
+)
+
+const disabled = computed(() => {
+  return !props.total
+})
+
+const bufferPercentage = computed(() => {
+  if (!props.total) return 0
+  return props.buffer / props.total * 100
+})
+
+const percentage = computed(() => {
+  if (!props.total) return 0
+  return props.value / props.total * 100
+})
+
+const textDisplay = computed(() => {
+  if (props.text) return props.text
+  if (disabled.value) return
+  if (props.absolute) return `${props.value} / ${props.total}`
+  return `${Math.floor(percentage.value)} %`
 })
 </script>
 
