@@ -105,7 +105,7 @@ async function deleteButton () {
       <Widget>
         <h2>{{ t('preview') }}</h2>
         <RealReactionButton
-          :button="transformedData"
+          :button="(transformedData as ReactionButton)"
           v-model="previewActive"
           :count="previewCount"
         >

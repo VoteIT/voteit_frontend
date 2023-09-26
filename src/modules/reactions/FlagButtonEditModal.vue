@@ -98,7 +98,7 @@ async function deleteButton () {
       <Widget>
         <h2>{{ t('preview') }}</h2>
         <FlagButton
-          :button="transformedData"
+          :button="(transformedData as ReactionButton)"
           v-model="previewActive"
           :can-toggle="true"
         >
