@@ -27,11 +27,9 @@ const { isAuthenticated } = useAuthentication()
 
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   default ({ message, to }, router, t, changed) {
-    const title = message ?? t(
-      changed
-        ? 'permission.defaultChangedMessage'
-        : 'permission.defaultMessage'
-    )
+    const title = message ?? changed
+      ? t('permission.defaultChangedMessage')
+      : t('permission.defaultMessage')
     openDialogEvent.emit({
       title,
       resolve: () => router.push(unref(to)),

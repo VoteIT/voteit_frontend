@@ -4,7 +4,7 @@
       <template #vote>
         <div class="text-center">
           <v-btn :disabled="disabled" :color="option.color" :variant="choice === p.pk ? 'elevated' : 'outlined'" :prepend-icon="option.icon" @click="select(p)">
-            {{ t(option.translationString) }}
+            {{ option.getTitle(t) }}
           </v-btn>
         </div>
       </template>
@@ -18,7 +18,8 @@ import { useI18n } from 'vue-i18n'
 
 import type { Proposal } from '@/modules/proposals/types'
 
-import { MajorityVote, SimpleChoice, simpleChoices, SimplePoll } from './types'
+import { MajorityVote, SimpleChoice, SimplePoll } from './types'
+import { simpleChoices } from './simple'
 
 const props = defineProps<{
   disabled?: boolean

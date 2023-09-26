@@ -1,5 +1,6 @@
 import { ThemeColor } from '@/utils/types'
 import { Poll, VoteResult } from '../types'
+import { ComposerTranslation } from 'vue-i18n'
 
 enum PollCriteria {
   MajorityWinner = 'majorityWinner',
@@ -31,30 +32,9 @@ export enum SimpleChoice {
 export interface SimpleChoiceDesc {
   value: SimpleChoice
   icon: string
-  translationString: string
+  getTitle (t: ComposerTranslation): string
   color: ThemeColor
 }
-
-export const simpleChoices: readonly SimpleChoiceDesc[] = [
-  {
-    value: SimpleChoice.Yes,
-    icon: 'mdi-thumb-up',
-    translationString: 'poll.approve',
-    color: ThemeColor.Success
-  },
-  {
-    value: SimpleChoice.No,
-    icon: 'mdi-thumb-down',
-    translationString: 'poll.deny',
-    color: ThemeColor.Warning
-  },
-  {
-    value: SimpleChoice.Abstain,
-    icon: 'mdi-cancel',
-    translationString: 'poll.abstain',
-    color: ThemeColor.Secondary
-  }
-] as const
 
 export type SimpleProposalResult = Record<SimpleChoice, number>
 type SimpleResultMap = Record<number, SimpleProposalResult>

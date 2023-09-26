@@ -29,7 +29,8 @@ import useProposals from '@/modules/proposals/useProposals'
 import Proposal from '@/modules/proposals/Proposal.vue'
 import type { Proposal as P } from '@/modules/proposals/types'
 
-import { simpleChoices, SimpleChoice, CombinedSimpleResult } from './types'
+import { SimpleChoice, CombinedSimpleResult } from './types'
+import { simpleChoices } from './simple'
 
 interface ProposalResult {
   proposal: P

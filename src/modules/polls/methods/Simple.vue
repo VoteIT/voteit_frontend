@@ -4,7 +4,7 @@
       <template #vote>
         <div class="simple-options">
           <v-btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'" :prepend-icon="opt.icon" @click="change(p, opt)">
-            {{ t(opt.translationString) }}
+            {{ opt.getTitle(t) }}
           </v-btn>
         </div>
       </template>
@@ -16,10 +16,11 @@
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import DefaultMap from '@/utils/DefaultMap'
 import type { Proposal } from '@/modules/proposals/types'
 
-import { SimpleVote, SimpleChoice, SimpleChoiceDesc, simpleChoices, SimplePoll } from './types'
-import DefaultMap from '@/utils/DefaultMap'
+import { SimpleVote, SimpleChoice, SimpleChoiceDesc, SimplePoll } from './types'
+import { simpleChoices } from './simple'
 
 const props = defineProps<{
   disabled?: boolean
