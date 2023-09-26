@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+import stringToHSL from '@/utils/stringToHSL'
+import { tagClickEvent } from '@/modules/meetings/useTags'
+
+defineEmits(['remove'])
+const props = defineProps<{
+  name: string
+  disabled?: boolean
+  closer?: boolean
+  count?: number
+}>()
+
+const style = computed(() => ({ backgroundColor: stringToHSL(props.name) }))
+const badge = computed(() => !!props.count)
+const badgeContent = computed(() => String(props.count))
+</script>
+
 <template>
   <v-badge :model-value="badge" :content="badgeContent" offset-x="-5" offset-y="-2" color="secondary">
     <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name" @click="tagClickEvent.emit(name)">
@@ -7,34 +26,6 @@
     </span>
   </v-badge>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
-
-import stringToHSL from '@/utils/stringToHSL'
-import { tagClickEvent } from '@/modules/meetings/useTags'
-
-export default defineComponent({
-  emits: ['remove'],
-  props: {
-    name: {
-      type: String,
-      required: true
-    },
-    disabled: Boolean,
-    closer: Boolean,
-    count: Number
-  },
-  setup (props) {
-    return {
-      style: computed(() => ({ backgroundColor: stringToHSL(props.name) })),
-      badge: computed(() => !!props.count),
-      badgeContent: computed(() => String(props.count)),
-      tagClickEvent
-    }
-  }
-})
-</script>
 
 <style lang="sass" scoped>
 .voteit-tag

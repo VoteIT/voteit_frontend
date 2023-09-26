@@ -23,8 +23,8 @@ const props = withDefaults(
     failed?: boolean,
     done?: boolean,
     total?: number,
-    value: number,
-    buffer: number
+    value?: number,
+    buffer?: number
   }>(),
   {
     value: 0,
