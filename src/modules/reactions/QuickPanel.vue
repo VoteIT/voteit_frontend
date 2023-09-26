@@ -3,19 +3,27 @@
     {{ t('reaction.buttonCount', meetingButtons.length) }}
   </v-card-text>
   <v-card-actions v-if="meetingButtons.length">
-    <RealReactionButton
-      v-for="button in meetingButtons"
-      :key="button.pk"
-      :button="button"
-      class="mr-1"
-      :count="Number(!!model[button.pk])"
-      :disabled="!button.active"
-      v-model="model[button.pk]"
-    >
-      <template #userList>
-        <UserList v-if="user" :user-ids="[user.pk]" />
-      </template>
-    </RealReactionButton>
+    <template v-for="button in meetingButtons" :key="button.pk">
+      <FlagButton
+        v-if="button.flag_mode"
+        :button="button"
+        :can-toggle="true"
+        v-model="model[button.pk]"
+        class="mr-1"
+      />
+      <RealReactionButton
+        v-else
+        :button="button"
+        class="mr-1"
+        :count="Number(!!model[button.pk])"
+        :disabled="!button.active"
+        v-model="model[button.pk]"
+      >
+        <template #userList>
+          <UserList v-if="user" :user-ids="[user.pk]" />
+        </template>
+      </RealReactionButton>
+    </template>
   </v-card-actions>
 </template>
 
@@ -30,6 +38,7 @@ import useMeeting from '../meetings/useMeeting'
 
 import RealReactionButton from './RealReactionButton.vue'
 import useReactions from './useReactions'
+import FlagButton from './FlagButton.vue'
 
 const { t } = useI18n()
 
