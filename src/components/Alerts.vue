@@ -12,8 +12,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeMount, reactive } from 'vue'
+<script setup lang="ts">
+import { computed, onBeforeMount, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { clearAlertsEvent, openAlertEvent } from '@/utils/events'
@@ -26,70 +26,57 @@ const DEFAULTS = {
   active: true
 }
 
-export default defineComponent({
-  setup () {
-    const { t } = useI18n()
-    const alerts = reactive<Alert[]>([])
+const { t } = useI18n()
+const alerts = reactive<Alert[]>([])
 
-    const hasMultipleActive = computed(() => alerts.filter(a => a.active).length > 1)
+const hasMultipleActive = computed(() => alerts.filter(a => a.active).length > 1)
 
-    function dismiss (alert?: Alert) {
-      if (alert) {
-        const index = alerts.indexOf(alert)
-        if (index !== -1) {
-          alerts.splice(index, 1)
-        }
-      } else {
-        alerts.length = 0
-      }
-    }
-
-    function textToAlert (text: string): Alert {
-      let level = DEFAULTS.level
-      let sticky = false
-      switch (text.charAt(0)) {
-        case '*':
-          text = text.substr(1)
-          level = AlertLevel.Warning
-          break
-        case '^':
-          text = text.substr(1)
-          level = AlertLevel.Error
-          sticky = true
-          break
-      }
-      return {
-        text,
-        level,
-        title: level,
-        sticky
-      }
-    }
-
-    function open (data: string | Alert) {
-      if (typeof data === 'string') {
-        alerts.push({ ...DEFAULTS, ...textToAlert(data) })
-      } else {
-        alerts.push({ ...DEFAULTS, ...data })
-      }
-      const alert = alerts[alerts.length - 1]
-      if (!alert.sticky) {
-        setTimeout(() => dismiss(alert), AUTO_DISMISS_DELAY)
-      }
-    }
-
-    onBeforeMount(() => {
-      openAlertEvent.on(open)
-      clearAlertsEvent.on(() => dismiss())
-    })
-
-    return {
-      t,
-      alerts,
-      hasMultipleActive,
-      dismiss
-    }
+function dismiss (alert?: Alert) {
+  if (!alert) {
+    alerts.length = 0
+    return
   }
+
+  const index = alerts.indexOf(alert)
+  if (index === -1) return
+  alerts.splice(index, 1)
+}
+
+function textToAlert (text: string): Alert {
+  switch (text.charAt(0)) {
+    case '*':
+      return {
+        level: AlertLevel.Warning,
+        text: text.slice(1),
+        title: AlertLevel.Warning,
+      }
+    case '^':
+      return {
+        level: AlertLevel.Error,
+        sticky: true,
+        text: text.slice(1),
+        title: AlertLevel.Error,
+      }
+  }
+  return {
+    level: AlertLevel.Info,
+    text,
+    title: AlertLevel.Info
+  }
+}
+
+function open (data: string | Alert) {
+  if (typeof data === 'string') data = textToAlert(data)
+  alerts.push({ ...DEFAULTS, ...data })
+  const alert = alerts.at(-1)!
+  if (!alert.sticky) {
+    setTimeout(() => dismiss(alert), AUTO_DISMISS_DELAY)
+  }
+}
+
+onBeforeMount(() => {
+  openAlertEvent.on(open)
+  clearAlertsEvent.on(() => dismiss())
 })
 </script>
 

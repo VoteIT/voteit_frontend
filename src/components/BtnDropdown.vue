@@ -1,44 +1,45 @@
 <template>
   <span class="btn-dropdown" :class="{ dark, isOpen, right }" @keydown.esc.prevent="isOpen = false">
-    <slot name="activator" :toggle="toggle"/>
+    <slot name="activator" :toggle="toggle"></slot>
     <v-btn v-if="title && !$slots.activator" @click="isOpen = !isOpen" append-icon="mdi-chevron-down">{{ title }}</v-btn>
     <Widget :dense="dense" v-show="isOpen">
-      <slot v-if="!lazy || isOpen" />
+      <slot v-if="!lazy || isOpen"></slot>
     </Widget>
   </span>
 </template>
 
-<script lang="ts">
-import { defineComponent, nextTick, ref, watch } from 'vue'
+<script setup lang="ts">
+import { nextTick, ref, watch } from 'vue'
 
-export default defineComponent({
-  name: 'BtnDropdown',
-  emits: ['open', 'close'],
-  props: {
-    title: String,
-    dark: Boolean,
-    lazy: Boolean,
-    right: Boolean,
-    dense: Boolean
-  },
-  setup (props, { emit }) {
-    const isOpen = ref(false)
-    watch(isOpen, value => {
-      nextTick(() => emit(value ? 'open' : 'close'))
-    })
-    function toggle () {
-      isOpen.value = !isOpen.value
-    }
-    function close () {
-      isOpen.value = false
-    }
+defineProps<{
+  title?: string
+  dark?: boolean
+  lazy?: boolean
+  right?: boolean
+  dense?: boolean
+}>()
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'open'): void
+}>()
 
-    return {
-      isOpen,
-      close,
-      toggle
-    }
-  }
+const isOpen = ref(false)
+watch(isOpen, async (value) => {
+  await nextTick()
+  if (value) emit('open')
+  else emit('close')
+})
+
+function toggle () {
+  isOpen.value = !isOpen.value
+}
+
+function close () {
+  isOpen.value = false
+}
+
+defineExpose({
+  close
 })
 </script>
 
