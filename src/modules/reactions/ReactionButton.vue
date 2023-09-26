@@ -1,5 +1,12 @@
 <template>
+  <FlagButton
+    v-if="button.flag_mode"
+    :button="button"
+    :can-toggle="isModerator"
+    v-model="reacted"
+  />
   <RealReactionButton
+    v-else
     :button="button"
     :count="count"
     :disabled="!canReact"
@@ -17,14 +24,17 @@
 import { computed, ref } from 'vue'
 
 import UserList from '@/components/UserList.vue'
+import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
 import { canAddReaction, canDeleteReaction, canListReactions as canList } from './rules'
 import { ReactionButton, ReactionRelation } from './types'
 import RealReactionButton from './RealReactionButton.vue'
+import FlagButton from './FlagButton.vue'
 
 const props = defineProps<{ button: ReactionButton, relation: ReactionRelation }>()
 
+const { isModerator } = useMeeting()
 const { fetchReactions, getUserReaction, setUserReacted, removeUserReacted, getButtonReactionCount } = useReactions()
 const reaction = computed(() => getUserReaction(props.button, props.relation))
 const count = computed(() => getButtonReactionCount(props.button, props.relation))

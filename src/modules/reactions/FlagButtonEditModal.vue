@@ -11,11 +11,10 @@ import UserList from '@/components/UserList.vue'
 import useRules from '@/composables/useRules'
 
 import useMeeting from '../meetings/useMeeting'
-import { MeetingRole } from '../meetings/types'
 
 import { ReactionButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
-import RealReactionButton from './RealReactionButton.vue'
+import FlagButton from './FlagButton.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
@@ -28,27 +27,21 @@ function getDefaults (btn?: ReactionButton): Partial<ReactionButton> {
   if (btn) return { ...btn }
   return {
     allowed_models: ['discussion_post', 'proposal'],
-    change_roles: [MeetingRole.Moderator],
     color: 'primary',
-    flag_mode: false,
-    icon: 'mdi-thumb-up',
-    list_roles: [MeetingRole.Moderator],
+    flag_mode: true,
+    icon: 'mdi-check',
     meeting: meetingId.value
   }
 }
 
 const { user } = useAuthentication()
-const { meetingId, roleLabels } = useMeeting()
+const { meetingId } = useMeeting()
 const formData = reactive<Partial<ReactionButton>>(getDefaults(props.data))
-const transformedData = computed(() => ({
-  ...formData,
-  target: formData.target || undefined
-}))
-const previewActive = ref(true)
-const previewCount = computed(() => {
-  const selected = Number(formData.target) || 100
-  return previewActive.value ? selected : selected - 1
+const transformedData = computed(() => {
+  const { change_roles, list_roles, flag_mode, target, ...data } = formData
+  return data
 })
+const previewActive = ref(true)
 const submitting = ref(false)
 
 function close () {
@@ -59,7 +52,7 @@ const form = ref<ComponentPublicInstance<{ validate(): void }> | null>(null)
 watch(form, value => value?.validate(), { immediate: true })
 const formValid = ref(true)
 const isValid = computed(() => {
-  return formValid.value && formData.icon && formData.color && formData.change_roles?.length && formData.list_roles?.length
+  return formValid.value && formData.icon && formData.color
 })
 
 async function save () {
@@ -104,15 +97,15 @@ async function deleteButton () {
     <main>
       <Widget>
         <h2>{{ t('preview') }}</h2>
-        <RealReactionButton
+        <FlagButton
           :button="transformedData"
           v-model="previewActive"
-          :count="previewCount"
+          :can-toggle="true"
         >
           <template #userList>
             <UserList v-if="user" :user-ids="[user.pk]" />
           </template>
-        </RealReactionButton>
+        </FlagButton>
       </Widget>
       <v-form @submit.prevent="save" class="mt-4" v-model="formValid" ref="form">
         <v-text-field dark required :label="t('title')" v-model="formData.title" :rules="[rules.required]" />
@@ -136,15 +129,6 @@ async function deleteButton () {
           <label>{{ t('reaction.modelsAllowed') }}</label>
           <CheckboxMultipleSelect v-model="formData.allowed_models" :settings="{ options: contentTypeLabels }" />
         </div>
-        <div>
-          <label>{{ t('reaction.rolesRequired') }}</label>
-          <CheckboxMultipleSelect v-model="formData.change_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
-        </div>
-        <div>
-          <label>{{ t('reaction.listRolesRequired') }}</label>
-          <CheckboxMultipleSelect v-model="formData.list_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
-        </div>
-        <v-text-field type="number" v-model="formData.target" :label="t('reaction.threshold')" :rules="[rules.min(0)]" :hint="t('reaction.thresholdHint')" />
         <div class="btn-controls submit mt-4">
           <v-spacer />
           <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close">

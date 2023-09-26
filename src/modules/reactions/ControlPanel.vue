@@ -1,75 +1,3 @@
-<template>
-  <div>
-    <div class="d-flex mb-4">
-      <h2>{{ t('reaction.settings') }}</h2>
-      <v-spacer />
-      <DefaultDialog :title="t('reaction.addButton')" persistent>
-        <template #activator="{ props }">
-          <v-btn color="primary" prepend-icon="mdi-gesture-tap-button" v-bind="props">
-            {{ t('reaction.addButton') }}
-          </v-btn>
-        </template>
-        <template #default="{ close }">
-          <ReactionEditModal @close="close" />
-        </template>
-      </DefaultDialog>
-    </div>
-    <v-table>
-      <thead>
-        <tr>
-          <th>
-            {{ t('reaction.buttons') }}
-          </th>
-          <th>
-            {{ t('reaction.active') }}
-          </th>
-          <th>
-            {{ t('proposal.proposals') }}
-          </th>
-          <th>
-            {{ t('discussion.discussions') }}
-          </th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="button in meetingButtons" :key="button.pk">
-          <td>
-            <RealReactionButton
-              :button="button"
-              :count="Number(!!model[button.pk])"
-              :disabled="!button.active"
-              v-model="model[button.pk]"
-            >
-              <template #userList>
-                <UserList v-if="user" :userIds="[user.pk]" />
-              </template>
-            </RealReactionButton>
-          </td>
-          <td>
-            <v-switch hide-details color="primary" :modelValue="button.active" @update:modelValue="setActive(button, $event)" />
-          </td>
-          <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
-            <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event)" />
-          </td>
-          <td class="text-right">
-            <DefaultDialog :title="t('reaction.editButton')" persistent>
-              <template #activator="{ props }">
-                <v-btn prepend-icon="mdi-pencil" size="small" color="primary" v-bind="props">
-                  {{ t('edit') }}
-                </v-btn>
-              </template>
-              <template #default="{ close }">
-                <ReactionEditModal :data="button" @close="close" />
-              </template>
-            </DefaultDialog>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -81,9 +9,11 @@ import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
 import ReactionEditModal from './ReactionEditModal.vue'
+import FlagButtonEditModal from './FlagButtonEditModal.vue'
 import { ReactionButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
+import FlagButton from './FlagButton.vue'
 
 const { t } = useI18n()
 const { user } = useAuthentication()
@@ -105,3 +35,102 @@ async function setActive (button: ReactionButton, active: boolean) {
 
 const model = reactive<Record<number, boolean>>({})
 </script>
+
+<template>
+  <div>
+    <div class="d-flex mb-4">
+      <h2>{{ t('reaction.settings') }}</h2>
+      <v-spacer />
+      <v-menu>
+        <v-list>
+          <DefaultDialog :title="t('reaction.addButton')" persistent>
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" prepend-icon="mdi-gesture-tap-button">
+                {{ t('reaction.button') }}
+              </v-list-item>
+            </template>
+            <template #default="{ close }">
+              <ReactionEditModal @close="close" />
+            </template>
+          </DefaultDialog>
+          <DefaultDialog :title="t('reaction.addButton')" persistent>
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" prepend-icon="mdi-flag">
+                {{ t('reaction.flag') }}
+              </v-list-item>
+            </template>
+            <template #default="{ close }">
+              <FlagButtonEditModal @close="close" />
+            </template>
+          </DefaultDialog>
+        </v-list>
+        <template #activator="{ props }">
+          <v-btn v-bind="props" append-icon="mdi-chevron-down" color="primary">
+            {{ t('reaction.addButton') }}
+          </v-btn>
+        </template>
+      </v-menu>
+    </div>
+    <v-table>
+      <thead>
+        <tr>
+          <th>
+            {{ t('reaction.buttons') }}
+          </th>
+          <th>
+            {{ t('reaction.active') }}
+          </th>
+          <th>
+            {{ t('proposal.proposals') }}
+          </th>
+          <th>
+            {{ t('discussion.discussions') }}
+          </th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="button in meetingButtons" :key="button.pk">
+          <td>
+            <FlagButton
+              v-if="button.flag_mode"
+              :button="button"
+              :can-toggle="true"
+              v-model="model[button.pk]"
+            />
+            <RealReactionButton
+              v-else
+              :button="button"
+              :count="Number(!!model[button.pk])"
+              :disabled="!button.active"
+              v-model="model[button.pk]"
+            >
+              <template #userList>
+                <UserList v-if="user" :userIds="[user.pk]" />
+              </template>
+            </RealReactionButton>
+          </td>
+          <td>
+            <v-switch hide-details color="primary" :modelValue="button.active" @update:modelValue="setActive(button, $event!)" />
+          </td>
+          <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
+            <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event!)" />
+          </td>
+          <td class="text-right">
+            <DefaultDialog :title="t('reaction.editButton')" persistent>
+              <template #activator="{ props }">
+                <v-btn prepend-icon="mdi-pencil" size="small" color="primary" v-bind="props">
+                  {{ t('edit') }}
+                </v-btn>
+              </template>
+              <template #default="{ close }">
+                <FlagButtonEditModal v-if="button.flag_mode" :data="button" @close="close" />
+                <ReactionEditModal v-else :data="button" @close="close" />
+              </template>
+            </DefaultDialog>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+  </div>
+</template>

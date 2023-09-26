@@ -32,9 +32,12 @@ export interface ReactionButton extends BaseContent {
   allowed_models: string[]
   change_roles: MeetingRole[]
   color: string
+  flag_mode: boolean
   icon: string
   list_roles: MeetingRole[]
   meeting: number
+  on_presentation: boolean
+  on_vote: boolean
   order: number
   target: null | number
 }

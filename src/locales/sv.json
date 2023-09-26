@@ -630,14 +630,16 @@
   "reaction": {
     "active": "Aktiv (användare kan reagera)",
     "addButton": "Ny reaktionsknapp",
+    "button": "Reaktionsknapp",
     "buttonCount": "Du kan lägga till reaktionsknappar på förslag och diskussioner | Mötet har en reaktionsknapp | Mötet har {count} reaktionsknappar",
     "buttons": "Reaktionsknappar",
     "deleteButtonConfirmation": "Du håller på att radera knappen permanent.\nÄr du säker?",
     "editButton": "Ändra reaktionsknapp",
-    "listRolesRequired": "Roller som krävs för att se vem som reagerat",
+    "flag": "Flagga",
+    "listRolesRequired": "Roller som kan se vem som reagerat",
     "modelsAllowed": "Visa på innehållstyper",
     "peopleReacted": "Reaktioner",
-    "rolesRequired": "Roller som krävs för att reagera",
+    "rolesRequired": "Roller som kan reagera",
     "settings": "Inställningar för reaktionsknappar",
     "threshold": "Tröskelvärde",
     "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv."
