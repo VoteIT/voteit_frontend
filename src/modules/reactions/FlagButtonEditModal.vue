@@ -38,7 +38,7 @@ const { user } = useAuthentication()
 const { meetingId } = useMeeting()
 const formData = reactive<Partial<ReactionButton>>(getDefaults(props.data))
 const transformedData = computed(() => {
-  const { change_roles, list_roles, flag_mode, target, ...data } = formData
+  const { change_roles, list_roles, target, ...data } = formData
   return data
 })
 const previewActive = ref(true)
