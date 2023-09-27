@@ -12,7 +12,7 @@ import useRules from '@/composables/useRules'
 
 import useMeeting from '../meetings/useMeeting'
 
-import { ReactionButton, ReactionIcon } from './types'
+import { IFlagButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
 import FlagButton from './FlagButton.vue'
 
@@ -20,10 +20,10 @@ const { t } = useI18n()
 const rules = useRules(t)
 const emit = defineEmits(['close'])
 const props = defineProps<{
-  data?: ReactionButton
+  data?: IFlagButton
 }>()
 
-function getDefaults (btn?: ReactionButton): Partial<ReactionButton> {
+function getDefaults (btn?: IFlagButton): Partial<IFlagButton> {
   if (btn) return { ...btn }
   return {
     allowed_models: ['discussion_post', 'proposal'],
@@ -36,7 +36,7 @@ function getDefaults (btn?: ReactionButton): Partial<ReactionButton> {
 
 const { user } = useAuthentication()
 const { meetingId } = useMeeting()
-const formData = reactive<Partial<ReactionButton>>(getDefaults(props.data))
+const formData = reactive<Partial<IFlagButton>>(getDefaults(props.data))
 const transformedData = computed(() => {
   const { change_roles, list_roles, target, ...data } = formData
   return data
@@ -98,7 +98,7 @@ async function deleteButton () {
       <Widget>
         <h2>{{ t('preview') }}</h2>
         <FlagButton
-          :button="(transformedData as ReactionButton)"
+          :button="(transformedData as IFlagButton)"
           v-model="previewActive"
           :can-toggle="true"
         >

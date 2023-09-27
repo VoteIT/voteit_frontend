@@ -10,7 +10,7 @@ import useMeeting from '../meetings/useMeeting'
 import useReactions from './useReactions'
 import ReactionEditModal from './ReactionEditModal.vue'
 import FlagButtonEditModal from './FlagButtonEditModal.vue'
-import { ReactionButton } from './types'
+import { ReactionButton, isFlagButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
@@ -93,7 +93,7 @@ const model = reactive<Record<number, boolean>>({})
         <tr v-for="button in meetingButtons" :key="button.pk">
           <td>
             <FlagButton
-              v-if="button.flag_mode"
+              v-if="isFlagButton(button)"
               :button="button"
               :can-toggle="true"
               v-model="model[button.pk]"
@@ -124,7 +124,7 @@ const model = reactive<Record<number, boolean>>({})
                 </v-btn>
               </template>
               <template #default="{ close }">
-                <FlagButtonEditModal v-if="button.flag_mode" :data="button" @close="close" />
+                <FlagButtonEditModal v-if="isFlagButton(button)" :data="button" @close="close" />
                 <ReactionEditModal v-else :data="button" @close="close" />
               </template>
             </DefaultDialog>

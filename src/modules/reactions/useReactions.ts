@@ -5,7 +5,7 @@ import { reactive } from 'vue'
 import useAuthentication from '@/composables/useAuthentication'
 
 import { reactionButtonType, reactionType } from './contentTypes'
-import { Reaction, ReactionButton, ReactionCountMessage, ReactionListMessage, ReactionRelation } from './types'
+import { Reaction, ReactionButton, ReactionCountMessage, ReactionListMessage, ReactionRelation, isFlagButton } from './types'
 
 function getCountKey (contentType: string, objectId: number, button: number) {
   return `${contentType}/${objectId}/${button}`
@@ -63,13 +63,12 @@ function setUserReacted (button: ReactionButton, relation: ReactionRelation) {
   })
 }
 
-function removeUserReacted (button: ReactionButton, relation: ReactionRelation) {
+async function removeUserReacted (button: ReactionButton, relation: ReactionRelation) {
   const reaction = getUserReaction(button, relation)
-  if (reaction) {
-    return reactionType.delete(reaction.pk)
-  } else {
-    return Promise.reject(new Error('User has no previous reaction'))
-  }
+  if (!reaction) throw new Error('User has no previous reaction')
+  return isFlagButton(button)
+    ? await reactionType.methodCall('delete_flag', { button: button.pk, ...relation })
+    : await reactionType.delete(reaction.pk)
 }
 
 async function fetchReactions (button: ReactionButton, relation: ReactionRelation) {

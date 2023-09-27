@@ -42,6 +42,17 @@ export interface ReactionButton extends BaseContent {
   target: null | number
 }
 
+export interface IFlagButton extends ReactionButton {
+  flag_mode: true
+  change_roles: never[]
+  list_roles: never[]
+  target: null
+}
+
+export function isFlagButton (btn: ReactionButton): btn is IFlagButton {
+  return btn.flag_mode
+}
+
 export enum ReactionIcon {
   ThumbUp = 'mdi-thumb-up',
   ThumbDown = 'mdi-thumb-down',

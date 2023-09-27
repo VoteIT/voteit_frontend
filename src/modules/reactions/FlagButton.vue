@@ -9,10 +9,10 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import { ReactionButton } from './types'
+import { IFlagButton } from './types'
 
 const props = defineProps<{
-  button: ReactionButton
+  button: IFlagButton
   canToggle?: boolean
   disabled?: boolean
   modelValue?: boolean

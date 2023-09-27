@@ -1,6 +1,6 @@
 <template>
   <FlagButton
-    v-if="button.flag_mode"
+    v-if="isFlagButton(button)"
     :button="button"
     :can-toggle="isModerator"
     v-model="reacted"
@@ -28,11 +28,14 @@ import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
 import { canAddReaction, canDeleteReaction, canListReactions as canList } from './rules'
-import { ReactionButton, ReactionRelation } from './types'
+import { ReactionButton, ReactionRelation, isFlagButton } from './types'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 
-const props = defineProps<{ button: ReactionButton, relation: ReactionRelation }>()
+const props = defineProps<{
+  button: ReactionButton,
+  relation: ReactionRelation
+}>()
 
 const { isModerator } = useMeeting()
 const { fetchReactions, getUserReaction, setUserReacted, removeUserReacted, getButtonReactionCount } = useReactions()
@@ -46,13 +49,14 @@ async function fetchUsers () {
 
 const reacted = computed({
   get () {
-    return !!reaction.value
+    return isFlagButton(props.button)
+      ? !!count.value
+      : !!reaction.value
   },
   set (value) {
-    const method = value
-      ? setUserReacted
-      : removeUserReacted
-    method(props.button, props.relation)
+    value
+      ? setUserReacted(props.button, props.relation)
+      : removeUserReacted(props.button, props.relation)
   }
 })
 

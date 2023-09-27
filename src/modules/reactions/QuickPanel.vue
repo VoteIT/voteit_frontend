@@ -5,7 +5,7 @@
   <v-card-actions v-if="meetingButtons.length">
     <template v-for="button in meetingButtons" :key="button.pk">
       <FlagButton
-        v-if="button.flag_mode"
+        v-if="isFlagButton(button)"
         :button="button"
         :can-toggle="true"
         v-model="model[button.pk]"
@@ -39,6 +39,7 @@ import useMeeting from '../meetings/useMeeting'
 import RealReactionButton from './RealReactionButton.vue'
 import useReactions from './useReactions'
 import FlagButton from './FlagButton.vue'
+import { isFlagButton } from './types'
 
 const { t } = useI18n()
 
