@@ -6,7 +6,6 @@ import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
 import QueryDialog from '@/components/QueryDialog.vue'
-import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserList from '@/components/UserList.vue'
 import useRules from '@/composables/useRules'
 
@@ -15,6 +14,7 @@ import useMeeting from '../meetings/useMeeting'
 import { IFlagButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
 import FlagButton from './FlagButton.vue'
+import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
@@ -71,14 +71,6 @@ async function save () {
   }
 }
 
-/* Checkboxes options */
-const contentTypeLabels = computed(() => {
-  return {
-    discussion_post: t('discussion.discussions'),
-    proposal: t('proposal.proposals')
-  }
-})
-
 async function deleteButton () {
   if (!formData.pk) return
   submitting.value = true
@@ -125,10 +117,11 @@ async function deleteButton () {
             </v-item>
           </v-item-group>
         </div>
-        <div>
-          <label>{{ t('reaction.modelsAllowed') }}</label>
-          <CheckboxMultipleSelect v-model="formData.allowed_models" :settings="{ options: contentTypeLabels }" />
-        </div>
+        <ButtonDisplayCheckboxes
+          v-model:allowed-models="(formData.allowed_models as string[])"
+          v-model:on-presentation="(formData.on_presentation as boolean)"
+          v-model:on-vote="(formData.on_vote as boolean)"
+        />
         <div class="btn-controls submit mt-4">
           <v-spacer />
           <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close">

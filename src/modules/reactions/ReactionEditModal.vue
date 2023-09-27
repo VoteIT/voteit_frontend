@@ -16,6 +16,7 @@ import { MeetingRole } from '../meetings/types'
 import { ReactionButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
+import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
@@ -78,14 +79,6 @@ async function save () {
   }
 }
 
-/* Checkboxes options */
-const contentTypeLabels = computed(() => {
-  return {
-    discussion_post: t('discussion.discussions'),
-    proposal: t('proposal.proposals')
-  }
-})
-
 async function deleteButton () {
   if (!formData.pk) return
   submitting.value = true
@@ -132,10 +125,11 @@ async function deleteButton () {
             </v-item>
           </v-item-group>
         </div>
-        <div>
-          <label>{{ t('reaction.modelsAllowed') }}</label>
-          <CheckboxMultipleSelect v-model="formData.allowed_models" :settings="{ options: contentTypeLabels }" />
-        </div>
+        <ButtonDisplayCheckboxes
+          v-model:allowed-models="(formData.allowed_models as string[])"
+          v-model:on-presentation="(formData.on_presentation as boolean)"
+          v-model:on-vote="(formData.on_vote as boolean)"
+        />
         <div>
           <label>{{ t('reaction.rolesRequired') }}</label>
           <CheckboxMultipleSelect v-model="formData.change_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
