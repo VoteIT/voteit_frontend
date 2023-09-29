@@ -79,10 +79,10 @@
         <p class="text-secondary mb-4">
           {{ t('proposal.ordering') }}: {{ proposalOrderingTitle }}
         </p>
-        <component :is="voteComponent" :poll="poll" :proposals="proposals" disabled />
+        <component :is="voteComponent" :poll="poll" :proposals="proposals" disabled :key="poll.pk" />
       </div>
       <template v-else-if="!votingComplete">
-        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" />
+        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" :key="poll.pk" />
         <div class="btn-controls mt-6" v-if="canVote">
           <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
