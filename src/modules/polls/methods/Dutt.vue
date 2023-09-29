@@ -1,4 +1,9 @@
 <template>
+  <FlagVoteSelector
+    :proposals="proposals"
+    :warn="!!selected.length"
+    @selected="selectIds"
+  />
   <div>
     <v-item-group v-model="selected" multiple>
       <v-item v-for="p in proposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
@@ -19,10 +24,11 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { Proposal } from '@/modules/proposals/types'
 import VoteProposal from '@/modules/proposals/VoteProposal.vue'
+import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
+import type { Proposal } from '@/modules/proposals/types'
 
-import { DuttPoll, DuttVote } from './types'
+import type { DuttPoll, DuttVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
@@ -70,4 +76,8 @@ const validHelpText = computed(() => {
   if (surplusProposals.value) return t('poll.dutt.maxHelpText', surplusProposals.value)
   return t('poll.dutt.validVoteHelpText')
 })
+
+function selectIds (proposals: number[]) {
+  selected.value = proposals
+}
 </script>

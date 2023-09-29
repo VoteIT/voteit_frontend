@@ -1,6 +1,15 @@
 <template>
+  <FlagVoteSelector
+    :proposals="proposals"
+    :warn="!!validVote"
+    @selected="selectIds"
+  />
   <form @submit.prevent class="my-4">
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+    <VoteProposal
+      v-for="p in proposals" :key="p.pk"
+      :proposal="p"
+      class="mb-4"
+    >
       <template #vote>
         <div class="simple-options">
           <v-btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'" :prepend-icon="opt.icon" @click="change(p, opt)">
@@ -8,7 +17,7 @@
           </v-btn>
         </div>
       </template>
-    </Proposal>
+    </VoteProposal>
   </form>
 </template>
 
@@ -21,6 +30,8 @@ import type { Proposal } from '@/modules/proposals/types'
 
 import { SimpleVote, SimpleChoice, SimpleChoiceDesc, SimplePoll } from './types'
 import { simpleChoices } from './simple'
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
+import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
 
 const props = defineProps<{
   disabled?: boolean
@@ -62,6 +73,15 @@ function change (proposal: Proposal, opt: SimpleChoiceDesc) {
   if (props.disabled) return
   votes.set(proposal.pk, opt.value)
   emit('update:modelValue', validVote.value)
+}
+
+function selectIds (proposals: number[]) {
+  for (const { pk } of props.proposals) {
+    votes.set(pk, proposals.includes(pk)
+      ? SimpleChoice.Yes
+      : SimpleChoice.No
+    )
+  }
 }
 </script>
 

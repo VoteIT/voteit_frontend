@@ -1,12 +1,21 @@
 <template>
   <div>
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+    <FlagVoteSelector
+      :proposals="proposals"
+      :warn="isValid"
+      @selected="selectIds"
+    />
+    <VoteProposal
+      v-for="p in proposals" :key="p.pk"
+      :proposal="p"
+      class="mb-4"
+    >
       <template #vote>
         <div class="text-center">
           <v-rating :length="stars" clearable v-model="grades[p.pk]" active-color="success" :size="stars > 8 ? 'x-small' : 'small'" :disabled="disabled" class="flex-wrap justify-center" />
         </div>
       </template>
-    </Proposal>
+    </VoteProposal>
     <Widget v-if="poll.settings.deny_proposal" color="warning" elevation="4" class="pa-4">
       <h2 class="text-center">
         {{ t('poll.deny') }}
@@ -22,9 +31,11 @@
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 import type { Proposal } from '@/modules/proposals/types'
+import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
 
-import { SchulzePoll, SchulzeVote } from './types'
+import type { SchulzePoll, SchulzeVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
@@ -48,12 +59,21 @@ function getGrades () {
 
 const grades = reactive<Record<number, number>>(getGrades())
 const stars = computed(() => props.poll.settings?.stars ?? 5)
+/** Any grade set to non-zero?) */
+const isValid = computed(() => Object.values(grades).some(n => n))
 
 watch(grades, value => {
-  const valid = Object.values(value).some(n => n) // Any grade set to non-zero?
-  if (!valid) return emit('update:modelValue') // Clear vote on invalid
+  if (!isValid.value) return emit('update:modelValue') // Clear vote on invalid
   emit('update:modelValue', {
     ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])
   })
 })
+
+function selectIds (proposals: number[]) {
+  for (const { pk } of props.proposals) {
+    grades[pk] = proposals.includes(pk)
+      ? stars.value
+      : 0
+  }
+}
 </script>
