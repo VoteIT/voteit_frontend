@@ -2,14 +2,14 @@
   <FlagButton
     v-if="isFlagButton(button)"
     :button="button"
-    :can-toggle="isModerator"
+    :disabled="readonly || !isModerator"
     v-model="reacted"
   />
   <RealReactionButton
     v-else
     :button="button"
     :count="count"
-    :disabled="!canReact"
+    :disabled="readonly || !canReact"
     :list-disabled="!canListReactions"
     v-model="reacted"
     @list-open="fetchUsers"
@@ -33,7 +33,8 @@ import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 
 const props = defineProps<{
-  button: ReactionButton,
+  button: ReactionButton
+  readonly?: boolean
   relation: ReactionRelation
 }>()
 
@@ -54,6 +55,7 @@ const reacted = computed({
       : !!reaction.value
   },
   set (value) {
+    if (props.readonly) return
     value
       ? setUserReacted(props.button, props.relation)
       : removeUserReacted(props.button, props.relation)

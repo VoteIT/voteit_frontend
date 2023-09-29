@@ -23,6 +23,9 @@
             <v-btn icon="mdi-chevron-right" variant="text" @click="deselectProposal(p)" />
           </div>
         </template>
+        <template #bottom>
+          <ButtonPlugins mode="presentation" :proposal="(p as Proposal)" class="mt-2" />
+        </template>
       </Proposal>
       <div v-if="!selectedProposals.length" class="text-h4 text-center text-secondary mt-12">
         <template v-if="nextTextProposalTag">
@@ -69,6 +72,7 @@ import { tagClickEvent } from '../meetings/useTags'
 
 import usePlenary from './usePlenary'
 import { map, range } from 'itertools'
+import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 
 const AVAILABLE_STATES = [ProposalState.Published, ProposalState.Approved, ProposalState.Denied]
 

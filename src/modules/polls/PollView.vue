@@ -55,9 +55,19 @@
           <h2>
             {{ t('poll.numApproved', approved.length) }}
           </h2>
-          <Proposal readOnly v-for="proposal in approved" :key="proposal.pk" :p="proposal" class="my-3" />
+          <Proposal
+            v-for="proposal in approved" :key="proposal.pk"
+            class="my-3"
+            readOnly
+            :p="proposal"
+          />
           <Dropdown :title="t('poll.numDenied', approved.length)">
-            <Proposal readOnly v-for="proposal in denied" :key="proposal.pk" :p="proposal" class="my-3" />
+            <Proposal
+              v-for="proposal in denied" :key="proposal.pk"
+              class="my-3"
+              readOnly 
+              :p="proposal"
+            />
           </Dropdown>
         </div>
       </div>
@@ -127,10 +137,12 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
+import useChannel from '@/composables/useChannel'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
 import Proposal from '../proposals/Proposal.vue'
+import { proposalButtonPlugins } from '../proposals/registry'
 import useProposalOrdering from '../proposals/useProposalOrdering'
 
 import usePoll from './usePoll'
@@ -141,9 +153,16 @@ const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
 const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
-const { isModerator, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 const { agendaItem, agendaItemRoute } = useAgendaItem(computed(() => poll.value?.agenda_item))
 const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))
+
+const subscribeAgendaItem = computed(() => {
+  // Only if a component requires, i.e. proposal reaction buttons
+  if (!meeting.value || !proposalButtonPlugins.getActivePlugins(meeting.value).length) return
+  return poll.value?.agenda_item
+})
+useChannel('agenda_item', subscribeAgendaItem)
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
 const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.

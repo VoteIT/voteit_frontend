@@ -6,6 +6,7 @@ import useAuthentication from '@/composables/useAuthentication'
 
 import { reactionButtonType, reactionType } from './contentTypes'
 import { Reaction, ReactionButton, ReactionCountMessage, ReactionListMessage, ReactionRelation, isFlagButton } from './types'
+import { ProposalButtonMode } from '../proposals/types'
 
 function getCountKey (contentType: string, objectId: number, button: number) {
   return `${contentType}/${objectId}/${button}`
@@ -30,11 +31,17 @@ reactionType.updateMap(
     reactionCounts.set(key, payload.count)
   })
 
-function getMeetingButtons (meeting: number, contentType?: string) {
+
+function getMeetingButtons (meeting: number, contentType?: string, mode?: ProposalButtonMode) {
   return sortBy(
     filter(
       reactionButtons.values(),
-      b => b.meeting === meeting && (!contentType || b.allowed_models.includes(contentType))
+      b => {
+        if (b.meeting !== meeting) return false
+        if (contentType && !b.allowed_models.includes(contentType)) return false
+        if (mode && !b[`on_${mode}`]) return false
+        return true
+      }
     ),
     'order'
   )
@@ -64,11 +71,13 @@ function setUserReacted (button: ReactionButton, relation: ReactionRelation) {
 }
 
 async function removeUserReacted (button: ReactionButton, relation: ReactionRelation) {
+  if (isFlagButton(button)) {
+    await reactionType.methodCall('delete_flag', { button: button.pk, ...relation })
+    return
+  }
   const reaction = getUserReaction(button, relation)
   if (!reaction) throw new Error('User has no previous reaction')
-  return isFlagButton(button)
-    ? await reactionType.methodCall('delete_flag', { button: button.pk, ...relation })
-    : await reactionType.delete(reaction.pk)
+  await reactionType.delete(reaction.pk)
 }
 
 async function fetchReactions (button: ReactionButton, relation: ReactionRelation) {

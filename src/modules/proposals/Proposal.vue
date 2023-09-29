@@ -51,6 +51,9 @@
           <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
         </DefaultDialog>
       </footer>
+      <footer v-else-if="$slots.buttons">
+        <slot name="buttons"></slot>
+      </footer>
       <slot name="bottom"></slot>
     </v-sheet>
     <v-sheet rounded elevation="2" v-else class="proposal">
@@ -89,7 +92,10 @@ import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
-const props = defineProps<{ p: Proposal, readOnly?: boolean }>()
+const props = defineProps<{
+  p: Proposal
+  readOnly?: boolean
+}>()
 
 const { t } = useI18n()
 const { isModerator, meetingId } = useMeeting()

@@ -10,7 +10,6 @@ import { proposalButtonPlugins } from '../proposals/registry'
 import ProposalPrintButton from './ProposalPrintButton.vue'
 import ProposalPrintView from './ProposalPrintView.vue'
 import ControlPanel from './ControlPanel.vue'
-import useAgendaItem from '../agendas/useAgendaItem'
 
 function checkActive (meeting: Meeting) {
   const { component } = useMeetingComponent<NoSettingsComponent>(ref(meeting.pk), 'proposal_print')
@@ -21,20 +20,6 @@ proposalButtonPlugins.register({
   id: 'printing',
   checkActive,
   component: ProposalPrintButton
-})
-
-agendaMenuPlugins.register({
-  id: 'printing',
-  checkActive,
-  getItems ({ agendaItem, menu, t }) {
-    if (menu !== 'main') return []
-    const { getAgendaItemRoute } = useAgendaItem(computed(() => agendaItem.pk))
-    return [{
-      title: t('printing.proposals'),
-      icon: 'mdi-printer',
-      to: getAgendaItemRoute('printing:proposals', { propIds: '-' } )!
-    }]
-  }
 })
 
 meetingSettingsPlugins.register({

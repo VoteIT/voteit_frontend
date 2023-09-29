@@ -1,5 +1,5 @@
 <template>
-  <span class="text-no-wrap" v-if="modelValue || canToggle">
+  <span class="text-no-wrap" v-if="modelValue || !disabled">
     <v-btn :prepend-icon="button.icon" size="small" :variant="variant" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click.prevent="emit('update:modelValue', !modelValue)">
       {{ button.title }}
     </v-btn>
@@ -13,7 +13,6 @@ import { IFlagButton } from './types'
 
 const props = defineProps<{
   button: IFlagButton
-  canToggle?: boolean
   disabled?: boolean
   modelValue?: boolean
 }>()
