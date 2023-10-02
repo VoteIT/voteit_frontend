@@ -1,6 +1,7 @@
 <template>
   <div>
     <FlagVoteSelector
+      v-if="!disabled"
       :proposals="proposals"
       :warn="isValid"
       @selected="selectIds"
@@ -62,7 +63,7 @@ const stars = computed(() => props.poll.settings?.stars ?? 5)
 /** Any grade set to non-zero?) */
 const isValid = computed(() => Object.values(grades).some(n => n))
 
-watch(grades, value => {
+watch(grades, () => {
   if (!isValid.value) return emit('update:modelValue') // Clear vote on invalid
   emit('update:modelValue', {
     ranking: Object.entries(grades).map(([k, v]) => [Number(k), v])

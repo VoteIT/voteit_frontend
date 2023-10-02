@@ -1,10 +1,11 @@
 <template>
-  <FlagVoteSelector
-    :proposals="proposals"
-    :warn="!!selected.length"
-    @selected="selectIds"
-  />
   <div>
+    <FlagVoteSelector
+      v-if="!disabled"
+      :proposals="proposals"
+      :warn="!!selected.length"
+      @selected="selectIds"
+    />
     <v-item-group v-model="selected" multiple>
       <v-item v-for="p in proposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
         <VoteProposal :proposal="p" class="mb-4">
@@ -32,7 +33,7 @@ import type { DuttPoll, DuttVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue: DuttVote
+  modelValue?: DuttVote
   poll: DuttPoll
   proposals: Proposal[]
 }>()

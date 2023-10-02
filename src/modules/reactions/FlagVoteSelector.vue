@@ -41,7 +41,7 @@ function isFlaggedProposal (btn: IFlagButton, proposal: number) {
 const activeFlagButtons = computed(() => getMeetingButtons(meetingId.value, 'proposal', 'vote').filter(hasFlagActive))
 
 async function selectButtonProposals (btn: IFlagButton) {
-  if (props.warn && !await dialogQuery(t('reactions.selectFlaggedWithValidVote'))) return
+  if (props.warn && !await dialogQuery(t('reaction.selectTemplateWithValidVote', { ...btn }))) return
   emit('selected', props.proposals.map(p => p.pk).filter(pk => isFlaggedProposal(btn, pk)))
 }
 </script>
@@ -49,8 +49,9 @@ async function selectButtonProposals (btn: IFlagButton) {
 <template>
   <MeetingToolbar
     v-if="activeFlagButtons.length"
-    :title="t('reactions.selectFlaggedProposals')"
+    :title="t('reaction.templateCount', activeFlagButtons.length)"
   >
+    <v-spacer />
     <v-menu>
       <template #activator="{ props }">
         <v-btn
@@ -59,7 +60,7 @@ async function selectButtonProposals (btn: IFlagButton) {
           color="primary"
           variant="flat"
         >
-          {{ t('reactions.selectAsFlag') }}
+          {{ t('reaction.selectTemplate') }}
         </v-btn>
       </template>
       <v-list>

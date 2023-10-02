@@ -1,24 +1,27 @@
 <template>
-  <FlagVoteSelector
-    :proposals="proposals"
-    :warn="!!validVote"
-    @selected="selectIds"
-  />
-  <form @submit.prevent class="my-4">
-    <VoteProposal
-      v-for="p in proposals" :key="p.pk"
-      :proposal="p"
-      class="mb-4"
-    >
-      <template #vote>
-        <div class="simple-options">
-          <v-btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'" :prepend-icon="opt.icon" @click="change(p, opt)">
-            {{ opt.getTitle(t) }}
-          </v-btn>
-        </div>
-      </template>
-    </VoteProposal>
-  </form>
+  <div>
+    <FlagVoteSelector
+      v-if="!disabled"
+      :proposals="proposals"
+      :warn="!!validVote"
+      @selected="selectIds"
+    />
+    <form @submit.prevent class="my-4">
+      <VoteProposal
+        v-for="p in proposals" :key="p.pk"
+        :proposal="p"
+        class="mb-4"
+      >
+        <template #vote>
+          <div class="simple-options">
+            <v-btn :disabled="disabled" v-for="opt in options" :key="opt.value" :color="opt.color" :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'" :prepend-icon="opt.icon" @click="change(p, opt)">
+              {{ opt.getTitle(t) }}
+            </v-btn>
+          </div>
+        </template>
+      </VoteProposal>
+    </form>
+  </div>
 </template>
 
 <script setup lang="ts">
