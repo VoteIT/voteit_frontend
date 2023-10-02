@@ -15,9 +15,7 @@ const props = defineProps<{
   warn: boolean
 }>()
 
-const emit = defineEmits<{
-  (e: 'selected', value: number[]): void
-}>()
+const emit = defineEmits<{(e: 'selected', value: number[]): void}>()
 
 const { t } = useI18n()
 const { getMeetingButtons, getButtonReactionCount } = useReactions()
@@ -28,7 +26,7 @@ function hasFlagActive (btn: ReactionButton): btn is IFlagButton {
   return props.proposals.some(p => {
     return getButtonReactionCount(
       btn,
-      { content_type: 'proposal', object_id: p.pk}
+      { content_type: 'proposal', object_id: p.pk }
     )
   })
 }
@@ -67,6 +65,7 @@ async function selectButtonProposals (btn: IFlagButton) {
       <v-list>
         <v-list-item
           v-for="btn in activeFlagButtons"
+          :key="btn.pk"
           :class="`text-${btn.color}`"
           :prepend-icon="btn.icon"
           :title="btn.title"

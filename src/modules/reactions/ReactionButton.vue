@@ -2,7 +2,7 @@
   <FlagButton
     v-if="isFlagButton(button)"
     :button="button"
-    :disabled="readonly || !isModerator"
+    :disabled="readonly || !canReact"
     v-model="reacted"
   />
   <RealReactionButton
@@ -24,7 +24,6 @@
 import { computed, ref } from 'vue'
 
 import UserList from '@/components/UserList.vue'
-import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
 import { canAddReaction, canDeleteReaction, canListReactions as canList } from './rules'
@@ -38,7 +37,6 @@ const props = defineProps<{
   relation: ReactionRelation
 }>()
 
-const { isModerator } = useMeeting()
 const { fetchReactions, getUserReaction, setUserReacted, removeUserReacted, getButtonReactionCount } = useReactions()
 const reaction = computed(() => getUserReaction(props.button, props.relation))
 const count = computed(() => getButtonReactionCount(props.button, props.relation))
