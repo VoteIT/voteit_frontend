@@ -649,7 +649,13 @@
     "templateCount": "Vote template | Vote templates",
     "threshold": "Threshold",
     "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active.",
-    "voteTemplate": "Vote template"
+    "voteTemplate": "Vote template",
+    "help": {
+      "description": "A reaction button can be a lot of things. From a simple like button, to a way of categorizing content to simplify voting. You can choose where the button is displayed and when it's active. Start by experimenting in a test meeting if you're not sure what different settings mean.",
+      "title": "What's a reaction button?",
+      "flagButton": "A flag has two states, like a light switch. They can only be changed by moderators in the meeting, and are mainly used to categorize proposals. For example, you can add flag buttons to show which proposals are from a nominating committee, which proposals affect the budget, or anything else that's important in your meeting.",
+      "reactionButton": "An ordinary reaction button is a way for you meeting participants to react to proposals and discussion posts. You can pick which roles are able to react and set a threshold, so the button enters an active mode once a certain number of participants reacted. This can be useful if a proposal needs support from a number of delegates to be processed further."
+    }
   },
   "role": {
     "discusser": "Discusser",

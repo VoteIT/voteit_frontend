@@ -649,7 +649,13 @@
     "templateCount": "Röstmall | Röstmallar",
     "threshold": "Tröskelvärde",
     "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv.",
-    "voteTemplate": "Röstmall"
+    "voteTemplate": "Röstmall",
+    "help": {
+      "description": "En reaktionsknapp kan vara många saker, från en enkel gilla-knapp till ett sätt att kategorisera förslag för att underlätta i omröstningar. Du kan välja var de ska visas och när de ska vara aktiva och gå att klicka på. Experimentera gärna med olika inställningar i ett testmöte om du känner dig osäker på de olika inställningarna.",
+      "title": "Vad är en reaktionsknapp?",
+      "flagButton": "En flagga har två lägen, som en strömbrytare. De kan bara ändras av mötets moderatorer, och används framförallt för att kategorisera förslag. Du kan till exempel lägga till flaggor för att visa vilka förslag som är från valberedningen, vilka förslag som har budgetpåverkan, eller något annat som är viktigt i ert möte.",
+      "reactionButton": "En vanlig reaktionsknapp är till för att mötets deltagare ska kunna reagera på förslag och diskussionsinlägg. Du kan även välja roller som kan reagera och sätta ett tröskelvärde, så att att visst antal reaktioner slår över knappen i ett aktivt läge. Det kan exempelvis användas om förslag behöver stöd från ett visst antal ombud för att komma upp till beslut."
+    }
   },
   "role": {
     "discusser": "Debattör",

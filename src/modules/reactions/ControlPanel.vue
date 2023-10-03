@@ -16,6 +16,7 @@ import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 import { enumerate } from 'itertools'
+import HelpSection from '@/components/HelpSection.vue'
 
 const { t } = useI18n()
 const { user } = useAuthentication()
@@ -52,6 +53,28 @@ const model = reactive<Record<number, boolean>>({})
 
 <template>
   <div>
+    <HelpSection id="reactionControls" start-open class="mb-4">
+      <h2 class="mb-2">
+        {{ t('reaction.help.title') }}
+      </h2>
+      <p class="mb-2">
+        <strong>
+          {{ t('reaction.help.description') }}
+        </strong>
+      </p>
+      <div class="d-flex">
+        <v-icon icon="mdi-gesture-tap-button" class="mr-3 mt-1" />
+        <p class="mb-2">
+          {{ t('reaction.help.reactionButton') }}
+        </p>
+      </div>
+      <div class="d-flex">
+        <v-icon icon="mdi-flag" class="mr-3 mt-1" />
+        <p class="mb-2">
+          {{ t('reaction.help.flagButton') }}
+        </p>
+      </div>
+    </HelpSection>
     <div class="d-flex mb-4">
       <h2>{{ t('reaction.settings') }}</h2>
       <v-spacer />
