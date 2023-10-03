@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -43,11 +43,16 @@ import { Poll, PollTransition } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useChannel from '@/composables/useChannel'
 
-const props = defineProps<{ data: Poll }>()
+const props = defineProps<{
+  data: Poll
+}>()
 
 const { t } = useI18n()
 const { isOngoing, isFinished, poll, pollStatus, proposals, resultComponent, voteComponent } = usePoll(ref(props.data.pk))
+
+useChannel('poll', computed(() => props.data.pk))
 
 const complete = computed(() => {
   if (!pollStatus.value) return false
@@ -78,11 +83,4 @@ async function close () {
   working.value = true
   await pollType.api.transition(props.data.pk, PollTransition.Close)
 }
-
-onBeforeMount(() => {
-  pollType.channel.subscribe(props.data.pk)
-})
-onBeforeUnmount(() => {
-  pollType.channel.leave(props.data.pk)
-})
 </script>
