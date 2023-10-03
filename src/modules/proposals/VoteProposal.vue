@@ -13,7 +13,7 @@ defineProps<{
     <template #vote>
       <slot name="vote"></slot>
     </template>
-    <template #bottom>
+    <template #actions>
       <ButtonPlugins
         :proposal="proposal"
         mode="vote"
