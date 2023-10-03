@@ -638,6 +638,7 @@
     "editButton": "Edit Reaction Button",
     "flag": "Flag",
     "listRolesRequired": "Roles allowed to see who reacted",
+    "none": "No reactions",
     "onPresentation": "Plenary view",
     "onPoll": "Polls",
     "peopleReacted": "Reactions",

@@ -15,13 +15,17 @@
     @list-open="fetchUsers"
   >
     <template #userList>
-      <UserList :userIds="reactionUsers" />
+      <UserList :userIds="reactionUsers" v-if="count" />
+      <em v-else>
+        {{ t('reaction.none') }}
+      </em>
     </template>
   </RealReactionButton>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import UserList from '@/components/UserList.vue'
 
@@ -37,6 +41,7 @@ const props = defineProps<{
   relation: ReactionRelation
 }>()
 
+const { t } = useI18n()
 const { fetchReactions, getUserReaction, setUserReacted, removeUserReacted, getButtonReactionCount } = useReactions()
 const reaction = computed(() => getUserReaction(props.button, props.relation))
 const count = computed(() => getButtonReactionCount(props.button, props.relation))
@@ -61,5 +66,5 @@ const reacted = computed({
 })
 
 const canReact = computed(() => reaction.value ? canDeleteReaction(reaction.value) : canAddReaction(props.button))
-const canListReactions = computed(() => !!count.value && canList(props.button))
+const canListReactions = computed(() => canList(props.button))
 </script>

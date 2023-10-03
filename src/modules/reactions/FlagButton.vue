@@ -1,9 +1,15 @@
 <template>
-  <span class="text-no-wrap" v-if="modelValue || !disabled">
-    <v-btn :prepend-icon="button.icon" size="small" :variant="variant" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click.prevent="emit('update:modelValue', !modelValue)">
-      {{ button.title }}
-    </v-btn>
-  </span>
+  <v-btn
+    v-if="modelValue || !disabled"
+    size="small"
+    :color="modelValue ? button.color : 'secondary'"
+    :disabled="disabled"
+    :prepend-icon="button.icon"
+    :variant="variant"
+    @click.prevent="emit('update:modelValue', !modelValue)"
+  >
+    {{ button.title }}
+  </v-btn>
 </template>
 
 <script lang="ts" setup>

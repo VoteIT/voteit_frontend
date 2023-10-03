@@ -42,7 +42,7 @@ const { meetingId, roleLabels } = useMeeting()
 const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
   const data = { ...formData }
-  if (!data.target) data.target = undefined
+  if (!data.target) data.target = null
   if (!data.icon) data.icon = '' // Empty string required by API
   return data
 })

@@ -49,3 +49,8 @@ const { meetingId } = useMeeting()
 const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
 const model = reactive<Record<number, boolean>>({})
 </script>
+
+<style lang="sass">
+.v-card-actions .v-btn
+  margin-inline-start: 0 !important
+</style>

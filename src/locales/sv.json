@@ -638,6 +638,7 @@
     "editButton": "Ändra reaktionsknapp",
     "flag": "Flagga",
     "listRolesRequired": "Roller som kan se vem som reagerat",
+    "none": "Inga reaktioner",
     "onPresentation": "Plenumvy",
     "onPoll": "Omröstningar",
     "peopleReacted": "Reaktioner",

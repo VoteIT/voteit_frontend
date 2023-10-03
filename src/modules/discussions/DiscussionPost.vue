@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -19,7 +19,6 @@ import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
 import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
 import type { Author } from '../meetings/types'
-import { watch } from 'vue'
 
 const props = defineProps<{
   p: DiscussionPost,

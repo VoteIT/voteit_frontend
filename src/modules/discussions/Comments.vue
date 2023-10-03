@@ -37,6 +37,7 @@ async function submit (post: Partial<IDiscussionPost>) {
 }
 
 const addContentComponent = ref<null | ComponentPublicInstance<{
+  // eslint-disable-next-line func-call-spacing
   focus (): void,
   setMention (user: { id: number, value: string }): void,
   addTag (...tags: string[]): void
@@ -61,7 +62,15 @@ defineExpose({
   <div class="comments">
     <DiscussionPost v-for="c in comments" :key="c.pk" :p="c" class="mb-4">
       <template #buttons>
-        <ReactionButton v-for="btn in reactions" :key="btn.pk" :button="btn" :relation="{ content_type: 'discussion_post', object_id: c.pk }">{{ btn.title }}</ReactionButton>
+        <ReactionButton
+          v-for="btn in reactions"
+          class="mr-1"
+          :key="btn.pk"
+          :button="btn"
+          :relation="{ content_type: 'discussion_post', object_id: c.pk }"
+        >
+          {{ btn.title }}
+        </ReactionButton>
       </template>
       <template #preMenu v-if="canAddDiscussionPost">
         <v-btn icon="mdi-reply" size="small" variant="text" @click="replyTo(c)" class="mx-2 reply-button" />
