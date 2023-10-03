@@ -1,15 +1,20 @@
 <template>
-  <v-btn
-    v-if="modelValue || !disabled"
-    size="small"
-    :color="modelValue ? button.color : 'secondary'"
-    :disabled="disabled"
-    :prepend-icon="button.icon"
-    :variant="variant"
-    @click.prevent="emit('update:modelValue', !modelValue)"
-  >
-    {{ button.title }}
-  </v-btn>
+  <v-tooltip :disabled="!button.description" :text="button.description" location="top center">
+    <template #activator="{ props }">
+      <v-btn
+        v-if="modelValue || !disabled"
+        v-bind="{ ...props, ...$attrs }"
+        size="small"
+        :color="modelValue ? button.color : 'secondary'"
+        :disabled="disabled"
+        :prepend-icon="button.icon"
+        :variant="variant"
+        @click.prevent="emit('update:modelValue', !modelValue)"
+      >
+        {{ button.title }}
+      </v-btn>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts" setup>

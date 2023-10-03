@@ -31,6 +31,7 @@ function getDefaults (btn?: ReactionButton): Partial<ReactionButton> & Pick<Reac
     allowed_models: ['discussion_post', 'proposal'],
     change_roles: [MeetingRole.Moderator],
     color: 'primary',
+    description: '',
     flag_mode: false,
     list_roles: [MeetingRole.Moderator],
     meeting: meetingId.value
@@ -97,7 +98,9 @@ async function deleteButton () {
   <div>
     <main>
       <Widget>
-        <h2>{{ t('preview') }}</h2>
+        <h2 class="mb-1">
+          {{ t('preview') }}
+        </h2>
         <RealReactionButton
           :button="(transformedData as ReactionButton)"
           v-model="previewActive"
@@ -109,7 +112,8 @@ async function deleteButton () {
         </RealReactionButton>
       </Widget>
       <v-form @submit.prevent="save" class="mt-4" v-model="formValid" ref="form">
-        <v-text-field dark required :label="t('title')" v-model="formData.title" :rules="[rules.required]" />
+        <v-text-field required :label="t('title')" v-model="formData.title" :rules="[rules.required, rules.maxLength(20)]" />
+        <v-text-field :label="t('description')" v-model="formData.description" :rules="[rules.maxLength(100)]" />
         <div>
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">

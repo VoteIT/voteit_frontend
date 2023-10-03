@@ -28,6 +28,7 @@ function getDefaults (btn?: IFlagButton): Partial<IFlagButton> & Pick<IFlagButto
   return {
     allowed_models: ['discussion_post', 'proposal'],
     color: 'primary',
+    description: '',
     flag_mode: true,
     meeting: meetingId.value
   }
@@ -89,7 +90,9 @@ async function deleteButton () {
   <div>
     <main>
       <Widget>
-        <h2>{{ t('preview') }}</h2>
+        <h2 class="mb-1">
+          {{ t('preview') }}
+        </h2>
         <FlagButton
           :button="(transformedData as IFlagButton)"
           v-model="previewActive"
@@ -101,7 +104,8 @@ async function deleteButton () {
         </FlagButton>
       </Widget>
       <v-form @submit.prevent="save" class="mt-4" v-model="formValid" ref="form">
-        <v-text-field dark required :label="t('title')" v-model="formData.title" :rules="[rules.required]" />
+        <v-text-field required :label="t('title')" v-model="formData.title" :rules="[rules.required, rules.maxLength(20)]" />
+        <v-text-field :label="t('description')" v-model="formData.description" :rules="[rules.maxLength(100)]" />
         <div>
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">

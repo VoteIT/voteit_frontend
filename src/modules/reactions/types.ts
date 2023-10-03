@@ -32,6 +32,7 @@ export interface ReactionButton extends BaseContent {
   allowed_models: string[]
   change_roles: MeetingRole[]
   color: string
+  description?: string
   flag_mode: boolean
   icon: string
   list_roles: MeetingRole[]
@@ -40,6 +41,7 @@ export interface ReactionButton extends BaseContent {
   on_vote: boolean
   order: number
   target: null | number
+  vote_template: boolean
 }
 
 export interface IFlagButton extends ReactionButton {
