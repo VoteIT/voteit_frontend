@@ -42,7 +42,7 @@ export type Proposal = RichtextProposal | DiffProposal
 type PreviewOmitted = 'created' | 'author' | 'pk' | 'prop_id'
 export type PreviewProposal = Omit<Proposal, PreviewOmitted>
 
-export type ProposalButtonMode = 'presentation' | 'vote'
+export type ProposalButtonMode = 'presentation' | 'vote' | 'voteTemplate'
 export interface ProposalButtonPlugin extends MeetingPlugin {
   checkActive? (meeting: Meeting, mode?: ProposalButtonMode): boolean,
   component: Component<{

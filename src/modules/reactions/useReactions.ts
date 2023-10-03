@@ -31,7 +31,6 @@ reactionType.updateMap(
     reactionCounts.set(key, payload.count)
   })
 
-
 function getMeetingButtons (meeting: number, contentType?: string, mode?: ProposalButtonMode) {
   return sortBy(
     filter(
@@ -39,6 +38,7 @@ function getMeetingButtons (meeting: number, contentType?: string, mode?: Propos
       b => {
         if (b.meeting !== meeting) return false
         if (contentType && !b.allowed_models.includes(contentType)) return false
+        if (mode === 'voteTemplate') return b.vote_template
         if (mode && !b[`on_${mode}`]) return false
         return true
       }

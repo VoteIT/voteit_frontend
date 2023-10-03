@@ -6,7 +6,7 @@ import useMeeting from '../meetings/useMeeting'
 import type { Proposal } from '../proposals/types'
 
 import useReactions from './useReactions'
-import { IFlagButton, ReactionButton, isFlagButton } from './types'
+import { ReactionButton, isFlagButton } from './types'
 import { dialogQuery } from '@/utils'
 
 const props = defineProps<{
@@ -17,31 +17,25 @@ const props = defineProps<{
 const emit = defineEmits<{(e: 'selected', value: number[]): void}>()
 
 const { t } = useI18n()
-const { getMeetingButtons, getButtonReactionCount } = useReactions()
+const { getMeetingButtons, getButtonReactionCount, getUserReaction } = useReactions()
 const { meetingId } = useMeeting()
 
-function hasFlagActive (btn: ReactionButton): btn is IFlagButton {
-  if (!isFlagButton(btn)) return false
-  return props.proposals.some(p => {
-    return getButtonReactionCount(
-      btn,
-      { content_type: 'proposal', object_id: p.pk }
-    )
-  })
+function isTemplateProposal (btn: ReactionButton, proposal: number) {
+  const relation = { content_type: 'proposal', object_id: proposal }
+  return isFlagButton(btn)
+    ? getButtonReactionCount(btn, relation)
+    : getUserReaction(btn, relation)
 }
 
-function isFlaggedProposal (btn: IFlagButton, proposal: number) {
-  return getButtonReactionCount(
-    btn,
-    { content_type: 'proposal', object_id: proposal }
-  )
+function hasTemplateProposals (btn: ReactionButton) {
+  return btn.vote_template && props.proposals.some(({ pk }) => isTemplateProposal(btn, pk))
 }
 
-const activeFlagButtons = computed(() => getMeetingButtons(meetingId.value, 'proposal', 'vote').filter(hasFlagActive))
+const activeFlagButtons = computed(() => getMeetingButtons(meetingId.value, 'proposal', 'voteTemplate').filter(hasTemplateProposals))
 
-async function selectButtonProposals (btn: IFlagButton) {
+async function selectButtonProposals (btn: ReactionButton) {
   if (props.warn && !await dialogQuery(t('reaction.selectTemplateWithValidVote', { ...btn }))) return
-  emit('selected', props.proposals.map(p => p.pk).filter(pk => isFlaggedProposal(btn, pk)))
+  emit('selected', props.proposals.map(p => p.pk).filter(pk => isTemplateProposal(btn, pk)))
 }
 </script>
 
