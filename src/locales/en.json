@@ -648,7 +648,8 @@
     "settings": "Reaction Button settings",
     "templateCount": "Vote template | Vote templates",
     "threshold": "Threshold",
-    "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active."
+    "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active.",
+    "voteTemplate": "Vote template"
   },
   "role": {
     "discusser": "Discusser",

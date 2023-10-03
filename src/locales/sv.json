@@ -648,7 +648,8 @@
     "settings": "Inställningar för reaktionsknappar",
     "templateCount": "Röstmall | Röstmallar",
     "threshold": "Tröskelvärde",
-    "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv."
+    "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv.",
+    "voteTemplate": "Röstmall"
   },
   "role": {
     "discusser": "Debattör",

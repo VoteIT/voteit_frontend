@@ -126,6 +126,7 @@ async function deleteButton () {
           v-model:allowed-models="formData.allowed_models"
           v-model:on-presentation="formData.on_presentation"
           v-model:on-vote="formData.on_vote"
+          v-model:vote-template="formData.vote_template"
         />
         <div class="btn-controls submit mt-4">
           <v-spacer />
