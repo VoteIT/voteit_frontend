@@ -2,6 +2,7 @@
   <div>
     <FlagVoteSelector
       v-if="!disabled"
+      class="mb-4"
       :proposals="proposals"
       :warn="!!validVote"
       @selected="selectIds"

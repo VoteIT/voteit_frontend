@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-
 const { t } = useI18n()
 
 const props = defineProps<{
   allowedModels: string[]
-  onPresentation: boolean
-  onVote: boolean
+  onPresentation?: boolean
+  onVote?: boolean
 }>()
 
+// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'update:allowedModels', data: string[]): void
   (e: 'update:onPresentation', data: boolean): void
@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 function setAllowedModel (model: string, value: boolean) {
   const allowed = value
-    ? [ ...props.allowedModels, model ]
+    ? [...props.allowedModels, model]
     : props.allowedModels.filter(m => m !== model)
   emit('update:allowedModels', allowed)
 }

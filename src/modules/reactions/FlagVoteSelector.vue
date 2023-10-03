@@ -47,11 +47,12 @@ async function selectButtonProposals (btn: IFlagButton) {
 </script>
 
 <template>
-  <MeetingToolbar
+  <v-toolbar
     v-if="activeFlagButtons.length"
+    border
+    rounded
     :title="t('reaction.templateCount', activeFlagButtons.length)"
   >
-    <v-spacer />
     <v-menu>
       <template #activator="{ props }">
         <v-btn
@@ -74,5 +75,5 @@ async function selectButtonProposals (btn: IFlagButton) {
         />
       </v-list>
     </v-menu>
-  </MeetingToolbar>
+  </v-toolbar>
 </template>

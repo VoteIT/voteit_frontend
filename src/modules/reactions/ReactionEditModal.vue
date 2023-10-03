@@ -25,14 +25,13 @@ const props = defineProps<{
   data?: ReactionButton
 }>()
 
-function getDefaults (btn?: ReactionButton): Partial<ReactionButton> {
+function getDefaults (btn?: ReactionButton): Partial<ReactionButton> & Pick<ReactionButton, 'allowed_models' | 'change_roles' | 'color' | 'flag_mode' | 'list_roles' | 'meeting'> {
   if (btn) return { ...btn }
   return {
     allowed_models: ['discussion_post', 'proposal'],
     change_roles: [MeetingRole.Moderator],
     color: 'primary',
     flag_mode: false,
-    icon: 'mdi-thumb-up',
     list_roles: [MeetingRole.Moderator],
     meeting: meetingId.value
   }
@@ -40,7 +39,7 @@ function getDefaults (btn?: ReactionButton): Partial<ReactionButton> {
 
 const { user } = useAuthentication()
 const { meetingId, roleLabels } = useMeeting()
-const formData = reactive<Partial<ReactionButton>>(getDefaults(props.data))
+const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => ({
   ...formData,
   target: formData.target || undefined
@@ -60,7 +59,7 @@ const form = ref<ComponentPublicInstance<{ validate(): void }> | null>(null)
 watch(form, value => value?.validate(), { immediate: true })
 const formValid = ref(true)
 const isValid = computed(() => {
-  return formValid.value && formData.icon && formData.color && formData.change_roles?.length && formData.list_roles?.length
+  return formValid.value && formData.color && formData.change_roles?.length && formData.list_roles?.length
 })
 
 async function save () {
@@ -113,22 +112,22 @@ async function deleteButton () {
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
             <v-item v-for="value in Object.values(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'elevated' : 'text'" :color="value" @click="toggle()" />
+              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'elevated' : 'text'" :color="value" @click="toggle" />
             </v-item>
           </v-item-group>
         </div>
         <div>
           <label>{{ t('icon') }}</label>
-          <v-item-group class="btn-controls" mandatory v-model="formData.icon">
+          <v-item-group class="btn-controls" v-model="formData.icon">
             <v-item v-for="value in Object.values(ReactionIcon)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :variant="isSelected ? 'elevated' : 'text'" :color="formData.color" :icon="value" @click="toggle()" />
+              <v-btn :variant="isSelected ? 'elevated' : 'text'" :color="formData.color" :icon="value" @click="toggle" />
             </v-item>
           </v-item-group>
         </div>
         <ButtonDisplayCheckboxes
-          v-model:allowed-models="(formData.allowed_models as string[])"
-          v-model:on-presentation="(formData.on_presentation as boolean)"
-          v-model:on-vote="(formData.on_vote as boolean)"
+          v-model:allowed-models="formData.allowed_models"
+          v-model:on-presentation="formData.on_presentation"
+          v-model:on-vote="formData.on_vote"
         />
         <div>
           <label>{{ t('reaction.rolesRequired') }}</label>

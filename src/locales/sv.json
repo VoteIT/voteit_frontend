@@ -645,7 +645,7 @@
     "selectTemplate": "Välj mall",
     "selectTemplateWithValidVote": "Dina val ersätts med de förslag som är markerade med \"{title}\".\nÄr du säker?",
     "settings": "Inställningar för reaktionsknappar",
-    "templateCount": "En röstmall | {count} röstmallar",
+    "templateCount": "Röstmall | Röstmallar",
     "threshold": "Tröskelvärde",
     "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv."
   },

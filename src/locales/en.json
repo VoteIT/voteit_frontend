@@ -645,7 +645,7 @@
     "selectTemplate": "Select template",
     "selectTemplateWithValidVote": "Your choices will be replaced by proposals marked \"{title}\".\nAre you sure?",
     "settings": "Reaction Button settings",
-    "templateCount": "One template | {count} templates",
+    "templateCount": "Vote template | Vote templates",
     "threshold": "Threshold",
     "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active."
   },

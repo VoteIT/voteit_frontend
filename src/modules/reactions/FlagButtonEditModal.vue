@@ -23,21 +23,21 @@ const props = defineProps<{
   data?: IFlagButton
 }>()
 
-function getDefaults (btn?: IFlagButton): Partial<IFlagButton> {
+function getDefaults (btn?: IFlagButton): Partial<IFlagButton> & Pick<IFlagButton, 'allowed_models' | 'color' | 'flag_mode' | 'meeting'> {
   if (btn) return { ...btn }
   return {
     allowed_models: ['discussion_post', 'proposal'],
     color: 'primary',
     flag_mode: true,
-    icon: 'mdi-check',
     meeting: meetingId.value
   }
 }
 
 const { user } = useAuthentication()
 const { meetingId } = useMeeting()
-const formData = reactive<Partial<IFlagButton>>(getDefaults(props.data))
+const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
+  // eslint-disable-next-line camelcase, @typescript-eslint/no-unused-vars
   const { change_roles, list_roles, target, ...data } = formData
   return data
 })
@@ -52,7 +52,7 @@ const form = ref<ComponentPublicInstance<{ validate(): void }> | null>(null)
 watch(form, value => value?.validate(), { immediate: true })
 const formValid = ref(true)
 const isValid = computed(() => {
-  return formValid.value && formData.icon && formData.color
+  return formValid.value && formData.color
 })
 
 async function save () {
@@ -105,22 +105,22 @@ async function deleteButton () {
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
             <v-item v-for="value in Object.values(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'elevated' : 'text'" :color="value" @click="toggle()" />
+              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'elevated' : 'text'" :color="value" @click="toggle" />
             </v-item>
           </v-item-group>
         </div>
         <div>
           <label>{{ t('icon') }}</label>
-          <v-item-group class="btn-controls" mandatory v-model="formData.icon">
+          <v-item-group class="btn-controls" v-model="formData.icon">
             <v-item v-for="value in Object.values(ReactionIcon)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :variant="isSelected ? 'elevated' : 'text'" :color="formData.color" :icon="value" @click="toggle()" />
+              <v-btn :variant="isSelected ? 'elevated' : 'text'" :color="formData.color" :icon="value" @click="toggle" />
             </v-item>
           </v-item-group>
         </div>
         <ButtonDisplayCheckboxes
-          v-model:allowed-models="(formData.allowed_models as string[])"
-          v-model:on-presentation="(formData.on_presentation as boolean)"
-          v-model:on-vote="(formData.on_vote as boolean)"
+          v-model:allowed-models="formData.allowed_models"
+          v-model:on-presentation="formData.on_presentation"
+          v-model:on-vote="formData.on_vote"
         />
         <div class="btn-controls submit mt-4">
           <v-spacer />
