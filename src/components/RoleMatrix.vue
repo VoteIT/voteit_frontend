@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <v-alert closable class="mb-8">
+    <HelpSection id="roleMatrix" start-open class="mb-4">
       <p class="mb-4">{{ t('role.help.intro') }}</p>
       <ul>
         <li class="mb-1" v-for="{ description, icon, name, title } in columnDescriptions" :key="name">
@@ -9,7 +9,7 @@
           {{ title }} &mdash; {{ description }}
         </li>
       </ul>
-    </v-alert>
+    </HelpSection>
     <slot name="filter"></slot>
     <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
     <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed: ordering.reversed, admin }">
@@ -71,6 +71,7 @@ import { meetingRolePlugins } from '@/modules/meetings/registry'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
+import HelpSection from './HelpSection.vue'
 
 const USERS_PER_PAGE = 50
 
