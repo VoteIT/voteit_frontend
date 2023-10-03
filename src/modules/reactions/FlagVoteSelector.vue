@@ -2,7 +2,6 @@
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 
-import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
 import type { Proposal } from '../proposals/types'
 

@@ -40,10 +40,12 @@ function getDefaults (btn?: ReactionButton): Partial<ReactionButton> & Pick<Reac
 const { user } = useAuthentication()
 const { meetingId, roleLabels } = useMeeting()
 const formData = reactive(getDefaults(props.data))
-const transformedData = computed(() => ({
-  ...formData,
-  target: formData.target || undefined
-}))
+const transformedData = computed(() => {
+  const data = { ...formData }
+  if (!data.target) data.target = undefined
+  if (!data.icon) data.icon = '' // Empty string required by API
+  return data
+})
 const previewActive = ref(true)
 const previewCount = computed(() => {
   const selected = Number(formData.target) || 100
