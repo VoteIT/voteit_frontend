@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { enumerate } from 'itertools'
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
@@ -6,17 +7,17 @@ import Draggable from 'vuedraggable'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
+import HelpSection from '@/components/HelpSection.vue'
 import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
 import ReactionEditModal from './ReactionEditModal.vue'
 import FlagButtonEditModal from './FlagButtonEditModal.vue'
+import { canAddReactionButton } from './rules'
 import { ReactionButton, isFlagButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
-import { enumerate } from 'itertools'
-import HelpSection from '@/components/HelpSection.vue'
 
 const { t } = useI18n()
 const { user } = useAuthentication()
@@ -34,6 +35,8 @@ const meetingButtons = computed({
     }
   }
 })
+
+const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
 
 async function setContentType (button: ReactionButton, contentType: string, value: boolean) {
   // eslint-disable-next-line camelcase
@@ -78,7 +81,7 @@ const model = reactive<Record<number, boolean>>({})
     <div class="d-flex mb-4">
       <h2>{{ t('reaction.settings') }}</h2>
       <v-spacer />
-      <v-menu>
+      <v-menu v-if="canEditButtons">
         <v-list>
           <DefaultDialog :title="t('reaction.addButton')" persistent>
             <template #activator="{ props }">
@@ -123,7 +126,7 @@ const model = reactive<Record<number, boolean>>({})
           <th>
             {{ t('discussion.discussions') }}
           </th>
-          <th></th>
+          <th v-if="canEditButtons"></th>
         </tr>
       </thead>
       <draggable
@@ -160,7 +163,7 @@ const model = reactive<Record<number, boolean>>({})
             <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
               <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event!)" />
             </td>
-            <td class="text-right">
+            <td class="text-right" v-if="canEditButtons">
               <DefaultDialog :title="t('reaction.editButton')" persistent>
                 <template #activator="{ props }">
                   <v-btn prepend-icon="mdi-pencil" size="small" color="primary" v-bind="props">
