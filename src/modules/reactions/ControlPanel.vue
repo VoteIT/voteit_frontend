@@ -8,6 +8,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import HelpSection from '@/components/HelpSection.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 import useMeeting from '../meetings/useMeeting'
 
 import useReactions from './useReactions'
@@ -37,6 +38,14 @@ const meetingButtons = computed({
 })
 
 const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
+
+async function deleteButton (button: ReactionButton) {
+  try {
+    await reactionButtonType.api.delete(button.pk)
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 async function setContentType (button: ReactionButton, contentType: string, value: boolean) {
   // eslint-disable-next-line camelcase
@@ -83,7 +92,7 @@ const model = reactive<Record<number, boolean>>({})
       <v-spacer />
       <v-menu v-if="canEditButtons">
         <v-list>
-          <DefaultDialog :title="t('reaction.addButton')" persistent>
+          <DefaultDialog :title="t('reaction.addButton')">
             <template #activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-gesture-tap-button">
                 {{ t('reaction.button') }}
@@ -93,7 +102,7 @@ const model = reactive<Record<number, boolean>>({})
               <ReactionEditModal @close="close" />
             </template>
           </DefaultDialog>
-          <DefaultDialog :title="t('reaction.addButton')" persistent>
+          <DefaultDialog :title="t('reaction.addButton')">
             <template #activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-flag">
                 {{ t('reaction.flag') }}
@@ -164,9 +173,9 @@ const model = reactive<Record<number, boolean>>({})
               <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event!)" />
             </td>
             <td class="text-right" v-if="canEditButtons">
-              <DefaultDialog :title="t('reaction.editButton')" persistent>
+              <DefaultDialog :title="t('reaction.editButton')">
                 <template #activator="{ props }">
-                  <v-btn prepend-icon="mdi-pencil" size="small" color="primary" v-bind="props">
+                  <v-btn prepend-icon="mdi-pencil" size="small" class="mr-1" color="primary" v-bind="props">
                     {{ t('edit') }}
                   </v-btn>
                 </template>
@@ -175,6 +184,13 @@ const model = reactive<Record<number, boolean>>({})
                   <ReactionEditModal v-else :data="button" @close="close" />
                 </template>
               </DefaultDialog>
+              <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton(button)">
+                <template #activator="{ props }">
+                  <v-btn prepend-icon="mdi-delete" color="warning" v-bind="props" size="small">
+                    {{ t('content.delete') }}
+                  </v-btn>
+                </template>
+              </QueryDialog>
             </td>
           </tr>
         </template>

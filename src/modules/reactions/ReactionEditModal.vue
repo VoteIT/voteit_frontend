@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
-import QueryDialog from '@/components/QueryDialog.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserList from '@/components/UserList.vue'
 import useRules from '@/composables/useRules'
@@ -80,18 +79,6 @@ async function save () {
     console.error(err)
   }
 }
-
-async function deleteButton () {
-  if (!formData.pk) return
-  submitting.value = true
-  try {
-    await reactionButtonType.api.delete(formData.pk)
-    emit('close')
-  } catch (err) {
-    submitting.value = false
-    console.error(err)
-  }
-}
 </script>
 
 <template>
@@ -150,20 +137,8 @@ async function deleteButton () {
           <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close">
             {{ t('cancel') }}
           </v-btn>
-          <template v-if="formData.pk">
-            <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton">
-              <template #activator="{ props }">
-                <v-btn prepend-icon="mdi-delete" color="warning" :disabled="submitting" v-bind="props">
-                  {{ t('content.delete') }}
-                </v-btn>
-              </template>
-            </QueryDialog>
-            <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
-              {{ t('update') }}
-            </v-btn>
-          </template>
-          <v-btn v-else type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
-            {{ t('create') }}
+          <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
+            {{ formData.pk ? t('update') : t('create') }}
           </v-btn>
         </div>
       </v-form>
