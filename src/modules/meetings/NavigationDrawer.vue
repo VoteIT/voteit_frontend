@@ -165,7 +165,7 @@ const menu = computed<TreeMenu[]>(() => {
       title: t('minutes.documents'),
       to: getMeetingRoute('meetingMinutes')
     }],
-    icon: 'mdi-home-variant-outline'
+    icon: 'mdi-home'
   },
   {
     title: t('poll.polls'),
