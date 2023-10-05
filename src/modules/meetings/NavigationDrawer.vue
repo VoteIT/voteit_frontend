@@ -58,9 +58,9 @@ import ComponentSlot from './ComponentSlot.vue'
 
 const agendaLoadedEvent = new TypedEvent()
 // eslint-disable-next-line camelcase
-channelSubscribedEvent.on(({ channel_type }) => {
+channelSubscribedEvent.on(({ channelType }) => {
   // Agenda is loaded when "participants" or "moderators" channels are subscribed
-  if (['participants', 'moderators'].includes(channel_type)) agendaLoadedEvent.emit()
+  if (['participants', 'moderators'].includes(channelType)) agendaLoadedEvent.emit()
 })
 
 const { t } = useI18n()
