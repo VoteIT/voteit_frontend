@@ -54,7 +54,7 @@ const onProposals = computed({
       <v-checkbox :modelValue="onProposals && voteTemplate" :disabled="!onProposals" @update:modelValue="emit('update:voteTemplate', $event)" :label="t('reaction.voteTemplate')" density="compact" hide-details class="flex-grow-0 mr-1" />
     </div>
     <div>
-      <v-checkbox v-mode="onDiscussions" :label="t('discussion.discussions')" density="compact" hide-details class="flex-grow-0" />
+      <v-checkbox v-model="onDiscussions" :label="t('discussion.discussions')" density="compact" hide-details class="flex-grow-0" />
     </div>
   </div>
 </template>
