@@ -228,6 +228,7 @@ import InvitationAnnotation from './InvitationAnnotation.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useInviteAnnotations from './useInviteAnnotations'
 import { translateMeetingRole } from './utils'
+import { meetingInviteStates } from './workflowStates'
 
 const PAGE_LENGTH = 25
 
@@ -263,13 +264,9 @@ const inviteFilter = reactive<{
   states: ['open']
 })
 const stateLabels = computed(() => {
-  return { // TODO ts
-    open: 'Öppen',
-    expired: 'Utgången',
-    revoked: 'Tillbakadragen',
-    accepted: 'Accepterad',
-    rejected: 'Avvisad'
-  }
+  return Object.fromEntries(
+    meetingInviteStates.map(({ getName, state }) => [state, getName(t, 2)])
+  )
 })
 const selectedInviteIds = ref<number[]>([])
 const selectedInvites = computed(() => filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk)))
