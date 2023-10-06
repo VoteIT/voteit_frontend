@@ -186,19 +186,15 @@
   },
   "erMethods": {
     "auto_always": {
-      "description": "Med den här metoden skapas alltid en ny röstlängd när potentiella röstare förändras. Den bör endast användas i demomöten.",
       "title": "Demomöte: Uppdatera alltid röstlängd"
     },
     "auto_before_poll": {
-      "description": "Med den här metoden skapas röstlängd automatiskt vid behov när en omröstning startas, utifrån potentiella röstare.",
       "title": "Automatisk vid omröstning"
     },
     "manual": {
-      "description": "Med den här metoden skapar mötets moderator röstlängden manuellt. Tillåter viktade röster.",
       "title": "Manuell"
     },
     "presence_check": {
-      "description": "Med den här metoden skapas en ny röstlängd när en närvarokontroll avslutas. Rösträtt ges till närvarande deltagare med rollen potentiell röstare.",
       "title": "Närvarokontroll"
     }
   },
@@ -283,10 +279,6 @@
       "label": "Klistra in personnummer",
       "hint": "Ett personnummer per rad",
       "typeLabel": "Personnummer"
-    },
-    "undefined": {
-      "label": "Välj typ för att lägga till inbjudningar",
-      "hint": ""
     },
     "workflow": {
       "accepted": "Accepterad | Accepterade",
@@ -517,14 +509,12 @@
       "validVoteHelpText": "Din röst är giltig."
     },
     "IRV": {
-      "numRounds": "IRV, en omgång | IRV, {count} omgångar",
       "repeatedRoundResult": "IRV är inte en metod som är avsedd för att utse flera vinnare. Varje omgång i en upprepad IRV är en enkel IRV, med tidigare omgångars vinnare borttagna. Eftersom varje enkel IRV har flera omgångar finns det inget svar på hur många röster ett förslag fått, men i slutändan har det uppnått en majoritet av rösterna. Hur många omgångar som krävdes är irrelevant."
     },
     "majority": {
       "tiedResult": "Omröstningen fick ett oavgjort resultat."
     },
     "method": {
-      "name": "Omröstningsmetod",
       "combined_simple": "Bifall / Avslag / Avstå",
       "dutt": "Dutt",
       "irv": "IRV",
@@ -532,10 +522,8 @@
       "repeated_irv": "Upprepad IRV",
       "repeated_schulze": "Repeterad Schulze",
       "schulze": "Schulze",
-      "schulze_stv": "Schulze STV (historisk)",
       "schulzeAddDeny": "Schulze (lägg till avslag)",
       "scottish_stv": "Skotsk STV",
-      "simple": "Majoritetsomröstning",
       "description": {
         "combined_simple": "Varje förslag behandlas individuellt, med alternativen bifall, avslag och avstå.",
         "dutt": "Denna omröstningsmetod är till för att visa vilka förslag som har störst acceptans bland de röstande, men kan inte utse majoritetsvinnare eller -förlorare. Om ett förslag kryssats av en majoritet av de röstande är det troligt, men inte säkert, att förslaget har majoritetsstöd - det kan också vara resultatet av taktikröstande eller obligatoriskt antal kryss. Metoden kan användas för opinionsmätningar och vägledande yttringar, men bör undvikas för riktiga beslut.",
@@ -581,7 +569,6 @@
       "numTiedWinners": "En klar vinnare kunde utses. | One ring to rule them all, and in the darkness bind them. | Det blev oavgjort mellan { count } förslag. Slumpröst användes för att utse vinnare bland dessa."
     },
     "STV": {
-      "numRounds": "Skotsk STV, en runda | Skotsk STV, {count} rundor",
       "direct": "Direktvald",
       "excluded": "Uteslöt",
       "elected": "Valde",

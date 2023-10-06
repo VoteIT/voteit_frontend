@@ -8,7 +8,7 @@
         v-for="role in policy.roles_given"
         :key="role"
       >
-        {{ t(`role.${role}`) }}
+        {{ meetingType.getRole(role).translateName(t) }}
       </v-chip>
     </div>
     <div class="text-right">
@@ -27,6 +27,7 @@ import type { AccessPolicy } from '@/contentTypes/types'
 
 import useMeeting from '../useMeeting'
 import { automaticAccessType } from './contentTypes'
+import { meetingType } from '../contentTypes'
 
 const props = defineProps<{ policy: AccessPolicy }>()
 

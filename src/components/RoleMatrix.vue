@@ -97,6 +97,20 @@ const loader = useLoader('RoleMatrix')
 const { meeting } = useMeeting()
 const contextRoles = props.contentType.useContextRoles()
 
+function translateRoleHelp (role: string): string {
+  const roleSpec = props.contentType.getRole(role)
+  return roleSpec
+    ? roleSpec.translateHelp(t)
+    : '-'
+}
+
+function translateRoleName (role: string): string {
+  const roleSpec = props.contentType.getRole(role)
+  return roleSpec
+    ? roleSpec.translateName(t)
+    : role
+}
+
 /**
  * Create a full column definition from role name.
  */
@@ -105,11 +119,11 @@ function roleToCol (name: string): DescribedColumn {
     getCount () {
       return contextRoles.getRoleCount(props.pk, name)
     },
-    getDescription (t) {
-      return t(`role.help.${name}`)
+    getDescription () {
+      return translateRoleHelp(name)
     },
-    getTitle (t) {
-      const title = t(`role.${name}`)
+    getTitle () {
+      const title = translateRoleName(name)
       return name in props.readonlyRoles
         ? `${title} (${props.readonlyRoles[name]})`
         : title

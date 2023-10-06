@@ -20,9 +20,9 @@
       </template>
       <v-list>
         <v-list-item
-          v-for="{ icon, id } in existingInviteScopes" :key="id"
+          v-for="{ icon, id, typeLabel } in existingInviteScopes" :key="id"
           :prepend-icon="icon"
-          :title="t(`invites.${id}.typeLabel`)"
+          :title="typeLabel"
           @click="copyFilteredData(id)"
         />
       </v-list>
@@ -126,9 +126,9 @@
         <th>
           <input type="checkbox" v-model="allInvitesSelected">
         </th>
-        <th v-for="{ id, icon } in existingInviteScopes" :key="id">
+        <th v-for="{ id, icon, typeLabel } in existingInviteScopes" :key="id">
           <v-icon :icon="icon" />
-          {{ t(`invites.${id}.typeLabel`) }}
+          {{ typeLabel }}
         </th>
         <th>
           {{ t('roles') }}
@@ -227,7 +227,7 @@ import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationAnnotation from './InvitationAnnotation.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useInviteAnnotations from './useInviteAnnotations'
-import { translateMeetingRole } from './utils'
+import { translateInviteType, translateMeetingRole } from './utils'
 import { meetingInviteStates } from './workflowStates'
 
 const PAGE_LENGTH = 25
@@ -247,7 +247,7 @@ const scopeItems = computed(() => {
   const activeScopes = invitationScopes.getActivePlugins()
   return activeScopes.map(({ icon, id }) => ({
     icon,
-    title: t(`invites.${id}.typeLabel`),
+    title: translateInviteType(id, t).typeLabel,
     value: id
   }))
 })
@@ -292,6 +292,10 @@ function search (inv: MeetingInvite) {
 const existingInviteScopes = computed(() => {
   return invitationScopes.getActivePlugins()
     .filter(scope => meetingInvites.value.some(inv => scope.id in inv.user_data))
+    .map(scope => ({
+      ...scope,
+      typeLabel: translateInviteType(scope.id, t).typeLabel
+    }))
 })
 
 function transformUserdata (userData: MeetingInvite['user_data']) {

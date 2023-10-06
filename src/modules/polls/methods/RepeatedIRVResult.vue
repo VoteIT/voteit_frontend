@@ -32,14 +32,7 @@ import { useI18n } from 'vue-i18n'
 
 import Tag from '@/components/Tag.vue'
 import { ScottishSTVResult } from './types'
-
-const translationMapping: Record<string, string | undefined> = {
-  Direct: 'poll.STV.direct',
-  Excluded: 'poll.STV.excluded',
-  Elected: 'poll.STV.elected',
-  'Tiebreak (Random)': 'poll.STV.tiebreakRandom',
-  'No competition left': 'poll.STV.noCompetition'
-}
+import { translateSTVStatus } from './utils'
 
 const props = defineProps<{
   abstainCount: number
@@ -56,13 +49,6 @@ const metadata = computed(() => [
   [t('poll.result.randomized'), props.result.randomized ? t('yes') : t('no')]
 ])
 
-function translate (text: string): string {
-  const ts = translationMapping[text]
-  return ts
-    ? t(ts)
-    : text
-}
-
 function pkToPropId (pk: number) {
   return getProposal(pk)?.prop_id ?? t('unknown')
 }
@@ -70,7 +56,7 @@ function pkToPropId (pk: number) {
 const rounds = computed(() => {
   return props.result.rounds.map((round, i) => {
     return {
-      status: translate(round.status),
+      status: translateSTVStatus(round.status, t),
       title: `${t('poll.result.round')} ${i + 1}`,
       proposalIds: round.selected.map(pkToPropId)
     }

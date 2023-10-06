@@ -9,6 +9,8 @@ import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.v
 import useRules from '@/composables/useRules'
 import { invitationScopes } from '../organisations/registry'
 import useMeeting from './useMeeting'
+import { MeetingInvite } from './types'
+import { translateInviteType } from './utils'
 
 interface InviteResult {
   added: number
@@ -18,7 +20,7 @@ interface InviteResult {
 
 defineEmits<{(e: 'done'): void}>()
 const props = defineProps<{
-  type?: string
+  type?: keyof MeetingInvite['user_data']
   meeting: number
 }>()
 
@@ -44,16 +46,12 @@ const ruleMapping = {
 }
 
 // Dynamic translation strings and rules
-const inviteInputProps = props.type
-  ? {
-    label: t(`invites.${props.type}.label`),
-    hint: t(`invites.${props.type}.hint`),
-    rules: ruleMapping[props.type as keyof typeof ruleMapping] || [rules.required]
-  }
-  : {
-    label: t('invites.mixed.label'),
-    rules: [rules.required]
-  }
+const { hint, label } = translateInviteType(props.type, t)
+const inviteInputProps = {
+  hint,
+  label,
+  rules: props.type ? ruleMapping[props.type] : [rules.required]
+}
 
 const scopes = computed(() => invitationScopes.getActivePlugins().map(({ id }) => id))
 

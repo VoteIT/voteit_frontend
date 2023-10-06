@@ -1,5 +1,5 @@
 import { ComposerTranslation } from 'vue-i18n'
-import { PollCriteria } from './types'
+import { PollCriteria, ScottishSTVRound } from './types'
 
 export function translateCriteria (criteria: PollCriteria, t: ComposerTranslation): { description: string, title: string } {
   switch (criteria) {
@@ -38,5 +38,25 @@ export function translateCriteria (criteria: PollCriteria, t: ComposerTranslatio
         description: t('poll.criterion.proportional.description'),
         title: t('poll.criterion.proportional.title')
       }
+  }
+}
+
+export function translateSTVStatus (status: ScottishSTVRound['status'], t: ComposerTranslation): string {
+  switch (status) {
+    case 'Elected':
+      return t('poll.STV.elected')
+    case 'Excluded':
+      return t('poll.STV.excluded')
+  }
+}
+
+export function translateSTVMethod (status: ScottishSTVRound['method'], t: ComposerTranslation): string {
+  switch (status) {
+    case 'Direct':
+      return t('poll.STV.direct')
+    case 'No competition left':
+      return t('poll.STV.noCompetition')
+    case 'Tiebreak (Random)':
+      return t('poll.STV.tiebreakRandom')
   }
 }

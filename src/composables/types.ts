@@ -4,6 +4,7 @@ import { OrganisationRole, User } from '@/modules/organisations/types'
 import { ThemeColor } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
 
 export interface RestApiConfig extends AxiosRequestConfig {
   alertOnError?: boolean
@@ -84,12 +85,17 @@ export interface ContextRoles {
 }
 
 export interface ContextRole {
+  description: string
   model_natural_key: string
   name: string
-  title: string
-  description: string
-  require_names?: string[]
   predicate_info?: any
+  require_names?: string[]
+  title: string
+}
+
+export interface ContextRoleDefinition {
+  translateHelp (t: ComposerTranslation): string
+  translateName (t: ComposerTranslation): string
 }
 
 export enum InitState {

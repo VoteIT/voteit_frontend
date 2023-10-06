@@ -37,16 +37,16 @@
             {{ t('accessPolicies.automatic.add') }}
           </v-btn>
         </div>
-        <v-card v-for="p in accessPolicies" :key="p.pk">
+        <v-card v-for="p in annotatedPolicies" :key="p.pk">
           <div class="d-flex align-start pr-3">
             <v-card-title class="flex-grow-1">
-              {{ t(`accessPolicies.${p.name}.title`) }}
+              {{ p.title }}
             </v-card-title>
-            <v-switch color="primary" :modelValue="p.active" @update:modelValue="setActive(p, $event)" :label="t('active')" class="flex-grow-0" hide-details />
+            <v-switch color="primary" :modelValue="p.active" @update:modelValue="setActive(p, $event!)" :label="t('active')" class="flex-grow-0" hide-details />
           </div>
           <v-card-text>
             <p class="mb-4">
-              {{ t(`accessPolicies.${p.name}.description`) }}
+              {{ p.description }}
             </p>
             <h2 class="text-h6 mb-2">
               {{ t('selectRoles') }}
@@ -101,15 +101,38 @@ import { meetingType } from '../contentTypes'
 import QueryDialog from '@/components/QueryDialog.vue'
 import { translateMeetingRole } from '../utils'
 
-const NON_MODIFIABLE_ROLES = [
-  'participant',
-  'moderator'
-]
+const NON_MODIFIABLE_ROLES = Object.freeze([
+  MeetingRole.Participant,
+  MeetingRole.Moderator
+])
 
 const { t } = useI18n()
 const { meetingId, meeting, meetingDialect, meetingUrl, getMeetingRoute } = useMeeting()
 const { alert } = useAlert()
 const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
+
+function translateAP (ap: AccessPolicyType): { description: string, title: string } {
+  switch (ap) {
+    case AccessPolicyType.Automatic:
+      return {
+        description: t('accessPolicies.automatic.description'),
+        title: t('accessPolicies.automatic.title')
+      }
+    case AccessPolicyType.ModeratorApproved:
+      // Not implemented
+      return {
+        description: 'accessPolicies.moderatorApproved.description',
+        title: 'accessPolicies.moderatorApproved.title'
+      }
+  }
+}
+
+const annotatedPolicies = computed(() => {
+  return accessPolicies.value.map(ap => ({
+    ...ap,
+    ...translateAP(ap.name)
+  }))
+})
 
 async function addAutomaticAccess () {
   await addPolicy({

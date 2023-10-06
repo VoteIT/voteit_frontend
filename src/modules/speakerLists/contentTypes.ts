@@ -8,7 +8,16 @@ export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRol
   channels: ['sls'],
   restEndpoint: 'speaker-list-systems/',
   states: speakerSystemStates,
-  hasRoles: true
+  roles: {
+    list_moderator: {
+      translateHelp: (t) => t('role.help.list_moderator'),
+      translateName: (t) => t('role.list_moderator')
+    },
+    speaker: {
+      translateHelp: (t) => t('role.help.speaker'),
+      translateName: (t) => t('role.speaker')
+    }
+  }
 })
 
 export const speakerListType = new ContentType<SpeakerList>({

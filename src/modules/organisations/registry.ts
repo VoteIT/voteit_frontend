@@ -1,11 +1,12 @@
 import PluginHandler from '@/utils/PluginHandler'
 
 import useOrganisation from './useOrganisation'
+import { MeetingInvite } from '../meetings/types'
 
 const { organisation } = useOrganisation()
 
 interface InvitationScope {
-  id: string
+  id: keyof MeetingInvite['user_data']
   icon: string
   transformData?: (data: string) => string
 }

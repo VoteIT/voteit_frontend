@@ -65,10 +65,10 @@ export interface RepeatedSchulzeResult extends VoteResult {
 
 type ScottishSTVVoteCount = [number, number]
 
-interface ScottishSTVRound {
-  status: string
+export interface ScottishSTVRound {
+  status: 'Excluded' | 'Elected'
   selected: number[]
-  method: string
+  method: 'Direct' | 'Tiebreak (Random)' | 'No competition left'
   vote_count: ScottishSTVVoteCount[]
 }
 

@@ -76,7 +76,7 @@ export interface AccessPolicy {
   meeting: number
   active: boolean
   name: AccessPolicyType
-  roles_given: string[]
+  roles_given: MeetingRole[]
 }
 
 export interface MeetingAccessPolicy {

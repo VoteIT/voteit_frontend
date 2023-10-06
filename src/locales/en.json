@@ -186,19 +186,15 @@
   },
   "erMethods": {
     "auto_always": {
-      "description": "This method will always create a new electoral register when potential voters change. Should only be used in demo meetings.",
       "title": "Demo meeting: Always update electoral register"
     },
     "auto_before_poll": {
-      "description": "This method automatically creates electoral registers as needed, from potential voters, when a poll is started.",
       "title": "Automatic on poll"
     },
     "manual": {
-      "description": "When using this method, the meeting moderator creates electoral registers manually. Allows for weighted votes.",
       "title": "Manual"
     },
     "presence_check": {
-      "description": "This method creates a new electoral register upon closing a presence check. Voting rights will be given to present users with the role potential voter.",
       "title": "Presence check"
     }
   },
@@ -283,10 +279,6 @@
       "label": "Paste swedish personnummer",
       "hint": "One swedish personnummer per row",
       "typeLabel": "Swedish personnummer"
-    },
-    "undefined": {
-      "label": "Select type to add invitations",
-      "hint": ""
     },
     "workflow": {
       "accepted": "Accepted",
@@ -517,14 +509,12 @@
       "validVoteHelpText": "Your vote is valid."
     },
     "IRV": {
-      "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds",
       "repeatedRoundResult": "IRV is not a method deisgned to elect multiple winenrs. Each round in a repeated IRV is a simple IRV, with the winners from previous rounds omited. Because each simple IRV has several rounds, there is no simple answer to how many votes a proposal got, other than that it would have at some point got a mojority of the votes. How many rounds that took is irrelevant."
     },
     "majority": {
       "tiedResult": "The poll got a tied result."
     },
     "method": {
-      "name": "Poll method",
       "combined_simple": "Accept / Reject / Abstain",
       "dutt": "Acceptance poll",
       "irv": "Instant Runoff-Voting",
@@ -532,10 +522,8 @@
       "repeated_irv": "Repeated IRV",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
-      "schulze_stv": "Schulze STV (historical)",
       "schulzeAddDeny": "Schulze (add deny)",
       "scottish_stv": "Scottish STV",
-      "simple": "Simple majority",
       "description": {
         "combined_simple": "Each proposal will be voted individually, with the options to approve, deny or abstain.",
         "dutt": "This poll methos shows which proposals has the highest approval, but can't appoint majority winners or losers. If a proposal was selected by a majority of voters, it's likely, but not certain, that the proposal is supported by a majority. It could also be the result of tactical voting or mandatory amount of selections. The method can be used for opinion surveys and guiding polls, but should be avoided for making real decisions.",
@@ -581,7 +569,6 @@
       "numTiedWinners": "A clear winner was established. | One ring to rule them all, and in the darkness bind them. | There was a tie between { count } proposals. The winner was randomly selected among those."
     },
     "STV": {
-      "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds",
       "direct": "Direct",
       "excluded": "Excluded",
       "elected": "Elected",
