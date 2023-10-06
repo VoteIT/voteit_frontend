@@ -4,8 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.18.0 (UNRELEASED)
+## 0.18.0 (2023-10-??)
 - WebSocket / Envelope integration rewritten, using `envelope-client` library.
+- Added flag button in reaction buttons
+- Reaction buttons can now be displayed in polls and on plenary view
+- Reaction buttons can now be used as vote templates in applicable methods
+- Fix problem where clearing dialect or er method blocked meeting creation
 
 ## 0.17.3 (2023-09-07)
 - Add simple keyboard navigation to Plenary view
