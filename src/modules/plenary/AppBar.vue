@@ -24,12 +24,12 @@
         </template>
         <v-list>
           <v-item-group multiple v-model="stateFilter">
-            <v-item v-for="{ state, count } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
+            <v-item v-for="{ count, state, title } in filterStates" :key="state.state" :value="state.state" v-slot="{ isSelected, toggle }">
               <v-list-item
                 @click.stop="toggle"
                 :prepend-icon="state.icon"
                 :active="isSelected"
-                :title="t(`workflowState.${state.state}`)"
+                :title="title"
                 :subtitle="t('proposal.proposalCount', { count }, count)"
               />
             </v-item>
@@ -72,6 +72,7 @@ import { QuickStartMethod } from './types'
 import { PollPlugin, pollPlugins } from '../polls/registry'
 import { onKeyStroke } from '@vueuse/core'
 import { useRouter } from 'vue-router'
+import { proposalType } from '../proposals/contentTypes'
 
 const { getState } = pollType.useWorkflows()
 
@@ -83,15 +84,20 @@ const { agendaItem, agendaItemRoute, canChangeAgendaItem, nextPollTitle } = useA
 const { stateFilter, selectedProposals, selectedProposalIds } = usePlenary(agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
+const { getState: getProposalState } = proposalType.useWorkflows()
 
 function getStateProposalCount (state: ProposalState) {
   return getAgendaProposals(agendaId.value, p => p.state === state).length
 }
 const filterStates = computed(() => {
-  return proposalStates.map(state => ({
-    state,
-    count: getStateProposalCount(state.state)
-  }))
+  return proposalStates.map(state => {
+    const count = getStateProposalCount(state.state)
+    return {
+      state,
+      count,
+      title: state.getName(t, count)
+    }
+  })
 })
 
 function pollStateToMenu (state: PollState): MenuItem[] {
@@ -109,6 +115,10 @@ function pollStateToMenu (state: PollState): MenuItem[] {
     }))
 }
 
+/**
+ * Selected proposals that are in a protected state (not published)
+ * If user tries to start a poll with any of these, have them confirm that it's ok
+ */
 const protectedProposalStates = computed(() => {
   return selectedProposals.value
     .map(p => p.state)
@@ -128,7 +138,7 @@ async function createPoll (method: Poll['method_name'], settings: PollMethodSett
     settings
   }
   if (protectedProposalStates.value.length) {
-    const states = [...new Set(protectedProposalStates.value)].map(s => t(`workflowState.${s}`).toLowerCase()).join(', ')
+    const states = [...new Set(protectedProposalStates.value)].map(s => getProposalState(s)!.getName(t).toLowerCase()).join(', ')
     const title = t('plenary.confirmStartProtectedStates', { states }, protectedProposalStates.value.length)
     if (!await dialogQuery({ title, theme: ThemeColor.Warning })) return
   }

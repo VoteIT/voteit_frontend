@@ -6,17 +6,26 @@ export const speakerSystemStates: WorkflowState<SpeakerSystemState>[] = [
   {
     transition: 'inactivate',
     icon: 'mdi-eye-off',
-    state: SpeakerSystemState.Inactive
+    state: SpeakerSystemState.Inactive,
+    getName (t, count = 1) {
+      return t('speaker.systemWorkflow.inactive', count)
+    }
   },
   {
     transition: 'activate',
     icon: 'mdi-eye',
-    state: SpeakerSystemState.Active
+    state: SpeakerSystemState.Active,
+    getName (t, count = 1) {
+      return t('speaker.systemWorkflow.active', count)
+    }
   },
   {
     transition: 'archive',
     icon: 'mdi-archive',
-    state: SpeakerSystemState.Archived
+    state: SpeakerSystemState.Archived,
+    getName (t, count = 1) {
+      return t('speaker.systemWorkflow.archived', count)
+    }
   }
 ]
 
@@ -25,12 +34,18 @@ export const speakerListStates: WorkflowState<SpeakerListState>[] = [
     transition: 'open',
     icon: 'mdi-play-circle-outline',
     state: SpeakerListState.Open,
-    color: ThemeColor.Primary
+    color: ThemeColor.Primary,
+    getName (t, count = 1) {
+      return t('speaker.listWorkflow.open', count)
+    }
   },
   {
     transition: 'close',
     icon: 'mdi-lock',
     state: SpeakerListState.Closed,
-    color: ThemeColor.Warning
+    color: ThemeColor.Warning,
+    getName (t, count = 1) {
+      return t('speaker.listWorkflow.closed', count)
+    }
   }
 ]

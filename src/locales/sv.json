@@ -127,6 +127,13 @@
       "blocked": "Förslag är blockerade",
       "closed": "Dagordningspunkten är avslutad",
       "nonProposer": "Du har inte förslagsrätt"
+    },
+    "workflow": {
+      "archived": "Arkiverad | Arkiverade",
+      "closed": "Stängd | Stängda",
+      "ongoing": "Pågående",
+      "private": "Privat | Privata",
+      "upcoming": "Kommande"
     }
   },
   "auth": {
@@ -280,6 +287,13 @@
     "undefined": {
       "label": "Välj typ för att lägga till inbjudningar",
       "hint": ""
+    },
+    "workflow": {
+      "accepted": "Accepterad | Accepterade",
+      "expired": "Utgången | Utgångna",
+      "open": "Öppen | Öppna",
+      "rejected": "Avvisad | Avvisade",
+      "revoked": "Tillbakadragen | Tillbakadragna"
     }
   },
   "join": {
@@ -332,6 +346,10 @@
     "yearStarted": "Startades år",
     "yourGroups": "Dina mötesgrupper",
     "yourRoles": "Dina mötesroller",
+    "componentState": {
+      "off": "Av",
+      "on": "På"
+    },
     "groups": {
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Ny grupp",
@@ -352,6 +370,14 @@
       "removeUserConfirm": "Du håller på att ta bort {user} från den här gruppen.\nÄr du säker?",
       "role": "Roll",
       "votes": "Röster"
+    },
+    "workflow": {
+      "archived": "Arkiverat | Arkiverade",
+      "archiving": "Arkiveras",
+      "closed": "Avslutat | Avslutade",
+      "deleting": "Raderas",
+      "ongoing": "Pågående",
+      "upcoming": "Kommande"
     }
   },
   "minutes": {
@@ -561,6 +587,16 @@
       "elected": "Valde",
       "tiebreakRandom": "Tiebreak (slumpmässig)",
       "noCompetition": "Kvarvarande förslag"
+    },
+    "workflow": {
+      "canceled": "Avbruten | Avbrutna",
+      "closed": "Avslutad | Avslutade",
+      "failed": "Misslyckades | Misslyckade",
+      "finished": "Avslutad | Avslutade",
+      "no_result": "Inget resultat | Inga resultat",
+      "ongoing": "Pågående",
+      "private": "Privat | Privata",
+      "upcoming": "Kommande"
     }
   },
   "plenary": {
@@ -588,7 +624,11 @@
     "presence": "Närvaro",
     "presenceNoted": "Vi har noterat din närvaro",
     "presentCount": "Inga närvarande deltagare | En närvarande deltagare | {count} närvarande deltagare",
-    "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället."
+    "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället.",
+    "workflow": {
+      "closed": "Avslutad | Avslutade",
+      "open":"Öppen | Öppna"
+    }
   },
   "printing": {
     "enable": "Aktivera snabbutskrift av förslag",
@@ -625,7 +665,15 @@
     "textModify": "Ändra förslagstext",
     "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?",
     "tied": "Oavgjort",
-    "unknown": "Okänt förslag"
+    "unknown": "Okänt förslag",
+    "workflow": {
+      "approved": "Bifallet | Bifallna",
+      "denied": "Avslaget | Avslagna",
+      "published": "Publicerat | Publicerade",
+      "retracted": "Tillbakadraget | Tillbakadragna",
+      "unhandled": "Ohanterat | Ohanterade",
+      "voting": "Låst för omröstning | Låsta för omröstning"
+    }
   },
   "reaction": {
     "active": "Aktiv (användare kan reagera)",
@@ -746,52 +794,15 @@
       "simple": "Kronologisk",
       "maxTimes": "Prioriteringsgräns",
       "maxTimesHint": "Antal gånger återkommande talare nedprioriteras till förmån för talare som talat färre gånger. 0 = ingen gräns."
-    }
-  },
-  "workflowState": {
-    "active": "Aktivt",
-    "approved": "Bifallet",
-    "archived": "Arkiverad",
-    "archiving": "Arkiverar",
-    "canceling": "Avbryter",
-    "canceled": "Avbruten",
-    "closed": "Avslutat",
-    "closing": "Avslutar",
-    "deleting": "Raderas",
-    "denied": "Avslaget",
-    "failed": "Misslyckad",
-    "finished": "Avslutad",
-    "inactive": "Inaktivt",
-    "no_result": "Inget resultat",
-    "ongoing": "Pågående",
-    "open": "Öppen",
-    "private": "Privat",
-    "published": "Publicerat",
-    "retracted": "Tillbakadraget",
-    "unhandled": "Ohanterat",
-    "upcoming": "Kommande",
-    "voting": "Låst för omröstning",
-    "plural": {
-      "approved": "Bifallna",
-      "archived": "Arkiverade",
-      "archiving": "Arkiverar",
-      "canceling": "Avbryter",
-      "canceled": "Avbrutna",
-      "closed": "Stängda",
-      "closing": "Stänger",
-      "deleting": "Raderas",
-      "denied": "Avslagna",
-      "failed": "Misslyckade",
-      "finished": "Avslutade",
-      "no_result": "Inget resultat",
-      "ongoing": "Pågående",
-      "open": "Öppna",
-      "private": "Privata",
-      "published": "Publicerade",
-      "retracted": "Tillbakadragna",
-      "unhandled": "Ohanterade",
-      "upcoming": "Kommande",
-      "voting": "Låsta för omröstning"
+    },
+    "systemWorkflow": {
+      "active": "Aktiv | Aktiva",
+      "archived":"Arkiverat | Arkiverade",
+      "inactive": "Inaktiv | Inaktiva"
+    },
+    "listWorkflow": {
+      "closed":"Stängd | Stängda",
+      "open": "Öppen | Öppna"
     }
   }
 }

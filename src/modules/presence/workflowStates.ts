@@ -9,12 +9,18 @@ export const presenceCheckStates: WorkflowState<PresenceCheckState>[] = [
   {
     transition: 'open',
     icon: 'mdi-play',
-    state: PresenceCheckState.Open
+    state: PresenceCheckState.Open,
+    getName (t) {
+      return t('presence.workflow.open')
+    }
   },
   {
     transition: 'close',
     icon: 'mdi-stop',
     state: PresenceCheckState.Closed,
-    isFinal: true
+    isFinal: true,
+    getName (t) {
+      return t('presence.workflow.closed')
+    }
   }
 ]

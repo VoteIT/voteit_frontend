@@ -8,50 +8,74 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-eye-off',
     state: PollState.Private,
     requiresRole: MeetingRole.Moderator,
-    priority: 5
+    priority: 5,
+    getName (t, count = 1) {
+      return t('poll.workflow.private', count)
+    }
   },
   {
     transition: PollTransition.Upcoming,
     icon: 'mdi-progress-clock',
     state: PollState.Upcoming,
-    priority: 2
+    priority: 2,
+    getName (t, count = 1) {
+      return t('poll.workflow.upcoming', count)
+    }
   },
   {
     transition: PollTransition.Ongoing,
     icon: 'mdi-play-circle',
     state: PollState.Ongoing,
-    priority: 1
+    priority: 1,
+    getName (t, count = 1) {
+      return t('poll.workflow.ongoing', count)
+    }
   },
   {
     transition: PollTransition.Close,
     icon: 'mdi-gavel',
     state: PollState.Closed,
     requiresRole: MeetingRole.Moderator,
-    priority: 3
+    priority: 3,
+    getName (t, count = 1) {
+      return t('poll.workflow.closed', count)
+    }
   },
   {
     transition: PollTransition.Finish,
     icon: 'mdi-check',
     state: PollState.Finished,
     isFinal: true,
-    priority: 4
+    priority: 4,
+    getName (t, count = 1) {
+      return t('poll.workflow.finished', count)
+    }
   },
   {
     transition: PollTransition.Cancel,
     icon: 'mdi-cancel',
     state: PollState.Canceled,
-    priority: 6
+    priority: 6,
+    getName (t, count = 1) {
+      return t('poll.workflow.canceled', count)
+    }
   },
   {
     icon: 'mdi-alert',
     state: PollState.Failed,
     isFinal: true,
-    priority: 7
+    priority: 7,
+    getName (t, count = 1) {
+      return t('poll.workflow.failed', count)
+    }
   },
   {
     icon: 'mdi-cancel',
     state: PollState.NoResult,
     isFinal: true,
-    priority: 8
+    priority: 8,
+    getName (t, count = 1) {
+      return t('poll.workflow.no_result', count)
+    }
   }
 ]

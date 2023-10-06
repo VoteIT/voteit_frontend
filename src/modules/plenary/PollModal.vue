@@ -26,7 +26,7 @@
     </div>
   </template>
   <main v-else-if="poll">
-    {{ t(`workflowState.${poll.state}`) }}
+    {{ pollType.useWorkflows().getState(poll.state)?.getName(t) }}
     <div v-if="isFinished" class="my-6">
       <component :is="resultComponent" :result="poll.result" :abstain-count="poll.abstain_count" :proposals="poll.proposals" />
     </div>

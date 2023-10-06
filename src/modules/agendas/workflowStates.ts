@@ -9,30 +9,45 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     icon: 'mdi-eye-off',
     state: AgendaState.Private,
     priority: 4,
-    requiresRole: MeetingRole.Moderator
+    requiresRole: MeetingRole.Moderator,
+    getName (t, count = 1) {
+      return t('agenda.workflow.private', count)
+    }
   },
   {
     transition: 'upcoming',
     icon: 'mdi-progress-clock',
     state: AgendaState.Upcoming,
-    priority: 2
+    priority: 2,
+    getName (t, count = 1) {
+      return t('agenda.workflow.upcoming', count)
+    }
   },
   {
     transition: 'ongoing',
     icon: 'mdi-play-circle',
     state: AgendaState.Ongoing,
-    priority: 1
+    priority: 1,
+    getName (t, count = 1) {
+      return t('agenda.workflow.ongoing', count)
+    }
   },
   {
     transition: 'close',
     icon: 'mdi-close-circle-outline',
     state: AgendaState.Closed,
-    priority: 3
+    priority: 3,
+    getName (t, count = 1) {
+      return t('agenda.workflow.closed', count)
+    }
   },
   {
     // Transition not user accessible
     // transition: 'archive',
     icon: 'mdi-archive',
-    state: AgendaState.Archived
+    state: AgendaState.Archived,
+    getName (t, count = 1) {
+      return t('agenda.workflow.archived', count)
+    }
   }
 ]

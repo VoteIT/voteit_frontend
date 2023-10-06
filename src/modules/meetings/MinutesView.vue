@@ -98,6 +98,7 @@ import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.v
 
 import useAgenda from '../agendas/useAgenda'
 import useUserDetails from '../organisations/useUserDetails'
+import { proposalType } from '../proposals/contentTypes'
 import { Proposal, ProposalState } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
 import { proposalStates } from '../proposals/workflowStates'
@@ -141,6 +142,8 @@ const SETTING_DEFAULTS = Object.freeze({
   }
 })
 
+const { getState: getProposalState } = proposalType.useWorkflows()
+
 export default defineComponent({
   components: {
     CheckboxMultipleSelect
@@ -171,20 +174,21 @@ export default defineComponent({
 
     const options = Object.fromEntries(
       PROPOSAL_STATE_ORDER
-        .map(state => [state, t(`workflowState.${state}`)])
+        .map(state => [state, getProposalState(state)!.getName(t)])
     )
 
     const annotatedAgenda = computed(() => {
       return agenda.value.map(({ pk, title, body }) => {
         const proposalStates = PROPOSAL_STATE_ORDER
           .map(state => {
+            const proposals = orderBy(
+              getAgendaProposals(pk, p => p.state === state),
+              PROPOSAL_ORDERING[settings.proposalOrder]
+            )
             return {
               state,
-              title: t(`workflowState.${state}`),
-              proposals: orderBy(
-                getAgendaProposals(pk, p => p.state === state),
-                PROPOSAL_ORDERING[settings.proposalOrder]
-              )
+              title: getProposalState(state)?.getName(t, proposals.length),
+              proposals
             }
           })
         return {

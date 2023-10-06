@@ -7,7 +7,7 @@
         </h1>
         <p class="text-center mb-4" v-if="listState">
           <v-icon :icon="listState.icon" :color="listState.color" />
-          {{ t(`workflowState.${listState.state}`) }}
+          {{ listState.getName(t) }}
         </p>
         <p v-if="!queue?.length" class="text-secondary text-center">
           {{ t('speaker.queueEmpty') }}

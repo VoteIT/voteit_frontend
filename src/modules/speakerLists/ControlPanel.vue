@@ -109,6 +109,7 @@ const { meetingId, roleLabels } = useMeeting()
 const loader = useLoader('SpeakerSystems panel')
 const systemRoles = ref<ContextRole[]>([])
 const { getUserIds } = speakerSystemType.useContextRoles()
+const { getState } = speakerSystemType.useWorkflows()
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 
 onBeforeMount(() => {
@@ -209,7 +210,7 @@ function getSystemData (system: SpeakerSystem): {key: string, value: string | nu
   return [
     {
       key: t('state'),
-      value: t(`workflowState.${system.state}`)
+      value: getState(system.state)!.getName(t)
     },
     {
       key: t('speaker.systemMethod'),

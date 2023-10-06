@@ -78,7 +78,7 @@ function getAiType (state: string) {
   return filteredAgenda.value.filter(ai => ai.state === state)
 }
 
-const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
+const aiGroups = computed(() => agendaWorkflows.getPriorityStates(
   s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
 ))
 
@@ -103,9 +103,10 @@ const aiMenus = computed<TreeMenuItem[]>(() => {
     })
   }
   for (const s of aiGroups.value) {
+    const items = getAIMenuItems(s)
     menus.push({
-      items: getAIMenuItems(s),
-      title: t(`workflowState.plural.${s.state}`),
+      items,
+      title: s.getName(t, items.length),
       showCount: true,
       showCountTotal: agenda.value.filter(ai => ai.state === s.state).length,
       loadedEvent: agendaLoadedEvent
