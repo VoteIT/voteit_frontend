@@ -127,6 +127,13 @@
       "blocked": "Proposals are blocked",
       "closed": "This agenda item is closed",
       "nonProposer": "You don't have proposal permissions"
+    },
+    "workflow": {
+      "archived": "Archived",
+      "closed": "Closed",
+      "ongoing": "Ongoing",
+      "private": "Private",
+      "upcoming": "Upcoming"
     }
   },
   "auth": {
@@ -280,6 +287,13 @@
     "undefined": {
       "label": "Select type to add invitations",
       "hint": ""
+    },
+    "workflow": {
+      "accepted": "Accepted",
+      "expired": "Expired",
+      "open": "Open",
+      "rejected": "Rejected",
+      "revoked": "Revoked"
     }
   },
   "join": {
@@ -352,6 +366,14 @@
       "removeUserConfirm": "You're about to remove {user} from this group.\nAre you sure?",
       "role": "Role",
       "votes": "Votes"
+    },
+    "workflow": {
+      "archived": "Archived",
+      "archiving": "Archiving",
+      "closed": "Closed",
+      "deleting": "Deleting",
+      "ongoing": "Ongoing",
+      "upcoming": "Upcoming"
     }
   },
   "minutes": {
@@ -561,6 +583,16 @@
       "elected": "Elected",
       "tiebreakRandom": "Tiebreak (random)",
       "noCompetition": "No competition left"
+    },
+    "workflow": {
+      "canceled": "Cancelled",
+      "closed": "Closed",
+      "failed": "Failed",
+      "finished": "Finished",
+      "no_result": "No result | No results",
+      "ongoing": "Ongoing",
+      "private": "Private",
+      "upcoming": "Upcoming"
     }
   },
   "plenary": {
@@ -588,7 +620,11 @@
     "presence": "Presence",
     "presenceNoted": "We have noted your presence",
     "presentCount": "No participants present | One present participant | {count} present participants",
-    "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead."
+    "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead.",
+    "workflow": {
+      "closed": "Closed",
+      "open":"Open"
+    }
   },
   "printing": {
     "enable": "Enable quick proposal printing",
@@ -625,7 +661,15 @@
     "textModify": "Modify proposal text",
     "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?",
     "tied": "Tied",
-    "unknown": "Unknown proposal"
+    "unknown": "Unknown proposal",
+    "workflow": {
+      "approved": "Approved",
+      "denied": "Denied",
+      "published": "Published",
+      "retracted": "Retracted",
+      "unhandled": "Unhandled",
+      "voting": "Locked for vote"
+    }
   },
   "reaction": {
     "active": "Active (users can react)",
@@ -745,52 +789,6 @@
       "simple": "Chronological",
       "maxTimes": "Priority limit",
       "maxTimesHint": "Maximum times recurring speakers will be deprioritized, in favor of speakers that have spoken fewer times. 0 = no limit."
-    }
-  },
-  "workflowState": {
-    "active": "Active",
-    "approved": "Approved",
-    "archived": "Archived",
-    "archiving": "Archiving",
-    "canceling": "Canceling",
-    "canceled": "Canceled",
-    "closed": "Closed",
-    "closing": "Closing",
-    "deleting": "Deleting",
-    "denied": "Denied",
-    "failed": "Failed",
-    "finished": "Finished",
-    "inactive": "Inactive",
-    "no_result": "No result",
-    "ongoing": "Ongoing",
-    "open": "Open",
-    "private": "Private",
-    "published": "Published",
-    "retracted": "Retracted",
-    "unhandled": "Unhandled",
-    "upcoming": "Upcoming",
-    "voting": "Locked for vote",
-    "plural": {
-      "approved": "Approved",
-      "archived": "Archived",
-      "archiving": "Archiving",
-      "canceling": "Canceling",
-      "canceled": "Canceled",
-      "closed": "Closed",
-      "closing": "Closing",
-      "deleting": "Deleting",
-      "denied": "Denied",
-      "failed": "Failed",
-      "finished": "Finished",
-      "no_result": "No result",
-      "ongoing": "Ongoing",
-      "open": "Open",
-      "private": "Private",
-      "published": "Published",
-      "retracted": "Retracted",
-      "unhandled": "Unhandled",
-      "upcoming": "Upcoming",
-      "voting": "Locked for vote"
     }
   }
 }
