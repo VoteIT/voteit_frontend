@@ -9,6 +9,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Added flag button in reaction buttons
 - Reaction buttons can now be displayed in polls and on plenary view
 - Reaction buttons can now be used as vote templates in applicable methods
+- Reaction buttons can now only be modified or interacted with in upcoming or open meetings
 - Fix problem where clearing dialect or er method blocked meeting creation
 
 ## 0.17.3 (2023-09-07)
