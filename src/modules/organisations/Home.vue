@@ -145,26 +145,26 @@ const { collapsedBodyHeightMobile, cols } = useDefaults()
 const groupRules = [
   {
     meetings: participatingOngoingMeetings,
-    translationString: 'workflowState.plural.ongoing'
+    state: meetingStates.find(s => s.state === MeetingState.Ongoing)!
   },
   {
     meetings: participatingUpcomingMeetings,
-    translationString: 'workflowState.plural.upcoming'
+    state: meetingStates.find(s => s.state === MeetingState.Upcoming)!
   },
   {
     meetings: participatingClosedMeetings,
-    translationString: 'workflowState.plural.closed',
+    state: meetingStates.find(s => s.state === MeetingState.Closed)!,
     maxLength: 3
   }
 ]
 const meetingGroups = computed(() => {
   return groupRules
-    .map(({ maxLength, meetings, translationString }) => {
+    .map(({ maxLength, meetings, state }) => {
       return {
         meetings: maxLength && !groupsExpanded.value
           ? meetings.value.slice(0, maxLength)
           : meetings.value,
-        title: t(translationString),
+        title: state.getName(t, meetings.value.length),
         expandable: !!maxLength && meetings.value.length > maxLength
       }
     })
