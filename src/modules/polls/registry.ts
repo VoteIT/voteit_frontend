@@ -3,10 +3,12 @@ import { Component } from 'vue'
 import { SchemaGenerator } from '@/components/inputs/types'
 import PluginHandler, { OrganisationPlugin } from '../organisations/PluginHandler'
 import { PollMethodCriterion, PollMethodSettings } from './methods/types'
+import { ComposerTranslation } from 'vue-i18n'
 
 export interface PollPlugin extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
+  getName (t: ComposerTranslation): string
   getSchema?: SchemaGenerator
   initialSettings?: PollMethodSettings
   multipleWinners?: boolean

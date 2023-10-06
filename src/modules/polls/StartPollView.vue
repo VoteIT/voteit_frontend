@@ -37,9 +37,9 @@
       <template v-if="pickMethod">
         <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
-          <v-expansion-panel v-for="{ id, criterion, discouraged } in availableMethods" :key="id" :title="t(`poll.method.${id}`)" :value="id">
+          <v-expansion-panel v-for="{ id, criterion, discouraged, getName } in availableMethods" :key="id" :title="getName(t)" :value="id">
             <v-expansion-panel-text>
-              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" type="info" :icon="discouraged && 'mdi-alert-decagram'">
+              <v-alert class="my-4" type="info" :icon="discouraged && 'mdi-alert-decagram'">
                 {{ t(`poll.method.description.${methodSelected}`) }}
               </v-alert>
               <h3 class="my-2">

@@ -1,7 +1,7 @@
 <template>
   <template v-if="poll && isOngoing">
     <main class="mb-8">
-      <p>{{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}</p>
+      <p>{{ t('poll.pollDescription', { method: pollMethodName, count: poll.proposals.length }) }}</p>
       <ProgressBar v-if="progressBar" v-bind="progressBar" absolute class="mt-8" />
     </main>
     <div class="actions text-right">
@@ -50,7 +50,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { isOngoing, isFinished, poll, pollStatus, proposals, resultComponent, voteComponent } = usePoll(ref(props.data.pk))
+const { isOngoing, isFinished, poll, pollMethodName, pollStatus, proposals, resultComponent, voteComponent } = usePoll(ref(props.data.pk))
 
 useChannel('poll', computed(() => props.data.pk))
 

@@ -96,6 +96,7 @@ import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
 import useSpeakerSystems from './useSpeakerSystems'
+import { translateOrderMethod } from './utils'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -212,7 +213,7 @@ function getSystemData (system: SpeakerSystem): {key: string, value: string | nu
     },
     {
       key: t('speaker.systemMethod'),
-      value: t(`speaker.orderMethod.${system.method_name}`)
+      value: translateOrderMethod(system.method_name, t)
     },
     {
       key: t('speaker.safePositions'),
@@ -247,7 +248,7 @@ const orderMethods = computed(() => {
     .map(name => {
       return {
         value: name,
-        title: t(`speaker.orderMethod.${name}`)
+        title: translateOrderMethod(name, t)
       }
     })
 })

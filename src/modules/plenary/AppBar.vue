@@ -69,7 +69,7 @@ import { PollMethodSettings, PollStartData } from '../polls/methods/types'
 import usePlenary from './usePlenary'
 import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
-import { PollPlugin } from '../polls/registry'
+import { PollPlugin, pollPlugins } from '../polls/registry'
 import { onKeyStroke } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
@@ -100,7 +100,7 @@ function pollStateToMenu (state: PollState): MenuItem[] {
     .map(poll => ({
       icon: wfState.icon,
       title: poll.title,
-      subtitle: t(`poll.method.${poll.method_name}`),
+      subtitle: pollPlugins.getPlugin(poll.method_name)?.getName(t),
       onClick: async () => openModalEvent.emit({
         title: poll.title,
         component: PollModal,

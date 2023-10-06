@@ -25,6 +25,7 @@ import { slugify } from '@/utils'
 
 import useMeeting from '../meetings/useMeeting'
 import usePolls from './usePolls'
+import { pollPlugins } from './registry'
 
 defineProps<{ modelValue?: boolean }>()
 defineEmits(['update:modelValue'])
@@ -36,9 +37,10 @@ const { getUnvotedPolls } = usePolls()
 const unvoted = computed(() => {
   return getUnvotedPolls(meetingId.value)
     .map(poll => {
+      const plugin = pollPlugins.getPlugin(poll.method_name)
       return {
         ...poll,
-        subtitle: t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`) }, poll.proposals.length),
+        subtitle: t('poll.pollDescription', { method: plugin?.getName(t) }, poll.proposals.length),
         to: {
           name: 'poll',
           params: {

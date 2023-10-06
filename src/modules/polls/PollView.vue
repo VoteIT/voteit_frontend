@@ -8,7 +8,7 @@
             <WorkflowState :admin="isModerator" :contentType="pollType" :object="poll" />
             <h1>{{ poll.title }}</h1>
             <p class="text-secondary">
-              {{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}
+              {{ t('poll.pollDescription', { method: pollMethodName, count: poll.proposals.length }) }}
             </p>
             <p v-if="agendaItem && agendaItemRoute">
               {{ t('agenda.item') }}:
@@ -48,7 +48,7 @@
       <div v-if="isFinished" id="poll-results" class="my-6">
         <ProgressBar class="my-4" :text="voteCount.text" :value="voteCount.voted" :total="voteCount.total" />
         <h3>
-          {{ t('poll.result.method', { method: methodName }) }}
+          {{ t('poll.result.method', { method: pollMethodName }) }}
         </h3>
         <component v-if="resultComponent" :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
         <div v-else class="mt-4">
@@ -65,7 +65,7 @@
             <Proposal
               v-for="proposal in denied" :key="proposal.pk"
               class="my-3"
-              readOnly 
+              readOnly
               :p="proposal"
             />
           </Dropdown>
@@ -152,7 +152,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, pollMethodName, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 const { agendaItem, agendaItemRoute } = useAgendaItem(computed(() => poll.value?.agenda_item))
 const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))
@@ -270,7 +270,6 @@ const buttons = computed(() => {
   }
   return btns
 })
-const methodName = computed(() => poll.value && t(`poll.method.${poll.value.method_name}`))
 </script>
 
 <style lang="sass">
