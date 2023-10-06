@@ -346,6 +346,10 @@
     "yearStarted": "Year (started)",
     "yourGroups": "Your meeting roles",
     "yourRoles": "Your meeting groups",
+    "componentState": {
+      "off": "Off",
+      "on": "On"
+    },
     "groups": {
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
@@ -789,6 +793,15 @@
       "simple": "Chronological",
       "maxTimes": "Priority limit",
       "maxTimesHint": "Maximum times recurring speakers will be deprioritized, in favor of speakers that have spoken fewer times. 0 = no limit."
+    },
+    "systemWorkflow": {
+      "active": "Active",
+      "archived":"Archived",
+      "inactive": "Inactive"
+    },
+    "listWorkflow": {
+      "closed":"Closed",
+      "open": "Open"
     }
   }
 }
