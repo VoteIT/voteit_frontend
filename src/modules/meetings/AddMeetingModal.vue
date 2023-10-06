@@ -53,6 +53,9 @@ import { meetingType } from './contentTypes'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import useDialects from './dialects/useDialects'
 import useRules from '@/composables/useRules'
+import { Meeting } from './types'
+
+type FormData = Pick<Meeting, 'title' | 'visible_in_lists'> & { er_policy_name: string | null, install_dialect: string | null }
 
 defineEmits(['close'])
 
@@ -62,16 +65,16 @@ const { availableErMethods } = useElectoralRegisters()
 const { installableDialects } = useDialects()
 const rules = useRules(t)
 
-const formData = reactive({
+const formData = reactive<FormData>({
   title: '',
   visible_in_lists: false,
-  er_policy_name: undefined,
-  install_dialect: undefined
+  er_policy_name: null,
+  install_dialect: null
 })
 const formReady = ref(false)
 
 watch(() => formData.install_dialect, value => {
-  if (value) formData.er_policy_name = undefined
+  if (value) formData.er_policy_name = null
 })
 const submitting = ref(false)
 
@@ -84,11 +87,19 @@ const dialectOptions = computed(() => {
   return installableDialects.value.map(({ name, title }) => ({ value: name, title }))
 })
 
+function cleanFormData (data: FormData) {
+  return {
+    ...data,
+    er_policy_name: data.er_policy_name || undefined,
+    install_dialect: data.install_dialect || undefined
+  } as Partial<Meeting>
+}
+
 async function addMeeting () {
   if (submitting.value) return
   submitting.value = true
   try {
-    const { data } = await meetingType.api.add(formData)
+    const { data } = await meetingType.api.add(cleanFormData(formData))
     router.push(`/m/${data.pk}/${slugify(data.title)}`)
   } catch {
     // TODO
