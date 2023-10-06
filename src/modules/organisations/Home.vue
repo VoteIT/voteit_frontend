@@ -23,11 +23,13 @@ import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
 import useMeetingInvites from '../meetings/useMeetingInvites'
 import Invite from '../meetings/Invite.vue'
+import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
+import { translateMeetingRole } from '../meetings/utils'
+
 import ContactInfoTab from './ContactInfoTab.vue'
 import useOrganisation from './useOrganisation'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
-import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -284,7 +286,7 @@ const searchInfo = computed(() => {
             :subtitle="start_time ? DateTime.fromISO(start_time).toLocaleString() : undefined"
           >
             <template #append>
-              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="translateMeetingRole(role, t)">
                 <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
                   <v-icon v-bind="props" :icon="icon" />
                 </template>
@@ -344,7 +346,7 @@ const searchInfo = computed(() => {
             :to="current_user_roles ? { name: 'meeting', params: { id: pk, slug: slugify(title) } } : undefined"
             >
             <template #append v-if="current_user_roles">
-              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="translateMeetingRole(role, t)">
                 <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
                   <v-icon v-bind="props" :icon="icon" />
                 </template>

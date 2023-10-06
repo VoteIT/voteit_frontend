@@ -99,6 +99,7 @@ import useAccessPolicies from './useAccessPolicies'
 import { MeetingRole } from '../types'
 import { meetingType } from '../contentTypes'
 import QueryDialog from '@/components/QueryDialog.vue'
+import { translateMeetingRole } from '../utils'
 
 const NON_MODIFIABLE_ROLES = [
   'participant',
@@ -139,7 +140,11 @@ const roles = computed(() => {
       r => !meetingDialect.value?.block_roles?.includes(r)
     )
     .map(
-      r => ({ text: t(`role.${r}`), value: r, disabled: NON_MODIFIABLE_ROLES.includes(r) })
+      value => ({
+        disabled: NON_MODIFIABLE_ROLES.includes(value),
+        text: translateMeetingRole(value, t),
+        value
+      })
     )
 })
 

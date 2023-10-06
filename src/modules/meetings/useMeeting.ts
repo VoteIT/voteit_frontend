@@ -1,5 +1,6 @@
 import { Dictionary } from 'lodash'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
@@ -9,8 +10,18 @@ import { meetings } from './useMeetings'
 import { MeetingRole } from './types'
 import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite, canViewMeeting, isModerator, isFinishedMeeting, isActiveMeeting } from './rules'
 import { meetingType } from './contentTypes'
-import { useI18n } from 'vue-i18n'
+import { translateMeetingRole } from './utils'
 
+const roleIcons: Record<MeetingRole, string> = {
+  participant: 'mdi-eye',
+  moderator: 'mdi-gavel',
+  proposer: 'mdi-note-plus',
+  discusser: 'mdi-comment-outline',
+  potential_voter: 'mdi-star-outline'
+}
+function getRoleIcon (role: MeetingRole) {
+  return roleIcons[role]
+}
 
 export default function useMeeting () {
   const route = useRoute()
@@ -22,7 +33,7 @@ export default function useMeeting () {
     return Object.values(MeetingRole)
       .map(value => ({
         value,
-        title: t(`role.${value}`)
+        title: translateMeetingRole(value, t)
       }))
   })
 
@@ -30,7 +41,7 @@ export default function useMeeting () {
     return Object.fromEntries(
       Object.values(MeetingRole)
         .filter(filter)
-        .map(role => [role, t(`role.${role}`)])
+        .map(role => [role, translateMeetingRole(role, t)])
     )
   }
 
@@ -74,11 +85,13 @@ export default function useMeeting () {
     meetingJoinRoute,
     meetingRoute,
     meetingUrl,
+    roleIcons,
     roleItems,
     roleLabels,
     roleLabelsEditable,
     userRoles,
     getMeetingRoute,
+    getRoleIcon,
     getRoleLabels,
     hasRole
   }

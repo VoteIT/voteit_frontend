@@ -89,6 +89,7 @@ import UserSearch from '@/components/UserSearch.vue'
 import { ContextRole } from '@/composables/types'
 
 import useMeeting from '../meetings/useMeeting'
+import { translateMeetingRole } from '../meetings/utils'
 import type { User } from '../organisations/types'
 
 import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
@@ -219,7 +220,7 @@ function getSystemData (system: SpeakerSystem): {key: string, value: string | nu
     },
     {
       key: t('speaker.speakerRoles'),
-      value: system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ')
+      value: system.meeting_roles_to_speaker.map(role => translateMeetingRole(role, t)).join(', ')
     }
   ]
 }

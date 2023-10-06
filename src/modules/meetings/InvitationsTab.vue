@@ -209,6 +209,7 @@ import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { chunk, isEqual } from 'lodash'
 
+import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
@@ -226,22 +227,14 @@ import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationAnnotation from './InvitationAnnotation.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useInviteAnnotations from './useInviteAnnotations'
-import { socket } from '@/utils/Socket'
+import { translateMeetingRole } from './utils'
 
 const PAGE_LENGTH = 25
-
-const meetingIcons: Record<MeetingRole, string> = {
-  participant: 'mdi-eye',
-  moderator: 'mdi-gavel',
-  proposer: 'mdi-note-plus',
-  discusser: 'mdi-comment-outline',
-  potential_voter: 'mdi-star-outline'
-}
 
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingId, roleLabelsEditable } = useMeeting()
+const { isModerator, meeting, meetingId, roleLabelsEditable, getRoleIcon } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
@@ -258,9 +251,6 @@ const scopeItems = computed(() => {
   }))
 })
 
-function getRoleIcon (role: MeetingRole) {
-  return meetingIcons[role]
-}
 const inviteFilter = reactive<{
   roles: string[],
   exactRoles: boolean,
@@ -329,7 +319,7 @@ const filteredInvites = computed(() => {
       return {
         ...inv,
         user_data: transformUserdata(inv.user_data),
-        rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
+        rolesDescription: inv.roles.map(role => ({ title: translateMeetingRole(role, t), icon: getRoleIcon(role) })),
         stateLabel: stateLabels.value[inv.state]
       }
     })
