@@ -41,7 +41,7 @@
             {{ t('poll.voteAddedInfo') }}
           </v-alert>
           <v-alert type="info" v-else class="my-6">
-            {{ t(`poll.method.help.${poll.method_name}`) }}
+            {{ pollHelpText }}
           </v-alert>
         </template>
       </header>
@@ -152,7 +152,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, pollMethodName, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, pollHelpText, pollMethodName, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
 const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 const { agendaItem, agendaItemRoute } = useAgendaItem(computed(() => poll.value?.agenda_item))
 const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))

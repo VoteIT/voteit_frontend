@@ -157,7 +157,7 @@ export default defineComponent({
     const { getAgendaProposals } = useProposals()
 
     const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
-    useMeetingTitle(computed(() => t(`minutes.${baseSetting.value || 'minutes'}`)))
+    useMeetingTitle(computed(() => baseSetting.value === 'minutes' ? t('minutes.minutes') : t('minutes.documents')))
 
     const settings = reactive({
       proposalOrder: 'created' as keyof typeof PROPOSAL_ORDERING,

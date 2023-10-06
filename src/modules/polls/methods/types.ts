@@ -2,7 +2,7 @@ import { ThemeColor } from '@/utils/types'
 import { Poll, VoteResult } from '../types'
 import { ComposerTranslation } from 'vue-i18n'
 
-enum PollCriteria {
+export enum PollCriteria {
   MajorityWinner = 'majorityWinner',
   MajorityLoser = 'majorityLoser',
   MutualMajority = 'mutualMajority',

@@ -8,6 +8,8 @@ import { ComposerTranslation } from 'vue-i18n'
 export interface PollPlugin extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
+  getDescription (t: ComposerTranslation): string
+  getHelp (t: ComposerTranslation): string
   getName (t: ComposerTranslation): string
   getSchema?: SchemaGenerator
   initialSettings?: PollMethodSettings
