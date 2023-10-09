@@ -6,11 +6,18 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 0.18.0 (2023-10-??)
 - WebSocket / Envelope integration rewritten, using `envelope-client` library.
-- Added flag button in reaction buttons
+- Added flag button in reaction buttons [#324](https://github.com/VoteIT/voteit_frontend/issues/324)
 - Reaction buttons can now be displayed in polls and on plenary view
 - Reaction buttons can now be used as vote templates in applicable methods
 - Reaction buttons can now only be modified or interacted with in upcoming or open meetings
-- Fix problem where clearing dialect or er method blocked meeting creation
+- Improved permission handling when loading meeting user has no access to [#321](https://github.com/VoteIT/voteit_frontend/issues/321)
+- Agenda display mode dropped from AgendaItemView [#323](https://github.com/VoteIT/voteit_frontend/issues/323)
+- Show generic VoteIT information if domain has no organisation [#320](https://github.com/VoteIT/voteit_frontend/issues/320)
+- Reply function for discussion posts [#304](https://github.com/VoteIT/voteit_frontend/issues/304)
+- Simple keyboard navigation in speaker management [#322](https://github.com/VoteIT/voteit_frontend/issues/322)
+- Translation refactoring, allowing correct function of extractLocales, correct workflow names based on context and easier pluralization. [#325](https://github.com/VoteIT/voteit_frontend/issues/325)
+- Fix null issue when clearing search in invite filter [#297](https://github.com/VoteIT/voteit_frontend/issues/297)
+- Fix null issue when clearing dialect or er method blocked meeting creation
 
 ## 0.17.3 (2023-09-07)
 - Add simple keyboard navigation to Plenary view
