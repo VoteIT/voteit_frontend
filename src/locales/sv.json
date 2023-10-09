@@ -130,7 +130,7 @@
     },
     "workflow": {
       "archived": "Arkiverad | Arkiverade",
-      "closed": "Stängd | Stängda",
+      "closed": "Avslutad | Avslutade",
       "ongoing": "Pågående",
       "private": "Privat | Privata",
       "upcoming": "Kommande"
