@@ -36,21 +36,18 @@ const { getUnvotedPolls } = usePolls()
 
 const unvoted = computed(() => {
   return getUnvotedPolls(meetingId.value)
-    .map(poll => {
-      const plugin = pollPlugins.getPlugin(poll.method_name)
-      return {
-        ...poll,
-        subtitle: t('poll.pollDescription', { method: plugin?.getName(t) }, poll.proposals.length),
-        to: {
-          name: 'poll',
-          params: {
-            id: meetingId.value,
-            slug: slugify(meeting.value?.title),
-            pid: poll.pk,
-            pslug: slugify(poll.title)
-          }
+    .map(poll => ({
+      ...poll,
+      subtitle: t('poll.pollDescription', { method: pollPlugins.getName(poll.method_name, t) }, poll.proposals.length),
+      to: {
+        name: 'poll',
+        params: {
+          id: meetingId.value,
+          slug: slugify(meeting.value?.title),
+          pid: poll.pk,
+          pslug: slugify(poll.title)
         }
       }
-    })
+    }))
 })
 </script>

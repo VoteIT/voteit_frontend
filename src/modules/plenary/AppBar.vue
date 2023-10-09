@@ -106,7 +106,7 @@ function pollStateToMenu (state: PollState): MenuItem[] {
     .map(poll => ({
       icon: wfState.icon,
       title: poll.title,
-      subtitle: pollPlugins.getPlugin(poll.method_name)?.getName(t),
+      subtitle: pollPlugins.getName(poll.method_name, t),
       onClick: async () => openModalEvent.emit({
         title: poll.title,
         component: PollModal,

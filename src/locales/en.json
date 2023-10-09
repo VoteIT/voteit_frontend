@@ -518,6 +518,7 @@
       "combined_simple": "Accept / Reject / Abstain",
       "dutt": "Acceptance poll",
       "irv": "Instant Runoff-Voting",
+      "legacy": "legacy",
       "majority": "Contraproposal",
       "repeated_irv": "Repeated IRV",
       "repeated_schulze": "Repeated Schulze",
