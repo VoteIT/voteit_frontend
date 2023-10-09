@@ -20,9 +20,9 @@
       </template>
       <v-list>
         <v-list-item
-          v-for="{ icon, id } in existingInviteScopes" :key="id"
+          v-for="{ icon, id, typeLabel } in existingInviteScopes" :key="id"
           :prepend-icon="icon"
-          :title="t(`invites.${id}.typeLabel`)"
+          :title="typeLabel"
           @click="copyFilteredData(id)"
         />
       </v-list>
@@ -126,9 +126,9 @@
         <th>
           <input type="checkbox" v-model="allInvitesSelected">
         </th>
-        <th v-for="{ id, icon } in existingInviteScopes" :key="id">
+        <th v-for="{ id, icon, typeLabel } in existingInviteScopes" :key="id">
           <v-icon :icon="icon" />
-          {{ t(`invites.${id}.typeLabel`) }}
+          {{ typeLabel }}
         </th>
         <th>
           {{ t('roles') }}
@@ -209,6 +209,7 @@ import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { chunk, isEqual } from 'lodash'
 
+import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
@@ -226,22 +227,15 @@ import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationAnnotation from './InvitationAnnotation.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useInviteAnnotations from './useInviteAnnotations'
-import { socket } from '@/utils/Socket'
+import { translateInviteType, translateMeetingRole } from './utils'
+import { meetingInviteStates } from './workflowStates'
 
 const PAGE_LENGTH = 25
-
-const meetingIcons: Record<MeetingRole, string> = {
-  participant: 'mdi-eye',
-  moderator: 'mdi-gavel',
-  proposer: 'mdi-note-plus',
-  discusser: 'mdi-comment-outline',
-  potential_voter: 'mdi-star-outline'
-}
 
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingId, roleLabelsEditable } = useMeeting()
+const { isModerator, meeting, meetingId, roleLabelsEditable, getRoleIcon } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
@@ -253,14 +247,11 @@ const scopeItems = computed(() => {
   const activeScopes = invitationScopes.getActivePlugins()
   return activeScopes.map(({ icon, id }) => ({
     icon,
-    title: t(`invites.${id}.typeLabel`),
+    title: translateInviteType(id, t).typeLabel,
     value: id
   }))
 })
 
-function getRoleIcon (role: MeetingRole) {
-  return meetingIcons[role]
-}
 const inviteFilter = reactive<{
   roles: string[],
   exactRoles: boolean,
@@ -273,13 +264,9 @@ const inviteFilter = reactive<{
   states: ['open']
 })
 const stateLabels = computed(() => {
-  return { // TODO ts
-    open: 'Öppen',
-    expired: 'Utgången',
-    revoked: 'Tillbakadragen',
-    accepted: 'Accepterad',
-    rejected: 'Avvisad'
-  }
+  return Object.fromEntries(
+    meetingInviteStates.map(({ getName, state }) => [state, getName(t, 2)])
+  )
 })
 const selectedInviteIds = ref<number[]>([])
 const selectedInvites = computed(() => filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk)))
@@ -305,6 +292,10 @@ function search (inv: MeetingInvite) {
 const existingInviteScopes = computed(() => {
   return invitationScopes.getActivePlugins()
     .filter(scope => meetingInvites.value.some(inv => scope.id in inv.user_data))
+    .map(scope => ({
+      ...scope,
+      typeLabel: translateInviteType(scope.id, t).typeLabel
+    }))
 })
 
 function transformUserdata (userData: MeetingInvite['user_data']) {
@@ -329,7 +320,7 @@ const filteredInvites = computed(() => {
       return {
         ...inv,
         user_data: transformUserdata(inv.user_data),
-        rolesDescription: inv.roles.map(role => ({ title: t(`role.${role}`), icon: getRoleIcon(role) })),
+        rolesDescription: inv.roles.map(role => ({ title: translateMeetingRole(role, t), icon: getRoleIcon(role) })),
         stateLabel: stateLabels.value[inv.state]
       }
     })

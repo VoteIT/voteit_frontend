@@ -5,7 +5,7 @@
         <router-link :to="pollRoute" class="flex-grow-1">
           <h3>
             {{ poll.title }}
-            <small class="text-secondary ml-4">{{ methodName }}</small>
+            <small class="text-secondary ml-4">{{ pollMethodName }}</small>
           </h3>
           <div class="text-secondary">
             <Moment v-if="isOngoing && poll.started" :prepend="t('poll.started')" :date="poll.started" />
@@ -73,7 +73,7 @@ const props = defineProps<{ poll: Poll }>()
 const { t } = useI18n()
 const { isModerator, getMeetingRoute } = useMeeting()
 const { getPollStatus, getUserVote } = usePolls()
-const { canVote, approved, denied, isOngoing, isFinished, voteCount } = usePoll(computed(() => props.poll.pk))
+const { canVote, approved, denied, isOngoing, isFinished, pollMethodName, voteCount } = usePoll(computed(() => props.poll.pk))
 
 const following = ref(false)
 const subscribePk = computed(() => {
@@ -86,7 +86,6 @@ useChannel('poll', subscribePk, { leaveDelay: 0 })
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
 const pollRoute = computed(() => getMeetingRoute('poll', { pid: props.poll.pk, pslug: slugify(props.poll.title) }))
 const userVote = computed(() => getUserVote(props.poll))
-const methodName = computed(() => t(`poll.method.${props.poll.method_name}`))
 </script>
 
 <style lang="sass">

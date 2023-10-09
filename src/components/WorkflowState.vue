@@ -15,7 +15,7 @@
         v-bind="props"
         :color="currentState.color || color"
       >
-        {{ t(`workflowState.${currentState.state}`) }}
+        {{ currentState.getName(t) }}
       </v-btn>
     </template>
     <v-list density="comfortable">
@@ -44,7 +44,7 @@
     variant="flat"
     :color="currentState.color || color"
   >
-    {{ t(`workflowState.${currentState.state}`) }}
+    {{ currentState.getName(t) }}
   </v-btn>
   <v-btn
     v-else

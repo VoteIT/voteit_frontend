@@ -78,6 +78,8 @@ export default function usePoll (pollRef: Ref<number>) {
   const canVote = computed(() => poll.value && _canVote(poll.value))
 
   const pollPlugin = computed(() => poll.value && pollPlugins.getPlugin(poll.value.method_name))
+  const pollHelpText = computed(() => pollPlugin.value?.getHelp(t))
+  const pollMethodName = computed(() => poll.value && pollPlugins.getName(poll.value.method_name, t))
   const voteComponent = computed(() => pollPlugin.value?.voteComponent)
   const resultComponent = computed(() => pollPlugin.value?.resultComponent)
 
@@ -121,6 +123,8 @@ export default function usePoll (pollRef: Ref<number>) {
     isOngoing,
     isPollVoter: computed(() => poll.value && isPollVoter(poll.value)),
     poll,
+    pollHelpText,
+    pollMethodName,
     pollStatus,
     proposals,
     nextUnvoted,

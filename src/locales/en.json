@@ -127,6 +127,13 @@
       "blocked": "Proposals are blocked",
       "closed": "This agenda item is closed",
       "nonProposer": "You don't have proposal permissions"
+    },
+    "workflow": {
+      "archived": "Archived",
+      "closed": "Closed",
+      "ongoing": "Ongoing",
+      "private": "Private",
+      "upcoming": "Upcoming"
     }
   },
   "auth": {
@@ -179,19 +186,15 @@
   },
   "erMethods": {
     "auto_always": {
-      "description": "This method will always create a new electoral register when potential voters change. Should only be used in demo meetings.",
       "title": "Demo meeting: Always update electoral register"
     },
     "auto_before_poll": {
-      "description": "This method automatically creates electoral registers as needed, from potential voters, when a poll is started.",
       "title": "Automatic on poll"
     },
     "manual": {
-      "description": "When using this method, the meeting moderator creates electoral registers manually. Allows for weighted votes.",
       "title": "Manual"
     },
     "presence_check": {
-      "description": "This method creates a new electoral register upon closing a presence check. Voting rights will be given to present users with the role potential voter.",
       "title": "Presence check"
     }
   },
@@ -277,9 +280,12 @@
       "hint": "One swedish personnummer per row",
       "typeLabel": "Swedish personnummer"
     },
-    "undefined": {
-      "label": "Select type to add invitations",
-      "hint": ""
+    "workflow": {
+      "accepted": "Accepted",
+      "expired": "Expired",
+      "open": "Open",
+      "rejected": "Rejected",
+      "revoked": "Revoked"
     }
   },
   "join": {
@@ -332,6 +338,10 @@
     "yearStarted": "Year (started)",
     "yourGroups": "Your meeting roles",
     "yourRoles": "Your meeting groups",
+    "componentState": {
+      "off": "Off",
+      "on": "On"
+    },
     "groups": {
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
@@ -352,6 +362,14 @@
       "removeUserConfirm": "You're about to remove {user} from this group.\nAre you sure?",
       "role": "Role",
       "votes": "Votes"
+    },
+    "workflow": {
+      "archived": "Archived",
+      "archiving": "Archiving",
+      "closed": "Closed",
+      "deleting": "Deleting",
+      "ongoing": "Ongoing",
+      "upcoming": "Upcoming"
     }
   },
   "minutes": {
@@ -491,25 +509,22 @@
       "validVoteHelpText": "Your vote is valid."
     },
     "IRV": {
-      "numRounds": "Instant-Runoff Voting, one round | Instant-Runoff Voting, {count} rounds",
       "repeatedRoundResult": "IRV is not a method deisgned to elect multiple winenrs. Each round in a repeated IRV is a simple IRV, with the winners from previous rounds omited. Because each simple IRV has several rounds, there is no simple answer to how many votes a proposal got, other than that it would have at some point got a mojority of the votes. How many rounds that took is irrelevant."
     },
     "majority": {
       "tiedResult": "The poll got a tied result."
     },
     "method": {
-      "name": "Poll method",
       "combined_simple": "Accept / Reject / Abstain",
       "dutt": "Acceptance poll",
       "irv": "Instant Runoff-Voting",
+      "legacy": "legacy",
       "majority": "Contraproposal",
       "repeated_irv": "Repeated IRV",
       "repeated_schulze": "Repeated Schulze",
       "schulze": "Schulze",
-      "schulze_stv": "Schulze STV (historical)",
       "schulzeAddDeny": "Schulze (add deny)",
       "scottish_stv": "Scottish STV",
-      "simple": "Simple majority",
       "description": {
         "combined_simple": "Each proposal will be voted individually, with the options to approve, deny or abstain.",
         "dutt": "This poll methos shows which proposals has the highest approval, but can't appoint majority winners or losers. If a proposal was selected by a majority of voters, it's likely, but not certain, that the proposal is supported by a majority. It could also be the result of tactical voting or mandatory amount of selections. The method can be used for opinion surveys and guiding polls, but should be avoided for making real decisions.",
@@ -555,12 +570,21 @@
       "numTiedWinners": "A clear winner was established. | One ring to rule them all, and in the darkness bind them. | There was a tie between { count } proposals. The winner was randomly selected among those."
     },
     "STV": {
-      "numRounds": "Scottish STV, one round | Scottish STV, {count} rounds",
       "direct": "Direct",
       "excluded": "Excluded",
       "elected": "Elected",
       "tiebreakRandom": "Tiebreak (random)",
       "noCompetition": "No competition left"
+    },
+    "workflow": {
+      "canceled": "Cancelled",
+      "closed": "Closed",
+      "failed": "Failed",
+      "finished": "Finished",
+      "no_result": "No result | No results",
+      "ongoing": "Ongoing",
+      "private": "Private",
+      "upcoming": "Upcoming"
     }
   },
   "plenary": {
@@ -588,7 +612,11 @@
     "presence": "Presence",
     "presenceNoted": "We have noted your presence",
     "presentCount": "No participants present | One present participant | {count} present participants",
-    "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead."
+    "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead.",
+    "workflow": {
+      "closed": "Closed",
+      "open":"Open"
+    }
   },
   "printing": {
     "enable": "Enable quick proposal printing",
@@ -625,22 +653,45 @@
     "textModify": "Modify proposal text",
     "textDeleteConfirm": "You are about to delete this proposal text.\nAre you sure?",
     "tied": "Tied",
-    "unknown": "Unknown proposal"
+    "unknown": "Unknown proposal",
+    "workflow": {
+      "approved": "Approved",
+      "denied": "Denied",
+      "published": "Published",
+      "retracted": "Retracted",
+      "unhandled": "Unhandled",
+      "voting": "Locked for vote"
+    }
   },
   "reaction": {
     "active": "Active (users can react)",
     "addButton": "New Reaction Button",
+    "button": "Reaction button",
     "buttonCount": "You can add reaction buttons to proposals and discussions | This meeting has one reaction button | This meeting has {count} reaction buttons",
     "buttons": "Reaction buttons",
     "deleteButtonConfirmation": "You are about to delete a button permanently.\nAre you sure?",
+    "displayOn": "Display on",
     "editButton": "Edit Reaction Button",
+    "flag": "Flag",
     "listRolesRequired": "Roles allowed to see who reacted",
-    "modelsAllowed": "Show on content types",
+    "none": "No reactions",
+    "onPresentation": "Plenary view",
+    "onPoll": "Polls",
     "peopleReacted": "Reactions",
     "rolesRequired": "Roles allowed to react",
+    "selectTemplate": "Select template",
+    "selectTemplateWithValidVote": "Your choices will be replaced by proposals marked \"{title}\".\nAre you sure?",
     "settings": "Reaction Button settings",
+    "templateCount": "Vote template | Vote templates",
     "threshold": "Threshold",
-    "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active."
+    "thresholdHint": "Number of reactions to display as activated. Empty or zero = not active.",
+    "voteTemplate": "Vote template",
+    "help": {
+      "description": "A reaction button can be a lot of things. From a simple like button, to a way of categorizing content to simplify voting. You can choose where the button is displayed and when it's active. Start by experimenting in a test meeting if you're not sure what different settings mean.",
+      "title": "What's a reaction button?",
+      "flagButton": "A flag has two states, like a light switch. They can only be changed by moderators in the meeting, and are mainly used to categorize proposals. For example, you can add flag buttons to show which proposals are from a nominating committee, which proposals affect the budget, or anything else that's important in your meeting.",
+      "reactionButton": "An ordinary reaction button is a way for you meeting participants to react to proposals and discussion posts. You can pick which roles are able to react and set a threshold, so the button enters an active mode once a certain number of participants reacted. This can be useful if a proposal needs support from a number of delegates to be processed further."
+    }
   },
   "role": {
     "discusser": "Discusser",
@@ -730,52 +781,15 @@
       "simple": "Chronological",
       "maxTimes": "Priority limit",
       "maxTimesHint": "Maximum times recurring speakers will be deprioritized, in favor of speakers that have spoken fewer times. 0 = no limit."
-    }
-  },
-  "workflowState": {
-    "active": "Active",
-    "approved": "Approved",
-    "archived": "Archived",
-    "archiving": "Archiving",
-    "canceling": "Canceling",
-    "canceled": "Canceled",
-    "closed": "Closed",
-    "closing": "Closing",
-    "deleting": "Deleting",
-    "denied": "Denied",
-    "failed": "Failed",
-    "finished": "Finished",
-    "inactive": "Inactive",
-    "no_result": "No result",
-    "ongoing": "Ongoing",
-    "open": "Open",
-    "private": "Private",
-    "published": "Published",
-    "retracted": "Retracted",
-    "unhandled": "Unhandled",
-    "upcoming": "Upcoming",
-    "voting": "Locked for vote",
-    "plural": {
-      "approved": "Approved",
-      "archived": "Archived",
-      "archiving": "Archiving",
-      "canceling": "Canceling",
-      "canceled": "Canceled",
-      "closed": "Closed",
-      "closing": "Closing",
-      "deleting": "Deleting",
-      "denied": "Denied",
-      "failed": "Failed",
-      "finished": "Finished",
-      "no_result": "No result",
-      "ongoing": "Ongoing",
-      "open": "Open",
-      "private": "Private",
-      "published": "Published",
-      "retracted": "Retracted",
-      "unhandled": "Unhandled",
-      "upcoming": "Upcoming",
-      "voting": "Locked for vote"
+    },
+    "systemWorkflow": {
+      "active": "Active",
+      "archived":"Archived",
+      "inactive": "Inactive"
+    },
+    "listWorkflow": {
+      "closed":"Closed",
+      "open": "Open"
     }
   }
 }

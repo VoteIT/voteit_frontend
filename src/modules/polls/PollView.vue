@@ -8,7 +8,7 @@
             <WorkflowState :admin="isModerator" :contentType="pollType" :object="poll" />
             <h1>{{ poll.title }}</h1>
             <p class="text-secondary">
-              {{ t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`), count: poll.proposals.length }) }}
+              {{ t('poll.pollDescription', { method: pollMethodName, count: poll.proposals.length }) }}
             </p>
             <p v-if="agendaItem && agendaItemRoute">
               {{ t('agenda.item') }}:
@@ -41,23 +41,33 @@
             {{ t('poll.voteAddedInfo') }}
           </v-alert>
           <v-alert type="info" v-else class="my-6">
-            {{ t(`poll.method.help.${poll.method_name}`) }}
+            {{ pollHelpText }}
           </v-alert>
         </template>
       </header>
       <div v-if="isFinished" id="poll-results" class="my-6">
         <ProgressBar class="my-4" :text="voteCount.text" :value="voteCount.voted" :total="voteCount.total" />
         <h3>
-          {{ t('poll.result.method', { method: methodName }) }}
+          {{ t('poll.result.method', { method: pollMethodName }) }}
         </h3>
         <component v-if="resultComponent" :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
         <div v-else class="mt-4">
           <h2>
             {{ t('poll.numApproved', approved.length) }}
           </h2>
-          <Proposal readOnly v-for="proposal in approved" :key="proposal.pk" :p="proposal" class="my-3" />
+          <Proposal
+            v-for="proposal in approved" :key="proposal.pk"
+            class="my-3"
+            readOnly
+            :p="proposal"
+          />
           <Dropdown :title="t('poll.numDenied', approved.length)">
-            <Proposal readOnly v-for="proposal in denied" :key="proposal.pk" :p="proposal" class="my-3" />
+            <Proposal
+              v-for="proposal in denied" :key="proposal.pk"
+              class="my-3"
+              readOnly
+              :p="proposal"
+            />
           </Dropdown>
         </div>
       </div>
@@ -69,10 +79,10 @@
         <p class="text-secondary mb-4">
           {{ t('proposal.ordering') }}: {{ proposalOrderingTitle }}
         </p>
-        <component :is="voteComponent" :poll="poll" :proposals="proposals" disabled />
+        <component :is="voteComponent" :poll="poll" :proposals="proposals" disabled :key="poll.pk" />
       </div>
       <template v-else-if="!votingComplete">
-        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" />
+        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" :key="poll.pk" />
         <div class="btn-controls mt-6" v-if="canVote">
           <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote" prepend-icon="mdi-vote">
             {{ t('poll.vote') }}
@@ -127,10 +137,12 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
+import useChannel from '@/composables/useChannel'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
 import Proposal from '../proposals/Proposal.vue'
+import { proposalButtonPlugins } from '../proposals/registry'
 import useProposalOrdering from '../proposals/useProposalOrdering'
 
 import usePoll from './usePoll'
@@ -140,10 +152,17 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
-const { isModerator, meetingId, getMeetingRoute } = useMeeting()
+const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, pollHelpText, pollMethodName, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 const { agendaItem, agendaItemRoute } = useAgendaItem(computed(() => poll.value?.agenda_item))
 const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))
+
+const subscribeAgendaItem = computed(() => {
+  // Only if a component requires, i.e. proposal reaction buttons
+  if (!meeting.value || !proposalButtonPlugins.getActivePlugins(meeting.value).length) return
+  return poll.value?.agenda_item
+})
+useChannel('agenda_item', subscribeAgendaItem)
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
 
 const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
@@ -251,7 +270,6 @@ const buttons = computed(() => {
   }
   return btns
 })
-const methodName = computed(() => poll.value && t(`poll.method.${poll.value.method_name}`))
 </script>
 
 <style lang="sass">

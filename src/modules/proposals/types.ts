@@ -1,5 +1,6 @@
 import { Component } from 'vue'
 import { MeetingPlugin } from '../meetings/PluginHandler'
+import { Meeting } from '../meetings/types'
 
 /* eslint-disable camelcase */
 export enum ProposalState {
@@ -41,6 +42,11 @@ export type Proposal = RichtextProposal | DiffProposal
 type PreviewOmitted = 'created' | 'author' | 'pk' | 'prop_id'
 export type PreviewProposal = Omit<Proposal, PreviewOmitted>
 
+export type ProposalButtonMode = 'presentation' | 'vote' | 'voteTemplate'
 export interface ProposalButtonPlugin extends MeetingPlugin {
-  component: Component<{ proposal: Proposal }>
+  checkActive? (meeting: Meeting, mode?: ProposalButtonMode): boolean,
+  component: Component<{
+    mode?: ProposalButtonMode,
+    proposal: Proposal
+  }>
 }

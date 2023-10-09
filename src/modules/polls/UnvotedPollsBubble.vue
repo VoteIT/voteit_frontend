@@ -25,6 +25,7 @@ import { slugify } from '@/utils'
 
 import useMeeting from '../meetings/useMeeting'
 import usePolls from './usePolls'
+import { pollPlugins } from './registry'
 
 defineProps<{ modelValue?: boolean }>()
 defineEmits(['update:modelValue'])
@@ -35,20 +36,18 @@ const { getUnvotedPolls } = usePolls()
 
 const unvoted = computed(() => {
   return getUnvotedPolls(meetingId.value)
-    .map(poll => {
-      return {
-        ...poll,
-        subtitle: t('poll.pollDescription', { method: t(`poll.method.${poll.method_name}`) }, poll.proposals.length),
-        to: {
-          name: 'poll',
-          params: {
-            id: meetingId.value,
-            slug: slugify(meeting.value?.title),
-            pid: poll.pk,
-            pslug: slugify(poll.title)
-          }
+    .map(poll => ({
+      ...poll,
+      subtitle: t('poll.pollDescription', { method: pollPlugins.getName(poll.method_name, t) }, poll.proposals.length),
+      to: {
+        name: 'poll',
+        params: {
+          id: meetingId.value,
+          slug: slugify(meeting.value?.title),
+          pid: poll.pk,
+          pslug: slugify(poll.title)
         }
       }
-    })
+    }))
 })
 </script>

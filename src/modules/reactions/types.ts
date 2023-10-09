@@ -32,11 +32,27 @@ export interface ReactionButton extends BaseContent {
   allowed_models: string[]
   change_roles: MeetingRole[]
   color: string
+  description?: string
+  flag_mode: boolean
   icon: string
   list_roles: MeetingRole[]
   meeting: number
+  on_presentation: boolean
+  on_vote: boolean
   order: number
   target: null | number
+  vote_template: boolean
+}
+
+export interface IFlagButton extends ReactionButton {
+  flag_mode: true
+  change_roles: never[]
+  list_roles: never[]
+  target: null
+}
+
+export function isFlagButton (btn: ReactionButton): btn is IFlagButton {
+  return btn.flag_mode
 }
 
 export enum ReactionIcon {

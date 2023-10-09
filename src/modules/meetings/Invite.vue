@@ -36,6 +36,7 @@ import useMeetingInvites from './useMeetingInvites'
 import useMeetings from './useMeetings'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
+import { translateInviteType } from './utils'
 
 const { fetchInvites } = useMeetingInvites()
 const { fetchMeetings } = useMeetings()
@@ -74,11 +75,11 @@ const invitedUserdata = computed(() => {
   return invitationScopes.getActivePlugins()
     .filter(scope => scope.id in props.invite.user_data)
     .map(scope => {
-      const value = props.invite.user_data[scope.id as keyof MeetingInvite['user_data']]!
+      const value = props.invite.user_data[scope.id]!
       return {
         icon: scope.icon,
         scope: scope.id,
-        subtitle: t(`invites.${scope.id}.typeLabel`),
+        subtitle: translateInviteType(scope.id, t).typeLabel,
         title: scope.transformData?.(value) || value
       }
     })

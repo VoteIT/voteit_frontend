@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 import { ComponentPublicInstance, ComputedRef } from 'vue'
-import { RouteLocationRaw } from 'vue-router'
 import { ComposerTranslation } from 'vue-i18n'
 
 import { MenuItem } from '@/utils/types'

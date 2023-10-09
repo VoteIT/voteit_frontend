@@ -58,9 +58,9 @@ import ComponentSlot from './ComponentSlot.vue'
 
 const agendaLoadedEvent = new TypedEvent()
 // eslint-disable-next-line camelcase
-channelSubscribedEvent.on(({ channel_type }) => {
+channelSubscribedEvent.on(({ channelType }) => {
   // Agenda is loaded when "participants" or "moderators" channels are subscribed
-  if (['participants', 'moderators'].includes(channel_type)) agendaLoadedEvent.emit()
+  if (['participants', 'moderators'].includes(channelType)) agendaLoadedEvent.emit()
 })
 
 const { t } = useI18n()
@@ -78,7 +78,7 @@ function getAiType (state: string) {
   return filteredAgenda.value.filter(ai => ai.state === state)
 }
 
-const aiGroups = computed<WorkflowState[]>(() => agendaWorkflows.getPriorityStates(
+const aiGroups = computed(() => agendaWorkflows.getPriorityStates(
   s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
 ))
 
@@ -103,9 +103,10 @@ const aiMenus = computed<TreeMenuItem[]>(() => {
     })
   }
   for (const s of aiGroups.value) {
+    const items = getAIMenuItems(s)
     menus.push({
-      items: getAIMenuItems(s),
-      title: t(`workflowState.plural.${s.state}`),
+      items,
+      title: s.getName(t, items.length),
       showCount: true,
       showCountTotal: agenda.value.filter(ai => ai.state === s.state).length,
       loadedEvent: agendaLoadedEvent
@@ -165,7 +166,7 @@ const menu = computed<TreeMenu[]>(() => {
       title: t('minutes.documents'),
       to: getMeetingRoute('meetingMinutes')
     }],
-    icon: 'mdi-home-variant-outline'
+    icon: 'mdi-home'
   },
   {
     title: t('poll.polls'),

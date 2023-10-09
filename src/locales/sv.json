@@ -127,6 +127,13 @@
       "blocked": "Förslag är blockerade",
       "closed": "Dagordningspunkten är avslutad",
       "nonProposer": "Du har inte förslagsrätt"
+    },
+    "workflow": {
+      "archived": "Arkiverad | Arkiverade",
+      "closed": "Stängd | Stängda",
+      "ongoing": "Pågående",
+      "private": "Privat | Privata",
+      "upcoming": "Kommande"
     }
   },
   "auth": {
@@ -179,19 +186,15 @@
   },
   "erMethods": {
     "auto_always": {
-      "description": "Med den här metoden skapas alltid en ny röstlängd när potentiella röstare förändras. Den bör endast användas i demomöten.",
       "title": "Demomöte: Uppdatera alltid röstlängd"
     },
     "auto_before_poll": {
-      "description": "Med den här metoden skapas röstlängd automatiskt vid behov när en omröstning startas, utifrån potentiella röstare.",
       "title": "Automatisk vid omröstning"
     },
     "manual": {
-      "description": "Med den här metoden skapar mötets moderator röstlängden manuellt. Tillåter viktade röster.",
       "title": "Manuell"
     },
     "presence_check": {
-      "description": "Med den här metoden skapas en ny röstlängd när en närvarokontroll avslutas. Rösträtt ges till närvarande deltagare med rollen potentiell röstare.",
       "title": "Närvarokontroll"
     }
   },
@@ -277,9 +280,12 @@
       "hint": "Ett personnummer per rad",
       "typeLabel": "Personnummer"
     },
-    "undefined": {
-      "label": "Välj typ för att lägga till inbjudningar",
-      "hint": ""
+    "workflow": {
+      "accepted": "Accepterad | Accepterade",
+      "expired": "Utgången | Utgångna",
+      "open": "Öppen | Öppna",
+      "rejected": "Avvisad | Avvisade",
+      "revoked": "Tillbakadragen | Tillbakadragna"
     }
   },
   "join": {
@@ -332,6 +338,10 @@
     "yearStarted": "Startades år",
     "yourGroups": "Dina mötesgrupper",
     "yourRoles": "Dina mötesroller",
+    "componentState": {
+      "off": "Av",
+      "on": "På"
+    },
     "groups": {
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Ny grupp",
@@ -352,6 +362,14 @@
       "removeUserConfirm": "Du håller på att ta bort {user} från den här gruppen.\nÄr du säker?",
       "role": "Roll",
       "votes": "Röster"
+    },
+    "workflow": {
+      "archived": "Arkiverat | Arkiverade",
+      "archiving": "Arkiveras",
+      "closed": "Avslutat | Avslutade",
+      "deleting": "Raderas",
+      "ongoing": "Pågående",
+      "upcoming": "Kommande"
     }
   },
   "minutes": {
@@ -491,25 +509,22 @@
       "validVoteHelpText": "Din röst är giltig."
     },
     "IRV": {
-      "numRounds": "IRV, en omgång | IRV, {count} omgångar",
       "repeatedRoundResult": "IRV är inte en metod som är avsedd för att utse flera vinnare. Varje omgång i en upprepad IRV är en enkel IRV, med tidigare omgångars vinnare borttagna. Eftersom varje enkel IRV har flera omgångar finns det inget svar på hur många röster ett förslag fått, men i slutändan har det uppnått en majoritet av rösterna. Hur många omgångar som krävdes är irrelevant."
     },
     "majority": {
       "tiedResult": "Omröstningen fick ett oavgjort resultat."
     },
     "method": {
-      "name": "Omröstningsmetod",
       "combined_simple": "Bifall / Avslag / Avstå",
       "dutt": "Dutt",
       "irv": "IRV",
+      "legacy": "historisk",
       "majority": "Motförslag",
       "repeated_irv": "Upprepad IRV",
       "repeated_schulze": "Repeterad Schulze",
       "schulze": "Schulze",
-      "schulze_stv": "Schulze STV (historisk)",
       "schulzeAddDeny": "Schulze (lägg till avslag)",
       "scottish_stv": "Skotsk STV",
-      "simple": "Majoritetsomröstning",
       "description": {
         "combined_simple": "Varje förslag behandlas individuellt, med alternativen bifall, avslag och avstå.",
         "dutt": "Denna omröstningsmetod är till för att visa vilka förslag som har störst acceptans bland de röstande, men kan inte utse majoritetsvinnare eller -förlorare. Om ett förslag kryssats av en majoritet av de röstande är det troligt, men inte säkert, att förslaget har majoritetsstöd - det kan också vara resultatet av taktikröstande eller obligatoriskt antal kryss. Metoden kan användas för opinionsmätningar och vägledande yttringar, men bör undvikas för riktiga beslut.",
@@ -555,12 +570,21 @@
       "numTiedWinners": "En klar vinnare kunde utses. | One ring to rule them all, and in the darkness bind them. | Det blev oavgjort mellan { count } förslag. Slumpröst användes för att utse vinnare bland dessa."
     },
     "STV": {
-      "numRounds": "Skotsk STV, en runda | Skotsk STV, {count} rundor",
       "direct": "Direktvald",
       "excluded": "Uteslöt",
       "elected": "Valde",
       "tiebreakRandom": "Tiebreak (slumpmässig)",
       "noCompetition": "Kvarvarande förslag"
+    },
+    "workflow": {
+      "canceled": "Avbruten | Avbrutna",
+      "closed": "Avslutad | Avslutade",
+      "failed": "Misslyckades | Misslyckade",
+      "finished": "Avslutad | Avslutade",
+      "no_result": "Inget resultat | Inga resultat",
+      "ongoing": "Pågående",
+      "private": "Privat | Privata",
+      "upcoming": "Kommande"
     }
   },
   "plenary": {
@@ -588,7 +612,11 @@
     "presence": "Närvaro",
     "presenceNoted": "Vi har noterat din närvaro",
     "presentCount": "Inga närvarande deltagare | En närvarande deltagare | {count} närvarande deltagare",
-    "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället."
+    "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället.",
+    "workflow": {
+      "closed": "Avslutad | Avslutade",
+      "open":"Öppen | Öppna"
+    }
   },
   "printing": {
     "enable": "Aktivera snabbutskrift av förslag",
@@ -625,22 +653,45 @@
     "textModify": "Ändra förslagstext",
     "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?",
     "tied": "Oavgjort",
-    "unknown": "Okänt förslag"
+    "unknown": "Okänt förslag",
+    "workflow": {
+      "approved": "Bifallet | Bifallna",
+      "denied": "Avslaget | Avslagna",
+      "published": "Publicerat | Publicerade",
+      "retracted": "Tillbakadraget | Tillbakadragna",
+      "unhandled": "Ohanterat | Ohanterade",
+      "voting": "Låst för omröstning | Låsta för omröstning"
+    }
   },
   "reaction": {
     "active": "Aktiv (användare kan reagera)",
     "addButton": "Ny reaktionsknapp",
+    "button": "Reaktionsknapp",
     "buttonCount": "Du kan lägga till reaktionsknappar på förslag och diskussioner | Mötet har en reaktionsknapp | Mötet har {count} reaktionsknappar",
     "buttons": "Reaktionsknappar",
     "deleteButtonConfirmation": "Du håller på att radera knappen permanent.\nÄr du säker?",
+    "displayOn": "Visning",
     "editButton": "Ändra reaktionsknapp",
-    "listRolesRequired": "Roller som krävs för att se vem som reagerat",
-    "modelsAllowed": "Visa på innehållstyper",
+    "flag": "Flagga",
+    "listRolesRequired": "Roller som kan se vem som reagerat",
+    "none": "Inga reaktioner",
+    "onPresentation": "Plenumvy",
+    "onPoll": "Omröstningar",
     "peopleReacted": "Reaktioner",
-    "rolesRequired": "Roller som krävs för att reagera",
+    "rolesRequired": "Roller som kan reagera",
+    "selectTemplate": "Välj mall",
+    "selectTemplateWithValidVote": "Dina val ersätts med de förslag som är markerade med \"{title}\".\nÄr du säker?",
     "settings": "Inställningar för reaktionsknappar",
+    "templateCount": "Röstmall | Röstmallar",
     "threshold": "Tröskelvärde",
-    "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv."
+    "thresholdHint": "Antal reaktioner för att visas som aktiv. Tomt eller noll = ej aktiv.",
+    "voteTemplate": "Röstmall",
+    "help": {
+      "description": "En reaktionsknapp kan vara många saker, från en enkel gilla-knapp till ett sätt att kategorisera förslag för att underlätta i omröstningar. Du kan välja var de ska visas och när de ska vara aktiva och gå att klicka på. Experimentera gärna med olika inställningar i ett testmöte om du känner dig osäker på de olika inställningarna.",
+      "title": "Vad är en reaktionsknapp?",
+      "flagButton": "En flagga har två lägen, som en strömbrytare. De kan bara ändras av mötets moderatorer, och används framförallt för att kategorisera förslag. Du kan till exempel lägga till flaggor för att visa vilka förslag som är från valberedningen, vilka förslag som har budgetpåverkan, eller något annat som är viktigt i ert möte.",
+      "reactionButton": "En vanlig reaktionsknapp är till för att mötets deltagare ska kunna reagera på förslag och diskussionsinlägg. Du kan även välja roller som kan reagera och sätta ett tröskelvärde, så att att visst antal reaktioner slår över knappen i ett aktivt läge. Det kan exempelvis användas om förslag behöver stöd från ett visst antal ombud för att komma upp till beslut."
+    }
   },
   "role": {
     "discusser": "Debattör",
@@ -731,52 +782,15 @@
       "simple": "Kronologisk",
       "maxTimes": "Prioriteringsgräns",
       "maxTimesHint": "Antal gånger återkommande talare nedprioriteras till förmån för talare som talat färre gånger. 0 = ingen gräns."
-    }
-  },
-  "workflowState": {
-    "active": "Aktivt",
-    "approved": "Bifallet",
-    "archived": "Arkiverad",
-    "archiving": "Arkiverar",
-    "canceling": "Avbryter",
-    "canceled": "Avbruten",
-    "closed": "Avslutat",
-    "closing": "Avslutar",
-    "deleting": "Raderas",
-    "denied": "Avslaget",
-    "failed": "Misslyckad",
-    "finished": "Avslutad",
-    "inactive": "Inaktivt",
-    "no_result": "Inget resultat",
-    "ongoing": "Pågående",
-    "open": "Öppen",
-    "private": "Privat",
-    "published": "Publicerat",
-    "retracted": "Tillbakadraget",
-    "unhandled": "Ohanterat",
-    "upcoming": "Kommande",
-    "voting": "Låst för omröstning",
-    "plural": {
-      "approved": "Bifallna",
-      "archived": "Arkiverade",
-      "archiving": "Arkiverar",
-      "canceling": "Avbryter",
-      "canceled": "Avbrutna",
-      "closed": "Stängda",
-      "closing": "Stänger",
-      "deleting": "Raderas",
-      "denied": "Avslagna",
-      "failed": "Misslyckade",
-      "finished": "Avslutade",
-      "no_result": "Inget resultat",
-      "ongoing": "Pågående",
-      "open": "Öppna",
-      "private": "Privata",
-      "published": "Publicerade",
-      "retracted": "Tillbakadragna",
-      "unhandled": "Ohanterade",
-      "upcoming": "Kommande",
-      "voting": "Låsta för omröstning"
+    },
+    "systemWorkflow": {
+      "active": "Aktiv | Aktiva",
+      "archived":"Arkiverat | Arkiverade",
+      "inactive": "Inaktiv | Inaktiva"
+    },
+    "listWorkflow": {
+      "closed":"Stängd | Stängda",
+      "open": "Öppen | Öppna"
     }
   }
 }

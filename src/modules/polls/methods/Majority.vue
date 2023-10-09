@@ -1,6 +1,10 @@
 <template>
   <form @submit.prevent class="my-4">
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+    <VoteProposal
+      v-for="p in proposals" :key="p.pk"
+      :proposal="p"
+      class="mb-4"
+    >
       <template #vote>
         <div class="text-center">
           <v-btn :disabled="disabled" :color="option.color" :variant="choice === p.pk ? 'elevated' : 'outlined'" :prepend-icon="option.icon" @click="select(p)">
@@ -8,7 +12,7 @@
           </v-btn>
         </div>
       </template>
-    </Proposal>
+    </VoteProposal>
   </form>
 </template>
 
@@ -20,6 +24,7 @@ import type { Proposal } from '@/modules/proposals/types'
 
 import { MajorityVote, SimpleChoice, SimplePoll } from './types'
 import { simpleChoices } from './simple'
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 const props = defineProps<{
   disabled?: boolean

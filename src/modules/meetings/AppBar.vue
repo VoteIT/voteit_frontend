@@ -28,6 +28,7 @@ import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 import { DEFAULT_ROLE_ORDER } from './constants'
 import { MeetingRole } from './types'
+import { translateMeetingRole } from './utils'
 import useMeetingGroups from './useMeetingGroups'
 
 const { t } = useI18n()
@@ -40,7 +41,7 @@ const roleList = computed(() => {
     .filter((role) => userRoles.value?.has(role))
     .map(role => ({
       prependIcon: getMeetingRoleIcon(role),
-      title: t(`role.${role}`)
+      title: translateMeetingRole(role, t)
     }))
 })
 

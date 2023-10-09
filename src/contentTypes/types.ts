@@ -2,15 +2,17 @@
 import { MeetingRole } from '@/modules/meetings/types'
 import { ChannelsConfig, ThemeColor } from '@/utils/types'
 import { PresenceCheckState } from '../modules/presence/workflowStates'
+import { ComposerTranslation } from 'vue-i18n'
 
 export interface WorkflowState<S = string> {
-  state: S
+  color?: ThemeColor
+  getName (t: ComposerTranslation, count?: number): string
   icon: string
-  transition?: string
-  requiresRole?: MeetingRole
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first
-  color?: ThemeColor
+  requiresRole?: MeetingRole
+  state: S
+  transition?: string
 }
 
 export interface TransitionCondition {
@@ -74,7 +76,7 @@ export interface AccessPolicy {
   meeting: number
   active: boolean
   name: AccessPolicyType
-  roles_given: string[]
+  roles_given: MeetingRole[]
 }
 
 export interface MeetingAccessPolicy {

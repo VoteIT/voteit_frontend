@@ -1,17 +1,38 @@
 <template>
-  <span class="text-no-wrap">
-    <v-btn :prepend-icon="button.icon" size="small" :variant="variant" :color="modelValue ? button.color : 'secondary'" :disabled="disabled" @click.prevent="emit('update:modelValue', !modelValue)">
-      {{ button.title }}
-    </v-btn>
-    <DefaultDialog @update:modelValue="$event && emit('listOpen')" :title="t('reaction.peopleReacted')">
-      <template #activator="{ props }">
-        <v-btn variant="text" flat size="small" v-bind="props" @click.prevent :disabled="listDisabled || !count" class="reaction-count">
-          {{ count }}
+  <v-tooltip :disabled="!button.description" :text="button.description" location="top center">
+    <template #activator="{ props }">
+      <v-btn-group
+        v-bind="{ ...props, ...$attrs }"
+        :color="modelValue ? button.color : 'secondary'"
+        :variant="variant"
+        class="btn-group"
+      >
+        <v-btn
+          size="small"
+          class="pr-2"
+          :disabled="disabled"
+          :prepend-icon="button.icon"
+          @click.prevent="emit('update:modelValue', !modelValue)"
+        >
+          {{ button.title }}
         </v-btn>
-      </template>
-      <slot name="userList"></slot>
-    </DefaultDialog>
-  </span>
+        <DefaultDialog @update:modelValue="$event && emit('listOpen')" :title="t('reaction.peopleReacted')">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              class="reaction-count pl-2"
+              size="small"
+              :disabled="disabled || listDisabled"
+              @click.prevent
+            >
+              {{ count }}
+            </v-btn>
+          </template>
+          <slot name="userList"></slot>
+        </DefaultDialog>
+      </v-btn-group>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts" setup>
@@ -37,14 +58,15 @@ const { t } = useI18n()
 const meetsTarget = computed(() => !!props.button.target && props.count >= props.button.target)
 const variant = computed(() => {
   return meetsTarget.value
-    ? 'flat'
-    : props.disabled
-      ? 'tonal'
-      : 'text'
+      ? 'flat'
+      : 'tonal'
 })
 </script>
 
 <style lang="sass" scoped>
 .reaction-count
   min-width: unset !important
+
+.btn-group
+  height: 28px !important
 </style>

@@ -5,52 +5,44 @@ import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 
 import useAuthentication from '@/composables/useAuthentication'
-import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserList from '@/components/UserList.vue'
 import useRules from '@/composables/useRules'
 
 import useMeeting from '../meetings/useMeeting'
-import { MeetingRole } from '../meetings/types'
 
-import { ReactionButton, ReactionIcon } from './types'
+import { IFlagButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
-import RealReactionButton from './RealReactionButton.vue'
+import FlagButton from './FlagButton.vue'
 import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
 const emit = defineEmits(['close'])
 const props = defineProps<{
-  data?: ReactionButton
+  data?: IFlagButton
 }>()
 
-function getDefaults (btn?: ReactionButton): Partial<ReactionButton> & Pick<ReactionButton, 'allowed_models' | 'change_roles' | 'color' | 'flag_mode' | 'list_roles' | 'meeting'> {
+function getDefaults (btn?: IFlagButton): Partial<IFlagButton> & Pick<IFlagButton, 'allowed_models' | 'color' | 'flag_mode' | 'meeting'> {
   if (btn) return { ...btn }
   return {
     allowed_models: ['discussion_post', 'proposal'],
-    change_roles: [MeetingRole.Moderator],
     color: 'primary',
     description: '',
-    flag_mode: false,
-    list_roles: [MeetingRole.Moderator],
+    flag_mode: true,
     meeting: meetingId.value
   }
 }
 
 const { user } = useAuthentication()
-const { meetingId, roleLabels } = useMeeting()
+const { meetingId } = useMeeting()
 const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
-  const data = { ...formData }
-  if (!data.target) data.target = null
+  // eslint-disable-next-line camelcase, @typescript-eslint/no-unused-vars
+  const { change_roles, list_roles, target, ...data } = formData
   if (!data.icon) data.icon = '' // Empty string required by API
   return data
 })
 const previewActive = ref(true)
-const previewCount = computed(() => {
-  const selected = Number(formData.target) || 100
-  return previewActive.value ? selected : selected - 1
-})
 const submitting = ref(false)
 
 function close () {
@@ -61,7 +53,7 @@ const form = ref<ComponentPublicInstance<{ validate(): void }> | null>(null)
 watch(form, value => value?.validate(), { immediate: true })
 const formValid = ref(true)
 const isValid = computed(() => {
-  return formValid.value && formData.color && formData.change_roles?.length && formData.list_roles?.length
+  return formValid.value && formData.color
 })
 
 async function save () {
@@ -88,15 +80,15 @@ async function save () {
         <h2 class="mb-1">
           {{ t('preview') }}
         </h2>
-        <RealReactionButton
-          :button="(transformedData as ReactionButton)"
+        <FlagButton
+          :button="(transformedData as IFlagButton)"
           v-model="previewActive"
-          :count="previewCount"
+          :can-toggle="true"
         >
           <template #userList>
             <UserList v-if="user" :user-ids="[user.pk]" />
           </template>
-        </RealReactionButton>
+        </FlagButton>
       </Widget>
       <v-form @submit.prevent="save" class="mt-4" v-model="formValid" ref="form">
         <v-text-field required :label="t('title')" v-model="formData.title" :rules="[rules.required, rules.maxLength(20)]" />
@@ -123,15 +115,6 @@ async function save () {
           v-model:on-vote="formData.on_vote"
           v-model:vote-template="formData.vote_template"
         />
-        <div>
-          <label>{{ t('reaction.rolesRequired') }}</label>
-          <CheckboxMultipleSelect v-model="formData.change_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
-        </div>
-        <div>
-          <label>{{ t('reaction.listRolesRequired') }}</label>
-          <CheckboxMultipleSelect v-model="formData.list_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
-        </div>
-        <v-text-field type="number" v-model="formData.target" :label="t('reaction.threshold')" :rules="[rules.min(0)]" :hint="t('reaction.thresholdHint')" />
         <div class="btn-controls submit mt-4">
           <v-spacer />
           <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close">

@@ -60,7 +60,7 @@
             <AddProposalModal @close="close" />
           </template>
         </DefaultDialog>
-        <v-tooltip v-else :text="t(`agenda.proposalBlocked.${proposalBlockReason}`)">
+        <v-tooltip v-else :text="tProposalBlockReason">
           <template #activator="{ props }">
             <v-btn v-bind="props" prepend-icon="mdi-text-box-plus-outline" color="primary" variant="tonal">
               {{ t('proposal.add') }}
@@ -115,7 +115,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useStorage } from '@vueuse/core'
 
 import { openModalEvent } from '@/utils/events'
 import { MenuItem } from '@/utils/types'
@@ -169,6 +168,18 @@ const { agendaItem, agendaBody, canAddDocument, canAddPoll, canAddProposal, canC
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
 provide(agendaIdKey, agendaId)
+
+// eslint-disable-next-line vue/return-in-computed-property
+const tProposalBlockReason = computed(() => {
+  switch (proposalBlockReason.value) {
+    case 'blocked':
+      return t('agenda.proposalBlocked.blocked')
+    case 'closed':
+      return t('agenda.proposalBlocked.closed')
+    case 'nonProposer':
+      return t('agenda.proposalBlocked.nonProposer')
+  }
+})
 
 const agendaItemExists = computed(() => {
   if (!agenda.value.length) return

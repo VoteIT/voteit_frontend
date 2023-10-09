@@ -3,7 +3,7 @@
     <v-list nav>
       <template v-for="{ state, items } in annotatedAgendaStates" :key="state.state">
         <v-list-subheader v-if="items.length">
-          {{ t(`workflowState.${state.state}`) }}
+          {{ state.getName(t, items.length) }}
         </v-list-subheader>
         <v-list-item v-for="ai in items" :key="ai.pk" :to="getURL(ai)">
           <v-list-item-title>

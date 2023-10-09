@@ -1,7 +1,11 @@
 <template>
   <div v-if="disabled && rankedProposals.length" id="scottish-stv-voting">
     <!-- If already voted -->
-    <Proposal readOnly :p="p" v-for="p in rankedProposals" :key="p.pk" class="mb-4">
+    <VoteProposal
+      v-for="p in rankedProposals" :key="p.pk"
+      :proposal="p"
+      class="mb-4"
+    >
       <template #top>
         <div class="float-right">
           <span class="number">
@@ -9,10 +13,14 @@
           </span>
         </div>
       </template>
-    </Proposal>
+    </VoteProposal>
   </div>
   <div v-else id="scottish-stv-voting">
-    <Proposal readOnly :p="p" v-for="p in proposals" :key="p.pk" class="mb-4">
+    <VoteProposal
+      v-for="p in proposals" :key="p.pk"
+      :proposal="p"
+      class="mb-4"
+    >
       <template #vote>
         <div class="voting-controls" v-if="ranking.includes(p.pk)">
           <div class="left">
@@ -41,7 +49,7 @@
           </div>
         </div>
       </template>
-    </Proposal>
+    </VoteProposal>
   </div>
 </template>
 
@@ -54,6 +62,7 @@ import type { Proposal } from '@/modules/proposals/types'
 
 import { Poll } from '../types'
 import { RankedVote } from './types'
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 const props = defineProps<{
   disabled?: boolean

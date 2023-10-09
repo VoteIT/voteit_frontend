@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot :empty="tabStates.length === 0"></slot>
-    <Dropdown v-for="{ state, polls } in tabStates" :key="state" :title="`${t(`workflowState.plural.${state}`)} (${polls.length})`" v-model="dropdowns[state]" :class="groupClass">
+    <Dropdown v-for="{ state, polls, title } in tabStates" :key="state" :title="title" v-model="dropdowns[state]" :class="groupClass">
       <PollCard :poll="p" v-for="p in polls" :key="p.pk" :class="pollClass" />
     </Dropdown>
   </div>
@@ -57,7 +57,8 @@ const tabStates = computed(() => {
         : getPolls(meetingId.value, s.state)
       return {
         ...s,
-        polls: orderBy(polls, attr, direction)
+        polls: orderBy(polls, attr, direction),
+        title: `${s.getName(t, polls.length)} (${polls.length})`
       }
     })
     .filter(s => s.polls.length)

@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <v-alert closable class="mb-8">
+    <HelpSection id="roleMatrix" start-open class="mb-4">
       <p class="mb-4">{{ t('role.help.intro') }}</p>
       <ul>
         <li class="mb-1" v-for="{ description, icon, name, title } in columnDescriptions" :key="name">
@@ -9,7 +9,7 @@
           {{ title }} &mdash; {{ description }}
         </li>
       </ul>
-    </v-alert>
+    </HelpSection>
     <slot name="filter"></slot>
     <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
     <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed: ordering.reversed, admin }">
@@ -71,6 +71,7 @@ import { meetingRolePlugins } from '@/modules/meetings/registry'
 import useMeeting from '@/modules/meetings/useMeeting'
 
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
+import HelpSection from './HelpSection.vue'
 
 const USERS_PER_PAGE = 50
 
@@ -96,6 +97,20 @@ const loader = useLoader('RoleMatrix')
 const { meeting } = useMeeting()
 const contextRoles = props.contentType.useContextRoles()
 
+function translateRoleHelp (role: string): string {
+  const roleSpec = props.contentType.getRole(role)
+  return roleSpec
+    ? roleSpec.translateHelp(t)
+    : '-'
+}
+
+function translateRoleName (role: string): string {
+  const roleSpec = props.contentType.getRole(role)
+  return roleSpec
+    ? roleSpec.translateName(t)
+    : role
+}
+
 /**
  * Create a full column definition from role name.
  */
@@ -104,11 +119,11 @@ function roleToCol (name: string): DescribedColumn {
     getCount () {
       return contextRoles.getRoleCount(props.pk, name)
     },
-    getDescription (t) {
-      return t(`role.help.${name}`)
+    getDescription () {
+      return translateRoleHelp(name)
     },
-    getTitle (t) {
-      const title = t(`role.${name}`)
+    getTitle () {
+      const title = translateRoleName(name)
       return name in props.readonlyRoles
         ? `${title} (${props.readonlyRoles[name]})`
         : title

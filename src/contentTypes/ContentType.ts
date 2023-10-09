@@ -1,6 +1,6 @@
 import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
-import { ContextRole, RestApiConfig } from '@/composables/types'
+import { ContextRole, ContextRoleDefinition, RestApiConfig } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
 
 import Channel from './Channel'
@@ -19,7 +19,6 @@ interface CType<T extends Partial<PKStateContent>> {
   restEndpoint?: string
   restConfig?: RestApiConfig
   channels?: string[]
-  hasRoles?: boolean
   useSocketApi?: boolean
 }
 
@@ -84,8 +83,20 @@ export class BaseContentType<T extends {}, K extends string | number = number> {
  * Used for content that has pk and possibly state.
  */
 export default class ContentType<T extends PKStateContent = { pk: number }, R extends string = string, K extends string | number = number> extends BaseContentType<T, K> {
-  rolesAvailable?: ContextRole[]
+  private roles?: Record<R, ContextRoleDefinition>
+  private rolesAvailable?: ContextRole[]
   private _channel?: Channel
+
+  constructor (contentType: CType<T> & { roles?: Record<R, ContextRoleDefinition> }) {
+    const { roles, ...ct } = contentType
+    super(ct)
+    this.roles = roles
+  }
+
+  public getRole (role: R): ContextRoleDefinition {
+    if (!this.roles) throw new Error('No role definitions available')
+    return this.roles[role]
+  }
 
   public updateMap (map: Map<number, T>, channelMap?: ChannelMap<T>) {
     if (channelMap) {
@@ -140,7 +151,7 @@ export default class ContentType<T extends PKStateContent = { pk: number }, R ex
   // Moved from Channel
 
   private assertHasRoles (): void {
-    if (!this.contentType.hasRoles) throw new Error(`Content Type ${this.name} is not configured to have context roles.`)
+    if (!this.roles) throw new Error(`Content Type ${this.name} is not configured to have context roles.`)
   }
 
   public async getAvailableRoles (): Promise<ContextRole[]> {

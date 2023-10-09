@@ -74,7 +74,7 @@ const orders = ref<FilterDescription<'asc'| 'desc'>[]>([
 ])
 const states = reactive<FilterDescription[]>(proposalStates.map(state => ({
   id: state.state,
-  label: t(`workflowState.${state.state}`),
+  label: state.getName(t, 2),
   active: activeFilter.value.states.has(state.state)
 })))
 

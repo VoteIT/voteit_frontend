@@ -31,7 +31,28 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
   channels: ['meeting', 'participants', 'moderators', 'invites'],
   restEndpoint: 'meetings/',
   restConfig: { alertOnError: false },
-  hasRoles: true,
+  roles: {
+    participant: {
+      translateHelp: (t) => t('role.help.participant'),
+      translateName: (t) => t('role.participant')
+    },
+    discusser: {
+      translateHelp: (t) => t('role.help.discusser'),
+      translateName: (t) => t('role.discusser')
+    },
+    moderator: {
+      translateHelp: (t) => t('role.help.moderator'),
+      translateName: (t) => t('role.moderator')
+    },
+    potential_voter: {
+      translateHelp: (t) => t('role.help.potential_voter'),
+      translateName: (t) => t('role.potential_voter')
+    },
+    proposer: {
+      translateHelp: (t) => t('role.help.proposer'),
+      translateName: (t) => t('role.proposer')
+    }
+  }
 })
 
 export const matchedInviteType = new ContentType<MeetingInvite>({

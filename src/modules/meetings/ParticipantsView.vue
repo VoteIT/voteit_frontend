@@ -13,7 +13,7 @@
             :admin="!!canChangeRoles"
             :contentType="meetingType"
             :pk="meetingId"
-            :icons="meetingIcons"
+            :icons="roleIcons"
             :cols="matrixCols"
             :filter="filterParticipants"
             :readonly-roles="readonlyRoles"
@@ -127,17 +127,9 @@ import InvitationsTab from './InvitationsTab.vue'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import MeetingToolbar from './MeetingToolbar.vue'
 
-const meetingIcons: Record<MeetingRole, string> = {
-  participant: 'mdi-eye',
-  moderator: 'mdi-gavel',
-  proposer: 'mdi-note-plus',
-  discusser: 'mdi-comment-outline',
-  potential_voter: 'mdi-star-outline'
-}
-
 const { t } = useI18n()
 const { user } = useAuthentication()
-const { meetingId, meetingDialect, canChangeRoles, canViewMeetingInvite, roleItems, getMeetingRoute } = useMeeting()
+const { meetingId, meetingDialect, canChangeRoles, canViewMeetingInvite, roleIcons, roleItems, getMeetingRoute } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)

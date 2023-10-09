@@ -2,7 +2,7 @@ import { ThemeColor } from '@/utils/types'
 import { Poll, VoteResult } from '../types'
 import { ComposerTranslation } from 'vue-i18n'
 
-enum PollCriteria {
+export enum PollCriteria {
   MajorityWinner = 'majorityWinner',
   MajorityLoser = 'majorityLoser',
   MutualMajority = 'mutualMajority',
@@ -65,10 +65,10 @@ export interface RepeatedSchulzeResult extends VoteResult {
 
 type ScottishSTVVoteCount = [number, number]
 
-interface ScottishSTVRound {
-  status: string
+export interface ScottishSTVRound {
+  status: 'Excluded' | 'Elected'
   selected: number[]
-  method: string
+  method: 'Direct' | 'Tiebreak (Random)' | 'No competition left'
   vote_count: ScottishSTVVoteCount[]
 }
 

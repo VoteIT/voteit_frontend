@@ -38,8 +38,8 @@ export function stripHTML (html: string) {
   return (tmp.textContent || tmp.innerText).trim()
 }
 
-export async function dialogQuery (text: string): Promise<undefined>
-export async function dialogQuery (dialog: Omit<Dialog, 'resolve'>): Promise<undefined>
+export async function dialogQuery (text: string): Promise<boolean>
+export async function dialogQuery (dialog: Omit<Dialog, 'resolve'>): Promise<boolean>
 export async function dialogQuery (dialogOrText: Omit<Dialog, 'resolve'> | string) {
   return new Promise(resolve => {
     if (typeof dialogOrText === 'string') {

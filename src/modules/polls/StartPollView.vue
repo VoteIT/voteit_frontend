@@ -37,31 +37,23 @@
       <template v-if="pickMethod">
         <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
-          <v-expansion-panel v-for="{ id, criterion, discouraged } in availableMethods" :key="id" :title="t(`poll.method.${id}`)" :value="id">
+          <v-expansion-panel v-for="{ id, criterion, discouraged, getName, getDescription } in availableMethods" :key="id" :title="getName(t)" :value="id">
             <v-expansion-panel-text>
-              <v-alert v-if="methodSelected && t(`poll.method.description.${methodSelected}`).length" class="my-4" type="info" :icon="discouraged && 'mdi-alert-decagram'">
-                {{ t(`poll.method.description.${methodSelected}`) }}
+              <v-alert class="my-4" type="info" :icon="discouraged && 'mdi-alert-decagram'">
+                {{ getDescription(t) }}
               </v-alert>
               <h3 class="my-2">
                 Valkriterier
               </h3>
-              <v-tooltip v-for="[criteria, value] of Object.entries(criterion)" :key="criteria" location="top">
+              <v-tooltip v-for="{ criteria, color, description, icon, title } in criterion" :key="criteria" location="top">
                 <template #activator="{ props }">
-                  <v-chip v-if="value === Conditional" class="ma-1" v-bind="props">
-                    <v-icon start>mdi-help-circle</v-icon>
-                    {{ t(`poll.criterion.${criteria}.title`) }}
-                  </v-chip>
-                  <v-chip v-else-if="value" color="success" class="ma-1" v-bind="props">
-                    <v-icon start>mdi-check-circle</v-icon>
-                    {{ t(`poll.criterion.${criteria}.title`) }}
-                  </v-chip>
-                  <v-chip v-else color="warning" class="ma-1" v-bind="props">
-                    <v-icon start>mdi-close-circle</v-icon>
-                    {{ t(`poll.criterion.${criteria}.title`) }}
+                  <v-chip class="ma-1" :color="color" v-bind="props">
+                    <v-icon start :icon="icon" />
+                    {{ title }}
                   </v-chip>
                 </template>
                 <div style="max-width: 200px;">
-                  {{ t(`poll.criterion.${criteria}.description`) }}
+                  {{ description }}
                 </div>
               </v-tooltip>
               <h3 class="my-2">
@@ -114,12 +106,13 @@ import useProposals from '../proposals/useProposals'
 import useProposalOrdering from '../proposals/useProposalOrdering'
 import { ProposalState } from '../proposals/types'
 
-import { Conditional, PollBaseSettings } from './methods/types'
+import { Conditional, PollBaseSettings, PollCriteria } from './methods/types'
 import type { PollStartData, PollMethodSettings } from './methods/types'
+import { translateCriteria } from './methods/utils'
 import type { Poll } from './types'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
-import { pollPlugins } from './registry'
+import { PollPlugin, pollPlugins } from './registry'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -159,7 +152,24 @@ function toggleAll () {
 }
 
 const pickMethod = ref(false)
-const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length))
+
+function getCriterionProps (value: boolean | typeof Conditional) {
+  if (value === Conditional) return { icon: 'mdi-help-circle' }
+  if (value) return { color: 'success', icon: 'mdi-check-circle' }
+  return { color: 'warning', icon: 'mdi-close-circle' }
+}
+
+function annotateCriterion (criterion: PollPlugin['criterion']) {
+  return Object.entries(criterion).map(([criteria, value]) => {
+    return {
+      criteria,
+      value,
+      ...translateCriteria(criteria as PollCriteria, t),
+      ...getCriterionProps(value)
+    }
+  })
+}
+const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length).map(m => ({ ...m, criterion: annotateCriterion(m.criterion) })))
 
 const methodSelected = ref<Poll['method_name'] | null>(null)
 const methodSelectedPlugin = computed(() => pollPlugins.getPlugin(methodSelected.value || ''))

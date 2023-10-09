@@ -99,7 +99,7 @@
             </template>
           </QueryDialog>
           <div class="my-2">
-            <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaItemType.workflowStates?.filter(s => s.transition)" :key="state.state" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ t(`workflowState.${state.state}`) }}</v-btn>
+            <v-btn color="primary" class="mt-1 mr-1" :prepend-icon="state.icon" v-for="state in agendaItemType.workflowStates?.filter(s => s.transition)" :key="state.state" :disabled="state.state === selectedSingularState" @click="setStateSelected(state)">{{ t('agenda.setTo') }} {{ state.getName(t, 2) }}</v-btn>
           </div>
           <div class="my-2">
             <v-btn color="success" class="mr-1" prepend-icon="mdi-text-box-plus-outline" @click="patchSelected({ block_proposals: false })">{{ t('agenda.allowProposals') }}</v-btn>

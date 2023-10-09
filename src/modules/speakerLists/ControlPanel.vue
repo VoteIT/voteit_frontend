@@ -89,12 +89,14 @@ import UserSearch from '@/components/UserSearch.vue'
 import { ContextRole } from '@/composables/types'
 
 import useMeeting from '../meetings/useMeeting'
+import { translateMeetingRole } from '../meetings/utils'
 import type { User } from '../organisations/types'
 
 import { canChangeSpeakerSystem, canDeleteSpeakerSystem } from './rules'
 import { SpeakerSystem, SpeakerSystemMethod, SpeakerSystemRole } from './types'
 import { speakerSystemType } from './contentTypes'
 import useSpeakerSystems from './useSpeakerSystems'
+import { translateOrderMethod } from './utils'
 
 const systemIcons = {
   speaker: 'mdi-chat',
@@ -107,6 +109,7 @@ const { meetingId, roleLabels } = useMeeting()
 const loader = useLoader('SpeakerSystems panel')
 const systemRoles = ref<ContextRole[]>([])
 const { getUserIds } = speakerSystemType.useContextRoles()
+const { getState } = speakerSystemType.useWorkflows()
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 
 onBeforeMount(() => {
@@ -207,11 +210,11 @@ function getSystemData (system: SpeakerSystem): {key: string, value: string | nu
   return [
     {
       key: t('state'),
-      value: t(`workflowState.${system.state}`)
+      value: getState(system.state)!.getName(t)
     },
     {
       key: t('speaker.systemMethod'),
-      value: t(`speaker.orderMethod.${system.method_name}`)
+      value: translateOrderMethod(system.method_name, t)
     },
     {
       key: t('speaker.safePositions'),
@@ -219,7 +222,7 @@ function getSystemData (system: SpeakerSystem): {key: string, value: string | nu
     },
     {
       key: t('speaker.speakerRoles'),
-      value: system.meeting_roles_to_speaker.map(r => t(`role.${r}`)).join(', ')
+      value: system.meeting_roles_to_speaker.map(role => translateMeetingRole(role, t)).join(', ')
     }
   ]
 }
@@ -246,7 +249,7 @@ const orderMethods = computed(() => {
     .map(name => {
       return {
         value: name,
-        title: t(`speaker.orderMethod.${name}`)
+        title: translateOrderMethod(name, t)
       }
     })
 })

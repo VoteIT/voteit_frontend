@@ -1,18 +1,124 @@
+<script lang="ts" setup>
+import { enumerate } from 'itertools'
+import { computed, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
+import Draggable from 'vuedraggable'
+
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import UserList from '@/components/UserList.vue'
+import useAuthentication from '@/composables/useAuthentication'
+import HelpSection from '@/components/HelpSection.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import useMeeting from '../meetings/useMeeting'
+
+import useReactions from './useReactions'
+import ReactionEditModal from './ReactionEditModal.vue'
+import FlagButtonEditModal from './FlagButtonEditModal.vue'
+import { canAddReactionButton } from './rules'
+import { ReactionButton, isFlagButton } from './types'
+import { reactionButtonType } from './contentTypes'
+import RealReactionButton from './RealReactionButton.vue'
+import FlagButton from './FlagButton.vue'
+
+const { t } = useI18n()
+const { user } = useAuthentication()
+const { meetingId } = useMeeting()
+const reactions = useReactions()
+
+const meetingButtons = computed({
+  get () {
+    return reactions.getMeetingButtons(meetingId.value)
+  },
+  set (btns) {
+    for (const [order, btn] of enumerate(btns, 1)) {
+      if (btn.order === order) continue
+      reactionButtonType.api.patch(btn.pk, { order })
+    }
+  }
+})
+
+const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
+
+async function deleteButton (button: ReactionButton) {
+  try {
+    await reactionButtonType.api.delete(button.pk)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function setContentType (button: ReactionButton, contentType: string, value: boolean) {
+  // eslint-disable-next-line camelcase
+  const allowed_models = value
+    ? [contentType, ...button.allowed_models]
+    : button.allowed_models.filter(ct => ct !== contentType)
+  // eslint-disable-next-line camelcase
+  await reactionButtonType.api.patch(button.pk, { allowed_models })
+}
+
+async function setActive (button: ReactionButton, active: boolean) {
+  await reactionButtonType.api.patch(button.pk, { active })
+}
+
+const model = reactive<Record<number, boolean>>({})
+</script>
+
 <template>
   <div>
+    <HelpSection id="reactionControls" start-open class="mb-4">
+      <h2 class="mb-2">
+        {{ t('reaction.help.title') }}
+      </h2>
+      <p class="mb-2">
+        <strong>
+          {{ t('reaction.help.description') }}
+        </strong>
+      </p>
+      <div class="d-flex">
+        <v-icon icon="mdi-gesture-tap-button" class="mr-3 mt-1" />
+        <p class="mb-2">
+          {{ t('reaction.help.reactionButton') }}
+        </p>
+      </div>
+      <div class="d-flex">
+        <v-icon icon="mdi-flag" class="mr-3 mt-1" />
+        <p class="mb-2">
+          {{ t('reaction.help.flagButton') }}
+        </p>
+      </div>
+    </HelpSection>
     <div class="d-flex mb-4">
       <h2>{{ t('reaction.settings') }}</h2>
       <v-spacer />
-      <DefaultDialog :title="t('reaction.addButton')" persistent>
+      <v-menu v-if="canEditButtons">
+        <v-list>
+          <DefaultDialog :title="t('reaction.addButton')">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" prepend-icon="mdi-gesture-tap-button">
+                {{ t('reaction.button') }}
+              </v-list-item>
+            </template>
+            <template #default="{ close }">
+              <ReactionEditModal @close="close" />
+            </template>
+          </DefaultDialog>
+          <DefaultDialog :title="t('reaction.addButton')">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" prepend-icon="mdi-flag">
+                {{ t('reaction.flag') }}
+              </v-list-item>
+            </template>
+            <template #default="{ close }">
+              <FlagButtonEditModal @close="close" />
+            </template>
+          </DefaultDialog>
+        </v-list>
         <template #activator="{ props }">
-          <v-btn color="primary" prepend-icon="mdi-gesture-tap-button" v-bind="props">
+          <v-btn v-bind="props" append-icon="mdi-chevron-down" color="primary">
             {{ t('reaction.addButton') }}
           </v-btn>
         </template>
-        <template #default="{ close }">
-          <ReactionEditModal @close="close" />
-        </template>
-      </DefaultDialog>
+      </v-menu>
     </div>
     <v-table>
       <thead>
@@ -29,79 +135,71 @@
           <th>
             {{ t('discussion.discussions') }}
           </th>
-          <th />
+          <th v-if="canEditButtons"></th>
         </tr>
       </thead>
-      <tbody>
-        <tr v-for="button in meetingButtons" :key="button.pk">
-          <td>
-            <RealReactionButton
-              :button="button"
-              :count="Number(!!model[button.pk])"
-              :disabled="!button.active"
-              v-model="model[button.pk]"
-            >
-              <template #userList>
-                <UserList v-if="user" :userIds="[user.pk]" />
-              </template>
-            </RealReactionButton>
-          </td>
-          <td>
-            <v-switch hide-details color="primary" :modelValue="button.active" @update:modelValue="setActive(button, $event)" />
-          </td>
-          <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
-            <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event)" />
-          </td>
-          <td class="text-right">
-            <DefaultDialog :title="t('reaction.editButton')" persistent>
-              <template #activator="{ props }">
-                <v-btn prepend-icon="mdi-pencil" size="small" color="primary" v-bind="props">
-                  {{ t('edit') }}
-                </v-btn>
-              </template>
-              <template #default="{ close }">
-                <ReactionEditModal :data="button" @close="close" />
-              </template>
-            </DefaultDialog>
-          </td>
-        </tr>
-      </tbody>
+      <draggable
+        v-model="meetingButtons"
+        handle=".handle"
+        item-key="pk"
+        tag="tbody"
+      >
+        <template #item="{element: button}">
+          <tr>
+            <td class="text-no-wrap">
+              <v-icon icon="mdi-drag" class="handle ml-n3 mr-2" />
+              <FlagButton
+                v-if="isFlagButton(button)"
+                :button="button"
+                :can-toggle="true"
+                v-model="model[button.pk]"
+              />
+              <RealReactionButton
+                v-else
+                :button="button"
+                :count="Number(!!model[button.pk])"
+                :disabled="!button.active"
+                v-model="model[button.pk]"
+              >
+                <template #userList>
+                  <UserList v-if="user" :userIds="[user.pk]" />
+                </template>
+              </RealReactionButton>
+            </td>
+            <td>
+              <v-switch hide-details color="primary" :modelValue="button.active" @update:modelValue="setActive(button, $event!)" />
+            </td>
+            <td v-for="contentType in ['proposal', 'discussion_post']" :key="contentType">
+              <v-switch hide-details color="primary" :modelValue="button.allowed_models.includes(contentType)" @update:modelValue="setContentType(button, contentType, $event!)" />
+            </td>
+            <td class="text-right" v-if="canEditButtons">
+              <DefaultDialog :title="t('reaction.editButton')">
+                <template #activator="{ props }">
+                  <v-btn prepend-icon="mdi-pencil" size="small" class="mr-1" color="primary" v-bind="props">
+                    {{ t('edit') }}
+                  </v-btn>
+                </template>
+                <template #default="{ close }">
+                  <FlagButtonEditModal v-if="isFlagButton(button)" :data="button" @close="close" />
+                  <ReactionEditModal v-else :data="button" @close="close" />
+                </template>
+              </DefaultDialog>
+              <QueryDialog color="warning" :text="t('reaction.deleteButtonConfirmation')" @confirmed="deleteButton(button)">
+                <template #activator="{ props }">
+                  <v-btn prepend-icon="mdi-delete" color="warning" v-bind="props" size="small">
+                    {{ t('content.delete') }}
+                  </v-btn>
+                </template>
+              </QueryDialog>
+            </td>
+          </tr>
+        </template>
+      </draggable>
     </v-table>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { computed, reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import UserList from '@/components/UserList.vue'
-import useAuthentication from '@/composables/useAuthentication'
-import useMeeting from '../meetings/useMeeting'
-
-import useReactions from './useReactions'
-import ReactionEditModal from './ReactionEditModal.vue'
-import { ReactionButton } from './types'
-import { reactionButtonType } from './contentTypes'
-import RealReactionButton from './RealReactionButton.vue'
-
-const { t } = useI18n()
-const { user } = useAuthentication()
-const { meetingId } = useMeeting()
-const reactions = useReactions()
-
-const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
-
-async function setContentType (button: ReactionButton, contentType: string, value: boolean) {
-  const allowed_models = value
-    ? [contentType, ...button.allowed_models]
-    : button.allowed_models.filter(ct => ct !== contentType)
-  await reactionButtonType.api.patch(button.pk, { allowed_models })
-}
-
-async function setActive (button: ReactionButton, active: boolean) {
-  await reactionButtonType.api.patch(button.pk, { active })
-}
-
-const model = reactive<Record<number, boolean>>({})
-</script>
+<style scoped lang="sass">
+.handle
+    cursor: grab
+</style>

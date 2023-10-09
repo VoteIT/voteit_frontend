@@ -46,6 +46,15 @@ pollPlugins.register({
     majorityWinner: true,
     majorityLoser: true
   },
+  getDescription (t) {
+    return t('poll.method.description.combined_simple')
+  },
+  getHelp (t) {
+    return t('poll.method.help.combined_simple')
+  },
+  getName (t) {
+    return t('poll.method.combined_simple')
+  },
   proposalsMin: 1,
   resultComponent: SimpleResult,
   voteComponent: Simple
@@ -60,6 +69,15 @@ pollPlugins.register({
     majorityLoser: true,
     majorityWinner: true,
     mutualMajority: true
+  },
+  getDescription (t) {
+    return t('poll.method.description.schulze')
+  },
+  getHelp (t) {
+    return t('poll.method.help.schulze')
+  },
+  getName (t) {
+    return t('poll.method.schulze')
   },
   getSchema (t, proposals) {
     return createFormSchema(t, getSchulzeSchema(t, proposals))
@@ -78,6 +96,15 @@ pollPlugins.register({
     majorityWinner: true,
     majorityLoser: true
   },
+  getDescription (t) {
+    return t('poll.method.description.majority')
+  },
+  getHelp (t) {
+    return t('poll.method.help.majority')
+  },
+  getName (t) {
+    return t('poll.method.majority')
+  },
   proposalsMin: 2,
   proposalsMax: 2,
   resultComponent: MajorityResult,
@@ -93,6 +120,15 @@ pollPlugins.register({
     majorityLoser: true,
     majorityWinner: true,
     proportional: false
+  },
+  getDescription (t) {
+    return t('poll.method.description.repeated_schulze')
+  },
+  getHelp (t) {
+    return t('poll.method.help.repeated_schulze')
+  },
+  getName (t) {
+    return t('poll.method.repeated_schulze')
   },
   getSchema (t, proposals) {
     const { properties, required } = getSchulzeSchema(t, proposals)
@@ -128,6 +164,15 @@ pollPlugins.register({
     condorcetWinner: false,
     majorityLoser: false,
     majorityWinner: false
+  },
+  getDescription (t) {
+    return t('poll.method.description.scottish_stv')
+  },
+  getHelp (t) {
+    return t('poll.method.help.scottish_stv')
+  },
+  getName (t) {
+    return t('poll.method.scottish_stv')
   },
   getSchema (t, proposals) {
     return createFormSchema(t, {
@@ -165,6 +210,15 @@ pollPlugins.register({
     majorityWinner: false,
     proportional: false
   },
+  getDescription (t) {
+    return t('poll.method.description.irv')
+  },
+  getHelp (t) {
+    return t('poll.method.help.irv')
+  },
+  getName (t) {
+    return t('poll.method.irv')
+  },
   getSchema (t) {
     return createFormSchema(t, {
       properties: {
@@ -195,6 +249,15 @@ pollPlugins.register({
     proportional: false
   },
   discouraged: true,
+  getDescription (t) {
+    return t('poll.method.description.dutt')
+  },
+  getHelp (t) {
+    return t('poll.method.help.dutt')
+  },
+  getName (t) {
+    return t('poll.method.dutt')
+  },
   getSchema (t, proposals) {
     return createFormSchema(t, {
       properties: {
@@ -236,6 +299,15 @@ pollPlugins.register({
   },
   discouraged: true,
   checkActive: () => !!getOrganisationComponent('repeated_irv'),
+  getDescription (t) {
+    return t('poll.method.description.repeated_irv')
+  },
+  getHelp (t) {
+    return t('poll.method.help.repeated_irv')
+  },
+  getName (t) {
+    return t('poll.method.repeated_irv')
+  },
   getSchema (t, proposals) {
     return createFormSchema(t, {
       properties: {

@@ -23,11 +23,14 @@ import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
 import useMeetingInvites from '../meetings/useMeetingInvites'
 import Invite from '../meetings/Invite.vue'
+import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
+import { translateMeetingRole } from '../meetings/utils'
+import { meetingStates } from '../meetings/workflowStates'
+
 import ContactInfoTab from './ContactInfoTab.vue'
 import useOrganisation from './useOrganisation'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
-import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -142,26 +145,26 @@ const { collapsedBodyHeightMobile, cols } = useDefaults()
 const groupRules = [
   {
     meetings: participatingOngoingMeetings,
-    translationString: 'workflowState.plural.ongoing'
+    state: meetingStates.find(s => s.state === MeetingState.Ongoing)!
   },
   {
     meetings: participatingUpcomingMeetings,
-    translationString: 'workflowState.plural.upcoming'
+    state: meetingStates.find(s => s.state === MeetingState.Upcoming)!
   },
   {
     meetings: participatingClosedMeetings,
-    translationString: 'workflowState.plural.closed',
+    state: meetingStates.find(s => s.state === MeetingState.Closed)!,
     maxLength: 3
   }
 ]
 const meetingGroups = computed(() => {
   return groupRules
-    .map(({ maxLength, meetings, translationString }) => {
+    .map(({ maxLength, meetings, state }) => {
       return {
         meetings: maxLength && !groupsExpanded.value
           ? meetings.value.slice(0, maxLength)
           : meetings.value,
-        title: t(translationString),
+        title: state.getName(t, meetings.value.length),
         expandable: !!maxLength && meetings.value.length > maxLength
       }
     })
@@ -185,9 +188,15 @@ const yearItems = computed(() => {
   ]
 })
 const stateItems = computed(() => {
-  return Object.values(MeetingState)
-    .filter(state => state in meetingStateCount.value)
-    .map(state => ({ value: state, title: t(`workflowState.plural.${state}`) + ` (${meetingStateCount.value[state]})` }))
+  return meetingStates
+    .filter(({ state }) => state in meetingStateCount.value)
+    .map(({ state, getName }) => {
+      const count = meetingStateCount.value[state]!
+      return {
+        value: state,
+        title: `${getName(t, count)} (${count})`
+      }
+    })
 })
 const INCLUDE_STATES = [MeetingState.Ongoing, MeetingState.Upcoming]
 const searchFilter = reactive<{ search: string, states: MeetingState[], year: number | null, order: keyof Meeting }>({
@@ -284,7 +293,7 @@ const searchInfo = computed(() => {
             :subtitle="start_time ? DateTime.fromISO(start_time).toLocaleString() : undefined"
           >
             <template #append>
-              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="translateMeetingRole(role, t)">
                 <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
                   <v-icon v-bind="props" :icon="icon" />
                 </template>
@@ -340,11 +349,11 @@ const searchInfo = computed(() => {
             v-for="{ pk, title, state, current_user_roles } in chunkedMeetings[currentSearchPage - 1]"
             :key="pk"
             :title="title"
-            :subtitle="t(`workflowState.${state}`)"
+            :subtitle="meetingStates.find(s => s.state === state)?.getName(t)"
             :to="current_user_roles ? { name: 'meeting', params: { id: pk, slug: slugify(title) } } : undefined"
             >
             <template #append v-if="current_user_roles">
-              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="t(`role.${role}`)">
+              <v-tooltip v-for="{ role, icon } in displayRoles" :key="role" :text="translateMeetingRole(role, t)">
                 <template #activator="{ props }" v-if="current_user_roles?.includes(role)">
                   <v-icon v-bind="props" :icon="icon" />
                 </template>

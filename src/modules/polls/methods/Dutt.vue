@@ -1,14 +1,21 @@
 <template>
   <div>
+    <FlagVoteSelector
+      v-if="!disabled"
+      class="mb-4"
+      :proposals="proposals"
+      :warn="!!selected.length"
+      @selected="selectIds"
+    />
     <v-item-group v-model="selected" multiple>
       <v-item v-for="p in proposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
-        <Proposal readOnly :p="p" class="mb-4">
+        <VoteProposal :proposal="p" class="mb-4">
           <template #vote>
             <div class="text-center">
               <v-checkbox @update:modelValue="toggle()" :disabled="disabled" :modelValue="isSelected" hide-details :label="t('select')" class="d-inline-block mb-n2" density="compact" />
             </div>
           </template>
-        </Proposal>
+        </VoteProposal>
       </v-item>
     </v-item-group>
     <v-alert v-if="!disabled && validHelpText" :text="validHelpText" />
@@ -19,13 +26,15 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
+import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
 import type { Proposal } from '@/modules/proposals/types'
 
-import { DuttPoll, DuttVote } from './types'
+import type { DuttPoll, DuttVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue: DuttVote
+  modelValue?: DuttVote
   poll: DuttPoll
   proposals: Proposal[]
 }>()
@@ -69,4 +78,8 @@ const validHelpText = computed(() => {
   if (surplusProposals.value) return t('poll.dutt.maxHelpText', surplusProposals.value)
   return t('poll.dutt.validVoteHelpText')
 })
+
+function selectIds (proposals: number[]) {
+  selected.value = proposals
+}
 </script>
