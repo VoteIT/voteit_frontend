@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import DefaultMap from '@/utils/DefaultMap'
@@ -76,8 +76,11 @@ const validVote = computed(() => {
 function change (proposal: Proposal, opt: SimpleChoiceDesc) {
   if (props.disabled) return
   votes.set(proposal.pk, opt.value)
-  emit('update:modelValue', validVote.value)
 }
+
+watch(validVote, value => {
+  emit('update:modelValue', value)
+})
 
 function selectIds (proposals: number[]) {
   for (const { pk } of props.proposals) {
