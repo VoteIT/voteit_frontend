@@ -3,12 +3,13 @@
   "version": "0.17.1",
   "private": true,
   "scripts": {
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
     "coverage": "vitest run --coverage",
     "dev": "vite",
     "extractLocales": "vue-i18n-extract report --vueFiles './src/**/*.?(ts|js|vue)' --languageFiles './src/locales/*.json'",
     "lint": "eslint --ext .ts,.vue --ignore-path .gitignore --fix src",
-    "test": "vitest --dom"
+    "test": "vitest --dom",
+    "typeCheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@mdi/font": "^6.9.96",
@@ -56,6 +57,7 @@
     "vite": "^4.4.9",
     "vitest": "^0.34.3",
     "vitest-websocket-mock": "^0.2.2",
-    "vue-i18n-extract": "^2.0.7"
+    "vue-i18n-extract": "^2.0.7",
+    "vue-tsc": "^1.8.19"
   }
 }
