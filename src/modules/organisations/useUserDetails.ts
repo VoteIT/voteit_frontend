@@ -6,17 +6,19 @@ import { useRoute } from 'vue-router'
 
 import { User } from './types'
 
-const userDetails = reactive(new Map<number, User>())
+const userDetails = reactive(
+  new Map<number, Omit<User, 'organisation' | 'organisation_roles'>>()
+)
 
 const fetchQueue = new Set<number>(new Set())
 let fetchTimeout: NodeJS.Timeout
 let loading = false
 const TIMEOUT = 50
 
-export default function useUserDetails () {
+export default function useUserDetails() {
   const context = inject(RoleContextKey, 'organisation')
   const { params } = useRoute()
-  const contextId = computed(() => params.id ? Number(params.id) : undefined)
+  const contextId = computed(() => (params.id ? Number(params.id) : undefined))
   const endpoint = `${context}-roles/`
 
   watch(contextId, () => {
@@ -24,9 +26,9 @@ export default function useUserDetails () {
     clearTimeout(fetchTimeout)
   })
 
-  async function fetchMultiple () {
+  async function fetchMultiple() {
     // Fetch all queued users (rest)
-    const missing = [...fetchQueue].filter(pk => !userDetails.has(pk))
+    const missing = [...fetchQueue].filter((pk) => !userDetails.has(pk))
     if (loading || !missing.length) return
     const params = {
       context: contextId.value,
@@ -35,7 +37,10 @@ export default function useUserDetails () {
     fetchQueue.clear()
     loading = true
     try {
-      const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(endpoint, { params })
+      const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(
+        endpoint,
+        { params }
+      )
       for (const { user } of data) {
         userDetails.set(user.pk, user)
       }
@@ -45,7 +50,7 @@ export default function useUserDetails () {
     if (fetchQueue.size) fetchMultiple()
   }
 
-  function fetchUserDetails (user: number) {
+  function fetchUserDetails(user: number) {
     // Avoid getting participants in several requests by queueing, and setting a short timeout.
     if (!fetchQueue.has(user)) {
       fetchQueue.add(user)
@@ -59,7 +64,7 @@ export default function useUserDetails () {
    * If not in storage, fetch user from API, using queue system.
    * @param user User primary key
    */
-  function getUser (user: number) {
+  function getUser(user: number) {
     // Queue for fetch if not in store
     if (!userDetails.has(user)) fetchUserDetails(user)
     return userDetails.get(user)

@@ -12,6 +12,7 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'space-before-function-paren': 'off',
     'template-curly-spacing': 'off',
     'vue/multi-word-component-names':
       process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -26,10 +27,7 @@ module.exports = {
       files: ['*.vue'],
       rules: {
         'no-unused-vars': 'off',
-        'space-before-function-paren': 'off',
-        '@typescript-eslint/no-unused-vars': 'error',
-        // We should try to activate next one at some point
-        'vue/script-setup-uses-vars': 'off'
+        '@typescript-eslint/no-unused-vars': 'error'
       }
     }
   ]

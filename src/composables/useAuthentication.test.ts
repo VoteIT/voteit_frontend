@@ -5,33 +5,58 @@ import { expect, test } from 'vitest'
 import DefaultMap from '@/utils/DefaultMap'
 import { getUserRandomSortValue, user } from './useAuthentication'
 
-function shuffleOrder (obj: { pk: number }) {
+function shuffleOrder(obj: { pk: number }) {
   return getUserRandomSortValue(obj.pk)
 }
 
-function getDistribution (objects: { pk: number }[], count: number) {
+function getDistribution(objects: { pk: number }[], count: number) {
   const counter = new DefaultMap<number, number>(() => 0)
   for (const pk of range(1, count)) {
+    // @ts-ignore
     user.value = { pk }
-    const first = Number(sortBy(objects, shuffleOrder).map(o => o.pk).join(''))
+    const first = Number(
+      sortBy(objects, shuffleOrder)
+        .map((o) => o.pk)
+        .join('')
+    )
     counter.set(first, counter.get(first) + 1)
   }
   return Object.fromEntries(counter.entries())
 }
 
 test('getUserRandomSortValue', () => {
-  const sortObjects = [1, 2, 3, 4, 5].map(pk => ({ pk }))
+  const sortObjects = [1, 2, 3, 4, 5].map((pk) => ({ pk }))
+  // @ts-ignore
   user.value = { pk: 1 }
-  expect(sortBy(sortObjects, shuffleOrder).map(o => o.pk)).toEqual([1, 5, 3, 2, 4])
+  expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
+    1, 5, 3, 2, 4
+  ])
+  // @ts-ignore
   user.value = { pk: 2 }
-  expect(sortBy(sortObjects, shuffleOrder).map(o => o.pk)).toEqual([4, 1, 5, 2, 3])
+  expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
+    4, 1, 5, 2, 3
+  ])
+  // @ts-ignore
   user.value = { pk: 3 }
-  expect(sortBy(sortObjects, shuffleOrder).map(o => o.pk)).toEqual([4, 1, 2, 5, 3])
+  expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
+    4, 1, 2, 5, 3
+  ])
+  // @ts-ignore
   user.value = { pk: 123 }
-  expect(sortBy(sortObjects, shuffleOrder).map(o => o.pk)).toEqual([5, 3, 1, 2, 4])
+  expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
+    5, 3, 1, 2, 4
+  ])
+  // @ts-ignore
   user.value = { pk: 12345 }
-  expect(sortBy(sortObjects, shuffleOrder).map(o => o.pk)).toEqual([5, 1, 2, 4, 3])
-  expect(getDistribution([...range(1, 4)].map(pk => ({ pk })), 10_000)).toEqual({
+  expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
+    5, 1, 2, 4, 3
+  ])
+  expect(
+    getDistribution(
+      [...range(1, 4)].map((pk) => ({ pk })),
+      10_000
+    )
+  ).toEqual({
     123: 2108,
     132: 1465,
     213: 1562,
