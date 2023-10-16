@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="text-center d-print-none">
-      <v-btn-toggle mandatory variant="outlined" v-model="baseSetting" class="mb-1">
+      <v-btn-toggle
+        mandatory
+        variant="outlined"
+        v-model="baseSetting"
+        class="mb-1"
+      >
         <v-btn size="large" value="documents" prepend-icon="mdi-file-document">
           {{ t('minutes.documents') }}
         </v-btn>
@@ -15,11 +20,18 @@
         <h3>
           {{ t('minutes.includeProposalStates') }}
         </h3>
-        <CheckboxMultipleSelect v-model="settings.showStates" :settings="{ options }" />
+        <CheckboxMultipleSelect
+          v-model="settings.showStates"
+          :settings="{ options }"
+        />
         <h3 class="mb-1">
           {{ t('minutes.proposalOrder') }}
         </h3>
-        <v-btn-toggle mandatory variant="outlined" v-model="settings.proposalOrder">
+        <v-btn-toggle
+          mandatory
+          variant="outlined"
+          v-model="settings.proposalOrder"
+        >
           <v-btn value="created" prepend-icon="mdi-sort">
             {{ t('created') }}
           </v-btn>
@@ -27,32 +39,72 @@
             {{ t('modified') }}
           </v-btn>
         </v-btn-toggle>
-        <v-switch color="primary" hide-details v-model="settings.showAuthors" :label="t('minutes.showAuthors')" />
-        <v-switch color="primary" hide-details v-model="settings.showSeparators" :label="t('minutes.showSeparators')" />
-        <v-switch color="primary" hide-details v-model="settings.showMeetingBody" :label="t('minutes.showMeetingBody')" />
-        <v-switch color="primary" hide-details v-model="settings.showAgendaBody" :label="t('minutes.showAIBody')" />
+        <v-switch
+          color="primary"
+          hide-details
+          v-model="settings.showAuthors"
+          :label="t('minutes.showAuthors')"
+        />
+        <v-switch
+          color="primary"
+          hide-details
+          v-model="settings.showSeparators"
+          :label="t('minutes.showSeparators')"
+        />
+        <!-- <v-switch
+          color="primary"
+          hide-details
+          v-model="settings.showMeetingBody"
+          :label="t('minutes.showMeetingBody')"
+        /> -->
+        <v-switch
+          color="primary"
+          hide-details
+          v-model="settings.showAgendaBody"
+          :label="t('minutes.showAIBody')"
+        />
         <div class="text-right">
-          <v-btn  size="large" value="minutes" prepend-icon="mdi-printer" onclick="window.print()">
+          <v-btn
+            size="large"
+            value="minutes"
+            prepend-icon="mdi-printer"
+            onclick="window.print()"
+          >
             {{ t('minutes.print') }}
           </v-btn>
         </div>
       </v-sheet>
     </v-expand-transition>
     <template v-if="baseSetting">
-      <v-alert v-if="baseSetting === 'minutes' && !isFinishedMeeting" type="warning" class="my-2" :text="t('minutes.warningMeetingNotFinished')" />
+      <v-alert
+        v-if="baseSetting === 'minutes' && !isFinishedMeeting"
+        type="warning"
+        class="my-2"
+        :text="t('minutes.warningMeetingNotFinished')"
+      />
       <template v-if="meeting">
         <h1 class="mt-8">
           {{ meeting.title }}
         </h1>
-        <p v-if="settings.showMeetingBody && meeting.body" v-html="meeting.body" />
+        <p
+          v-if="settings.showMeetingBody && meeting.body"
+          v-html="meeting.body"
+        />
       </template>
-      <div v-for="{ hasUnresolved, pk, proposalStates, title, body } in annotatedAgenda" :key="pk">
+      <div
+        v-for="{ hasUnresolved, pk, proposalStates, title } in annotatedAgenda"
+        :key="pk"
+      >
         <v-divider v-if="settings.showSeparators" class="my-4" />
         <div class="my-2 d-flex align-center">
           <h2 class="flex-grow-0">
             {{ title }}
           </h2>
-          <v-tooltip v-if="baseSetting === 'minutes' && hasUnresolved" location="bottom" :text="t('minutes.warningAIUnresolved')">
+          <v-tooltip
+            v-if="baseSetting === 'minutes' && hasUnresolved"
+            location="bottom"
+            :text="t('minutes.warningAIUnresolved')"
+          >
             <template #activator="{ props }">
               <v-icon v-bind="props" color="warning" size="large" class="ml-2">
                 mdi-alert
@@ -60,8 +112,8 @@
             </template>
           </v-tooltip>
         </div>
-        <p v-if="settings.showAgendaBody && body" v-html="body" class="my-4" />
-        <p v-else-if="!proposalStates.length">
+        <!-- <p v-if="settings.showAgendaBody && body" v-html="body" class="my-4" /> -->
+        <p v-if="!proposalStates.length">
           <em>
             {{ t('minutes.noInformation') }}
           </em>
@@ -148,7 +200,7 @@ export default defineComponent({
   components: {
     CheckboxMultipleSelect
   },
-  setup () {
+  setup() {
     const { t } = useI18n()
     const { meetingId, isFinishedMeeting, meeting } = useMeeting()
     const { agenda } = useAgenda(meetingId)
@@ -157,7 +209,13 @@ export default defineComponent({
     const { getAgendaProposals } = useProposals()
 
     const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
-    useMeetingTitle(computed(() => baseSetting.value === 'minutes' ? t('minutes.minutes') : t('minutes.documents')))
+    useMeetingTitle(
+      computed(() =>
+        baseSetting.value === 'minutes'
+          ? t('minutes.minutes')
+          : t('minutes.documents')
+      )
+    )
 
     const settings = reactive({
       proposalOrder: 'created' as keyof typeof PROPOSAL_ORDERING,
@@ -167,52 +225,60 @@ export default defineComponent({
       showSeparators: true,
       showStates: [] as ProposalState[]
     })
-    watch(baseSetting, type => {
+    watch(baseSetting, (type) => {
       // If baseSetting changes, all settings should be reset to those defaults
       if (type) Object.assign(settings, SETTING_DEFAULTS[type])
     })
 
     const options = Object.fromEntries(
-      PROPOSAL_STATE_ORDER
-        .map(state => [state, getProposalState(state)!.getName(t)])
+      PROPOSAL_STATE_ORDER.map((state) => [
+        state,
+        getProposalState(state)!.getName(t)
+      ])
     )
 
     const annotatedAgenda = computed(() => {
-      return agenda.value.map(({ pk, title, body }) => {
-        const proposalStates = PROPOSAL_STATE_ORDER
-          .map(state => {
-            const proposals = orderBy(
-              getAgendaProposals(pk, p => p.state === state),
-              PROPOSAL_ORDERING[settings.proposalOrder]
-            )
-            return {
-              state,
-              title: getProposalState(state)?.getName(t, proposals.length),
-              proposals
-            }
-          })
+      return agenda.value.map(({ pk, title }) => {
+        const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
+          const proposals = orderBy(
+            getAgendaProposals(pk, (p) => p.state === state),
+            PROPOSAL_ORDERING[settings.proposalOrder]
+          )
+          return {
+            state,
+            title: getProposalState(state)?.getName(t, proposals.length),
+            proposals
+          }
+        })
         return {
           // hasProposals: prposalStates.some(({ proposals }) => proposals.length),
-          body,
-          hasUnresolved: proposalStates.some(({ state, proposals }) => UNRESOLVED_STATES.includes(state) && proposals.length),
+          // body,
+          hasUnresolved: proposalStates.some(
+            ({ state, proposals }) =>
+              UNRESOLVED_STATES.includes(state) && proposals.length
+          ),
           pk,
-          proposalStates: proposalStates.filter(({ state, proposals }) => settings.showStates.includes(state) && proposals.length),
+          proposalStates: proposalStates.filter(
+            ({ state, proposals }) =>
+              settings.showStates.includes(state) && proposals.length
+          ),
           title
         }
       })
     })
 
     const orderedProposalStates = computed(() => {
-      return PROPOSAL_STATE_ORDER
-        .map(s => proposalStates.find(({ state }) => s === state)) as WorkflowState[]
+      return PROPOSAL_STATE_ORDER.map((s) =>
+        proposalStates.find(({ state }) => s === state)
+      ) as WorkflowState[]
     })
 
-    function getProposalBody (p: Proposal) {
+    function getProposalBody(p: Proposal) {
       if (p.shortname === 'proposal') return p.body
       return p.body_diff_brief
     }
 
-    function setDefaults (type: keyof typeof SETTING_DEFAULTS) {
+    function setDefaults(type: keyof typeof SETTING_DEFAULTS) {
       Object.assign(settings, SETTING_DEFAULTS[type])
     }
 
