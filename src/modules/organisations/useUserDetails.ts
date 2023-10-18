@@ -5,10 +5,24 @@ import { computed, inject, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { User } from './types'
+import { socket } from '@/utils/Socket'
 
 const userDetails = reactive(
   new Map<number, Omit<User, 'organisation' | 'organisation_roles'>>()
 )
+
+socket.addTypeHandler('user', ({ t, p }) => {
+  const type = t.split('.')[1]
+  switch (type) {
+    case 'inv': {
+      const { pk } = p as { pk: number }
+      userDetails.delete(pk)
+      break
+    }
+    default:
+      console.warn(`Got unknown user message type '${type}'`)
+  }
+})
 
 const fetchQueue = new Set<number>(new Set())
 let fetchTimeout: NodeJS.Timeout
