@@ -1,9 +1,13 @@
 <template>
-  <v-tooltip :disabled="!button.description" :text="button.description" location="top center">
+  <v-tooltip
+    :disabled="!button.description"
+    :text="button.description"
+    location="top center"
+  >
     <template #activator="{ props }">
       <v-btn-group
         v-bind="{ ...props, ...$attrs }"
-        :color="modelValue ? button.color : 'secondary'"
+        :color="button.color"
         :variant="variant"
         class="btn-group"
       >
@@ -16,16 +20,20 @@
         >
           {{ button.title }}
         </v-btn>
-        <DefaultDialog @update:modelValue="$event && emit('listOpen')" :title="t('reaction.peopleReacted')">
+        <DefaultDialog
+          @update:modelValue="$event && emit('listOpen')"
+          :title="t('reaction.peopleReacted')"
+        >
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
-              class="reaction-count pl-2"
+              class="reaction-count pl-1 pr-2"
               size="small"
-              :disabled="disabled || listDisabled"
+              :disabled="listDisabled"
               @click.prevent
             >
-              {{ count }}
+              {{ countText }}
+              <v-icon v-if="meetsTarget" icon="mdi-check" />
             </v-btn>
           </template>
           <slot name="userList"></slot>
@@ -45,8 +53,8 @@ import { ReactionButton } from './types'
 interface Props {
   button: ReactionButton
   count: number
-  disabled?: boolean,
-  listDisabled?: boolean,
+  disabled?: boolean
+  listDisabled?: boolean
   modelValue?: boolean
 }
 const props = defineProps<Props>()
@@ -55,11 +63,16 @@ const emit = defineEmits(['update:modelValue', 'listOpen'])
 
 const { t } = useI18n()
 
-const meetsTarget = computed(() => !!props.button.target && props.count >= props.button.target)
+const meetsTarget = computed(() => {
+  if (!props.button.target) return
+  return props.count >= props.button.target
+})
 const variant = computed(() => {
-  return meetsTarget.value
-      ? 'flat'
-      : 'tonal'
+  return props.modelValue ? 'flat' : 'tonal'
+})
+const countText = computed(() => {
+  if (!props.button.target || meetsTarget.value) return String(props.count)
+  return `${props.count}/${props.button.target}`
 })
 </script>
 
