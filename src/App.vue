@@ -2,17 +2,17 @@
   <v-app id="app">
     <router-view name="appBar" />
     <v-main>
-      <router-view name="navigationDrawer"/>
+      <router-view name="navigationDrawer" />
       <div id="toolbar" />
       <v-container>
-        <router-view/>
+        <router-view />
       </v-container>
     </v-main>
     <OnlineStatus class="d-print-none" />
-    <Modal/>
-    <Dialogs/>
-    <Loader/>
-    <Alerts/>
+    <Modal />
+    <Dialogs />
+    <Loader />
+    <Alerts />
   </v-app>
 </template>
 
@@ -20,7 +20,8 @@
 import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
-import { onBeforeMount, provide } from 'vue'
+import { onBeforeMount, provide, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { RoleContextKey } from './injectionKeys'
 import useAuthentication from './composables/useAuthentication'
@@ -33,7 +34,10 @@ import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
 import useOrganisation from './modules/organisations/useOrganisation'
 import { useRoute, useRouter } from 'vue-router'
+import { frontendVersion } from './utils/Socket'
+import { openDialogEvent } from './utils/events'
 
+const { t } = useI18n()
 const loader = useLoader('App')
 const { fetchAuthenticatedUser } = useAuthentication()
 const { fetchOrganisation } = useOrganisation()
@@ -62,6 +66,30 @@ provide('cols', {
     offsetLg: 2
   }
 })
+
+function promptVersionReload() {
+  openDialogEvent.emit({
+    resolve(reload) {
+      if (reload) location.reload()
+      else setTimeout(promptVersionReload, 30_000)
+    },
+    title: t('system.versionReloadQuery'),
+    dismissible: false,
+    no: t('system.reloadLater'),
+    yes: t('system.reloadNow')
+  })
+  console.log('SEARCHME', import.meta.env.VITE_FRONTEND_VERSION)
+}
+
+watch(
+  frontendVersion,
+  (version) => {
+    const clientVersion = import.meta.env.VITE_FRONTEND_VERSION
+    if (!(version && clientVersion)) return
+    if (version !== clientVersion) promptVersionReload()
+  },
+  { immediate: true }
+)
 </script>
 
 <style lang="sass">

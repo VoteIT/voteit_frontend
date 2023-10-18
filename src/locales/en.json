@@ -615,7 +615,7 @@
     "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead.",
     "workflow": {
       "closed": "Closed",
-      "open":"Open"
+      "open": "Open"
     }
   },
   "printing": {
@@ -784,12 +784,17 @@
     },
     "systemWorkflow": {
       "active": "Active",
-      "archived":"Archived",
+      "archived": "Archived",
       "inactive": "Inactive"
     },
     "listWorkflow": {
-      "closed":"Closed",
+      "closed": "Closed",
       "open": "Open"
     }
+  },
+  "system": {
+    "reloadLater": "Just let me ...",
+    "reloadNow": "Reload now",
+    "versionReloadQuery": "There's a new VoteIT version.\nYou need to reload the page."
   }
 }

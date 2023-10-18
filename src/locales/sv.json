@@ -615,7 +615,7 @@
     "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället.",
     "workflow": {
       "closed": "Avslutad | Avslutade",
-      "open":"Öppen | Öppna"
+      "open": "Öppen | Öppna"
     }
   },
   "printing": {
@@ -729,7 +729,6 @@
     "tabSeparatedMaxColumns": "Kräver max {count} värden (tabb-separerat)",
     "tabSeparatedMinColumns": "Kräver minst {count} värden (tabb-separerat)",
     "tabSeparatedBadColumnCount": "Felaktigt antal värden på rad {count}"
-
   },
   "speaker": {
     "activeList": "Aktiv lista",
@@ -785,12 +784,17 @@
     },
     "systemWorkflow": {
       "active": "Aktiv | Aktiva",
-      "archived":"Arkiverat | Arkiverade",
+      "archived": "Arkiverat | Arkiverade",
       "inactive": "Inaktiv | Inaktiva"
     },
     "listWorkflow": {
-      "closed":"Stängd | Stängda",
+      "closed": "Stängd | Stängda",
       "open": "Öppen | Öppna"
     }
+  },
+  "system": {
+    "reloadLater": "Jag ska bara ...",
+    "reloadNow": "Ladda om nu",
+    "versionReloadQuery": "Det finns en ny version av VoteIT.\nDu behöver ladda om sidan."
   }
 }
