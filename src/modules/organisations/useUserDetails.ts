@@ -1,11 +1,11 @@
 import { RoleContextKey } from '@/injectionKeys'
 import { MeetingRoles, OrganisationRoles } from '@/composables/types'
 import restApi from '@/utils/restApi'
+import { socket } from '@/utils/Socket'
 import { computed, inject, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { User } from './types'
-import { socket } from '@/utils/Socket'
 
 const userDetails = reactive(
   new Map<number, Omit<User, 'organisation' | 'organisation_roles'>>()
