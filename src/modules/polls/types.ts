@@ -9,7 +9,8 @@ export enum PollState {
   Finished = 'finished',
   Canceled = 'canceled',
   Failed = 'failed',
-  NoResult = 'no_result'
+  NoResult = 'no_result',
+  Withheld = 'withheld'
 }
 
 export enum PollIcon {
@@ -20,7 +21,8 @@ export enum PollIcon {
   Finished = 'mdi-check',
   Canceled = 'mdi-cancel',
   Failed = 'mdi-alert',
-  NoResult = 'mdi-cancel'
+  NoResult = 'mdi-cancel',
+  Withheld = 'mdi-gavel'
 }
 
 export enum PollTransition {
@@ -29,7 +31,10 @@ export enum PollTransition {
   Ongoing = 'ongoing',
   Close = 'close',
   Finish = 'finish',
-  Cancel = 'cancel'
+  Cancel = 'cancel',
+  PublishResult = 'publish_result',
+  WithholdResult = 'withhold_result'
+
 }
 
 export interface PollStatus {
@@ -55,7 +60,7 @@ export interface Poll extends BaseContent {
   method_name: string
   proposals: number[]
   p_ord: 'a' | 'c' | 'r' // a: alphabetical, c: chronological (default), r: random
-  result: VoteResult
+  result?: VoteResult
   settings: unknown
   state: PollState
   started: string | null
