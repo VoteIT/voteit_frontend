@@ -8,8 +8,8 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-eye-off',
     state: PollState.Private,
     requiresRole: MeetingRole.Moderator,
-    priority: 5,
-    getName (t, count = 1) {
+    priority: 6,
+    getName(t, count = 1) {
       return t('poll.workflow.private', count)
     }
   },
@@ -18,7 +18,7 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-progress-clock',
     state: PollState.Upcoming,
     priority: 2,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('poll.workflow.upcoming', count)
     }
   },
@@ -27,7 +27,7 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-play-circle',
     state: PollState.Ongoing,
     priority: 1,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('poll.workflow.ongoing', count)
     }
   },
@@ -37,7 +37,7 @@ export const pollStates: WorkflowState<PollState>[] = [
     state: PollState.Closed,
     requiresRole: MeetingRole.Moderator,
     priority: 3,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('poll.workflow.closed', count)
     }
   },
@@ -45,9 +45,8 @@ export const pollStates: WorkflowState<PollState>[] = [
     transition: PollTransition.Finish,
     icon: 'mdi-check',
     state: PollState.Finished,
-    isFinal: true,
     priority: 4,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('poll.workflow.finished', count)
     }
   },
@@ -55,8 +54,8 @@ export const pollStates: WorkflowState<PollState>[] = [
     transition: PollTransition.Cancel,
     icon: 'mdi-cancel',
     state: PollState.Canceled,
-    priority: 6,
-    getName (t, count = 1) {
+    priority: 7,
+    getName(t, count = 1) {
       return t('poll.workflow.canceled', count)
     }
   },
@@ -64,18 +63,26 @@ export const pollStates: WorkflowState<PollState>[] = [
     icon: 'mdi-alert',
     state: PollState.Failed,
     isFinal: true,
-    priority: 7,
-    getName (t, count = 1) {
+    priority: 8,
+    getName(t, count = 1) {
       return t('poll.workflow.failed', count)
     }
   },
   {
     icon: 'mdi-cancel',
     state: PollState.NoResult,
-    isFinal: true,
-    priority: 8,
-    getName (t, count = 1) {
+    priority: 9,
+    getName(t, count = 1) {
       return t('poll.workflow.no_result', count)
+    }
+  },
+  {
+    icon: 'mdi-eye-off',
+    state: PollState.Withheld,
+    transition: PollTransition.WithholdResult,
+    priority: 5,
+    getName(t, count = 1) {
+      return t('poll.workflow.withheld', count)
     }
   }
 ]

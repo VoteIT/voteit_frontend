@@ -584,7 +584,8 @@
       "no_result": "Inget resultat | Inga resultat",
       "ongoing": "Pågående",
       "private": "Privat | Privata",
-      "upcoming": "Kommande"
+      "upcoming": "Kommande",
+      "withheld": "Dolt resultat | Dolda resultat"
     }
   },
   "plenary": {

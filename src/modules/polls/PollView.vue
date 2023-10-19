@@ -4,11 +4,22 @@
       <header>
         <header class="d-flex">
           <div class="flex-grow-1">
-            <span v-if="isOngoing && !canVote" class="header-tag">{{ t('poll.cantVote') }}</span>
-            <WorkflowState :admin="isModerator" :contentType="pollType" :object="poll" />
+            <span v-if="isOngoing && !canVote" class="header-tag">{{
+              t('poll.cantVote')
+            }}</span>
+            <WorkflowState
+              :admin="isModerator"
+              :contentType="pollType"
+              :object="poll"
+            />
             <h1>{{ poll.title }}</h1>
             <p class="text-secondary">
-              {{ t('poll.pollDescription', { method: pollMethodName, count: poll.proposals.length }) }}
+              {{
+                t('poll.pollDescription', {
+                  method: pollMethodName,
+                  count: poll.proposals.length
+                })
+              }}
             </p>
             <p v-if="agendaItem && agendaItemRoute">
               {{ t('agenda.item') }}:
@@ -22,7 +33,11 @@
                   <span v-bind="props">
                     {{ t('electoralRegister.electoralRegister') }}:
                     <span class="text-secondary">
-                      {{ DateTime.fromISO(electoralRegister.created).toLocaleString(DateTime.DATETIME_SHORT) }}
+                      {{
+                        DateTime.fromISO(
+                          electoralRegister.created
+                        ).toLocaleString(DateTime.DATETIME_SHORT)
+                      }}
                     </span>
                   </span>
                 </template>
@@ -45,25 +60,50 @@
           </v-alert>
         </template>
       </header>
+      <div v-if="isWithheld" id="poll-results" class="my-6">
+        <ProgressBar
+          class="my-4"
+          :text="voteCount.text"
+          :value="voteCount.voted"
+          :total="voteCount.total"
+        />
+        <h3>
+          {{ t('poll.result.withheld', { method: pollMethodName }) }}
+        </h3>
+      </div>
       <div v-if="isFinished" id="poll-results" class="my-6">
-        <ProgressBar class="my-4" :text="voteCount.text" :value="voteCount.voted" :total="voteCount.total" />
+        <ProgressBar
+          class="my-4"
+          :text="voteCount.text"
+          :value="voteCount.voted"
+          :total="voteCount.total"
+        />
         <h3>
           {{ t('poll.result.method', { method: pollMethodName }) }}
         </h3>
-        <component v-if="resultComponent" :is="resultComponent" :result="poll.result" :abstainCount="poll.abstain_count" :proposals="poll.proposals" class="mb-8" />
+        <component
+          v-if="resultComponent"
+          :is="resultComponent"
+          :result="poll.result"
+          :abstainCount="poll.abstain_count"
+          :proposals="poll.proposals"
+          class="mb-8"
+        />
         <div v-else class="mt-4">
           <h2>
             {{ t('poll.numApproved', approved.length) }}
           </h2>
           <Proposal
-            v-for="proposal in approved" :key="proposal.pk"
+            v-for="proposal in approved"
+            :key="proposal.pk"
             class="my-3"
             readOnly
             :p="proposal"
           />
           <Dropdown :title="t('poll.numDenied', approved.length)">
             <Proposal
-              v-for="proposal in denied" :key="proposal.pk"
+              v-for="proposal in denied"
+              :key="proposal.pk"
               class="my-3"
               readOnly
               :p="proposal"
@@ -79,26 +119,64 @@
         <p class="text-secondary mb-4">
           {{ t('proposal.ordering') }}: {{ proposalOrderingTitle }}
         </p>
-        <component :is="voteComponent" :poll="poll" :proposals="proposals" disabled :key="poll.pk" />
+        <component
+          :is="voteComponent"
+          :poll="poll"
+          :proposals="proposals"
+          disabled
+          :key="poll.pk"
+        />
       </div>
       <template v-else-if="!votingComplete">
-        <component class="voting-component" :disabled="!canVote" v-if="isOngoing" :is="voteComponent" :poll="poll" :proposals="proposals" v-model="validVote" :key="poll.pk" />
+        <component
+          class="voting-component"
+          :disabled="!canVote"
+          v-if="isOngoing"
+          :is="voteComponent"
+          :poll="poll"
+          :proposals="proposals"
+          v-model="validVote"
+          :key="poll.pk"
+        />
         <div class="btn-controls mt-6" v-if="canVote">
-          <v-btn color="primary" size="large" :disabled="!validVote || submitting" @click="castVote" prepend-icon="mdi-vote">
+          <v-btn
+            color="primary"
+            size="large"
+            :disabled="!validVote || submitting"
+            @click="castVote"
+            prepend-icon="mdi-vote"
+          >
             {{ t('poll.vote') }}
           </v-btn>
-          <v-btn color="warning" :disabled="submitting" @click="abstainVote" prepend-icon="mdi-cancel">
+          <v-btn
+            color="warning"
+            :disabled="submitting"
+            @click="abstainVote"
+            prepend-icon="mdi-cancel"
+          >
             {{ t('poll.abstain') }}
           </v-btn>
         </div>
       </template>
       <div class="mt-6">
-        <v-btn v-for="{ props, title } in buttons" :key="title" v-bind="props" class="mr-1 mb-1">
+        <v-btn
+          v-for="{ props, title } in buttons"
+          :key="title"
+          v-bind="props"
+          class="mr-1 mb-1"
+        >
           {{ title }}
         </v-btn>
-        <DefaultDialog v-if="isFinished && isPollVoter" :title="t('poll.yourVote')">
+        <DefaultDialog
+          v-if="isFinished && isPollVoter"
+          :title="t('poll.yourVote')"
+        >
           <template #activator="{ props }">
-            <v-btn v-bind="props" color="secondary mb-1" prepend-icon="mdi-vote">
+            <v-btn
+              v-bind="props"
+              color="secondary mb-1"
+              prepend-icon="mdi-vote"
+            >
               {{ t('poll.showVote') }}
             </v-btn>
           </template>
@@ -109,7 +187,15 @@
             <p v-else-if="userVote.abstain">
               {{ t('poll.abstained') }}
             </p>
-            <component v-else class="voting-component" disabled :is="voteComponent" :poll="poll" :proposals="proposals" :modelValue="userVote.vote" />
+            <component
+              v-else
+              class="voting-component"
+              disabled
+              :is="voteComponent"
+              :poll="poll"
+              :proposals="proposals"
+              :modelValue="userVote.vote"
+            />
             <v-spacer />
             <div class="text-right">
               <v-btn color="primary" @click="close">
@@ -152,14 +238,44 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
-const { approved, denied, electoralRegister, erMethod, poll, proposals, isFinished, isPrivateOrUpcoming, isOngoing, isPollVoter, pollHelpText, pollMethodName, userVote, canDelete, canVote, voteComponent, resultComponent, nextUnvoted, voteCount } = usePoll(pollId)
+const {
+  approved,
+  denied,
+  electoralRegister,
+  erMethod,
+  poll,
+  proposals,
+  isFinished,
+  isPrivateOrUpcoming,
+  isOngoing,
+  isPollVoter,
+  isWithheld,
+  pollHelpText,
+  pollMethodName,
+  userVote,
+  canDelete,
+  canVote,
+  voteComponent,
+  resultComponent,
+  nextUnvoted,
+  voteCount
+} = usePoll(pollId)
 const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
-const { agendaItem, agendaItemRoute } = useAgendaItem(computed(() => poll.value?.agenda_item))
-const { proposalOrderingTitle } = useProposalOrdering(t, computed(() => poll.value?.p_ord))
+const { agendaItem, agendaItemRoute } = useAgendaItem(
+  computed(() => poll.value?.agenda_item)
+)
+const { proposalOrderingTitle } = useProposalOrdering(
+  t,
+  computed(() => poll.value?.p_ord)
+)
 
 const subscribeAgendaItem = computed(() => {
   // Only if a component requires, i.e. proposal reaction buttons
-  if (!meeting.value || !proposalButtonPlugins.getActivePlugins(meeting.value).length) return
+  if (
+    !meeting.value ||
+    !proposalButtonPlugins.getActivePlugins(meeting.value).length
+  )
+    return
   return poll.value?.agenda_item
 })
 useChannel('agenda_item', subscribeAgendaItem)
@@ -177,7 +293,7 @@ watch(pollId, () => {
 })
 
 const submitting = ref(false)
-async function castVote () {
+async function castVote() {
   if (!validVote.value || !poll.value) return
   submitting.value = true
   const msg = {
@@ -188,20 +304,24 @@ async function castVote () {
     await socket.call(`${poll.value.method_name}_vote.add`, msg)
     votingComplete.value = true
   } catch (e) {
-    openAlertEvent.emit('^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!')
+    openAlertEvent.emit(
+      '^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!'
+    )
   }
   submitting.value = false
 }
 
-async function abstainVote () {
+async function abstainVote() {
   if (!poll.value) return
   if (validVote.value) {
-    if (!await dialogQuery({
-      title: t('poll.abstainValidVoteConfirm'),
-      no: t('cancel'),
-      yes: t('poll.abstain'),
-      theme: ThemeColor.Warning
-    })) {
+    if (
+      !(await dialogQuery({
+        title: t('poll.abstainValidVoteConfirm'),
+        no: t('cancel'),
+        yes: t('poll.abstain'),
+        theme: ThemeColor.Warning
+      }))
+    ) {
       return
     }
   }
@@ -211,17 +331,22 @@ async function abstainVote () {
     votingComplete.value = true
     validVote.value = undefined // Forget vote
   } catch (e) {
-    openAlertEvent.emit('^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!')
+    openAlertEvent.emit(
+      '^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!'
+    )
   }
   submitting.value = false
 }
 
-async function deletePoll () {
+async function deletePoll() {
   if (!canDelete.value || !poll.value) return
-  if (!await dialogQuery({
-    title: t('poll.confirmDeleteQuery'),
-    theme: ThemeColor.Warning
-  })) return
+  if (
+    !(await dialogQuery({
+      title: t('poll.confirmDeleteQuery'),
+      theme: ThemeColor.Warning
+    }))
+  )
+    return
   await pollType.api.delete(poll.value.pk)
   router.push({
     name: 'polls',
@@ -231,28 +356,34 @@ async function deletePoll () {
 
 const menuItems = computed<MenuItem[]>(() => {
   if (!canDelete.value) return []
-  return [{
-    title: t('content.delete'),
-    prependIcon: 'mdi-delete',
-    color: ThemeColor.Warning,
-    onClick: deletePoll
-  }]
+  return [
+    {
+      title: t('content.delete'),
+      prependIcon: 'mdi-delete',
+      color: ThemeColor.Warning,
+      onClick: deletePoll
+    }
+  ]
 })
 
 const buttons = computed(() => {
-  const btns: { props: object, title: string }[] = [{
-    props: {
-      color: ThemeColor.Primary,
-      to: getMeetingRoute('polls'),
-      prependIcon: 'mdi-chevron-double-left'
-    },
-    title: t('poll.all')
-  }]
+  const btns: { props: object; title: string }[] = [
+    {
+      props: {
+        color: ThemeColor.Primary,
+        to: getMeetingRoute('polls'),
+        prependIcon: 'mdi-chevron-double-left'
+      },
+      title: t('poll.all')
+    }
+  ]
   if (votingComplete.value && canVote.value) {
     btns.push({
       props: {
         color: ThemeColor.Secondary,
-        onClick: () => { votingComplete.value = false },
+        onClick: () => {
+          votingComplete.value = false
+        },
         prependIcon: 'mdi-vote'
       },
       title: t('poll.viewAndChangeVote')
@@ -262,7 +393,10 @@ const buttons = computed(() => {
     btns.push({
       props: {
         color: ThemeColor.Primary,
-        to: getMeetingRoute('poll', { pid: nextUnvoted.value.pk, pslug: slugify(nextUnvoted.value.title) }),
+        to: getMeetingRoute('poll', {
+          pid: nextUnvoted.value.pk,
+          pslug: slugify(nextUnvoted.value.title)
+        }),
         prependIcon: 'mdi-star'
       },
       title: t('poll.nextUnvoted', { ...nextUnvoted.value })

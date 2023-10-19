@@ -584,7 +584,8 @@
       "no_result": "No result | No results",
       "ongoing": "Ongoing",
       "private": "Private",
-      "upcoming": "Upcoming"
+      "upcoming": "Upcoming",
+      "withheld": "Withheld result | Withheld results"
     }
   },
   "plenary": {

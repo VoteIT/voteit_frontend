@@ -34,7 +34,6 @@ export enum PollTransition {
   Cancel = 'cancel',
   PublishResult = 'publish_result',
   WithholdResult = 'withhold_result'
-
 }
 
 export interface PollStatus {

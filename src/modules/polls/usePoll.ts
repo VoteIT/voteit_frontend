@@ -6,7 +6,12 @@ import useElectoralRegister from '../meetings/electoralRegisters/useElectoralReg
 import useProposals from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
 
-import { canChangePoll, canDeletePoll, canVote as _canVote, isPollVoter } from './rules'
+import {
+  canChangePoll,
+  canDeletePoll,
+  canVote as _canVote,
+  isPollVoter
+} from './rules'
 import { pollPlugins } from './registry'
 import { PollState } from './types'
 import usePolls from './usePolls'
@@ -16,21 +21,20 @@ import { getUserRandomSortValue } from '@/composables/useAuthentication'
 const polls = usePolls()
 const { getProposal } = useProposals()
 
-function isProposal (p?: Proposal): p is Proposal {
+function isProposal(p?: Proposal): p is Proposal {
   return !!p
 }
 
-function getProposals (pks: number[]) {
-  return pks
-    .map(getProposal)
-    .filter(isProposal)
+function getProposals(pks: number[]) {
+  return pks.map(getProposal).filter(isProposal)
 }
 
-export default function usePoll (pollRef: Ref<number>) {
+export default function usePoll(pollRef: Ref<number>) {
   const { t } = useI18n()
 
   const poll = computed(() => polls.getPoll(pollRef.value))
-  const { electoralRegister, erMethod, erMethodWeighted, totalWeight } = useElectoralRegister(computed(() => poll.value?.electoral_register))
+  const { electoralRegister, erMethod, erMethodWeighted, totalWeight } =
+    useElectoralRegister(computed(() => poll.value?.electoral_register))
   const voteCount = computed(() => {
     if (!poll.value) return {}
     const abstains = poll.value.abstain_count ?? 0
@@ -40,7 +44,7 @@ export default function usePoll (pollRef: Ref<number>) {
       const total = totalWeight.value ?? 0
       return {
         abstains,
-        percentage: Math.round(voted / total * 100),
+        percentage: Math.round((voted / total) * 100),
         text: erMethodWeighted.value
           ? t('poll.finalVoteCountWeighted', { abstains, votes, total })
           : t('poll.finalVoteCount', { abstains, votes, total }),
@@ -69,24 +73,33 @@ export default function usePoll (pollRef: Ref<number>) {
   })
 
   const isFinished = computed(() => poll.value?.state === PollState.Finished)
-  const isPrivateOrUpcoming = computed(() => poll.value && [PollState.Private, PollState.Upcoming].includes(poll.value.state))
+  const isPrivateOrUpcoming = computed(
+    () =>
+      poll.value &&
+      [PollState.Private, PollState.Upcoming].includes(poll.value.state)
+  )
   const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
+  const isWithheld = computed(() => poll.value?.state === PollState.Withheld)
   const userVote = computed(() => poll.value && polls.getUserVote(poll.value))
 
   const canChange = computed(() => poll.value && canChangePoll(poll.value))
   const canDelete = computed(() => poll.value && canDeletePoll(poll.value))
   const canVote = computed(() => poll.value && _canVote(poll.value))
 
-  const pollPlugin = computed(() => poll.value && pollPlugins.getPlugin(poll.value.method_name))
+  const pollPlugin = computed(
+    () => poll.value && pollPlugins.getPlugin(poll.value.method_name)
+  )
   const pollHelpText = computed(() => pollPlugin.value?.getHelp(t))
-  const pollMethodName = computed(() => poll.value && pollPlugins.getName(poll.value.method_name, t))
+  const pollMethodName = computed(
+    () => poll.value && pollPlugins.getName(poll.value.method_name, t)
+  )
   const voteComponent = computed(() => pollPlugin.value?.voteComponent)
   const resultComponent = computed(() => pollPlugin.value?.resultComponent)
 
   /**
    * Get sorting value for proposal, based on poll settings
    */
-  function getProposalSortValue (proposal: Proposal) {
+  function getProposalSortValue(proposal: Proposal) {
     switch (poll.value?.p_ord) {
       case 'a':
         return stripHTML(proposal.body)
@@ -122,6 +135,7 @@ export default function usePoll (pollRef: Ref<number>) {
     isPrivateOrUpcoming,
     isOngoing,
     isPollVoter: computed(() => poll.value && isPollVoter(poll.value)),
+    isWithheld,
     poll,
     pollHelpText,
     pollMethodName,
