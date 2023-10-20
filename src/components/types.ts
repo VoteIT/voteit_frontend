@@ -3,8 +3,8 @@ import { ComposerTranslation } from 'vue-i18n'
 import { UserContextRoles } from '@/composables/types'
 
 export type EditorComponent = ComponentPublicInstance<{
-  setText: (text: string) => void,
-  focus: () => void,
+  setText: (text: string) => void
+  focus: () => void
   clear: () => void
 }>
 
@@ -35,7 +35,7 @@ export enum QuillFormat {
   Image = 'image',
   Video = 'video',
   // Custom
-  Mention = 'mention',
+  Mention = 'mention'
 }
 
 export interface TagObject {
@@ -43,33 +43,43 @@ export interface TagObject {
   value: string
 }
 
-type QuillToolbarGroup = string[] | Record<string, number | string>[] | Record<string, (string | number | false)[]>[]
+type QuillToolbarGroup =
+  | string[]
+  | Record<string, number | string>[]
+  | Record<string, (string | number | false)[]>[]
 
 export interface QuillOptions {
   theme: 'bubble' | 'snow'
   debug?: 'error' | 'warn' | 'log' | 'info' | boolean
   formats?: QuillFormat[]
   modules: {
-    toolbar?: string[] | QuillToolbarGroup[] | {
-      container: QuillToolbarGroup[],
-      handlers: Record<string, () => void>
-    }
+    toolbar?:
+      | string[]
+      | QuillToolbarGroup[]
+      | {
+          container: QuillToolbarGroup[]
+          handlers: Record<string, () => void>
+        }
     keyboard: {
       bindings: {
-        tab?: null,
+        tab?: null
         submit?: {
           key: string
           ctrlKey?: boolean
           handler: () => void
         }
       }
-    },
+    }
     mention: {
       allowedChars: RegExp
       mentionDenotationChars: string[]
-      source?: (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) => void
+      source?: (
+        searchTerm: string,
+        renderList: (tags: TagObject[]) => void,
+        mentionChar: string
+      ) => void
     }
-  },
+  }
   placeholder?: string
 }
 
@@ -87,7 +97,7 @@ export enum FieldType {
   Switch = 'switch',
   Tags = 'tags',
   Text = 'text',
-  TextArea = 'textarea',
+  TextArea = 'textarea'
 }
 
 export interface FieldRule<T = string> {
@@ -118,7 +128,7 @@ interface CheckboxField extends SchemaField<boolean> {
 
 interface CheckboxMultipleField extends SchemaField<boolean> {
   type: FieldType.CheckboxMultiple
-  options: Record<string | number, string>,
+  options: Record<string | number, string>
   requiredValues?: string[]
 }
 
@@ -132,7 +142,7 @@ interface NumberField extends SchemaField<string> {
 }
 
 interface SelectField extends SchemaField<string> {
-  type: FieldType.Select,
+  type: FieldType.Select
   items: {
     title: string
     value: string | number
@@ -155,29 +165,40 @@ interface TagsField extends SchemaField<string[]> {
   type: FieldType.Tags
 }
 
-export type FormField = CheckboxField | CheckboxMultipleField | DurationField | NumberField | SelectField | SwitchField | TagsField | TextField | TextAreaField
+export type FormField =
+  | CheckboxField
+  | CheckboxMultipleField
+  | DurationField
+  | NumberField
+  | SelectField
+  | SwitchField
+  | TagsField
+  | TextField
+  | TextAreaField
 export type FormSchema = FormField[]
 
 export interface RoleMatrixColumn {
-  getCount (): number
-  getDescription? (t: ComposerTranslation): string
-  getTitle (t: ComposerTranslation): string
-  getValue (userRoles: UserContextRoles): boolean
-  setValue? (user: number, value: boolean): void
+  getCount(): number
+  getDescription?(t: ComposerTranslation): string
+  getTitle(t: ComposerTranslation): string
+  getValue(userRoles: UserContextRoles): boolean
+  setValue?(user: number, value: boolean): void
   icon: string
   name: string
 }
 export interface DescribedColumn extends RoleMatrixColumn {
-  getDescription (t: ComposerTranslation): string
+  getDescription(t: ComposerTranslation): string
 }
 export type ColumnOrRole = RoleMatrixColumn | string
 
 /**
  * Determine if column is a string value representing a role, or a full column description.
  */
-export function isColumn (col?: ColumnOrRole): col is RoleMatrixColumn {
+export function isColumn(col?: ColumnOrRole): col is RoleMatrixColumn {
   return typeof col === 'object'
 }
-export function isDescribedColumn (col: RoleMatrixColumn): col is DescribedColumn {
+export function isDescribedColumn(
+  col: RoleMatrixColumn
+): col is DescribedColumn {
   return typeof col.getDescription === 'function'
 }

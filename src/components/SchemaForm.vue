@@ -1,16 +1,21 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="valid"
-    @submit.prevent="submit"
-  >
+  <v-form ref="form" v-model="valid" @submit.prevent="submit">
     <component
-      v-for="(field, i) in fields" :key="i"
-      :is="field.component" v-bind="field.props" v-model="formData[field.name]"
+      v-for="(field, i) in fields"
+      :key="i"
+      :is="field.component"
+      v-bind="field.props"
+      v-model="formData[field.name]"
       @blur="cleanField(field)"
-      :error="!!fieldErrors[field.name]" :messages="fieldErrors[field.name]"
+      :error="!!fieldErrors[field.name]"
+      :messages="fieldErrors[field.name]"
     />
-    <slot name="buttons" :valid="valid" :submitting="submitting" :disabled="submitting || valid === false" />
+    <slot
+      name="buttons"
+      :valid="valid"
+      :submitting="submitting"
+      :disabled="submitting || valid === false"
+    />
   </v-form>
 </template>
 
@@ -41,26 +46,32 @@ const componentNames: Record<FieldType, string | Component> = {
 interface Props {
   modelValue?: any
   schema: FormSchema
-  handler? (data: any): Promise<unknown>
+  handler?(data: any): Promise<unknown>
   validateImmediately?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: () => ({})
 })
-const emit = defineEmits(['update:modelValue', 'update:valid', 'saved', 'submit'])
+const emit = defineEmits([
+  'update:modelValue',
+  'update:valid',
+  'saved',
+  'submit'
+])
 
-const { fieldErrors, clearErrors, handleRestError, handleSocketError } = useErrorHandler()
+const { fieldErrors, clearErrors, handleRestError, handleSocketError } =
+  useErrorHandler()
 
 const valid = ref<boolean | null>(null)
 const formData = reactive(
   Object.fromEntries(
-    props.schema.map(f => [f.name, props.modelValue[f.name] ?? f.default])
+    props.schema.map((f) => [f.name, props.modelValue[f.name] ?? f.default])
   )
 )
 
 const fields = props.schema.map(({ name, rules, type, ...props }) => {
-  const fieldValidators = rules?.map(r => r.validate).filter(v => v)
+  const fieldValidators = rules?.map((r) => r.validate).filter((v) => v)
   // Special case for numbers
   if (type === FieldType.Number) Object.assign(props, { type: 'number' })
   for (const rule of rules || []) {
@@ -77,7 +88,13 @@ const fields = props.schema.map(({ name, rules, type, ...props }) => {
   }
 })
 
-function cleanField ({ name, rules }: { name: string, rules?: FieldRule<any>[] }) {
+function cleanField({
+  name,
+  rules
+}: {
+  name: string
+  rules?: FieldRule<any>[]
+}) {
   let value = formData[name]
   for (const { clean } of rules || []) {
     if (clean) value = clean(value)
@@ -85,14 +102,14 @@ function cleanField ({ name, rules }: { name: string, rules?: FieldRule<any>[] }
   // Avoid triggering unneccessary reactivity
   if (formData[name] !== value) formData[name] = value
 }
-function cleanForm () {
+function cleanForm() {
   for (const field of props.schema) {
     cleanField(field)
   }
 }
 
 const submitting = ref(false)
-async function submit () {
+async function submit() {
   cleanForm()
   if (!form.value) return
   await form.value.validate()
@@ -110,7 +127,9 @@ async function submit () {
   submitting.value = false
 }
 
-const form = ref<ComponentPublicInstance<{ validate(): Promise<unknown> }> | null>(null)
+const form = ref<ComponentPublicInstance<{
+  validate(): Promise<unknown>
+}> | null>(null)
 
 watch(formData, (value) => {
   clearErrors()
@@ -118,12 +137,12 @@ watch(formData, (value) => {
 })
 
 if (props.validateImmediately) {
-  watch(form, form => {
+  watch(form, (form) => {
     form?.validate()
   })
 }
 
-watch(valid, value => {
+watch(valid, (value) => {
   emit('update:valid', value)
 })
 </script>
