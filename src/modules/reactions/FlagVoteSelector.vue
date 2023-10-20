@@ -14,28 +14,43 @@ const props = defineProps<{
   warn: boolean
 }>()
 
-const emit = defineEmits<{(e: 'selected', value: number[]): void}>()
+const emit = defineEmits<{ (e: 'selected', value: number[]): void }>()
 
 const { t } = useI18n()
-const { getMeetingButtons, getButtonReactionCount, getUserReaction } = useReactions()
+const { getMeetingButtons, getButtonReactionCount, getUserReaction } =
+  useReactions()
 const { meetingId } = useMeeting()
 
-function isTemplateProposal (btn: ReactionButton, proposal: number) {
+function isTemplateProposal(btn: ReactionButton, proposal: number) {
   const relation = { content_type: 'proposal', object_id: proposal }
   return isFlagButton(btn)
     ? getButtonReactionCount(btn, relation)
     : getUserReaction(btn, relation)
 }
 
-function hasTemplateProposals (btn: ReactionButton) {
-  return btn.vote_template && props.proposals.some(({ pk }) => isTemplateProposal(btn, pk))
+function hasTemplateProposals(btn: ReactionButton) {
+  return (
+    btn.vote_template &&
+    props.proposals.some(({ pk }) => isTemplateProposal(btn, pk))
+  )
 }
 
-const activeFlagButtons = computed(() => getMeetingButtons(meetingId.value, 'proposal', 'voteTemplate').filter(hasTemplateProposals))
+const activeFlagButtons = computed(() =>
+  getMeetingButtons(meetingId.value, 'proposal', 'voteTemplate').filter(
+    hasTemplateProposals
+  )
+)
 
-async function selectButtonProposals (btn: ReactionButton) {
-  if (props.warn && !await dialogQuery(t('reaction.selectTemplateWithValidVote', { ...btn }))) return
-  emit('selected', props.proposals.map(p => p.pk).filter(pk => isTemplateProposal(btn, pk)))
+async function selectButtonProposals(btn: ReactionButton) {
+  if (
+    props.warn &&
+    !(await dialogQuery(t('reaction.selectTemplateWithValidVote', { ...btn })))
+  )
+    return
+  emit(
+    'selected',
+    props.proposals.map((p) => p.pk).filter((pk) => isTemplateProposal(btn, pk))
+  )
 }
 </script>
 
