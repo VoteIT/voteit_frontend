@@ -550,6 +550,8 @@
       "winnersHint": "Lämna tom för att få ett resultat med alla förslag sorterade"
     },
     "result": {
+      "approveOther": "Motstående förslag",
+      "approveThis": "Bifall",
       "complete": "Fullständigt resultat",
       "electionRounds": "En valomgång | {count} valomgångar",
       "quota": "Kvot",
@@ -557,11 +559,16 @@
       "round": "Runda",
       "roundNum": "Runda {count}",
       "method": "Resultat med {method}",
+      "show": "Visa resultat",
+      "tie": "Oavgjort",
       "versus": "Mot",
       "voteCount": "Inga röster | En röst | {count} röster",
-      "approveThis": "Bifall",
-      "tie": "Oavgjort",
-      "approveOther": "Motstående förslag",
+      "withheld": "Dolt resultat",
+      "withheldDisplayConfirm": "Jag förstår och vill visa resultatet",
+      "withheldDisplayWarning": "Som moderator kan du förhandsvisa ett dolt omröstningsresultat. Du bör först förvissa dig om att inga obehöriga kan se vad du visar på din skärm, exempelvis genom att titta över din axel eller genom att du delar skärm på något sätt.",
+      "withheldExplanation": "Resultatet i den här omröstningen är inte publicerat ännu. Det betyder vanligtvis att mötets arrangör vill vänta med att presentera resultatet, och att det kommer att publiceras senare.",
+      "withheldPublish": "Publicera resultatet nu",
+      "withheldPublishConfirm": "Detta publicerar resultatet till alla mötesdetagare.\nÄr du säker?",
       "withhold": "Dölj resultatet vid stängning av omröstning"
     },
     "schulze": {

@@ -550,6 +550,8 @@
       "winnersHint": "Leave empty to get a result with all proposals sorted"
     },
     "result": {
+      "approveOther": "Approve other proposal",
+      "approveThis": "Approve",
       "complete": "Complete result",
       "electionRounds": "One election round | {count} election rounds",
       "method": "Result using {method}",
@@ -557,11 +559,16 @@
       "round": "Round",
       "roundNum": "Round {count}",
       "quota": "Quota",
+      "show": "Show result",
+      "tie": "Tie",
       "versus": "Versus",
       "voteCount": "No votes | One vote | {count} votes",
-      "approveThis": "Approve",
-      "tie": "Tie",
-      "approveOther": "Approve other proposal",
+      "withheld": "Withheld result",
+      "withheldDisplayConfirm": "I understand and want to show the result",
+      "withheldDisplayWarning": "As meeting moderator, you can preview a withheld poll result. You should ensure that no unathorized people can see your screen, for example by looking over your shoulder, or if you're sharing your screen.",
+      "withheldExplanation": "The result of this poll is not published yet. That usually means that the meeting organizer wants to control the timing of publication, and that the result will be available soon.",
+      "withheldPublish": "Publish result now",
+      "withheldPublishConfirm": "This will publish the result for all meeting participants. \nAre you sure?",
       "withhold": "Withhold result when closing poll"
     },
     "schulze": {

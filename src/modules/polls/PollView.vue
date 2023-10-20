@@ -67,9 +67,7 @@
           :value="voteCount.voted"
           :total="voteCount.total"
         />
-        <h3>
-          {{ t('poll.result.withheld', { method: pollMethodName }) }}
-        </h3>
+        <WithheldResult :pollId="pollId" />
       </div>
       <div v-if="isFinished" id="poll-results" class="my-6">
         <ProgressBar
@@ -233,6 +231,7 @@ import useProposalOrdering from '../proposals/useProposalOrdering'
 
 import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
+import WithheldResult from './WithheldResult.vue'
 
 const { t } = useI18n()
 const route = useRoute()

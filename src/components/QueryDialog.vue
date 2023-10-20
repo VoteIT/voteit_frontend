@@ -21,18 +21,10 @@
       </p>
       <div class="text-right mt-4">
         <slot name="buttons" :close="close">
-          <v-btn
-            variant="text"
-            @click="close"
-            class="mr-1"
-          >
+          <v-btn variant="text" @click="close" class="mr-1">
             {{ t('no') }}
           </v-btn>
-          <v-btn
-            variant="flat"
-            :color="color"
-            @click="confirm"
-          >
+          <v-btn variant="flat" :color="color" @click="confirm">
             {{ confirmText || t('yes') }}
           </v-btn>
         </slot>
@@ -67,12 +59,17 @@ const props = withDefaults(defineProps<Props>(), {
 
 const isActive = ref(props.modelValue)
 
-function close () {
+function close() {
   isActive.value = false
 }
 
-function confirm () {
+function confirm() {
   emit('confirmed')
   close()
 }
 </script>
+
+<style lang="sass">
+p.text-h6
+  white-space: pre-line
+</style>
