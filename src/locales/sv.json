@@ -561,7 +561,8 @@
       "voteCount": "Inga röster | En röst | {count} röster",
       "approveThis": "Bifall",
       "tie": "Oavgjort",
-      "approveOther": "Motstående förslag"
+      "approveOther": "Motstående förslag",
+      "withhold": "Dölj resultatet vid stängning av omröstning"
     },
     "schulze": {
       "addDenyProposal": "Lägg till avslag",

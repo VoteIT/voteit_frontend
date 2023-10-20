@@ -561,7 +561,8 @@
       "voteCount": "No votes | One vote | {count} votes",
       "approveThis": "Approve",
       "tie": "Tie",
-      "approveOther": "Approve other proposal"
+      "approveOther": "Approve other proposal",
+      "withhold": "Withhold result when closing poll"
     },
     "schulze": {
       "addDenyProposal": "Add deny proposal",

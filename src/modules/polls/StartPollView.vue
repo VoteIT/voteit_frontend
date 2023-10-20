@@ -4,32 +4,68 @@
       <header class="mb-4">
         <h1>{{ t('poll.start') }}</h1>
       </header>
-      <h2 class="mb-2">
-        {{ t('step', 1) }}: {{ t('poll.selectAgendaItem') }}
-      </h2>
-      <v-alert class="mt-4" v-if="!pollableAgendaItems.length" type="info" :text="t('poll.noPollableAgendaItems')" />
+      <h2 class="mb-2">{{ t('step', 1) }}: {{ t('poll.selectAgendaItem') }}</h2>
+      <v-alert
+        class="mt-4"
+        v-if="!pollableAgendaItems.length"
+        type="info"
+        :text="t('poll.noPollableAgendaItems')"
+      />
       <v-list bg-color="background">
-        <v-list-item v-show="!agendaId || agendaId === ai.pk" v-for="{ ai, ...bind } in pollableAgendaItems" :key="ai.pk" v-bind="bind">
+        <v-list-item
+          v-show="!agendaId || agendaId === ai.pk"
+          v-for="{ ai, ...bind } in pollableAgendaItems"
+          :key="ai.pk"
+          v-bind="bind"
+        >
           <template #append v-if="agendaId">
-            <v-btn size="small" variant="text" icon="mdi-close" :to="getMeetingRoute('pollStart')"/>
+            <v-btn
+              size="small"
+              variant="text"
+              icon="mdi-close"
+              :to="getMeetingRoute('pollStart')"
+            />
           </template>
         </v-list-item>
       </v-list>
       <template v-if="agendaId">
         <h2 class="my-2">{{ t('step', 2) }}: {{ t('poll.pickProposals') }}</h2>
         <v-item-group v-model="selectedProposalIds" multiple>
-          <v-item v-for="p in availableProposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
+          <v-item
+            v-for="p in availableProposals"
+            :key="p.pk"
+            :value="p.pk"
+            v-slot="{ toggle, isSelected }"
+          >
             <v-expand-transition>
-              <Proposal v-show="!pickMethod || selectedProposalIds.includes(p.pk)" read-only :p="p" @click="!pickMethod && toggle()" :class="{ isSelected, locked: pickMethod }" class="mb-4" />
+              <Proposal
+                v-show="!pickMethod || selectedProposalIds.includes(p.pk)"
+                read-only
+                :p="p"
+                @click="!pickMethod && toggle()"
+                :class="{ isSelected, locked: pickMethod }"
+                class="mb-4"
+              />
             </v-expand-transition>
           </v-item>
         </v-item-group>
-        <p v-if="!availableProposals.length"><em>{{ t('poll.noAiPublishedProposals') }}</em></p>
+        <p v-if="!availableProposals.length">
+          <em>{{ t('poll.noAiPublishedProposals') }}</em>
+        </p>
         <div v-if="!pickMethod" class="btn-group mt-3">
-          <v-btn prepend-icon="mdi-check-all" color="primary" @click="toggleAll">
+          <v-btn
+            prepend-icon="mdi-check-all"
+            color="primary"
+            @click="toggleAll"
+          >
             {{ t('all') }}
           </v-btn>
-          <v-btn prepend-icon="mdi-arrow-right-bold" color="primary" :disabled="!selectedProposals.length" @click="pickMethod=true">
+          <v-btn
+            prepend-icon="mdi-arrow-right-bold"
+            color="primary"
+            :disabled="!selectedProposals.length"
+            @click="pickMethod = true"
+          >
             {{ t('navigation.continue') }}
           </v-btn>
         </div>
@@ -37,22 +73,45 @@
       <template v-if="pickMethod">
         <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
-          <v-expansion-panel v-for="{ id, criterion, discouraged, getName, getDescription } in availableMethods" :key="id" :title="getName(t)" :value="id">
+          <v-expansion-panel
+            v-for="{
+              id,
+              criterion,
+              discouraged,
+              getName,
+              getDescription
+            } in availableMethods"
+            :key="id"
+            :title="getName(t)"
+            :value="id"
+          >
             <v-expansion-panel-text>
-              <v-alert class="my-4" type="info" :icon="discouraged && 'mdi-alert-decagram'">
+              <v-alert
+                class="my-4"
+                type="info"
+                :icon="discouraged && 'mdi-alert-decagram'"
+              >
                 {{ getDescription(t) }}
               </v-alert>
-              <h3 class="my-2">
-                Valkriterier
-              </h3>
-              <v-tooltip v-for="{ criteria, color, description, icon, title } in criterion" :key="criteria" location="top">
+              <h3 class="my-2">Valkriterier</h3>
+              <v-tooltip
+                v-for="{
+                  criteria,
+                  color,
+                  description,
+                  icon,
+                  title
+                } in criterion"
+                :key="criteria"
+                location="top"
+              >
                 <template #activator="{ props }">
                   <v-chip class="ma-1" :color="color" v-bind="props">
                     <v-icon start :icon="icon" />
                     {{ title }}
                   </v-chip>
                 </template>
-                <div style="max-width: 200px;">
+                <div style="max-width: 200px">
                   {{ description }}
                 </div>
               </v-tooltip>
@@ -71,12 +130,34 @@
           </v-expansion-panel>
         </v-expansion-panels>
         <div class="btn-group mt-3">
-          <v-btn prepend-icon="mdi-undo-variant" @click="pickMethod = false" color="primary">{{ t('navigation.back') }}</v-btn>
-          <v-btn prepend-icon="mdi-check" color="primary" :disabled="!readyToCreate" @click="createPoll()">{{ t('create') }}</v-btn>
-          <v-btn v-if="agendaItem?.state === 'ongoing'" prepend-icon="mdi-play" color="primary" :disabled="!readyToCreate" @click="createPoll(true)">{{ t('poll.createAndStart') }}</v-btn>
+          <v-btn
+            prepend-icon="mdi-undo-variant"
+            @click="pickMethod = false"
+            color="primary"
+            >{{ t('navigation.back') }}</v-btn
+          >
+          <v-btn
+            prepend-icon="mdi-check"
+            color="primary"
+            :disabled="!readyToCreate"
+            @click="createPoll()"
+            >{{ t('create') }}</v-btn
+          >
+          <v-btn
+            v-if="agendaItem?.state === 'ongoing'"
+            prepend-icon="mdi-play"
+            color="primary"
+            :disabled="!readyToCreate"
+            @click="createPoll(true)"
+            >{{ t('poll.createAndStart') }}</v-btn
+          >
         </div>
       </template>
-      <v-alert v-if="agendaItem && agendaItem.state !== 'ongoing'" type="info" class="mt-2">
+      <v-alert
+        v-if="agendaItem && agendaItem.state !== 'ongoing'"
+        type="info"
+        class="mt-2"
+      >
         {{ t('poll.cantStartWithoutOngoing') }}
       </v-alert>
     </v-col>
@@ -128,38 +209,45 @@ usePermission(isModerator, { to: meetingRoute }) // TODO canAddPoll might be dif
 useMeetingTitle(t('poll.start'))
 
 const selectedProposalIds = ref<number[]>([])
-function getPublishedProposals (agendaItem: number) {
-  return proposals.getAgendaProposals(agendaItem, p => p.state === ProposalState.Published)
+function getPublishedProposals(agendaItem: number) {
+  return proposals.getAgendaProposals(
+    agendaItem,
+    (p) => p.state === ProposalState.Published
+  )
 }
 const pollableAgendaItems = computed(() => {
   return agenda.value
-    .filter(ai => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
-    .map(ai => ({
+    .filter((ai) => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
+    .map((ai) => ({
       ai,
       to: getMeetingRoute('pollStartAI', { aid: ai.pk }),
       title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
     }))
 })
 const availableProposals = computed(() => getPublishedProposals(agendaId.value))
-const selectedProposals = computed(() => availableProposals.value.filter(p => selectedProposalIds.value.includes(p.pk)))
+const selectedProposals = computed(() =>
+  availableProposals.value.filter((p) =>
+    selectedProposalIds.value.includes(p.pk)
+  )
+)
 
-function toggleAll () {
+function toggleAll() {
   if (selectedProposals.value.length === availableProposals.value.length) {
     selectedProposalIds.value.length = 0
   } else {
-    selectedProposalIds.value = availableProposals.value.map(p => p.pk)
+    selectedProposalIds.value = availableProposals.value.map((p) => p.pk)
   }
 }
 
 const pickMethod = ref(false)
 
-function getCriterionProps (value: boolean | typeof Conditional) {
+function getCriterionProps(value: boolean | typeof Conditional) {
   if (value === Conditional) return { icon: 'mdi-help-circle' }
   if (value) return { color: 'success', icon: 'mdi-check-circle' }
   return { color: 'warning', icon: 'mdi-close-circle' }
 }
 
-function annotateCriterion (criterion: PollPlugin['criterion']) {
+function annotateCriterion(criterion: PollPlugin['criterion']) {
   return Object.entries(criterion).map(([criteria, value]) => {
     return {
       criteria,
@@ -169,18 +257,27 @@ function annotateCriterion (criterion: PollPlugin['criterion']) {
     }
   })
 }
-const availableMethods = computed(() => pollPlugins.getAvailableMethods(selectedProposals.value.length).map(m => ({ ...m, criterion: annotateCriterion(m.criterion) })))
+const availableMethods = computed(() =>
+  pollPlugins
+    .getAvailableMethods(selectedProposals.value.length)
+    .map((m) => ({ ...m, criterion: annotateCriterion(m.criterion) }))
+)
 
 const methodSelected = ref<Poll['method_name'] | null>(null)
-const methodSelectedPlugin = computed(() => pollPlugins.getPlugin(methodSelected.value || ''))
-const methodSettings = ref<PollBaseSettings | PollBaseSettings & PollMethodSettings>({ title: '', p_ord: 'c' })
-watch(methodSelected, name => {
+const methodSelectedPlugin = computed(() =>
+  pollPlugins.getPlugin(methodSelected.value || '')
+)
+const methodSettings = ref<
+  PollBaseSettings | (PollBaseSettings & PollMethodSettings)
+>({ title: '', p_ord: 'c', withheld_result: false })
+watch(methodSelected, (name) => {
   if (!name) return
   const initial = methodSelectedPlugin.value?.initialSettings || {}
   methodSettings.value = {
     ...initial,
     title: nextPollTitle.value,
-    p_ord: 'c'
+    p_ord: 'c',
+    withheld_result: false
   }
 })
 
@@ -190,20 +287,27 @@ const readyToCreate = computed(() => {
   return methodSelected.value && !working.value && settingsValid.value
 })
 
-function settingsOrNull (settings: PollMethodSettings | {}): PollMethodSettings | null {
+function settingsOrNull(
+  settings: PollMethodSettings | {}
+): PollMethodSettings | null {
   if (isEmpty(settings)) return null
   return settings as PollMethodSettings
 }
 
-async function createPoll (start = false) {
+async function createPoll(start = false) {
   if (!methodSelected.value) return
-  if (!pollPlugins.getPlugin(methodSelected.value)) return alert(`*${methodSelected.value} not implemented`)
+  if (!pollPlugins.getPlugin(methodSelected.value))
+    return alert(`*${methodSelected.value} not implemented`)
 
   working.value = true
   // eslint-disable-next-line camelcase
-  const { title, p_ord, ...settings } = methodSettings.value
+  const { title, p_ord, withheld_result, ...settings } = methodSettings.value
   // For Repeated Schulze
-  if ('winners' in settings && settings.winners === selectedProposals.value.length) settings.winners = null
+  if (
+    'winners' in settings &&
+    settings.winners === selectedProposals.value.length
+  )
+    settings.winners = null
   const pollData: PollStartData = {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
@@ -213,32 +317,46 @@ async function createPoll (start = false) {
     proposals: [...selectedProposalIds.value],
     method_name: methodSelected.value,
     start,
-    settings: settingsOrNull(settings)
+    settings: settingsOrNull(settings),
+    // eslint-disable-next-line camelcase
+    withheld_result
   }
   try {
     const { data } = await pollType.api.add(pollData as Partial<Poll>)
-    router.push(getMeetingRoute('poll', { pid: data.pk, pslug: slugify(data.title) }))
+    router.push(
+      getMeetingRoute('poll', { pid: data.pk, pslug: slugify(data.title) })
+    )
   } catch {}
   working.value = false
 }
 
 const methodSchema = computed<FormSchema | undefined>(() => {
   if (!methodSelected.value) return
-  const specifics = methodSelectedPlugin.value?.getSchema?.(t, selectedProposals.value.length) || []
+  const specifics =
+    methodSelectedPlugin.value?.getSchema?.(
+      t,
+      selectedProposals.value.length
+    ) || []
   return [
     {
       type: FieldType.Text,
       name: 'title',
       rules: [required, maxLength(70)],
       label: t('title')
-    }, {
+    },
+    {
       type: FieldType.Select,
       name: 'p_ord',
       rules: [required],
       label: t('proposal.ordering'),
       items: proposalOrderingOptions.value
     },
-    ...specifics
+    ...specifics,
+    {
+      type: FieldType.Checkbox,
+      name: 'withheld_result',
+      label: t('poll.result.withhold')
+    }
   ]
 })
 

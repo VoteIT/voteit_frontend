@@ -13,7 +13,9 @@ export enum PollCriteria {
 }
 
 export const Conditional = Symbol('conditional')
-export type PollMethodCriterion = Partial<Record<PollCriteria, boolean | typeof Conditional>>
+export type PollMethodCriterion = Partial<
+  Record<PollCriteria, boolean | typeof Conditional>
+>
 
 export interface RankedVote {
   ranking: number[]
@@ -32,7 +34,7 @@ export enum SimpleChoice {
 export interface SimpleChoiceDesc {
   value: SimpleChoice
   icon: string
-  getTitle (t: ComposerTranslation): string
+  getTitle(t: ComposerTranslation): string
   color: ThemeColor
 }
 
@@ -44,7 +46,7 @@ export interface CombinedSimpleResult extends VoteResult {
 }
 
 export interface MajorityResult extends VoteResult {
-  results: { proposal: number, votes: number }[]
+  results: { proposal: number; votes: number }[]
 }
 
 type SchulzePair = [[number, number], number]
@@ -84,7 +86,7 @@ export type InstantRunoffResult = ScottishSTVResult
 export type MajorityVote = { choice: number }
 export type SimpleVote = Record<SimpleChoice, number[]>
 
-export type PollBaseSettings = Pick<Poll, 'title' | 'p_ord'>
+export type PollBaseSettings = Pick<Poll, 'title' | 'p_ord' | 'withheld_result'>
 
 export interface DuttSettings {
   min: number
@@ -110,7 +112,12 @@ export interface SchulzeSettings {
   deny_proposal?: boolean
 }
 
-export type PollMethodSettings = RepeatedSchulzeSettings | ScottishSTVSettings | InstantRunoffSettings | SchulzeSettings | DuttSettings
+export type PollMethodSettings =
+  | RepeatedSchulzeSettings
+  | ScottishSTVSettings
+  | InstantRunoffSettings
+  | SchulzeSettings
+  | DuttSettings
 
 export interface SimplePoll extends Poll {
   method_name: 'combined_simple'
@@ -154,7 +161,7 @@ export interface DuttVote {
 
 export interface DuttResult extends VoteResult {
   results: {
-    votes: number,
+    votes: number
     proposal: number
   }[]
 }
@@ -165,4 +172,14 @@ export interface DuttPoll extends Poll {
   settings: DuttSettings
 }
 
-export type PollStartData = Pick<Poll, 'agenda_item' | 'meeting' | 'method_name' | 'p_ord' | 'proposals' | 'settings' | 'title'> & { start: boolean }
+export type PollStartData = Pick<
+  Poll,
+  | 'agenda_item'
+  | 'meeting'
+  | 'method_name'
+  | 'p_ord'
+  | 'proposals'
+  | 'settings'
+  | 'title'
+  | 'withheld_result'
+> & { start: boolean }

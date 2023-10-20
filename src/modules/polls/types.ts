@@ -63,4 +63,5 @@ export interface Poll extends BaseContent {
   settings: unknown
   state: PollState
   started: string | null
+  withheld_result: boolean
 }
