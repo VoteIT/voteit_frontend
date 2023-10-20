@@ -8,14 +8,15 @@
       <v-window v-model="currentTab" :touch="false">
         <v-window-item value="default">
           <RoleMatrix
-            :remove-confirm="removeConfirm"
             :admin="!!canChangeRoles"
-            :contentType="meetingType"
-            :pk="meetingId"
-            :icons="roleIcons"
             :cols="matrixCols"
+            :contentType="meetingType"
             :filter="filterParticipants"
+            :icons="roleIcons"
+            :pk="meetingId"
             :readonly-roles="readonlyRoles"
+            :remove-confirm="removeConfirm"
+            :remove-confirm-text="t('meeting.confirmRemoveParticipant')"
           >
             <template #filter>
               <div class="d-flex">
@@ -145,9 +146,8 @@
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, getFullName } from '@/utils'
+import { getFullName } from '@/utils'
 import restApi from '@/utils/restApi'
-import { ThemeColor } from '@/utils/types'
 import { openAlertEvent } from '@/utils/events'
 import UserList from '@/components/UserList.vue'
 import UserSearch from '@/components/UserSearch.vue'
@@ -200,9 +200,7 @@ function getDownloadUrl(type: 'csv' | 'json') {
   return `${restApi.defaults.baseURL}export-participants/${meetingId.value}/${type}/`
 }
 
-const matrixCols = computed(() => {
-  return canChangeRoles.value ? DEFAULT_ROLE_ORDER : DEFAULT_ROLE_ORDER.slice(1)
-})
+const matrixCols = DEFAULT_ROLE_ORDER.slice(1)
 
 function addRole(user: number, role: string) {
   meetingType.addRoles(meetingId.value, user, role)
@@ -223,21 +221,10 @@ const readonlyRoles = computed(() => {
 })
 
 async function removeConfirm(userPk: number, role: string) {
-  if (
-    userPk === user.value?.pk &&
-    ['moderator', 'participant'].includes(role)
-  ) {
+  if (userPk === user.value?.pk && role === 'moderator') {
     openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
     return false
   }
-  if (
-    role === 'participant' &&
-    !(await dialogQuery({
-      title: t('meeting.confirmRemoveParticipant'),
-      theme: ThemeColor.Warning
-    }))
-  )
-    return false
   return true
 }
 

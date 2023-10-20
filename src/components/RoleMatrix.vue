@@ -1,27 +1,44 @@
 <template>
-
   <div>
     <HelpSection id="roleMatrix" start-open class="mb-4">
       <p class="mb-4">{{ t('role.help.intro') }}</p>
       <ul>
-        <li class="mb-1" v-for="{ description, icon, name, title } in columnDescriptions" :key="name">
+        <li
+          class="mb-1"
+          v-for="{ description, icon, name, title } in columnDescriptions"
+          :key="name"
+        >
           <v-icon :icon="icon" />
           {{ title }} &mdash; {{ description }}
         </li>
       </ul>
     </HelpSection>
     <slot name="filter"></slot>
-    <v-pagination v-if="pageCount > 1" v-model="currentPage" :length="pageCount" />
-    <v-table class="context-roles" v-if="userMatrix.length" :class="{ orderReversed: ordering.reversed, admin }">
+    <v-pagination
+      v-if="pageCount > 1"
+      v-model="currentPage"
+      :length="pageCount"
+    />
+    <v-table
+      class="context-roles"
+      v-if="userMatrix.length"
+      :class="{ orderReversed: ordering.reversed, admin }"
+    >
       <thead>
         <tr>
           <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
             {{ t('name') }}
           </th>
           <th v-if="admin">
-            {{ t('email')}}
+            {{ t('email') }}
           </th>
-          <th v-for="{ count, icon, name, title } in columnTitles" class="text-center" :key="name" @click="orderUsers(name)" :class="{ orderBy: name === ordering.column }">
+          <th
+            v-for="{ count, icon, name, title } in columnTitles"
+            class="text-center"
+            :key="name"
+            @click="orderUsers(name)"
+            :class="{ orderBy: name === ordering.column }"
+          >
             <v-tooltip :text="title" location="top">
               <template #activator="{ props }">
                 <v-icon v-bind="props" :icon="icon" />
@@ -29,17 +46,26 @@
               </template>
             </v-tooltip>
           </th>
+          <th v-if="admin"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="{ user, row } in pageUsers" :key="user" :class="{ currentUser: isCurrentUser({ user }) }">
+        <tr
+          v-for="{ user, row } in pageUsers"
+          :key="user"
+          :class="{ currentUser: isCurrentUser({ user }) }"
+        >
           <td><User :pk="user" userid /></td>
           <td v-if="admin">
             <small>
               {{ getUser(user)?.email }}
             </small>
           </td>
-          <td v-for="({ name, setValue }, i) in columns" :key="name" class="text-center">
+          <td
+            v-for="({ name, setValue }, i) in columns"
+            :key="name"
+            class="text-center"
+          >
             <v-btn
               :disabled="!admin || !setValue"
               variant="text"
@@ -48,6 +74,30 @@
             >
               <v-icon :icon="row[i] ? 'mdi-check' : 'mdi-close'" />
             </v-btn>
+          </td>
+          <td v-if="admin" class="text-right">
+            <QueryDialog
+              v-if="removeConfirmText"
+              :text="removeConfirmText"
+              color="warning"
+              @confirmed="removeAllRoles(user)"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  size="small"
+                  color="warning"
+                  icon="mdi-delete"
+                />
+              </template>
+            </QueryDialog>
+            <v-btn
+              v-else
+              size="small"
+              color="warning"
+              icon="mdi-delete"
+              @click="removeAllRoles(user)"
+            />
           </td>
         </tr>
       </tbody>
@@ -72,24 +122,27 @@ import useMeeting from '@/modules/meetings/useMeeting'
 
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import HelpSection from './HelpSection.vue'
+import QueryDialog from './QueryDialog.vue'
 
 const USERS_PER_PAGE = 50
 
-interface Props {
-  admin: boolean
-  addConfirm? (user: number, role: string): Promise<boolean>
-  cols?: string[]
-  contentType: ContentType<any, any>
-  filter? (userRoles: UserContextRoles): boolean
-  icons: Dictionary<string>
-  pk: number
-  readonlyRoles?: Dictionary<string>
-  removeConfirm? (user: number, role: string): Promise<boolean>
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  readonlyRoles: () => ({})
-})
+const props = withDefaults(
+  defineProps<{
+    admin: boolean
+    addConfirm?(user: number, role: string): Promise<boolean>
+    cols?: string[]
+    contentType: ContentType<any, any>
+    filter?(userRoles: UserContextRoles): boolean
+    icons: Dictionary<string>
+    pk: number
+    readonlyRoles?: Dictionary<string>
+    removeConfirm?(user: number, role: string): Promise<boolean>
+    removeConfirmText?: string
+  }>(),
+  {
+    readonlyRoles: () => ({})
+  }
+)
 
 const { t } = useI18n()
 const { getUser } = useUserDetails()
@@ -97,38 +150,34 @@ const loader = useLoader('RoleMatrix')
 const { meeting } = useMeeting()
 const contextRoles = props.contentType.useContextRoles()
 
-function translateRoleHelp (role: string): string {
+function translateRoleHelp(role: string): string {
   const roleSpec = props.contentType.getRole(role)
-  return roleSpec
-    ? roleSpec.translateHelp(t)
-    : '-'
+  return roleSpec ? roleSpec.translateHelp(t) : '-'
 }
 
-function translateRoleName (role: string): string {
+function translateRoleName(role: string): string {
   const roleSpec = props.contentType.getRole(role)
-  return roleSpec
-    ? roleSpec.translateName(t)
-    : role
+  return roleSpec ? roleSpec.translateName(t) : role
 }
 
 /**
  * Create a full column definition from role name.
  */
-function roleToCol (name: string): DescribedColumn {
+function roleToCol(name: string): DescribedColumn {
   const readonlyColumn: DescribedColumn = {
-    getCount () {
+    getCount() {
       return contextRoles.getRoleCount(props.pk, name)
     },
-    getDescription () {
+    getDescription() {
       return translateRoleHelp(name)
     },
-    getTitle () {
+    getTitle() {
       const title = translateRoleName(name)
       return name in props.readonlyRoles
         ? `${title} (${props.readonlyRoles[name]})`
         : title
     },
-    getValue (user) {
+    getValue(user) {
       return user.assigned.has(name)
     },
     icon: props.icons[name],
@@ -137,7 +186,7 @@ function roleToCol (name: string): DescribedColumn {
   if (name in props.readonlyRoles) return readonlyColumn
   return {
     ...readonlyColumn,
-    setValue (user, value) {
+    setValue(user, value) {
       if (value) addRole(user, name)
       else removeRole(user, name)
     }
@@ -145,12 +194,12 @@ function roleToCol (name: string): DescribedColumn {
 }
 
 const columns = computed(() => {
-  const roleNames = props.cols || availableRoles.value.map(r => r.name)
+  const roleNames = props.cols || availableRoles.value.map((r) => r.name)
   let columns: RoleMatrixColumn[] = roleNames.map(roleToCol)
   if (!meeting.value) return columns
   for (const plugin of ifilter(
     meetingRolePlugins.getActivePlugins(meeting.value),
-    p => p.contentType === props.contentType.name
+    (p) => p.contentType === props.contentType.name
   )) {
     columns = plugin.transform(columns, meeting.value)
   }
@@ -161,25 +210,22 @@ const columns = computed(() => {
  * For use in table head
  */
 const columnTitles = computed(() => {
-  return columns.value
-    .map(col => ({
-      ...col,
-      count: col.getCount(),
-      title: col.getTitle(t)
-    }))
+  return columns.value.map((col) => ({
+    ...col,
+    count: col.getCount(),
+    title: col.getTitle(t)
+  }))
 })
 
 /**
  * For use in help section
  */
 const columnDescriptions = computed(() => {
-  return columns.value
-    .filter(isDescribedColumn)
-    .map(col => ({
-      ...col,
-      description: col.getDescription(t),
-      title: col.getTitle(t)
-    }))
+  return columns.value.filter(isDescribedColumn).map((col) => ({
+    ...col,
+    description: col.getDescription(t),
+    title: col.getTitle(t)
+  }))
 })
 
 const availableRoles = ref<ContextRole[]>([])
@@ -192,35 +238,43 @@ onBeforeMount(() => {
   )
 })
 
-async function addRole (user: number, role: string) {
+async function addRole(user: number, role: string) {
   if (!props.admin) return
-  if (props.addConfirm && !await props.addConfirm(user, role)) return
+  if (props.addConfirm && !(await props.addConfirm(user, role))) return
   props.contentType.addRoles(props.pk, user, role)
 }
-async function removeRole (user: number, role: string) {
+async function removeRole(user: number, role: string) {
   if (!props.admin) return
-  if (props.removeConfirm && !await props.removeConfirm(user, role)) return
+  if (props.removeConfirm && !(await props.removeConfirm(user, role))) return
   props.contentType.removeRoles(props.pk, user, role)
 }
 
-const ordering = reactive<{ column: string | null, reversed: boolean }>({
+async function removeAllRoles(user: number) {
+  if (!props.admin) return
+  const userRoles = contextRoles.getUserRoles(props.pk, user)
+  if (!userRoles) throw new Error(`User ${user} has no roles in this context`)
+  console.log(userRoles)
+  props.contentType.removeRoles(props.pk, user, ...userRoles)
+}
+
+const ordering = reactive<{ column: string | null; reversed: boolean }>({
   column: null,
   reversed: false
 })
 
-function orderUsers (column: string | null) {
+function orderUsers(column: string | null) {
   if (ordering.column === column) ordering.reversed = !ordering.reversed
   else ordering.column = column
 }
 
-function getRow (userRoles: UserContextRoles) {
+function getRow(userRoles: UserContextRoles) {
   return {
     user: userRoles.user,
-    row: columns.value.map(c => c.getValue(userRoles))
+    row: columns.value.map((c) => c.getValue(userRoles))
   }
 }
 
-function isCurrentUser (roles: { user: number }): boolean {
+function isCurrentUser(roles: { user: number }): boolean {
   return roles.user === user.value?.pk
 }
 
@@ -229,30 +283,35 @@ const userMatrix = computed(() => {
   if (props.filter) userRoles = userRoles.filter(props.filter)
   const matrix = userRoles.map(getRow)
   const orderByName = ordering.column === null
-  const orderColumn = columns.value.findIndex(c => c.name === ordering.column)
+  const orderColumn = columns.value.findIndex((c) => c.name === ordering.column)
   // Ordering function
-  const _ordering: (roles: { user: number, row: boolean[] }) => string | boolean | undefined = orderByName
-    // Get user full name to order by
-    ? ({ user }) => {
-      const _user = getUser(user)
-      if (_user) return getFullName(_user)
-    }
+  const _ordering: (roles: {
+    user: number
+    row: boolean[]
+  }) => string | boolean | undefined = orderByName
+    ? // Get user full name to order by
+      ({ user }) => {
+        const _user = getUser(user)
+        if (_user) return getFullName(_user)
+      }
     : ({ row }) => row[orderColumn]
   // Ordering direction
-  const order = (ordering.reversed !== orderByName) // XOR
-    ? 'asc'
-    : 'desc'
-  return _orderBy(
-    matrix,
-    [isCurrentUser, _ordering],
-    ['desc', order]
-  )
+  const order =
+    ordering.reversed !== orderByName // XOR
+      ? 'asc'
+      : 'desc'
+  return _orderBy(matrix, [isCurrentUser, _ordering], ['desc', order])
 })
 
 const currentPage = ref(1)
-const pageCount = computed(() => Math.ceil(userMatrix.value.length / USERS_PER_PAGE))
+const pageCount = computed(() =>
+  Math.ceil(userMatrix.value.length / USERS_PER_PAGE)
+)
 const pageUsers = computed(() => {
-  return userMatrix.value.slice(USERS_PER_PAGE * (currentPage.value - 1), USERS_PER_PAGE * currentPage.value)
+  return userMatrix.value.slice(
+    USERS_PER_PAGE * (currentPage.value - 1),
+    USERS_PER_PAGE * currentPage.value
+  )
 })
 </script>
 
