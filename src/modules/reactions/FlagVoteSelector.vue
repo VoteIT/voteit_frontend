@@ -41,6 +41,10 @@ const activeFlagButtons = computed(() =>
   )
 )
 
+const singleButton = computed(() =>
+  activeFlagButtons.value.length === 1 ? activeFlagButtons.value[0] : undefined
+)
+
 async function selectButtonProposals(btn: ReactionButton) {
   if (
     props.warn &&
@@ -61,7 +65,16 @@ async function selectButtonProposals(btn: ReactionButton) {
     rounded
     :title="t('reaction.templateCount', activeFlagButtons.length)"
   >
-    <v-menu>
+    <v-btn
+      v-if="singleButton"
+      :color="singleButton.color"
+      :prepend-icon="singleButton.icon"
+      variant="flat"
+      @click="selectButtonProposals(singleButton)"
+    >
+      {{ singleButton.title }}
+    </v-btn>
+    <v-menu v-else>
       <template #activator="{ props }">
         <v-btn
           v-bind="props"
