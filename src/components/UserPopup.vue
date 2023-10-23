@@ -1,12 +1,14 @@
 <template>
   <v-overlay
     scroll-strategy="close"
-    location-strategy="connected" location="top center" origin="auto"
+    location-strategy="connected"
+    location="top center"
+    origin="auto"
     :scrim="false"
     :transition="false"
-    >
+  >
     <template #activator="{ props }">
-      <slot name="activator" :props="props" />
+      <slot name="activator" :props="props"></slot>
     </template>
     <v-card rounded="lg" class="mb-1" elevation="4">
       <v-card-item>
@@ -32,6 +34,6 @@ import { getFullName } from '@/utils'
 import { User } from '@/modules/organisations/types'
 
 defineProps<{
-  user: User
+  user: Pick<User, 'email' | 'first_name' | 'last_name' | 'userid'>
 }>()
 </script>

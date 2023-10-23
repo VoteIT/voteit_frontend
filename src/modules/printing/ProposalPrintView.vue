@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col v-bind="cols.default">
-      <v-sheet class="d-print-none pa-4 mb-8" border rounded>
+      <v-sheet class="d-print-none pa-4 mb-8" :border="true" rounded>
         <div class="d-flex">
           <h2>
             {{ t('printing.selectProposals') }}
@@ -27,24 +27,41 @@
           />
         </div>
         <v-chip-group v-model="propIds" multiple column>
-          <v-chip v-for="{ pk, prop_id } in proposals" :key="pk" :value="pk" color="primary">
+          <v-chip
+            v-for="{ pk, prop_id } in proposals"
+            :key="pk"
+            :value="pk"
+            color="primary"
+          >
             #{{ prop_id }}
           </v-chip>
         </v-chip-group>
       </v-sheet>
-      <v-alert type="info" class="my-8 d-print-none" :text="t('printing.proposalHelpText')" />
-      <div v-for="{ pk, author, meetingGroup, body, body_diff_brief, created, prop_id } in selectedProposals" :key="pk" class="proposal-container mb-12">
-        <p class="mb-2 text-h4">
-          #{{ prop_id }}
-        </p>
+      <v-alert
+        type="info"
+        class="my-8 d-print-none"
+        :text="t('printing.proposalHelpText')"
+      />
+      <div
+        v-for="p in selectedProposals"
+        :key="p.pk"
+        class="proposal-container mb-12"
+      >
+        <p class="mb-2 text-h4">#{{ p.prop_id }}</p>
         <p class="text-secondary">
-          <span v-if="meetingGroup">
-            {{ meetingGroup.title }}
+          <span v-if="p.meetingGroup">
+            {{ p.meetingGroup.title }}
           </span>
-          <User v-else :pk="author" userid />
-          - {{ DateTime.fromISO(created).toLocaleString(DateTime.DATETIME_SHORT) }}
+          <User v-else :pk="p.author" userid />
+          -
+          {{
+            DateTime.fromISO(p.created).toLocaleString(DateTime.DATETIME_SHORT)
+          }}
         </p>
-        <div v-html="body_diff_brief || body" class="text-h4 proposal-text-paragraph my-2" />
+        <div
+          v-html="isDiffProposal(p) ? p.body_diff_brief : p.body"
+          class="text-h4 proposal-text-paragraph my-2"
+        ></div>
       </div>
     </v-col>
   </v-row>
@@ -52,7 +69,13 @@
 
 <script lang="ts" setup>
 import { DateTime } from 'luxon'
-import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -61,7 +84,7 @@ import useDefaults from '@/composables/useDefaults'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import { ProposalState } from '../proposals/types'
+import { ProposalState, isDiffProposal } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
 
 import usePrinting from './usePrinting'
@@ -76,40 +99,39 @@ const { getAgendaProposals } = useProposals()
 const route = useRoute()
 const router = useRouter()
 const propIds = computed<number[]>({
-  get () {
+  get() {
     if (typeof route.params.propIds !== 'string') return []
-    return route.params.propIds
-      .split(',')
-      .map(Number)
+    return route.params.propIds.split(',').map(Number)
   },
-  set (value) {
+  set(value) {
     router.replace(value.join(','))
   }
 })
-const proposals = computed(() => getAgendaProposals(agendaId.value, p => p.state !== ProposalState.Retracted))
+const proposals = computed(() =>
+  getAgendaProposals(agendaId.value, (p) => p.state !== ProposalState.Retracted)
+)
 const selectedProposals = computed(() => {
-  return getAgendaProposals(
-    agendaId.value,
-    ({ pk }) => propIds.value.includes(pk)
-  ).map(p => ({
+  return getAgendaProposals(agendaId.value, ({ pk }) =>
+    propIds.value.includes(pk)
+  ).map((p) => ({
     meetingGroup: p.meeting_group && getMeetingGroup(p.meeting_group),
     ...p
   }))
 })
 
 const allSelected = computed({
-  get () {
+  get() {
     return propIds.value.length === proposals.value.length
   },
-  set (value) {
-    if (value) propIds.value = proposals.value.map(p => p.pk)
+  set(value) {
+    if (value) propIds.value = proposals.value.map((p) => p.pk)
   }
 })
 
-function print () {
+function print() {
   if (selectedProposals.value.length) window.print()
 }
-function backAfterPrint () {
+function backAfterPrint() {
   if (!backOnPrinted.value) return
   backOnPrinted.value = false
   nextTick(router.back)

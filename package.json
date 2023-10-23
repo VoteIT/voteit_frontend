@@ -2,7 +2,7 @@
   "name": "voteit_4_frontend",
   "private": true,
   "scripts": {
-    "build": "tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "coverage": "vitest run --coverage",
     "dev": "vite",
     "extractLocales": "vue-i18n-extract report --vueFiles './src/**/*.?(ts|js|vue)' --languageFiles './src/locales/*.json'",

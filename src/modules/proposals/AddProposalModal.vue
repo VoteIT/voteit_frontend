@@ -3,7 +3,11 @@
     <v-expand-transition>
       <form @submit.prevent="preview" v-show="!done">
         <slot name="editor">
-          <RichtextEditor v-model="body" class="proposal-editor mb-2" :placeholder="t('proposal.postPlaceholder')" />
+          <RichtextEditor
+            v-model="body"
+            class="proposal-editor mb-2"
+            :placeholder="t('proposal.postPlaceholder')"
+          />
         </slot>
         <TagEdit v-model="extraTags" class="mb-2" />
         <div class="d-flex flex-column flex-md-row">
@@ -25,11 +29,21 @@
     </v-expand-transition>
     <v-expand-transition>
       <div v-if="proposalPreview" id="proposal-preview">
-        <Proposal readOnly :p="proposalPreview" class="my-6" :class="{ previewing }" />
+        <Proposal
+          readOnly
+          :p="proposalPreview"
+          class="my-6"
+          :class="{ previewing }"
+        />
       </div>
     </v-expand-transition>
     <v-spacer />
-    <v-alert v-if="done" type="success" :text="t('allDone')" class="mt-8 flex-grow-0" />
+    <v-alert
+      v-if="done"
+      type="success"
+      :text="t('allDone')"
+      class="mt-8 flex-grow-0"
+    />
     <div v-if="done" class="text-right mt-4">
       <v-btn color="primary" @click="$emit('close')">
         {{ t('close') }}
@@ -39,7 +53,12 @@
       <v-btn variant="text" @click="$emit('close')">
         {{ t('cancel') }}
       </v-btn>
-      <v-btn color="primary" prepend-icon="mdi-text-box-plus-outline" :disabled="!proposalPreview || previewing || saving" @click="saveProposal">
+      <v-btn
+        color="primary"
+        prepend-icon="mdi-text-box-plus-outline"
+        :disabled="!proposalPreview || previewing || saving"
+        @click="saveProposal"
+      >
         {{ proposal ? t('update') : t('publish') }}
       </v-btn>
     </div>
@@ -75,7 +94,7 @@ interface Props {
   shortname?: Proposal['shortname']
 }
 const props = withDefaults(defineProps<Props>(), {
-  extra () {
+  extra() {
     return {}
   },
   modelValue: '',
@@ -89,26 +108,25 @@ const { agendaId } = useAgenda(meetingId)
 const { canPostAs } = useMeetingGroups(meetingId)
 const { getHTMLTags } = useTags()
 
-const body = ref(
-  props.proposal
-    ? props.proposal.body
-    : props.modelValue
-)
-function getExtraTags (proposal?: Proposal) {
+const body = ref(props.proposal ? props.proposal.body : props.modelValue)
+function getExtraTags(proposal?: Proposal) {
   if (!proposal) return []
   const docTags = getHTMLTags(proposal.body)
-  return proposal.tags.filter(tag => !docTags.has(tag) && tag !== proposal.prop_id)
+  return proposal.tags.filter(
+    (tag) => !docTags.has(tag) && tag !== proposal.prop_id
+  )
 }
 const extraTags = ref(getExtraTags(props.proposal))
 
-const author = ref<Partial<Author> | undefined>(
-  props.proposal && {
-    author: props.proposal.author,
-    meeting_group: props.proposal.meeting_group
-  } as Author
+const author = ref<Author | undefined>(
+  props.proposal &&
+    ({
+      author: props.proposal.author,
+      meeting_group: props.proposal.meeting_group
+    } as Author)
 )
 
-function getPatchData (): Partial<Proposal> {
+function getPatchData(): Partial<Proposal> {
   return {
     body: body.value,
     ...(author.value || {}),
@@ -116,7 +134,7 @@ function getPatchData (): Partial<Proposal> {
   }
 }
 
-function getCreateData (): Partial<Proposal> {
+function getCreateData(): Partial<Proposal> {
   return {
     shortname: props.shortname,
     agenda_item: agendaId.value,
@@ -133,11 +151,14 @@ const errorText = computed(() => {
   if (!errs) return
   return errs.join(', ')
 })
-async function preview () {
+async function preview() {
   errors.value = {}
   if (!body.value) return
   try {
-    const { data } = await api.action<PreviewProposal>('preview', getCreateData())
+    const { data } = await api.action<PreviewProposal>(
+      'preview',
+      getCreateData()
+    )
     proposalPreview.value = {
       ...data,
       created: new Date().toISOString(),
@@ -153,10 +174,11 @@ async function preview () {
 
 const saving = ref(false)
 const done = ref(false)
-async function saveProposal () {
+async function saveProposal() {
   saving.value = true
   try {
-    if (props.proposal) await proposalType.api.patch(props.proposal.pk, getPatchData())
+    if (props.proposal)
+      await proposalType.api.patch(props.proposal.pk, getPatchData())
     else await proposalType.api.add(getCreateData())
     done.value = true
   } catch {}
@@ -164,7 +186,7 @@ async function saveProposal () {
 }
 
 const previewing = ref(false)
-function setPreviewTimeout () {
+function setPreviewTimeout() {
   clearTimeout(previewTimeout)
   if (!stripHTML(body.value)) {
     previewing.value = false
@@ -172,18 +194,19 @@ function setPreviewTimeout () {
     return
   }
   previewing.value = true
-  previewTimeout = setTimeout(
-    preview,
-    previewDelay
-  )
+  previewTimeout = setTimeout(preview, previewDelay)
 }
 
 watch(author, preview)
 watch(body, setPreviewTimeout)
 watch(extraTags, preview)
-watch(() => props.modelValue, value => { // React when used as subcomponent, i.e. in AddTextProposalModal
-  body.value = value
-})
+watch(
+  () => props.modelValue,
+  (value) => {
+    // React when used as subcomponent, i.e. in AddTextProposalModal
+    body.value = value
+  }
+)
 </script>
 
 <style lang="sass">

@@ -7,8 +7,8 @@ const userMeetingInvites = ref<MeetingInvite[]>([])
 
 meetingInviteType.updateMap(meetingInvites)
 
-export default function useMeetingInvites (meetingId?: Ref<number>) {
-  async function fetchInvites () {
+export default function useMeetingInvites(meetingId?: Ref<number>) {
+  async function fetchInvites() {
     try {
       /* For user from rest API */
       const { data } = await matchedInviteType.api.list()
@@ -18,17 +18,18 @@ export default function useMeetingInvites (meetingId?: Ref<number>) {
     }
   }
 
-  function clearInvites () {
+  function clearInvites() {
     /* For user from rest API */
     userMeetingInvites.value = []
   }
 
   return {
-    userMeetingInvites: readonly(userMeetingInvites),
+    userMeetingInvites,
     meetingInvites: computed(() => {
       if (!meetingId) return []
-      return [...meetingInvites.values()]
-        .filter(invite => invite.meeting === meetingId.value)
+      return [...meetingInvites.values()].filter(
+        (invite) => invite.meeting === meetingId.value
+      )
     }),
     clearInvites,
     fetchInvites

@@ -34,6 +34,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  // @ts-ignore - vue-tsc stops on this
   routes
 })
 

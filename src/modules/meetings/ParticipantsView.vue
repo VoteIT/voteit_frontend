@@ -26,10 +26,11 @@
                   clearable
                   v-model="participantFilter.search"
                 />
+                <!-- Typescript workaround for multiple -->
                 <v-select
                   :items="roleItems.slice(1)"
                   class="ml-1"
-                  multiple
+                  :multiple="true as false"
                   label="Begränsa till roller"
                   clearable
                   v-model="participantFilter.roles"

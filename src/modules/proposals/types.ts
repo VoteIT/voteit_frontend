@@ -39,14 +39,22 @@ export interface DiffProposal extends BaseProposal {
 }
 
 export type Proposal = RichtextProposal | DiffProposal
+
+export function isDiffProposal(prop: Proposal): prop is DiffProposal {
+  return prop.shortname === 'diff_proposal'
+}
+export function isRichtextProposal(prop: Proposal): prop is RichtextProposal {
+  return prop.shortname === 'proposal'
+}
+
 type PreviewOmitted = 'created' | 'author' | 'pk' | 'prop_id'
 export type PreviewProposal = Omit<Proposal, PreviewOmitted>
 
 export type ProposalButtonMode = 'presentation' | 'vote' | 'voteTemplate'
 export interface ProposalButtonPlugin extends MeetingPlugin {
-  checkActive? (meeting: Meeting, mode?: ProposalButtonMode): boolean,
+  checkActive?(meeting: Meeting, mode?: ProposalButtonMode): boolean
   component: Component<{
-    mode?: ProposalButtonMode,
+    mode?: ProposalButtonMode
     proposal: Proposal
   }>
 }

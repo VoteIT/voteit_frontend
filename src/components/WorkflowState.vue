@@ -72,10 +72,13 @@ interface Props {
   admin?: boolean
   color?: Color
   object: StateContent
-  contentType: ContentType<any>
+  contentType: ContentType<any, any>
   right?: boolean
 }
-const props = withDefaults(defineProps<Props>(), { admin: false, color: 'secondary' })
+const props = withDefaults(defineProps<Props>(), {
+  admin: false,
+  color: 'secondary'
+})
 
 const { t } = useI18n()
 const contentApi = props.contentType.getContentApi()
@@ -84,14 +87,18 @@ const transitionsAvailable = ref<Transition[] | null>(null)
 const { alert } = useAlert()
 
 const currentState = computed(() => getState(props.object.state))
-const isUserModifiable = computed<boolean>(() => props.admin && !currentState.value?.isFinal)
+const isUserModifiable = computed<boolean>(
+  () => props.admin && !currentState.value?.isFinal
+)
 
 const fetching = ref(false)
-async function menuOpenChange (open: boolean) {
+async function menuOpenChange(open: boolean) {
   if (!open || fetching.value) return
   fetching.value = true
   try {
-    transitionsAvailable.value = await contentApi.getTransitions(props.object.pk)
+    transitionsAvailable.value = await contentApi.getTransitions(
+      props.object.pk
+    )
   } catch {
     alert('^Could not get available transitions')
   }
@@ -99,7 +106,7 @@ async function menuOpenChange (open: boolean) {
 }
 
 const working = ref(false)
-async function makeTransition (t: Transition) {
+async function makeTransition(t: Transition) {
   working.value = true
   try {
     await contentApi.transition(props.object.pk, t.name)
@@ -107,15 +114,18 @@ async function makeTransition (t: Transition) {
   working.value = false
 }
 
-function unmetConditions (t: Transition) {
+function unmetConditions(t: Transition) {
   if (t.allowed) return
   return t.conditions
-    .filter(c => !c.allowed)
-    .map(c => c.title)
+    .filter((c) => !c.allowed)
+    .map((c) => c.title)
     .join(', ')
 }
 
-watch(() => props.object, () => {
-  transitionsAvailable.value = null
-})
+watch(
+  () => props.object,
+  () => {
+    transitionsAvailable.value = null
+  }
+)
 </script>

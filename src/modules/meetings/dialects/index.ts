@@ -8,7 +8,9 @@ import SFSVoteManagement from './SFSVoteManagement.vue'
 import GroupDelegationManagement from './GroupDelegationManagement.vue'
 // import MainAndSubstManagement from './MainAndSubstManagement.vue'
 
-export const voteManagementComponents: Partial<Record<string, MeetingGroupColumn['component']>> = {
+export const voteManagementComponents: Partial<
+  Record<string, MeetingGroupColumn['component']>
+> = {
   // Currently not neccessary
   // ordinarie_och_ersattare: MainAndSubstManagement,
   sfsfum: SFSVoteManagement
@@ -16,27 +18,28 @@ export const voteManagementComponents: Partial<Record<string, MeetingGroupColumn
 
 meetingGroupTablePlugins.register({
   id: 'groupVotes',
-  checkActive (meeting) {
+  checkActive(meeting) {
     return meeting.group_votes_active
   },
-  transform (columns, meeting) {
-    const component = voteManagementComponents[meeting.dialect?.view_components?.votes_management as string] // Weird annotation, but undefined works as key
+  transform(columns, meeting) {
+    const component =
+      voteManagementComponents[
+        meeting.dialect?.view_components?.votes_management as string
+      ] // Weird annotation, but undefined works as key
     const { meetingGroups } = useMeetingGroups(toRef(meeting, 'pk'))
     return [
       ...columns,
       {
         component,
         name: 'groupVotes',
-        getCount () {
+        getCount() {
           return meetingGroups.value.reduce((acc, g) => acc + (g.votes || 0), 0)
         },
-        getTitle (t) {
+        getTitle(t) {
           return t('meeting.groups.votes')
         },
-        getValue (group) {
-          return component
-            ? ''
-            : group.votes || '-'
+        getValue(group) {
+          return component ? '' : group.votes || '-'
         }
       }
     ]
@@ -45,26 +48,29 @@ meetingGroupTablePlugins.register({
 
 meetingGroupTablePlugins.register({
   id: 'mainAndSubst',
-  checkActive (meeting) {
+  checkActive(meeting) {
     return (
       [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) &&
       meeting.er_policy_name === 'main_subst_active'
     )
   },
-  transform (columns, meeting) {
+  transform(columns, meeting) {
     const { voteCount } = useMeetingGroups(toRef(meeting, 'pk'))
     return [
       ...columns,
       {
         name: 'electoralRegister',
-        getCount () {
+        getCount() {
           return voteCount.value
         },
-        getTitle (t) {
+        getTitle(t) {
           return t('electoralRegister.inCurrent')
         },
-        getValue (group) {
-          return group.memberships.reduce((acc, { votes }) => acc + (votes || 0), 0)
+        getValue(group) {
+          return group.memberships.reduce(
+            (acc, { votes }) => acc + (votes || 0),
+            0
+          )
         }
       }
     ]
@@ -73,16 +79,16 @@ meetingGroupTablePlugins.register({
 
 meetingGroupTablePlugins.register({
   id: 'group_delegations',
-  checkActive (meeting) {
+  checkActive(meeting) {
     return !!meeting.dialect?.groups_can_delegate
   },
-  transform (columns) {
+  transform(columns): MeetingGroupColumn[] {
     return [
       ...columns,
       {
         component: GroupDelegationManagement,
         name: 'delegate_to',
-        getTitle (t) {
+        getTitle(t) {
           return t('meeting.groups.delegations')
         }
       }

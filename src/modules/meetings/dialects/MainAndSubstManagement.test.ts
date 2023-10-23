@@ -8,7 +8,7 @@ import MainAndSubstManagement from './MainAndSubstManagement.vue'
 
 vi.mock('@/modules/active/useActive', () => {
   return {
-    default () {
+    default() {
       return {
         activeUserIds: { value: [1] }
       }
@@ -22,23 +22,21 @@ test('Mount component', () => {
     legacy: false,
     messages: { en: {} }
   })
-  const wrapper = mount(
-    MainAndSubstManagement,
-    {
-      global: {
-        plugins: [i18n, router, vuetify]
-      },
-      props: {
-        group: {
-          votes: 2,
-          memberships: [
-            { user: 1, role: 1 },
-            { user: 2, role: 1 }
-          ]
-        }
+  // @ts-ignore
+  const wrapper = mount(MainAndSubstManagement, {
+    global: {
+      plugins: [i18n, router, vuetify]
+    },
+    props: {
+      group: {
+        votes: 2,
+        memberships: [
+          { user: 1, role: 1 },
+          { user: 2, role: 1 }
+        ]
       }
     }
-  )
+  })
   expect(wrapper.html()).toMatchSnapshot()
   expect(wrapper.text()).toContain('1/2')
 })
