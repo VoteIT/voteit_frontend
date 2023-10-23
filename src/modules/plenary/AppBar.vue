@@ -132,7 +132,9 @@ const filterStates = computed(() => {
 })
 
 function pollStateToMenu(state: PollState): MenuItem[] {
-  const wfState = getState(state)!
+  const wfState = getState(state)
+  if (!wfState) throw new Error(`Unknown poll state '${state}'`)
+
   return getAiPolls(agendaId.value, state).map((poll) => ({
     icon: wfState.icon,
     title: poll.title,
