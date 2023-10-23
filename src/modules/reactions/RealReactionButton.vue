@@ -15,6 +15,7 @@
           size="small"
           class="pr-2"
           :disabled="disabled"
+          :loading="working"
           :prepend-icon="button.icon"
           @click.prevent="emit('update:modelValue', !modelValue)"
         >
@@ -50,14 +51,14 @@ import { useI18n } from 'vue-i18n'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { ReactionButton } from './types'
 
-interface Props {
+const props = defineProps<{
   button: ReactionButton
   count: number
   disabled?: boolean
   listDisabled?: boolean
+  working?: boolean
   modelValue?: boolean
-}
-const props = defineProps<Props>()
+}>()
 
 const emit = defineEmits(['update:modelValue', 'listOpen'])
 

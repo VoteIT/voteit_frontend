@@ -12,6 +12,7 @@
           size="small"
           :color="button.color"
           :disabled="disabled"
+          :loading="working"
           :prepend-icon="button.icon"
           :variant="variant"
           @click.prevent="emit('update:modelValue', !modelValue)"
@@ -31,6 +32,7 @@ import { IFlagButton } from './types'
 const props = defineProps<{
   button: IFlagButton
   disabled?: boolean
+  working?: boolean
   modelValue?: boolean
 }>()
 
