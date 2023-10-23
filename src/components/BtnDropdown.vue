@@ -1,9 +1,18 @@
 <template>
-  <span class="btn-dropdown" :class="{ dark, isOpen, right }" @keydown.esc.prevent="isOpen = false">
+  <span
+    class="btn-dropdown"
+    :class="{ dark, isOpen, right }"
+    @keydown.esc.prevent="isOpen = false"
+  >
     <slot name="activator" :toggle="toggle"></slot>
-    <v-btn v-if="title && !$slots.activator" @click="isOpen = !isOpen" append-icon="mdi-chevron-down">{{ title }}</v-btn>
+    <v-btn
+      v-if="title && !$slots.activator"
+      @click="isOpen = !isOpen"
+      append-icon="mdi-chevron-down"
+      >{{ title }}</v-btn
+    >
     <Widget :dense="dense" v-show="isOpen">
-      <slot v-if="!lazy || isOpen"></slot>
+      <slot v-if="eager || isOpen"></slot>
     </Widget>
   </span>
 </template>
@@ -14,7 +23,7 @@ import { nextTick, ref, watch } from 'vue'
 defineProps<{
   title?: string
   dark?: boolean
-  lazy?: boolean
+  eager?: boolean
   right?: boolean
   dense?: boolean
 }>()
@@ -30,11 +39,11 @@ watch(isOpen, async (value) => {
   else emit('close')
 })
 
-function toggle () {
+function toggle() {
   isOpen.value = !isOpen.value
 }
 
-function close () {
+function close() {
   isOpen.value = false
 }
 

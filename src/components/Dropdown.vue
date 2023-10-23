@@ -1,17 +1,31 @@
 <template>
   <div class="page-dropdown">
     <div v-if="$slots.actions" class="d-flex">
-      <v-btn prepend-icon="mdi-chevron-right" variant="text" @click="toggle" class="collapse flex-grow-1" :class="{ isOpen }">
+      <v-btn
+        prepend-icon="mdi-chevron-right"
+        variant="text"
+        @click="toggle"
+        class="collapse flex-grow-1"
+        :class="{ isOpen }"
+      >
         {{ title }}
       </v-btn>
       <slot name="actions"></slot>
     </div>
-    <v-btn v-else prepend-icon="mdi-chevron-right" variant="text" block @click="toggle" class="collapse" :class="{ isOpen }">
+    <v-btn
+      v-else
+      prepend-icon="mdi-chevron-right"
+      variant="text"
+      block
+      @click="toggle"
+      class="collapse"
+      :class="{ isOpen }"
+    >
       {{ title }}
     </v-btn>
     <v-expand-transition>
       <div class="dropdown-content" v-show="isOpen">
-        <slot></slot>
+        <slot v-if="eager || isOpen"></slot>
       </div>
     </v-expand-transition>
   </div>
@@ -20,11 +34,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-const props = defineProps<{ modelValue?: boolean, title?: string }>()
+const props = defineProps<{
+  eager?: boolean
+  modelValue?: boolean
+  title?: string
+}>()
 const emit = defineEmits(['update:modelValue'])
 
 const isOpen = ref(props.modelValue)
-function toggle () {
+function toggle() {
   isOpen.value = !isOpen.value
   emit('update:modelValue', isOpen.value)
 }

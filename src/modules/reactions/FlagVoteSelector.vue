@@ -61,7 +61,7 @@ async function selectButtonProposals(btn: ReactionButton) {
 <template>
   <v-toolbar
     v-if="activeFlagButtons.length"
-    border
+    :border="true"
     rounded
     :title="t('reaction.templateCount', activeFlagButtons.length)"
   >
