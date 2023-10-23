@@ -563,6 +563,7 @@
       "tie": "Tie",
       "versus": "Versus",
       "voteCount": "No votes | One vote | {count} votes",
+      "willBeWithheld": "The result from this poll will be withheld when the poll is closed.",
       "withheld": "Withheld result",
       "withheldDisplayConfirm": "I understand and want to show the result",
       "withheldDisplayWarning": "As meeting moderator, you can preview a withheld poll result. You should ensure that no unathorized people can see your screen, for example by looking over your shoulder, or if you're sharing your screen.",
