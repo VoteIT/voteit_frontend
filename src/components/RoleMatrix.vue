@@ -83,21 +83,19 @@
               @confirmed="removeAllRoles(user)"
             >
               <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  size="small"
-                  color="warning"
-                  icon="mdi-delete"
-                />
+                <v-btn v-bind="props" color="warning" variant="text">
+                  <v-icon icon="mdi-delete" />
+                </v-btn>
               </template>
             </QueryDialog>
             <v-btn
               v-else
-              size="small"
               color="warning"
-              icon="mdi-delete"
               @click="removeAllRoles(user)"
-            />
+              variant="text"
+            >
+              <v-icon icon="mdi-delete" />
+            </v-btn>
           </td>
         </tr>
       </tbody>
