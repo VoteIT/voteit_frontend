@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.19.0
+
+- Support polls with withheld result [#330](https://github.com/VoteIT/voteit_frontend/issues/330)
+- Add delete button to RoleMatrix and hide participant role in participant list [#329](https://github.com/VoteIT/voteit_frontend/issues/329)
+
 ## 0.18.1 (2023-10-18)
 
 - Rection button updates (clearer if user interacted)
