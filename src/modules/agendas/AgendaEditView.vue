@@ -205,7 +205,7 @@
               v-model="bulkTags"
               :items="agendaTags"
               hide-details
-              :multiple="true as false"
+              :multiple="(true as false)"
               :label="t('tags')"
             >
               <template #chip="{ item, props }">
