@@ -3,7 +3,6 @@ import AgendaItemView from '../agendas/AgendaItemView.vue'
 import polls from '../polls/router'
 import speakerLists from '../speakerLists/router'
 
-import appBar from './AppBar.vue'
 import ControlPanelView from './ControlPanel.vue'
 import ElectoralRegistersView from './electoralRegisters/ElectoralRegistersView.vue'
 import JoinMeeting from './JoinView.vue'
@@ -11,21 +10,12 @@ import ParticipantsView from './ParticipantsView.vue'
 import StartView from './StartView.vue'
 import MeetingView from './MeetingView.vue'
 import MinutesView from './MinutesView.vue'
-import navigationDrawer from './NavigationDrawer.vue'
 
 export default [
   {
     path: '/m/:id/:slug',
     name: 'MeetingRouterView',
-    components: {
-      default: MeetingView,
-      navigationDrawer,
-      appBar
-    },
-    props: {
-      navigationDrawer: false,
-      appBar: false
-    },
+    component: MeetingView,
     children: [
       {
         path: '',
@@ -37,11 +27,13 @@ export default [
         path: 'settings',
         name: 'settings',
         component: ControlPanelView,
-        children: [{
-          path: ':panel',
-          name: 'controlPanel',
-          component: ControlPanelView
-        }]
+        children: [
+          {
+            path: ':panel',
+            name: 'controlPanel',
+            component: ControlPanelView
+          }
+        ]
       },
       {
         path: 'agenda',
@@ -82,9 +74,6 @@ export default [
   {
     path: '/join/:id/:slug',
     name: 'meetingJoin',
-    components: {
-      default: JoinMeeting,
-      appBar
-    }
-  },
+    component: JoinMeeting
+  }
 ]

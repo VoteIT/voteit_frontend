@@ -42,7 +42,7 @@
                 v-show="!pickMethod || selectedProposalIds.includes(p.pk)"
                 read-only
                 :p="p"
-                @click="!pickMethod && toggle()"
+                @click="!pickMethod && toggle?.()"
                 :class="{ isSelected, locked: pickMethod }"
                 class="mb-4"
               />

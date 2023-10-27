@@ -3,7 +3,7 @@ import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
-import useProposals from '../proposals/useProposals'
+import { getProposals } from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
 
 import {
@@ -19,15 +19,6 @@ import { stripHTML } from '@/utils'
 import { getUserRandomSortValue } from '@/composables/useAuthentication'
 
 const polls = usePolls()
-const { getProposal } = useProposals()
-
-function isProposal(p?: Proposal): p is Proposal {
-  return !!p
-}
-
-function getProposals(pks: number[]) {
-  return pks.map(getProposal).filter(isProposal)
-}
 
 export default function usePoll(pollRef: Ref<number>) {
   const { t } = useI18n()

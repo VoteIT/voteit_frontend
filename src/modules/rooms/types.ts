@@ -1,0 +1,19 @@
+export interface IMeetingRoom {
+  pk: number
+  active: boolean // Currently broadcasting
+  agenda_item: number | null
+  body?: string
+  handler?: number // Currently broadcasting user
+  meeting: number
+  sls: number | null
+  send_sls: boolean
+  send_proposals: boolean
+  show_time: boolean
+  title: string
+}
+
+export interface IRoomHighlight {
+  pk: number
+  agenda_item: number | null
+  highlighted: number[] // Proposal ids
+}

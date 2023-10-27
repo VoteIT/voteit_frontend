@@ -13,10 +13,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    components: {
-      default: Home,
-      appBar
-    }
+    component: Home
   },
   ...meeting,
   plenary,

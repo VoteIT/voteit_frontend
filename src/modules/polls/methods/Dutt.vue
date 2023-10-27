@@ -8,11 +8,24 @@
       @selected="selectIds"
     />
     <v-item-group v-model="selected" multiple>
-      <v-item v-for="p in proposals" :key="p.pk" :value="p.pk" v-slot="{ toggle, isSelected }">
+      <v-item
+        v-for="p in proposals"
+        :key="p.pk"
+        :value="p.pk"
+        v-slot="{ toggle, isSelected }"
+      >
         <VoteProposal :proposal="p" class="mb-4">
           <template #vote>
             <div class="text-center">
-              <v-checkbox @update:modelValue="toggle()" :disabled="disabled" :modelValue="isSelected" hide-details :label="t('select')" class="d-inline-block mb-n2" density="compact" />
+              <v-checkbox
+                @update:modelValue="toggle?.()"
+                :disabled="disabled"
+                :modelValue="isSelected"
+                hide-details
+                :label="t('select')"
+                class="d-inline-block mb-n2"
+                density="compact"
+              />
             </div>
           </template>
         </VoteProposal>
@@ -69,17 +82,19 @@ const validVote = computed(() => {
   }
 })
 
-watch(validVote, value => {
+watch(validVote, (value) => {
   emit('update:modelValue', value)
 })
 
 const validHelpText = computed(() => {
-  if (missingProposals.value) return t('poll.dutt.minHelpText', missingProposals.value)
-  if (surplusProposals.value) return t('poll.dutt.maxHelpText', surplusProposals.value)
+  if (missingProposals.value)
+    return t('poll.dutt.minHelpText', missingProposals.value)
+  if (surplusProposals.value)
+    return t('poll.dutt.maxHelpText', surplusProposals.value)
   return t('poll.dutt.validVoteHelpText')
 })
 
-function selectIds (proposals: number[]) {
+function selectIds(proposals: number[]) {
   selected.value = proposals
 }
 </script>

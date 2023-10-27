@@ -1,51 +1,105 @@
 <script setup lang="ts">
-import { provide } from 'vue'
+import { computed, provide } from 'vue'
 import { RoleContextKey } from '@/injectionKeys'
+import { useI18n } from 'vue-i18n'
 
 import useMeetingChannel from '../meetings/useMeetingChannel'
-import useMeeting from '../meetings/useMeeting'
+import Proposal from '../proposals/Proposal.vue'
+import useRoom from '../rooms/useRoom'
+import ActiveSpeakerList from '../speakerLists/ActiveSpeakerList.vue'
 
-import useRealTime from './useRealTime'
 import ClockFace from './ClockFace.vue'
+import AppBar from './AppBar.vue'
+import { ProposalState } from '../proposals/types'
+import useMeetingTitle from '../meetings/useMeetingTitle'
 
 provide(RoleContextKey, 'meeting')
 
-const { meetingId } = useMeeting()
-const { leftActive, rightActive, pauseMessage } = useRealTime(meetingId)
+const { t } = useI18n()
+
+const { highlightedProposals, meetingRoom } = useRoom()
 
 useMeetingChannel()
+useMeetingTitle(t('room.realTime'))
 
 const targetTime = new Date()
-targetTime.setHours(targetTime.getHours() + 1)
-targetTime.setMinutes(targetTime.getMinutes() + 1)
+// targetTime.setHours(targetTime.getHours() + 1)
+// targetTime.setMinutes(targetTime.getMinutes() + 1)
+
+const speakerSystemActive = computed(() => {
+  if (!meetingRoom.value?.send_sls) return
+  return meetingRoom.value.sls
+})
+const proposalsActive = computed(() => !!meetingRoom.value?.send_proposals)
+const paused = computed(
+  () => !(speakerSystemActive.value || proposalsActive.value)
+)
 </script>
 
 <template>
-  <div v-if="!leftActive && !rightActive">
-    <h2 class="text-center mb-8">
-      {{ pauseMessage }}
-    </h2>
-    <ClockFace :target-time="targetTime" />
-  </div>
-  <div v-else class="d-flex">
-    <div v-if="leftActive" class="left flex-grow-1">
-      <h2>Nej men hej</h2>
+  <AppBar />
+  <v-main class="ma-6">
+    <div v-if="!meetingRoom?.active" class="text-center">
+      <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
+      <em>
+        {{ t('room.noBroadcast') }}
+      </em>
     </div>
-    <div v-if="leftActive && rightActive" class="spacer"></div>
-    <div v-if="rightActive" class="right flex-grow-1">
-      <h2>
-        <em>Hej, men nej!</em>
+    <div v-else-if="paused">
+      <h2 class="text-center mb-8">
+        {{ t('room.paused') }}
       </h2>
+      <ClockFace :target-time="targetTime" />
     </div>
-  </div>
+    <div v-else class="d-flex full-height">
+      <div v-if="speakerSystemActive" class="left flex-grow-1">
+        <ActiveSpeakerList :system-id="speakerSystemActive" />
+      </div>
+      <v-divider
+        v-if="speakerSystemActive && proposalsActive"
+        class="mx-5"
+        vertical
+      />
+      <div v-if="meetingRoom.send_proposals" class="right flex-grow-1">
+        <h2>
+          {{ t('proposal.proposals') }}
+        </h2>
+        <v-slide-x-transition group>
+          <Proposal
+            v-for="p in highlightedProposals"
+            read-only
+            :key="p.pk"
+            :p="p"
+            class="my-4"
+          >
+            <template #actions>
+              <v-icon
+                v-if="p.state === ProposalState.Approved"
+                icon="mdi-check-circle"
+                color="success"
+                size="x-large"
+                class="mb-n2"
+              />
+              <v-icon
+                v-if="p.state === ProposalState.Denied"
+                icon="mdi-close-circle"
+                color="warning"
+                size="x-large"
+                class="mb-n2"
+              />
+            </template>
+          </Proposal>
+        </v-slide-x-transition>
+      </div>
+    </div>
+  </v-main>
 </template>
 
 <style scoped lang="sass">
 .left,
 .right
   flex-basis: 50%
-  background-color: rgba(0,0,0,.05)
 
-.spacer
-  width: 10px
+.full-height
+  height: 100%
 </style>

@@ -27,7 +27,7 @@
 import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
-import useProposals from '@/modules/proposals/useProposals'
+import { getProposals } from '@/modules/proposals/useProposals'
 import Proposal from '@/modules/proposals/Proposal.vue'
 import type { Proposal as P } from '@/modules/proposals/types'
 
@@ -53,12 +53,6 @@ const props = defineProps<{
   proposals: number[]
   result: CombinedSimpleResult
 }>()
-
-const { getProposal } = useProposals()
-
-function isProposal(prop?: P): prop is P {
-  return !!prop
-}
 
 function getActiveChoice(pk: number): SimpleChoice | undefined {
   if (props.result.approved.includes(pk)) return SimpleChoice.Yes
@@ -98,9 +92,6 @@ function transformResult(proposal: P): ProposalResult {
 }
 
 const results = computed(() => {
-  return props.proposals
-    .map(getProposal)
-    .filter(isProposal)
-    .map(transformResult)
+  return getProposals(props.proposals).map(transformResult)
 })
 </script>

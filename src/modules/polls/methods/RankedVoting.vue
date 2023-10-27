@@ -2,7 +2,8 @@
   <div v-if="disabled && rankedProposals.length" id="scottish-stv-voting">
     <!-- If already voted -->
     <VoteProposal
-      v-for="p in rankedProposals" :key="p.pk"
+      v-for="p in rankedProposals"
+      :key="p.pk"
       :proposal="p"
       class="mb-4"
     >
@@ -16,11 +17,7 @@
     </VoteProposal>
   </div>
   <div v-else id="scottish-stv-voting">
-    <VoteProposal
-      v-for="p in proposals" :key="p.pk"
-      :proposal="p"
-      class="mb-4"
-    >
+    <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
       <template #vote>
         <div class="voting-controls" v-if="ranking.includes(p.pk)">
           <div class="left">
@@ -29,20 +26,35 @@
             </span>
           </div>
           <div class="center">
-            <v-btn :disabled="disabled" variant="text" size="small" @click="toggleSelected(p)">
+            <v-btn
+              :disabled="disabled"
+              variant="text"
+              size="small"
+              @click="toggleSelected(p)"
+            >
               {{ t('poll.rankingSelectedAs') }}
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>
           </div>
           <div class="right">
-            <v-btn :disabled="disabled" outlined color="primary" size="small" @click="toggleSelected(p)">
+            <v-btn
+              :disabled="disabled"
+              outlined
+              color="primary"
+              size="small"
+              @click="toggleSelected(p)"
+            >
               {{ t('clear') }}
             </v-btn>
           </div>
         </div>
         <div class="voting-controls" v-else>
           <div class="center">
-            <v-btn :disabled="disabled" color="primary" @click="toggleSelected(p)">
+            <v-btn
+              :disabled="disabled"
+              color="primary"
+              @click="toggleSelected(p)"
+            >
               {{ t('poll.rankingSelectAs') }}
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>
@@ -57,7 +69,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '@/modules/proposals/useProposals'
+import { getProposals } from '@/modules/proposals/useProposals'
 import type { Proposal } from '@/modules/proposals/types'
 
 import { Poll } from '../types'
@@ -77,11 +89,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { getProposal } = useProposals()
 
 const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
 
-function setOrder (order?: number[]) {
+function setOrder(order?: number[]) {
   if (order) ranking.value = order
   emit('update:modelValue', { ranking: ranking.value })
 }
@@ -89,10 +100,10 @@ function setOrder (order?: number[]) {
 // TODO: Allow setting min proposals to rank.
 const minRanked = computed(() => 1)
 
-function toggleSelected (proposal: Proposal) {
+function toggleSelected(proposal: Proposal) {
   if (props.disabled) return
   if (ranking.value.includes(proposal.pk)) {
-    ranking.value = ranking.value.filter(p => p !== proposal.pk)
+    ranking.value = ranking.value.filter((p) => p !== proposal.pk)
   } else {
     ranking.value.push(proposal.pk)
   }
@@ -100,11 +111,7 @@ function toggleSelected (proposal: Proposal) {
   else emit('update:modelValue')
 }
 
-function isProposal (p?: Proposal): p is Proposal {
-  return !!p
-}
-
-const rankedProposals = computed(() => ranking.value.map(getProposal).filter(isProposal))
+const rankedProposals = computed(() => getProposals(ranking.value))
 </script>
 
 <style lang="sass">
@@ -146,5 +153,4 @@ const rankedProposals = computed(() => ranking.value.map(getProposal).filter(isP
     height: 23px
     background-color: rgb(var(--v-theme-success))
     animation: bounce-in .3s
-
 </style>

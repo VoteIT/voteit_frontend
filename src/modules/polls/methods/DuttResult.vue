@@ -8,7 +8,9 @@
       class="my-4"
     >
       <template #bottom-right>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">
+        <p
+          class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2"
+        >
           {{ t('poll.result.voteCount', votes) }}
           <v-tooltip location="top right">
             <template #activator="{ props }">
@@ -19,7 +21,12 @@
         </p>
       </template>
     </Proposal>
-    <v-alert :text="t('poll.method.description.dutt')" type="info" icon="mdi-alert-decagram" class="my-2" />
+    <v-alert
+      :text="t('poll.method.description.dutt')"
+      type="info"
+      icon="mdi-alert-decagram"
+      class="my-2"
+    />
   </div>
 </template>
 
@@ -28,13 +35,12 @@ import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '@/modules/proposals/useProposals'
+import { getProposals } from '@/modules/proposals/useProposals'
 import Proposal from '@/modules/proposals/Proposal.vue'
 import type { Proposal as P } from '../../proposals/types'
 import type { DuttResult } from './types'
 
 const { t } = useI18n()
-const { getProposal } = useProposals()
 
 const PARTIAL_ICONS = [
   'mdi-circle-slice-1',
@@ -46,7 +52,7 @@ const PARTIAL_ICONS = [
   'mdi-circle-slice-7'
 ]
 
-function getFractionIcon (fraction: number) {
+function getFractionIcon(fraction: number) {
   // Empty, half and full circles, only for exact values.
   switch (fraction) {
     case 0:
@@ -66,17 +72,11 @@ const props = defineProps<{
   result: DuttResult
 }>()
 
-function isProposal (p?: P): p is P {
-  return !!p
-}
-
-function getIcon (votes: number) {
+function getIcon(votes: number) {
   const fraction = votes / props.result.vote_count
   const majority = fraction > 0.5
   return {
-    color: majority
-      ? 'success'
-      : 'warning',
+    color: majority ? 'success' : 'warning',
     icon: getFractionIcon(fraction),
     text: majority
       ? t('poll.dutt.majorityProposal')
@@ -84,8 +84,9 @@ function getIcon (votes: number) {
   }
 }
 
-function proposalToResult (proposal: P) {
-  const votes = props.result.results.find(r => r.proposal === proposal.pk)?.votes || 0
+function proposalToResult(proposal: P) {
+  const votes =
+    props.result.results.find((r) => r.proposal === proposal.pk)?.votes || 0
   return {
     icon: getIcon(votes),
     proposal,
@@ -95,10 +96,7 @@ function proposalToResult (proposal: P) {
 
 const results = computed(() => {
   return orderBy(
-    props.proposals
-      .map(getProposal)
-      .filter(isProposal)
-      .map(proposalToResult),
+    getProposals(props.proposals).map(proposalToResult),
     'votes',
     'desc'
   )

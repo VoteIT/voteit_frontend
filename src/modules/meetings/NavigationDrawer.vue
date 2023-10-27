@@ -1,18 +1,48 @@
 <template>
-  <v-navigation-drawer v-if="initDone" app id="meeting-navigation" v-model="isOpen" width="348" class="d-print-none">
-    <MenuTree :items="menu" @navigation="toggleDrawer">
+  <v-navigation-drawer
+    app
+    id="meeting-navigation"
+    v-model="isOpen"
+    width="348"
+    class="d-print-none"
+  >
+    <MenuTree v-if="initDone" :items="menu" @navigation="toggleDrawer">
       <template #tagFilter v-if="agendaTags.length">
         <div class="d-flex ml-8 mb-1 mr-2">
-          <v-btn class="flex-grow-1" variant="text" size="small" :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="filterMenuOpen = !filterMenuOpen">
+          <v-btn
+            class="flex-grow-1"
+            variant="text"
+            size="small"
+            :append-icon="
+              filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'
+            "
+            @click="filterMenuOpen = !filterMenuOpen"
+          >
             {{ t('filter') }}
           </v-btn>
-          <v-btn variant="text" size="small" :disabled="!agendaTag" @click="agendaTag = undefined">
+          <v-btn
+            variant="text"
+            size="small"
+            :disabled="!agendaTag"
+            @click="agendaTag = undefined"
+          >
             <v-icon icon="mdi-undo" />
           </v-btn>
         </div>
         <v-expand-transition>
-          <v-chip-group column class="ml-8" v-model="agendaTag" :items="agendaTags" v-show="filterMenuOpen">
-            <v-chip v-for="tag in agendaTags" :key="tag" :value="tag" size="small">
+          <v-chip-group
+            column
+            class="ml-8"
+            v-model="agendaTag"
+            :items="agendaTags"
+            v-show="filterMenuOpen"
+          >
+            <v-chip
+              v-for="tag in agendaTags"
+              :key="tag"
+              :value="tag"
+              size="small"
+            >
               {{ tag }}
             </v-chip>
           </v-chip-group>
@@ -21,7 +51,7 @@
     </MenuTree>
     <template #append>
       <ComponentSlot name="appendMenu" />
-      <v-defaults-provider :defaults="{ 'VList': { bgColor: 'surface' } }">
+      <v-defaults-provider :defaults="{ VList: { bgColor: 'surface' } }">
         <BugReports v-if="isModerator" class="ma-2" />
       </v-defaults-provider>
     </template>
@@ -60,13 +90,21 @@ const agendaLoadedEvent = new TypedEvent()
 // eslint-disable-next-line camelcase
 channelSubscribedEvent.on(({ channelType }) => {
   // Agenda is loaded when "participants" or "moderators" channels are subscribed
-  if (['participants', 'moderators'].includes(channelType)) agendaLoadedEvent.emit()
+  if (['participants', 'moderators'].includes(channelType))
+    agendaLoadedEvent.emit()
 })
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
 const { mobile } = useDisplay()
-const { meeting, meetingId, isModerator, meetingRoute, getMeetingRoute, hasRole } = useMeeting()
+const {
+  meeting,
+  meetingId,
+  isModerator,
+  meetingRoute,
+  getMeetingRoute,
+  hasRole
+} = useMeeting()
 const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
 const { agendaTags } = useAgendaTags(agenda)
 const agendaWorkflows = agendaItemType.useWorkflows()
@@ -74,23 +112,26 @@ const { getAiPolls, getUnvotedPolls } = usePolls()
 const { getAgendaProposals } = useProposals()
 const { initDone } = useLoader('Agenda')
 
-function getAiType (state: string) {
-  return filteredAgenda.value.filter(ai => ai.state === state)
+function getAiType(state: string) {
+  return filteredAgenda.value.filter((ai) => ai.state === state)
 }
 
-const aiGroups = computed(() => agendaWorkflows.getPriorityStates(
-  s => s && (!s.requiresRole || !!hasRole(s.requiresRole))
-))
-
-function getAIMenuItems (s: WorkflowState): TreeMenuLink[] {
-  return getAiType(s.state).map(ai => ({
-      title: ai.title,
-      to: getMeetingRoute('agendaItem', { aid: ai.pk, aslug: slugify(ai.title) }),
-      icons: getAiPolls(ai.pk, PollState.Ongoing).length ? ['mdi-star-outline'] : [],
-      count: getAgendaProposals(ai.pk).length || undefined,
-      hasNewItems: hasNewItems(ai)
-    })
+const aiGroups = computed(() =>
+  agendaWorkflows.getPriorityStates(
+    (s) => s && (!s.requiresRole || !!hasRole(s.requiresRole))
   )
+)
+
+function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
+  return getAiType(s.state).map((ai) => ({
+    title: ai.title,
+    to: getMeetingRoute('agendaItem', { aid: ai.pk, aslug: slugify(ai.title) }),
+    icons: getAiPolls(ai.pk, PollState.Ongoing).length
+      ? ['mdi-star-outline']
+      : [],
+    count: getAgendaProposals(ai.pk).length || undefined,
+    hasNewItems: hasNewItems(ai)
+  }))
 }
 
 const aiMenus = computed<TreeMenuItem[]>(() => {
@@ -108,14 +149,16 @@ const aiMenus = computed<TreeMenuItem[]>(() => {
       items,
       title: s.getName(t, items.length),
       showCount: true,
-      showCountTotal: agenda.value.filter(ai => ai.state === s.state).length,
+      showCountTotal: agenda.value.filter((ai) => ai.state === s.state).length,
       loadedEvent: agendaLoadedEvent
     })
   }
   return menus
 })
 
-const unvotedPolls = computed(() => orderBy(getUnvotedPolls(meetingId.value), ['started']))
+const unvotedPolls = computed(() =>
+  orderBy(getUnvotedPolls(meetingId.value), ['started'])
+)
 const hasUnvotedPolls = computed(() => !!unvotedPolls.value.length)
 const openPollMenuEvent = new TypedEvent()
 watch(hasUnvotedPolls, (value, oldValue) => {
@@ -123,11 +166,13 @@ watch(hasUnvotedPolls, (value, oldValue) => {
 })
 
 const pollMenus = computed<TreeMenuItem[]>(() => {
-  const menus: TreeMenuItem[] = [{
-    exactActive: true,
-    title: t('poll.all'),
-    to: getMeetingRoute('polls')
-  }]
+  const menus: TreeMenuItem[] = [
+    {
+      exactActive: true,
+      title: t('poll.all'),
+      to: getMeetingRoute('polls')
+    }
+  ]
   if (meeting.value && canAddPoll(meeting.value)) {
     menus.push({
       title: t('poll.new'),
@@ -138,7 +183,7 @@ const pollMenus = computed<TreeMenuItem[]>(() => {
   if (unvotedPolls.value.length) {
     menus.push({
       title: t('poll.unvoted'),
-      items: unvotedPolls.value.map(p => ({
+      items: unvotedPolls.value.map((p) => ({
         title: p.title,
         to: getMeetingRoute('poll', { pid: p.pk, pslug: slugify(p.title) }),
         icons: ['mdi-star']
@@ -150,39 +195,46 @@ const pollMenus = computed<TreeMenuItem[]>(() => {
 })
 
 const menu = computed<TreeMenu[]>(() => {
-  const items: TreeMenu[] = [{
-    title: t('meeting.meeting'),
-    items: [{
-      exactActive: true,
-      title: t('start'),
-      to: meetingRoute.value
-    }, {
-      title: t('meeting.participants'),
-      to: getMeetingRoute('participants')
-    }, {
-      title: t('electoralRegister.plural'),
-      to: getMeetingRoute('electoralRegisters')
-    }, {
-      title: t('minutes.documents'),
-      to: getMeetingRoute('meetingMinutes')
-    }],
-    icon: 'mdi-home'
-  },
-  {
-    title: t('poll.polls'),
-    items: pollMenus.value,
-    icon: hasUnvotedPolls.value ? 'mdi-star' : 'mdi-star-outline',
-    openEvent: openPollMenuEvent
-  },
-  {
-    title: t('agenda.agenda'),
-    items: aiMenus.value,
-    defaultOpen: true,
-    icon: 'mdi-format-list-bulleted',
-    openFirstNonEmpty: true,
-    loadedEvent: agendaLoadedEvent,
-    slotBefore: 'tagFilter'
-  }]
+  const items: TreeMenu[] = [
+    {
+      title: t('meeting.meeting'),
+      items: [
+        {
+          exactActive: true,
+          title: t('start'),
+          to: meetingRoute.value
+        },
+        {
+          title: t('meeting.participants'),
+          to: getMeetingRoute('participants')
+        },
+        {
+          title: t('electoralRegister.plural'),
+          to: getMeetingRoute('electoralRegisters')
+        },
+        {
+          title: t('minutes.documents'),
+          to: getMeetingRoute('meetingMinutes')
+        }
+      ],
+      icon: 'mdi-home'
+    },
+    {
+      title: t('poll.polls'),
+      items: pollMenus.value,
+      icon: hasUnvotedPolls.value ? 'mdi-star' : 'mdi-star-outline',
+      openEvent: openPollMenuEvent
+    },
+    {
+      title: t('agenda.agenda'),
+      items: aiMenus.value,
+      defaultOpen: true,
+      icon: 'mdi-format-list-bulleted',
+      openFirstNonEmpty: true,
+      loadedEvent: agendaLoadedEvent,
+      slotBefore: 'tagFilter'
+    }
+  ]
   if (canChangeMeeting(meeting.value)) {
     items[0].items.push({
       icons: ['mdi-cog'],
@@ -194,7 +246,7 @@ const menu = computed<TreeMenu[]>(() => {
 })
 
 const isOpen = ref(!mobile.value)
-function toggleDrawer () {
+function toggleDrawer() {
   if (mobile.value) isOpen.value = !isOpen.value
 }
 toggleNavDrawerEvent.on(toggleDrawer)

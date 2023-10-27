@@ -1,276 +1,3 @@
-<template>
-  <MeetingToolbar :title="t('agenda.agenda')">
-    <v-spacer />
-    <v-tabs :items="editModes" v-model="editMode" />
-  </MeetingToolbar>
-  <v-window v-model="editMode">
-    <v-window-item value="default">
-      <div class="d-flex align-center">
-        <v-chip-group v-model="agendaTag">
-          <v-chip
-            v-for="tag in agendaTags"
-            :key="tag"
-            :value="tag"
-            size="small"
-            color="primary"
-          >
-            {{ tag }}
-          </v-chip>
-        </v-chip-group>
-        <v-chip
-          v-if="agendaTag"
-          size="small"
-          @click="agendaTag = undefined"
-          prepend-icon="mdi-close"
-          color="warning"
-        >
-          {{ t('clear') }}
-        </v-chip>
-      </div>
-      <v-table id="agenda-edit">
-        <thead>
-          <tr>
-            <th>
-              <input type="checkbox" v-model="editIsAllSelected" />
-            </th>
-            <th>{{ t('state') }}</th>
-            <th width="100%">{{ t('title') }}</th>
-            <th>
-              <v-tooltip :text="t('agenda.helpEditTags')" location="top">
-                <template #activator="{ props }">
-                  <span v-bind="props" class="text-no-wrap">
-                    {{ t('tags') }}
-                    <v-icon icon="mdi-help-circle" />
-                  </span>
-                </template>
-              </v-tooltip>
-            </th>
-            <th>{{ t('proposal.proposals') }}</th>
-            <th>{{ t('discussion.discussions') }}</th>
-            <th />
-          </tr>
-        </thead>
-        <v-item-group tag="tbody" multiple v-model="editSelected">
-          <v-item
-            v-for="ai in filteredAgenda"
-            :key="ai.pk"
-            v-slot="{ toggle, isSelected }"
-            :value="ai.pk"
-          >
-            <tr>
-              <td>
-                <input
-                  type="checkbox"
-                  :checked="isSelected"
-                  @change.prevent="toggle()"
-                  class="mr-2"
-                />
-              </td>
-              <td class="state">
-                <v-icon size="small" :icon="getState(ai.state)?.icon" />
-              </td>
-              <td>
-                <Headline
-                  :modelValue="ai.title"
-                  tag="h4"
-                  :maxlength="100"
-                  clickToEdit
-                  @update:modelValue="setTitle(ai, $event)"
-                />
-              </td>
-              <td>
-                <v-chip-group v-model="agendaTag">
-                  <v-chip
-                    v-for="tag in ai.tags"
-                    :key="tag"
-                    :value="tag"
-                    size="small"
-                    color="primary"
-                  >
-                    {{ tag }}
-                  </v-chip>
-                </v-chip-group>
-              </td>
-              <td class="state">
-                <v-switch
-                  :modelValue="!ai.block_proposals"
-                  hide-details
-                  color="primary"
-                  @update:modelValue="
-                    patchAgendaItem(ai, { block_proposals: !$event })
-                  "
-                />
-              </td>
-              <td class="state">
-                <v-switch
-                  :modelValue="!ai.block_discussion"
-                  hide-details
-                  color="primary"
-                  @update:modelValue="
-                    patchAgendaItem(ai, { block_discussion: !$event })
-                  "
-                />
-              </td>
-              <td>
-                <QueryDialog
-                  v-if="canDeleteAgendaItem(ai)"
-                  color="warning"
-                  :text="t('agenda.deleteItemConfirm')"
-                  @confirmed="agendaApi.delete(ai.pk)"
-                >
-                  <template #activator="{ props }">
-                    <v-btn
-                      color="warning"
-                      prepend-icon="mdi-delete"
-                      size="small"
-                      v-bind="props"
-                    >
-                      {{ t('content.delete') }}
-                    </v-btn>
-                  </template>
-                </QueryDialog>
-              </td>
-            </tr>
-          </v-item>
-        </v-item-group>
-      </v-table>
-      <v-expand-transition>
-        <v-sheet
-          :border="true"
-          rounded
-          v-if="selectedAgendaItems.length"
-          class="pa-2"
-        >
-          <h2 class="my-2">
-            {{ t('agenda.changeMany', selectedAgendaItems.length) }}
-          </h2>
-          <QueryDialog
-            :text="t('agenda.deleteSelectedConfirm', editSelected.length)"
-            color="warning"
-            @confirmed="deleteSelected"
-          >
-            <template #activator="{ props }">
-              <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
-                {{ t('content.delete') }}
-              </v-btn>
-            </template>
-          </QueryDialog>
-          <div class="my-2">
-            <v-btn
-              color="primary"
-              class="mt-1 mr-1"
-              :prepend-icon="state.icon"
-              v-for="state in agendaItemType.workflowStates?.filter(
-                (s) => s.transition
-              )"
-              :key="state.state"
-              :disabled="state.state === selectedSingularState"
-              @click="setStateSelected(state)"
-              >{{ t('agenda.setTo') }} {{ state.getName(t, 2) }}</v-btn
-            >
-          </div>
-          <div class="my-2">
-            <v-btn
-              color="success"
-              class="mr-1"
-              prepend-icon="mdi-text-box-plus-outline"
-              @click="patchSelected({ block_proposals: false })"
-              >{{ t('agenda.allowProposals') }}</v-btn
-            >
-            <v-btn
-              color="warning"
-              prepend-icon="mdi-text-box-plus-outline"
-              @click="patchSelected({ block_proposals: true })"
-              >{{ t('agenda.blockProposals') }}</v-btn
-            >
-          </div>
-          <div class="my-2">
-            <v-btn
-              color="success"
-              class="mr-1"
-              prepend-icon="mdi-comment-outline"
-              @click="patchSelected({ block_discussion: false })"
-              >{{ t('agenda.allowDiscussion') }}</v-btn
-            >
-            <v-btn
-              color="warning"
-              prepend-icon="mdi-comment-outline"
-              @click="patchSelected({ block_discussion: true })"
-              >{{ t('agenda.blockDiscussion') }}</v-btn
-            >
-          </div>
-          <div class="my-2">
-            <!-- Typescript workaround for multiple -->
-            <v-combobox
-              v-model="bulkTags"
-              :items="agendaTags"
-              hide-details
-              :multiple="(true as false)"
-              :label="t('tags')"
-            >
-              <template #chip="{ item, props }">
-                <v-chip
-                  v-bind="props"
-                  :color="
-                    isBulkAllSelected(item.value) ? 'primary' : 'secondary'
-                  "
-                  @click.self.stop="tagBulkAdd(item.value)"
-                  closable
-                />
-              </template>
-            </v-combobox>
-          </div>
-        </v-sheet>
-      </v-expand-transition>
-      <v-divider class="mt-6 mb-2" />
-      <h2>{{ t('agenda.newItem') }}</h2>
-      <form
-        @submit.prevent="addAgendaItem()"
-        id="agenda-add-form"
-        class="d-flex mb-2"
-      >
-        <v-text-field
-          :label="t('title')"
-          required
-          maxlength="100"
-          v-model="newAgendaTitle"
-          hide-details
-          class="flex-grow-1 hide-details"
-        />
-        <v-btn
-          prepend-icon="mdi-plus"
-          type="submit"
-          :disabled="!newAgendaTitle"
-          color="primary"
-          >{{ t('add') }}</v-btn
-        >
-      </form>
-    </v-window-item>
-    <v-window-item value="order">
-      <Draggable v-model="agendaItems" item-key="pk">
-        <template #item="{ element }">
-          <div>
-            <v-icon size="small" :icon="getState(element.state)?.icon" />
-            <span>{{ element.title }}</span>
-            <v-icon size="small" icon="mdi-drag-horizontal" />
-          </div>
-        </template>
-      </Draggable>
-      <div class="text-right">
-        <v-btn
-          class="my-1"
-          color="primary"
-          :disabled="!agendaOrderChanged"
-          :loading="orderSaving"
-          @click="saveAgendaOrder"
-        >
-          {{ t('save') }}
-        </v-btn>
-      </div>
-    </v-window-item>
-  </v-window>
-</template>
-
 <script lang="ts" setup>
 import Axios from 'axios'
 import { difference, isEqual } from 'lodash'
@@ -350,20 +77,18 @@ watch(agenda, (agendaItems) => {
 /* END agenda ordering
  */
 
-const editModes = computed(() => {
-  return [
-    {
-      value: 'default',
-      title: t('edit'),
-      prependIcon: 'mdi-pencil'
-    },
-    {
-      value: 'order',
-      title: t('sort'),
-      prependIcon: 'mdi-reorder-horizontal'
-    }
-  ]
-})
+const editModes = computed(() => [
+  {
+    value: 'default',
+    text: t('edit'),
+    prependIcon: 'mdi-pencil'
+  },
+  {
+    value: 'order',
+    text: t('sort'),
+    prependIcon: 'mdi-reorder-horizontal'
+  }
+])
 const editMode = ref('default')
 
 const newAgendaTitle = ref('')
@@ -507,6 +232,278 @@ async function setTitle({ pk }: AgendaItem, title: string) {
   agendaItemType.api.patch(pk, { title })
 }
 </script>
+
+<template>
+  <MeetingToolbar :title="t('agenda.agenda')">
+    <v-spacer />
+    <v-tabs :items="editModes" v-model="editMode" />
+  </MeetingToolbar>
+  <v-window v-model="editMode">
+    <v-window-item value="default">
+      <div class="d-flex align-center">
+        <v-chip-group v-model="agendaTag">
+          <v-chip
+            v-for="tag in agendaTags"
+            :key="tag"
+            :value="tag"
+            size="small"
+            color="primary"
+          >
+            {{ tag }}
+          </v-chip>
+        </v-chip-group>
+        <v-chip
+          v-if="agendaTag"
+          size="small"
+          @click="agendaTag = undefined"
+          prepend-icon="mdi-close"
+          color="warning"
+        >
+          {{ t('clear') }}
+        </v-chip>
+      </div>
+      <v-table id="agenda-edit">
+        <thead>
+          <tr>
+            <th>
+              <input type="checkbox" v-model="editIsAllSelected" />
+            </th>
+            <th>{{ t('state') }}</th>
+            <th width="100%">{{ t('title') }}</th>
+            <th>
+              <v-tooltip :text="t('agenda.helpEditTags')" location="top">
+                <template #activator="{ props }">
+                  <span v-bind="props" class="text-no-wrap">
+                    {{ t('tags') }}
+                    <v-icon icon="mdi-help-circle" />
+                  </span>
+                </template>
+              </v-tooltip>
+            </th>
+            <th>{{ t('proposal.proposals') }}</th>
+            <th>{{ t('discussion.discussions') }}</th>
+            <th />
+          </tr>
+        </thead>
+        <v-item-group tag="tbody" multiple v-model="editSelected">
+          <v-item
+            v-for="ai in filteredAgenda"
+            :key="ai.pk"
+            v-slot="{ toggle, isSelected }"
+            :value="ai.pk"
+          >
+            <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  :checked="isSelected"
+                  @change.prevent="toggle?.()"
+                  class="mr-2"
+                />
+              </td>
+              <td class="state">
+                <v-icon size="small" :icon="getState(ai.state)?.icon" />
+              </td>
+              <td>
+                <Headline
+                  :modelValue="ai.title"
+                  tag="h4"
+                  :maxlength="100"
+                  clickToEdit
+                  @update:modelValue="setTitle(ai, $event)"
+                />
+              </td>
+              <td>
+                <v-chip-group v-model="agendaTag">
+                  <v-chip
+                    v-for="tag in ai.tags"
+                    :key="tag"
+                    :value="tag"
+                    size="small"
+                    color="primary"
+                  >
+                    {{ tag }}
+                  </v-chip>
+                </v-chip-group>
+              </td>
+              <td class="state">
+                <v-switch
+                  :modelValue="!ai.block_proposals"
+                  hide-details
+                  color="primary"
+                  @update:modelValue="
+                    patchAgendaItem(ai, { block_proposals: !$event })
+                  "
+                />
+              </td>
+              <td class="state">
+                <v-switch
+                  :modelValue="!ai.block_discussion"
+                  hide-details
+                  color="primary"
+                  @update:modelValue="
+                    patchAgendaItem(ai, { block_discussion: !$event })
+                  "
+                />
+              </td>
+              <td>
+                <QueryDialog
+                  v-if="canDeleteAgendaItem(ai)"
+                  color="warning"
+                  :text="t('agenda.deleteItemConfirm')"
+                  @confirmed="agendaApi.delete(ai.pk)"
+                >
+                  <template #activator="{ props }">
+                    <v-btn
+                      color="warning"
+                      prepend-icon="mdi-delete"
+                      size="small"
+                      v-bind="props"
+                    >
+                      {{ t('content.delete') }}
+                    </v-btn>
+                  </template>
+                </QueryDialog>
+              </td>
+            </tr>
+          </v-item>
+        </v-item-group>
+      </v-table>
+      <v-expand-transition>
+        <v-sheet
+          :border="true"
+          rounded
+          v-if="selectedAgendaItems.length"
+          class="pa-2"
+        >
+          <h2 class="my-2">
+            {{ t('agenda.changeMany', selectedAgendaItems.length) }}
+          </h2>
+          <QueryDialog
+            :text="t('agenda.deleteSelectedConfirm', editSelected.length)"
+            color="warning"
+            @confirmed="deleteSelected"
+          >
+            <template #activator="{ props }">
+              <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
+                {{ t('content.delete') }}
+              </v-btn>
+            </template>
+          </QueryDialog>
+          <div class="my-2">
+            <v-btn
+              color="primary"
+              class="mt-1 mr-1"
+              :prepend-icon="state.icon"
+              v-for="state in agendaItemType.workflowStates?.filter(
+                (s) => s.transition
+              )"
+              :key="state.state"
+              :disabled="state.state === selectedSingularState"
+              @click="setStateSelected(state)"
+              >{{ t('agenda.setTo') }} {{ state.getName(t, 2) }}</v-btn
+            >
+          </div>
+          <div class="my-2">
+            <v-btn
+              color="success"
+              class="mr-1"
+              prepend-icon="mdi-text-box-plus-outline"
+              @click="patchSelected({ block_proposals: false })"
+              >{{ t('agenda.allowProposals') }}</v-btn
+            >
+            <v-btn
+              color="warning"
+              prepend-icon="mdi-text-box-plus-outline"
+              @click="patchSelected({ block_proposals: true })"
+              >{{ t('agenda.blockProposals') }}</v-btn
+            >
+          </div>
+          <div class="my-2">
+            <v-btn
+              color="success"
+              class="mr-1"
+              prepend-icon="mdi-comment-outline"
+              @click="patchSelected({ block_discussion: false })"
+              >{{ t('agenda.allowDiscussion') }}</v-btn
+            >
+            <v-btn
+              color="warning"
+              prepend-icon="mdi-comment-outline"
+              @click="patchSelected({ block_discussion: true })"
+              >{{ t('agenda.blockDiscussion') }}</v-btn
+            >
+          </div>
+          <div class="my-2">
+            <v-combobox
+              v-model="bulkTags"
+              :items="agendaTags"
+              hide-details
+              multiple
+              :label="t('tags')"
+            >
+              <template #chip="{ item, props }">
+                <v-chip
+                  v-bind="props"
+                  :color="
+                    isBulkAllSelected(item.value) ? 'primary' : 'secondary'
+                  "
+                  @click.self.stop="tagBulkAdd(item.value)"
+                  closable
+                />
+              </template>
+            </v-combobox>
+          </div>
+        </v-sheet>
+      </v-expand-transition>
+      <v-divider class="mt-6 mb-2" />
+      <h2>{{ t('agenda.newItem') }}</h2>
+      <form
+        @submit.prevent="addAgendaItem()"
+        id="agenda-add-form"
+        class="d-flex mb-2"
+      >
+        <v-text-field
+          :label="t('title')"
+          required
+          maxlength="100"
+          v-model="newAgendaTitle"
+          hide-details
+          class="flex-grow-1 hide-details"
+        />
+        <v-btn
+          prepend-icon="mdi-plus"
+          type="submit"
+          :disabled="!newAgendaTitle"
+          color="primary"
+          >{{ t('add') }}</v-btn
+        >
+      </form>
+    </v-window-item>
+    <v-window-item value="order">
+      <Draggable v-model="agendaItems" item-key="pk">
+        <template #item="{ element }">
+          <div>
+            <v-icon size="small" :icon="getState(element.state)?.icon" />
+            <span>{{ element.title }}</span>
+            <v-icon size="small" icon="mdi-drag-horizontal" />
+          </div>
+        </template>
+      </Draggable>
+      <div class="text-right">
+        <v-btn
+          class="my-1"
+          color="primary"
+          :disabled="!agendaOrderChanged"
+          :loading="orderSaving"
+          @click="saveAgendaOrder"
+        >
+          {{ t('save') }}
+        </v-btn>
+      </div>
+    </v-window-item>
+  </v-window>
+</template>
 
 <style lang="sass" scoped>
 [data-draggable]

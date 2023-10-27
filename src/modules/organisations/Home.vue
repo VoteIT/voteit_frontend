@@ -31,6 +31,8 @@ import ContactInfoTab from './ContactInfoTab.vue'
 import useOrganisation from './useOrganisation'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
+import AppBar from '@/components/AppBar.vue'
+import UserMenu from '@/components/UserMenu.vue'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -127,15 +129,15 @@ const tabs = computed(() => {
   return [
     {
       value: 'default',
-      title: t('home.home')
+      text: t('home.home')
     },
     {
       value: 'roles',
-      title: t('roles')
+      text: t('roles')
     },
     {
       value: 'contactInfo',
-      title: t('home.contactInfo.title')
+      text: t('home.contactInfo.title')
     }
   ]
 })
@@ -283,274 +285,300 @@ const searchInfo = computed<
 </script>
 
 <template>
-  <v-row v-if="organisation" class="home mt-4 mb-4">
-    <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
-      <v-btn
-        block
-        v-if="organisation.login_url"
-        color="primary"
-        :href="idLoginURL"
-        prepend-icon="mdi-login"
-      >
-        {{ t('organization.loginTo', { ...organisation }) }}
-      </v-btn>
-      <EditableHelpText :modelValue="organisation.help_info" class="mt-3" />
-    </v-col>
-    <v-col
-      cols="12"
-      order-md="0"
-      md="8"
-      lg="6"
-      offset-lg="1"
-      xl="5"
-      offset-xl="2"
-    >
-      <v-tabs
-        v-if="tabs"
-        v-model="currentTab"
-        :items="tabs"
-        align-tabs="end"
-        class="mb-4"
-      />
-      <v-window v-model="currentTab">
-        <v-window-item value="default">
-          <header class="d-flex">
-            <Headline
-              v-model="changeForm.page_title"
-              :editing="editing"
-              class="flex-grow-1"
-            />
-            <DropdownMenu :items="menu" />
-          </header>
-          <Richtext
-            v-model="changeForm.body"
-            :editing="editing"
-            @edit-done="save()"
-            variant="full"
-            :maxHeight="collapsedBodyHeightMobile"
-          />
-        </v-window-item>
-
-        <template v-if="canChangeOrganisation">
-          <v-window-item value="roles">
-            <UserSearch class="mb-6" @submit="addUser" />
-            <RoleMatrix
-              admin
-              :contentType="organisationType"
-              :pk="organisation.pk"
-              :icons="organisationIcons"
-            />
-          </v-window-item>
-
-          <v-window-item value="contactInfo">
-            <ContactInfoTab />
-          </v-window-item>
-        </template>
-      </v-window>
-    </v-col>
-    <v-divider vertical />
-    <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
-      <div v-if="userMeetingInvites.length" class="mb-4">
-        <h2 class="mb-2">
-          {{ t('join.invites', userMeetingInvites.length) }}
-        </h2>
-        <Invite
-          v-for="inv in userMeetingInvites"
-          :key="inv.pk"
-          :invite="inv"
-          class="mb-4"
-        />
-      </div>
-      <h2 class="mb-3">
-        {{ t('home.yourMeetings', meetingCount) }}
-      </h2>
-      <div
-        v-for="{ expandable, meetings, title } in meetingGroups"
-        :key="title"
-      >
-        <h3>
-          {{ title }}
-        </h3>
-        <v-list class="my-3" :border="true" rounded>
-          <v-list-item
-            v-for="{ pk, start_time, title, current_user_roles } in meetings"
-            :key="pk"
-            :to="{ name: 'meeting', params: { id: pk, slug: slugify(title) } }"
-            :title="title"
-            :subtitle="
-              start_time
-                ? DateTime.fromISO(start_time).toLocaleString()
-                : undefined
-            "
-          >
-            <template #append>
-              <v-tooltip
-                v-for="{ role, icon } in displayRoles"
-                :key="role"
-                :text="translateMeetingRole(role, t)"
-              >
-                <template
-                  #activator="{ props }"
-                  v-if="current_user_roles?.includes(role)"
-                >
-                  <v-icon v-bind="props" :icon="icon" />
-                </template>
-              </v-tooltip>
-            </template>
-          </v-list-item>
+  <AppBar />
+  <UserMenu />
+  <v-main>
+    <v-container>
+      <v-row v-if="organisation" class="home mt-4 mb-4">
+        <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
           <v-btn
             block
-            v-if="expandable && !groupsExpanded"
-            @click="groupsExpanded = true"
-            variant="text"
-          >
-            {{ t('organization.showMore') }}
-          </v-btn>
-        </v-list>
-      </div>
-      <p v-if="!meetingGroups.length" class="mb-4">
-        <em>{{ t('home.noCurrentMeetings') }}</em>
-      </p>
-      <DefaultDialog v-if="canAddMeeting" :title="t('meeting.create')">
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            block
-            prepend-icon="mdi-plus"
-            variant="text"
+            v-if="organisation.login_url"
             color="primary"
+            :href="idLoginURL"
+            prepend-icon="mdi-login"
           >
-            {{ t('meeting.create') }}
+            {{ t('organization.loginTo', { ...organisation }) }}
           </v-btn>
-        </template>
-        <template v-slot="{ isActive }">
-          <AddMeeting @close="isActive.value = false" />
-        </template>
-      </DefaultDialog>
-      <DefaultDialog
-        v-if="otherMeetingsExist"
-        :title="t('meeting.find')"
-        height="80vh"
-      >
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            block
-            variant="elevated"
-            color="primary"
-            prepend-icon="mdi-calendar-plus"
-            size="x-large"
-          >
-            {{ t('meeting.find') }}
-          </v-btn>
-        </template>
-        <!-- true as false to get arount typing issue in Vuetify. Probably solved by Vuetify version upgrade. -->
-        <v-select
-          :label="t('state')"
-          chips
-          closable-chips
-          density="comfortable"
-          :items="stateItems"
-          v-model="searchFilter.states"
-          :multiple="(true as false)"
-          hide-details
-          class="mb-1"
-          :rules="[rules.required]"
-        />
-        <div class="d-flex mb-1">
-          <v-text-field
-            :label="t('search')"
-            v-model="searchFilter.search"
-            class="mr-1"
-            hide-details
-            clearable
+          <EditableHelpText :modelValue="organisation.help_info" class="mt-3" />
+        </v-col>
+        <v-col
+          cols="12"
+          order-md="0"
+          md="8"
+          lg="6"
+          offset-lg="1"
+          xl="5"
+          offset-xl="2"
+        >
+          <v-tabs
+            v-if="tabs"
+            v-model="currentTab"
+            :items="tabs"
+            align-tabs="end"
+            class="mb-4"
           />
-          <v-select
-            :label="t('meeting.yearStarted')"
-            :items="yearItems"
-            v-model="searchFilter.year"
-            hide-details
-          />
-        </div>
+          <v-window v-model="currentTab">
+            <v-window-item value="default">
+              <header class="d-flex">
+                <Headline
+                  v-model="changeForm.page_title"
+                  :editing="editing"
+                  class="flex-grow-1"
+                />
+                <DropdownMenu :items="menu" />
+              </header>
+              <Richtext
+                v-model="changeForm.body"
+                :editing="editing"
+                @edit-done="save()"
+                variant="full"
+                :maxHeight="collapsedBodyHeightMobile"
+              />
+            </v-window-item>
 
-        <v-alert v-if="searchInfo" class="mt-4" prominent v-bind="searchInfo" />
+            <template v-if="canChangeOrganisation">
+              <v-window-item value="roles">
+                <UserSearch class="mb-6" @submit="addUser" />
+                <RoleMatrix
+                  admin
+                  :contentType="organisationType"
+                  :pk="organisation.pk"
+                  :icons="organisationIcons"
+                />
+              </v-window-item>
 
-        <v-pagination
-          v-if="chunkedMeetings.length > 1"
-          v-model="currentSearchPage"
-          :length="chunkedMeetings.length"
-        />
-        <v-list v-if="chunkedMeetings.length">
-          <v-list-item
-            v-for="{ pk, title, state, current_user_roles } in chunkedMeetings[
-              currentSearchPage - 1
-            ]"
-            :key="pk"
-            :title="title"
-            :subtitle="meetingStates.find((s) => s.state === state)?.getName(t)"
-            :to="
-              current_user_roles
-                ? { name: 'meeting', params: { id: pk, slug: slugify(title) } }
-                : undefined
-            "
-          >
-            <template #append v-if="current_user_roles">
-              <v-tooltip
-                v-for="{ role, icon } in displayRoles"
-                :key="role"
-                :text="translateMeetingRole(role, t)"
-              >
-                <template
-                  #activator="{ props }"
-                  v-if="current_user_roles?.includes(role)"
-                >
-                  <v-icon v-bind="props" :icon="icon" />
-                </template>
-              </v-tooltip>
+              <v-window-item value="contactInfo">
+                <ContactInfoTab />
+              </v-window-item>
             </template>
-            <template v-else #append>
-              <v-btn
+          </v-window>
+        </v-col>
+        <v-divider vertical />
+        <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
+          <div v-if="userMeetingInvites.length" class="mb-4">
+            <h2 class="mb-2">
+              {{ t('join.invites', userMeetingInvites.length) }}
+            </h2>
+            <Invite
+              v-for="inv in userMeetingInvites"
+              :key="inv.pk"
+              :invite="inv"
+              class="mb-4"
+            />
+          </div>
+          <h2 class="mb-3">
+            {{ t('home.yourMeetings', meetingCount) }}
+          </h2>
+          <div
+            v-for="{ expandable, meetings, title } in meetingGroups"
+            :key="title"
+          >
+            <h3>
+              {{ title }}
+            </h3>
+            <v-list class="my-3" :border="true" rounded>
+              <v-list-item
+                v-for="{
+                  pk,
+                  start_time,
+                  title,
+                  current_user_roles
+                } in meetings"
+                :key="pk"
                 :to="{
-                  name: 'meetingJoin',
+                  name: 'meeting',
                   params: { id: pk, slug: slugify(title) }
                 }"
-                append-icon="mdi-arrow-right-circle"
-                color="primary"
-                variant="tonal"
+                :title="title"
+                :subtitle="
+                  start_time
+                    ? DateTime.fromISO(start_time).toLocaleString()
+                    : undefined
+                "
               >
-                {{ t('join.meeting') }}
+                <template #append>
+                  <v-tooltip
+                    v-for="{ role, icon } in displayRoles"
+                    :key="role"
+                    :text="translateMeetingRole(role, t)"
+                  >
+                    <template
+                      #activator="{ props }"
+                      v-if="current_user_roles?.includes(role)"
+                    >
+                      <v-icon v-bind="props" :icon="icon" />
+                    </template>
+                  </v-tooltip>
+                </template>
+              </v-list-item>
+              <v-btn
+                block
+                v-if="expandable && !groupsExpanded"
+                @click="groupsExpanded = true"
+                variant="text"
+              >
+                {{ t('organization.showMore') }}
+              </v-btn>
+            </v-list>
+          </div>
+          <p v-if="!meetingGroups.length" class="mb-4">
+            <em>{{ t('home.noCurrentMeetings') }}</em>
+          </p>
+          <DefaultDialog v-if="canAddMeeting" :title="t('meeting.create')">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                block
+                prepend-icon="mdi-plus"
+                variant="text"
+                color="primary"
+              >
+                {{ t('meeting.create') }}
               </v-btn>
             </template>
-          </v-list-item>
-        </v-list>
-      </DefaultDialog>
-
-      <EditableHelpText
-        :modelValue="organisation.help_info"
-        :editable="!!canChangeOrganisation"
-        :handler="saveHelpText"
-        :placeholder="t('home.helpInfoPlaceholder')"
-        class="mt-3"
-      />
-    </v-col>
-  </v-row>
-  <v-row v-else-if="organisationIsUnavailable">
-    <v-col v-bind="cols">
-      <v-sheet class="py-8 px-4 text-center" :border="true" rounded>
-        <h1 class="mb-4 flex-grow-1">
-          {{ t('home.noOrganisationTitle') }}
-        </h1>
-        <p class="mb-12">
-          {{ t('home.noOrganisationDescription') }}
-        </p>
-        <p>
-          <i18n-t keypath="home.noOrganisationTryItOut">
-            <template #projectURL>
-              <a href="https://voteit.se">VoteIT.se</a>
+            <template v-slot="{ isActive }">
+              <AddMeeting @close="isActive.value = false" />
             </template>
-          </i18n-t>
-        </p>
-      </v-sheet>
-    </v-col>
-  </v-row>
+          </DefaultDialog>
+          <DefaultDialog
+            v-if="otherMeetingsExist"
+            :title="t('meeting.find')"
+            height="80vh"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                block
+                variant="elevated"
+                color="primary"
+                prepend-icon="mdi-calendar-plus"
+                size="x-large"
+              >
+                {{ t('meeting.find') }}
+              </v-btn>
+            </template>
+            <v-select
+              :label="t('state')"
+              chips
+              closable-chips
+              density="comfortable"
+              :items="stateItems"
+              v-model="searchFilter.states"
+              multiple
+              hide-details
+              class="mb-1"
+              :rules="[rules.required]"
+            />
+            <div class="d-flex mb-1">
+              <v-text-field
+                :label="t('search')"
+                v-model="searchFilter.search"
+                class="mr-1"
+                hide-details
+                clearable
+              />
+              <v-select
+                :label="t('meeting.yearStarted')"
+                :items="yearItems"
+                v-model="searchFilter.year"
+                hide-details
+              />
+            </div>
+
+            <v-alert
+              v-if="searchInfo"
+              class="mt-4"
+              prominent
+              v-bind="searchInfo"
+            />
+
+            <v-pagination
+              v-if="chunkedMeetings.length > 1"
+              v-model="currentSearchPage"
+              :length="chunkedMeetings.length"
+            />
+            <v-list v-if="chunkedMeetings.length">
+              <v-list-item
+                v-for="{
+                  pk,
+                  title,
+                  state,
+                  current_user_roles
+                } in chunkedMeetings[currentSearchPage - 1]"
+                :key="pk"
+                :title="title"
+                :subtitle="
+                  meetingStates.find((s) => s.state === state)?.getName(t)
+                "
+                :to="
+                  current_user_roles
+                    ? {
+                        name: 'meeting',
+                        params: { id: pk, slug: slugify(title) }
+                      }
+                    : undefined
+                "
+              >
+                <template #append v-if="current_user_roles">
+                  <v-tooltip
+                    v-for="{ role, icon } in displayRoles"
+                    :key="role"
+                    :text="translateMeetingRole(role, t)"
+                  >
+                    <template
+                      #activator="{ props }"
+                      v-if="current_user_roles?.includes(role)"
+                    >
+                      <v-icon v-bind="props" :icon="icon" />
+                    </template>
+                  </v-tooltip>
+                </template>
+                <template v-else #append>
+                  <v-btn
+                    :to="{
+                      name: 'meetingJoin',
+                      params: { id: pk, slug: slugify(title) }
+                    }"
+                    append-icon="mdi-arrow-right-circle"
+                    color="primary"
+                    variant="tonal"
+                  >
+                    {{ t('join.meeting') }}
+                  </v-btn>
+                </template>
+              </v-list-item>
+            </v-list>
+          </DefaultDialog>
+
+          <EditableHelpText
+            :modelValue="organisation.help_info"
+            :editable="!!canChangeOrganisation"
+            :handler="saveHelpText"
+            :placeholder="t('home.helpInfoPlaceholder')"
+            class="mt-3"
+          />
+        </v-col>
+      </v-row>
+      <v-row v-else-if="organisationIsUnavailable">
+        <v-col v-bind="cols">
+          <v-sheet class="py-8 px-4 text-center" :border="true" rounded>
+            <h1 class="mb-4 flex-grow-1">
+              {{ t('home.noOrganisationTitle') }}
+            </h1>
+            <p class="mb-12">
+              {{ t('home.noOrganisationDescription') }}
+            </p>
+            <p>
+              <i18n-t keypath="home.noOrganisationTryItOut">
+                <template #projectURL>
+                  <a href="https://voteit.se">VoteIT.se</a>
+                </template>
+              </i18n-t>
+            </p>
+          </v-sheet>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
