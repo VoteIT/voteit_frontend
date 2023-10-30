@@ -9,30 +9,20 @@ import { agendaItemType } from '../agendas/contentTypes'
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
-import useRoom from '../rooms/useRoom'
+import usePlenary from './usePlenary'
 
 const router = useRouter()
 const { meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, agendaItemRoute, canChangeAgendaItem } =
   useAgendaItem(agendaId)
-const { roomId } = useRoom()
 
-function getPath(aid: number, room?: number) {
-  return {
-    name: 'Plenary',
-    params: {
-      id: meetingId.value,
-      aid,
-      roomId: room || roomId.value
-    }
-  }
-}
+const { getPlenaryPath } = usePlenary(meetingId, agendaId)
 
 /* Agenda navigation */
 function navigateAgendaItem(aid?: number) {
   if (!aid) return
-  router.push(getPath(aid))
+  router.push(getPlenaryPath({ aid }))
 }
 onKeyStroke('ArrowLeft', () => navigateAgendaItem(previousAgendaItem.value?.pk))
 onKeyStroke('ArrowRight', () => navigateAgendaItem(nextAgendaItem.value?.pk))
@@ -65,13 +55,19 @@ onKeyStroke('ArrowRight', () => navigateAgendaItem(nextAgendaItem.value?.pk))
         <v-btn
           variant="text"
           :disabled="!previousAgendaItem"
-          :to="previousAgendaItem ? getPath(previousAgendaItem.pk) : '/'"
+          :to="
+            previousAgendaItem
+              ? getPlenaryPath({ aid: previousAgendaItem.pk })
+              : '/'
+          "
           icon="mdi-chevron-left"
         />
         <v-btn
           variant="text"
           :disabled="!nextAgendaItem"
-          :to="nextAgendaItem ? getPath(nextAgendaItem.pk) : '/'"
+          :to="
+            nextAgendaItem ? getPlenaryPath({ aid: nextAgendaItem.pk }) : '/'
+          "
           icon="mdi-chevron-right"
         />
       </template>

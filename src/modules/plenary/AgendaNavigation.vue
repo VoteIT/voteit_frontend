@@ -1,7 +1,10 @@
 <template>
   <v-navigation-drawer v-model="isOpen" location="right" disable-resize-watcher>
     <v-list nav>
-      <template v-for="{ state, items } in annotatedAgendaStates" :key="state.state">
+      <template
+        v-for="{ state, items } in annotatedAgendaStates"
+        :key="state.state"
+      >
         <v-list-subheader v-if="items.length">
           {{ state.getName(t, items.length) }}
         </v-list-subheader>
@@ -10,7 +13,13 @@
             {{ ai.title }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            {{ t('proposal.proposalCountOfTotal', ai.proposals, ai.proposals.total) }}
+            {{
+              t(
+                'proposal.proposalCountOfTotal',
+                ai.proposals,
+                ai.proposals.total
+              )
+            }}
           </v-list-item-subtitle>
         </v-list-item>
       </template>
@@ -34,15 +43,15 @@ import usePlenary from './usePlenary'
 const { t } = useI18n()
 const { meetingId } = useMeeting()
 const { agendaId, agendaStates } = useAgenda(meetingId)
-const { filterProposalStates } = usePlenary(agendaId)
+const { filterProposalStates } = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const isOpen = ref(false)
 
-function toggle () {
-    isOpen.value = !isOpen.value
+function toggle() {
+  isOpen.value = !isOpen.value
 }
 
-function getURL (ai: AgendaItem) {
+function getURL(ai: AgendaItem) {
   return `/p/${meetingId.value}/${ai.pk}`
 }
 
@@ -50,7 +59,7 @@ const annotatedAgendaStates = computed(() => {
   return agendaStates.value.map(({ state, items }) => {
     return {
       state,
-      items: items.map(ai => ({
+      items: items.map((ai) => ({
         ...ai,
         proposals: {
           filtered: getAgendaProposals(ai.pk, filterProposalStates).length,

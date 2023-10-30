@@ -49,7 +49,7 @@ const {
   selectTag,
   deselectProposal,
   clearSelected
-} = usePlenary(agendaId)
+} = usePlenary(meetingId, agendaId)
 
 const { t } = useI18n()
 const { anyProposal, getAgendaProposals } = useProposals()

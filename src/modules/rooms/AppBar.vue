@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
-import useRoom from '../rooms/useRoom'
+import useRoom from './useRoom'
 
 const { meetingRoute } = useMeeting()
 const { meetingRoom } = useRoom()

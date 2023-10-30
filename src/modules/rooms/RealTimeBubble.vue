@@ -40,7 +40,7 @@ const broadcasting = computed(() =>
       :key="pk"
       v-bind="props"
       :to="{
-        name: 'realTime:main',
+        name: 'rooms:main',
         params: { id: meetingId, roomId: pk }
       }"
       active

@@ -81,7 +81,8 @@ function getRoomMenu(roomId: number, title: string) {
       params: {
         id: meetingId.value,
         aid: agenda.value[0].pk,
-        roomId
+        roomId,
+        tab: 'decisions'
       }
     }
   }

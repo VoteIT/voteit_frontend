@@ -11,6 +11,7 @@ import { roomType } from './contentTypes'
 export default function useRoom() {
   const route = useRoute()
   const roomId = computed(() => Number(route.params.roomId))
+
   useChannel('room', roomId)
 
   const meetingRoom = computed(() => meetingRoomStore.get(roomId.value))

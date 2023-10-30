@@ -28,7 +28,7 @@ import './modules/reactions'
 import './modules/presence'
 import './modules/printing'
 import './modules/speakerLists'
-import './modules/realTime'
+import './modules/rooms'
 
 createApp(App)
   .use(i18n)

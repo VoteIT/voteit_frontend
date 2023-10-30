@@ -45,8 +45,13 @@ const { meetingRoom } = useRoom()
 const { getState } = pollType.useWorkflows()
 
 const { nextPollTitle } = useAgendaItem(agendaId)
-const { stateFilter, selectedProposals, selectedProposalIds } =
-  usePlenary(agendaId)
+const {
+  currentTab,
+  stateFilter,
+  selectedProposals,
+  selectedProposalIds,
+  tabs
+} = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 const { getState: getProposalState } = proposalType.useWorkflows()
@@ -193,24 +198,13 @@ const pollMenu = computed<MenuItem[]>(() => {
     ...pollStateToMenu(PollState.Finished)
   ]
 })
-
-const tabs = [
-  {
-    prependIcon: 'mdi-bullhorn',
-    value: 'speakers',
-    text: t('room.discussion')
-  },
-  { prependIcon: 'mdi-gavel', value: 'proposals', text: t('room.decisions') }
-] as const
-type Mode = 'speakers' | 'proposals'
-const currentTab = ref<Mode>('proposals')
 </script>
 
 <template>
   <AppBar>
     <v-tabs v-model="currentTab" :items="tabs" />
     <v-spacer />
-    <template v-if="currentTab === 'proposals'">
+    <template v-if="currentTab === 'decisions'">
       <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
       <v-menu location="bottom right">
         <template #activator="{ props }">
@@ -246,7 +240,7 @@ const currentTab = ref<Mode>('proposals')
   </v-app-bar>
   <v-main class="ma-6">
     <div id="toolbar"></div>
-    <template v-if="currentTab === 'speakers'">
+    <template v-if="currentTab === 'discussion'">
       <SpeakerHandling v-if="meetingRoom?.sls" :system-id="meetingRoom.sls" />
       <p v-else>
         <em>
@@ -254,6 +248,6 @@ const currentTab = ref<Mode>('proposals')
         </em>
       </p>
     </template>
-    <ProposalHandling v-if="currentTab === 'proposals'" />
+    <ProposalHandling v-if="currentTab === 'decisions'" />
   </v-main>
 </template>

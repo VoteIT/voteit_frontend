@@ -18,7 +18,8 @@ agendaMenuPlugins.register({
           params: {
             id: meeting.pk,
             aid: agendaItem.pk,
-            roomId
+            roomId,
+            tab: 'descisions'
           }
         }
       }
