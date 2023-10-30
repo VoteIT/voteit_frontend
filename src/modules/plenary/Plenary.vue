@@ -245,7 +245,7 @@ const pollMenu = computed<MenuItem[]>(() => {
       <SpeakerHandling v-if="meetingRoom?.sls" :system-id="meetingRoom.sls" />
       <p v-else>
         <em>
-          {{ t('room.noSpeakerSystem') }}
+          {{ t('plenary.noSpeakerSystem') }}
         </em>
       </p>
     </template>

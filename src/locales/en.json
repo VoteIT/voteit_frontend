@@ -599,10 +599,13 @@
   },
   "plenary": {
     "confirmStartProtectedStates": "You have selected a proposal that is in {states} state.\nDo you still want to start the poll? | You have selected {count} proposals that are in {states} state.\nDo you still want to start the poll?",
+    "decisions": "Decisions",
+    "discussion": "Discussion",
     "finishedPolls": "Finished polls",
     "hintModifyFilter": "Try selecting more proposal states in filter menu.",
     "nextParagraph": "Next paragraph",
     "noProposalsInFilter": "No proposals",
+    "noSpeakerSystem": "This room is not configured to use speaker lists.",
     "ongoingPolls": "Ongoing polls",
     "selectMinProposals": "Select at least one proposal | Select at least {count} proposals",
     "selectExactProposals": "Select {count} proposals",
@@ -726,6 +729,27 @@
       "speaker": "Speakers may enter open speaker lists, even if user doesn't have a required role.",
       "voter": "Exists as a voter within the latest electoral register. However, older polls may use older registers."
     }
+  },
+  "room": {
+    "broadcasting": "Broadcasting",
+    "broadcastThisAgendaItem": "Another agenda item is currently broadcasting. Do you want to switch to this one?",
+    "broadcastingUser": "Broadcasting by ({userid})",
+    "create": "Create room",
+    "confirmBroadcastStart": "Do you want to start broadcasting in this room?",
+    "confirmBroadcastStop": "This ends the broadcast.\nAre you sure?",
+    "confirmBroadcastTakeover": "You're about to take over the broadcast in this room.\nAre you sure?",
+    "confirmDelete": "This deletes the room. You can't undo that.\nAre you sure?",
+    "displayProposals": "Display proposals",
+    "displaySpeakers": "Display speaker list",
+    "edit": "Edit room",
+    "noBroadcast": "No broadcast currently...",
+    "paused": "Paused...",
+    "realTime": "Realtime view",
+    "selectAgendaItem": "Broadcast this agenda item",
+    "settings": "Room settings",
+    "settingsDescription": "Configure meeting rooms och speaker lists. Mainly used for live meetings.",
+    "settingsHelp": "To access the plenary view (live decision handling) and speaker lists, you need to configure at least one room in your meeting. If you have a meeting with multiple simultaneous processes, i.e. parallell committees, you may have to configure meeting rooms for those aswell.",
+    "settingsTitle": "Meeting rooms / realtime view"
   },
   "rules": {
     "maxLength": "Must not be longer than {count} characters",

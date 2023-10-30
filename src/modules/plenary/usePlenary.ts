@@ -24,9 +24,13 @@ export default function usePlenary(
     {
       prependIcon: 'mdi-bullhorn',
       value: 'discussion',
-      text: t('room.discussion')
+      text: t('plenary.discussion')
     },
-    { prependIcon: 'mdi-gavel', value: 'decisions', text: t('room.decisions') }
+    {
+      prependIcon: 'mdi-gavel',
+      value: 'decisions',
+      text: t('plenary.decisions')
+    }
   ] as const
   type Tab = (typeof tabs)[number]['value']
 

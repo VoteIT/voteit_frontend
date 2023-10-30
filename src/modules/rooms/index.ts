@@ -17,7 +17,10 @@ meetingSettingsPlugins.register({
   component: ControlPanel,
   icon: 'mdi-door',
   getTitle(t) {
-    return t('room.rooms')
+    return t('room.settingsTitle')
+  },
+  getDescription(t) {
+    return t('room.settingsDescription')
   }
 })
 

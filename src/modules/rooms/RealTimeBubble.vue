@@ -33,7 +33,7 @@ const broadcasting = computed(() =>
 </script>
 
 <template>
-  <h2 class="mb-1">{{ t('rooms.broadcastAvailable') }}</h2>
+  <h2 class="mb-1">{{ t('room.broadcasting') }}</h2>
   <v-list color="primary">
     <v-list-item
       v-for="{ pk, ...props } in broadcasting"

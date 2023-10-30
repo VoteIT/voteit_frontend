@@ -599,10 +599,13 @@
   },
   "plenary": {
     "confirmStartProtectedStates": "Du har valt ett förslag som är i {states} läge.\nVill du ändå starta omröstningen? | Du har valt {count} förslag som är i {states} läge.\nVill du ändå starta omröstningen?",
+    "decisions": "Beslut",
+    "discussion": "Diskussion",
     "finishedPolls": "Avslutade omröstningar",
     "hintModifyFilter": "Försök att välja fler förslagslägen i filtermenyn.",
     "nextParagraph": "Nästa stycke",
     "noProposalsInFilter": "Inga förslag",
+    "noSpeakerSystem": "Rummet saknar inställningar för talarlistor.",
     "ongoingPolls": "Pågående omröstningar",
     "selectExactProposals": "Välj {count} förslag",
     "selectMinProposals": "Välj minst ett förslag | Välj minst {count} förslag",
@@ -726,6 +729,27 @@
       "speaker": "Får sätta upp sig på talarlisa, även om användaren inte har en krävd roll.",
       "voter": "Har rösträtt enligt mötets senaste röstlängd. Gamla omröstningar kan fortfarande ha en annan röstlängd."
     }
+  },
+  "room": {
+    "broadcasting": "Sändning pågår",
+    "broadcastThisAgendaItem": "Just nu sänds en annan dagordningspunkt. Vill du byta till denna?",
+    "broadcastingUser": "Sändning pågår ({userid})",
+    "create": "skapa rum",
+    "confirmBroadcastStart": "Vill du starta sändning från det här rummer?",
+    "confirmBroadcastStop": "Detta avslutar sändningen.\nÄr du säker?",
+    "confirmBroadcastTakeover": "Du håller nu på att ta över sändningen i det här rummet.\nÄr du säker?",
+    "confirmDelete": "Detta raderar rummet. Det går inte att ångra.\nÄr du säker?",
+    "displayProposals": "Visa förslag",
+    "displaySpeakers": "Visa talarlista",
+    "edit": "Redigera rum",
+    "noBroadcast": "Ingen sändning just nu...",
+    "paused": "Paus...",
+    "realTime": "Realtivdsvy",
+    "selectAgendaItem": "Sänd denna dagordningspunkt",
+    "settings": "Inställningar för rum",
+    "settingsDescription": "Sätt upp mötesrum för realtidsvy och talarhantering. Används mest för livemöten.",
+    "settingsHelp": "För att få tillgång till plenumvy (beslutshantering) och talarlistor behöver du sätta upp minst ett mötesrum i ditt möte. Om du har ett möte med flera samtidigt pågående processer, exempelvis parallella utskott, kan du behöva sätta upp mötesrum även för dessa.",
+    "settingsTitle": "Mötesrum / realtidsvy"
   },
   "rules": {
     "maxLength": "Får inte vara längre än {count} tecken",
