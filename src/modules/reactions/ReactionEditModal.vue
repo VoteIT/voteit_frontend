@@ -7,6 +7,7 @@ import { ThemeColor } from '@/utils/types'
 import useAuthentication from '@/composables/useAuthentication'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserList from '@/components/UserList.vue'
+import Widget from '@/components/Widget.vue'
 import useRules from '@/composables/useRules'
 
 import useMeeting from '../meetings/useMeeting'
@@ -24,7 +25,18 @@ const props = defineProps<{
   data?: ReactionButton
 }>()
 
-function getDefaults (btn?: ReactionButton): Partial<ReactionButton> & Pick<ReactionButton, 'allowed_models' | 'change_roles' | 'color' | 'flag_mode' | 'list_roles' | 'meeting'> {
+function getDefaults(
+  btn?: ReactionButton
+): Partial<ReactionButton> &
+  Pick<
+    ReactionButton,
+    | 'allowed_models'
+    | 'change_roles'
+    | 'color'
+    | 'flag_mode'
+    | 'list_roles'
+    | 'meeting'
+  > {
   if (btn) return { ...btn }
   return {
     allowed_models: ['discussion_post', 'proposal'],
@@ -53,23 +65,31 @@ const previewCount = computed(() => {
 })
 const submitting = ref(false)
 
-function close () {
+function close() {
   emit('close')
 }
 
 const form = ref<ComponentPublicInstance<{ validate(): void }> | null>(null)
-watch(form, value => value?.validate(), { immediate: true })
+watch(form, (value) => value?.validate(), { immediate: true })
 const formValid = ref(true)
 const isValid = computed(() => {
-  return formValid.value && formData.color && formData.change_roles?.length && formData.list_roles?.length
+  return (
+    formValid.value &&
+    formData.color &&
+    formData.change_roles?.length &&
+    formData.list_roles?.length
+  )
 })
 
-async function save () {
+async function save() {
   submitting.value = true
   // Transform target to value or null
   try {
     if (transformedData.value.pk) {
-      await reactionButtonType.api.patch(transformedData.value.pk, transformedData.value)
+      await reactionButtonType.api.patch(
+        transformedData.value.pk,
+        transformedData.value
+      )
     } else {
       await reactionButtonType.api.add(transformedData.value)
     }
@@ -98,22 +118,56 @@ async function save () {
           </template>
         </RealReactionButton>
       </Widget>
-      <v-form @submit.prevent="save" class="mt-4" v-model="formValid" ref="form">
-        <v-text-field required :label="t('title')" v-model="formData.title" :rules="[rules.required, rules.maxLength(20)]" />
-        <v-text-field :label="t('description')" v-model="formData.description" :rules="[rules.maxLength(100)]" />
+      <v-form
+        @submit.prevent="save"
+        class="mt-4"
+        v-model="formValid"
+        ref="form"
+      >
+        <v-text-field
+          required
+          :label="t('title')"
+          v-model="formData.title"
+          :rules="[rules.required, rules.maxLength(20)]"
+        />
+        <v-text-field
+          :label="t('description')"
+          v-model="formData.description"
+          :rules="[rules.maxLength(100)]"
+        />
         <div>
           <label>{{ t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
-            <v-item v-for="value in Object.values(ThemeColor)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :icon="isSelected ? 'mdi-brush' : 'mdi-circle'" :variant="isSelected ? 'elevated' : 'text'" :color="value" @click="toggle" />
+            <v-item
+              v-for="value in Object.values(ThemeColor)"
+              :key="value"
+              :value="value"
+              v-slot="{ toggle, isSelected }"
+            >
+              <v-btn
+                :icon="isSelected ? 'mdi-brush' : 'mdi-circle'"
+                :variant="isSelected ? 'elevated' : 'text'"
+                :color="value"
+                @click="toggle"
+              />
             </v-item>
           </v-item-group>
         </div>
         <div>
           <label>{{ t('icon') }}</label>
           <v-item-group class="btn-controls" v-model="formData.icon">
-            <v-item v-for="value in Object.values(ReactionIcon)" :key="value" :value="value" v-slot="{ toggle, isSelected }">
-              <v-btn :variant="isSelected ? 'elevated' : 'text'" :color="formData.color" :icon="value" @click="toggle" />
+            <v-item
+              v-for="value in Object.values(ReactionIcon)"
+              :key="value"
+              :value="value"
+              v-slot="{ toggle, isSelected }"
+            >
+              <v-btn
+                :variant="isSelected ? 'elevated' : 'text'"
+                :color="formData.color"
+                :icon="value"
+                @click="toggle"
+              />
             </v-item>
           </v-item-group>
         </div>
@@ -125,19 +179,43 @@ async function save () {
         />
         <div>
           <label>{{ t('reaction.rolesRequired') }}</label>
-          <CheckboxMultipleSelect v-model="formData.change_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
+          <CheckboxMultipleSelect
+            v-model="formData.change_roles"
+            :settings="{ options: roleLabels }"
+            :required-values="['moderator']"
+          />
         </div>
         <div>
           <label>{{ t('reaction.listRolesRequired') }}</label>
-          <CheckboxMultipleSelect v-model="formData.list_roles" :settings="{ options: roleLabels }" :required-values="['moderator']" />
+          <CheckboxMultipleSelect
+            v-model="formData.list_roles"
+            :settings="{ options: roleLabels }"
+            :required-values="['moderator']"
+          />
         </div>
-        <v-text-field type="number" v-model="formData.target" :label="t('reaction.threshold')" :rules="[rules.min(0)]" :hint="t('reaction.thresholdHint')" />
+        <v-text-field
+          type="number"
+          v-model="formData.target"
+          :label="t('reaction.threshold')"
+          :rules="[rules.min(0)]"
+          :hint="t('reaction.thresholdHint')"
+        />
         <div class="btn-controls submit mt-4">
           <v-spacer />
-          <v-btn preprend-icon="mdi-cancel" variant="text" color="secondary" @click="close">
+          <v-btn
+            preprend-icon="mdi-cancel"
+            variant="text"
+            color="secondary"
+            @click="close"
+          >
             {{ t('cancel') }}
           </v-btn>
-          <v-btn type="submit" color="primary" prepend-icon="mdi-check" :disabled="!isValid || submitting">
+          <v-btn
+            type="submit"
+            color="primary"
+            prepend-icon="mdi-check"
+            :disabled="!isValid || submitting"
+          >
             {{ formData.pk ? t('update') : t('create') }}
           </v-btn>
         </div>

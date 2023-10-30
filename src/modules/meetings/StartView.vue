@@ -38,6 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 
 import { MenuItem } from '@/utils/types'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'

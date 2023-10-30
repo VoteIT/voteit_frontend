@@ -65,6 +65,7 @@ import { dialogQuery } from '@/utils'
 import { openModalEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import Tag from '@/components/Tag.vue'
 
 import { ProposalText, proposalTextType } from './contentTypes'
 import useProposals from './useProposals'

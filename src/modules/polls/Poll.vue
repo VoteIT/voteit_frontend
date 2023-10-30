@@ -8,12 +8,26 @@
             <small class="text-secondary ml-4">{{ pollMethodName }}</small>
           </h3>
           <div class="text-secondary">
-            <Moment v-if="isOngoing && poll.started" :prepend="t('poll.started')" :date="poll.started" />
-            <Moment v-else-if="isFinished && poll.closed" :prepend="t('poll.finished')" :date="poll.closed" />
+            <Moment
+              v-if="isOngoing && poll.started"
+              :prepend="t('poll.started')"
+              :date="poll.started"
+            />
+            <Moment
+              v-else-if="isFinished && poll.closed"
+              :prepend="t('poll.finished')"
+              :date="poll.closed"
+            />
           </div>
         </router-link>
         <div class="text-right d-flex flex-column">
-          <WorkflowState v-if="isModerator" admin :object="poll" :contentType="pollType" right />
+          <WorkflowState
+            v-if="isModerator"
+            admin
+            :object="poll"
+            :contentType="pollType"
+            right
+          />
           <router-link :to="pollRoute">
             <v-icon size="xxx-large">mdi-chevron-right</v-icon>
           </router-link>
@@ -22,31 +36,66 @@
     </header>
     <div class="body">
       <template v-if="isFinished">
-        <Dropdown v-if="approved.length" :title="t('poll.numApproved', approved.length )" class="mb-2">
+        <Dropdown
+          v-if="approved.length"
+          :title="t('poll.numApproved', approved.length)"
+          class="mb-2"
+        >
           <div class="proposals approved">
             <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
-        <Dropdown v-if="denied.length" :title="t('poll.numDenied', denied.length )" class="mb-2">
+        <Dropdown
+          v-if="denied.length"
+          :title="t('poll.numDenied', denied.length)"
+          class="mb-2"
+        >
           <div class="proposals denied">
             <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
-        <ProgressBar class="my-4" :text="voteCount.text" :value="voteCount.voted" :total="voteCount.total" />
+        <ProgressBar
+          class="my-4"
+          :text="voteCount.text"
+          :value="voteCount.voted"
+          :total="voteCount.total"
+        />
       </template>
 
-      <ProgressBar v-if="isOngoing" :value="pollStatus?.voted" :total="pollStatus?.total">
-        <span v-if="pollStatus">{{ t('poll.votedProgress', {
-          ...pollStatus,
-          percentage: Math.round(pollStatus.voted / pollStatus.total * 100)
-        }, pollStatus.voted) }}</span>
-        <v-btn prepend-icon="mdi-reload" v-else variant="text" size="small" @click="following = true">
+      <ProgressBar
+        v-if="isOngoing"
+        :value="pollStatus?.voted"
+        :total="pollStatus?.total"
+      >
+        <span v-if="pollStatus">{{
+          t(
+            'poll.votedProgress',
+            {
+              ...pollStatus,
+              percentage: Math.round(
+                (pollStatus.voted / pollStatus.total) * 100
+              )
+            },
+            pollStatus.voted
+          )
+        }}</span>
+        <v-btn
+          prepend-icon="mdi-reload"
+          v-else
+          variant="text"
+          size="small"
+          @click="following = true"
+        >
           {{ t('poll.showProgress') }}
         </v-btn>
-        <span v-if="userVote" class="active">{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
-        <span v-else-if="canVote">{{ t('poll.youHaveNotVoted') }} <v-icon size="x-small" icon="mdi-check"/></span>
+        <span v-if="userVote" class="active"
+          >{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"
+        /></span>
+        <span v-else-if="canVote"
+          >{{ t('poll.youHaveNotVoted') }}
+          <v-icon size="x-small" icon="mdi-check"
+        /></span>
       </ProgressBar>
-
     </div>
   </Widget>
 </template>
@@ -55,8 +104,10 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import Dropdown from '@/components/Dropdown.vue'
 import Moment from '@/components/Moment.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
+import Widget from '@/components/Widget.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
 
@@ -73,7 +124,15 @@ const props = defineProps<{ poll: Poll }>()
 const { t } = useI18n()
 const { isModerator, getMeetingRoute } = useMeeting()
 const { getPollStatus, getUserVote } = usePolls()
-const { canVote, approved, denied, isOngoing, isFinished, pollMethodName, voteCount } = usePoll(computed(() => props.poll.pk))
+const {
+  canVote,
+  approved,
+  denied,
+  isOngoing,
+  isFinished,
+  pollMethodName,
+  voteCount
+} = usePoll(computed(() => props.poll.pk))
 
 const following = ref(false)
 const subscribePk = computed(() => {
@@ -84,7 +143,12 @@ const subscribePk = computed(() => {
 useChannel('poll', subscribePk, { leaveDelay: 0 })
 
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
-const pollRoute = computed(() => getMeetingRoute('poll', { pid: props.poll.pk, pslug: slugify(props.poll.title) }))
+const pollRoute = computed(() =>
+  getMeetingRoute('poll', {
+    pid: props.poll.pk,
+    pslug: slugify(props.poll.title)
+  })
+)
 const userVote = computed(() => getUserVote(props.poll))
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <v-app-bar flat class="d-print-none" color="app-bar">
     <v-app-bar-nav-icon
-      v-show="hasNavDrawer"
+      v-if="hasNavDrawer"
       class="d-md-none"
       variant="text"
       color="background"
@@ -30,8 +30,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
@@ -40,19 +39,15 @@ import useAuthentication from '@/composables/useAuthentication'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 
 import { toggleUserMenu } from './events'
+import UserAvatar from './UserAvatar.vue'
 
-defineProps<{ title?: string }>()
+defineProps<{ hasNavDrawer?: boolean; title?: string }>()
 
 const { t } = useI18n()
-const route = useRoute()
 const { user } = useAuthentication()
 const { organisation } = useOrganisation()
 
 const userMenuOpen = ref(false)
-
-const hasNavDrawer = computed(() => {
-  return !!route.matched[0]?.components?.navigationDrawer
-})
 </script>
 
 <style lang="sass">

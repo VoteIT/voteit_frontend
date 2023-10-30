@@ -1,6 +1,10 @@
 /* eslint-disable camelcase */
 import { MeetingRole } from '@/modules/meetings/types'
-import { OrganisationRole, User } from '@/modules/organisations/types'
+import {
+  OrganisationRole,
+  IUser,
+  IOrganisationUser
+} from '@/modules/organisations/types'
 import { ThemeColor } from '@/utils/types'
 import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'
@@ -27,10 +31,10 @@ interface HTMLModal extends Modal {
   html: string
 }
 
-export function isComponentModal (modal: Modal): modal is ComponentModal {
+export function isComponentModal(modal: Modal): modal is ComponentModal {
   return !!modal.component
 }
-export function isHTMLModal (modal: Modal): modal is HTMLModal {
+export function isHTMLModal(modal: Modal): modal is HTMLModal {
   return !!modal.html
 }
 
@@ -58,20 +62,20 @@ export interface Dialog {
 }
 
 export interface OrganisationRoles {
-  pk: number,
-  user: User,
+  pk: number
+  user: IOrganisationUser
   assigned: OrganisationRole[]
 }
 
 export interface MeetingRoles {
   pk: number
-  user: Omit<User, 'organisation' | 'organisation_roles'>
+  user: IUser
   meeting: number
   assigned: MeetingRole[]
 }
 
-export interface UserContextRoles<T=string> {
-  user: number,
+export interface UserContextRoles<T = string> {
+  user: number
   assigned: Set<T>
 }
 
@@ -94,8 +98,8 @@ export interface ContextRole {
 }
 
 export interface ContextRoleDefinition {
-  translateHelp (t: ComposerTranslation): string
-  translateName (t: ComposerTranslation): string
+  translateHelp(t: ComposerTranslation): string
+  translateName(t: ComposerTranslation): string
 }
 
 export enum InitState {

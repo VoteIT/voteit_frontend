@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import User from '@/components/User.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
 import useUserDetails from '../organisations/useUserDetails'

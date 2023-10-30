@@ -25,7 +25,7 @@ import {
 import { useI18n } from 'vue-i18n'
 
 import useAuthentication from '@/composables/useAuthentication'
-import type { User } from '../organisations/types'
+import type { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 
 import useMeeting from './useMeeting'
@@ -80,9 +80,7 @@ export default defineComponent({
       { immediate: true }
     )
 
-    function userToAutocomplete(
-      user: Pick<User, 'first_name' | 'last_name' | 'pk' | 'userid'>
-    ): AutocompleteItem {
+    function userToAutocomplete(user: IUser): AutocompleteItem {
       return {
         title: `${getFullName(user)} (${user.userid})`,
         value: `user:${user.pk}`

@@ -52,7 +52,7 @@
           <span v-if="p.meetingGroup">
             {{ p.meetingGroup.title }}
           </span>
-          <User v-else :pk="p.author" userid />
+          <User v-else-if="p.author" :pk="p.author" userid />
           -
           {{
             DateTime.fromISO(p.created).toLocaleString(DateTime.DATETIME_SHORT)
@@ -80,6 +80,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import useDefaults from '@/composables/useDefaults'
+import User from '@/components/User.vue'
 
 import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'

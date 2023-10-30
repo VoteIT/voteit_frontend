@@ -1,24 +1,47 @@
 <template>
   <div>
-    <v-sheet v-if="p" rounded elevation="4" class="proposal" :class="{ isUnread }">
+    <v-sheet
+      v-if="p"
+      rounded
+      elevation="4"
+      class="proposal"
+      :class="{ isUnread }"
+    >
       <slot name="top"></slot>
       <div class="meta d-flex">
         <div class="flex-grow-1">
           <span class="content-type">{{ t('proposal.proposal') }}</span>
-          <Tag :name="p.prop_id"/>
+          <Tag :name="p.prop_id" />
         </div>
         <slot name="actions">
-          <WorkflowState right v-if="!readOnly && (isModerator || p.state !== 'published')" :admin="isModerator" :object="p" :content-type="proposalType" />
+          <WorkflowState
+            right
+            v-if="!readOnly && (isModerator || p.state !== 'published')"
+            :admin="isModerator"
+            :object="p"
+            :content-type="proposalType"
+          />
         </slot>
       </div>
       <Richtext v-if="p.shortname === 'proposal'" :object="p" class="my-3" />
-      <div v-else-if="p.shortname === 'diff_proposal'" v-html="p.body_diff_brief" class="proposal-text-paragraph my-3"></div>
+      <div
+        v-else-if="p.shortname === 'diff_proposal'"
+        v-html="p.body_diff_brief"
+        class="proposal-text-paragraph my-3"
+      ></div>
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
       <div class="author text-secondary d-flex flex-wrap align-end">
-        <v-icon v-if="meetingGroup" size="small" class="mr-1" style="position: relative; top: -1px;">mdi-account-multiple</v-icon>
-        <span>{{ t('by') }}
+        <v-icon
+          v-if="meetingGroup"
+          size="small"
+          class="mr-1"
+          style="position: relative; top: -1px"
+          >mdi-account-multiple</v-icon
+        >
+        <span
+          >{{ t('by') }}
           <span v-if="meetingGroup">
             {{ meetingGroup.title }}
           </span>
@@ -33,13 +56,31 @@
       </v-sheet>
       <footer v-if="!readOnly" class="mt-2 d-flex">
         <div class="d-flex flex-wrap">
-          <v-btn prepend-icon="mdi-comment-outline" size="small" variant="text" v-if="canAddDiscussionPost" @click="comment">
+          <v-btn
+            prepend-icon="mdi-comment-outline"
+            size="small"
+            variant="text"
+            v-if="canAddDiscussionPost"
+            @click="comment"
+          >
             {{ t('discussion.comment') }}
           </v-btn>
-          <v-btn prepend-icon="mdi-chevron-up" size="small" variant="text" v-if="showComments" @click="showComments = false">
+          <v-btn
+            prepend-icon="mdi-chevron-up"
+            size="small"
+            variant="text"
+            v-if="showComments"
+            @click="showComments = false"
+          >
             {{ t('discussion.hideComments') }}
           </v-btn>
-          <v-btn prepend-icon="mdi-chevron-down" size="small" variant="text" v-else-if="discussionPosts.length" @click="showComments = true">
+          <v-btn
+            prepend-icon="mdi-chevron-down"
+            size="small"
+            variant="text"
+            v-else-if="discussionPosts.length"
+            @click="showComments = true"
+          >
             {{ t('discussion.comments', { count: discussionPosts.length }) }}
           </v-btn>
           <slot name="buttons"></slot>
@@ -47,7 +88,11 @@
         <v-spacer />
         <DropdownMenu size="small" :items="menuItems" />
         <DefaultDialog v-model="editDialog" color="background" persistent>
-          <AddTextProposalModal v-if="p.shortname === 'diff_proposal'" @close="editDialog = false" :proposal="p" />
+          <AddTextProposalModal
+            v-if="p.shortname === 'diff_proposal'"
+            @close="editDialog = false"
+            :proposal="p"
+          />
           <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
         </DefaultDialog>
       </footer>
@@ -59,7 +104,13 @@
     <v-sheet rounded elevation="2" v-else class="proposal">
       <em>{{ t('proposal.notFound') }}</em>
     </v-sheet>
-    <Comments class="proposal-comments mt-4 mb-8 ml-1 mr-4 mr-sm-8 mr-lg-12" v-if="!readOnly && showComments" ref="commentsComponent" :set-tag="p.prop_id" :comments="discussionPosts" />
+    <Comments
+      class="proposal-comments mt-4 mb-8 ml-1 mr-4 mr-sm-8 mr-lg-12"
+      v-if="!readOnly && showComments"
+      ref="commentsComponent"
+      :set-tag="p.prop_id"
+      :comments="discussionPosts"
+    />
   </div>
 </template>
 
@@ -70,6 +121,7 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
 
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import Moment from '@/components/Moment.vue'
 import Richtext from '@/components/Richtext.vue'
 import Tag from '@/components/Tag.vue'
@@ -86,7 +138,11 @@ import useMeetingGroups from '../meetings/useMeetingGroups'
 import useTags from '../meetings/useTags'
 
 import { proposalType } from './contentTypes'
-import { canChangeProposal, canDeleteProposal, canRetractProposal } from './rules'
+import {
+  canChangeProposal,
+  canDeleteProposal,
+  canRetractProposal
+} from './rules'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
@@ -107,29 +163,39 @@ const showComments = ref(false)
 const { getProposalDiscussions } = useDiscussions()
 const { getMeetingGroup } = useMeetingGroups(meetingId)
 
-const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
+const meetingGroup = computed(
+  () => props.p.meeting_group && getMeetingGroup(props.p.meeting_group)
+)
 const { isUnread } = useUnread(new Date(props.p.created))
 
-async function queryDelete () {
-  if (await dialogQuery({
-    title: t('proposal.deletePrompt'),
-    theme: ThemeColor.Warning
-  })) proposalType.api.delete(props.p.pk)
+async function queryDelete() {
+  if (
+    await dialogQuery({
+      title: t('proposal.deletePrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    proposalType.api.delete(props.p.pk)
 }
 
-async function retract () {
-  if (await dialogQuery({
-    title: t('proposal.retractPrompt'),
-    theme: ThemeColor.Warning
-  })) proposalType.api.transition(props.p.pk, 'retract')
+async function retract() {
+  if (
+    await dialogQuery({
+      title: t('proposal.retractPrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    proposalType.api.transition(props.p.pk, 'retract')
 }
 
 const discussionPosts = computed(() => {
   if (props.readOnly) return []
   return orderContent(getProposalDiscussions(props.p))
 })
-const commentsComponent = ref<null | ComponentPublicInstance<{ focus:() => void }>>(null)
-async function comment () {
+const commentsComponent = ref<null | ComponentPublicInstance<{
+  focus: () => void
+}>>(null)
+async function comment() {
   showComments.value = true
   await nextTick()
   // eslint-disable-next-line no-unused-expressions
@@ -143,7 +209,9 @@ const menuItems = computed<MenuItem[]>(() => {
     items.push({
       title: t('edit'),
       prependIcon: 'mdi-pencil',
-      onClick: async () => { editDialog.value = true }
+      onClick: async () => {
+        editDialog.value = true
+      }
     })
   }
   if (canRetractProposal(props.p)) {
@@ -167,7 +235,9 @@ const menuItems = computed<MenuItem[]>(() => {
 
 const extraTags = computed(() => {
   const docTags = getHTMLTags(props.p.body)
-  return props.p.tags.filter(tag => !docTags.has(tag) && tag !== props.p.prop_id)
+  return props.p.tags.filter(
+    (tag) => !docTags.has(tag) && tag !== props.p.prop_id
+  )
 })
 </script>
 

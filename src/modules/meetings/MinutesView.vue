@@ -130,7 +130,7 @@
                 <span v-if="p.meeting_group">
                   {{ getMeetingGroup(p.meeting_group)?.title }}
                 </span>
-                <User v-else :pk="p.author" />
+                <User v-else-if="p.author" :pk="p.author" />
               </template>
             </h4>
             <div class="proposal-text-paragraph" v-html="getProposalBody(p)" />
@@ -146,6 +146,7 @@ import { computed, defineComponent, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { WorkflowState } from '@/contentTypes/types'
+import User from '@/components/User.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 
 import useAgenda from '../agendas/useAgenda'
@@ -198,7 +199,8 @@ const { getState: getProposalState } = proposalType.useWorkflows()
 
 export default defineComponent({
   components: {
-    CheckboxMultipleSelect
+    CheckboxMultipleSelect,
+    User
   },
   setup() {
     const { t } = useI18n()

@@ -21,7 +21,7 @@ const broadcastStatusText = computed(() => {
   if (isBroadcasting.value) return t('room.broadcasting')
   const { active, handler } = meetingRoom.value
   if (active && handler)
-    return t('room.broadcastingUser', getUser(handler) ?? {})
+    return t('room.broadcastingUser', { ...getUser(handler) })
   return t('room.noBroadcast')
 })
 

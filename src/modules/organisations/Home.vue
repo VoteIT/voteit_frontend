@@ -8,6 +8,7 @@ import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 import { slugify } from '@/utils'
 import { MenuItem } from '@/utils/types'
 
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'

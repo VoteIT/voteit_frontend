@@ -1,5 +1,11 @@
 <template>
-  <v-card class="speaker-list mb-2" :title="list.title" :border="isActive" :flat="!isActive" :subtitle="isActive ? t('speaker.listActive') : t('speaker.list')">
+  <v-card
+    class="speaker-list mb-2"
+    :title="list.title"
+    :border="isActive"
+    :flat="!isActive"
+    :subtitle="isActive ? t('speaker.listActive') : t('speaker.list')"
+  >
     <v-card-text>
       <p v-if="list.current" class="mb-2">
         {{ t('speaker.currentlySpeaking') }}:
@@ -7,13 +13,26 @@
       </p>
       <h3>
         {{ t('speaker.queue') }}
-        <v-btn :class="{ expanded: expandQueue }" variant="text" size="small" v-if="list.queue.length > 1 && (list.queue.length !== 2 || list.queue[1] !== user?.pk)" @click="expandQueue = !expandQueue" icon="mdi-chevron-down" />
+        <v-btn
+          :class="{ expanded: expandQueue }"
+          variant="text"
+          size="small"
+          v-if="
+            list.queue.length > 1 &&
+            (list.queue.length !== 2 || list.queue[1] !== user?.pk)
+          "
+          @click="expandQueue = !expandQueue"
+          icon="mdi-chevron-down"
+        />
       </h3>
       <div v-if="list.queue.length">
         <template v-for="(userPk, i) in list.queue" :key="userPk">
           <v-expand-transition>
-            <div :class="{ self: userPk === user?.pk }" v-show="expandQueue || i === 0 || userPk === user?.pk">
-              {{ i+1 }}. <User :pk="userPk"/>
+            <div
+              :class="{ self: userPk === user?.pk }"
+              v-show="expandQueue || i === 0 || userPk === user?.pk"
+            >
+              {{ i + 1 }}. <User :pk="userPk" />
             </div>
           </v-expand-transition>
         </template>
@@ -23,10 +42,24 @@
       </p>
     </v-card-text>
     <v-card-actions v-if="enterLeaveBtn" class="flex-wrap">
-      <v-btn variant="elevated" :prepend-icon="enterLeaveBtn.icon" :color="enterLeaveBtn.color" @click="enterLeaveBtn.action()">
+      <v-btn
+        variant="elevated"
+        :prepend-icon="enterLeaveBtn.icon"
+        :color="enterLeaveBtn.color"
+        @click="enterLeaveBtn.action()"
+      >
         {{ enterLeaveBtn.title }}
       </v-btn>
-      <v-btn :to="getMeetingRoute('speakerLists', {system: list.speaker_system, aid: list.agenda_item })" prepend-icon="mdi-bullhorn" v-if="canChange">
+      <v-btn
+        :to="
+          getMeetingRoute('speakerLists', {
+            system: list.speaker_system,
+            aid: list.agenda_item
+          })
+        "
+        prepend-icon="mdi-bullhorn"
+        v-if="canChange"
+      >
         {{ t('manage') }}
       </v-btn>
       <div class="d-flex flex-grow-1">
@@ -41,12 +74,13 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import User from '@/components/User.vue'
 import { user } from '@/composables/useAuthentication'
 import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
 
 import useMeeting from '@/modules/meetings/useMeeting'
 import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
-import { SpeakerList, SpeakerListState } from './types'
+import { SpeakerList } from './types'
 
 interface EnterLeaveBtn {
   icon: string
@@ -63,11 +97,12 @@ const { t } = useI18n()
 const speakers = useSpeakerLists()
 const { meetingId, getMeetingRoute } = useMeeting()
 
-const listSystem = computed(() => props.list && speakers.getSystem(props.list.speaker_system))
+const listSystem = computed(
+  () => props.list && speakers.getSystem(props.list.speaker_system)
+)
 const inList = computed(() => speakers.userInList(props.list))
 // eslint-disable-next-line camelcase
 const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
-const isOpen = computed(() => props.list.state === SpeakerListState.Open)
 const expandQueue = ref(false)
 
 const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
@@ -92,7 +127,11 @@ const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
 
 const canChange = computed(() => canChangeSpeakerList(props.list))
 
-const fullscreenPath = computed(() => isActive.value && `/speakers/${meetingId.value}/${props.list.speaker_system}`)
+const fullscreenPath = computed(
+  () =>
+    isActive.value &&
+    `/speakers/${meetingId.value}/${props.list.speaker_system}`
+)
 </script>
 
 <style lang="sass">

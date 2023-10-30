@@ -6,17 +6,18 @@ import { useRouter } from 'vue-router'
 import { getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
 import * as rules from '@/utils/rules'
+import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
 import useOrganisation from '@/modules/organisations/useOrganisation'
-import { User } from '@/modules/organisations/types'
+import { IUser } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
 
 import DefaultDialog from './DefaultDialog.vue'
 import SchemaForm from './SchemaForm.vue'
 import { FieldType } from './types'
 import type { FormSchema } from './types'
-import useAlert from '@/composables/useAlert'
 import { toggleUserMenu } from './events'
+import UserAvatar from './UserAvatar.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -42,9 +43,7 @@ async function logout() {
   else router.push({ name: 'home' })
 }
 
-function updateProfile(
-  data: Pick<User, 'userid' | 'first_name' | 'last_name' | 'email'>
-) {
+function updateProfile(data: IUser) {
   return auth.updateProfile(data)
 }
 
@@ -178,7 +177,7 @@ const canSwitchUser = computed(() => {
             @click="auth.switchUser(user)"
           >
             <template #prepend>
-              <UserAvatar :user="user" />
+              <UserAvatar :user="(user as IUser)" />
             </template>
             <v-list-item-title
               :class="{ 'text-secondary': !getFullName(user) }"

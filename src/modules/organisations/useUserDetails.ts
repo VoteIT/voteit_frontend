@@ -5,11 +5,9 @@ import { socket } from '@/utils/Socket'
 import { computed, inject, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { User } from './types'
+import { IUser } from './types'
 
-const userDetails = reactive(
-  new Map<number, Omit<User, 'organisation' | 'organisation_roles'>>()
-)
+const userDetails = reactive(new Map<number, IUser>())
 
 socket.addTypeHandler('user', ({ t, p }) => {
   const type = t.split('.')[1]

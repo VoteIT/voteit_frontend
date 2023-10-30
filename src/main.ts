@@ -6,12 +6,6 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
-import Menu from './components/Menu.vue'
-import Tag from './components/Tag.vue'
-import User from './components/User.vue'
-import Dropdown from './components/Dropdown.vue'
-import UserAvatar from './components/UserAvatar.vue'
-import Widget from './components/Widget.vue'
 import Proposal from './modules/proposals/Proposal.vue'
 
 // REGISTER PLUGINS
@@ -34,11 +28,5 @@ createApp(App)
   .use(i18n)
   .use(router)
   .use(vuetify)
-  .component('DropdownMenu', Menu)
-  .component('Tag', Tag)
-  .component('User', User)
-  .component('Dropdown', Dropdown)
-  .component('UserAvatar', UserAvatar)
-  .component('Widget', Widget)
   .component('Proposal', Proposal)
   .mount('#app')

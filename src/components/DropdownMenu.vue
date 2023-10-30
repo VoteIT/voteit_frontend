@@ -8,7 +8,7 @@ import { MenuItem, MenuSubheader } from '@/utils/types'
 const props = withDefaults(
   defineProps<{
     color?: string
-    contentType?: ContentType
+    contentType?: ContentType<any, any>
     float?: boolean
     icon?: string
     items?: MenuItem[]

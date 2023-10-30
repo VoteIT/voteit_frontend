@@ -6,6 +6,7 @@ import { dialogQuery } from '@/utils'
 import { openModalEvent } from '@/utils/events'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { RoleContextKey } from '@/injectionKeys'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 

@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 import { useIdle } from '@vueuse/core'
 
 import { MenuItemTo } from '@/utils/types'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 

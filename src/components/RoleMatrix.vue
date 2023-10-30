@@ -55,7 +55,7 @@
           :key="user"
           :class="{ currentUser: isCurrentUser({ user }) }"
         >
-          <td><User :pk="user" userid /></td>
+          <td><user :pk="user" userid /></td>
           <td v-if="admin">
             <small>
               {{ getUser(user)?.email }}

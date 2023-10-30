@@ -157,7 +157,7 @@ import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
 import useTabRoute from '@/composables/useTabRoute'
 
-import { User } from '../organisations/types'
+import { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 import useOrganisation from '../organisations/useOrganisation'
 import usePresence from '../presence/usePresence'
@@ -229,7 +229,7 @@ async function removeConfirm(userPk: number, role: string) {
 }
 
 const omitIds = computed(() => getUserIds(meetingId.value))
-function searchFilter(user: User): boolean {
+function searchFilter(user: IUser): boolean {
   return !omitIds.value.includes(user.pk)
 }
 
@@ -284,7 +284,7 @@ function changePresence(user: number, present: boolean) {
   }
 }
 
-function presenceFilter({ pk }: User) {
+function presenceFilter({ pk }: IUser) {
   return !presentUserIds.value.includes(pk)
 }
 

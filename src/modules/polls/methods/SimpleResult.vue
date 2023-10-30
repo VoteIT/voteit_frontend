@@ -91,7 +91,7 @@ function transformResult(proposal: P): ProposalResult {
   }
 }
 
-const results = computed(() => {
-  return getProposals(props.proposals).map(transformResult)
-})
+const results = computed(() =>
+  getProposals(props.proposals).map(transformResult)
+)
 </script>

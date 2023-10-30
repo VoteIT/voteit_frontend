@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 
 import { durationToString } from '@/utils'
 import restApi from '@/utils/restApi'
+import User from '@/components/User.vue'
 import useMeeting from '../meetings/useMeeting'
 
 import useSpeakerHistory from './useSpeakerHistory'

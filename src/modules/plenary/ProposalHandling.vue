@@ -5,6 +5,7 @@ import { computed, reactive, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke } from '@vueuse/core'
 
+import Tag from '@/components/Tag.vue'
 import { WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'

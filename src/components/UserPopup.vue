@@ -31,9 +31,11 @@
 
 <script setup lang="ts">
 import { getFullName } from '@/utils'
-import { User } from '@/modules/organisations/types'
+import { IUser } from '@/modules/organisations/types'
+
+import UserAvatar from './UserAvatar.vue'
 
 defineProps<{
-  user: Pick<User, 'email' | 'first_name' | 'last_name' | 'userid'>
+  user: IUser
 }>()
 </script>

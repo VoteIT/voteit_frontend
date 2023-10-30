@@ -1,5 +1,5 @@
 <template>
-  <AppBar :title="meeting?.title" />
+  <AppBar hasNavDrawer :title="meeting?.title" />
   <UserMenu>
     <template #prependProfile v-if="roleList.length || userGroups.length">
       <template v-if="roleList.length">

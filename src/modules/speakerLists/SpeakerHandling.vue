@@ -12,17 +12,20 @@ import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
 import useAlert from '@/composables/useAlert'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import Moment from '@/components/Moment.vue'
 import SchemaForm from '@/components/SchemaForm.vue'
+import User from '@/components/User.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import { FieldType, FormSchema } from '@/components/types'
 
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
-import type { User } from '../organisations/types'
+import type { IUser } from '../organisations/types'
 
 import {
   canActivateList,
@@ -178,7 +181,7 @@ const userSearchParams = computed(() => {
   }
 })
 // Filter on users that are speakers but not already in queue
-function userSearchFilter(user: User): boolean {
+function userSearchFilter(user: IUser): boolean {
   if (!speakerQueue.value || !speakerSystem.value) return false
   return !speakerQueue.value.includes(user.pk)
 }
