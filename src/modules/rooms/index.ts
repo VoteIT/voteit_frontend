@@ -35,5 +35,5 @@ meetingBubblePlugins.register({
 router.addRoute({
   component: RealTimeView,
   name: 'rooms:main',
-  path: '/real-time/:id/:roomId'
+  path: '/room/:id/:roomId'
 })
