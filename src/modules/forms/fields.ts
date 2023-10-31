@@ -1,9 +1,9 @@
 import { ComposerTranslation } from 'vue-i18n'
-import { Field, NumberField, StringField } from './types'
+import { ArrayField, Field, NumberField, StringField } from './types'
 import useRules from '@/composables/useRules'
 
 interface IField {
-  component: string
+  getComponent(field: Field): string
   getProps?(field: Field): object
   getRules?(
     field: Field,
@@ -12,24 +12,40 @@ interface IField {
 }
 
 function getMax(field: NumberField) {
-  if (field.maximum) return field.maximum
-  if (!field.exclusiveMaximum) return
+  if (typeof field.maximum === 'number') return field.maximum
+  if (typeof field.exclusiveMaximum !== 'number') return
   const step = field.multipleOf ?? 1
   return field.exclusiveMaximum - step
 }
 function getMin(field: NumberField) {
-  if (field.minimum) return field.minimum
-  if (!field.exclusiveMinimum) return
+  if (typeof field.minimum === 'number') return field.minimum
+  if (typeof field.exclusiveMinimum !== 'number') return
   const step = field.multipleOf ?? 1
   return field.exclusiveMinimum + step
 }
 
 const fields: Record<Field['type'], IField> = {
+  array: {
+    getComponent() {
+      return 'v-select'
+    },
+    getProps(field: ArrayField) {
+      return {
+        items: field.items.oneOf,
+        itemValue: 'const',
+        multiple: true
+      }
+    }
+  },
   boolean: {
-    component: 'v-checkbox'
+    getComponent() {
+      return 'v-checkbox'
+    }
   },
   number: {
-    component: 'v-text-field',
+    getComponent() {
+      return 'v-text-field'
+    },
     getProps(field: NumberField) {
       return {
         type: 'number',
@@ -50,8 +66,11 @@ const fields: Record<Field['type'], IField> = {
     }
   },
   string: {
-    component: 'v-text-field',
+    getComponent(field: StringField) {
+      return field.oneOf ? 'v-select' : 'v-text-field'
+    },
     getProps(field: StringField) {
+      if (field.oneOf) return { items: field.oneOf, itemValue: 'const' }
       return {
         minlength: field.minLength,
         maxlength: field.maxLength

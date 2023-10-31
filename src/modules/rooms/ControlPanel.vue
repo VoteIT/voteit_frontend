@@ -1,55 +1,60 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { sortBy } from 'lodash'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import HelpSection from '@/components/HelpSection.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 import useMeeting from '../meetings/useMeeting'
-import type { JsonSchema } from '../forms/types'
-import JsonSchemaForm from '../forms/JsonSchemaForm.vue'
+import { SpeakerSystem, SpeakerSystemState } from '../speakerLists/types'
+import { speakerSystemType } from '../speakerLists/contentTypes'
+import useSpeakerLists from '../speakerLists/useSpeakerLists'
 
 import { roomType } from './contentTypes'
 import { IMeetingRoom } from './types'
 import { parseRestError } from '@/utils/restApi'
 import useRooms from './useRooms'
-import QueryDialog from '@/components/QueryDialog.vue'
+import RoomForm from './RoomForm.vue'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
 const { meetingRooms } = useRooms(meetingId)
 
-type EditData = Pick<IMeetingRoom, 'title' | 'sls'>
+const { getSystem } = useSpeakerLists()
 
-const schema: JsonSchema<EditData> = {
-  properties: {
-    title: {
-      type: 'string',
-      label: t('title'),
-      maxLength: 100
-    },
-    sls: {
-      type: 'number',
-      label: t('speaker.system')
-    }
-  },
-  required: ['title']
+interface FormData {
+  room: Pick<IMeetingRoom, 'title'> & { speakers: boolean }
+  speakerSystem?: Pick<
+    SpeakerSystem,
+    'method_name' | 'safe_positions' | 'settings' | 'meeting_roles_to_speaker'
+  >
 }
 
 const errors = ref()
 const working = ref(false)
 /* Creation */
 const createOpen = ref(false)
-const createData = ref<EditData>({
-  title: '',
-  sls: null
-})
-async function create() {
+
+async function createSpeakerSystem(speakerSystem: Partial<SpeakerSystem>) {
+  const { data } = await speakerSystemType.api.add({
+    meeting: meetingId.value,
+    ...speakerSystem
+  })
+  return data.pk
+}
+
+async function create({ room, speakerSystem }: FormData) {
   working.value = true
   try {
+    const sls = speakerSystem
+      ? await createSpeakerSystem(speakerSystem)
+      : undefined
     await roomType.add({
       meeting: meetingId.value,
-      ...createData.value
+      ...room,
+      sls // Override with newly created
     })
     createOpen.value = false
   } catch (e) {
@@ -58,26 +63,50 @@ async function create() {
   working.value = false
 }
 
-/* Editing */
-const editData = ref<EditData>({
-  title: '',
-  sls: null
-})
-function setEditData(data: IMeetingRoom) {
-  errors.value = undefined
-  const { title, sls } = data
-  editData.value = { title, sls }
-}
-async function updateRoom(room: number, close: () => void) {
+async function updateRoom(
+  { pk, sls }: IMeetingRoom,
+  { room, speakerSystem }: FormData,
+  close: () => void
+) {
   working.value = true
+  const systemState = sls && getSystem(sls)?.state
+  const slsAdded = !sls && room.speakers
+  const slsModified = !!sls && room.speakers
+  const slsDisabled =
+    !!sls && !room.speakers && systemState === SpeakerSystemState.Active
+  const slsEnabled =
+    !!sls && room.speakers && systemState === SpeakerSystemState.Inactive
   try {
-    await roomType.update(room, { ...editData.value })
+    if (slsAdded) sls = await createSpeakerSystem(speakerSystem!)
+    await roomType.update(pk, { ...room, sls })
+    if (slsModified) await speakerSystemType.api.patch(sls!, speakerSystem!)
+    if (slsDisabled) await speakerSystemType.api.transition(sls!, 'inactivate')
+    if (slsEnabled) await speakerSystemType.api.transition(sls!, 'activate')
     close()
   } catch (e) {
     errors.value = parseRestError(e)
   }
   working.value = false
 }
+
+const editableMeetingRooms = computed(() =>
+  sortBy(
+    meetingRooms.value.map((r) => {
+      const speakerSystem = r.sls ? getSystem(r.sls) : undefined
+      return {
+        ...r,
+        formData: {
+          room: {
+            title: r.title,
+            speakers: speakerSystem?.state === SpeakerSystemState.Active
+          },
+          speakerSystem
+        }
+      }
+    }),
+    'title'
+  )
+)
 </script>
 
 <template>
@@ -108,27 +137,7 @@ async function updateRoom(room: number, close: () => void) {
               class="mt-n1 mr-n1"
             />
           </div>
-          <v-form @submit.prevent="create" v-slot="{ isValid }">
-            <JsonSchemaForm
-              :errors="errors"
-              :schema="schema"
-              v-model="createData"
-              @changed="errors = undefined"
-            />
-            <div class="text-right">
-              <v-btn variant="text" @click="close">
-                {{ t('cancel') }}
-              </v-btn>
-              <v-btn
-                type="submit"
-                color="primary"
-                :disabled="!isValid.value"
-                :loading="working"
-              >
-                {{ t('room.create') }}
-              </v-btn>
-            </div>
-          </v-form>
+          <RoomForm :working="working" @submit="create" @cancel="close" />
         </template>
       </DefaultDialog>
     </div>
@@ -139,22 +148,33 @@ async function updateRoom(room: number, close: () => void) {
             {{ t('title') }}
           </th>
           <th>
+            {{ t('speaker.lists', 2) }}
+          </th>
+          <th>
             {{ t('room.broadcasting') }}
           </th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="room in meetingRooms" :key="room.pk">
+        <tr v-for="room in editableMeetingRooms" :key="room.pk">
           <td>
             {{ room.title }}
+          </td>
+          <td>
+            <v-icon
+              v-if="room.formData.room.speakers"
+              icon="mdi-check"
+              color="success"
+            />
+            <v-icon v-else icon="mdi-close" color="warning" />
           </td>
           <td>
             <v-icon v-if="room.active" icon="mdi-check" color="success" />
             <v-icon v-else icon="mdi-close" color="warning" />
           </td>
           <td class="text-right">
-            <DefaultDialog @update:model-value="setEditData(room)">
+            <DefaultDialog>
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
@@ -179,21 +199,12 @@ async function updateRoom(room: number, close: () => void) {
                     variant="text"
                   />
                 </div>
-                <v-form @submit.prevent="updateRoom(room.pk, close)">
-                  <JsonSchemaForm
-                    :errors="errors"
-                    :schema="schema"
-                    v-model="editData"
-                  />
-                  <div class="text-right">
-                    <v-btn variant="text" @click="close">
-                      {{ t('cancel') }}
-                    </v-btn>
-                    <v-btn color="primary" type="submit">
-                      {{ t('save') }}
-                    </v-btn>
-                  </div>
-                </v-form>
+                <RoomForm
+                  :data="room.formData"
+                  :working="working"
+                  @cancel="close"
+                  @submit="updateRoom(room, $event, close)"
+                />
               </template>
             </DefaultDialog>
             <QueryDialog

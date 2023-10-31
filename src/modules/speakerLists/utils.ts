@@ -1,9 +1,14 @@
 import { ComposerTranslation } from 'vue-i18n'
 
+import { SpeakerSystemMethod } from './types'
+
 /**
  * Translation method to avoid dynamic translation strings
  */
-export function translateOrderMethod (method: string, t: ComposerTranslation): string {
+export function translateOrderMethod(
+  method: SpeakerSystemMethod,
+  t: ComposerTranslation
+): string {
   switch (method) {
     case 'priority':
       return t('speaker.orderMethod.priority')

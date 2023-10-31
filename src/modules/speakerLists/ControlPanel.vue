@@ -232,7 +232,7 @@ function getMethodSettings(data: Partial<SpeakerSystem>) {
         min: 0,
         modelValue: data.settings.max_times,
         // eslint-disable-next-line camelcase
-        'onUpdate:modelValue': (max_times: number) => {
+        'onUpdate:modelValue'(max_times: number) {
           // eslint-disable-next-line camelcase
           data.settings = { max_times }
         },
