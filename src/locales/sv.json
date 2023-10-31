@@ -735,7 +735,7 @@
     "broadcastThisAgendaItem": "Just nu sänds en annan dagordningspunkt. Vill du byta till denna?",
     "broadcastingUser": "Sändning pågår ({userid})",
     "create": "skapa rum",
-    "confirmBroadcastStart": "Vill du starta sändning från det här rummer?",
+    "confirmBroadcastStart": "Vill du starta sändning från det här rummet?",
     "confirmBroadcastStop": "Detta avslutar sändningen.\nÄr du säker?",
     "confirmBroadcastTakeover": "Du håller nu på att ta över sändningen i det här rummet.\nÄr du säker?",
     "confirmDelete": "Detta raderar rummet. Det går inte att ångra.\nÄr du säker?",
