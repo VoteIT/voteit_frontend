@@ -7,7 +7,7 @@ import useRoom from './useRoom'
 
 const { meetingRoute } = useMeeting()
 const { meetingRoom } = useRoom()
-const { agendaItem } = useAgendaItem(
+const { agendaItem, agendaItemRoute } = useAgendaItem(
   computed(() => meetingRoom.value?.agenda_item || undefined)
 )
 
@@ -21,7 +21,7 @@ const crumbs = computed(() => {
 
 <template>
   <v-app-bar flat color="app-bar">
-    <router-link :to="meetingRoute">
+    <router-link :to="agendaItemRoute ?? meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
@@ -9,6 +10,7 @@ import { agendaItemType } from '../agendas/contentTypes'
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
+import useRoom from '../rooms/useRoom'
 import usePlenary from './usePlenary'
 
 const router = useRouter()
@@ -16,6 +18,7 @@ const { meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, agendaItemRoute, canChangeAgendaItem } =
   useAgendaItem(agendaId)
+const { meetingRoom } = useRoom()
 
 const { getPlenaryPath } = usePlenary(meetingId, agendaId)
 
@@ -26,21 +29,27 @@ function navigateAgendaItem(aid?: number) {
 }
 onKeyStroke('ArrowLeft', () => navigateAgendaItem(previousAgendaItem.value?.pk))
 onKeyStroke('ArrowRight', () => navigateAgendaItem(nextAgendaItem.value?.pk))
+
+const breadcrumbs = computed(() => [
+  { title: meetingRoom.value?.title ?? '-' },
+  { title: agendaItem.value?.title ?? '-' }
+])
 </script>
 
 <template>
   <v-app-bar flat color="app-bar">
-    <router-link :to="meetingRoute">
+    <router-link :to="agendaItemRoute ?? meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">
-      <router-link
+      <v-breadcrumbs :items="breadcrumbs" />
+      <!-- <router-link
         v-if="agendaItem && agendaItemRoute"
         :to="agendaItemRoute"
         class="text-white text-decoration-none"
       >
         {{ agendaItem.title }}
-      </router-link>
+      </router-link> -->
     </v-app-bar-title>
     <div class="flex-shrink-0 d-flex align-center">
       <WorkflowState
