@@ -46,7 +46,12 @@ const paused = computed(
       </em>
     </div>
     <div v-else-if="paused">
-      <h2 class="text-center mb-8">
+      <div
+        v-if="meetingRoom.body"
+        v-html="meetingRoom.body"
+        class="text-center text-h4 my-8"
+      ></div>
+      <h2 v-else class="text-center my-8">
         {{ t('room.paused') }}
       </h2>
       <ClockFace :target-time="targetTime" />
