@@ -49,7 +49,7 @@ const paused = computed(
       <div
         v-if="meetingRoom.body"
         v-html="meetingRoom.body"
-        class="text-center text-h4 my-8"
+        class="text-center text-h6 my-8"
       ></div>
       <h2 v-else class="text-center my-8">
         {{ t('room.paused') }}

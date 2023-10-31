@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -11,6 +11,7 @@ import useUserDetails from '../organisations/useUserDetails'
 import usePlenary from '../plenary/usePlenary'
 import useRoom from './useRoom'
 import { roomType } from './contentTypes'
+import { stripHTML } from '@/utils'
 
 const { t } = useI18n()
 const {
@@ -46,7 +47,12 @@ const pauseEdit = reactive({
   isOpen: false,
   body: meetingRoom.value?.body ?? ''
 })
-
+watch(
+  () => meetingRoom.value?.body,
+  (body) => {
+    pauseEdit.body = body ?? ''
+  }
+)
 async function savePauseMessage() {
   if (!meetingRoom.value) throw new Error('No meeting room')
   await roomType.api.patch(meetingRoom.value.pk, { body: pauseEdit.body })
@@ -91,9 +97,15 @@ async function toggleBroadcast() {
       />
       <DefaultDialog :title="t('room.pauseMessage')" v-model="pauseEdit.isOpen">
         <template #activator="{ props }">
-          <v-list-item prepend-icon="mdi-clock" v-bind="props">
-            {{ t('room.pauseMessage') }}
-          </v-list-item>
+          <v-list-item
+            prepend-icon="mdi-clock"
+            v-bind="props"
+            :title="t('room.pauseMessage')"
+            :subtitle="
+              meetingRoom.body &&
+              stripHTML(meetingRoom.body).slice(0, 16) + '&hellip;'
+            "
+          />
         </template>
         <template #default="{ close }">
           <v-alert type="info" class="my-3">

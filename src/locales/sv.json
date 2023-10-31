@@ -744,6 +744,8 @@
     "edit": "Redigera rum",
     "noBroadcast": "Ingen sändning just nu...",
     "paused": "Paus...",
+    "pauseMessage": "Pausmeddelande",
+    "pauseMessageDescription": "Pausmeddelandet visas när sändning är aktiv, men visning av både talarlista eller förslag är avstängd.",
     "realTime": "Realtivdsvy",
     "selectAgendaItem": "Sänd denna dagordningspunkt",
     "settings": "Inställningar för rum",
