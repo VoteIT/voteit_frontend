@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PageNotFoundView from '@/views/PageNotFoundView.vue'
 import appBar from '@/components/AppBar.vue'
 
-import speakerFullscreen from '@/modules/speakerLists/fullscreenRouter'
+// import speakerFullscreen from '@/modules/speakerLists/fullscreenRouter'
 import plenary from '@/modules/plenary/router'
 import meeting from '@/modules/meetings/router'
 
@@ -17,7 +17,7 @@ const routes = [
   },
   ...meeting,
   plenary,
-  speakerFullscreen,
+  // speakerFullscreen,
   // Other pages, do a 404
   {
     path: '/:pathMatch(.*)*',

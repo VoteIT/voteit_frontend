@@ -1,3 +1,72 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import User from '@/components/User.vue'
+import { user } from '@/composables/useAuthentication'
+import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
+
+import useMeeting from '@/modules/meetings/useMeeting'
+import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
+import { SpeakerList } from './types'
+import { IMeetingRoom } from '../rooms/types'
+
+interface EnterLeaveBtn {
+  icon: string
+  title: string
+  color?: string
+  action: () => void
+}
+
+const props = defineProps<{
+  list: SpeakerList & { room: IMeetingRoom }
+}>()
+
+const { t } = useI18n()
+const speakers = useSpeakerLists()
+const { getMeetingRoute } = useMeeting()
+
+const listSystem = computed(
+  () => props.list && speakers.getSystem(props.list.speaker_system)
+)
+const inList = computed(() => speakers.userInList(props.list))
+const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
+const expandQueue = ref(false)
+
+const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
+  if (!inList.value && canEnterList(props.list)) {
+    return {
+      icon: 'mdi-playlist-plus',
+      title: t('speaker.enterList'),
+      color: 'primary',
+      action: () => speakers.enterList(props.list)
+    }
+  }
+  if (inList.value && canLeaveList(props.list)) {
+    return {
+      icon: 'mdi-playlist-remove',
+      title: t('speaker.leaveList'),
+      color: 'warning',
+      action: () => speakers.leaveList(props.list)
+    }
+  }
+  return null
+})
+
+const canChange = computed(() => canChangeSpeakerList(props.list))
+
+const fullscreenPath = computed(
+  () =>
+    props.list.room.active &&
+    isActive.value &&
+    getMeetingRoute('rooms:main', {
+      aid: props.list.agenda_item,
+      roomId: props.list.room.pk,
+      tab: 'discussion'
+    })
+)
+</script>
+
 <template>
   <v-card
     class="speaker-list mb-2"
@@ -52,9 +121,10 @@
       </v-btn>
       <v-btn
         :to="
-          getMeetingRoute('speakerLists', {
-            system: list.speaker_system,
-            aid: list.agenda_item
+          getMeetingRoute('Plenary', {
+            aid: list.agenda_item,
+            roomId: list.room.pk,
+            tab: 'discussion'
           })
         "
         prepend-icon="mdi-bullhorn"
@@ -69,70 +139,6 @@
     </v-card-actions>
   </v-card>
 </template>
-
-<script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import User from '@/components/User.vue'
-import { user } from '@/composables/useAuthentication'
-import useSpeakerLists from '@/modules/speakerLists/useSpeakerLists'
-
-import useMeeting from '@/modules/meetings/useMeeting'
-import { canChangeSpeakerList, canEnterList, canLeaveList } from './rules'
-import { SpeakerList } from './types'
-
-interface EnterLeaveBtn {
-  icon: string
-  title: string
-  color?: string
-  action: () => void
-}
-
-const props = defineProps<{
-  list: SpeakerList
-}>()
-
-const { t } = useI18n()
-const speakers = useSpeakerLists()
-const { meetingId, getMeetingRoute } = useMeeting()
-
-const listSystem = computed(
-  () => props.list && speakers.getSystem(props.list.speaker_system)
-)
-const inList = computed(() => speakers.userInList(props.list))
-// eslint-disable-next-line camelcase
-const isActive = computed(() => listSystem.value?.active_list === props.list.pk)
-const expandQueue = ref(false)
-
-const enterLeaveBtn = computed<EnterLeaveBtn | null>(() => {
-  if (!inList.value && canEnterList(props.list)) {
-    return {
-      icon: 'mdi-playlist-plus',
-      title: t('speaker.enterList'),
-      color: 'primary',
-      action: () => speakers.enterList(props.list)
-    }
-  }
-  if (inList.value && canLeaveList(props.list)) {
-    return {
-      icon: 'mdi-playlist-remove',
-      title: t('speaker.leaveList'),
-      color: 'warning',
-      action: () => speakers.leaveList(props.list)
-    }
-  }
-  return null
-})
-
-const canChange = computed(() => canChangeSpeakerList(props.list))
-
-const fullscreenPath = computed(
-  () =>
-    isActive.value &&
-    `/speakers/${meetingId.value}/${props.list.speaker_system}`
-)
-</script>
 
 <style lang="sass">
 .speaker-list

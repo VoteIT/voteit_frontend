@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+import Dropdown from '@/components/Dropdown.vue'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import SpeakerList from '../speakerLists/SpeakerList.vue'
 import useSpeakerLists from '../speakerLists/useSpeakerLists'
-import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 import useMeeting from '../meetings/useMeeting'
-import { useI18n } from 'vue-i18n'
-import Dropdown from '@/components/Dropdown.vue'
+import useRooms from '../rooms/useRooms'
 
 const props = defineProps<{
   agendaId: number
@@ -14,27 +15,31 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const { meetingId, getMeetingRoute } = useMeeting()
-const { activeSpeakerSystems, managingSpeakerSystems } =
-  useSpeakerSystems(meetingId)
+const { activeSpeakerSystems, managingSpeakerSystems } = useRooms(meetingId)
 
 const { getAgendaSpeakerLists } = useSpeakerLists()
 
 const speakerLists = computed(() =>
-  getAgendaSpeakerLists(
-    props.agendaId,
-    (list) =>
-      !!activeSpeakerSystems.value.find(
-        (system) => system.pk === list.speaker_system
-      )
-  )
+  getAgendaSpeakerLists(props.agendaId, (list) =>
+    activeSpeakerSystems.value.some(
+      (system) => system.pk === list.speaker_system
+    )
+  ).map((list) => ({
+    ...list,
+    // Annotate using room id
+    room: activeSpeakerSystems.value.find(
+      (sls) => sls.pk === list.speaker_system
+    )?.room!
+  }))
 )
 
 const manageSpeakerListsMenu = computed(() => {
   return managingSpeakerSystems.value.map((system) => ({
-    title: t('speaker.manageSystem', { ...system }),
+    title: t('speaker.manageSystem', { ...system.room }),
     prependIcon: 'mdi-bullhorn',
-    to: getMeetingRoute('speakerLists', {
-      system: system.pk,
+    to: getMeetingRoute('Plenary', {
+      roomId: system.room.pk,
+      tab: 'discussion',
       aid: props.agendaId
     })
   }))
