@@ -30,10 +30,13 @@ export default function useRoom() {
     await roomType.update(roomId.value, { agenda_item: aid })
   }
 
-  async function setBroadcast(active = true) {
+  async function setBroadcast(
+    active = true,
+    content?: { agenda_item: number; proposals: number[] }
+  ) {
     if (!user.value) throw new Error('No authenticated user')
     const handler = active ? user.value.pk : undefined
-    await roomType.update(roomId.value, { active, handler })
+    await roomType.update(roomId.value, { active, handler, ...content })
   }
 
   async function setProposalBroadcast(active = true) {
