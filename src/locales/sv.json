@@ -805,7 +805,6 @@
     "settingsHelp": "Ett system för talarlistor kan bara ha en aktiv talarlista. Om du har parallella utskott i ett möte kan du sätta upp ett system per utskott.",
     "speakerCount": "Inga talare i kö | En talare i kö | {count} talare i kö",
     "system": "System för talarlistor",
-    "systems": "System för talarlistor",
     "systemAdd": "Lägg till listsystem",
     "systemEdit": "Ändra listsystem",
     "systemMethod": "Metod för ordning",
