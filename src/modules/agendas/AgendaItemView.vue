@@ -15,7 +15,7 @@
               @edit-done="submit"
             />
           </div>
-          <DropdownMenu float :items="menuItems" />
+          <DropdownMenu :items="menuItems" />
         </div>
         <Richtext
           :editing="editing"
@@ -35,10 +35,11 @@
         >
           <template #actions>
             <v-btn
+              :disabled="!hasPublishedProposals"
               icon="mdi-star-plus"
-              variant="text"
               size="small"
               :to="toNewPoll"
+              variant="text"
             />
           </template>
           <PollList :agendaItem="agendaId" class="ml-4" />
@@ -155,6 +156,7 @@
 </template>
 
 <script lang="ts" setup>
+import { any } from 'itertools'
 import {
   computed,
   nextTick,
@@ -188,8 +190,8 @@ import TextDocuments from '../proposals/TextDocuments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import useProposals from '../proposals/useProposals'
-import { Proposal } from '../proposals/types'
+import useProposals, { iterProposals } from '../proposals/useProposals'
+import { Proposal, ProposalState } from '../proposals/types'
 import { DiscussionPost } from '../discussions/types'
 import { TagsKey, tagClickEvent } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
@@ -309,11 +311,21 @@ function getAgendaMenuContext(menu: string) {
   }
 }
 
+const hasPublishedProposals = computed(() =>
+  any(
+    iterProposals(
+      (p) =>
+        p.agenda_item === agendaId.value && p.state === ProposalState.Published
+    )
+  )
+)
+
 const menuItems = computed<MenuItem[]>(() => {
   if (!agendaItem.value) return []
   const items: MenuItem[] = []
   if (canAddPoll.value) {
     items.push({
+      disabled: !hasPublishedProposals.value,
       title: t('poll.new'),
       prependIcon: 'mdi-star-plus',
       to: toNewPoll.value

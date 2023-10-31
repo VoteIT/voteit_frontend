@@ -37,6 +37,12 @@ function agendaItemHasProposals(ai: number): boolean {
   return false
 }
 
+export function* iterProposals(predicate?: Predicate<Proposal>) {
+  for (const p of proposals.values()) {
+    if (!predicate || predicate(p)) yield p
+  }
+}
+
 function getAgendaProposals(
   ai: number,
   predicate?: Predicate<Proposal>,
@@ -44,10 +50,11 @@ function getAgendaProposals(
   direction: 'asc' | 'desc' = 'asc'
 ): Proposal[] {
   return orderBy(
-    filter(
-      proposals.values(),
-      (p) => p.agenda_item === ai && (!predicate || predicate(p))
-    ),
+    [
+      ...iterProposals(
+        (p) => p.agenda_item === ai && (!predicate || predicate(p))
+      )
+    ],
     order,
     direction
   )

@@ -6,26 +6,41 @@ import { slugify } from '@/utils'
 import useMeeting from '../meetings/useMeeting'
 import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
 import { canAddPoll as _canAddPoll } from '../polls/rules'
-import { canAddProposal as _canAddProposal, canAddDocument as _canAddDocument, getProposalBlockReason } from '../proposals/rules'
+import usePolls from '../polls/usePolls'
+import {
+  canAddProposal as _canAddProposal,
+  canAddDocument as _canAddDocument,
+  getProposalBlockReason
+} from '../proposals/rules'
 
 import { canChangeAgendaItem as canChange } from './rules'
 
 import useAgenda from './useAgenda'
-import usePolls from '../polls/usePolls'
 
-function ellipsisTitle (title: string, length: number) {
+function ellipsisTitle(title: string, length: number) {
   if (title.length <= length) return title
   return title.slice(0, length - 1) + '…'
 }
 
-export default function useAgendaItem (agendaId: Ref<number | undefined>) {
+export default function useAgendaItem(agendaId: Ref<number | undefined>) {
   const { meetingId, getMeetingRoute } = useMeeting()
   const { getAgendaItem, getAgendaBody } = useAgenda(meetingId)
-  const agendaItem = computed(() => typeof agendaId.value === 'number' ? getAgendaItem(agendaId.value) : undefined)
-  const agendaBody = computed(() => typeof agendaId.value === 'number' ? getAgendaBody(agendaId.value)?.body : undefined)
+  const agendaItem = computed(() =>
+    typeof agendaId.value === 'number'
+      ? getAgendaItem(agendaId.value)
+      : undefined
+  )
+  const agendaBody = computed(() =>
+    typeof agendaId.value === 'number'
+      ? getAgendaBody(agendaId.value)?.body
+      : undefined
+  )
   const { allPollTitles } = usePolls()
 
-  function getAgendaItemRoute (name: string = 'agendaItem', params?: Dictionary<string | number>) {
+  function getAgendaItemRoute(
+    name: string = 'agendaItem',
+    params?: Dictionary<string | number>
+  ) {
     if (!agendaId.value) return
     return getMeetingRoute(name, {
       aid: agendaId.value,
@@ -39,7 +54,10 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
     if (!agendaItem.value) return ''
     for (let n = 1; true; n++) {
       const addLength = String(n).length + 1 // Add room for space char
-      const title = `${ellipsisTitle(agendaItem.value.title, 70 - addLength)} ${n}`
+      const title = `${ellipsisTitle(
+        agendaItem.value.title,
+        70 - addLength
+      )} ${n}`
       if (!allPollTitles.value.includes(title)) return title
     }
   })
@@ -49,7 +67,9 @@ export default function useAgendaItem (agendaId: Ref<number | undefined>) {
     return canChange(agendaItem.value)
   })
 
-  const canAddPoll = computed(() => agendaItem.value && _canAddPoll(agendaItem.value))
+  const canAddPoll = computed(
+    () => agendaItem.value && _canAddPoll(agendaItem.value)
+  )
 
   const canAddProposal = computed(() => {
     if (!agendaItem.value) return false

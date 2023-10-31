@@ -19,7 +19,7 @@ agendaMenuPlugins.register({
             id: meeting.pk,
             aid: agendaItem.pk,
             roomId,
-            tab: 'descisions'
+            tab: 'decisions'
           }
         }
       }
