@@ -156,7 +156,6 @@
 </template>
 
 <script lang="ts" setup>
-import { any } from 'itertools'
 import {
   computed,
   nextTick,
@@ -190,7 +189,10 @@ import TextDocuments from '../proposals/TextDocuments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import useProposals, { iterProposals } from '../proposals/useProposals'
+import useProposals, {
+  anyProposal,
+  filterProposals
+} from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
 import { DiscussionPost } from '../discussions/types'
 import { TagsKey, tagClickEvent } from '../meetings/useTags'
@@ -256,17 +258,15 @@ function proposalFilter(p: Proposal): boolean {
   return states.has(p.state)
 }
 const sortedProposals = computed(() =>
-  proposals.getAgendaProposals(
-    agendaId.value,
-    proposalFilter,
+  filterProposals(
+    (p) => isAIProposal(p) && proposalFilter(p),
     'created',
     activeFilter.value.order
   )
 )
 const hiddenProposals = computed(() =>
-  proposals.getAgendaProposals(
-    agendaId.value,
-    (p) => !proposalFilter(p),
+  filterProposals(
+    (p) => isAIProposal(p) && !proposalFilter(p),
     'created',
     activeFilter.value.order
   )
@@ -311,13 +311,12 @@ function getAgendaMenuContext(menu: string) {
   }
 }
 
+function isAIProposal(p: Proposal) {
+  return p.agenda_item === agendaId.value
+}
+
 const hasPublishedProposals = computed(() =>
-  any(
-    iterProposals(
-      (p) =>
-        p.agenda_item === agendaId.value && p.state === ProposalState.Published
-    )
-  )
+  anyProposal((p) => isAIProposal(p) && p.state === ProposalState.Published)
 )
 
 const menuItems = computed<MenuItem[]>(() => {
@@ -360,9 +359,7 @@ const menuItems = computed<MenuItem[]>(() => {
   return pluginMenuItems.length ? [...items, '---', ...pluginMenuItems] : items
 })
 
-const hasProposals = computed(() =>
-  proposals.agendaItemHasProposals(agendaId.value)
-)
+const hasProposals = computed(() => anyProposal(isAIProposal))
 
 function setLastRead(ai: AgendaItem, force = false) {
   // Allow forcing read marker, on user demand

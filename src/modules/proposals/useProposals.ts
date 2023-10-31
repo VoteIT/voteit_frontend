@@ -1,4 +1,4 @@
-import { any, filter, ifilter, map, Predicate } from 'itertools'
+import { any, map, Predicate } from 'itertools'
 import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
@@ -29,13 +29,6 @@ agendaDeletedEvent.on((pk) => {
     if (proposal.agenda_item === pk) proposals.delete(proposal.pk)
   }
 })
-
-function agendaItemHasProposals(ai: number): boolean {
-  for (const p of proposals.values()) {
-    if (p.agenda_item === ai) return true
-  }
-  return false
-}
 
 export function* iterProposals(predicate?: Predicate<Proposal>) {
   for (const p of proposals.values()) {
@@ -68,20 +61,27 @@ export function getProposals(pks: number[]) {
   return pks.map(getProposal).filter(isProposal)
 }
 
-function anyProposal(predicate: Predicate<Proposal>): boolean {
-  return any(proposals.values(), predicate)
+export function filterProposals(
+  predicate: Predicate<Proposal>,
+  order: keyof Proposal = 'created',
+  direction: 'asc' | 'desc' = 'asc'
+) {
+  return orderBy([...iterProposals(predicate)], order, direction)
+}
+
+export function anyProposal(predicate: Predicate<Proposal>): boolean {
+  return any(iterProposals(predicate))
 }
 
 function forProposals(
   predicate: Predicate<Proposal>,
   fn: (proposal: Proposal) => void
 ) {
-  map(ifilter(proposals.values(), predicate), fn)
+  map(iterProposals(predicate), fn)
 }
 
 export default function useProposals() {
   return {
-    agendaItemHasProposals,
     anyProposal,
     forProposals,
     getAgendaProposals,
