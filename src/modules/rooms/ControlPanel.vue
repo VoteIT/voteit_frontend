@@ -6,9 +6,16 @@ import { useI18n } from 'vue-i18n'
 import HelpSection from '@/components/HelpSection.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import RoleMatrix from '@/components/RoleMatrix.vue'
+import UserSearch from '@/components/UserSearch.vue'
 
 import useMeeting from '../meetings/useMeeting'
-import { SpeakerSystem, SpeakerSystemState } from '../speakerLists/types'
+import { IUser } from '../organisations/types'
+import {
+  SpeakerSystem,
+  SpeakerSystemRole,
+  SpeakerSystemState
+} from '../speakerLists/types'
 import { speakerSystemType } from '../speakerLists/contentTypes'
 import useSpeakerLists from '../speakerLists/useSpeakerLists'
 
@@ -17,12 +24,15 @@ import { IMeetingRoom } from './types'
 import { parseRestError } from '@/utils/restApi'
 import useRooms from './useRooms'
 import RoomForm from './RoomForm.vue'
+import useAgenda from '../agendas/useAgenda'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
+const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 
 const { getSystem } = useSpeakerLists()
+const { getUserIds } = speakerSystemType.useContextRoles()
 
 interface FormData {
   room: Pick<IMeetingRoom, 'title'> & { speakers: boolean }
@@ -34,7 +44,6 @@ interface FormData {
 
 const errors = ref()
 const working = ref(false)
-/* Creation */
 const createOpen = ref(false)
 
 async function createSpeakerSystem(speakerSystem: Partial<SpeakerSystem>) {
@@ -93,6 +102,7 @@ const editableMeetingRooms = computed(() =>
   sortBy(
     meetingRooms.value.map((r) => {
       const speakerSystem = r.sls ? getSystem(r.sls) : undefined
+      const userIds = r.sls ? getUserIds(r.sls) : []
       return {
         ...r,
         formData: {
@@ -101,12 +111,23 @@ const editableMeetingRooms = computed(() =>
             speakers: speakerSystem?.state === SpeakerSystemState.Active
           },
           speakerSystem
+        },
+        userSearch: {
+          params: { meeting: meetingId.value },
+          filter: ({ pk }: IUser) => !userIds.includes(pk),
+          onSubmit: (user: number) =>
+            speakerSystemType.addRoles(r.sls!, user, SpeakerSystemRole.Speaker)
         }
       }
     }),
     'title'
   )
 )
+
+const systemIcons = {
+  speaker: 'mdi-chat',
+  list_moderator: 'mdi-gavel'
+}
 </script>
 
 <template>
@@ -161,17 +182,68 @@ const editableMeetingRooms = computed(() =>
           <td>
             {{ room.title }}
           </td>
-          <td>
-            <v-icon
-              v-if="room.formData.room.speakers"
-              icon="mdi-check"
-              color="success"
-            />
-            <v-icon v-else icon="mdi-close" color="warning" />
+          <td v-if="room.formData.room.speakers">
+            <v-icon icon="mdi-check" color="success" />
+            <DefaultDialog>
+              <template #activator="{ props }">
+                <v-btn
+                  class="ml-2"
+                  color="primary"
+                  prepend-icon="mdi-account-group"
+                  size="small"
+                  v-bind="props"
+                >
+                  {{ t('speaker.handleRoles') }}
+                </v-btn>
+              </template>
+              <template #default="{ close }">
+                <div class="d-flex mb-2">
+                  <h2 class="flex-grow-1">
+                    {{ t('speaker.handleRoles') }}
+                  </h2>
+                  <v-btn
+                    class="mt-n1 mr-n1"
+                    icon="mdi-close"
+                    size="small"
+                    variant="text"
+                    @click="close"
+                  />
+                </div>
+                <RoleMatrix
+                  admin
+                  class="mb-4"
+                  :content-type="speakerSystemType"
+                  :icons="systemIcons"
+                  :pk="room.sls!"
+                />
+                <UserSearch class="mb-2" v-bind="room.userSearch" />
+              </template>
+            </DefaultDialog>
+          </td>
+          <td v-else>
+            <v-icon icon="mdi-close" color="warning" />
           </td>
           <td>
             <v-icon v-if="room.active" icon="mdi-check" color="success" />
             <v-icon v-else icon="mdi-close" color="warning" />
+            <v-btn
+              v-if="agenda.length"
+              class="ml-2"
+              color="primary"
+              prepend-icon="mdi-broadcast"
+              size="small"
+              :to="{
+                name: 'Plenary',
+                params: {
+                  id: meetingId,
+                  roomId: room.pk,
+                  tab: 'decisions',
+                  aid: room.agenda_item || agenda[0].pk
+                }
+              }"
+            >
+              {{ t('plenary.view') }}
+            </v-btn>
           </td>
           <td class="text-right">
             <DefaultDialog>

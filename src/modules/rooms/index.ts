@@ -15,7 +15,7 @@ import { meetingRoomStore } from './useRooms'
 meetingSettingsPlugins.register({
   id: 'rooms',
   component: ControlPanel,
-  icon: 'mdi-door',
+  icon: 'mdi-lecturn',
   getTitle(t) {
     return t('room.settingsTitle')
   },

@@ -14,10 +14,10 @@ meetingSettingsPlugins.register({
   component: DialectControlPanel,
   quickComponent: DialectQuick,
   icon: 'mdi-brush-variant',
-  getTitle (t) {
+  getTitle(t) {
     return t('meeting.dialect')
   },
-  checkActive (meeting) {
+  checkActive(meeting) {
     return !!meeting.dialect
   }
 })
@@ -27,7 +27,7 @@ meetingSettingsPlugins.register({
   component: AccessPolicies,
   quickComponent: APQuick,
   icon: 'mdi-key',
-  getTitle (t) {
+  getTitle(t) {
     return t('accessPolicy.plural')
   }
 })
@@ -37,7 +37,7 @@ meetingSettingsPlugins.register({
   component: ElectoralRegisters,
   quickComponent: ERQuick,
   icon: 'mdi-vote',
-  getTitle (t) {
+  getTitle(t) {
     return t('electoralRegister.plural')
   }
 })
@@ -45,22 +45,11 @@ meetingSettingsPlugins.register({
 meetingSettingsPlugins.register({
   id: 'exports',
   component: ExportsControlPanel,
-  getDescription (t) {
+  getDescription(t) {
     return t('meeting.exportsDescription')
   },
   icon: 'mdi-file-download',
-  getTitle (t) {
+  getTitle(t) {
     return t('meeting.exports')
-  }
-})
-
-// TODO Move registration to module
-meetingSettingsPlugins.register({
-  id: 'speakers',
-  component: SpeakerSystems,
-  getDescription: (t) => t('speaker.settings'),
-  icon: 'mdi-account-voice',
-  getTitle (t) {
-    return t('speaker.systems')
   }
 })

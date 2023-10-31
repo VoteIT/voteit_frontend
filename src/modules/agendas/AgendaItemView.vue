@@ -43,38 +43,7 @@
           </template>
           <PollList :agendaItem="agendaId" class="ml-4" />
         </Dropdown>
-        <Dropdown
-          v-if="speakerLists.length || manageSpeakerListsMenu.length"
-          :title="t('speaker.lists', speakerLists.length)"
-          modelValue
-        >
-          <template #actions v-if="manageSpeakerListsMenu.length">
-            <v-tooltip :text="t('speaker.manageLists')">
-              <template #activator="{ props }">
-                <DropdownMenu
-                  v-if="manageSpeakerListsMenu.length > 1"
-                  v-bind="props"
-                  :items="manageSpeakerListsMenu"
-                  icon="mdi-bullhorn"
-                  size="small"
-                />
-                <v-btn
-                  v-else
-                  v-bind="props"
-                  size="small"
-                  variant="text"
-                  :to="manageSpeakerListsMenu[0].to"
-                  icon="mdi-bullhorn"
-                />
-              </template>
-            </v-tooltip>
-          </template>
-          <SpeakerList
-            v-for="list in speakerLists"
-            :key="list.pk"
-            :list="list"
-          />
-        </Dropdown>
+        <AISpeakerLists :agendaId="agendaId" />
       </v-col>
     </v-row>
     <v-divider class="my-4" />
@@ -215,15 +184,12 @@ import useLoader from '@/composables/useLoader'
 
 import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
-import SpeakerList from '../speakerLists/SpeakerList.vue'
 import TextDocuments from '../proposals/TextDocuments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposals from '../proposals/useProposals'
 import { Proposal } from '../proposals/types'
-import useSpeakerLists from '../speakerLists/useSpeakerLists'
-import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 import { DiscussionPost } from '../discussions/types'
 import { TagsKey, tagClickEvent } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
@@ -239,6 +205,7 @@ import useAgendaItem from './useAgendaItem'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
+import AISpeakerLists from './AISpeakerLists.vue'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
@@ -313,18 +280,6 @@ const sortedDiscussions = computed(() =>
     discussions.getAgendaDiscussions(agendaId.value, discussionFilter)
   )
 )
-const { activeSpeakerSystems, managingSpeakerSystems } =
-  useSpeakerSystems(meetingId)
-const { getAgendaSpeakerLists } = useSpeakerLists()
-const speakerLists = computed(() =>
-  getAgendaSpeakerLists(
-    agendaId.value,
-    (list) =>
-      !!activeSpeakerSystems.value.find(
-        (system) => system.pk === list.speaker_system
-      )
-  )
-)
 
 const allTags = computed<Set<string>>(() => {
   // Perl achievement unlocked (sry)
@@ -391,17 +346,6 @@ const menuItems = computed<MenuItem[]>(() => {
     .getActivePlugins(meeting.value)
     .flatMap((plugin) => plugin.getItems(menuContext))
   return pluginMenuItems.length ? [...items, '---', ...pluginMenuItems] : items
-})
-
-const manageSpeakerListsMenu = computed(() => {
-  return managingSpeakerSystems.value.map((system) => ({
-    title: t('speaker.manageSystem', { ...system }),
-    prependIcon: 'mdi-bullhorn',
-    to: getMeetingRoute('speakerLists', {
-      system: system.pk,
-      aid: agendaId.value
-    })
-  }))
 })
 
 const hasProposals = computed(() =>

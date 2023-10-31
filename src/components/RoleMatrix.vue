@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HelpSection id="roleMatrix" start-open class="mb-4">
+    <HelpSection :id="`roleMatrix-${contentType.name}`" start-open class="mb-4">
       <p class="mb-4">{{ t('role.help.intro') }}</p>
       <ul>
         <li
@@ -55,7 +55,7 @@
           :key="user"
           :class="{ currentUser: isCurrentUser({ user }) }"
         >
-          <td><user :pk="user" userid /></td>
+          <td><User :pk="user" userid /></td>
           <td v-if="admin">
             <small>
               {{ getUser(user)?.email }}
@@ -121,6 +121,7 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import HelpSection from './HelpSection.vue'
 import QueryDialog from './QueryDialog.vue'
+import User from './User.vue'
 
 const USERS_PER_PAGE = 50
 

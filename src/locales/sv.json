@@ -731,7 +731,7 @@
     }
   },
   "room": {
-    "broadcasting": "Sändning pågår",
+    "broadcasting": "Sändning",
     "broadcastThisAgendaItem": "Just nu sänds en annan dagordningspunkt. Vill du byta till denna?",
     "broadcastingUser": "Sändning pågår ({userid})",
     "create": "skapa rum",
@@ -749,7 +749,7 @@
     "settings": "Inställningar för rum",
     "settingsDescription": "Sätt upp mötesrum för realtidsvy och talarhantering. Används mest för livemöten.",
     "settingsHelp": "För att få tillgång till plenumvy (beslutshantering) och talarlistor behöver du sätta upp minst ett mötesrum i ditt möte. Om du har ett möte med flera samtidigt pågående processer, exempelvis parallella utskott, kan du behöva sätta upp mötesrum även för dessa.",
-    "settingsTitle": "Mötesrum / realtidsvy"
+    "settingsTitle": "Mötesrum och talarlistor"
   },
   "rules": {
     "maxLength": "Får inte vara längre än {count} tecken",
@@ -781,6 +781,7 @@
     "currentlySpeaking": "Talar nu",
     "enterList": "Sätt upp mig",
     "fullscreenSystem": "Talarlista fullskärm ({title})",
+    "handleRoles": "Roller",
     "history": "Talarhistorik",
     "leaveList": "Lämna listan",
     "list": "Talarlista",

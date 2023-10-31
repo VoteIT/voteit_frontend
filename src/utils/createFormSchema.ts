@@ -31,6 +31,18 @@ export default function createFormSchema<T extends {}>(
       // eslint-disable-next-line array-callback-return
       .map(([name, field]) => {
         switch (field.type) {
+          case 'array':
+            return {
+              name: name as string,
+              type: FieldType.Select,
+              label: field.label,
+              hint: field.hint,
+              rules: withRequired(name),
+              items: field.items.oneOf.map((i) => ({
+                value: i.const,
+                title: i.title
+              }))
+            }
           case 'boolean': {
             return {
               name: name as string,

@@ -46,7 +46,6 @@ import useDefaults from '@/composables/useDefaults'
 
 import useAgenda from '../agendas/useAgenda'
 import useRooms from '../rooms/useRooms'
-import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
 import { meetingType } from './contentTypes'
 import useMeeting from './useMeeting'
@@ -58,7 +57,6 @@ const { cols } = useDefaults()
 const editing = ref(false)
 const { meeting, meetingId, canChange, isModerator } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 
 useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
@@ -98,19 +96,12 @@ function* iterMenu() {
         editing.value = true
       }
     }
-  const hasPlenary =
-    canChange.value && !!meetingRooms.value.length && !!agenda.value.length
-  if (activeSpeakerSystems.value.length || hasPlenary) yield '---'
-  if (activeSpeakerSystems.value.length) {
-    for (const system of activeSpeakerSystems.value) {
-      yield {
-        title: t('speaker.fullscreenSystem', { ...system }),
-        prependIcon: 'mdi-projector-screen-outline',
-        to: `/speakers/${meetingId.value}/${system.pk}`
-      }
-    }
-  }
-  if (!hasPlenary) return
+  // If not admin or no meeting rooms, we're done
+  if (
+    !(canChange.value && !!meetingRooms.value.length && !!agenda.value.length)
+  )
+    return
+  yield '---'
   if (meetingRooms.value.length === 1)
     yield getRoomMenu(meetingRooms.value[0].pk, t('plenary.view'))
   else

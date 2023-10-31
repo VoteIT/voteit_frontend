@@ -749,7 +749,7 @@
     "settings": "Room settings",
     "settingsDescription": "Configure meeting rooms och speaker lists. Mainly used for live meetings.",
     "settingsHelp": "To access the plenary view (live decision handling) and speaker lists, you need to configure at least one room in your meeting. If you have a meeting with multiple simultaneous processes, i.e. parallell committees, you may have to configure meeting rooms for those aswell.",
-    "settingsTitle": "Meeting rooms / realtime view"
+    "settingsTitle": "Rooms and speaker lists"
   },
   "rules": {
     "maxLength": "Must not be longer than {count} characters",
