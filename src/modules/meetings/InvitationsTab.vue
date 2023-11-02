@@ -114,7 +114,7 @@
       <div class="pa-4">
         <v-text-field :label="t('search')" v-model="inviteFilter.search" clearable />
         <CheckboxMultipleSelect v-model="inviteFilter.states" :settings="{ options: stateLabels }" :label="t('invites.filterOnStatus')" />
-        <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabelsEditable }" :label="t('invites.filterOnRoles')" :requiredValues="['participant']" />
+        <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabelsEditable }" :label="t('invites.filterOnRoles')" :requiredValues="[MeetingRole.Participant]" />
         <v-switch v-model="inviteFilter.exactRoles" :label="t('invites.filterMatchRoles')" />
       </div>
     </v-sheet>
@@ -258,7 +258,7 @@ const inviteFilter = reactive<{
   search: string | null,
   states: string[]
 }>({
-  roles: ['participant'],
+  roles: [MeetingRole.Participant],
   exactRoles: false,
   search: null,
   states: ['open']

@@ -9,7 +9,7 @@ import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.v
 import useRules from '@/composables/useRules'
 import { invitationScopes } from '../organisations/registry'
 import useMeeting from './useMeeting'
-import { MeetingInvite } from './types'
+import { MeetingInvite, MeetingRole } from './types'
 import { translateInviteType } from './utils'
 
 interface InviteResult {
@@ -27,7 +27,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const rules = useRules(t)
 const { roleLabelsEditable } = useMeeting()
-const rolesRequired = ['participant']
+const rolesRequired = [MeetingRole.Participant]
 
 const submittingInvites = ref(false)
 const inviteData = reactive({

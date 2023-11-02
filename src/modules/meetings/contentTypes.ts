@@ -32,23 +32,23 @@ export const meetingType = new ContentType<Meeting, MeetingRole>({
   restEndpoint: 'meetings/',
   restConfig: { alertOnError: false },
   roles: {
-    participant: {
+    [MeetingRole.Participant]: {
       translateHelp: (t) => t('role.help.participant'),
       translateName: (t) => t('role.participant')
     },
-    discusser: {
+    [MeetingRole.Discusser]: {
       translateHelp: (t) => t('role.help.discusser'),
       translateName: (t) => t('role.discusser')
     },
-    moderator: {
+    [MeetingRole.Moderator]: {
       translateHelp: (t) => t('role.help.moderator'),
       translateName: (t) => t('role.moderator')
     },
-    potential_voter: {
+    [MeetingRole.PotentialVoter]: {
       translateHelp: (t) => t('role.help.potential_voter'),
       translateName: (t) => t('role.potential_voter')
     },
-    proposer: {
+    [MeetingRole.Proposer]: {
       translateHelp: (t) => t('role.help.proposer'),
       translateName: (t) => t('role.proposer')
     }

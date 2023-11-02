@@ -12,17 +12,6 @@ import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMe
 import { meetingType } from './contentTypes'
 import { translateMeetingRole } from './utils'
 
-const roleIcons: Record<MeetingRole, string> = {
-  participant: 'mdi-eye',
-  moderator: 'mdi-gavel',
-  proposer: 'mdi-note-plus',
-  discusser: 'mdi-comment-outline',
-  potential_voter: 'mdi-star-outline'
-}
-function getRoleIcon (role: MeetingRole) {
-  return roleIcons[role]
-}
-
 export default function useMeeting () {
   const route = useRoute()
   const router = useRouter()
@@ -85,13 +74,11 @@ export default function useMeeting () {
     meetingJoinRoute,
     meetingRoute,
     meetingUrl,
-    roleIcons,
     roleItems,
     roleLabels,
     roleLabelsEditable,
     userRoles,
     getMeetingRoute,
-    getRoleIcon,
     getRoleLabels,
     hasRole
   }
