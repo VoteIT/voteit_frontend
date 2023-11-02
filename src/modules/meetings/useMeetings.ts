@@ -8,14 +8,14 @@ import type { LoaderCallback } from '@/composables/useLoader'
 import { meetingType } from './contentTypes'
 import { Meeting, MeetingRole, MeetingState } from './types'
 
-const roleIcons: Record<MeetingRole, string> = {
+export const roleIcons: Record<MeetingRole, string> = {
   [MeetingRole.Participant]: 'mdi-eye',
   [MeetingRole.Moderator]: 'mdi-gavel',
   [MeetingRole.Proposer]: 'mdi-note-plus',
   [MeetingRole.Discusser]: 'mdi-comment-outline',
   [MeetingRole.PotentialVoter]: 'mdi-star-outline'
 }
-function getMeetingRoleIcon (role: MeetingRole) {
+export function getMeetingRoleIcon (role: MeetingRole) {
   return roleIcons[role]
 }
 
@@ -108,17 +108,18 @@ export default function useMeetings (loader?: (...callbacks: LoaderCallback[]) =
   }
 
   return {
-    meetings,
+    clearMeetings,
     existingMeetingYears,
-    meetingStateCount,
-    otherMeetingsExist,
-    participatingClosedMeetings,
-    participatingOngoingMeetings,
-    participatingUpcomingMeetings,
     fetchMeeting,
     fetchMeetings,
     filterMeetings,
     getMeetingRoleIcon,
-    clearMeetings
+    meetingStateCount,
+    meetings,
+    otherMeetingsExist,
+    participatingClosedMeetings,
+    participatingOngoingMeetings,
+    participatingUpcomingMeetings,
+    roleIcons
   }
 }
