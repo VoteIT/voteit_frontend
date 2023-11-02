@@ -235,7 +235,7 @@ const PAGE_LENGTH = 25
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingId, roleLabelsEditable, getRoleIcon } = useMeeting()
+const { isModerator, meeting, meetingId, roleLabelsEditable, getMeetingRoleIcon } = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
@@ -320,7 +320,7 @@ const filteredInvites = computed(() => {
       return {
         ...inv,
         user_data: transformUserdata(inv.user_data),
-        rolesDescription: inv.roles.map(role => ({ title: translateMeetingRole(role, t), icon: getRoleIcon(role) })),
+        rolesDescription: inv.roles.map(role => ({ title: translateMeetingRole(role, t), icon: getMeetingRoleIcon(role) })),
         stateLabel: stateLabels.value[inv.state]
       }
     })

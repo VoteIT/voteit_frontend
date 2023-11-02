@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
 
-import { meetings } from './useMeetings'
+import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 
 import { MeetingRole } from './types'
 import { canChangeMeeting, canChangeRolesMeeting, canAddMeetingInvite, canViewMeetingInvite, canViewMeeting, isModerator, isFinishedMeeting, isActiveMeeting } from './rules'
@@ -74,10 +74,12 @@ export default function useMeeting () {
     meetingJoinRoute,
     meetingRoute,
     meetingUrl,
+    roleIcons,
     roleItems,
     roleLabels,
     roleLabelsEditable,
     userRoles,
+    getMeetingRoleIcon,
     getMeetingRoute,
     getRoleLabels,
     hasRole
