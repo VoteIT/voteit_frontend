@@ -43,13 +43,6 @@ const breadcrumbs = computed(() => [
     </router-link>
     <v-app-bar-title class="text-truncate">
       <v-breadcrumbs :items="breadcrumbs" />
-      <!-- <router-link
-        v-if="agendaItem && agendaItemRoute"
-        :to="agendaItemRoute"
-        class="text-white text-decoration-none"
-      >
-        {{ agendaItem.title }}
-      </router-link> -->
     </v-app-bar-title>
     <div class="flex-shrink-0 d-flex align-center">
       <WorkflowState
@@ -85,7 +78,7 @@ const breadcrumbs = computed(() => [
         @click.stop="toggleNavDrawerEvent.emit()"
       />
     </div>
-    <template #extension>
+    <template v-if="$slots.default" #extension>
       <slot></slot>
     </template>
   </v-app-bar>

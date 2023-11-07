@@ -40,7 +40,7 @@ const { t } = useI18n()
 provide(RoleContextKey, 'meeting')
 provide(LastReadKey, ref(new Date()))
 
-const { meetingId } = useMeeting()
+const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
 const { meetingRoom } = useRoom()
 const { getState } = pollType.useWorkflows()
@@ -203,40 +203,42 @@ const pollMenu = computed<MenuItem[]>(() => {
 
 <template>
   <AppBar>
-    <v-tabs v-model="currentTab" :items="tabs" />
-    <v-spacer />
-    <template v-if="currentTab === 'decisions'">
-      <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
-      <v-menu location="bottom right">
-        <template #activator="{ props }">
-          <v-btn
-            :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'"
-            v-bind="props"
-          />
-        </template>
-        <v-list>
-          <v-item-group multiple v-model="stateFilter">
-            <v-item
-              v-for="{ count, state, title } in filterStates"
-              :key="state.state"
-              :value="state.state"
-              v-slot="{ isSelected, toggle }"
-            >
-              <v-list-item
-                @click.stop="toggle"
-                :prepend-icon="state.icon"
-                :a-ctive="isSelected"
-                :title="title"
-                :subtitle="t('proposal.proposalCount', { count }, count)"
-              />
-            </v-item>
-          </v-item-group>
-        </v-list>
-      </v-menu>
+    <template #default v-if="isModerator">
+      <v-tabs v-model="currentTab" :items="tabs" />
+      <v-spacer />
+      <template v-if="currentTab === 'decisions'">
+        <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
+        <v-menu location="bottom right">
+          <template #activator="{ props }">
+            <v-btn
+              :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'"
+              v-bind="props"
+            />
+          </template>
+          <v-list>
+            <v-item-group multiple v-model="stateFilter">
+              <v-item
+                v-for="{ count, state, title } in filterStates"
+                :key="state.state"
+                :value="state.state"
+                v-slot="{ isSelected, toggle }"
+              >
+                <v-list-item
+                  @click.stop="toggle"
+                  :prepend-icon="state.icon"
+                  :a-ctive="isSelected"
+                  :title="title"
+                  :subtitle="t('proposal.proposalCount', { count }, count)"
+                />
+              </v-item>
+            </v-item-group>
+          </v-list>
+        </v-menu>
+      </template>
     </template>
   </AppBar>
   <AgendaNavigation />
-  <v-app-bar bg-color="secondary" location="bottom">
+  <v-app-bar v-if="isModerator" bg-color="secondary" location="bottom">
     <BroadcastMenu />
   </v-app-bar>
   <v-main class="ma-6">
