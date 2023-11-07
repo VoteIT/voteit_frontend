@@ -20,11 +20,11 @@ export interface BubbleActivation extends BubbleInfo {
 }
 
 export enum MeetingRole {
-  Participant = 'participant',
-  Proposer = 'proposer',
-  Discusser = 'discusser',
-  PotentialVoter = 'potential_voter',
-  Moderator = 'moderator'
+  Participant = 'pa',
+  Proposer = 'pr',
+  Discusser = 'di',
+  PotentialVoter = 'pv',
+  Moderator = 'mo'
 }
 
 export enum MeetingInviteState {
