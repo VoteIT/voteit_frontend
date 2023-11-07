@@ -109,7 +109,7 @@ const canSwitchUser = computed(() => {
     <v-list nav density="comfortable">
       <v-list-item class="no-prepend">
         <UserAvatar size="large" class="my-2" />
-        <v-list-item-title class="text-h6">{{
+        <v-list-item-title class="text-h6 pb-1">{{
           getFullName(user)
         }}</v-list-item-title>
         <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>

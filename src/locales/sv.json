@@ -23,7 +23,6 @@
   "filter": "Filtrera",
   "handle": "Hantera",
   "icon": "Ikon",
-  "inactive": "Inaktiv",
   "login": "Logga in",
   "manage": "Hantera",
   "modified": "Ändrad",
@@ -731,7 +730,8 @@
     }
   },
   "room": {
-    "broadcasting": "Sänder förslag",
+    "broadcastActive": "Sändning pågår",
+    "broadcastingProposals": "Sänder förslag",
     "broadcastThisAgendaItem": "Just nu sänds en annan dagordningspunkt. Vill du byta till denna?",
     "broadcastingUser": "Sändning pågår ({userid})",
     "create": "skapa rum",
@@ -768,7 +768,6 @@
     "tabSeparatedBadColumnCount": "Felaktigt antal värden på rad {count}"
   },
   "speaker": {
-    "activeList": "Aktiv lista",
     "addByName": "Sök namn",
     "addByParticipantNumber": "Lägg till deltagarnummer",
     "addWithName": "Namngiven lista",

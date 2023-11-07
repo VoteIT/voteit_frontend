@@ -29,7 +29,7 @@ const { getUser } = useUserDetails()
 
 const broadcastStatusText = computed(() => {
   if (!meetingRoom.value) return
-  if (isBroadcasting.value) return t('room.broadcasting')
+  if (isBroadcasting.value) return t('room.broadcastingProposals')
   if (
     meetingRoom.value.open &&
     meetingRoom.value.send_proposals &&

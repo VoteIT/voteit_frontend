@@ -72,6 +72,10 @@ async function create({ room, speakerSystem }: FormData) {
   working.value = false
 }
 
+function setOpen(room: number, open: boolean) {
+  return roomType.update(room, { open })
+}
+
 async function updateRoom(
   { pk, sls }: IMeetingRoom,
   { room, speakerSystem }: FormData,
@@ -172,7 +176,7 @@ const systemIcons = {
             {{ t('speaker.lists', 2) }}
           </th>
           <th>
-            {{ t('room.broadcasting') }}
+            {{ t('room.open') }}
           </th>
           <th></th>
         </tr>
@@ -224,8 +228,13 @@ const systemIcons = {
             <v-icon icon="mdi-close" color="warning" />
           </td>
           <td>
-            <v-icon v-if="room.open" icon="mdi-check" color="success" />
-            <v-icon v-else icon="mdi-close" color="warning" />
+            <v-btn
+              @click="setOpen(room.pk, !room.open)"
+              :color="room.open ? 'success' : 'warning'"
+              variant="text"
+            >
+              <v-icon :icon="room.open ? 'mdi-check' : 'mdi-close'" />
+            </v-btn>
             <v-btn
               v-if="agenda.length"
               class="ml-2"

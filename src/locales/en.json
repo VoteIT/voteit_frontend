@@ -23,7 +23,6 @@
   "filter": "Filter",
   "handle": "Handle",
   "icon": "Icon",
-  "inactive": "Inactive",
   "login": "Log in",
   "manage": "Manage",
   "modified": "Modified",
@@ -731,7 +730,8 @@
     }
   },
   "room": {
-    "broadcasting": "Broadcasting",
+    "broadcastActive": "Broadcast ongoing",
+    "broadcastingProposals": "Broadcasting proposals",
     "broadcastThisAgendaItem": "Another agenda item is currently broadcasting. Do you want to switch to this one?",
     "broadcastingUser": "Broadcasting by ({userid})",
     "create": "Create room",
@@ -743,6 +743,7 @@
     "displaySpeakers": "Display speaker list",
     "edit": "Edit room",
     "noBroadcast": "No broadcast currently...",
+    "open": "Open",
     "paused": "Paused...",
     "pauseMessage": "Pause message",
     "pauseMessageDescription": "The pause message will be displayed when the broadcast is active, but the display of both speaker list and proposals is disabled.",
@@ -767,7 +768,6 @@
     "tabSeparatedBadColumnCount": "Incorrect column count on line {count}"
   },
   "speaker": {
-    "activeList": "Active list",
     "addByName": "Add by name",
     "addByParticipantNumber": "Add by participant number",
     "addWithName": "Add named list",
