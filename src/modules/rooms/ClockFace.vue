@@ -15,21 +15,21 @@ function getTime(date: Date) {
   }
 }
 
-const target = props.targetTime && getTime(props.targetTime)
+const target = computed(() => props.targetTime && getTime(props.targetTime))
 const hours = ref(0)
 const minutes = ref(0)
 
 // eslint-disable-next-line vue/return-in-computed-property
 const timeToGo = computed(() => {
-  if (!target) return
-  const minutesToGo = target.minutes - minutes.value
+  if (!target.value) return
+  const minutesToGo = target.value.minutes - minutes.value
   if (minutesToGo <= 0) return
   if (minutesToGo < 360)
     return {
       '--start': minutes.value,
       '--time': minutesToGo % 360
     }
-  const hoursToGo = target.hours - hours.value
+  const hoursToGo = target.value.hours - hours.value
   if (hoursToGo < 360)
     return {
       '--start': hours.value,

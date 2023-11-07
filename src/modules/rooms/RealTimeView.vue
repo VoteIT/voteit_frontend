@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DateTime } from 'luxon'
 import { computed, provide } from 'vue'
 import { RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
@@ -22,9 +23,17 @@ const { highlightedProposals, meetingRoom } = useRoom()
 useMeetingChannel()
 useMeetingTitle(t('room.realTime'))
 
-const targetTime = new Date()
-// targetTime.setHours(targetTime.getHours() + 1)
-// targetTime.setMinutes(targetTime.getMinutes() + 1)
+const targetTime = computed(() => {
+  if (!meetingRoom.value?.body) return
+  const pauseTime = meetingRoom.value.body.match(/(\d{2}):(\d{2})/)
+  if (!pauseTime) return
+  const date = new Date()
+  date.setHours(Number(pauseTime[1]))
+  date.setMinutes(Number(pauseTime[2]))
+  date.setSeconds(0)
+  date.setMilliseconds(0)
+  return date
+})
 
 const speakerSystemActive = computed(() => {
   if (!meetingRoom.value?.send_sls) return
