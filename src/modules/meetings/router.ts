@@ -1,7 +1,6 @@
 import AgendaEditView from '../agendas/AgendaEditView.vue'
 import AgendaItemView from '../agendas/AgendaItemView.vue'
 import polls from '../polls/router'
-// import speakerLists from '../speakerLists/router'
 
 import ControlPanelView from './ControlPanel.vue'
 import ElectoralRegistersView from './electoralRegisters/ElectoralRegistersView.vue'
@@ -22,7 +21,6 @@ export default [
         name: 'meeting',
         component: StartView
       },
-      // speakerLists,
       {
         path: 'settings',
         name: 'settings',
