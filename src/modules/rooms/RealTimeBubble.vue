@@ -14,7 +14,7 @@ const { meetingRooms } = useRooms(meetingId)
 
 const broadcasting = computed(() =>
   meetingRooms.value
-    .filter((r) => r.active)
+    .filter((r) => r.open)
     .map(({ pk, title, send_proposals, send_sls }) => {
       const subtitles = [
         send_sls && t('speaker.list'),

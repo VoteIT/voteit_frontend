@@ -30,7 +30,7 @@ meetingBubblePlugins.register({
   icon: 'mdi-broadcast',
   order: 10,
   checkActive() {
-    return any(meetingRoomStore.values(), (r) => r.active)
+    return any(meetingRoomStore.values(), (r) => r.open)
   },
   requireAttention: computed(() => true)
 })

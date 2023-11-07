@@ -40,6 +40,7 @@ import useSpeakerSystem from './useSpeakerSystem'
 import { openAlertEvent } from '@/utils/events'
 
 import type { SpeakerList, SpeakerListAddMessage } from './types'
+import usePermission from '@/composables/usePermission'
 
 const props = defineProps<{
   systemId: number
@@ -60,7 +61,7 @@ const { alert } = useAlert()
 
 const { user } = useAuthentication()
 const speakers = useSpeakerLists()
-const { meetingId } = useMeeting()
+const { meetingId, meetingRoute } = useMeeting()
 const systemId = computed(() => props.systemId)
 const { agendaId, agendaItem } = useAgenda(meetingId)
 
@@ -101,6 +102,8 @@ const {
 function isSelf(userId: number) {
   return user.value?.pk === userId
 }
+
+usePermission(canManageSystem, { to: meetingRoute.value })
 
 /*
  * Navigation

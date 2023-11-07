@@ -1,6 +1,6 @@
 export interface IMeetingRoom {
   pk: number
-  active: boolean // Currently broadcasting
+  open: boolean // Currently broadcasting
   agenda_item: number | null
   body?: string
   handler?: number // Currently broadcasting user

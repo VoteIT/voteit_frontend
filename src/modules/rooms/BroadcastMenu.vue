@@ -18,6 +18,7 @@ const {
   isBroadcasting,
   meetingRoom,
   setBroadcast,
+  setOpen,
   setProposalBroadcast,
   setSlsBroadcast
 } = useRoom()
@@ -29,16 +30,19 @@ const { getUser } = useUserDetails()
 const broadcastStatusText = computed(() => {
   if (!meetingRoom.value) return
   if (isBroadcasting.value) return t('room.broadcasting')
-  const { active, handler } = meetingRoom.value
-  if (active && handler)
-    return t('room.broadcastingUser', { ...getUser(handler) })
+  if (
+    meetingRoom.value.open &&
+    meetingRoom.value.send_proposals &&
+    meetingRoom.value.handler
+  )
+    return t('room.broadcastingUser', { ...getUser(meetingRoom.value.handler) })
   return t('room.noBroadcast')
 })
 
 const broadcastConfirmText = computed(() => {
   if (!meetingRoom.value) return
   if (isBroadcasting.value) return t('room.confirmBroadcastStop')
-  return meetingRoom.value.active
+  return meetingRoom.value.open && meetingRoom.value.send_proposals
     ? t('room.confirmBroadcastTakeover')
     : t('room.confirmBroadcastStart')
 })
@@ -60,9 +64,9 @@ async function savePauseMessage() {
 }
 
 async function toggleBroadcast() {
-  if (isBroadcasting.value) setBroadcast(false)
+  if (isBroadcasting.value) setProposalBroadcast(false)
   else
-    setBroadcast(true, {
+    setBroadcast({
       agenda_item: agendaId.value,
       proposals: [...selectedProposalIds]
     })
@@ -77,11 +81,22 @@ async function toggleBroadcast() {
     <v-list v-if="meetingRoom">
       <v-list-item
         :prepend-icon="
+          meetingRoom.open
+            ? 'mdi-checkbox-marked-outline'
+            : 'mdi-checkbox-blank-outline'
+        "
+        :active="meetingRoom.open"
+        :title="t('room.open')"
+        @click.stop="setOpen(!meetingRoom.open)"
+      />
+      <v-list-item
+        :prepend-icon="
           meetingRoom.send_sls
             ? 'mdi-checkbox-marked-outline'
             : 'mdi-checkbox-blank-outline'
         "
         :active="meetingRoom.send_sls"
+        :disabled="!meetingRoom.open"
         :title="t('room.displaySpeakers')"
         @click.stop="setSlsBroadcast(!meetingRoom.send_sls)"
       />
@@ -92,6 +107,7 @@ async function toggleBroadcast() {
             : 'mdi-checkbox-blank-outline'
         "
         :active="meetingRoom.send_proposals"
+        :disabled="!meetingRoom.open"
         :title="t('room.displayProposals')"
         @click.stop="setProposalBroadcast(!meetingRoom.send_proposals)"
       />
@@ -129,7 +145,7 @@ async function toggleBroadcast() {
     <template #activator="{ props }">
       {{ broadcastStatusText }}
       <v-btn
-        :icon="meetingRoom?.active ? 'mdi-broadcast' : 'mdi-broadcast-off'"
+        :icon="isBroadcasting ? 'mdi-broadcast' : 'mdi-broadcast-off'"
         v-bind="props"
         :color="isBroadcasting ? 'warning' : undefined"
       />

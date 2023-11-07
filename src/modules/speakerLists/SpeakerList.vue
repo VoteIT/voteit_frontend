@@ -57,7 +57,7 @@ const canChange = computed(() => canChangeSpeakerList(props.list))
 
 const fullscreenPath = computed(
   () =>
-    props.list.room.active &&
+    props.list.room.open &&
     isActive.value &&
     getMeetingRoute('rooms:main', {
       aid: props.list.agenda_item,

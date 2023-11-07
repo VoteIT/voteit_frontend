@@ -21,21 +21,32 @@ export default function useRoom() {
 
   const isBroadcasting = computed(() => {
     if (!meetingRoom.value) return false
-    const { active, handler } = meetingRoom.value
-    return active && handler === user.value?.pk
+    return (
+      meetingRoom.value.open &&
+      meetingRoom.value.send_proposals &&
+      meetingRoom.value.handler === user.value?.pk
+    )
   })
 
   async function setAgendaId(aid: number) {
     await roomType.update(roomId.value, { agenda_item: aid })
   }
 
-  async function setBroadcast(
-    active = true,
-    content?: { agenda_item: number; proposals: number[] }
-  ) {
+  async function setOpen(open: boolean) {
+    await roomType.update(roomId.value, { open })
+  }
+
+  async function setBroadcast(content?: {
+    agenda_item: number
+    proposals: number[]
+  }) {
     if (!user.value) throw new Error('No authenticated user')
-    const handler = active ? user.value.pk : undefined
-    await roomType.update(roomId.value, { active, handler, ...content })
+    await roomType.update(roomId.value, {
+      handler: user.value.pk,
+      open: true,
+      send_proposals: true,
+      ...content
+    })
   }
 
   async function setProposalBroadcast(active = true) {
@@ -58,6 +69,7 @@ export default function useRoom() {
     roomId,
     setAgendaId,
     setBroadcast,
+    setOpen,
     setProposalBroadcast,
     setSlsBroadcast,
     setHighlightedProposals

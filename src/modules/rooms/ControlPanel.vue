@@ -224,7 +224,7 @@ const systemIcons = {
             <v-icon icon="mdi-close" color="warning" />
           </td>
           <td>
-            <v-icon v-if="room.active" icon="mdi-check" color="success" />
+            <v-icon v-if="room.open" icon="mdi-check" color="success" />
             <v-icon v-else icon="mdi-close" color="warning" />
             <v-btn
               v-if="agenda.length"
