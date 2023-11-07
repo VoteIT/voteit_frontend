@@ -1,7 +1,7 @@
 import { computed, Ref } from 'vue'
 
 import useSpeakerLists from './useSpeakerLists'
-import { canManageSystem, isSystemModerator } from './rules'
+import { canManageSystem } from './rules'
 
 const { getSystem, getSystemSpeakerLists, getList, getCurrent } =
   useSpeakerLists()
