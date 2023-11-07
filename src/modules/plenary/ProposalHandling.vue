@@ -38,11 +38,6 @@ const {
   setHighlightedProposals
 } = useRoom()
 
-const isBroadcastingAI = computed(
-  () =>
-    isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
-)
-
 const {
   filterProposalStates,
   selectedProposalIds,
@@ -56,6 +51,11 @@ const {
 const { t } = useI18n()
 const { anyProposal, getAgendaProposals } = useProposals()
 
+const isBroadcastingAI = computed(
+  () =>
+    isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
+)
+
 /**
  * If broadcasting, send selected proposals to server.
  * TODO: Handle errors by rechecking broadcasting status.
@@ -65,11 +65,18 @@ function setBroadcastProposals() {
   setHighlightedProposals([...selectedProposalIds])
 }
 
-watch(selectedProposalIds, setBroadcastProposals, { immediate: true })
+watch(selectedProposalIds, setBroadcastProposals)
 watch(isBroadcastingAI, (value) => value && setBroadcastProposals())
 watch(agendaId, () => {
   if (isBroadcastingAI.value) highlightedProposals.value.forEach(selectProposal)
   else clearSelected()
+})
+
+// If current Agenda Item is broadcasting, select highlighted proposals from that broadcast.
+onMounted(() => {
+  if (meetingRoom.value?.agenda_item !== agendaId.value) return
+  clearSelected()
+  highlightedProposals.value.forEach(selectProposal)
 })
 
 /**
