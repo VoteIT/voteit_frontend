@@ -39,7 +39,8 @@ const {
 } = useRoom()
 
 const isBroadcastingAI = computed(
-  () => meetingRoom.value?.agenda_item === agendaId.value
+  () =>
+    isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
 )
 
 const {
