@@ -22,6 +22,7 @@ export interface ArrayField {
     type: 'string'
     oneOf: OneOf[]
   }
+  'x-display'?: 'checkboxes'
 }
 
 export interface NumberField {

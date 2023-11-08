@@ -102,6 +102,11 @@
     "title": "Aktiva användare",
     "yesImActive": "Ja, jag är aktiv"
   },
+  "admin": {
+    "testMode": "Testläge...",
+    "testModeActive": "Du har satt tillfälliga mötesroller som skiljer sig från dina normala roller i mötet. Klicka återställ för att återgå till dina normala roller.",
+    "testModeDescription": "Du kan tillfälligt sätta andra mötesroller för dig själv om du vill se hur mötet ser ut och beter sig för användare med andra rättigheter. Rollerna sätts bara i din egen webbläsare och dina vanliga roller kommer återställas när du lämnar mötet."
+  },
   "agenda": {
     "agenda": "Dagordning",
     "allowProposals": "Tillåt förslag",
@@ -599,7 +604,7 @@
   "plenary": {
     "confirmStartProtectedStates": "Du har valt ett förslag som är i {states} läge.\nVill du ändå starta omröstningen? | Du har valt {count} förslag som är i {states} läge.\nVill du ändå starta omröstningen?",
     "decisions": "Beslut",
-    "discussion": "Diskussion",
+    "discussion": "Debatt",
     "finishedPolls": "Avslutade omröstningar",
     "hintModifyFilter": "Försök att välja fler förslagslägen i filtermenyn.",
     "nextParagraph": "Nästa stycke",

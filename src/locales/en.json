@@ -102,6 +102,11 @@
     "title": "Active users",
     "yesImActive": "Yes, I'm active"
   },
+  "admin": {
+    "testMode": "Test mode...",
+    "testModeActive": "You've set temporary meeting roles that overrides your ordinary roles in this meeting. Klick reset to return to your ordinary roles.",
+    "testModeDescription": "You can temporarily set different meeting roles on yourself if you want to see what the meeting looks and behaves like for users with other permissions. The roles are only set in your web browser and will be reset when you leave the meeting."
+  },
   "agenda": {
     "agenda": "Agenda",
     "allowProposals": "Allow proposals",

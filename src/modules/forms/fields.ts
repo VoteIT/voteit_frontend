@@ -1,9 +1,12 @@
 import { ComposerTranslation } from 'vue-i18n'
-import { ArrayField, Field, NumberField, StringField } from './types'
+
 import useRules from '@/composables/useRules'
+import CheckboxMultipleSelect from './CheckboxMultipleSelect.vue'
+import { ArrayField, Field, NumberField, StringField } from './types'
+import { Component } from 'vue'
 
 interface IField {
-  getComponent(field: Field): string
+  getComponent(field: Field): string | Component
   getProps?(field: Field): object
   getRules?(
     field: Field,
@@ -26,10 +29,15 @@ function getMin(field: NumberField) {
 
 const fields: Record<Field['type'], IField> = {
   array: {
-    getComponent() {
+    getComponent(field: ArrayField) {
+      if (field['x-display'] === 'checkboxes') return CheckboxMultipleSelect
       return 'v-select'
     },
     getProps(field: ArrayField) {
+      if (field['x-display'] === 'checkboxes')
+        return {
+          items: field.items.oneOf
+        }
       return {
         items: field.items.oneOf,
         itemValue: 'const',

@@ -1,12 +1,21 @@
-import { toRef } from 'vue'
+import { computed, toRef } from 'vue'
+
 import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
-import { MeetingInviteAnnotationPlugin, meetingExportPlugins, meetingInviteAnnotationPlugins, meetingRolePlugins } from './registry'
+import FakeRolesBubble from './FakeRolesBubble.vue'
+import {
+  MeetingInviteAnnotationPlugin,
+  meetingBubblePlugins,
+  meetingExportPlugins,
+  meetingInviteAnnotationPlugins,
+  meetingRolePlugins
+} from './registry'
 import useMeetingGroups from './useMeetingGroups'
+import { hasFakeRoles } from './rules'
 
-function getDownloadFormat (meetingId: number, format: 'csv' | 'json') {
+function getDownloadFormat(meetingId: number, format: 'csv' | 'json') {
   return {
     format,
     url: getApiLink(`export-participants/${meetingId}/${format}/`)
@@ -15,20 +24,22 @@ function getDownloadFormat (meetingId: number, format: 'csv' | 'json') {
 
 meetingExportPlugins.register({
   id: 'participants',
-  getExports (t, meetingId) {
-    return [{
-      formats: [
-        getDownloadFormat(meetingId, 'csv'),
-        getDownloadFormat(meetingId, 'json')
-      ]
-    }]
+  getExports(t, meetingId) {
+    return [
+      {
+        formats: [
+          getDownloadFormat(meetingId, 'csv'),
+          getDownloadFormat(meetingId, 'json')
+        ]
+      }
+    ]
   },
-  getTitle (t) {
+  getTitle(t) {
     return t('meeting.participantsList')
   }
 })
 
-function getGroupDownloadFormat (meetingId: number, format: 'csv' | 'json') {
+function getGroupDownloadFormat(meetingId: number, format: 'csv' | 'json') {
   return {
     format,
     url: getApiLink(`export-meeting-groups/${meetingId}/${format}/`)
@@ -37,81 +48,94 @@ function getGroupDownloadFormat (meetingId: number, format: 'csv' | 'json') {
 
 meetingExportPlugins.register({
   id: 'meetingGroups',
-  checkActive (meeting) {
+  checkActive(meeting) {
     return meeting.group_votes_active
   },
-  getExports (t, meetingId) {
-    return [{
-      formats: [
-        getGroupDownloadFormat(meetingId, 'csv'),
-        getGroupDownloadFormat(meetingId, 'json')
-      ]
-    }]
+  getExports(t, meetingId) {
+    return [
+      {
+        formats: [
+          getGroupDownloadFormat(meetingId, 'csv'),
+          getGroupDownloadFormat(meetingId, 'json')
+        ]
+      }
+    ]
   },
-  getTitle (t) {
+  getTitle(t) {
     return t('meeting.groups.groups')
   }
 })
 
-function insertAfter (columns: RoleMatrixColumn[], name: string, column: RoleMatrixColumn) {
-  const index = (columns.findIndex(col => col.name === name) + 1) || columns.length
-  return [
-    ...columns.slice(0, index),
-    column,
-    ...columns.slice(index)
-  ]
+function insertAfter(
+  columns: RoleMatrixColumn[],
+  name: string,
+  column: RoleMatrixColumn
+) {
+  const index =
+    columns.findIndex((col) => col.name === name) + 1 || columns.length
+  return [...columns.slice(0, index), column, ...columns.slice(index)]
 }
 
 meetingRolePlugins.register({
   contentType: 'meeting',
   id: 'voter',
-  transform (columns, meeting) {
-    const { currentElectoralRegister } = useElectoralRegisters(toRef(meeting, 'pk'))
+  transform(columns, meeting) {
+    const { currentElectoralRegister } = useElectoralRegisters(
+      toRef(meeting, 'pk')
+    )
 
     // Partial column defintion, for updating or inserting with new name
     const columnDefinition: Omit<RoleMatrixColumn, 'name'> = {
-      getCount () {
+      getCount() {
         return currentElectoralRegister.value?.weights.length ?? 0
       },
-      getDescription (t) {
+      getDescription(t) {
         return t('role.help.voter')
       },
-      getTitle (t) {
+      getTitle(t) {
         return t('electoralRegister.inCurrent')
       },
-      getValue ({ user }) {
-        return !!currentElectoralRegister.value?.weights.find(v => v.user === user)
+      getValue({ user }) {
+        return !!currentElectoralRegister.value?.weights.find(
+          (v) => v.user === user
+        )
       },
       icon: 'mdi-star'
     }
 
     return meeting.er_policy_name === 'auto_always'
-      // Replace parts of potential_voter column
-      ? columns.map(c => {
-        return c.name === 'potential_voter'
-          ? { ...c, ...columnDefinition }
-          : c
-      })
-      // Insert with new name
+      ? columns.map((c) => {
+          return c.name === 'potential_voter'
+            ? { ...c, ...columnDefinition }
+            : c
+        }) // Replace parts of potential_voter column
       : insertAfter(columns, 'potential_voter', {
-        ...columnDefinition,
-        name: 'voter'
-      })
+          ...columnDefinition,
+          name: 'voter'
+        }) // Insert with new name
   }
 })
 
 meetingInviteAnnotationPlugins.register({
   id: 'group',
-  getPossibleValues (meeting) {
+  getPossibleValues(meeting) {
     const { meetingGroups } = useMeetingGroups(toRef(meeting, 'pk'))
-    return meetingGroups.value.map(g => ({ value: g.groupid, description: g.title }))
+    return meetingGroups.value.map((g) => ({
+      value: g.groupid,
+      description: g.title
+    }))
   },
-  getTranslator (t, meeting) {
+  getTranslator(t, meeting) {
     const { getMeetingGroup, groupRoles } = useMeetingGroups(meeting)
-    return (annotation: { name: 'group', meeting_group: number, role?: number }) => {
+    return (annotation: {
+      name: 'group'
+      meeting_group: number
+      role?: number
+    }) => {
       const group = getMeetingGroup(annotation.meeting_group)
       return {
-        subtitle: groupRoles.value.find(role => role.pk === annotation.role)?.title,
+        subtitle: groupRoles.value.find((role) => role.pk === annotation.role)
+          ?.title,
         title: `${t('meeting.groups.group')}: ${group?.title || t('unknown')}`
       }
     }
@@ -120,10 +144,26 @@ meetingInviteAnnotationPlugins.register({
 
 meetingInviteAnnotationPlugins.register({
   id: 'grouprole',
-  checkActive (meeting) {
+  checkActive(meeting) {
     return !!meeting.dialect?.roles?.length
   },
-  getPossibleValues (meeting) {
-    return meeting.dialect?.roles.map(role => ({ value: role.role_id, description: role.title })) ?? []
+  getPossibleValues(meeting) {
+    return (
+      meeting.dialect?.roles.map((role) => ({
+        value: role.role_id,
+        description: role.title
+      })) ?? []
+    )
   }
+})
+
+meetingBubblePlugins.register({
+  component: FakeRolesBubble,
+  icon: 'mdi-account-hard-hat',
+  id: 'fakeRoles',
+  checkActive(meeting) {
+    return hasFakeRoles(meeting.pk)
+  },
+  requireAttention: computed(() => true),
+  order: -1
 })
