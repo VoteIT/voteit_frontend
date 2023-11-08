@@ -31,11 +31,8 @@ agendaMenuPlugins.register({
     }
     return meetingRooms.value.length === 1
       ? [getRoomMenu(meetingRooms.value[0].pk, t('plenary.view'))]
-      : sortBy(
-          meetingRooms.value.map((room) =>
-            getRoomMenu(room.pk, `${t('plenary.view')} (${room.title})`)
-          ),
-          'title'
+      : sortBy(meetingRooms.value, 'title').map((room) =>
+          getRoomMenu(room.pk, `${t('plenary.view')} (${room.title})`)
         )
   }
 })

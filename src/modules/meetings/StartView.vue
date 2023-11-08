@@ -33,6 +33,7 @@
 </template>
 
 <script lang="ts" setup>
+import { sortBy } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
@@ -105,7 +106,7 @@ function* iterMenu() {
   if (meetingRooms.value.length === 1)
     yield getRoomMenu(meetingRooms.value[0].pk, t('plenary.view'))
   else
-    for (const room of meetingRooms.value) {
+    for (const room of sortBy(meetingRooms.value, 'title')) {
       yield getRoomMenu(room.pk, `${t('plenary.view')} (${room.title})`)
     }
 }
