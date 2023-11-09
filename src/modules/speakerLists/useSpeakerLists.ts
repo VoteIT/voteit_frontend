@@ -1,4 +1,4 @@
-import { filter } from 'itertools'
+import { Predicate, filter, first } from 'itertools'
 import { countBy, orderBy } from 'lodash'
 import { reactive } from 'vue'
 
@@ -56,13 +56,22 @@ function getSystem(pk: number) {
   return speakerSystems.get(pk)
 }
 
+/**
+ * Find a speaker system matching a specific predicate.
+ * @example
+ * findSpeakerSystem((s) => s.room === 1)
+ */
+export function findSpeakerSystem(predicate: Predicate<SpeakerSystem>) {
+  return first(speakerSystems.values(), predicate)
+}
+
 function getSystems(
   meeting: number,
-  _filter?: (system: SpeakerSystem) => boolean
+  predicate?: Predicate<SpeakerSystem>
 ): SpeakerSystem[] {
   return filter(
     speakerSystems.values(),
-    (s) => s.meeting === meeting && (!_filter || _filter(s))
+    (s) => s.meeting === meeting && (!predicate || predicate(s))
   )
 }
 
@@ -73,11 +82,11 @@ function getTimesSpoken(list: number) {
 
 function getAgendaSpeakerLists(
   agendaItem: number,
-  _filter: (list: SpeakerList) => boolean = () => true
+  predicate: Predicate<SpeakerList> = () => true
 ): SpeakerList[] {
   return filter(
     speakerLists.values(),
-    (list) => list.agenda_item === agendaItem && _filter(list)
+    (list) => list.agenda_item === agendaItem && predicate(list)
   )
 }
 
@@ -176,6 +185,10 @@ async function setActiveList(list: SpeakerList, stopActiveSpeaker = false) {
   await speakerListType.methodCall('set_active', { pk: list.pk })
 }
 
+/*
+ * These functions should all be imported directly. Function call is unneccessary.
+ * Possibly use with a meeting ref in future, to get meeting specific systems in som scoped functions.
+ */
 export default function useSpeakerLists() {
   return {
     getAgendaSpeakerLists,

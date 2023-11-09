@@ -12,6 +12,7 @@ import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { ProposalState } from '../proposals/types'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 provide(RoleContextKey, 'meeting')
 
@@ -36,7 +37,7 @@ const targetTime = computed(() => {
 
 const speakerSystemActive = computed(() => {
   if (!meetingRoom.value?.send_sls) return
-  return meetingRoom.value.sls
+  return findSpeakerSystem((s) => s.room === meetingRoom.value?.pk)
 })
 const proposalsActive = computed(() => !!meetingRoom.value?.send_proposals)
 const paused = computed(
@@ -66,7 +67,7 @@ const paused = computed(
     </div>
     <div v-else class="d-flex full-height">
       <div v-if="speakerSystemActive" class="left flex-grow-1">
-        <ActiveSpeakerList :system-id="speakerSystemActive" />
+        <ActiveSpeakerList :system-id="speakerSystemActive.pk" />
       </div>
       <v-divider
         v-if="speakerSystemActive && proposalsActive"

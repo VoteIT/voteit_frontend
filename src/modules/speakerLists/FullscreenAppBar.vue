@@ -11,6 +11,7 @@ import useMeeting from '../meetings/useMeeting'
 
 import useSpeakerSystem from './useSpeakerSystem'
 import useSpeakerSystems from './useSpeakerSystems'
+import { meetingRoomStore } from '../rooms/useRooms'
 
 const { t } = useI18n()
 const { idle } = useIdle(3000)
@@ -21,6 +22,9 @@ const { activeSpeakerSystems } = useSpeakerSystems(meetingId)
 const { speakerSystem, systemActiveList } = useSpeakerSystem(
   computed(() => Number(route.params.system))
 )
+const room = computed(
+  () => speakerSystem.value && meetingRoomStore.get(speakerSystem.value?.room)
+)
 const { agendaItemRoute } = useAgendaItem(
   computed(() => systemActiveList.value?.agenda_item)
 )
@@ -30,8 +34,9 @@ const systemsMenu = computed<MenuItemTo[] | undefined>(() => {
   return activeSpeakerSystems.value
     .filter((system) => system.pk !== speakerSystem.value?.pk)
     .map((system) => {
+      const room = meetingRoomStore.get(system.room)
       return {
-        title: system.title,
+        title: room?.title || '-',
         to: `/speakers/${meetingId.value}/${system.pk}`
       }
     })
@@ -61,7 +66,7 @@ const nav = computed(() => {
     <v-app-bar-title v-if="meeting">
       <router-link :to="meetingRoute" class="text-white text-decoration-none">
         {{ meeting.title }}
-        <small v-if="speakerSystem"> ({{ speakerSystem.title }}) </small>
+        <small v-if="speakerSystem"> ({{ room?.title ?? '-' }}) </small>
       </router-link>
       <v-fade-transition>
         <v-btn

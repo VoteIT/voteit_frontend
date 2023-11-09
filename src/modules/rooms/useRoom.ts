@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import useChannel from '@/composables/useChannel'
 import { user } from '@/composables/useAuthentication'
 import { getProposals } from '../proposals/useProposals'
+import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import { highlightedStore, meetingRoomStore } from './useRooms'
 import { roomType } from './contentTypes'
@@ -61,12 +62,17 @@ export default function useRoom() {
     await roomType.update(roomId.value, { highlighted: proposalIds } as any)
   }
 
+  const speakerSystem = computed(() =>
+    findSpeakerSystem((s) => s.room === roomId.value)
+  )
+
   return {
     highlighted,
     highlightedProposals,
     isBroadcasting,
     meetingRoom,
     roomId,
+    speakerSystem,
     setAgendaId,
     setBroadcast,
     setOpen,

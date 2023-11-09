@@ -42,7 +42,7 @@ provide(LastReadKey, ref(new Date()))
 
 const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
-const { meetingRoom } = useRoom()
+const { speakerSystem } = useRoom()
 const { getState } = pollType.useWorkflows()
 
 const { nextPollTitle } = useAgendaItem(agendaId)
@@ -244,7 +244,7 @@ const pollMenu = computed<MenuItem[]>(() => {
   <v-main class="ma-6">
     <div id="toolbar"></div>
     <template v-if="currentTab === 'discussion'">
-      <SpeakerHandling v-if="meetingRoom?.sls" :system-id="meetingRoom.sls" />
+      <SpeakerHandling v-if="speakerSystem" :system-id="speakerSystem.pk" />
       <p v-else>
         <em>
           {{ t('plenary.noSpeakerSystem') }}

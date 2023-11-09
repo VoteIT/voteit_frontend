@@ -23,12 +23,12 @@ type SpeakerSystemSettings = { max_times: number } | null
 
 export interface SpeakerSystem {
   pk: number
-  title: string
   state: SpeakerSystemState
   active_list?: number
   meeting: number
   meeting_roles_to_speaker: MeetingRole[]
   method_name: SpeakerSystemMethod
+  room: number
   safe_positions?: number
   settings?: SpeakerSystemSettings
 }

@@ -17,7 +17,7 @@ import {
   SpeakerSystemState
 } from '../speakerLists/types'
 import { speakerSystemType } from '../speakerLists/contentTypes'
-import useSpeakerLists from '../speakerLists/useSpeakerLists'
+import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import { roomType } from './contentTypes'
 import { IMeetingRoom } from './types'
@@ -31,7 +31,6 @@ const { meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 
-const { getSystem } = useSpeakerLists()
 const { getUserIds } = speakerSystemType.useContextRoles()
 
 interface FormData {
@@ -57,14 +56,16 @@ async function createSpeakerSystem(speakerSystem: Partial<SpeakerSystem>) {
 async function create({ room, speakerSystem }: FormData) {
   working.value = true
   try {
-    const sls = speakerSystem
-      ? await createSpeakerSystem(speakerSystem)
-      : undefined
-    await roomType.add({
+    const { data } = await roomType.api.add({
       meeting: meetingId.value,
-      ...room,
-      sls // Override with newly created
+      ...room
     })
+    if (speakerSystem)
+      await speakerSystemType.api.add({
+        room: data.pk,
+        meeting: meetingId.value,
+        ...speakerSystem
+      })
     createOpen.value = false
   } catch (e) {
     errors.value = parseRestError(e)
@@ -77,12 +78,13 @@ function setOpen(room: number, open: boolean) {
 }
 
 async function updateRoom(
-  { pk, sls }: IMeetingRoom,
+  { pk }: IMeetingRoom,
   { room, speakerSystem }: FormData,
   close: () => void
 ) {
   working.value = true
-  const systemState = sls && getSystem(sls)?.state
+  const { pk: sls, state: systemState } =
+    findSpeakerSystem((s) => s.room === pk) || {}
   const slsAdded = !sls && room.speakers
   const slsModified = !!sls && room.speakers
   const slsDisabled =
@@ -90,8 +92,8 @@ async function updateRoom(
   const slsEnabled =
     !!sls && room.speakers && systemState === SpeakerSystemState.Inactive
   try {
-    if (slsAdded) sls = await createSpeakerSystem(speakerSystem!)
-    await roomType.update(pk, { ...room, sls })
+    await roomType.update(pk, room)
+    if (slsAdded) await createSpeakerSystem({ ...speakerSystem!, room: pk })
     if (slsModified) await speakerSystemType.api.patch(sls!, speakerSystem!)
     if (slsDisabled) await speakerSystemType.api.transition(sls!, 'inactivate')
     if (slsEnabled) await speakerSystemType.api.transition(sls!, 'activate')
@@ -103,29 +105,34 @@ async function updateRoom(
 }
 
 const editableMeetingRooms = computed(() =>
-  sortBy(
-    meetingRooms.value.map((r) => {
-      const speakerSystem = r.sls ? getSystem(r.sls) : undefined
-      const userIds = r.sls ? getUserIds(r.sls) : []
-      return {
-        ...r,
-        formData: {
-          room: {
-            title: r.title,
-            speakers: speakerSystem?.state === SpeakerSystemState.Active
-          },
-          speakerSystem
+  sortBy(meetingRooms.value, 'title').map((r) => {
+    const speakerSystem = findSpeakerSystem((s) => s.room === r.pk)
+    const userIds = speakerSystem ? getUserIds(speakerSystem.pk) : []
+    return {
+      ...r,
+      sls: speakerSystem?.pk,
+      formData: {
+        room: {
+          title: r.title,
+          speakers: speakerSystem?.state === SpeakerSystemState.Active
         },
-        userSearch: {
-          params: { meeting: meetingId.value },
-          filter: ({ pk }: IUser) => !userIds.includes(pk),
-          onSubmit: (user: number) =>
-            speakerSystemType.addRoles(r.sls!, user, SpeakerSystemRole.Speaker)
+        speakerSystem
+      },
+      userSearch: {
+        params: { meeting: meetingId.value },
+        filter: ({ pk }: IUser) => !userIds.includes(pk),
+        onSubmit: (user: number) => {
+          if (!speakerSystem)
+            throw new Error("Can't add roles without speaker system")
+          speakerSystemType.addRoles(
+            speakerSystem.pk,
+            user,
+            SpeakerSystemRole.Speaker
+          )
         }
       }
-    }),
-    'title'
-  )
+    }
+  })
 )
 
 const systemIcons = {

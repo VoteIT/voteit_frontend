@@ -7,7 +7,7 @@ import DropdownMenu from '@/components/DropdownMenu.vue'
 import SpeakerList from '../speakerLists/SpeakerList.vue'
 import useSpeakerLists from '../speakerLists/useSpeakerLists'
 import useMeeting from '../meetings/useMeeting'
-import useRooms from '../rooms/useRooms'
+import useRooms, { meetingRoomStore } from '../rooms/useRooms'
 
 const props = defineProps<{
   agendaId: number
@@ -26,23 +26,29 @@ const speakerLists = computed(() =>
     )
   ).map((list) => ({
     ...list,
-    // Annotate using room id
-    room: activeSpeakerSystems.value.find(
-      (sls) => sls.pk === list.speaker_system
-    )?.room!
+    // Annotate with room information
+    room: meetingRoomStore.get(
+      activeSpeakerSystems.value.find((sls) => sls.pk === list.speaker_system)
+        ?.room!
+    )!
   }))
 )
 
 const manageSpeakerListsMenu = computed(() => {
-  return managingSpeakerSystems.value.map((system) => ({
-    title: t('speaker.manageSystem', { ...system.room }),
-    prependIcon: 'mdi-bullhorn',
-    to: getMeetingRoute('Plenary', {
-      roomId: system.room.pk,
-      tab: 'discussion',
-      aid: props.agendaId
-    })
-  }))
+  return managingSpeakerSystems.value.map((system) => {
+    const room = meetingRoomStore.get(system.room)
+    return {
+      title: t('speaker.manageSystem', { ...room }),
+      prependIcon: 'mdi-bullhorn',
+      to: room
+        ? getMeetingRoute('Plenary', {
+            roomId: room.pk,
+            tab: 'discussion',
+            aid: props.agendaId
+          })
+        : '#'
+    }
+  })
 })
 </script>
 

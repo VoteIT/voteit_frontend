@@ -5,7 +5,6 @@ export interface IMeetingRoom {
   body?: string
   handler?: number // Currently broadcasting user
   meeting: number
-  sls: number | null
   send_sls: boolean
   send_proposals: boolean
   show_time: boolean

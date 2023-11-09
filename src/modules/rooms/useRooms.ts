@@ -1,8 +1,8 @@
 import { Ref, computed, reactive } from 'vue'
 import { IMeetingRoom, IRoomHighlight } from './types'
 import { roomType } from './contentTypes'
-import { filter } from 'itertools'
-import useSpeakerLists from '../speakerLists/useSpeakerLists'
+import { Predicate, filter } from 'itertools'
+import { speakerSystems } from '../speakerLists/useSpeakerLists'
 import { SpeakerSystem, SpeakerSystemState } from '../speakerLists/types'
 import { isSystemModerator } from '../speakerLists/rules'
 
@@ -15,20 +15,13 @@ roomType
     highlightedStore.set(data.pk, data)
   )
 
-const { getSystem } = useSpeakerLists()
-
 function* iterSpeakerSystems(
   meeting: number,
-  filter?: (system: SpeakerSystem) => boolean
+  predicate?: Predicate<SpeakerSystem>
 ) {
-  for (const room of meetingRoomStore.values()) {
-    if (!room.sls || room.meeting !== meeting) continue
-    const sls = getSystem(room.sls)
-    if (!sls || (filter && !filter(sls))) continue
-    yield {
-      room,
-      ...sls
-    }
+  for (const system of speakerSystems.values()) {
+    if (system.meeting !== meeting) continue
+    if (!predicate || predicate(system)) yield system
   }
 }
 

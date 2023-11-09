@@ -113,6 +113,9 @@ export default function useContextRoles<T extends string>(contentType: string) {
     return [...iterRoles(pk)] as UserContextRoles<T>[]
   }
 
+  /**
+   * Get all user ids with roles in this context.
+   */
   function getUserIds(pk: number) {
     return map(iterRoles(pk), (role) => role.user)
   }

@@ -11,6 +11,7 @@ import useMeeting from '../meetings/useMeeting'
 
 import useSpeakerHistory from './useSpeakerHistory'
 import useSpeakerSystems from './useSpeakerSystems'
+import { meetingRoomStore } from '../rooms/useRooms'
 
 function getDownloadUrl(system: number, type: 'csv' | 'json') {
   return `${restApi.defaults.baseURL}export-speakers/${system}/${type}/`
@@ -32,9 +33,10 @@ function secondsToTimeDisplay(seconds: number) {
 
 function* getSystemTabs() {
   for (const system of allSpeakerSystems.value) {
+    const room = meetingRoomStore.get(system.room)
     yield {
       value: String(system.pk),
-      text: system.title
+      text: room?.title ?? '-'
     }
   }
 }

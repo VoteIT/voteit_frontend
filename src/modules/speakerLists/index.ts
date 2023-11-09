@@ -3,6 +3,7 @@ import { filter } from 'itertools'
 
 import { meetingExportPlugins } from '../meetings/registry'
 import { speakerSystems } from './useSpeakerLists'
+import { meetingRoomStore } from '../rooms/useRooms'
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
@@ -18,9 +19,9 @@ meetingExportPlugins.register({
       speakerSystems.values(),
       (s) => s.meeting === meetingId
     )
-    return systems.map(({ pk, title }) => {
+    return systems.map(({ pk, room }) => {
       return {
-        title,
+        title: meetingRoomStore.get(room)?.title ?? '-',
         formats: [getDownloadFormat(pk, 'csv'), getDownloadFormat(pk, 'json')]
       }
     })
