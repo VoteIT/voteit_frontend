@@ -1,9 +1,8 @@
-import { sortBy } from 'lodash'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
-import { SpeakerGroup, SpeakerSystemMethod } from './types'
+import { SpeakerSystem } from './types'
 import {
   getCurrent,
   getHistory,
@@ -13,6 +12,8 @@ import {
 } from './useSpeakerLists'
 import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
+import { enumerate, groupby, imap, map } from 'itertools'
+import systemMethods from './systemMethods'
 
 export default function useSpeakerList(listId: Ref<number | undefined>) {
   const { t } = useI18n()
@@ -44,47 +45,43 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
     }))
   })
 
+  /**
+   * Creates a key function to be used by itertools.groupby to create speakerGroups.
+   * systemMethods is a half-baked plugin architecture, to be extended at a later point.
+   */
+  function getGroupKeyFn(system: SpeakerSystem) {
+    const safePositions = system.safe_positions ?? 0
+    const methodKeyFn = systemMethods[system.method_name].getGroupKeyFn(
+      t,
+      system.settings
+    )
+    return (speakerEntry: {
+      position: number
+      user: number
+      timesSpoken: number
+    }) => {
+      // Safe positions first, then system method logic.
+      return speakerEntry.position <= safePositions
+        ? t('speaker.lockedPositions')
+        : methodKeyFn(speakerEntry)
+    }
+  }
+
   const speakerGroups = computed(() => {
-    // TODO: Use groupBy logic, so that backend order of speakers is always the truth also in frontend.
-    // Support priority lists
-    if (!speakerSystem.value) return
-    const safePositions = speakerSystem.value.safe_positions ?? 0
-    const groups: SpeakerGroup[] = []
-    if (safePositions) {
-      groups.push({
-        title: t('speaker.lockedPositions'),
-        queue: annotatedSpeakerQueue.value
-          .slice(0, speakerSystem.value.safe_positions)
-          .map(({ user }) => user)
+    if (!speakerSystem.value) return []
+    return map(
+      groupby(
+        imap(
+          enumerate(annotatedSpeakerQueue.value, 1),
+          ([position, speaker]) => ({ position, ...speaker }) // Join into one object
+        ),
+        getGroupKeyFn(speakerSystem.value) // Create a key function
+      ),
+      ([title, entries]) => ({
+        title,
+        queue: map(entries, (e) => e.user) // Deconstruct into an array of user numbers
       })
-    }
-    const annotatedRestQueue = annotatedSpeakerQueue.value.slice(safePositions)
-    // TODO: Move this into plugin architecture
-    if (speakerSystem.value.method_name === SpeakerSystemMethod.Priority) {
-      const max = speakerSystem.value.settings?.max_times ?? 0
-      // A speaker system can have a maximum amount of lists. This will get spoken times up to that max value.
-      function maxListValue({ timesSpoken }: { timesSpoken: number }) {
-        return max >= 0 ? Math.min(timesSpoken, max) : timesSpoken
-      }
-      // Create a list of unique spoken times in order
-      const spokenNumbers = sortBy([
-        ...new Set(annotatedRestQueue.map(maxListValue))
-      ])
-      for (const spoken of spokenNumbers) {
-        groups.push({
-          title: t('speaker.listNumber', spoken + 1),
-          queue: annotatedRestQueue
-            .filter((entry) => maxListValue(entry) === spoken)
-            .map((e) => e.user)
-        })
-      }
-    } else {
-      groups.push({
-        title: t('speaker.queue'),
-        queue: annotatedRestQueue.map(({ user }) => user)
-      })
-    }
-    return groups
+    )
   })
 
   function enterList() {
