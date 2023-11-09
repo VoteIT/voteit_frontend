@@ -14,6 +14,7 @@ import {
 } from './registry'
 import useMeetingGroups from './useMeetingGroups'
 import { hasFakeRoles } from './rules'
+import { MeetingRole } from './types'
 
 function getDownloadFormat(meetingId: number, format: 'csv' | 'json') {
   return {
@@ -103,16 +104,18 @@ meetingRolePlugins.register({
       icon: 'mdi-star'
     }
 
+    // Replace parts of potential voter column,
+    // or insert with new name
     return meeting.er_policy_name === 'auto_always'
       ? columns.map((c) => {
-          return c.name === 'potential_voter'
+          return c.name === MeetingRole.PotentialVoter
             ? { ...c, ...columnDefinition }
             : c
-        }) // Replace parts of potential_voter column
-      : insertAfter(columns, 'potential_voter', {
+        })
+      : insertAfter(columns, MeetingRole.PotentialVoter, {
           ...columnDefinition,
           name: 'voter'
-        }) // Insert with new name
+        })
   }
 })
 

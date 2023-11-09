@@ -4,6 +4,19 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.20.2 (2023-11-09)
+
+- Fix bug for adding or replacing voter column in participant list.
+
+## 0.20.1 (2023-11-08)
+
+- Fix mistake with double participant role in ordered list
+
+## 0.20.0 (2023-11-07)
+
+- Role refactoring changes (name changes of meeting roles)
+- Font switch (Noto Sans) to fix spacing problem with quotation marks
+
 ## 0.19.0 (2023-10-25)
 
 - Support polls with withheld result [#330](https://github.com/VoteIT/voteit_frontend/issues/330)
