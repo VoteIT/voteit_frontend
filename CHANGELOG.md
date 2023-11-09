@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.20.2 (2023-11-09)
+
+- Fix bug for adding or replacing voter column in participant list.
+
 ## 0.20.1 (2023-11-08)
 
 - Fix mistake with double participant role in ordered list
