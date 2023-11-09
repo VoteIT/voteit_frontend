@@ -1,9 +1,18 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 
-import { SpeakerHistory, SpeakerList, Speaker, SpeakerSystem, SpeakerSystemRole } from './types'
+import {
+  SpeakerHistory,
+  SpeakerList,
+  Speaker,
+  SpeakerSystem,
+  SpeakerSystemRole
+} from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
 
-export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRole>({
+export const speakerSystemType = new ContentType<
+  SpeakerSystem,
+  SpeakerSystemRole
+>({
   name: 'speaker_system',
   channels: ['sls'],
   restEndpoint: 'speaker-list-systems/',

@@ -20,7 +20,7 @@ import useUserDetails from '../modules/organisations/useUserDetails'
 import UserPopup from './UserPopup.vue'
 
 const props = defineProps<{
-  pk: number,
+  pk: number
   userid?: boolean
 }>()
 

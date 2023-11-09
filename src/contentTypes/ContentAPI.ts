@@ -18,18 +18,25 @@ enum HTTPMethod {
   Delete = 'delete'
 }
 
-export default class ContentAPI<T extends { pk?: number, state?: string }, K=number> {
+export default class ContentAPI<
+  T extends { pk?: number; state?: string },
+  K = number
+> {
   private endpoint: string
   private workflowStates?: WorkflowState<T['state']>[]
   private config: RestApiConfig
 
-  constructor (endpoint: string, workflowStates?: WorkflowState<T['state']>[], config?: RestApiConfig) {
+  constructor(
+    endpoint: string,
+    workflowStates?: WorkflowState<T['state']>[],
+    config?: RestApiConfig
+  ) {
     this.endpoint = endpoint
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
     this.workflowStates = workflowStates
   }
 
-  private handleError (error: AxiosError) {
+  private handleError(error: AxiosError) {
     const response = error.response
     if (response) {
       let title = `HTTP ${response.status}`
@@ -68,7 +75,7 @@ export default class ContentAPI<T extends { pk?: number, state?: string }, K=num
     }
   }
 
-  private call (method: HTTPMethod, url: string, config?: RestApiConfig) {
+  private call(method: HTTPMethod, url: string, config?: RestApiConfig) {
     config = {
       ...this.config,
       ...(config || {}),
@@ -82,51 +89,71 @@ export default class ContentAPI<T extends { pk?: number, state?: string }, K=num
     return request
   }
 
-  public add (data: Partial<T>): AxiosPromise<T> {
+  public add(data: Partial<T>): AxiosPromise<T> {
     return this.call(HTTPMethod.Post, this.endpoint, { data })
   }
 
-  public list<RT=T[]> (params?: object): AxiosPromise<RT> {
+  public list<RT = T[]>(params?: object): AxiosPromise<RT> {
     return this.call(HTTPMethod.Get, this.endpoint, { params })
   }
 
-  public retrieve (pk: K): AxiosPromise<T> {
+  public retrieve(pk: K): AxiosPromise<T> {
     return this.call(HTTPMethod.Get, `${this.endpoint}${pk}/`)
   }
 
-  public put (pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
+  public put(pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
     return this.call(HTTPMethod.Put, `${this.endpoint}${pk}/`, { data })
   }
 
-  public patch (pk: K, data: Partial<T>): AxiosPromise<T> {
+  public patch(pk: K, data: Partial<T>): AxiosPromise<T> {
     return this.call(HTTPMethod.Patch, `${this.endpoint}${pk}/`, { data })
   }
 
-  public delete (pk: K): AxiosPromise {
+  public delete(pk: K): AxiosPromise {
     return this.call(HTTPMethod.Delete, `${this.endpoint}${pk}/`)
   }
 
-  public getAction<Type> (pk: number, action: string): AxiosPromise<Type>
-  public getAction<Type> (action: string): AxiosPromise<Type>
-  public getAction<Type> (pkOrAction: number | string, action?: string): AxiosPromise<Type> {
+  public getAction<Type>(pk: number, action: string): AxiosPromise<Type>
+  public getAction<Type>(action: string): AxiosPromise<Type>
+  public getAction<Type>(
+    pkOrAction: number | string,
+    action?: string
+  ): AxiosPromise<Type> {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
-      return this.call(HTTPMethod.Get, `${this.endpoint}${pkOrAction}/${action}/`)
+      return this.call(
+        HTTPMethod.Get,
+        `${this.endpoint}${pkOrAction}/${action}/`
+      )
     }
     return this.call(HTTPMethod.Get, `${this.endpoint}${pkOrAction}/`)
   }
 
-  public action<Type> (pk: number, action: string, data?: object): AxiosPromise<Type>
-  public action<Type> (action: string, data?: object): AxiosPromise<Type>
-  public action (pkOrAction: number | string, actionOrData?: string | object, data?: object) {
+  public action<Type>(
+    pk: number,
+    action: string,
+    data?: object
+  ): AxiosPromise<Type>
+  public action<Type>(action: string, data?: object): AxiosPromise<Type>
+  public action(
+    pkOrAction: number | string,
+    actionOrData?: string | object,
+    data?: object
+  ) {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
-      return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/${actionOrData}/`, { data })
+      return this.call(
+        HTTPMethod.Post,
+        `${this.endpoint}${pkOrAction}/${actionOrData}/`,
+        { data }
+      )
     }
-    return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/`, { data: actionOrData })
+    return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/`, {
+      data: actionOrData
+    })
   }
 
-  public transition (pk: number, name: string): AxiosPromise<Partial<T>> {
+  public transition(pk: number, name: string): AxiosPromise<Partial<T>> {
     // Cannot handle K = string
     if (this.workflowStates) {
       return this.action(pk, 'transitions', {
@@ -137,9 +164,15 @@ export default class ContentAPI<T extends { pk?: number, state?: string }, K=num
     }
   }
 
-  public async getTransitions (pk: number): Promise<Transition[]> {
+  public async getTransitions(pk: number): Promise<Transition[]> {
     // Cannot handle K = string
-    const { data }: { data: Transition[] } = await this.call(HTTPMethod.Get, `${this.endpoint}${pk}/transitions/`)
-    return data.map(t => ({ ...t, icon: this.workflowStates?.find(s => s.transition === t.name)?.icon }))
+    const { data }: { data: Transition[] } = await this.call(
+      HTTPMethod.Get,
+      `${this.endpoint}${pk}/transitions/`
+    )
+    return data.map((t) => ({
+      ...t,
+      icon: this.workflowStates?.find((s) => s.transition === t.name)?.icon
+    }))
   }
 }

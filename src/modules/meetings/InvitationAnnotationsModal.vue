@@ -13,31 +13,35 @@ import { meetingInviteAnnotationPlugins } from './registry'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
 interface AnnotationProgress extends Progress {
-  added: number,
-  changed: number,
-  existed: number,
-  name: string,
+  added: number
+  changed: number
+  existed: number
+  name: string
 }
 
-function isAnnotationProgress (p: AnnotationProgress | Progress): p is AnnotationProgress {
+function isAnnotationProgress(p: Progress): p is AnnotationProgress {
   return 'name' in p
 }
 
 const { t } = useI18n()
 const rules = useRules(t)
+// Not used in template
+// eslint-disable-next-line vue/no-dupe-keys
 const { meeting } = useMeeting()
 const { allDataTypes } = useInviteAnnotations(meeting)
 
 const annotatedDataTypes = computed(() => {
-  return allDataTypes.value.map(dt => {
+  return allDataTypes.value.map((dt) => {
     if (!meeting.value) throw new Error('Meeting is missing')
-    const possibleValues = meetingInviteAnnotationPlugins.getPlugin(dt.name)?.getPossibleValues?.(meeting.value)
+    const possibleValues = meetingInviteAnnotationPlugins
+      .getPlugin(dt.name)
+      ?.getPossibleValues?.(meeting.value)
     return { ...dt, possibleValues }
   })
 })
 
 const props = defineProps<{ meeting: number }>()
-defineEmits<{(e: 'close'): void}>()
+defineEmits<{ (e: 'close'): void }>()
 
 const annotationForm = reactive({
   data: '',
@@ -48,25 +52,29 @@ const annotationForm = reactive({
   valid: false
 })
 
-watch(() => annotationForm.data, () => {
-  annotationForm.errors = {}
-})
+watch(
+  () => annotationForm.data,
+  () => {
+    annotationForm.errors = {}
+  }
+)
 
-function submitAnnotations () {
+function submitAnnotations() {
   annotationForm.submitting = true
   const [columns, ...rows] = annotationForm.data
     .split('\n')
-    .map(row => row.split('\t'))
-  socket.call<unknown, AnnotationProgress | Progress>('invites.add_annotations', {
-    columns,
-    meeting: props.meeting,
-    rows
-  })
-    .onProgress(p => {
+    .map((row) => row.split('\t'))
+  socket
+    .call<unknown, AnnotationProgress | Progress>('invites.add_annotations', {
+      columns,
+      meeting: props.meeting,
+      rows
+    })
+    .onProgress((p) => {
       if (isAnnotationProgress(p)) annotationForm.results.push(p)
       else annotationForm.expected = p.total
     })
-    .catch(e => {
+    .catch((e) => {
       annotationForm.errors = parseSocketError(e as Error)
       annotationForm.results = []
     })
@@ -75,7 +83,7 @@ function submitAnnotations () {
     })
 }
 
-function getSum (result: AnnotationProgress) {
+function getSum(result: AnnotationProgress) {
   return result.added + result.changed + result.existed
 }
 </script>
@@ -85,9 +93,20 @@ function getSum (result: AnnotationProgress) {
     <p class="mb-3">
       {{ t('invites.annotate.working') }}
     </p>
-    <v-progress-linear :max="annotationForm.expected" :model-value="annotationForm.results.length" color="success" bg-color="background" />
+    <v-progress-linear
+      :max="annotationForm.expected"
+      :model-value="annotationForm.results.length"
+      color="success"
+      bg-color="background"
+    />
     <p v-if="annotationForm.results.length" class="text-secondary">
-      {{ t('invites.annotate.annotatedType', { ...annotationForm.results.at(-1) }, getSum(annotationForm.results.at(-1)!)) }}
+      {{
+        t(
+          'invites.annotate.annotatedType',
+          { ...annotationForm.results.at(-1) },
+          getSum(annotationForm.results.at(-1)!)
+        )
+      }}
     </p>
     <p v-else>&nbsp;</p>
   </template>
@@ -136,10 +155,21 @@ function getSum (result: AnnotationProgress) {
         </thead>
         <tbody>
           <tr>
-            <th v-for="{ name, possibleValues } in annotatedDataTypes" :key="name">
-              <DefaultDialog v-if="possibleValues" :title="t('invites.annotate.possibleValuesFor', { name })">
+            <th
+              v-for="{ name, possibleValues } in annotatedDataTypes"
+              :key="name"
+            >
+              <DefaultDialog
+                v-if="possibleValues"
+                :title="t('invites.annotate.possibleValuesFor', { name })"
+              >
                 <template #activator="{ props }">
-                  <v-btn variant="tonal" size="x-small" icon="mdi-help" v-bind="props" />
+                  <v-btn
+                    variant="tonal"
+                    size="x-small"
+                    icon="mdi-help"
+                    v-bind="props"
+                  />
                 </template>
                 <template #default="{ close }">
                   <v-table>
@@ -150,8 +180,13 @@ function getSum (result: AnnotationProgress) {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="{ description, value } in possibleValues" :key="value">
-                        <td><strong>{{ value }}</strong></td>
+                      <tr
+                        v-for="{ description, value } in possibleValues"
+                        :key="value"
+                      >
+                        <td>
+                          <strong>{{ value }}</strong>
+                        </td>
                         <td class="text-secondary">{{ description || '-' }}</td>
                       </tr>
                     </tbody>
@@ -163,21 +198,30 @@ function getSum (result: AnnotationProgress) {
                   </div>
                 </template>
               </DefaultDialog>
-              <span v-else>
-                ...
-              </span>
+              <span v-else> ... </span>
             </th>
           </tr>
         </tbody>
       </v-table>
     </v-alert>
-    <v-form @submit.prevent="submitAnnotations" v-model="annotationForm.valid" ref="invitationsForm">
+    <v-form
+      @submit.prevent="submitAnnotations"
+      v-model="annotationForm.valid"
+      ref="invitationsForm"
+    >
       <v-textarea
         v-model="annotationForm.data"
         class="mb-2"
-        :error-messages="annotationForm.errors.columns || annotationForm.errors.rows || annotationForm.errors.__root__"
+        :error-messages="
+          annotationForm.errors.columns ||
+          annotationForm.errors.rows ||
+          annotationForm.errors.__root__
+        "
         rows="10"
-        :rules="[rules.required, rules.tabSeparatedEqualColumns(annotatedDataTypes.length)]"
+        :rules="[
+          rules.required,
+          rules.tabSeparatedEqualColumns(annotatedDataTypes.length)
+        ]"
       />
       <div class="text-right">
         <v-btn @click="$emit('close')" variant="text">

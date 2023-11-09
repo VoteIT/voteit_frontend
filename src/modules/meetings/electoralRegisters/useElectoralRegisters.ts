@@ -16,18 +16,18 @@ electoralRegisterType.updateMap(
 
 const _erMethods = ref<ErMethod[] | null>(null)
 
-async function fetchErMethods () {
+async function fetchErMethods() {
   try {
     const { data } = await erMethodType.api.list()
     _erMethods.value = data
   } catch {} // TODO
 }
 
-function getErMethod (name: string) {
-  return _erMethods.value?.find(erm => erm.name === name)
+function getErMethod(name: string) {
+  return _erMethods.value?.find((erm) => erm.name === name)
 }
 
-async function fetchRegister (pk: number) {
+async function fetchRegister(pk: number) {
   registers.set(pk, null) // If it has any value, will not fetch again
   try {
     const { data } = await electoralRegisterType.api.retrieve(pk)
@@ -37,12 +37,12 @@ async function fetchRegister (pk: number) {
   }
 }
 
-function getRegister (pk: number) {
+function getRegister(pk: number) {
   if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
   return registers.get(pk) as ElectoralRegister | null
 }
 
-function hasWeightedVotes ({ weights }: ElectoralRegister) {
+function hasWeightedVotes({ weights }: ElectoralRegister) {
   return weights.some(({ weight }) => weight !== 1)
 }
 
@@ -51,13 +51,13 @@ const erMethods = computed<ErMethod[] | null>(() => {
   return _erMethods.value
 })
 
-export default function useElectoralRegisters (meetingId?: Ref<number>) {
+export default function useElectoralRegisters(meetingId?: Ref<number>) {
   const meeting = computed(() => meetingId && meetings.get(meetingId.value))
 
   const availableErMethods = computed(() => {
     if (erMethod.value && erMethodLocked.value) return [erMethod.value]
     if (!erMethods.value) return
-    return erMethods.value.filter(method => {
+    return erMethods.value.filter((method) => {
       if (!method.available) return false
       if (method.group_votes_active === null) return true
       return !!meeting.value?.group_votes_active === method.group_votes_active
@@ -66,7 +66,9 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
 
   const erMethod = computed(() => {
     if (!meetingId) return
-    return erMethods.value?.find(erm => erm.name === meeting.value?.er_policy_name)
+    return erMethods.value?.find(
+      (erm) => erm.name === meeting.value?.er_policy_name
+    )
   })
   const erMethodWeighted = computed(() => erMethod.value?.handles_vote_weight)
 
@@ -78,34 +80,39 @@ export default function useElectoralRegisters (meetingId?: Ref<number>) {
     return !!meeting.value?.dialect?.er_policy_name
   })
 
-  async function fetchRegisters () {
-    if (!meetingId) throw new Error('Call using useElectoralRegisters(Ref<meetingId>) to fetch meeting registers')
+  async function fetchRegisters() {
+    if (!meetingId)
+      throw new Error(
+        'Call using useElectoralRegisters(Ref<meetingId>) to fetch meeting registers'
+      )
     try {
-      const { data } = await electoralRegisterType.api.list({ meeting: meetingId.value })
+      const { data } = await electoralRegisterType.api.list({
+        meeting: meetingId.value
+      })
       for (const er of data) {
         registers.set(er.pk, er)
       }
     } catch {} // TODO
   }
 
-  function isMeetingER (er: ElectoralRegister | null): er is ElectoralRegister {
+  function isMeetingER(er: ElectoralRegister | null): er is ElectoralRegister {
     return er?.meeting === meetingId?.value
   }
 
-  function getWeightInCurrent (user: number) {
-    return currentElectoralRegister.value?.weights.find(w => w.user === user)?.weight
+  function getWeightInCurrent(user: number) {
+    return currentElectoralRegister.value?.weights.find((w) => w.user === user)
+      ?.weight
   }
 
   const sortedRegisters = computed(() => {
     if (!meetingId) return []
     return orderBy(
-      [...registers.values()]
-        .filter(isMeetingER)
-        .map(er => ({
-          ...er,
-          hasWeightedVotes: hasWeightedVotes(er)
-        })),
-      ['created'], ['desc']
+      [...registers.values()].filter(isMeetingER).map((er) => ({
+        ...er,
+        hasWeightedVotes: hasWeightedVotes(er)
+      })),
+      ['created'],
+      ['desc']
     )
   })
   const currentElectoralRegister = computed(() => {

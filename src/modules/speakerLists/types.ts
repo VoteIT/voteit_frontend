@@ -16,7 +16,7 @@ export enum SpeakerSystemRole {
 
 export enum SpeakerSystemMethod {
   Simple = 'simple',
-  Priority = 'priority',
+  Priority = 'priority'
 }
 
 type SpeakerSystemSettings = { max_times: number } | null
@@ -35,7 +35,7 @@ export interface SpeakerSystem {
 
 export enum SpeakerListState {
   Open = 'open',
-  Closed = 'closed',
+  Closed = 'closed'
 }
 
 export interface SpeakerList extends BaseContent {

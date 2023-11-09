@@ -5,7 +5,12 @@
         <h1 class="flex-grow-1">
           {{ t('poll.all') }}
         </h1>
-        <v-btn v-if="canAddPoll" color="primary" prepend-icon="mdi-star-plus" :to="toAddPoll">
+        <v-btn
+          v-if="canAddPoll"
+          color="primary"
+          prepend-icon="mdi-star-plus"
+          :to="toAddPoll"
+        >
           {{ t('poll.new') }}
         </v-btn>
       </header>
@@ -36,9 +41,15 @@ const { t } = useI18n()
 const { meeting, getMeetingRoute } = useMeeting()
 useMeetingTitle(t('poll.all'))
 
-const pollStatesOpen = ref(history.state.pollStatesOpen as PollState[] || [PollState.Ongoing])
-watch(pollStatesOpen, value => { history.replaceState({ ...history.state, pollStatesOpen: [...value] }, '') })
+const pollStatesOpen = ref(
+  (history.state.pollStatesOpen as PollState[]) || [PollState.Ongoing]
+)
+watch(pollStatesOpen, (value) => {
+  history.replaceState({ ...history.state, pollStatesOpen: [...value] }, '')
+})
 
-const canAddPoll = computed(() => meeting.value && rules.canAddPoll(meeting.value))
+const canAddPoll = computed(
+  () => meeting.value && rules.canAddPoll(meeting.value)
+)
 const toAddPoll = computed(() => getMeetingRoute('pollStart'))
 </script>

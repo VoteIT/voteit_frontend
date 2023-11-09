@@ -2,7 +2,7 @@ import { WorkflowState } from '@/contentTypes/types'
 
 export enum PresenceCheckState {
   Open = 'open',
-  Closed = 'closed',
+  Closed = 'closed'
 }
 
 export const presenceCheckStates: WorkflowState<PresenceCheckState>[] = [
@@ -10,7 +10,7 @@ export const presenceCheckStates: WorkflowState<PresenceCheckState>[] = [
     transition: 'open',
     icon: 'mdi-play',
     state: PresenceCheckState.Open,
-    getName (t) {
+    getName(t) {
       return t('presence.workflow.open')
     }
   },
@@ -19,7 +19,7 @@ export const presenceCheckStates: WorkflowState<PresenceCheckState>[] = [
     icon: 'mdi-stop',
     state: PresenceCheckState.Closed,
     isFinal: true,
-    getName (t) {
+    getName(t) {
       return t('presence.workflow.closed')
     }
   }

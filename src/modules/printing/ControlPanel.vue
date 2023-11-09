@@ -1,5 +1,8 @@
 <template>
-  <ComponentQuickPanel component-name="proposal_print" :switch-label="t('printing.enable')"/>
+  <ComponentQuickPanel
+    component-name="proposal_print"
+    :switch-label="t('printing.enable')"
+  />
 </template>
 
 <script lang="ts" setup>

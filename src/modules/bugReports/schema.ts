@@ -28,6 +28,8 @@ export default [
     type: FieldType.TextArea,
     label: 'Beskrivning',
     rules: [required],
-    messages: ['Beskriv vad du gjorde när felet uppkom, vad du försökte åstadkomma och vad konsekvensen blev.']
+    messages: [
+      'Beskriv vad du gjorde när felet uppkom, vad du försökte åstadkomma och vad konsekvensen blev.'
+    ]
   }
 ]

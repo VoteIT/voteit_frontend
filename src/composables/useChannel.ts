@@ -9,13 +9,17 @@ import { socket } from '@/utils/Socket'
 
 import { channelLeftEvent, channelSubscribedEvent } from './events'
 
-type SubscriptionObj = ReturnType<typeof socket['channels']['subscribe']>
+type SubscriptionObj = ReturnType<(typeof socket)['channels']['subscribe']>
 
 const subscribedChannels = reactive(new Set<string>())
-channelSubscribedEvent.on(channel => subscribedChannels.add(channel.path))
-channelLeftEvent.on(channel => subscribedChannels.delete(channel.path))
+channelSubscribedEvent.on((channel) => subscribedChannels.add(channel.path))
+channelLeftEvent.on((channel) => subscribedChannels.delete(channel.path))
 
-export default function useChannel (name: string | Ref<string | undefined>, pk: Ref<number | undefined>, config?: ChannelConfig & { critical?: boolean }) {
+export default function useChannel(
+  name: string | Ref<string | undefined>,
+  pk: Ref<number | undefined>,
+  config?: ChannelConfig & { critical?: boolean }
+) {
   const { t } = useI18n()
   const router = useRouter()
 
@@ -32,9 +36,11 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
     if (!channelType || !pk.value) return
     return `${channelType}/${pk.value}`
   })
-  const isSubscribed = computed(() => channelPath.value && subscribedChannels.has(channelPath.value))
+  const isSubscribed = computed(
+    () => channelPath.value && subscribedChannels.has(channelPath.value)
+  )
 
-  async function subscribe () {
+  async function subscribe() {
     // Must only be called if name and pk is set
     const channelType = unref(name)!
     subscription = socket.channels.subscribe(channelType, pk.value!)
@@ -48,13 +54,15 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
           theme: ThemeColor.Error,
           no: false,
           yes: t('meeting.subscriptionFailedButton'),
-          resolve: async () => { router.push('/') }
+          resolve: async () => {
+            router.push('/')
+          }
         })
       }
     }
   }
 
-  watch(channelPath, to => {
+  watch(channelPath, (to) => {
     subscription?.leave(config?.leaveDelay)
     if (to) subscribe()
   })
@@ -65,8 +73,6 @@ export default function useChannel (name: string | Ref<string | undefined>, pk: 
 
   return {
     isSubscribed,
-    promise: channelPath.value
-      ? subscribe()
-      : Promise.resolve()
+    promise: channelPath.value ? subscribe() : Promise.resolve()
   }
 }

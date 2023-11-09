@@ -51,7 +51,7 @@ export interface IFlagButton extends ReactionButton {
   target: null
 }
 
-export function isFlagButton (btn: ReactionButton): btn is IFlagButton {
+export function isFlagButton(btn: ReactionButton): btn is IFlagButton {
   return btn.flag_mode
 }
 
@@ -67,5 +67,5 @@ export enum ReactionIcon {
   Alert = 'mdi-alert',
   Attachment = 'mdi-attachment',
   Pencil = 'mdi-pencil',
-  Currency = 'mdi-currency-eur',
+  Currency = 'mdi-currency-eur'
 }

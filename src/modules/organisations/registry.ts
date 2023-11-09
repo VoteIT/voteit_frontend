@@ -12,8 +12,10 @@ interface InvitationScope {
 }
 
 class InvitationScopePluginHandler extends PluginHandler<InvitationScope> {
-  public getActivePlugins () {
-    return this.getPlugins(({ id }) => organisation.value?.scope.includes(id) || false)
+  public getActivePlugins() {
+    return this.getPlugins(
+      ({ id }) => organisation.value?.scope.includes(id) || false
+    )
   }
 }
 
@@ -27,7 +29,7 @@ invitationScopes.register({
 invitationScopes.register({
   id: 'swedish_ssn',
   icon: 'mdi-card-account-details',
-  transformData (ssn) {
+  transformData(ssn) {
     return `${ssn.slice(0, 8)} ••••`
   }
 })

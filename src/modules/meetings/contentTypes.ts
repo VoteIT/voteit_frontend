@@ -2,8 +2,21 @@ import { MeetingRoles } from '@/composables/types'
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import { MeetingAccessPolicy } from '@/contentTypes/types'
 import { ElectoralRegister, ErMethod } from './electoralRegisters/types'
-import { ComponentBase, GroupMembership, GroupRole, Meeting, MeetingDialectDefinition, MeetingGroup, MeetingInvite, MeetingRole } from './types'
-import { meetingComponentStates, meetingInviteStates, meetingStates } from './workflowStates'
+import {
+  ComponentBase,
+  GroupMembership,
+  GroupRole,
+  Meeting,
+  MeetingDialectDefinition,
+  MeetingGroup,
+  MeetingInvite,
+  MeetingRole
+} from './types'
+import {
+  meetingComponentStates,
+  meetingInviteStates,
+  meetingStates
+} from './workflowStates'
 
 export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
   name: 'access_policy',
@@ -87,7 +100,9 @@ export const groupMembershipType = new ContentType<GroupMembership>({
   restEndpoint: 'group-memberships/'
 })
 
-export const meetingDialectType = new BaseContentType<MeetingDialectDefinition>({
-  name: 'meeting_dialect',
-  restEndpoint: 'meeting-dialects/'
-})
+export const meetingDialectType = new BaseContentType<MeetingDialectDefinition>(
+  {
+    name: 'meeting_dialect',
+    restEndpoint: 'meeting-dialects/'
+  }
+)

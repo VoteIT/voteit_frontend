@@ -1,11 +1,26 @@
 <template>
-  <RichtextEditor :variant="variant" v-if="editing" submit v-model="content" @submit="submit()" set-focus class="richtext" />
+  <RichtextEditor
+    :variant="variant"
+    v-if="editing"
+    submit
+    v-model="content"
+    @submit="submit()"
+    set-focus
+    class="richtext"
+  />
   <div v-else>
     <div class="overflow-hidden position-relative" :style="style">
       <div ref="contentElem" class="richtext" v-html="content" />
       <div class="overflow-fade" v-show="isOverflowing && !userExpanded" />
     </div>
-    <v-btn block v-if="isOverflowing" variant="text" color="primary" @click="userExpanded = !userExpanded" :append-icon="expandIcon">
+    <v-btn
+      block
+      v-if="isOverflowing"
+      variant="text"
+      color="primary"
+      @click="userExpanded = !userExpanded"
+      :append-icon="expandIcon"
+    >
       {{ userExpanded ? t('collapse') : t('expand') }}
     </v-btn>
   </div>
@@ -21,7 +36,14 @@ import { useElementBounding } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-const EXTERNAL_ICON_CLASSES = ['mdi-open-in-new', 'mdi', 'v-icon', 'notranslate', 'v-theme--light', 'v-icon--size-x-small']
+const EXTERNAL_ICON_CLASSES = [
+  'mdi-open-in-new',
+  'mdi',
+  'v-icon',
+  'notranslate',
+  'v-theme--light',
+  'v-icon--size-x-small'
+]
 
 export default defineComponent({
   name: 'Richtext',
@@ -45,23 +67,23 @@ export default defineComponent({
     maxHeight: Number
   },
   emits: ['edit-done', 'update:modelValue'],
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     const { t } = useI18n()
     const router = useRouter()
 
-    function getContent (): string {
+    function getContent(): string {
       if (props.object) return props.object[props.contentAttribute]
       if (typeof props.modelValue === 'string') return props.modelValue
       throw new Error('RichText needs :object=<object> or v-model=<string>')
     }
     const content = ref(getContent())
 
-    async function submitRequest (pk: number, data: Object) {
+    async function submitRequest(pk: number, data: Object) {
       if (props.channel) await props.channel.change(pk, data)
       if (props.api) await props.api.patch(pk, data)
     }
 
-    async function submit () {
+    async function submit() {
       if (props.modelValue) return emit('edit-done')
       if (props.object && content.value !== getContent()) {
         const data: Record<string, string> = {}
@@ -77,7 +99,7 @@ export default defineComponent({
       if (props.editing) return
       content.value = getContent()
     })
-    watch(content, value => {
+    watch(content, (value) => {
       nextTick(addExternalIcons)
       emit('update:modelValue', value)
     })
@@ -85,43 +107,50 @@ export default defineComponent({
     const contentElem = ref<HTMLElement | null>(null)
     useTags(contentElem)
     const { height } = useElementBounding(contentElem)
-    const isOverflowing = computed(() => !!props.maxHeight && height.value > (props.maxHeight + 72)) // Add 72 for double btn height
+    const isOverflowing = computed(
+      () => !!props.maxHeight && height.value > props.maxHeight + 72
+    ) // Add 72 for double btn height
     const userExpanded = ref<null | boolean>(null)
-    const expandIcon = computed(() => `mdi-chevron-${userExpanded.value ? 'up' : 'down'}`)
+    const expandIcon = computed(
+      () => `mdi-chevron-${userExpanded.value ? 'up' : 'down'}`
+    )
     const style = computed(() => {
       if (!isOverflowing.value) return
       return {
-        maxHeight: userExpanded.value
-          ? '80000px'
-          : `${(props.maxHeight || 0)}px`
+        maxHeight: userExpanded.value ? '80000px' : `${props.maxHeight || 0}px`
       }
     })
 
-    function isExternal (anchor: HTMLAnchorElement): boolean {
+    function isExternal(anchor: HTMLAnchorElement): boolean {
       return anchor.host !== location.host
     }
 
-    function addExternalIcons () {
+    function addExternalIcons() {
       if (!contentElem.value) return
-      for (const anchor of contentElem.value.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+      for (const anchor of contentElem.value.querySelectorAll<HTMLAnchorElement>(
+        'a[href]'
+      )) {
         if (!isExternal(anchor)) continue
         const icon = document.createElement('sup')
-        EXTERNAL_ICON_CLASSES.forEach(c => icon.classList.add(c))
+        EXTERNAL_ICON_CLASSES.forEach((c) => icon.classList.add(c))
         anchor.append(icon)
       }
     }
 
     // Force external links to open in new tab
-    watch(contentElem, el => {
+    watch(contentElem, (el) => {
       if (!el) return
-      function getAnchorElement (current: HTMLElement | null): HTMLAnchorElement | undefined {
+      function getAnchorElement(
+        current: HTMLElement | null
+      ): HTMLAnchorElement | undefined {
         // Move up the tree until we get to container or an anchor
         while (current && current !== el) {
-          if (current.tagName === 'A' && 'href' in current) return current as HTMLAnchorElement
+          if (current.tagName === 'A' && 'href' in current)
+            return current as HTMLAnchorElement
           current = current.parentElement
         }
       }
-      el.addEventListener('click', event => {
+      el.addEventListener('click', (event) => {
         const anchor = getAnchorElement(event.target as HTMLElement)
         if (!anchor) return
         event.preventDefault()

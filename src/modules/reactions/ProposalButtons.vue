@@ -1,6 +1,7 @@
 <template>
   <ReactionButton
-    v-for="btn in reactions" :key="btn.pk"
+    v-for="btn in reactions"
+    :key="btn.pk"
     :button="btn"
     :readonly="!!mode"
     :relation="{ content_type: 'proposal', object_id: proposal.pk }"
@@ -27,5 +28,7 @@ const props = defineProps<{
   proposal: Proposal
 }>()
 
-const reactions = computed(() => getMeetingButtons(meetingId.value, 'proposal', props.mode))
+const reactions = computed(() =>
+  getMeetingButtons(meetingId.value, 'proposal', props.mode)
+)
 </script>

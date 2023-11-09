@@ -2,12 +2,17 @@
   <div style="height: 64px" />
   <div id="bubbles" class="d-print-none">
     <v-overlay
-      v-for="{ component, id, icon, requireAttention } in bubbles" :key="id"
+      v-for="{ component, id, icon, requireAttention } in bubbles"
+      :key="id"
       eager
       transition="bubble-content"
-      scroll-strategy="reposition" location-strategy="connected" location="bottom end" anchor="top end"
+      scroll-strategy="reposition"
+      location-strategy="connected"
+      location="bottom end"
+      anchor="top end"
       :scrim="false"
-      :modelValue="id === openBubble" @update:modelValue="setOpen(id, $event)"
+      :modelValue="id === openBubble"
+      @update:modelValue="setOpen(id, $event)"
     >
       <template #activator="{ props, isActive }">
         <v-btn
@@ -18,10 +23,7 @@
         />
       </template>
       <v-sheet rounded class="pa-4 mb-3" elevation="8">
-        <component
-          :is="component"
-          @update:modelValue="setOpen(id, $event)"
-        />
+        <component :is="component" @update:modelValue="setOpen(id, $event)" />
       </v-sheet>
     </v-overlay>
   </div>
@@ -36,24 +38,25 @@ import { meetingBubblePlugins } from './registry'
 import useMeeting from './useMeeting'
 
 const { meeting } = useMeeting()
-const activePlugins = computed(() => meeting.value
-  ? sortBy(meetingBubblePlugins.getActivePlugins(meeting.value), 'order')
-  : []
+const activePlugins = computed(() =>
+  meeting.value
+    ? sortBy(meetingBubblePlugins.getActivePlugins(meeting.value), 'order')
+    : []
 )
 
-const bubbles = computed(() => activePlugins.value.map(plugin => {
-  return {
-    ...plugin,
-    requireAttention: plugin.requireAttention.value
-  }
-}))
+const bubbles = computed(() =>
+  activePlugins.value.map((plugin) => {
+    return {
+      ...plugin,
+      requireAttention: plugin.requireAttention.value
+    }
+  })
+)
 
 const openBubble = ref<string | null>(null)
 
-function setOpen (id: string, value: boolean) {
-  openBubble.value = value
-    ? id
-    : null
+function setOpen(id: string, value: boolean) {
+  openBubble.value = value ? id : null
 }
 </script>
 

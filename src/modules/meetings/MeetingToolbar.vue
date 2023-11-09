@@ -1,6 +1,11 @@
 <template>
   <teleport to="#toolbar">
-    <v-toolbar color="secondary-lighten-2" elevation="1" class="text-black" :title="title">
+    <v-toolbar
+      color="secondary-lighten-2"
+      elevation="1"
+      class="text-black"
+      :title="title"
+    >
       <slot></slot>
       <template v-if="$slots.extension" #extension>
         <slot name="extension"></slot>

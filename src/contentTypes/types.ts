@@ -6,7 +6,7 @@ import { ComposerTranslation } from 'vue-i18n'
 
 export interface WorkflowState<S = string> {
   color?: ThemeColor
-  getName (t: ComposerTranslation, count?: number): string
+  getName(t: ComposerTranslation, count?: number): string
   icon: string
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first
@@ -86,7 +86,7 @@ export interface MeetingAccessPolicy {
 
 export enum SchemaType {
   Incoming = 'incoming',
-  Outgoing = 'outgoing',
+  Outgoing = 'outgoing'
 }
 
 // For Channel.ts

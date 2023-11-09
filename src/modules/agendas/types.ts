@@ -38,13 +38,17 @@ export interface Filter {
   tags: Set<string>
 }
 
-export type AgendaFilterComponent = ComponentPublicInstance<{ setTag:(tag: string) => void, isModified: ComputedRef<boolean>, clearFilters: () => {} }>
+export type AgendaFilterComponent = ComponentPublicInstance<{
+  setTag: (tag: string) => void
+  isModified: ComputedRef<boolean>
+  clearFilters: () => {}
+}>
 
 export interface AgendaMenuPlugin extends MeetingPlugin {
-  getItems (context: {
-    agendaItem: AgendaItem,
-    meeting: Meeting,
-    menu: string,
+  getItems(context: {
+    agendaItem: AgendaItem
+    meeting: Meeting
+    menu: string
     t: ComposerTranslation
   }): MenuItem[]
 }

@@ -28,13 +28,22 @@
         persistent-hint
       />
       <div>
-        <v-checkbox color="primary" v-model="formData.visible_in_lists" :label="t('meeting.visibleInLists')" />
+        <v-checkbox
+          color="primary"
+          v-model="formData.visible_in_lists"
+          :label="t('meeting.visibleInLists')"
+        />
       </div>
       <div class="text-right">
         <v-btn variant="text" @click="$emit('close')">
           {{ t('cancel') }}
         </v-btn>
-        <v-btn type="submit" color="primary" prepend-icon="mdi-send" :disabled="!formReady">
+        <v-btn
+          type="submit"
+          color="primary"
+          prepend-icon="mdi-send"
+          :disabled="!formReady"
+        >
           {{ t('create') }}
         </v-btn>
       </div>
@@ -55,7 +64,10 @@ import useDialects from './dialects/useDialects'
 import useRules from '@/composables/useRules'
 import { Meeting } from './types'
 
-type FormData = Pick<Meeting, 'title' | 'visible_in_lists'> & { er_policy_name: string | null, install_dialect: string | null }
+type FormData = Pick<Meeting, 'title' | 'visible_in_lists'> & {
+  er_policy_name: string | null
+  install_dialect: string | null
+}
 
 defineEmits(['close'])
 
@@ -73,21 +85,30 @@ const formData = reactive<FormData>({
 })
 const formReady = ref(false)
 
-watch(() => formData.install_dialect, value => {
-  if (value) formData.er_policy_name = null
-})
+watch(
+  () => formData.install_dialect,
+  (value) => {
+    if (value) formData.er_policy_name = null
+  }
+)
 const submitting = ref(false)
 
 const erOptions = computed(() => {
-  return availableErMethods.value?.map(({ name, title }) => ({ value: name, title }))
+  return availableErMethods.value?.map(({ name, title }) => ({
+    value: name,
+    title
+  }))
 })
 
 const dialectOptions = computed(() => {
   if (!installableDialects.value) return []
-  return installableDialects.value.map(({ name, title }) => ({ value: name, title }))
+  return installableDialects.value.map(({ name, title }) => ({
+    value: name,
+    title
+  }))
 })
 
-function cleanFormData (data: FormData) {
+function cleanFormData(data: FormData) {
   return {
     ...data,
     er_policy_name: data.er_policy_name || undefined,
@@ -95,7 +116,7 @@ function cleanFormData (data: FormData) {
   } as Partial<Meeting>
 }
 
-async function addMeeting () {
+async function addMeeting() {
   if (submitting.value) return
   submitting.value = true
   try {

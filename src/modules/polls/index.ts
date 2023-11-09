@@ -13,7 +13,7 @@ meetingBubblePlugins.register({
   id: 'unvotedPolls',
   order: 0,
   requireAttention: computed(() => true),
-  checkActive (meeting) {
+  checkActive(meeting) {
     return !!getNextUnvotedPoll(meeting.pk)
   }
 })

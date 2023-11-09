@@ -7,11 +7,12 @@ import Richtext from './Richtext.vue'
 
 const props = defineProps<{
   editable?: boolean
-  handler?:(value: string) => Promise<any>
+  handler?: (value: string) => Promise<any>
   placeholder?: string
   modelValue?: string
 }>()
-if (props.editable && !props.handler) throw new Error('EditableHelpText: handler required with editable property')
+if (props.editable && !props.handler)
+  throw new Error('EditableHelpText: handler required with editable property')
 
 const { t } = useI18n()
 
@@ -21,18 +22,17 @@ const editing = ref(false)
 const hasValue = computed(() => !!stripHTML(model.value))
 const visible = computed(() => props.editable || hasValue.value)
 
-watch(() => props.modelValue, v => {
-  if (editing.value) return
-  model.value = v ?? ''
-})
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (editing.value) return
+    model.value = v ?? ''
+  }
+)
 
-async function save () {
+async function save() {
   if (!props.handler) return
-  await props.handler(
-    stripHTML(model.value).trim()
-      ? model.value
-      : ''
-  )
+  await props.handler(stripHTML(model.value).trim() ? model.value : '')
   editing.value = false
 }
 </script>

@@ -3,9 +3,7 @@
     <v-list bg-color="background">
       <v-list-item v-for="(proposal, i) in approved" :key="i">
         <template #prepend>
-          <span class="text-h6 mr-4 mt-n3">
-            {{ i + 1 }}.
-          </span>
+          <span class="text-h6 mr-4 mt-n3"> {{ i + 1 }}. </span>
         </template>
         <v-list-item-title v-if="!proposal">
           - {{ t('proposal.unknown') }} -
@@ -40,7 +38,13 @@
         <v-expansion-panel-title>
           <div class="text-truncate">
             {{ round.title }}: {{ round.statusText }}
-            <Tag disabled :name="id" v-for="id in round.proposalIds" :key="id" class="mx-1" />
+            <Tag
+              disabled
+              :name="id"
+              v-for="id in round.proposalIds"
+              :key="id"
+              class="mx-1"
+            />
           </div>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
@@ -50,7 +54,11 @@
               <v-list-item :disabled="!round.selected.includes(pk)">
                 <Tag disabled :name="id" class="mr-2" /> {{ text }}
                 <template v-if="round.selected.includes(pk)" #append>
-                  <v-icon v-if="round.status === 'Elected'" icon="mdi-check" color="success" />
+                  <v-icon
+                    v-if="round.status === 'Elected'"
+                    icon="mdi-check"
+                    color="success"
+                  />
                   <v-icon v-else icon="mdi-minus" color="warning" />
                 </template>
               </v-list-item>
@@ -87,7 +95,7 @@ const metadata = computed(() => [
   [t('poll.result.randomized'), props.result.randomized ? t('yes') : t('no')]
 ])
 
-function pkToPropId (pk: number) {
+function pkToPropId(pk: number) {
   return getProposal(pk)?.prop_id ?? t('unknown')
 }
 
@@ -104,14 +112,23 @@ const rounds = computed(() => {
         pk,
         text: [0, 1].includes(count) // Always plural if not exactly zero or one
           ? t('poll.result.voteCount', count)
-          : t('poll.result.voteCount', { count: count.toLocaleString(undefined, { maximumFractionDigits: 5 }) }, 2)
+          : t(
+              'poll.result.voteCount',
+              {
+                count: count.toLocaleString(undefined, {
+                  maximumFractionDigits: 5
+                })
+              },
+              2
+            )
       })),
       'count',
       'desc'
     )
-    const divideBefore = round.status === 'Elected'
-      ? voteCount.find(({ pk }) => !round.selected.includes(pk))?.id
-      : voteCount.at(-1)?.id
+    const divideBefore =
+      round.status === 'Elected'
+        ? voteCount.find(({ pk }) => !round.selected.includes(pk))?.id
+        : voteCount.at(-1)?.id
     return {
       ...round,
       divideBefore,

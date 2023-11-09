@@ -14,6 +14,6 @@ test('PluginHandler', () => {
 
   handler.register({ id: 'test-2' })
   handler.register({ id: '' })
-  expect(handler.getPlugins(p => p.id.startsWith('test')).length).toEqual(2)
-  expect(handler.getPlugins(p => !p.id.startsWith('test')).length).toEqual(1)
+  expect(handler.getPlugins((p) => p.id.startsWith('test')).length).toEqual(2)
+  expect(handler.getPlugins((p) => !p.id.startsWith('test')).length).toEqual(1)
 })

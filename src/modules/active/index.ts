@@ -1,8 +1,18 @@
 import { ref, toRef } from 'vue'
 
-import { meetingGroupTablePlugins, meetingRolePlugins, meetingSettingsPlugins, meetingSlotPlugins } from '../meetings/registry'
+import {
+  meetingGroupTablePlugins,
+  meetingRolePlugins,
+  meetingSettingsPlugins,
+  meetingSlotPlugins
+} from '../meetings/registry'
 import useMeetingComponents from '../meetings/useMeetingComponent'
-import { GroupMembership, Meeting, MeetingState, NoSettingsComponent } from '../meetings/types'
+import {
+  GroupMembership,
+  Meeting,
+  MeetingState,
+  NoSettingsComponent
+} from '../meetings/types'
 
 import ControlPanel from './ControlPanel.vue'
 import MenuPlugin from './MenuPlugin.vue'
@@ -12,15 +22,17 @@ import { Predicate } from 'itertools'
 
 const COMPONENT_NAME = 'active_users'
 
-function checkActive (meeting: Meeting) {
-  const { component } = useMeetingComponents<NoSettingsComponent<typeof COMPONENT_NAME>>(ref(meeting.pk), COMPONENT_NAME)
+function checkActive(meeting: Meeting) {
+  const { component } = useMeetingComponents<
+    NoSettingsComponent<typeof COMPONENT_NAME>
+  >(ref(meeting.pk), COMPONENT_NAME)
   return component.value?.state === 'on'
 }
 
 meetingSettingsPlugins.register({
   id: COMPONENT_NAME,
   icon: 'mdi-account-network',
-  getTitle (t) {
+  getTitle(t) {
     return t('activeUsers.title')
   },
   quickComponent: ControlPanel
@@ -37,18 +49,18 @@ meetingRolePlugins.register({
   checkActive,
   contentType: 'meeting',
   id: COMPONENT_NAME,
-  transform (columns, meeting) {
+  transform(columns, meeting) {
     const { activeUserIds } = useActive(toRef(meeting, 'pk'))
     return [
       ...columns,
       {
-        getCount () {
+        getCount() {
           return activeUserIds.value.length
         },
-        getTitle (t) {
+        getTitle(t) {
           return t('activeUsers.active')
         },
-        getValue ({ user }) {
+        getValue({ user }) {
           return activeUserIds.value.includes(user)
         },
         icon: 'mdi-account-network',
@@ -59,15 +71,22 @@ meetingRolePlugins.register({
   }
 })
 
-function countActive (memberships: GroupMembership[], checkActive: Predicate<number>) {
-  return memberships.reduce((acc, { user }) => acc + Number(checkActive(user)), 0)
+function countActive(
+  memberships: GroupMembership[],
+  checkActive: Predicate<number>
+) {
+  return memberships.reduce(
+    (acc, { user }) => acc + Number(checkActive(user)),
+    0
+  )
 }
 
 meetingGroupTablePlugins.register({
   checkActive,
   id: COMPONENT_NAME,
-  transform (columns, meeting) {
-    if (![MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state)) return columns
+  transform(columns, meeting) {
+    if (![MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state))
+      return columns
     const meetingId = toRef(meeting, 'pk')
     const { checkActive } = useActive(meetingId)
     // const { allGroupMembers } = useMeetingGroups(meetingId)
@@ -78,13 +97,13 @@ meetingGroupTablePlugins.register({
         // getCount () {
         //   return countActive(allGroupMembers.value, checkActive)
         // },
-        getDescription (t) {
+        getDescription(t) {
           return t('activeUsers.groupActiveDescription')
         },
-        getValue (group) {
+        getValue(group) {
           return countActive(group.memberships, checkActive)
         },
-        getTitle (t) {
+        getTitle(t) {
           return t('activeUsers.activePlural')
         }
       }

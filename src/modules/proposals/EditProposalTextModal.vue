@@ -2,10 +2,21 @@
   <main>
     <form @submit.prevent="save()">
       <v-text-field v-model="formData.title" required :label="t('title')" />
-      <v-text-field v-model="formData.base_tag" required :label="t('proposal.textBaseTag')" @change="cleanBaseTag()" />
+      <v-text-field
+        v-model="formData.base_tag"
+        required
+        :label="t('proposal.textBaseTag')"
+        @change="cleanBaseTag()"
+      />
       <textarea class="form-control" v-model="formData.body" required />
       <div class="btn-group text-right">
-        <v-btn type="submit" :disabled="saving" color="primary" prepend-icon="mdi-check-all">{{ t('save') }}</v-btn>
+        <v-btn
+          type="submit"
+          :disabled="saving"
+          color="primary"
+          prepend-icon="mdi-check-all"
+          >{{ t('save') }}</v-btn
+        >
       </div>
     </form>
   </main>
@@ -26,25 +37,32 @@ export default defineComponent({
   props: {
     data: Object as PropType<ProposalText>
   },
-  setup (props) {
+  setup(props) {
     const { meetingId } = useMeeting()
     const { agendaId } = useAgenda(meetingId)
     const { t } = useI18n()
-    const formData = reactive<Pick<ProposalText, 'base_tag' | 'body' | 'title'>>({
+    const formData = reactive<
+      Pick<ProposalText, 'base_tag' | 'body' | 'title'>
+    >({
       base_tag: props.data?.base_tag ?? t('proposal.textBaseTagDefault'),
       body: props.data?.body ?? '',
       title: props.data?.title ?? ''
     })
 
-    function cleanBaseTag () {
+    function cleanBaseTag() {
       formData.base_tag = slugify(formData.base_tag)
     }
     const saving = ref(false)
-    async function save () {
+    async function save() {
       saving.value = true
       try {
-        if (props.data) await proposalTextType.api.patch(props.data.pk, formData)
-        else await proposalTextType.api.add({ agenda_item: agendaId.value, ...formData })
+        if (props.data)
+          await proposalTextType.api.patch(props.data.pk, formData)
+        else
+          await proposalTextType.api.add({
+            agenda_item: agendaId.value,
+            ...formData
+          })
         closeModalEvent.emit()
       } catch {
         saving.value = false

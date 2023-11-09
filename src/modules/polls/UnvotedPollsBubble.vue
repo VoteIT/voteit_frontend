@@ -8,11 +8,16 @@
     </p>
     <v-list>
       <v-list-item
-        active color="primary" class="mt-1"
-        v-for="{ pk, title, subtitle, to } in unvoted" :key="pk"
+        active
+        color="primary"
+        class="mt-1"
+        v-for="{ pk, title, subtitle, to } in unvoted"
+        :key="pk"
         append-icon="mdi-chevron-right"
-        :title="title" :subtitle="subtitle"
-        :to="to" @click="$emit('update:modelValue', false)"
+        :title="title"
+        :subtitle="subtitle"
+        :to="to"
+        @click="$emit('update:modelValue', false)"
       />
     </v-list>
   </div>
@@ -35,19 +40,22 @@ const { meeting, meetingId } = useMeeting()
 const { getUnvotedPolls } = usePolls()
 
 const unvoted = computed(() => {
-  return getUnvotedPolls(meetingId.value)
-    .map(poll => ({
-      ...poll,
-      subtitle: t('poll.pollDescription', { method: pollPlugins.getName(poll.method_name, t) }, poll.proposals.length),
-      to: {
-        name: 'poll',
-        params: {
-          id: meetingId.value,
-          slug: slugify(meeting.value?.title),
-          pid: poll.pk,
-          pslug: slugify(poll.title)
-        }
+  return getUnvotedPolls(meetingId.value).map((poll) => ({
+    ...poll,
+    subtitle: t(
+      'poll.pollDescription',
+      { method: pollPlugins.getName(poll.method_name, t) },
+      poll.proposals.length
+    ),
+    to: {
+      name: 'poll',
+      params: {
+        id: meetingId.value,
+        slug: slugify(meeting.value?.title),
+        pid: poll.pk,
+        pslug: slugify(poll.title)
       }
-    }))
+    }
+  }))
 })
 </script>

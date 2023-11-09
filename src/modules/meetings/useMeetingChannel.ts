@@ -5,11 +5,10 @@ import useLoader from '@/composables/useLoader'
 import useChannel from '@/composables/useChannel'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
-import axios from 'axios'
 
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
-export default function useMeetingChannel () {
+export default function useMeetingChannel() {
   const { isModerator, meetingId, meeting, meetingJoinRoute } = useMeeting()
   const { fetchMeeting } = useMeetings()
   const router = useRouter()
@@ -29,13 +28,14 @@ export default function useMeetingChannel () {
 
   const loader = useLoader(
     'useMeetingChannel',
-    ...channels.map(ch => ch.promise)
+    ...channels.map((ch) => ch.promise)
   )
 
   onBeforeMount(() => {
     loader.call(async () => {
       try {
-        if (!await fetchMeeting(meetingId.value)) await router.push(meetingJoinRoute.value)
+        if (!(await fetchMeeting(meetingId.value)))
+          await router.push(meetingJoinRoute.value)
       } catch {
         fetchFailed.value = true
         // await router.push({ name: 'home' })
@@ -44,7 +44,9 @@ export default function useMeetingChannel () {
     })
   })
 
-  const isLoaded = computed(() => !!meeting.value && channels.every(ch => ch.isSubscribed.value))
+  const isLoaded = computed(
+    () => !!meeting.value && channels.every((ch) => ch.isSubscribed.value)
+  )
 
   return {
     isLoaded,

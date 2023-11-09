@@ -18,7 +18,7 @@ interface InviteResult {
   existed: number
 }
 
-defineEmits<{(e: 'done'): void}>()
+defineEmits<{ (e: 'done'): void }>()
 const props = defineProps<{
   type?: keyof MeetingInvite['user_data']
   meeting: number
@@ -36,13 +36,19 @@ const inviteData = reactive({
   valid: false
 })
 const inviteErrors = ref<Dictionary<string[]>>({})
-watch(() => inviteData.user_data, () => {
-  inviteErrors.value = {}
-})
+watch(
+  () => inviteData.user_data,
+  () => {
+    inviteErrors.value = {}
+  }
+)
 
 const ruleMapping = {
   email: [rules.multiline(rules.trimmed(rules.email)), rules.required],
-  swedish_ssn: [rules.multiline(rules.trimmed(rules.swedishSSN)), rules.required]
+  swedish_ssn: [
+    rules.multiline(rules.trimmed(rules.swedishSSN)),
+    rules.required
+  ]
 }
 
 // Dynamic translation strings and rules
@@ -53,16 +59,18 @@ const inviteInputProps = {
   rules: props.type ? ruleMapping[props.type] : [rules.required]
 }
 
-const scopes = computed(() => invitationScopes.getActivePlugins().map(({ id }) => id))
+const scopes = computed(() =>
+  invitationScopes.getActivePlugins().map(({ id }) => id)
+)
 
 const result = ref<null | InviteResult>(null)
-async function submitInvites () {
+async function submitInvites() {
   inviteErrors.value = {}
   submittingInvites.value = true
   const userData = inviteData.user_data.split('\n')
   const [columns, ...rows] = props.type // If type is not supplied, get columns from first row
     ? [[props.type], ...userData]
-    : userData.map(row => row.split('\t'))
+    : userData.map((row) => row.split('\t'))
   try {
     const { p } = await socket.call<InviteResult>('invites.add', {
       columns,
@@ -106,7 +114,12 @@ async function submitInvites () {
     </div>
   </div>
   <v-form v-else @submit.prevent="submitInvites" v-model="inviteData.valid">
-    <v-alert v-if="!type" type="info" class="my-3" :title="t('invites.mixed.helpTitle')">
+    <v-alert
+      v-if="!type"
+      type="info"
+      class="my-3"
+      :title="t('invites.mixed.helpTitle')"
+    >
       <p class="mb-3">
         {{ t('invites.mixed.helpText') }}
       </p>
@@ -118,9 +131,7 @@ async function submitInvites () {
             </td>
           </tr>
           <tr>
-            <td v-for="scope in scopes" :key="scope">
-              ...
-            </td>
+            <td v-for="scope in scopes" :key="scope">...</td>
           </tr>
         </tbody>
       </v-table>
@@ -128,7 +139,9 @@ async function submitInvites () {
     <v-textarea
       v-model="inviteData.user_data"
       class="mb-2"
-      :error-messages="inviteErrors.columns || inviteErrors.rows || inviteErrors.__root__"
+      :error-messages="
+        inviteErrors.columns || inviteErrors.rows || inviteErrors.__root__
+      "
       rows="10"
       v-bind="inviteInputProps"
     />

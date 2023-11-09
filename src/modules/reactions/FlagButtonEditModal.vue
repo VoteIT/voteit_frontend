@@ -88,7 +88,7 @@ async function save() {
           {{ t('preview') }}
         </h2>
         <FlagButton
-          :button="(transformedData as IFlagButton)"
+          :button="transformedData as IFlagButton"
           v-model="previewActive"
           :can-toggle="true"
         >

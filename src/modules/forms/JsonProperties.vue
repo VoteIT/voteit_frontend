@@ -72,7 +72,7 @@ const computedFields = computed(() => {
         v-if="!('component' in f)"
         :errors="errors"
         :required="required"
-        :properties="(f.properties as any)"
+        :properties="f.properties as any"
         v-model="(formData as any)[f.name]"
       />
       <component

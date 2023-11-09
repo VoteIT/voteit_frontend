@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isAuthenticated" :class="{ visible }" id="socket-info" class="d-flex align-center">
+  <div
+    v-if="isAuthenticated"
+    :class="{ visible }"
+    id="socket-info"
+    class="d-flex align-center"
+  >
     <span class="mx-4">{{ displayText }}</span>
     <v-progress-circular v-if="isConnecting" size="small" indeterminate />
     <v-btn v-if="retryBtn" v-bind="retryBtn">
@@ -30,7 +35,7 @@ const connectionFailed = ref(false)
 
 let reconnectIntervalId: ReturnType<typeof setInterval>
 
-function reconnectTicker () {
+function reconnectTicker() {
   reconnectTime.value--
   if (reconnectTime.value < 1) {
     clearInterval(reconnectIntervalId)
@@ -38,12 +43,12 @@ function reconnectTicker () {
   }
 }
 
-function startTicker () {
+function startTicker() {
   clearInterval(reconnectIntervalId)
   reconnectIntervalId = setInterval(reconnectTicker, 1000)
 }
 
-watch(socketState, state => {
+watch(socketState, (state) => {
   if (!isAuthenticated.value) return // Socket should be closed if this is the case, handled below
   switch (state) {
     case WebSocket.OPEN:
@@ -74,12 +79,25 @@ const displayText = computed(() => {
   if (!isAuthenticated.value) return
   if (socketState.value === WebSocket.OPEN) return t('network.connected')
   if (connectionFailed.value) return t('network.noConnection')
-  if (([WebSocket.CLOSED, WebSocket.CLOSING] as number[]).includes(socketState.value!)) return t('network.reconnecting', { s: reconnectTime.value }, reconnectTime.value)
+  if (
+    ([WebSocket.CLOSED, WebSocket.CLOSING] as number[]).includes(
+      socketState.value!
+    )
+  )
+    return t(
+      'network.reconnecting',
+      { s: reconnectTime.value },
+      reconnectTime.value
+    )
   if (socketState.value === WebSocket.CONNECTING) return t('network.connecting')
 })
 
 const isConnecting = computed(() => socketState.value === WebSocket.CONNECTING)
-const visible = computed(() => !isOnline.value || (isAuthenticated.value && socketState.value !== WebSocket.OPEN))
+const visible = computed(
+  () =>
+    !isOnline.value ||
+    (isAuthenticated.value && socketState.value !== WebSocket.OPEN)
+)
 
 const retryBtn = computed(() => {
   if (!connectionFailed.value) return

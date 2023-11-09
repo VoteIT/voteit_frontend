@@ -9,43 +9,48 @@ import { automaticAccessType } from './contentTypes'
 import { MeetingRole } from '../types'
 
 const policyStore = reactive<Map<number, AccessPolicy>>(new Map())
-const contentTypes: Partial<Record<AccessPolicyType, ContentType<AccessPolicy>>> = {
+const contentTypes: Partial<
+  Record<AccessPolicyType, ContentType<AccessPolicy>>
+> = {
   automatic: automaticAccessType
 }
 
 const { alert } = useAlert()
 
-export default function useAccessPolicies (meetingId: Ref<number>) {
-  const accessPolicies = computed(() => filter(
-    policyStore.values(),
-    p => p.meeting === meetingId.value
-  ))
+export default function useAccessPolicies(meetingId: Ref<number>) {
+  const accessPolicies = computed(() =>
+    filter(policyStore.values(), (p) => p.meeting === meetingId.value)
+  )
 
-  function getContentType (p: Pick<AccessPolicy, 'name'>) {
+  function getContentType(p: Pick<AccessPolicy, 'name'>) {
     const ct = contentTypes[p.name]
     if (!ct) throw new Error(`No API for access policy type "${p.name}"`)
     return ct
   }
 
-  async function addPolicy (p: Pick<AccessPolicy, 'meeting' | 'name' | 'roles_given'>) {
+  async function addPolicy(
+    p: Pick<AccessPolicy, 'meeting' | 'name' | 'roles_given'>
+  ) {
     const { api } = getContentType(p)
     const { data } = await api.add(p)
     policyStore.set(data.pk, data)
   }
 
-  async function deletePolicy (p: AccessPolicy) {
+  async function deletePolicy(p: AccessPolicy) {
     const { api } = getContentType(p)
     try {
       await api.delete(p.pk)
       policyStore.delete(p.pk)
     } catch {
-       alert('*Cound not delete access policy')
+      alert('*Cound not delete access policy')
     }
   }
 
-  const hasActivePolicy = computed(() => accessPolicies.value.some(p => p.active))
+  const hasActivePolicy = computed(() =>
+    accessPolicies.value.some((p) => p.active)
+  )
 
-  async function setActive (p: AccessPolicy, active: boolean) {
+  async function setActive(p: AccessPolicy, active: boolean) {
     const { api } = getContentType(p)
     try {
       const { data } = await api.patch(p.pk, {
@@ -57,7 +62,7 @@ export default function useAccessPolicies (meetingId: Ref<number>) {
     }
   }
 
-  async function setRoles (p: AccessPolicy, rolesGiven: MeetingRole[]) {
+  async function setRoles(p: AccessPolicy, rolesGiven: MeetingRole[]) {
     const { api } = getContentType(p)
     try {
       const { data } = await api.patch(p.pk, {
@@ -75,10 +80,10 @@ export default function useAccessPolicies (meetingId: Ref<number>) {
     try {
       const { data } = await accessPolicyType.api.retrieve(meeting)
       // Start by removing any policies in store that's not in response
-      const newPks = data.policies.map(p => p.pk)
+      const newPks = data.policies.map((p) => p.pk)
       for (const { pk } of ifilter(
         policyStore.values(),
-        p => p.meeting === meeting && !newPks.includes(p.pk)
+        (p) => p.meeting === meeting && !newPks.includes(p.pk)
       )) {
         policyStore.delete(pk)
       }

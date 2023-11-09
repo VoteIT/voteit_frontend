@@ -9,13 +9,19 @@ type Dictionary<T> = { [index: string]: T } // Use 'type' instead of 'interface'
 
 type PKContent = { pk: number }
 export type ChannelMap<T extends PKContent> = Dictionary<KeysOfType<T, number>>
-type ChannelMapEntry<T extends PKContent> = { channelMap: ChannelMap<T>, map: Map<number, T> }
+type ChannelMapEntry<T extends PKContent> = {
+  channelMap: ChannelMap<T>
+  map: Map<number, T>
+}
 const channelMaps: ChannelMapEntry<any>[] = [] // Why any?
 
 /**
  * Check if any subscribed channel type and pk is mapped to an attribute of obj
  */
-function checkProtectingChannels<T extends PKContent> (obj: T, channelMap: ChannelMap<T>) {
+function checkProtectingChannels<T extends PKContent>(
+  obj: T,
+  channelMap: ChannelMap<T>
+) {
   for (const { channelType, pk } of socket.channels.getSubscribedChannels()) {
     const attr = channelMap[channelType]
     if (attr && obj[attr] === pk) return true
@@ -27,7 +33,10 @@ function checkProtectingChannels<T extends PKContent> (obj: T, channelMap: Chann
  * Clean up a content map based in registered channel mappings.
  * Any other subscribed channel providing the same object should protect the data.
  */
-function cleanupContentType<T extends PKContent> (map: Map<number, T>, channelMap: ChannelMap<T>) {
+function cleanupContentType<T extends PKContent>(
+  map: Map<number, T>,
+  channelMap: ChannelMap<T>
+) {
   for (const obj of map.values()) {
     if (!checkProtectingChannels(obj, channelMap)) map.delete(obj.pk)
   }
@@ -54,7 +63,10 @@ export default {
    * @param map Map object, mapping the objects primary key to the full object
    * @param channelMap An object, mapping channel types to the attribute on the object pointing to a channels id (number)
    */
-  register<T extends PKContent> (map: Map<number, T>, channelMap: ChannelMap<T>) {
+  register<T extends PKContent>(
+    map: Map<number, T>,
+    channelMap: ChannelMap<T>
+  ) {
     channelMaps.push({
       channelMap,
       map

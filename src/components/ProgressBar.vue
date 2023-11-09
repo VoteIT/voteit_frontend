@@ -8,7 +8,11 @@
     </div>
     <div class="bar d-flex">
       <div class="progress" :style="{ width: percentage + '%' }"></div>
-      <div class="buffer" v-if="buffer" :style="{ width: bufferPercentage + '%' }"></div>
+      <div
+        class="buffer"
+        v-if="buffer"
+        :style="{ width: bufferPercentage + '%' }"
+      ></div>
     </div>
   </div>
 </template>
@@ -18,12 +22,12 @@ import { computed } from 'vue'
 
 const props = withDefaults(
   defineProps<{
-    text?: string,
-    absolute?: boolean,
-    failed?: boolean,
-    done?: boolean,
-    total?: number,
-    value?: number,
+    text?: string
+    absolute?: boolean
+    failed?: boolean
+    done?: boolean
+    total?: number
+    value?: number
     buffer?: number
   }>(),
   {
@@ -38,12 +42,12 @@ const disabled = computed(() => {
 
 const bufferPercentage = computed(() => {
   if (!props.total) return 0
-  return props.buffer / props.total * 100
+  return (props.buffer / props.total) * 100
 })
 
 const percentage = computed(() => {
   if (!props.total) return 0
-  return props.value / props.total * 100
+  return (props.value / props.total) * 100
 })
 
 const textDisplay = computed(() => {

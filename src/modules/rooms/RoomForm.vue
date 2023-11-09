@@ -47,7 +47,7 @@ const schema = computed(
         }
       },
       required: ['title']
-    } as JsonSchema<RoomEditData>)
+    }) as JsonSchema<RoomEditData>
 )
 
 const speakerMethodSettingSchema: Partial<
@@ -97,7 +97,7 @@ const slsSchema = computed(
         }
       },
       required: ['method_name', 'meeting_roles_to_speaker']
-    } as JsonSchema<SlsEditData>)
+    }) as JsonSchema<SlsEditData>
 )
 
 function getDefaults() {

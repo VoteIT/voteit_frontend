@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="isActive" v-bind="dialogDefaults" :persistent="persistent" :height="height">
+  <v-dialog
+    v-model="isActive"
+    v-bind="dialogDefaults"
+    :persistent="persistent"
+    :height="height"
+  >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
     </template>
@@ -33,11 +38,7 @@ import useDefaults from '@/composables/useDefaults'
 
 const { dialogDefaults } = useDefaults()
 
-const emit = defineEmits([
-  'close',
-  'open',
-  'update:modelValue'
-])
+const emit = defineEmits(['close', 'open', 'update:modelValue'])
 
 interface Props {
   color?: Color
@@ -51,13 +52,18 @@ const props = defineProps<Props>()
 
 const isActive = ref(props.modelValue)
 
-function close () {
+function close() {
   isActive.value = false
 }
 
-watch(isActive, value => {
+watch(isActive, (value) => {
   emit(value ? 'open' : 'close')
   emit('update:modelValue', value)
 })
-watch(() => props.modelValue, value => { isActive.value = value })
+watch(
+  () => props.modelValue,
+  (value) => {
+    isActive.value = value
+  }
+)
 </script>

@@ -1,5 +1,11 @@
 <template>
-  <v-text-field :id="name" :label="label" :type="settings.type ?? 'text'" v-model="value" :required="required" />
+  <v-text-field
+    :id="name"
+    :label="label"
+    :type="settings.type ?? 'text'"
+    v-model="value"
+    :required="required"
+  />
 </template>
 
 <script lang="ts">
@@ -18,9 +24,9 @@ export default defineComponent({
     required: Boolean
   },
   emits: ['update:modelValue'],
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     const value = ref(props.modelValue)
-    watch(value, value => {
+    watch(value, (value) => {
       emit('update:modelValue', value)
     })
     return {

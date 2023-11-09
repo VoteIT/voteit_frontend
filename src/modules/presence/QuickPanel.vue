@@ -1,5 +1,8 @@
 <template>
-  <ComponentQuickPanel component-name="presence_check" :switch-label="t('presence.activateSystem')">
+  <ComponentQuickPanel
+    component-name="presence_check"
+    :switch-label="t('presence.activateSystem')"
+  >
     {{ t('presence.recommendActive') }}
   </ComponentQuickPanel>
 </template>

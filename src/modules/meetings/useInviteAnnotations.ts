@@ -14,22 +14,28 @@ interface InviteDataType {
 
 const inviteDataTypes = ref<InviteDataType[] | null>(null)
 
-function filterDataTypes (meeting?: Meeting, filter: (dt: InviteDataType) => boolean = () => true) {
+function filterDataTypes(
+  meeting?: Meeting,
+  filter: (dt: InviteDataType) => boolean = () => true
+) {
   if (!meeting || !inviteDataTypes.value) return []
-  return inviteDataTypes.value.filter(dt => {
-    const isActive = meetingInviteAnnotationPlugins.getPlugin(dt.name)?.checkActive?.(meeting)
+  return inviteDataTypes.value.filter((dt) => {
+    const isActive = meetingInviteAnnotationPlugins
+      .getPlugin(dt.name)
+      ?.checkActive?.(meeting)
     return (
       // undefined or true is OK
-      isActive !== false &&
-      filter(dt)
+      isActive !== false && filter(dt)
     )
   })
 }
 
-export default function useInviteAnnotations (meeting: Ref<Meeting | undefined>) {
+export default function useInviteAnnotations(
+  meeting: Ref<Meeting | undefined>
+) {
   const fetchFailed = ref(false)
 
-  async function fetchDataTypes () {
+  async function fetchDataTypes() {
     if (inviteDataTypes.value) return
     try {
       const { data } = await restApi.get<InviteDataType[]>('invite-data-types/')
@@ -47,8 +53,12 @@ export default function useInviteAnnotations (meeting: Ref<Meeting | undefined>)
 
   // Filtered data types or empty lists if not fetched yet.
   const allDataTypes = computed(() => filterDataTypes(meeting.value))
-  const annotationDataTypes = computed(() => filterDataTypes(meeting.value, dt => dt.is_annotation))
-  const clearableDataTypes = computed(() => filterDataTypes(meeting.value, dt => dt.is_clearable))
+  const annotationDataTypes = computed(() =>
+    filterDataTypes(meeting.value, (dt) => dt.is_annotation)
+  )
+  const clearableDataTypes = computed(() =>
+    filterDataTypes(meeting.value, (dt) => dt.is_clearable)
+  )
 
   return {
     allDataTypes,

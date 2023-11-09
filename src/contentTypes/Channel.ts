@@ -21,24 +21,31 @@ export default class Channel {
   public name: string
   private config: ChannelConfig
 
-  constructor (name: string, config?: ChannelConfig) {
+  constructor(name: string, config?: ChannelConfig) {
     this.name = name
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
   }
 
-  public onLeave (fn: LeaveHandler) {
+  public onLeave(fn: LeaveHandler) {
     leaveHandlers.get(this.name).push(fn)
     return this
   }
 
   // Wrap call and handle request errors (Timeout only?)
-  private call<RT=unknown> (uri: string, data?: object, config?: ChannelConfig) {
+  private call<RT = unknown>(
+    uri: string,
+    data?: object,
+    config?: ChannelConfig
+  ) {
     config = { ...this.config, ...(config || {}) }
     return socket.call<RT>(uri, data, config)
   }
 
   // eslint-disable-next-line camelcase
-  public getSchema (message_type: string, type: SchemaType = SchemaType.Incoming): Promise<SuccessMessage<{ message_schema: object }>> {
+  public getSchema(
+    message_type: string,
+    type: SchemaType = SchemaType.Incoming
+  ): Promise<SuccessMessage<{ message_schema: object }>> {
     // eslint-disable-next-line camelcase
     return this.call(`schema.get_${type}`, { message_type })
   }

@@ -177,7 +177,7 @@ const canSwitchUser = computed(() => {
             @click="auth.switchUser(user)"
           >
             <template #prepend>
-              <UserAvatar :user="(user as IUser)" />
+              <UserAvatar :user="user as IUser" />
             </template>
             <v-list-item-title
               :class="{ 'text-secondary': !getFullName(user) }"

@@ -46,7 +46,9 @@ const { t } = useI18n()
 const reactions = useReactions()
 const { meetingId } = useMeeting()
 
-const meetingButtons = computed(() => reactions.getMeetingButtons(meetingId.value))
+const meetingButtons = computed(() =>
+  reactions.getMeetingButtons(meetingId.value)
+)
 const model = reactive<Record<number, boolean>>({})
 </script>
 

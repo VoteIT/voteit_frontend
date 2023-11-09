@@ -10,7 +10,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     state: AgendaState.Private,
     priority: 4,
     requiresRole: MeetingRole.Moderator,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('agenda.workflow.private', count)
     }
   },
@@ -19,7 +19,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     icon: 'mdi-progress-clock',
     state: AgendaState.Upcoming,
     priority: 2,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('agenda.workflow.upcoming', count)
     }
   },
@@ -28,7 +28,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     icon: 'mdi-play-circle',
     state: AgendaState.Ongoing,
     priority: 1,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('agenda.workflow.ongoing', count)
     }
   },
@@ -37,7 +37,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     icon: 'mdi-close-circle-outline',
     state: AgendaState.Closed,
     priority: 3,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('agenda.workflow.closed', count)
     }
   },
@@ -46,7 +46,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     // transition: 'archive',
     icon: 'mdi-archive',
     state: AgendaState.Archived,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('agenda.workflow.archived', count)
     }
   }

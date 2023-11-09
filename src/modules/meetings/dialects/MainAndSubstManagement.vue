@@ -17,14 +17,22 @@ import useMeeting from '../useMeeting'
 
 import { isRoleMembership } from './types'
 
-const props = defineProps<{ group: MeetingGroup & { memberships: GroupMembership[] }}>()
+const props = defineProps<{
+  group: MeetingGroup & { memberships: GroupMembership[] }
+}>()
 
 const { meetingId } = useMeeting()
 const { activeUserIds } = useActive(meetingId)
 
-const roleMemberships = computed(() => props.group.memberships.filter(isRoleMembership))
-const activeVoters = computed(() => roleMemberships.value.filter(m => activeUserIds.value.includes(m.user)))
-const potentialVotes = computed(() => Math.min(activeVoters.value.length, props.group.votes || 0))
+const roleMemberships = computed(() =>
+  props.group.memberships.filter(isRoleMembership)
+)
+const activeVoters = computed(() =>
+  roleMemberships.value.filter((m) => activeUserIds.value.includes(m.user))
+)
+const potentialVotes = computed(() =>
+  Math.min(activeVoters.value.length, props.group.votes || 0)
+)
 const allAssigned = computed(() => props.group.votes === potentialVotes.value)
 
 const tooltip = computed(() => {

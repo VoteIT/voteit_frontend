@@ -7,7 +7,12 @@
       <p class="mb-8 text-secondary">
         {{ t('pageNotFoundDescription') }}
       </p>
-      <v-btn size="large" :to="{ name: 'home' }" color="primary" prepend-icon="mdi-home">
+      <v-btn
+        size="large"
+        :to="{ name: 'home' }"
+        color="primary"
+        prepend-icon="mdi-home"
+      >
         {{ t('home.home') }}
       </v-btn>
     </v-col>
@@ -24,12 +29,15 @@ import useOrganisation from '@/modules/organisations/useOrganisation'
 const { organisation } = useOrganisation()
 
 export default defineComponent({
-  setup () {
+  setup() {
     const { t } = useI18n()
-    useTitle(computed(() => {
-      if (organisation.value) return `${t('pageNotFound')} | ${organisation.value.title}`
-      return t('pageNotFound')
-    }))
+    useTitle(
+      computed(() => {
+        if (organisation.value)
+          return `${t('pageNotFound')} | ${organisation.value.title}`
+        return t('pageNotFound')
+      })
+    )
 
     return { t }
   }

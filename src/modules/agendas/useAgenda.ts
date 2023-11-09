@@ -15,26 +15,20 @@ export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
 agendaItemType
-  .updateMap(
-    agendaItems,
-    { meeting: 'meeting' }
-  )
-  .onDeleted(agendaItem => agendaDeletedEvent.emit(agendaItem.pk))
+  .updateMap(agendaItems, { meeting: 'meeting' })
+  .onDeleted((agendaItem) => agendaDeletedEvent.emit(agendaItem.pk))
 
 // Delete as first event
-agendaDeletedEvent.on(pk => {
+agendaDeletedEvent.on((pk) => {
   agendaItems.delete(pk)
   agendaBodies.delete(pk)
 })
 
-agendaBodyType.updateMap(
-  agendaBodies,
-  { agenda_item: 'pk' }
-)
+agendaBodyType.updateMap(agendaBodies, { agenda_item: 'pk' })
 
 /*
-** Clear agenda when leaving meeting.
-*/
+ ** Clear agenda when leaving meeting.
+ */
 // meetingType.channel
 //   .onLeave(pk => {
 //     for (const agendaItem of agendaItems.values()) {
@@ -46,8 +40,8 @@ agendaBodyType.updateMap(
 //   })
 
 /*
-** Clear private agenda items when leaving moderators channel.
-*/
+ ** Clear private agenda items when leaving moderators channel.
+ */
 channelLeftEvent.on(({ channelType, pk }) => {
   if (channelType !== 'moderators') return
   for (const { meeting, state } of agendaItems.values()) {
@@ -57,23 +51,22 @@ channelLeftEvent.on(({ channelType, pk }) => {
   }
 })
 
-lastReadType
-  .onChanged(payload => {
-    agendaItemsLastRead.set(payload.agenda_item, new Date(payload.timestamp))
-  })
+lastReadType.onChanged((payload) => {
+  agendaItemsLastRead.set(payload.agenda_item, new Date(payload.timestamp))
+})
 
 // Must supply meetingId
 // Optionally supply a tag for using filteredAgenda
-export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | undefined>) {
+export default function useAgenda(
+  meetingId: Ref<number>,
+  tag?: Ref<string | undefined>
+) {
   const route = useRoute()
 
   const agenda = computed(() => {
     // Filter on meetingId
     return orderBy(
-      filter(
-        agendaItems.values(),
-        ai => ai.meeting === meetingId.value
-      ),
+      filter(agendaItems.values(), (ai) => ai.meeting === meetingId.value),
       ['order']
     )
   })
@@ -81,54 +74,60 @@ export default function useAgenda (meetingId: Ref<number>, tag?: Ref<string | un
   const filteredAgenda = computed(() => {
     // Filter on tag, if supplied
     return agenda.value.filter(
-      ai => !tag?.value || ai.tags.includes(tag.value)
+      (ai) => !tag?.value || ai.tags.includes(tag.value)
     )
   })
 
   const agendaStates = computed(() => {
-    return agendaItemStates.map(state => {
+    return agendaItemStates.map((state) => {
       return {
         state,
-        items: filter(
-          agenda.value,
-          ai => ai.state === state.state
-        )
+        items: filter(agenda.value, (ai) => ai.state === state.state)
       }
     })
   })
 
-  function getAgendaItem (agendaItem: number) {
+  function getAgendaItem(agendaItem: number) {
     return agendaItems.get(agendaItem)
   }
 
-  function getAgendaBody (agendaItem: number) {
+  function getAgendaBody(agendaItem: number) {
     return agendaBodies.get(agendaItem)
   }
 
-  function getRelativeAgendaItem (agendaItem: AgendaItem, positions = 1): Maybe<AgendaItem> {
+  function getRelativeAgendaItem(
+    agendaItem: AgendaItem,
+    positions = 1
+  ): Maybe<AgendaItem> {
     const index = agenda.value.indexOf(agendaItem)
     return agenda.value[index + positions]
   }
-  function getPreviousAgendaItem (agendaItem: AgendaItem) {
+  function getPreviousAgendaItem(agendaItem: AgendaItem) {
     return getRelativeAgendaItem(agendaItem, -1)
   }
-  function getNextAgendaItem (agendaItem: AgendaItem) {
+  function getNextAgendaItem(agendaItem: AgendaItem) {
     return getRelativeAgendaItem(agendaItem)
   }
 
-  function hasNewItems (agendaItem: AgendaItem): boolean {
+  function hasNewItems(agendaItem: AgendaItem): boolean {
     // If no content, there are no new items
     if (!agendaItem.related_modified) return false
     const lastRead = agendaItemsLastRead.get(agendaItem.pk)
     // Else, if no lastRead or set to earlier time, there are new items
-    return !lastRead || (new Date(agendaItem.related_modified) > lastRead)
+    return !lastRead || new Date(agendaItem.related_modified) > lastRead
   }
 
   const agendaId = computed(() => Number(route.params.aid))
   const agendaItem = computed(() => agendaItems.get(agendaId.value))
-  const agendaItemLastRead = computed(() => agendaItemsLastRead.get(agendaId.value) ?? new Date(0)) // Default to epoch
-  const previousAgendaItem = computed(() => agendaItem.value && getPreviousAgendaItem(agendaItem.value))
-  const nextAgendaItem = computed(() => agendaItem.value && getNextAgendaItem(agendaItem.value))
+  const agendaItemLastRead = computed(
+    () => agendaItemsLastRead.get(agendaId.value) ?? new Date(0)
+  ) // Default to epoch
+  const previousAgendaItem = computed(
+    () => agendaItem.value && getPreviousAgendaItem(agendaItem.value)
+  )
+  const nextAgendaItem = computed(
+    () => agendaItem.value && getNextAgendaItem(agendaItem.value)
+  )
 
   return {
     agenda,

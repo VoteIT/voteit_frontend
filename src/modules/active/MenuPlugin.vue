@@ -7,7 +7,10 @@
     </p>
     <v-switch v-model="isActive" hide-details class="flex-grow-0">
       <template #label>
-        <v-icon icon="mdi-account-network" :color="isActive ? undefined : 'secondary'" />
+        <v-icon
+          icon="mdi-account-network"
+          :color="isActive ? undefined : 'secondary'"
+        />
       </template>
     </v-switch>
     <v-dialog v-model="dialogActive" v-bind="dialogDefaults" persistent>
@@ -27,14 +30,27 @@
           {{ t('activeUsers.dialogInformation') }}
         </p>
         <div class="text-right mt-4">
-          <QueryDialog @confirmed="dialogActive = false" :text="t('activeUsers.confirmDismiss')">
+          <QueryDialog
+            @confirmed="dialogActive = false"
+            :text="t('activeUsers.confirmDismiss')"
+          >
             <template #activator="{ props }">
-              <v-btn prepend-icon="mdi-close" variant="tonal" class="mr-2" v-bind="props">
+              <v-btn
+                prepend-icon="mdi-close"
+                variant="tonal"
+                class="mr-2"
+                v-bind="props"
+              >
                 {{ t('close') }}
               </v-btn>
             </template>
           </QueryDialog>
-          <v-btn prepend-icon="mdi-check" color="primary" :loading="working" @click="dialogSetActive">
+          <v-btn
+            prepend-icon="mdi-check"
+            color="primary"
+            :loading="working"
+            @click="dialogSetActive"
+          >
             {{ t('activeUsers.yesImActive') }}
           </v-btn>
         </div>
@@ -63,17 +79,22 @@ const { componentActive, isActive, setActive } = useActive(meetingId)
 const reactedMeetings = reactive(new Set<number>())
 
 const dialogActive = computed({
-  get () {
-    return working.value || (componentActive.value && !isActive.value && !reactedMeetings.has(meetingId.value))
+  get() {
+    return (
+      working.value ||
+      (componentActive.value &&
+        !isActive.value &&
+        !reactedMeetings.has(meetingId.value))
+    )
   },
-  set (value) {
+  set(value) {
     if (value) reactedMeetings.delete(meetingId.value)
     else reactedMeetings.add(meetingId.value)
   }
 })
 
 const working = ref(false)
-async function dialogSetActive () {
+async function dialogSetActive() {
   working.value = true
   try {
     await setActive(true)

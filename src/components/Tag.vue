@@ -18,11 +18,29 @@ const badgeContent = computed(() => String(props.count))
 </script>
 
 <template>
-  <v-badge :model-value="badge" :content="badgeContent" offset-x="-5" offset-y="-2" color="secondary">
-    <span class="voteit-tag" :class="{ disabled }" :style="style" data-denotation-char="#" :data-value="name" @click="tagClickEvent.emit(name)">
+  <v-badge
+    :model-value="badge"
+    :content="badgeContent"
+    offset-x="-5"
+    offset-y="-2"
+    color="secondary"
+  >
+    <span
+      class="voteit-tag"
+      :class="{ disabled }"
+      :style="style"
+      data-denotation-char="#"
+      :data-value="name"
+      @click="tagClickEvent.emit(name)"
+    >
       <v-icon size="x-small" icon="mdi-tag-outline" />
       #{{ name }}
-      <v-icon v-if="closer" size="x-small" icon="mdi-close" @click.stop="$emit('remove')" />
+      <v-icon
+        v-if="closer"
+        size="x-small"
+        icon="mdi-close"
+        @click.stop="$emit('remove')"
+      />
     </span>
   </v-badge>
 </template>

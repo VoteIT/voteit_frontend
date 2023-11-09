@@ -109,7 +109,7 @@ async function save() {
           {{ t('preview') }}
         </h2>
         <RealReactionButton
-          :button="(transformedData as ReactionButton)"
+          :button="transformedData as ReactionButton"
           v-model="previewActive"
           :count="previewCount"
         >

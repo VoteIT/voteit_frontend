@@ -1,20 +1,52 @@
 <template>
-  <v-dialog v-model="isActive" style="z-index: 2020" v-bind="dialogDefaults" :persistent="!dismissible">
-    <v-sheet id="dialog" elevation="16" ref="window" v-if="active" @keyup.esc="deny()" class="pa-4">
-      <v-btn v-if="dismissible" variant="text" icon="mdi-close" class="closer" @click="deny()" />
+  <v-dialog
+    v-model="isActive"
+    style="z-index: 2020"
+    v-bind="dialogDefaults"
+    :persistent="!dismissible"
+  >
+    <v-sheet
+      id="dialog"
+      elevation="16"
+      ref="window"
+      v-if="active"
+      @keyup.esc="deny()"
+      class="pa-4"
+    >
+      <v-btn
+        v-if="dismissible"
+        variant="text"
+        icon="mdi-close"
+        class="closer"
+        @click="deny()"
+      />
       <p class="ml-2 mr-10">
         {{ active.title }}
       </p>
       <div class="btn-controls justify-end">
-        <v-btn v-if="active.no" variant="text" @click="deny(true)">{{ active.no }}</v-btn>
-        <v-btn v-if="active.yes" :color="active.theme ?? 'primary'" @click="accept">{{ active.yes }}</v-btn>
+        <v-btn v-if="active.no" variant="text" @click="deny(true)">{{
+          active.no
+        }}</v-btn>
+        <v-btn
+          v-if="active.yes"
+          :color="active.theme ?? 'primary'"
+          @click="accept"
+          >{{ active.yes }}</v-btn
+        >
       </div>
     </v-sheet>
   </v-dialog>
 </template>
 
 <script lang="ts" setup>
-import { ComponentPublicInstance, computed, nextTick, onBeforeMount, reactive, ref } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onBeforeMount,
+  reactive,
+  ref
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openDialogEvent } from '@/utils/events'
@@ -30,13 +62,13 @@ const queue = reactive<Dialog[]>([])
 const active = computed<Dialog | undefined>(() => queue[0])
 const isActive = computed({
   get: () => !!active.value,
-  set (active) {
+  set(active) {
     if (!active) deny()
   }
 })
 const dismissible = computed(() => active.value?.dismissible)
 
-function close () {
+function close() {
   queue.shift()
   if (!queue.length && savedFocusEl) {
     savedFocusEl.focus()
@@ -44,19 +76,19 @@ function close () {
   }
 }
 
-function deny (override = false) {
+function deny(override = false) {
   if (!override && !dismissible.value) return
   active.value?.resolve(false)
   close()
 }
 
-function accept () {
+function accept() {
   active.value?.resolve(true)
   close()
 }
 
 onBeforeMount(() => {
-  openDialogEvent.on(dialog => {
+  openDialogEvent.on((dialog) => {
     if (!dialog) return
     dialog = {
       dismissible: true,
@@ -71,7 +103,11 @@ onBeforeMount(() => {
     nextTick(() => {
       if (!window.value) return
       const el = window.value.$el as HTMLElement
-      el.querySelector<HTMLElement>('input,button:not(.closer),a[href],textarea,[tabindex]')?.focus()
+      el
+        .querySelector<HTMLElement>(
+          'input,button:not(.closer),a[href],textarea,[tabindex]'
+        )
+        ?.focus()
     })
   })
 })

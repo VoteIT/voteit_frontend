@@ -1,6 +1,7 @@
 <template>
   <component
-    v-for="{ component, id } in components" :key="id"
+    v-for="{ component, id } in components"
+    :key="id"
     :is="component"
   />
   <slot v-if="!components.length"></slot>
@@ -20,7 +21,7 @@ const props = defineProps<{ name: string }>()
 const components = computed(() => {
   return filter(
     meeting.value ? meetingSlotPlugins.getActivePlugins(meeting.value) : [],
-    plugin => plugin.slot === props.name
+    (plugin) => plugin.slot === props.name
   )
 })
 </script>

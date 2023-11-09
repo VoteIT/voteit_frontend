@@ -14,17 +14,22 @@ export const email: FieldRule<string> = {
   props: {
     type: 'email'
   },
-  validate: (value) => !value.length || emailPattern.test(value) || 'Invalid email address'
+  validate: (value) =>
+    !value.length || emailPattern.test(value) || 'Invalid email address'
 }
 
 export const slug = {
   clean: (value: string) => slugify(value),
-  validate: (value: string) => value === slugify(value) || 'Must only contain a-z, 0-9, separated by a single "-"'
+  validate: (value: string) =>
+    value === slugify(value) ||
+    'Must only contain a-z, 0-9, separated by a single "-"'
 }
 
 export const tag = {
   clean: (value: string) => tagify(value),
-  validate: (value: string) => value === tagify(value) || 'Must only contain word characters and numbers, separated by a single "-"'
+  validate: (value: string) =>
+    value === tagify(value) ||
+    'Must only contain word characters and numbers, separated by a single "-"'
 }
 
 export const required = {
@@ -32,18 +37,20 @@ export const required = {
   validate: (value: string | number | boolean) => !!value || 'Required field'
 }
 
-export function minLength (length: number) {
+export function minLength(length: number) {
   return {
-    validate: (value: string) => value.length >= length || `Must be at least ${length} characters`
+    validate: (value: string) =>
+      value.length >= length || `Must be at least ${length} characters`
   }
 }
 
-export function maxLength (length: number) {
+export function maxLength(length: number) {
   return {
     props: {
       maxlength: length
     },
-    validate: (value: string) => value.length <= length || `Must not be longer than ${length} characters`
+    validate: (value: string) =>
+      value.length <= length || `Must not be longer than ${length} characters`
   }
 }
 

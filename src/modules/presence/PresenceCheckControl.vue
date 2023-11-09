@@ -2,17 +2,31 @@
   <div v-if="presenceCheck">
     <h2>{{ t('presence.ongoingCheck') }}</h2>
     <p>
-      <Moment :prepend="t('presence.openedAt')" :date="presenceCheck.opened"/>
+      <Moment :prepend="t('presence.openedAt')" :date="presenceCheck.opened" />
     </p>
     <p class="my-2">
       {{ t('presence.presentCount', presenceCount) }}
     </p>
-    <v-btn :disabled="submitting" :loading="submitting" v-if="canChange" @click="close()" color="warning" prepend-icon="mdi-stop">
+    <v-btn
+      :disabled="submitting"
+      :loading="submitting"
+      v-if="canChange"
+      @click="close()"
+      color="warning"
+      prepend-icon="mdi-stop"
+    >
       {{ t('presence.closeCheck') }}
     </v-btn>
   </div>
   <div v-else class="text-center my-8">
-    <v-btn :disabled="submitting" :loading="submitting" size="large" color="primary" @click="open()" prepend-icon="mdi-hand-wave">
+    <v-btn
+      :disabled="submitting"
+      :loading="submitting"
+      size="large"
+      color="primary"
+      @click="open()"
+      prepend-icon="mdi-hand-wave"
+    >
       {{ t('presence.newCheck') }}
     </v-btn>
   </div>
@@ -33,11 +47,12 @@ import { presenceCheckClosed } from './events'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
-const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence(meetingId)
+const { presenceCheck, presenceCount, closeCheck, openCheck } =
+  usePresence(meetingId)
 
 const submitting = ref(false)
 
-async function close () {
+async function close() {
   if (submitting.value || !presenceCheck.value) return
   submitting.value = true
   try {
@@ -49,7 +64,7 @@ async function close () {
   submitting.value = false
 }
 
-async function open () {
+async function open() {
   if (submitting.value || presenceCheck.value) return
   submitting.value = true
   try {
@@ -62,10 +77,15 @@ async function open () {
 
 useLoader(
   'PresenceCheckControl',
-  useChannel('presence_check', computed(() => presenceCheck.value?.pk)).promise
+  useChannel(
+    'presence_check',
+    computed(() => presenceCheck.value?.pk)
+  ).promise
 )
 
-const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
+const canChange = computed(
+  () => presenceCheck.value && canChangePresenceCheck(presenceCheck.value)
+)
 </script>
 
 <style lang="sass" scoped>

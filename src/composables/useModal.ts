@@ -1,12 +1,12 @@
 import { openModalEvent, closeModalEvent } from '@/utils/events'
 import { Modal } from './types'
 
-export default function useModal () {
-  function openModal (modal: Modal) {
+export default function useModal() {
+  function openModal(modal: Modal) {
     openModalEvent.emit(modal)
   }
 
-  function closeModal () {
+  function closeModal() {
     closeModalEvent.emit(undefined)
   }
 

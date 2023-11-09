@@ -1,10 +1,19 @@
 <template>
   <div>
     <v-expansion-panels class="my-6">
-      <v-expansion-panel v-for="{ proposalIds, status, title } in rounds" :key="title">
+      <v-expansion-panel
+        v-for="{ proposalIds, status, title } in rounds"
+        :key="title"
+      >
         <v-expansion-panel-title>
           {{ title }}: {{ status }}
-          <Tag disabled :name="id" v-for="id in proposalIds" :key="id" class="ml-2" />
+          <Tag
+            disabled
+            :name="id"
+            v-for="id in proposalIds"
+            :key="id"
+            class="ml-2"
+          />
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           {{ t('poll.IRV.repeatedRoundResult') }}
@@ -49,7 +58,7 @@ const metadata = computed(() => [
   [t('poll.result.randomized'), props.result.randomized ? t('yes') : t('no')]
 ])
 
-function pkToPropId (pk: number) {
+function pkToPropId(pk: number) {
   return getProposal(pk)?.prop_id ?? t('unknown')
 }
 

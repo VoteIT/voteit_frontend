@@ -14,43 +14,51 @@ const DEFAULT_OPTIONS: HandlerOptions = {
   target: 'none'
 } as const
 
-function getSpecifiedFieldErrorMessage (errors: Dictionary<string[]>, field: string) {
-  const fieldErrors = errors[field] || errors.non_field_errors || ['Unkown error']
+function getSpecifiedFieldErrorMessage(
+  errors: Dictionary<string[]>,
+  field: string
+) {
+  const fieldErrors = errors[field] ||
+    errors.non_field_errors || ['Unkown error']
   return fieldErrors.join(', ')
 }
 
-export default function useErrorHandler (opts: HandlerOptions = DEFAULT_OPTIONS) {
+export default function useErrorHandler(
+  opts: HandlerOptions = DEFAULT_OPTIONS
+) {
   opts = { ...DEFAULT_OPTIONS, ...opts }
 
   const fieldErrors = ref<Dictionary<string[]>>({})
   const errorMessage = ref<string | null>(null)
   const hasError = computed(() => typeof errorMessage.value === 'string')
 
-  function clearErrors () {
+  function clearErrors() {
     fieldErrors.value = {}
     errorMessage.value = null
   }
 
-  function displayError (message: string) {
-    if (opts.target === 'dialog') openDialogEvent.emit({ title: message, resolve () {} })
+  function displayError(message: string) {
+    if (opts.target === 'dialog')
+      openDialogEvent.emit({ title: message, resolve() {} })
     if (opts.target === 'alert') openAlertEvent.emit(`^${message}`)
   }
 
-  function handleError (e: unknown, parse: (e: Error) => Dictionary<string[]>) {
+  function handleError(e: unknown, parse: (e: Error) => Dictionary<string[]>) {
     if (!(e instanceof Error)) throw e
     errorMessage.value = e.message
     fieldErrors.value = parse(e)
-    displayError(opts.showField
-      ? getSpecifiedFieldErrorMessage(fieldErrors.value, opts.showField)
-      : e.message
+    displayError(
+      opts.showField
+        ? getSpecifiedFieldErrorMessage(fieldErrors.value, opts.showField)
+        : e.message
     )
   }
 
-  function handleSocketError (e: unknown) {
+  function handleSocketError(e: unknown) {
     handleError(e, parseSocketError)
   }
 
-  function handleRestError (e: unknown) {
+  function handleRestError(e: unknown) {
     handleError(e, parseRestError)
   }
 

@@ -1,6 +1,8 @@
 <template>
   <div v-if="groupVotes || assignedVotes">
-    <span :class="{ 'text-warning': !allAssigned }">{{ assignedVotes }}/{{ groupVotes }}</span>
+    <span :class="{ 'text-warning': !allAssigned }"
+      >{{ assignedVotes }}/{{ groupVotes }}</span
+    >
     <DefaultDialog v-if="canAssignVotes" v-model="editing">
       <template #activator="{ props }">
         <v-btn size="small" color="accent" class="ml-2" v-bind="props">
@@ -18,19 +20,34 @@
             :max="(editUserVotes.get(user) ?? 0) + editUnassignedVotes"
             :model-value="editUserVotes.get(user)"
             @update:model-value="editUserVotes.set(user, Number($event))"
-            :rules="[rules.max((editUserVotes.get(user) ?? 0) + editUnassignedVotes)]"
+            :rules="[
+              rules.max((editUserVotes.get(user) ?? 0) + editUnassignedVotes)
+            ]"
           />
         </template>
       </UserList>
-      <v-alert class="mb-2" :color="editUnassignedVotes ? 'secondary' : undefined">
+      <v-alert
+        class="mb-2"
+        :color="editUnassignedVotes ? 'secondary' : undefined"
+      >
         {{ editUnassignedVotes }} röster kvar att fördela
       </v-alert>
-      <v-alert v-if="errorMessage" :text="errorMessage" type="error" class="mb-2" />
+      <v-alert
+        v-if="errorMessage"
+        :text="errorMessage"
+        type="error"
+        class="mb-2"
+      />
       <div class="text-right">
         <v-btn variant="text" :disabled="working" @click="editing = false">
           {{ t('cancel') }}
         </v-btn>
-        <v-btn color="primary" :loading="working" :disabled="!!editUnassignedVotes" @click="saveUserVotes">
+        <v-btn
+          color="primary"
+          :loading="working"
+          :disabled="!!editUnassignedVotes"
+          @click="saveUserVotes"
+        >
           {{ t('save') }}
         </v-btn>
       </div>
@@ -55,7 +72,9 @@ import useMeetingGroups from '../useMeetingGroups'
 import useMeeting from '../useMeeting'
 import { isFinishedMeeting } from '../rules'
 
-const props = defineProps<{ group: MeetingGroup & { memberships: GroupMembership[] }}>()
+const props = defineProps<{
+  group: MeetingGroup & { memberships: GroupMembership[] }
+}>()
 
 const { t } = useI18n()
 const { isModerator, meetingId } = useMeeting()
@@ -63,43 +82,61 @@ const { groupRoles } = useMeetingGroups(meetingId)
 const rules = useRules(t)
 const { errorMessage, clearErrors, handleSocketError } = useErrorHandler()
 
-interface RoleMembership extends GroupMembership { role: number }
-function isRoleMembership (membership: GroupMembership): membership is RoleMembership {
+interface RoleMembership extends GroupMembership {
+  role: number
+}
+function isRoleMembership(
+  membership: GroupMembership
+): membership is RoleMembership {
   return !!membership.role
 }
-const roleMemberships = computed(() => props.group.memberships.filter(isRoleMembership))
+const roleMemberships = computed(() =>
+  props.group.memberships.filter(isRoleMembership)
+)
 
 const groupVotes = computed(() => props.group.votes || 0)
 const assignedVotes = computed(() => {
-  return roleMemberships.value
-    .reduce((acc, member) => acc + (member.votes ?? 0), 0)
+  return roleMemberships.value.reduce(
+    (acc, member) => acc + (member.votes ?? 0),
+    0
+  )
 })
 
 const allAssigned = computed(() => props.group.votes === assignedVotes.value)
-const leaderRoleId = computed(() => groupRoles.value.find(g => g.role_id === 'leader')?.pk)
+const leaderRoleId = computed(
+  () => groupRoles.value.find((g) => g.role_id === 'leader')?.pk
+)
 
 /**
  * Meeting is in active state (upcoming, ongoing), and user is moderator or group manager,
  */
 const canAssignVotes = computed(() => {
-  if (!user.value || !props.group.votes || !roleMemberships.value.length) return false
+  if (!user.value || !props.group.votes || !roleMemberships.value.length)
+    return false
   return (
     !isFinishedMeeting(meetingId.value) &&
-    (
-      isModerator.value ||
-      props.group.memberships.some(member => member.user === user.value?.pk && member.role === leaderRoleId.value)
-    )
+    (isModerator.value ||
+      props.group.memberships.some(
+        (member) =>
+          member.user === user.value?.pk && member.role === leaderRoleId.value
+      ))
   )
 })
 
 // For management modal
 const editing = ref(false)
-const editUserIds = computed(() => roleMemberships.value.map(member => member.user))
-const editUserVotes = reactive(new Map(roleMemberships.value.map(({ user, votes }) => [user, votes || 0])))
-const editUnassignedVotes = computed(() => groupVotes.value - sum(editUserVotes.values()))
+const editUserIds = computed(() =>
+  roleMemberships.value.map((member) => member.user)
+)
+const editUserVotes = reactive(
+  new Map(roleMemberships.value.map(({ user, votes }) => [user, votes || 0]))
+)
+const editUnassignedVotes = computed(
+  () => groupVotes.value - sum(editUserVotes.values())
+)
 
 // Make sure we have the latest values when editing
-watch(editing, value => {
+watch(editing, (value) => {
   if (!value) return clearErrors()
   for (const { user, votes } of roleMemberships.value) {
     editUserVotes.set(user, votes ?? 0)
@@ -111,8 +148,9 @@ watch(editing, value => {
 })
 
 const working = ref(false)
-async function saveUserVotes () {
-  if (editUnassignedVotes.value) throw new Error('Cannot save user votes, becuase not all votes assigned')
+async function saveUserVotes() {
+  if (editUnassignedVotes.value)
+    throw new Error('Cannot save user votes, becuase not all votes assigned')
   clearErrors()
   working.value = true
   try {

@@ -1,8 +1,19 @@
 <template>
   <div class="d-flex">
-    <v-text-field type="number" min="0" :label="t('input.minutes')" v-model="duration.minutes" />
+    <v-text-field
+      type="number"
+      min="0"
+      :label="t('input.minutes')"
+      v-model="duration.minutes"
+    />
     <div class="mr-1"></div>
-    <v-text-field type="number" min="0" max="59" :label="t('input.seconds')" v-model="duration.seconds" />
+    <v-text-field
+      type="number"
+      min="0"
+      max="59"
+      :label="t('input.seconds')"
+      v-model="duration.seconds"
+    />
   </div>
 </template>
 
@@ -23,6 +34,6 @@ const duration = reactive({
 })
 
 watch(duration, ({ minutes, seconds }) => {
-  emit('update:modelValue', (Number(minutes) * 60) + Number(seconds))
+  emit('update:modelValue', Number(minutes) * 60 + Number(seconds))
 })
 </script>

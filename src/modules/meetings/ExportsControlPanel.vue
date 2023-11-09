@@ -6,14 +6,18 @@
       </h1>
       <i18n-t keypath="meeting.exportsLongDescription">
         <template #csv>
-          <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank">CSV</a>
+          <a
+            href="https://en.wikipedia.org/wiki/Comma-separated_values"
+            target="_blank"
+            >CSV</a
+          >
         </template>
         <template #json>
           <a href="https://en.wikipedia.org/wiki/JSON" target="_blank">JSON</a>
         </template>
       </i18n-t>
     </header>
-    <v-table class="my-2" >
+    <v-table class="my-2">
       <thead>
         <tr>
           <th colspan="2">
@@ -29,13 +33,19 @@
           <td class="text-right">
             <v-menu location="bottom right">
               <template #activator="{ props }">
-                <v-btn v-bind="props" append-icon="mdi-download" variant="tonal" color="primary">
+                <v-btn
+                  v-bind="props"
+                  append-icon="mdi-download"
+                  variant="tonal"
+                  color="primary"
+                >
                   {{ t('download') }}
                 </v-btn>
               </template>
               <v-list>
                 <v-list-item
-                  v-for="{ title, url } in exports" :key="url"
+                  v-for="{ title, url } in exports"
+                  :key="url"
                   append-icon="mdi-file-download"
                   target="_blank"
                   :href="url"
@@ -62,7 +72,10 @@ const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
 
-function * iterDownloads (defaultTitle: string, exports: { title?: string, formats: { format: string, url: string }[]}[]) {
+function* iterDownloads(
+  defaultTitle: string,
+  exports: { title?: string; formats: { format: string; url: string }[] }[]
+) {
   for (const { title, formats } of exports) {
     for (const { format, url } of formats) {
       yield {
@@ -76,16 +89,17 @@ function * iterDownloads (defaultTitle: string, exports: { title?: string, forma
 const exportPlugins = computed(() => {
   if (!meeting.value) return []
   const plugins = meetingExportPlugins.getActivePlugins(meeting.value)
-  return sortBy(plugins
-    .map(({ id, getExports, getTitle }) => {
-      const title = getTitle(t)
-      return {
-        id,
-        exports: [...iterDownloads(title, getExports(t, meetingId.value))],
-        title
-      }
-    })
-    .filter(e => e.exports.length),
+  return sortBy(
+    plugins
+      .map(({ id, getExports, getTitle }) => {
+        const title = getTitle(t)
+        return {
+          id,
+          exports: [...iterDownloads(title, getExports(t, meetingId.value))],
+          title
+        }
+      })
+      .filter((e) => e.exports.length),
     'title'
   )
 })

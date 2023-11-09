@@ -221,7 +221,7 @@ onKeyStroke(
         <template #bottom>
           <ButtonPlugins
             mode="presentation"
-            :proposal="(p as Proposal)"
+            :proposal="p as Proposal"
             class="mt-2"
           />
         </template>

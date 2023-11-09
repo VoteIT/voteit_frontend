@@ -1,5 +1,8 @@
 <template>
-  <ComponentQuickPanel component-name="active_users" :switch-label="t('activeUsers.enable')">
+  <ComponentQuickPanel
+    component-name="active_users"
+    :switch-label="t('activeUsers.enable')"
+  >
     <template #actions>
       <DefaultDialog @close="purgedCount = null">
         <template #activator="{ props }">
@@ -18,14 +21,35 @@
             <h2 class="flex-grow-1">
               {{ t('activeUsers.purgeInactive') }}
             </h2>
-            <v-btn icon="mdi-close" variant="text" class="mr-n1 mt-n1" @click="close" />
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              class="mr-n1 mt-n1"
+              @click="close"
+            />
           </div>
           <p class="mb-2">
             {{ t('activeUsers.purgeInactiveHelp') }}
           </p>
-          <v-form v-if="!working" class="d-flex mb-2" @submit.prevent="purgeInactive">
-            <v-text-field type="number" :rules="[rules.required, rules.min(1)]" v-model="hours" :label="t('activeUsers.inactiveHours')" min="1" hide-details />
-            <v-btn type="submit" class="rounded-s-0" :disabled="working" color="primary">
+          <v-form
+            v-if="!working"
+            class="d-flex mb-2"
+            @submit.prevent="purgeInactive"
+          >
+            <v-text-field
+              type="number"
+              :rules="[rules.required, rules.min(1)]"
+              v-model="hours"
+              :label="t('activeUsers.inactiveHours')"
+              min="1"
+              hide-details
+            />
+            <v-btn
+              type="submit"
+              class="rounded-s-0"
+              :disabled="working"
+              color="primary"
+            >
               {{ t('clear') }}
             </v-btn>
           </v-form>
@@ -61,7 +85,7 @@ const hours = ref(1)
 const working = ref(false)
 const purgedCount = ref<number | null>(null)
 
-async function purgeInactive () {
+async function purgeInactive() {
   working.value = true
   const { p } = await activeUserType.methodCall<{ count: number }>('purge', {
     meeting: meetingId.value,

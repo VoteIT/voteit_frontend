@@ -5,19 +5,23 @@ const PROGRESS_INITIAL: Progress = {
   total: 1
 }
 
-export default class ProgressPromise<T, PT extends Progress=Progress> extends Promise<T> {
+export default class ProgressPromise<
+  T,
+  PT extends Progress = Progress
+> extends Promise<T> {
   _progress: Progress
   _listeners: Set<ProgressHandler<PT>>
   _setProgress: ProgressHandler<PT>
 
-  constructor (
+  constructor(
     executor: (
       resolve: (value: T | PromiseLike<T>) => void,
       reject: (reason?: any) => void,
       progress: (progress: PT) => void
-    ) => void) {
+    ) => void
+  ) {
     const setProgress = (progress: PT) => {
-      (async () => {
+      ;(async () => {
         // We wait for the next microtask tick so `super` is called before we use `this`
         await Promise.resolve()
 
@@ -31,27 +35,25 @@ export default class ProgressPromise<T, PT extends Progress=Progress> extends Pr
       })()
     }
 
-    super((
-      resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void
-    ) => {
-      executor(
-        resolve,
-        reject,
-        setProgress
-      )
-    })
+    super(
+      (
+        resolve: (value: T | PromiseLike<T>) => void,
+        reject: (reason?: any) => void
+      ) => {
+        executor(resolve, reject, setProgress)
+      }
+    )
 
     this._listeners = new Set()
     this._setProgress = setProgress
     this._progress = PROGRESS_INITIAL
   }
 
-  get progress () {
+  get progress() {
     return this._progress
   }
 
-  public onProgress (callback: ProgressHandler<PT>) {
+  public onProgress(callback: ProgressHandler<PT>) {
     if (typeof callback !== 'function') {
       throw new TypeError(`Expected a \`Function\`, got \`${typeof callback}\``)
     }

@@ -33,7 +33,6 @@
 </template>
 
 <script lang="ts" setup>
-import { sortBy } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
@@ -45,20 +44,16 @@ import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useDefaults from '@/composables/useDefaults'
 
-import useAgenda from '../agendas/useAgenda'
-import useRooms from '../rooms/useRooms'
-
 import { meetingType } from './contentTypes'
 import useMeeting from './useMeeting'
 import { MeetingState } from './types'
+import { meetingMenuPlugins } from './registry'
 
 const { t } = useI18n()
 const { cols } = useDefaults()
 
 const editing = ref(false)
 const { meeting, meetingId, canChange, isModerator } = useMeeting()
-const { agenda } = useAgenda(meetingId)
-const { meetingRooms } = useRooms(meetingId)
 
 useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
 
@@ -72,23 +67,8 @@ watch(meeting, (value) => {
   content.body = value?.body ?? ''
 })
 
-function getRoomMenu(roomId: number, title: string) {
-  return {
-    title,
-    prependIcon: 'mdi-gavel',
-    to: {
-      name: 'Plenary',
-      params: {
-        id: meetingId.value,
-        aid: agenda.value[0].pk,
-        roomId,
-        tab: 'decisions'
-      }
-    }
-  }
-}
-
 function* iterMenu() {
+  if (!meeting.value) return
   if (canChange.value)
     yield {
       title: t('edit'),
@@ -97,18 +77,14 @@ function* iterMenu() {
         editing.value = true
       }
     }
-  // If not admin or no meeting rooms, we're done
-  if (
-    !(canChange.value && !!meetingRooms.value.length && !!agenda.value.length)
-  )
-    return
-  yield '---'
-  if (meetingRooms.value.length === 1)
-    yield getRoomMenu(meetingRooms.value[0].pk, t('plenary.view'))
-  else
-    for (const room of sortBy(meetingRooms.value, 'title')) {
-      yield getRoomMenu(room.pk, `${t('plenary.view')} (${room.title})`)
-    }
+  // Extra menu items from plugins
+  const pluginMenuItems = meetingMenuPlugins
+    .getActivePlugins(meeting.value)
+    .flatMap((plugin) =>
+      plugin.getItems({ meeting: meeting.value!, menu: 'start', t })
+    )
+  if (pluginMenuItems.length) yield '---'
+  yield* pluginMenuItems
 }
 
 const menuItems = computed<MenuItem[]>(() => [...iterMenu()])

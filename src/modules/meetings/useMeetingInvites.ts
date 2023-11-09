@@ -1,4 +1,4 @@
-import { readonly, reactive, computed, ref, Ref } from 'vue'
+import { reactive, computed, ref, Ref } from 'vue'
 import { matchedInviteType, meetingInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 

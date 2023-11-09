@@ -23,20 +23,23 @@ const props = defineProps<{
 const { dateTime, serverNow } = useServerDateTime(computed(() => props.date))
 const fromNow = ref('')
 
-function updateFromNow () {
+function updateFromNow() {
   // Can not be computed(), because time is not reactive
   const serverDateTime = serverNow()
   const serverDiff = serverDateTime.diff(dateTime.value)
   if (props.inSeconds) {
     fromNow.value = durationToString(serverDiff)
   } else {
-    fromNow.value = serverDiff > ABSOLUTE_BREAKPOINT
-      ? dateTime.value.toLocaleString()
-      : dateTime.value.toRelative({ base: serverDateTime }) || ''
+    fromNow.value =
+      serverDiff > ABSOLUTE_BREAKPOINT
+        ? dateTime.value.toLocaleString()
+        : dateTime.value.toRelative({ base: serverDateTime }) || ''
   }
 }
 
-useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, { immediateCallback: true })
+useIntervalFn(updateFromNow, props.inSeconds ? 1_000 : 60_000, {
+  immediateCallback: true
+})
 watchEffect(updateFromNow)
 watch(currentLocale, () => nextTick(updateFromNow))
 </script>

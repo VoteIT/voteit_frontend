@@ -19,7 +19,11 @@ const props = withDefaults(
 
 const { meeting } = useMeeting()
 
-const plugins = computed(() => meeting.value ? proposalButtonPlugins.getActivePlugins(meeting.value, props.mode) : [])
+const plugins = computed(() =>
+  meeting.value
+    ? proposalButtonPlugins.getActivePlugins(meeting.value, props.mode)
+    : []
+)
 </script>
 
 <template>

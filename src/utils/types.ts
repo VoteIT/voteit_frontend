@@ -15,7 +15,7 @@ export enum State {
   Failed = 'f',
   Waiting = 'w', // Deprecated
   Queued = 'q',
-  Running = 'r',
+  Running = 'r'
 }
 
 export interface Progress {
@@ -59,7 +59,9 @@ export interface FailedMessage extends BaseChannelsMessage {
   p: ValidationErrorPayload | ErrorPayload
 }
 
-export function isValidationErrorPayload (p: FailedMessage['p']): p is ValidationErrorPayload {
+export function isValidationErrorPayload(
+  p: FailedMessage['p']
+): p is ValidationErrorPayload {
   return 'errors' in p
 }
 
@@ -80,9 +82,14 @@ export interface BatchPayload {
   payloads: object[]
 }
 
-export type ChannelsMessage<T=unknown> = SuccessMessage<T> | ProgressMessage | FailedMessage
+export type ChannelsMessage<T = unknown> =
+  | SuccessMessage<T>
+  | ProgressMessage
+  | FailedMessage
 
-export type ProgressHandler<PT extends Progress=Progress> = (progress: PT) => void
+export type ProgressHandler<PT extends Progress = Progress> = (
+  progress: PT
+) => void
 
 // For Socket.ts
 export interface ChannelsConfig {
@@ -97,9 +104,17 @@ export enum ThemeColor {
   Error = 'error',
   Info = 'info',
   Warning = 'warning',
-  Success = 'success',
+  Success = 'success'
 }
-export type Color = 'accent' | 'background' | 'primary' | 'secondary' | 'error' | 'info' | 'warning' | 'success'
+export type Color =
+  | 'accent'
+  | 'background'
+  | 'primary'
+  | 'secondary'
+  | 'error'
+  | 'info'
+  | 'warning'
+  | 'success'
 
 interface MenuItemBase {
   title: string
@@ -126,7 +141,12 @@ export interface MenuItemOnClick extends MenuItemBase {
   onClick: () => Promise<void>
 }
 
-export type MenuItem = '---' | MenuItemOnClick | MenuItemTo | MenuItemHref | MenuSubheader
+export type MenuItem =
+  | '---'
+  | MenuItemOnClick
+  | MenuItemTo
+  | MenuItemHref
+  | MenuSubheader
 
 export interface TreeMenuLink {
   count?: number
@@ -153,11 +173,11 @@ export interface TreeMenu {
 
 export type TreeMenuItem = TreeMenuLink | TreeMenu
 
-export function isTreeLink (item: TreeMenuItem): item is TreeMenuLink {
+export function isTreeLink(item: TreeMenuItem): item is TreeMenuLink {
   return 'to' in item
 }
 
-export function isTreeMenu (item: TreeMenuItem): item is TreeMenu {
+export function isTreeMenu(item: TreeMenuItem): item is TreeMenu {
   return 'items' in item
 }
 

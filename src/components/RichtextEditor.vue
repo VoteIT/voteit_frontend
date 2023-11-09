@@ -15,7 +15,10 @@ const mentionOptions = {
   mentionDenotationChars: ['@', '#']
 }
 
-const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'modules'>> = {
+const variants: Record<
+  QuillVariant,
+  Pick<QuillOptions, 'theme' | 'formats' | 'modules'>
+> = {
   restricted: {
     theme: 'bubble',
     formats: [
@@ -47,7 +50,12 @@ const variants: Record<QuillVariant, Pick<QuillOptions, 'theme' | 'formats' | 'm
       toolbar: {
         container: [
           [{ header: [false, 2, 3, 4] }],
-          [QuillFormat.Bold, QuillFormat.Italic, QuillFormat.Link, QuillFormat.InlineCode],
+          [
+            QuillFormat.Bold,
+            QuillFormat.Italic,
+            QuillFormat.Link,
+            QuillFormat.InlineCode
+          ],
           [{ script: 'sub' }, { script: 'super' }],
           [{ indent: '-1' }, { indent: '+1' }],
           [QuillFormat.BlockQuote],
@@ -100,22 +108,30 @@ const rootElement = ref<HTMLElement | null>(null)
 
 const { meetingId } = useMeeting()
 
-function toTagObject (tagName: string): TagObject {
+function toTagObject(tagName: string): TagObject {
   return { id: tagName, value: tagName }
 }
 
-function * filterTagObjects (filter: (tag: string) => boolean): Generator<TagObject, void> {
+function* filterTagObjects(
+  filter: (tag: string) => boolean
+): Generator<TagObject, void> {
   for (const tag of tags.value) {
     if (filter(tag)) yield toTagObject(tag)
   }
 }
 
-async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]) => void, mentionChar: string) {
+async function mentionSource(
+  searchTerm: string,
+  renderList: (tags: TagObject[]) => void,
+  mentionChar: string
+) {
   switch (mentionChar) {
     case '#':
       renderList([
         toTagObject(tagify(searchTerm)),
-        ...filterTagObjects(tag => tag.startsWith(searchTerm) && tag !== searchTerm)
+        ...filterTagObjects(
+          (tag) => tag.startsWith(searchTerm) && tag !== searchTerm
+        )
       ])
       break
     case '@': {
@@ -124,19 +140,22 @@ async function mentionSource (searchTerm: string, renderList: (tags: TagObject[]
         search: searchTerm.toLowerCase(),
         meeting: meetingId.value
       })
-      renderList(data.map(({ user }) => {
-        return {
-          id: user.pk,
-          value: getDisplayName(user)
-        }
-      }))
+      renderList(
+        data.map(({ user }) => {
+          return {
+            id: user.pk,
+            value: getDisplayName(user)
+          }
+        })
+      )
       break
     }
   }
 }
 
 onMounted(() => {
-  if (!editorElement.value) throw new Error('Richtext editor element not available')
+  if (!editorElement.value)
+    throw new Error('Richtext editor element not available')
   editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
   const config: QuillOptions = {
     ...variants[props.variant],
@@ -162,7 +181,10 @@ onMounted(() => {
   config.modules.mention.source = mentionSource
   editor = new Quill(editorElement.value, config)
   editor.on('text-change', async () => {
-    if (!editor) return console.error('Quill text-change event triggered, but editor is not available')
+    if (!editor)
+      return console.error(
+        'Quill text-change event triggered, but editor is not available'
+      )
     emit('update:modelValue', editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Replace all non-beaking spaces - they often show up by accident
   })
   if (props.setFocus) focus()
@@ -170,14 +192,14 @@ onMounted(() => {
   editor.root.addEventListener('blur', () => emit('blur'))
 })
 
-function focus () {
+function focus() {
   if (!editor) return
   editor.focus()
   editor.setSelection(editor.getLength(), editor.getLength())
   rootElement.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 }
 
-function setText (value: string = '') {
+function setText(value: string = '') {
   if (!editor) return
   editor.root.innerHTML = value
 }
@@ -198,7 +220,13 @@ defineExpose({
     </p>
     <slot name="controls"></slot>
     <div class="btn-controls" v-if="submit && !$slots.controls">
-      <v-btn :prepend-icon="submitIcon" color="primary" :disabled="disabled" size="small" @click="$emit('submit')">
+      <v-btn
+        :prepend-icon="submitIcon"
+        color="primary"
+        :disabled="disabled"
+        size="small"
+        @click="$emit('submit')"
+      >
         {{ submitText || t('save') }}
       </v-btn>
     </div>

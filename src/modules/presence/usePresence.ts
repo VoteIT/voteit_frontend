@@ -11,44 +11,46 @@ import { canAddPresenceCheck } from './rules'
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
 
-presenceCheckType.updateMap(
-  presenceChecks,
-  { meeting: 'meeting' }
-)
-presenceType.updateMap(
-  presence,
-  { presence_check: 'presence_check' }
-)
+presenceCheckType.updateMap(presenceChecks, { meeting: 'meeting' })
+presenceType.updateMap(presence, { presence_check: 'presence_check' })
 
 const { user } = useAuthentication()
 
-export default function usePresence (meetingId: Ref<number>) {
-  const closedPresenceChecks = computed(() => filter(
-    presenceChecks.values(),
-    pc => pc.meeting === meetingId.value && pc.state === PresenceCheckState.Closed
-  ))
+export default function usePresence(meetingId: Ref<number>) {
+  const closedPresenceChecks = computed(() =>
+    filter(
+      presenceChecks.values(),
+      (pc) =>
+        pc.meeting === meetingId.value && pc.state === PresenceCheckState.Closed
+    )
+  )
 
-  function getUserPresence (check: number, userPk?: number): Presence | undefined {
+  function getUserPresence(
+    check: number,
+    userPk?: number
+  ): Presence | undefined {
     userPk = userPk || user.value?.pk
     for (const p of presence.values()) {
       if (p.presence_check === check && p.user === userPk) return p
     }
   }
 
-  async function closeCheck () {
-    if (!presenceCheck.value) throw new Error('No active presence check in meeting.')
+  async function closeCheck() {
+    if (!presenceCheck.value)
+      throw new Error('No active presence check in meeting.')
     presenceCheckType.api.transition(presenceCheck.value.pk, 'close')
   }
 
-  async function openCheck () {
-    if (presenceCheck.value) throw new Error('Meeting already has a presence check.')
+  async function openCheck() {
+    if (presenceCheck.value)
+      throw new Error('Meeting already has a presence check.')
     presenceCheckType.api.add({
       meeting: meetingId.value
     })
   }
 
   // eslint-disable-next-line camelcase
-  function changePresence (presence_check: number, present: boolean) {
+  function changePresence(presence_check: number, present: boolean) {
     return presenceType.methodCall('change', {
       // eslint-disable-next-line camelcase
       presence_check,
@@ -65,8 +67,18 @@ export default function usePresence (meetingId: Ref<number>) {
       }
     }
   })
-  const presentUserIds = computed(() => map(ifilter(presence.values(), p => p.presence_check === presenceCheck.value?.pk), p => p.user))
-  const userPresence = computed(() => presenceCheck.value && getUserPresence(presenceCheck.value.pk))
+  const presentUserIds = computed(() =>
+    map(
+      ifilter(
+        presence.values(),
+        (p) => p.presence_check === presenceCheck.value?.pk
+      ),
+      (p) => p.user
+    )
+  )
+  const userPresence = computed(
+    () => presenceCheck.value && getUserPresence(presenceCheck.value.pk)
+  )
   const isPresent = computed(() => presenceCheck.value && !!userPresence.value) // undefined or boolean
 
   return {

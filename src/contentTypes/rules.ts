@@ -4,7 +4,7 @@ import useAuthentication from '../composables/useAuthentication'
 
 const { user } = useAuthentication()
 
-export function isAuthor (content: Proposal | DiscussionPost): boolean {
+export function isAuthor(content: Proposal | DiscussionPost): boolean {
   if (!user.value) return false
   return user.value.pk === content.author
 }
