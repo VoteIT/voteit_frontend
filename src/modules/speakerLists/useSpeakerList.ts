@@ -2,38 +2,47 @@ import { sortBy } from 'lodash'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { user } from '@/composables/useAuthentication'
 import { SpeakerGroup, SpeakerSystemMethod } from './types'
-import useSpeakerLists from './useSpeakerLists'
+import {
+  getCurrent,
+  getHistory,
+  getTimesSpoken,
+  speakerLists,
+  speakerSystems
+} from './useSpeakerLists'
+import { speakerListType } from './contentTypes'
+import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
 
-const { getHistory, getList, getCurrent, getSystem, getTimesSpoken } =
-  useSpeakerLists()
-
-export default function useSpeakerList(list: Ref<number | undefined>) {
+export default function useSpeakerList(listId: Ref<number | undefined>) {
   const { t } = useI18n()
 
   const speakerHistory = computed(() => {
-    if (!list.value) throw new Error('Speaker history requires list value')
-    return getHistory(list.value)
+    if (!listId.value) throw new Error('Speaker history requires list value')
+    return getHistory(listId.value)
   })
   const speakerList = computed(() =>
-    list.value ? getList(list.value) : undefined
+    listId.value ? speakerLists.get(listId.value) : undefined
   )
   const speakerQueue = computed(() => speakerList.value?.queue ?? [])
   const speakerSystem = computed(
-    () => speakerList.value && getSystem(speakerList.value.speaker_system)
+    () =>
+      speakerList.value && speakerSystems.get(speakerList.value.speaker_system)
   )
   const currentSpeaker = computed(() =>
-    list.value ? getCurrent(list.value) : undefined
+    listId.value ? getCurrent(listId.value) : undefined
   )
   /**
-   * Speaker queue as objects, with user and timesSpoken
+   * Speaker queue as objects, with user and times spoken
    */
-  const annotatedSpeakerQueue = computed(() =>
-    speakerQueue.value.map((user) => ({
+  const annotatedSpeakerQueue = computed(() => {
+    if (!listId.value) return []
+    const timesSpokenMap = getTimesSpoken(listId.value)
+    return speakerQueue.value.map((user) => ({
       user,
-      timesSpoken: timesSpokenMap.value[user] || 0
+      timesSpoken: timesSpokenMap[user] ?? 0
     }))
-  )
+  })
 
   const speakerGroups = computed(() => {
     // TODO: Use groupBy logic, so that backend order of speakers is always the truth also in frontend.
@@ -78,17 +87,94 @@ export default function useSpeakerList(list: Ref<number | undefined>) {
     return groups
   })
 
-  const timesSpokenMap = computed(() => {
-    if (!list.value) throw new Error('Times spoken requires list id')
-    return getTimesSpoken(list.value)
-  })
+  function enterList() {
+    return speakerListType.methodCall('enter', { pk: listId.value })
+  }
+  function leaveList() {
+    if (!listId.value) throw new Error('Leave list requires list id')
+    return speakerListType.methodCall('leave', { pk: listId.value })
+  }
+
+  function moderatorEnterList(user: number) {
+    return speakerListType.methodCall('mod_enter', {
+      pk: listId.value,
+      user
+    })
+  }
+  function moderatorLeaveList(user: number) {
+    return speakerListType.methodCall('mod_leave', {
+      pk: listId.value,
+      user
+    })
+  }
+
+  // Start by user pk, or first in queue
+  function startSpeaker(user?: number) {
+    user = user || speakerQueue.value[0]
+    speakerListType.methodCall('start_user', {
+      pk: listId.value,
+      user
+    })
+  }
+
+  async function stopSpeaker() {
+    if (!listId.value)
+      throw new Error("Can't stop speaker on undefined list id")
+    const current = getCurrent(listId.value)
+    if (current) {
+      await speakerListType.methodCall('stop_user', {
+        pk: listId.value,
+        user: current.user
+      })
+    }
+  }
+
+  function undoSpeaker() {
+    speakerListType.methodCall('mod_undo', {
+      pk: listId.value
+    })
+  }
+
+  function shuffleList() {
+    speakerListType.methodCall('mod_shuffle', {
+      pk: listId.value
+    })
+  }
+
+  const userInQueue = computed(
+    () => !!user.value && speakerQueue.value.includes(user.value.pk)
+  )
 
   return {
     annotatedSpeakerQueue,
+    canEnterList: computed(
+      () =>
+        !userInQueue.value &&
+        speakerList.value &&
+        canEnterList(speakerList.value)
+    ),
+    canLeaveList: computed(
+      () =>
+        userInQueue.value &&
+        speakerList.value &&
+        canLeaveList(speakerList.value)
+    ),
+    canStartSpeaker: computed(
+      () => speakerList.value && canStartSpeaker(speakerList.value)
+    ),
     currentSpeaker,
     speakerHistory,
     speakerList,
     speakerGroups,
-    speakerQueue
+    speakerSystem,
+    speakerQueue,
+    enterList,
+    leaveList,
+    moderatorEnterList,
+    moderatorLeaveList,
+    startSpeaker,
+    stopSpeaker,
+    shuffleList,
+    undoSpeaker
   }
 }

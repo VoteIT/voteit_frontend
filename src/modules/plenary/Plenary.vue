@@ -242,7 +242,6 @@ const pollMenu = computed<MenuItem[]>(() => {
     <BroadcastMenu />
   </v-app-bar>
   <v-main class="ma-6">
-    <div id="toolbar"></div>
     <template v-if="currentTab === 'discussion'">
       <SpeakerHandling v-if="speakerSystem" :system-id="speakerSystem.pk" />
       <p v-else>

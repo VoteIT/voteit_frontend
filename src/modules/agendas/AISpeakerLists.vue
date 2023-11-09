@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import SpeakerList from '../speakerLists/SpeakerList.vue'
-import useSpeakerLists from '../speakerLists/useSpeakerLists'
+import { getSpeakerLists } from '../speakerLists/useSpeakerLists'
 import useMeeting from '../meetings/useMeeting'
 import useRooms, { meetingRoomStore } from '../rooms/useRooms'
 
@@ -17,13 +17,13 @@ const { t } = useI18n()
 const { meetingId, getMeetingRoute } = useMeeting()
 const { activeSpeakerSystems, managingSpeakerSystems } = useRooms(meetingId)
 
-const { getAgendaSpeakerLists } = useSpeakerLists()
-
 const speakerLists = computed(() =>
-  getAgendaSpeakerLists(props.agendaId, (list) =>
-    activeSpeakerSystems.value.some(
-      (system) => system.pk === list.speaker_system
-    )
+  getSpeakerLists(
+    (list) =>
+      list.agenda_item === props.agendaId &&
+      activeSpeakerSystems.value.some(
+        (system) => system.pk === list.speaker_system
+      )
   ).map((list) => ({
     ...list,
     // Annotate with room information

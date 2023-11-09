@@ -93,3 +93,13 @@ export interface HistoricSpeaker {
 }
 
 export type Speaker = QueuedSpeaker | CurrentSpeaker | HistoricSpeaker
+
+export function isCurrentSpeaker(speaker: Speaker): speaker is CurrentSpeaker {
+  return !speaker.seconds && !!speaker.started
+}
+
+export function isHistoricSpeaker(
+  speaker: Speaker
+): speaker is HistoricSpeaker {
+  return !!(speaker.seconds && speaker.started)
+}

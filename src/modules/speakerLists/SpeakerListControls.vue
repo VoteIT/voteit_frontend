@@ -1,0 +1,235 @@
+<script setup lang="ts">
+import { map, range } from 'itertools'
+import { computed, ref, toRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { openAlertEvent } from '@/utils/events'
+import UserAvatar from '@/components/UserAvatar.vue'
+import User from '@/components/User.vue'
+import Moment from '@/components/Moment.vue'
+import UserSearch from '@/components/UserSearch.vue'
+import { user } from '@/composables/useAuthentication'
+
+import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
+import useMeeting from '../meetings/useMeeting'
+import { IUser } from '../organisations/types'
+
+import useSpeakerList from './useSpeakerList'
+import { onKeyStroke } from '@vueuse/core'
+import * as speakerRules from './rules'
+
+const props = defineProps<{
+  listId: number
+}>()
+
+const { t } = useI18n()
+
+const { meetingId } = useMeeting()
+const {
+  annotatedSpeakerQueue,
+  canStartSpeaker,
+  currentSpeaker,
+  speakerGroups,
+  speakerSystem,
+  speakerQueue,
+  moderatorEnterList,
+  moderatorLeaveList,
+  shuffleList,
+  startSpeaker,
+  stopSpeaker,
+  undoSpeaker
+} = useSpeakerList(toRef(props, 'listId'))
+const { hasParticipantNumbers, participantNumbers } =
+  useParticipantNumbers(meetingId)
+
+const canManageSystem = computed(
+  () => speakerSystem.value && speakerRules.canManageSystem(speakerSystem.value)
+)
+
+// For user search
+const userSearchParams = computed(() => {
+  return {
+    meeting: meetingId.value,
+    any_roles: speakerSystem.value?.meeting_roles_to_speaker.join(',')
+  }
+})
+// Filter on users that are speakers but not already in queue
+function userSearchFilter(user: IUser): boolean {
+  if (!speakerQueue.value || !speakerSystem.value) return false
+  return !speakerQueue.value.includes(user.pk)
+}
+
+function isSelf(userId: number) {
+  return user.value?.pk === userId
+}
+
+const participantNumberInput = ref('')
+async function addParticipantNumbers() {
+  const numbers = participantNumberInput.value
+    .split(/[^\d]+/)
+    .filter((n) => n)
+    .map(Number)
+  const inList: number[] = []
+  const missing: number[] = []
+  for (const n of numbers) {
+    const user = participantNumbers.value.find((pn) => pn.number === n)?.user
+    if (!user) missing.push(n)
+    else if (speakerQueue.value?.includes(user)) inList.push(n)
+    else moderatorEnterList(user)
+  }
+  if (missing.length)
+    openAlertEvent.emit(
+      '*' +
+        t(
+          'participantNumber.doesNotExist',
+          { ids: missing.join(', ') },
+          missing.length
+        )
+    )
+  if (inList.length)
+    openAlertEvent.emit(
+      '*' +
+        t(
+          'participantNumber.alreadyInList',
+          { ids: inList.join(', ') },
+          inList.length
+        )
+    )
+  participantNumberInput.value = ''
+}
+
+/*
+ * Navigation
+ */
+
+function onNonInputTarget(fn: (e: KeyboardEvent) => void) {
+  return (evt: KeyboardEvent) => {
+    if (((evt.target as Element) || null)?.tagName === 'INPUT') return
+    fn(evt)
+  }
+}
+onKeyStroke(
+  map(range(1, 10), String),
+  onNonInputTarget((e) => {
+    const speaker = speakerQueue.value[Number(e.key) - 1]
+    if (!speaker) return
+    startSpeaker(speaker)
+  })
+)
+onKeyStroke(
+  'z',
+  onNonInputTarget((e) => e.ctrlKey && undoSpeaker())
+)
+onKeyStroke(
+  's',
+  onNonInputTarget(() => startSpeaker())
+)
+onKeyStroke(
+  'e',
+  onNonInputTarget(() => currentSpeaker.value && stopSpeaker())
+)
+/*
+ * End navigation
+ */
+</script>
+
+<template>
+  <div>
+    <div class="btn-group mb-2">
+      <v-btn
+        color="primary"
+        :disabled="!canStartSpeaker || !speakerQueue.length"
+        @click="startSpeaker()"
+        ><v-icon icon="mdi-play"
+      /></v-btn>
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="stopSpeaker"
+        ><v-icon icon="mdi-stop"
+      /></v-btn>
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="undoSpeaker"
+        ><v-icon icon="mdi-undo"
+      /></v-btn>
+      <v-btn
+        color="primary"
+        :disabled="!speakerQueue.length"
+        @click="shuffleList"
+        ><v-icon icon="mdi-shuffle-variant"
+      /></v-btn>
+    </div>
+    <div class="d-flex" v-if="canManageSystem">
+      <UserSearch
+        :label="t('speaker.addByName')"
+        :filter="userSearchFilter"
+        @submit="moderatorEnterList"
+        :params="userSearchParams"
+        instant
+        class="flex-grow-1"
+      />
+      <template v-if="hasParticipantNumbers">
+        <div style="width: 10px"></div>
+        <v-text-field
+          :label="t('speaker.addByParticipantNumber')"
+          class="mb-0 flex-grow-1"
+          v-model="participantNumberInput"
+          @keydown.enter="addParticipantNumbers()"
+        />
+      </template>
+    </div>
+    <p v-else>
+      <em>{{ t('speaker.cantManageList') }}</em>
+    </p>
+    <v-sheet elevation="4" rounded="lg" v-if="currentSpeaker" class="my-4 pa-3">
+      <div class="d-flex mb-2 align-center">
+        <UserAvatar :pk="currentSpeaker.user" class="mr-2" />
+        <User :pk="currentSpeaker.user" style="font-size: 1.2rem" />
+      </div>
+      <p class="text-h3 text-right">
+        <Moment in-seconds ordinary :date="currentSpeaker.started" />
+      </p>
+    </v-sheet>
+    <v-list
+      v-if="annotatedSpeakerQueue.length"
+      density="comfortable"
+      bg-color="background"
+    >
+      <template v-for="{ title, queue } in speakerGroups" :key="title">
+        <v-list-subheader v-if="title" class="mt-3">
+          {{ title }}
+        </v-list-subheader>
+        <v-list-item
+          v-for="user in queue"
+          :key="user"
+          :class="{ self: isSelf(user) }"
+        >
+          <template #prepend>
+            <UserAvatar :pk="user" />
+          </template>
+          <v-list-item-title class="flex-grow-1">
+            <User :pk="user" />
+          </v-list-item-title>
+          <template #append>
+            <span class="btn-group d-flex flex-nowrap">
+              <v-btn
+                color="primary"
+                :disabled="!canStartSpeaker"
+                @click="startSpeaker(user)"
+                size="x-small"
+              >
+                <v-icon icon="mdi-play" />
+              </v-btn>
+              <v-btn
+                color="warning"
+                @click="moderatorLeaveList(user)"
+                size="x-small"
+              >
+                <v-icon icon="mdi-delete" />
+              </v-btn>
+            </span>
+          </template>
+        </v-list-item>
+      </template>
+    </v-list>
+    <p v-else class="mt-4">
+      <em>{{ t('speaker.queueEmpty') }}</em>
+    </p>
+  </div>
+</template>
