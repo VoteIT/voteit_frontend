@@ -1,3 +1,4 @@
+import { enumerate, groupby, imap, map } from 'itertools'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -12,7 +13,6 @@ import {
 } from './useSpeakerLists'
 import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
-import { enumerate, groupby, imap, map } from 'itertools'
 import systemMethods from './systemMethods'
 
 export default function useSpeakerList(listId: Ref<number | undefined>) {
@@ -67,19 +67,29 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
     }
   }
 
+  /**
+   * Speaker groups
+   * @example
+   * [
+   *   { title: 'Safe positions', queue: [1] },
+   *   { title: 'List 1': queue: [2, 3] },
+   *   { title: 'List 2': queue: [4] }
+   * ]
+   */
   const speakerGroups = computed(() => {
     if (!speakerSystem.value) return []
+    const keyFn = getGroupKeyFn(speakerSystem.value) // Create a key function
     return map(
       groupby(
         imap(
-          enumerate(annotatedSpeakerQueue.value, 1),
+          enumerate(annotatedSpeakerQueue.value, 1), // Start at position 1
           ([position, speaker]) => ({ position, ...speaker }) // Join into one object
-        ),
-        getGroupKeyFn(speakerSystem.value) // Create a key function
+        ), // This is an iterator of speakerEntry
+        keyFn
       ),
       ([title, entries]) => ({
-        title,
-        queue: map(entries, (e) => e.user) // Deconstruct into an array of user numbers
+        title, // groupby key is title
+        queue: map(entries, (e) => e.user) // Deconstruct into an array of users (number[])
       })
     )
   })
