@@ -30,7 +30,7 @@ import SpeakerHandling from '../speakerLists/SpeakerHandling.vue'
 
 import AppBar from './AppBar.vue'
 import AgendaNavigation from './AgendaNavigation.vue'
-import ProposalHandling from './ProposalHandling.vue'
+import DecisionsTab from './DecisionsTab.vue'
 import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
 import usePlenary from './usePlenary'
@@ -250,6 +250,6 @@ const pollMenu = computed<MenuItem[]>(() => {
         </em>
       </p>
     </template>
-    <ProposalHandling v-if="currentTab === 'decisions'" />
+    <DecisionsTab v-if="currentTab === 'decisions'" />
   </v-main>
 </template>
