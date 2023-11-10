@@ -27,8 +27,14 @@ function navigateAgendaItem(aid?: number) {
   if (!aid) return
   router.push(getPlenaryPath({ aid }))
 }
-onKeyStroke('ArrowLeft', () => navigateAgendaItem(previousAgendaItem.value?.pk))
-onKeyStroke('ArrowRight', () => navigateAgendaItem(nextAgendaItem.value?.pk))
+onKeyStroke(
+  'ArrowLeft',
+  (event) => !event.altKey && navigateAgendaItem(previousAgendaItem.value?.pk)
+)
+onKeyStroke(
+  'ArrowRight',
+  (event) => !event.altKey && navigateAgendaItem(nextAgendaItem.value?.pk)
+)
 
 const breadcrumbs = computed(() => [
   { title: meetingRoom.value?.title ?? '-' },
