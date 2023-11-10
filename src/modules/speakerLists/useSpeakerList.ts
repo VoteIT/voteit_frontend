@@ -1,4 +1,4 @@
-import { enumerate, groupby, imap, map } from 'itertools'
+import { enumerate, groupby, map } from 'itertools'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -7,7 +7,6 @@ import { SpeakerSystem } from './types'
 import {
   getCurrent,
   getHistory,
-  getTimesSpoken,
   speakerLists,
   speakerSystems
 } from './useSpeakerLists'
@@ -33,37 +32,23 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
   const currentSpeaker = computed(() =>
     listId.value ? getCurrent(listId.value) : undefined
   )
-  /**
-   * Speaker queue as objects, with user and times spoken
-   */
-  const annotatedSpeakerQueue = computed(() => {
-    if (!listId.value) return []
-    const timesSpokenMap = getTimesSpoken(listId.value)
-    return speakerQueue.value.map((user) => ({
-      user,
-      timesSpoken: timesSpokenMap[user] ?? 0
-    }))
-  })
 
   /**
    * Creates a key function to be used by itertools.groupby to create speakerGroups.
    * systemMethods is a half-baked plugin architecture, to be extended at a later point.
    */
-  function getGroupKeyFn(system: SpeakerSystem) {
+  function getGroupKeyFn(system: SpeakerSystem, listId: number) {
     const safePositions = system.safe_positions ?? 0
     const methodKeyFn = systemMethods[system.method_name].getGroupKeyFn(
       t,
-      system.settings
+      system.settings,
+      listId
     )
-    return (speakerEntry: {
-      position: number
-      user: number
-      timesSpoken: number
-    }) => {
+    return ([position, user]: [number, number]) => {
       // Safe positions first, then system method logic.
-      return speakerEntry.position <= safePositions
+      return position <= safePositions
         ? t('speaker.lockedPositions')
-        : methodKeyFn(speakerEntry)
+        : methodKeyFn({ position, user })
     }
   }
 
@@ -77,19 +62,17 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
    * ]
    */
   const speakerGroups = computed(() => {
-    if (!speakerSystem.value) return []
-    const keyFn = getGroupKeyFn(speakerSystem.value) // Create a key function
+    if (!speakerSystem.value || !listId.value) return []
+    const keyFn = getGroupKeyFn(speakerSystem.value, listId.value) // Create a key function
     return map(
       groupby(
-        imap(
-          enumerate(annotatedSpeakerQueue.value, 1), // Start at position 1
-          ([position, speaker]) => ({ position, ...speaker }) // Join into one object
-        ), // This is an iterator of speakerEntry
+        enumerate(speakerQueue.value, 1), // Start at position 1
         keyFn
       ),
-      ([title, entries]) => ({
+      ([title, posUser]) => ({
         title, // groupby key is title
-        queue: map(entries, (e) => e.user) // Deconstruct into an array of users (number[])
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        queue: map(posUser, ([_, user]) => user) // Deconstruct enumeration into an array of users (number[])
       })
     )
   })
@@ -153,7 +136,6 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
   )
 
   return {
-    annotatedSpeakerQueue,
     canEnterList: computed(
       () =>
         !userInQueue.value &&

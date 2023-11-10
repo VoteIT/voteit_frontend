@@ -26,7 +26,6 @@ const { t } = useI18n()
 
 const { meetingId } = useMeeting()
 const {
-  annotatedSpeakerQueue,
   canStartSpeaker,
   currentSpeaker,
   speakerGroups,
@@ -187,7 +186,7 @@ onKeyStroke(
       </p>
     </v-sheet>
     <v-list
-      v-if="annotatedSpeakerQueue.length"
+      v-if="speakerGroups.length"
       density="comfortable"
       bg-color="background"
     >
