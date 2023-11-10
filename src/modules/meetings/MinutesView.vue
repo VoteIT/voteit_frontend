@@ -16,7 +16,12 @@
       </v-btn-toggle>
     </div>
     <v-expand-transition>
-      <v-sheet v-if="baseSetting" border rounded class="pa-4 d-print-none">
+      <v-sheet
+        v-if="baseSetting"
+        :border="true"
+        rounded
+        class="pa-4 d-print-none"
+      >
         <h3>
           {{ t('minutes.includeProposalStates') }}
         </h3>
@@ -154,6 +159,7 @@ import { useI18n } from 'vue-i18n'
 import { WorkflowState } from '@/contentTypes/types'
 import User from '@/components/User.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
+import Tag from '@/components/Tag.vue'
 
 import useAgenda from '../agendas/useAgenda'
 import useUserDetails from '../organisations/useUserDetails'
@@ -161,26 +167,13 @@ import { proposalType } from '../proposals/contentTypes'
 import { Proposal, ProposalState } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
 import { proposalStates } from '../proposals/workflowStates'
+import { PROPOSAL_STATE_ORDER } from '../proposals/constants'
+import { isUnresolvedState } from '../proposals/utils'
 
 import useMeeting from './useMeeting'
 import { orderBy } from 'lodash'
 import useMeetingTitle from './useMeetingTitle'
 import useMeetingGroups from './useMeetingGroups'
-import Tag from '@/components/Tag.vue'
-
-const UNRESOLVED_STATES = Object.freeze([
-  ProposalState.Published,
-  ProposalState.Voting
-])
-
-const PROPOSAL_STATE_ORDER = Object.freeze([
-  ProposalState.Approved,
-  ProposalState.Denied,
-  ProposalState.Voting,
-  ProposalState.Published,
-  ProposalState.Unhandled,
-  ProposalState.Retracted
-])
 
 const PROPOSAL_ORDERING = {
   created: ['created'],
@@ -265,7 +258,7 @@ export default defineComponent({
           // body,
           hasUnresolved: proposalStates.some(
             ({ state, proposals }) =>
-              UNRESOLVED_STATES.includes(state) && proposals.length
+              isUnresolvedState(state) && proposals.length
           ),
           pk,
           proposalStates: proposalStates.filter(

@@ -199,6 +199,10 @@ const pollMenu = computed<MenuItem[]>(() => {
     ...pollStateToMenu(PollState.Finished)
   ]
 })
+
+const ongoingPollCount = computed(
+  () => getAiPolls(agendaId.value, PollState.Ongoing).length
+)
 </script>
 
 <template>
@@ -207,7 +211,16 @@ const pollMenu = computed<MenuItem[]>(() => {
       <v-tabs v-model="currentTab" :items="tabs" />
       <v-spacer />
       <template v-if="currentTab === 'decisions'">
-        <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
+        <v-badge
+          :model-value="!!ongoingPollCount"
+          :content="ongoingPollCount"
+          :max="9"
+          offset-x="6"
+          offset-y="6"
+          color="background"
+        >
+          <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
+        </v-badge>
         <v-menu location="bottom right">
           <template #activator="{ props }">
             <v-btn
@@ -226,7 +239,7 @@ const pollMenu = computed<MenuItem[]>(() => {
                 <v-list-item
                   @click.stop="toggle"
                   :prepend-icon="state.icon"
-                  :a-ctive="isSelected"
+                  :active="isSelected"
                   :title="title"
                   :subtitle="t('proposal.proposalCount', { count }, count)"
                 />

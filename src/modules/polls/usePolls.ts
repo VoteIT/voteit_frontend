@@ -63,7 +63,7 @@ function filterPolls(_filter: (poll: Poll) => boolean) {
 /**
  * Check if any poll matches filter
  */
-function anyPoll(filter: (poll: Poll) => boolean) {
+export function anyPoll(filter: (poll: Poll) => boolean) {
   return any(polls.values(), filter)
 }
 

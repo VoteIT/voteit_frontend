@@ -20,13 +20,20 @@ export default function useRoom() {
   )
   const highlightedProposals = computed(() => getProposals(highlighted.value))
 
+  /**
+   * Is anyone broadcasting?
+   */
+  const hasBroadcast = computed(() => {
+    if (!meetingRoom.value) return false
+    return meetingRoom.value.open && meetingRoom.value.send_proposals
+  })
+
+  /**
+   * Is current user broadcasting?
+   */
   const isBroadcasting = computed(() => {
     if (!meetingRoom.value) return false
-    return (
-      meetingRoom.value.open &&
-      meetingRoom.value.send_proposals &&
-      meetingRoom.value.handler === user.value?.pk
-    )
+    return hasBroadcast.value && meetingRoom.value.handler === user.value?.pk
   })
 
   async function setAgendaId(aid: number) {
@@ -38,7 +45,7 @@ export default function useRoom() {
   }
 
   async function setBroadcast(content?: {
-    agenda_item: number
+    agenda_item?: number
     proposals: number[]
   }) {
     if (!user.value) throw new Error('No authenticated user')
@@ -67,6 +74,7 @@ export default function useRoom() {
   )
 
   return {
+    hasBroadcast,
     highlighted,
     highlightedProposals,
     isBroadcasting,

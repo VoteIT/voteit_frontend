@@ -17,15 +17,16 @@ import useProposals from '../proposals/useProposals'
 import useTextDocuments from '../proposals/useTextDocuments'
 import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
+import useRoom from '../rooms/useRoom'
 
 import usePlenary from './usePlenary'
-import useRoom from '../rooms/useRoom'
+import AgendaInfoAlert from './AgendaInfoAlert.vue'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
   ProposalState.Approved,
   ProposalState.Denied
-]
+] as Readonly<ProposalState[]>
 
 const { meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
@@ -34,18 +35,17 @@ const {
   highlightedProposals,
   isBroadcasting,
   meetingRoom,
-  setAgendaId,
   setHighlightedProposals
 } = useRoom()
 
 const {
-  filterProposalStates,
   selectedProposalIds,
   selectedProposals,
-  selectProposal,
-  selectTag,
+  clearSelected,
   deselectProposal,
-  clearSelected
+  filterProposalStates,
+  selectProposal,
+  selectTag
 } = usePlenary(meetingId, agendaId)
 
 const { t } = useI18n()
@@ -156,23 +156,7 @@ onKeyStroke(
 </script>
 
 <template>
-  <v-alert
-    v-if="isBroadcasting && meetingRoom?.agenda_item !== agendaId"
-    class="mb-6 pa-8"
-    :border="true"
-    icon="mdi-broadcast"
-    type="warning"
-    rounded
-  >
-    <p class="text-center mb-4">
-      {{ t('room.broadcastThisAgendaItem') }}
-    </p>
-    <div class="text-center">
-      <v-btn size="large" @click="setAgendaId(agendaId)">
-        {{ t('room.selectAgendaItem') }}
-      </v-btn>
-    </div>
-  </v-alert>
+  <AgendaInfoAlert class="mb-6" />
   <v-row v-if="!selectedProposals.length && !pool.length">
     <v-col
       md="8"

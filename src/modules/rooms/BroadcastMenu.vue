@@ -12,9 +12,11 @@ import usePlenary from '../plenary/usePlenary'
 import useRoom from './useRoom'
 import { roomType } from './contentTypes'
 import { stripHTML } from '@/utils'
+import { AgendaState } from '../agendas/types'
 
 const { t } = useI18n()
 const {
+  hasBroadcast,
   isBroadcasting,
   meetingRoom,
   setBroadcast,
@@ -23,18 +25,14 @@ const {
   setSlsBroadcast
 } = useRoom()
 const { meetingId } = useMeeting()
-const { agendaId } = useAgenda(meetingId)
+const { agendaId, agendaItem } = useAgenda(meetingId)
 const { selectedProposalIds } = usePlenary(meetingId, agendaId)
 const { getUser } = useUserDetails()
 
 const broadcastStatusText = computed(() => {
   if (!meetingRoom.value) return
   if (isBroadcasting.value) return t('room.broadcastingProposals')
-  if (
-    meetingRoom.value.open &&
-    meetingRoom.value.send_proposals &&
-    meetingRoom.value.handler
-  )
+  if (hasBroadcast.value && meetingRoom.value.handler)
     return t('room.broadcastingUser', { ...getUser(meetingRoom.value.handler) })
   return t('room.noBroadcast')
 })
@@ -67,7 +65,10 @@ async function toggleBroadcast() {
   if (isBroadcasting.value) setProposalBroadcast(false)
   else
     setBroadcast({
-      agenda_item: agendaId.value,
+      agenda_item:
+        agendaItem.value?.state === AgendaState.Private
+          ? undefined
+          : agendaId.value,
       proposals: [...selectedProposalIds]
     })
 }

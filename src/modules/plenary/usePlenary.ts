@@ -8,7 +8,7 @@ import useRoom from '../rooms/useRoom'
 
 const { getProposal, forProposals } = useProposals()
 
-const stateFilter = ref([ProposalState.Published])
+const stateFilter = ref([ProposalState.Published, ProposalState.Voting])
 const selectedProposalIds = reactive<number[]>([])
 
 export default function usePlenary(

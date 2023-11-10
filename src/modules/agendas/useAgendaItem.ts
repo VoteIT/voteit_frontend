@@ -1,3 +1,4 @@
+import { any } from 'itertools'
 import type { Dictionary } from 'lodash'
 import { computed, Ref } from 'vue'
 
@@ -12,6 +13,8 @@ import {
   canAddDocument as _canAddDocument,
   getProposalBlockReason
 } from '../proposals/rules'
+import { iterProposals } from '../proposals/useProposals'
+import { isUnresolvedState } from '../proposals/utils'
 
 import { canChangeAgendaItem as canChange } from './rules'
 
@@ -91,6 +94,14 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
     return _canAddDocument(agendaItem.value)
   })
 
+  const hasUnresolvedProposals = computed(() =>
+    any(
+      iterProposals(
+        (p) => p.agenda_item === agendaId.value && isUnresolvedState(p.state)
+      )
+    )
+  )
+
   return {
     agendaItem,
     agendaBody,
@@ -100,6 +111,7 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
     canAddPoll,
     canAddProposal,
     canChangeAgendaItem,
+    hasUnresolvedProposals,
     nextPollTitle,
     proposalBlockReason,
     getAgendaItemRoute
