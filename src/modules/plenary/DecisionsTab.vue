@@ -165,12 +165,12 @@ onKeyStroke(
       offset-lg="4"
       class="text-center text-secondary mt-12"
     >
-      <h2 class="text-h4 mb-6">{{ t('plenary.noProposalsInFilter') }}</h2>
-      <v-alert
-        v-if="hasProposals"
-        type="info"
-        :text="t('plenary.hintModifyFilter')"
-      />
+      <h2 class="text-h4 mb-6">
+        {{ t('plenary.noProposalsInFilter') }}
+      </h2>
+      <p>
+        {{ t('plenary.hintModifyFilter') }}
+      </p>
     </v-col>
   </v-row>
   <v-row v-else>
