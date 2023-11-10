@@ -89,7 +89,7 @@
         <p
           v-if="settings.showMeetingBody && meeting.body"
           v-html="meeting.body"
-        />
+        ></p>
       </template>
       <div
         v-for="{ hasUnresolved, pk, proposalStates, title } in annotatedAgenda"
@@ -160,6 +160,7 @@ import useMeeting from './useMeeting'
 import { orderBy } from 'lodash'
 import useMeetingTitle from './useMeetingTitle'
 import useMeetingGroups from './useMeetingGroups'
+import Tag from '@/components/Tag.vue'
 
 const UNRESOLVED_STATES = Object.freeze([
   ProposalState.Published,
@@ -200,7 +201,8 @@ const { getState: getProposalState } = proposalType.useWorkflows()
 export default defineComponent({
   components: {
     CheckboxMultipleSelect,
-    User
+    User,
+    Tag
   },
   setup() {
     const { t } = useI18n()
