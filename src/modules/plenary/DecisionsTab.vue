@@ -49,7 +49,7 @@ const {
 } = usePlenary(meetingId, agendaId)
 
 const { t } = useI18n()
-const { anyProposal, getAgendaProposals } = useProposals()
+const { getAgendaProposals } = useProposals()
 
 const isBroadcastingAI = computed(
   () =>
@@ -95,10 +95,6 @@ const pool = computed(() =>
     (p) => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
   )
 )
-const hasProposals = computed(() =>
-  anyProposal((p) => p.agenda_item === agendaId.value)
-)
-
 const transitioning = reactive(new Set<number>())
 async function makeTransition(
   p: Pick<Proposal, 'state' | 'pk'>,
