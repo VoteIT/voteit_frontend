@@ -382,6 +382,8 @@
     "minutes": "Protokoll",
     "print": "Skriv ut",
     "noInformation": "Ingen information",
+    "proposalMeta": "Förslag {tag}",
+    "proposalMetaAuthor": "Förslag {tag} från {author}",
     "proposalOrder": "Ordning på förslag",
     "showAuthors": "Visa förslagsläggare",
     "showSeparators": "Visa horisontella linjer mellan dagordningspunkter",

@@ -123,16 +123,22 @@
             {{ title }}
           </h3>
           <div v-for="p in proposals" :key="p.pk" class="my-3">
-            <h4>
-              {{ t('proposal.proposal') }} <Tag disabled :name="p.prop_id" />
-              <template v-if="settings.showAuthors">
-                {{ ' ' + t('by') }}
-                <span v-if="p.meeting_group">
-                  {{ getMeetingGroup(p.meeting_group)?.title }}
-                </span>
-                <User v-else-if="p.author" :pk="p.author" />
+            <i18n-t
+              v-if="settings.showAuthors"
+              keypath="minutes.proposalMetaAuthor"
+              tag="h4"
+            >
+              <template #tag><Tag disabled :name="p.prop_id" /></template>
+              <template v-if="p.meeting_group" #author>
+                {{ getMeetingGroup(p.meeting_group)?.title }}
               </template>
-            </h4>
+              <template v-else-if="p.author" #author>
+                <User :pk="p.author" />
+              </template>
+            </i18n-t>
+            <i18n-t v-else keypath="minutes.proposalMeta" tag="h4">
+              <template #tag><Tag disabled :name="p.prop_id" /></template>
+            </i18n-t>
             <div class="proposal-text-paragraph" v-html="getProposalBody(p)" />
           </div>
         </div>

@@ -382,6 +382,8 @@
     "minutes": "Minutes",
     "print": "Print",
     "noInformation": "No information",
+    "proposalMeta": "Proposal {tag}",
+    "proposalMetaAuthor": "Proposal {tag} from {author}",
     "proposalOrder": "Proposal order",
     "showAuthors": "Show proposal authors",
     "showSeparators": "Show horizontal separators",
