@@ -66,9 +66,16 @@ export function getSpeakerSystems(
   )
 }
 
-export function getTimesSpoken(list: number) {
+/**
+ * Generate a getter for times spoken on list.
+ * @example
+ * const getSpoken = timesSpokenGetter(listId)
+ * const spoken = getSpoken(userId)
+ */
+export function timesSpokenGetter(list: number) {
   const spokenUserIds = getHistory(list).map(({ user }) => user)
-  return countBy(spokenUserIds)
+  const map = countBy(spokenUserIds)
+  return (user: number) => map[user] ?? 0
 }
 
 export function getSpeakerLists(predicate: Predicate<SpeakerList>) {

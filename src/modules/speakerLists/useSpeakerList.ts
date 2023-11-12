@@ -48,7 +48,7 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
       // Safe positions first, then system method logic.
       return position <= safePositions
         ? t('speaker.lockedPositions')
-        : methodKeyFn({ position, user })
+        : methodKeyFn(user)
     }
   }
 
@@ -63,16 +63,15 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
    */
   const speakerGroups = computed(() => {
     if (!speakerSystem.value || !listId.value) return []
-    const keyFn = getGroupKeyFn(speakerSystem.value, listId.value) // Create a key function
     return map(
       groupby(
         enumerate(speakerQueue.value, 1), // Start at position 1
-        keyFn
+        getGroupKeyFn(speakerSystem.value, listId.value) // Create a key function
       ),
-      ([title, posUser]) => ({
+      ([title, posUsers]) => ({
         title, // groupby key is title
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        queue: map(posUser, ([_, user]) => user) // Deconstruct enumeration into an array of users (number[])
+        queue: map(posUsers, ([pos, user]) => user) // Deconstruct enumeration into an array of users (number[])
       })
     )
   })
