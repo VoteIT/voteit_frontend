@@ -10,13 +10,7 @@ const DEFAULT_CONFIG: RestApiConfig = {
   alertOnError: true
 }
 
-enum HTTPMethod {
-  Get = 'get',
-  Post = 'post',
-  Put = 'put',
-  Patch = 'patch',
-  Delete = 'delete'
-}
+type HTTPMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 export default class ContentAPI<
   T extends { pk?: number; state?: string },
@@ -90,27 +84,27 @@ export default class ContentAPI<
   }
 
   public add(data: Partial<T>): AxiosPromise<T> {
-    return this.call(HTTPMethod.Post, this.endpoint, { data })
+    return this.call('get', this.endpoint, { data })
   }
 
   public list<RT = T[]>(params?: object): AxiosPromise<RT> {
-    return this.call(HTTPMethod.Get, this.endpoint, { params })
+    return this.call('get', this.endpoint, { params })
   }
 
   public retrieve(pk: K): AxiosPromise<T> {
-    return this.call(HTTPMethod.Get, `${this.endpoint}${pk}/`)
+    return this.call('get', `${this.endpoint}${pk}/`)
   }
 
   public put(pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
-    return this.call(HTTPMethod.Put, `${this.endpoint}${pk}/`, { data })
+    return this.call('put', `${this.endpoint}${pk}/`, { data })
   }
 
   public patch(pk: K, data: Partial<T>): AxiosPromise<T> {
-    return this.call(HTTPMethod.Patch, `${this.endpoint}${pk}/`, { data })
+    return this.call('patch', `${this.endpoint}${pk}/`, { data })
   }
 
   public delete(pk: K): AxiosPromise {
-    return this.call(HTTPMethod.Delete, `${this.endpoint}${pk}/`)
+    return this.call('delete', `${this.endpoint}${pk}/`)
   }
 
   public getAction<Type>(pk: number, action: string): AxiosPromise<Type>
@@ -121,34 +115,39 @@ export default class ContentAPI<
   ): AxiosPromise<Type> {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
-      return this.call(
-        HTTPMethod.Get,
-        `${this.endpoint}${pkOrAction}/${action}/`
-      )
+      return this.call('get', `${this.endpoint}${pkOrAction}/${action}/`)
     }
-    return this.call(HTTPMethod.Get, `${this.endpoint}${pkOrAction}/`)
+    return this.call('get', `${this.endpoint}${pkOrAction}/`)
   }
 
   public action<Type>(
     pk: number,
     action: string,
-    data?: object
+    data?: object,
+    method?: HTTPMethod
   ): AxiosPromise<Type>
-  public action<Type>(action: string, data?: object): AxiosPromise<Type>
+  public action<Type>(
+    action: string,
+    data?: object,
+    method?: HTTPMethod
+  ): AxiosPromise<Type>
   public action(
     pkOrAction: number | string,
     actionOrData?: string | object,
-    data?: object
+    dataOrMethod?: object | HTTPMethod,
+    method?: HTTPMethod
   ) {
     // Cannot handle K = string
     if (typeof pkOrAction === 'number') {
       return this.call(
-        HTTPMethod.Post,
+        method ?? 'post',
         `${this.endpoint}${pkOrAction}/${actionOrData}/`,
-        { data }
+        { data: dataOrMethod }
       )
     }
-    return this.call(HTTPMethod.Post, `${this.endpoint}${pkOrAction}/`, {
+    if (typeof dataOrMethod === 'object')
+      throw new Error('Unexpected value as method')
+    return this.call(dataOrMethod ?? 'post', `${this.endpoint}${pkOrAction}/`, {
       data: actionOrData
     })
   }
@@ -167,7 +166,7 @@ export default class ContentAPI<
   public async getTransitions(pk: number): Promise<Transition[]> {
     // Cannot handle K = string
     const { data }: { data: Transition[] } = await this.call(
-      HTTPMethod.Get,
+      'get',
       `${this.endpoint}${pk}/transitions/`
     )
     return data.map((t) => ({
