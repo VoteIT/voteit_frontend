@@ -169,7 +169,7 @@ onKeyStroke(
       </p>
     </v-col>
   </v-row>
-  <v-row v-else>
+  <v-row v-else class="proposals">
     <v-col cols="7" md="8" lg="9">
       <Proposal
         v-for="p in selectedProposals"
@@ -239,3 +239,13 @@ onKeyStroke(
     </v-col>
   </v-row>
 </template>
+
+<style lang="sass">
+.proposals
+  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - 12px) !important
+  overflow: hidden !important
+  margin-bottom: -24px !important
+  > div
+    overflow-y: auto
+    height: 100%
+</style>
