@@ -1,4 +1,4 @@
-import { computed, ref, Ref } from 'vue'
+import { computed, Ref } from 'vue'
 
 import {
   getCurrent,
@@ -29,12 +29,9 @@ export default function useSpeakerSystem(
     () => systemActiveList.value && systemActiveList.value.queue
   )
 
+  const { stopSpeaker } = useSpeakerList(systemActiveListId)
   async function setActiveList(list: SpeakerList, stopActiveSpeaker = false) {
-    if (stopActiveSpeaker) {
-      const system = speakerSystems.get(list.speaker_system)
-      if (system?.active_list)
-        await useSpeakerList(ref(system.active_list)).stopSpeaker()
-    }
+    if (stopActiveSpeaker && systemActiveListId.value) await stopSpeaker()
     await speakerListType.methodCall('set_active', { pk: list.pk })
   }
 
