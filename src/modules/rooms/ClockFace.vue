@@ -29,12 +29,12 @@ const timeToGo = computed(() => {
       '--start': minutes.value,
       '--time': minutesToGo % 360
     }
-  const hoursToGo = target.value.hours - hours.value
-  if (hoursToGo < 360)
-    return {
-      '--start': hours.value,
-      '--time': hoursToGo % 360
-    }
+  // const hoursToGo = target.value.hours - hours.value
+  // if (hoursToGo < 360)
+  //   return {
+  //     '--start': hours.value,
+  //     '--time': hoursToGo % 360
+  //   }
 })
 
 function updateTime() {
