@@ -8,6 +8,7 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import { highlightedStore, meetingRoomStore } from './useRooms'
 import { roomType } from './contentTypes'
+import { isEqual } from 'lodash'
 
 export default function useRoom() {
   const route = useRoute()
@@ -37,7 +38,12 @@ export default function useRoom() {
   })
 
   async function setAgendaId(aid: number) {
-    await roomType.update(roomId.value, { agenda_item: aid })
+    await roomType.api.action(
+      roomId.value,
+      'handle',
+      { agenda_item: aid },
+      'patch'
+    )
   }
 
   async function setOpen(open: boolean) {
@@ -46,15 +52,35 @@ export default function useRoom() {
 
   async function setBroadcast(content?: {
     agenda_item?: number
-    proposals: number[]
+    highlighted: number[]
   }) {
-    if (!user.value) throw new Error('No authenticated user')
-    await roomType.update(roomId.value, {
-      handler: user.value.pk,
-      open: true,
-      send_proposals: true,
-      ...content
-    })
+    if (!user.value)
+      throw new Error(
+        'No authenticated user available when trying to set broadcast'
+      )
+    if (!meetingRoom.value)
+      throw new Error(
+        `No meeting room data available for room ${roomId.value} when trying to set broadcast`
+      )
+    const { handler, open, send_proposals } = meetingRoom.value
+    // Make sure broadcast is on
+    if (!open || !send_proposals)
+      await roomType.update(roomId.value, {
+        open: true,
+        send_proposals: true
+      })
+    // Make sure user is handler
+    if (handler !== user.value?.pk) await setHandler()
+    // Set content
+    if (content)
+      await roomType.api.action(roomId.value, 'handle', content, 'patch')
+  }
+
+  /**
+   * Sets current user as handler.
+   */
+  function setHandler() {
+    return roomType.api.action(roomId.value, 'set-handler')
   }
 
   async function setProposalBroadcast(active = true) {
@@ -66,7 +92,13 @@ export default function useRoom() {
   }
 
   async function setHighlightedProposals(proposalIds: number[]) {
-    await roomType.update(roomId.value, { highlighted: proposalIds } as any)
+    if (isEqual(proposalIds, highlighted.value)) return
+    await roomType.api.action(
+      roomId.value,
+      'handle',
+      { highlighted: proposalIds },
+      'patch'
+    )
   }
 
   const speakerSystem = computed(() =>
@@ -83,6 +115,7 @@ export default function useRoom() {
     speakerSystem,
     setAgendaId,
     setBroadcast,
+    setHandler,
     setOpen,
     setProposalBroadcast,
     setSlsBroadcast,

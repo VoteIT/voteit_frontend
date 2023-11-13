@@ -141,7 +141,7 @@ ol.speaker-queue
 
 <template>
   <v-row v-if="speakerSystem">
-    <v-col cols="12" order-sm="1" sm="5" md="5" lg="4" class="speaker-lists">
+    <v-col cols="12" order-sm="1" sm="5" md="5" class="speaker-lists">
       <div class="d-flex mb-3">
         <h2 class="flex-grow-1">
           {{ t('speaker.listChoices') }}
@@ -293,7 +293,7 @@ ol.speaker-queue
       </v-item-group>
       <SpeakerListHistory v-if="currentList" :list="currentList" class="mt-4" />
     </v-col>
-    <v-col cols="12" order-sm="0" sm="7" md="7" lg="6" offset-lg="1">
+    <v-col cols="12" order-sm="0" sm="7" md="7">
       <SpeakerListControls v-if="currentList" :list-id="currentList.pk" />
     </v-col>
   </v-row>

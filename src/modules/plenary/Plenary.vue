@@ -40,19 +40,31 @@ const { t } = useI18n()
 provide(RoleContextKey, 'meeting')
 provide(LastReadKey, ref(new Date()))
 
+const tabs = computed(
+  () =>
+    [
+      {
+        prependIcon: 'mdi-bullhorn',
+        value: 'discussion',
+        text: t('plenary.discussion')
+      },
+      {
+        disabled: !isModerator.value,
+        prependIcon: 'mdi-gavel',
+        value: 'decisions',
+        text: t('plenary.decisions')
+      }
+    ] as const
+)
+
 const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
-const { speakerSystem } = useRoom()
+const { meetingRoom, speakerSystem, setSlsBroadcast } = useRoom()
 const { getState } = pollType.useWorkflows()
 
 const { nextPollTitle } = useAgendaItem(agendaId)
-const {
-  currentTab,
-  stateFilter,
-  selectedProposals,
-  selectedProposalIds,
-  tabs
-} = usePlenary(meetingId, agendaId)
+const { currentTab, stateFilter, selectedProposals, selectedProposalIds } =
+  usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 const { getState: getProposalState } = proposalType.useWorkflows()
@@ -207,7 +219,7 @@ const ongoingPollCount = computed(
 
 <template>
   <AppBar>
-    <template #default v-if="isModerator">
+    <template #default>
       <v-tabs v-model="currentTab" :items="tabs" />
       <v-spacer />
       <template v-if="currentTab === 'decisions'">
@@ -248,14 +260,28 @@ const ongoingPollCount = computed(
           </v-list>
         </v-menu>
       </template>
+      <BroadcastMenu />
     </template>
   </AppBar>
   <AgendaNavigation />
-  <v-app-bar v-if="isModerator" bg-color="secondary" location="bottom">
-    <BroadcastMenu />
-  </v-app-bar>
   <v-main class="ma-6">
     <template v-if="currentTab === 'discussion'">
+      <v-alert
+        v-if="!meetingRoom?.send_sls"
+        class="mb-6"
+        :border="true"
+        type="info"
+        :title="t('room.displaySpeakers')"
+        :text="t('room.displaySpeakersDescription')"
+      >
+        <template #append>
+          <v-btn
+            @click="setSlsBroadcast()"
+            prepend-icon="mdi-bullhorn"
+            :text="t('room.displaySpeakers')"
+          />
+        </template>
+      </v-alert>
       <SpeakerHandling v-if="speakerSystem" :system-id="speakerSystem.pk" />
       <p v-else>
         <em>

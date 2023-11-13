@@ -51,6 +51,9 @@ const {
 const { t } = useI18n()
 const { getAgendaProposals } = useProposals()
 
+/**
+ * User is broadcasting and current Agenda Item is being broadcasted
+ */
 const isBroadcastingAI = computed(
   () =>
     isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
@@ -73,10 +76,10 @@ watch(agendaId, () => {
 })
 
 // If current Agenda Item is broadcasting, select highlighted proposals from that broadcast.
-onMounted(() => {
+watch(highlightedProposals, (proposals) => {
+  if (!isBroadcastingAI.value) return
   if (meetingRoom.value?.agenda_item !== agendaId.value) return
-  clearSelected()
-  highlightedProposals.value.forEach(selectProposal)
+  proposals.forEach((p) => selectProposal(p))
 })
 
 /**

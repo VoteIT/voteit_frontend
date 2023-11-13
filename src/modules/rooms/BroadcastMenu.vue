@@ -1,49 +1,23 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
-import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
-import useUserDetails from '../organisations/useUserDetails'
-import usePlenary from '../plenary/usePlenary'
 import useRoom from './useRoom'
 import { roomType } from './contentTypes'
 import { stripHTML } from '@/utils'
-import { AgendaState } from '../agendas/types'
 
 const { t } = useI18n()
 const {
-  hasBroadcast,
   isBroadcasting,
   meetingRoom,
-  setBroadcast,
   setOpen,
   setProposalBroadcast,
   setSlsBroadcast
 } = useRoom()
-const { meetingId } = useMeeting()
-const { agendaId, agendaItem } = useAgenda(meetingId)
-const { selectedProposalIds } = usePlenary(meetingId, agendaId)
-const { getUser } = useUserDetails()
-
-const broadcastStatusText = computed(() => {
-  if (!meetingRoom.value) return
-  if (isBroadcasting.value) return t('room.broadcastingProposals')
-  if (hasBroadcast.value && meetingRoom.value.handler)
-    return t('room.broadcastingUser', { ...getUser(meetingRoom.value.handler) })
-  return t('room.noBroadcast')
-})
-
-const broadcastConfirmText = computed(() => {
-  if (!meetingRoom.value) return
-  if (isBroadcasting.value) return t('room.confirmBroadcastStop')
-  return meetingRoom.value.open && meetingRoom.value.send_proposals
-    ? t('room.confirmBroadcastTakeover')
-    : t('room.confirmBroadcastStart')
-})
+const { isModerator, getMeetingRoute } = useMeeting()
 
 const pauseEdit = reactive({
   isOpen: false,
@@ -61,26 +35,23 @@ async function savePauseMessage() {
   pauseEdit.isOpen = false
 }
 
-async function toggleBroadcast() {
-  if (isBroadcasting.value) setProposalBroadcast(false)
-  else
-    setBroadcast({
-      agenda_item:
-        agendaItem.value?.state === AgendaState.Private
-          ? undefined
-          : agendaId.value,
-      proposals: [...selectedProposalIds]
-    })
+function autoEllipse(text: string, maxLen = 16) {
+  if (text.length <= maxLen) return text
+  return text.slice(0, maxLen) + '…'
 }
 </script>
 
 <template>
   <v-menu>
     <template #activator="{ props }">
-      <v-btn icon="mdi-cogs" v-bind="props" />
+      <v-btn
+        :icon="isBroadcasting ? 'mdi-broadcast' : 'mdi-broadcast-off'"
+        v-bind="props"
+      />
     </template>
     <v-list v-if="meetingRoom">
       <v-list-item
+        v-if="isModerator"
         :prepend-icon="
           meetingRoom.open
             ? 'mdi-checkbox-marked-outline'
@@ -102,6 +73,7 @@ async function toggleBroadcast() {
         @click.stop="setSlsBroadcast(!meetingRoom.send_sls)"
       />
       <v-list-item
+        v-if="isModerator"
         :prepend-icon="
           meetingRoom.send_proposals
             ? 'mdi-checkbox-marked-outline'
@@ -119,8 +91,7 @@ async function toggleBroadcast() {
             v-bind="props"
             :title="t('room.pauseMessage')"
             :subtitle="
-              meetingRoom.body &&
-              stripHTML(meetingRoom.body).slice(0, 16) + '&hellip;'
+              meetingRoom.body && autoEllipse(stripHTML(meetingRoom.body))
             "
           />
         </template>
@@ -139,18 +110,12 @@ async function toggleBroadcast() {
           </div>
         </template>
       </DefaultDialog>
+      <v-list-item
+        v-if="isModerator"
+        prepend-icon="mdi-cogs"
+        :to="getMeetingRoute('controlPanel', { panel: 'rooms' })"
+        :title="t('room.settings')"
+      />
     </v-list>
   </v-menu>
-  <v-spacer />
-  <QueryDialog @confirmed="toggleBroadcast" color="warning">
-    <template #activator="{ props }">
-      {{ broadcastStatusText }}
-      <v-btn
-        :icon="isBroadcasting ? 'mdi-broadcast' : 'mdi-broadcast-off'"
-        v-bind="props"
-        :color="isBroadcasting ? 'warning' : undefined"
-      />
-    </template>
-    {{ broadcastConfirmText }}
-  </QueryDialog>
 </template>

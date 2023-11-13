@@ -1,5 +1,4 @@
 import { ComputedRef, computed, reactive, readonly, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import { ProposalState, Proposal } from '@/modules/proposals/types'
@@ -15,24 +14,11 @@ export default function usePlenary(
   meetingId: ComputedRef<number>,
   agendaItem: ComputedRef<number>
 ) {
-  const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
   const { roomId } = useRoom()
 
-  const tabs = [
-    {
-      prependIcon: 'mdi-bullhorn',
-      value: 'discussion',
-      text: t('plenary.discussion')
-    },
-    {
-      prependIcon: 'mdi-gavel',
-      value: 'decisions',
-      text: t('plenary.decisions')
-    }
-  ] as const
-  type Tab = (typeof tabs)[number]['value']
+  type Tab = 'discussion' | 'decisions'
 
   const currentTab = computed({
     get() {
@@ -65,6 +51,7 @@ export default function usePlenary(
   }
 
   function selectProposal(p: Pick<Proposal, 'pk'>) {
+    if (selectedProposalIds.includes(p.pk)) return
     selectedProposalIds.push(p.pk)
   }
   function deselectProposal(p: Pick<Proposal, 'pk'>) {
@@ -98,7 +85,6 @@ export default function usePlenary(
     selectedProposalIds: readonly(selectedProposalIds),
     selectedProposals,
     stateFilter,
-    tabs,
     clearSelected,
     deselectProposal,
     filterProposalStates,

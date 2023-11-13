@@ -24,8 +24,14 @@ const { meetingId } = useMeeting()
 const { getUser } = useUserDetails()
 const { agendaId, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, hasUnresolvedProposals } = useAgendaItem(agendaId)
-const { hasBroadcast, isBroadcasting, meetingRoom, setAgendaId, setBroadcast } =
-  useRoom()
+const {
+  hasBroadcast,
+  isBroadcasting,
+  meetingRoom,
+  setAgendaId,
+  setBroadcast,
+  setHandler
+} = useRoom()
 const { selectedProposalIds } = usePlenary(meetingId, agendaId)
 
 const isBroadcastingAI = computed(
@@ -58,15 +64,17 @@ const alertInfo = computed(() => {
               text: t('plenary.takeOverBroadcast'),
               async onClick() {
                 if (
-                  await dialogQuery({
+                  !(await dialogQuery({
                     title: t('room.confirmBroadcastTakeover'),
                     theme: ThemeColor.Warning
-                  })
+                  }))
                 )
-                  setBroadcast({
-                    agenda_item: agendaId.value,
-                    proposals: [...selectedProposalIds]
-                  })
+                  return
+                await setHandler()
+                await setBroadcast({
+                  agenda_item: agendaId.value,
+                  highlighted: [...selectedProposalIds]
+                })
               }
             }
           ]
@@ -85,7 +93,7 @@ const alertInfo = computed(() => {
               onClick() {
                 setBroadcast({
                   agenda_item: agendaId.value,
-                  proposals: [...selectedProposalIds]
+                  highlighted: [...selectedProposalIds]
                 })
               }
             }
