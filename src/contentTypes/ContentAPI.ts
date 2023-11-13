@@ -84,7 +84,7 @@ export default class ContentAPI<
   }
 
   public add(data: Partial<T>): AxiosPromise<T> {
-    return this.call('get', this.endpoint, { data })
+    return this.call('post', this.endpoint, { data })
   }
 
   public list<RT = T[]>(params?: object): AxiosPromise<RT> {
