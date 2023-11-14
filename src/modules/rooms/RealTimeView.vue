@@ -3,16 +3,18 @@ import { computed, provide } from 'vue'
 import { RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
+import useChannel from '@/composables/useChannel'
 import useMeetingChannel from '../meetings/useMeetingChannel'
+import useMeetingTitle from '../meetings/useMeetingTitle'
 import Proposal from '../proposals/Proposal.vue'
+import { ProposalState } from '../proposals/types'
+import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import useRoom from '../rooms/useRoom'
 import ActiveSpeakerList from '../speakerLists/ActiveSpeakerList.vue'
+import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
-import { ProposalState } from '../proposals/types'
-import useMeetingTitle from '../meetings/useMeetingTitle'
-import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 provide(RoleContextKey, 'meeting')
 
@@ -20,6 +22,10 @@ const { t } = useI18n()
 
 const { highlightedProposals, meetingRoom } = useRoom()
 
+useChannel(
+  'agenda_item',
+  computed(() => meetingRoom.value?.agenda_item || undefined) // null not acceptable in useChannel
+)
 useMeetingChannel()
 useMeetingTitle(t('room.realTime'))
 
@@ -101,6 +107,9 @@ const paused = computed(
                 size="x-large"
                 class="mb-n2"
               />
+            </template>
+            <template #bottom>
+              <ButtonPlugins mode="presentation" :proposal="p" class="mt-2" />
             </template>
           </Proposal>
         </v-slide-x-transition>
