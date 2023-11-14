@@ -89,6 +89,12 @@ function autoEllipse(text: string, maxLen = 16) {
           <v-list-item
             prepend-icon="mdi-clock"
             v-bind="props"
+            :active="
+              meetingRoom.open &&
+              !meetingRoom.send_sls &&
+              !meetingRoom.send_proposals &&
+              !!meetingRoom.body?.length
+            "
             :title="t('room.pauseMessage')"
             :subtitle="
               meetingRoom.body && autoEllipse(stripHTML(meetingRoom.body))
