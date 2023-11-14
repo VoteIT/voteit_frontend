@@ -16,8 +16,7 @@ import usePlenary from './usePlenary'
 const router = useRouter()
 const { meeting, meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
-const { agendaItem, agendaItemRoute, canChangeAgendaItem } =
-  useAgendaItem(agendaId)
+const { agendaItem, canChangeAgendaItem } = useAgendaItem(agendaId)
 const { meetingRoom } = useRoom()
 
 const { getPlenaryPath } = usePlenary(meetingId, agendaId)
@@ -45,7 +44,7 @@ const breadcrumbs = computed(() => [
 
 <template>
   <v-app-bar flat color="app-bar">
-    <router-link :to="agendaItemRoute ?? meetingRoute">
+    <router-link :to="meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">
