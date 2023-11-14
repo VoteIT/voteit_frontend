@@ -627,6 +627,8 @@
     "startBroadcast": "Starta sändning",
     "startPoll": "Starta omröstning",
     "takeOverBroadcast": "Ta över sändning",
+    "toActiveAgendaItem": "Till aktuell dagordningspunkt",
+    "toActiveSpeakerList": "Till aktiv talarlista",
     "toDecisionMode": "Till beslut",
     "upcomingAI": "Kommande dagordningspunkt",
     "upcomingAIDescription": "Den här dagordningspunkten står som kommande. Tryck på 'Till beslut' för att göra den pågående och börja sändning. Alternativet 'Sänd denna' lämnar dagordningspunkten som kommande.",

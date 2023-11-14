@@ -627,6 +627,8 @@
     "startBroadcast": "Start broadcast",
     "startPoll": "Start poll",
     "takeOverBroadcast": "Take over broadcast",
+    "toActiveAgendaItem": "To active Agenda Item",
+    "toActiveSpeakerList": "To active Speaker List",
     "toDecisionMode": "Start decisions",
     "upcomingAI": "Upcoming Agenda Item",
     "upcomingAIDescription": "This Agenda Item is not ongoing. Press the button 'Start decisions' to make it ongoing and start broadcasting. The 'Broadcast this' option leaves the Agenda Item in upcoming state.",

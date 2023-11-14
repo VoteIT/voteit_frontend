@@ -34,6 +34,7 @@ import DecisionsTab from './DecisionsTab.vue'
 import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
 import usePlenary from './usePlenary'
+import useSpeakerSystem from '../speakerLists/useSpeakerSystem'
 
 const { t } = useI18n()
 
@@ -59,12 +60,21 @@ const tabs = computed(
 
 const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
-const { meetingRoom, speakerSystem, setSlsBroadcast } = useRoom()
+const { meetingRoom, roomId, speakerSystem, setSlsBroadcast } = useRoom()
 const { getState } = pollType.useWorkflows()
+const { systemActiveList } = useSpeakerSystem(
+  computed(() => speakerSystem.value?.pk || 0), // userSpeakerSystem requires computed number
+  agendaId
+)
 
 const { nextPollTitle } = useAgendaItem(agendaId)
-const { currentTab, stateFilter, selectedProposals, selectedProposalIds } =
-  usePlenary(meetingId, agendaId)
+const {
+  currentTab,
+  stateFilter,
+  selectedProposals,
+  selectedProposalIds,
+  getPlenaryPath
+} = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 const { getState: getProposalState } = proposalType.useWorkflows()
@@ -76,6 +86,22 @@ useMeetingTitle(t('plenary.view'))
 function getStateProposalCount(state: ProposalState) {
   return getAgendaProposals(agendaId.value, (p) => p.state === state).length
 }
+
+function getActiveAIRoute(agendaItem?: number | null) {
+  if (agendaItem && agendaItem !== agendaId.value)
+    return getPlenaryPath({
+      roomId: roomId.value,
+      tab: currentTab.value,
+      aid: agendaItem
+    })
+}
+
+const toActiveSpeakerList = computed(() =>
+  getActiveAIRoute(systemActiveList.value?.agenda_item)
+)
+const toActiveProposals = computed(() =>
+  getActiveAIRoute(meetingRoom.value?.agenda_item)
+)
 
 const filterStates = computed(() => {
   return proposalStates.map((state) => {
@@ -223,6 +249,14 @@ const ongoingPollCount = computed(
       <v-tabs v-model="currentTab" :items="tabs" />
       <v-spacer />
       <template v-if="currentTab === 'decisions'">
+        <v-fade-transition>
+          <v-btn
+            v-if="toActiveProposals"
+            :text="t('plenary.toActiveAgendaItem')"
+            :to="toActiveProposals"
+            variant="tonal"
+          />
+        </v-fade-transition>
         <v-badge
           :model-value="!!ongoingPollCount"
           :content="ongoingPollCount"
@@ -259,6 +293,16 @@ const ongoingPollCount = computed(
             </v-item-group>
           </v-list>
         </v-menu>
+      </template>
+      <template v-if="currentTab === 'discussion'">
+        <v-fade-transition>
+          <v-btn
+            v-if="toActiveSpeakerList"
+            :text="t('plenary.toActiveSpeakerList')"
+            :to="toActiveSpeakerList"
+            variant="tonal"
+          />
+        </v-fade-transition>
       </template>
       <BroadcastMenu />
     </template>
