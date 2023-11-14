@@ -5,16 +5,16 @@ import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from './useRoom'
 
-const { meetingRoute } = useMeeting()
+const { meeting, meetingRoute } = useMeeting()
 const { meetingRoom } = useRoom()
-const { agendaItem, agendaItemRoute } = useAgendaItem(
+const { agendaItemRoute } = useAgendaItem(
   computed(() => meetingRoom.value?.agenda_item || undefined)
 )
 
 const crumbs = computed(() => {
   return [
-    { title: meetingRoom.value?.title ?? '' },
-    { title: agendaItem.value?.title ?? '' }
+    { title: meeting.value?.title ?? '', to: meetingRoute.value },
+    { title: meetingRoom.value?.title ?? '' }
   ]
 })
 </script>

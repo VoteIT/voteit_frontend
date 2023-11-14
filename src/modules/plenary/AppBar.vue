@@ -14,7 +14,7 @@ import useRoom from '../rooms/useRoom'
 import usePlenary from './usePlenary'
 
 const router = useRouter()
-const { meetingId, meetingRoute } = useMeeting()
+const { meeting, meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, agendaItemRoute, canChangeAgendaItem } =
   useAgendaItem(agendaId)
@@ -37,6 +37,7 @@ onKeyStroke(
 )
 
 const breadcrumbs = computed(() => [
+  { title: meeting.value?.title ?? '', to: meetingRoute.value },
   { title: meetingRoom.value?.title ?? '-' },
   { title: agendaItem.value?.title ?? '-' }
 ])
