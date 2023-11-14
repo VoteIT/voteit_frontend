@@ -117,6 +117,7 @@ export type Color =
   | 'success'
 
 interface MenuItemBase {
+  active?: boolean
   title: string
   subtitle?: string
   appendIcon?: string

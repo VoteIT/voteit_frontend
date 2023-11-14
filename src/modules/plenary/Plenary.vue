@@ -4,9 +4,8 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
 import { openModalEvent } from '@/utils/events'
-import { MenuItem, ThemeColor } from '@/utils/types'
+import { MenuItem, MenuItemOnClick, ThemeColor } from '@/utils/types'
 import { RoleContextKey } from '@/injectionKeys'
-import DropdownMenu from '@/components/DropdownMenu.vue'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 
@@ -119,6 +118,7 @@ function pollStateToMenu(state: PollState): MenuItem[] {
   if (!wfState) throw new Error(`Unknown poll state '${state}'`)
 
   return getAiPolls(agendaId.value, state).map((poll) => ({
+    active: state === PollState.Ongoing,
     icon: wfState.icon,
     title: poll.title,
     subtitle: pollPlugins.getName(poll.method_name, t),
@@ -241,6 +241,13 @@ const pollMenu = computed<MenuItem[]>(() => {
 const ongoingPollCount = computed(
   () => getAiPolls(agendaId.value, PollState.Ongoing).length
 )
+
+function isSubheader(item: MenuItem): item is { subheader: string } {
+  return typeof item === 'object' && 'subheader' in item
+}
+function isListItem(item: MenuItem): item is MenuItemOnClick {
+  return typeof item === 'object' && 'onClick' in item
+}
 </script>
 
 <template>
@@ -261,17 +268,36 @@ const ongoingPollCount = computed(
           :model-value="!!ongoingPollCount"
           :content="ongoingPollCount"
           :max="9"
-          offset-x="6"
-          offset-y="6"
+          offset-x="3"
+          offset-y="3"
           color="background"
         >
-          <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
+          <v-menu location="bottom right">
+            <template #activator="{ props }">
+              <v-btn
+                append-icon="mdi-chevron-down"
+                v-bind="props"
+                :text="t('poll.polls')"
+              />
+            </template>
+            <v-list>
+              <template v-for="(item, i) in pollMenu" :key="i">
+                <v-list-subheader
+                  v-if="isSubheader(item)"
+                  :title="item.subheader"
+                />
+                <v-list-item v-if="isListItem(item)" v-bind="item" />
+                <v-divider v-if="item === '---'" class="my-2" />
+              </template>
+            </v-list>
+          </v-menu>
         </v-badge>
         <v-menu location="bottom right">
           <template #activator="{ props }">
             <v-btn
-              :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'"
+              append-icon="mdi-chevron-down"
               v-bind="props"
+              :text="t('filter')"
             />
           </template>
           <v-list>
