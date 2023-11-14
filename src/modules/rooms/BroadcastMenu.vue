@@ -2,21 +2,16 @@
 import { reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { autoEllipsis } from '@/utils'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from './useRoom'
 import { roomType } from './contentTypes'
-import { stripHTML } from '@/utils'
 
 const { t } = useI18n()
-const {
-  isBroadcasting,
-  meetingRoom,
-  setOpen,
-  setProposalBroadcast,
-  setSlsBroadcast
-} = useRoom()
+const { meetingRoom, setOpen, setProposalBroadcast, setSlsBroadcast } =
+  useRoom()
 const { isModerator, getMeetingRoute } = useMeeting()
 
 const pauseEdit = reactive({
@@ -29,25 +24,28 @@ watch(
     pauseEdit.body = body ?? ''
   }
 )
-async function savePauseMessage() {
+async function savePauseMessage(pauseBroadcast = false) {
   if (!meetingRoom.value) throw new Error('No meeting room')
-  await roomType.api.patch(meetingRoom.value.pk, { body: pauseEdit.body })
+  const data = pauseBroadcast
+    ? {
+        body: pauseEdit.body,
+        send_proposals: false,
+        send_sls: false
+      }
+    : {
+        body: pauseEdit.body
+      }
+  await roomType.api.patch(meetingRoom.value.pk, data)
   pauseEdit.isOpen = false
-}
-
-function autoEllipse(text: string, maxLen = 16) {
-  if (text.length <= maxLen) return text
-  return text.slice(0, maxLen) + '…'
 }
 </script>
 
 <template>
   <v-menu>
     <template #activator="{ props }">
-      <v-btn
-        :icon="isBroadcasting ? 'mdi-broadcast' : 'mdi-broadcast-off'"
-        v-bind="props"
-      />
+      <v-btn append-icon="mdi-chevron-down" class="mr-2" v-bind="props">
+        {{ t('room.broadcast') }}
+      </v-btn>
     </template>
     <v-list v-if="meetingRoom">
       <v-list-item
@@ -58,7 +56,12 @@ function autoEllipse(text: string, maxLen = 16) {
             : 'mdi-checkbox-blank-outline'
         "
         :active="meetingRoom.open"
-        :title="t('room.open')"
+        :subtitle="
+          meetingRoom.open
+            ? t('room.isOpenDescription')
+            : t('room.isNotOpenDescription')
+        "
+        :title="t('room.isOpen')"
         @click.stop="setOpen(!meetingRoom.open)"
       />
       <v-list-item
@@ -97,7 +100,7 @@ function autoEllipse(text: string, maxLen = 16) {
             "
             :title="t('room.pauseMessage')"
             :subtitle="
-              meetingRoom.body && autoEllipse(stripHTML(meetingRoom.body))
+              meetingRoom.body && autoEllipsis(meetingRoom.body, 20, true)
             "
           />
         </template>
@@ -107,12 +110,19 @@ function autoEllipse(text: string, maxLen = 16) {
           </v-alert>
           <RichtextEditor v-model="pauseEdit.body" class="mb-2" @keydown.stop />
           <div class="text-right">
-            <v-btn variant="text" @click="close">
-              {{ t('cancel') }}
-            </v-btn>
-            <v-btn color="primary" @click="savePauseMessage">
-              {{ t('save') }}
-            </v-btn>
+            <v-btn variant="text" @click="close" :text="t('cancel')" />
+            <v-btn
+              color="primary"
+              @click="savePauseMessage"
+              :text="t('save')"
+            />
+            <v-btn
+              class="ml-1"
+              prepend-icon="mdi-broadcast-off"
+              color="primary"
+              @click="savePauseMessage(true)"
+              :text="t('plenary.saveAndPauseBroadcast')"
+            />
           </div>
         </template>
       </DefaultDialog>

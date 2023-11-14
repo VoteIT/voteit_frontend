@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { map, range } from 'itertools'
 import { flatten } from 'lodash'
-import { computed, reactive, watch, onBeforeUnmount, onMounted } from 'vue'
+import { computed, reactive, ref, watch, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { onKeyStroke } from '@vueuse/core'
+import { onKeyStroke, useElementBounding } from '@vueuse/core'
 
 import Tag from '@/components/Tag.vue'
 import { WorkflowState } from '@/contentTypes/types'
@@ -152,10 +152,21 @@ onKeyStroke(
   'n',
   () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value)
 )
+
+// Handle height of agenda info alert
+const agendaInfoEl = ref<HTMLDivElement | undefined>()
+const { height: aiHeight } = useElementBounding(agendaInfoEl)
+const proposalsStyle = computed(() => {
+  return {
+    '--aiheight': aiHeight.value ? `${aiHeight.value + 24}px` : '0px'
+  }
+})
 </script>
 
 <template>
-  <AgendaInfoAlert class="mb-6" />
+  <div ref="agendaInfoEl">
+    <AgendaInfoAlert class="mb-6" />
+  </div>
   <v-row v-if="!selectedProposals.length && !pool.length">
     <v-col
       md="8"
@@ -172,7 +183,7 @@ onKeyStroke(
       </p>
     </v-col>
   </v-row>
-  <v-row v-else class="proposals">
+  <v-row v-else class="proposals" :style="proposalsStyle">
     <v-col cols="7" md="8" lg="9">
       <Proposal
         v-for="p in selectedProposals"
@@ -245,7 +256,7 @@ onKeyStroke(
 
 <style lang="sass">
 .proposals
-  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - 12px) !important
+  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - var(--aiheight) - 12px) !important
   overflow: hidden !important
   margin-bottom: -24px !important
   > div

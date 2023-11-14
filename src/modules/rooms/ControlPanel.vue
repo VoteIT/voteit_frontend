@@ -194,11 +194,9 @@ const systemIcons = {
             {{ room.title }}
           </td>
           <td v-if="room.formData.room.speakers">
-            <v-icon icon="mdi-check" color="success" />
-            <DefaultDialog>
+            <DefaultDialog :title="t('speaker.handleRoles')">
               <template #activator="{ props }">
                 <v-btn
-                  class="ml-2"
                   color="primary"
                   prepend-icon="mdi-account-group"
                   size="small"
@@ -207,32 +205,18 @@ const systemIcons = {
                   {{ t('speaker.handleRoles') }}
                 </v-btn>
               </template>
-              <template #default="{ close }">
-                <div class="d-flex mb-2">
-                  <h2 class="flex-grow-1">
-                    {{ t('speaker.handleRoles') }}
-                  </h2>
-                  <v-btn
-                    class="mt-n1 mr-n1"
-                    icon="mdi-close"
-                    size="small"
-                    variant="text"
-                    @click="close"
-                  />
-                </div>
-                <RoleMatrix
-                  admin
-                  class="mb-4"
-                  :content-type="speakerSystemType"
-                  :icons="systemIcons"
-                  :pk="room.sls!"
-                />
-                <UserSearch class="mb-2" v-bind="room.userSearch" />
-              </template>
+              <RoleMatrix
+                admin
+                class="mb-4"
+                :content-type="speakerSystemType"
+                :icons="systemIcons"
+                :pk="room.sls!"
+              />
+              <UserSearch class="mb-2" v-bind="room.userSearch" />
             </DefaultDialog>
           </td>
           <td v-else>
-            <v-icon icon="mdi-close" color="warning" />
+            {{ t('room.noSpeakerSystem') }}
           </td>
           <td>
             <v-btn
@@ -248,6 +232,8 @@ const systemIcons = {
               color="primary"
               prepend-icon="mdi-broadcast"
               size="small"
+              variant="tonal"
+              :text="t('room.toPlenaryView')"
               :to="{
                 name: 'Plenary',
                 params: {
@@ -257,9 +243,7 @@ const systemIcons = {
                   aid: room.agenda_item || agenda[0].pk
                 }
               }"
-            >
-              {{ t('plenary.view') }}
-            </v-btn>
+            />
           </td>
           <td class="text-right">
             <DefaultDialog>

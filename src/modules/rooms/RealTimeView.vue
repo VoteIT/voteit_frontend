@@ -57,7 +57,7 @@ const paused = computed(
     <div v-if="!meetingRoom?.open" class="text-center">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
       <em>
-        {{ t('room.noBroadcast') }}
+        {{ t('room.closed') }}
       </em>
     </div>
     <div v-else-if="paused">
