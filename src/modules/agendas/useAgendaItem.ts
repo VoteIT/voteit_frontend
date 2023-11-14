@@ -2,7 +2,7 @@ import { any } from 'itertools'
 import type { Dictionary } from 'lodash'
 import { computed, Ref } from 'vue'
 
-import { slugify } from '@/utils'
+import { autoEllipsis, slugify } from '@/utils'
 
 import useMeeting from '../meetings/useMeeting'
 import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
@@ -19,11 +19,6 @@ import { isUnresolvedState } from '../proposals/utils'
 import { canChangeAgendaItem as canChange } from './rules'
 
 import useAgenda from './useAgenda'
-
-function ellipsisTitle(title: string, length: number) {
-  if (title.length <= length) return title
-  return title.slice(0, length - 1) + '…'
-}
 
 export default function useAgendaItem(agendaId: Ref<number | undefined>) {
   const { meetingId, getMeetingRoute } = useMeeting()
@@ -57,7 +52,7 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
     if (!agendaItem.value) return ''
     for (let n = 1; true; n++) {
       const addLength = String(n).length + 1 // Add room for space char
-      const title = `${ellipsisTitle(
+      const title = `${autoEllipsis(
         agendaItem.value.title,
         70 - addLength
       )} ${n}`

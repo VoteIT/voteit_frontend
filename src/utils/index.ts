@@ -95,3 +95,9 @@ export function getDisplayName(
   if (user.userid) return user.userid
   return '- unknown -'
 }
+
+export function autoEllipsis(text: string, length: number, html = false) {
+  if (html) text = stripHTML(text)
+  if (text.length <= length) return text
+  return text.slice(0, length - 1) + '…'
+}
