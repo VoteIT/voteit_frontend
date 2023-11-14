@@ -113,7 +113,7 @@ async function savePauseMessage(pauseBroadcast = false) {
             <v-btn variant="text" @click="close" :text="t('cancel')" />
             <v-btn
               color="primary"
-              @click="savePauseMessage"
+              @click="savePauseMessage()"
               :text="t('save')"
             />
             <v-btn
