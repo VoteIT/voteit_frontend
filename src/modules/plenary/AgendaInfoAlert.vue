@@ -73,7 +73,7 @@ const alertInfo = computed(() => {
                 await setHandler()
                 await setBroadcast({
                   agenda_item: agendaId.value,
-                  highlighted: [...selectedProposalIds]
+                  highlighted: [...selectedProposalIds.value]
                 })
               }
             }
@@ -93,7 +93,7 @@ const alertInfo = computed(() => {
               onClick() {
                 setBroadcast({
                   agenda_item: agendaId.value,
-                  highlighted: [...selectedProposalIds]
+                  highlighted: [...selectedProposalIds.value]
                 })
               }
             }

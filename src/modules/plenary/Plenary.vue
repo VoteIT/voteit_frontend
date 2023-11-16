@@ -151,7 +151,7 @@ async function createPoll(
     agenda_item: agendaId.value,
     meeting: meetingId.value,
     title: nextPollTitle.value as string,
-    proposals: [...selectedProposalIds],
+    proposals: [...selectedProposalIds.value],
     method_name: method,
     start: true,
     settings

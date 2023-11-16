@@ -1,14 +1,18 @@
-import { ComputedRef, computed, reactive, readonly, ref } from 'vue'
+import { ComputedRef, computed, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { ProposalState, Proposal } from '@/modules/proposals/types'
+import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
 import useRoom from '../rooms/useRoom'
 
-const { getProposal, forProposals } = useProposals()
+const { getProposal, getAgendaProposals } = useProposals()
 
 const stateFilter = ref([ProposalState.Published, ProposalState.Voting])
-const selectedProposalIds = reactive<number[]>([])
+const selectedProposalIds = ref<number[]>([])
+
+export function isSelectedProposal(proposal: Proposal) {
+  return selectedProposalIds.value.includes(proposal.pk)
+}
 
 export default function usePlenary(
   meetingId: ComputedRef<number>,
@@ -50,34 +54,29 @@ export default function usePlenary(
     return !stateFilter.value.length || stateFilter.value.includes(p.state)
   }
 
-  function selectProposal(p: Pick<Proposal, 'pk'>) {
-    if (selectedProposalIds.includes(p.pk)) return
-    selectedProposalIds.push(p.pk)
+  function selectProposal(proposal: number) {
+    if (selectedProposalIds.value.includes(proposal)) return
+    selectedProposalIds.value = [...selectedProposalIds.value, proposal]
   }
-  function deselectProposal(p: Pick<Proposal, 'pk'>) {
-    const index = selectedProposalIds.indexOf(p.pk)
-    if (index !== -1) selectedProposalIds.splice(index, 1)
+
+  function selectProposalIds(proposals: number[]) {
+    selectedProposalIds.value = proposals
   }
-  function clearSelected() {
-    selectedProposalIds.length = 0
+
+  function deselectProposal(proposal: number) {
+    selectedProposalIds.value = selectedProposalIds.value.filter(
+      (pk) => proposal !== pk
+    )
   }
   const selectedProposals = computed(() =>
-    readonly(
-      selectedProposalIds.map(getProposal).filter((p): p is Proposal => !!p)
-    )
+    readonly(selectedProposalIds.value.map(getProposal).filter(isProposal))
   )
 
   function selectTag(tagName: string) {
-    selectedProposalIds.length = 0
-    forProposals(
-      (p) =>
-        p.agenda_item === agendaItem.value &&
-        filterProposalStates(p) &&
-        p.tags.includes(tagName),
-      ({ pk }) => {
-        selectedProposalIds.push(pk)
-      }
-    )
+    selectedProposalIds.value = getAgendaProposals(
+      agendaItem.value,
+      (p) => filterProposalStates(p) && p.tags.includes(tagName)
+    ).map((p) => p.pk)
   }
 
   return {
@@ -85,11 +84,11 @@ export default function usePlenary(
     selectedProposalIds: readonly(selectedProposalIds),
     selectedProposals,
     stateFilter,
-    clearSelected,
     deselectProposal,
     filterProposalStates,
     getPlenaryPath,
     selectProposal,
+    selectProposalIds,
     selectTag
   }
 }

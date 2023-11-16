@@ -19,7 +19,7 @@ import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import useRoom from '../rooms/useRoom'
 
-import usePlenary from './usePlenary'
+import usePlenary, { isSelectedProposal } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
 
 const AVAILABLE_STATES = [
@@ -31,20 +31,16 @@ const AVAILABLE_STATES = [
 const { meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
-const {
-  highlightedProposals,
-  isBroadcasting,
-  meetingRoom,
-  setHighlightedProposals
-} = useRoom()
+const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =
+  useRoom()
 
 const {
   selectedProposalIds,
   selectedProposals,
-  clearSelected,
   deselectProposal,
   filterProposalStates,
   selectProposal,
+  selectProposalIds,
   selectTag
 } = usePlenary(meetingId, agendaId)
 
@@ -64,23 +60,17 @@ const isBroadcastingAI = computed(
  * TODO: Handle errors by rechecking broadcasting status.
  */
 function setBroadcastProposals() {
-  if (!isBroadcasting.value || !isBroadcastingAI.value) return
-  setHighlightedProposals([...selectedProposalIds])
+  if (!isBroadcastingAI.value) return
+  setHighlightedProposals([...selectedProposalIds.value])
 }
 
-watch(selectedProposalIds, setBroadcastProposals)
-watch(isBroadcastingAI, (value) => value && setBroadcastProposals())
-watch(agendaId, () => {
-  if (isBroadcastingAI.value) highlightedProposals.value.forEach(selectProposal)
-  else clearSelected()
-})
-
+watch([selectedProposalIds, isBroadcastingAI], setBroadcastProposals)
 // If current Agenda Item is broadcasting, select highlighted proposals from that broadcast.
-watch(highlightedProposals, (proposals) => {
-  if (!isBroadcastingAI.value) return
-  if (meetingRoom.value?.agenda_item !== agendaId.value) return
-  proposals.forEach((p) => selectProposal(p))
-})
+watch(
+  agendaId,
+  () => selectProposalIds(isBroadcastingAI.value ? highlighted.value : []),
+  { immediate: true }
+)
 
 /**
  * Get list of state transitions that should be visible in state selection.
@@ -95,7 +85,7 @@ function getProposalStates(state: ProposalState) {
 const pool = computed(() =>
   getAgendaProposals(
     agendaId.value,
-    (p) => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
+    (p) => filterProposalStates(p) && !isSelectedProposal(p)
   )
 )
 const transitioning = reactive(new Set<number>())
@@ -141,12 +131,12 @@ onKeyStroke(map(range(1, 10), String), (e) => {
     ? selectedProposals.value.at(num)
     : pool.value.at(num)
   if (!proposal) return
-  if (e.altKey) deselectProposal(proposal)
-  else selectProposal(proposal)
+  if (e.altKey) deselectProposal(proposal.pk)
+  else selectProposal(proposal.pk)
 })
 
 // Esc to deselect all proposals
-onKeyStroke('Escape', clearSelected)
+onKeyStroke('Escape', () => selectProposalIds([]))
 // 'n' to select next proposal text tag
 onKeyStroke(
   'n',
@@ -208,7 +198,7 @@ const proposalsStyle = computed(() => {
             <v-btn
               icon="mdi-chevron-right"
               variant="text"
-              @click="deselectProposal(p)"
+              @click="deselectProposal(p.pk)"
             />
           </div>
         </template>
@@ -246,7 +236,7 @@ const proposalsStyle = computed(() => {
           size="small"
           icon="mdi-chevron-left"
           variant="text"
-          @click="selectProposal(p)"
+          @click="selectProposal(p.pk)"
         />
         <Proposal readOnly :p="p" class="flex-grow-1" />
       </div>
