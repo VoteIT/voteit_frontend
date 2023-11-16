@@ -111,15 +111,11 @@ export interface Meeting extends BaseContent {
 }
 
 export interface MeetingGroup extends BaseContent {
-  groupid: string
   body: string
-  created: string
   delegate_to: number | null
-  modified: string
-  tags: string[]
-  author: number
+  groupid: string
   meeting: number
-  mentions: number[]
+  tags: string[]
   votes: null | number
 }
 
