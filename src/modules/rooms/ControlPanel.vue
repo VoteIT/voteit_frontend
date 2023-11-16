@@ -182,7 +182,7 @@ const systemIcons = {
           <th>
             {{ t('speaker.lists', 2) }}
           </th>
-          <th>
+          <th class="text-center">
             {{ t('room.open') }}
           </th>
           <th></th>
@@ -218,7 +218,7 @@ const systemIcons = {
           <td v-else>
             {{ t('room.noSpeakerSystem') }}
           </td>
-          <td>
+          <td class="text-center">
             <v-btn
               @click="setOpen(room.pk, !room.open)"
               :color="room.open ? 'success' : 'warning'"
