@@ -1,4 +1,4 @@
-import { ComputedRef, computed, readonly, ref } from 'vue'
+import { ComputedRef, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
@@ -69,7 +69,7 @@ export default function usePlenary(
     )
   }
   const selectedProposals = computed(() =>
-    readonly(selectedProposalIds.value.map(getProposal).filter(isProposal))
+    selectedProposalIds.value.map(getProposal).filter(isProposal)
   )
 
   function selectTag(tagName: string) {
@@ -81,7 +81,7 @@ export default function usePlenary(
 
   return {
     currentTab,
-    selectedProposalIds: readonly(selectedProposalIds),
+    selectedProposalIds,
     selectedProposals,
     stateFilter,
     deselectProposal,

@@ -64,11 +64,18 @@ function setBroadcastProposals() {
   setHighlightedProposals([...selectedProposalIds.value])
 }
 
-watch([selectedProposalIds, isBroadcastingAI], setBroadcastProposals)
+watch(selectedProposalIds, setBroadcastProposals)
 // If current Agenda Item is broadcasting, select highlighted proposals from that broadcast.
 watch(
   agendaId,
   () => selectProposalIds(isBroadcastingAI.value ? highlighted.value : []),
+  { immediate: true }
+)
+// When we know we're broadcasting current AI and highlighted changes or is set,
+// select room highlighted
+watch(
+  () => isBroadcastingAI.value && highlighted.value,
+  (value) => value && selectProposalIds(value),
   { immediate: true }
 )
 
@@ -131,6 +138,7 @@ onKeyStroke(map(range(1, 10), String), (e) => {
     ? selectedProposals.value.at(num)
     : pool.value.at(num)
   if (!proposal) return
+  if (e.altKey) deselectProposal(proposal.pk)
   if (e.altKey) deselectProposal(proposal.pk)
   else selectProposal(proposal.pk)
 })
@@ -203,11 +211,7 @@ const proposalsStyle = computed(() => {
           </div>
         </template>
         <template #bottom>
-          <ButtonPlugins
-            mode="presentation"
-            :proposal="p as Proposal"
-            class="mt-2"
-          />
+          <ButtonPlugins mode="presentation" :proposal="p" class="mt-2" />
         </template>
       </Proposal>
       <div
