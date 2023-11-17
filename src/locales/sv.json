@@ -465,6 +465,7 @@
     "viewAndChangeVote": "Visa och ändra röst",
     "votedProgress": "Ingen har röstat | {percentage} % har röstat ({voted} / {total}) | {percentage} % har röstat ({voted} / {total})",
     "voteAddedInfo": "Din röst har accepterats.\nDu kan ändra din röst fram till omröstningen avslutas.",
+    "winningProposal": "Vinnande förslag",
     "youHaveVoted": "Du har röstat",
     "youHaveNotVoted": "Du har inte röstat",
     "yourVote": "Din röst",
