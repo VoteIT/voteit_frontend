@@ -1,5 +1,44 @@
 <template>
   <v-navigation-drawer v-model="isOpen" location="right" disable-resize-watcher>
+    <template v-if="agendaTags.length">
+      <div class="d-flex mb-1">
+        <v-btn
+          class="flex-grow-1"
+          variant="text"
+          size="small"
+          :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+          @click="filterMenuOpen = !filterMenuOpen"
+        >
+          {{ t('filter') }}
+        </v-btn>
+        <v-btn
+          variant="text"
+          size="small"
+          :disabled="!selectedAgendaTag"
+          @click="selectedAgendaTag = undefined"
+        >
+          <v-icon icon="mdi-undo" />
+        </v-btn>
+      </div>
+      <v-expand-transition>
+        <v-chip-group
+          column
+          class="ml-8"
+          v-model="selectedAgendaTag"
+          :items="agendaTags"
+          v-show="filterMenuOpen"
+        >
+          <v-chip
+            v-for="tag in agendaTags"
+            :key="tag"
+            :value="tag"
+            size="small"
+          >
+            {{ tag }}
+          </v-chip>
+        </v-chip-group>
+      </v-expand-transition>
+    </template>
     <v-list nav>
       <template
         v-for="{ state, items } in annotatedAgendaStates"
@@ -34,15 +73,18 @@ import { useI18n } from 'vue-i18n'
 import { toggleNavDrawerEvent } from '@/utils/events'
 
 import useAgenda from '../agendas/useAgenda'
-import { AgendaItem } from '../agendas/types'
+import { AgendaItem, AgendaState } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import useProposals from '../proposals/useProposals'
 
 import usePlenary from './usePlenary'
+import { sortBy } from 'lodash'
+import useAgendaTags from '../agendas/useAgendaTags'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
-const { agendaId, agendaStates } = useAgenda(meetingId)
+const { agenda, agendaId, agendaStates } = useAgenda(meetingId)
+const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { filterProposalStates } = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const isOpen = ref(false)
@@ -55,19 +97,31 @@ function getURL(ai: AgendaItem) {
   return `/p/${meetingId.value}/${ai.pk}`
 }
 
+const AGENDA_STATE_ORDER = [
+  AgendaState.Ongoing,
+  AgendaState.Upcoming,
+  AgendaState.Closed,
+  AgendaState.Archived,
+  AgendaState.Private
+] as const
+const filterMenuOpen = ref(false)
+
 const annotatedAgendaStates = computed(() => {
-  return agendaStates.value.map(({ state, items }) => {
-    return {
-      state,
-      items: items.map((ai) => ({
-        ...ai,
-        proposals: {
-          filtered: getAgendaProposals(ai.pk, filterProposalStates).length,
-          total: getAgendaProposals(ai.pk).length
-        }
-      }))
-    }
-  })
+  return sortBy(
+    agendaStates.value.map(({ state, items }) => {
+      return {
+        state,
+        items: items.filter(aiMatchesTag).map((ai) => ({
+          ...ai,
+          proposals: {
+            filtered: getAgendaProposals(ai.pk, filterProposalStates).length,
+            total: getAgendaProposals(ai.pk).length
+          }
+        }))
+      }
+    }),
+    ({ state }) => AGENDA_STATE_ORDER.indexOf(state.state)
+  )
 })
 
 onMounted(() => {

@@ -16,6 +16,29 @@
         disabled
       />
     </p>
+    <template v-if="denyProposalWon">
+      <h3 v-if="denyProposalWon || winningProposal" class="mt-8 mb-1">
+        {{ t('poll.winningProposal') }}
+      </h3>
+      <v-card
+        v-if="denyProposalWon"
+        color="warning"
+        :title="t('poll.deny')"
+        class="mb-8"
+      />
+    </template>
+    <Proposal
+      v-else-if="winningProposal"
+      :p="winningProposal"
+      readOnly
+      class="my-8"
+    >
+      <template #bottom-right>
+        <v-btn color="success" prepend-icon="mdi-thumb-up">
+          {{ t('poll.winningProposal') }}
+        </v-btn>
+      </template>
+    </Proposal>
     <v-expansion-panels multiple class="my-4">
       <v-expansion-panel
         v-for="{ btn, proposal, pairs } in proposalPairs"
@@ -75,6 +98,7 @@ import useProposals from '@/modules/proposals/useProposals'
 
 import { ThemeColor } from '@/utils/types'
 import { SchulzeResult } from './types'
+import { orderBy } from 'lodash'
 
 const props = defineProps<{
   abstainCount: number
@@ -130,46 +154,59 @@ const voteCount = computed(() => {
 })
 
 function mapProposal(proposals: number[]) {
-  return proposals.map((pk) => {
-    return {
-      proposal: getProposal(pk),
-      btn:
-        props.result.winner === pk
+  return orderBy(
+    proposals.map((pk) => {
+      const winner = props.result.winner === pk
+      return {
+        proposal: getProposal(pk),
+        winner,
+        btn: winner
           ? { icon: 'mdi-thumb-up', color: ThemeColor.Success }
           : { icon: 'mdi-thumb-down', color: ThemeColor.Warning },
-      pairs: props.result.candidates
-        .filter((n) => n !== pk)
-        .map((other) => {
-          const myStrength = strengthMap.value[pk][other]
-          const otherStrength = strengthMap.value[other][pk]
-          const tiedStrength = voteCount.value - myStrength - otherStrength
-          return {
-            proposal: getProposal(other),
-            approve: myStrength,
-            tie: tiedStrength,
-            deny: otherStrength,
-            // Percentages
-            results: [
-              {
-                percentage: (myStrength / voteCount.value) * 100,
-                color: ThemeColor.Success
-              },
-              {
-                percentage: (tiedStrength / voteCount.value) * 100,
-                color: ThemeColor.Secondary
-              },
-              {
-                percentage: (otherStrength / voteCount.value) * 100,
-                color: ThemeColor.Warning
-              }
-            ]
-          }
-        })
-    }
-  })
+        pairs: props.result.candidates
+          .filter((n) => n !== pk)
+          .map((other) => {
+            const myStrength = strengthMap.value[pk][other]
+            const otherStrength = strengthMap.value[other][pk]
+            const tiedStrength = voteCount.value - myStrength - otherStrength
+            return {
+              proposal: getProposal(other),
+              approve: myStrength,
+              tie: tiedStrength,
+              deny: otherStrength,
+              // Percentages
+              results: [
+                {
+                  percentage: (myStrength / voteCount.value) * 100,
+                  color: ThemeColor.Success
+                },
+                {
+                  percentage: (tiedStrength / voteCount.value) * 100,
+                  color: ThemeColor.Secondary
+                },
+                {
+                  percentage: (otherStrength / voteCount.value) * 100,
+                  color: ThemeColor.Warning
+                }
+              ]
+            }
+          })
+      }
+    }),
+    'winner',
+    'desc'
+  )
 }
 
 const proposalPairs = computed(() => {
   return mapProposal(sortedProposals.value)
+})
+
+const winningProposal = computed(() => {
+  if (!props.result.winner) return
+  return getProposal(props.result.winner)
+})
+const denyProposalWon = computed(() => {
+  return props.result.winner === 0
 })
 </script>

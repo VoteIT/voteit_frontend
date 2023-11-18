@@ -23,8 +23,8 @@
           <v-btn
             variant="text"
             size="small"
-            :disabled="!agendaTag"
-            @click="agendaTag = undefined"
+            :disabled="!selectedAgendaTag"
+            @click="selectedAgendaTag = undefined"
           >
             <v-icon icon="mdi-undo" />
           </v-btn>
@@ -33,7 +33,7 @@
           <v-chip-group
             column
             class="ml-8"
-            v-model="agendaTag"
+            v-model="selectedAgendaTag"
             :items="agendaTags"
             v-show="filterMenuOpen"
           >
@@ -95,7 +95,6 @@ channelSubscribedEvent.on(({ channelType }) => {
 })
 
 const { t } = useI18n()
-const agendaTag = ref<string | undefined>(undefined)
 const { mobile } = useDisplay()
 const {
   meeting,
@@ -105,8 +104,11 @@ const {
   getMeetingRoute,
   hasRole
 } = useMeeting()
-const { agenda, filteredAgenda, hasNewItems } = useAgenda(meetingId, agendaTag)
-const { agendaTags } = useAgendaTags(agenda)
+const { agenda, filteredAgenda, hasNewItems } = useAgenda(
+  meetingId,
+  computed(() => selectedAgendaTag.value)
+)
+const { agendaTags, selectedAgendaTag } = useAgendaTags(agenda)
 const agendaWorkflows = agendaItemType.useWorkflows()
 const { getAiPolls, getUnvotedPolls } = usePolls()
 const { getAgendaProposals } = useProposals()
