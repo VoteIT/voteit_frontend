@@ -15,12 +15,14 @@ import useUserDetails from '../organisations/useUserDetails'
 import usePlenary from './usePlenary'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
+import { MeetingState } from '../meetings/types'
+import { meetingType } from '../meetings/contentTypes'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 
-const { meetingId } = useMeeting()
+const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails()
 const { agendaId, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, hasUnresolvedProposals } = useAgendaItem(agendaId)
@@ -45,8 +47,42 @@ const hasOngoingPolls = computed(() =>
   )
 )
 
-// eslint-disable-next-line vue/return-in-computed-property
-const alertInfo = computed(() => {
+function getMeetingStateAlert() {
+  switch (meeting.value?.state) {
+    case undefined:
+    case MeetingState.Ongoing:
+      return
+    case MeetingState.Upcoming:
+      return {
+        props: {
+          icon: 'mdi-progress-clock',
+          title: t('plenary.meetingUpcoming'),
+          text: t('plenary.meetingUpcomingDescription'),
+          type: 'warning' as const
+        },
+        actions: [
+          {
+            prependIcon: 'mdi-play-circle',
+            text: t('plenary.meetingToOngoing'),
+            async onClick() {
+              meetingType.api.transition(meetingId.value, 'ongoing')
+            }
+          }
+        ]
+      }
+    default:
+      return {
+        props: {
+          icon: 'mdi-progress-clock',
+          title: t('plenary.meetingClosed'),
+          text: t('plenary.meetingClosedDescription'),
+          type: 'warning' as const
+        }
+      }
+  }
+}
+
+function getAgendaAlert() {
   if (!isBroadcasting.value)
     return hasBroadcast.value && meetingRoom.value?.handler
       ? {
@@ -183,7 +219,9 @@ const alertInfo = computed(() => {
         ]
       }
   }
-})
+}
+
+const alertInfo = computed(() => getMeetingStateAlert() || getAgendaAlert())
 </script>
 
 <template>
