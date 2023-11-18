@@ -40,22 +40,19 @@ const { t } = useI18n()
 provide(RoleContextKey, 'meeting')
 provide(LastReadKey, ref(new Date()))
 
-const tabs = computed(
-  () =>
-    [
-      {
-        prependIcon: 'mdi-bullhorn',
-        value: 'discussion',
-        text: t('plenary.discussion')
-      },
-      {
-        disabled: !isModerator.value,
-        prependIcon: 'mdi-gavel',
-        value: 'decisions',
-        text: t('plenary.decisions')
-      }
-    ] as const
-)
+const tabs = computed(() => [
+  {
+    prependIcon: 'mdi-bullhorn',
+    value: 'discussion' as const,
+    text: t('plenary.discussion')
+  },
+  {
+    disabled: !isModerator.value,
+    prependIcon: 'mdi-gavel',
+    value: 'decisions' as const,
+    text: t('plenary.decisions')
+  }
+])
 
 const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
