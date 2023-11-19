@@ -193,6 +193,7 @@ ol.speaker-queue
                     :model-value="{ title: nextSpeakerListName }"
                     :handler="addSpeakerList"
                     @saved="close"
+                    @keydown.stop
                   >
                     <template #buttons="{ disabled }">
                       <div class="text-right">
@@ -264,6 +265,7 @@ ol.speaker-queue
                         :model-value="{ title: list.title }"
                         :handler="createEditHandler(list.pk)"
                         @saved="close"
+                        @keydown.stop
                       >
                         <template #buttons="{ disabled }">
                           <div class="text-right">
