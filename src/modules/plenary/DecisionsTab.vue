@@ -204,7 +204,11 @@ const proposalsStyle = computed(() => {
                 :variant="p.state === s.state ? 'flat' : 'tonal'"
                 @click="makeTransition(p, s)"
               >
-                <v-icon :icon="s.icon" />
+                <v-icon
+                  :icon="s.icon"
+                  size="large"
+                  :color="p.state === s.state ? undefined : s.color"
+                />
               </v-btn>
             </v-btn-group>
             <v-btn
