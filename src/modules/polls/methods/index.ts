@@ -320,10 +320,9 @@ pollPlugins.register({
           label: t('poll.allowRandomTiebreaker')
         },
         min: {
-          hint: t('poll.dutt.minMaxHint'),
           label: t('poll.minRanked'),
           maximum: proposals,
-          minimum: 0,
+          minimum: 1,
           type: 'number'
         },
         max: {
@@ -334,11 +333,12 @@ pollPlugins.register({
           type: 'number'
         }
       },
-      required: ['winners']
+      required: ['winners', 'min']
     })
   },
   initialSettings: {
     allow_random: true,
+    min: 1,
     winners: 2
   },
   proposalsMin: 3,
