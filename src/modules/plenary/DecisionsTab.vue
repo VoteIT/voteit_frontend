@@ -21,6 +21,7 @@ import useRoom from '../rooms/useRoom'
 
 import usePlenary, { isSelectedProposal } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
+import { AgendaState } from '../agendas/types'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -29,7 +30,7 @@ const AVAILABLE_STATES = [
 ] as Readonly<ProposalState[]>
 
 const { meetingId } = useMeeting()
-const { agendaId } = useAgenda(meetingId)
+const { agendaId, agendaItem } = useAgenda(meetingId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
 const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =
   useRoom()
@@ -46,6 +47,12 @@ const {
 
 const { t } = useI18n()
 const { getAgendaProposals } = useProposals()
+
+const canChangeProposalState = computed(
+  () =>
+    !!agendaItem.value &&
+    [AgendaState.Upcoming, AgendaState.Ongoing].includes(agendaItem.value.state)
+)
 
 /**
  * User is broadcasting and current Agenda Item is being broadcasted
@@ -191,9 +198,11 @@ const proposalsStyle = computed(() => {
               <v-btn
                 v-for="s in getProposalStates(p.state)"
                 :key="s.state"
-                :color="p.state === s.state ? s.color : 'background'"
-                @click="makeTransition(p, s)"
+                :color="p.state === s.state ? s.color : 'secondary'"
+                :disabled="!canChangeProposalState"
                 :loading="p.state !== s.state && transitioning.has(p.pk)"
+                :variant="p.state === s.state ? 'flat' : 'tonal'"
+                @click="makeTransition(p, s)"
               >
                 <v-icon :icon="s.icon" />
               </v-btn>
