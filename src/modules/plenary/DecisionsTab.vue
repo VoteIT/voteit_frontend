@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { map, range } from 'itertools'
-import { flatten } from 'lodash'
+import { flatten, sortBy } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding } from '@vueuse/core'
@@ -32,8 +32,13 @@ const AVAILABLE_STATES = [
 const { meetingId } = useMeeting()
 const { agendaId, agendaItem } = useAgenda(meetingId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
-const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =
-  useRoom()
+const {
+  highlighted,
+  highlightedProposals,
+  isBroadcasting,
+  meetingRoom,
+  setHighlightedProposals
+} = useRoom()
 
 const {
   selectedProposalIds,
@@ -41,8 +46,7 @@ const {
   deselectProposal,
   filterProposalStates,
   selectProposal,
-  selectProposalIds,
-  selectTag
+  selectProposalIds
 } = usePlenary(meetingId, agendaId)
 
 const { t } = useI18n()
@@ -66,13 +70,46 @@ const isBroadcastingAI = computed(
  * If broadcasting, send selected proposals to server.
  * TODO: Handle errors by rechecking broadcasting status.
  */
-function setBroadcastProposals() {
-  if (!isBroadcastingAI.value) return
-  setHighlightedProposals([...selectedProposalIds.value])
+// function setBroadcastProposals() {
+//   if (!isBroadcastingAI.value) return
+//   setHighlightedProposals([...selectedProposalIds.value])
+// }
+
+function select(proposal: Proposal) {
+  if (isBroadcastingAI.value)
+    setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
+  else selectProposal(proposal.pk)
 }
 
-watch(selectedProposalIds, setBroadcastProposals)
+function deselect(proposal: Proposal) {
+  if (isBroadcastingAI.value)
+    setHighlightedProposals(
+      selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
+    )
+  else deselectProposal(proposal.pk)
+}
+
+function selectTag(tag: string) {
+  const proposals = sortBy(
+    getAgendaProposals(
+      agendaId.value,
+      (p) => filterProposalStates(p) && p.tags.includes(tag)
+    ),
+    'created'
+  ).map((p) => p.pk)
+  if (isBroadcastingAI.value) setHighlightedProposals(proposals)
+  else selectProposalIds(proposals)
+}
+
+const aiHighlighted = computed(() =>
+  highlightedProposals.value
+    .filter((p) => p.agenda_item === agendaId.value)
+    .map((p) => p.pk)
+)
+
+// watch(selectedProposalIds, setBroadcastProposals)
 // If current Agenda Item is broadcasting, select highlighted proposals from that broadcast.
+// Otherwise clear selected proposals.
 watch(
   agendaId,
   () => selectProposalIds(isBroadcastingAI.value ? highlighted.value : []),
@@ -81,7 +118,7 @@ watch(
 // When we know we're broadcasting current AI and highlighted changes or is set,
 // select room highlighted
 watch(
-  () => isBroadcastingAI.value && highlighted.value,
+  () => isBroadcastingAI.value && aiHighlighted.value,
   (value) => value && selectProposalIds(value),
   { immediate: true }
 )
@@ -140,9 +177,8 @@ onKeyStroke(map(range(1, 10), String), (e) => {
     ? selectedProposals.value.at(num)
     : pool.value.at(num)
   if (!proposal) return
-  if (e.altKey) deselectProposal(proposal.pk)
-  if (e.altKey) deselectProposal(proposal.pk)
-  else selectProposal(proposal.pk)
+  if (e.altKey) deselect(proposal)
+  else select(proposal)
 })
 
 // Esc to deselect all proposals
@@ -214,7 +250,7 @@ const proposalsStyle = computed(() => {
             <v-btn
               icon="mdi-chevron-right"
               variant="text"
-              @click="deselectProposal(p.pk)"
+              @click="deselect(p)"
             />
           </div>
         </template>
@@ -248,7 +284,7 @@ const proposalsStyle = computed(() => {
           size="small"
           icon="mdi-chevron-left"
           variant="text"
-          @click="selectProposal(p.pk)"
+          @click="select(p)"
         />
         <Proposal readOnly :p="p" class="flex-grow-1" />
       </div>

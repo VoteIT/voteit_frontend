@@ -5,7 +5,7 @@ import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
 import useRoom from '../rooms/useRoom'
 
-const { getProposal, getAgendaProposals } = useProposals()
+const { getProposal } = useProposals()
 
 const stateFilter = ref([ProposalState.Published, ProposalState.Voting])
 const selectedProposalIds = ref<number[]>([])
@@ -72,13 +72,6 @@ export default function usePlenary(
     selectedProposalIds.value.map(getProposal).filter(isProposal)
   )
 
-  function selectTag(tagName: string) {
-    selectedProposalIds.value = getAgendaProposals(
-      agendaItem.value,
-      (p) => filterProposalStates(p) && p.tags.includes(tagName)
-    ).map((p) => p.pk)
-  }
-
   return {
     currentTab,
     selectedProposalIds,
@@ -88,7 +81,6 @@ export default function usePlenary(
     filterProposalStates,
     getPlenaryPath,
     selectProposal,
-    selectProposalIds,
-    selectTag
+    selectProposalIds
   }
 }

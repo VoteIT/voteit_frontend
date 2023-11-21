@@ -82,6 +82,13 @@ function getMeetingStateAlert() {
   }
 }
 
+function broadcastThis() {
+  return setBroadcast({
+    agenda_item: agendaId.value,
+    highlighted: [...selectedProposalIds.value]
+  })
+}
+
 function getAgendaAlert() {
   if (!isBroadcasting.value)
     return hasBroadcast.value && meetingRoom.value?.handler
@@ -107,10 +114,7 @@ function getAgendaAlert() {
                 )
                   return
                 await setHandler()
-                await setBroadcast({
-                  agenda_item: agendaId.value,
-                  highlighted: [...selectedProposalIds.value]
-                })
+                await broadcastThis()
               }
             }
           ]
@@ -126,12 +130,7 @@ function getAgendaAlert() {
             {
               prependIcon: 'mdi-broadcast',
               text: t('plenary.startBroadcast'),
-              onClick() {
-                setBroadcast({
-                  agenda_item: agendaId.value,
-                  highlighted: [...selectedProposalIds.value]
-                })
-              }
+              onClick: broadcastThis
             }
           ]
         }
@@ -159,15 +158,13 @@ function getAgendaAlert() {
             text: t('plenary.toDecisionMode'),
             async onClick() {
               await agendaItemType.api.transition(agendaId.value, 'ongoing')
-              await setAgendaId(agendaId.value)
+              await broadcastThis()
             }
           },
           {
             prependIcon: 'mdi-broadcast',
             text: t('plenary.broadcastAI'),
-            onClick() {
-              setAgendaId(agendaId.value)
-            }
+            onClick: broadcastThis
           }
         ]
       }
@@ -212,9 +209,7 @@ function getAgendaAlert() {
           {
             prependIcon: 'mdi-broadcast',
             text: t('plenary.broadcastAI'),
-            onClick() {
-              setAgendaId(agendaId.value)
-            }
+            onClick: broadcastThis
           }
         ]
       }
