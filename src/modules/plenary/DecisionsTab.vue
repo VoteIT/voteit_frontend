@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { map, range } from 'itertools'
 import { flatten } from 'lodash'
-import { computed, reactive, ref, watch, onBeforeUnmount, onMounted } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding } from '@vueuse/core'
 
@@ -9,7 +9,7 @@ import Tag from '@/components/Tag.vue'
 import { WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
-import { tagClickEvent } from '../meetings/useTags'
+import useTags from '../meetings/useTags'
 import type { Proposal } from '../proposals/types'
 import { ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
@@ -123,12 +123,7 @@ const nextTextProposalTag = computed(() =>
   textProposalTags.value.find(tagInPool)
 )
 
-onMounted(() => {
-  tagClickEvent.on(selectTag)
-})
-onBeforeUnmount(() => {
-  tagClickEvent.off(selectTag)
-})
+useTags(undefined, selectTag)
 
 // 1-9 selects or deselects (w altKey) proposals in order
 onKeyStroke(map(range(1, 10), String), (e) => {
