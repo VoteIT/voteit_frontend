@@ -20,7 +20,7 @@ import STVResult from './STVResult.vue'
 
 const { getOrganisationComponent } = useOrganisation()
 
-function getSchulzeSchema (t: ComposerTranslation, proposals: number) {
+function getSchulzeSchema(t: ComposerTranslation, proposals: number) {
   return {
     properties: {
       stars: {
@@ -34,9 +34,7 @@ function getSchulzeSchema (t: ComposerTranslation, proposals: number) {
         label: t('poll.schulze.addDenyProposal')
       }
     },
-    required: proposals < 3
-      ? ['deny_proposal', 'stars']
-      : ['stars']
+    required: proposals < 3 ? ['deny_proposal', 'stars'] : ['stars']
   } as const
 }
 
@@ -46,13 +44,13 @@ pollPlugins.register({
     majorityWinner: true,
     majorityLoser: true
   },
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.combined_simple')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.combined_simple')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.combined_simple')
   },
   proposalsMin: 1,
@@ -70,16 +68,16 @@ pollPlugins.register({
     majorityWinner: true,
     mutualMajority: true
   },
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.schulze')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.schulze')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.schulze')
   },
-  getSchema (t, proposals) {
+  getSchema(t, proposals) {
     return createFormSchema(t, getSchulzeSchema(t, proposals))
   },
   initialSettings: {
@@ -96,13 +94,13 @@ pollPlugins.register({
     majorityWinner: true,
     majorityLoser: true
   },
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.majority')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.majority')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.majority')
   },
   proposalsMin: 2,
@@ -121,16 +119,16 @@ pollPlugins.register({
     majorityWinner: true,
     proportional: false
   },
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.repeated_schulze')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.repeated_schulze')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.repeated_schulze')
   },
-  getSchema (t, proposals) {
+  getSchema(t, proposals) {
     const { properties, required } = getSchulzeSchema(t, proposals)
     return createFormSchema(t, {
       properties: {
@@ -165,16 +163,16 @@ pollPlugins.register({
     majorityLoser: false,
     majorityWinner: false
   },
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.scottish_stv')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.scottish_stv')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.scottish_stv')
   },
-  getSchema (t, proposals) {
+  getSchema(t, proposals) {
     return createFormSchema(t, {
       properties: {
         winners: {
@@ -210,16 +208,16 @@ pollPlugins.register({
     majorityWinner: false,
     proportional: false
   },
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.irv')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.irv')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.irv')
   },
-  getSchema (t) {
+  getSchema(t) {
     return createFormSchema(t, {
       properties: {
         allow_random: {
@@ -249,16 +247,16 @@ pollPlugins.register({
     proportional: false
   },
   discouraged: true,
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.dutt')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.dutt')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.dutt')
   },
-  getSchema (t, proposals) {
+  getSchema(t, proposals) {
     return createFormSchema(t, {
       properties: {
         min: {
@@ -299,16 +297,16 @@ pollPlugins.register({
   },
   discouraged: true,
   checkActive: () => !!getOrganisationComponent('repeated_irv'),
-  getDescription (t) {
+  getDescription(t) {
     return t('poll.method.description.repeated_irv')
   },
-  getHelp (t) {
+  getHelp(t) {
     return t('poll.method.help.repeated_irv')
   },
-  getName (t) {
+  getName(t) {
     return t('poll.method.repeated_irv')
   },
-  getSchema (t, proposals) {
+  getSchema(t, proposals) {
     return createFormSchema(t, {
       properties: {
         winners: {
@@ -320,6 +318,20 @@ pollPlugins.register({
         allow_random: {
           type: 'boolean',
           label: t('poll.allowRandomTiebreaker')
+        },
+        min: {
+          hint: t('poll.dutt.minMaxHint'),
+          label: t('poll.minRanked'),
+          maximum: proposals,
+          minimum: 0,
+          type: 'number'
+        },
+        max: {
+          hint: t('poll.dutt.minMaxHint'),
+          label: t('poll.maxRanked'),
+          maximum: proposals,
+          minimum: 0,
+          type: 'number'
         }
       },
       required: ['winners']

@@ -437,6 +437,8 @@
     "finalVoteCountWeighted": "{votes} of {total} votes ({abstains} abstains)",
     "finalVoteCountNoEr": "{votes} voted, {abstains} abstained actively, no electoral register",
     "finished": "Finished",
+    "maxRanked": "Maximum proposals to rank",
+    "minRanked": "Minimum proposals to rank",
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",
     "numDenied": "Denied proposal | Denied proposals",
