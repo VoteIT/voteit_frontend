@@ -115,12 +115,6 @@ const states = computed(() =>
     }
   })
 )
-
-watch(states, (value: FilterDescription[]) => {
-  activeFilter.value.states = new Set(
-    value.filter((f) => f.active).map((f) => f.id) as ProposalState[]
-  )
-})
 </script>
 
 <style lang="sass">
