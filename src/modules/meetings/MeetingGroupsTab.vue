@@ -4,7 +4,12 @@
       {{ t('meeting.groups.help') }}
     </v-alert>
     <v-toolbar :title="t('meeting.groups.groups')" color="secondary">
-      <v-btn class="mr-2 d-none d-md-inline" :variant="groupFilter.open ? 'elevated' : 'text'" @click="groupFilter.open = !groupFilter.open" :color="groupFilter.open ? 'secondary-lighten-2' : undefined" >
+      <v-btn
+        class="mr-2 d-none d-md-inline"
+        :variant="groupFilter.open ? 'elevated' : 'text'"
+        @click="groupFilter.open = !groupFilter.open"
+        :color="groupFilter.open ? 'secondary-lighten-2' : undefined"
+      >
         <v-icon start>mdi-filter-menu</v-icon>
         {{ t('filter') }}
       </v-btn>
@@ -16,15 +21,29 @@
             </v-btn>
           </template>
           <template #default="{ close }">
-            <v-alert type="info" class="mb-2" :text="meeting?.group_votes_active ? t('meeting.groups.importWithVotesHelp') : t('meeting.groups.importHelp')" />
+            <v-alert
+              type="info"
+              class="mb-2"
+              :text="
+                meeting?.group_votes_active
+                  ? t('meeting.groups.importWithVotesHelp')
+                  : t('meeting.groups.importHelp')
+              "
+            />
             <SchemaForm
-             :schema="importSchema"
-             :handler="createGroups"
-             @saved="close"
+              :schema="importSchema"
+              :handler="createGroups"
+              @saved="close"
             >
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
-                  <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-send">
+                  <v-btn
+                    type="submit"
+                    color="primary"
+                    :loading="submitting"
+                    :disabled="disabled"
+                    prepend-icon="mdi-send"
+                  >
                     {{ t('meeting.groups.import') }}
                   </v-btn>
                 </div>
@@ -39,8 +58,16 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item append-icon="mdi-file-download" :title="t('meeting.groups.groups') + ' (CSV)'" :href="getApiLink(`export-meeting-groups/${meetingId}/csv/`)" />
-            <v-list-item append-icon="mdi-file-download" :title="t('meeting.groups.groups') + ' (JSON)'" :href="getApiLink(`export-meeting-groups/${meetingId}/json/`)" />
+            <v-list-item
+              append-icon="mdi-file-download"
+              :title="t('meeting.groups.groups') + ' (CSV)'"
+              :href="getApiLink(`export-meeting-groups/${meetingId}/csv/`)"
+            />
+            <v-list-item
+              append-icon="mdi-file-download"
+              :title="t('meeting.groups.groups') + ' (JSON)'"
+              :href="getApiLink(`export-meeting-groups/${meetingId}/json/`)"
+            />
           </v-list>
         </v-menu>
         <DefaultDialog :title="t('meeting.groups.new')">
@@ -60,7 +87,13 @@
                   <v-btn variant="text" @click="close">
                     {{ t('cancel') }}
                   </v-btn>
-                  <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled" prepend-icon="mdi-account-multiple-plus">
+                  <v-btn
+                    type="submit"
+                    color="primary"
+                    :loading="submitting"
+                    :disabled="disabled"
+                    prepend-icon="mdi-account-multiple-plus"
+                  >
                     {{ t('meeting.groups.create') }}
                   </v-btn>
                 </div>
@@ -73,12 +106,24 @@
     <v-expand-transition>
       <v-sheet v-show="groupFilter.open" color="secondary" class="rounded-b">
         <div class="pa-4">
-          <v-text-field :label="t('search')" v-model="groupFilter.search" clearable />
-          <v-switch :label="t('meeting.groups.filterMine')" hide-details v-model="groupFilter.mine" />
+          <v-text-field
+            :label="t('search')"
+            v-model="groupFilter.search"
+            clearable
+          />
+          <v-switch
+            :label="t('meeting.groups.filterMine')"
+            hide-details
+            v-model="groupFilter.mine"
+          />
         </div>
       </v-sheet>
     </v-expand-transition>
-    <v-pagination v-if="groupChunks.length > 1" v-model="currentPage" :length="groupChunks.length" />
+    <v-pagination
+      v-if="groupChunks.length > 1"
+      v-model="currentPage"
+      :length="groupChunks.length"
+    />
     <v-table>
       <thead>
         <tr>
@@ -88,13 +133,21 @@
           <th>
             {{ t('meeting.groups.members') }}
           </th>
-          <th v-for="{ description, name, title } in columns" :key="name" class="text-truncate">
+          <th
+            v-for="{ description, name, title } in columns"
+            :key="name"
+            class="text-truncate"
+          >
             <span>
               {{ title }}
             </span>
             <v-tooltip v-if="description" :text="description" location="top">
               <template #activator="{ props }">
-                <v-icon icon="mdi-help-circle" v-bind="props" class="ml-1 my-n2" />
+                <v-icon
+                  icon="mdi-help-circle"
+                  v-bind="props"
+                  class="ml-1 my-n2"
+                />
               </template>
             </v-tooltip>
           </th>
@@ -105,22 +158,31 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="group in groupChunks[currentPage - 1]" :key="group.pk" :class="group.isMember ? 'bg-secondary-lighten-2' : undefined">
+        <tr
+          v-for="group in groupChunks[currentPage - 1]"
+          :key="group.pk"
+          :class="group.isMember ? 'bg-secondary-lighten-2' : undefined"
+        >
           <td>
             {{ group.title }}
           </td>
           <td>
             {{ group.members.length || '-' }}
-            <DefaultDialog v-if="group.members.length || canChangeMeeting" :title="t('meeting.groups.membersIn', { ...group })">
+            <DefaultDialog
+              v-if="group.members.length || canChangeMeeting"
+              :title="t('meeting.groups.membersIn', { ...group })"
+            >
               <template #activator="{ props }">
-                <v-btn v-bind="props" size="small" color="secondary" class="ml-2">
+                <v-btn
+                  v-bind="props"
+                  size="small"
+                  color="secondary"
+                  class="ml-2"
+                >
                   {{ canChangeMeeting ? t('handle') : t('show') }}
                 </v-btn>
               </template>
-              <GroupMemberships
-                :group="group"
-                :editable="canChangeMeeting"
-              />
+              <GroupMemberships :group="group" :editable="canChangeMeeting" />
             </DefaultDialog>
           </td>
           <td v-for="{ component, name, getValue } in columns" :key="name">
@@ -128,7 +190,12 @@
             <component v-if="component" :is="component" :group="group" />
           </td>
           <td v-if="allTags.size">
-            <Tag v-for="tag in group.tags" :key="tag" :name="tag" class="mr-1" />
+            <Tag
+              v-for="tag in group.tags"
+              :key="tag"
+              :name="tag"
+              class="mr-1"
+            />
           </td>
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>
@@ -149,14 +216,23 @@
                       <v-btn @click="close" variant="text">
                         {{ t('cancel') }}
                       </v-btn>
-                      <QueryDialog :text="t('meeting.groups.deleteConfirm', { ...group })" color="warning" @confirmed="deleteGroup(group, close)">
+                      <QueryDialog
+                        :text="t('meeting.groups.deleteConfirm', { ...group })"
+                        color="warning"
+                        @confirmed="deleteGroup(group, close)"
+                      >
                         <template #activator="{ props }">
                           <v-btn variant="text" color="warning" v-bind="props">
                             {{ t('content.delete') }}
                           </v-btn>
                         </template>
                       </QueryDialog>
-                      <v-btn type="submit" color="primary" :loading="submitting" :disabled="disabled">
+                      <v-btn
+                        type="submit"
+                        color="primary"
+                        :loading="submitting"
+                        :disabled="disabled"
+                      >
                         {{ t('save') }}
                       </v-btn>
                     </div>
@@ -185,7 +261,15 @@
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
 import { chunk, orderBy } from 'lodash'
-import { computed, onBeforeUnmount, onBeforeMount, provide, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onBeforeMount,
+  provide,
+  reactive,
+  ref,
+  watch
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getApiLink } from '@/utils/restApi'
@@ -205,7 +289,7 @@ import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
-import { TagsKey, tagClickEvent } from './useTags'
+import useTags, { TagsKey } from './useTags'
 import useUserDetails from '../organisations/useUserDetails'
 import { getFullName } from '@/utils'
 
@@ -217,8 +301,8 @@ const { getUser } = useUserDetails()
 const rules = useRules(t)
 
 const groupFilter = reactive<{
-  mine: boolean,
-  open: boolean,
+  mine: boolean
+  open: boolean
   search: string | null
 }>({
   mine: false,
@@ -227,39 +311,42 @@ const groupFilter = reactive<{
 })
 
 // Set search query on tag click
-function tagClick (tag: string) {
+function tagClick(tag: string) {
   groupFilter.open = true
   groupFilter.search = '#' + tag
 }
-onBeforeMount(() => tagClickEvent.on(tagClick))
-onBeforeUnmount(() => tagClickEvent.on(tagClick))
+useTags(undefined, tagClick)
 
-function searchGroup ({ tags, title, members }: (typeof meetingGroups.value)[number]) {
+function searchGroup({
+  tags,
+  title,
+  members
+}: (typeof meetingGroups.value)[number]) {
   if (!groupFilter.search) return true
   const query = groupFilter.search.toLowerCase()
   // Start by title search (cheapest)
   if (title.toLowerCase().includes(query)) return true
   // Tags are always lowercase
-  if (tags.some(tag => ('#' + tag).includes(query))) return true
+  if (tags.some((tag) => ('#' + tag).includes(query))) return true
   // Lastly, search members
-  return (members.some(id => {
+  return members.some((id) => {
     const user = getUser(id)
     if (!user) return false
     return (
       !!user.userid?.includes(query) ||
       getFullName(user).toLowerCase().includes(query)
     )
-  }))
+  })
 }
 
 const orderedMeetingGroups = computed(() => {
   return orderBy(
     meetingGroups.value
-      .map(g => ({
+      .map((g) => ({
         ...g,
         isMember: g.members.includes(user.value!.pk)
       }))
-      .filter(g => {
+      .filter((g) => {
         if (groupFilter.mine && !g.isMember) return false
         if (groupFilter.search && !searchGroup(g)) return false
         return true
@@ -276,14 +363,14 @@ const columns = computed(() => {
   for (const plugin of plugins) {
     columns = plugin.transform(columns, meeting.value)
   }
-  return columns.map(col => ({
+  return columns.map((col) => ({
     ...col,
     count: col.getCount?.(),
     description: col.getDescription?.(t),
     title: col.getTitle(t)
   }))
 })
-const hasCountColumns = computed(() => any(columns.value, c => !!c.getCount))
+const hasCountColumns = computed(() => any(columns.value, (c) => !!c.getCount))
 
 const importSchema = computed<FormSchema>(() => {
   const validate = rules.multiline(
@@ -297,19 +384,21 @@ const importSchema = computed<FormSchema>(() => {
       label: t('meeting.groups.groups'),
       name: 'groups',
       type: FieldType.TextArea,
-      rules: [{
-        props: {
-          required: true
-        },
-        validate
-      }]
+      rules: [
+        {
+          props: {
+            required: true
+          },
+          validate
+        }
+      ]
     }
   ]
 })
 /**
  * Socket call to import groups.
  */
-async function createGroups (data: { groups: string }) {
+async function createGroups(data: { groups: string }) {
   await meetingGroupType.methodCall('bulk_create', {
     meeting: meetingId.value,
     ...data
@@ -319,14 +408,18 @@ async function createGroups (data: { groups: string }) {
 // Paginate
 const GROUPS_PER_PAGE = 20
 const currentPage = ref(1)
-const groupChunks = computed(() => chunk(orderedMeetingGroups.value, GROUPS_PER_PAGE))
-watch(groupChunks, chunks => {
+const groupChunks = computed(() =>
+  chunk(orderedMeetingGroups.value, GROUPS_PER_PAGE)
+)
+watch(groupChunks, (chunks) => {
   const maxPage = chunks.length + 1
   if (currentPage.value > maxPage) currentPage.value = maxPage
 })
 
 // Provide tag autocompletion
-const allTags = computed(() => new Set(flatmap(meetingGroups.value, group => group.tags)))
+const allTags = computed(
+  () => new Set(flatmap(meetingGroups.value, (group) => group.tags))
+)
 provide(TagsKey, allTags)
 
 const groupSchema = computed(() => {
@@ -335,13 +428,15 @@ const groupSchema = computed(() => {
       name: 'title',
       type: FieldType.Text,
       label: t('name'),
-      rules: [{
-        props: {
-          maxlength: 100,
-          required: true
-        },
-        validate: rules.required
-      }]
+      rules: [
+        {
+          props: {
+            maxlength: 100,
+            required: true
+          },
+          validate: rules.required
+        }
+      ]
     },
     {
       name: 'body',
@@ -359,18 +454,20 @@ const groupSchema = computed(() => {
       name: 'votes',
       type: FieldType.Number,
       label: t('meeting.groups.votes'),
-      rules: [{
-        props: {
-          min: 0
-        },
-        validate: rules.min(0)
-      }]
+      rules: [
+        {
+          props: {
+            min: 0
+          },
+          validate: rules.min(0)
+        }
+      ]
     })
   }
   return schema
 })
 
-async function createGroup (data: Partial<MeetingGroup>) {
+async function createGroup(data: Partial<MeetingGroup>) {
   if (!user.value) throw new Error('User not authenticated')
   await meetingGroupType.api.add({
     ...data,
@@ -380,12 +477,12 @@ async function createGroup (data: Partial<MeetingGroup>) {
   })
 }
 
-function changeGroup (pk: number) {
+function changeGroup(pk: number) {
   return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
 }
 
 const { handleRestError } = useErrorHandler({ target: 'alert' })
-async function deleteGroup (group: MeetingGroup, close: () => void) {
+async function deleteGroup(group: MeetingGroup, close: () => void) {
   try {
     await meetingGroupType.api.delete(group.pk)
     close()
