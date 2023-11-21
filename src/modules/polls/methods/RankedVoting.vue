@@ -62,6 +62,7 @@
         </div>
       </template>
     </VoteProposal>
+    <v-alert v-if="!disabled && validHelpText" v-bind="validHelpText" />
   </div>
 </template>
 
@@ -73,7 +74,7 @@ import { getProposals } from '@/modules/proposals/useProposals'
 import type { Proposal } from '@/modules/proposals/types'
 
 import { Poll } from '../types'
-import { RankedVote } from './types'
+import { RankedVote, isRepeatedIRVPoll } from './types'
 import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 const props = defineProps<{
@@ -97,8 +98,27 @@ function setOrder(order?: number[]) {
   emit('update:modelValue', { ranking: ranking.value })
 }
 
-// TODO: Allow setting min proposals to rank.
-const minRanked = computed(() => 1)
+const minMaxSettings = computed(() => {
+  // TODO: Decouple from this component
+  if (isRepeatedIRVPoll(props.poll)) return props.poll.settings
+})
+const maxRanked = computed(() => minMaxSettings.value?.max)
+const minRanked = computed(() => minMaxSettings.value?.min ?? 1)
+
+const missingProposals = computed(() => {
+  const len = ranking.value.length
+  const min = minRanked.value
+  if (min > 0 && len < min) return min - len
+})
+
+const surplusProposals = computed(() => {
+  const len = ranking.value.length
+  const max = maxRanked.value
+  if (max && len > max) return len - max
+})
+const isValid = computed(
+  () => !missingProposals.value && !surplusProposals.value
+)
 
 function toggleSelected(proposal: Proposal) {
   if (props.disabled) return
@@ -107,11 +127,25 @@ function toggleSelected(proposal: Proposal) {
   } else {
     ranking.value.push(proposal.pk)
   }
-  if (ranking.value.length >= minRanked.value) setOrder()
+  if (isValid.value) setOrder()
   else emit('update:modelValue')
 }
 
 const rankedProposals = computed(() => getProposals(ranking.value))
+
+const validHelpText = computed(() => {
+  if (missingProposals.value)
+    return {
+      text: t('poll.dutt.minHelpText', missingProposals.value),
+      type: 'warning' as const
+    }
+  if (surplusProposals.value)
+    return {
+      text: t('poll.dutt.maxHelpText', surplusProposals.value),
+      type: 'warning' as const
+    }
+  return { text: t('poll.dutt.validVoteHelpText'), type: 'success' as const }
+})
 </script>
 
 <style lang="sass">

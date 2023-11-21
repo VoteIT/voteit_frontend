@@ -107,6 +107,12 @@ export interface InstantRunoffSettings {
   allow_random: boolean
 }
 
+export interface RepeatedIRVSettings extends InstantRunoffSettings {
+  max: number | null
+  min: number | null
+  winners: number
+}
+
 export interface SchulzeSettings {
   stars?: number
   deny_proposal?: boolean
@@ -116,6 +122,7 @@ export type PollMethodSettings =
   | RepeatedSchulzeSettings
   | ScottishSTVSettings
   | InstantRunoffSettings
+  | RepeatedIRVSettings
   | SchulzeSettings
   | DuttSettings
 
@@ -153,6 +160,16 @@ export interface InstantRunoffPoll extends Poll {
   method_name: 'irv'
   result: ScottishSTVResult // TODO: Rename to something more general
   settings: InstantRunoffSettings
+}
+
+export interface RepeatedIRVPoll extends Poll {
+  method_name: 'repeated_irv'
+  result: ScottishSTVResult // TODO: Rename to something more general
+  settings: RepeatedIRVSettings
+}
+
+export function isRepeatedIRVPoll(poll: Poll): poll is RepeatedIRVPoll {
+  return poll.method_name === 'repeated_irv'
 }
 
 export interface DuttVote {

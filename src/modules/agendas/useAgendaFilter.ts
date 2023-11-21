@@ -15,14 +15,16 @@ function setEqual(a: Set<string>, b: Set<string>): boolean {
 }
 
 export default function useAgendaFilter(agendaId: Ref<number>) {
+  function clearFilters() {
+    agendaFilters.set(agendaId.value, {
+      order: 'asc',
+      states: new Set(DEFAULT_FILTER_STATES),
+      tags: new Set()
+    })
+  }
+
   const activeFilter = computed<Filter>(() => {
-    if (!agendaFilters.has(agendaId.value)) {
-      agendaFilters.set(agendaId.value, {
-        order: 'asc',
-        states: new Set(DEFAULT_FILTER_STATES),
-        tags: new Set()
-      })
-    }
+    if (!agendaFilters.has(agendaId.value)) clearFilters()
     return agendaFilters.get(agendaId.value)!
   })
 
@@ -43,6 +45,7 @@ export default function useAgendaFilter(agendaId: Ref<number>) {
   return {
     activeFilter,
     isModified,
+    clearFilters,
     orderContent
   }
 }

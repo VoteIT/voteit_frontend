@@ -289,7 +289,7 @@ import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
-import { TagsKey, tagClickEvent } from './useTags'
+import useTags, { TagsKey } from './useTags'
 import useUserDetails from '../organisations/useUserDetails'
 import { getFullName } from '@/utils'
 
@@ -315,8 +315,7 @@ function tagClick(tag: string) {
   groupFilter.open = true
   groupFilter.search = '#' + tag
 }
-onBeforeMount(() => tagClickEvent.on(tagClick))
-onBeforeUnmount(() => tagClickEvent.on(tagClick))
+useTags(undefined, tagClick)
 
 function searchGroup({
   tags,

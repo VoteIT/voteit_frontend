@@ -1,4 +1,11 @@
-import { InjectionKey, onMounted, onUpdated, Ref, watch } from 'vue'
+import {
+  InjectionKey,
+  onMounted,
+  onUnmounted,
+  onUpdated,
+  Ref,
+  watch
+} from 'vue'
 import stringToHSL from '@/utils/stringToHSL'
 import { tagify } from '@/utils'
 import TypedEvent from '@/utils/TypedEvent'
@@ -40,7 +47,10 @@ function getHTMLTags(html: string): Set<string> {
   return docTags
 }
 
-export default function useTags(el?: Ref<HTMLElement | null>) {
+export default function useTags(
+  el?: Ref<HTMLElement | null>,
+  onClick?: (tag: string) => void
+) {
   if (el) {
     onMounted(() => {
       if (!el.value) return
@@ -53,6 +63,11 @@ export default function useTags(el?: Ref<HTMLElement | null>) {
     watch(el, (elem) => {
       if (elem) elem.addEventListener('click', clickHandler)
     })
+  }
+
+  if (onClick) {
+    onMounted(() => tagClickEvent.on(onClick))
+    onUnmounted(() => tagClickEvent.off(onClick))
   }
 
   return {

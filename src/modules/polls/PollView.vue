@@ -31,7 +31,11 @@
               <v-tooltip>
                 <template #activator="{ props }">
                   <span v-bind="props">
-                    {{ t('electoralRegister.electoralRegister') }}:
+                    {{
+                      erPreliminary
+                        ? t('electoralRegister.preliminary')
+                        : t('electoralRegister.electoralRegister')
+                    }}:
                     <span class="text-secondary">
                       {{
                         DateTime.fromISO(
@@ -233,6 +237,7 @@ import useProposalOrdering from '../proposals/useProposalOrdering'
 import usePoll from './usePoll'
 import { pollType, voteType } from './contentTypes'
 import WithheldResult from './WithheldResult.vue'
+import { PollState } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -404,6 +409,8 @@ const buttons = computed(() => {
   }
   return btns
 })
+
+const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
 </script>
 
 <style lang="sass">

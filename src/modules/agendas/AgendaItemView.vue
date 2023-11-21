@@ -105,17 +105,17 @@
           v-else-if="filterTag"
           class="mb-2"
         >
-          <div class="flex-grow-1 mb-2">
-            {{ t('agenda.filteringOnTag') }}
-            <Tag :name="filterTag" disabled class="ml-2" />
-          </div>
-          <v-btn
-            size="small"
-            @click="filterComponent?.clearFilters()"
-            prepend-icon="mdi-undo-variant"
-          >
-            {{ t('defaultFilters') }}
-          </v-btn>
+          {{ t('agenda.filteringOnTag') }}
+          <Tag :name="filterTag" disabled class="ml-2" />
+          <template #append>
+            <v-btn
+              size="small"
+              @click="clearFilters"
+              prepend-icon="mdi-undo-variant"
+            >
+              {{ t('defaultFilters') }}
+            </v-btn>
+          </template>
         </v-alert>
         <v-alert
           type="info"
@@ -123,17 +123,17 @@
           v-else-if="hasProposals && !sortedProposals.length"
           class="mb-2"
         >
-          <div class="flex-grow-1 mb-2">
-            {{ t('agenda.helpNoProposalsInFilter') }}
-          </div>
-          <v-btn
-            size="small"
-            v-if="filterComponent?.isModified"
-            @click="filterComponent?.clearFilters()"
-            prepend-icon="mdi-undo-variant"
-          >
-            {{ t('defaultFilters') }}
-          </v-btn>
+          {{ t('agenda.helpNoProposalsInFilter') }}
+          <template #append>
+            <v-btn
+              size="small"
+              v-if="isModified"
+              @click="clearFilters"
+              prepend-icon="mdi-undo-variant"
+            >
+              {{ t('defaultFilters') }}
+            </v-btn>
+          </template>
         </v-alert>
         <AgendaProposals :proposals="sortedProposals" />
         <Dropdown
@@ -157,10 +157,9 @@
 
 <script lang="ts" setup>
 import {
+  ComponentPublicInstance,
   computed,
   nextTick,
-  onMounted,
-  onUnmounted,
   provide,
   reactive,
   ref,
@@ -195,7 +194,7 @@ import useProposals, {
 } from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
 import { DiscussionPost } from '../discussions/types'
-import { TagsKey, tagClickEvent } from '../meetings/useTags'
+import useTags, { TagsKey } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
 import usePolls from '../polls/usePolls'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
@@ -204,7 +203,7 @@ import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 import useAgenda from './useAgenda'
 import AgendaFilters from './AgendaFilters.vue'
 import useAgendaFilter from './useAgendaFilter'
-import { AgendaFilterComponent, AgendaItem } from './types'
+import { AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
@@ -218,7 +217,8 @@ const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
 const { agendaId, agenda, agendaItemLastRead, hasNewItems } =
   useAgenda(meetingId)
-const { activeFilter, orderContent } = useAgendaFilter(agendaId)
+const { activeFilter, isModified, clearFilters, orderContent } =
+  useAgendaFilter(agendaId)
 const {
   agendaItem,
   agendaBody,
@@ -381,9 +381,17 @@ watch(agendaBody, (value) => {
   content.body = value ?? ''
 })
 
-const filterComponent = ref<AgendaFilterComponent | null>(null)
-async function toggleTag(tagName: string) {
+const filterComponent = ref<ComponentPublicInstance | null>(null)
+async function selectTag(tagName: string) {
   activeFilter.value.tags = new Set([tagName])
+  activeFilter.value.states = new Set([
+    ProposalState.Approved,
+    ProposalState.Denied,
+    ProposalState.Published,
+    ProposalState.Retracted,
+    ProposalState.Unhandled,
+    ProposalState.Voting
+  ])
   const el: HTMLElement = filterComponent.value?.$el
   if (!el) return
   await nextTick()
@@ -393,12 +401,7 @@ async function toggleTag(tagName: string) {
   })
 }
 const filterTag = computed(() => [...activeFilter.value.tags][0])
-onMounted(() => {
-  tagClickEvent.on(toggleTag)
-})
-onUnmounted(() => {
-  tagClickEvent.off(toggleTag)
-})
+useTags(undefined, selectTag)
 
 const editing = ref(false)
 const content = reactive({

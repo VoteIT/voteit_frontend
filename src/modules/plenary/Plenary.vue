@@ -26,6 +26,7 @@ import { proposalType } from '../proposals/contentTypes'
 import BroadcastMenu from '../rooms/BroadcastMenu.vue'
 import useRoom from '../rooms/useRoom'
 import SpeakerHandling from '../speakerLists/SpeakerHandling.vue'
+import useTags from '../meetings/useTags'
 
 import AppBar from './AppBar.vue'
 import AgendaNavigation from './AgendaNavigation.vue'
@@ -69,11 +70,13 @@ const {
   stateFilter,
   selectedProposals,
   selectedProposalIds,
-  getPlenaryPath
+  getPlenaryPath,
+  selectTag
 } = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 const { getState: getProposalState } = proposalType.useWorkflows()
+useTags(undefined, selectTag)
 
 useMeetingChannel()
 useChannel('agenda_item', agendaId)
