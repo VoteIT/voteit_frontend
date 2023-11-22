@@ -611,6 +611,8 @@
     "broadcastAI": "Broadcast this",
     "closeAI": "Close Agenda Item",
     "closeAIDescription": "There are no ongoing polls or unresolved proposals in this Agenda Item. Do you want to close it and move to the next one?",
+    "closedAI": "Finished agenda item",
+    "closedAIDescription": "This agenda item is finished. If you need to handle decisions on this agenda item, you must move it back to ongoing.",
     "confirmStartProtectedStates": "You have selected a proposal that is in {states} state.\nDo you still want to start the poll? | You have selected {count} proposals that are in {states} state.\nDo you still want to start the poll?",
     "decisions": "Decisions",
     "discussion": "Discussion",

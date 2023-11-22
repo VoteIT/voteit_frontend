@@ -9,8 +9,6 @@ import { AgendaState } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import { agendaItemType } from '../agendas/contentTypes'
-import { anyPoll } from '../polls/usePolls'
-import { PollState } from '../polls/types'
 import useUserDetails from '../organisations/useUserDetails'
 import usePlenary from './usePlenary'
 import { dialogQuery } from '@/utils'
@@ -25,26 +23,15 @@ const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails()
 const { agendaId, nextAgendaItem } = useAgenda(meetingId)
-const { agendaItem, hasUnresolvedProposals } = useAgendaItem(agendaId)
-const {
-  hasBroadcast,
-  isBroadcasting,
-  meetingRoom,
-  setAgendaId,
-  setBroadcast,
-  setHandler
-} = useRoom()
+const { agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
+  useAgendaItem(agendaId)
+const { hasBroadcast, isBroadcasting, meetingRoom, setBroadcast, setHandler } =
+  useRoom()
 const { selectedProposalIds } = usePlenary(meetingId, agendaId)
 
 const isBroadcastingAI = computed(
   () =>
     isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
-)
-
-const hasOngoingPolls = computed(() =>
-  anyPoll(
-    (p) => p.agenda_item === agendaId.value && p.state === PollState.Ongoing
-  )
 )
 
 function getMeetingStateAlert() {
@@ -90,7 +77,7 @@ function broadcastThis() {
 }
 
 function getAgendaAlert() {
-  if (!isBroadcasting.value)
+  if (!isBroadcasting.value && agendaItem.value?.state !== AgendaState.Private)
     return hasBroadcast.value && meetingRoom.value?.handler
       ? {
           props: {
@@ -212,6 +199,15 @@ function getAgendaAlert() {
             onClick: broadcastThis
           }
         ]
+      }
+    case AgendaState.Closed:
+      return {
+        props: {
+          icon: 'mdi-check-all',
+          title: t('plenary.closedAI'),
+          text: t('plenary.closedAIDescription'),
+          type: 'warning' as const
+        }
       }
   }
 }

@@ -34,7 +34,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
   },
   {
     transition: 'close',
-    icon: 'mdi-close-circle-outline',
+    icon: 'mdi-check-all',
     state: AgendaState.Closed,
     priority: 3,
     getName(t, count = 1) {

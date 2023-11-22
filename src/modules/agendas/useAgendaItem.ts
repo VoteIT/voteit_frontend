@@ -1,4 +1,3 @@
-import { any } from 'itertools'
 import type { Dictionary } from 'lodash'
 import { computed, Ref } from 'vue'
 
@@ -7,17 +6,17 @@ import { autoEllipsis, slugify } from '@/utils'
 import useMeeting from '../meetings/useMeeting'
 import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
 import { canAddPoll as _canAddPoll } from '../polls/rules'
-import usePolls from '../polls/usePolls'
+import usePolls, { anyPoll } from '../polls/usePolls'
+import { PollState } from '../polls/types'
 import {
   canAddProposal as _canAddProposal,
   canAddDocument as _canAddDocument,
   getProposalBlockReason
 } from '../proposals/rules'
-import { iterProposals } from '../proposals/useProposals'
+import { anyProposal } from '../proposals/useProposals'
 import { isUnresolvedState } from '../proposals/utils'
 
 import { canChangeAgendaItem as canChange } from './rules'
-
 import useAgenda from './useAgenda'
 
 export default function useAgendaItem(agendaId: Ref<number | undefined>) {
@@ -89,11 +88,15 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
     return _canAddDocument(agendaItem.value)
   })
 
+  const hasOngoingPolls = computed(() =>
+    anyPoll(
+      (p) => p.agenda_item === agendaId.value && p.state === PollState.Ongoing
+    )
+  )
+
   const hasUnresolvedProposals = computed(() =>
-    any(
-      iterProposals(
-        (p) => p.agenda_item === agendaId.value && isUnresolvedState(p.state)
-      )
+    anyProposal(
+      (p) => p.agenda_item === agendaId.value && isUnresolvedState(p.state)
     )
   )
 
@@ -106,6 +109,7 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
     canAddPoll,
     canAddProposal,
     canChangeAgendaItem,
+    hasOngoingPolls,
     hasUnresolvedProposals,
     nextPollTitle,
     proposalBlockReason,
