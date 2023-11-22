@@ -8,8 +8,10 @@ import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.v
 import Tag from '@/components/Tag.vue'
 
 import useAgenda from '../agendas/useAgenda'
+import { AgendaState } from '../agendas/types'
+import { agendaItemType } from '../agendas/contentTypes'
 import { proposalType } from '../proposals/contentTypes'
-import { Proposal, ProposalState } from '../proposals/types'
+import { Proposal, ProposalState, isDiffProposal } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
 import { PROPOSAL_STATE_ORDER } from '../proposals/constants'
 import { isUnresolvedState } from '../proposals/utils'
@@ -23,22 +25,42 @@ const PROPOSAL_ORDERING = {
   modified: ['modified', 'created']
 }
 
-const SETTING_DEFAULTS = Object.freeze({
+const AGENDA_STATE_ODER = [
+  AgendaState.Upcoming,
+  AgendaState.Ongoing,
+  AgendaState.Closed,
+  AgendaState.Archived
+]
+
+const SETTING_DEFAULTS = {
   documents: {
     proposalOrder: 'created',
     showAgendaBody: true,
     showMeetingBody: true,
-    showStates: [...PROPOSAL_STATE_ORDER]
+    proposalStates: [...PROPOSAL_STATE_ORDER],
+    agendaStates: [...AGENDA_STATE_ODER],
+    unresolvedStates: 'all'
   },
   minutes: {
     proposalOrder: 'modified',
     showAgendaBody: false,
     showMeetingBody: false,
-    showStates: [ProposalState.Approved, ProposalState.Denied]
+    proposalStates: [ProposalState.Approved, ProposalState.Denied],
+    agendaStates: [...AGENDA_STATE_ODER],
+    unresolvedStates: 'all'
+  },
+  remaining: {
+    proposalOrder: 'created',
+    showAgendaBody: false,
+    showMeetingBody: false,
+    proposalStates: [ProposalState.Published, ProposalState.Voting],
+    agendaStates: [AgendaState.Upcoming, AgendaState.Ongoing],
+    unresolvedStates: true
   }
-})
+} as const
 
 const { getState: getProposalState } = proposalType.useWorkflows()
+const { getState: getAgendaState } = agendaItemType.useWorkflows()
 
 const { t } = useI18n()
 const { meetingId, isFinishedMeeting, meeting } = useMeeting()
@@ -61,52 +83,76 @@ const settings = reactive({
   showAuthors: true,
   showMeetingBody: false,
   showSeparators: true,
-  showStates: [] as ProposalState[]
+  proposalStates: [] as ProposalState[],
+  agendaStates: [] as AgendaState[],
+  unresolvedStates: 'all' as 'all' | boolean
 })
 watch(baseSetting, (type) => {
   // If baseSetting changes, all settings should be reset to those defaults
   if (type) Object.assign(settings, SETTING_DEFAULTS[type])
 })
 
-const options = Object.fromEntries(
-  PROPOSAL_STATE_ORDER.map((state) => [
-    state,
-    getProposalState(state)!.getName(t)
-  ])
-)
+const proposalStateSettings = {
+  options: Object.fromEntries(
+    PROPOSAL_STATE_ORDER.map((state) => [
+      state,
+      getProposalState(state)!.getName(t, 2) // Go plural
+    ])
+  )
+}
+
+const agendaStateSettings = {
+  options: Object.fromEntries(
+    AGENDA_STATE_ODER.map((state) => [
+      state,
+      getAgendaState(state)!.getName(t, 2) // Go plural
+    ])
+  )
+}
+
+function unresolvedAIFilter(ai: {
+  hasUnresolved: boolean
+  state: AgendaState
+}) {
+  if (!settings.agendaStates.includes(ai.state)) return false
+  if (settings.unresolvedStates === 'all') return true
+  return ai.hasUnresolved === settings.unresolvedStates
+}
 
 const annotatedAgenda = computed(() => {
-  return agenda.value.map(({ pk, title }) => {
-    const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
-      const proposals = orderBy(
-        getAgendaProposals(pk, (p) => p.state === state),
-        PROPOSAL_ORDERING[settings.proposalOrder]
-      )
+  return agenda.value
+    .map(({ pk, state, title }) => {
+      const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
+        const proposals = orderBy(
+          getAgendaProposals(pk, (p) => p.state === state),
+          PROPOSAL_ORDERING[settings.proposalOrder]
+        )
+        return {
+          state,
+          title: getProposalState(state)?.getName(t, proposals.length),
+          proposals
+        }
+      })
       return {
+        // hasProposals: proposalStates.some(({ proposals }) => proposals.length),
+        // body,
+        hasUnresolved: proposalStates.some(
+          ({ state, proposals }) => isUnresolvedState(state) && proposals.length
+        ),
+        pk,
+        proposalStates: proposalStates.filter(
+          ({ state, proposals }) =>
+            settings.proposalStates.includes(state) && proposals.length
+        ),
         state,
-        title: getProposalState(state)?.getName(t, proposals.length),
-        proposals
+        title
       }
     })
-    return {
-      // hasProposals: prposalStates.some(({ proposals }) => proposals.length),
-      // body,
-      hasUnresolved: proposalStates.some(
-        ({ state, proposals }) => isUnresolvedState(state) && proposals.length
-      ),
-      pk,
-      proposalStates: proposalStates.filter(
-        ({ state, proposals }) =>
-          settings.showStates.includes(state) && proposals.length
-      ),
-      title
-    }
-  })
+    .filter(unresolvedAIFilter)
 })
 
 function getProposalBody(p: Proposal) {
-  if (p.shortname === 'proposal') return p.body
-  return p.body_diff_brief
+  return isDiffProposal(p) ? p.body_diff_brief : p.body
 }
 </script>
 
@@ -125,6 +171,9 @@ function getProposalBody(p: Proposal) {
         <v-btn size="large" value="minutes" prepend-icon="mdi-file-sign">
           {{ t('minutes.minutes') }}
         </v-btn>
+        <v-btn size="large" value="remaining" prepend-icon="mdi-file-clock">
+          {{ t('minutes.remaining') }}
+        </v-btn>
       </v-btn-toggle>
     </div>
     <v-expand-transition>
@@ -135,11 +184,37 @@ function getProposalBody(p: Proposal) {
         class="pa-4 d-print-none"
       >
         <h3>
+          {{ t('minutes.includeAgendaStates') }}
+        </h3>
+        <CheckboxMultipleSelect
+          v-model="settings.agendaStates"
+          :settings="agendaStateSettings"
+        />
+        <h3 class="mb-1">
+          {{ t('minutes.unresolvedProposals') }}
+        </h3>
+        <v-btn-toggle
+          mandatory
+          variant="outlined"
+          v-model="settings.unresolvedStates"
+          class="mb-4"
+        >
+          <v-btn value="all" prepend-icon="mdi-asterisk">
+            {{ t('all') }}
+          </v-btn>
+          <v-btn :value="true" prepend-icon="mdi-alert">
+            {{ t('minutes.unresolved') }}
+          </v-btn>
+          <v-btn :value="false" prepend-icon="mdi-check">
+            {{ t('minutes.resolved') }}
+          </v-btn>
+        </v-btn-toggle>
+        <h3>
           {{ t('minutes.includeProposalStates') }}
         </h3>
         <CheckboxMultipleSelect
-          v-model="settings.showStates"
-          :settings="{ options }"
+          v-model="settings.proposalStates"
+          :settings="proposalStateSettings"
         />
         <h3 class="mb-1">
           {{ t('minutes.proposalOrder') }}
@@ -148,6 +223,7 @@ function getProposalBody(p: Proposal) {
           mandatory
           variant="outlined"
           v-model="settings.proposalOrder"
+          class="mb-4"
         >
           <v-btn value="created" prepend-icon="mdi-sort">
             {{ t('created') }}
@@ -182,9 +258,11 @@ function getProposalBody(p: Proposal) {
         /> -->
         <div class="text-right">
           <v-btn
+            color="primary"
+            prepend-icon="mdi-printer"
             size="large"
             value="minutes"
-            prepend-icon="mdi-printer"
+            variant="flat"
             onclick="window.print()"
           >
             {{ t('minutes.print') }}
