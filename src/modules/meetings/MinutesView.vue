@@ -1,3 +1,115 @@
+<script setup lang="ts">
+import { orderBy } from 'lodash'
+import { computed, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import User from '@/components/User.vue'
+import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
+import Tag from '@/components/Tag.vue'
+
+import useAgenda from '../agendas/useAgenda'
+import { proposalType } from '../proposals/contentTypes'
+import { Proposal, ProposalState } from '../proposals/types'
+import useProposals from '../proposals/useProposals'
+import { PROPOSAL_STATE_ORDER } from '../proposals/constants'
+import { isUnresolvedState } from '../proposals/utils'
+
+import useMeeting from './useMeeting'
+import useMeetingTitle from './useMeetingTitle'
+import useMeetingGroups from './useMeetingGroups'
+
+const PROPOSAL_ORDERING = {
+  created: ['created'],
+  modified: ['modified', 'created']
+}
+
+const SETTING_DEFAULTS = Object.freeze({
+  documents: {
+    proposalOrder: 'created',
+    showAgendaBody: true,
+    showMeetingBody: true,
+    showStates: [...PROPOSAL_STATE_ORDER]
+  },
+  minutes: {
+    proposalOrder: 'modified',
+    showAgendaBody: false,
+    showMeetingBody: false,
+    showStates: [ProposalState.Approved, ProposalState.Denied]
+  }
+})
+
+const { getState: getProposalState } = proposalType.useWorkflows()
+
+const { t } = useI18n()
+const { meetingId, isFinishedMeeting, meeting } = useMeeting()
+const { agenda } = useAgenda(meetingId)
+const { getMeetingGroup } = useMeetingGroups(meetingId)
+const { getAgendaProposals } = useProposals()
+
+const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
+useMeetingTitle(
+  computed(() =>
+    baseSetting.value === 'minutes'
+      ? t('minutes.minutes')
+      : t('minutes.documents')
+  )
+)
+
+const settings = reactive({
+  proposalOrder: 'created' as keyof typeof PROPOSAL_ORDERING,
+  showAgendaBody: false,
+  showAuthors: true,
+  showMeetingBody: false,
+  showSeparators: true,
+  showStates: [] as ProposalState[]
+})
+watch(baseSetting, (type) => {
+  // If baseSetting changes, all settings should be reset to those defaults
+  if (type) Object.assign(settings, SETTING_DEFAULTS[type])
+})
+
+const options = Object.fromEntries(
+  PROPOSAL_STATE_ORDER.map((state) => [
+    state,
+    getProposalState(state)!.getName(t)
+  ])
+)
+
+const annotatedAgenda = computed(() => {
+  return agenda.value.map(({ pk, title }) => {
+    const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
+      const proposals = orderBy(
+        getAgendaProposals(pk, (p) => p.state === state),
+        PROPOSAL_ORDERING[settings.proposalOrder]
+      )
+      return {
+        state,
+        title: getProposalState(state)?.getName(t, proposals.length),
+        proposals
+      }
+    })
+    return {
+      // hasProposals: prposalStates.some(({ proposals }) => proposals.length),
+      // body,
+      hasUnresolved: proposalStates.some(
+        ({ state, proposals }) => isUnresolvedState(state) && proposals.length
+      ),
+      pk,
+      proposalStates: proposalStates.filter(
+        ({ state, proposals }) =>
+          settings.showStates.includes(state) && proposals.length
+      ),
+      title
+    }
+  })
+})
+
+function getProposalBody(p: Proposal) {
+  if (p.shortname === 'proposal') return p.body
+  return p.body_diff_brief
+}
+</script>
+
 <template>
   <div>
     <div class="text-center d-print-none">
@@ -56,18 +168,18 @@
           v-model="settings.showSeparators"
           :label="t('minutes.showSeparators')"
         />
-        <!-- <v-switch
+        <v-switch
           color="primary"
           hide-details
           v-model="settings.showMeetingBody"
           :label="t('minutes.showMeetingBody')"
-        /> -->
-        <v-switch
+        />
+        <!-- <v-switch
           color="primary"
           hide-details
           v-model="settings.showAgendaBody"
           :label="t('minutes.showAIBody')"
-        />
+        /> -->
         <div class="text-right">
           <v-btn
             size="large"
@@ -151,154 +263,3 @@
     </template>
   </div>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { WorkflowState } from '@/contentTypes/types'
-import User from '@/components/User.vue'
-import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
-import Tag from '@/components/Tag.vue'
-
-import useAgenda from '../agendas/useAgenda'
-import useUserDetails from '../organisations/useUserDetails'
-import { proposalType } from '../proposals/contentTypes'
-import { Proposal, ProposalState } from '../proposals/types'
-import useProposals from '../proposals/useProposals'
-import { proposalStates } from '../proposals/workflowStates'
-import { PROPOSAL_STATE_ORDER } from '../proposals/constants'
-import { isUnresolvedState } from '../proposals/utils'
-
-import useMeeting from './useMeeting'
-import { orderBy } from 'lodash'
-import useMeetingTitle from './useMeetingTitle'
-import useMeetingGroups from './useMeetingGroups'
-
-const PROPOSAL_ORDERING = {
-  created: ['created'],
-  modified: ['modified', 'created']
-}
-
-const SETTING_DEFAULTS = Object.freeze({
-  documents: {
-    proposalOrder: 'created',
-    showAgendaBody: true,
-    showMeetingBody: true,
-    showStates: [...PROPOSAL_STATE_ORDER]
-  },
-  minutes: {
-    proposalOrder: 'modified',
-    showAgendaBody: false,
-    showMeetingBody: false,
-    showStates: [ProposalState.Approved, ProposalState.Denied]
-  }
-})
-
-const { getState: getProposalState } = proposalType.useWorkflows()
-
-export default defineComponent({
-  components: {
-    CheckboxMultipleSelect,
-    User,
-    Tag
-  },
-  setup() {
-    const { t } = useI18n()
-    const { meetingId, isFinishedMeeting, meeting } = useMeeting()
-    const { agenda } = useAgenda(meetingId)
-    const { getUser } = useUserDetails()
-    const { getMeetingGroup } = useMeetingGroups(meetingId)
-    const { getAgendaProposals } = useProposals()
-
-    const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
-    useMeetingTitle(
-      computed(() =>
-        baseSetting.value === 'minutes'
-          ? t('minutes.minutes')
-          : t('minutes.documents')
-      )
-    )
-
-    const settings = reactive({
-      proposalOrder: 'created' as keyof typeof PROPOSAL_ORDERING,
-      showAgendaBody: false,
-      showAuthors: true,
-      showMeetingBody: false,
-      showSeparators: true,
-      showStates: [] as ProposalState[]
-    })
-    watch(baseSetting, (type) => {
-      // If baseSetting changes, all settings should be reset to those defaults
-      if (type) Object.assign(settings, SETTING_DEFAULTS[type])
-    })
-
-    const options = Object.fromEntries(
-      PROPOSAL_STATE_ORDER.map((state) => [
-        state,
-        getProposalState(state)!.getName(t)
-      ])
-    )
-
-    const annotatedAgenda = computed(() => {
-      return agenda.value.map(({ pk, title }) => {
-        const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
-          const proposals = orderBy(
-            getAgendaProposals(pk, (p) => p.state === state),
-            PROPOSAL_ORDERING[settings.proposalOrder]
-          )
-          return {
-            state,
-            title: getProposalState(state)?.getName(t, proposals.length),
-            proposals
-          }
-        })
-        return {
-          // hasProposals: prposalStates.some(({ proposals }) => proposals.length),
-          // body,
-          hasUnresolved: proposalStates.some(
-            ({ state, proposals }) =>
-              isUnresolvedState(state) && proposals.length
-          ),
-          pk,
-          proposalStates: proposalStates.filter(
-            ({ state, proposals }) =>
-              settings.showStates.includes(state) && proposals.length
-          ),
-          title
-        }
-      })
-    })
-
-    const orderedProposalStates = computed(() => {
-      return PROPOSAL_STATE_ORDER.map((s) =>
-        proposalStates.find(({ state }) => s === state)
-      ) as WorkflowState[]
-    })
-
-    function getProposalBody(p: Proposal) {
-      if (p.shortname === 'proposal') return p.body
-      return p.body_diff_brief
-    }
-
-    function setDefaults(type: keyof typeof SETTING_DEFAULTS) {
-      Object.assign(settings, SETTING_DEFAULTS[type])
-    }
-
-    return {
-      t,
-      annotatedAgenda,
-      baseSetting,
-      isFinishedMeeting,
-      meeting,
-      orderedProposalStates,
-      options,
-      settings,
-      getProposalBody,
-      getMeetingGroup,
-      getUser,
-      setDefaults
-    }
-  }
-})
-</script>
