@@ -30,46 +30,44 @@ export default class ContentAPI<
     this.workflowStates = workflowStates
   }
 
+  // TODO Use parseRestError from utils.restApi
   private handleError(error: AxiosError) {
     const response = error.response
-    if (response) {
-      let title = `HTTP ${response.status}`
-      let text = 'Unknown error'
-      let sticky = false
-      // Default strings from response.data, unless special cases below
-      if (typeof response.data === 'string') {
-        text = response.data
-      } else if (typeof response.data === 'object') {
-        text = JSON.stringify(response.data)
-      }
-      switch (response.status) {
-        case 500:
-          text = 'Server error'
-          break
-        case 400:
-          sticky = true
-          if ('error' in response.data) {
-            title = 'Error'
-            text = response.data.error
-          }
-          break
-      }
-      openAlertEvent.emit({
-        title,
-        text,
-        sticky,
-        level: AlertLevel.Error
-      })
-    } else {
-      openAlertEvent.emit({
+    if (!response)
+      return openAlertEvent.emit({
         title: 'Error',
         text: 'No response from server',
         level: AlertLevel.Error
       })
+
+    let title = `HTTP ${response.status}`
+    let text = 'Unknown error'
+    let sticky = false
+    // Default strings from response.data, unless special cases below
+    if (typeof response.data === 'string') text = response.data
+    else if (typeof response.data === 'object')
+      text = JSON.stringify(response.data)
+    switch (response.status) {
+      case 500:
+        text = 'Server error'
+        break
+      case 400:
+        sticky = true
+        if ('error' in response.data) {
+          title = 'Error'
+          text = response.data.error
+        }
+        break
     }
+    openAlertEvent.emit({
+      title,
+      text,
+      sticky,
+      level: AlertLevel.Error
+    })
   }
 
-  private call(method: HTTPMethod, url: string, config?: RestApiConfig) {
+  private call<Type>(method: HTTPMethod, url: string, config?: RestApiConfig) {
     config = {
       ...this.config,
       ...(config || {}),
@@ -80,7 +78,7 @@ export default class ContentAPI<
     if (this.config.alertOnError) {
       request.catch(this.handleError)
     }
-    return request
+    return request as AxiosPromise<Type>
   }
 
   public add(data: Partial<T>): AxiosPromise<T> {
@@ -107,67 +105,39 @@ export default class ContentAPI<
     return this.call('delete', `${this.endpoint}${pk}/`)
   }
 
-  public getAction<Type>(pk: number, action: string): AxiosPromise<Type>
-  public getAction<Type>(action: string): AxiosPromise<Type>
-  public getAction<Type>(
-    pkOrAction: number | string,
-    action?: string
-  ): AxiosPromise<Type> {
-    // Cannot handle K = string
-    if (typeof pkOrAction === 'number') {
-      return this.call('get', `${this.endpoint}${pkOrAction}/${action}/`)
-    }
-    return this.call('get', `${this.endpoint}${pkOrAction}/`)
-  }
-
-  public action<Type>(
-    pk: number,
-    action: string,
-    data?: object,
-    method?: HTTPMethod
-  ): AxiosPromise<Type>
-  public action<Type>(
-    action: string,
-    data?: object,
-    method?: HTTPMethod
-  ): AxiosPromise<Type>
-  public action(
-    pkOrAction: number | string,
-    actionOrData?: string | object,
-    dataOrMethod?: object | HTTPMethod,
-    method?: HTTPMethod
-  ) {
-    // Cannot handle K = string
-    if (typeof pkOrAction === 'number') {
-      return this.call(
-        method ?? 'post',
-        `${this.endpoint}${pkOrAction}/${actionOrData}/`,
-        { data: dataOrMethod }
-      )
-    }
-    if (typeof dataOrMethod === 'object')
-      throw new Error('Unexpected value as method')
-    return this.call(dataOrMethod ?? 'post', `${this.endpoint}${pkOrAction}/`, {
-      data: actionOrData
+  public listAction<Type>(action: string, data?: object, method?: HTTPMethod) {
+    return this.call<Type>(method ?? 'post', `${this.endpoint}${action}/`, {
+      data
     })
   }
 
-  public transition(pk: number, name: string): AxiosPromise<Partial<T>> {
-    // Cannot handle K = string
-    if (this.workflowStates) {
-      return this.action(pk, 'transitions', {
-        transition: name
-      })
-    } else {
-      throw new Error(`No Workflow States defined for ${this.endpoint}`)
-    }
+  public action<Type>(
+    id: K,
+    action: string,
+    data?: object,
+    method?: HTTPMethod
+  ) {
+    return this.call<Type>(
+      method ?? 'post',
+      `${this.endpoint}${id}/${action}/`,
+      {
+        data
+      }
+    )
   }
 
-  public async getTransitions(pk: number): Promise<Transition[]> {
-    // Cannot handle K = string
+  public transition(id: K, name: string): AxiosPromise<Partial<T>> {
+    if (!this.workflowStates)
+      throw new Error(`No Workflow States defined for ${this.endpoint}`)
+    return this.action(id, 'transitions', {
+      transition: name
+    })
+  }
+
+  public async getTransitions(id: K): Promise<Transition[]> {
     const { data }: { data: Transition[] } = await this.call(
       'get',
-      `${this.endpoint}${pk}/transitions/`
+      `${this.endpoint}${id}/transitions/`
     )
     return data.map((t) => ({
       ...t,

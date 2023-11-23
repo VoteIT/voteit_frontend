@@ -23,7 +23,11 @@ export function getUserRandomSortValue(number: number) {
 
 export default function useAuthentication() {
   async function fetchAlternateUsers() {
-    const { data } = await profileType.api.getAction<IUser[]>('alternate')
+    const { data } = await profileType.api.listAction<IUser[]>(
+      'alternate',
+      undefined,
+      'get'
+    )
     alternateUsers.value = data
   }
 
@@ -67,7 +71,7 @@ export default function useAuthentication() {
   async function logout() {
     if (!isAuthenticated.value) return
     console.log('Logging out')
-    await profileType.api.action('logout')
+    await profileType.api.listAction('logout')
     isAuthenticated.value = false
     user.value = null
     alternateUsers.value = []

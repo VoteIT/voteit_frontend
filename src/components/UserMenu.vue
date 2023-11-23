@@ -50,8 +50,10 @@ function updateProfile(data: IUser) {
 const emailChoices = ref<string[] | null>(null)
 async function fetchEmailChoices() {
   try {
-    const { data } = await profileType.api.getAction<{ emails: string[] }>(
-      'email_choices'
+    const { data } = await profileType.api.listAction<{ emails: string[] }>(
+      'email_choices',
+      undefined,
+      'get'
     )
     emailChoices.value = data.emails
   } catch {

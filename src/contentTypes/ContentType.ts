@@ -103,7 +103,7 @@ export class BaseContentType<T extends {}, K extends string | number = number> {
  * Used for content that has pk and possibly state.
  */
 export default class ContentType<
-  T extends PKStateContent = { pk: number },
+  T extends PKStateContent,
   R extends string = string,
   K extends string | number = number
 > extends BaseContentType<T, K> {
