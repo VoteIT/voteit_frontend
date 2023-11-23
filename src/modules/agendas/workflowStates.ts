@@ -1,11 +1,11 @@
-import { WorkflowState } from '@/contentTypes/types'
+import { WorkflowStates } from '@/contentTypes/types'
 import { MeetingRole } from '@/modules/meetings/types'
 
-import { AgendaState } from './types'
+import { AgendaState, AgendaTransition } from './types'
 
-export const agendaItemStates: WorkflowState<AgendaState>[] = [
+export const agendaItemStates: WorkflowStates<AgendaState, AgendaTransition> = [
   {
-    transition: 'unpublish',
+    transition: AgendaTransition.Unpublish,
     icon: 'mdi-eye-off',
     state: AgendaState.Private,
     priority: 4,
@@ -15,7 +15,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     }
   },
   {
-    transition: 'upcoming',
+    transition: AgendaTransition.Upcoming,
     icon: 'mdi-progress-clock',
     state: AgendaState.Upcoming,
     priority: 2,
@@ -24,7 +24,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     }
   },
   {
-    transition: 'ongoing',
+    transition: AgendaTransition.Ongoing,
     icon: 'mdi-play-circle',
     state: AgendaState.Ongoing,
     priority: 1,
@@ -33,7 +33,7 @@ export const agendaItemStates: WorkflowState<AgendaState>[] = [
     }
   },
   {
-    transition: 'close',
+    transition: AgendaTransition.Close,
     icon: 'mdi-check-all',
     state: AgendaState.Closed,
     priority: 3,

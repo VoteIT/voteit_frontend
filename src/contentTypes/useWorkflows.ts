@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash'
 
-import { WorkflowState } from './types'
+import { WorkflowState, WorkflowStates } from './types'
 
-export default function useWorkflows<S>(states: WorkflowState<S>[]) {
+export default function useWorkflows<S>(states: WorkflowStates<S>) {
   function getState(state: S): WorkflowState<S> | undefined {
     return states.find((s) => s.state === state)
   }

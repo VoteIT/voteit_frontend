@@ -4,16 +4,27 @@ import { ChannelsConfig, ThemeColor } from '@/utils/types'
 import { PresenceCheckState } from '../modules/presence/workflowStates'
 import { ComposerTranslation } from 'vue-i18n'
 
-export interface WorkflowState<S = string> {
+export interface WorkflowState<
+  States = string,
+  Transitions extends string = string
+> {
   color?: ThemeColor
   getName(t: ComposerTranslation, count?: number): string
   icon: string
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first
   requiresRole?: MeetingRole
-  state: S
-  transition?: string
+  state: States
+  transition?: Transitions
 }
+export type WorkflowStates<S = string, T extends string = string> = Readonly<
+  Readonly<WorkflowState<S, T>>[]
+>
+
+export type ConditionalWorkflowStates<
+  T extends { state?: string },
+  Transitions extends string = string
+> = T['state'] extends string ? WorkflowStates<T['state'], Transitions> : never
 
 export interface TransitionCondition {
   name: string

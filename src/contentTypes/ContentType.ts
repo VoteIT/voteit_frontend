@@ -15,7 +15,7 @@ import {
   RoleChangeMessage,
   RolesGetMessage
 } from './messages'
-import { ChannelConfig, WorkflowState } from './types'
+import { ChannelConfig, ConditionalWorkflowStates } from './types'
 import useWorkflows from './useWorkflows'
 import contentCleanup, { ChannelMap } from './contentCleanup'
 
@@ -23,7 +23,7 @@ type MethodHandler<T> = (item: T) => void
 type PKStateContent = { pk: number; state?: string }
 
 interface CType<T extends Partial<PKStateContent>> {
-  states?: WorkflowState<T['state']>[]
+  states?: ConditionalWorkflowStates<T>
   name: string // Content type name in channels
   restEndpoint?: string
   restConfig?: RestApiConfig

@@ -4,7 +4,7 @@ import { AlertLevel, RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils/events'
 import restApi from '@/utils/restApi'
 
-import { Transition, WorkflowState } from './types'
+import { ConditionalWorkflowStates, Transition } from './types'
 
 const DEFAULT_CONFIG: RestApiConfig = {
   alertOnError: true
@@ -17,12 +17,12 @@ export default class ContentAPI<
   K = number
 > {
   private endpoint: string
-  private workflowStates?: WorkflowState<T['state']>[]
+  private workflowStates?: ConditionalWorkflowStates<T>
   private config: RestApiConfig
 
   constructor(
     endpoint: string,
-    workflowStates?: WorkflowState<T['state']>[],
+    workflowStates?: ConditionalWorkflowStates<T>,
     config?: RestApiConfig
   ) {
     this.endpoint = endpoint
