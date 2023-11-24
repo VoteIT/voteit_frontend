@@ -3,6 +3,7 @@ import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../meetings/useMeeting'
+import { MeetingRole } from '../meetings/types'
 import type { JsonSchema } from '../forms/types'
 import JsonSchemaForm from '../forms/JsonSchemaForm.vue'
 import { SpeakerSystem, SpeakerSystemMethod } from '../speakerLists/types'
@@ -110,9 +111,9 @@ function getDefaults() {
     speakerSystem:
       speakerSystem ||
       ({
-        meeting_roles_to_speaker: [],
+        meeting_roles_to_speaker: [MeetingRole.Discusser],
         method_name: SpeakerSystemMethod.Simple,
-        safe_positions: undefined,
+        safe_positions: 1,
         settings: null
       } as SlsEditData)
   }
