@@ -621,6 +621,7 @@
     "confirmStartProtectedStates": "Du har valt ett förslag som är i {states} läge.\nVill du ändå starta omröstningen? | Du har valt {count} förslag som är i {states} läge.\nVill du ändå starta omröstningen?",
     "decisions": "Beslut",
     "discussion": "Debatt",
+    "displayApprovedProposals": "Visa bifallet förslag | Visa bifallna förslag",
     "finishedPolls": "Avslutade omröstningar",
     "hintModifyFilter": "Försök att välja fler förslagslägen i filtermenyn.",
     "meetingClosed": "Mötet är stängt",

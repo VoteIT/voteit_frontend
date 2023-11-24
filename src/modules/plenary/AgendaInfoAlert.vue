@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { AgendaState } from '../agendas/types'
@@ -10,23 +11,29 @@ import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import { agendaItemType } from '../agendas/contentTypes'
 import useUserDetails from '../organisations/useUserDetails'
-import usePlenary from './usePlenary'
-import { dialogQuery } from '@/utils'
-import { ThemeColor } from '@/utils/types'
 import { MeetingState } from '../meetings/types'
 import { meetingType } from '../meetings/contentTypes'
+import { filterProposals } from '../proposals/useProposals'
 
-const route = useRoute()
-const router = useRouter()
+import usePlenary from './usePlenary'
+import { ProposalState } from '../proposals/types'
+import { isEqual } from 'lodash'
+
 const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails()
-const { agendaId, nextAgendaItem } = useAgenda(meetingId)
+const { agendaId } = useAgenda(meetingId)
 const { agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
   useAgendaItem(agendaId)
-const { hasBroadcast, isBroadcasting, meetingRoom, setBroadcast, setHandler } =
-  useRoom()
+const {
+  hasBroadcast,
+  highlighted,
+  isBroadcasting,
+  meetingRoom,
+  setBroadcast,
+  setHandler
+} = useRoom()
 const { selectedProposalIds } = usePlenary(meetingId, agendaId)
 
 const isBroadcastingAI = computed(
@@ -75,6 +82,30 @@ function broadcastThis() {
     highlighted: [...selectedProposalIds.value]
   })
 }
+
+const selectApprovedAction = computed(() => {
+  const proposals = filterProposals(
+    (p) =>
+      p.agenda_item === agendaId.value && p.state === ProposalState.Approved,
+    'modified'
+  ).map((p) => p.pk)
+  if (
+    !isBroadcasting.value ||
+    hasUnresolvedProposals.value ||
+    !proposals.length ||
+    isEqual(proposals, highlighted.value)
+  )
+    return []
+  return [
+    {
+      prependIcon: 'mdi-check-circle-outline',
+      text: t('plenary.displayApprovedProposals', proposals.length),
+      onClick() {
+        return setBroadcast({ highlighted: proposals })
+      }
+    }
+  ]
+})
 
 function getAgendaAlert() {
   if (!isBroadcasting.value && agendaItem.value?.state !== AgendaState.Private)
@@ -159,8 +190,7 @@ function getAgendaAlert() {
       if (
         isBroadcastingAI.value &&
         !hasUnresolvedProposals.value &&
-        !hasOngoingPolls.value &&
-        nextAgendaItem.value
+        !hasOngoingPolls.value
       )
         return {
           props: {
@@ -175,13 +205,9 @@ function getAgendaAlert() {
               text: t('plenary.closeAI'),
               async onClick() {
                 await agendaItemType.api.transition(agendaId.value, 'close')
-                if (!nextAgendaItem.value) return
-                await router.push({
-                  name: route.name!,
-                  params: { ...route.params, aid: nextAgendaItem.value.pk }
-                })
               }
-            }
+            },
+            ...selectApprovedAction.value
           ]
         }
       if (isBroadcastingAI.value) return
@@ -207,7 +233,8 @@ function getAgendaAlert() {
           title: t('plenary.closedAI'),
           text: t('plenary.closedAIDescription'),
           type: 'warning' as const
-        }
+        },
+        actions: selectApprovedAction.value
       }
   }
 }
