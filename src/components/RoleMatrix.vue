@@ -130,7 +130,7 @@ const props = withDefaults(
     admin: boolean
     addConfirm?(user: number, role: string): Promise<boolean>
     cols?: string[]
-    contentType: ContentType<any, any>
+    contentType: ContentType<any, any, any> // TODO generic
     filter?(userRoles: UserContextRoles): boolean
     icons: Dictionary<string>
     pk: number

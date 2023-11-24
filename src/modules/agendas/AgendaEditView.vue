@@ -21,7 +21,7 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 
 import useAgenda from './useAgenda'
 import useAgendaTags from './useAgendaTags'
-import { AgendaItem } from './types'
+import { AgendaItem, AgendaState, AgendaTransition } from './types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
 
@@ -177,11 +177,11 @@ function deleteSelected() {
   actionOnSelected((ai) => agendaApi.delete(ai.pk))
 }
 
-function setStateSelected(state: WorkflowState) {
+function setStateSelected(state: WorkflowState<AgendaState, AgendaTransition>) {
   actionOnSelected((ai) => {
     if (ai.state === state.state) return Promise.resolve()
     if (!state.transition) return Promise.reject(new Error('No transition'))
-    return agendaApi.transition(ai.pk, state.transition)
+    return agendaItemType.transitions.make(ai.pk, state.transition)
   })
 }
 
@@ -395,7 +395,7 @@ async function setTitle({ pk }: AgendaItem, title: string) {
               color="primary"
               class="mt-1 mr-1"
               :prepend-icon="state.icon"
-              v-for="state in agendaItemType.workflowStates?.filter(
+              v-for="state in agendaItemType.transitions.states.filter(
                 (s) => s.transition
               )"
               :key="state.state"

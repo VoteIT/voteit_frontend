@@ -95,8 +95,9 @@ async function updateRoom(
     await roomType.update(pk, room)
     if (slsAdded) await createSpeakerSystem({ ...speakerSystem!, room: pk })
     if (slsModified) await speakerSystemType.api.patch(sls!, speakerSystem!)
-    if (slsDisabled) await speakerSystemType.api.transition(sls!, 'inactivate')
-    if (slsEnabled) await speakerSystemType.api.transition(sls!, 'activate')
+    if (slsDisabled)
+      await speakerSystemType.transitions.make(sls!, 'inactivate')
+    if (slsEnabled) await speakerSystemType.transitions.make(sls!, 'activate')
     close()
   } catch (e) {
     errors.value = parseRestError(e)

@@ -41,7 +41,7 @@ watch(isOpen, async (value) => {
   if (!value) return
   if (props.showTransitions && props.contentType && props.object) {
     working.value = true
-    transitionsAvailable.value = await props.contentType.api.getTransitions(
+    transitionsAvailable.value = await props.contentType.transitions.get(
       props.object.pk
     )
     working.value = false
@@ -62,7 +62,7 @@ const currentState = computed(() => {
 async function makeTransition(t: Transition) {
   if (!props.contentType || !props.object || !t.name) return
   working.value = true
-  await props.contentType.api.transition(props.object.pk, t.name)
+  await props.contentType.transitions.make(props.object.pk, t.name)
   working.value = false
   isOpen.value = false
 }

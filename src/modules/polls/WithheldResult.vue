@@ -17,7 +17,7 @@ const { t } = useI18n()
 const { resultComponent, poll } = usePoll(computed(() => props.pollId))
 
 function publishNow() {
-  pollType.api.transition(props.pollId, PollTransition.PublishResult)
+  pollType.transitions.make(props.pollId, PollTransition.PublishResult)
 }
 
 const showResult = ref(false)

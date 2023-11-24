@@ -9,8 +9,10 @@ import {
 } from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
 
+// TODO Type transitions (string for now)
 export const speakerSystemType = new ContentType<
   SpeakerSystem,
+  string,
   SpeakerSystemRole
 >({
   name: 'speaker_system',

@@ -54,7 +54,7 @@ export default function useComponentApi<
   }
 
   async function setComponentState({ pk }: T, state: boolean) {
-    const { data } = await meetingComponentType.api.transition(
+    const { data } = await meetingComponentType.transitions.make(
       pk,
       state ? 'enable' : 'disable'
     )

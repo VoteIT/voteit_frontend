@@ -144,11 +144,11 @@ const working = ref(false)
 
 async function cancel() {
   working.value = true
-  await pollType.api.transition(props.data.pk, PollTransition.Cancel)
+  await pollType.transitions.make(props.data.pk, PollTransition.Cancel)
 }
 
 async function close() {
   working.value = true
-  await pollType.api.transition(props.data.pk, PollTransition.Close)
+  await pollType.transitions.make(props.data.pk, PollTransition.Close)
 }
 </script>

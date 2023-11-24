@@ -38,7 +38,7 @@ export default function usePresence(meetingId: Ref<number>) {
   async function closeCheck() {
     if (!presenceCheck.value)
       throw new Error('No active presence check in meeting.')
-    presenceCheckType.api.transition(presenceCheck.value.pk, 'close')
+    presenceCheckType.transitions.make(presenceCheck.value.pk, 'close')
   }
 
   async function openCheck() {

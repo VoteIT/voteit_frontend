@@ -5,8 +5,8 @@ import { PresenceCheckState } from '../modules/presence/workflowStates'
 import { ComposerTranslation } from 'vue-i18n'
 
 export interface WorkflowState<
-  States = string,
-  Transitions extends string = string
+  State = string,
+  Transition extends string = string
 > {
   color?: ThemeColor
   getName(t: ComposerTranslation, count?: number): string
@@ -14,8 +14,8 @@ export interface WorkflowState<
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first
   requiresRole?: MeetingRole
-  state: States
-  transition?: Transitions
+  state: State
+  transition?: Transition
 }
 export type WorkflowStates<S = string, T extends string = string> = Readonly<
   Readonly<WorkflowState<S, T>>[]

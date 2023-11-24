@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isEqual } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -6,7 +7,7 @@ import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
-import { AgendaState } from '../agendas/types'
+import { AgendaState, AgendaTransition } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import { agendaItemType } from '../agendas/contentTypes'
@@ -14,10 +15,9 @@ import useUserDetails from '../organisations/useUserDetails'
 import { MeetingState } from '../meetings/types'
 import { meetingType } from '../meetings/contentTypes'
 import { filterProposals } from '../proposals/useProposals'
+import { ProposalState } from '../proposals/types'
 
 import usePlenary from './usePlenary'
-import { ProposalState } from '../proposals/types'
-import { isEqual } from 'lodash'
 
 const { t } = useI18n()
 
@@ -59,7 +59,7 @@ function getMeetingStateAlert() {
             prependIcon: 'mdi-play-circle',
             text: t('plenary.meetingToOngoing'),
             async onClick() {
-              meetingType.api.transition(meetingId.value, 'ongoing')
+              meetingType.transitions.make(meetingId.value, 'ongoing')
             }
           }
         ]
@@ -175,7 +175,10 @@ function getAgendaAlert() {
             prependIcon: 'mdi-gavel',
             text: t('plenary.toDecisionMode'),
             async onClick() {
-              await agendaItemType.api.transition(agendaId.value, 'ongoing')
+              await agendaItemType.transitions.make(
+                agendaId.value,
+                AgendaTransition.Ongoing
+              )
               await broadcastThis()
             }
           },
@@ -204,7 +207,10 @@ function getAgendaAlert() {
               prependIcon: 'mdi-gavel',
               text: t('plenary.closeAI'),
               async onClick() {
-                await agendaItemType.api.transition(agendaId.value, 'close')
+                await agendaItemType.transitions.make(
+                  agendaId.value,
+                  AgendaTransition.Close
+                )
               }
             },
             ...selectApprovedAction.value

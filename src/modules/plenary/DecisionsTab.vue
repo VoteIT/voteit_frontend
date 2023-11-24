@@ -156,7 +156,7 @@ async function makeTransition(
   if (state.state === p.state) return // No need to change state then, is there?
   transitioning.add(p.pk)
   try {
-    await proposalType.api.transition(p.pk, state.transition)
+    await proposalType.transitions.make(p.pk, state.transition)
   } catch {}
   transitioning.delete(p.pk)
 }

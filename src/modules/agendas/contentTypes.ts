@@ -1,9 +1,9 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import { LastRead } from '@/utils/types'
-import { AgendaItem, AgendaBody } from './types'
+import { AgendaItem, AgendaBody, AgendaTransition } from './types'
 import { agendaItemStates } from './workflowStates'
 
-export const agendaItemType = new ContentType<AgendaItem>({
+export const agendaItemType = new ContentType<AgendaItem, AgendaTransition>({
   states: agendaItemStates,
   name: 'agenda_item',
   channels: ['agenda_item'],

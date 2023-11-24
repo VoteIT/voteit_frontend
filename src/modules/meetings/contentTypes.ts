@@ -38,7 +38,8 @@ export const meetingRoleType = new ContentType<MeetingRoles>({
   restEndpoint: 'meeting-roles/'
 })
 
-export const meetingType = new ContentType<Meeting, MeetingRole>({
+// TODO type transitions (string for now)
+export const meetingType = new ContentType<Meeting, string, MeetingRole>({
   states: meetingStates,
   name: 'meeting',
   channels: ['meeting', 'participants', 'moderators', 'invites'],

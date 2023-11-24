@@ -18,16 +18,22 @@ import {
 import { ChannelConfig, ConditionalWorkflowStates } from './types'
 import useWorkflows from './useWorkflows'
 import contentCleanup, { ChannelMap } from './contentCleanup'
+import useTransitions from './useTransitions'
 
 type MethodHandler<T> = (item: T) => void
 type PKStateContent = { pk: number; state?: string }
 
-interface CType<T extends Partial<PKStateContent>> {
-  states?: ConditionalWorkflowStates<T>
-  name: string // Content type name in channels
-  restEndpoint?: string
-  restConfig?: RestApiConfig
+interface CType<
+  T extends Partial<PKStateContent>,
+  Transition extends string = never,
+  Role extends string = never
+> {
   channels?: string[]
+  name: string // Content type name in channels
+  restConfig?: RestApiConfig
+  restEndpoint?: string
+  roles?: Record<Role, ContextRoleDefinition>
+  states?: ConditionalWorkflowStates<T, Transition>
   useSocketApi?: boolean
 }
 
@@ -35,12 +41,16 @@ interface CType<T extends Partial<PKStateContent>> {
  * Basic content type, providing a unified access to rest and socket api.
  * Used for content that has no pk or state.
  */
-export class BaseContentType<T extends {}, K extends string | number = number> {
-  protected readonly contentType: CType<T>
+export class BaseContentType<
+  T extends {},
+  Transition extends string = never,
+  Role extends string = never
+> {
+  protected readonly contentType: CType<T, Transition, Role>
   protected methodHandlers: Map<string, MethodHandler<any>>
-  private _api?: ContentAPI<T, K>
+  private _api?: ContentAPI<T>
 
-  constructor(contentType: CType<T>) {
+  constructor(contentType: CType<T, Transition, Role>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
     socket.addTypeHandler(this.name, this.handleMessage.bind(this))
@@ -84,11 +94,7 @@ export class BaseContentType<T extends {}, K extends string | number = number> {
       throw new Error(
         `Content Api not configured for Content Type ${this.name}`
       )
-    return new ContentAPI<T, K>(
-      this.contentType.restEndpoint,
-      this.contentType.states,
-      config
-    )
+    return new ContentAPI<T>(this.contentType.restEndpoint, config)
   }
 
   public get api() {
@@ -104,22 +110,31 @@ export class BaseContentType<T extends {}, K extends string | number = number> {
  */
 export default class ContentType<
   T extends PKStateContent,
-  R extends string = string,
-  K extends string | number = number
-> extends BaseContentType<T, K> {
-  private roles?: Record<R, ContextRoleDefinition>
+  Transition extends string = string,
+  Role extends string = string
+> extends BaseContentType<T, Transition, Role> {
   private rolesAvailable?: ContextRole[]
   private _channel?: Channel
+  private _transitions?: ReturnType<typeof useTransitions<T, Transition>>
 
-  constructor(
-    contentType: CType<T> & { roles?: Record<R, ContextRoleDefinition> }
-  ) {
-    const { roles, ...ct } = contentType
-    super(ct)
-    this.roles = roles
+  private get roles() {
+    return this.contentType.roles
   }
 
-  public getRole(role: R): ContextRoleDefinition {
+  public get transitions() {
+    if (!this.contentType.states)
+      throw new Error(
+        `Content type ${this.name} has not registered transitions`
+      )
+    if (!this._transitions)
+      this._transitions = useTransitions<T, Transition>(
+        this.contentType.states,
+        this.api
+      )
+    return this._transitions
+  }
+
+  public getRole(role: Role): ContextRoleDefinition {
     if (!this.roles) throw new Error('No role definitions available')
     return this.roles[role]
   }
@@ -156,13 +171,13 @@ export default class ContentType<
     return this.api.add(data)
   }
 
-  public update(pk: K, data: Partial<T>, config?: ChannelConfig) {
+  public update(pk: number, data: Partial<T>, config?: ChannelConfig) {
     if (this.contentType.useSocketApi)
       return this.methodCall('change', { pk, kwargs: data }, config)
     return this.api.patch(pk, data)
   }
 
-  public delete(pk: K, config?: ChannelConfig) {
+  public delete(pk: number, config?: ChannelConfig) {
     if (this.contentType.useSocketApi)
       return this.methodCall('delete', { pk }, config)
     return this.api.delete(pk)
@@ -178,7 +193,7 @@ export default class ContentType<
 
   public useContextRoles() {
     this.assertHasRoles()
-    return useContextRoles<R>(this.contentType.name)
+    return useContextRoles<Role>(this.contentType.name)
   }
 
   // Moved from Channel
@@ -209,7 +224,7 @@ export default class ContentType<
       pk,
       filter_users: users
     }
-    const { p } = await socket.call<ContextRolesPayload<R>>(
+    const { p } = await socket.call<ContextRolesPayload<Role>>(
       'roles.get',
       message
     )

@@ -4,8 +4,6 @@ import { AlertLevel, RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils/events'
 import restApi from '@/utils/restApi'
 
-import { ConditionalWorkflowStates, Transition } from './types'
-
 const DEFAULT_CONFIG: RestApiConfig = {
   alertOnError: true
 }
@@ -17,17 +15,11 @@ export default class ContentAPI<
   K = number
 > {
   private endpoint: string
-  private workflowStates?: ConditionalWorkflowStates<T>
   private config: RestApiConfig
 
-  constructor(
-    endpoint: string,
-    workflowStates?: ConditionalWorkflowStates<T>,
-    config?: RestApiConfig
-  ) {
+  constructor(endpoint: string, config?: RestApiConfig) {
     this.endpoint = endpoint
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
-    this.workflowStates = workflowStates
   }
 
   // TODO Use parseRestError from utils.restApi
@@ -124,24 +116,5 @@ export default class ContentAPI<
         data
       }
     )
-  }
-
-  public transition(id: K, name: string): AxiosPromise<Partial<T>> {
-    if (!this.workflowStates)
-      throw new Error(`No Workflow States defined for ${this.endpoint}`)
-    return this.action(id, 'transitions', {
-      transition: name
-    })
-  }
-
-  public async getTransitions(id: K): Promise<Transition[]> {
-    const { data }: { data: Transition[] } = await this.call(
-      'get',
-      `${this.endpoint}${id}/transitions/`
-    )
-    return data.map((t) => ({
-      ...t,
-      icon: this.workflowStates?.find((s) => s.transition === t.name)?.icon
-    }))
   }
 }

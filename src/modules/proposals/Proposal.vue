@@ -185,7 +185,7 @@ async function retract() {
       theme: ThemeColor.Warning
     })
   )
-    proposalType.api.transition(props.p.pk, 'retract')
+    proposalType.transitions.make(props.p.pk, 'retract')
 }
 
 const discussionPosts = computed(() => {

@@ -72,7 +72,7 @@ interface Props {
   admin?: boolean
   color?: Color
   object: StateContent
-  contentType: ContentType<any, any>
+  contentType: ContentType<any, any, any> // TODO Generic
   right?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -81,7 +81,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { t } = useI18n()
-const contentApi = props.contentType.getContentApi()
 const { getState } = props.contentType.useWorkflows()
 const transitionsAvailable = ref<Transition[] | null>(null)
 const { alert } = useAlert()
@@ -96,7 +95,7 @@ async function menuOpenChange(open: boolean) {
   if (!open || fetching.value) return
   fetching.value = true
   try {
-    transitionsAvailable.value = await contentApi.getTransitions(
+    transitionsAvailable.value = await props.contentType.transitions.get(
       props.object.pk
     )
   } catch {
@@ -109,7 +108,7 @@ const working = ref(false)
 async function makeTransition(t: Transition) {
   working.value = true
   try {
-    await contentApi.transition(props.object.pk, t.name)
+    await props.contentType.transitions.make(props.object.pk, t.name)
   } catch {}
   working.value = false
 }
