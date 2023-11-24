@@ -89,16 +89,21 @@ function deselect(proposal: Proposal) {
   else deselectProposal(proposal.pk)
 }
 
-function selectTag(tag: string) {
-  const proposals = sortBy(
-    getAgendaProposals(
-      agendaId.value,
-      (p) => filterProposalStates(p) && p.tags.includes(tag)
-    ),
-    'created'
-  ).map((p) => p.pk)
+function replaceSelection(proposals: number[]) {
   if (isBroadcastingAI.value) setHighlightedProposals(proposals)
   else selectProposalIds(proposals)
+}
+
+function selectTag(tag: string) {
+  replaceSelection(
+    sortBy(
+      getAgendaProposals(
+        agendaId.value,
+        (p) => filterProposalStates(p) && p.tags.includes(tag)
+      ),
+      'created'
+    ).map((p) => p.pk)
+  )
 }
 
 const aiHighlighted = computed(() =>
@@ -182,7 +187,7 @@ onKeyStroke(map(range(1, 10), String), (e) => {
 })
 
 // Esc to deselect all proposals
-onKeyStroke('Escape', () => selectProposalIds([]))
+onKeyStroke('Escape', () => replaceSelection([]))
 // 'n' to select next proposal text tag
 onKeyStroke(
   'n',
