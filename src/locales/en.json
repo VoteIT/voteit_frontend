@@ -687,6 +687,7 @@
   },
   "proposal": {
     "add": "Add proposal",
+    "agendaItemHasUnresolved": "This agenda item has unresolved proposals.\nIt's a good idea to resolve all proposals before closing the agenda item. Do you still want to close it?",
     "approved": "Approved",
     "change": "Propose change",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",

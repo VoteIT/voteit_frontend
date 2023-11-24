@@ -22,17 +22,24 @@
       <div v-if="fetching" class="text-center">
         <v-progress-circular indeterminate />
       </div>
-      <v-list-item
+      <WorkflowTransition
         v-else
         v-for="t in transitionsAvailable"
         :key="t.name"
-        :prepend-icon="t.icon"
-        :title="t.title"
-        :disabled="!t.allowed"
-        :subtitle="unmetConditions(t)"
-        @click="makeTransition(t)"
-        link
-      />
+        :content-type="contentType"
+        :obj="obj"
+        :transition="t.name"
+        v-slot="{ props }"
+      >
+        <v-list-item
+          v-bind="props"
+          :prepend-icon="t.icon"
+          :title="t.title"
+          :disabled="!t.allowed"
+          :subtitle="unmetConditions(t)"
+          link
+        />
+      </WorkflowTransition>
     </v-list>
   </v-menu>
   <v-btn
@@ -71,19 +78,23 @@ import { Color } from '@/utils/types'
 import useAlert from '@/composables/useAlert'
 import { StateContent, Transition as ITransition } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
+import WorkflowTransition from './WorkflowTransition.vue'
 
-interface Props {
-  admin?: boolean
-  color?: Color
-  object: T
-  contentType: ContentType<T, Transition, any>
-  right?: boolean
-}
-const props = withDefaults(defineProps<Props>(), {
-  admin: false,
-  color: 'secondary'
-})
+const props = withDefaults(
+  defineProps<{
+    admin?: boolean
+    color?: Color
+    object: T
+    contentType: ContentType<T, Transition, any>
+    right?: boolean
+  }>(),
+  {
+    admin: false,
+    color: 'secondary'
+  }
+)
 
+const obj = computed(() => props.object) // Vue TS generics workaround. Don't know why it needs to be like this.
 const { t } = useI18n()
 const { getState } = props.contentType.useWorkflows()
 const transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
@@ -109,13 +120,6 @@ async function menuOpenChange(open: boolean) {
 }
 
 const working = ref(false)
-async function makeTransition(t: ITransition<Transition>) {
-  working.value = true
-  try {
-    await props.contentType.transitions.make(props.object.pk, t.name)
-  } catch {}
-  working.value = false
-}
 
 function unmetConditions(t: ITransition<Transition>) {
   if (t.allowed) return
