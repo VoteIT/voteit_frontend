@@ -29,11 +29,11 @@ export default function usePlenary(
       return route.params.tab as Tab
     },
     set(tab) {
-      router.push(getPlenaryPath({ tab }))
+      router.push(getPlenaryRoute({ tab }))
     }
   })
 
-  function getPlenaryPath(params: {
+  function getPlenaryRoute(params: {
     roomId?: number
     tab?: Tab
     aid?: number
@@ -79,7 +79,7 @@ export default function usePlenary(
     stateFilter,
     deselectProposal,
     filterProposalStates,
-    getPlenaryPath,
+    getPlenaryRoute,
     selectProposal,
     selectProposalIds
   }

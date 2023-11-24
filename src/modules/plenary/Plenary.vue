@@ -69,7 +69,7 @@ const {
   stateFilter,
   selectedProposals,
   selectedProposalIds,
-  getPlenaryPath
+  getPlenaryRoute
 } = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
@@ -85,7 +85,7 @@ function getStateProposalCount(state: ProposalState) {
 
 function getActiveAIRoute(agendaItem?: number | null) {
   if (agendaItem && agendaItem !== agendaId.value)
-    return getPlenaryPath({
+    return getPlenaryRoute({
       roomId: roomId.value,
       tab: currentTab.value,
       aid: agendaItem

@@ -19,12 +19,12 @@ const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, canChangeAgendaItem } = useAgendaItem(agendaId)
 const { meetingRoom } = useRoom()
 
-const { getPlenaryPath } = usePlenary(meetingId, agendaId)
+const { getPlenaryRoute } = usePlenary(meetingId, agendaId)
 
 /* Agenda navigation */
 function navigateAgendaItem(aid?: number) {
   if (!aid) return
-  router.push(getPlenaryPath({ aid }))
+  router.push(getPlenaryRoute({ aid }))
 }
 onKeyStroke(
   'ArrowLeft',
@@ -65,7 +65,7 @@ const breadcrumbs = computed(() => [
           :disabled="!previousAgendaItem"
           :to="
             previousAgendaItem
-              ? getPlenaryPath({ aid: previousAgendaItem.pk })
+              ? getPlenaryRoute({ aid: previousAgendaItem.pk })
               : '/'
           "
           icon="mdi-chevron-left"
@@ -74,7 +74,7 @@ const breadcrumbs = computed(() => [
           variant="text"
           :disabled="!nextAgendaItem"
           :to="
-            nextAgendaItem ? getPlenaryPath({ aid: nextAgendaItem.pk }) : '/'
+            nextAgendaItem ? getPlenaryRoute({ aid: nextAgendaItem.pk }) : '/'
           "
           icon="mdi-chevron-right"
         />
