@@ -34,6 +34,7 @@ import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
 import usePlenary from './usePlenary'
 import useSpeakerSystem from '../speakerLists/useSpeakerSystem'
+import useLoader from '@/composables/useLoader'
 
 const { t } = useI18n()
 
@@ -76,11 +77,14 @@ const { getAiPolls, getPollMethod } = usePolls()
 const { getState: getProposalState } = proposalType.useWorkflows()
 
 useMeetingChannel()
-useChannel('agenda_item', agendaId)
-useChannel(
-  'sls',
-  computed(() => speakerSystem.value?.pk)
-).promise
+useLoader(
+  'Plenary',
+  useChannel('agenda_item', agendaId).promise,
+  useChannel(
+    'sls',
+    computed(() => speakerSystem.value?.pk)
+  ).promise
+)
 useMeetingTitle(t('plenary.view'))
 
 function getStateProposalCount(state: ProposalState) {
