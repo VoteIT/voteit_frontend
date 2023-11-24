@@ -77,6 +77,10 @@ const { getState: getProposalState } = proposalType.useWorkflows()
 
 useMeetingChannel()
 useChannel('agenda_item', agendaId)
+useChannel(
+  'sls',
+  computed(() => speakerSystem.value?.pk)
+).promise
 useMeetingTitle(t('plenary.view'))
 
 function getStateProposalCount(state: ProposalState) {

@@ -5,8 +5,6 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import createFormSchema from '@/utils/createFormSchema'
-import useChannel from '@/composables/useChannel'
-import useLoader from '@/composables/useLoader'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import SchemaForm from '@/components/SchemaForm.vue'
@@ -39,12 +37,6 @@ const { meetingId, meetingRoute } = useMeeting()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
 const systemId = computed(() => props.systemId)
 const { agendaId, agendaItem } = useAgenda(meetingId)
-
-useLoader(
-  'SpeakerListsView',
-  useChannel('agenda_item', agendaId).promise,
-  useChannel('sls', systemId).promise
-)
 
 const {
   canManageSystem,
