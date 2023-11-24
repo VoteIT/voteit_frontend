@@ -37,6 +37,7 @@ const SETTING_DEFAULTS = {
     proposalOrder: 'created',
     showAgendaBody: true,
     showMeetingBody: true,
+    showUnresolvedWarning: false,
     proposalStates: [...PROPOSAL_STATE_ORDER],
     agendaStates: [...AGENDA_STATE_ODER],
     unresolvedStates: 'all'
@@ -45,6 +46,7 @@ const SETTING_DEFAULTS = {
     proposalOrder: 'modified',
     showAgendaBody: false,
     showMeetingBody: false,
+    showUnresolvedWarning: true,
     proposalStates: [ProposalState.Approved, ProposalState.Denied],
     agendaStates: [...AGENDA_STATE_ODER],
     unresolvedStates: 'all'
@@ -53,6 +55,7 @@ const SETTING_DEFAULTS = {
     proposalOrder: 'created',
     showAgendaBody: false,
     showMeetingBody: false,
+    showUnresolvedWarning: false,
     proposalStates: [ProposalState.Published, ProposalState.Voting],
     agendaStates: [AgendaState.Upcoming, AgendaState.Ongoing],
     unresolvedStates: true
@@ -82,7 +85,9 @@ const settings = reactive({
   showAgendaBody: false,
   showAuthors: true,
   showMeetingBody: false,
+  showProposalTag: true,
   showSeparators: true,
+  showUnresolvedWarning: false,
   proposalStates: [] as ProposalState[],
   agendaStates: [] as AgendaState[],
   unresolvedStates: 'all' as 'all' | boolean
@@ -205,8 +210,8 @@ function getProposalBody(p: Proposal) {
           <v-btn :value="true" prepend-icon="mdi-alert">
             {{ t('minutes.unresolved') }}
           </v-btn>
-          <v-btn :value="false" prepend-icon="mdi-check">
-            {{ t('minutes.resolved') }}
+          <v-btn :value="false" prepend-icon="mdi-check-all">
+            {{ t('minutes.noUnresolved') }}
           </v-btn>
         </v-btn-toggle>
         <h3>
@@ -235,6 +240,12 @@ function getProposalBody(p: Proposal) {
         <v-switch
           color="primary"
           hide-details
+          v-model="settings.showProposalTag"
+          :label="t('minutes.showProposalTag')"
+        />
+        <v-switch
+          color="primary"
+          hide-details
           v-model="settings.showAuthors"
           :label="t('minutes.showAuthors')"
         />
@@ -249,6 +260,12 @@ function getProposalBody(p: Proposal) {
           hide-details
           v-model="settings.showMeetingBody"
           :label="t('minutes.showMeetingBody')"
+        />
+        <v-switch
+          color="primary"
+          hide-details
+          v-model="settings.showUnresolvedWarning"
+          :label="t('minutes.showUnresolvedWarning')"
         />
         <!-- <v-switch
           color="primary"
@@ -296,7 +313,7 @@ function getProposalBody(p: Proposal) {
             {{ title }}
           </h2>
           <v-tooltip
-            v-if="baseSetting === 'minutes' && hasUnresolved"
+            v-if="settings.showUnresolvedWarning && hasUnresolved"
             location="bottom"
             :text="t('minutes.warningAIUnresolved')"
           >
@@ -323,7 +340,9 @@ function getProposalBody(p: Proposal) {
               keypath="minutes.proposalMetaAuthor"
               tag="h4"
             >
-              <template #tag><Tag disabled :name="p.prop_id" /></template>
+              <template #tag v-if="settings.showProposalTag"
+                ><Tag disabled :name="p.prop_id"
+              /></template>
               <template v-if="p.meeting_group" #author>
                 {{ getMeetingGroup(p.meeting_group)?.title }}
               </template>
