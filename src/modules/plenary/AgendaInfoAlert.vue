@@ -256,6 +256,7 @@ const alertInfo = computed(() => getMeetingStateAlert() || getAgendaAlert())
     class="pa-6"
   >
     <template #append v-if="alertInfo.actions">
+      <!-- TODO Use WorkflowTransition to trigger transition guards -->
       <v-btn
         v-for="action in alertInfo.actions"
         :key="action.text"
