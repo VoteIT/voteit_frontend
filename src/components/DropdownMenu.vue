@@ -1,18 +1,22 @@
-<script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+<script
+  lang="ts"
+  setup
+  generic="T extends StateContent, Transition extends string"
+>
+import { computed, Ref, ref, watch } from 'vue'
 
 import ContentType from '@/contentTypes/ContentType'
-import { StateContent, Transition } from '@/contentTypes/types'
+import { StateContent, Transition as ITransition } from '@/contentTypes/types'
 import { MenuItem, MenuSubheader } from '@/utils/types'
 
 const props = withDefaults(
   defineProps<{
     color?: string
-    contentType?: ContentType<any, any>
+    contentType?: ContentType<T, Transition>
     float?: boolean
     icon?: string
     items?: MenuItem[]
-    object?: StateContent
+    object?: T
     position?: 'auto' | 'top' | 'bottom'
     showTransitions?: boolean
     size?: 'small' | 'x-small'
@@ -29,7 +33,7 @@ const props = withDefaults(
 const isOpen = ref(false)
 const working = ref(false)
 const workflows = props.contentType?.useWorkflows()
-const transitionsAvailable = ref<Transition[] | null>(null)
+const transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
 if (props.showTransitions && (!props.object || !props.contentType)) {
   console.warn(
     'Menu component needs object and contentType to show transitions.'
@@ -59,7 +63,7 @@ const currentState = computed(() => {
   return workflows.getState(props.object.state)
 })
 
-async function makeTransition(t: Transition) {
+async function makeTransition(t: ITransition<Transition>) {
   if (!props.contentType || !props.object || !t.name) return
   working.value = true
   await props.contentType.transitions.make(props.object.pk, t.name)

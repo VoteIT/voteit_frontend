@@ -59,20 +59,24 @@
   </v-btn>
 </template>
 
-<script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+<script
+  lang="ts"
+  setup
+  generic="T extends StateContent, Transition extends string"
+>
+import { computed, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { Color } from '@/utils/types'
 import useAlert from '@/composables/useAlert'
-import { StateContent, Transition } from '@/contentTypes/types'
+import { StateContent, Transition as ITransition } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
 interface Props {
   admin?: boolean
   color?: Color
-  object: StateContent
-  contentType: ContentType<any, any, any> // TODO Generic
+  object: T
+  contentType: ContentType<T, Transition, any>
   right?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -82,7 +86,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n()
 const { getState } = props.contentType.useWorkflows()
-const transitionsAvailable = ref<Transition[] | null>(null)
+const transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
 const { alert } = useAlert()
 
 const currentState = computed(() => getState(props.object.state))
@@ -105,7 +109,7 @@ async function menuOpenChange(open: boolean) {
 }
 
 const working = ref(false)
-async function makeTransition(t: Transition) {
+async function makeTransition(t: ITransition<Transition>) {
   working.value = true
   try {
     await props.contentType.transitions.make(props.object.pk, t.name)
@@ -113,7 +117,7 @@ async function makeTransition(t: Transition) {
   working.value = false
 }
 
-function unmetConditions(t: Transition) {
+function unmetConditions(t: ITransition<Transition>) {
   if (t.allowed) return
   return t.conditions
     .filter((c) => !c.allowed)

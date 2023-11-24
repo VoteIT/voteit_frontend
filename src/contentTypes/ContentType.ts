@@ -113,7 +113,7 @@ export default class ContentType<
   Transition extends string = string,
   Role extends string = string
 > extends BaseContentType<T, Transition, Role> {
-  private rolesAvailable?: ContextRole[]
+  private rolesAvailable?: ContextRole<Role>[]
   private _channel?: Channel
   private _transitions?: ReturnType<typeof useTransitions<T, Transition>>
 
@@ -205,10 +205,10 @@ export default class ContentType<
       )
   }
 
-  public async getAvailableRoles(): Promise<ContextRole[]> {
+  public async getAvailableRoles(): Promise<ContextRole<Role>[]> {
     this.assertHasRoles()
     if (this.rolesAvailable) return this.rolesAvailable
-    const response = await socket.call<AvailableRolesPayload>(
+    const response = await socket.call<AvailableRolesPayload<Role>>(
       'roles.available',
       { model: this.name }
     )

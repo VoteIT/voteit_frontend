@@ -1,4 +1,4 @@
-import { WorkflowState } from '@/contentTypes/types'
+import { WorkflowStates } from '@/contentTypes/types'
 import { ThemeColor } from '@/utils/types'
 import {
   MeetingComponentState,
@@ -6,7 +6,16 @@ import {
   MeetingState
 } from './types'
 
-export const meetingStates: WorkflowState<MeetingState>[] = [
+export const meetingStates: WorkflowStates<
+  MeetingState,
+  | 'upcoming'
+  | 'ongoing'
+  | 'close'
+  | 'request_archiving'
+  | 'archive'
+  | 'request_delete'
+  | 'abort_delete'
+> = [
   {
     transition: 'upcoming',
     icon: 'mdi-progress-clock',
@@ -67,7 +76,10 @@ export const meetingStates: WorkflowState<MeetingState>[] = [
   }
 ]
 
-export const meetingInviteStates: WorkflowState<MeetingInviteState>[] = [
+export const meetingInviteStates: WorkflowStates<
+  MeetingInviteState,
+  'accept' | 'reject' | 'revoke'
+> = [
   {
     icon: 'mdi-todo', // TODO
     state: MeetingInviteState.Open,
@@ -112,7 +124,10 @@ export const meetingInviteStates: WorkflowState<MeetingInviteState>[] = [
   }
 ]
 
-export const meetingComponentStates: WorkflowState<MeetingComponentState>[] = [
+export const meetingComponentStates: WorkflowStates<
+  MeetingComponentState,
+  'disable' | 'enable'
+> = [
   {
     icon: 'mdi-todo', // TODO
     state: MeetingComponentState.Off,

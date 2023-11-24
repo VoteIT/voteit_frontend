@@ -1,8 +1,11 @@
-import { WorkflowState } from '@/contentTypes/types'
+import { WorkflowStates } from '@/contentTypes/types'
 import { ThemeColor } from '@/utils/types'
 import { SpeakerListState, SpeakerSystemState } from './types'
 
-export const speakerSystemStates: WorkflowState<SpeakerSystemState>[] = [
+export const speakerSystemStates: WorkflowStates<
+  SpeakerSystemState,
+  'inactivate' | 'activate' | 'archive'
+> = [
   {
     transition: 'inactivate',
     icon: 'mdi-eye-off',
@@ -29,7 +32,10 @@ export const speakerSystemStates: WorkflowState<SpeakerSystemState>[] = [
   }
 ]
 
-export const speakerListStates: WorkflowState<SpeakerListState>[] = [
+export const speakerListStates: WorkflowStates<
+  SpeakerListState,
+  'open' | 'close'
+> = [
   {
     transition: 'open',
     icon: 'mdi-play-circle-outline',

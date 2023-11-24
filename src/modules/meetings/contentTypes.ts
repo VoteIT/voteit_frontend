@@ -1,6 +1,6 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
-import { MeetingAccessPolicy } from '@/contentTypes/types'
+import { ExtractTransition, MeetingAccessPolicy } from '@/contentTypes/types'
 import { ElectoralRegister, ErMethod } from './electoralRegisters/types'
 import {
   ComponentBase,
@@ -38,8 +38,11 @@ export const meetingRoleType = new ContentType<MeetingRoles>({
   restEndpoint: 'meeting-roles/'
 })
 
-// TODO type transitions (string for now)
-export const meetingType = new ContentType<Meeting, string, MeetingRole>({
+export const meetingType = new ContentType<
+  Meeting,
+  ExtractTransition<typeof meetingStates>,
+  MeetingRole
+>({
   states: meetingStates,
   name: 'meeting',
   channels: ['meeting', 'participants', 'moderators', 'invites'],
@@ -74,7 +77,10 @@ export const matchedInviteType = new ContentType<MeetingInvite>({
   restEndpoint: 'handle-matched-invites/'
 })
 
-export const meetingInviteType = new ContentType<MeetingInvite>({
+export const meetingInviteType = new ContentType<
+  MeetingInvite,
+  ExtractTransition<typeof meetingInviteStates>
+>({
   name: 'meeting_invite',
   restEndpoint: 'meeting-invites/',
   states: meetingInviteStates
@@ -86,7 +92,10 @@ export const meetingGroupType = new ContentType<MeetingGroup>({
   restConfig: { alertOnError: false }
 })
 
-export const meetingComponentType = new ContentType<ComponentBase>({
+export const meetingComponentType = new ContentType<
+  ComponentBase,
+  ExtractTransition<typeof meetingComponentStates>
+>({
   restEndpoint: 'meeting-components/',
   name: 'meeting_component',
   states: meetingComponentStates

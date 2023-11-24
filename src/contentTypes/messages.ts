@@ -23,6 +23,6 @@ export interface ContextRolesPayload<R = string> {
   items: [number, R[]][]
 }
 
-export interface AvailableRolesPayload {
-  roles: ContextRole[]
+export interface AvailableRolesPayload<Role extends string> {
+  roles: ContextRole<Role>[]
 }

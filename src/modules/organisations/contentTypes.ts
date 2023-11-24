@@ -6,7 +6,6 @@ import {
   IUser
 } from './types'
 
-// TODO Type transitions (string for now)
 export const organisationType = new ContentType<
   Organisation,
   string,

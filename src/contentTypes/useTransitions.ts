@@ -9,8 +9,8 @@ export default function useTransitions<
   T extends { pk: number; state?: string },
   Transition extends string
 >(states: WorkflowStates<T['state'], Transition>, api: ContentAPI<T, number>) {
-  async function get(pk: number): Promise<ITransition[]> {
-    const { data }: { data: ITransition[] } = await api.action(
+  async function get(pk: number): Promise<ITransition<Transition>[]> {
+    const { data } = await api.action<ITransition<Transition>[]>(
       pk,
       'transitions',
       undefined,

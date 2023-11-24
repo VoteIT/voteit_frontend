@@ -5,7 +5,10 @@ export enum PresenceCheckState {
   Closed = 'closed'
 }
 
-export const presenceCheckStates: WorkflowState<PresenceCheckState>[] = [
+export const presenceCheckStates: WorkflowState<
+  PresenceCheckState,
+  'open' | 'close'
+>[] = [
   {
     transition: 'open',
     icon: 'mdi-play',

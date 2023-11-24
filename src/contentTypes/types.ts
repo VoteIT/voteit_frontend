@@ -21,6 +21,13 @@ export type WorkflowStates<S = string, T extends string = string> = Readonly<
   Readonly<WorkflowState<S, T>>[]
 >
 
+export type ExtractTransition<States> = States extends WorkflowStates<
+  any,
+  infer Transition
+>
+  ? Transition
+  : never
+
 export type ConditionalWorkflowStates<
   T extends { state?: string },
   Transitions extends string = string
@@ -33,8 +40,8 @@ export interface TransitionCondition {
 }
 
 // Transitions from backend
-export interface Transition {
-  name: string
+export interface Transition<T extends string = string> {
+  name: T
   permission: string
   source: string
   target: string

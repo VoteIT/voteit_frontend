@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding } from '@vueuse/core'
 
 import Tag from '@/components/Tag.vue'
-import { WorkflowState } from '@/contentTypes/types'
+import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
 import useTags from '../meetings/useTags'
@@ -147,7 +147,7 @@ const pool = computed(() =>
 const transitioning = reactive(new Set<number>())
 async function makeTransition(
   p: Pick<Proposal, 'state' | 'pk'>,
-  state: WorkflowState
+  state: WorkflowState<ProposalState, ExtractTransition<typeof proposalStates>>
 ) {
   if (!state.transition)
     throw new Error(

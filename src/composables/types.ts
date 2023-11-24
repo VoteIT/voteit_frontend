@@ -88,10 +88,10 @@ export interface ContextRoles {
   user_pk: number
 }
 
-export interface ContextRole {
+export interface ContextRole<Role extends string = string> {
   description: string
   model_natural_key: string
-  name: string
+  name: Role
   predicate_info?: any
   require_names?: string[]
   title: string

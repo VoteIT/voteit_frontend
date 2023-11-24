@@ -8,7 +8,10 @@ export const DEFAULT_FILTER_STATES = [
   ProposalState.Approved
 ]
 
-export const proposalStates: WorkflowState<ProposalState>[] = [
+export const proposalStates: WorkflowState<
+  ProposalState,
+  'publish' | 'retract' | 'lock_for_vote' | 'approved' | 'denied' | 'unhandled'
+>[] = [
   {
     transition: 'publish',
     icon: 'mdi-eye',

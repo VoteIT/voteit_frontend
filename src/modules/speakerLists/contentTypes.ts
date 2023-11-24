@@ -8,11 +8,11 @@ import {
   SpeakerSystemRole
 } from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
+import { ExtractTransition } from '@/contentTypes/types'
 
-// TODO Type transitions (string for now)
 export const speakerSystemType = new ContentType<
   SpeakerSystem,
-  string,
+  ExtractTransition<typeof speakerSystemStates>,
   SpeakerSystemRole
 >({
   name: 'speaker_system',
@@ -31,7 +31,10 @@ export const speakerSystemType = new ContentType<
   }
 })
 
-export const speakerListType = new ContentType<SpeakerList>({
+export const speakerListType = new ContentType<
+  SpeakerList,
+  ExtractTransition<typeof speakerListStates>
+>({
   states: speakerListStates,
   name: 'speaker_list',
   channels: ['speaker_list'],
