@@ -29,8 +29,11 @@ meetingBubblePlugins.register({
   component: RealTimeBubble,
   icon: 'mdi-broadcast',
   order: 10,
-  checkActive() {
-    return any(meetingRoomStore.values(), (r) => r.open)
+  checkActive(meeting) {
+    return any(
+      meetingRoomStore.values(),
+      (r) => r.meeting === meeting.pk && r.open
+    )
   },
   requireAttention: computed(() => true)
 })

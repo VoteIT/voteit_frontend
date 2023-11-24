@@ -19,9 +19,9 @@ function getSubtitle({ body, send_proposals, send_sls }: IMeetingRoom): string {
       const ellipsed = body ? autoEllipsis(body, 20, true) : ''
       return ellipsed.length ? ellipsed : t('room.noBroadcast')
     }
-    case 'falsetrue':
-      return t('room.sendingProposals')
     case 'truefalse':
+      return t('room.sendingProposals')
+    case 'falsetrue':
       return t('room.sendingSpeakers')
     case 'truetrue':
       return t('room.sendingSpeakersProposals')
