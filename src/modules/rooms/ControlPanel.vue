@@ -83,21 +83,22 @@ async function updateRoom(
   close: () => void
 ) {
   working.value = true
-  const { pk: sls, state: systemState } =
-    findSpeakerSystem((s) => s.room === pk) || {}
-  const slsAdded = !sls && room.speakers
-  const slsModified = !!sls && room.speakers
+  const system = findSpeakerSystem((s) => s.room === pk)
+  const slsAdded = !system && room.speakers
+  const slsModified = !!system && room.speakers
   const slsDisabled =
-    !!sls && !room.speakers && systemState === SpeakerSystemState.Active
+    !!system && !room.speakers && system.state === SpeakerSystemState.Active
   const slsEnabled =
-    !!sls && room.speakers && systemState === SpeakerSystemState.Inactive
+    !!system && room.speakers && system.state === SpeakerSystemState.Inactive
   try {
     await roomType.update(pk, room)
     if (slsAdded) await createSpeakerSystem({ ...speakerSystem!, room: pk })
-    if (slsModified) await speakerSystemType.api.patch(sls!, speakerSystem!)
+    if (slsModified)
+      await speakerSystemType.api.patch(system.pk, speakerSystem!)
     if (slsDisabled)
-      await speakerSystemType.transitions.make(sls!, 'inactivate')
-    if (slsEnabled) await speakerSystemType.transitions.make(sls!, 'activate')
+      await speakerSystemType.transitions.make(system, 'inactivate', t)
+    if (slsEnabled)
+      await speakerSystemType.transitions.make(system, 'activate', t)
     close()
   } catch (e) {
     errors.value = parseRestError(e)

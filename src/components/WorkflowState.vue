@@ -22,24 +22,17 @@
       <div v-if="fetching" class="text-center">
         <v-progress-circular indeterminate />
       </div>
-      <WorkflowTransition
+      <v-list-item
         v-else
         v-for="t in transitionsAvailable"
         :key="t.name"
-        :content-type="contentType"
-        :obj="obj"
-        :transition="t.name"
-        v-slot="{ props }"
-      >
-        <v-list-item
-          v-bind="props"
-          :prepend-icon="t.icon"
-          :title="t.title"
-          :disabled="!t.allowed"
-          :subtitle="unmetConditions(t)"
-          link
-        />
-      </WorkflowTransition>
+        :prepend-icon="t.icon"
+        :title="t.title"
+        :disabled="!t.allowed"
+        :subtitle="t.unmetConditions"
+        @click="makeTransition(t.name)"
+        link
+      />
     </v-list>
   </v-menu>
   <v-btn
@@ -69,23 +62,24 @@
 <script
   lang="ts"
   setup
-  generic="T extends StateContent, Transition extends string"
+  generic="T extends StateContent, CT extends ContentType<T, any, any>"
 >
 import { computed, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { Color } from '@/utils/types'
 import useAlert from '@/composables/useAlert'
-import { StateContent, Transition as ITransition } from '@/contentTypes/types'
+import { Transition as ITransition, StateContent } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
-import WorkflowTransition from './WorkflowTransition.vue'
+
+type Transition = CT extends ContentType<any, infer T, any> ? T : never
 
 const props = withDefaults(
   defineProps<{
     admin?: boolean
     color?: Color
+    contentType: CT
     object: T
-    contentType: ContentType<T, Transition, any>
     right?: boolean
   }>(),
   {
@@ -94,10 +88,16 @@ const props = withDefaults(
   }
 )
 
-const obj = computed(() => props.object) // Vue TS generics workaround. Don't know why it needs to be like this.
 const { t } = useI18n()
 const { getState } = props.contentType.useWorkflows()
-const transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
+const _transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
+const transitionsAvailable = computed(
+  () =>
+    _transitionsAvailable.value?.map((t) => ({
+      ...t,
+      unmetConditions: unmetConditions(t)
+    }))
+)
 const { alert } = useAlert()
 
 const currentState = computed(() => getState(props.object.state))
@@ -110,7 +110,7 @@ async function menuOpenChange(open: boolean) {
   if (!open || fetching.value) return
   fetching.value = true
   try {
-    transitionsAvailable.value = await props.contentType.transitions.get(
+    _transitionsAvailable.value = await props.contentType.transitions.get(
       props.object.pk
     )
   } catch {
@@ -120,6 +120,12 @@ async function menuOpenChange(open: boolean) {
 }
 
 const working = ref(false)
+
+async function makeTransition(transition: Transition) {
+  working.value = true
+  await props.contentType.transitions.make(props.object, transition, t)
+  working.value = false
+}
 
 function unmetConditions(t: ITransition<Transition>) {
   if (t.allowed) return
@@ -132,7 +138,7 @@ function unmetConditions(t: ITransition<Transition>) {
 watch(
   () => props.object,
   () => {
-    transitionsAvailable.value = null
+    _transitionsAvailable.value = null
   }
 )
 </script>

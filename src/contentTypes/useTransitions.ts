@@ -1,15 +1,16 @@
-import { partition } from 'itertools'
+import { chain, first, imap } from 'itertools'
+import { isString } from 'lodash'
 import { ComposerTranslation } from 'vue-i18n'
 
 import DefaultMap from '@/utils/DefaultMap'
+import { dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 
 import ContentAPI from './ContentAPI'
 import type { Transition as ITransition, WorkflowStates } from './types'
 
-type TransitionGuard<T> = (
-  obj: T,
-  t: ComposerTranslation
-) => { blocking?: boolean; message: string } | undefined
+export const UnguardedTransition = Symbol('UnguardedTransition')
+type TransitionGuard<T> = (obj: T, t: ComposerTranslation) => string | undefined
 
 /**
  * Handle content type transitions
@@ -35,8 +36,18 @@ export default function useTransitions<
     }))
   }
 
-  function make(pk: number, transition: Transition) {
-    return api.action<Partial<T>>(pk, 'transitions', { transition })
+  async function make(
+    obj: T,
+    transition: Transition,
+    t: ComposerTranslation | typeof UnguardedTransition
+  ) {
+    const guardQuery =
+      t === UnguardedTransition ? undefined : checkGuards(obj, transition, t)
+    if (
+      !guardQuery ||
+      (await dialogQuery({ title: guardQuery, theme: ThemeColor.Warning }))
+    )
+      return await api.action<Partial<T>>(obj.pk, 'transitions', { transition })
   }
 
   function registerGuard(transition: Transition, guard: TransitionGuard<T>) {
@@ -51,15 +62,12 @@ export default function useTransitions<
     transition: Transition | '*',
     t: ComposerTranslation
   ) {
-    function* iterGuards() {
-      for (const guard of guards.get(transition)) {
-        const result = guard(obj, t)
-        if (result) yield result
-      }
-    }
-    // Check blocking guards first
-    const [blocking, nonBlocking] = partition(iterGuards(), (m) => !!m.blocking)
-    return blocking.at(0) ?? nonBlocking.at(0)
+    return first(
+      imap(chain(guards.get('*'), guards.get(transition)), (guard) =>
+        guard(obj, t)
+      ),
+      isString
+    )
   }
 
   return {

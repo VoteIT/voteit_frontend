@@ -19,6 +19,20 @@ import { ProposalState } from '../proposals/types'
 
 import usePlenary from './usePlenary'
 
+interface IAlertInfo {
+  actions?: {
+    prependIcon: string
+    text: string
+    onClick?(): void
+  }[]
+  props: {
+    icon?: string
+    title: string
+    text: string
+    type: 'warning' | 'info'
+  }
+}
+
 const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
@@ -41,7 +55,7 @@ const isBroadcastingAI = computed(
     isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
 )
 
-function getMeetingStateAlert() {
+function getMeetingStateAlert(): IAlertInfo | undefined {
   switch (meeting.value?.state) {
     case undefined:
     case MeetingState.Ongoing:
@@ -52,14 +66,14 @@ function getMeetingStateAlert() {
           icon: 'mdi-progress-clock',
           title: t('plenary.meetingUpcoming'),
           text: t('plenary.meetingUpcomingDescription'),
-          type: 'warning' as const
+          type: 'warning'
         },
         actions: [
           {
             prependIcon: 'mdi-play-circle',
             text: t('plenary.meetingToOngoing'),
             async onClick() {
-              meetingType.transitions.make(meetingId.value, 'ongoing')
+              meetingType.transitions.make(meeting.value!, 'ongoing', t)
             }
           }
         ]
@@ -70,13 +84,14 @@ function getMeetingStateAlert() {
           icon: 'mdi-progress-clock',
           title: t('plenary.meetingClosed'),
           text: t('plenary.meetingClosedDescription'),
-          type: 'warning' as const
+          type: 'warning'
         }
       }
   }
 }
 
 function broadcastThis() {
+  console.log('broadcast')
   return setBroadcast({
     agenda_item: agendaId.value,
     highlighted: [...selectedProposalIds.value]
@@ -107,7 +122,7 @@ const selectApprovedAction = computed(() => {
   ]
 })
 
-function getAgendaAlert() {
+function getAgendaAlert(): IAlertInfo | undefined {
   if (!isBroadcasting.value && agendaItem.value?.state !== AgendaState.Private)
     return hasBroadcast.value && meetingRoom.value?.handler
       ? {
@@ -117,7 +132,7 @@ function getAgendaAlert() {
               ...getUser(meetingRoom.value.handler)
             }),
             text: t('plenary.noBroadcastDescription'),
-            type: 'warning' as const
+            type: 'warning'
           },
           actions: [
             {
@@ -142,7 +157,7 @@ function getAgendaAlert() {
             icon: 'mdi-broadcast-off',
             title: t('room.noBroadcast'),
             text: t('plenary.noBroadcastDescription'),
-            type: 'info' as const
+            type: 'info'
           },
           actions: [
             {
@@ -158,7 +173,7 @@ function getAgendaAlert() {
         props: {
           title: t('plenary.privateAI'),
           text: t('plenary.privateAIDescription'),
-          type: 'warning' as const
+          type: 'warning'
         }
       }
     case AgendaState.Upcoming:
@@ -168,7 +183,7 @@ function getAgendaAlert() {
           icon: 'mdi-broadcast',
           title: t('plenary.upcomingAI'),
           text: t('plenary.upcomingAIDescription'),
-          type: 'info' as const
+          type: 'info'
         },
         actions: [
           {
@@ -176,8 +191,9 @@ function getAgendaAlert() {
             text: t('plenary.toDecisionMode'),
             async onClick() {
               await agendaItemType.transitions.make(
-                agendaId.value,
-                AgendaTransition.Ongoing
+                agendaItem.value!,
+                AgendaTransition.Ongoing,
+                t
               )
               await broadcastThis()
             }
@@ -200,7 +216,7 @@ function getAgendaAlert() {
             icon: 'mdi-gavel',
             title: t('plenary.closeAI'),
             text: t('plenary.closeAIDescription'),
-            type: 'info' as const
+            type: 'info'
           },
           actions: [
             {
@@ -208,8 +224,9 @@ function getAgendaAlert() {
               text: t('plenary.closeAI'),
               async onClick() {
                 await agendaItemType.transitions.make(
-                  agendaId.value,
-                  AgendaTransition.Close
+                  agendaItem.value!,
+                  AgendaTransition.Close,
+                  t
                 )
               }
             },
@@ -222,7 +239,7 @@ function getAgendaAlert() {
           icon: 'mdi-broadcast',
           title: t('plenary.ongoingAI'),
           text: t('plenary.ongoingAIDescription'),
-          type: 'info' as const
+          type: 'info'
         },
         actions: [
           {
@@ -238,7 +255,7 @@ function getAgendaAlert() {
           icon: 'mdi-check-all',
           title: t('plenary.closedAI'),
           text: t('plenary.closedAIDescription'),
-          type: 'warning' as const
+          type: 'warning'
         },
         actions: selectApprovedAction.value
       }
@@ -256,11 +273,10 @@ const alertInfo = computed(() => getMeetingStateAlert() || getAgendaAlert())
     class="pa-6"
   >
     <template #append v-if="alertInfo.actions">
-      <!-- TODO Use WorkflowTransition to trigger transition guards -->
       <v-btn
-        v-for="action in alertInfo.actions"
-        :key="action.text"
-        v-bind="action"
+        v-for="props in alertInfo.actions"
+        :key="props.text"
+        v-bind="props"
         block
         class="my-1"
       />

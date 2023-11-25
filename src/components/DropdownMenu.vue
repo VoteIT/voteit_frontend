@@ -1,18 +1,21 @@
 <script
   lang="ts"
   setup
-  generic="T extends StateContent, Transition extends string"
+  generic="T extends StateContent, CT extends ContentType<T, any, any>"
 >
 import { computed, Ref, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import ContentType from '@/contentTypes/ContentType'
-import { StateContent, Transition as ITransition } from '@/contentTypes/types'
 import { MenuItem, MenuSubheader } from '@/utils/types'
+import ContentType from '@/contentTypes/ContentType'
+import { Transition as ITransition, StateContent } from '@/contentTypes/types'
+
+type Transition = CT extends ContentType<any, infer T, any> ? T : never
 
 const props = withDefaults(
   defineProps<{
     color?: string
-    contentType?: ContentType<T, Transition>
+    contentType?: CT
     float?: boolean
     icon?: string
     items?: MenuItem[]
@@ -30,6 +33,8 @@ const props = withDefaults(
   }
 )
 
+const { t } = useI18n()
+
 const isOpen = ref(false)
 const working = ref(false)
 const workflows = props.contentType?.useWorkflows()
@@ -38,6 +43,14 @@ if (props.showTransitions && (!props.object || !props.contentType)) {
   console.warn(
     'Menu component needs object and contentType to show transitions.'
   )
+}
+
+async function makeTransition(transition: Transition) {
+  if (!props.contentType || !props.object) return
+  working.value = true
+  await props.contentType.transitions.make(props.object, transition, t)
+  working.value = false
+  isOpen.value = false
 }
 
 watch(isOpen, async (value) => {
@@ -62,14 +75,6 @@ const currentState = computed(() => {
   if (!workflows || !props.object) return
   return workflows.getState(props.object.state)
 })
-
-async function makeTransition(t: ITransition<Transition>) {
-  if (!props.contentType || !props.object || !t.name) return
-  working.value = true
-  await props.contentType.transitions.make(props.object.pk, t.name)
-  working.value = false
-  isOpen.value = false
-}
 
 function isSubheader(item: MenuItem): item is MenuSubheader {
   return item !== '---' && 'subheader' in item
@@ -104,13 +109,14 @@ function isSubheader(item: MenuItem): item is MenuSubheader {
         <template v-if="transitionsAvailable">
           <v-divider v-if="items.length || $slots.top" />
           <v-list-item
+            v-for="t in transitionsAvailable"
+            :key="t.name"
             link
             :prepend-icon="t.icon"
             :disabled="working"
-            v-for="t in transitionsAvailable"
-            :key="t.name"
-            @click="makeTransition(t)"
             :title="t.title"
+            v-bind="props"
+            @click="makeTransition(t.name)"
           />
         </template>
         <slot name="bottom"></slot>

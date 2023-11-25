@@ -146,7 +146,7 @@ const pool = computed(() =>
 )
 const transitioning = reactive(new Set<number>())
 async function makeTransition(
-  p: Pick<Proposal, 'state' | 'pk'>,
+  p: Proposal,
   state: WorkflowState<ProposalState, ExtractTransition<typeof proposalStates>>
 ) {
   if (!state.transition)
@@ -156,7 +156,7 @@ async function makeTransition(
   if (state.state === p.state) return // No need to change state then, is there?
   transitioning.add(p.pk)
   try {
-    await proposalType.transitions.make(p.pk, state.transition)
+    await proposalType.transitions.make(p, state.transition, t)
   } catch {}
   transitioning.delete(p.pk)
 }

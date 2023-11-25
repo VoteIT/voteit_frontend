@@ -490,8 +490,8 @@ async function deleteSelected() {
 async function revokeSelected() {
   // Revoke any selected deletable invites (same as revokable?)
   // TODO Warn if any were not revokable
-  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-    meetingInviteType.transitions.make(pk, 'revoke')
+  for (const inv of selectedInvites.value.filter(canDeleteMeetingInvite)) {
+    meetingInviteType.transitions.make(inv, 'revoke', t)
   }
 }
 

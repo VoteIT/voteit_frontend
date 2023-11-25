@@ -7,6 +7,7 @@ import { Presence, PresenceCheck } from '@/contentTypes/types'
 import { PresenceCheckState } from './workflowStates'
 import { presenceCheckType, presenceType } from './contentTypes'
 import { canAddPresenceCheck } from './rules'
+import { UnguardedTransition } from '@/contentTypes/useTransitions'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
@@ -38,7 +39,11 @@ export default function usePresence(meetingId: Ref<number>) {
   async function closeCheck() {
     if (!presenceCheck.value)
       throw new Error('No active presence check in meeting.')
-    presenceCheckType.transitions.make(presenceCheck.value.pk, 'close')
+    presenceCheckType.transitions.make(
+      presenceCheck.value,
+      'close',
+      UnguardedTransition
+    )
   }
 
   async function openCheck() {

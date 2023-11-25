@@ -181,7 +181,7 @@ function setStateSelected(state: WorkflowState<AgendaState, AgendaTransition>) {
   actionOnSelected((ai) => {
     if (ai.state === state.state) return Promise.resolve()
     if (!state.transition) return Promise.reject(new Error('No transition'))
-    return agendaItemType.transitions.make(ai.pk, state.transition)
+    return agendaItemType.transitions.make(ai, state.transition, t)
   })
 }
 

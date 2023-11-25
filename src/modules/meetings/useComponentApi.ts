@@ -1,5 +1,8 @@
 import { computed, ref, Ref } from 'vue'
+
 import { meetingComponentType } from './contentTypes'
+import { UnguardedTransition } from '@/contentTypes/useTransitions'
+
 import { ComponentBase } from './types'
 
 // TODO: Deprecate? This seems to hugely double for useMeetingComponent?
@@ -53,12 +56,13 @@ export default function useComponentApi<
     }
   }
 
-  async function setComponentState({ pk }: T, state: boolean) {
-    const { data } = await meetingComponentType.transitions.make(
-      pk,
-      state ? 'enable' : 'disable'
+  async function setComponentState(obj: T, state: boolean) {
+    const response = await meetingComponentType.transitions.make(
+      obj,
+      state ? 'enable' : 'disable',
+      UnguardedTransition
     )
-    if (data.state) setReactiveState(pk, data.state)
+    if (response?.data.state) setReactiveState(obj.pk, response.data.state)
   }
 
   return {
