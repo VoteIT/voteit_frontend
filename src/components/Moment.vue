@@ -1,9 +1,18 @@
 <template>
-  <span :class="{ time: !ordinary }">{{ prepend }} {{ fromNow }}</span>
+  <span v-if="inSeconds" :class="{ time: !ordinary }">
+    {{ prepend }} {{ fromNow }}
+  </span>
+  <v-tooltip v-else :text="exactDate">
+    <template #activator="{ props }">
+      <span v-bind="{ ...props, ...$attrs }" :class="{ time: !ordinary }">
+        {{ prepend }} {{ fromNow }}
+      </span>
+    </template>
+  </v-tooltip>
 </template>
 
 <script setup lang="ts">
-import { Duration } from 'luxon'
+import { Duration, DateTime } from 'luxon'
 import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { useIntervalFn } from '@vueuse/shared'
 
@@ -22,6 +31,13 @@ const props = defineProps<{
 
 const { dateTime, serverNow } = useServerDateTime(computed(() => props.date))
 const fromNow = ref('')
+
+const exactDate = computed(() =>
+  DateTime.fromISO(props.date).toLocaleString({
+    dateStyle: 'long',
+    timeStyle: 'long'
+  })
+)
 
 function updateFromNow() {
   // Can not be computed(), because time is not reactive

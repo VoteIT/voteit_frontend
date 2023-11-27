@@ -4,10 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.21.0 (2023-11-21)
+## 0.21.0 (2023-11-27)
 
 - Allow setting min/max ranked proposals in repeated IRV [#335](https://github.com/VoteIT/voteit_frontend/issues/335)
 - Select all proposal states when filtering on tag in Agenda Item view [#336](https://github.com/VoteIT/voteit_frontend/issues/336)
+- Display exact time on hover when showing relative times or dates (Moment.vue)
 
 ## 0.20.3 (2023-11-17)
 
