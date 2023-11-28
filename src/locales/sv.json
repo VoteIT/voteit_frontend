@@ -792,7 +792,7 @@
     "paused": "Paus...",
     "pauseMessage": "Pausmeddelande",
     "pauseMessageDescription": "Pausmeddelandet visas när mötesrummet är öppet, men sändning av både talarlista och förslag är avstängd.",
-    "realTime": "Realtivdsvy",
+    "realTime": "Realtidsvy",
     "sendingProposals": "Visar förslag",
     "sendingSpeakers": "Visar talarlista",
     "sendingSpeakersProposals": "Visar talarlista och förslag",
