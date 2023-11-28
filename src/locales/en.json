@@ -119,6 +119,7 @@
     "deleteSelectedConfirm": "You are about to delete {count} Agenda Items permanently.\nAre you sure?",
     "edit": "Edit agenda",
     "filteringOnTag": "Filtering on",
+    "filterOnTag": "Filter on",
     "helpEditTags": "Select agenda items to the left to edit tags",
     "helpNoProposals": "This agenda item has no proposals yet.",
     "helpNoProposalsInFilter": "There are proposals on this agenda item that are not shown because of your filter settings.",
@@ -147,6 +148,8 @@
   "content": {
     "addName": "Add {name}",
     "delete": "Radera",
+    "itemsPerPageText": "Items per page",
+    "pageText": "{'{'}0{'}'}-{'{'}1{'}'} of {'{'}2{'}'}",
     "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
   },
   "discussion": {

@@ -18,6 +18,7 @@ import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
 import { meetingType } from '../meetings/contentTypes'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import { MeetingState } from '../meetings/types'
 
 import useAgenda from './useAgenda'
 import useAgendaTags from './useAgendaTags'
@@ -27,7 +28,7 @@ import { agendaItemType } from './contentTypes'
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
-const { isModerator, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 const { agenda, filteredAgenda, getAgendaItem } = useAgenda(
   meetingId,
   agendaTag
@@ -104,22 +105,7 @@ const editSelected = ref<number[]>([])
 const selectedAgendaItems = computed(() =>
   filteredAgenda.value.filter((ai) => editSelected.value.includes(ai.pk))
 )
-const selectedSingularState = computed(() => {
-  const states = new Set(selectedAgendaItems.value.map((ai) => ai?.state))
-  if (states.size !== 1) return
-  return states.values().next().value
-})
 const editManyWorking = ref(false)
-const editIsAllSelected = computed({
-  get: () => selectedAgendaItems.value.length === filteredAgenda.value.length,
-  set: (value: boolean) => {
-    if (value) {
-      editSelected.value = filteredAgenda.value.map((ai) => ai.pk)
-    } else {
-      editSelected.value = []
-    }
-  }
-})
 
 // eslint-disable-next-line no-undef
 function isRejected(
@@ -231,6 +217,20 @@ function tagBulkAdd(tag: string) {
 async function setTitle({ pk }: AgendaItem, title: string) {
   agendaItemType.api.patch(pk, { title })
 }
+
+/**
+ * Used to disable state selection if all selected AI:s are already that state,
+ * of if target is ongoing and meeting is not ongoing,
+ */
+function canSetState(target: AgendaState) {
+  return (
+    selectedAgendaItems.value.some((ai) => ai.state !== target) &&
+    !(
+      target === AgendaState.Ongoing &&
+      meeting.value?.state !== MeetingState.Ongoing
+    )
+  )
+}
 </script>
 
 <template>
@@ -240,7 +240,7 @@ async function setTitle({ pk }: AgendaItem, title: string) {
   </MeetingToolbar>
   <v-window v-model="editMode">
     <v-window-item value="default">
-      <div class="d-flex align-center">
+      <div class="d-flex align-center" v-if="agendaTags.length < 5">
         <v-chip-group v-model="agendaTag">
           <v-chip
             v-for="tag in agendaTags"
@@ -262,113 +262,116 @@ async function setTitle({ pk }: AgendaItem, title: string) {
           {{ t('clear') }}
         </v-chip>
       </div>
-      <v-table id="agenda-edit">
-        <thead>
-          <tr>
-            <th>
-              <input type="checkbox" v-model="editIsAllSelected" />
-            </th>
-            <th>{{ t('state') }}</th>
-            <th width="100%">{{ t('title') }}</th>
-            <th>
-              <v-tooltip :text="t('agenda.helpEditTags')" location="top">
-                <template #activator="{ props }">
-                  <span v-bind="props" class="text-no-wrap">
-                    {{ t('tags') }}
-                    <v-icon icon="mdi-help-circle" />
-                  </span>
-                </template>
-              </v-tooltip>
-            </th>
-            <th>{{ t('proposal.proposals') }}</th>
-            <th>{{ t('discussion.discussions') }}</th>
-            <th />
-          </tr>
-        </thead>
-        <v-item-group tag="tbody" multiple v-model="editSelected">
-          <v-item
-            v-for="ai in filteredAgenda"
-            :key="ai.pk"
-            v-slot="{ toggle, isSelected }"
-            :value="ai.pk"
+      <v-select
+        v-else
+        v-model="agendaTag"
+        :label="t('agenda.filterOnTag')"
+        :items="agendaTags"
+        hide-details
+        clearable
+        density="compact"
+        class="mb-1"
+        style="max-width: 280px"
+      />
+      <v-data-table
+        :headers="[
+          { title: t('state'), key: 'state' },
+          { title: t('title'), key: 'title' },
+          {
+            title: t('tags'),
+            key: 'tags',
+            sortable: false
+          },
+          { title: t('proposal.proposals'), key: 'block_proposals' },
+          { title: t('discussion.discussions'), key: 'block_discussion' },
+          { title: '', key: 'pk', sortable: false, align: 'end' }
+        ]"
+        show-select
+        v-model="editSelected"
+        item-value="pk"
+        :custom-filter="(tags, query) => tags.includes(query)"
+        :search="agendaTag"
+        :filter-keys="['tags']"
+        :items="agendaItems"
+        :items-per-page="25"
+        :page-text="t('content.pageText')"
+        :items-per-page-text="t('content.itemsPerPageText')"
+        class="mb-2"
+      >
+        <template #item.state="{ value }">
+          <v-icon size="small" :icon="getState(value)?.icon" />
+        </template>
+        <template #item.title="{ item, value }">
+          <Headline
+            :modelValue="value"
+            tag="h4"
+            :maxlength="100"
+            clickToEdit
+            @update:modelValue="setTitle(item, $event)"
+          />
+        </template>
+        <template #header.tags>
+          <v-tooltip :text="t('agenda.helpEditTags')" location="top">
+            <template #activator="{ props }">
+              <span v-bind="props" class="text-no-wrap">
+                {{ t('tags') }} <v-icon icon="mdi-help-circle" />
+              </span>
+            </template>
+          </v-tooltip>
+        </template>
+        <template #item.tags="{ value }">
+          <v-chip-group v-model="agendaTag">
+            <v-chip
+              v-for="tag in value"
+              :key="tag"
+              :value="tag"
+              size="small"
+              color="primary"
+            >
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
+        </template>
+        <template #item.block_proposals="{ item, value }">
+          <v-switch
+            :modelValue="!value"
+            hide-details
+            color="primary"
+            @update:modelValue="
+              patchAgendaItem(item, { block_proposals: !$event })
+            "
+          />
+        </template>
+        <template #item.block_discussion="{ item, value }">
+          <v-switch
+            :modelValue="!value"
+            hide-details
+            color="primary"
+            @update:modelValue="
+              patchAgendaItem(item, { block_discussion: !$event })
+            "
+          />
+        </template>
+        <template #item.pk="{ item, value }">
+          <QueryDialog
+            v-if="canDeleteAgendaItem(item)"
+            color="warning"
+            :text="t('agenda.deleteItemConfirm')"
+            @confirmed="agendaApi.delete(value)"
           >
-            <tr>
-              <td>
-                <input
-                  type="checkbox"
-                  :checked="isSelected"
-                  @change.prevent="toggle?.()"
-                  class="mr-2"
-                />
-              </td>
-              <td class="state">
-                <v-icon size="small" :icon="getState(ai.state)?.icon" />
-              </td>
-              <td>
-                <Headline
-                  :modelValue="ai.title"
-                  tag="h4"
-                  :maxlength="100"
-                  clickToEdit
-                  @update:modelValue="setTitle(ai, $event)"
-                />
-              </td>
-              <td>
-                <v-chip-group v-model="agendaTag">
-                  <v-chip
-                    v-for="tag in ai.tags"
-                    :key="tag"
-                    :value="tag"
-                    size="small"
-                    color="primary"
-                  >
-                    {{ tag }}
-                  </v-chip>
-                </v-chip-group>
-              </td>
-              <td class="state">
-                <v-switch
-                  :modelValue="!ai.block_proposals"
-                  hide-details
-                  color="primary"
-                  @update:modelValue="
-                    patchAgendaItem(ai, { block_proposals: !$event })
-                  "
-                />
-              </td>
-              <td class="state">
-                <v-switch
-                  :modelValue="!ai.block_discussion"
-                  hide-details
-                  color="primary"
-                  @update:modelValue="
-                    patchAgendaItem(ai, { block_discussion: !$event })
-                  "
-                />
-              </td>
-              <td>
-                <QueryDialog
-                  v-if="canDeleteAgendaItem(ai)"
-                  color="warning"
-                  :text="t('agenda.deleteItemConfirm')"
-                  @confirmed="agendaApi.delete(ai.pk)"
-                >
-                  <template #activator="{ props }">
-                    <v-btn
-                      color="warning"
-                      prepend-icon="mdi-delete"
-                      size="small"
-                      v-bind="props"
-                    >
-                      {{ t('content.delete') }}
-                    </v-btn>
-                  </template>
-                </QueryDialog>
-              </td>
-            </tr>
-          </v-item>
-        </v-item-group>
-      </v-table>
+            <template #activator="{ props }">
+              <v-btn
+                color="warning"
+                prepend-icon="mdi-delete"
+                size="small"
+                v-bind="props"
+              >
+                {{ t('content.delete') }}
+              </v-btn>
+            </template>
+          </QueryDialog>
+        </template>
+      </v-data-table>
       <v-expand-transition>
         <v-sheet
           :border="true"
@@ -399,7 +402,7 @@ async function setTitle({ pk }: AgendaItem, title: string) {
                 (s) => s.transition
               )"
               :key="state.state"
-              :disabled="state.state === selectedSingularState"
+              :disabled="!canSetState(state.state)"
               @click="setStateSelected(state)"
               >{{ t('agenda.setTo') }} {{ state.getName(t, 2) }}</v-btn
             >

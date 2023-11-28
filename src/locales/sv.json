@@ -119,6 +119,7 @@
     "deleteSelectedConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker? | Du är på väg att radera {count} dagordningspunkter.\nÄr du säker?",
     "edit": "Redigera dagordning",
     "filteringOnTag": "Filtrerar på",
+    "filterOnTag": "Filtrera på",
     "helpEditTags": "Välj dagordningspunkter till vänster för att redigera taggar",
     "helpNoProposals": "Den här dagordningspunkten har inga förslag än.",
     "helpNoProposalsInFilter": "Det finns förslag på den här dagordningspunkten som inte visas på grund av dina filterinställningar.",
@@ -147,6 +148,8 @@
   "content": {
     "addName": "Lägg till {name}",
     "delete": "Radera",
+    "itemsPerPageText": "Objekt per sida",
+    "pageText": "{'{'}0{'}'}-{'{'}1{'}'} av {'{'}2{'}'}",
     "warnShorterThan": "Ditt inlägg är färre än {length} tecken.\nÄr du säker?"
   },
   "discussion": {

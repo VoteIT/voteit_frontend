@@ -58,7 +58,7 @@ const onProposals = computed({
       <v-checkbox
         :modelValue="onProposals && onPresentation"
         :disabled="!onProposals"
-        @update:modelValue="emit('update:onPresentation', $event)"
+        @update:modelValue="emit('update:onPresentation', $event!)"
         :label="t('reaction.onPresentation')"
         density="compact"
         hide-details
@@ -67,7 +67,7 @@ const onProposals = computed({
       <v-checkbox
         :modelValue="onProposals && onVote"
         :disabled="!onProposals"
-        @update:modelValue="emit('update:onVote', $event)"
+        @update:modelValue="emit('update:onVote', $event!)"
         :label="t('reaction.onPoll')"
         density="compact"
         hide-details
@@ -76,7 +76,7 @@ const onProposals = computed({
       <v-checkbox
         :modelValue="onProposals && voteTemplate"
         :disabled="!onProposals"
-        @update:modelValue="emit('update:voteTemplate', $event)"
+        @update:modelValue="emit('update:voteTemplate', $event!)"
         :label="t('reaction.voteTemplate')"
         density="compact"
         hide-details

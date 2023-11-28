@@ -44,7 +44,7 @@ const users = computed(() => {
     <v-item-group
       :multiple="multiple"
       :modelValue="modelValue"
-      @update:modelValue="$emit('update:modelValue', $event)"
+      @update:modelValue="$emit('update:modelValue', $event as Value)"
     >
       <v-item
         v-for="user in users"
@@ -63,7 +63,11 @@ const users = computed(() => {
             {{ user.userid }}
           </v-list-item-subtitle>
           <template #append>
-            <slot name="appendItem" :user="user.pk" :isSelected="isSelected" />
+            <slot
+              name="appendItem"
+              :user="user.pk"
+              :isSelected="isSelected"
+            ></slot>
           </template>
         </v-list-item>
       </v-item>
