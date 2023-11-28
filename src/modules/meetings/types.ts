@@ -66,7 +66,8 @@ export enum MeetingState {
   Closed = 'closed',
   Archiving = 'archiving',
   Archived = 'archived',
-  Deleting = 'deleting'
+  Deleting = 'deleting',
+  Previous = 'pre' // This is not really a state. It's here as a workaround, because WorkkflowStates if not implemented correctly.
 }
 
 export interface MeetingDialectDefinition {
