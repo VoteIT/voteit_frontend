@@ -61,6 +61,7 @@ export const meetingStates: WorkflowStates<
     transition: 'request_delete',
     icon: 'mdi-delete',
     state: MeetingState.Deleting,
+    color: ThemeColor.Warning,
     getName(t, count = 1) {
       return t('meeting.workflow.deleting', count)
     }
@@ -68,8 +69,7 @@ export const meetingStates: WorkflowStates<
   {
     transition: 'abort_delete',
     icon: 'mdi-undo',
-    state: MeetingState.Deleting, // FIXME Why this here?
-    color: ThemeColor.Warning, // FIXME not displayed
+    state: MeetingState.Previous, // FIXME Workaround - state and transition shouldn't be 1-to-1
     getName(t, count = 1) {
       return t('meeting.workflow.deleting', count)
     }

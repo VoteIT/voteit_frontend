@@ -15,7 +15,7 @@ export interface WorkflowState<
   priority?: number // Determines order in navigation, i.e. ongoing first
   requiresRole?: MeetingRole
   state: State
-  transition?: Transition
+  transition?: Transition // FIXME This is incorrect, but useful for now. Transitions don't really have a 1-1 relationship.
 }
 export type WorkflowStates<S = string, T extends string = string> = Readonly<
   Readonly<WorkflowState<S, T>>[]
