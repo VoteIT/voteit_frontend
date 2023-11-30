@@ -350,10 +350,17 @@ function getProposalBody(p: Proposal) {
                 <User :pk="p.author" />
               </template>
             </i18n-t>
-            <i18n-t v-else keypath="minutes.proposalMeta" tag="h4">
+            <i18n-t
+              v-else-if="settings.showProposalTag"
+              keypath="minutes.proposalMeta"
+              tag="h4"
+            >
               <template #tag><Tag disabled :name="p.prop_id" /></template>
             </i18n-t>
-            <div class="proposal-text-paragraph" v-html="getProposalBody(p)" />
+            <div
+              class="proposal-text-paragraph"
+              v-html="getProposalBody(p)"
+            ></div>
           </div>
         </div>
       </div>
