@@ -16,25 +16,21 @@ const { isModerator, getMeetingRoute } = useMeeting()
 
 const pauseEdit = reactive({
   isOpen: false,
-  body: meetingRoom.value?.body ?? ''
+  body: meetingRoom.value?.body ?? '',
+  show_time: meetingRoom.value?.show_time ?? true
 })
-watch(
-  () => meetingRoom.value?.body,
-  (body) => {
-    pauseEdit.body = body ?? ''
-  }
-)
+watch(meetingRoom, (room) => {
+  if (!room) return
+  pauseEdit.body = room.body ?? ''
+  pauseEdit.show_time = room.show_time
+})
+
 async function savePauseMessage(pauseBroadcast = false) {
   if (!meetingRoom.value) throw new Error('No meeting room')
+  const { body, show_time } = pauseEdit
   const data = pauseBroadcast
-    ? {
-        body: pauseEdit.body,
-        send_proposals: false,
-        send_sls: false
-      }
-    : {
-        body: pauseEdit.body
-      }
+    ? { body, show_time, send_proposals: false, send_sls: false }
+    : { body, show_time }
   await roomType.api.patch(meetingRoom.value.pk, data)
   pauseEdit.isOpen = false
 }
@@ -109,6 +105,11 @@ async function savePauseMessage(pauseBroadcast = false) {
             {{ t('room.pauseMessageDescription') }}
           </v-alert>
           <RichtextEditor v-model="pauseEdit.body" class="mb-2" @keydown.stop />
+          <v-switch
+            v-model="pauseEdit.show_time"
+            color="primary"
+            :label="t('room.showClock')"
+          />
           <div class="text-right">
             <v-btn variant="text" @click="close" :text="t('cancel')" />
             <v-btn

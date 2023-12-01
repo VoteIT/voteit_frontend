@@ -803,6 +803,7 @@
     "settingsDescription": "Sätt upp mötesrum för realtidsvy och talarhantering. Används mest för livemöten.",
     "settingsHelp": "För att få tillgång till plenumvy (beslutshantering) och talarlistor behöver du sätta upp minst ett mötesrum i ditt möte. Om du har ett möte med flera samtidigt pågående processer, exempelvis parallella utskott, kan du behöva sätta upp mötesrum även för dessa.",
     "settingsTitle": "Mötesrum och talarlistor",
+    "showClock": "Visa klocka",
     "toPlenaryView": "Till plenumvy"
   },
   "rules": {
