@@ -10,7 +10,7 @@
     </template>
     <template #default="attrs">
       <v-sheet class="pa-4" :color="color">
-        <div v-if="title && !persistent" class="d-flex mb-4">
+        <div v-if="title || persistent" class="d-flex mb-4">
           <h2 v-if="title" class="flex-grow-1">
             {{ title }}
           </h2>

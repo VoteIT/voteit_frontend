@@ -7,7 +7,7 @@ import { Modal, isComponentModal, isHTMLModal } from '@/composables/types'
 import DefaultDialog from './DefaultDialog.vue'
 
 const defaults: Partial<Modal> = {
-  dismissable: true
+  dismissible: true
 }
 
 const modalQueue = reactive<Modal[]>([])
@@ -32,7 +32,7 @@ onMounted(() => {
   <DefaultDialog
     :model-value="isOpen"
     :title="modal?.title"
-    :persistent="!modal?.dismissable"
+    :persistent="!modal?.dismissible"
     @close="close()"
   >
     <template v-if="modal">
