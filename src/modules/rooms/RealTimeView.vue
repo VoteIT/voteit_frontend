@@ -15,12 +15,14 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import RealTimePollModal from './RealTimePollModal.vue'
 
 provide(RoleContextKey, 'meeting')
 
 const { t } = useI18n()
 
-const { highlightedProposals, meetingRoom } = useRoom()
+const { highlightedProposals, meetingRoom, roomOpenPoll } = useRoom()
 
 useChannel(
   'agenda_item',
@@ -54,6 +56,13 @@ const paused = computed(
 <template>
   <AppBar />
   <v-main class="ma-6">
+    <DefaultDialog
+      persistent
+      :model-value="!!roomOpenPoll"
+      :title="roomOpenPoll?.title"
+    >
+      <RealTimePollModal v-if="roomOpenPoll" :poll="roomOpenPoll" />
+    </DefaultDialog>
     <div v-if="!meetingRoom?.open" class="text-center">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
       <em>

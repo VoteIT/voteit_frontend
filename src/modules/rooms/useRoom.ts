@@ -9,6 +9,7 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 import { highlightedStore, meetingRoomStore } from './useRooms'
 import { roomType } from './contentTypes'
 import { isEqual } from 'lodash'
+import usePoll from '../polls/usePoll'
 
 export default function useRoom() {
   const route = useRoute()
@@ -37,13 +38,18 @@ export default function useRoom() {
     return hasBroadcast.value && meetingRoom.value.handler === user.value?.pk
   })
 
-  async function setAgendaId(aid: number) {
-    await roomType.api.action(
-      roomId.value,
-      'handle',
-      { agenda_item: aid },
-      'patch'
-    )
+  /**
+   * Use this to react and open selected poll in real-time view.
+   */
+  const { poll: roomOpenPoll } = usePoll(
+    computed(() => meetingRoom.value?.poll ?? 0)
+  )
+
+  /**
+   * Set broadcasted poll. Should always be called when starting poll in plenary view.
+   */
+  function setPoll(poll: number | null) {
+    return roomType.api.action(roomId.value, 'handle', { poll }, 'patch')
   }
 
   async function setOpen(open: boolean) {
@@ -112,11 +118,12 @@ export default function useRoom() {
     isBroadcasting,
     meetingRoom,
     roomId,
+    roomOpenPoll,
     speakerSystem,
-    setAgendaId,
     setBroadcast,
     setHandler,
     setOpen,
+    setPoll,
     setProposalBroadcast,
     setSlsBroadcast,
     setHighlightedProposals

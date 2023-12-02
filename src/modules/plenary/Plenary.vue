@@ -2,39 +2,36 @@
 import { computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
-import { openModalEvent } from '@/utils/events'
-import { MenuItem, MenuItemOnClick, ThemeColor } from '@/utils/types'
 import { RoleContextKey } from '@/injectionKeys'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
+import useLoader from '@/composables/useLoader'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 import useAgenda from '../agendas/useAgenda'
-import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import { pollType } from '../polls/contentTypes'
 import { Poll, PollState } from '../polls/types'
-import { PollMethodSettings, PollStartData } from '../polls/methods/types'
-import { PollPlugin, pollPlugins } from '../polls/registry'
+import { pollPlugins } from '../polls/registry'
 import usePolls from '../polls/usePolls'
 import { proposalStates } from '../proposals/workflowStates'
 import { ProposalState } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
-import { proposalType } from '../proposals/contentTypes'
 import BroadcastMenu from '../rooms/BroadcastMenu.vue'
 import useRoom from '../rooms/useRoom'
 import SpeakerHandling from '../speakerLists/SpeakerHandling.vue'
+import useSpeakerSystem from '../speakerLists/useSpeakerSystem'
 
 import AppBar from './AppBar.vue'
 import AgendaNavigation from './AgendaNavigation.vue'
 import DecisionsTab from './DecisionsTab.vue'
-import PollModal from './PollModal.vue'
 import { QuickStartMethod } from './types'
 import usePlenary from './usePlenary'
-import useSpeakerSystem from '../speakerLists/useSpeakerSystem'
-import useLoader from '@/composables/useLoader'
+import StartPollModal from './StartPollModal.vue'
+import PollModal from './PollModal.vue'
+import { openModalEvent } from '@/utils/events'
 
 const { t } = useI18n()
 
@@ -57,24 +54,25 @@ const tabs = computed(() => [
 
 const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
-const { meetingRoom, roomId, speakerSystem, setSlsBroadcast } = useRoom()
+const {
+  isBroadcasting,
+  meetingRoom,
+  roomId,
+  roomOpenPoll,
+  speakerSystem,
+  setPoll,
+  setSlsBroadcast
+} = useRoom()
 const { getState } = pollType.useWorkflows()
 const { systemActiveList } = useSpeakerSystem(
   computed(() => speakerSystem.value?.pk || 0), // userSpeakerSystem requires computed number
   agendaId
 )
 
-const { nextPollTitle } = useAgendaItem(agendaId)
-const {
-  currentTab,
-  stateFilter,
-  selectedProposals,
-  selectedProposalIds,
-  getPlenaryRoute
-} = usePlenary(meetingId, agendaId)
+const { currentTab, stateFilter, selectedProposals, getPlenaryRoute } =
+  usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
-const { getState: getProposalState } = proposalType.useWorkflows()
 
 useMeetingChannel()
 useLoader(
@@ -118,91 +116,51 @@ const filterStates = computed(() => {
   })
 })
 
-function pollStateToMenu(state: PollState): MenuItem[] {
+function pollStateToItems(state: PollState) {
   const wfState = getState(state)
   if (!wfState) throw new Error(`Unknown poll state '${state}'`)
 
   return getAiPolls(agendaId.value, state).map((poll) => ({
     active: state === PollState.Ongoing,
-    icon: wfState.icon,
-    title: poll.title,
+    poll,
+    prependIcon: wfState.icon,
     subtitle: pollPlugins.getName(poll.method_name, t),
-    onClick: async () =>
-      openModalEvent.emit({
-        title: poll.title,
-        component: PollModal,
-        data: poll
-      })
+    title: poll.title
   }))
 }
 
-/**
- * Selected proposals that are in a protected state (not published)
- * If user tries to start a poll with any of these, have them confirm that it's ok
- */
-const protectedProposalStates = computed(() => {
-  return selectedProposals.value
-    .map((p) => p.state)
-    .filter((s) => s !== ProposalState.Published)
-})
+const finishedPollItems = computed(() => pollStateToItems(PollState.Finished))
+const ongoingPollItems = computed(() => pollStateToItems(PollState.Ongoing))
 
-const working = ref(false)
-async function createPoll(
-  method: Poll['method_name'],
-  settings: PollMethodSettings | null
-) {
-  working.value = true
-  const pollData: Omit<PollStartData, 'p_ord' | 'withheld_result'> = {
-    agenda_item: agendaId.value,
-    meeting: meetingId.value,
-    title: nextPollTitle.value as string,
-    proposals: [...selectedProposalIds.value],
-    method_name: method,
-    start: true,
-    settings
-  }
-  if (protectedProposalStates.value.length) {
-    const states = [...new Set(protectedProposalStates.value)]
-      .map((s) => getProposalState(s)!.getName(t).toLowerCase())
-      .join(', ')
-    const title = t(
-      'plenary.confirmStartProtectedStates',
-      { states },
-      protectedProposalStates.value.length
-    )
-    if (!(await dialogQuery({ title, theme: ThemeColor.Warning }))) return
-  }
-  try {
-    const { data } = await pollType.api.add(pollData as Partial<Poll>)
-    openModalEvent.emit({
-      title: data.title,
-      component: PollModal,
-      data
-    })
-  } catch {}
-  working.value = false
+function openPoll(poll: Poll) {
+  if (isBroadcasting.value) setPoll(poll.pk)
+  openModalEvent.emit({
+    component: PollModal,
+    data: poll,
+    title: poll.title
+  })
 }
 
-const pollMethodMenu = computed<MenuItem[]>(() => {
+const pollMethodMenu = computed(() => {
   const quickStartMethods: QuickStartMethod[] = [
     {
-      ...(getPollMethod('combined_simple') as PollPlugin),
+      ...getPollMethod('combined_simple')!,
       settings: null,
       title: t('poll.method.combined_simple')
     },
     {
-      ...(getPollMethod('majority') as PollPlugin),
+      ...getPollMethod('majority')!,
       settings: null,
       title: t('poll.method.majority')
     },
     {
-      ...(getPollMethod('schulze') as PollPlugin),
+      ...getPollMethod('schulze')!,
       proposalsMin: 3,
       settings: null,
       title: t('poll.method.schulze')
     },
     {
-      ...(getPollMethod('schulze') as PollPlugin),
+      ...getPollMethod('schulze')!,
       settings: { deny_proposal: true },
       title: t('poll.method.schulzeAddDeny')
     }
@@ -222,37 +180,19 @@ const pollMethodMenu = computed<MenuItem[]>(() => {
         : undefined
       return {
         disabled,
-        icon: 'mdi-vote',
+        prependIcon: 'mdi-vote',
+        id,
+        settings,
         subtitle,
-        title,
-        onClick: () => createPoll(id as Poll['method_name'], settings)
+        title
       }
     }
   )
 })
 
-const pollMenu = computed<MenuItem[]>(() => {
-  return [
-    { subheader: t('plenary.startPoll') },
-    ...pollMethodMenu.value,
-    '---',
-    { subheader: t('plenary.ongoingPolls') },
-    ...pollStateToMenu(PollState.Ongoing),
-    { subheader: t('plenary.finishedPolls') },
-    ...pollStateToMenu(PollState.Finished)
-  ]
-})
-
 const ongoingPollCount = computed(
   () => getAiPolls(agendaId.value, PollState.Ongoing).length
 )
-
-function isSubheader(item: MenuItem): item is { subheader: string } {
-  return typeof item === 'object' && 'subheader' in item
-}
-function isListItem(item: MenuItem): item is MenuItemOnClick {
-  return typeof item === 'object' && 'onClick' in item
-}
 </script>
 
 <template>
@@ -286,14 +226,40 @@ function isListItem(item: MenuItem): item is MenuItemOnClick {
               />
             </template>
             <v-list>
-              <template v-for="(item, i) in pollMenu" :key="i">
-                <v-list-subheader
-                  v-if="isSubheader(item)"
-                  :title="item.subheader"
-                />
-                <v-list-item v-if="isListItem(item)" v-bind="item" />
-                <v-divider v-if="item === '---'" class="my-2" />
-              </template>
+              <v-list-subheader :title="t('plenary.startPoll')" />
+              <DefaultDialog
+                v-for="{ id, settings, ...item } in pollMethodMenu"
+                :key="id"
+                :title="roomOpenPoll?.title ?? t('plenary.startPoll')"
+                @close="setPoll(null)"
+              >
+                <template #activator="{ props }">
+                  <v-list-item v-bind="{ ...item, ...props }" />
+                </template>
+                <template #default="{ close }">
+                  <StartPollModal
+                    :method-name="id"
+                    :proposals="selectedProposals"
+                    :settings="settings"
+                    @cancel="close"
+                  />
+                </template>
+              </DefaultDialog>
+              <v-divider />
+              <v-list-subheader :title="t('plenary.ongoingPolls')" />
+              <v-list-item
+                v-for="{ poll, ...item } in ongoingPollItems"
+                :key="poll.pk"
+                v-bind="item"
+                @click="openPoll(poll)"
+              />
+              <v-list-subheader :title="t('plenary.finishedPolls')" />
+              <v-list-item
+                v-for="{ poll, ...item } in finishedPollItems"
+                :key="poll.pk"
+                v-bind="item"
+                @clivk="openPoll(poll)"
+              />
             </v-list>
           </v-menu>
         </v-badge>

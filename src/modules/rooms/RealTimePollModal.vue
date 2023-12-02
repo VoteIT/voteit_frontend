@@ -1,0 +1,98 @@
+<script setup lang="ts">
+import { computed, toRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { Poll } from '../polls/types'
+import usePoll from '../polls/usePoll'
+import useChannel from '@/composables/useChannel'
+import ProgressBar from '@/components/ProgressBar.vue'
+
+const props = defineProps<{
+  poll: Poll
+}>()
+
+const { t } = useI18n()
+
+const pollId = toRef(props.poll, 'pk')
+const {
+  isOngoing,
+  isFinished,
+  isWithheld,
+  pollMethodName,
+  pollStatus,
+  resultComponent
+} = usePoll(pollId)
+
+// Only follow if ongoing
+useChannel(
+  'poll',
+  computed(() => (isOngoing.value ? pollId.value : undefined))
+)
+
+const complete = computed(() => {
+  if (!pollStatus.value) return false
+  return pollStatus.value.voted === pollStatus.value.total
+})
+
+const progressText = computed(() => {
+  if (!pollStatus.value) return ''
+  return t(
+    'poll.numVoted',
+    pollStatus.value as Record<string, any>,
+    pollStatus.value.voted
+  )
+})
+
+const progressBar = computed(() => {
+  if (!pollStatus.value) return
+  return {
+    value: pollStatus.value.voted,
+    total: pollStatus.value.total,
+    text: progressText.value,
+    done: complete.value
+  }
+})
+</script>
+
+<template>
+  <template v-if="isOngoing">
+    <main class="mb-8">
+      <p>
+        {{
+          t('poll.pollDescription', {
+            method: pollMethodName,
+            count: poll.proposals.length
+          })
+        }}
+      </p>
+      <ProgressBar
+        v-if="progressBar"
+        v-bind="progressBar"
+        absolute
+        class="mt-8"
+      />
+      <v-alert
+        v-if="poll.withheld_result"
+        :text="t('poll.result.willBeWithheld')"
+        type="info"
+        class="my-6"
+      />
+    </main>
+  </template>
+  <main v-else>
+    <div v-if="isFinished" class="mt-6">
+      <component
+        :is="resultComponent"
+        :result="poll.result"
+        :abstain-count="poll.abstain_count"
+        :proposals="poll.proposals"
+      />
+    </div>
+    <v-alert
+      v-else-if="isWithheld"
+      class="mt-6"
+      :text="t('poll.result.withheldExplanation')"
+      type="info"
+    />
+  </main>
+</template>

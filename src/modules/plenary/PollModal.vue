@@ -1,11 +1,11 @@
 <template>
-  <template v-if="poll && isOngoing">
+  <template v-if="isOngoing">
     <main class="mb-8">
       <p>
         {{
           t('poll.pollDescription', {
             method: pollMethodName,
-            count: poll.proposals.length
+            count: data.proposals.length
           })
         }}
       </p>
@@ -16,7 +16,7 @@
         class="mt-8"
       />
       <v-alert
-        v-if="poll.withheld_result"
+        v-if="data.withheld_result"
         :text="t('poll.result.willBeWithheld')"
         type="info"
         class="my-6"
@@ -29,7 +29,7 @@
             {{ t('poll.showBallot') }}
           </v-btn>
         </template>
-        <component :is="voteComponent" :poll="poll" :proposals="proposals" />
+        <component :is="voteComponent" :poll="data" :proposals="proposals" />
       </DefaultDialog>
       <QueryDialog
         @confirmed="cancel"
@@ -59,13 +59,13 @@
       </v-btn>
     </div>
   </template>
-  <main v-else-if="poll">
+  <main v-else-if="data">
     <div v-if="isFinished" class="mt-6">
       <component
         :is="resultComponent"
-        :result="poll.result"
-        :abstain-count="poll.abstain_count"
-        :proposals="poll.proposals"
+        :result="data.result"
+        :abstain-count="data.abstain_count"
+        :proposals="data.proposals"
       />
     </div>
     <v-alert
@@ -74,12 +74,12 @@
       :text="t('poll.result.withheldExplanation')"
       type="info"
     />
-    <WorkflowState v-else :content-type="pollType" :object="poll" />
+    <WorkflowState v-else :content-type="pollType" :object="data" />
   </main>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toRef, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -87,36 +87,31 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useChannel from '@/composables/useChannel'
+
 import usePoll from '../polls/usePoll'
 import { Poll, PollTransition } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
+import useRoom from '../rooms/useRoom'
 
 const props = defineProps<{
   data: Poll
 }>()
 
 const { t } = useI18n()
+const pollId = toRef(props.data, 'pk')
 const {
   isOngoing,
   isFinished,
   isWithheld,
-  poll,
   pollMethodName,
   pollStatus,
   proposals,
   resultComponent,
   voteComponent
-} = usePoll(ref(props.data.pk))
+} = usePoll(pollId)
+const { isBroadcasting, setPoll } = useRoom()
 
-useChannel(
-  'poll',
-  computed(() => props.data.pk)
-)
-
-useChannel(
-  'poll',
-  computed(() => props.data.pk)
-)
+useChannel('poll', pollId)
 
 const complete = computed(() => {
   if (!pollStatus.value) return false
@@ -151,4 +146,11 @@ async function close() {
   working.value = true
   await pollType.transitions.make(props.data, PollTransition.Close, t)
 }
+
+/**
+ * Unsets active poll in room, whether from created poll or broadcaster clicked to open an existing poll.
+ */
+onBeforeUnmount(() => {
+  if (isBroadcasting.value) setPoll(null)
+})
 </script>
