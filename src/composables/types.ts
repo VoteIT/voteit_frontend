@@ -17,7 +17,7 @@ export interface RestApiConfig extends AxiosRequestConfig {
 export interface Modal {
   component?: Component
   data?: object
-  dismissable?: boolean
+  dismissible?: boolean
   html?: string
   title?: string
 }
