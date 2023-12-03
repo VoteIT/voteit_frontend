@@ -15,14 +15,13 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import RealTimePollModal from './RealTimePollModal.vue'
+import { roomDisplayMode } from './displayOptions'
 
 provide(RoleContextKey, 'meeting')
 
 const { t } = useI18n()
 
-const { highlightedProposals, meetingRoom, roomOpenPoll } = useRoom()
+const { highlightedProposals, meetingRoom } = useRoom()
 
 useChannel(
   'agenda_item',
@@ -51,18 +50,27 @@ const proposalsActive = computed(() => !!meetingRoom.value?.send_proposals)
 const paused = computed(
   () => !(speakerSystemActive.value || proposalsActive.value)
 )
+const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
+  const speakers = !!speakerSystemActive.value
+  const proposals = proposalsActive.value
+  switch (roomDisplayMode.value) {
+    case 'onlyProposals':
+      return { speakers: false, proposals }
+    case 'onlySpeakers':
+      return { speakers, proposals: false }
+    case 'prioritizeProposals':
+      return { speakers: speakers && !proposals, proposals }
+    case 'prioritizeSpeakers':
+      return { speakers: speakers, proposals: proposals && !speakers }
+    default:
+      return { speakers, proposals }
+  }
+})
 </script>
 
 <template>
   <AppBar />
   <v-main class="ma-6">
-    <DefaultDialog
-      persistent
-      :model-value="!!roomOpenPoll"
-      :title="roomOpenPoll?.title"
-    >
-      <RealTimePollModal v-if="roomOpenPoll" :poll="roomOpenPoll" />
-    </DefaultDialog>
     <div v-if="!meetingRoom?.open" class="text-center">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
       <em>
@@ -81,15 +89,15 @@ const paused = computed(
       <ClockFace v-if="meetingRoom.show_time" :target-time="targetTime" />
     </div>
     <div v-else class="d-flex full-height">
-      <div v-if="speakerSystemActive" class="left flex-grow-1">
-        <ActiveSpeakerList :system-id="speakerSystemActive.pk" />
+      <div v-if="display.speakers" class="left flex-grow-1">
+        <ActiveSpeakerList :system-id="speakerSystemActive!.pk" />
       </div>
       <v-divider
-        v-if="speakerSystemActive && proposalsActive"
+        v-if="display.speakers && display.proposals"
         class="mx-5"
         vertical
       />
-      <div v-if="meetingRoom.send_proposals" class="right flex-grow-1">
+      <div v-if="display.proposals" class="right flex-grow-1">
         <h2>
           {{ t('proposal.proposals') }}
         </h2>
@@ -122,6 +130,14 @@ const paused = computed(
             </template>
           </Proposal>
         </v-slide-x-transition>
+      </div>
+      <div v-if="!display.proposals && !display.speakers" class="flex-grow-1">
+        <!-- In display mode is only one kind, and that type is not active -->
+        <p class="text-center my-8">
+          <em>
+            {{ t('room.nothingToDisplay') }}
+          </em>
+        </p>
       </div>
     </div>
   </v-main>

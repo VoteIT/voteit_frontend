@@ -17,6 +17,7 @@
           </div>
           <DropdownMenu :items="menuItems" />
         </div>
+        <TagEdit v-if="editing" v-model="content.tags" class="my-2" />
         <Richtext
           :editing="editing"
           v-model="content.body"
@@ -156,6 +157,7 @@
 </template>
 
 <script lang="ts" setup>
+import { isEqual } from 'lodash'
 import {
   ComponentPublicInstance,
   computed,
@@ -181,6 +183,7 @@ import usePermission from '@/composables/usePermission'
 import { LastReadKey } from '@/composables/useUnread'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import useLoader from '@/composables/useLoader'
+import TagEdit from '@/components/TagEdit.vue'
 
 import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
@@ -405,14 +408,17 @@ useTags(undefined, selectTag)
 
 const editing = ref(false)
 const content = reactive({
-  title: agendaItem.value?.title ?? '',
-  body: agendaBody.value ?? ''
+  body: agendaBody.value ?? '',
+  tags: agendaItem.value?.tags ?? [],
+  title: agendaItem.value?.title ?? ''
 })
 function submit() {
   editing.value = false
   if (
-    content.title === agendaItem.value?.title &&
-    content.body === agendaBody.value
+    !agendaItem.value ||
+    (content.title === agendaItem.value.title &&
+      content.body === agendaBody.value &&
+      isEqual(content.tags, agendaItem.value.tags))
   )
     return
   agendaItemType.update(agendaId.value, { ...content })
