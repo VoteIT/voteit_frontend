@@ -5,7 +5,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
-import { dialogQuery } from '@/utils'
+import { dialogQuery, tagify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
@@ -201,15 +201,17 @@ function isBulkAllSelected(tag: string) {
   return selectedAgendaItems.value.every((ai) => ai.tags.includes(tag))
 }
 function tagBulkRemove(tag: string) {
-  actionOnSelected(({ tags, pk }) => {
-    if (!tags.includes(tag)) return Promise.resolve()
-    return agendaItemType.api.patch(pk, { tags: tags.filter((t) => t !== tag) })
+  actionOnSelected(async ({ tags, pk }) => {
+    if (!tags.includes(tag)) return
+    await agendaItemType.api.patch(pk, { tags: tags.filter((t) => t !== tag) })
   })
 }
 function tagBulkAdd(tag: string) {
-  actionOnSelected(({ tags, pk }) => {
-    if (tags.includes(tag)) return Promise.resolve()
-    return agendaItemType.api.patch(pk, { tags: [...tags, tag] })
+  console.log(tag)
+  tag = tagify(tag)
+  actionOnSelected(async ({ tags, pk }) => {
+    if (tags.includes(tag)) return
+    await agendaItemType.api.patch(pk, { tags: [...tags, tag] })
   })
 }
 /* END TAGS */
@@ -451,7 +453,7 @@ function canSetState(target: AgendaState) {
                   :color="
                     isBulkAllSelected(item.value) ? 'primary' : 'secondary'
                   "
-                  @click.self.stop="tagBulkAdd(item.value)"
+                  @click.stop="tagBulkAdd(item.value)"
                   closable
                 />
               </template>
