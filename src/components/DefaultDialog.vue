@@ -1,9 +1,9 @@
 <template>
   <v-dialog
     v-model="isActive"
-    v-bind="dialogDefaults"
     :persistent="persistent"
     :height="height"
+    :width="width"
   >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
@@ -34,21 +34,22 @@
 import { ref, watch } from 'vue'
 
 import { Color } from '@/utils/types'
-import useDefaults from '@/composables/useDefaults'
-
-const { dialogDefaults } = useDefaults()
 
 const emit = defineEmits(['close', 'open', 'update:modelValue'])
 
-interface Props {
-  color?: Color
-  height?: string | number
-  modelValue?: boolean
-  persistent?: boolean
-  title?: string
-}
-
-const props = defineProps<Props>()
+const props = withDefaults(
+  defineProps<{
+    color?: Color
+    height?: string | number
+    modelValue?: boolean
+    persistent?: boolean
+    title?: string
+    width?: string
+  }>(),
+  {
+    width: '640px'
+  }
+)
 
 const isActive = ref(props.modelValue)
 

@@ -8,6 +8,7 @@ export interface IMeetingRoom {
   poll: null | number
   send_sls: boolean
   send_proposals: boolean
+  show_ballot: boolean
   show_time: boolean
   title: string
 }

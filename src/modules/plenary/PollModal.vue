@@ -23,13 +23,22 @@
       />
     </main>
     <div class="actions text-right">
-      <DefaultDialog :title="t('poll.ballot')">
+      <DefaultDialog
+        :title="t('poll.ballot')"
+        @update:model-value="isBroadcasting && setShowBallot($event)"
+        width="600px"
+      >
         <template #activator="{ props }">
           <v-btn variant="text" v-bind="props" prepend-icon="mdi-vote">
             {{ t('poll.showBallot') }}
           </v-btn>
         </template>
-        <component :is="voteComponent" :poll="data" :proposals="proposals" />
+        <component
+          :is="voteComponent"
+          disabled
+          :poll="data"
+          :proposals="proposals"
+        />
       </DefaultDialog>
       <QueryDialog
         @confirmed="cancel"
@@ -109,7 +118,7 @@ const {
   resultComponent,
   voteComponent
 } = usePoll(pollId)
-const { isBroadcasting, setPoll } = useRoom()
+const { isBroadcasting, setPoll, setShowBallot } = useRoom()
 
 useChannel('poll', pollId)
 

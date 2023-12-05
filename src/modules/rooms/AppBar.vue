@@ -70,7 +70,11 @@ const currentDisplay = computed(
     <v-app-bar-title class="text-truncate">
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
-    <DefaultDialog :model-value="pollModalOpen" :title="roomOpenPoll?.title">
+    <DefaultDialog
+      :model-value="pollModalOpen"
+      :persistent="idle"
+      :title="roomOpenPoll?.title"
+    >
       <template #activator="{ props }">
         <v-fade-transition>
           <v-btn

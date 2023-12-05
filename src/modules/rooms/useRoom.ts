@@ -56,6 +56,10 @@ export default function useRoom() {
     await roomType.update(roomId.value, { open })
   }
 
+  function setShowBallot(show_ballot: boolean) {
+    return roomType.update(roomId.value, { show_ballot })
+  }
+
   async function setBroadcast(content?: {
     agenda_item?: number
     highlighted: number[]
@@ -126,6 +130,7 @@ export default function useRoom() {
     setPoll,
     setProposalBroadcast,
     setSlsBroadcast,
+    setShowBallot,
     setHighlightedProposals
   }
 }

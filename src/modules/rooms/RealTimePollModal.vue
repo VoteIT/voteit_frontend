@@ -8,21 +8,28 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import { Poll } from '../polls/types'
 import usePoll from '../polls/usePoll'
 import { pollType } from '../polls/contentTypes'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import useRoom from './useRoom'
+import { useIdle } from '@vueuse/core'
 
 const props = defineProps<{
   poll: Poll
 }>()
 
 const { t } = useI18n()
+const { idle } = useIdle(5_000)
 
 const pollId = toRef(props.poll, 'pk')
+const { meetingRoom } = useRoom()
 const {
   isOngoing,
   isFinished,
   isWithheld,
   pollMethodName,
   pollStatus,
-  resultComponent
+  proposals,
+  resultComponent,
+  voteComponent
 } = usePoll(pollId)
 
 // Only follow if ongoing
@@ -83,6 +90,19 @@ const pollStateText = computed(() => getState(props.poll.state)?.getName(t))
         class="my-6"
       />
     </main>
+    <DefaultDialog
+      :model-value="meetingRoom?.show_ballot"
+      :persistent="idle"
+      :title="t('poll.ballot')"
+      width="600px"
+    >
+      <component
+        :is="voteComponent"
+        disabled
+        :poll="poll"
+        :proposals="proposals"
+      />
+    </DefaultDialog>
   </template>
   <main v-else>
     <div v-if="isFinished" class="mt-6">
