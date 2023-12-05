@@ -258,7 +258,7 @@ const ongoingPollCount = computed(
                 v-for="{ poll, ...item } in finishedPollItems"
                 :key="poll.pk"
                 v-bind="item"
-                @clivk="openPoll(poll)"
+                @click="openPoll(poll)"
               />
             </v-list>
           </v-menu>
