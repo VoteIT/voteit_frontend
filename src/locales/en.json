@@ -128,6 +128,7 @@
     "itemCount": "The meeting has no agenda items | The meeting has one agenda item | The meeting has {count} agenda items",
     "newItem": "New Agenda Item",
     "setTo": "Set to",
+    "tagEditInfo": "Tags - used as filters in agenda menu",
     "proposalBlocked": {
       "blocked": "Proposals are blocked",
       "closed": "This agenda item is closed",

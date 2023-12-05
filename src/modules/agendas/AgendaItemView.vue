@@ -17,15 +17,30 @@
           </div>
           <DropdownMenu :items="menuItems" />
         </div>
-        <TagEdit v-if="editing" v-model="content.tags" class="my-2" />
         <Richtext
           :editing="editing"
           v-model="content.body"
-          @edit-done="submit"
+          :class="editing ? '' : 'mb-8'"
+          no-submit
           variant="full"
-          class="mb-8"
           :maxHeight="collapsedBodyHeight"
         />
+        <TagEdit
+          v-if="editing"
+          v-model="content.tags"
+          class="my-2"
+          :label="t('agenda.tagEditInfo')"
+        />
+        <div v-if="editing" class="text-right">
+          <v-btn variant="text" :text="t('cancel')" @click="editing = false" />
+          <v-btn
+            color="primary"
+            :disabled="!editingModified"
+            :loading="submitting"
+            :text="t('save')"
+            @click="submit"
+          />
+        </div>
         <TextDocuments />
       </v-col>
       <v-col cols="12" lg="4">
@@ -378,7 +393,11 @@ watch(agendaItem, (to, from) => {
   // When leaving agenda item
   // FIXME should react to agendaId or onRouteLeave
   if (from) setLastRead(from)
-  if (to) content.title = to.title // Body from agendaBody, see below
+  if (to) {
+    editing.value = false
+    content.title = to.title // Body from agendaBody, see below
+    content.tags = extraTags.value
+  }
 })
 watch(agendaBody, (value) => {
   content.body = value ?? ''
@@ -404,24 +423,36 @@ async function selectTag(tagName: string) {
   })
 }
 const filterTag = computed(() => [...activeFilter.value.tags][0])
-useTags(undefined, selectTag)
+const { getHTMLTags } = useTags(undefined, selectTag)
 
+const extraTags = computed(() => {
+  if (!agendaItem.value || !agendaBody.value) return []
+  const docTags = getHTMLTags(agendaBody.value)
+  return agendaItem.value.tags.filter((tag) => !docTags.has(tag))
+})
+watch(extraTags, (tags) => (content.tags = tags))
 const editing = ref(false)
 const content = reactive({
   body: agendaBody.value ?? '',
-  tags: agendaItem.value?.tags ?? [],
+  tags: extraTags.value,
   title: agendaItem.value?.title ?? ''
 })
-function submit() {
-  editing.value = false
-  if (
-    !agendaItem.value ||
-    (content.title === agendaItem.value.title &&
-      content.body === agendaBody.value &&
-      isEqual(content.tags, agendaItem.value.tags))
-  )
-    return
-  agendaItemType.update(agendaId.value, { ...content })
+const submitting = ref(false)
+const editingModified = computed(
+  () =>
+    !!agendaItem.value &&
+    (content.title !== agendaItem.value.title ||
+      content.body !== agendaBody.value ||
+      !isEqual(content.tags, agendaItem.value.tags))
+)
+async function submit() {
+  if (!editingModified.value) return
+  submitting.value = true
+  try {
+    await agendaItemType.update(agendaId.value, { ...content })
+    editing.value = false
+  } catch {} // TODO
+  submitting.value = false
 }
 
 provide(LastReadKey, agendaItemLastRead)

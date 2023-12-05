@@ -1,17 +1,136 @@
+<script setup lang="ts" generic="T extends { pk: number }">
+import { computed, nextTick, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { useElementBounding } from '@vueuse/core'
+
+import useTags from '@/modules/meetings/useTags'
+
+import RichtextEditor from './RichtextEditor.vue'
+import { QuillVariant } from './types'
+
+const EXTERNAL_ICON_CLASSES = [
+  'mdi-open-in-new',
+  'mdi',
+  'v-icon',
+  'notranslate',
+  'v-theme--light',
+  'v-icon--size-x-small'
+]
+
+const props = withDefaults(
+  defineProps<{
+    contentAttribute?: keyof T
+    editing?: boolean
+    maxHeight?: number
+    modelValue?: string
+    noSubmit?: boolean
+    object?: T
+    variant?: QuillVariant
+  }>(),
+  {
+    contentAttribute: 'body' as keyof T,
+    editing: false,
+    noSubmit: false,
+    variant: 'restricted'
+  }
+)
+const emit = defineEmits<{
+  (e: 'edit-done'): void
+  (e: 'update:modelValue', value: string): void
+}>()
+
+const { t } = useI18n()
+const router = useRouter()
+
+function getContent(): string {
+  if (props.object) return props.object[props.contentAttribute!] as string
+  if (typeof props.modelValue === 'string') return props.modelValue
+  throw new Error('RichText needs :object=<object> or v-model=<string>')
+}
+const content = ref(getContent())
+
+watch(props, () => {
+  if (props.editing) return
+  content.value = getContent()
+})
+watch(content, (value) => {
+  nextTick(addExternalIcons)
+  emit('update:modelValue', value)
+})
+
+const contentElem = ref<HTMLElement | null>(null)
+useTags(contentElem)
+const { height } = useElementBounding(contentElem)
+const isOverflowing = computed(
+  () => !!props.maxHeight && height.value > props.maxHeight + 72
+) // Add 72 for double btn height
+const userExpanded = ref<null | boolean>(null)
+const expandIcon = computed(
+  () => `mdi-chevron-${userExpanded.value ? 'up' : 'down'}`
+)
+const style = computed(() => {
+  if (!isOverflowing.value) return
+  return {
+    maxHeight: userExpanded.value ? '80000px' : `${props.maxHeight || 0}px`
+  }
+})
+
+function isExternal(anchor: HTMLAnchorElement): boolean {
+  return anchor.host !== location.host
+}
+
+function addExternalIcons() {
+  if (!contentElem.value) return
+  for (const anchor of contentElem.value.querySelectorAll<HTMLAnchorElement>(
+    'a[href]'
+  )) {
+    if (!isExternal(anchor)) continue
+    const icon = document.createElement('sup')
+    EXTERNAL_ICON_CLASSES.forEach((c) => icon.classList.add(c))
+    anchor.append(icon)
+  }
+}
+
+// Force external links to open in new tab
+watch(contentElem, (el) => {
+  if (!el) return
+  function getAnchorElement(
+    current: HTMLElement | null
+  ): HTMLAnchorElement | undefined {
+    // Move up the tree until we get to container or an anchor
+    while (current && current !== el) {
+      if (current.tagName === 'A' && 'href' in current)
+        return current as HTMLAnchorElement
+      current = current.parentElement
+    }
+  }
+  el.addEventListener('click', (event) => {
+    const anchor = getAnchorElement(event.target as HTMLElement)
+    if (!anchor) return
+    event.preventDefault()
+    if (isExternal(anchor)) return window.open(anchor.href, '_blank')
+    const url = new URL(anchor.href)
+    router.push(url.pathname)
+  })
+  addExternalIcons()
+})
+</script>
+
 <template>
   <RichtextEditor
-    :variant="variant"
     v-if="editing"
-    submit
     v-model="content"
-    @submit="submit()"
-    set-focus
+    :variant="variant"
     class="richtext"
+    set-focus
+    :submit="!noSubmit"
+    @submit="emit('edit-done')"
   />
   <div v-else>
     <div class="overflow-hidden position-relative" :style="style">
-      <div ref="contentElem" class="richtext" v-html="content" />
-      <div class="overflow-fade" v-show="isOverflowing && !userExpanded" />
+      <div ref="contentElem" class="richtext" v-html="content"></div>
+      <div class="overflow-fade" v-show="isOverflowing && !userExpanded"></div>
     </div>
     <v-btn
       block
@@ -25,155 +144,6 @@
     </v-btn>
   </div>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, nextTick, PropType, ref, watch } from 'vue'
-
-import useTags from '@/modules/meetings/useTags'
-import RichtextEditor from './RichtextEditor.vue'
-import { QuillVariant } from './types'
-import { useElementBounding } from '@vueuse/core'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
-
-const EXTERNAL_ICON_CLASSES = [
-  'mdi-open-in-new',
-  'mdi',
-  'v-icon',
-  'notranslate',
-  'v-theme--light',
-  'v-icon--size-x-small'
-]
-
-export default defineComponent({
-  name: 'Richtext',
-  components: {
-    RichtextEditor
-  },
-  props: {
-    modelValue: String,
-    channel: Object,
-    api: Object,
-    contentAttribute: {
-      type: String,
-      default: 'body'
-    },
-    object: Object,
-    editing: Boolean,
-    variant: {
-      type: String as PropType<QuillVariant>,
-      default: 'restricted'
-    },
-    maxHeight: Number
-  },
-  emits: ['edit-done', 'update:modelValue'],
-  setup(props, { emit }) {
-    const { t } = useI18n()
-    const router = useRouter()
-
-    function getContent(): string {
-      if (props.object) return props.object[props.contentAttribute]
-      if (typeof props.modelValue === 'string') return props.modelValue
-      throw new Error('RichText needs :object=<object> or v-model=<string>')
-    }
-    const content = ref(getContent())
-
-    async function submitRequest(pk: number, data: Object) {
-      if (props.channel) await props.channel.change(pk, data)
-      if (props.api) await props.api.patch(pk, data)
-    }
-
-    async function submit() {
-      if (props.modelValue) return emit('edit-done')
-      if (props.object && content.value !== getContent()) {
-        const data: Record<string, string> = {}
-        data[props.contentAttribute] = content.value
-        const response = await submitRequest(props.object.pk, data)
-        emit('edit-done', response)
-      } else {
-        emit('edit-done')
-      }
-    }
-
-    watch(props, () => {
-      if (props.editing) return
-      content.value = getContent()
-    })
-    watch(content, (value) => {
-      nextTick(addExternalIcons)
-      emit('update:modelValue', value)
-    })
-
-    const contentElem = ref<HTMLElement | null>(null)
-    useTags(contentElem)
-    const { height } = useElementBounding(contentElem)
-    const isOverflowing = computed(
-      () => !!props.maxHeight && height.value > props.maxHeight + 72
-    ) // Add 72 for double btn height
-    const userExpanded = ref<null | boolean>(null)
-    const expandIcon = computed(
-      () => `mdi-chevron-${userExpanded.value ? 'up' : 'down'}`
-    )
-    const style = computed(() => {
-      if (!isOverflowing.value) return
-      return {
-        maxHeight: userExpanded.value ? '80000px' : `${props.maxHeight || 0}px`
-      }
-    })
-
-    function isExternal(anchor: HTMLAnchorElement): boolean {
-      return anchor.host !== location.host
-    }
-
-    function addExternalIcons() {
-      if (!contentElem.value) return
-      for (const anchor of contentElem.value.querySelectorAll<HTMLAnchorElement>(
-        'a[href]'
-      )) {
-        if (!isExternal(anchor)) continue
-        const icon = document.createElement('sup')
-        EXTERNAL_ICON_CLASSES.forEach((c) => icon.classList.add(c))
-        anchor.append(icon)
-      }
-    }
-
-    // Force external links to open in new tab
-    watch(contentElem, (el) => {
-      if (!el) return
-      function getAnchorElement(
-        current: HTMLElement | null
-      ): HTMLAnchorElement | undefined {
-        // Move up the tree until we get to container or an anchor
-        while (current && current !== el) {
-          if (current.tagName === 'A' && 'href' in current)
-            return current as HTMLAnchorElement
-          current = current.parentElement
-        }
-      }
-      el.addEventListener('click', (event) => {
-        const anchor = getAnchorElement(event.target as HTMLElement)
-        if (!anchor) return
-        event.preventDefault()
-        if (isExternal(anchor)) return window.open(anchor.href, '_blank')
-        const url = new URL(anchor.href)
-        router.push(url.pathname)
-      })
-      addExternalIcons()
-    })
-
-    return {
-      t,
-      content,
-      contentElem,
-      expandIcon,
-      isOverflowing,
-      style,
-      userExpanded,
-      submit
-    }
-  }
-})
-</script>
 
 <style lang="sass">
 .richtext
