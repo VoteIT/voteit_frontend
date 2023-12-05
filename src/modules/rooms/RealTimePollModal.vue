@@ -2,10 +2,12 @@
 import { computed, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { Poll } from '../polls/types'
-import usePoll from '../polls/usePoll'
 import useChannel from '@/composables/useChannel'
 import ProgressBar from '@/components/ProgressBar.vue'
+
+import { Poll } from '../polls/types'
+import usePoll from '../polls/usePoll'
+import { pollType } from '../polls/contentTypes'
 
 const props = defineProps<{
   poll: Poll
@@ -52,6 +54,9 @@ const progressBar = computed(() => {
     done: complete.value
   }
 })
+
+const { getState } = pollType.useWorkflows()
+const pollStateText = computed(() => getState(props.poll.state)?.getName(t))
 </script>
 
 <template>
@@ -94,5 +99,8 @@ const progressBar = computed(() => {
       :text="t('poll.result.withheldExplanation')"
       type="info"
     />
+    <p v-else class="my-2">
+      {{ pollStateText }}
+    </p>
   </main>
 </template>
