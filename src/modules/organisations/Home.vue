@@ -8,10 +8,12 @@ import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 import { slugify } from '@/utils'
 import { MenuItem } from '@/utils/types'
 
+import AppBar from '@/components/AppBar.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
+import UserMenu from '@/components/UserMenu.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import useChannel from '@/composables/useChannel'
@@ -32,8 +34,6 @@ import ContactInfoTab from './ContactInfoTab.vue'
 import useOrganisation from './useOrganisation'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
-import AppBar from '@/components/AppBar.vue'
-import UserMenu from '@/components/UserMenu.vue'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -438,15 +438,11 @@ const searchInfo = computed<
                 {{ t('meeting.create') }}
               </v-btn>
             </template>
-            <template v-slot="{ isActive }">
-              <AddMeeting @close="isActive.value = false" />
+            <template v-slot="{ close }">
+              <AddMeeting @close="close" />
             </template>
           </DefaultDialog>
-          <DefaultDialog
-            v-if="otherMeetingsExist"
-            :title="t('meeting.find')"
-            height="80vh"
-          >
+          <DefaultDialog v-if="otherMeetingsExist" :title="t('meeting.find')">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
