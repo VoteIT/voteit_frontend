@@ -1,16 +1,23 @@
 <script setup lang="ts" generic="T extends {}">
 import { computed, reactive, watch } from 'vue'
+import type { Component } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useRules from '@/composables/useRules'
 
-import { Field, JsonObject, JsonSchema } from './types'
+import type { Field, JsonObject, JsonProperties } from './types'
 import fields from './fields'
-import { useI18n } from 'vue-i18n'
+
+function isClearableComponent(component: string | Component) {
+  if (typeof component !== 'string') return false
+  return ['v-text-field', 'v-select'].includes(component)
+}
 
 const props = defineProps<{
   errors?: Partial<Record<string, string[]>>
   modelValue: T
-  properties: JsonSchema<T>['properties']
+  nameSpace?: string
+  properties: JsonProperties<T>
   required?: (keyof T)[]
 }>()
 
@@ -21,8 +28,14 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const rules = useRules(t)
 
-const formData = reactive(props.modelValue || {})
+const formData = reactive<any>(props.modelValue || {}) // TODO not any
 watch(formData, (value) => emit('update:modelValue', value as T))
+watch(
+  () => props.modelValue,
+  (value) => {
+    Object.assign(formData, value)
+  }
+)
 
 function withRequired(
   name: keyof T,
@@ -31,36 +44,49 @@ function withRequired(
   return props.required?.includes(name) ? [rules.required, ..._rules] : _rules
 }
 
-function fieldToInput(name: keyof T, field: Field) {
-  const required = !!props.required?.includes(name)
+function getName(key: keyof T) {
+  return props.nameSpace
+    ? `${props.nameSpace}.${key as string}`
+    : (key as string)
+}
+
+function fieldToInput(key: keyof T, field: Field) {
+  const required = !!props.required?.includes(key)
   const { getComponent, getProps, getRules } = fields[field.type]
   const component = getComponent(field)
-  const clearable = component === 'v-text-field' ? !required : undefined
+  const clearable = isClearableComponent(component) ? !required : undefined
   return {
-    name,
+    key,
+    name: getName(key),
     component,
     props: {
       ...getProps?.(field),
       clearable,
-      error: !!props.errors?.[name as string],
-      errorMessages: props.errors?.[name as string],
+      disabled: field.readOnly,
+      error: !!props.errors?.[key as string],
+      errorMessages: props.errors?.[key as string],
       label: field.label,
       hint: field.hint,
       required,
-      rules: withRequired(name, getRules?.(field, t) ?? [])
+      rules: withRequired(key, getRules?.(field, t) ?? [])
     }
   }
 }
 
 const computedFields = computed(() => {
   return Object.entries(props.properties).map((entry) => {
-    const [name, field] = entry as [keyof T, Field | JsonObject<any>]
+    const [key, field] = entry as [
+      keyof T,
+      T[keyof T] extends object ? JsonObject<JsonProperties<T[keyof T]>> : Field
+    ]
     if (field.type === 'object')
       return {
-        name,
-        properties: field.properties
-      } as const
-    return fieldToInput(name, field)
+        key,
+        name: getName(key),
+        properties: field.properties as any, // TODO
+        required: field.required as any
+      }
+    return fieldToInput(key as keyof T, field)
   })
 })
 </script>
@@ -71,16 +97,19 @@ const computedFields = computed(() => {
       <JsonProperties
         v-if="!('component' in f)"
         :errors="errors"
-        :required="required"
-        :properties="f.properties as any"
-        v-model="(formData as any)[f.name]"
+        :name-space="f.name"
+        :required="f.required"
+        :properties="f.properties"
+        v-model="formData[f.key]"
+        :key="`group:${f.name}`"
       />
       <component
         v-else
         :is="f.component"
         :name="f.name"
         v-bind="f.props"
-        v-model="(formData as T)[f.name]"
+        v-model="formData[f.key]"
+        :key="f.name"
       />
     </template>
   </div>

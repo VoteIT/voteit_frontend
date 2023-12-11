@@ -335,11 +335,3 @@ const pageUsers = computed(() => {
 .currentUser
   background-color: rgb(var(--v-theme-secondary-lighten-2))
 </style>
-
-<style lang="sass">
-// Visual bug in Vuetify
-// TODO Remove hopefully!
-.v-pagination
-  .v-btn__overlay
-    --v-border-opacity: .12 !important
-</style>

@@ -1,51 +1,140 @@
 <template>
   <main>
-    <v-form @submit.prevent="addMeeting" v-model="formReady">
-      <v-text-field
-        :label="t('title')"
-        autocomplete="off"
-        v-model="formData.title"
-        :rules="[rules.minLength(5), rules.maxLength(100)]"
-      />
-      <v-select
-        v-if="installableDialects"
-        v-model="formData.install_dialect"
-        class="mb-2"
-        clearable
-        :hint="t('meeting.dialectHint')"
-        :items="dialectOptions"
-        label="Mötesdialekt"
-        persistent-hint
-      />
-      <v-select
-        v-model="formData.er_policy_name"
-        class="mb-2"
-        clearable
-        :disabled="!!formData.install_dialect"
-        :hint="t('meeting.erHint')"
-        :items="erOptions"
-        :label="t('electoralRegister.method')"
-        persistent-hint
-      />
-      <div>
-        <v-checkbox
+    <v-card
+      class="my-3"
+      color="info"
+      loading
+      :text="stepData.info"
+      :title="stepData.title"
+    >
+      <template #loader>
+        <v-progress-linear
+          :model-value="currentStep"
+          :max="steps.length"
           color="primary"
-          v-model="formData.visible_in_lists"
-          :label="t('meeting.visibleInLists')"
         />
-      </div>
-      <div class="text-right">
-        <v-btn variant="text" @click="$emit('close')">
+      </template>
+    </v-card>
+    <v-form @submit.prevent="nextStep" v-model="formReady" v-slot="{ isValid }">
+      <template v-if="submitting">
+        <v-progress-circular class="my-8" color="primary" indeterminate />
+      </template>
+      <template v-else-if="currentStep === 0">
+        <v-text-field
+          :label="t('title')"
+          :rules="[rules.required, rules.minLength(5)]"
+          v-model="formData.meeting.title"
+        />
+        <v-select
+          v-if="installableDialects"
+          clearable
+          item-value="name"
+          :label="t('meeting.dialect')"
+          :hint="t('meeting.dialectHint')"
+          :items="installableDialects"
+          v-model="formData.meeting.install_dialect"
+        >
+          <template #item="{ item, props }">
+            <!-- TODO subtitle -->
+            <v-list-item
+              v-bind="{ ...props, ...item.props }"
+              :subtitle="
+                item.raw.description ?? t('meeting.dialectNoDescription')
+              "
+            />
+          </template>
+        </v-select>
+      </template>
+      <template v-else-if="currentStep === 1">
+        <v-checkbox
+          hide-details
+          :label="t('room.create')"
+          v-model="formData.createRoom"
+        />
+        <v-text-field
+          :disabled="!formData.createRoom"
+          :label="t('title')"
+          v-model="formData.room.title"
+          :rules="[rules.required]"
+        />
+        <v-checkbox
+          hide-details
+          :disabled="!formData.createRoom"
+          :label="t('speakers.createSpeakerSystem')"
+          :model-value="formData.createRoom && formData.createSpeakerSystem"
+          @update:model-value="formData.createSpeakerSystem = !!$event"
+        />
+        <v-select
+          :disabled="!formData.createRoom || !formData.createSpeakerSystem"
+          :items="systemMethods"
+          :label="t('speaker.systemMethod')"
+          v-model="formData.sls.method_name"
+        />
+        <v-expand-transition>
+          <v-text-field
+            v-if="formData.sls.method_name === SpeakerSystemMethod.Priority"
+            min="0"
+            type="number"
+            :disabled="!formData.createRoom || !formData.createSpeakerSystem"
+            :hint="t('speaker.orderMethod.maxTimesHint')"
+            :label="t('speaker.orderMethod.maxTimes')"
+            :rules="[rules.required, rules.min(0)]"
+            v-model="formData.sls.settings.max_times"
+          />
+        </v-expand-transition>
+        <v-text-field
+          min="0"
+          type="number"
+          :disabled="!formData.createRoom || !formData.createSpeakerSystem"
+          :hint="t('speaker.safePositionsHint')"
+          :label="t('speaker.safePositions')"
+          :rules="[rules.required, rules.min(0)]"
+          v-model="formData.sls.safe_positions"
+        />
+        <v-select
+          multiple
+          :disabled="!formData.createRoom || !formData.createSpeakerSystem"
+          :label="t('speaker.speakerRoles')"
+          :items="roleItems"
+          v-model="formData.sls.meeting_roles_to_speaker"
+        />
+      </template>
+      <template v-else-if="currentStep === 2">
+        <CardSelector
+          color="success"
+          :items="erMethods"
+          v-model="formData.meeting.er_policy_name"
+        >
+          <template #actions="{ item }">
+            <v-chip
+              v-for="{ icon, text } in item.attributes"
+              :key="text"
+              :text="text"
+              :prepend-icon="icon"
+              class="mr-1"
+            />
+          </template>
+        </CardSelector>
+      </template>
+      <div class="text-right mt-3">
+        <v-btn variant="text" @click="$emit('close')" class="mr-2">
           {{ t('cancel') }}
         </v-btn>
-        <v-btn
-          type="submit"
-          color="primary"
-          prepend-icon="mdi-send"
-          :disabled="!formReady"
-        >
-          {{ t('create') }}
-        </v-btn>
+        <v-btn-group>
+          <v-btn
+            color="secondary"
+            prepend-icon="mdi-chevron-left"
+            :disabled="currentStep === 0"
+            :text="t('navigation.back')"
+            @click="prevStep"
+          />
+          <v-btn
+            type="submit"
+            color="primary"
+            :disabled="!isValid.value"
+            v-bind="nextStepBtn"
+          />
+        </v-btn-group>
       </div>
     </v-form>
   </main>
@@ -59,60 +148,153 @@ import { useI18n } from 'vue-i18n'
 import { slugify } from '@/utils'
 
 import { meetingType } from './contentTypes'
-import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
+import useElectoralRegisters, {
+  getErAttributes
+} from './electoralRegisters/useElectoralRegisters'
 import useDialects from './dialects/useDialects'
+import { Meeting, MeetingRole } from './types'
 import useRules from '@/composables/useRules'
-import { Meeting } from './types'
+import { SpeakerSystemMethod } from '../speakerLists/types'
+import { translateOrderMethod } from '../speakerLists/utils'
+import CardSelector from '@/components/CardSelector.vue'
+import { roomType } from '../rooms/contentTypes'
+import { speakerSystemType } from '../speakerLists/contentTypes'
+import useMeeting from './useMeeting'
 
-type FormData = Pick<Meeting, 'title' | 'visible_in_lists'> & {
-  er_policy_name: string | null
-  install_dialect: string | null
+type FormData = {
+  meeting: {
+    title: string
+    er_policy_name: string | null
+    install_dialect: string | null
+  }
+  createRoom: boolean
+  createSpeakerSystem: boolean
+  room: {
+    title: string
+  }
+  sls: {
+    meeting_roles_to_speaker: MeetingRole[]
+    method_name: SpeakerSystemMethod
+    safe_positions: number
+    settings: {
+      max_times: number
+    }
+  }
 }
 
 defineEmits(['close'])
 
 const { t } = useI18n()
 const router = useRouter()
+const { roleItems } = useMeeting()
 const { availableErMethods } = useElectoralRegisters()
 const { installableDialects } = useDialects()
 const rules = useRules(t)
 
+const currentStep = ref(0)
+const steps = computed<{ info: string; title: string }[]>(() => {
+  const erStep = formData.meeting.install_dialect
+    ? []
+    : [
+        {
+          info: t('meeting.createErDescription'),
+          title: t('meeting.createErTitle')
+        }
+      ]
+  return [
+    {
+      info: t('meeting.createBaseDescription'),
+      title: t('meeting.createBaseTitle')
+    },
+    {
+      info: t('meeting.createRoomDescription'),
+      title: t('meeting.createRoomTitle')
+    },
+    ...erStep
+  ]
+})
+const stepData = computed(() => steps.value[currentStep.value])
+const nextStepBtn = computed(() => {
+  return currentStep.value === steps.value.length - 1
+    ? {
+        text: t('meeting.create'),
+        appendIcon: 'mdi-check-all'
+      }
+    : {
+        text: `${t('navigation.next')}: ${
+          steps.value[currentStep.value + 1].title
+        }`,
+        appendIcon: 'mdi-chevron-right'
+      }
+})
+
+function prevStep() {
+  currentStep.value--
+}
+
+function nextStep() {
+  // TODO Check if current is done
+  if (currentStep.value === steps.value.length - 1) addMeeting()
+  else currentStep.value++
+}
+
 const formData = reactive<FormData>({
-  title: '',
-  visible_in_lists: false,
-  er_policy_name: null,
-  install_dialect: null
+  meeting: {
+    title: '',
+    er_policy_name: null,
+    install_dialect: null
+  },
+  createRoom: false,
+  createSpeakerSystem: true,
+  room: {
+    title: t('room.defaultName')
+  },
+  sls: {
+    method_name: SpeakerSystemMethod.Simple,
+    safe_positions: 1,
+    settings: {
+      max_times: 1
+    },
+    meeting_roles_to_speaker: [MeetingRole.Discusser]
+  }
 })
 const formReady = ref(false)
 
+const systemMethods = computed(() =>
+  [SpeakerSystemMethod.Simple, SpeakerSystemMethod.Priority].map((value) => ({
+    value,
+    title: translateOrderMethod(value, t)
+  }))
+)
+
+function annotateErMethod(
+  method: NonNullable<(typeof availableErMethods)['value']>[number]
+) {
+  return {
+    attributes: [...getErAttributes(method, t)],
+    text: method.description,
+    value: method.name,
+    ...method
+  }
+}
+
+const erMethods = computed(
+  () => availableErMethods.value?.map(annotateErMethod) ?? []
+)
+
 watch(
-  () => formData.install_dialect,
+  () => formData.meeting.install_dialect,
   (value) => {
-    if (value) formData.er_policy_name = null
+    if (value) formData.meeting.er_policy_name = null
   }
 )
 const submitting = ref(false)
 
-const erOptions = computed(() => {
-  return availableErMethods.value?.map(({ name, title }) => ({
-    value: name,
-    title
-  }))
-})
-
-const dialectOptions = computed(() => {
-  if (!installableDialects.value) return []
-  return installableDialects.value.map(({ name, title }) => ({
-    value: name,
-    title
-  }))
-})
-
-function cleanFormData(data: FormData) {
+function cleanFormData(meeting: FormData['meeting']) {
   return {
-    ...data,
-    er_policy_name: data.er_policy_name || undefined,
-    install_dialect: data.install_dialect || undefined
+    ...meeting,
+    er_policy_name: meeting.er_policy_name || undefined,
+    install_dialect: meeting.install_dialect || undefined
   } as Partial<Meeting>
 }
 
@@ -120,8 +302,18 @@ async function addMeeting() {
   if (submitting.value) return
   submitting.value = true
   try {
-    const { data } = await meetingType.api.add(cleanFormData(formData))
-    router.push(`/m/${data.pk}/${slugify(data.title)}`)
+    const { data: meeting } = await meetingType.api.add(
+      cleanFormData(formData.meeting)
+    )
+    if (formData.createRoom) {
+      const { data: room } = await roomType.api.add({
+        meeting: meeting.pk,
+        ...formData.room
+      })
+      if (formData.createSpeakerSystem)
+        await speakerSystemType.api.add({ room: room.pk, ...formData.sls })
+    }
+    await router.push(`/m/${meeting.pk}/${slugify(meeting.title)}`)
   } catch {
     // TODO
   }

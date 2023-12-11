@@ -8,8 +8,7 @@ import colors from 'vuetify/lib/util/colors'
 const light = {
   dark: false,
   variables: {
-    'border-color': '223,207,200',
-    'border-opacity': 1
+    'border-color': '223,207,200'
   },
   colors: {
     background: '#f8f4f2',

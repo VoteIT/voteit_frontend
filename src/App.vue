@@ -91,6 +91,10 @@ watch(
 *
   box-sizing: border-box
 
+.v-sheet,
+.v-list
+  --v-border-opacity: 1 !important
+
 .v-btn
   text-transform: none !important
   letter-spacing: .04em !important

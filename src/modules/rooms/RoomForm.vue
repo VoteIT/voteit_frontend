@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../meetings/useMeeting'
 import { MeetingRole } from '../meetings/types'
-import type { JsonSchema } from '../forms/types'
+import type { JsonProperties, JsonSchema } from '../forms/types'
 import JsonSchemaForm from '../forms/JsonSchemaForm.vue'
 import { SpeakerSystem, SpeakerSystemMethod } from '../speakerLists/types'
 import { translateOrderMethod } from '../speakerLists/utils'
@@ -52,7 +52,7 @@ const schema = computed(
 )
 
 const speakerMethodSettingSchema: Partial<
-  Record<SpeakerSystemMethod, JsonSchema<any>['properties']>
+  Record<SpeakerSystemMethod, JsonProperties<any>>
 > = {
   priority: {
     max_times: {
@@ -63,7 +63,9 @@ const speakerMethodSettingSchema: Partial<
     }
   }
 }
-function getSettings(method: SpeakerSystemMethod) {
+
+// TODO any?
+function getSettings(method: SpeakerSystemMethod): any {
   const properties = speakerMethodSettingSchema[method]
   if (properties) return { settings: { type: 'object', properties } }
 }
@@ -82,6 +84,7 @@ const slsSchema = computed(
         ...getSettings(formData.speakerSystem.method_name),
         safe_positions: {
           type: 'number',
+          hint: t('speaker.safePositionsHint'),
           label: t('speaker.safePositions'),
           minimum: 0
         },
