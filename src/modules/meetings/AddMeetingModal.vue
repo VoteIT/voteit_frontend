@@ -1,6 +1,7 @@
 <template>
   <main>
     <v-card
+      v-if="!submitting"
       class="my-3"
       color="info"
       loading
@@ -16,9 +17,12 @@
       </template>
     </v-card>
     <v-form @submit.prevent="nextStep" v-model="formReady" v-slot="{ isValid }">
-      <template v-if="submitting">
-        <v-progress-circular class="my-8" color="primary" indeterminate />
-      </template>
+      <v-progress-circular
+        v-if="submitting"
+        class="my-8"
+        color="primary"
+        indeterminate
+      />
       <template v-else-if="currentStep === 0">
         <v-text-field
           :label="t('title')"
@@ -60,7 +64,7 @@
         <v-checkbox
           hide-details
           :disabled="!formData.createRoom"
-          :label="t('speakers.createSpeakerSystem')"
+          :label="t('speaker.useSpeakerLists')"
           :model-value="formData.createRoom && formData.createSpeakerSystem"
           @update:model-value="formData.createSpeakerSystem = !!$event"
         />
