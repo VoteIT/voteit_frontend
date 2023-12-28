@@ -4,20 +4,15 @@ import { ChannelsConfig, ThemeColor } from '@/utils/types'
 import { PresenceCheckState } from '../modules/presence/workflowStates'
 import { ComposerTranslation } from 'vue-i18n'
 
-export interface WorkflowState<S = string> {
+export interface WorkflowState<State = string> {
   color?: ThemeColor
-  getName (t: ComposerTranslation, count?: number): string
+  getName(t: ComposerTranslation, count?: number): string
   icon: string
   isFinal?: boolean
   priority?: number // Determines order in navigation, i.e. ongoing first
   requiresRole?: MeetingRole
-<<<<<<< HEAD
-  state: S
-  transition?: string
-=======
   state: State
   transition?: Transition // FIXME This is incorrect, but useful for now. Transitions don't really have a 1-1 relationship.
->>>>>>> a470653 (fix a problem because of assuming state-transition is 1-1.)
 }
 
 export interface TransitionCondition {
@@ -91,7 +86,7 @@ export interface MeetingAccessPolicy {
 
 export enum SchemaType {
   Incoming = 'incoming',
-  Outgoing = 'outgoing',
+  Outgoing = 'outgoing'
 }
 
 // For Channel.ts
