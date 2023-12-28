@@ -4,7 +4,10 @@ import { ChannelsConfig, ThemeColor } from '@/utils/types'
 import { PresenceCheckState } from '../modules/presence/workflowStates'
 import { ComposerTranslation } from 'vue-i18n'
 
-export interface WorkflowState<State = string> {
+export interface WorkflowState<
+  State = string,
+  Transition extends string = string
+> {
   color?: ThemeColor
   getName(t: ComposerTranslation, count?: number): string
   icon: string
