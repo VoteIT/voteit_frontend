@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 64px" />
+  <div style="height: 64px"></div>
   <div id="bubbles" class="d-print-none">
     <v-overlay
       v-for="{ component, id, icon, requireAttention } in bubbles"
@@ -88,8 +88,8 @@ function setOpen(id: string, value: boolean) {
   .activator
     position: relative
     background-color: rgb(var(--v-theme-surface))
-    border: 1px solid rgba(var(--v-theme-on-surface), .4)
-    color: rgb(var(--v-theme-on-surface))
+    border: 1px solid rgba(var(--v-theme-app-bar), .4)
+    color: rgb(var(--v-theme-app-bar))
     height: 64px
     width: 64px
     border-radius: 50%
@@ -98,8 +98,8 @@ function setOpen(id: string, value: boolean) {
     &.attention
       animation: attention 2s infinite
     &.open
-      background-color: rgb(var(--v-theme-on-surface))
-      color: rgb(var(--v-theme-surface))
+      background-color: rgb(var(--v-theme-app-bar))
+      color: rgb(var(--v-theme-on-app-bar))
 
     margin-left: 10px
     &:last-child

@@ -27,7 +27,7 @@ meetingSettingsPlugins.register({
 meetingBubblePlugins.register({
   id: 'presence_check',
   component: RealTimeBubble,
-  icon: 'mdi-broadcast',
+  icon: 'mdi-television-play',
   order: 10,
   checkActive(meeting) {
     return any(
