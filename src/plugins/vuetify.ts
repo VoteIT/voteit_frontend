@@ -28,7 +28,9 @@ const light = {
     success: '#1da475',
     'success-lighten-2': '#6ce498',
     'success-lighten-4': '#cbf6db',
-    warning: colors.red.darken2
+    warning: colors.red.darken2,
+    'warning-lighten-2': colors.red.lighten2,
+    'warning-lighten-4': colors.red.lighten4
   }
 }
 

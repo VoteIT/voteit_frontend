@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import useChannel from '@/composables/useChannel'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import Proposal from '../proposals/Proposal.vue'
+import ProposalSheet from '../proposals/ProposalSheet.vue'
 import { ProposalState } from '../proposals/types'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import useRoom from '../rooms/useRoom'
@@ -102,33 +102,33 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
           {{ t('proposal.proposals') }}
         </h2>
         <v-slide-x-transition group>
-          <Proposal
+          <ProposalSheet
             v-for="p in highlightedProposals"
             read-only
             :key="p.pk"
-            :p="p"
+            :proposal="p"
             class="my-4"
           >
-            <template #actions>
-              <v-icon
-                v-if="p.state === ProposalState.Approved"
-                icon="mdi-check-circle"
-                color="success"
-                size="x-large"
-                class="mb-n2"
-              />
-              <v-icon
-                v-if="p.state === ProposalState.Denied"
-                icon="mdi-close-circle"
-                color="warning"
-                size="x-large"
-                class="mb-n2"
-              />
-            </template>
-            <template #bottom>
+            <template #append>
               <ButtonPlugins mode="presentation" :proposal="p" class="mt-2" />
             </template>
-          </Proposal>
+            <template #bottom>
+              <div
+                v-if="p.state === ProposalState.Approved"
+                class="bg-success-lighten-4 rounded-b py-2 px-4 d-flex"
+              >
+                <v-icon icon="mdi-check-circle" color="success" class="mr-2" />
+                {{ t('proposal.approved') }}
+              </div>
+              <div
+                v-else-if="p.state === ProposalState.Denied"
+                class="bg-warning-lighten-4 rounded-b py-2 px-4 d-flex"
+              >
+                <v-icon icon="mdi-close-circle" color="warning" class="mr-2" />
+                {{ t('proposal.denied') }}
+              </div>
+            </template>
+          </ProposalSheet>
         </v-slide-x-transition>
       </div>
       <div v-if="!display.proposals && !display.speakers" class="flex-grow-1">

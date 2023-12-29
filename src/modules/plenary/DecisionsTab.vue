@@ -22,6 +22,7 @@ import useRoom from '../rooms/useRoom'
 import usePlenary, { isSelectedProposal } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
 import { AgendaState } from '../agendas/types'
+import ProposalSheet from '../proposals/ProposalSheet.vue'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -226,11 +227,10 @@ const proposalsStyle = computed(() => {
   </v-row>
   <v-row v-else class="proposals" :style="proposalsStyle">
     <v-col cols="7" md="8" lg="9">
-      <Proposal
+      <ProposalSheet
         v-for="p in selectedProposals"
         :key="p.pk"
-        readOnly
-        :p="p"
+        :proposal="p"
         class="mb-4"
       >
         <template #actions>
@@ -259,10 +259,10 @@ const proposalsStyle = computed(() => {
             />
           </div>
         </template>
-        <template #bottom>
+        <template #append>
           <ButtonPlugins mode="presentation" :proposal="p" class="mt-2" />
         </template>
-      </Proposal>
+      </ProposalSheet>
       <div
         v-if="!selectedProposals.length"
         class="text-h4 text-center text-secondary mt-12"
@@ -291,7 +291,7 @@ const proposalsStyle = computed(() => {
           variant="text"
           @click="select(p)"
         />
-        <Proposal readOnly :p="p" class="flex-grow-1" />
+        <ProposalSheet :proposal="p" class="flex-grow-1" />
       </div>
     </v-col>
   </v-row>

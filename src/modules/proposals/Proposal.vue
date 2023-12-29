@@ -23,12 +23,7 @@
           />
         </slot>
       </div>
-      <Richtext v-if="p.shortname === 'proposal'" :object="p" class="my-3" />
-      <div
-        v-else-if="p.shortname === 'diff_proposal'"
-        v-html="p.body_diff_brief"
-        class="proposal-text-paragraph my-3"
-      ></div>
+      <ProposalText :proposal="p" class="my-3" />
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
@@ -123,7 +118,6 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Moment from '@/components/Moment.vue'
-import Richtext from '@/components/Richtext.vue'
 import Tag from '@/components/Tag.vue'
 import User from '@/components/User.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -147,6 +141,7 @@ import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import ProposalText from './ProposalText.vue'
 
 const props = defineProps<{
   p: Proposal
