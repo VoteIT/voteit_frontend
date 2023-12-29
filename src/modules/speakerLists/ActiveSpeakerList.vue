@@ -31,7 +31,7 @@ const {
   currentSpeakerQueue: queue,
   currentlySpeaking: speaking
 } = useSpeakerSystem(systemId)
-const { currentSpeaker, speakerGroups } = useSpeakerList(systemActiveListId)
+const { speakerGroups } = useSpeakerList(systemActiveListId)
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -46,6 +46,7 @@ const groups = computed<SpeakerGroup[]>(() => {
     return [
       {
         active: true,
+        title: t('speaker.currentlySpeaking'),
         queue: [speaking.value.user]
       },
       ...speakerGroups.value
@@ -57,31 +58,23 @@ const groups = computed<SpeakerGroup[]>(() => {
 
 <template>
   <div v-if="list">
-    <h1 class="text-center">
+    <h2 class="mb-2">
+      <small>{{ t('speaker.list') }}</small
+      ><br />
       {{ list.title }}
-    </h1>
-    <p class="text-center mb-4" v-if="listState">
-      <v-icon :icon="listState.icon" :color="listState.color" />
-      {{ listState.getName(t) }}
-    </p>
-    <p v-if="!queue?.length" class="text-secondary text-center">
+    </h2>
+    <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
+    <p v-if="!speaking && !queue?.length" class="text-secondary">
       {{ t('speaker.queueEmpty') }}
     </p>
     <v-list bg-color="background">
       <v-slide-x-transition group>
-        <template v-for="{ active, title, queue } in groups" :key="title">
-          <div
-            v-if="!active && queue.length"
-            :key="title"
-            class="mt-6 mb-2"
-            style="z-index: 0"
-          >
+        <template v-for="{ active, title, queue } in groups">
+          <div v-if="queue.length" :key="title" class="mt-6 mb-2">
+            <p v-if="title" class="bg-background text-secondary pr-2">
+              {{ title }}
+            </p>
             <v-divider />
-            <div class="overflow-visible mt-n3">
-              <span v-if="title" class="bg-background text-secondary pr-2">
-                {{ title }}
-              </span>
-            </div>
           </div>
           <v-list-item
             v-for="pk in queue"
@@ -94,9 +87,9 @@ const groups = computed<SpeakerGroup[]>(() => {
             <template #prepend>
               <UserAvatar :pk="pk" />
             </template>
-            <template v-if="active && currentSpeaker" #append>
+            <template v-if="active && speaking" #append>
               <span class="timer px-4 text-primary">
-                <Moment in-seconds ordinary :date="currentSpeaker.started" />
+                <Moment in-seconds ordinary :date="speaking.started" />
               </span>
             </template>
             <v-list-item-title>
@@ -116,11 +109,13 @@ const groups = computed<SpeakerGroup[]>(() => {
       </v-slide-x-transition>
     </v-list>
   </div>
-  <h1 v-else class="text-center">
+  <h2 v-else>
+    <small>{{ t('speaker.list') }}</small
+    ><br />
     <em>
       {{ t('speaker.noActiveList') }}
     </em>
-  </h1>
+  </h2>
 </template>
 
 <style scoped lang="sass">
@@ -130,4 +125,9 @@ const groups = computed<SpeakerGroup[]>(() => {
 .timer
   background-color: rgba(var(--v-theme-primary), .08)
   border-radius: 3px
+
+h2
+  line-height: 1.2
+  small
+    font-size: .9rem !important
 </style>
