@@ -12,6 +12,7 @@ import { speakerListType } from './contentTypes'
 import { SpeakerGroup } from './types'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
+import Moment from '@/components/Moment.vue'
 
 const props = defineProps<{
   systemId: number
@@ -30,7 +31,7 @@ const {
   currentSpeakerQueue: queue,
   currentlySpeaking: speaking
 } = useSpeakerSystem(systemId)
-const { speakerGroups } = useSpeakerList(systemActiveListId)
+const { currentSpeaker, speakerGroups } = useSpeakerList(systemActiveListId)
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -86,14 +87,26 @@ const groups = computed<SpeakerGroup[]>(() => {
             v-for="pk in queue"
             :key="pk"
             color="primary"
-            :active="active"
             style="z-index: 1"
+            :class="{ active }"
+            rounded
           >
             <template #prepend>
               <UserAvatar :pk="pk" />
             </template>
+            <template v-if="active && currentSpeaker" #append>
+              <span class="timer px-4 text-primary">
+                <Moment in-seconds ordinary :date="currentSpeaker.started" />
+              </span>
+            </template>
             <v-list-item-title>
               <User :pk="pk" />
+              <v-icon
+                v-if="active"
+                icon="mdi-account-voice"
+                size="x-small"
+                class="ml-1"
+              />
             </v-list-item-title>
             <v-list-item-subtitle>
               {{ getUserId(pk) }}
@@ -109,3 +122,12 @@ const groups = computed<SpeakerGroup[]>(() => {
     </em>
   </h1>
 </template>
+
+<style scoped lang="sass">
+.active
+  border: 2px solid rgba(var(--v-theme-primary), .5)
+
+.timer
+  background-color: rgba(var(--v-theme-primary), .08)
+  border-radius: 3px
+</style>
