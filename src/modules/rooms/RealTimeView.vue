@@ -149,13 +149,13 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 .full-height
   height: 100%
 
-.text-size-large::v-deep
+.text-size-large:deep
   .richtext p,
   .timer,
   .v-list-item-title
     font-size: large !important
 
-.text-size-x-large::v-deep
+.text-size-x-large:deep
   .richtext p,
   .timer,
   .v-list-item-title
