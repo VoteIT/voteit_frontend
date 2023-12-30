@@ -151,6 +151,10 @@
     "delete": "Radera",
     "itemsPerPageText": "Items per page",
     "pageText": "{'{'}0{'}'}-{'{'}1{'}'} of {'{'}2{'}'}",
+    "textSize": "Text size",
+    "textSizeNormal": "Normal text",
+    "textSizeLarge": "Large text",
+    "textSizeXLarge": "Very large text",
     "warnShorterThan": "Your content is less that {length} characters.\nAre you sure?"
   },
   "discussion": {

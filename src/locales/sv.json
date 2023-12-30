@@ -151,6 +151,10 @@
     "delete": "Radera",
     "itemsPerPageText": "Objekt per sida",
     "pageText": "{'{'}0{'}'}-{'{'}1{'}'} av {'{'}2{'}'}",
+    "textSize": "Textstorlek",
+    "textSizeNormal": "Normal text",
+    "textSizeLarge": "Stor text",
+    "textSizeXLarge": "Mycket stor text",
     "warnShorterThan": "Ditt inlägg är färre än {length} tecken.\nÄr du säker?"
   },
   "discussion": {

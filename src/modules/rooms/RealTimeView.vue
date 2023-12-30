@@ -21,7 +21,7 @@ provide(RoleContextKey, 'meeting')
 
 const { t } = useI18n()
 
-const { highlightedProposals, meetingRoom } = useRoom()
+const { highlightedProposals, meetingRoom, textSize } = useRoom()
 
 useChannel(
   'agenda_item',
@@ -70,7 +70,7 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 
 <template>
   <AppBar />
-  <v-main>
+  <v-main :class="`text-size-${textSize}`">
     <div v-if="!meetingRoom?.open" class="text-center pa-6">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
       <em>
@@ -148,4 +148,16 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 
 .full-height
   height: 100%
+
+.text-size-large::v-deep
+  .richtext p,
+  .timer,
+  .v-list-item-title
+    font-size: large !important
+
+.text-size-x-large::v-deep
+  .richtext p,
+  .timer,
+  .v-list-item-title
+    font-size: x-large !important
 </style>

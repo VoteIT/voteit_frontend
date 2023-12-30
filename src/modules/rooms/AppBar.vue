@@ -12,9 +12,26 @@ import HeaderMenu from '@/components/HeaderMenu.vue'
 
 const { t } = useI18n()
 const { meeting, meetingRoute } = useMeeting()
-const { meetingRoom, roomOpenPoll } = useRoom()
+const { meetingRoom, roomOpenPoll, textSize } = useRoom()
 
 const { idle } = useIdle(5_000)
+
+const textSizes = computed(() => {
+  return [
+    {
+      value: 'normal',
+      title: t('content.textSizeNormal')
+    },
+    {
+      value: 'large',
+      title: t('content.textSizeLarge')
+    },
+    {
+      value: 'x-large',
+      title: t('content.textSizeXLarge')
+    }
+  ]
+})
 
 const crumbs = computed(() => {
   return [
@@ -88,6 +105,32 @@ const currentDisplay = computed(
       </template>
       <RealTimePollModal v-if="roomOpenPoll" :poll="roomOpenPoll" />
     </DefaultDialog>
+    <v-menu>
+      <template #activator="{ props, isActive }">
+        <v-fade-transition>
+          <v-btn
+            v-show="isActive || !idle"
+            v-bind="props"
+            prepend-icon="mdi-format-size"
+            append-icon="mdi-chevron-down"
+            :text="t('content.textSize')"
+          />
+        </v-fade-transition>
+      </template>
+      <HeaderMenu :title="t('content.textSize')" icon="mdi-format-size">
+        <v-list :selected="[textSize]" @update:selected="textSize = $event[0]">
+          <v-list-item
+            v-for="{ value, title } in textSizes"
+            :key="value"
+            :value="value"
+            :title="title"
+            :prepend-icon="
+              textSize === value ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank'
+            "
+          />
+        </v-list>
+      </HeaderMenu>
+    </v-menu>
     <v-menu>
       <template #activator="{ props, isActive }">
         <v-fade-transition>

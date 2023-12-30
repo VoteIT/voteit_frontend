@@ -2,7 +2,7 @@
 defineProps<{
   icon: string
   title: string
-  subtitle: string
+  subtitle?: string
 }>()
 </script>
 
@@ -17,7 +17,7 @@ defineProps<{
       />
       <div class="flex-grow-1">
         <h2>{{ title }}</h2>
-        <p class="text-secondary">
+        <p v-if="subtitle" class="text-secondary">
           {{ subtitle }}
         </p>
       </div>

@@ -10,6 +10,12 @@ import { highlightedStore, meetingRoomStore } from './useRooms'
 import { roomType } from './contentTypes'
 import { isEqual } from 'lodash'
 import usePoll from '../polls/usePoll'
+import { useStorage } from '@vueuse/core'
+
+const textSize = useStorage<'normal' | 'large' | 'x-large'>(
+  'room.textSize',
+  'normal'
+)
 
 export default function useRoom() {
   const route = useRoute()
@@ -124,6 +130,7 @@ export default function useRoom() {
     roomId,
     roomOpenPoll,
     speakerSystem,
+    textSize,
     setBroadcast,
     setHandler,
     setOpen,
