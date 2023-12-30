@@ -70,14 +70,14 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 
 <template>
   <AppBar />
-  <v-main class="ma-6">
-    <div v-if="!meetingRoom?.open" class="text-center">
+  <v-main>
+    <div v-if="!meetingRoom?.open" class="text-center pa-6">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
       <em>
         {{ t('room.closed') }}
       </em>
     </div>
-    <div v-else-if="paused">
+    <div v-else-if="paused" class="pa-6">
       <div
         v-if="meetingRoom.body"
         v-html="meetingRoom.body"
@@ -89,15 +89,10 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
       <ClockFace v-if="meetingRoom.show_time" :target-time="targetTime" />
     </div>
     <div v-else class="d-flex full-height">
-      <div v-if="display.speakers" class="left flex-grow-1">
+      <div v-if="display.speakers" class="left flex-grow-1 pa-6">
         <ActiveSpeakerList :system-id="speakerSystemActive!.pk" />
       </div>
-      <v-divider
-        v-if="display.speakers && display.proposals"
-        class="mx-5"
-        vertical
-      />
-      <div v-if="display.proposals" class="right flex-grow-1">
+      <div v-if="display.proposals" class="right flex-grow-1 pa-6">
         <h2>
           {{ t('proposal.proposals') }}
         </h2>
@@ -147,6 +142,9 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 .left,
 .right
   flex-basis: 50%
+
+.right
+  background-color: rgba(0,0,0,.04)
 
 .full-height
   height: 100%
