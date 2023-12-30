@@ -29,24 +29,22 @@ const isActive = computed(
 )
 const expandQueue = ref(false)
 
+// eslint-disable-next-line vue/return-in-computed-property
 const enterLeaveBtn = computed(() => {
-  if (canEnterList.value) {
+  if (canEnterList.value)
     return {
       prependIcon: 'mdi-playlist-plus',
       text: t('speaker.enterList'),
       color: 'primary',
       onClick: enterList
     }
-  }
-  if (canLeaveList.value) {
+  if (canLeaveList.value)
     return {
       prependIcon: 'mdi-playlist-remove',
       text: t('speaker.leaveList'),
       color: 'warning',
       onClick: leaveList
     }
-  }
-  return undefined
 })
 
 const canChange = computed(() => canChangeSpeakerList(props.list))
@@ -54,6 +52,7 @@ const canChange = computed(() => canChangeSpeakerList(props.list))
 const fullscreenPath = computed(
   () =>
     props.list.room.open &&
+    props.list.room.send_sls &&
     isActive.value &&
     getMeetingRoute('rooms:main', {
       aid: props.list.agenda_item,
@@ -64,19 +63,16 @@ const fullscreenPath = computed(
 </script>
 
 <template>
-  <v-card
-    class="speaker-list mb-2"
-    :title="list.title"
-    :border="isActive"
-    :flat="!isActive"
-    :subtitle="isActive ? t('speaker.listActive') : t('speaker.list')"
-  >
-    <v-card-text>
+  <v-sheet class="speaker-list" :flat="!isActive" rounded elevation="4">
+    <div class="pa-3">
+      <h3 class="text-truncate mb-2">
+        {{ list.title }}
+      </h3>
       <p v-if="list.current" class="mb-2">
         {{ t('speaker.currentlySpeaking') }}:
         <strong><User :pk="list.current" /></strong>
       </p>
-      <h3>
+      <h4>
         {{ t('speaker.queue') }}
         <v-btn
           :class="{ expanded: expandQueue }"
@@ -89,8 +85,8 @@ const fullscreenPath = computed(
           @click="expandQueue = !expandQueue"
           icon="mdi-chevron-down"
         />
-      </h3>
-      <div v-if="list.queue.length">
+      </h4>
+      <div v-if="list.queue.length" class="mb-2">
         <template v-for="(userPk, i) in list.queue" :key="userPk">
           <v-expand-transition>
             <div
@@ -102,41 +98,46 @@ const fullscreenPath = computed(
           </v-expand-transition>
         </template>
       </div>
-      <p v-else>
+      <p v-else class="mb-2">
         <em>{{ t('speaker.queueEmpty') }}</em>
       </p>
-    </v-card-text>
-    <v-card-actions v-if="enterLeaveBtn" class="flex-wrap">
-      <v-btn variant="elevated" v-bind="enterLeaveBtn" />
-      <v-btn
-        :to="
-          getMeetingRoute('Plenary', {
-            aid: list.agenda_item,
-            roomId: list.room.pk,
-            tab: 'discussion'
-          })
-        "
-        prepend-icon="mdi-bullhorn"
-        v-if="canChange"
-      >
-        {{ t('manage') }}
-      </v-btn>
-      <div class="d-flex flex-grow-1">
-        <v-spacer />
-        <v-btn v-if="fullscreenPath" :to="fullscreenPath" icon="mdi-overscan" />
+      <v-btn v-if="enterLeaveBtn" variant="elevated" v-bind="enterLeaveBtn" />
+    </div>
+    <template v-if="canChange || isActive">
+      <v-divider />
+      <div class="px-3 py-1">
+        <v-btn
+          v-if="fullscreenPath"
+          color="primary"
+          :to="fullscreenPath"
+          :text="t('speaker.fullscreen')"
+          variant="text"
+        />
+        <v-btn
+          v-if="canChange"
+          color="primary"
+          :to="
+            getMeetingRoute('Plenary', {
+              aid: list.agenda_item,
+              roomId: list.room.pk,
+              tab: 'discussion'
+            })
+          "
+          variant="text"
+        >
+          {{ t('speaker.manage') }}
+        </v-btn>
       </div>
-    </v-card-actions>
-  </v-card>
+    </template>
+    <div v-if="isActive" class="bg-success-lighten-4 rounded-b px-3 py-1">
+      <v-icon icon="mdi-television-play" color="success" class="mr-2" />
+      {{ t('speaker.listActive') }}
+    </div>
+  </v-sheet>
 </template>
 
 <style lang="sass">
 .speaker-list
-  .btn-controls
-    float: right
-
-  h3 .mdi
-    cursor: pointer
-
   ol
     padding-left: 1.5em
 

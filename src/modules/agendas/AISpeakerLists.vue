@@ -79,6 +79,11 @@ const manageSpeakerListsMenu = computed(() => {
         </template>
       </v-tooltip>
     </template>
-    <SpeakerList v-for="list in speakerLists" :key="list.pk" :list="list" />
+    <SpeakerList
+      v-for="list in speakerLists"
+      :key="list.pk"
+      :list="list"
+      class="mb-2"
+    />
   </Dropdown>
 </template>
