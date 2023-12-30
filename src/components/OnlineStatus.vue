@@ -1,20 +1,30 @@
 <template>
   <div
     v-if="isAuthenticated"
-    :class="{ visible }"
+    :class="{ visible, dismissed }"
     id="socket-info"
     class="d-flex align-center"
+    v-element-hover="onHover"
   >
     <span class="mx-4">{{ displayText }}</span>
     <v-progress-circular v-if="isConnecting" size="small" indeterminate />
     <v-btn v-if="retryBtn" v-bind="retryBtn">
       {{ t('tryAgain') }}
     </v-btn>
+    <v-spacer />
+    <v-btn
+      class="mr-2"
+      icon="mdi-chevron-up"
+      size="small"
+      variant="text"
+      @click="dismissed = true"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { vElementHover } from '@vueuse/components'
 
 import useAuthentication from '@/composables/useAuthentication'
 import { socket, socketState } from '@/utils/Socket'
@@ -98,6 +108,18 @@ const visible = computed(
     !isOnline.value ||
     (isAuthenticated.value && socketState.value !== WebSocket.OPEN)
 )
+const dismissed = ref(false)
+const canHover = ref(false)
+function onHover() {
+  if (canHover.value) dismissed.value = false
+}
+watch(dismissed, (value) => {
+  if (value)
+    setTimeout(() => {
+      canHover.value = true
+    }, 500)
+  else canHover.value = false
+})
 
 const retryBtn = computed(() => {
   if (!connectionFailed.value) return
@@ -122,8 +144,11 @@ const retryBtn = computed(() => {
   height: 64px
   background-color: #000
   color: rgb(var(--v-theme-on-error))
-  transition: top 1s ease-in, background-color 250ms
+  transition: top 500ms ease-in, background-color 250ms
   &.visible
     top: 0
     background-color: rgb(var(--v-theme-error))
+    &.dismissed
+      top: -58px
+      background-color: rgb(var(--v-theme-error))
 </style>
