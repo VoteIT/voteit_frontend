@@ -59,7 +59,11 @@ export interface JsonObject<Properties extends {}> {
 
 export type Field = ArrayField | BooleanField | NumberField | StringField
 export type JsonProperties<T extends {}> = {
-  [P in keyof T]: T[P] extends object ? JsonObject<JsonProperties<T[P]>> : Field
+  [P in keyof T]: T[P] extends object
+    ? T[P] extends Array<string>
+      ? ArrayField
+      : JsonObject<JsonProperties<T[P]>>
+    : Field
 }
 
 export interface JsonSchema<T extends {}> {
