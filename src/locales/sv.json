@@ -788,6 +788,7 @@
   },
   "room": {
     "broadcast": "Sändning",
+    "broadcastDesc": "Välj vad som sänds till realtidsvyn",
     "broadcastingUser": "Sändning pågår ({userid})",
     "closed": "Rummet är för närvarande stängt.",
     "create": "skapa rum",

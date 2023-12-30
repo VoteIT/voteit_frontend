@@ -788,6 +788,7 @@
   },
   "room": {
     "broadcast": "Broadcast",
+    "broadcastDesc": "Choose what to send to real-time view",
     "broadcastingUser": "Broadcasting by ({userid})",
     "closed": "This room is currently closed.",
     "create": "Create room",
