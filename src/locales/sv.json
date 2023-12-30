@@ -791,6 +791,7 @@
     "confirmDelete": "Detta raderar rummet. Det går inte att ångra.\nÄr du säker?",
     "defaultName": "Plenum",
     "displayAny": "Visa allt",
+    "displayOptions": "Välj innehåll att visa",
     "displayProposals": "Sänd förslag",
     "displaySpeakers": "Sänd talarlista",
     "displaySpeakersDescription": "Just nu visas inte talarlistor i det här rummets realtidsvy. Tryck på 'Sänd talarlista' för att starta visningen.",

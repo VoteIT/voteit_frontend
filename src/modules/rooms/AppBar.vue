@@ -8,6 +8,7 @@ import useMeeting from '../meetings/useMeeting'
 import useRoom from './useRoom'
 import RealTimePollModal from './RealTimePollModal.vue'
 import { roomDisplayMode } from './displayOptions'
+import HeaderMenu from '@/components/HeaderMenu.vue'
 
 const { t } = useI18n()
 const { meeting, meetingRoute } = useMeeting()
@@ -99,18 +100,28 @@ const currentDisplay = computed(
           />
         </v-fade-transition>
       </template>
-      <v-list>
-        <v-item-group mandatory v-model="roomDisplayMode">
-          <v-item
-            v-for="{ value, ...props } in displayOptions"
-            :key="value"
-            :value="value"
-            v-slot="{ isSelected, toggle }"
-          >
-            <v-list-item v-bind="props" :active="isSelected" @click="toggle" />
-          </v-item>
-        </v-item-group>
-      </v-list>
+      <HeaderMenu
+        :title="t('room.realTime')"
+        :subtitle="t('room.displayOptions')"
+        icon="mdi-television-play"
+      >
+        <v-list>
+          <v-item-group mandatory v-model="roomDisplayMode">
+            <v-item
+              v-for="{ value, ...props } in displayOptions"
+              :key="value"
+              :value="value"
+              v-slot="{ isSelected, toggle }"
+            >
+              <v-list-item
+                v-bind="props"
+                :active="isSelected"
+                @click="toggle"
+              />
+            </v-item>
+          </v-item-group>
+        </v-list>
+      </HeaderMenu>
     </v-menu>
   </v-app-bar>
 </template>
