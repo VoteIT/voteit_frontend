@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
@@ -13,6 +14,7 @@ import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import usePlenary from './usePlenary'
 
+const { t } = useI18n()
 const router = useRouter()
 const { meeting, meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
@@ -48,6 +50,9 @@ const breadcrumbs = computed(() => [
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">
+      <small class="position-absolute">
+        {{ t('plenary.view') }}
+      </small>
       <v-breadcrumbs :items="breadcrumbs" />
     </v-app-bar-title>
     <div class="flex-shrink-0 d-flex align-center">
@@ -89,3 +94,11 @@ const breadcrumbs = computed(() => [
     </template>
   </v-app-bar>
 </template>
+
+<style scoped lang="sass">
+.v-toolbar-title small
+  opacity: var(--v-disabled-opacity)
+  margin-left: 17px
+  margin-top: -6px
+  font-size: .65em
+</style>

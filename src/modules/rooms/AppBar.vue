@@ -86,6 +86,11 @@ const currentDisplay = computed(
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">
+      <v-fade-transition>
+        <small v-show="!idle" class="position-absolute">
+          {{ t('room.realTime') }}
+        </small>
+      </v-fade-transition>
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
     <DefaultDialog
@@ -168,3 +173,11 @@ const currentDisplay = computed(
     </v-menu>
   </v-app-bar>
 </template>
+
+<style scoped lang="sass">
+.v-toolbar-title small
+  opacity: var(--v-disabled-opacity)
+  margin-left: 17px
+  margin-top: -6px
+  font-size: .65em
+</style>
