@@ -25,6 +25,7 @@ import { parseRestError } from '@/utils/restApi'
 import useRooms from './useRooms'
 import RoomForm from './RoomForm.vue'
 import useAgenda from '../agendas/useAgenda'
+import { translateMeetingRole } from '../meetings/utils'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
@@ -182,9 +183,6 @@ const systemIcons = {
             {{ t('title') }}
           </th>
           <th>
-            {{ t('speaker.lists', 2) }}
-          </th>
-          <th class="text-center">
             {{ t('room.open') }}
           </th>
           <th></th>
@@ -195,32 +193,7 @@ const systemIcons = {
           <td>
             {{ room.title }}
           </td>
-          <td v-if="room.formData.room.speakers">
-            <DefaultDialog :title="t('speaker.handleRoles')">
-              <template #activator="{ props }">
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-account-group"
-                  size="small"
-                  v-bind="props"
-                >
-                  {{ t('speaker.handleRoles') }}
-                </v-btn>
-              </template>
-              <RoleMatrix
-                admin
-                class="mb-4"
-                :content-type="speakerSystemType"
-                :icons="systemIcons"
-                :pk="room.sls!"
-              />
-              <UserSearch class="mb-2" v-bind="room.userSearch" />
-            </DefaultDialog>
-          </td>
-          <td v-else>
-            {{ t('room.noSpeakerSystem') }}
-          </td>
-          <td class="text-center">
+          <td>
             <v-btn
               @click="setOpen(room.pk, !room.open)"
               :color="room.open ? 'success' : 'warning'"
@@ -248,55 +221,103 @@ const systemIcons = {
             />
           </td>
           <td class="text-right">
-            <DefaultDialog>
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  class="mr-1"
-                  color="primary"
-                  prepend-icon="mdi-pencil"
-                  size="small"
-                >
-                  {{ t('edit') }}
-                </v-btn>
-              </template>
-              <template #default="{ close }">
-                <div class="d-flex mb-2">
-                  <h2 class="flex-grow-1">
-                    {{ t('room.edit') }}
-                  </h2>
+            <v-btn-group class="mr-1" density="compact">
+              <DefaultDialog>
+                <template #activator="{ props }">
                   <v-btn
+                    v-bind="props"
+                    color="primary"
+                    prepend-icon="mdi-pencil"
                     size="small"
-                    icon="mdi-close"
-                    @click="close"
-                    class="mt-n1 mr-n1"
-                    variant="text"
+                  >
+                    {{ t('edit') }}
+                  </v-btn>
+                </template>
+                <template #default="{ close }">
+                  <div class="d-flex mb-2">
+                    <h2 class="flex-grow-1">
+                      {{ t('room.edit') }}
+                    </h2>
+                    <v-btn
+                      icon="mdi-close"
+                      @click="close"
+                      class="mt-n1 mr-n1"
+                      variant="text"
+                    />
+                  </div>
+                  <RoomForm
+                    :data="room.formData"
+                    :working="working"
+                    @cancel="close"
+                    @submit="updateRoom(room, $event, close)"
                   />
-                </div>
-                <RoomForm
-                  :data="room.formData"
-                  :working="working"
-                  @cancel="close"
-                  @submit="updateRoom(room, $event, close)"
-                />
-              </template>
-            </DefaultDialog>
-            <QueryDialog
-              :text="t('room.confirmDelete')"
-              color="warning"
-              @confirmed="roomType.delete(room.pk)"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  color="warning"
-                  v-bind="props"
-                  size="small"
-                  prepend-icon="mdi-delete"
-                >
-                  {{ t('content.delete') }}
-                </v-btn>
-              </template>
-            </QueryDialog>
+                </template>
+              </DefaultDialog>
+              <v-menu location="bottom right">
+                <template #activator="{ props }">
+                  <v-btn v-bind="props" color="primary" class="px-0">
+                    <v-icon icon="mdi-chevron-down" />
+                  </v-btn>
+                </template>
+                <v-list>
+                  <DefaultDialog
+                    v-if="room.formData.room.speakers"
+                    :title="t('speaker.handleRoles')"
+                  >
+                    <template #activator="{ props }">
+                      <v-list-item
+                        prepend-icon="mdi-account-group"
+                        v-bind="props"
+                      >
+                        {{ t('speaker.handleRoles') }}
+                      </v-list-item>
+                    </template>
+                    <p class="mb-3">
+                      <i18n-t
+                        keypath="speaker.handleRolesHelp"
+                        :plural="
+                          room.formData.speakerSystem?.meeting_roles_to_speaker
+                            .length
+                        "
+                      >
+                        <template #roles>
+                          <strong>
+                            {{
+                              room.formData.speakerSystem?.meeting_roles_to_speaker
+                                .map((r) => translateMeetingRole(r, t))
+                                .join(', ')
+                            }}
+                          </strong>
+                        </template>
+                      </i18n-t>
+                    </p>
+                    <RoleMatrix
+                      admin
+                      class="mb-4"
+                      :content-type="speakerSystemType"
+                      :icons="systemIcons"
+                      :pk="room.sls!"
+                    />
+                    <UserSearch class="mb-2" v-bind="room.userSearch" />
+                  </DefaultDialog>
+                  <QueryDialog
+                    :text="t('room.confirmDelete')"
+                    color="warning"
+                    @confirmed="roomType.delete(room.pk)"
+                  >
+                    <template #activator="{ props }">
+                      <v-list-item
+                        base-color="warning"
+                        v-bind="props"
+                        prepend-icon="mdi-delete"
+                      >
+                        {{ t('content.delete') }}
+                      </v-list-item>
+                    </template>
+                  </QueryDialog>
+                </v-list>
+              </v-menu>
+            </v-btn-group>
           </td>
         </tr>
       </tbody>
