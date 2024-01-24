@@ -40,6 +40,7 @@ provide(LastReadKey, ref(new Date()))
 
 const tabs = computed(() => [
   {
+    disabled: !hasSpeakerLists.value,
     prependIcon: 'mdi-bullhorn',
     value: 'discussion' as const,
     text: t('plenary.discussion')
@@ -55,6 +56,7 @@ const tabs = computed(() => [
 const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
 const {
+  hasSpeakerLists,
   isBroadcasting,
   meetingRoom,
   roomId,

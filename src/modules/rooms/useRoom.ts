@@ -11,6 +11,7 @@ import { roomType } from './contentTypes'
 import { isEqual } from 'lodash'
 import usePoll from '../polls/usePoll'
 import { useStorage } from '@vueuse/core'
+import { SpeakerSystemState } from '../speakerLists/types'
 
 const textSize = useStorage<'normal' | 'large' | 'x-large'>(
   'room.textSize',
@@ -120,9 +121,13 @@ export default function useRoom() {
   const speakerSystem = computed(() =>
     findSpeakerSystem((s) => s.room === roomId.value)
   )
+  const hasSpeakerLists = computed(
+    () => speakerSystem.value?.state === SpeakerSystemState.Active
+  )
 
   return {
     hasBroadcast,
+    hasSpeakerLists,
     highlighted,
     highlightedProposals,
     isBroadcasting,

@@ -11,8 +11,13 @@ import { roomType } from './contentTypes'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 
 const { t } = useI18n()
-const { meetingRoom, setOpen, setProposalBroadcast, setSlsBroadcast } =
-  useRoom()
+const {
+  hasSpeakerLists,
+  meetingRoom,
+  setOpen,
+  setProposalBroadcast,
+  setSlsBroadcast
+} = useRoom()
 const { isModerator, getMeetingRoute } = useMeeting()
 
 const pauseEdit = reactive({
@@ -67,6 +72,7 @@ async function savePauseMessage(pauseBroadcast = false) {
           @click.stop="setOpen(!meetingRoom.open)"
         />
         <v-list-item
+          v-if="hasSpeakerLists"
           :prepend-icon="
             meetingRoom.send_sls
               ? 'mdi-checkbox-marked'
