@@ -387,6 +387,7 @@ const searchInfo = computed<
                   current_user_roles
                 } in meetings"
                 :key="pk"
+                class="meeting-item"
                 :to="{
                   name: 'meeting',
                   params: { id: pk, slug: slugify(title) }
@@ -579,3 +580,9 @@ const searchInfo = computed<
     </v-container>
   </v-main>
 </template>
+
+<style scoped lang="sass">
+.meeting-item
+  :deep(.v-list-item-title)
+    white-space: normal
+</style>
