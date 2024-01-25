@@ -849,6 +849,8 @@
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
     "confirmStopActiveSpeaker": "The list \"{title}\" has an active speaker. To switch active list, you need to stop that speaker first.\nDo you want to do that?",
     "currentlySpeaking": "Now speaking",
+    "displayTimer": "Show timer in real-time view",
+    "displayTimerHint": "If this is active, spoken time will be shown to everyone in the real-time view. Recommended off, because it can be distracting.",
     "editList": "Edit list name",
     "editSpeakerTime": "Edit time spoken",
     "enterList": "Enter list",

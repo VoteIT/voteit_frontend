@@ -87,7 +87,7 @@ const groups = computed<SpeakerGroup[]>(() => {
             <template #prepend>
               <UserAvatar :pk="pk" />
             </template>
-            <template v-if="active && speaking" #append>
+            <template v-if="system?.show_time && active && speaking" #append>
               <span class="timer px-4 text-primary">
                 <Moment in-seconds ordinary :date="speaking.started" />
               </span>

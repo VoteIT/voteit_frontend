@@ -852,6 +852,8 @@
     "confirmListDeletion": "Du håller på att radera den här talarlistan.\nÄr du säker?",
     "confirmStopActiveSpeaker": "Listan \"{title}\" har en aktiv talare. För att välja en ny aktiv lista behöver du stoppa den talaren först.\nVill du göra det?",
     "currentlySpeaking": "Talar nu",
+    "displayTimer": "Visa timer i realtidsvy",
+    "displayTimerHint": "Om detta är aktivt visas talad tid för aktiv talare för alla i realtidsvyn. Rekommendas att vara avstängt, eftersom det kan upplevas distraherande.",
     "enterList": "Sätt upp mig",
     "fullscreen": "Visa i fullskärm",
     "handleRoles": "Hantera roller",

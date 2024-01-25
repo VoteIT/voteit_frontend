@@ -31,6 +31,7 @@ export interface SpeakerSystem {
   room: number
   safe_positions?: number
   settings?: SpeakerSystemSettings
+  show_time: boolean
 }
 
 export enum SpeakerListState {

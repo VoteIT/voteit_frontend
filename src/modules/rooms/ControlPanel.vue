@@ -38,7 +38,11 @@ interface FormData {
   room: Pick<IMeetingRoom, 'title'> & { speakers: boolean }
   speakerSystem?: Pick<
     SpeakerSystem,
-    'method_name' | 'safe_positions' | 'settings' | 'meeting_roles_to_speaker'
+    | 'method_name'
+    | 'safe_positions'
+    | 'settings'
+    | 'meeting_roles_to_speaker'
+    | 'show_time'
   >
 }
 

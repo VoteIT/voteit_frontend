@@ -14,7 +14,11 @@ import { IMeetingRoom } from './types'
 type RoomEditData = Pick<IMeetingRoom, 'title'> & { speakers: boolean }
 type SlsEditData = Pick<
   SpeakerSystem,
-  'method_name' | 'safe_positions' | 'settings' | 'meeting_roles_to_speaker'
+  | 'method_name'
+  | 'safe_positions'
+  | 'settings'
+  | 'meeting_roles_to_speaker'
+  | 'show_time'
 >
 
 const props = defineProps<{
@@ -98,6 +102,11 @@ const slsSchema = computed(
               title: i.title
             }))
           }
+        },
+        show_time: {
+          label: t('speaker.displayTimer'),
+          type: 'boolean',
+          hint: t('speaker.displayTimerHint')
         }
       },
       required: ['method_name', 'meeting_roles_to_speaker']
@@ -117,7 +126,8 @@ function getDefaults() {
         meeting_roles_to_speaker: [MeetingRole.Discusser],
         method_name: SpeakerSystemMethod.Simple,
         safe_positions: 1,
-        settings: null
+        settings: null,
+        show_time: false
       } as SlsEditData)
   }
 }
