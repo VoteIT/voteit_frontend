@@ -4,6 +4,7 @@ import { RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
 import useChannel from '@/composables/useChannel'
+import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
@@ -22,6 +23,9 @@ provide(RoleContextKey, 'meeting')
 const { t } = useI18n()
 
 const { highlightedProposals, meetingRoom, textSize } = useRoom()
+const { agendaItem } = useAgendaItem(
+  computed(() => meetingRoom.value?.agenda_item ?? -1) // Can be undefined
+)
 
 useChannel(
   'agenda_item',
@@ -93,8 +97,10 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
         <ActiveSpeakerList :system-id="speakerSystemActive!.pk" />
       </div>
       <div v-if="display.proposals" class="right flex-grow-1 pa-6">
-        <h2>
-          {{ t('proposal.proposals') }}
+        <h2 class="mb-2">
+          <small>{{ t('proposal.proposals') }}</small
+          ><br />
+          {{ agendaItem?.title }}
         </h2>
         <v-slide-x-transition group>
           <ProposalSheet
@@ -160,4 +166,9 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
   :deep(.timer),
   :deep(.v-list-item-title)
     font-size: x-large !important
+
+h2
+  line-height: 1.2
+  small
+    font-size: .9rem !important
 </style>
