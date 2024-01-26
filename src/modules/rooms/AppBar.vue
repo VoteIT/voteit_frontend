@@ -11,7 +11,7 @@ import { roomDisplayMode } from './displayOptions'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 
 const { t } = useI18n()
-const { meeting, meetingRoute } = useMeeting()
+const { isModerator, meeting, meetingRoute, getMeetingRoute } = useMeeting()
 const { meetingRoom, roomOpenPoll, textSize } = useRoom()
 
 const { idle } = useIdle(5_000)
@@ -110,6 +110,21 @@ const currentDisplay = computed(
       </template>
       <RealTimePollModal v-if="roomOpenPoll" :poll="roomOpenPoll" />
     </DefaultDialog>
+    <v-fade-transition v-if="isModerator && meetingRoom?.agenda_item">
+      <v-btn
+        v-show="!idle"
+        :text="t('room.toPlenaryView')"
+        append-icon="mdi-chevron-right"
+        variant="tonal"
+        :to="
+          getMeetingRoute('Plenary', {
+            aid: meetingRoom.agenda_item,
+            roomId: meetingRoom.pk,
+            tab: 'decisions'
+          })
+        "
+      />
+    </v-fade-transition>
     <v-menu>
       <template #activator="{ props, isActive }">
         <v-fade-transition>

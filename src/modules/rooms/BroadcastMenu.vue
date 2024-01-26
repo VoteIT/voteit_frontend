@@ -150,6 +150,12 @@ async function savePauseMessage(pauseBroadcast = false) {
         <v-list-item
           v-if="isModerator"
           append-icon="mdi-chevron-right"
+          :to="getMeetingRoute('rooms:main', { roomId: meetingRoom.pk })"
+          :title="t('plenary.toRealTimeView')"
+        />
+        <v-list-item
+          v-if="isModerator"
+          append-icon="mdi-chevron-right"
           :to="getMeetingRoute('controlPanel', { panel: 'rooms' })"
           :title="t('room.settings')"
         />

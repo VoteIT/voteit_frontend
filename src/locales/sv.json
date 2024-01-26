@@ -663,9 +663,10 @@
     "toActiveAgendaItem": "Till aktuell dagordningspunkt",
     "toActiveSpeakerList": "Till aktiv talarlista",
     "toDecisionMode": "Till beslut",
+    "toRealTimeView": "Till realtidsvy",
     "upcomingAI": "Kommande dagordningspunkt",
     "upcomingAIDescription": "Den här dagordningspunkten står som kommande. Tryck på 'Till beslut' för att göra den pågående och börja sändning. Alternativet 'Sänd denna' lämnar dagordningspunkten som kommande.",
-    "view": "sändarvy"
+    "view": "Sändarvy"
   },
   "presence": {
     "activateSystem": "Aktivera system för närvarokontroll",
