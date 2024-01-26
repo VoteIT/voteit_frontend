@@ -1,9 +1,15 @@
 <script setup lang="ts">
-defineProps<{
-  icon: string
-  title: string
-  subtitle?: string
-}>()
+withDefaults(
+  defineProps<{
+    icon: string
+    iconColor?: string
+    title: string
+    subtitle?: string
+  }>(),
+  {
+    iconColor: 'secondary'
+  }
+)
 </script>
 
 <template>
@@ -12,7 +18,7 @@ defineProps<{
       <v-icon
         :icon="icon"
         size="xx-large"
-        color="secondary"
+        :color="iconColor"
         class="mr-4 mt-1"
       />
       <div class="flex-grow-1">

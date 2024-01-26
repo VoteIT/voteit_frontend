@@ -801,6 +801,7 @@
     "displaySpeakers": "Sänd talarlista",
     "displaySpeakersDescription": "Just nu visas inte talarlistor i det här rummets realtidsvy. Tryck på 'Sänd talarlista' för att starta visningen.",
     "edit": "Redigera rum",
+    "isBroadcasting": "Det är du som sänder beslut",
     "isOpen": "Rummet är öppet",
     "isNotOpenDescription": "Deltagare kan inte gå in i rummet",
     "isOpenDescription": "Deltagare kan gå in i rummet",

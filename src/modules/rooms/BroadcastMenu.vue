@@ -13,6 +13,7 @@ import HeaderMenu from '@/components/HeaderMenu.vue'
 const { t } = useI18n()
 const {
   hasSpeakerLists,
+  isBroadcasting,
   meetingRoom,
   setOpen,
   setProposalBroadcast,
@@ -45,13 +46,22 @@ async function savePauseMessage(pauseBroadcast = false) {
 <template>
   <v-menu>
     <template #activator="{ props }">
-      <v-btn append-icon="mdi-chevron-down" class="mr-2" v-bind="props">
+      <v-btn
+        append-icon="mdi-chevron-down"
+        class="mr-2"
+        v-bind="props"
+        :variant="isBroadcasting ? 'flat' : undefined"
+        :color="isBroadcasting ? 'yellow' : undefined"
+      >
         {{ t('room.broadcast') }}
       </v-btn>
     </template>
     <HeaderMenu
       icon="mdi-broadcast"
-      :subtitle="t('room.broadcastDesc')"
+      :icon-color="isBroadcasting ? 'warning' : undefined"
+      :subtitle="
+        isBroadcasting ? t('room.isBroadcasting') : t('room.broadcastDesc')
+      "
       :title="t('room.broadcast')"
     >
       <v-list v-if="meetingRoom">

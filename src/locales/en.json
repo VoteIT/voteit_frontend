@@ -801,6 +801,7 @@
     "displaySpeakers": "Display speaker lists",
     "displaySpeakersDescription": "Speaker lists are currently not displayed in real-time view for this room. Press 'Display speaker lists' to start displaying them.",
     "edit": "Edit room",
+    "isBroadcasting": "You're the one broadcasting decisions",
     "isOpen": "The room is open",
     "isNotOpenDescription": "Participants can't enter this room",
     "isOpenDescription": "Participants can enter this room",
