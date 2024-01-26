@@ -1,11 +1,19 @@
 <template>
-  <template v-if="isOngoing">
+  <main v-if="!poll" class="text-center">
+    <v-progress-circular
+      class="my-6"
+      color="secondary"
+      indeterminate
+      size="large"
+    />
+  </main>
+  <template v-else-if="isOngoing">
     <main class="mb-8">
       <p>
         {{
           t('poll.pollDescription', {
             method: pollMethodName,
-            count: data.proposals.length
+            count: poll.proposals.length
           })
         }}
       </p>
@@ -16,7 +24,7 @@
         class="mt-8"
       />
       <v-alert
-        v-if="data.withheld_result"
+        v-if="poll.withheld_result"
         :text="t('poll.result.willBeWithheld')"
         type="info"
         class="my-6"
@@ -36,7 +44,7 @@
         <component
           :is="voteComponent"
           disabled
-          :poll="data"
+          :poll="poll"
           :proposals="proposals"
         />
       </DefaultDialog>
@@ -68,13 +76,13 @@
       </v-btn>
     </div>
   </template>
-  <main v-else-if="data">
+  <main v-else>
     <div v-if="isFinished" class="mt-6">
       <component
         :is="resultComponent"
-        :result="data.result"
-        :abstain-count="data.abstain_count"
-        :proposals="data.proposals"
+        :result="poll.result"
+        :abstain-count="poll.abstain_count"
+        :proposals="poll.proposals"
       />
     </div>
     <v-alert
@@ -83,7 +91,7 @@
       :text="t('poll.result.withheldExplanation')"
       type="info"
     />
-    <WorkflowState v-else :content-type="pollType" :object="data" />
+    <WorkflowState v-else :content-type="pollType" :object="poll" />
   </main>
 </template>
 
@@ -112,6 +120,7 @@ const {
   isOngoing,
   isFinished,
   isWithheld,
+  poll,
   pollMethodName,
   pollStatus,
   proposals,
@@ -148,12 +157,12 @@ const working = ref(false)
 
 async function cancel() {
   working.value = true
-  await pollType.transitions.make(props.data, PollTransition.Cancel, t)
+  await pollType.transitions.make(poll.value!, PollTransition.Cancel, t)
 }
 
 async function close() {
   working.value = true
-  await pollType.transitions.make(props.data, PollTransition.Close, t)
+  await pollType.transitions.make(poll.value!, PollTransition.Close, t)
 }
 
 /**
