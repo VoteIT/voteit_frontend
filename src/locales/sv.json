@@ -333,7 +333,7 @@
     "createErTitle": "Röstlängder",
     "createErDescription": "För att deltagarna ska kunna rösta i mötet behöver du välja en metod för röstlängder. Du kan även ställa in metod för röstlängder senare i kontrollpanelen.",
     "createRoomTitle": "Mötesrum och talarlistor",
-    "createRoomDescription": "Om du ska ha ett livemöte, där ni använder plenumvyn för att fatta beslut, behöver du skapa ett mötesrum. Du kan också Konfigurera talarlistor kopplade till mötesrummet. Om mötet är online över tid behöver du inte skapa något mötesrum. Du kan också skapa mötesrum och ändra inställningar i kontrollpanelen senare.",
+    "createRoomDescription": "Om du ska ha ett livemöte, där ni använder sändarvyn för att fatta beslut, behöver du skapa ett mötesrum. Du kan också Konfigurera talarlistor kopplade till mötesrummet. Om mötet är online över tid behöver du inte skapa något mötesrum. Du kan också skapa mötesrum och ändra inställningar i kontrollpanelen senare.",
     "dialect": "Mötesdialekt",
     "dialectGroupRoles": "Dialekten definierar mötesgrupper med roller",
     "dialectGroupVotes": "Rösträtt hanteras genom mötets grupper",
@@ -640,10 +640,10 @@
     "finishedPolls": "Avslutade omröstningar",
     "hintModifyFilter": "Försök att välja fler förslagslägen i filtermenyn.",
     "meetingClosed": "Mötet är stängt",
-    "meetingClosedDescription": "Det här mötet är i ett stängt tillstånd. Du kan inte använda plenumvyn.",
+    "meetingClosedDescription": "Det här mötet är i ett stängt tillstånd. Du kan inte använda sändarvyn.",
     "meetingToOngoing": "Gör mötet pågående",
     "meetingUpcoming": "Kommande möte",
-    "meetingUpcomingDescription": "Mötet behöver vara pågåpende för att du ska kunna använda plenumvyn.",
+    "meetingUpcomingDescription": "Mötet behöver vara pågåpende för att du ska kunna använda sändarvyn.",
     "nextParagraph": "Nästa stycke",
     "noBroadcastDescription": "Dina valda förslag sänds för närvarande inte ut till deltagarna.",
     "noProposalsInFilter": "Inga förslag",
@@ -665,7 +665,7 @@
     "toDecisionMode": "Till beslut",
     "upcomingAI": "Kommande dagordningspunkt",
     "upcomingAIDescription": "Den här dagordningspunkten står som kommande. Tryck på 'Till beslut' för att göra den pågående och börja sändning. Alternativet 'Sänd denna' lämnar dagordningspunkten som kommande.",
-    "view": "Plenumvy"
+    "view": "sändarvy"
   },
   "presence": {
     "activateSystem": "Aktivera system för närvarokontroll",
@@ -743,7 +743,7 @@
     "flag": "Flagga",
     "listRolesRequired": "Roller som kan se vem som reagerat",
     "none": "Inga reaktioner",
-    "onPresentation": "Plenumvy",
+    "onPresentation": "Realtids- och sändarvy",
     "onPoll": "Omröstningar",
     "peopleReacted": "Reaktioner",
     "rolesRequired": "Roller som kan reagera",
@@ -821,10 +821,10 @@
     "sendingSpeakersProposals": "Visar talarlista och förslag",
     "settings": "Inställningar för mötesrum",
     "settingsDescription": "Sätt upp mötesrum för realtidsvy och talarhantering. Används mest för livemöten.",
-    "settingsHelp": "För att få tillgång till plenumvy (beslutshantering) och talarlistor behöver du sätta upp minst ett mötesrum i ditt möte. Om du har ett möte med flera samtidigt pågående processer, exempelvis parallella utskott, kan du behöva sätta upp mötesrum även för dessa.",
+    "settingsHelp": "För att få tillgång till sändarvy (beslutshantering) och talarlistor behöver du sätta upp minst ett mötesrum i ditt möte. Om du har ett möte med flera samtidigt pågående processer, exempelvis parallella utskott, kan du behöva sätta upp mötesrum även för dessa.",
     "settingsTitle": "Mötesrum och talarlistor",
     "showClock": "Visa klocka",
-    "toPlenaryView": "Till plenumvy"
+    "toPlenaryView": "Till sändarvy"
   },
   "rules": {
     "maxLength": "Får inte vara längre än {count} tecken",
