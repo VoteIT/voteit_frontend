@@ -100,7 +100,6 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
 }
 
 function broadcastThis() {
-  console.log('broadcast')
   return setBroadcast({
     agenda_item: agendaId.value,
     highlighted: [...selectedProposalIds.value]
