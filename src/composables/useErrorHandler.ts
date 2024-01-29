@@ -4,6 +4,8 @@ import { parseSocketError } from 'envelope-client'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
 import { parseRestError } from '@/utils/restApi'
+import { useI18n } from 'vue-i18n'
+import { ThemeColor } from '@/utils/types'
 
 interface HandlerOptions {
   target: 'alert' | 'dialog' | 'none'
@@ -26,6 +28,7 @@ function getSpecifiedFieldErrorMessage(
 export default function useErrorHandler(
   opts: HandlerOptions = DEFAULT_OPTIONS
 ) {
+  const { t } = useI18n()
   opts = { ...DEFAULT_OPTIONS, ...opts }
 
   const fieldErrors = ref<Dictionary<string[]>>({})
@@ -39,7 +42,13 @@ export default function useErrorHandler(
 
   function displayError(message: string) {
     if (opts.target === 'dialog')
-      openDialogEvent.emit({ title: message, resolve() {} })
+      openDialogEvent.emit({
+        title: message,
+        resolve() {},
+        no: false,
+        yes: t('ok'),
+        theme: ThemeColor.Warning
+      })
     if (opts.target === 'alert') openAlertEvent.emit(`^${message}`)
   }
 
