@@ -18,6 +18,7 @@ import { filterProposals } from '../proposals/useProposals'
 import { ProposalState } from '../proposals/types'
 
 import usePlenary from './usePlenary'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 interface IAlertInfo {
   actions?: {
@@ -49,6 +50,10 @@ const {
   setHandler
 } = useRoom()
 const { selectedProposalIds } = usePlenary(meetingId, agendaId)
+const { handleRestError } = useErrorHandler({
+  showField: 'transition',
+  target: 'dialog'
+})
 
 const isBroadcastingAI = computed(
   () =>
@@ -73,7 +78,11 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
             prependIcon: 'mdi-play-circle',
             text: t('plenary.meetingToOngoing'),
             async onClick() {
-              meetingType.transitions.make(meeting.value!, 'ongoing', t)
+              try {
+                await meetingType.transitions.make(meeting.value!, 'ongoing', t)
+              } catch (e) {
+                handleRestError(e)
+              }
             }
           }
         ]

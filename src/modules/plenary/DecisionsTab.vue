@@ -23,6 +23,7 @@ import usePlenary, { isSelectedProposal } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
 import { AgendaState } from '../agendas/types'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -52,6 +53,10 @@ const {
 
 const { t } = useI18n()
 const { getAgendaProposals } = useProposals()
+const { handleRestError } = useErrorHandler({
+  showField: 'transition',
+  target: 'dialog'
+})
 
 const canChangeProposalState = computed(
   () =>
@@ -158,7 +163,9 @@ async function makeTransition(
   transitioning.add(p.pk)
   try {
     await proposalType.transitions.make(p, state.transition, t)
-  } catch {}
+  } catch (e) {
+    handleRestError(e)
+  }
   transitioning.delete(p.pk)
 }
 
