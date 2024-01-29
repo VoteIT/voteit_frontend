@@ -1,4 +1,4 @@
-import type { Dictionary } from 'lodash'
+import { isEmpty, type Dictionary } from 'lodash'
 import { computed, ref } from 'vue'
 import { parseSocketError } from 'envelope-client'
 
@@ -23,6 +23,13 @@ function getSpecifiedFieldErrorMessage(
   const fieldErrors = errors[field] ||
     errors.non_field_errors || ['Unkown error']
   return fieldErrors.join(', ')
+}
+
+function getNonspecificFieldErrorMessage(errors: Dictionary<string[]>) {
+  if (isEmpty(errors)) return
+  return Object.entries(errors)
+    .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+    .join('\n')
 }
 
 export default function useErrorHandler(
@@ -52,23 +59,28 @@ export default function useErrorHandler(
     if (opts.target === 'alert') openAlertEvent.emit(`^${message}`)
   }
 
-  function handleError(e: unknown, parse: (e: Error) => Dictionary<string[]>) {
+  function handleError(
+    e: unknown,
+    parse: (e: Error) => Dictionary<string[]>,
+    showField?: string
+  ) {
     if (!(e instanceof Error)) throw e
     errorMessage.value = e.message
     fieldErrors.value = parse(e)
+    showField = showField ?? opts.showField
     displayError(
-      opts.showField
-        ? getSpecifiedFieldErrorMessage(fieldErrors.value, opts.showField)
-        : e.message
+      showField
+        ? getSpecifiedFieldErrorMessage(fieldErrors.value, showField)
+        : getNonspecificFieldErrorMessage(fieldErrors.value) ?? e.message
     )
   }
 
-  function handleSocketError(e: unknown) {
-    handleError(e, parseSocketError)
+  function handleSocketError(e: unknown, showField?: string) {
+    handleError(e, parseSocketError, showField)
   }
 
-  function handleRestError(e: unknown) {
-    handleError(e, parseRestError)
+  function handleRestError(e: unknown, showField?: string) {
+    handleError(e, parseRestError, showField)
   }
 
   return {
