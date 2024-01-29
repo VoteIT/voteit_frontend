@@ -15,7 +15,7 @@ export const agendaItems = reactive<Map<number, AgendaItem>>(new Map())
 export const agendaItemsLastRead = reactive<Map<number, Date>>(new Map())
 
 agendaItemType
-  .updateMap(agendaItems, { meeting: 'meeting' })
+  .updateMap(agendaItems, { participants: 'meeting', moderators: 'meeting' })
   .onDeleted((agendaItem) => agendaDeletedEvent.emit(agendaItem.pk))
 
 // Delete as first event
@@ -44,10 +44,9 @@ agendaBodyType.updateMap(agendaBodies, { agenda_item: 'pk' })
  */
 channelLeftEvent.on(({ channelType, pk }) => {
   if (channelType !== 'moderators') return
-  for (const { meeting, state } of agendaItems.values()) {
-    if (meeting === pk && state === AgendaState.Private) {
-      agendaDeletedEvent.emit(pk)
-    }
+  for (const { pk: agendaPk, meeting, state } of agendaItems.values()) {
+    if (meeting === pk && state === AgendaState.Private)
+      agendaDeletedEvent.emit(agendaPk)
   }
 })
 
