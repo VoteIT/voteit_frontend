@@ -26,7 +26,8 @@
       <template v-else-if="currentStep === 0">
         <v-text-field
           :label="t('title')"
-          :rules="[rules.required, rules.minLength(5)]"
+          :rules="[rules.required, rules.minLength(5), rules.maxLength(100)]"
+          maxlength="100"
           v-model="formData.meeting.title"
         />
         <v-select
@@ -39,7 +40,6 @@
           v-model="formData.meeting.install_dialect"
         >
           <template #item="{ item, props }">
-            <!-- TODO subtitle -->
             <v-list-item
               v-bind="{ ...props, ...item.props }"
               :subtitle="
@@ -158,12 +158,12 @@ import useElectoralRegisters, {
 import useDialects from './dialects/useDialects'
 import { Meeting, MeetingRole } from './types'
 import useRules from '@/composables/useRules'
-import { SpeakerSystemMethod } from '../speakerLists/types'
+import { SpeakerSystem, SpeakerSystemMethod } from '../speakerLists/types'
 import { translateOrderMethod } from '../speakerLists/utils'
 import CardSelector from '@/components/CardSelector.vue'
-import { roomType } from '../rooms/contentTypes'
-import { speakerSystemType } from '../speakerLists/contentTypes'
 import useMeeting from './useMeeting'
+import { IMeetingRoom } from '../rooms/types'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 type FormData = {
   meeting: {
@@ -194,6 +194,7 @@ const { roleItems } = useMeeting()
 const { availableErMethods } = useElectoralRegisters()
 const { installableDialects } = useDialects()
 const rules = useRules(t)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const currentStep = ref(0)
 const steps = computed<{ info: string; title: string }[]>(() => {
@@ -299,27 +300,25 @@ function cleanFormData(meeting: FormData['meeting']) {
     ...meeting,
     er_policy_name: meeting.er_policy_name || undefined,
     install_dialect: meeting.install_dialect || undefined
-  } as Partial<Meeting>
+  } as Partial<Meeting> & {
+    room?: Partial<IMeetingRoom>
+    sls?: Partial<SpeakerSystem>
+  }
 }
 
 async function addMeeting() {
   if (submitting.value) return
   submitting.value = true
+  const createData = cleanFormData(formData.meeting)
+  if (formData.createRoom) {
+    createData.room = { ...formData.room }
+    if (formData.createSpeakerSystem) createData.sls = { ...formData.sls }
+  }
   try {
-    const { data: meeting } = await meetingType.api.add(
-      cleanFormData(formData.meeting)
-    )
-    if (formData.createRoom) {
-      const { data: room } = await roomType.api.add({
-        meeting: meeting.pk,
-        ...formData.room
-      })
-      if (formData.createSpeakerSystem)
-        await speakerSystemType.api.add({ room: room.pk, ...formData.sls })
-    }
+    const { data: meeting } = await meetingType.api.add(createData)
     await router.push(`/m/${meeting.pk}/${slugify(meeting.title)}`)
-  } catch {
-    // TODO
+  } catch (e) {
+    handleRestError(e)
   }
   submitting.value = false
 }

@@ -1,7 +1,7 @@
 <template>
+  <p>{{ active }}</p>
   <v-dialog
     v-model="isActive"
-    style="z-index: 2020"
     v-bind="dialogDefaults"
     :persistent="!dismissible"
   >
@@ -100,6 +100,7 @@ onBeforeMount(() => {
       savedFocusEl = document.querySelector(':focus')
     }
     queue.push(dialog)
+    console.log('dialog!', dialog)
     nextTick(() => {
       if (!window.value) return
       const el = window.value.$el as HTMLElement
