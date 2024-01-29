@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Duration } from 'luxon'
-import { computed, ref, toRef } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { durationToString } from '@/utils'
@@ -30,7 +30,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { speakerHistory } = useSpeakerList(toRef(props.list, 'pk'))
+const { speakerHistory } = useSpeakerList(computed(() => props.list.pk))
 
 const speakerHistoryExpanded = ref(false)
 const speakerHistoryExpandable = computed(

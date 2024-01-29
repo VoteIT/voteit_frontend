@@ -9,6 +9,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import SchemaForm from '@/components/SchemaForm.vue'
 import { FormSchema } from '@/components/types'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
@@ -22,7 +23,11 @@ import { speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
 
-import type { SpeakerList, SpeakerListAddMessage } from './types'
+import {
+  SpeakerListState,
+  type SpeakerList,
+  type SpeakerListAddMessage
+} from './types'
 import usePermission from '@/composables/usePermission'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
@@ -58,6 +63,9 @@ const currentList = computed<SpeakerList | undefined>({
     )
       setActiveList(list, true)
   }
+})
+const { handleSocketError, handleRestError } = useErrorHandler({
+  target: 'dialog'
 })
 usePermission(canManageSystem, { to: meetingRoute.value })
 
@@ -115,6 +123,23 @@ function getListMenu(list: SpeakerList): MenuItem[] {
     ]
   }
   return []
+}
+
+async function setActive(list: SpeakerList, active = true) {
+  try {
+    if (active) await setActiveList(list)
+    else await speakerListType.methodCall('deactivate', { pk: list.pk })
+  } catch (e) {
+    handleSocketError(e)
+  }
+}
+
+async function transitionList(list: SpeakerList, transition: 'close' | 'open') {
+  try {
+    await speakerListType.transitions.make(list, transition, t)
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 </script>
 
@@ -208,28 +233,28 @@ ol.speaker-queue
           </v-menu>
         </v-btn-group>
       </div>
-      <v-item-group v-model="currentList">
+      <v-item-group :model-value="currentList">
         <v-item
           v-for="list in speakerLists"
           :key="list.pk"
           :value="list"
-          v-slot="{ isSelected, toggle }"
+          v-slot="{ isSelected }"
         >
-          <v-card
-            :color="isSelected ? 'success' : undefined"
-            class="mb-4"
-            @click="toggle?.()"
-          >
+          <v-card :color="isSelected ? 'success' : undefined" class="mb-4">
             <div class="d-flex">
               <v-card-title class="flex-grow-1 flex-shrink-1">
                 {{ list.title }}
+                <v-icon
+                  :icon="
+                    list.state === SpeakerListState.Open
+                      ? 'mdi-play-circle-outline'
+                      : 'mdi-lock'
+                  "
+                  class="ml-2 mt-n1"
+                  size="x-small"
+                />
               </v-card-title>
-              <DropdownMenu
-                :items="getListMenu(list)"
-                :show-transitions="canChangeSpeakerList(list)"
-                :content-type="speakerListType"
-                :object="list"
-              >
+              <DropdownMenu :items="getListMenu(list)">
                 <template #top v-if="canManageSystem">
                   <DefaultDialog>
                     <template #activator="{ props }">
@@ -282,6 +307,36 @@ ol.speaker-queue
             <v-card-text>
               {{ t('speaker.speakerCount', list.queue.length) }}
             </v-card-text>
+            <template v-if="canChangeSpeakerList" #actions>
+              <v-btn
+                v-if="isSelected"
+                @click="setActive(list, false)"
+                :text="t('speaker.deactivateList')"
+                variant="flat"
+                class="mr-1"
+              />
+              <v-btn
+                v-else
+                @click="setActive(list)"
+                :text="t('speaker.activateList')"
+                variant="flat"
+                class="mr-1"
+              />
+              <v-btn
+                v-if="list.state === SpeakerListState.Open"
+                @click="transitionList(list, 'close')"
+                :text="t('speaker.closeList')"
+                class="mr-1"
+                variant="flat"
+              />
+              <v-btn
+                v-else
+                @click="transitionList(list, 'open')"
+                :text="t('speaker.openList')"
+                class="mr-1"
+                variant="flat"
+              />
+            </template>
           </v-card>
         </v-item>
       </v-item-group>

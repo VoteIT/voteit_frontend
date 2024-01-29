@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRef } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useChannel from '@/composables/useChannel'
@@ -19,7 +19,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { idle } = useIdle(5_000)
 
-const pollId = toRef(props.poll, 'pk')
+const pollId = computed(() => props.poll.pk)
 const { meetingRoom } = useRoom()
 const {
   isOngoing,
