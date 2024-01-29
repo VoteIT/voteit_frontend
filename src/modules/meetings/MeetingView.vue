@@ -89,6 +89,7 @@ import { MeetingRole } from './types'
 import { DEFAULT_ROLE_ORDER } from './constants'
 import { translateMeetingRole } from './utils'
 import { hasMeetingRole, setFakeRoles } from './rules'
+import { isEqual } from 'lodash'
 
 const { t } = useI18n()
 const { meeting, meetingId, roleItems, userRoles } = useMeeting()
@@ -147,7 +148,17 @@ const fakeMeetingRoles = computed({
     }
   },
   set({ roles }) {
-    setFakeRoles(meetingId.value, [...roles, MeetingRole.Participant])
+    roles = [...roles, MeetingRole.Participant]
+    // Check to avoid infinite loop
+    if (
+      !isEqual(
+        new Set(roles),
+        new Set(
+          DEFAULT_ROLE_ORDER.filter((r) => hasMeetingRole(meetingId.value, r))
+        )
+      )
+    )
+      setFakeRoles(meetingId.value, roles)
   }
 })
 const fakeRolesSchema = computed(() => {

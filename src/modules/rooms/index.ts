@@ -35,7 +35,7 @@ meetingBubblePlugins.register({
       (r) => r.meeting === meeting.pk && r.open
     )
   },
-  requireAttention: computed(() => true)
+  requireAttention: computed(() => false)
 })
 
 router.addRoute({
