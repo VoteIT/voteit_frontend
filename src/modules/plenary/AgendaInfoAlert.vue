@@ -50,10 +50,7 @@ const {
   setHandler
 } = useRoom()
 const { selectedProposalIds } = usePlenary(meetingId, agendaId)
-const { handleRestError } = useErrorHandler({
-  showField: 'transition',
-  target: 'dialog'
-})
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const isBroadcastingAI = computed(
   () =>
@@ -81,7 +78,7 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
               try {
                 await meetingType.transitions.make(meeting.value!, 'ongoing', t)
               } catch (e) {
-                handleRestError(e)
+                handleRestError(e, 'transition')
               }
             }
           }
@@ -123,8 +120,12 @@ const selectApprovedAction = computed(() => {
     {
       prependIcon: 'mdi-check-circle-outline',
       text: t('plenary.displayApprovedProposals', proposals.length),
-      onClick() {
-        return setBroadcast({ highlighted: proposals })
+      async onClick() {
+        try {
+          await setBroadcast({ highlighted: proposals })
+        } catch (e) {
+          handleRestError(e, 'highlighted')
+        }
       }
     }
   ]
@@ -154,8 +155,12 @@ function getAgendaAlert(): IAlertInfo | undefined {
                   }))
                 )
                   return
-                await setHandler()
-                await broadcastThis()
+                try {
+                  await setHandler()
+                  await broadcastThis()
+                } catch (e) {
+                  handleRestError(e)
+                }
               }
             }
           ]
@@ -171,7 +176,13 @@ function getAgendaAlert(): IAlertInfo | undefined {
             {
               prependIcon: 'mdi-broadcast',
               text: t('plenary.startBroadcast'),
-              onClick: broadcastThis
+              async onClick() {
+                try {
+                  await broadcastThis()
+                } catch (e) {
+                  handleRestError(e)
+                }
+              }
             }
           ]
         }
@@ -198,18 +209,28 @@ function getAgendaAlert(): IAlertInfo | undefined {
             prependIcon: 'mdi-gavel',
             text: t('plenary.toDecisionMode'),
             async onClick() {
-              await agendaItemType.transitions.make(
-                agendaItem.value!,
-                AgendaTransition.Ongoing,
-                t
-              )
-              await broadcastThis()
+              try {
+                await agendaItemType.transitions.make(
+                  agendaItem.value!,
+                  AgendaTransition.Ongoing,
+                  t
+                )
+                await broadcastThis()
+              } catch (e) {
+                handleRestError(e)
+              }
             }
           },
           {
             prependIcon: 'mdi-broadcast',
             text: t('plenary.broadcastAI'),
-            onClick: broadcastThis
+            async onClick() {
+              try {
+                await broadcastThis()
+              } catch (e) {
+                handleRestError(e)
+              }
+            }
           }
         ]
       }
@@ -253,7 +274,13 @@ function getAgendaAlert(): IAlertInfo | undefined {
           {
             prependIcon: 'mdi-broadcast',
             text: t('plenary.broadcastAI'),
-            onClick: broadcastThis
+            async onClick() {
+              try {
+                await broadcastThis()
+              } catch (e) {
+                handleRestError(e)
+              }
+            }
           }
         ]
       }

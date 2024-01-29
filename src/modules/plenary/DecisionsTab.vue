@@ -53,10 +53,7 @@ const {
 
 const { t } = useI18n()
 const { getAgendaProposals } = useProposals()
-const { handleRestError } = useErrorHandler({
-  showField: 'transition',
-  target: 'dialog'
-})
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const canChangeProposalState = computed(
   () =>
@@ -81,23 +78,36 @@ const isBroadcastingAI = computed(
 //   setHighlightedProposals([...selectedProposalIds.value])
 // }
 
-function select(proposal: Proposal) {
-  if (isBroadcastingAI.value)
-    setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
-  else selectProposal(proposal.pk)
+async function select(proposal: Proposal) {
+  if (isBroadcastingAI.value) {
+    try {
+      await setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
+    } catch (e) {
+      handleRestError(e, 'highlighted')
+    }
+  } else selectProposal(proposal.pk)
 }
 
-function deselect(proposal: Proposal) {
-  if (isBroadcastingAI.value)
-    setHighlightedProposals(
-      selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
-    )
-  else deselectProposal(proposal.pk)
+async function deselect(proposal: Proposal) {
+  if (isBroadcastingAI.value) {
+    try {
+      await setHighlightedProposals(
+        selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
+      )
+    } catch (e) {
+      handleRestError(e, 'highlighted')
+    }
+  } else deselectProposal(proposal.pk)
 }
 
-function replaceSelection(proposals: number[]) {
-  if (isBroadcastingAI.value) setHighlightedProposals(proposals)
-  else selectProposalIds(proposals)
+async function replaceSelection(proposals: number[]) {
+  if (isBroadcastingAI.value) {
+    try {
+      await setHighlightedProposals(proposals)
+    } catch (e) {
+      handleRestError(e, 'highlighted')
+    }
+  } else selectProposalIds(proposals)
 }
 
 function selectTag(tag: string) {
@@ -164,7 +174,7 @@ async function makeTransition(
   try {
     await proposalType.transitions.make(p, state.transition, t)
   } catch (e) {
-    handleRestError(e)
+    handleRestError(e, 'transition')
   }
   transitioning.delete(p.pk)
 }
