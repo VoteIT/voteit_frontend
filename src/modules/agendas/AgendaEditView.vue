@@ -300,6 +300,11 @@ function canSetState(target: AgendaState) {
         :items-per-page-text="t('content.itemsPerPageText')"
         class="mb-2"
       >
+        <template #no-data>
+          <em class="text-secondary">
+            {{ t('agenda.editNoItems') }}
+          </em>
+        </template>
         <template #item.state="{ value }">
           <v-icon size="small" :icon="getState(value)?.icon" />
         </template>

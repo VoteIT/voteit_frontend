@@ -117,6 +117,7 @@
     "deleteItemConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker?",
     "deleteSelectedConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker? | Du är på väg att radera {count} dagordningspunkter.\nÄr du säker?",
     "edit": "Redigera dagordning",
+    "editNoItems": "Mötet har inga dagordningspunkter ännu. Skapa dagordning nedan...",
     "filteringOnTag": "Filtrerar på",
     "filterOnTag": "Filtrera på",
     "helpEditTags": "Välj dagordningspunkter till vänster för att redigera taggar",
