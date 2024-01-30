@@ -9,7 +9,9 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
+import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
+import { translateMeetingRole } from '../meetings/utils'
 import { IUser } from '../organisations/types'
 import {
   SpeakerSystem,
@@ -24,8 +26,6 @@ import { IMeetingRoom } from './types'
 import { parseRestError } from '@/utils/restApi'
 import useRooms from './useRooms'
 import RoomForm from './RoomForm.vue'
-import useAgenda from '../agendas/useAgenda'
-import { translateMeetingRole } from '../meetings/utils'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
@@ -90,7 +90,8 @@ async function updateRoom(
   working.value = true
   const system = findSpeakerSystem((s) => s.room === pk)
   const slsAdded = !system && room.speakers
-  const slsModified = !!system && room.speakers
+  const slsModified =
+    !!system && room.speakers && system.state !== SpeakerSystemState.Archived
   const slsDisabled =
     !!system && !room.speakers && system.state === SpeakerSystemState.Active
   const slsEnabled =
@@ -118,10 +119,11 @@ const editableMeetingRooms = computed(() =>
     return {
       ...r,
       sls: speakerSystem?.pk,
+      slsDisabled: speakerSystem?.state === SpeakerSystemState.Archived,
       formData: {
         room: {
           title: r.title,
-          speakers: speakerSystem?.state === SpeakerSystemState.Active
+          speakers: speakerSystem?.state !== SpeakerSystemState.Inactive
         },
         speakerSystem
       },
@@ -251,6 +253,7 @@ const systemIcons = {
                   </div>
                   <RoomForm
                     :data="room.formData"
+                    :sls-disabled="room.slsDisabled"
                     :working="working"
                     @cancel="close"
                     @submit="updateRoom(room, $event, close)"

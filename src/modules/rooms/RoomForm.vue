@@ -26,6 +26,7 @@ const props = defineProps<{
     room: RoomEditData
     speakerSystem?: SlsEditData
   }
+  slsDisabled?: boolean
   working: boolean
 }>()
 
@@ -47,6 +48,7 @@ const schema = computed(
           maxLength: 100
         },
         speakers: {
+          readOnly: !!props.slsDisabled,
           type: 'boolean',
           label: t('speaker.lists', 2)
         }
@@ -79,6 +81,7 @@ const slsSchema = computed(
     ({
       properties: {
         method_name: {
+          readOnly: !!props.slsDisabled,
           type: 'string',
           label: t('speaker.systemMethod'),
           oneOf: [SpeakerSystemMethod.Simple, SpeakerSystemMethod.Priority].map(
@@ -87,12 +90,14 @@ const slsSchema = computed(
         },
         ...getSettings(formData.speakerSystem.method_name),
         safe_positions: {
+          readOnly: !!props.slsDisabled,
           type: 'number',
           hint: t('speaker.safePositionsHint'),
           label: t('speaker.safePositions'),
           minimum: 0
         },
         meeting_roles_to_speaker: {
+          readOnly: !!props.slsDisabled,
           label: t('speaker.speakerRoles'),
           type: 'array',
           items: {
@@ -104,6 +109,7 @@ const slsSchema = computed(
           }
         },
         show_time: {
+          readOnly: !!props.slsDisabled,
           label: t('speaker.displayTimer'),
           type: 'boolean',
           hint: t('speaker.displayTimerHint')
