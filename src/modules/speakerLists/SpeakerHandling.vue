@@ -50,6 +50,8 @@ const {
   systemActiveList,
   setActiveList
 } = useSpeakerSystem(systemId, agendaId)
+const { getState } = speakerListType.useWorkflows()
+
 const currentList = computed<SpeakerList | undefined>({
   get() {
     if (systemActiveList.value?.agenda_item !== agendaId.value) return
@@ -240,104 +242,121 @@ ol.speaker-queue
           :value="list"
           v-slot="{ isSelected }"
         >
-          <v-card :color="isSelected ? 'success' : undefined" class="mb-4">
-            <div class="d-flex">
-              <v-card-title class="flex-grow-1 flex-shrink-1">
-                {{ list.title }}
-                <v-icon
-                  :icon="
-                    list.state === SpeakerListState.Open
-                      ? 'mdi-play-circle-outline'
-                      : 'mdi-lock'
-                  "
-                  class="ml-2 mt-n1"
-                  size="x-small"
-                />
-              </v-card-title>
-              <DropdownMenu :items="getListMenu(list)">
-                <template #top v-if="canManageSystem">
-                  <DefaultDialog>
-                    <template #activator="{ props }">
-                      <v-list-item
-                        v-bind="props"
-                        prepend-icon="mdi-pencil"
-                        :title="t('edit')"
-                      />
-                    </template>
-                    <template #default="{ close }">
-                      <div class="d-flex mb-2">
-                        <h2 class="flex-grow-1">
-                          {{ t('speaker.editList') }}
-                        </h2>
-                        <v-btn
-                          @click="close"
-                          class="mt-n2 mr-n2"
-                          icon="mdi-close"
-                          size="small"
-                          variant="text"
+          <v-sheet class="mb-4" elevation="4" rounded>
+            <div class="pa-3">
+              <div class="d-flex">
+                <h3 class="flex-grow-1 flex-shrink-1">
+                  {{ list.title }}
+                  <small
+                    :class="`text-${getState(list.state)?.color}`"
+                    class="ml-2"
+                  >
+                    <v-icon
+                      :icon="
+                        list.state === SpeakerListState.Open
+                          ? 'mdi-play-circle-outline'
+                          : 'mdi-lock'
+                      "
+                      size="small"
+                    />
+                    &nbsp;{{ getState(list.state)?.getName(t) }}</small
+                  >
+                </h3>
+                <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
+                  <template #top v-if="canManageSystem">
+                    <DefaultDialog>
+                      <template #activator="{ props }">
+                        <v-list-item
+                          v-bind="props"
+                          prepend-icon="mdi-pencil"
+                          :title="t('edit')"
                         />
-                      </div>
-                      <SchemaForm
-                        :schema="speakerListSchema"
-                        :model-value="{ title: list.title }"
-                        :handler="createEditHandler(list.pk)"
-                        @saved="close"
-                        @keydown.stop
-                      >
-                        <template #buttons="{ disabled }">
-                          <div class="text-right">
-                            <v-btn @click="close" variant="text">
-                              {{ t('cancel') }}
-                            </v-btn>
-                            <v-btn
-                              color="primary"
-                              :disabled="disabled"
-                              type="submit"
-                            >
-                              {{ t('save') }}
-                            </v-btn>
-                          </div>
-                        </template>
-                      </SchemaForm>
-                    </template>
-                  </DefaultDialog>
-                </template>
-              </DropdownMenu>
+                      </template>
+                      <template #default="{ close }">
+                        <div class="d-flex mb-2">
+                          <h2 class="flex-grow-1">
+                            {{ t('speaker.editList') }}
+                          </h2>
+                          <v-btn
+                            @click="close"
+                            class="mt-n2 mr-n2"
+                            icon="mdi-close"
+                            size="small"
+                            variant="text"
+                          />
+                        </div>
+                        <SchemaForm
+                          :schema="speakerListSchema"
+                          :model-value="{ title: list.title }"
+                          :handler="createEditHandler(list.pk)"
+                          @saved="close"
+                          @keydown.stop
+                        >
+                          <template #buttons="{ disabled }">
+                            <div class="text-right">
+                              <v-btn @click="close" variant="text">
+                                {{ t('cancel') }}
+                              </v-btn>
+                              <v-btn
+                                color="primary"
+                                :disabled="disabled"
+                                type="submit"
+                              >
+                                {{ t('save') }}
+                              </v-btn>
+                            </div>
+                          </template>
+                        </SchemaForm>
+                      </template>
+                    </DefaultDialog>
+                  </template>
+                </DropdownMenu>
+              </div>
+              <p>
+                {{ t('speaker.speakerCount', list.queue.length) }}
+              </p>
             </div>
-            <v-card-text>
-              {{ t('speaker.speakerCount', list.queue.length) }}
-            </v-card-text>
-            <template v-if="canChangeSpeakerList" #actions>
-              <v-btn
-                v-if="isSelected"
-                @click="setActive(list, false)"
-                :text="t('speaker.deactivateList')"
-                variant="flat"
-                class="mr-1"
-              />
-              <v-btn
-                v-else
-                @click="setActive(list)"
-                :text="t('speaker.activateList')"
-                variant="flat"
-                class="mr-1"
-              />
-              <v-btn
-                v-if="list.state === SpeakerListState.Open"
-                @click="transitionList(list, 'close')"
-                :text="t('speaker.closeList')"
-                class="mr-1"
-                variant="flat"
-              />
-              <v-btn
-                v-else
-                @click="transitionList(list, 'open')"
-                :text="t('speaker.openList')"
-                class="mr-1"
-                variant="flat"
-              />
+            <template v-if="canChangeSpeakerList">
+              <v-divider />
+              <div class="px-3 py-1">
+                <v-btn
+                  v-if="isSelected"
+                  @click="setActive(list, false)"
+                  :text="t('speaker.deactivateList')"
+                  variant="text"
+                  class="mr-1"
+                />
+                <v-btn
+                  v-else
+                  @click="setActive(list)"
+                  :text="t('speaker.activateList')"
+                  variant="text"
+                  class="mr-1"
+                />
+                <v-btn
+                  v-if="list.state === SpeakerListState.Open"
+                  @click="transitionList(list, 'close')"
+                  :text="t('speaker.closeList')"
+                  class="mr-1"
+                  variant="text"
+                />
+                <v-btn
+                  v-else
+                  @click="transitionList(list, 'open')"
+                  :text="t('speaker.openList')"
+                  class="mr-1"
+                  variant="text"
+                />
+              </div>
             </template>
-          </v-card>
+            <div
+              v-if="isSelected"
+              class="bg-success-lighten-4 rounded-b px-3 py-1"
+            >
+              <v-icon icon="mdi-television-play" color="success" class="mr-2" />
+              {{ t('speaker.listActive') }}
+            </div>
+          </v-sheet>
         </v-item>
       </v-item-group>
       <SpeakerListHistory v-if="currentList" :list="currentList" class="mt-4" />
