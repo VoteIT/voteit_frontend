@@ -28,7 +28,7 @@ function getItems({ agendaItem, meeting, t }: OptionalAIContext) {
   function getRoomMenu(room: IMeetingRoom, title: string) {
     return {
       title,
-      prependIcon: 'mdi-gavel',
+      prependIcon: 'mdi-broadcast',
       to: {
         name: 'Plenary',
         params: {

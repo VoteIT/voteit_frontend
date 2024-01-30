@@ -7,6 +7,7 @@ import { autoEllipsis } from '@/utils'
 import useMeeting from '../meetings/useMeeting'
 import useRooms from '../rooms/useRooms'
 import { IMeetingRoom } from './types'
+import { orderBy } from 'lodash'
 
 const { t } = useI18n()
 
@@ -29,14 +30,18 @@ function getSubtitle({ body, send_proposals, send_sls }: IMeetingRoom): string {
 }
 
 const broadcasting = computed(() =>
-  meetingRooms.value
-    .filter((r) => r.open)
-    .map((room) => ({
-      pk: room.pk,
-      active: room.send_proposals || room.send_sls,
-      subtitle: getSubtitle(room),
-      title: room.title
-    }))
+  orderBy(
+    meetingRooms.value
+      .filter((r) => r.open)
+      .map((room) => ({
+        pk: room.pk,
+        active: room.send_proposals || room.send_sls,
+        subtitle: getSubtitle(room),
+        title: room.title
+      })),
+    ['active', 'title'],
+    ['desc', 'asc']
+  )
 )
 </script>
 
