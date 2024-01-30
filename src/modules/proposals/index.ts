@@ -36,5 +36,5 @@ agendaItemType.transitions.registerGuard(AgendaTransition.Close, (obj, t) => {
       (p) => p.agenda_item === obj.pk && UNRESOLVED_STATES.includes(p.state)
     )
   )
-    return t('proposal.agendaItemHasUnresolved')
+    return { text: t('proposal.agendaItemHasUnresolved') }
 })

@@ -1,5 +1,4 @@
-import { chain, first, imap } from 'itertools'
-import { isString } from 'lodash'
+import { chain, filter, first, imap } from 'itertools'
 import { ComposerTranslation } from 'vue-i18n'
 
 import DefaultMap from '@/utils/DefaultMap'
@@ -10,7 +9,12 @@ import ContentAPI from './ContentAPI'
 import type { Transition as ITransition, WorkflowStates } from './types'
 
 export const UnguardedTransition = Symbol('UnguardedTransition')
-type TransitionGuard<T> = (obj: T, t: ComposerTranslation) => string | undefined
+
+type GuardTrigger = { text: string; isBlocking?: boolean }
+type TransitionGuard<T> = (
+  obj: T,
+  t: ComposerTranslation
+) => GuardTrigger | undefined
 
 /**
  * Handle content type transitions
@@ -22,6 +26,10 @@ export default function useTransitions<
   const guards = new DefaultMap<Transition | '*', TransitionGuard<T>[]>(
     () => []
   )
+
+  function isGuardTrigger(value?: GuardTrigger): value is GuardTrigger {
+    return !!value
+  }
 
   async function get(pk: number): Promise<ITransition<Transition>[]> {
     const { data } = await api.action<ITransition<Transition>[]>(
@@ -41,13 +49,17 @@ export default function useTransitions<
     transition: Transition,
     t: ComposerTranslation | typeof UnguardedTransition
   ) {
-    const guardQuery =
-      t === UnguardedTransition ? undefined : checkGuards(obj, transition, t)
-    if (
-      !guardQuery ||
-      (await dialogQuery({ title: guardQuery, theme: ThemeColor.Warning }))
-    )
-      return await api.action<Partial<T>>(obj.pk, 'transitions', { transition })
+    const action = () =>
+      api.action<Partial<T>>(obj.pk, 'transitions', { transition })
+    if (t === UnguardedTransition) return await action()
+    const guardQuery = checkGuards(obj, transition, t)
+    if (!guardQuery) return action()
+    const dialog = { title: guardQuery.text, theme: ThemeColor.Warning }
+    if (guardQuery.isBlocking) {
+      dialogQuery({ ...dialog, no: false, yes: t('ok') })
+      return
+    }
+    if (await dialogQuery(dialog)) return await action()
   }
 
   function registerGuard(transition: Transition, guard: TransitionGuard<T>) {
@@ -62,11 +74,15 @@ export default function useTransitions<
     transition: Transition | '*',
     t: ComposerTranslation
   ) {
-    return first(
+    const triggeredGuards = filter(
       imap(chain(guards.get('*'), guards.get(transition)), (guard) =>
         guard(obj, t)
       ),
-      isString
+      isGuardTrigger
+    )
+    // First non-overridable or first triggered
+    return (
+      first(triggeredGuards, (g) => !!g?.isBlocking) ?? first(triggeredGuards)
     )
   }
 

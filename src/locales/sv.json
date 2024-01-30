@@ -848,6 +848,7 @@
     "addByParticipantNumber": "Lägg till deltagarnummer",
     "addWithName": "Namngiven lista",
     "addQuick": "Snabbskapa lista",
+    "agendaItemHasOngoingSpeaker": "Den här dagordningspunkten har en talarlista med aktiv talare.\nAvsluta debatten innan du stänger dagordningspunkten.",
     "deactivateList": "Deaktivera",
     "editList": "Ändra listnamn",
     "editSpeakerTime": "Ändra talad tid",
