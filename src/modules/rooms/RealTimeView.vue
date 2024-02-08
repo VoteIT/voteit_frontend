@@ -85,11 +85,11 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
       <div
         v-if="meetingRoom.body"
         v-html="meetingRoom.body"
-        class="text-center text-h6 my-8"
+        class="paus-message text-center my-8"
       ></div>
-      <h2 v-else class="text-center my-8">
+      <p v-else class="paus-message text-center my-8">
         {{ t('room.paused') }}
-      </h2>
+      </p>
       <ClockFace v-if="meetingRoom.show_time" :target-time="targetTime" />
     </div>
     <div v-else class="d-flex full-height">
@@ -154,6 +154,14 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 
 .full-height
   height: 100%
+
+.paus-message
+  font-size: large !important
+  .text-size-large &
+    font-size: x-large !important
+  .text-size-x-large &
+    font-size: xx-large !important
+
 
 .text-size-large
   :deep(.richtext p),

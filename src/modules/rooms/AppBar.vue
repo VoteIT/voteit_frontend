@@ -9,9 +9,12 @@ import useRoom from './useRoom'
 import RealTimePollModal from './RealTimePollModal.vue'
 import { roomDisplayMode } from './displayOptions'
 import HeaderMenu from '@/components/HeaderMenu.vue'
+import useAgenda from '../agendas/useAgenda'
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingRoute, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, meetingId, meetingRoute, getMeetingRoute } =
+  useMeeting()
+const { agenda } = useAgenda(meetingId)
 const { meetingRoom, roomOpenPoll, textSize } = useRoom()
 
 const { idle } = useIdle(5_000)
@@ -110,7 +113,7 @@ const currentDisplay = computed(
       </template>
       <RealTimePollModal v-if="roomOpenPoll" :poll="roomOpenPoll" />
     </DefaultDialog>
-    <v-fade-transition v-if="isModerator && meetingRoom?.agenda_item">
+    <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
       <v-btn
         v-show="!idle"
         :text="t('room.toPlenaryView')"
@@ -118,7 +121,7 @@ const currentDisplay = computed(
         variant="tonal"
         :to="
           getMeetingRoute('Plenary', {
-            aid: meetingRoom.agenda_item,
+            aid: meetingRoom?.agenda_item || agenda[0].pk,
             roomId: meetingRoom.pk,
             tab: 'decisions'
           })
