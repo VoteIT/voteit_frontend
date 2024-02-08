@@ -4,6 +4,18 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.22.0 (2024-02-12)
+
+Introducing VoteIT real-time view.  
+[Project info](https://voteit.se/nyheter/realtidsvy-detta-ar-nytt.html) - [What's new](https://voteit.se/nyheter/realtidsvy-detta-ar-nytt.html)
+
+- Adds meeting rooms, which also configures it's own speaker system.
+- Plenary view and speaker handling now moved to broadcasting view.
+- Broadcasting / decisions gives useful information and offers actions to move forward.
+- Real-time view allows following meeting in real-time, allowing simultaneous display of active speaker list and broadcasted proposals.
+- Start meeting is now a guide with multiple steps.
+- Multiple updates to dependencies, including Vue and Vuetify.
+
 ## 0.21.0 (2023-11-27)
 
 - Allow setting min/max ranked proposals in repeated IRV [#335](https://github.com/VoteIT/voteit_frontend/issues/335)
