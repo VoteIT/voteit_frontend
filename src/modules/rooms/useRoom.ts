@@ -25,9 +25,11 @@ export default function useRoom() {
 
   const meetingRoom = computed(() => meetingRoomStore.get(roomId.value))
   const highlighted = computed(
-    () => highlightedStore.get(roomId.value)?.highlighted ?? []
+    () => highlightedStore.get(roomId.value)?.highlighted
   )
-  const highlightedProposals = computed(() => getProposals(highlighted.value))
+  const highlightedProposals = computed(() =>
+    highlighted.value ? getProposals(highlighted.value) : []
+  )
 
   /**
    * Is anyone broadcasting?

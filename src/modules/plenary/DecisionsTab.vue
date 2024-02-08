@@ -34,13 +34,8 @@ const AVAILABLE_STATES = [
 const { meetingId } = useMeeting()
 const { agendaId, agendaItem } = useAgenda(meetingId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
-const {
-  highlighted,
-  highlightedProposals,
-  isBroadcasting,
-  meetingRoom,
-  setHighlightedProposals
-} = useRoom()
+const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =
+  useRoom()
 
 const {
   selectedProposalIds,
@@ -69,19 +64,11 @@ const isBroadcastingAI = computed(
     isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
 )
 
-/**
- * If broadcasting, send selected proposals to server.
- * TODO: Handle errors by rechecking broadcasting status.
- */
-// function setBroadcastProposals() {
-//   if (!isBroadcastingAI.value) return
-//   setHighlightedProposals([...selectedProposalIds.value])
-// }
-
 async function select(proposal: Proposal) {
   if (isBroadcastingAI.value) {
     try {
       await setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
+      selectProposal(proposal.pk)
     } catch (e) {
       handleRestError(e, 'highlighted')
     }
@@ -94,6 +81,7 @@ async function deselect(proposal: Proposal) {
       await setHighlightedProposals(
         selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
       )
+      deselectProposal(proposal.pk)
     } catch (e) {
       handleRestError(e, 'highlighted')
     }
@@ -104,6 +92,7 @@ async function replaceSelection(proposals: number[]) {
   if (isBroadcastingAI.value) {
     try {
       await setHighlightedProposals(proposals)
+      selectProposalIds(proposals)
     } catch (e) {
       handleRestError(e, 'highlighted')
     }
@@ -122,25 +111,14 @@ function selectTag(tag: string) {
   )
 }
 
-const aiHighlighted = computed(() =>
-  highlightedProposals.value
-    .filter((p) => p.agenda_item === agendaId.value)
-    .map((p) => p.pk)
-)
-
-// watch(selectedProposalIds, setBroadcastProposals)
 // If current Agenda Item is broadcasting, select highlighted proposals from that broadcast.
 // Otherwise clear selected proposals.
+// Do not trigger until room is loaded and highlighted is set.
 watch(
-  agendaId,
-  () => selectProposalIds(isBroadcastingAI.value ? highlighted.value : []),
-  { immediate: true }
-)
-// When we know we're broadcasting current AI and highlighted changes or is set,
-// select room highlighted
-watch(
-  () => isBroadcastingAI.value && aiHighlighted.value,
-  (value) => value && selectProposalIds(value),
+  () => meetingRoom.value && highlighted.value && agendaId.value,
+  (value) => {
+    value && selectProposalIds(isBroadcastingAI.value ? highlighted.value! : [])
+  },
   { immediate: true }
 )
 

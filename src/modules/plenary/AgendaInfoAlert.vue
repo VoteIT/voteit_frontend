@@ -122,7 +122,10 @@ const selectApprovedAction = computed(() => {
       text: t('plenary.displayApprovedProposals', proposals.length),
       async onClick() {
         try {
-          await setBroadcast({ highlighted: proposals })
+          await setBroadcast({
+            agenda_item: agendaId.value,
+            highlighted: proposals
+          })
         } catch (e) {
           handleRestError(e, 'highlighted')
         }
