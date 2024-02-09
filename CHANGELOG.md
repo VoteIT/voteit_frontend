@@ -7,7 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.22.0 (2024-02-12)
 
 Introducing VoteIT real-time view.  
-[Project info](https://voteit.se/nyheter/realtidsvy-detta-ar-nytt.html) - [What's new](https://voteit.se/nyheter/realtidsvy-detta-ar-nytt.html)
+Information in swedish: [Project info](https://voteit.se/nyheter/realtidsvy-detta-ar-nytt.html) - [What's new](https://voteit.se/nyheter/realtidsvy-detta-ar-nytt.html)
 
 - Adds meeting rooms, which also configures it's own speaker system.
 - Plenary view and speaker handling now moved to broadcasting view.
