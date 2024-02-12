@@ -48,7 +48,7 @@ useIntervalFn(updateTime, 250)
 </script>
 
 <template>
-  <div class="clock" style="--clock-size: 400px">
+  <div class="clock" style="--clock-size: min(calc(100vw - 60px), 400px)">
     <div
       v-if="timeToGo"
       class="pie"
