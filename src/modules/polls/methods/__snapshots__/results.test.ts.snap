@@ -25,7 +25,7 @@ exports[`DuttResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -62,7 +62,7 @@ exports[`DuttResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -99,7 +99,7 @@ exports[`DuttResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -153,7 +153,7 @@ exports[`MajorityResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -190,7 +190,7 @@ exports[`MajorityResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -302,7 +302,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -335,7 +335,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -758,7 +758,7 @@ exports[`SimpleResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -801,7 +801,7 @@ exports[`SimpleResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
@@ -844,7 +844,7 @@ exports[`SimpleResult component 1`] = `
       </div>
       <!--v-if-->
       <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\">
-        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-8\\" class=\\"ml-6 time\\"> för 0 sekunder sedan</span>
+        <!--v-if--><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-8\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>

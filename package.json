@@ -7,7 +7,7 @@
     "dev": "vite",
     "extractLocales": "vue-i18n-extract report --vueFiles './src/**/*.?(ts|js|vue)' --languageFiles './src/locales/*.json'",
     "lint": "eslint --ext .ts,.vue --ignore-path .gitignore --fix src",
-    "test": "vitest --dom",
+    "test": "LANG=en vitest --dom",
     "typeCheck": "vue-tsc --noEmit"
   },
   "dependencies": {
