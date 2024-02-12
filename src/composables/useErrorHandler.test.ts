@@ -1,7 +1,17 @@
 import { ValidationError } from 'envelope-client/src/errors'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
 import useErrorHandler from './useErrorHandler'
+import { useI18n } from 'vue-i18n'
+
+vi.mock('vue-i18n')
+
+// @ts-ignore
+useI18n.mockReturnValue({
+  t(tKey: string) {
+    return tKey
+  }
+})
 
 test('Bad error', () => {
   const { handleSocketError, handleRestError } = useErrorHandler()
