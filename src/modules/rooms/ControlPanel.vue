@@ -65,7 +65,7 @@ async function create({ room, speakerSystem }: FormData) {
       meeting: meetingId.value,
       ...room
     })
-    if (speakerSystem)
+    if (room.speakers)
       await speakerSystemType.api.add({
         room: data.pk,
         meeting: meetingId.value,
@@ -318,6 +318,7 @@ const systemIcons = {
                     <template #activator="{ props }">
                       <v-list-item
                         base-color="warning"
+                        :disabled="room.formData.room.speakers"
                         v-bind="props"
                         prepend-icon="mdi-delete"
                       >
