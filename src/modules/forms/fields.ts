@@ -51,10 +51,11 @@ const fields: Record<Field['type'], IField> = {
     }
   },
   number: {
-    getComponent() {
-      return 'v-text-field'
+    getComponent(field: NumberField) {
+      return field.oneOf ? 'v-select' : 'v-text-field'
     },
     getProps(field: NumberField) {
+      if (field.oneOf) return { items: field.oneOf, itemValue: 'const' }
       return {
         type: 'number',
         max: getMax(field),

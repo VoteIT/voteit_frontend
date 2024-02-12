@@ -37,7 +37,7 @@ export interface NumberField {
   maximum?: number
   minimum?: number
   multipleOf?: number
-  // oneOf?: OneOf<number>[]
+  oneOf?: OneOf<number>[]
 }
 
 export interface StringField {
@@ -53,7 +53,7 @@ export interface StringField {
 
 export interface JsonObject<Properties extends {}> {
   type: 'object'
-  properties: Properties
+  properties: JsonProperties<Properties>
   required?: (keyof Properties)[]
 }
 

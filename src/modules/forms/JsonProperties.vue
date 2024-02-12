@@ -38,10 +38,10 @@ watch(
 )
 
 function withRequired(
-  name: keyof T,
+  required: boolean,
   _rules: ((value: string) => true | string)[]
 ) {
-  return props.required?.includes(name) ? [rules.required, ..._rules] : _rules
+  return required ? [rules.required, ..._rules] : _rules
 }
 
 function getName(key: keyof T) {
@@ -51,10 +51,15 @@ function getName(key: keyof T) {
 }
 
 function fieldToInput(key: keyof T, field: Field) {
-  const required = !!props.required?.includes(key)
+  let required = !!props.required?.includes(key)
   const { getComponent, getProps, getRules } = fields[field.type]
   const component = getComponent(field)
   const clearable = isClearableComponent(component) ? !required : undefined
+  if (field.type === 'number' && field.oneOf) {
+    // Workaround, because 0 is not recognized as a value. Do after computing clearable option.
+    // FIXME
+    required = required && !field.oneOf.some((i) => i.const === 0)
+  }
   return {
     key,
     name: getName(key),
@@ -68,7 +73,7 @@ function fieldToInput(key: keyof T, field: Field) {
       label: field.label,
       hint: field.hint,
       required,
-      rules: withRequired(key, getRules?.(field, t) ?? [])
+      rules: withRequired(required, getRules?.(field, t) ?? [])
     }
   }
 }
