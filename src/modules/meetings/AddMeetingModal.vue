@@ -75,24 +75,32 @@
           v-model="formData.sls.method_name"
         />
         <v-expand-transition>
-          <v-text-field
+          <v-select
             v-if="formData.sls.method_name === SpeakerSystemMethod.Priority"
-            min="0"
-            type="number"
             :disabled="!formData.createRoom || !formData.createSpeakerSystem"
             :hint="t('speaker.orderMethod.maxTimesHint')"
+            itemValue="const"
             :label="t('speaker.orderMethod.maxTimes')"
-            :rules="[rules.required, rules.min(0)]"
+            :items="
+              map(range(10), (n) => ({
+                const: n,
+                title: t('speaker.orderMethod.maxTimesValue', n)
+              }))
+            "
             v-model="formData.sls.settings.max_times"
           />
         </v-expand-transition>
-        <v-text-field
-          min="0"
-          type="number"
+        <v-select
           :disabled="!formData.createRoom || !formData.createSpeakerSystem"
           :hint="t('speaker.safePositionsHint')"
+          itemValue="const"
           :label="t('speaker.safePositions')"
-          :rules="[rules.required, rules.min(0)]"
+          :items="
+            map(range(3), (n) => ({
+              const: n,
+              title: t('speaker.safePositionsValue', n)
+            }))
+          "
           v-model="formData.sls.safe_positions"
         />
         <v-select
@@ -145,6 +153,7 @@
 </template>
 
 <script lang="ts" setup>
+import { map, range } from 'itertools'
 import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'

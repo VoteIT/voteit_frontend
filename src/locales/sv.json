@@ -882,7 +882,8 @@
     "queue": "Talarkö",
     "queueEmpty": "Inga talare i kön",
     "safePositions": "Säkra platser",
-    "safePositionsHint": "Antal säkra platser överst i talarkön. Vanligtvis 1, för att säkerställa att nästa talare kan förbereda sig.",
+    "safePositionsHint": "Antal säkra platser överst i talarkön. Vanligtvis en, för att säkerställa att nästa talare kan förbereda sig.",
+    "safePositionsValue": "Inga säkra platser | En säker plats (standard) | {count} säkra platser",
     "speakerCount": "Inga talare i kö | En talare i kö | {count} talare i kö",
     "systemMethod": "Metod för ordning",
     "timeSpoken": "Tid ({time})",
@@ -892,7 +893,8 @@
       "priority": "Prioritera talare som talat mindre",
       "simple": "Kronologisk",
       "maxTimes": "Prioriteringsgräns",
-      "maxTimesHint": "Antal gånger återkommande talare nedprioriteras till förmån för talare som talat färre gånger. 0 = ingen gräns."
+      "maxTimesHint": "Antal gånger återkommande talare nedprioriteras till förmån för talare som talat färre gånger.",
+      "maxTimesValue": "Prioritera alltid | Prioritera en gång | Prioritera {count} gånger"
     },
     "systemWorkflow": {
       "active": "Aktiv | Aktiva",

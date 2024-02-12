@@ -4,12 +4,13 @@ import { useI18n } from 'vue-i18n'
 
 import useMeeting from '../meetings/useMeeting'
 import { MeetingRole } from '../meetings/types'
-import type { JsonProperties, JsonSchema } from '../forms/types'
+import type { JsonObject, JsonSchema } from '../forms/types'
 import JsonSchemaForm from '../forms/JsonSchemaForm.vue'
 import { SpeakerSystem, SpeakerSystemMethod } from '../speakerLists/types'
 import { translateOrderMethod } from '../speakerLists/utils'
 
 import { IMeetingRoom } from './types'
+import { map, range } from 'itertools'
 
 type RoomEditData = Pick<IMeetingRoom, 'title'> & { speakers: boolean }
 type SlsEditData = Pick<
@@ -58,22 +59,30 @@ const schema = computed(
 )
 
 const speakerMethodSettingSchema: Partial<
-  Record<SpeakerSystemMethod, JsonProperties<any>>
+  Record<SpeakerSystemMethod, JsonObject<{ max_times: number }>>
 > = {
   priority: {
-    max_times: {
-      type: 'number',
-      label: t('speaker.orderMethod.maxTimes'),
-      hint: t('speaker.orderMethod.maxTimesHint'),
-      minimum: 0
-    }
+    type: 'object',
+    properties: {
+      max_times: {
+        type: 'number',
+        label: t('speaker.orderMethod.maxTimes'),
+        hint: t('speaker.orderMethod.maxTimesHint'),
+        minimum: 0,
+        oneOf: map(range(10), (n) => ({
+          const: n,
+          title: t('speaker.orderMethod.maxTimesValue', n)
+        }))
+      }
+    },
+    required: ['max_times']
   }
 }
 
 // TODO any?
 function getSettings(method: SpeakerSystemMethod): any {
   const properties = speakerMethodSettingSchema[method]
-  if (properties) return { settings: { type: 'object', properties } }
+  if (properties) return { settings: properties }
 }
 
 const slsSchema = computed(
@@ -94,7 +103,10 @@ const slsSchema = computed(
           type: 'number',
           hint: t('speaker.safePositionsHint'),
           label: t('speaker.safePositions'),
-          minimum: 0
+          oneOf: map(range(3), (n) => ({
+            const: n,
+            title: t('speaker.safePositionsValue', n)
+          }))
         },
         meeting_roles_to_speaker: {
           readOnly: !!props.slsDisabled,
@@ -115,7 +127,7 @@ const slsSchema = computed(
           hint: t('speaker.displayTimerHint')
         }
       },
-      required: ['method_name', 'meeting_roles_to_speaker']
+      required: ['method_name', 'meeting_roles_to_speaker', 'safe_positions']
     }) as JsonSchema<SlsEditData>
 )
 
@@ -132,7 +144,9 @@ function getDefaults() {
         meeting_roles_to_speaker: [MeetingRole.Discusser],
         method_name: SpeakerSystemMethod.Simple,
         safe_positions: 1,
-        settings: null,
+        settings: {
+          max_times: 1
+        },
         show_time: false
       } as SlsEditData)
   }
