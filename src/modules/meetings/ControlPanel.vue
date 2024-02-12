@@ -7,11 +7,19 @@
   </MeetingToolbar>
   <v-row id="setting-panels">
     <v-col v-if="currentComponent">
-      <component :is="currentComponent"/>
+      <component :is="currentComponent" />
     </v-col>
     <v-col class="grid" v-else>
       <v-card
-        v-for="{ icon, id, description, disabled, title, to, quickComponent } in panelPlugins"
+        v-for="{
+          icon,
+          id,
+          description,
+          disabled,
+          title,
+          to,
+          quickComponent
+        } in panelPlugins"
         class="d-flex flex-column"
         :disabled="disabled"
         :key="id"
@@ -67,9 +75,8 @@ onUnmounted(clearComponents)
 
 const panelPlugins = computed(() => {
   if (!meeting.value) return []
-  return sortBy(meetingSettingsPlugins
-    .getActivePlugins(meeting.value)
-    .map(panel => {
+  return sortBy(
+    meetingSettingsPlugins.getActivePlugins(meeting.value).map((panel) => {
       return {
         description: panel.getDescription && panel.getDescription(t),
         disabled: !!panel.isDisabled?.(meeting.value as Meeting),
@@ -77,26 +84,34 @@ const panelPlugins = computed(() => {
         to: panel.route
           ? getMeetingRoute(panel.route.name, panel.route.params)
           : panel.component
-            ? getMeetingRoute('controlPanel', { panel: panel.id })
-            : undefined,
+          ? getMeetingRoute('controlPanel', { panel: panel.id })
+          : undefined,
         ...panel
       }
-    }), 'title')
+    }),
+    'title'
+  )
 })
 const currentPanel = computed(() => route.params.panel as string | undefined)
-const currentPlugin = computed(() => currentPanel.value ? meetingSettingsPlugins.getPlugin(currentPanel.value) : undefined)
+const currentPlugin = computed(() =>
+  currentPanel.value
+    ? meetingSettingsPlugins.getPlugin(currentPanel.value)
+    : undefined
+)
 const currentComponent = computed(() => currentPlugin.value?.component)
 
 const breadcrumbs = computed(() => {
   if (!currentPlugin.value) return
-  return [{
-    text: t('meeting.controlPanel'),
-    to: getMeetingRoute('settings')
-  },
-  {
-    text: currentPlugin.value.getTitle(t),
-    to: getMeetingRoute('controlPanel', { panel: currentPlugin.value.id })
-  }]
+  return [
+    {
+      title: t('meeting.controlPanel'),
+      to: getMeetingRoute('settings')
+    },
+    {
+      title: currentPlugin.value.getTitle(t),
+      to: getMeetingRoute('controlPanel', { panel: currentPlugin.value.id })
+    }
+  ]
 })
 </script>
 

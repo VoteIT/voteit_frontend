@@ -13,12 +13,18 @@
         v-if="method.isCurrent"
         :title="method.title"
         class="my-4"
-        v-bind="method.props">
+        v-bind="method.props"
+      >
         <v-card-text>
           {{ method.description }}
         </v-card-text>
         <v-card-actions v-if="method.attributes.length">
-          <v-chip v-for="{ icon, text } in method.attributes" :key="text" :prepend-icon="icon" class="mr-1">
+          <v-chip
+            v-for="{ icon, text } in method.attributes"
+            :key="text"
+            :prepend-icon="icon"
+            class="mr-1"
+          >
             {{ text }}
           </v-chip>
         </v-card-actions>
@@ -30,15 +36,20 @@
             class="my-4"
             v-bind="{ ...method.props, ...activator.props }"
           >
-          <v-card-text>
-            {{ method.description }}
-          </v-card-text>
-          <v-card-actions v-if="method.attributes.length">
-            <v-chip v-for="{ icon, text } in method.attributes" :key="text" :prepend-icon="icon" class="mr-1">
-              {{ text }}
-            </v-chip>
-          </v-card-actions>
-        </v-card>
+            <v-card-text>
+              {{ method.description }}
+            </v-card-text>
+            <v-card-actions v-if="method.attributes.length">
+              <v-chip
+                v-for="{ icon, text } in method.attributes"
+                :key="text"
+                :prepend-icon="icon"
+                class="mr-1"
+              >
+                {{ text }}
+              </v-chip>
+            </v-card-actions>
+          </v-card>
         </template>
         <i18n-t keypath="electoralRegister.confirmMethodChange">
           <template #name>
@@ -63,8 +74,7 @@ import useAlert from '@/composables/useAlert'
 import { meetingType } from '../contentTypes'
 import useMeeting from '../useMeeting'
 
-import useElectoralRegisters from './useElectoralRegisters'
-import { ErMethod } from './types'
+import useElectoralRegisters, { getErAttributes } from './useElectoralRegisters'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -73,10 +83,10 @@ const { alert } = useAlert()
 const api = meetingType.getContentApi({ alertOnError: false })
 
 const currentName = computed({
-  get () {
+  get() {
     return meeting.value?.er_policy_name
   },
-  async set (name) {
+  async set(name) {
     if (name === meeting.value?.er_policy_name) return
     try {
       await api.patch(meetingId.value, { er_policy_name: name })
@@ -87,7 +97,7 @@ const currentName = computed({
           title: e.response.data.er_policy_name.join('\n'),
           no: false,
           yes: t('ok'),
-          resolve () {}
+          resolve() {}
         })
       }
       alert('^Unknown error')
@@ -95,20 +105,12 @@ const currentName = computed({
   }
 })
 
-function * getAttributes (method: ErMethod) {
-  if (method.handles_active_check) yield { icon: 'mdi-account-network', text: t('electoralRegister.handlesActiveCheck') }
-  if (method.handles_vote_weight) yield { icon: 'mdi-account-plus', text: t('electoralRegister.handlesVoteWeight') }
-  if (method.group_votes_active) yield { icon: 'mdi-account-group', text: t('electoralRegister.groupVotesActive') }
-  if (method.allow_manual) yield { icon: 'mdi-book-open-variant', text: t('electoralRegister.createManual') }
-  if (method.allow_trigger) yield { icon: 'mdi-star-check', text: t('electoralRegister.triggerWhenever') }
-}
-
 const methods = computed(() => {
-  return availableErMethods.value?.map(method => {
+  return availableErMethods.value?.map((method) => {
     const isCurrent = method.name === currentName.value
     return {
       ...method,
-      attributes: [...getAttributes(method)],
+      attributes: [...getErAttributes(method, t)],
       isCurrent,
       props: {
         elevation: isCurrent ? 6 : 0,

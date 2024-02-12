@@ -8,14 +8,16 @@ declare namespace global {
   const WS: WS
 }
 
-type TestContent = { pk: number, a: number, b: number }
+type TestContent = { pk: number; a: number; b: number }
 
-async function subscribe (channelType: string, pk: number) {
+async function subscribe(channelType: string, pk: number) {
   const p = { channel_type: channelType, pk }
   const { leave, promise } = socket.channels.subscribe(channelType, pk)
   await sleep()
   const message: any = await global.WS.nextMessage
-  expect(message).toEqual(expect.objectContaining({ t: 'channel.subscribe', p }))
+  expect(message).toEqual(
+    expect.objectContaining({ t: 'channel.subscribe', p })
+  )
   global.WS.send({ ...message, t: 'channel.subscribed', s: 's' })
   await promise
   return leave

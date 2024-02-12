@@ -4,7 +4,7 @@ import { MeetingDialectDefinition } from '../types'
 
 const dialectStore = ref<MeetingDialectDefinition[] | null>(null)
 
-async function loadDialects () {
+async function loadDialects() {
   const { data } = await meetingDialectType.api.list()
   dialectStore.value = data
 }
@@ -14,7 +14,7 @@ const installableDialects = computed(() => {
   return dialectStore.value
 })
 
-export default function useDialects () {
+export default function useDialects() {
   return {
     installableDialects
   }

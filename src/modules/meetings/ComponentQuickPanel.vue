@@ -38,21 +38,31 @@ import useComponentApi from './useComponentApi'
 import { isActiveMeeting } from './rules'
 import type { NoSettingsComponent } from './types'
 
-const props = defineProps<{ componentName: string, switchLabel: string }>()
+const props = defineProps<{ componentName: string; switchLabel: string }>()
 
 const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
-const isBlocked = computed(() => meeting.value?.dialect?.block_components?.includes(props.componentName))
-const isRequired = computed(() => isActiveMeeting(meeting.value) && (meeting.value?.dialect?.configure_components || []).some(({ name }) => name === props.componentName))
+const isBlocked = computed(
+  () => meeting.value?.dialect?.block_components?.includes(props.componentName)
+)
+const isRequired = computed(
+  () =>
+    isActiveMeeting(meeting.value) &&
+    (meeting.value?.dialect?.configure_components || []).some(
+      ({ name }) => name === props.componentName
+    )
+)
 const warnRequired = computed(() => !active.value && isRequired.value)
-const { component, addComponent, setComponentState } = useComponentApi<NoSettingsComponent<string>>(meetingId, props.componentName)
+const { component, addComponent, setComponentState } = useComponentApi<
+  NoSettingsComponent<string>
+>(meetingId, props.componentName)
 
 const active = computed({
-  get () {
+  get() {
     return component.value?.state === 'on'
   },
-  set (value) {
+  set(value) {
     if (!component.value) return addComponent(null, true)
     // TODO error handling here
     setComponentState(component.value, value)

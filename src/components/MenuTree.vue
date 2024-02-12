@@ -1,14 +1,21 @@
 <template>
   <ul class="menu-tree" :class="`level-${level}`">
     <li v-if="slotBefore && $slots[slotBefore]">
-      <slot :name="slotBefore" />
+      <slot :name="slotBefore"></slot>
     </li>
-    <li v-for="(item, i) in items" :key="i" :class="{ open: openMenus.has(i), link: isTreeLink(item) }">
+    <li
+      v-for="(item, i) in items"
+      :key="i"
+      :class="{ open: openMenus.has(i), link: isTreeLink(item) }"
+    >
       <router-link
         v-if="isTreeLink(item)"
         @click="$emit('navigation')"
         class="menu-item"
-        :class="{ 'has-new': item.hasNewItems, 'router-link-exact-only': item.exactActive }"
+        :class="{
+          'has-new': item.hasNewItems,
+          'router-link-exact-only': item.exactActive
+        }"
         :to="item.to"
         v-ripple
       >
@@ -16,7 +23,12 @@
           {{ item.title }}
         </div>
         <span class="icons" v-if="item.icons">
-          <v-icon v-for="icon in item.icons" :key="icon" :icon="icon" size="x-small" />
+          <v-icon
+            v-for="icon in item.icons"
+            :key="icon"
+            :icon="icon"
+            size="x-small"
+          />
         </span>
         <span class="count" v-if="typeof item.count === 'number'">
           {{ item.count }}
@@ -24,16 +36,40 @@
       </router-link>
       <a href="#" v-else class="sub-menu" @click.prevent="toggleMenu(i)">
         <div>
-          <v-icon :size="level ? 'x-small' : 'small'" left icon="mdi-chevron-right"/>
+          <v-icon
+            :size="level ? 'x-small' : 'small'"
+            left
+            icon="mdi-chevron-right"
+          />
           {{ item.title }}
-          <template v-if="item.showCount && item.showCountTotal !== undefined && item.showCountTotal !== item.items.length">({{ item.items.length }}/{{ item.showCountTotal }})</template>
-          <template v-else-if="item.showCount">({{ item.items.length }})</template>
+          <template
+            v-if="
+              item.showCount &&
+              item.showCountTotal !== undefined &&
+              item.showCountTotal !== item.items.length
+            "
+            >({{ item.items.length }}/{{ item.showCountTotal }})</template
+          >
+          <template v-else-if="item.showCount"
+            >({{ item.items.length }})</template
+          >
         </div>
-        <v-icon v-if="item.icon" :icon="item.icon" size="small"/>
+        <v-icon v-if="item.icon" :icon="item.icon" size="small" />
       </a>
       <v-expand-transition>
-        <MenuTree v-if="isTreeMenu(item)" @hasActive="childHasActive(i)" @navigation="$emit('navigation')" :level="level + 1" v-bind="item" v-show="openMenus.has(i)">
-          <template v-for="(component, slot) in $slots" :key="slot" v-slot:[slot]>
+        <MenuTree
+          v-if="isTreeMenu(item)"
+          @hasActive="childHasActive(i)"
+          @navigation="$emit('navigation')"
+          :level="level + 1"
+          v-bind="item"
+          v-show="openMenus.has(i)"
+        >
+          <template
+            v-for="(component, slot) in $slots"
+            :key="slot"
+            v-slot:[slot]
+          >
             <component :is="component" />
           </template>
         </MenuTree>
@@ -55,7 +91,7 @@ import TypedEvent from '@/utils/TypedEvent'
 
 interface Props {
   defaultOpen?: boolean
-  icon?: string,
+  icon?: string
   items: TreeMenuItem[]
   level?: number
   loadedEvent?: TypedEvent
@@ -83,33 +119,42 @@ props.items.forEach((item, index) => {
   item.openEvent?.on(() => openMenus.add(index))
 })
 props.loadedEvent?.on(() => {
-  if (props.openFirstNonEmpty) defer(openFirstNonEmpty)
+  if (props.openFirstNonEmpty)
+    defer(() => {
+      if (openMenus.size) return
+      for (const [index, item] of props.items.entries()) {
+        if ('items' in item && item.items.length) return openMenus.add(index)
+      }
+    })
 })
+
 // Default open on new items?
-watch(() => props.items, (items, oldItems) => {
-  items.forEach((item, index) => {
-    if (isTreeMenu(item) && !oldItems.includes(item) && item.defaultOpen) openMenus.add(index)
-  })
-})
-function toggleMenu (index: number) {
+watch(
+  () => props.items,
+  (items, oldItems) => {
+    items.forEach((item, index) => {
+      if (isTreeMenu(item) && !oldItems.includes(item) && item.defaultOpen)
+        openMenus.add(index)
+    })
+  }
+)
+function toggleMenu(index: number) {
   if (openMenus.has(index)) return openMenus.delete(index)
   openMenus.add(index)
 }
 
-function openFirstNonEmpty () {
-  // Only if none open already
-  if (openMenus.size) return
-  for (const [index, item] of props.items.entries()) {
-    if ('items' in item && item.items.length) return openMenus.add(index)
-  }
-}
+const hasActive = computed(() =>
+  props.items.some((item) => 'to' in item && item.to === route.path)
+)
+watch(
+  hasActive,
+  (value) => {
+    if (value) emit('hasActive')
+  },
+  { immediate: true }
+)
 
-const hasActive = computed(() => props.items.some(item => 'to' in item && item.to === route.path))
-watch(hasActive, value => {
-  if (value) emit('hasActive')
-}, { immediate: true })
-
-function childHasActive (index: number) {
+function childHasActive(index: number) {
   openMenus.add(index)
   emit('hasActive')
 }

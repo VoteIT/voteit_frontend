@@ -3,16 +3,9 @@ import App from './App.vue'
 // import './registerServiceWorker'
 import router from './router'
 
-import Api from './plugins/Api'
 import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
-import Menu from './components/Menu.vue'
-import Tag from './components/Tag.vue'
-import User from './components/User.vue'
-import Dropdown from './components/Dropdown.vue'
-import UserAvatar from './components/UserAvatar.vue'
-import Widget from './components/Widget.vue'
 import Proposal from './modules/proposals/Proposal.vue'
 
 // REGISTER PLUGINS
@@ -21,6 +14,7 @@ import './modules/meetings/dialects'
 import './modules/active'
 import './modules/agendas'
 import './modules/discussions'
+import './modules/plenary'
 import './modules/polls'
 import './modules/polls/methods'
 import './modules/proposals'
@@ -28,17 +22,11 @@ import './modules/reactions'
 import './modules/presence'
 import './modules/printing'
 import './modules/speakerLists'
+import './modules/rooms'
 
 createApp(App)
   .use(i18n)
   .use(router)
   .use(vuetify)
-  .use(Api)
-  .component('DropdownMenu', Menu)
-  .component('Tag', Tag)
-  .component('User', User)
-  .component('Dropdown', Dropdown)
-  .component('UserAvatar', UserAvatar)
-  .component('Widget', Widget)
   .component('Proposal', Proposal)
   .mount('#app')

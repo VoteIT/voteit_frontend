@@ -1,5 +1,13 @@
 <template>
-  <template v-if="poll && isOngoing">
+  <main v-if="!poll" class="text-center">
+    <v-progress-circular
+      class="my-6"
+      color="secondary"
+      indeterminate
+      size="large"
+    />
+  </main>
+  <template v-else-if="isOngoing">
     <main class="mb-8">
       <p>
         {{
@@ -23,13 +31,22 @@
       />
     </main>
     <div class="actions text-right">
-      <DefaultDialog :title="t('poll.ballot')">
+      <DefaultDialog
+        :title="t('poll.ballot')"
+        @update:model-value="isBroadcasting && setShowBallot($event)"
+        width="600px"
+      >
         <template #activator="{ props }">
           <v-btn variant="text" v-bind="props" prepend-icon="mdi-vote">
             {{ t('poll.showBallot') }}
           </v-btn>
         </template>
-        <component :is="voteComponent" :poll="poll" :proposals="proposals" />
+        <component
+          :is="voteComponent"
+          disabled
+          :poll="poll"
+          :proposals="proposals"
+        />
       </DefaultDialog>
       <QueryDialog
         @confirmed="cancel"
@@ -59,7 +76,7 @@
       </v-btn>
     </div>
   </template>
-  <main v-else-if="poll">
+  <main v-else>
     <div v-if="isFinished" class="mt-6">
       <component
         :is="resultComponent"
@@ -79,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toRef, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -87,15 +104,18 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useChannel from '@/composables/useChannel'
+
 import usePoll from '../polls/usePoll'
 import { Poll, PollTransition } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
+import useRoom from '../rooms/useRoom'
 
 const props = defineProps<{
   data: Poll
 }>()
 
 const { t } = useI18n()
+const pollId = toRef(props.data, 'pk')
 const {
   isOngoing,
   isFinished,
@@ -106,17 +126,10 @@ const {
   proposals,
   resultComponent,
   voteComponent
-} = usePoll(ref(props.data.pk))
+} = usePoll(pollId)
+const { isBroadcasting, setPoll, setShowBallot } = useRoom()
 
-useChannel(
-  'poll',
-  computed(() => props.data.pk)
-)
-
-useChannel(
-  'poll',
-  computed(() => props.data.pk)
-)
+useChannel('poll', pollId)
 
 const complete = computed(() => {
   if (!pollStatus.value) return false
@@ -144,11 +157,18 @@ const working = ref(false)
 
 async function cancel() {
   working.value = true
-  await pollType.api.transition(props.data.pk, PollTransition.Cancel)
+  await pollType.transitions.make(poll.value!, PollTransition.Cancel, t)
 }
 
 async function close() {
   working.value = true
-  await pollType.api.transition(props.data.pk, PollTransition.Close)
+  await pollType.transitions.make(poll.value!, PollTransition.Close, t)
 }
+
+/**
+ * Unsets active poll in room, whether from created poll or broadcaster clicked to open an existing poll.
+ */
+onBeforeUnmount(() => {
+  if (isBroadcasting.value) setPoll(null)
+})
 </script>

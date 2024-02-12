@@ -16,7 +16,12 @@ export enum PermissionDeniedStrategy {
   RequireLogin = 'requireLogin'
 }
 type PermissonValue = boolean | undefined
-type PermissionDeniedHandler = (options: PermissionOptions, router: Router, t: ComposerTranslation, changed: boolean) => void
+type PermissionDeniedHandler = (
+  options: PermissionOptions,
+  router: Router,
+  t: ComposerTranslation,
+  changed: boolean
+) => void
 
 const DEFAULT_OPTIONS: PermissionOptions = {
   to: { name: 'home' }
@@ -26,10 +31,11 @@ const { idLoginURL } = useOrganisation()
 const { isAuthenticated } = useAuthentication()
 
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
-  default ({ message, to }, router, t, changed) {
-    const title = message ?? changed
-      ? t('permission.defaultChangedMessage')
-      : t('permission.defaultMessage')
+  default({ message, to }, router, t, changed) {
+    const title =
+      message ?? changed
+        ? t('permission.defaultChangedMessage')
+        : t('permission.defaultMessage')
     openDialogEvent.emit({
       title,
       resolve: () => router.push(unref(to)),
@@ -39,11 +45,12 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
       theme: ThemeColor.Error
     })
   },
-  requireLogin (options, router, t, changed) {
-    if (isAuthenticated.value !== false) return strategies.default(options, router, t, changed)
+  requireLogin(options, router, t, changed) {
+    if (isAuthenticated.value !== false)
+      return strategies.default(options, router, t, changed)
     openDialogEvent.emit({
       title: options.message ?? t('permission.defaultLoginMessage'),
-      resolve: doLogin => {
+      resolve: (doLogin) => {
         if (doLogin) location.assign(idLoginURL.value!)
         else router.push({ name: 'home' })
       },
@@ -55,21 +62,35 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   }
 }
 
-export default function usePermission (permission: Ref<PermissonValue>, options: Partial<PermissionOptions> = {}, strategy: PermissionDeniedStrategy | PermissionDeniedHandler = PermissionDeniedStrategy.Default) {
+export default function usePermission(
+  permission: Ref<PermissonValue>,
+  options: Partial<PermissionOptions> = {},
+  strategy:
+    | PermissionDeniedStrategy
+    | PermissionDeniedHandler = PermissionDeniedStrategy.Default
+) {
   const router = useRouter()
   const { t } = useI18n()
 
   const previousValue = ref<PermissonValue>(permission.value)
 
-  function denyUser () {
-    const method = typeof strategy === 'function'
-     ? strategy
-     : strategies[strategy]
-    method({ ...DEFAULT_OPTIONS, ...options }, router, t, previousValue.value === true)
+  function denyUser() {
+    const method =
+      typeof strategy === 'function' ? strategy : strategies[strategy]
+    method(
+      { ...DEFAULT_OPTIONS, ...options },
+      router,
+      t,
+      previousValue.value === true
+    )
   }
 
-  watch(permission, allowed => {
-    if (allowed === false) denyUser()
-    previousValue.value = allowed
-  }, { immediate: true })
+  watch(
+    permission,
+    (allowed) => {
+      if (allowed === false) denyUser()
+      previousValue.value = allowed
+    },
+    { immediate: true }
+  )
 }

@@ -45,6 +45,8 @@ socket.addTypeHandler('s', ({ t, i, p }) => {
       frontendVersion.value = (p as { version: string }).version
       break
     case 'batch':
+    case 'pong':
+    case 'stat':
       break
     default:
       console.warn(`Got unknown system message type '${type}'`)

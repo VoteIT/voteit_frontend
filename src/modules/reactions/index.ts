@@ -13,14 +13,14 @@ meetingSettingsPlugins.register({
   component: ControlPanel,
   quickComponent: QuickPanel,
   icon: 'mdi-thumb-up',
-  getTitle (t) {
+  getTitle(t) {
     return t('reaction.buttons')
   }
 })
 
 proposalButtonPlugins.register({
   id: 'reactions',
-  checkActive (meeting, mode) {
+  checkActive(meeting, mode) {
     return !!getMeetingButtons(meeting.pk, undefined, mode).length
   },
   component: ProposalButtons

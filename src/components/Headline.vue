@@ -1,6 +1,13 @@
 <template>
   <component :is="tag" class="editable-headline" @click="onClick">
-    <input ref="inputEl" v-if="editActive" v-model="content" :maxlength="maxlength" @keydown.ctrl.enter="done" @keydown.enter.exact="done" />
+    <input
+      ref="inputEl"
+      v-if="editActive"
+      v-model="content"
+      :maxlength="maxlength"
+      @keydown.ctrl.enter="done"
+      @keydown.enter.exact="done"
+    />
     <template v-else>{{ content }}</template>
   </component>
 </template>
@@ -24,26 +31,33 @@ const emit = defineEmits(['update:modelValue', 'update:editing', 'edit-done'])
 const content = ref(props.modelValue)
 const editActive = ref(props.editing)
 const inputEl = ref<HTMLInputElement | null>(null)
-watch(content, value => {
+watch(content, (value) => {
   // Always update modelValue if editing is requested from outside component
   if (props.editing) emit('update:modelValue', value)
 })
-watch(() => props.modelValue, value => {
-  content.value = value
-})
-watch(() => props.editing, value => {
-  editActive.value = value
-})
+watch(
+  () => props.modelValue,
+  (value) => {
+    content.value = value
+  }
+)
+watch(
+  () => props.editing,
+  (value) => {
+    editActive.value = value
+  }
+)
 
-async function onClick () {
+async function onClick() {
   if (!props.clickToEdit) return
   editActive.value = true
   await nextTick()
   inputEl.value?.focus()
 }
 
-function done () {
-  if (content.value !== props.modelValue) emit('update:modelValue', content.value)
+function done() {
+  if (content.value !== props.modelValue)
+    emit('update:modelValue', content.value)
   emit('edit-done')
   editActive.value = false
 }

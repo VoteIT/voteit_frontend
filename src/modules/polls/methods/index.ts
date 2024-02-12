@@ -17,10 +17,14 @@ import RepeatedIRVResult from './RepeatedIRVResult.vue'
 import SimpleResult from './SimpleResult.vue'
 import SchulzeResult from './SchulzeResult.vue'
 import STVResult from './STVResult.vue'
+import { JsonSchema } from '@/modules/forms/types'
 
 const { getOrganisationComponent } = useOrganisation()
 
-function getSchulzeSchema(t: ComposerTranslation, proposals: number) {
+function getSchulzeSchema(
+  t: ComposerTranslation,
+  proposals: number
+): JsonSchema<{ deny_proposal: boolean; stars: number }> {
   return {
     properties: {
       stars: {
@@ -35,7 +39,7 @@ function getSchulzeSchema(t: ComposerTranslation, proposals: number) {
       }
     },
     required: proposals < 3 ? ['deny_proposal', 'stars'] : ['stars']
-  } as const
+  }
 }
 
 pollPlugins.register({

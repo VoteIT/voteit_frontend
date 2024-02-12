@@ -1,11 +1,5 @@
 <template>
-  <v-btn
-    v-if="!mode"
-    size="small"
-    color="primary"
-    :to="to"
-    @click="goTo"
-  >
+  <v-btn v-if="!mode" size="small" color="primary" :to="to" @click="goTo">
     <v-icon icon="mdi-printer" />
   </v-btn>
 </template>
@@ -26,9 +20,11 @@ const props = defineProps<{
 }>()
 
 const { getAgendaItemRoute } = useAgendaItem(ref(props.proposal.agenda_item))
-const to = computed(() => getAgendaItemRoute('printing:proposals', { propIds: props.proposal.pk }))
+const to = computed(() =>
+  getAgendaItemRoute('printing:proposals', { propIds: props.proposal.pk })
+)
 
-function goTo () {
+function goTo() {
   backOnPrinted.value = true
 }
 </script>

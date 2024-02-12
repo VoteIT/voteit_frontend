@@ -1,15 +1,19 @@
-import { toRef } from 'vue'
+import { computed, toRef } from 'vue'
+
 import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
+import FakeRolesBubble from './FakeRolesBubble.vue'
 import {
   MeetingInviteAnnotationPlugin,
+  meetingBubblePlugins,
   meetingExportPlugins,
   meetingInviteAnnotationPlugins,
   meetingRolePlugins
 } from './registry'
 import useMeetingGroups from './useMeetingGroups'
+import { hasFakeRoles } from './rules'
 import { MeetingRole } from './types'
 
 function getDownloadFormat(meetingId: number, format: 'csv' | 'json') {
@@ -154,4 +158,15 @@ meetingInviteAnnotationPlugins.register({
       })) ?? []
     )
   }
+})
+
+meetingBubblePlugins.register({
+  component: FakeRolesBubble,
+  icon: 'mdi-account-hard-hat',
+  id: 'fakeRoles',
+  checkActive(meeting) {
+    return hasFakeRoles(meeting.pk)
+  },
+  requireAttention: computed(() => false),
+  order: -1
 })

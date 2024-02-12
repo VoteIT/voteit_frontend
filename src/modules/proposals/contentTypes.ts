@@ -2,6 +2,7 @@
 import ContentType from '@/contentTypes/ContentType'
 import { Proposal } from './types'
 import { proposalStates } from './workflowStates'
+import { ExtractTransition } from '@/contentTypes/types'
 
 export interface TextParagraph {
   paragraph_id: number
@@ -21,7 +22,10 @@ export interface ProposalText {
   base_tag: string
 }
 
-export const proposalType = new ContentType<Proposal>({
+export const proposalType = new ContentType<
+  Proposal,
+  ExtractTransition<typeof proposalStates>
+>({
   states: proposalStates,
   name: 'proposal',
   restEndpoint: 'proposals/'

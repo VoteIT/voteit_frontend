@@ -12,18 +12,25 @@
           <v-btn
             color="primary"
             :to="getMeetingRoute('participants')"
-            prepend-icon="mdi-account">
+            prepend-icon="mdi-account"
+          >
             {{ t('meeting.participants') }}
           </v-btn>
         </v-alert>
-        <v-switch :label="t('meeting.visibleInLists')" v-model="meetingListed" color="primary" :messages="t('accessPolicy.listedMeetingHelp')" />
+        <v-switch
+          :label="t('meeting.visibleInLists')"
+          v-model="meetingListed"
+          color="primary"
+          :messages="t('accessPolicy.listedMeetingHelp')"
+        />
         <v-expand-transition>
           <div v-if="meetingListed && !hasActivePolicy">
             <v-alert
               type="warning"
               :title="t('accessPolicy.noAccessPolicies')"
               :text="t('accessPolicy.noAccessPoliciesAlert')"
-              class="my-4" />
+              class="my-4"
+            />
           </div>
         </v-expand-transition>
         <!-- TODO Add more access policies later! -->
@@ -33,7 +40,8 @@
             @click="addAutomaticAccess"
             prepend-icon="mdi-account-cog"
             size="large"
-            color="primary">
+            color="primary"
+          >
             {{ t('accessPolicies.automatic.add') }}
           </v-btn>
         </div>
@@ -42,7 +50,14 @@
             <v-card-title class="flex-grow-1">
               {{ p.title }}
             </v-card-title>
-            <v-switch color="primary" :modelValue="p.active" @update:modelValue="setActive(p, $event!)" :label="t('active')" class="flex-grow-0" hide-details />
+            <v-switch
+              color="primary"
+              :modelValue="p.active"
+              @update:modelValue="setActive(p, $event!)"
+              :label="t('active')"
+              class="flex-grow-0"
+              hide-details
+            />
           </div>
           <v-card-text>
             <p class="mb-4">
@@ -52,14 +67,29 @@
               {{ t('selectRoles') }}
             </h2>
             <div>
-              <v-chip-group :modelValue="p.roles_given" @update:modelValue="setRoles(p, $event)" multiple>
-                <v-chip color="primary" v-for="role in roles" :key="role.value" v-bind="role" />
+              <v-chip-group
+                :modelValue="p.roles_given"
+                @update:modelValue="setRoles(p, $event)"
+                multiple
+              >
+                <v-chip
+                  color="primary"
+                  v-for="role in roles"
+                  :key="role.value"
+                  v-bind="role"
+                />
               </v-chip-group>
             </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-tooltip v-if="p.active" :model-value="copied" :text="t('copied')" location="top" :open-on-hover="false">
+            <v-tooltip
+              v-if="p.active"
+              :model-value="copied"
+              :text="t('copied')"
+              location="top"
+              :open-on-hover="false"
+            >
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
@@ -72,7 +102,11 @@
                 </v-btn>
               </template>
             </v-tooltip>
-            <QueryDialog :text="t('accessPolicy.confirmDelete')" color="warning" @confirmed="deletePolicy(p)">
+            <QueryDialog
+              :text="t('accessPolicy.confirmDelete')"
+              color="warning"
+              @confirmed="deletePolicy(p)"
+            >
               <template #activator="{ props }">
                 <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
                   {{ t('content.delete') }}
@@ -107,11 +141,22 @@ const NON_MODIFIABLE_ROLES = Object.freeze([
 ])
 
 const { t } = useI18n()
-const { meetingId, meeting, meetingDialect, meetingUrl, getMeetingRoute } = useMeeting()
+const { meetingId, meeting, meetingDialect, meetingUrl, getMeetingRoute } =
+  useMeeting()
 const { alert } = useAlert()
-const { accessPolicies, hasActivePolicy, addPolicy, deletePolicy, setActive, setRoles } = useAccessPolicies(meetingId)
+const {
+  accessPolicies,
+  hasActivePolicy,
+  addPolicy,
+  deletePolicy,
+  setActive,
+  setRoles
+} = useAccessPolicies(meetingId)
 
-function translateAP (ap: AccessPolicyType): { description: string, title: string } {
+function translateAP(ap: AccessPolicyType): {
+  description: string
+  title: string
+} {
   switch (ap) {
     case AccessPolicyType.Automatic:
       return {
@@ -128,13 +173,13 @@ function translateAP (ap: AccessPolicyType): { description: string, title: strin
 }
 
 const annotatedPolicies = computed(() => {
-  return accessPolicies.value.map(ap => ({
+  return accessPolicies.value.map((ap) => ({
     ...ap,
     ...translateAP(ap.name)
   }))
 })
 
-async function addAutomaticAccess () {
+async function addAutomaticAccess() {
   await addPolicy({
     meeting: meetingId.value,
     name: AccessPolicyType.Automatic,
@@ -143,10 +188,10 @@ async function addAutomaticAccess () {
 }
 
 const meetingListed = computed<boolean>({
-  get () {
+  get() {
     return !!meeting.value && meeting.value.visible_in_lists
   },
-  set (value) {
+  set(value) {
     try {
       meetingType.api.patch(meetingId.value, {
         visible_in_lists: value
@@ -159,16 +204,12 @@ const meetingListed = computed<boolean>({
 
 const roles = computed(() => {
   return Object.values(MeetingRole)
-    .filter(
-      r => !meetingDialect.value?.block_roles?.includes(r)
-    )
-    .map(
-      value => ({
-        disabled: NON_MODIFIABLE_ROLES.includes(value),
-        text: translateMeetingRole(value, t),
-        value
-      })
-    )
+    .filter((r) => !meetingDialect.value?.block_roles?.includes(r))
+    .map((value) => ({
+      disabled: NON_MODIFIABLE_ROLES.includes(value),
+      text: translateMeetingRole(value, t),
+      value
+    }))
 })
 
 const { copy, copied } = useClipboard()

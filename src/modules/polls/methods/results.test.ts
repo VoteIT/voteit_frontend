@@ -22,21 +22,26 @@ const global = {
   plugins: [i18n, router, vuetify]
 }
 
+function getProposal(pk: number) {
+  return {
+    created: new Date().toISOString(),
+    body: `<p>Proposal ${pk}</p>`,
+    pk,
+    prop_id: `prop-${pk}`,
+    shortname: 'proposal',
+    tags: []
+  }
+}
+
 vi.mock('@/modules/proposals/useProposals', () => {
   return {
     default() {
       return {
-        getProposal(pk: number) {
-          return {
-            created: new Date().toISOString(),
-            body: `<p>Proposal ${pk}</p>`,
-            pk,
-            prop_id: `prop-${pk}`,
-            shortname: 'proposal',
-            tags: []
-          }
-        }
+        getProposal
       }
+    },
+    getProposals(pks: number[]) {
+      return pks.map(getProposal)
     }
   }
 })

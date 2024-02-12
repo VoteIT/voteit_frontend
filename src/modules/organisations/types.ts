@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 export enum OrganisationRole {
   Manager = 'org_manager',
-  MeetingCreator = 'meeting_creator',
+  MeetingCreator = 'meeting_creator'
 }
 
 interface OrganisationComponent<Settings = null> {
@@ -27,7 +27,7 @@ export interface Organisation {
 
 // TODO This needs to be synced with variants of backend serializers
 // Meeting user data can be based on this and be defined in ../meetings/types.ts
-export interface User {
+export interface IUser {
   pk: number
   first_name: string
   img_url: string | null
@@ -36,4 +36,10 @@ export interface User {
   organisation_roles: OrganisationRole[] // Only when loading authenticated user from /api/user
   userid: string | null
   email: string
+}
+
+// Only when loading authenticated user from /api/user
+export interface IOrganisationUser extends IUser {
+  organisation: number
+  organisation_roles: OrganisationRole[]
 }

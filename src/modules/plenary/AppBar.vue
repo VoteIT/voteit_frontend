@@ -1,16 +1,59 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { onKeyStroke } from '@vueuse/core'
+
+import { toggleNavDrawerEvent } from '@/utils/events'
+import WorkflowState from '@/components/WorkflowState.vue'
+
+import { agendaItemType } from '../agendas/contentTypes'
+import useAgenda from '../agendas/useAgenda'
+import useAgendaItem from '../agendas/useAgendaItem'
+import useMeeting from '../meetings/useMeeting'
+import useRoom from '../rooms/useRoom'
+import usePlenary from './usePlenary'
+
+const { t } = useI18n()
+const router = useRouter()
+const { meeting, meetingId, meetingRoute } = useMeeting()
+const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
+const { agendaItem, canChangeAgendaItem } = useAgendaItem(agendaId)
+const { meetingRoom } = useRoom()
+
+const { getPlenaryRoute } = usePlenary(meetingId, agendaId)
+
+/* Agenda navigation */
+function navigateAgendaItem(aid?: number) {
+  if (!aid) return
+  router.push(getPlenaryRoute({ aid }))
+}
+onKeyStroke(
+  'ArrowLeft',
+  (event) => !event.altKey && navigateAgendaItem(previousAgendaItem.value?.pk)
+)
+onKeyStroke(
+  'ArrowRight',
+  (event) => !event.altKey && navigateAgendaItem(nextAgendaItem.value?.pk)
+)
+
+const breadcrumbs = computed(() => [
+  { title: meeting.value?.title ?? '', to: meetingRoute.value },
+  { title: meetingRoom.value?.title ?? '-' },
+  { title: agendaItem.value?.title ?? '-' }
+])
+</script>
+
 <template>
-  <v-app-bar app flat color="app-bar">
+  <v-app-bar flat color="app-bar">
     <router-link :to="meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title class="text-truncate">
-      <router-link
-        v-if="agendaItem && agendaItemRoute"
-        :to="agendaItemRoute"
-        class="text-white text-decoration-none"
-      >
-        {{ agendaItem.title }}
-      </router-link>
+      <small class="position-absolute">
+        {{ t('plenary.view') }}
+      </small>
+      <v-breadcrumbs :items="breadcrumbs" />
     </v-app-bar-title>
     <div class="flex-shrink-0 d-flex align-center">
       <WorkflowState
@@ -21,40 +64,13 @@
         :object="agendaItem"
       />
       <div class="pa-3"></div>
-      <DropdownMenu position="bottom" icon="mdi-star" :items="pollMenu" />
-      <v-menu location="bottom right">
-        <template #activator="{ props }">
-          <v-btn
-            :icon="stateFilter.length ? 'mdi-filter-menu' : 'mdi-filter-off'"
-            v-bind="props"
-          />
-        </template>
-        <v-list>
-          <v-item-group multiple v-model="stateFilter">
-            <v-item
-              v-for="{ count, state, title } in filterStates"
-              :key="state.state"
-              :value="state.state"
-              v-slot="{ isSelected, toggle }"
-            >
-              <v-list-item
-                @click.stop="toggle"
-                :prepend-icon="state.icon"
-                :active="isSelected"
-                :title="title"
-                :subtitle="t('proposal.proposalCount', { count }, count)"
-              />
-            </v-item>
-          </v-item-group>
-        </v-list>
-      </v-menu>
       <template v-if="agendaItem">
         <v-btn
           variant="text"
           :disabled="!previousAgendaItem"
           :to="
             previousAgendaItem
-              ? `/p/${meetingId}/${previousAgendaItem.pk}`
+              ? getPlenaryRoute({ aid: previousAgendaItem.pk })
               : '/'
           "
           icon="mdi-chevron-left"
@@ -62,7 +78,9 @@
         <v-btn
           variant="text"
           :disabled="!nextAgendaItem"
-          :to="nextAgendaItem ? `/p/${meetingId}/${nextAgendaItem.pk}` : '/'"
+          :to="
+            nextAgendaItem ? getPlenaryRoute({ aid: nextAgendaItem.pk }) : '/'
+          "
           icon="mdi-chevron-right"
         />
       </template>
@@ -71,195 +89,16 @@
         @click.stop="toggleNavDrawerEvent.emit()"
       />
     </div>
+    <template v-if="$slots.default" #extension>
+      <slot></slot>
+    </template>
   </v-app-bar>
 </template>
 
-<script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { dialogQuery } from '@/utils'
-import { openModalEvent, toggleNavDrawerEvent } from '@/utils/events'
-import { MenuItem, ThemeColor } from '@/utils/types'
-import WorkflowState from '@/components/WorkflowState.vue'
-
-import { agendaItemType } from '../agendas/contentTypes'
-import useAgenda from '../agendas/useAgenda'
-import useAgendaItem from '../agendas/useAgendaItem'
-import useMeeting from '../meetings/useMeeting'
-import { proposalStates } from '../proposals/workflowStates'
-import useProposals from '../proposals/useProposals'
-import { ProposalState } from '../proposals/types'
-import { pollType } from '../polls/contentTypes'
-import usePolls from '../polls/usePolls'
-import { Poll, PollState } from '../polls/types'
-import { PollMethodSettings, PollStartData } from '../polls/methods/types'
-
-import usePlenary from './usePlenary'
-import PollModal from './PollModal.vue'
-import { QuickStartMethod } from './types'
-import { PollPlugin, pollPlugins } from '../polls/registry'
-import { onKeyStroke } from '@vueuse/core'
-import { useRouter } from 'vue-router'
-import { proposalType } from '../proposals/contentTypes'
-
-const { getState } = pollType.useWorkflows()
-
-const { t } = useI18n()
-const router = useRouter()
-const { meetingId, meetingRoute } = useMeeting()
-const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
-const { agendaItem, agendaItemRoute, canChangeAgendaItem, nextPollTitle } =
-  useAgendaItem(agendaId)
-const { stateFilter, selectedProposals, selectedProposalIds } =
-  usePlenary(agendaId)
-const { getAgendaProposals } = useProposals()
-const { getAiPolls, getPollMethod } = usePolls()
-const { getState: getProposalState } = proposalType.useWorkflows()
-
-function getStateProposalCount(state: ProposalState) {
-  return getAgendaProposals(agendaId.value, (p) => p.state === state).length
-}
-const filterStates = computed(() => {
-  return proposalStates.map((state) => {
-    const count = getStateProposalCount(state.state)
-    return {
-      state,
-      count,
-      title: state.getName(t, count)
-    }
-  })
-})
-
-function pollStateToMenu(state: PollState): MenuItem[] {
-  const wfState = getState(state)
-  if (!wfState) throw new Error(`Unknown poll state '${state}'`)
-
-  return getAiPolls(agendaId.value, state).map((poll) => ({
-    icon: wfState.icon,
-    title: poll.title,
-    subtitle: pollPlugins.getName(poll.method_name, t),
-    onClick: async () =>
-      openModalEvent.emit({
-        title: poll.title,
-        component: PollModal,
-        data: poll
-      })
-  }))
-}
-
-/**
- * Selected proposals that are in a protected state (not published)
- * If user tries to start a poll with any of these, have them confirm that it's ok
- */
-const protectedProposalStates = computed(() => {
-  return selectedProposals.value
-    .map((p) => p.state)
-    .filter((s) => s !== ProposalState.Published)
-})
-
-const working = ref(false)
-async function createPoll(
-  method: Poll['method_name'],
-  settings: PollMethodSettings | null
-) {
-  working.value = true
-  const pollData: Omit<PollStartData, 'p_ord' | 'withheld_result'> = {
-    agenda_item: agendaId.value,
-    meeting: meetingId.value,
-    title: nextPollTitle.value as string,
-    proposals: [...selectedProposalIds],
-    method_name: method,
-    start: true,
-    settings
-  }
-  if (protectedProposalStates.value.length) {
-    const states = [...new Set(protectedProposalStates.value)]
-      .map((s) => getProposalState(s)!.getName(t).toLowerCase())
-      .join(', ')
-    const title = t(
-      'plenary.confirmStartProtectedStates',
-      { states },
-      protectedProposalStates.value.length
-    )
-    if (!(await dialogQuery({ title, theme: ThemeColor.Warning }))) return
-  }
-  try {
-    const { data } = await pollType.api.add(pollData as Partial<Poll>)
-    openModalEvent.emit({
-      title: data.title,
-      component: PollModal,
-      data
-    })
-  } catch {}
-  working.value = false
-}
-
-const pollMethodMenu = computed<MenuItem[]>(() => {
-  const quickStartMethods: QuickStartMethod[] = [
-    {
-      ...(getPollMethod('combined_simple') as PollPlugin),
-      settings: null,
-      title: t('poll.method.combined_simple')
-    },
-    {
-      ...(getPollMethod('majority') as PollPlugin),
-      settings: null,
-      title: t('poll.method.majority')
-    },
-    {
-      ...(getPollMethod('schulze') as PollPlugin),
-      proposalsMin: 3,
-      settings: null,
-      title: t('poll.method.schulze')
-    },
-    {
-      ...(getPollMethod('schulze') as PollPlugin),
-      settings: { deny_proposal: true },
-      title: t('poll.method.schulzeAddDeny')
-    }
-  ]
-  return quickStartMethods.map(
-    ({ id, proposalsMax, proposalsMin, settings, title }) => {
-      const proposalsExact = proposalsMin === proposalsMax
-      const proposalCount = selectedProposals.value.length
-      const disabled = !(
-        proposalCount >= proposalsMin &&
-        (!proposalsMax || proposalCount <= proposalsMax)
-      )
-      const subtitle = disabled
-        ? proposalsExact
-          ? t('plenary.selectExactProposals', proposalsMin)
-          : t('plenary.selectMinProposals', proposalsMin)
-        : undefined
-      return {
-        disabled,
-        icon: 'mdi-vote',
-        subtitle,
-        title,
-        onClick: () => createPoll(id as Poll['method_name'], settings)
-      }
-    }
-  )
-})
-
-const pollMenu = computed<MenuItem[]>(() => {
-  return [
-    { subheader: t('plenary.startPoll') },
-    ...pollMethodMenu.value,
-    '---',
-    { subheader: t('plenary.ongoingPolls') },
-    ...pollStateToMenu(PollState.Ongoing),
-    { subheader: t('plenary.finishedPolls') },
-    ...pollStateToMenu(PollState.Finished)
-  ]
-})
-
-/* Agenda navigation */
-function navigateAgendaItem(aid?: number) {
-  if (!agendaItem) return
-  router.push({ name: 'Plenary', params: { id: meetingId.value, aid } })
-}
-onKeyStroke('ArrowLeft', () => navigateAgendaItem(previousAgendaItem.value?.pk))
-onKeyStroke('ArrowRight', () => navigateAgendaItem(nextAgendaItem.value?.pk))
-</script>
+<style scoped lang="sass">
+.v-toolbar-title small
+  opacity: var(--v-disabled-opacity)
+  margin-left: 17px
+  margin-top: -6px
+  font-size: .65em
+</style>

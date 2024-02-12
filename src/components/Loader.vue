@@ -25,7 +25,7 @@ const dotCount = ref(0)
 const { initDone, initFailed, initState } = useLoader('Loader')
 const visible = ref(true)
 
-function dotUp () {
+function dotUp() {
   dotCount.value = (dotCount.value + 1) % 4
 }
 
@@ -33,11 +33,13 @@ onMounted(() => {
   dotInterval = setInterval(dotUp, DOT_INTERVAL)
 })
 
-watch(initState, state => {
+watch(initState, (state) => {
   switch (state) {
     case InitState.Done:
       clearInterval(dotInterval)
-      visibleTimeout = setTimeout(() => { visible.value = false }, 500)
+      visibleTimeout = setTimeout(() => {
+        visible.value = false
+      }, 500)
       break
     case InitState.Failed:
       clearInterval(dotInterval)

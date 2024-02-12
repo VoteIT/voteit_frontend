@@ -1,9 +1,20 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 
-import { SpeakerHistory, SpeakerList, Speaker, SpeakerSystem, SpeakerSystemRole } from './types'
+import {
+  SpeakerHistory,
+  SpeakerList,
+  Speaker,
+  SpeakerSystem,
+  SpeakerSystemRole
+} from './types'
 import { speakerListStates, speakerSystemStates } from './workflowStates'
+import { ExtractTransition } from '@/contentTypes/types'
 
-export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRole>({
+export const speakerSystemType = new ContentType<
+  SpeakerSystem,
+  ExtractTransition<typeof speakerSystemStates>,
+  SpeakerSystemRole
+>({
   name: 'speaker_system',
   channels: ['sls'],
   restEndpoint: 'speaker-list-systems/',
@@ -20,7 +31,10 @@ export const speakerSystemType = new ContentType<SpeakerSystem, SpeakerSystemRol
   }
 })
 
-export const speakerListType = new ContentType<SpeakerList>({
+export const speakerListType = new ContentType<
+  SpeakerList,
+  ExtractTransition<typeof speakerListStates>
+>({
   states: speakerListStates,
   name: 'speaker_list',
   channels: ['speaker_list'],

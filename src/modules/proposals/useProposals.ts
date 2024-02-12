@@ -1,4 +1,4 @@
-import { any, filter, ifilter, map, Predicate } from 'itertools'
+import { any, map, Predicate } from 'itertools'
 import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
@@ -6,18 +6,15 @@ import { agendaDeletedEvent } from '../agendas/events'
 import { agendaItems } from '../agendas/useAgenda'
 import { meetingType } from '../meetings/contentTypes'
 
-import { Proposal } from './types'
+import { isProposal, Proposal } from './types'
 import { proposalType } from './contentTypes'
 
 const proposals = reactive<Map<number, Proposal>>(new Map())
 
-proposalType.updateMap(
-  proposals,
-  { participants: 'm', moderators: 'm' }
-)
+proposalType.updateMap(proposals, { participants: 'm', moderators: 'm' })
 
 // Automatically clear proposals for meeting when leaving.
-meetingType.channel.onLeave(meeting => {
+meetingType.channel.onLeave((meeting) => {
   for (const p of proposals.values()) {
     const ai = agendaItems.get(p.agenda_item)
     if (ai?.meeting === meeting) {
@@ -27,53 +24,64 @@ meetingType.channel.onLeave(meeting => {
 })
 
 /* Make sure proposals for agenda item are cleaned up on "deletion" (private). */
-agendaDeletedEvent.on(pk => {
+agendaDeletedEvent.on((pk) => {
   for (const proposal of proposals.values()) {
     if (proposal.agenda_item === pk) proposals.delete(proposal.pk)
   }
 })
 
-function agendaItemHasProposals (ai: number): boolean {
+export function* iterProposals(predicate?: Predicate<Proposal>) {
   for (const p of proposals.values()) {
-    if (p.agenda_item === ai) return true
+    if (!predicate || predicate(p)) yield p
   }
-  return false
 }
 
-function getAgendaProposals (ai: number, predicate?: Predicate<Proposal>, order = 'created', direction: 'asc' | 'desc' = 'asc'): Proposal[] {
+function getAgendaProposals(
+  ai: number,
+  predicate?: Predicate<Proposal>,
+  order = 'created',
+  direction: 'asc' | 'desc' = 'asc'
+): Proposal[] {
   return orderBy(
-    filter(
-      proposals.values(),
-      p => p.agenda_item === ai && (!predicate || predicate(p))
-    ),
-    order, direction
+    [
+      ...iterProposals(
+        (p) => p.agenda_item === ai && (!predicate || predicate(p))
+      )
+    ],
+    order,
+    direction
   )
 }
 
-function getProposal (pk: number) {
+function getProposal(pk: number) {
   return proposals.get(pk)
 }
 
-function anyProposal (predicate: Predicate<Proposal>): boolean {
-  return any(
-    proposals.values(),
-    predicate
-  )
+export function getProposals(pks: number[]) {
+  return pks.map(getProposal).filter(isProposal)
 }
 
-function forProposals (predicate: Predicate<Proposal>, fn: (proposal: Proposal) => void) {
-  map(
-    ifilter(
-      proposals.values(),
-      predicate
-    ),
-    fn
-  )
+export function filterProposals(
+  predicate: Predicate<Proposal>,
+  order: keyof Proposal = 'created',
+  direction: 'asc' | 'desc' = 'asc'
+) {
+  return orderBy([...iterProposals(predicate)], order, direction)
 }
 
-export default function useProposals () {
+export function anyProposal(predicate: Predicate<Proposal>): boolean {
+  return any(iterProposals(predicate))
+}
+
+function forProposals(
+  predicate: Predicate<Proposal>,
+  fn: (proposal: Proposal) => void
+) {
+  map(iterProposals(predicate), fn)
+}
+
+export default function useProposals() {
   return {
-    agendaItemHasProposals,
     anyProposal,
     forProposals,
     getAgendaProposals,

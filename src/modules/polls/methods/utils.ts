@@ -1,7 +1,10 @@
 import { ComposerTranslation } from 'vue-i18n'
 import { PollCriteria, ScottishSTVRound } from './types'
 
-export function translateCriteria (criteria: PollCriteria, t: ComposerTranslation): { description: string, title: string } {
+export function translateCriteria(
+  criteria: PollCriteria,
+  t: ComposerTranslation
+): { description: string; title: string } {
   switch (criteria) {
     case PollCriteria.CloneProof:
       return {
@@ -41,7 +44,10 @@ export function translateCriteria (criteria: PollCriteria, t: ComposerTranslatio
   }
 }
 
-export function translateSTVStatus (status: ScottishSTVRound['status'], t: ComposerTranslation): string {
+export function translateSTVStatus(
+  status: ScottishSTVRound['status'],
+  t: ComposerTranslation
+): string {
   switch (status) {
     case 'Elected':
       return t('poll.STV.elected')
@@ -50,7 +56,10 @@ export function translateSTVStatus (status: ScottishSTVRound['status'], t: Compo
   }
 }
 
-export function translateSTVMethod (status: ScottishSTVRound['method'], t: ComposerTranslation): string {
+export function translateSTVMethod(
+  status: ScottishSTVRound['method'],
+  t: ComposerTranslation
+): string {
   switch (status) {
     case 'Direct':
       return t('poll.STV.direct')

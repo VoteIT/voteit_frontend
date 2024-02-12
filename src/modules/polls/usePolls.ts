@@ -14,18 +14,15 @@ const userVotes = reactive<Map<number, Vote>>(new Map())
 const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
 
 pollType
-  .updateMap(
-    polls,
-    { participants: 'meeting', moderators: 'meeting' }
-  )
-  .on<PollStatus>('status', item => {
+  .updateMap(polls, { participants: 'meeting', moderators: 'meeting' })
+  .on<PollStatus>('status', (item) => {
     const existing = pollStatuses.get(item.pk)
     // Throw away statuses with less votes - in case async order wrong
     if (!existing || existing.voted < item.voted) {
       pollStatuses.set(item.pk, item)
     }
   })
-  .channel.onLeave(pk => {
+  .channel.onLeave((pk) => {
     pollStatuses.delete(pk)
   })
 
@@ -33,9 +30,9 @@ pollType
 voteType.updateMap(userVotes)
 
 /*
-** Clear private polls when agenda item deleted.
-*/
-agendaDeletedEvent.on(pk => {
+ ** Clear private polls when agenda item deleted.
+ */
+agendaDeletedEvent.on((pk) => {
   for (const poll of polls.values()) {
     if (poll.agenda_item === pk) {
       polls.delete(poll.pk)
@@ -47,62 +44,59 @@ agendaDeletedEvent.on(pk => {
  * Used to compute a unique poll title
  */
 const allPollTitles = computed(() => {
-  return [...polls.values()].map(p => p.title)
+  return [...polls.values()].map((p) => p.title)
 })
 
-function getPolls (meeting: number, state?: PollState) {
-  return filterPolls(p => p.meeting === meeting && (!state || p.state === state))
+function getPolls(meeting: number, state?: PollState) {
+  return filterPolls(
+    (p) => p.meeting === meeting && (!state || p.state === state)
+  )
 }
 
 /**
  * Get all polls that matches filter
  */
-function filterPolls (_filter: (poll: Poll) => boolean) {
+function filterPolls(_filter: (poll: Poll) => boolean) {
   return filter(polls.values(), _filter)
 }
 
 /**
  * Check if any poll matches filter
  */
-function anyPoll (filter: (poll: Poll) => boolean) {
+export function anyPoll(filter: (poll: Poll) => boolean) {
   return any(polls.values(), filter)
 }
 
-function getAiPolls (agendaItem: number, state?: PollState) {
-  return filterPolls(p => p.agenda_item === agendaItem && (!state || p.state === state))
+function getAiPolls(agendaItem: number, state?: PollState) {
+  return filterPolls(
+    (p) => p.agenda_item === agendaItem && (!state || p.state === state)
+  )
 }
 
-function getPoll (pk: number) {
+function getPoll(pk: number) {
   return polls.get(pk)
 }
 
-function getPollMethod (id: string) {
+function getPollMethod(id: string) {
   return pollPlugins.getPlugin(id)
 }
 
-function getPollStatus (pk: number) {
+function getPollStatus(pk: number) {
   return pollStatuses.get(pk)
 }
 
-function getUserVote (poll: Poll) {
-  return first(
-    userVotes.values(),
-    vote => vote.poll === poll.pk
-  )
+function getUserVote(poll: Poll) {
+  return first(userVotes.values(), (vote) => vote.poll === poll.pk)
 }
 
-function isUnvotedPoll (poll: Poll) {
-  return (
-    poll.state === PollState.Ongoing &&
-    canVote(poll) &&
-    !getUserVote(poll)
-  )
+function isUnvotedPoll(poll: Poll) {
+  return poll.state === PollState.Ongoing && canVote(poll) && !getUserVote(poll)
 }
 
 /**
  * Generate a predicate to filter on current users unvoted polls in meeting.
  */
-function getMeetingUnvotedPredicate (meeting: number): Predicate<Poll> {
+function getMeetingUnvotedPredicate(meeting: number): Predicate<Poll> {
   return (poll: Poll) => poll.meeting === meeting && isUnvotedPoll(poll)
 }
 
@@ -110,7 +104,7 @@ function getMeetingUnvotedPredicate (meeting: number): Predicate<Poll> {
  * Get first ongoing poll in a meeting that current user hasn't voted in.
  * @param poll If provided, function will return next unvoted poll in order
  */
-function getNextUnvotedPoll (meeting: number, poll?: Poll) {
+function getNextUnvotedPoll(meeting: number, poll?: Poll) {
   const isUnvoted = getMeetingUnvotedPredicate(meeting)
   if (poll) {
     const isOther = ({ pk }: Poll) => pk !== poll.pk
@@ -121,11 +115,11 @@ function getNextUnvotedPoll (meeting: number, poll?: Poll) {
   return first(filter(polls.values(), isUnvoted))
 }
 
-function getUnvotedPolls (meeting: number) {
+function getUnvotedPolls(meeting: number) {
   return filterPolls(getMeetingUnvotedPredicate(meeting))
 }
 
-export default function usePolls () {
+export default function usePolls() {
   return {
     allPollTitles,
     anyPoll,

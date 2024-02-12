@@ -59,6 +59,6 @@ const modalProps = computed(
       },
       modelValue: body.value,
       proposal: props.proposal
-    } as const)
+    }) as const
 )
 </script>

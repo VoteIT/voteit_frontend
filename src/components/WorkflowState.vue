@@ -29,8 +29,8 @@
         :prepend-icon="t.icon"
         :title="t.title"
         :disabled="!t.allowed"
-        :subtitle="unmetConditions(t)"
-        @click="makeTransition(t)"
+        :subtitle="t.unmetConditions"
+        @click="makeTransition(t.name)"
         link
       />
     </v-list>
@@ -59,31 +59,45 @@
   </v-btn>
 </template>
 
-<script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+<script
+  lang="ts"
+  setup
+  generic="T extends StateContent, CT extends ContentType<T, any, any>"
+>
+import { computed, Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { Color } from '@/utils/types'
 import useAlert from '@/composables/useAlert'
-import { StateContent, Transition } from '@/contentTypes/types'
+import { Transition as ITransition, StateContent } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
-interface Props {
-  admin?: boolean
-  color?: Color
-  object: StateContent
-  contentType: ContentType<any, any>
-  right?: boolean
-}
-const props = withDefaults(defineProps<Props>(), {
-  admin: false,
-  color: 'secondary'
-})
+type Transition = CT extends ContentType<any, infer T, any> ? T : never
+
+const props = withDefaults(
+  defineProps<{
+    admin?: boolean
+    color?: Color
+    contentType: CT
+    object: T
+    right?: boolean
+  }>(),
+  {
+    admin: false,
+    color: 'secondary'
+  }
+)
 
 const { t } = useI18n()
-const contentApi = props.contentType.getContentApi()
 const { getState } = props.contentType.useWorkflows()
-const transitionsAvailable = ref<Transition[] | null>(null)
+const _transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
+const transitionsAvailable = computed(
+  () =>
+    _transitionsAvailable.value?.map((t) => ({
+      ...t,
+      unmetConditions: unmetConditions(t)
+    }))
+)
 const { alert } = useAlert()
 
 const currentState = computed(() => getState(props.object.state))
@@ -96,7 +110,7 @@ async function menuOpenChange(open: boolean) {
   if (!open || fetching.value) return
   fetching.value = true
   try {
-    transitionsAvailable.value = await contentApi.getTransitions(
+    _transitionsAvailable.value = await props.contentType.transitions.get(
       props.object.pk
     )
   } catch {
@@ -106,15 +120,14 @@ async function menuOpenChange(open: boolean) {
 }
 
 const working = ref(false)
-async function makeTransition(t: Transition) {
+
+async function makeTransition(transition: Transition) {
   working.value = true
-  try {
-    await contentApi.transition(props.object.pk, t.name)
-  } catch {}
+  await props.contentType.transitions.make(props.object, transition, t)
   working.value = false
 }
 
-function unmetConditions(t: Transition) {
+function unmetConditions(t: ITransition<Transition>) {
   if (t.allowed) return
   return t.conditions
     .filter((c) => !c.allowed)
@@ -125,7 +138,7 @@ function unmetConditions(t: Transition) {
 watch(
   () => props.object,
   () => {
-    transitionsAvailable.value = null
+    _transitionsAvailable.value = null
   }
 )
 </script>

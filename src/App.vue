@@ -1,13 +1,6 @@
 <template>
-  <v-app id="app">
-    <router-view name="appBar" />
-    <v-main>
-      <router-view name="navigationDrawer" />
-      <div id="toolbar" />
-      <v-container>
-        <router-view />
-      </v-container>
-    </v-main>
+  <v-app>
+    <router-view />
     <OnlineStatus class="d-print-none" />
     <Modal />
     <Dialogs />
@@ -97,6 +90,10 @@ watch(
 
 *
   box-sizing: border-box
+
+.v-sheet,
+.v-list
+  --v-border-opacity: 1 !important
 
 .v-btn
   text-transform: none !important

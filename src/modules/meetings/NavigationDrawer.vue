@@ -1,13 +1,12 @@
 <template>
   <v-navigation-drawer
-    v-if="initDone"
     app
     id="meeting-navigation"
     v-model="isOpen"
     width="348"
     class="d-print-none"
   >
-    <MenuTree :items="menu" @navigation="toggleDrawer">
+    <MenuTree v-if="initDone" :items="menu" @navigation="toggleDrawer">
       <template #tagFilter v-if="agendaTags.length">
         <div class="d-flex ml-8 mb-1 mr-2">
           <v-btn

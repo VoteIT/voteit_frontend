@@ -1,192 +1,128 @@
-import { filter } from 'itertools'
+import { Predicate, any, count, filter, first, imap } from 'itertools'
 import { countBy, orderBy } from 'lodash'
-import { reactive } from 'vue'
+import { Ref, computed, reactive } from 'vue'
 
-import { user } from '@/composables/useAuthentication'
-
-import { SpeakerList, SpeakerSystem, Speaker, HistoricSpeaker, CurrentSpeaker } from './types'
+import {
+  SpeakerList,
+  SpeakerSystem,
+  Speaker,
+  HistoricSpeaker,
+  isCurrentSpeaker,
+  isHistoricSpeaker
+} from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
 export const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
 const speakers = reactive<Map<number, Speaker>>(new Map())
 
-speakerSystemType.updateMap(
-  speakerSystems,
-  { meeting: 'meeting' }
-)
+speakerSystemType.updateMap(speakerSystems, { meeting: 'meeting' })
+speakerListType.updateMap(speakerLists, {
+  sls: 'speaker_system',
+  agenda_item: 'agenda_item'
+})
+speakerType.updateMap(speakers, { sls: 'sls' })
 
-speakerListType.updateMap(
-  speakerLists,
-  { sls: 'speaker_system', agenda_item: 'agenda_item' }
-)
-speakerType.updateMap(
-  speakers,
-  { sls: 'sls' }
-)
-
-function isCurrentSpeaker (speaker: Speaker): speaker is CurrentSpeaker {
-  return !speaker.seconds && !!speaker.started
+/**
+ * Check in any speaker list matches predicate (lazy way)
+ */
+export function anySpeakerList(predicate: Predicate<SpeakerList>) {
+  return any(speakerLists.values(), predicate)
 }
 
-function isHistoricSpeaker (speaker: Speaker): speaker is HistoricSpeaker {
-  return !!(speaker.seconds && speaker.started)
-}
-
-export function getCurrent (list: number) {
+/**
+ * Get current speaker for speaker list, if any.
+ */
+export function getCurrent(list: number) {
   for (const speaker of speakers.values()) {
-    if (speaker.speaker_list === list && isCurrentSpeaker(speaker)) return speaker
+    if (speaker.speaker_list === list && isCurrentSpeaker(speaker))
+      return speaker
   }
 }
-function getHistory (list: number) {
+
+/**
+ * Get sorted speaker history for list, sorted by start time, descending.
+ */
+export function getHistory(list: number) {
   return orderBy(
     filter(
       speakers.values(),
-      speaker => speaker.speaker_list === list && isHistoricSpeaker(speaker)
+      (speaker) => speaker.speaker_list === list && isHistoricSpeaker(speaker)
     ),
-    'started', 'desc'
+    'started',
+    'desc'
   ) as HistoricSpeaker[]
 }
-function getList (pk: number) {
-  return speakerLists.get(pk)
-}
-function getSystem (pk: number) {
-  return speakerSystems.get(pk)
+
+/**
+ * Find a speaker system matching a specific predicate.
+ * @example
+ * findSpeakerSystem((s) => s.room === 1)
+ */
+export function findSpeakerSystem(predicate: Predicate<SpeakerSystem>) {
+  return first(speakerSystems.values(), predicate)
 }
 
-function getSystems (meeting: number, _filter?: (system: SpeakerSystem) => boolean): SpeakerSystem[] {
+export function getSpeakerSystems(
+  meeting: number,
+  predicate?: Predicate<SpeakerSystem>
+) {
   return filter(
     speakerSystems.values(),
-    s => s.meeting === meeting && (!_filter || _filter(s))
+    (s) => s.meeting === meeting && (!predicate || predicate(s))
   )
 }
 
-function getTimesSpoken (list: number) {
+/**
+ * Generate a getter for times spoken on list.
+ * @example
+ * const getSpoken = timesSpokenGetter(listId)
+ * const spoken = getSpoken(userId)
+ */
+export function timesSpokenGetter(list: number) {
   const spokenUserIds = getHistory(list).map(({ user }) => user)
-  return countBy(spokenUserIds)
+  const map = countBy(spokenUserIds)
+  return (user: number) => map[user] ?? 0
 }
 
-function getAgendaSpeakerLists (agendaItem: number, _filter: (list: SpeakerList) => boolean = () => true): SpeakerList[] {
-  return filter(
-    speakerLists.values(),
-    list => list.agenda_item === agendaItem && _filter(list)
-  )
+export function getSpeakerLists(predicate: Predicate<SpeakerList>) {
+  return filter(speakerLists.values(), predicate)
 }
 
-function getSystemSpeakerLists (systemId: number, agendaItem?: number): SpeakerList[] {
+export function getSystemSpeakerLists(systemId: number, agendaItem?: number) {
   return filter(
     speakerLists.values(),
-    list => (
+    (list) =>
       list.speaker_system === systemId &&
       (!agendaItem || list.agenda_item === agendaItem)
-    )
   )
 }
 
-function getSystemActiveSpeaker (system: SpeakerSystem): Speaker | undefined {
-  if (!system.active_list) return
-  const speakerList = speakerLists.get(system.active_list)
-  return speakerList && getCurrent(speakerList.pk)
-}
+/*
+ * These functions should all be imported directly. Function call is unneccessary.
+ * Possibly use with a meeting ref in future, to get meeting specific systems in som scoped functions.
+ */
+export default function useSpeakerLists(meeting: Ref<number>) {
+  const speakerSystems = computed(() => getSpeakerSystems(meeting.value))
 
-function makeUniqueListName (title: string): string {
-  function checkDuplicate (title: string): boolean {
-    for (const list of speakerLists.values()) {
-      if (list.title === title) return true
+  function getUniqueListTitle(title: string): string {
+    const systemIds = speakerSystems.value.map((s) => s.pk)
+    function checkUnique(title: string) {
+      return !any(
+        speakerLists.values(),
+        (list) =>
+          systemIds.includes(list.speaker_system) && list.title === title
+      )
     }
-    return false
+    if (checkUnique(title)) return title
+    return first(
+      imap(count(1), (n) => `${title} - ${n}`),
+      checkUnique
+    )!
   }
-  if (!checkDuplicate(title)) return title
-  for (let i = 1; true; i++) {
-    const newTitle = `${title} - ${i}`
-    if (!checkDuplicate(newTitle)) return newTitle
-  }
-}
 
-function enterList (list: SpeakerList) {
-  return speakerListType.methodCall('enter', { pk: list.pk })
-}
-function leaveList (list: SpeakerList) {
-  return speakerListType.methodCall('leave', { pk: list.pk })
-}
-function userInList (list: SpeakerList) {
-  return !!user.value && list.queue.includes(user.value.pk)
-}
-
-function moderatorEnterList (list: SpeakerList, user: number) {
-  return speakerListType.methodCall('mod_enter', {
-    pk: list.pk,
-    user
-  })
-}
-function moderatorLeaveList (list: SpeakerList, user: number) {
-  return speakerListType.methodCall('mod_leave', {
-    pk: list.pk,
-    user
-  })
-}
-
-// Start by user pk, or first in queue
-function startSpeaker (list: SpeakerList, user?: number) {
-  user = user || list.queue[0]
-  speakerListType.methodCall('start_user', {
-    pk: list.pk,
-    user
-  })
-}
-
-async function stopSpeaker (list: SpeakerList) {
-  const current = getCurrent(list.pk)
-  if (current) {
-    await speakerListType.methodCall('stop_user', {
-      pk: list.pk,
-      user: current.user
-    })
-  }
-}
-
-function undoSpeaker (list: SpeakerList) {
-  speakerListType.methodCall('mod_undo', {
-    pk: list.pk
-  })
-}
-
-function shuffleList (list: SpeakerList) {
-  speakerListType.methodCall('mod_shuffle', {
-    pk: list.pk
-  })
-}
-
-async function setActiveList (list: SpeakerList, stopActiveSpeaker = false) {
-  if (stopActiveSpeaker) {
-    const system = getSystem(list.speaker_system)
-    const activeList = system?.active_list && getList(system.active_list)
-    if (activeList) await stopSpeaker(activeList)
-  }
-  await speakerListType.methodCall('set_active', { pk: list.pk })
-}
-
-export default function useSpeakerLists () {
   return {
-    getAgendaSpeakerLists,
-    getCurrent,
-    getHistory,
-    getList,
-    getSystem,
-    getSystemActiveSpeaker,
-    getSystems,
-    getSystemSpeakerLists,
-    getTimesSpoken,
-    enterList,
-    leaveList,
-    moderatorEnterList,
-    moderatorLeaveList,
-    startSpeaker,
-    stopSpeaker,
-    undoSpeaker,
-    shuffleList,
-    userInList,
-    setActiveList,
-    makeUniqueListName
+    speakerSystems,
+    getUniqueListTitle
   }
 }

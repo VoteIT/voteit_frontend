@@ -1,13 +1,15 @@
 <template>
   <form @submit.prevent class="my-4">
-    <VoteProposal
-      v-for="p in proposals" :key="p.pk"
-      :proposal="p"
-      class="mb-4"
-    >
+    <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
       <template #vote>
         <div class="text-center">
-          <v-btn :disabled="disabled" :color="option.color" :variant="choice === p.pk ? 'elevated' : 'outlined'" :prepend-icon="option.icon" @click="select(p)">
+          <v-btn
+            :disabled="disabled"
+            :color="option.color"
+            :variant="choice === p.pk ? 'elevated' : 'outlined'"
+            :prepend-icon="option.icon"
+            @click="select(p)"
+          >
             {{ option.getTitle(t) }}
           </v-btn>
         </div>
@@ -41,9 +43,9 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const choice = ref<number | undefined>(props.modelValue?.choice)
 
-const option = simpleChoices.find(c => c.value === SimpleChoice.Yes)!
+const option = simpleChoices.find((c) => c.value === SimpleChoice.Yes)!
 
-function select (proposal: Proposal) {
+function select(proposal: Proposal) {
   if (props.disabled) return
   choice.value = proposal.pk
   emit('update:modelValue', { choice: choice.value })

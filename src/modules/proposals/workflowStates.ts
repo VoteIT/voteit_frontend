@@ -2,15 +2,22 @@ import { ThemeColor } from '@/utils/types'
 import { ProposalState } from './types'
 import { WorkflowState } from '@/contentTypes/types'
 
-export const DEFAULT_FILTER_STATES = [ProposalState.Published, ProposalState.Voting, ProposalState.Approved]
+export const DEFAULT_FILTER_STATES = [
+  ProposalState.Published,
+  ProposalState.Voting,
+  ProposalState.Approved
+]
 
-export const proposalStates: WorkflowState<ProposalState>[] = [
+export const proposalStates: WorkflowState<
+  ProposalState,
+  'publish' | 'retract' | 'lock_for_vote' | 'approved' | 'denied' | 'unhandled'
+>[] = [
   {
     transition: 'publish',
     icon: 'mdi-eye',
     state: ProposalState.Published,
     color: ThemeColor.Primary,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('proposal.workflow.published', count)
     }
   },
@@ -19,7 +26,7 @@ export const proposalStates: WorkflowState<ProposalState>[] = [
     icon: 'mdi-undo-variant',
     state: ProposalState.Retracted,
     color: ThemeColor.Secondary,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('proposal.workflow.retracted', count)
     }
   },
@@ -28,7 +35,7 @@ export const proposalStates: WorkflowState<ProposalState>[] = [
     icon: 'mdi-vote',
     state: ProposalState.Voting,
     color: ThemeColor.Info,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('proposal.workflow.voting', count)
     }
   },
@@ -37,7 +44,7 @@ export const proposalStates: WorkflowState<ProposalState>[] = [
     icon: 'mdi-check-circle-outline',
     state: ProposalState.Approved,
     color: ThemeColor.Success,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('proposal.workflow.approved', count)
     }
   },
@@ -46,7 +53,7 @@ export const proposalStates: WorkflowState<ProposalState>[] = [
     icon: 'mdi-close-circle-outline',
     state: ProposalState.Denied,
     color: ThemeColor.Warning,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('proposal.workflow.denied', count)
     }
   },
@@ -55,7 +62,7 @@ export const proposalStates: WorkflowState<ProposalState>[] = [
     icon: 'mdi-help-circle-outline',
     state: ProposalState.Unhandled,
     color: ThemeColor.Secondary,
-    getName (t, count = 1) {
+    getName(t, count = 1) {
       return t('proposal.workflow.unhandled', count)
     }
   }

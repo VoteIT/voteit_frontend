@@ -15,16 +15,32 @@
               @edit-done="submit"
             />
           </div>
-          <DropdownMenu float :items="menuItems" />
+          <DropdownMenu :items="menuItems" />
         </div>
         <Richtext
           :editing="editing"
           v-model="content.body"
-          @edit-done="submit"
+          :class="editing ? '' : 'mb-8'"
+          no-submit
           variant="full"
-          class="mb-8"
           :maxHeight="collapsedBodyHeight"
         />
+        <TagEdit
+          v-if="editing"
+          v-model="content.tags"
+          class="my-2"
+          :label="t('agenda.tagEditInfo')"
+        />
+        <div v-if="editing" class="text-right">
+          <v-btn variant="text" :text="t('cancel')" @click="editing = false" />
+          <v-btn
+            color="primary"
+            :disabled="!editingModified"
+            :loading="submitting"
+            :text="t('save')"
+            @click="submit"
+          />
+        </div>
         <TextDocuments />
       </v-col>
       <v-col cols="12" lg="4">
@@ -35,46 +51,16 @@
         >
           <template #actions>
             <v-btn
+              :disabled="!hasPublishedProposals"
               icon="mdi-star-plus"
-              variant="text"
               size="small"
               :to="toNewPoll"
+              variant="text"
             />
           </template>
           <PollList :agendaItem="agendaId" class="ml-4" />
         </Dropdown>
-        <Dropdown
-          v-if="speakerLists.length || manageSpeakerListsMenu.length"
-          :title="t('speaker.lists', speakerLists.length)"
-          modelValue
-        >
-          <template #actions v-if="manageSpeakerListsMenu.length">
-            <v-tooltip :text="t('speaker.manageLists')">
-              <template #activator="{ props }">
-                <DropdownMenu
-                  v-if="manageSpeakerListsMenu.length > 1"
-                  v-bind="props"
-                  :items="manageSpeakerListsMenu"
-                  icon="mdi-bullhorn"
-                  size="small"
-                />
-                <v-btn
-                  v-else
-                  v-bind="props"
-                  size="small"
-                  variant="text"
-                  :to="manageSpeakerListsMenu[0].to"
-                  icon="mdi-bullhorn"
-                />
-              </template>
-            </v-tooltip>
-          </template>
-          <SpeakerList
-            v-for="list in speakerLists"
-            :key="list.pk"
-            :list="list"
-          />
-        </Dropdown>
+        <AISpeakerLists :agendaId="agendaId" />
       </v-col>
     </v-row>
     <v-divider class="my-4" />
@@ -186,6 +172,7 @@
 </template>
 
 <script lang="ts" setup>
+import { isEqual } from 'lodash'
 import {
   ComponentPublicInstance,
   computed,
@@ -200,8 +187,10 @@ import { useI18n } from 'vue-i18n'
 import { openModalEvent } from '@/utils/events'
 import { MenuItem } from '@/utils/types'
 import Dropdown from '@/components/Dropdown.vue'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
+import Tag from '@/components/Tag.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
@@ -209,18 +198,19 @@ import usePermission from '@/composables/usePermission'
 import { LastReadKey } from '@/composables/useUnread'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import useLoader from '@/composables/useLoader'
+import TagEdit from '@/components/TagEdit.vue'
 
 import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
-import SpeakerList from '../speakerLists/SpeakerList.vue'
 import TextDocuments from '../proposals/TextDocuments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import useProposals from '../proposals/useProposals'
+import useProposals, {
+  anyProposal,
+  filterProposals
+} from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
-import useSpeakerLists from '../speakerLists/useSpeakerLists'
-import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 import { DiscussionPost } from '../discussions/types'
 import useTags, { TagsKey } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
@@ -236,6 +226,7 @@ import useAgendaItem from './useAgendaItem'
 import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
+import AISpeakerLists from './AISpeakerLists.vue'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
@@ -285,17 +276,15 @@ function proposalFilter(p: Proposal): boolean {
   return states.has(p.state)
 }
 const sortedProposals = computed(() =>
-  proposals.getAgendaProposals(
-    agendaId.value,
-    proposalFilter,
+  filterProposals(
+    (p) => isAIProposal(p) && proposalFilter(p),
     'created',
     activeFilter.value.order
   )
 )
 const hiddenProposals = computed(() =>
-  proposals.getAgendaProposals(
-    agendaId.value,
-    (p) => !proposalFilter(p),
+  filterProposals(
+    (p) => isAIProposal(p) && !proposalFilter(p),
     'created',
     activeFilter.value.order
   )
@@ -309,18 +298,6 @@ function discussionFilter(d: DiscussionPost): boolean {
 const sortedDiscussions = computed(() =>
   orderContent(
     discussions.getAgendaDiscussions(agendaId.value, discussionFilter)
-  )
-)
-const { activeSpeakerSystems, managingSpeakerSystems } =
-  useSpeakerSystems(meetingId)
-const { getAgendaSpeakerLists } = useSpeakerLists()
-const speakerLists = computed(() =>
-  getAgendaSpeakerLists(
-    agendaId.value,
-    (list) =>
-      !!activeSpeakerSystems.value.find(
-        (system) => system.pk === list.speaker_system
-      )
   )
 )
 
@@ -352,11 +329,20 @@ function getAgendaMenuContext(menu: string) {
   }
 }
 
+function isAIProposal(p: Proposal) {
+  return p.agenda_item === agendaId.value
+}
+
+const hasPublishedProposals = computed(() =>
+  anyProposal((p) => isAIProposal(p) && p.state === ProposalState.Published)
+)
+
 const menuItems = computed<MenuItem[]>(() => {
   if (!agendaItem.value) return []
   const items: MenuItem[] = []
   if (canAddPoll.value) {
     items.push({
+      disabled: !hasPublishedProposals.value,
       title: t('poll.new'),
       prependIcon: 'mdi-star-plus',
       to: toNewPoll.value
@@ -368,17 +354,6 @@ const menuItems = computed<MenuItem[]>(() => {
       prependIcon: 'mdi-pencil',
       onClick: async () => {
         editing.value = true
-      }
-    })
-    items.push({
-      title: t('plenary.view'),
-      prependIcon: 'mdi-gavel',
-      to: {
-        name: 'Plenary',
-        params: {
-          id: meetingId.value,
-          aid: agendaId.value
-        }
       }
     })
   }
@@ -395,30 +370,14 @@ const menuItems = computed<MenuItem[]>(() => {
   }
   // Extra menu items from plugins
   if (!meeting.value || !agendaItem.value) return items
+  const menuContext = getAgendaMenuContext('main')
   const pluginMenuItems = agendaMenuPlugins
     .getActivePlugins(meeting.value)
-    .flatMap((plugin) => plugin.getItems(getAgendaMenuContext('main')))
-  if (pluginMenuItems.length) {
-    if (items.length) items.push('---')
-    Array.prototype.push.apply(items, pluginMenuItems)
-  }
-  return items
+    .flatMap((plugin) => plugin.getItems(menuContext))
+  return pluginMenuItems.length ? [...items, '---', ...pluginMenuItems] : items
 })
 
-const manageSpeakerListsMenu = computed(() => {
-  return managingSpeakerSystems.value.map((system) => ({
-    title: t('speaker.manageSystem', { ...system }),
-    prependIcon: 'mdi-bullhorn',
-    to: getMeetingRoute('speakerLists', {
-      system: system.pk,
-      aid: agendaId.value
-    })
-  }))
-})
-
-const hasProposals = computed(() =>
-  proposals.agendaItemHasProposals(agendaId.value)
-)
+const hasProposals = computed(() => anyProposal(isAIProposal))
 
 function setLastRead(ai: AgendaItem, force = false) {
   // Allow forcing read marker, on user demand
@@ -434,7 +393,11 @@ watch(agendaItem, (to, from) => {
   // When leaving agenda item
   // FIXME should react to agendaId or onRouteLeave
   if (from) setLastRead(from)
-  if (to) content.title = to.title // Body from agendaBody, see below
+  if (to) {
+    editing.value = false
+    content.title = to.title // Body from agendaBody, see below
+    content.tags = extraTags.value
+  }
 })
 watch(agendaBody, (value) => {
   content.body = value ?? ''
@@ -460,21 +423,36 @@ async function selectTag(tagName: string) {
   })
 }
 const filterTag = computed(() => [...activeFilter.value.tags][0])
-useTags(undefined, selectTag)
+const { getHTMLTags } = useTags(undefined, selectTag)
 
+const extraTags = computed(() => {
+  if (!agendaItem.value || !agendaBody.value) return []
+  const docTags = getHTMLTags(agendaBody.value)
+  return agendaItem.value.tags.filter((tag) => !docTags.has(tag))
+})
+watch(extraTags, (tags) => (content.tags = tags))
 const editing = ref(false)
 const content = reactive({
-  title: agendaItem.value?.title ?? '',
-  body: agendaBody.value ?? ''
+  body: agendaBody.value ?? '',
+  tags: extraTags.value,
+  title: agendaItem.value?.title ?? ''
 })
-function submit() {
-  editing.value = false
-  if (
-    content.title === agendaItem.value?.title &&
-    content.body === agendaBody.value
-  )
-    return
-  agendaItemType.update(agendaId.value, { ...content })
+const submitting = ref(false)
+const editingModified = computed(
+  () =>
+    !!agendaItem.value &&
+    (content.title !== agendaItem.value.title ||
+      content.body !== agendaBody.value ||
+      !isEqual(content.tags, agendaItem.value.tags))
+)
+async function submit() {
+  if (!editingModified.value) return
+  submitting.value = true
+  try {
+    await agendaItemType.update(agendaId.value, { ...content })
+    editing.value = false
+  } catch {} // TODO
+  submitting.value = false
 }
 
 provide(LastReadKey, agendaItemLastRead)

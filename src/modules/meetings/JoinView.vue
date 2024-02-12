@@ -3,13 +3,22 @@
     <v-col v-bind="cols.default">
       <h1>{{ t('join.meetingTitle', { ...meeting }) }}</h1>
       <Richtext :object="meeting" class="mb-8" />
-      <div class="btn-controls" v-if="canBecomeModeratorMeeting" @click="joinAsModerator()">
+      <div
+        class="btn-controls"
+        v-if="canBecomeModeratorMeeting"
+        @click="joinAsModerator()"
+      >
         <v-btn color="warning" prepend-icon="mdi-gavel">
           {{ t('join.asModerator') }}
         </v-btn>
       </div>
       <div class="btn-controls" v-else-if="policyComponents.length">
-        <component v-for="{ component, policy } in policyComponents" :is="component" :key="policy.name" :policy="policy" />
+        <component
+          v-for="{ component, policy } in policyComponents"
+          :is="component"
+          :key="policy.name"
+          :policy="policy"
+        />
       </div>
       <p v-else>
         <em>{{ t('join.noAccess') }}</em>
@@ -48,23 +57,31 @@ const { cols } = useDefaults()
 
 const policyComponents = computed(() => {
   return policies.value
-    .filter(ap => ap.active)
-    .map(policy => ({
+    .filter((ap) => ap.active)
+    .map((policy) => ({
       component: accessPolicies[policy.name],
       policy
     }))
 })
 
 const meeting = computed(() => meetings.get(meetingId.value))
-const canBecomeModeratorMeeting = computed(() => meeting.value && canBecomeModerator())
+const canBecomeModeratorMeeting = computed(
+  () => meeting.value && canBecomeModerator()
+)
 
-async function joinAsModerator () {
+async function joinAsModerator() {
   if (!user.value) return console.warn('Anonymous tried to join as moderator')
-  if (await dialogQuery({
-    title: t('join.asModeratorDescription'),
-    theme: ThemeColor.Info
-  })) {
-    await meetingType.addRoles(meetingId.value, user.value.pk, MeetingRole.Moderator)
+  if (
+    await dialogQuery({
+      title: t('join.asModeratorDescription'),
+      theme: ThemeColor.Info
+    })
+  ) {
+    await meetingType.addRoles(
+      meetingId.value,
+      user.value.pk,
+      MeetingRole.Moderator
+    )
     router.push(meetingRoute.value)
   }
 }

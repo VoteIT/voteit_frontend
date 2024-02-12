@@ -16,26 +16,27 @@ export enum SpeakerSystemRole {
 
 export enum SpeakerSystemMethod {
   Simple = 'simple',
-  Priority = 'priority',
+  Priority = 'priority'
 }
 
 type SpeakerSystemSettings = { max_times: number } | null
 
 export interface SpeakerSystem {
   pk: number
-  title: string
   state: SpeakerSystemState
   active_list?: number
   meeting: number
   meeting_roles_to_speaker: MeetingRole[]
   method_name: SpeakerSystemMethod
+  room: number
   safe_positions?: number
   settings?: SpeakerSystemSettings
+  show_time: boolean
 }
 
 export enum SpeakerListState {
   Open = 'open',
-  Closed = 'closed',
+  Closed = 'closed'
 }
 
 export interface SpeakerList extends BaseContent {
@@ -93,3 +94,13 @@ export interface HistoricSpeaker {
 }
 
 export type Speaker = QueuedSpeaker | CurrentSpeaker | HistoricSpeaker
+
+export function isCurrentSpeaker(speaker: Speaker): speaker is CurrentSpeaker {
+  return !speaker.seconds && !!speaker.started
+}
+
+export function isHistoricSpeaker(
+  speaker: Speaker
+): speaker is HistoricSpeaker {
+  return !!(speaker.seconds && speaker.started)
+}

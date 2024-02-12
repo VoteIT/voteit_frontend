@@ -4,7 +4,8 @@
       <v-btn color="primary" @click="countToTen(true)">Count to 10</v-btn>
       <v-btn color="primary" @click="countToTen(false)">Fail at 5</v-btn>
     </div>
-    <ProgressBar v-else
+    <ProgressBar
+      v-else
       id="counter-progress"
       class="progress"
       :total="progress.total"
@@ -32,32 +33,33 @@ const progress = ref<Progress>(PROGRESS_DEFAULT)
 const state = ref<boolean | null>(null)
 const counting = ref(false)
 
-function countToTen (succeed: boolean) {
+function countToTen(succeed: boolean) {
   const data = succeed ? undefined : { fail: 5 }
   counting.value = true
 
-  testingType.methodCall<Progress>('count', data, { alertOnError: false })
+  testingType
+    .methodCall<Progress>('count', data, { alertOnError: false })
     .onProgress((value) => {
-    progress.value = value
-  })
-  .then(({ p }) => {
-    progress.value = p
-    state.value = true
-  })
-  .catch(() => {
-    state.value = false
-    progress.value = {
-      curr: 1,
-      total: 1
-    }
-  })
-  .finally(() => {
-    setTimeout(() => {
-      progress.value = PROGRESS_DEFAULT
-      state.value = null
-      counting.value = false
-    }, 2000)
-  })
+      progress.value = value
+    })
+    .then(({ p }) => {
+      progress.value = p
+      state.value = true
+    })
+    .catch(() => {
+      state.value = false
+      progress.value = {
+        curr: 1,
+        total: 1
+      }
+    })
+    .finally(() => {
+      setTimeout(() => {
+        progress.value = PROGRESS_DEFAULT
+        state.value = null
+        counting.value = false
+      }, 2000)
+    })
 }
 const progressText = computed(() => {
   switch (state.value) {

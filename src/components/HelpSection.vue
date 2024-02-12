@@ -16,9 +16,11 @@ defineEmits<{
 
 const dismissedHelpIds = useStorage<string[]>('dismissedHelpIds', [])
 const isDismissed = computed(() => dismissedHelpIds.value.includes(props.id))
-const isOpen = ref((props.startOpen && !isDismissed.value) || !!props.modelValue)
+const isOpen = ref(
+  (props.startOpen && !isDismissed.value) || !!props.modelValue
+)
 
-function toggle () {
+function toggle() {
   if (props.modal) {
     return
   }
@@ -28,8 +30,19 @@ function toggle () {
 </script>
 
 <template>
-  <v-btn v-if="modal" size="small" icon="mdi-help" @click="toggle" variant="tonal" />
-  <v-sheet v-else :color="isOpen ? 'secondary-lighten-2' : 'background'" rounded class="container">
+  <v-btn
+    v-if="modal"
+    size="small"
+    icon="mdi-help"
+    @click="toggle"
+    variant="tonal"
+  />
+  <v-sheet
+    v-else
+    :color="isOpen ? 'secondary-lighten-2' : 'transparent'"
+    rounded
+    class="container"
+  >
     <div class="d-flex">
       <v-expand-transition>
         <div v-if="isOpen">
@@ -39,7 +52,12 @@ function toggle () {
         </div>
       </v-expand-transition>
       <v-spacer />
-      <v-btn size="small" :icon="isOpen ? 'mdi-close' : 'mdi-help'" @click="toggle" :variant="isOpen ? 'text' : 'tonal'" />
+      <v-btn
+        size="small"
+        :icon="isOpen ? 'mdi-close' : 'mdi-help'"
+        @click="toggle"
+        :variant="isOpen ? 'text' : 'tonal'"
+      />
     </div>
   </v-sheet>
 </template>

@@ -14,6 +14,13 @@ export enum AgendaState {
   Archived = 'archived'
 }
 
+export enum AgendaTransition {
+  Unpublish = 'unpublish',
+  Upcoming = 'upcoming',
+  Ongoing = 'ongoing',
+  Close = 'close'
+}
+
 export interface AgendaItem {
   pk: number
   block_proposals: boolean

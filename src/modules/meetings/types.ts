@@ -4,7 +4,11 @@ import type { ComposerTranslation } from 'vue-i18n'
 import type { BaseContent } from '@/contentTypes/types'
 import type { voteManagementComponents } from './dialects/index'
 
-export type BubbleComponent = Component & { id: string, icon: string, order: number }
+export type BubbleComponent = Component & {
+  id: string
+  icon: string
+  order: number
+}
 
 export interface BubbleInfo {
   component: BubbleComponent
@@ -87,7 +91,7 @@ export interface MeetingDialectDefinition {
     role_id: string
     roles: MeetingRole[]
   }[]
-  title: string,
+  title: string
   view_components: {
     votes_management: keyof typeof voteManagementComponents
   }
@@ -108,15 +112,11 @@ export interface Meeting extends BaseContent {
 }
 
 export interface MeetingGroup extends BaseContent {
-  groupid: string
   body: string
-  created: string
   delegate_to: number | null
-  modified: string
-  tags: string[]
-  author: number
+  groupid: string
   meeting: number
-  mentions: number[]
+  tags: string[]
   votes: null | number
 }
 
@@ -137,8 +137,8 @@ export interface GroupMembership {
   votes: null | number
 }
 
-type UserAuthor = { author: number, meeting_group: null }
-type GroupAuthor = { author: number | null, meeting_group: number }
+type UserAuthor = { author: number; meeting_group: null }
+type GroupAuthor = { author: number | null; meeting_group: number }
 export type Author = UserAuthor | GroupAuthor
 
 export interface ComponentBase<N = string> {
@@ -160,8 +160,10 @@ export interface MeetingGroupColumn {
   // Add component eventually
   component?: ColumnComponent
   name: string
-  getCount? (): number
-  getDescription? (t: ComposerTranslation): string
-  getTitle (t: ComposerTranslation): string
-  getValue? (group: MeetingGroup & { memberships: GroupMembership[] }): string | number
+  getCount?(): number
+  getDescription?(t: ComposerTranslation): string
+  getTitle(t: ComposerTranslation): string
+  getValue?(
+    group: MeetingGroup & { memberships: GroupMembership[] }
+  ): string | number
 }

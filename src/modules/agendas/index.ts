@@ -1,6 +1,9 @@
 import { getApiLink } from '@/utils/restApi'
 
-import { meetingExportPlugins, meetingSettingsPlugins } from '../meetings/registry'
+import {
+  meetingExportPlugins,
+  meetingSettingsPlugins
+} from '../meetings/registry'
 import useMeeting from '../meetings/useMeeting'
 
 import useAgenda from './useAgenda'
@@ -9,17 +12,17 @@ meetingSettingsPlugins.register({
   id: 'agenda',
   route: { name: 'agendaEdit' },
   icon: 'mdi-clipboard-list',
-  getDescription (t) {
+  getDescription(t) {
     const { meetingId } = useMeeting()
     const { agenda } = useAgenda(meetingId)
     return t('agenda.itemCount', agenda.value.length)
   },
-  getTitle (t) {
+  getTitle(t) {
     return t('agenda.agenda')
   }
 })
 
-function getDownloadFormat (meeting: number, format: 'csv' | 'json') {
+function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
   return {
     format,
     url: getApiLink(`export-agenda-items/${meeting}/${format}/`)
@@ -28,15 +31,17 @@ function getDownloadFormat (meeting: number, format: 'csv' | 'json') {
 
 meetingExportPlugins.register({
   id: 'agenda',
-  getExports (t, meetingId) {
-    return [{
-      formats: [
-        getDownloadFormat(meetingId, 'csv'),
-        getDownloadFormat(meetingId, 'json')
-      ]
-    }]
+  getExports(t, meetingId) {
+    return [
+      {
+        formats: [
+          getDownloadFormat(meetingId, 'csv'),
+          getDownloadFormat(meetingId, 'json')
+        ]
+      }
+    ]
   },
-  getTitle (t) {
+  getTitle(t) {
     return t('agenda.agenda')
   }
 })

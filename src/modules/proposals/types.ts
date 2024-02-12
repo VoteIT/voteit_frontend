@@ -40,6 +40,9 @@ export interface DiffProposal extends BaseProposal {
 
 export type Proposal = RichtextProposal | DiffProposal
 
+export function isProposal(prop?: Proposal): prop is Proposal {
+  return !!prop
+}
 export function isDiffProposal(prop: Proposal): prop is DiffProposal {
   return prop.shortname === 'diff_proposal'
 }

@@ -23,7 +23,7 @@ import { computed } from 'vue'
 
 import useAuthentication from '@/composables/useAuthentication'
 import useUserDetails from '@/modules/organisations/useUserDetails'
-import type { User } from '@/modules/organisations/types'
+import type { IUser } from '@/modules/organisations/types'
 import { ThemeColor } from '@/utils/types'
 
 import UserPopup from './UserPopup.vue'
@@ -34,7 +34,7 @@ const props = withDefaults(
     popup?: boolean
     pk?: number
     size?: string
-    user?: User
+    user?: IUser
   }>(),
   {
     color: 'primary'

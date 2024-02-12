@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-alert v-if="pollTied" type="info" class="mt-4 mb-8" :text="t('poll.majority.tiedResult')" />
+    <v-alert
+      v-if="pollTied"
+      type="info"
+      class="mt-4 mb-8"
+      :text="t('poll.majority.tiedResult')"
+    />
     <Proposal
       v-for="{ icon, proposal, votes } in proposalResults"
       :key="proposal.pk"
@@ -9,7 +14,9 @@
       class="my-4"
     >
       <template #bottom-right>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">
+        <p
+          class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2"
+        >
           {{ t('poll.result.voteCount', votes) }}
           <v-tooltip location="top right">
             <template #activator="{ props }">
@@ -29,13 +36,11 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
-import useProposals from '@/modules/proposals/useProposals'
+import { getProposals } from '@/modules/proposals/useProposals'
 import Proposal from '@/modules/proposals/Proposal.vue'
 import type { MajorityResult } from './types'
-import type { Proposal as P } from '@/modules/proposals/types'
 
 const { t } = useI18n()
-const { getProposal } = useProposals()
 
 const props = defineProps<{
   abstainCount: number
@@ -43,29 +48,39 @@ const props = defineProps<{
   result: MajorityResult
 }>()
 
-function getIcon (proposal: number) {
-  if (props.result.approved.includes(proposal)) return { icon: 'mdi-thumb-up', color: ThemeColor.Success, text: t('proposal.approved') }
-  if (props.result.denied.includes(proposal)) return { icon: 'mdi-thumb-down', color: ThemeColor.Warning, text: t('proposal.denied') }
-  return { icon: 'mdi-help-rhombus', color: ThemeColor.Secondary, text: t('proposal.tied') }
-}
-
-function isProposal (prop?: P): prop is P {
-  return !!prop
+function getIcon(proposal: number) {
+  if (props.result.approved.includes(proposal))
+    return {
+      icon: 'mdi-thumb-up',
+      color: ThemeColor.Success,
+      text: t('proposal.approved')
+    }
+  if (props.result.denied.includes(proposal))
+    return {
+      icon: 'mdi-thumb-down',
+      color: ThemeColor.Warning,
+      text: t('proposal.denied')
+    }
+  return {
+    icon: 'mdi-help-rhombus',
+    color: ThemeColor.Secondary,
+    text: t('proposal.tied')
+  }
 }
 
 const pollTied = computed(() => props.result.approved.length === 0)
 
 const proposalResults = computed(() => {
   return orderBy(
-    props.proposals
-      .map(getProposal)
-      .filter(isProposal)
-      .map(proposal => ({
-        proposal,
-        votes: props.result.results.find(r => r.proposal === proposal.pk)?.votes || 0,
-        icon: getIcon(proposal.pk)
-      })),
-    ['votes'], ['desc']
+    getProposals(props.proposals).map((proposal) => ({
+      proposal,
+      votes:
+        props.result.results.find((r) => r.proposal === proposal.pk)?.votes ||
+        0,
+      icon: getIcon(proposal.pk)
+    })),
+    ['votes'],
+    ['desc']
   )
 })
 </script>

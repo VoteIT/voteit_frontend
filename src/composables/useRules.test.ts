@@ -28,7 +28,11 @@ test('Or rule', () => {
   expect(rules.or(rules.max(2), rules.min(4))('2')).toBe(true)
   expect(rules.or(rules.max(2), rules.min(4))('3')).toBe('rules.noMatch')
   expect(rules.or(rules.max(2), rules.min(4))('4')).toBe(true)
-  const threeOr = rules.or(rules.maxLength(2), rules.minLength(4), rules.min(500))
+  const threeOr = rules.or(
+    rules.maxLength(2),
+    rules.minLength(4),
+    rules.min(500)
+  )
   expect(threeOr('99')).toBe(true)
   expect(threeOr('100')).toBe('rules.noMatch')
   expect(threeOr('499')).toBe('rules.noMatch')
@@ -87,24 +91,36 @@ x212121212
   const multiSSN = rules.multiline(rules.swedishSSN)
 
   expect(multiEmail(correctEmails)).toEqual(true)
-  expect(multiEmail(incorrectEmails)).toEqual(invalid + ': invites.email.invalid')
+  expect(multiEmail(incorrectEmails)).toEqual(
+    invalid + ': invites.email.invalid'
+  )
   expect(multiEmail(correctMix)).toEqual(invalid + ': invites.email.invalid')
   expect(multiMix(correctEmails)).toEqual(true)
   expect(multiMix(correctMix)).toEqual(true)
   expect(multiMix(correctSSNs)).toEqual(true)
   expect(multiMix(incorrectSSN)).toEqual(invalid + ': rules.noMatch')
   expect(multiSSN(correctSSNs)).toEqual(true)
-  expect(multiSSN(incorrectSSN)).toEqual(invalid + ': invites.swedish_ssn.invalid')
-  expect(multiSSN(correctMix)).toEqual(invalid + ': invites.swedish_ssn.invalid')
+  expect(multiSSN(incorrectSSN)).toEqual(
+    invalid + ': invites.swedish_ssn.invalid'
+  )
+  expect(multiSSN(correctMix)).toEqual(
+    invalid + ': invites.swedish_ssn.invalid'
+  )
 })
 
 test('TabSeparated', () => {
-  const mixRule = rules.tabSeparated(rules.minLength(1), rules.email, rules.swedishSSN)
+  const mixRule = rules.tabSeparated(
+    rules.minLength(1),
+    rules.email,
+    rules.swedishSSN
+  )
 
   expect(mixRule('One\ttwo')).toEqual('rules.tabSeparatedBadLength')
   expect(mixRule('\ttwo\tthree')).toEqual('rules.minLength')
   expect(mixRule('One\ttwo\tthree')).toEqual('invites.email.invalid')
-  expect(mixRule('One\ttest@example.com\tthree')).toEqual('invites.swedish_ssn.invalid')
+  expect(mixRule('One\ttest@example.com\tthree')).toEqual(
+    'invites.swedish_ssn.invalid'
+  )
   expect(mixRule('One\ttest@example.com\t1212121212')).toEqual(true)
 })
 
@@ -115,7 +131,9 @@ test('TabSeparatedEqualColumns', () => {
   expect(rule('One\ttwo\n')).toEqual(true)
   expect(rule('One\ttwo\nThree')).toEqual('rules.tabSeparatedBadColumnCount')
   expect(rule('One\ntwo\tThree')).toEqual('rules.tabSeparatedBadColumnCount')
-  expect(rules.tabSeparatedEqualColumns(2, 2)('\n')).toEqual('rules.tabSeparatedMinColumns')
+  expect(rules.tabSeparatedEqualColumns(2, 2)('\n')).toEqual(
+    'rules.tabSeparatedMinColumns'
+  )
   expect(rule('One\ttwo\tthree')).toEqual('rules.tabSeparatedMaxColumns')
   // Correct format
   expect(rule('One\ttwo\nthree\tfour')).toEqual(true)

@@ -1,5 +1,12 @@
 <template>
-  <v-text-field :label="label" type="number" v-model="model" :min="settings.min" :max="settings.max" :required="required" />
+  <v-text-field
+    :label="label"
+    type="number"
+    v-model="model"
+    :min="settings.min"
+    :max="settings.max"
+    :required="required"
+  />
 </template>
 
 <script lang="ts">
@@ -17,13 +24,13 @@ export default defineComponent({
     required: Boolean
   },
   emits: ['update:modelValue'],
-  setup (props, { emit }) {
+  setup(props, { emit }) {
     return {
       model: computed({
-        get () {
+        get() {
           return String(props.modelValue)
         },
-        set (value: string) {
+        set(value: string) {
           // strValue.value = value
           emit('update:modelValue', Number(value) || undefined)
         }

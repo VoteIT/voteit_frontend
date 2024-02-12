@@ -66,16 +66,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ComponentPublicInstance, computed, inject, ref, watch } from 'vue'
+import { ComponentPublicInstance, computed, inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onClickOutside } from '@vueuse/core'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'
+import Tag from '@/components/Tag.vue'
 
 import { proposalStates } from '../proposals/workflowStates'
 
 import useAgendaFilter from './useAgendaFilter'
-import { ProposalState } from '../proposals/types'
 import { agendaIdKey } from './injectionKeys'
 
 interface FilterDescription<V extends string = string> {

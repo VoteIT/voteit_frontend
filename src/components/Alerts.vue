@@ -1,12 +1,26 @@
 <template>
   <div id="alerts">
-    <v-alert elevation="4" v-for="(alert, index) in alerts" :key="index" v-model="alert.active" :type="alert.level" closable class="mb-2">
+    <v-alert
+      elevation="4"
+      v-for="(alert, index) in alerts"
+      :key="index"
+      v-model="alert.active"
+      :type="alert.level"
+      closable
+      class="mb-2"
+    >
       <div>
         <strong v-if="alert.title">{{ alert.title }}:</strong>
         {{ alert.text }}
       </div>
     </v-alert>
-    <v-btn color="secondary" prepend-icon="mdi-notification-clear-all" class="dismiss-all" v-if="hasMultipleActive" @click="dismiss()">
+    <v-btn
+      color="secondary"
+      prepend-icon="mdi-notification-clear-all"
+      class="dismiss-all"
+      v-if="hasMultipleActive"
+      @click="dismiss()"
+    >
       {{ t('dismissAll') }}
     </v-btn>
   </div>
@@ -29,9 +43,11 @@ const DEFAULTS = {
 const { t } = useI18n()
 const alerts = reactive<Alert[]>([])
 
-const hasMultipleActive = computed(() => alerts.filter(a => a.active).length > 1)
+const hasMultipleActive = computed(
+  () => alerts.filter((a) => a.active).length > 1
+)
 
-function dismiss (alert?: Alert) {
+function dismiss(alert?: Alert) {
   if (!alert) {
     alerts.length = 0
     return
@@ -42,20 +58,20 @@ function dismiss (alert?: Alert) {
   alerts.splice(index, 1)
 }
 
-function textToAlert (text: string): Alert {
+function textToAlert(text: string): Alert {
   switch (text.charAt(0)) {
     case '*':
       return {
         level: AlertLevel.Warning,
         text: text.slice(1),
-        title: AlertLevel.Warning,
+        title: AlertLevel.Warning
       }
     case '^':
       return {
         level: AlertLevel.Error,
         sticky: true,
         text: text.slice(1),
-        title: AlertLevel.Error,
+        title: AlertLevel.Error
       }
   }
   return {
@@ -65,7 +81,7 @@ function textToAlert (text: string): Alert {
   }
 }
 
-function open (data: string | Alert) {
+function open(data: string | Alert) {
   if (typeof data === 'string') data = textToAlert(data)
   alerts.push({ ...DEFAULTS, ...data })
   const alert = alerts.at(-1)!

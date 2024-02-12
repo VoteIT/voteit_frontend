@@ -1,9 +1,28 @@
 <template>
-  <v-alert class="mb-4" :title="t('invites.helpTextTitle')" :text="t('invites.helpTextBody')" color="primary" icon="mdi-email-off" />
+  <v-alert
+    class="mb-4"
+    :title="t('invites.helpTextTitle')"
+    :text="t('invites.helpTextBody')"
+    color="primary"
+    icon="mdi-email-off"
+  />
   <v-toolbar color="secondary" :title="t('invites.existing')">
-    <v-tooltip v-if="existingInviteScopes.length === 1" :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
+    <v-tooltip
+      v-if="existingInviteScopes.length === 1"
+      :modelValue="copied"
+      location="top"
+      :text="t('copied')"
+      :open-on-hover="false"
+    >
       <template #activator="{ props }">
-        <v-btn class="mr-2" v-bind="props" @click="copyFilteredData()" :color="copied ? 'success' : undefined" :variant="copied ? 'elevated' : 'text'" :title="t('invites.copyMatchingTooltip')">
+        <v-btn
+          class="mr-2"
+          v-bind="props"
+          @click="copyFilteredData()"
+          :color="copied ? 'success' : undefined"
+          :variant="copied ? 'elevated' : 'text'"
+          :title="t('invites.copyMatchingTooltip')"
+        >
           <v-icon>mdi-content-copy</v-icon>
         </v-btn>
       </template>
@@ -11,7 +30,12 @@
     <v-menu v-else-if="existingInviteScopes.length > 1">
       <template #activator="{ props }">
         <v-btn v-bind="props" append-icon="mdi-chevron-down">
-          <v-tooltip :modelValue="copied" location="top" :text="t('copied')" :open-on-hover="false">
+          <v-tooltip
+            :modelValue="copied"
+            location="top"
+            :text="t('copied')"
+            :open-on-hover="false"
+          >
             <template #activator="{ props }">
               <v-icon v-bind="props">mdi-content-copy</v-icon>
             </template>
@@ -20,39 +44,63 @@
       </template>
       <v-list>
         <v-list-item
-          v-for="{ icon, id, typeLabel } in existingInviteScopes" :key="id"
+          v-for="{ icon, id, typeLabel } in existingInviteScopes"
+          :key="id"
           :prepend-icon="icon"
           :title="typeLabel"
           @click="copyFilteredData(id)"
         />
       </v-list>
     </v-menu>
-    <v-btn class="mr-2 d-none d-md-inline" :variant="filterMenu ? 'elevated' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'secondary-lighten-2' : undefined" >
+    <v-btn
+      class="mr-2 d-none d-md-inline"
+      :variant="filterMenu ? 'elevated' : 'text'"
+      @click="filterMenu = !filterMenu"
+      :color="filterMenu ? 'secondary-lighten-2' : undefined"
+    >
       <v-icon start>mdi-filter-menu</v-icon>
       {{ t('filter') }}
     </v-btn>
-    <v-btn class="mr-2 d-md-none" :variant="filterMenu ? 'elevated' : 'text'" @click="filterMenu = !filterMenu" :color="filterMenu ? 'secondary-lighten-2' : undefined" >
+    <v-btn
+      class="mr-2 d-md-none"
+      :variant="filterMenu ? 'elevated' : 'text'"
+      @click="filterMenu = !filterMenu"
+      :color="filterMenu ? 'secondary-lighten-2' : undefined"
+    >
       <v-icon>mdi-filter-menu</v-icon>
     </v-btn>
     <DefaultDialog v-if="scopeItems.length === 1" :title="t('invites.add')">
       <template #activator="{ props }">
-        <v-btn v-bind="props" prepend-icon="mdi-account-multiple-plus" class="text-no-wrap">
+        <v-btn
+          v-bind="props"
+          prepend-icon="mdi-account-multiple-plus"
+          class="text-no-wrap"
+        >
           {{ t('invites.add') }}
         </v-btn>
       </template>
       <template #default="{ close }">
-        <InvitationModal :type="scopeItems[0].value" :meeting="meetingId" @done="close" />
+        <InvitationModal
+          :type="scopeItems[0].value"
+          :meeting="meetingId"
+          @done="close"
+        />
       </template>
     </DefaultDialog>
     <v-menu v-else-if="scopeItems.length > 1">
       <template #activator="{ props }">
-        <v-btn v-bind="props" append-icon="mdi-chevron-down" class="text-no-wrap">
+        <v-btn
+          v-bind="props"
+          append-icon="mdi-chevron-down"
+          class="text-no-wrap"
+        >
           {{ t('invites.add') }}
         </v-btn>
       </template>
       <v-list>
         <DefaultDialog
-          v-for="{ icon, title, value } in scopeItems" :key="value"
+          v-for="{ icon, title, value } in scopeItems"
+          :key="value"
           :title="t('invites.add')"
         >
           <template #activator="{ props }">
@@ -64,7 +112,11 @@
         </DefaultDialog>
         <DefaultDialog :title="t('invites.add')">
           <template #activator="{ props }">
-            <v-list-item v-bind="props" :title="t('invites.mixed.typeLabel')" prepend-icon="mdi-account-star" />
+            <v-list-item
+              v-bind="props"
+              :title="t('invites.mixed.typeLabel')"
+              prepend-icon="mdi-account-star"
+            />
           </template>
           <template #default="{ close }">
             <InvitationModal :meeting="meetingId" @done="close" />
@@ -112,19 +164,39 @@
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
       <div class="pa-4">
-        <v-text-field :label="t('search')" v-model="inviteFilter.search" clearable />
-        <CheckboxMultipleSelect v-model="inviteFilter.states" :settings="{ options: stateLabels }" :label="t('invites.filterOnStatus')" />
-        <CheckboxMultipleSelect v-model="inviteFilter.roles" :settings="{ options: roleLabelsEditable }" :label="t('invites.filterOnRoles')" :requiredValues="[MeetingRole.Participant]" />
-        <v-switch v-model="inviteFilter.exactRoles" :label="t('invites.filterMatchRoles')" />
+        <v-text-field
+          :label="t('search')"
+          v-model="inviteFilter.search"
+          clearable
+        />
+        <CheckboxMultipleSelect
+          v-model="inviteFilter.states"
+          :settings="{ options: stateLabels }"
+          :label="t('invites.filterOnStatus')"
+        />
+        <CheckboxMultipleSelect
+          v-model="inviteFilter.roles"
+          :settings="{ options: roleLabelsEditable }"
+          :label="t('invites.filterOnRoles')"
+          :requiredValues="[MeetingRole.Participant]"
+        />
+        <v-switch
+          v-model="inviteFilter.exactRoles"
+          :label="t('invites.filterMatchRoles')"
+        />
       </div>
     </v-sheet>
   </v-expand-transition>
-  <v-pagination v-if="pages.length > 1" v-model="currentPage" :length="pages.length" />
+  <v-pagination
+    v-if="pages.length > 1"
+    v-model="currentPage"
+    :length="pages.length"
+  />
   <v-table class="mb-4">
     <thead>
       <tr>
         <th>
-          <input type="checkbox" v-model="allInvitesSelected">
+          <input type="checkbox" v-model="allInvitesSelected" />
         </th>
         <th v-for="{ id, icon, typeLabel } in existingInviteScopes" :key="id">
           <v-icon :icon="icon" />
@@ -142,24 +214,36 @@
       </tr>
     </thead>
     <v-item-group tag="tbody" v-model="selectedInviteIds" multiple>
-      <v-item v-for="invite in pages[currentPage - 1]" :key="invite.pk" :value="invite.pk">
+      <v-item
+        v-for="invite in pages[currentPage - 1]"
+        :key="invite.pk"
+        :value="invite.pk"
+      >
         <template v-slot="{ isSelected, toggle }">
           <tr @click="toggle" :class="{ 'bg-secondary-lighten-2': isSelected }">
             <td>
-              <input type="checkbox" :checked="(isSelected)" />
+              <input type="checkbox" :checked="isSelected" />
             </td>
             <td v-for="{ id } in existingInviteScopes" :key="id">
               {{ invite.user_data[id] }}
             </td>
             <td>
-              <v-tooltip location="top" v-for="{ title, icon } in invite.rolesDescription" :key="icon" :text="title">
+              <v-tooltip
+                location="top"
+                v-for="{ title, icon } in invite.rolesDescription"
+                :key="icon"
+                :text="title"
+              >
                 <template #activator="{ props }">
                   <v-icon :icon="icon" v-bind="props" />
                 </template>
               </v-tooltip>
             </td>
             <th v-if="hasAnnotations">
-              <DefaultDialog v-if="invite.has_annotations" :title="t('invites.annotate.annotatedTitle')">
+              <DefaultDialog
+                v-if="invite.has_annotations"
+                :title="t('invites.annotate.annotatedTitle')"
+              >
                 <template #activator="{ props }">
                   <v-icon v-bind="props" icon="mdi-badge-account" />
                 </template>
@@ -181,21 +265,41 @@
       </v-item>
     </v-item-group>
   </v-table>
-  <v-pagination v-if="pages.length > 1" v-model="currentPage" :length="pages.length" />
+  <v-pagination
+    v-if="pages.length > 1"
+    v-model="currentPage"
+    :length="pages.length"
+  />
   <div v-if="!isSubscribed" class="text-center my-6">
     <v-progress-circular indeterminate />
   </div>
-  <v-alert v-else-if="inviteHelp" type="info" v-bind="inviteHelp" class="my-4" />
+  <v-alert
+    v-else-if="inviteHelp"
+    type="info"
+    v-bind="inviteHelp"
+    class="my-4"
+  />
   <v-expand-transition>
     <v-sheet rounded border v-show="selectedInvites.length">
       <div class="ma-4">
         <h2 class="mb-2">
           {{ t('invites.bulkChange', selectedInvites.length) }}
         </h2>
-        <v-btn prepend-icon="mdi-undo" color="primary" :disabled="!selectedHasDeletable" @click="revokeSelected" class="mr-1">
+        <v-btn
+          prepend-icon="mdi-undo"
+          color="primary"
+          :disabled="!selectedHasDeletable"
+          @click="revokeSelected"
+          class="mr-1"
+        >
           {{ t('invites.revoke') }}
         </v-btn>
-        <v-btn prepend-icon="mdi-delete" color="warning" :disabled="!selectedHasDeletable" @click="deleteSelected">
+        <v-btn
+          prepend-icon="mdi-delete"
+          color="warning"
+          :disabled="!selectedHasDeletable"
+          @click="deleteSelected"
+        >
           {{ t('content.delete') }}
         </v-btn>
       </div>
@@ -235,13 +339,21 @@ const PAGE_LENGTH = 25
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingId, roleLabelsEditable, getMeetingRoleIcon } = useMeeting()
+const {
+  isModerator,
+  meeting,
+  meetingId,
+  roleLabelsEditable,
+  getMeetingRoleIcon
+} = useMeeting()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
 
 const { isSubscribed } = useChannel('invites', meetingId)
-usePermission(isModerator, {}, () => { emit('denied') })
+usePermission(isModerator, {}, () => {
+  emit('denied')
+})
 
 const scopeItems = computed(() => {
   const activeScopes = invitationScopes.getActivePlugins()
@@ -253,9 +365,9 @@ const scopeItems = computed(() => {
 })
 
 const inviteFilter = reactive<{
-  roles: string[],
-  exactRoles: boolean,
-  search: string | null,
+  roles: string[]
+  exactRoles: boolean
+  search: string | null
   states: string[]
 }>({
   roles: [MeetingRole.Participant],
@@ -269,58 +381,82 @@ const stateLabels = computed(() => {
   )
 })
 const selectedInviteIds = ref<number[]>([])
-const selectedInvites = computed(() => filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk)))
-const selectedHasDeletable = computed(() => selectedInvites.value.some(canDeleteMeetingInvite))
+const selectedInvites = computed(() =>
+  filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk))
+)
+const selectedHasDeletable = computed(() =>
+  selectedInvites.value.some(canDeleteMeetingInvite)
+)
 
 const allInvitesSelected = computed({
-  get () {
+  get() {
     if (!filteredInvites.value.length) return false
-    return filteredInvites.value.every(inv => selectedInviteIds.value.includes(inv.pk))
+    return filteredInvites.value.every((inv) =>
+      selectedInviteIds.value.includes(inv.pk)
+    )
   },
-  set (value) {
+  set(value) {
     selectedInviteIds.value = value
-      ? filteredInvites.value.map(inv => inv.pk)
+      ? filteredInvites.value.map((inv) => inv.pk)
       : []
   }
 })
 
-function search (inv: MeetingInvite) {
+function search(inv: MeetingInvite) {
   const searchLower = inviteFilter.search?.toLocaleLowerCase()
-  return !searchLower || Object.values(inv.user_data).some(data => data.toLocaleLowerCase().includes(searchLower))
+  return (
+    !searchLower ||
+    Object.values(inv.user_data).some((data) =>
+      data.toLocaleLowerCase().includes(searchLower)
+    )
+  )
 }
 
 const existingInviteScopes = computed(() => {
-  return invitationScopes.getActivePlugins()
-    .filter(scope => meetingInvites.value.some(inv => scope.id in inv.user_data))
-    .map(scope => ({
+  return invitationScopes
+    .getActivePlugins()
+    .filter((scope) =>
+      meetingInvites.value.some((inv) => scope.id in inv.user_data)
+    )
+    .map((scope) => ({
       ...scope,
       typeLabel: translateInviteType(scope.id, t).typeLabel
     }))
 })
 
-function transformUserdata (userData: MeetingInvite['user_data']) {
-  return Object.fromEntries(Object.entries(userData).map(([scope, value]) => {
-    const plugin = invitationScopes.getPlugin(scope)
-    if (!plugin) throw new Error(`Bad user data scope: ${scope}`)
-    return [
-      scope,
-      plugin.transformData?.(value) || value
-    ]
-  }))
+function transformUserdata(userData: MeetingInvite['user_data']) {
+  return Object.fromEntries(
+    Object.entries(userData).map(([scope, value]) => {
+      const plugin = invitationScopes.getPlugin(scope)
+      if (!plugin) throw new Error(`Bad user data scope: ${scope}`)
+      return [scope, plugin.transformData?.(value) || value]
+    })
+  )
 }
 
 const filteredInvites = computed(() => {
   const roleSet = new Set(inviteFilter.roles)
   const roleFilter = inviteFilter.exactRoles
     ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
-    : (invite: MeetingInvite) => inviteFilter.roles.every((role) => invite.roles.includes(role as MeetingRole))
+    : (invite: MeetingInvite) =>
+        inviteFilter.roles.every((role) =>
+          invite.roles.includes(role as MeetingRole)
+        )
   return meetingInvites.value
-    .filter(inv => search(inv) && roleFilter(inv) && inviteFilter.states.includes(inv.state))
-    .map(inv => {
+    .filter(
+      (inv) =>
+        search(inv) &&
+        roleFilter(inv) &&
+        inviteFilter.states.includes(inv.state)
+    )
+    .map((inv) => {
       return {
         ...inv,
         user_data: transformUserdata(inv.user_data),
-        rolesDescription: inv.roles.map(role => ({ title: translateMeetingRole(role, t), icon: getMeetingRoleIcon(role) })),
+        rolesDescription: inv.roles.map((role) => ({
+          title: translateMeetingRole(role, t),
+          icon: getMeetingRoleIcon(role)
+        })),
         stateLabel: stateLabels.value[inv.state]
       }
     })
@@ -329,18 +465,20 @@ const filteredInvites = computed(() => {
 const pages = computed(() => chunk(filteredInvites.value, PAGE_LENGTH))
 const currentPage = ref(1)
 // When filtering, the number of pages might change. Make sure currentPage is never higher than number of pages.
-watch(pages, value => {
+watch(pages, (value) => {
   if (currentPage.value > value.length) currentPage.value = value.length || 1
 })
 
-function copyFilteredData (scope?: string) {
-  copy(filteredInvites.value
-    .map(i => i.user_data[scope || existingInviteScopes.value[0].id])
-    .filter(Boolean)
-    .join('\n') + '\n')
+function copyFilteredData(scope?: string) {
+  copy(
+    filteredInvites.value
+      .map((i) => i.user_data[scope || existingInviteScopes.value[0].id])
+      .filter(Boolean)
+      .join('\n') + '\n'
+  )
 }
 
-async function deleteSelected () {
+async function deleteSelected() {
   // Delete any selected deletable invites
   // TODO Confirm dialog
   // TODO Warn if any were not deletable
@@ -349,17 +487,17 @@ async function deleteSelected () {
   }
 }
 
-async function revokeSelected () {
+async function revokeSelected() {
   // Revoke any selected deletable invites (same as revokable?)
   // TODO Warn if any were not revokable
-  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-    meetingInviteType.api.transition(pk, 'revoke')
+  for (const inv of selectedInvites.value.filter(canDeleteMeetingInvite)) {
+    meetingInviteType.transitions.make(inv, 'revoke', t)
   }
 }
 
 const inviteHelp = computed(() => {
   if (!meetingInvites.value.length) {
-      return {
+    return {
       text: t('invites.noInvitesHelp')
     }
   }
@@ -373,9 +511,11 @@ const inviteHelp = computed(() => {
 })
 
 const filterMenu = ref(false)
-const hasAnnotations = computed(() => meetingInvites.value.some(inv => inv.has_annotations))
+const hasAnnotations = computed(() =>
+  meetingInvites.value.some((inv) => inv.has_annotations)
+)
 
-async function clearAnnotationType (type: string) {
+async function clearAnnotationType(type: string) {
   await socket.call('invites.clear_annotations', {
     meeting: meetingId.value,
     types: [type]

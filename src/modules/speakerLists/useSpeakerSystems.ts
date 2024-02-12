@@ -1,15 +1,20 @@
 import { computed, Ref } from 'vue'
 import { isSystemModerator } from './rules'
 import { SpeakerSystemState } from './types'
-import useSpeakerLists from './useSpeakerLists'
+import { getSpeakerSystems } from './useSpeakerLists'
 
-const { getSystems } = useSpeakerLists()
-
-export default function useSpeakerSystems (meeting: Ref<number>) {
-  const activeSpeakerSystems = computed(() => getSystems(meeting.value, system => system.state === SpeakerSystemState.Active))
-  const allSpeakerSystems = computed(() => getSystems(meeting.value))
+export default function useSpeakerSystems(meeting: Ref<number>) {
+  const activeSpeakerSystems = computed(() =>
+    getSpeakerSystems(
+      meeting.value,
+      (system) => system.state === SpeakerSystemState.Active
+    )
+  )
+  const allSpeakerSystems = computed(() => getSpeakerSystems(meeting.value))
   const hasSpeakerSystems = computed(() => !!allSpeakerSystems.value.length)
-  const managingSpeakerSystems = computed(() => getSystems(meeting.value, system => !!isSystemModerator(system)))
+  const managingSpeakerSystems = computed(() =>
+    getSpeakerSystems(meeting.value, (system) => !!isSystemModerator(system))
+  )
 
   return {
     activeSpeakerSystems,

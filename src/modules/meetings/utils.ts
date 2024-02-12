@@ -4,7 +4,10 @@ import { MeetingInvite, MeetingRole } from './types'
 /**
  * Translation method to avoid dynamic translation strings
  */
-export function translateMeetingRole (role: MeetingRole, t: ComposerTranslation): string {
+export function translateMeetingRole(
+  role: MeetingRole,
+  t: ComposerTranslation
+): string {
   switch (role) {
     case MeetingRole.Discusser:
       return t('role.discusser')
@@ -19,7 +22,10 @@ export function translateMeetingRole (role: MeetingRole, t: ComposerTranslation)
   }
 }
 
-export function translateInviteType (type: keyof MeetingInvite['user_data'] | undefined, t: ComposerTranslation): { hint?: string, label: string, typeLabel?: string } {
+export function translateInviteType(
+  type: keyof MeetingInvite['user_data'] | undefined,
+  t: ComposerTranslation
+): { hint?: string; label: string; typeLabel?: string } {
   if (!type) return { label: t('invites.mixed.label') }
   switch (type) {
     case 'email':

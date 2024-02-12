@@ -4,7 +4,10 @@ import { nextTick, ref } from 'vue'
 
 import usePermission from './usePermission'
 
-vi.mock('vue-i18n', vi.fn(() => ({ useI18n: () => ({ t: (str: string) => str }) })))
+vi.mock(
+  'vue-i18n',
+  vi.fn(() => ({ useI18n: () => ({ t: (str: string) => str }) }))
+)
 
 test('usePermission custom', async () => {
   expect(usePermission).toBeTruthy()
@@ -34,6 +37,6 @@ test('usePermission default', async () => {
       theme: 'error',
       title: 'permission.defaultMessage',
       yes: 'ok'
-    }
-  ))
+    })
+  )
 })

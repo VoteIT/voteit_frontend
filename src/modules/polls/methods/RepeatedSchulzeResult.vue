@@ -1,14 +1,29 @@
 <template>
   <div>
-    <Proposal v-for="proposal, i in orderedProposals" :key="proposal.pk" :selected="proposal && result.approved.includes(proposal.pk)" :p="proposal" read-only class="my-4">
+    <Proposal
+      v-for="(proposal, i) in orderedProposals"
+      :key="proposal.pk"
+      :selected="proposal && result.approved.includes(proposal.pk)"
+      :p="proposal"
+      read-only
+      class="my-4"
+    >
       <template #top>
-        <span class="ordinal">{{ i+1 }}</span>
+        <span class="ordinal">{{ i + 1 }}</span>
       </template>
     </Proposal>
     <v-expansion-panels>
-      <v-expansion-panel v-for="(round, i) in result.rounds" :key="i" :title="t('poll.result.roundNum', i+1)">
+      <v-expansion-panel
+        v-for="(round, i) in result.rounds"
+        :key="i"
+        :title="t('poll.result.roundNum', i + 1)"
+      >
         <v-expansion-panel-text>
-          <SchulzeResult :proposals="round.candidates" :result="round" :abstainCount="abstainCount" />
+          <SchulzeResult
+            :proposals="round.candidates"
+            :result="round"
+            :abstainCount="abstainCount"
+          />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -37,7 +52,7 @@ const { getProposal } = useProposals()
 
 const orderedProposals = computed(() => {
   return props.result.rounds
-    .map(round => getProposal(round.winner))
+    .map((round) => getProposal(round.winner))
     .filter((p?: P): p is P => !!p)
 })
 </script>

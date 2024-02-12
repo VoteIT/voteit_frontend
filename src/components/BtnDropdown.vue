@@ -20,6 +20,8 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
 
+import Widget from './Widget.vue'
+
 defineProps<{
   title?: string
   dark?: boolean

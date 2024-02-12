@@ -26,11 +26,10 @@
                   clearable
                   v-model="participantFilter.search"
                 />
-                <!-- Typescript workaround for multiple -->
                 <v-select
                   :items="roleItems.slice(1)"
                   class="ml-1"
-                  :multiple="true as false"
+                  multiple
                   label="Begränsa till roller"
                   clearable
                   v-model="participantFilter.roles"
@@ -158,7 +157,7 @@ import useAuthentication from '@/composables/useAuthentication'
 import useAlert from '@/composables/useAlert'
 import useTabRoute from '@/composables/useTabRoute'
 
-import { User } from '../organisations/types'
+import { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 import useOrganisation from '../organisations/useOrganisation'
 import usePresence from '../presence/usePresence'
@@ -230,7 +229,7 @@ async function removeConfirm(userPk: number, role: string) {
 }
 
 const omitIds = computed(() => getUserIds(meetingId.value))
-function searchFilter(user: User): boolean {
+function searchFilter(user: IUser): boolean {
   return !omitIds.value.includes(user.pk)
 }
 
@@ -239,36 +238,37 @@ const { currentTab } = useTabRoute(
   'participants',
   'participantsTab'
 )
+
+function* getExtraTabs() {
+  if (canManagePresence.value)
+    yield {
+      value: 'presence',
+      text: t('presence.presence')
+    }
+  if (hasSpeakerSystems.value)
+    yield {
+      value: 'speakerHistory',
+      text: t('speaker.history')
+    }
+  if (canViewMeetingInvite.value)
+    yield {
+      value: 'invites',
+      text: t('invites.invites')
+    }
+}
+
 const tabs = computed(() => {
-  const tabs = [
+  return [
     {
       value: 'default',
-      title: t('meeting.participants')
+      text: t('meeting.participants')
     },
     {
       value: 'groups',
-      title: t('meeting.groups.groups')
-    }
+      text: t('meeting.groups.groups')
+    },
+    ...getExtraTabs()
   ]
-  if (canManagePresence.value) {
-    tabs.push({
-      value: 'presence',
-      title: t('presence.presence')
-    })
-  }
-  if (hasSpeakerSystems.value) {
-    tabs.push({
-      value: 'speakerHistory',
-      title: t('speaker.history')
-    })
-  }
-  if (canViewMeetingInvite.value) {
-    tabs.push({
-      value: 'invites',
-      title: t('invites.invites')
-    })
-  }
-  return tabs
 })
 
 function changePresence(user: number, present: boolean) {
@@ -284,7 +284,7 @@ function changePresence(user: number, present: boolean) {
   }
 }
 
-function presenceFilter({ pk }: User) {
+function presenceFilter({ pk }: IUser) {
   return !presentUserIds.value.includes(pk)
 }
 

@@ -70,7 +70,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useProposals from '@/modules/proposals/useProposals'
+import { getProposals } from '@/modules/proposals/useProposals'
 import type { Proposal } from '@/modules/proposals/types'
 
 import { Poll } from '../types'
@@ -90,7 +90,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { getProposal } = useProposals()
 
 const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
 
@@ -132,13 +131,7 @@ function toggleSelected(proposal: Proposal) {
   else emit('update:modelValue')
 }
 
-function isProposal(p?: Proposal): p is Proposal {
-  return !!p
-}
-
-const rankedProposals = computed(() =>
-  ranking.value.map(getProposal).filter(isProposal)
-)
+const rankedProposals = computed(() => getProposals(ranking.value))
 
 const validHelpText = computed(() => {
   if (missingProposals.value)

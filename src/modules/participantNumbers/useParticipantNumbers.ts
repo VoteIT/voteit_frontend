@@ -5,17 +5,18 @@ import { ParticipantNumber } from './types'
 
 const participantNumberStore = reactive(new Map<number, ParticipantNumber>())
 
-participantNumberType.updateMap(
-  participantNumberStore,
-  { meeting: 'meeting' }
-)
+participantNumberType.updateMap(participantNumberStore, { meeting: 'meeting' })
 
-export default function useParticipantNumbers (meeting: Ref<number>) {
-  const participantNumbers = computed(() => filter(
-    participantNumberStore.values(),
-    pn => pn.meeting === meeting.value
-  ))
-  const hasParticipantNumbers = computed(() => !!participantNumbers.value.length)
+export default function useParticipantNumbers(meeting: Ref<number>) {
+  const participantNumbers = computed(() =>
+    filter(
+      participantNumberStore.values(),
+      (pn) => pn.meeting === meeting.value
+    )
+  )
+  const hasParticipantNumbers = computed(
+    () => !!participantNumbers.value.length
+  )
 
   return {
     participantNumbers,

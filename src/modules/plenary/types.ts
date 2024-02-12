@@ -5,5 +5,5 @@ import type { PollPlugin } from '../polls/registry'
 
 export interface QuickStartMethod extends PollPlugin {
   settings: PollMethodSettings | null
-  title: string,
+  title: string
 }

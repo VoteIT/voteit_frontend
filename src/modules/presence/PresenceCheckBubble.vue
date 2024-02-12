@@ -4,7 +4,9 @@
       {{ t('presence.check') }}
     </h2>
     <p class="my-2">
-      {{ userPresence ? t('presence.presenceNoted') : t('presence.notePresent') }}
+      {{
+        userPresence ? t('presence.presenceNoted') : t('presence.notePresent')
+      }}
     </p>
     <v-btn
       @click="togglePresence"
@@ -38,12 +40,15 @@ const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
 const { alert } = useAlert()
 const { meetingId } = useMeeting()
-const { presenceCheck, userPresence, isPresent, changePresence } = usePresence(meetingId)
+const { presenceCheck, userPresence, isPresent, changePresence } =
+  usePresence(meetingId)
 const working = ref(false)
 
-const canChange = computed(() => presenceCheck.value && canChangePresenceCheck(presenceCheck.value))
+const canChange = computed(
+  () => presenceCheck.value && canChangePresenceCheck(presenceCheck.value)
+)
 
-async function togglePresence () {
+async function togglePresence() {
   if (!presenceCheck.value) return
   working.value = true
   // Save in case isPresent is not updated after await

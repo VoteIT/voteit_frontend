@@ -28,8 +28,12 @@ const { getUser } = useUserDetails()
 const { canAddDiscussionPost, agendaItem } = useAgendaItem(agendaId)
 const { getMeetingButtons } = useReactions()
 
-const submitIcon = computed(() => agendaItem.value?.block_discussion ? 'mdi-lock-outline' : 'mdi-comment-text-outline')
-async function submit (post: Partial<IDiscussionPost>) {
+const submitIcon = computed(() =>
+  agendaItem.value?.block_discussion
+    ? 'mdi-lock-outline'
+    : 'mdi-comment-text-outline'
+)
+async function submit(post: Partial<IDiscussionPost>) {
   await discussionPostType.api.add({
     agenda_item: agendaId.value,
     ...post
@@ -38,16 +42,22 @@ async function submit (post: Partial<IDiscussionPost>) {
 
 const addContentComponent = ref<null | ComponentPublicInstance<{
   // eslint-disable-next-line func-call-spacing
-  focus (): void,
-  setMention (user: { id: number, value: string }): void,
-  addTag (...tags: string[]): void
+  focus(): void
+  setMention(user: { id: number; value: string }): void
+  addTag(...tags: string[]): void
 }>>(null)
-const reactions = computed(() => getMeetingButtons(meetingId.value, 'discussion_post'))
+const reactions = computed(() =>
+  getMeetingButtons(meetingId.value, 'discussion_post')
+)
 
-function replyTo (post: IDiscussionPost) {
+function replyTo(post: IDiscussionPost) {
   if (post.author && !post.meeting_group) {
     const user = getUser(post.author)
-    if (user) addContentComponent.value?.setMention({ id: user.pk, value: getDisplayName(user) })
+    if (user)
+      addContentComponent.value?.setMention({
+        id: user.pk,
+        value: getDisplayName(user)
+      })
   }
   addContentComponent.value?.addTag(...post.tags)
   addContentComponent.value?.focus()
@@ -60,22 +70,30 @@ defineExpose({
 
 <template>
   <div class="comments">
-    <DiscussionPost v-for="c in comments" :key="c.pk" :p="c" class="mb-4">
-      <template #buttons>
-        <ReactionButton
-          v-for="btn in reactions"
-          class="mr-1"
-          :key="btn.pk"
-          :button="btn"
-          :relation="{ content_type: 'discussion_post', object_id: c.pk }"
-        >
-          {{ btn.title }}
-        </ReactionButton>
-      </template>
-      <template #preMenu v-if="canAddDiscussionPost">
-        <v-btn icon="mdi-reply" size="small" variant="text" @click="replyTo(c)" class="mx-2 reply-button" />
-      </template>
-    </DiscussionPost>
+    <v-slide-x-transition group>
+      <DiscussionPost v-for="c in comments" :key="c.pk" :p="c" class="mb-4">
+        <template #buttons>
+          <ReactionButton
+            v-for="btn in reactions"
+            class="mr-1"
+            :key="btn.pk"
+            :button="btn"
+            :relation="{ content_type: 'discussion_post', object_id: c.pk }"
+          >
+            {{ btn.title }}
+          </ReactionButton>
+        </template>
+        <template #preMenu v-if="canAddDiscussionPost">
+          <v-btn
+            icon="mdi-reply"
+            size="small"
+            variant="text"
+            @click="replyTo(c)"
+            class="mx-2 reply-button"
+          />
+        </template>
+      </DiscussionPost>
+    </v-slide-x-transition>
     <DiscussionPostEditor
       v-if="canAddDiscussionPost"
       ref="addContentComponent"

@@ -9,7 +9,7 @@ const cols = {
   }
 }
 
-export default function useDefaults () {
+export default function useDefaults() {
   const { mobile } = useDisplay()
 
   const dialogDefaults = computed(() => {
@@ -18,8 +18,10 @@ export default function useDefaults () {
     }
   })
 
-  const collapsedBodyHeight = computed(() => mobile.value ? 80 : 240)
-  const collapsedBodyHeightMobile = computed(() => mobile.value ? 80 : undefined)
+  const collapsedBodyHeight = computed(() => (mobile.value ? 80 : 240))
+  const collapsedBodyHeightMobile = computed(() =>
+    mobile.value ? 80 : undefined
+  )
 
   return {
     collapsedBodyHeight,

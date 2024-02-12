@@ -1,219 +1,337 @@
-<template>
-  <v-row v-if="!selectedProposals.length && !pool.length">
-    <v-col
-      md="8"
-      offset-md="2"
-      lg="4"
-      offset-lg="4"
-      class="text-center text-secondary mt-12"
-    >
-      <h2 class="text-h4 mb-6">{{ t('plenary.noProposalsInFilter') }}</h2>
-      <v-alert
-        v-if="hasProposals"
-        type="info"
-        :text="t('plenary.hintModifyFilter')"
-      />
-    </v-col>
-  </v-row>
-  <v-row v-else>
-    <v-col cols="7" md="8" lg="9">
-      <Proposal
-        v-for="p in selectedProposals"
-        :key="p.pk"
-        readOnly
-        :p="p"
-        class="mb-4"
-      >
-        <template #actions>
-          <div class="text-right">
-            <v-btn-group class="mr-2">
-              <v-btn
-                v-for="s in getProposalStates(p.state)"
-                :key="s.state"
-                :color="p.state === s.state ? s.color : 'background'"
-                @click="makeTransition(p, s)"
-                :loading="p.state !== s.state && transitioning.has(p.pk)"
-              >
-                <v-icon :icon="s.icon" />
-              </v-btn>
-            </v-btn-group>
-            <v-btn
-              icon="mdi-chevron-right"
-              variant="text"
-              @click="deselectProposal(p)"
-            />
-          </div>
-        </template>
-        <template #bottom>
-          <ButtonPlugins
-            mode="presentation"
-            :proposal="(p as Proposal)"
-            class="mt-2"
-          />
-        </template>
-      </Proposal>
-      <div
-        v-if="!selectedProposals.length"
-        class="text-h4 text-center text-secondary mt-12"
-      >
-        <template v-if="nextTextProposalTag">
-          <p class="mb-1">
-            {{ t('plenary.nextParagraph') }}
-          </p>
-          <Tag
-            v-if="nextTextProposalTag"
-            :name="nextTextProposalTag"
-            style="transform: scale(1.4)"
-          />
-        </template>
-        <template v-else>
-          {{ t('plenary.selectProposals') }} <v-icon icon="mdi-chevron-right" />
-        </template>
-      </div>
-    </v-col>
-    <v-col cols="5" md="4" lg="3">
-      <div class="mb-6 d-flex" v-for="p in pool" :key="p.pk">
-        <v-btn
-          size="small"
-          icon="mdi-chevron-left"
-          variant="text"
-          @click="selectProposal(p)"
-        />
-        <Proposal readOnly :p="p" class="flex-grow-1" />
-      </div>
-    </v-col>
-  </v-row>
-</template>
-
 <script setup lang="ts">
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  provide,
-  reactive,
-  ref,
-  watch
-} from 'vue'
+import { computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { flatten } from 'lodash'
-import { onKeyStroke } from '@vueuse/core'
 
 import { RoleContextKey } from '@/injectionKeys'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
-import { WorkflowState } from '@/contentTypes/types'
+import useLoader from '@/composables/useLoader'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 import useAgenda from '../agendas/useAgenda'
-import useProposals from '../proposals/useProposals'
-import type { Proposal } from '../proposals/types'
-import { ProposalState } from '../proposals/types'
-import { proposalType } from '../proposals/contentTypes'
-import useTextDocuments from '../proposals/useTextDocuments'
-import { proposalStates } from '../proposals/workflowStates'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingChannel from '../meetings/useMeetingChannel'
-import useTags from '../meetings/useTags'
+import useMeetingTitle from '../meetings/useMeetingTitle'
+import { pollType } from '../polls/contentTypes'
+import { Poll, PollState } from '../polls/types'
+import { pollPlugins } from '../polls/registry'
+import usePolls from '../polls/usePolls'
+import { proposalStates } from '../proposals/workflowStates'
+import { ProposalState } from '../proposals/types'
+import useProposals from '../proposals/useProposals'
+import BroadcastMenu from '../rooms/BroadcastMenu.vue'
+import useRoom from '../rooms/useRoom'
+import SpeakerHandling from '../speakerLists/SpeakerHandling.vue'
+import useSpeakerSystem from '../speakerLists/useSpeakerSystem'
 
+import AppBar from './AppBar.vue'
+import AgendaNavigation from './AgendaNavigation.vue'
+import DecisionsTab from './DecisionsTab.vue'
+import { QuickStartMethod } from './types'
 import usePlenary from './usePlenary'
-import { map, range } from 'itertools'
-import ButtonPlugins from '../proposals/ButtonPlugins.vue'
+import StartPollModal from './StartPollModal.vue'
+import PollModal from './PollModal.vue'
+import { openModalEvent } from '@/utils/events'
 
-const AVAILABLE_STATES = [
-  ProposalState.Published,
-  ProposalState.Approved,
-  ProposalState.Denied
-]
+const { t } = useI18n()
 
 provide(RoleContextKey, 'meeting')
 provide(LastReadKey, ref(new Date()))
 
-const { t } = useI18n()
-const { anyProposal, getAgendaProposals } = useProposals()
-const { meetingId } = useMeeting()
+const tabs = computed(() => [
+  {
+    disabled: !hasSpeakerLists.value,
+    prependIcon: 'mdi-bullhorn',
+    value: 'discussion' as const,
+    text: t('plenary.discussion')
+  },
+  {
+    disabled: !isModerator.value,
+    prependIcon: 'mdi-gavel',
+    value: 'decisions' as const,
+    text: t('plenary.decisions')
+  }
+])
+
+const { isModerator, meetingId } = useMeeting()
 const { agendaId } = useAgenda(meetingId)
 const {
-  filterProposalStates,
-  selectedProposalIds,
-  selectedProposals,
-  selectProposal,
-  selectTag,
-  deselectProposal,
-  clearSelected
-} = usePlenary(agendaId)
-const { aiProposalTexts } = useTextDocuments(agendaId)
+  hasSpeakerLists,
+  isBroadcasting,
+  meetingRoom,
+  roomId,
+  roomOpenPoll,
+  speakerSystem,
+  setPoll,
+  setSlsBroadcast
+} = useRoom()
+const { getState } = pollType.useWorkflows()
+const { systemActiveList } = useSpeakerSystem(
+  computed(() => speakerSystem.value?.pk || 0), // userSpeakerSystem requires computed number
+  agendaId
+)
+
+const { currentTab, stateFilter, selectedProposals, getPlenaryRoute } =
+  usePlenary(meetingId, agendaId)
+const { getAgendaProposals } = useProposals()
+const { getAiPolls, getPollMethod } = usePolls()
 
 useMeetingChannel()
-useChannel('agenda_item', agendaId)
+useLoader(
+  'Plenary',
+  useChannel('agenda_item', agendaId).promise,
+  useChannel(
+    'sls',
+    computed(() => speakerSystem.value?.pk)
+  ).promise
+)
+useMeetingTitle(t('plenary.view'))
 
-/**
- * Get list of state transitions that should be visible in state selection.
- * (Published, approved, denied, <other current state>)
- */
-function getProposalStates(state: ProposalState) {
-  return proposalStates.filter(
-    (s) => AVAILABLE_STATES.includes(s.state) || state === s.state
-  )
+function getStateProposalCount(state: ProposalState) {
+  return getAgendaProposals(agendaId.value, (p) => p.state === state).length
 }
 
-const pool = computed(() =>
-  getAgendaProposals(
-    agendaId.value,
-    (p) => filterProposalStates(p) && !selectedProposalIds.includes(p.pk)
-  )
-)
-const hasProposals = computed(() =>
-  anyProposal((p) => p.agenda_item === agendaId.value)
-)
-
-function tagInPool(tag: string) {
-  return pool.value.some(({ tags }) => tags.includes(tag))
+function getActiveAIRoute(agendaItem?: number | null) {
+  if (agendaItem && agendaItem !== agendaId.value)
+    return getPlenaryRoute({
+      roomId: roomId.value,
+      tab: currentTab.value,
+      aid: agendaItem
+    })
 }
 
-const textProposalTags = computed(() =>
-  flatten(aiProposalTexts.value.map((doc) => doc.paragraphs.map((p) => p.tag)))
+const toActiveSpeakerList = computed(() =>
+  getActiveAIRoute(systemActiveList.value?.agenda_item)
 )
-const nextTextProposalTag = computed(() =>
-  textProposalTags.value.find(tagInPool)
+const toActiveProposals = computed(() =>
+  getActiveAIRoute(meetingRoom.value?.agenda_item)
 )
 
-const transitioning = reactive(new Set<number>())
-async function makeTransition(
-  p: Pick<Proposal, 'state' | 'pk'>,
-  state: WorkflowState
-) {
-  if (!state.transition)
-    throw new Error(
-      `Proposal state ${state.state} has no registered transition`
-    )
-  if (state.state === p.state) return // No need to change state then is there?
-  transitioning.add(p.pk)
-  try {
-    await proposalType.api.transition(p.pk, state.transition)
-  } catch {}
-  transitioning.delete(p.pk)
-}
-
-watch(agendaId, clearSelected, { immediate: true })
-useTags(undefined, selectTag)
-
-// 1-9 selects or deselects (w altKey) proposals in order
-onKeyStroke(map(range(1, 10), String), (e) => {
-  e.preventDefault()
-  const num = Number(e.key) - 1
-  const proposal = e.altKey
-    ? selectedProposals.value.at(num)
-    : pool.value.at(num)
-  if (!proposal) return
-  if (e.altKey) deselectProposal(proposal)
-  else selectProposal(proposal)
+const filterStates = computed(() => {
+  return proposalStates.map((state) => {
+    const count = getStateProposalCount(state.state)
+    return {
+      state,
+      count,
+      title: state.getName(t, count)
+    }
+  })
 })
 
-// Esc to deselect all proposals
-onKeyStroke('Escape', clearSelected)
-// 'n' to select next proposal text tag
-onKeyStroke(
-  'n',
-  () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value)
+function pollStateToItems(state: PollState) {
+  const wfState = getState(state)
+  if (!wfState) throw new Error(`Unknown poll state '${state}'`)
+
+  return getAiPolls(agendaId.value, state).map((poll) => ({
+    active: state === PollState.Ongoing,
+    poll,
+    prependIcon: wfState.icon,
+    subtitle: pollPlugins.getName(poll.method_name, t),
+    title: poll.title
+  }))
+}
+
+const finishedPollItems = computed(() => pollStateToItems(PollState.Finished))
+const ongoingPollItems = computed(() => pollStateToItems(PollState.Ongoing))
+
+function openPoll(poll: Poll) {
+  if (isBroadcasting.value) setPoll(poll.pk)
+  openModalEvent.emit({
+    component: PollModal,
+    data: poll,
+    title: poll.title
+  })
+}
+
+const pollMethodMenu = computed(() => {
+  const quickStartMethods: QuickStartMethod[] = [
+    {
+      ...getPollMethod('combined_simple')!,
+      settings: null,
+      title: t('poll.method.combined_simple')
+    },
+    {
+      ...getPollMethod('majority')!,
+      settings: null,
+      title: t('poll.method.majority')
+    },
+    {
+      ...getPollMethod('schulze')!,
+      proposalsMin: 3,
+      settings: null,
+      title: t('poll.method.schulze')
+    },
+    {
+      ...getPollMethod('schulze')!,
+      settings: { deny_proposal: true },
+      title: t('poll.method.schulzeAddDeny')
+    }
+  ]
+  return quickStartMethods.map(
+    ({ id, proposalsMax, proposalsMin, settings, title }) => {
+      const proposalsExact = proposalsMin === proposalsMax
+      const proposalCount = selectedProposals.value.length
+      const disabled = !(
+        proposalCount >= proposalsMin &&
+        (!proposalsMax || proposalCount <= proposalsMax)
+      )
+      const subtitle = disabled
+        ? proposalsExact
+          ? t('plenary.selectExactProposals', proposalsMin)
+          : t('plenary.selectMinProposals', proposalsMin)
+        : undefined
+      return {
+        disabled,
+        prependIcon: 'mdi-vote',
+        id,
+        settings,
+        subtitle,
+        title
+      }
+    }
+  )
+})
+
+const ongoingPollCount = computed(
+  () => getAiPolls(agendaId.value, PollState.Ongoing).length
 )
 </script>
+
+<template>
+  <AppBar>
+    <template #default>
+      <v-tabs v-model="currentTab" :items="tabs" />
+      <v-spacer />
+      <template v-if="currentTab === 'decisions'">
+        <v-fade-transition>
+          <v-btn
+            v-if="toActiveProposals"
+            :text="t('plenary.toActiveAgendaItem')"
+            :to="toActiveProposals"
+            variant="tonal"
+          />
+        </v-fade-transition>
+        <v-badge
+          :model-value="!!ongoingPollCount"
+          :content="ongoingPollCount"
+          :max="9"
+          offset-x="3"
+          offset-y="3"
+          color="background"
+        >
+          <v-menu location="bottom right">
+            <template #activator="{ props }">
+              <v-btn
+                append-icon="mdi-chevron-down"
+                v-bind="props"
+                :text="t('poll.polls')"
+              />
+            </template>
+            <v-list>
+              <v-list-subheader :title="t('plenary.startPoll')" />
+              <DefaultDialog
+                v-for="{ id, settings, ...item } in pollMethodMenu"
+                :key="id"
+                :title="roomOpenPoll?.title ?? t('plenary.startPoll')"
+                @close="setPoll(null)"
+              >
+                <template #activator="{ props }">
+                  <v-list-item v-bind="{ ...item, ...props }" />
+                </template>
+                <template #default="{ close }">
+                  <StartPollModal
+                    :method-name="id"
+                    :proposals="selectedProposals"
+                    :settings="settings"
+                    @cancel="close"
+                  />
+                </template>
+              </DefaultDialog>
+              <v-divider />
+              <v-list-subheader :title="t('plenary.ongoingPolls')" />
+              <v-list-item
+                v-for="{ poll, ...item } in ongoingPollItems"
+                :key="poll.pk"
+                v-bind="item"
+                @click="openPoll(poll)"
+              />
+              <v-list-subheader :title="t('plenary.finishedPolls')" />
+              <v-list-item
+                v-for="{ poll, ...item } in finishedPollItems"
+                :key="poll.pk"
+                v-bind="item"
+                @click="openPoll(poll)"
+              />
+            </v-list>
+          </v-menu>
+        </v-badge>
+        <v-menu location="bottom right">
+          <template #activator="{ props }">
+            <v-btn
+              append-icon="mdi-chevron-down"
+              v-bind="props"
+              :text="t('filter')"
+            />
+          </template>
+          <v-list>
+            <v-item-group multiple v-model="stateFilter">
+              <v-item
+                v-for="{ count, state, title } in filterStates"
+                :key="state.state"
+                :value="state.state"
+                v-slot="{ isSelected, toggle }"
+              >
+                <v-list-item
+                  @click.stop="toggle"
+                  :prepend-icon="state.icon"
+                  :active="isSelected"
+                  :title="title"
+                  :subtitle="t('proposal.proposalCount', { count }, count)"
+                />
+              </v-item>
+            </v-item-group>
+          </v-list>
+        </v-menu>
+      </template>
+      <template v-if="currentTab === 'discussion'">
+        <v-fade-transition>
+          <v-btn
+            v-if="toActiveSpeakerList"
+            :text="t('plenary.toActiveSpeakerList')"
+            :to="toActiveSpeakerList"
+            variant="tonal"
+          />
+        </v-fade-transition>
+      </template>
+      <BroadcastMenu />
+    </template>
+  </AppBar>
+  <AgendaNavigation />
+  <v-main class="ma-6">
+    <template v-if="currentTab === 'discussion'">
+      <v-alert
+        v-if="!meetingRoom?.send_sls"
+        class="mb-6"
+        :border="true"
+        type="info"
+        :title="t('room.displaySpeakers')"
+        :text="t('room.displaySpeakersDescription')"
+      >
+        <template #append>
+          <v-btn
+            @click="setSlsBroadcast()"
+            prepend-icon="mdi-bullhorn"
+            :text="t('room.displaySpeakers')"
+          />
+        </template>
+      </v-alert>
+      <SpeakerHandling v-if="speakerSystem" :system-id="speakerSystem.pk" />
+      <p v-else>
+        <em>
+          {{ t('plenary.noSpeakerSystem') }}
+        </em>
+      </p>
+    </template>
+    <DecisionsTab v-if="currentTab === 'decisions'" />
+  </v-main>
+</template>

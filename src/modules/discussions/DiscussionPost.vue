@@ -5,9 +5,13 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import Moment from '@/components/Moment.vue'
+import Tag from '@/components/Tag.vue'
+import DropdownMenu from '@/components/DropdownMenu.vue'
 import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
+import User from '@/components/User.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import useUnread from '@/composables/useUnread'
 
 import useTags from '../meetings/useTags'
@@ -21,7 +25,7 @@ import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
 import type { Author } from '../meetings/types'
 
 const props = defineProps<{
-  p: DiscussionPost,
+  p: DiscussionPost
   readOnly?: boolean
 }>()
 
@@ -38,13 +42,18 @@ const author = ref({
   meeting_group: props.p.meeting_group
 } as Author)
 const { isUnread } = useUnread(new Date(props.p.created))
-const meetingGroup = computed(() => props.p.meeting_group && getMeetingGroup(props.p.meeting_group))
+const meetingGroup = computed(
+  () => props.p.meeting_group && getMeetingGroup(props.p.meeting_group)
+)
 
-async function queryDelete () {
-  if (await dialogQuery({
-    title: t('discussion.deletePrompt'),
-    theme: ThemeColor.Warning
-  })) discussionPostType.api.delete(props.p.pk)
+async function queryDelete() {
+  if (
+    await dialogQuery({
+      title: t('discussion.deletePrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    discussionPostType.api.delete(props.p.pk)
 }
 
 const menuItems = computed<MenuItem[]>(() => {
@@ -53,7 +62,9 @@ const menuItems = computed<MenuItem[]>(() => {
     menu.push({
       title: t('edit'),
       prependIcon: 'mdi-pencil',
-      onClick: async () => { editing.value = true }
+      onClick: async () => {
+        editing.value = true
+      }
     })
   }
   if (canDeleteDiscussionPost(props.p)) {
@@ -67,16 +78,19 @@ const menuItems = computed<MenuItem[]>(() => {
   return menu
 })
 
-function getExtraTags () {
+function getExtraTags() {
   const docTags = getHTMLTags(props.p.body)
-  return props.p.tags.filter(tag => !docTags.has(tag))
+  return props.p.tags.filter((tag) => !docTags.has(tag))
 }
 const extraTags = ref(getExtraTags())
-watch(() => props.p.body, () => {
-  extraTags.value = getExtraTags()
-})
+watch(
+  () => props.p.body,
+  () => {
+    extraTags.value = getExtraTags()
+  }
+)
 
-function cancel () {
+function cancel() {
   editing.value = false
   body.value = props.p.body
   extraTags.value = getExtraTags()
@@ -86,50 +100,50 @@ function cancel () {
   } as Author
 }
 
-async function save () {
+async function save() {
   saving.value = true
-  discussionPostType.api.patch(
-    props.p.pk,
-    {
-      body: body.value,
-      tags: extraTags.value,
-      ...author.value
-    }
-  )
+  discussionPostType.api.patch(props.p.pk, {
+    body: body.value,
+    tags: extraTags.value,
+    ...author.value
+  })
   editing.value = false
   saving.value = false
 }
 </script>
 
 <template>
-  <v-sheet rounded elevation="4" class="discussion rounded-ts-xl" :class="{ isUnread }">
+  <v-sheet
+    rounded
+    elevation="4"
+    class="discussion rounded-ts-xl"
+    :class="{ isUnread }"
+  >
     <div class="d-flex" v-if="meetingGroup">
       <v-avatar color="secondary" class="mr-2" icon="mdi-account-multiple" />
       <div class="flex-grow-1">
-        {{ meetingGroup.title }}<br/>
+        {{ meetingGroup.title }}<br />
         <Moment :date="p.created" />
       </div>
     </div>
     <div class="d-flex" v-else-if="p.author">
       <UserAvatar popup :pk="p.author" class="mr-2" />
       <div class="flex-grow-1">
-        <User :pk="p.author" /><br/>
+        <User :pk="p.author" /><br />
         <Moment :date="p.created" />
       </div>
     </div>
     <div class="d-flex" v-else>
-      <v-avatar color="secondary" class="mr-2">
-        ?
-      </v-avatar>
+      <v-avatar color="secondary" class="mr-2"> ? </v-avatar>
       <div class="flex-grow-1">
-        {{ t('unknownUser') }}<br/>
+        {{ t('unknownUser') }}<br />
         <Moment :date="p.created" />
       </div>
     </div>
     <div v-if="editing">
       <RichtextEditor v-if="editing" v-model="body" />
       <TagEdit v-model="extraTags" />
-      <br/>
+      <br />
       <PostAs v-show="canPostAs" v-model="author" class="my-2" />
       <div class="d-flex mt-1">
         <v-spacer />
@@ -147,7 +161,10 @@ async function save () {
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
     </div>
-    <footer v-if="!readOnly && ($slots.buttons || $slots.preMenu || menuItems.length)" class="d-flex">
+    <footer
+      v-if="!readOnly && ($slots.buttons || $slots.preMenu || menuItems.length)"
+      class="d-flex"
+    >
       <div class="d-flex flex-wrap">
         <slot name="buttons"></slot>
       </div>

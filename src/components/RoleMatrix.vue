@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HelpSection id="roleMatrix" start-open class="mb-4">
+    <HelpSection :id="`roleMatrix-${contentType.name}`" start-open class="mb-4">
       <p class="mb-4">{{ t('role.help.intro') }}</p>
       <ul>
         <li
@@ -103,7 +103,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="Role extends string">
 import { ifilter } from 'itertools'
 import { Dictionary, orderBy as _orderBy } from 'lodash'
 import { computed, onBeforeMount, reactive, ref } from 'vue'
@@ -121,6 +121,8 @@ import useMeeting from '@/modules/meetings/useMeeting'
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import HelpSection from './HelpSection.vue'
 import QueryDialog from './QueryDialog.vue'
+import User from './User.vue'
+import { Ref } from 'vue'
 
 const USERS_PER_PAGE = 50
 
@@ -128,8 +130,8 @@ const props = withDefaults(
   defineProps<{
     admin: boolean
     addConfirm?(user: number, role: string): Promise<boolean>
-    cols?: string[]
-    contentType: ContentType<any, any>
+    cols?: Role[]
+    contentType: ContentType<any, any, Role>
     filter?(userRoles: UserContextRoles): boolean
     icons: Dictionary<string>
     pk: number
@@ -148,12 +150,12 @@ const loader = useLoader('RoleMatrix')
 const { meeting } = useMeeting()
 const contextRoles = props.contentType.useContextRoles()
 
-function translateRoleHelp(role: string): string {
+function translateRoleHelp(role: Role): string {
   const roleSpec = props.contentType.getRole(role)
   return roleSpec ? roleSpec.translateHelp(t) : '-'
 }
 
-function translateRoleName(role: string): string {
+function translateRoleName(role: Role): string {
   const roleSpec = props.contentType.getRole(role)
   return roleSpec ? roleSpec.translateName(t) : role
 }
@@ -161,7 +163,7 @@ function translateRoleName(role: string): string {
 /**
  * Create a full column definition from role name.
  */
-function roleToCol(name: string): DescribedColumn {
+function roleToCol(name: Role): DescribedColumn {
   const readonlyColumn: DescribedColumn = {
     getCount() {
       return contextRoles.getRoleCount(props.pk, name)
@@ -226,7 +228,7 @@ const columnDescriptions = computed(() => {
   }))
 })
 
-const availableRoles = ref<ContextRole[]>([])
+const availableRoles: Ref<ContextRole<Role>[]> = ref([])
 onBeforeMount(() => {
   loader.call(
     async () => {
@@ -332,12 +334,4 @@ const pageUsers = computed(() => {
 
 .currentUser
   background-color: rgb(var(--v-theme-secondary-lighten-2))
-</style>
-
-<style lang="sass">
-// Visual bug in Vuetify
-// TODO Remove hopefully!
-.v-pagination
-  .v-btn__overlay
-    --v-border-opacity: .12 !important
 </style>

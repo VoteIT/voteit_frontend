@@ -10,7 +10,13 @@ test('Bad error', () => {
 })
 
 test('Error.message', () => {
-  const { errorMessage, fieldErrors, clearErrors, handleSocketError, handleRestError } = useErrorHandler()
+  const {
+    errorMessage,
+    fieldErrors,
+    clearErrors,
+    handleSocketError,
+    handleRestError
+  } = useErrorHandler()
   handleSocketError(new Error('message'))
   expect(errorMessage.value).toBe('message')
   expect(fieldErrors.value).toEqual({ __root__: ['message'] })
@@ -24,27 +30,34 @@ test('Error.message', () => {
   expect(fieldErrors.value).toEqual({})
 })
 
-function mockAxiosError (message: string) {
+function mockAxiosError(message: string) {
   const axiosError = new Error(message)
-  return Object.assign(
-    axiosError,
-    {
-      isAxiosError: true,
-      response: { data: { test: [message] } }
-    }
-  )
+  return Object.assign(axiosError, {
+    isAxiosError: true,
+    response: { data: { test: [message] } }
+  })
 }
 
 test('ValidationError.errors', () => {
-  const { errorMessage, fieldErrors, clearErrors, handleSocketError, handleRestError } = useErrorHandler()
-  handleSocketError(new ValidationError('message', [{
-    loc: ['test'],
-    msg: 'field message',
-    type: 'error.testing'
-  }]))
+  const {
+    errorMessage,
+    fieldErrors,
+    clearErrors,
+    handleSocketError,
+    handleRestError
+  } = useErrorHandler()
+  handleSocketError(
+    new ValidationError('message', [
+      {
+        loc: ['test'],
+        msg: 'field message',
+        type: 'error.testing'
+      }
+    ])
+  )
   expect(errorMessage.value).toBe('message')
   expect(fieldErrors.value).toEqual({ test: ['field message'] })
-  const teapot = 'I\'m a teapot'
+  const teapot = "I'm a teapot"
   handleRestError(mockAxiosError(teapot))
   expect(errorMessage.value).toBe(teapot)
   expect(fieldErrors.value).toEqual({ test: [teapot] })

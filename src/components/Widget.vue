@@ -1,6 +1,6 @@
 <template>
   <v-sheet elevation="2" class="widget" rounded :class="{ selected, dense }">
-    <slot/>
+    <slot />
   </v-sheet>
 </template>
 

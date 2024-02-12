@@ -4,7 +4,13 @@
       {{ group.body }}
     </p>
     <div v-if="group.tags.length" class="mt-n3 mb-3">
-      <Tag v-for="tag in group.tags" :key="tag" :name="tag" class="mr-1" disabled />
+      <Tag
+        v-for="tag in group.tags"
+        :key="tag"
+        :name="tag"
+        class="mr-1"
+        disabled
+      />
     </div>
     <v-table v-if="group.memberships.length" class="mb-2">
       <thead>
@@ -28,10 +34,22 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="{ currentWeight, isActive, pk, role, user, votes } in annotatedMembers" :key="pk">
+        <tr
+          v-for="{
+            currentWeight,
+            isActive,
+            pk,
+            role,
+            user,
+            votes
+          } in annotatedMembers"
+          :key="pk"
+        >
           <td>
             {{ user && getFullName(user) }}
-            <small v-if="user?.userid" class="text-secondary">({{ user.userid }})</small>
+            <small v-if="user?.userid" class="text-secondary"
+              >({{ user.userid }})</small
+            >
           </td>
           <td v-if="groupRoles.length">
             <v-menu v-if="editable">
@@ -47,7 +65,8 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="grole in groupRoles" :key="grole.role_id"
+                  v-for="grole in groupRoles"
+                  :key="grole.role_id"
                   :active="grole.pk === role"
                   :disabled="grole.pk === role"
                   link
@@ -77,7 +96,11 @@
             <span v-if="erMethodWeighted">
               {{ currentWeight }}
             </span>
-            <v-icon v-else-if="currentWeight" icon="mdi-check" color="success "/>
+            <v-icon
+              v-else-if="currentWeight"
+              icon="mdi-check"
+              color="success "
+            />
           </td>
           <td v-if="editable">
             <QueryDialog @confirmed="removeMember(pk)">
@@ -110,7 +133,12 @@
       immediate
       @submit="addUser"
     />
-    <v-alert v-if="editable && !group.memberships.length" type="info" :text="t('meeting.groups.addMemberEmptyHelp')" class="mt-4" />
+    <v-alert
+      v-if="editable && !group.memberships.length"
+      type="info"
+      :text="t('meeting.groups.addMemberEmptyHelp')"
+      class="mt-4"
+    />
   </div>
 </template>
 
@@ -123,7 +151,7 @@ import Tag from '@/components/Tag.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useUserDetails from '../organisations/useUserDetails'
-import type { User } from '../organisations/types'
+import type { IUser } from '../organisations/types'
 
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
@@ -143,10 +171,11 @@ const { getUser } = useUserDetails()
 const { meeting, meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
 const { activeUserIds, componentActive } = useActive(meetingId)
-const { erMethodWeighted, getWeightInCurrent } = useElectoralRegisters(meetingId)
+const { erMethodWeighted, getWeightInCurrent } =
+  useElectoralRegisters(meetingId)
 
 const annotatedMembers = computed(() => {
-  return props.group.memberships.map(m => {
+  return props.group.memberships.map((m) => {
     return {
       ...m,
       isActive: activeUserIds.value.includes(m.user),
@@ -156,30 +185,30 @@ const annotatedMembers = computed(() => {
   })
 })
 
-const displayGroupVotes = computed(() => erMethodWeighted.value && !!meeting.value?.dialect?.group_votes_active)
+const displayGroupVotes = computed(
+  () => erMethodWeighted.value && !!meeting.value?.dialect?.group_votes_active
+)
 
 /**
  * Used as filter function for UserSearch
  */
-function filterUser (user: User) {
-  return !props.group.memberships.find(m => m.user === user.pk)
+function filterUser(user: IUser) {
+  return !props.group.memberships.find((m) => m.user === user.pk)
 }
 
-function addUser (user: number) {
+function addUser(user: number) {
   groupMembershipType.api.add({
     meeting_group: props.group.pk,
     user
   })
 }
 
-function getRoleTitle (role: number | null) {
-  const _role = groupRoles.value.find(r => r.pk === role)
-  return _role
-    ? _role.title
-    : '---'
+function getRoleTitle(role: number | null) {
+  const _role = groupRoles.value.find((r) => r.pk === role)
+  return _role ? _role.title : '---'
 }
 
-function removeMember (pk: number) {
+function removeMember(pk: number) {
   groupMembershipType.api.delete(pk)
 }
 
@@ -188,7 +217,7 @@ function removeMember (pk: number) {
  * @param user User primary key
  * @param pk Primary key of membership object
  */
-function setRole (role: number | null, pk: number) {
+function setRole(role: number | null, pk: number) {
   groupMembershipType.api.patch(pk, { role })
 }
 </script>
