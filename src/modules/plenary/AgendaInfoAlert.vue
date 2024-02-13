@@ -49,7 +49,10 @@ const {
   setBroadcast,
   setHandler
 } = useRoom()
-const { selectedProposalIds } = usePlenary(meetingId, agendaId)
+const { selectedProposalIds, selectProposalIds } = usePlenary(
+  meetingId,
+  agendaId
+)
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const isBroadcastingAI = computed(
@@ -97,6 +100,7 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
 }
 
 function broadcastThis() {
+  // This does not need to call selectProposalIds(), because it uses selected ids already
   return setBroadcast({
     agenda_item: agendaId.value,
     highlighted: [...selectedProposalIds.value]
@@ -126,6 +130,7 @@ const selectApprovedAction = computed(() => {
             agenda_item: agendaId.value,
             highlighted: proposals
           })
+          selectProposalIds(proposals)
         } catch (e) {
           handleRestError(e, 'highlighted')
         }
