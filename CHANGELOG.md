@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.22.2 (2024-02-13)
+
+- Bugfix in broadcast view: When selecting approved proposals, they were not selected in broadcast view
+
 ## 0.22.1 (2024-02-12)
 
 - Fix problems with creation and deletion of room/speaker settings
