@@ -229,11 +229,14 @@
     "noMatchingMeetings": "Hittar inga möten som matchar dina filter.",
     "yourMeetings": "Ditt möte | Dina möten",
     "contactInfo": {
+      "check": "Kontrollera",
       "genericEmail": "E-post för allmän kontakt",
       "invoiceEmail": "E-post för fakturor",
       "invoiceInfo": "Information för fakturering (referens, etc)",
-      "help": "Kontrollera gärna att kontaktinformationen till din organisation stämmer. Informationen publiceras inte. Den används endast för vi ska kunna kontakta organisationen om viktiga förändringar eller administrativa ärenden.",
+      "help": "Kontrollera att kontaktinformationen till din organisation stämmer. Informationen publiceras inte. Den används endast för vi ska kunna kontakta organisationen om viktiga förändringar eller administrativa ärenden.",
       "modified": "Du har osparade ändringar",
+      "requiresCheck": "Kontrollera kontaktinformation",
+      "requiresCheckDescription": "Kontaktuppgifterna till din organisation har inte uppdaterats på länge. Kontrollera att de stämmer och spara uppgifterna.",
       "text": "Kontaktperson, adress, telefon, med mera",
       "title": "Kontaktinformation"
     }

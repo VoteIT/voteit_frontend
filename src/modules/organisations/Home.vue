@@ -34,6 +34,7 @@ import ContactInfoTab from './ContactInfoTab.vue'
 import useOrganisation from './useOrganisation'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
+import useContactInfo from './useContactInfo'
 
 const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
 
@@ -75,6 +76,8 @@ const {
   filterMeetings
 } = useMeetings(loader.call)
 const rules = useRules(t)
+
+const { requiresCheck } = useContactInfo(true)
 
 useTitle(
   computed(() =>
@@ -314,13 +317,27 @@ const searchInfo = computed<
         >
           <v-tabs
             v-if="tabs"
-            v-model="currentTab"
             :items="tabs"
+            v-model="currentTab"
             align-tabs="end"
             class="mb-4"
           />
           <v-window v-model="currentTab">
             <v-window-item value="default">
+              <v-alert
+                v-if="tabs && requiresCheck"
+                :title="t('home.contactInfo.requiresCheck')"
+                :text="t('home.contactInfo.requiresCheckDescription')"
+                type="warning"
+                class="mb-4"
+              >
+                <template #append>
+                  <v-btn
+                    :text="t('home.contactInfo.check')"
+                    @click="currentTab = 'contactInfo'"
+                  />
+                </template>
+              </v-alert>
               <header class="d-flex">
                 <Headline
                   v-model="changeForm.page_title"

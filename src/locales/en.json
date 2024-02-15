@@ -229,11 +229,14 @@
     "noMatchingMeetings": "Found no meetings that match your filter.",
     "yourMeetings": "Your meeting | Your meetings",
     "contactInfo": {
+      "check": "Check",
       "genericEmail": "Email for generic contact",
       "invoiceEmail": "Email for invoices",
       "invoiceInfo": "Invoice information (reference, ...)",
       "help": "Please check that the contact information is accurate. This information will not be published. We use it to contact you about important changes or administrative issues.",
       "modified": "You have unsaved changes",
+      "requiresCheck": "Check contact information",
+      "requiresCheckDescription": "The contact information for your organisation hasn't been updated in a while. Check that they're correct and hit that save button.",
       "text": "Contact person, address, phone number, ...",
       "title": "Contact info"
     }

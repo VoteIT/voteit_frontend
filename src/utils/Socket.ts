@@ -11,8 +11,17 @@ const DEFAULT_CONFIG: SocketOptions['config'] = {
 }
 const OUTGOING_HEARTBEAT_MS = 60_000
 
+export const SocketState = {
+  Undefined: undefined,
+  Connecting: 0,
+  Open: 1,
+  Closing: 2,
+  Closed: 3
+} as const
+type SocketStateValue = (typeof SocketState)[keyof typeof SocketState]
+
 export const frontendVersion = ref<string | undefined>()
-export const socketState = ref<number | undefined>()
+export const socketState = ref<SocketStateValue>()
 export const socket = new Socket(`${wsProtocol}//${hostname}/ws/`, {
   config: DEFAULT_CONFIG,
   debug: import.meta.env.NODE_ENV === 'development',
@@ -54,7 +63,7 @@ socket.addTypeHandler('s', ({ t, i, p }) => {
 })
 
 socket.on('readyState', ({ readyState }) => {
-  socketState.value = readyState
+  socketState.value = readyState as SocketStateValue
 })
 
 socket.channels.onSubscriptionChanged(({ subscribed, ...channel }) => {
