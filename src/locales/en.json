@@ -655,6 +655,7 @@
     "ongoingAI": "Broadcast this Agenda Item?",
     "ongoingAIDescription": "This ongoing Agenda Item is not currently broadcasted.",
     "ongoingPolls": "Ongoing polls",
+    "otherTags": "Other tags",
     "privateAI": "Private Agenda Item",
     "privateAIDescription": "This Agenda Item is private, and can't be broadcasted to meeting participants.",
     "saveAndPauseBroadcast": "Save and pause broadcast",

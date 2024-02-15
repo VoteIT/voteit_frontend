@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { map, range } from 'itertools'
-import { flatten, sortBy } from 'lodash'
+import { filter, map, range } from 'itertools'
+import { flatten, orderBy } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding } from '@vueuse/core'
@@ -19,7 +19,7 @@ import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import useRoom from '../rooms/useRoom'
 
-import usePlenary, { isSelectedProposal } from './usePlenary'
+import usePlenary, { isProposalInPool } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
 import { AgendaState } from '../agendas/types'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
@@ -38,6 +38,7 @@ const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =
   useRoom()
 
 const {
+  filteredProposals,
   selectedProposalIds,
   selectedProposals,
   deselectProposal,
@@ -101,7 +102,7 @@ async function replaceSelection(proposals: number[]) {
 
 function selectTag(tag: string) {
   replaceSelection(
-    sortBy(
+    orderBy(
       getAgendaProposals(
         agendaId.value,
         (p) => filterProposalStates(p) && p.tags.includes(tag)
@@ -132,12 +133,7 @@ function getProposalStates(state: ProposalState) {
   )
 }
 
-const pool = computed(() =>
-  getAgendaProposals(
-    agendaId.value,
-    (p) => filterProposalStates(p) && !isSelectedProposal(p)
-  )
-)
+const pool = computed(() => filteredProposals.value.filter(isProposalInPool))
 const transitioning = reactive(new Set<number>())
 async function makeTransition(
   p: Proposal,
@@ -164,8 +160,41 @@ function tagInPool(tag: string) {
 const textProposalTags = computed(() =>
   flatten(aiProposalTexts.value.map((doc) => doc.paragraphs.map((p) => p.tag)))
 )
-const nextTextProposalTag = computed(() =>
-  textProposalTags.value.find(tagInPool)
+
+/**
+ * Map tags -> number of proposals with tag in current filter
+ */
+const proposalTagCount = computed(() => {
+  const counter = new Map<string, number>()
+  for (const prop of filteredProposals.value) {
+    for (const tag of prop.tags) counter.set(tag, (counter.get(tag) || 0) + 1)
+  }
+  return counter
+})
+
+const nextTextProposalTag = computed(() => {
+  const tag = textProposalTags.value.find(tagInPool)
+  if (!tag) return
+  return [tag, proposalTagCount.value.get(tag) || 0] as const
+})
+
+const allProposalIds = computed(() =>
+  filteredProposals.value.map((p) => p.prop_id)
+)
+/**
+ * Tags that are not prop ids, and not next paragraph tag.
+ * Ordered by tag name.
+ */
+const otherTags = computed(() =>
+  orderBy(
+    filter(
+      proposalTagCount.value.entries(),
+      ([tag]) =>
+        !allProposalIds.value.includes(tag) &&
+        tag !== nextTextProposalTag.value?.[0]
+    ),
+    ([tag]) => tag
+  )
 )
 
 useTags(undefined, selectTag)
@@ -187,7 +216,7 @@ onKeyStroke('Escape', () => replaceSelection([]))
 // 'n' to select next proposal text tag
 onKeyStroke(
   'n',
-  () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value)
+  () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value[0])
 )
 
 // Handle height of agenda info alert
@@ -262,15 +291,25 @@ const proposalsStyle = computed(() => {
         v-if="!selectedProposals.length"
         class="text-h4 text-center text-secondary mt-12"
       >
-        <template v-if="nextTextProposalTag">
-          <p class="mb-1">
-            {{ t('plenary.nextParagraph') }}
-          </p>
-          <Tag
-            v-if="nextTextProposalTag"
-            :name="nextTextProposalTag"
-            style="transform: scale(1.4)"
-          />
+        <template v-if="nextTextProposalTag || otherTags.length">
+          <template v-if="nextTextProposalTag">
+            <p class="mb-1">
+              {{ t('plenary.nextParagraph') }}
+            </p>
+            <Tag
+              :name="nextTextProposalTag[0]"
+              :count="nextTextProposalTag[1]"
+              style="transform: scale(1.4)"
+            />
+          </template>
+          <template v-if="otherTags.length">
+            <p class="mt-12 mb-1">
+              {{ t('plenary.otherTags', otherTags.length) }}
+            </p>
+            <span v-for="[tag, count] in otherTags" :key="tag" class="mx-5">
+              <Tag :name="tag" :count="count" style="transform: scale(1.2)" />
+            </span>
+          </template>
         </template>
         <template v-else>
           {{ t('plenary.selectProposals') }}

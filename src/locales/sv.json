@@ -655,6 +655,7 @@
     "ongoingAI": "Sända från denna dagordningspunkt?",
     "ongoingAIDescription": "Den här dagordningspunkten är pågående, men sänds för närvarande inte ut till deltagarna.",
     "ongoingPolls": "Pågående omröstningar",
+    "otherTags": "Andra taggar",
     "privateAI": "Privat dagordningspunkt",
     "privateAIDescription": "Denna dagordningspunkten är privat och kan därför inte sändas ut till deltagarna.",
     "saveAndPauseBroadcast": "Spara och pausa sändning",

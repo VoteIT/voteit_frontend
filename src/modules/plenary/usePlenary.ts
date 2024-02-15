@@ -5,13 +5,21 @@ import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
 import useRoom from '../rooms/useRoom'
 
-const { getProposal } = useProposals()
+const { getAgendaProposals, getProposal } = useProposals()
 
 const stateFilter = ref([ProposalState.Published, ProposalState.Voting])
 const selectedProposalIds = ref<number[]>([])
 
 export function isSelectedProposal(proposal: Proposal) {
   return selectedProposalIds.value.includes(proposal.pk)
+}
+
+export function isProposalInPool(proposal: Proposal) {
+  return !isSelectedProposal(proposal)
+}
+
+function filterProposalStates(p: Proposal) {
+  return !stateFilter.value.length || stateFilter.value.includes(p.state)
 }
 
 export default function usePlenary(
@@ -50,10 +58,6 @@ export default function usePlenary(
     }
   }
 
-  function filterProposalStates(p: Proposal) {
-    return !stateFilter.value.length || stateFilter.value.includes(p.state)
-  }
-
   function selectProposal(proposal: number) {
     if (selectedProposalIds.value.includes(proposal)) return
     selectedProposalIds.value = [...selectedProposalIds.value, proposal]
@@ -72,8 +76,13 @@ export default function usePlenary(
     selectedProposalIds.value.map(getProposal).filter(isProposal)
   )
 
+  const filteredProposals = computed(() =>
+    getAgendaProposals(agendaItem.value, filterProposalStates)
+  )
+
   return {
     currentTab,
+    filteredProposals,
     selectedProposalIds,
     selectedProposals,
     stateFilter,
