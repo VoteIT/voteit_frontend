@@ -85,8 +85,6 @@ export interface MeetingDialectDefinition {
   groups_can_delegate: boolean // Only dialect can activate this
   name: string
   roles: {
-    can_discuss_as: boolean
-    can_propose_as: boolean
     title: string
     role_id: string
     roles: MeetingRole[]
@@ -122,8 +120,6 @@ export interface MeetingGroup extends BaseContent {
 
 export interface GroupRole extends BaseContent {
   roles: MeetingRole[]
-  can_discuss_as: boolean
-  can_propose_as: boolean
   role_id: string
   meeting: number
 }
