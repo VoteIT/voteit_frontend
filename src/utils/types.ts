@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { RouteLocationRaw } from 'vue-router'
+import { RouteLocationNamedRaw } from 'vue-router'
 
 import TypedEvent from './TypedEvent'
 
@@ -135,7 +135,7 @@ export interface MenuItemHref extends MenuItemBase {
 }
 
 export interface MenuItemTo extends MenuItemBase {
-  to: RouteLocationRaw
+  to: RouteLocationNamedRaw
 }
 
 export interface MenuItemOnClick extends MenuItemBase {
@@ -155,7 +155,7 @@ export interface TreeMenuLink {
   hasNewItems?: boolean
   icons?: string[]
   title: string
-  to: RouteLocationRaw // Can only be string, not route object, for matching purposes.
+  to: RouteLocationNamedRaw // Only allow named locations
 }
 
 export interface TreeMenu {

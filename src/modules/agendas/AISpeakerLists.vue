@@ -46,7 +46,7 @@ const manageSpeakerListsMenu = computed(() => {
             tab: 'discussion',
             aid: props.agendaId
           })
-        : '#'
+        : { hash: '' }
     }
   })
 })

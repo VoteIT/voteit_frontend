@@ -84,31 +84,37 @@
 <script setup lang="ts">
 import { defer } from 'lodash'
 import { computed, reactive, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { isTreeLink, isTreeMenu, TreeMenuItem } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
 
-interface Props {
-  defaultOpen?: boolean
-  icon?: string
-  items: TreeMenuItem[]
-  level?: number
-  loadedEvent?: TypedEvent
-  openEvent?: TypedEvent
-  openFirstNonEmpty?: boolean
-  showCount?: boolean
-  slotAfter?: string
-  slotBefore?: string
-  title?: string
-}
+const props = withDefaults(
+  defineProps<{
+    defaultOpen?: boolean
+    icon?: string
+    items: TreeMenuItem[]
+    level?: number
+    loadedEvent?: TypedEvent
+    openEvent?: TypedEvent
+    openFirstNonEmpty?: boolean
+    showCount?: boolean
+    slotAfter?: string
+    slotBefore?: string
+    title?: string
+  }>(),
+  {
+    level: 0
+  }
+)
 
-const emit = defineEmits(['navigation', 'hasActive'])
-const props = withDefaults(defineProps<Props>(), {
-  level: 0
-})
+const emit = defineEmits<{
+  (e: 'navigation'): void
+  (e: 'hasActive'): void
+}>()
 
 const route = useRoute()
+const router = useRouter()
 const openMenus = reactive<Set<number>>(new Set())
 
 // Menus can be set to open by default
@@ -143,9 +149,12 @@ function toggleMenu(index: number) {
   openMenus.add(index)
 }
 
-const hasActive = computed(() =>
-  props.items.some((item) => 'to' in item && item.to === route.path)
-)
+const hasActive = computed(() => {
+  return props.items.some(
+    (item) =>
+      isTreeLink(item) && router.resolve(item.to).fullPath === route.path
+  )
+})
 watch(
   hasActive,
   (value) => {
