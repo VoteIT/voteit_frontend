@@ -6,10 +6,6 @@ import * as directives from 'vuetify/directives'
 import colors from 'vuetify/lib/util/colors'
 
 const light = {
-  dark: false,
-  variables: {
-    'border-color': '223,207,200'
-  },
   colors: {
     background: '#f8f4f2',
     'app-bar': '#563661',
@@ -31,6 +27,10 @@ const light = {
     warning: colors.red.darken2,
     'warning-lighten-2': colors.red.lighten2,
     'warning-lighten-4': colors.red.lighten4
+  },
+  dark: false,
+  variables: {
+    'border-color': '223,207,200'
   }
 }
 
@@ -54,6 +54,11 @@ const dark = {
 
 export default createVuetify({
   components,
+  defaults: {
+    VSelect: {
+      persistentHint: true
+    }
+  },
   directives,
   theme: {
     defaultTheme: 'light',
