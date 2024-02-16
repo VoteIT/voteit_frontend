@@ -19,6 +19,7 @@ export function getApiLink(path: string) {
 const restApi = axios.create({
   baseURL: `${location.protocol}//${hostname}/api/`,
   withCredentials: true,
+  withXSRFToken: !!import.meta.env.VITE_BACKEND_PORT, // Should be true only for dev environment
   // Django CSRF setup
   xsrfCookieName: 'csrftoken',
   xsrfHeaderName: 'X-CSRFTOKEN'
