@@ -131,12 +131,10 @@ export function canStopSpeaker(list: SpeakerList): boolean {
 
 export function canEnterList(list: SpeakerList): boolean {
   const system = getSystem(list)
+  if (!system) return false
   return (
-    !!system &&
-    ((!!isSystemSpeaker(system) &&
-      isOpenList(list) &&
-      isActiveSystem(system)) ||
-      (!!isSystemModerator(system) && !isArchivedSystem(system)))
+    (isActiveSystem(system) && isOpenList(list) && !!isSystemSpeaker(system)) ||
+    (!!isSystemModerator(system) && !isArchivedSystem(system))
   )
 }
 
