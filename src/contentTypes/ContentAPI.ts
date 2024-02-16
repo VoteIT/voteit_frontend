@@ -45,9 +45,13 @@ export default class ContentAPI<
         break
       case 400:
         sticky = true
-        if ('error' in response.data) {
+        if (
+          response.data &&
+          typeof response.data === 'object' &&
+          'error' in response.data
+        ) {
           title = 'Error'
-          text = response.data.error
+          text = response.data.error as string
         }
         break
     }
