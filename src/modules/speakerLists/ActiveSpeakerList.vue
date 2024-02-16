@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useIdle } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
@@ -28,7 +29,9 @@ const {
   currentSpeakerQueue: queue,
   currentlySpeaking: speaking
 } = useSpeakerSystem(systemId)
-const { speakerGroups } = useSpeakerList(systemActiveListId)
+const { speakerGroups, canEnterList, canLeaveList, enterList, leaveList } =
+  useSpeakerList(systemActiveListId)
+const { idle } = useIdle(5000)
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -47,16 +50,41 @@ const groups = computed<SpeakerGroup[]>(() => {
   }
   return speakerGroups.value
 })
+
+// eslint-disable-next-line vue/return-in-computed-property
+const enterLeaveButton = computed(() => {
+  if (canEnterList.value)
+    return {
+      text: t('speaker.enterList'),
+      color: 'primary',
+      prependIcon: 'mdi-account-voice',
+      onClick: enterList
+    }
+  if (canLeaveList.value)
+    return {
+      text: t('speaker.leaveList'),
+      color: 'warning',
+      prependIcon: 'mdi-account-voice-off',
+      onClick: leaveList
+    }
+})
 </script>
 
 <template>
   <div v-if="list">
-    <h2 class="mb-2">
-      <small>{{ t('speaker.list') }}</small
-      ><br />
-      {{ list.title }}
-    </h2>
-    <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
+    <div class="d-sm-flex">
+      <div class="flex-grow-1">
+        <h2 class="mb-2 flex-grow-1">
+          <small>{{ t('speaker.list') }}</small
+          ><br />
+          {{ list.title }}
+        </h2>
+        <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
+      </div>
+      <v-fade-transition>
+        <v-btn v-if="enterLeaveButton && !idle" v-bind="enterLeaveButton" />
+      </v-fade-transition>
+    </div>
     <p v-if="!speaking && !queue?.length" class="text-secondary">
       {{ t('speaker.queueEmpty') }}
     </p>
