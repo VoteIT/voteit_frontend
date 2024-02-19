@@ -1,10 +1,13 @@
 <template>
   <div class="progress-bar" :class="{ failed, done, disabled }">
-    <div v-if="$slots.default" class="meta">
-      <slot></slot>
-    </div>
-    <div v-else-if="textDisplay">
-      <span>{{ textDisplay }}</span>
+    <div class="d-flex">
+      <div v-if="$slots.default" class="meta flex-grow-1">
+        <slot></slot>
+      </div>
+      <div v-else-if="textDisplay" class="flex-grow-1">
+        <span>{{ textDisplay }}</span>
+      </div>
+      <slot name="right"></slot>
     </div>
     <div class="bar d-flex">
       <div class="progress" :style="{ width: percentage + '%' }"></div>
