@@ -30,7 +30,7 @@ function getItems({ agendaItem, meeting, t }: OptionalAIContext) {
       title,
       prependIcon: 'mdi-broadcast',
       to: {
-        name: 'Plenary',
+        name: 'room:broadcast',
         params: {
           id: meeting.pk,
           aid: agendaItem?.pk ?? room.agenda_item ?? firstAI,

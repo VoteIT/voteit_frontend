@@ -28,35 +28,26 @@ export default function usePlenary(
 ) {
   const route = useRoute()
   const router = useRouter()
-  const { roomId } = useRoom()
+  const { getRoomRoute } = useRoom()
 
   type Tab = 'discussion' | 'decisions'
+
+  function getPlenaryRoute(params: { aid?: number; tab?: Tab }) {
+    return getRoomRoute('room:broadcast', {
+      aid: agendaItem.value,
+      tab: currentTab.value,
+      ...params
+    })
+  }
 
   const currentTab = computed({
     get() {
       return route.params.tab as Tab
     },
     set(tab) {
-      router.push(getPlenaryRoute({ tab }))
+      router.replace(getPlenaryRoute({ tab }))
     }
   })
-
-  function getPlenaryRoute(params: {
-    roomId?: number
-    tab?: Tab
-    aid?: number
-  }) {
-    return {
-      name: 'Plenary',
-      params: {
-        id: meetingId.value,
-        aid: agendaItem.value,
-        roomId: roomId.value,
-        tab: currentTab.value,
-        ...params
-      }
-    }
-  }
 
   function selectProposal(proposal: number) {
     if (selectedProposalIds.value.includes(proposal)) return

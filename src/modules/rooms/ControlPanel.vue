@@ -25,12 +25,14 @@ import { roomType } from './contentTypes'
 import { IMeetingRoom } from './types'
 import { parseRestError } from '@/utils/restApi'
 import useRooms from './useRooms'
+import useRoom from './useRoom'
 import RoomForm from './RoomForm.vue'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
+const { getRoomRoute } = useRoom()
 
 const { getUserIds } = speakerSystemType.useContextRoles()
 
@@ -218,15 +220,14 @@ const systemIcons = {
               size="small"
               variant="tonal"
               :text="t('room.toPlenaryView')"
-              :to="{
-                name: 'Plenary',
-                params: {
+              :to="
+                getRoomRoute('room:broadcast', {
                   id: meetingId,
                   roomId: room.pk,
-                  tab: 'decisions',
-                  aid: room.agenda_item || agenda[0].pk
-                }
-              }"
+                  aid: room.agenda_item || agenda[0].pk,
+                  tab: 'decisions'
+                })
+              "
             />
           </td>
           <td class="text-right">

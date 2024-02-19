@@ -12,10 +12,9 @@ import HeaderMenu from '@/components/HeaderMenu.vue'
 import useAgenda from '../agendas/useAgenda'
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingId, meetingRoute, getMeetingRoute } =
-  useMeeting()
+const { isModerator, meeting, meetingId, meetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { meetingRoom, roomOpenPoll, textSize } = useRoom()
+const { meetingRoom, roomOpenPoll, textSize, getRoomRoute } = useRoom()
 
 const { idle } = useIdle(5_000)
 
@@ -120,9 +119,8 @@ const currentDisplay = computed(
         append-icon="mdi-chevron-right"
         variant="tonal"
         :to="
-          getMeetingRoute('Plenary', {
-            aid: meetingRoom?.agenda_item || agenda[0].pk,
-            roomId: meetingRoom.pk,
+          getRoomRoute('room:broadcast', {
+            aid: meetingRoom.agenda_item || agenda[0].pk,
             tab: 'decisions'
           })
         "

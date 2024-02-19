@@ -15,6 +15,7 @@ const {
   hasSpeakerLists,
   isBroadcasting,
   meetingRoom,
+  realTimeRoute,
   setOpen,
   setProposalBroadcast,
   setSlsBroadcast
@@ -160,7 +161,7 @@ async function savePauseMessage(pauseBroadcast = false) {
         <v-list-item
           v-if="isModerator"
           append-icon="mdi-chevron-right"
-          :to="getMeetingRoute('rooms:main', { roomId: meetingRoom.pk })"
+          :to="realTimeRoute"
           :title="t('plenary.toRealTimeView')"
         />
         <v-list-item

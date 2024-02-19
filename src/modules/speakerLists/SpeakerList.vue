@@ -5,25 +5,26 @@ import { useI18n } from 'vue-i18n'
 import User from '@/components/User.vue'
 import { user } from '@/composables/useAuthentication'
 
-import useMeeting from '../meetings/useMeeting'
 import { IMeetingRoom } from '../rooms/types'
 
 import { canChangeSpeakerList } from './rules'
 import { SpeakerList } from './types'
 import useSpeakerSystem from './useSpeakerSystem'
 import useSpeakerList from './useSpeakerList'
+import useRoom from '../rooms/useRoom'
 
 const props = defineProps<{
   list: SpeakerList & { room: IMeetingRoom }
 }>()
 
 const { t } = useI18n()
-const { getMeetingRoute } = useMeeting()
 
 const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'speaker_system'))
 const { canEnterList, canLeaveList, enterList, leaveList } = useSpeakerList(
   toRef(props.list, 'pk')
 )
+const { getRoomRoute } = useRoom()
+
 const isActive = computed(
   () => speakerSystem.value?.active_list === props.list.pk
 )
@@ -53,12 +54,15 @@ const fullscreenPath = computed(
   () =>
     props.list.room.open &&
     props.list.room.send_sls &&
-    isActive.value &&
-    getMeetingRoute('rooms:main', {
-      aid: props.list.agenda_item,
-      roomId: props.list.room.pk,
-      tab: 'discussion'
-    })
+    isActive.value && {
+      name: 'room:main',
+      params: {
+        id: props.list.room.meeting,
+        roomId: props.list.room.pk,
+        aid: props.list.agenda_item,
+        tab: 'discussion'
+      }
+    }
 )
 </script>
 
@@ -117,9 +121,10 @@ const fullscreenPath = computed(
           v-if="canChange"
           color="primary"
           :to="
-            getMeetingRoute('Plenary', {
-              aid: list.agenda_item,
+            getRoomRoute('room:broadcast', {
+              id: list.room.meeting,
               roomId: list.room.pk,
+              aid: list.agenda_item,
               tab: 'discussion'
             })
           "

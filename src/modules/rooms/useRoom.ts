@@ -1,17 +1,17 @@
+import { isEqual } from 'lodash'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouteLocationNamedRaw, useRoute } from 'vue-router'
+import { useStorage } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
 import { user } from '@/composables/useAuthentication'
+import usePoll from '../polls/usePoll'
 import { getProposals } from '../proposals/useProposals'
 import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
+import { SpeakerSystemState } from '../speakerLists/types'
 
 import { highlightedStore, meetingRoomStore } from './useRooms'
 import { roomType } from './contentTypes'
-import { isEqual } from 'lodash'
-import usePoll from '../polls/usePoll'
-import { useStorage } from '@vueuse/core'
-import { SpeakerSystemState } from '../speakerLists/types'
 
 const textSize = useStorage<'normal' | 'large' | 'x-large'>(
   'room.textSize',
@@ -127,6 +127,27 @@ export default function useRoom() {
     () => speakerSystem.value?.state === SpeakerSystemState.Active
   )
 
+  function getRoomRoute(
+    name: 'room:broadcast' | 'room:main',
+    params?: {
+      aid?: number
+      id?: number
+      roomId?: number
+      tab?: 'decisions' | 'discussion'
+    }
+  ): RouteLocationNamedRaw {
+    return {
+      name,
+      params: {
+        roomId: roomId.value,
+        id: meetingRoom.value?.meeting,
+        ...params
+      }
+    }
+  }
+
+  const realTimeRoute = computed(() => getRoomRoute('room:main'))
+
   return {
     hasBroadcast,
     hasSpeakerLists,
@@ -134,10 +155,12 @@ export default function useRoom() {
     highlightedProposals,
     isBroadcasting,
     meetingRoom,
+    realTimeRoute,
     roomId,
     roomOpenPoll,
     speakerSystem,
     textSize,
+    getRoomRoute,
     setBroadcast,
     setHandler,
     setOpen,

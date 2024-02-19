@@ -96,11 +96,8 @@ const { t } = useI18n()
 const { meetingId } = useMeeting()
 const { agenda, agendaId, agendaStates } = useAgenda(meetingId)
 const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
-const { speakerSystem, meetingRoom, roomId } = useRoom()
-const { currentTab, filterProposalStates, getPlenaryRoute } = usePlenary(
-  meetingId,
-  agendaId
-)
+const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
+const { currentTab, filterProposalStates } = usePlenary(meetingId, agendaId)
 const { getAgendaProposals } = useProposals()
 
 const isOpen = ref(false)
@@ -110,8 +107,7 @@ function toggle() {
 }
 
 function getRoute(aid: number) {
-  return getPlenaryRoute({
-    roomId: roomId.value,
+  return getRoomRoute('room:broadcast', {
     aid,
     tab: currentTab.value
   })

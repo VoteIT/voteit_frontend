@@ -11,7 +11,7 @@ import { orderBy } from 'lodash'
 
 const { t } = useI18n()
 
-const { meetingId, getMeetingRoute } = useMeeting()
+const { meetingId } = useMeeting()
 const { meetingRooms } = useRooms(meetingId)
 
 function getSubtitle({ body, send_proposals, send_sls }: IMeetingRoom): string {
@@ -66,7 +66,7 @@ const broadcasting = computed(() =>
       v-for="{ active, subtitle, pk, ...props } in broadcasting"
       :key="pk"
       v-bind="props"
-      :to="getMeetingRoute('rooms:main', { roomId: pk })"
+      :to="{ name: 'room:main', params: { id: meetingId, roomId: pk } }"
       append-icon="mdi-chevron-right"
       class="mt-1"
     >

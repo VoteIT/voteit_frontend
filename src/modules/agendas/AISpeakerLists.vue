@@ -8,14 +8,16 @@ import SpeakerList from '../speakerLists/SpeakerList.vue'
 import { getSpeakerLists } from '../speakerLists/useSpeakerLists'
 import useMeeting from '../meetings/useMeeting'
 import useRooms, { meetingRoomStore } from '../rooms/useRooms'
+import useRoom from '../rooms/useRoom'
 
 const props = defineProps<{
   agendaId: number
 }>()
 
 const { t } = useI18n()
-const { meetingId, getMeetingRoute } = useMeeting()
+const { meetingId } = useMeeting()
 const { activeSpeakerSystems, managingSpeakerSystems } = useRooms(meetingId)
+const { getRoomRoute } = useRoom()
 
 const speakerLists = computed(() =>
   getSpeakerLists(
@@ -41,10 +43,11 @@ const manageSpeakerListsMenu = computed(() => {
       title: t('speaker.manageSystem', { ...room }),
       prependIcon: 'mdi-bullhorn',
       to: room
-        ? getMeetingRoute('Plenary', {
+        ? getRoomRoute('room:broadcast', {
+            id: room.meeting,
             roomId: room.pk,
-            tab: 'discussion',
-            aid: props.agendaId
+            aid: props.agendaId,
+            tab: 'discussion'
           })
         : { hash: '' }
     }
