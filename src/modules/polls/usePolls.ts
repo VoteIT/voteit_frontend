@@ -104,7 +104,7 @@ function getMeetingUnvotedPredicate(meeting: number): Predicate<Poll> {
  * Get first ongoing poll in a meeting that current user hasn't voted in.
  * @param poll If provided, function will return next unvoted poll in order
  */
-function getNextUnvotedPoll(meeting: number, poll?: Poll) {
+export function getNextUnvotedPoll(meeting: number, poll?: Poll) {
   const isUnvoted = getMeetingUnvotedPredicate(meeting)
   if (poll) {
     const isOther = ({ pk }: Poll) => pk !== poll.pk
