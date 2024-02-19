@@ -9,6 +9,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
+import { parseRestError } from '@/utils/restApi'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
 import { translateMeetingRole } from '../meetings/utils'
@@ -23,10 +24,11 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 
 import { roomType } from './contentTypes'
 import { IMeetingRoom } from './types'
-import { parseRestError } from '@/utils/restApi'
 import useRooms from './useRooms'
 import useRoom from './useRoom'
 import RoomForm from './RoomForm.vue'
+import { openDialogEvent } from '@/utils/events'
+import { ThemeColor } from '@/utils/types'
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
@@ -152,6 +154,21 @@ const editableMeetingRooms = computed(() =>
 const systemIcons = {
   speaker: 'mdi-chat',
   list_moderator: 'mdi-gavel'
+}
+
+async function deleteRoom(pk: number) {
+  try {
+    await roomType.delete(pk)
+  } catch (e) {
+    const err = parseRestError(e)
+    openDialogEvent.emit({
+      title: 'force' in err ? t('room.couldNotDelete') : t('error.unknown'),
+      resolve() {},
+      no: false,
+      yes: t('ok'),
+      theme: ThemeColor.Error
+    })
+  }
 }
 </script>
 
@@ -314,12 +331,12 @@ const systemIcons = {
                   <QueryDialog
                     :text="t('room.confirmDelete')"
                     color="warning"
-                    @confirmed="roomType.delete(room.pk)"
+                    @confirmed="deleteRoom(room.pk)"
                   >
                     <template #activator="{ props }">
                       <v-list-item
                         base-color="warning"
-                        :disabled="room.formData.room.speakers"
+                        :disabled="room.open"
                         v-bind="props"
                         prepend-icon="mdi-delete"
                       >

@@ -799,6 +799,7 @@
     "create": "skapa rum",
     "confirmBroadcastTakeover": "Du håller nu på att ta över sändningen i det här rummet.\nÄr du säker?",
     "confirmDelete": "Detta raderar rummet. Det går inte att ångra.\nÄr du säker?",
+    "couldNotDelete": "Detta rum har minst en talarlista med talarhistorik och/eller anmälda talare. Det kan därför inte raderas.",
     "defaultName": "Plenum",
     "displayAny": "Visa allt",
     "displayOptions": "Välj innehåll att visa",
