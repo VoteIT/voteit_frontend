@@ -15,7 +15,7 @@
             variant="elevated"
             prepend-icon="mdi-content-copy"
             :color="copied ? 'success' : 'primary'"
-            @click.prevent="copy(meetingUrl)"
+            @click.prevent="copy(meetingJoinUrl)"
           >
             {{ t('meeting.copyUrl') }}
           </v-btn>
@@ -41,7 +41,7 @@ import useAccessPolicies from './useAccessPolicies'
 
 const { t } = useI18n()
 const { copy, copied } = useClipboard()
-const { meetingId, meetingUrl } = useMeeting()
+const { meetingId, meetingJoinUrl } = useMeeting()
 const { accessPolicies } = useAccessPolicies(meetingId)
 
 const hasAutomatic = computed(() =>

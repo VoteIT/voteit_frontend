@@ -96,7 +96,7 @@
                   prepend-icon="mdi-content-copy"
                   :color="copied ? 'success' : 'primary'"
                   variant="elevated"
-                  @click="copy(meetingUrl)"
+                  @click="copy(meetingJoinUrl)"
                 >
                   {{ t('meeting.copyUrl') }}
                 </v-btn>
@@ -141,7 +141,7 @@ const NON_MODIFIABLE_ROLES = Object.freeze([
 ])
 
 const { t } = useI18n()
-const { meetingId, meeting, meetingDialect, meetingUrl, getMeetingRoute } =
+const { meetingId, meeting, meetingDialect, meetingJoinUrl, getMeetingRoute } =
   useMeeting()
 const { alert } = useAlert()
 const {

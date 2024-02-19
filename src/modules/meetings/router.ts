@@ -71,7 +71,7 @@ export default [
   // Join has url outside meeting, so users don't need meeting roles to visit this view.
   {
     path: '/join/:id/:slug',
-    name: 'meetingJoin',
+    name: 'meeting:join',
     component: JoinMeeting
   }
 ]

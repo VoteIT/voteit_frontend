@@ -1,7 +1,7 @@
 import { Dictionary } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { RouteLocationRaw, useRoute, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
 
@@ -49,14 +49,14 @@ export default function useMeeting() {
   const meetingId = computed(() => Number(route.params.id))
   const meeting = computed(() => meetings.get(meetingId.value))
   const meetingDialect = computed(() => meeting.value?.dialect)
-  const meetingJoinRoute = computed(() => ({
-    name: 'meetingJoin',
-    params: { id: meetingId.value, slug: slugify(meeting.value?.title) }
-  }))
+  const meetingJoinRoute = computed(() => getMeetingRoute('meeting:join'))
   const meetingRoute = computed(() => getMeetingRoute())
-  const meetingUrl = computed(
-    () => location.origin + router.resolve(meetingRoute.value).href
-  )
+
+  function getUrl(route: RouteLocationRaw) {
+    return location.origin + router.resolve(route).href
+  }
+  const meetingUrl = computed(() => getUrl(meetingRoute.value))
+  const meetingJoinUrl = computed(() => getUrl(meetingJoinRoute.value))
 
   const userRoles = computed(
     () =>
@@ -99,6 +99,7 @@ export default function useMeeting() {
     meetingId,
     meetingDialect,
     meetingJoinRoute,
+    meetingJoinUrl,
     meetingRoute,
     meetingUrl,
     roleIcons,

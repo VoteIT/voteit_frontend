@@ -552,7 +552,7 @@ const searchInfo = computed<
                 <template v-else #append>
                   <v-btn
                     :to="{
-                      name: 'meetingJoin',
+                      name: 'meeting:join',
                       params: { id: pk, slug: slugify(title) }
                     }"
                     append-icon="mdi-arrow-right-circle"
