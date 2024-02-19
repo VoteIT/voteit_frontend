@@ -1,30 +1,36 @@
 <template>
-  <v-row id="join-meeting" v-if="meeting">
-    <v-col v-bind="cols.default">
-      <h1>{{ t('join.meetingTitle', { ...meeting }) }}</h1>
-      <Richtext :object="meeting" class="mb-8" />
-      <div
-        class="btn-controls"
-        v-if="canBecomeModeratorMeeting"
-        @click="joinAsModerator()"
-      >
-        <v-btn color="warning" prepend-icon="mdi-gavel">
-          {{ t('join.asModerator') }}
-        </v-btn>
-      </div>
-      <div class="btn-controls" v-else-if="policyComponents.length">
-        <component
-          v-for="{ component, policy } in policyComponents"
-          :is="component"
-          :key="policy.name"
-          :policy="policy"
-        />
-      </div>
-      <p v-else>
-        <em>{{ t('join.noAccess') }}</em>
-      </p>
-    </v-col>
-  </v-row>
+  <AppBar />
+  <UserMenu />
+  <v-main>
+    <v-container>
+      <v-row id="join-meeting" v-if="meeting">
+        <v-col v-bind="cols.default">
+          <h1>{{ t('join.meetingTitle', { ...meeting }) }}</h1>
+          <Richtext :object="meeting" class="mb-8" />
+          <div
+            class="btn-controls"
+            v-if="canBecomeModeratorMeeting"
+            @click="joinAsModerator()"
+          >
+            <v-btn color="warning" prepend-icon="mdi-gavel">
+              {{ t('join.asModerator') }}
+            </v-btn>
+          </div>
+          <div class="btn-controls" v-else-if="policyComponents.length">
+            <component
+              v-for="{ component, policy } in policyComponents"
+              :is="component"
+              :key="policy.name"
+              :policy="policy"
+            />
+          </div>
+          <p v-else>
+            <em>{{ t('join.noAccess') }}</em>
+          </p>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 
 <script setup lang="ts">
@@ -46,6 +52,8 @@ import { MeetingRole } from './types'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 import { canBecomeModerator } from './rules'
+import AppBar from '@/components/AppBar.vue'
+import UserMenu from '@/components/UserMenu.vue'
 
 const { t } = useI18n()
 const { meetingId, meetingRoute } = useMeeting()
