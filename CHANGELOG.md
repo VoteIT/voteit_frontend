@@ -4,6 +4,15 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.23.0 (?)
+
+- Add "other tags" to empty broadcast/decisions view
+- Display alert for org managers on organisation home if contact information required check
+- Copy join link now uses link to join page
+- Allow deleting rooms with no speakers on any of it's speaker lists. (Backend does check)
+- Bugfix: Add back AppBar to join view
+- Bugfix: Meeting NavigationDrawer should open active menus automatically
+
 ## 0.22.2 (2024-02-13)
 
 - Bugfix in broadcast view: When selecting approved proposals, they were not selected in broadcast view
