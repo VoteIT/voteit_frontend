@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
@@ -10,38 +10,60 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import useMeeting from '../meetings/useMeeting'
 import usePoll from '../polls/usePoll'
 import { pollType } from '../polls/contentTypes'
-import useRoom from './useRoom'
 import useMeetingPolls from '../polls/useMeetingPolls'
 
+import useRoom from './useRoom'
+import PollBallot from '../polls/PollBallot.vue'
+
 const props = defineProps<{
+  dismissible: boolean
   pollId?: number
+}>()
+
+defineEmits<{
+  (e: 'close'): void
 }>()
 
 const { t } = useI18n()
 const { idle } = useIdle(5_000)
 
 const { meetingId } = useMeeting()
-const { meetingOngoingPolls } = useMeetingPolls(meetingId)
+const { firstUnvotedPoll, meetingOngoingPolls } = useMeetingPolls(meetingId)
 
-const currentPollId = ref(props.pollId || meetingOngoingPolls.value[0].pk)
+const currentPollId = ref(
+  props.pollId || firstUnvotedPoll.value?.pk || meetingOngoingPolls.value[0].pk
+)
 const { meetingRoom } = useRoom()
 const {
   canVote,
   isOngoing,
   isFinished,
   isWithheld,
+  nextUnvoted,
   poll,
   pollMethodName,
   pollStatus,
   proposals,
   resultComponent,
+  userVote,
   voteComponent
 } = usePoll(currentPollId)
 
-// Only follow if ongoing
+const changeVote = ref(false)
+// Reset changeVote when switching poll
+watch(currentPollId, () => (changeVote.value = false))
+
+const isVoting = computed(
+  () =>
+    isOngoing.value && canVote.value && (changeVote.value || !userVote.value)
+)
+
+// Only follow if ongoing and not currently voting
 useChannel(
   'poll',
-  computed(() => (isOngoing.value ? currentPollId.value : undefined))
+  computed(() =>
+    !isVoting.value && isOngoing.value ? currentPollId.value : undefined
+  )
 )
 
 const complete = computed(() => {
@@ -75,18 +97,25 @@ const pollStateText = computed(
 </script>
 
 <template>
+  <div class="d-flex mb-4">
+    <h2 class="flex-grow-1">
+      {{ poll?.title }}
+    </h2>
+    <v-btn
+      v-if="dismissible"
+      class="mt-n2 mr-n2"
+      icon="mdi-close"
+      size="small"
+      variant="text"
+      @click="$emit('close')"
+    />
+  </div>
   <div v-if="!poll" class="my-8 text-center">
     <v-progress-circular indeterminate color="primary" />
   </div>
   <template v-else-if="isOngoing">
-    <main class="mb-8">
-      <component
-        v-if="canVote"
-        :is="voteComponent"
-        :poll="poll"
-        :proposals="proposals"
-      />
-      <p>
+    <main>
+      <p class="mb-4">
         {{
           t('poll.pollDescription', {
             method: pollMethodName,
@@ -94,18 +123,49 @@ const pollStateText = computed(
           })
         }}
       </p>
+      <PollBallot
+        v-if="isVoting"
+        :model-value="userVote?.vote"
+        :poll="poll"
+        :proposals="proposals"
+        @voting-complete="changeVote = false"
+      />
       <ProgressBar
-        v-if="progressBar"
+        v-else-if="progressBar"
         v-bind="progressBar"
         absolute
         class="mt-8"
-      />
+      >
+        <template v-if="canVote" #right>
+          <span :class="{ active: !!userVote }">
+            {{ userVote ? t('poll.youHaveVoted') : t('poll.youHaveNotVoted') }}
+            <v-icon size="x-small" icon="mdi-check" />
+          </span>
+        </template>
+      </ProgressBar>
       <v-alert
         v-if="poll?.withheld_result"
         :text="t('poll.result.willBeWithheld')"
         type="info"
         class="my-6"
       />
+      <div v-if="userVote || nextUnvoted" class="mt-6">
+        <v-btn
+          v-if="userVote && !changeVote"
+          color="secondary"
+          class="mr-1"
+          prepend-icon="mdi-vote"
+          :text="t('poll.viewAndChangeVote')"
+          @click="changeVote = true"
+        />
+        <v-btn
+          v-if="nextUnvoted"
+          color="primary"
+          prepend-icon="mdi-star"
+          :text="t('poll.nextUnvoted', { ...nextUnvoted })"
+          @click="currentPollId = nextUnvoted.pk"
+        />
+      </div>
     </main>
     <DefaultDialog
       :model-value="meetingRoom?.show_ballot"
@@ -141,3 +201,14 @@ const pollStateText = computed(
     </p>
   </main>
 </template>
+
+<style lang="sass">
+span.active
+  .mdi
+    display: inline-block
+    background-color: rgb(var(--v-theme-success))
+    border-radius: 4px
+    text-align: center
+    width: 18px
+    height: 18px
+</style>

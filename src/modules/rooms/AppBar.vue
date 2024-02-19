@@ -99,11 +99,7 @@ const currentDisplay = computed(
       </v-fade-transition>
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
-    <DefaultDialog
-      :model-value="pollModalOpen"
-      :persistent="idle"
-      :title="roomOpenPoll?.title"
-    >
+    <DefaultDialog :model-value="pollModalOpen" persistent>
       <template #activator="{ props }">
         <v-fade-transition>
           <v-btn
@@ -114,7 +110,13 @@ const currentDisplay = computed(
           />
         </v-fade-transition>
       </template>
-      <RealTimePollModal :poll-id="roomOpenPoll?.pk" />
+      <template #default="{ close }">
+        <RealTimePollModal
+          :dismissible="!idle"
+          :poll-id="roomOpenPoll?.pk"
+          @close="close"
+        />
+      </template>
     </DefaultDialog>
     <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
       <v-btn
