@@ -56,8 +56,8 @@ function getPolls(meeting: number, state?: PollState) {
 /**
  * Get all polls that matches filter
  */
-function filterPolls(_filter: (poll: Poll) => boolean) {
-  return filter(polls.values(), _filter)
+export function filterPolls(predicate: (poll: Poll) => boolean) {
+  return filter(polls.values(), predicate)
 }
 
 /**
