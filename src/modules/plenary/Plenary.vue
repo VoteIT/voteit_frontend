@@ -59,7 +59,6 @@ const {
   hasSpeakerLists,
   isBroadcasting,
   meetingRoom,
-  roomId,
   roomOpenPoll,
   speakerSystem,
   setPoll,
@@ -94,7 +93,6 @@ function getStateProposalCount(state: ProposalState) {
 function getActiveAIRoute(agendaItem?: number | null) {
   if (agendaItem && agendaItem !== agendaId.value)
     return getPlenaryRoute({
-      roomId: roomId.value,
       tab: currentTab.value,
       aid: agendaItem
     })
