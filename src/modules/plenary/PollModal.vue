@@ -77,7 +77,10 @@
     </div>
   </template>
   <main v-else>
-    <div v-if="isFinished" class="mt-6">
+    <p class="mb-4">
+      {{ t('poll.result.method', { method: pollMethodName }) }}
+    </p>
+    <div v-if="isFinished">
       <component
         :is="resultComponent"
         :result="poll.result"
