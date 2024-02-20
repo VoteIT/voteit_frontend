@@ -181,25 +181,13 @@ async function deleteRoom(pk: number) {
       <h2 class="flex-grow-1">
         {{ t('room.settings') }}
       </h2>
-      <DefaultDialog v-model="createOpen">
+      <DefaultDialog v-model="createOpen" :title="t('room.create')">
         <template #activator="{ props }">
           <v-btn color="primary" prepend-icon="mdi-plus" v-bind="props">
             {{ t('room.create') }}
           </v-btn>
         </template>
         <template #default="{ close }">
-          <div class="d-flex mb-3">
-            <h2 class="flex-grow-1">
-              {{ t('room.create') }}
-            </h2>
-            <v-btn
-              size="small"
-              @click="close"
-              icon="mdi-close"
-              variant="text"
-              class="mt-n1 mr-n1"
-            />
-          </div>
           <RoomForm :working="working" @submit="create" @cancel="close" />
         </template>
       </DefaultDialog>
@@ -249,7 +237,7 @@ async function deleteRoom(pk: number) {
           </td>
           <td class="text-right">
             <v-btn-group class="mr-1" density="compact">
-              <DefaultDialog>
+              <DefaultDialog :title="t('room.edit')">
                 <template #activator="{ props }">
                   <v-btn
                     v-bind="props"
@@ -261,17 +249,6 @@ async function deleteRoom(pk: number) {
                   </v-btn>
                 </template>
                 <template #default="{ close }">
-                  <div class="d-flex mb-2">
-                    <h2 class="flex-grow-1">
-                      {{ t('room.edit') }}
-                    </h2>
-                    <v-btn
-                      icon="mdi-close"
-                      @click="close"
-                      class="mt-n1 mr-n1"
-                      variant="text"
-                    />
-                  </div>
                   <RoomForm
                     :data="room.formData"
                     :sls-disabled="room.slsDisabled"
