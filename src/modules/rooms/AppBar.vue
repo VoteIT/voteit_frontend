@@ -46,9 +46,10 @@ const crumbs = computed(() => {
 })
 
 const hasOpenPoll = computed(() => !!roomOpenPoll.value)
-
+const isVoting = ref(false) // True if user could be voting in poll modal
 const pollModalOpen = ref(!!roomOpenPoll.value)
-watch(hasOpenPoll, (value) => (pollModalOpen.value = value))
+const pollModalTitle = ref('') // Weird bidning, but it does the job for now
+watch(hasOpenPoll, (value) => (pollModalOpen.value = isVoting.value || value)) // Do not close if user could be voting
 
 const displayOptions: {
   value: (typeof roomDisplayMode)['value']
@@ -99,7 +100,12 @@ const currentDisplay = computed(
       </v-fade-transition>
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
-    <DefaultDialog :model-value="pollModalOpen" persistent>
+    <DefaultDialog
+      :model-value="pollModalOpen"
+      :persistent="idle"
+      :title="pollModalTitle"
+      @close="isVoting = false"
+    >
       <template #activator="{ props }">
         <v-fade-transition>
           <v-btn
@@ -110,13 +116,12 @@ const currentDisplay = computed(
           />
         </v-fade-transition>
       </template>
-      <template #default="{ close }">
-        <RealTimePollModal
-          :dismissible="!idle"
-          :poll-id="roomOpenPoll?.pk"
-          @close="close"
-        />
-      </template>
+      <RealTimePollModal
+        :dismissible="!idle"
+        :poll-id="roomOpenPoll?.pk"
+        @update:isVoting="isVoting = $event"
+        @update:title="pollModalTitle = $event"
+      />
     </DefaultDialog>
     <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
       <v-btn

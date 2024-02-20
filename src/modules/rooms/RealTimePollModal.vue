@@ -20,8 +20,9 @@ const props = defineProps<{
   pollId?: number
 }>()
 
-defineEmits<{
-  (e: 'close'): void
+const emit = defineEmits<{
+  (e: 'update:isVoting', value: boolean): void
+  (e: 'update:title', value: string): void
 }>()
 
 const { t } = useI18n()
@@ -55,7 +56,13 @@ watch(currentPollId, () => (changeVote.value = false))
 
 const isVoting = computed(
   () =>
-    isOngoing.value && canVote.value && (changeVote.value || !userVote.value)
+    isOngoing.value && !!canVote.value && (changeVote.value || !userVote.value)
+)
+watch(isVoting, (value) => emit('update:isVoting', value), { immediate: true })
+watch(
+  () => poll.value?.title ?? '',
+  (title) => emit('update:title', title),
+  { immediate: true }
 )
 
 // Only follow if ongoing and not currently voting
@@ -97,19 +104,6 @@ const pollStateText = computed(
 </script>
 
 <template>
-  <div class="d-flex mb-4">
-    <h2 class="flex-grow-1">
-      {{ poll?.title }}
-    </h2>
-    <v-btn
-      v-if="dismissible"
-      class="mt-n2 mr-n2"
-      icon="mdi-close"
-      size="small"
-      variant="text"
-      @click="$emit('close')"
-    />
-  </div>
   <div v-if="!poll" class="my-8 text-center">
     <v-progress-circular indeterminate color="primary" />
   </div>
