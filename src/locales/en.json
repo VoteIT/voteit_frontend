@@ -823,6 +823,8 @@
     "onlyProposals": "Only proposals",
     "onlySpeakers": "Only speaker list",
     "open": "Open",
+    "passiveMode": "Projector mode",
+    "passiveModeHint": "Disable user interaction",
     "paused": "Paused...",
     "pauseMessage": "Pause message",
     "pauseMessageDescription": "The pause message will be displayed when the broadcast is active, but the display of both speaker list and proposals is disabled.",

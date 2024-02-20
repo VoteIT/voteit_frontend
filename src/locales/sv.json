@@ -823,6 +823,8 @@
     "onlyProposals": "Endast förslag",
     "onlySpeakers": "Endast talarlista",
     "open": "Öppet",
+    "passiveMode": "Projektorläge",
+    "passiveModeHint": "Stäng av användarinteraktion",
     "paused": "Paus...",
     "pauseMessage": "Pausmeddelande",
     "pauseMessageDescription": "Pausmeddelandet visas när mötesrummet är öppet, men sändning av både talarlista och förslag är avstängd.",

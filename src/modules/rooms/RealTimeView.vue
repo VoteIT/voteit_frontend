@@ -22,7 +22,7 @@ provide(RoleContextKey, 'meeting')
 
 const { t } = useI18n()
 
-const { highlightedProposals, meetingRoom, textSize } = useRoom()
+const { highlightedProposals, meetingRoom, passiveMode, textSize } = useRoom()
 const { agendaItem } = useAgendaItem(
   computed(() => meetingRoom.value?.agenda_item ?? -1) // Can be undefined
 )
@@ -94,7 +94,10 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
     </div>
     <div v-else class="d-flex full-height">
       <div v-if="display.speakers" class="left flex-grow-1 pa-6">
-        <ActiveSpeakerList :system-id="speakerSystemActive!.pk" />
+        <ActiveSpeakerList
+          :passive="passiveMode"
+          :system-id="speakerSystemActive!.pk"
+        />
       </div>
       <div v-if="display.proposals" class="right flex-grow-1 pa-6">
         <h2 class="mb-2">

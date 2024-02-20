@@ -15,6 +15,7 @@ import useSpeakerSystem from './useSpeakerSystem'
 import SpeakerEntry from './SpeakerEntry.vue'
 
 const props = defineProps<{
+  passive: boolean
   systemId: number
 }>()
 
@@ -68,6 +69,7 @@ function enterLeaveAction(fn: () => Promise<any>) {
 
 // eslint-disable-next-line vue/return-in-computed-property
 const enterLeaveButton = computed(() => {
+  if (props.passive) return
   if (canEnterList.value)
     return {
       text: t('speaker.enterList'),

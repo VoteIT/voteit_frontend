@@ -13,6 +13,12 @@ import { SpeakerSystemState } from '../speakerLists/types'
 import { highlightedStore, meetingRoomStore } from './useRooms'
 import { roomType } from './contentTypes'
 
+/**
+ * Set client to passive mode to disable interaction in real-time view (no speaker registration or voting)
+ * Used when connecting computer to projector.
+ */
+const passiveMode = useStorage('room:passiveMode', false)
+
 const textSize = useStorage<'normal' | 'large' | 'x-large'>(
   'room.textSize',
   'normal'
@@ -155,6 +161,7 @@ export default function useRoom() {
     highlightedProposals,
     isBroadcasting,
     meetingRoom,
+    passiveMode,
     realTimeRoute,
     roomId,
     roomOpenPoll,

@@ -16,7 +16,8 @@ import useRoom from './useRoom'
 const { t } = useI18n()
 const { isModerator, meeting, meetingId, meetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { meetingRoom, roomOpenPoll, textSize, getRoomRoute } = useRoom()
+const { meetingRoom, passiveMode, roomOpenPoll, textSize, getRoomRoute } =
+  useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 
 const { idle } = useIdle(5_000)
@@ -118,6 +119,7 @@ const currentDisplay = computed(
       </template>
       <RealTimePollModal
         :dismissible="!idle"
+        :passive="passiveMode"
         :poll-id="roomOpenPoll?.pk"
         @update:isVoting="isVoting = $event"
         @update:title="pollModalTitle = $event"
@@ -194,6 +196,17 @@ const currentDisplay = computed(
                 @click="toggle"
               />
             </v-item>
+            <v-list-item
+              :active="passiveMode"
+              :prepend-icon="
+                passiveMode
+                  ? 'mdi-checkbox-marked'
+                  : 'mdi-checkbox-blank-outline'
+              "
+              :title="t('room.passiveMode')"
+              :subtitle="t('room.passiveModeHint')"
+              @click.stop="passiveMode = !passiveMode"
+            />
           </v-item-group>
         </v-list>
       </HeaderMenu>

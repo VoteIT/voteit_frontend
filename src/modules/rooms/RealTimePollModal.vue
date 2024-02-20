@@ -17,6 +17,7 @@ import PollBallot from '../polls/PollBallot.vue'
 
 const props = defineProps<{
   dismissible: boolean
+  passive: boolean
   pollId?: number
 }>()
 
@@ -56,7 +57,10 @@ watch(currentPollId, () => (changeVote.value = false))
 
 const isVoting = computed(
   () =>
-    isOngoing.value && !!canVote.value && (changeVote.value || !userVote.value)
+    !props.passive &&
+    isOngoing.value &&
+    !!canVote.value &&
+    (changeVote.value || !userVote.value)
 )
 watch(isVoting, (value) => emit('update:isVoting', value), { immediate: true })
 watch(
@@ -130,7 +134,7 @@ const pollStateText = computed(
         absolute
         class="mt-8"
       >
-        <template v-if="canVote" #right>
+        <template v-if="!passive && canVote" #right>
           <span :class="{ active: !!userVote }">
             {{ userVote ? t('poll.youHaveVoted') : t('poll.youHaveNotVoted') }}
             <v-icon size="x-small" icon="mdi-check" />
