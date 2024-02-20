@@ -196,6 +196,15 @@ const pollStateText = computed(
     <p v-else class="my-2">
       {{ pollStateText }}
     </p>
+    <div class="mt-6" v-if="nextUnvoted">
+      <v-btn
+        v-if="nextUnvoted"
+        color="primary"
+        prepend-icon="mdi-star"
+        :text="t('poll.nextUnvoted', { ...nextUnvoted })"
+        @click="currentPollId = nextUnvoted.pk"
+      />
+    </div>
   </main>
 </template>
 
