@@ -124,7 +124,7 @@ const editableMeetingRooms = computed(() =>
       ...r,
       sls: speakerSystem?.pk,
       slsDisabled:
-        !speakerSystem || speakerSystem.state === SpeakerSystemState.Archived,
+        !!speakerSystem && speakerSystem.state === SpeakerSystemState.Archived,
       formData: {
         room: {
           title: r.title,
