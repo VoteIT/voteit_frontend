@@ -143,7 +143,7 @@ const pollStateText = computed(
         type="info"
         class="my-6"
       />
-      <div v-if="userVote || nextUnvoted" class="mt-6">
+      <div v-if="(userVote && !changeVote) || nextUnvoted" class="mt-6">
         <v-btn
           v-if="userVote && !changeVote"
           color="secondary"
