@@ -59,15 +59,11 @@ meetingGroupTablePlugins.register({
   },
   transform(columns, meeting) {
     const meetingId = toRef(meeting, 'pk')
-    const { voteCount } = useMeetingGroups(meetingId)
     const { usersInCurrentRegister } = useElectoralRegisters(meetingId)
     return [
       ...columns,
       {
         name: 'electoralRegister',
-        getCount() {
-          return voteCount.value
-        },
         getDescription(t) {
           return t('electoralRegister.inCurrentDescriptionGroup')
         },
