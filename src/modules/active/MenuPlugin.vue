@@ -5,7 +5,12 @@
         {{ isActive ? t('activeUsers.active') : t('activeUsers.inactive') }}
       </strong>
     </p>
-    <v-switch v-model="isActive" hide-details class="flex-grow-0">
+    <v-switch
+      v-model="isActive"
+      hide-details
+      color="surface"
+      class="flex-grow-0"
+    >
       <template #label>
         <v-icon
           icon="mdi-account-network"
