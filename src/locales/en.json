@@ -194,7 +194,8 @@
     "voterCount": "No voters | 1 voter | {count} voters",
     "weight": "Weight",
     "weightedVoterCount": "No voters | One voter ({total} votes) | {count} voters ({total} votes)",
-    "inCurrent": "In current electoral register"
+    "inCurrent": "In current electoral register",
+    "inCurrentDescriptionGroup": "Number of members that are in the meetings current electoral register. Participants can be counted in multiple groups."
   },
   "erMethods": {
     "auto_always": {

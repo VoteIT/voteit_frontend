@@ -194,7 +194,8 @@
     "voterCount": "Inga röstberättigade | En röstberättigad | {count} röstberättigade",
     "weightedVoterCount": "Inga röstberättigade | En röstberättigad ({total} röster) | {count} röstberättigade ({total} röster)",
     "weight": "Vikt",
-    "inCurrent": "I nuvarande röstlängd"
+    "inCurrent": "I nuvarande röstlängd",
+    "inCurrentDescriptionGroup": "Antal medlemmar som finns i mötets nuvarande röstlängd. Samma deltagare kan räknas i flera grupper."
   },
   "erMethods": {
     "auto_always": {

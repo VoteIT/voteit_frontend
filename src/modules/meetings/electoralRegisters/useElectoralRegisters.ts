@@ -147,6 +147,9 @@ export default function useElectoralRegisters(meetingId?: Ref<number>) {
   const currentElectoralRegister = computed(() => {
     return sortedRegisters.value.at(0)
   })
+  const usersInCurrentRegister = computed(() => {
+    return new Set(currentElectoralRegister.value?.weights.map((w) => w.user))
+  })
 
   return {
     availableErMethods,
@@ -157,6 +160,7 @@ export default function useElectoralRegisters(meetingId?: Ref<number>) {
     erMethodWeighted,
     erMethods,
     sortedRegisters,
+    usersInCurrentRegister,
     getErMethod,
     getRegister,
     getWeightInCurrent,

@@ -6,6 +6,7 @@ import useMeetingGroups from '../useMeetingGroups'
 
 import SFSVoteManagement from './SFSVoteManagement.vue'
 import GroupDelegationManagement from './GroupDelegationManagement.vue'
+import useElectoralRegisters from '../electoralRegisters/useElectoralRegisters'
 // import MainAndSubstManagement from './MainAndSubstManagement.vue'
 
 export const voteManagementComponents: Partial<
@@ -51,11 +52,15 @@ meetingGroupTablePlugins.register({
   checkActive(meeting) {
     return (
       [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) &&
-      meeting.er_policy_name === 'main_subst_active'
+      meeting.er_policy_name === 'main_subst_active' &&
+      !!useElectoralRegisters(toRef(meeting, 'pk')).currentElectoralRegister
+        .value
     )
   },
   transform(columns, meeting) {
-    const { voteCount } = useMeetingGroups(toRef(meeting, 'pk'))
+    const meetingId = toRef(meeting, 'pk')
+    const { voteCount } = useMeetingGroups(meetingId)
+    const { usersInCurrentRegister } = useElectoralRegisters(meetingId)
     return [
       ...columns,
       {
@@ -63,12 +68,16 @@ meetingGroupTablePlugins.register({
         getCount() {
           return voteCount.value
         },
+        getDescription(t) {
+          return t('electoralRegister.inCurrentDescriptionGroup')
+        },
         getTitle(t) {
           return t('electoralRegister.inCurrent')
         },
         getValue(group) {
           return group.memberships.reduce(
-            (acc, { votes }) => acc + (votes || 0),
+            (acc, { user }) =>
+              usersInCurrentRegister.value.has(user) ? acc + 1 : acc,
             0
           )
         }
