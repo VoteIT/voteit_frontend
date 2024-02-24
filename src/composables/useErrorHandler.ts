@@ -25,10 +25,17 @@ function getSpecifiedFieldErrorMessage(
   return fieldErrors.join(', ')
 }
 
-function getNonspecificFieldErrorMessage(errors: Dictionary<string[]>) {
+function joinStrings(msgs: string[] | string) {
+  if (typeof msgs === 'string') return msgs
+  return msgs.join(', ')
+}
+
+function getNonspecificFieldErrorMessage(
+  errors: Dictionary<string[] | string>
+) {
   if (isEmpty(errors)) return
   return Object.entries(errors)
-    .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+    .map(([field, msgs]) => `${field}: ${joinStrings(msgs)}`)
     .join('\n')
 }
 
