@@ -16,7 +16,7 @@ defineProps<{
       variant="flat"
       v-bind="$attrs"
     />
-    <v-menu>
+    <v-menu location="bottom right">
       <template #activator="{ props }">
         <v-btn
           :color="color"
