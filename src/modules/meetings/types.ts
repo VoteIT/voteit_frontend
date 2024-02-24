@@ -115,7 +115,6 @@ export interface MeetingGroup extends BaseContent {
   groupid: string
   meeting: number
   post_as: boolean
-  post_with: boolean
   show_on_speaker: boolean
   tags: string[]
   votes: null | number
