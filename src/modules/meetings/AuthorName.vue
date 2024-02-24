@@ -15,6 +15,7 @@ const { getMeetingGroup } = useMeetingGroups(meetingId)
 const props = defineProps<{
   author: Author
   prependText?: string
+  icon?: boolean
 }>()
 
 const user = computed(() => getUser(props.author.author))
@@ -28,7 +29,7 @@ const groupName = computed(() =>
 
 <template>
   <span v-if="isGroupAuthor(author)">
-    <v-icon size="small" class="mr-1" style="position: relative; top: -1px"
+    <v-icon v-if="icon" size="small" class="mr-1" style="margin-top: -1px"
       >mdi-account-multiple</v-icon
     >
     {{ prependText }}

@@ -28,7 +28,7 @@
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
       <div class="author text-secondary d-flex flex-wrap align-end">
-        <AuthorName :author="p" :prepend-text="t('by')" />
+        <AuthorName :author="p" icon :prepend-text="t('by')" />
         <Moment :date="p.created" class="ml-6" />
         <v-spacer />
         <slot name="bottom-right"></slot>
