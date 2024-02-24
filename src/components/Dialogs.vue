@@ -100,7 +100,6 @@ onBeforeMount(() => {
       savedFocusEl = document.querySelector(':focus')
     }
     queue.push(dialog)
-    console.log('dialog!', dialog)
     nextTick(() => {
       if (!window.value) return
       const el = window.value.$el as HTMLElement
