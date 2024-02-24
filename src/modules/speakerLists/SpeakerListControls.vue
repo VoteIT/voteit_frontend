@@ -17,6 +17,7 @@ import { IUser } from '../organisations/types'
 import useSpeakerList from './useSpeakerList'
 import { onKeyStroke } from '@vueuse/core'
 import * as speakerRules from './rules'
+import SpeakerEntry from './SpeakerEntry.vue'
 
 const props = defineProps<{
   listId: number
@@ -194,17 +195,12 @@ onKeyStroke(
         <v-list-subheader v-if="title" class="mt-3">
           {{ title }}
         </v-list-subheader>
-        <v-list-item
+        <SpeakerEntry
           v-for="user in queue"
           :key="user"
+          :user="user"
           :class="{ self: isSelf(user) }"
         >
-          <template #prepend>
-            <UserAvatar :pk="user" />
-          </template>
-          <v-list-item-title class="flex-grow-1">
-            <User :pk="user" />
-          </v-list-item-title>
           <template #append>
             <span class="btn-group d-flex flex-nowrap">
               <v-btn
@@ -224,7 +220,7 @@ onKeyStroke(
               </v-btn>
             </span>
           </template>
-        </v-list-item>
+        </SpeakerEntry>
       </template>
     </v-list>
     <p v-else class="mt-4">
