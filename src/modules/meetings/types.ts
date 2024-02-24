@@ -135,9 +135,24 @@ export interface GroupMembership {
   votes: null | number
 }
 
-type UserAuthor = { author: number; meeting_group: null }
-type GroupAuthor = { author: number | null; meeting_group: number }
-export type Author = UserAuthor | GroupAuthor
+type UserAuthor = { as_group: false; author: number; meeting_group: null }
+type GroupAuthor = { as_group: true; author: number; meeting_group: number }
+type WithGroupAuthor = {
+  as_group: false
+  author: number
+  meeting_group: number
+}
+export type Author = UserAuthor | GroupAuthor | WithGroupAuthor
+
+export function isGroupAuthor(author: Author): author is GroupAuthor {
+  return author.as_group
+}
+export function isUserAuthor(author: Author): author is UserAuthor {
+  return !author.meeting_group
+}
+export function isWithGroupAuthor(author: Author): author is WithGroupAuthor {
+  return !author.as_group && !!author.meeting_group
+}
 
 export interface ComponentBase<N = string> {
   readonly pk: number
