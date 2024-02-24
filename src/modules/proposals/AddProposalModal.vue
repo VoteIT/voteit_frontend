@@ -121,6 +121,7 @@ const extraTags = ref(getExtraTags(props.proposal))
 const author = ref<Author | undefined>(
   props.proposal &&
     ({
+      as_group: props.proposal.as_group,
       author: props.proposal.author,
       meeting_group: props.proposal.meeting_group
     } as Author)
@@ -134,13 +135,13 @@ function getPatchData(): Partial<Proposal> {
   }
 }
 
-function getCreateData(): Partial<Proposal> {
+function getCreateData() {
   return {
     shortname: props.shortname,
     agenda_item: agendaId.value,
     ...props.extra,
     ...getPatchData()
-  }
+  } as Partial<Proposal>
 }
 
 const api = proposalType.getContentApi({ alertOnError: false })
@@ -164,7 +165,7 @@ async function preview() {
       created: new Date().toISOString(),
       pk: 0,
       shortname: props.shortname
-    }
+    } as Partial<Proposal>
   } catch (e) {
     proposalPreview.value = null
     errors.value = parseRestError(e)
