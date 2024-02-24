@@ -28,20 +28,7 @@
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
       <div class="author text-secondary d-flex flex-wrap align-end">
-        <v-icon
-          v-if="meetingGroup"
-          size="small"
-          class="mr-1"
-          style="position: relative; top: -1px"
-          >mdi-account-multiple</v-icon
-        >
-        <span
-          >{{ t('by') }}
-          <span v-if="meetingGroup">
-            {{ meetingGroup.title }}
-          </span>
-          <User v-else-if="p.author" :pk="p.author" userid />
-        </span>
+        <AuthorName :author="p" :prepend-text="t('by')" />
         <Moment :date="p.created" class="ml-6" />
         <v-spacer />
         <slot name="bottom-right"></slot>
@@ -119,7 +106,6 @@ import { MenuItem, ThemeColor } from '@/utils/types'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Moment from '@/components/Moment.vue'
 import Tag from '@/components/Tag.vue'
-import User from '@/components/User.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useUnread from '@/composables/useUnread'
 
@@ -128,7 +114,6 @@ import useAgendaFilter from '../agendas/useAgendaFilter'
 import Comments from '../discussions/Comments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
-import useMeetingGroups from '../meetings/useMeetingGroups'
 import useTags from '../meetings/useTags'
 
 import { proposalType } from './contentTypes'
@@ -142,6 +127,7 @@ import AddTextProposalModal from './AddTextProposalModal.vue'
 import type { Proposal } from './types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import ProposalText from './ProposalText.vue'
+import AuthorName from '../meetings/AuthorName.vue'
 
 const props = defineProps<{
   p: Proposal
@@ -149,18 +135,14 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { isModerator, meetingId } = useMeeting()
+const { isModerator } = useMeeting()
 const agendaId = computed(() => props.p.agenda_item)
 const { orderContent } = useAgendaFilter(agendaId)
 const { canAddDiscussionPost } = useAgendaItem(agendaId)
 const { getHTMLTags } = useTags()
 const showComments = ref(false)
 const { getProposalDiscussions } = useDiscussions()
-const { getMeetingGroup } = useMeetingGroups(meetingId)
 
-const meetingGroup = computed(
-  () => props.p.meeting_group && getMeetingGroup(props.p.meeting_group)
-)
 const { isUnread } = useUnread(new Date(props.p.created))
 
 async function queryDelete() {
