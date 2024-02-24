@@ -6,7 +6,6 @@ import { dialogQuery, stripHTML } from '@/utils'
 
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import type { EditorComponent } from '@/components/types'
 
 import useMeetingGroups from '../meetings/useMeetingGroups'
@@ -15,6 +14,7 @@ import useMeeting from '../meetings/useMeeting'
 import type { Author } from '../meetings/types'
 
 import type { DiscussionPost } from './types'
+import AuthorAvatar from '../meetings/AuthorAvatar.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -130,19 +130,7 @@ defineExpose({
 
 <template>
   <div class="d-flex">
-    <v-avatar
-      v-if="author?.meeting_group"
-      icon="mdi-account-multiple"
-      color="secondary"
-      size="small"
-      class="mr-1"
-    />
-    <UserAvatar
-      v-else-if="author?.author"
-      size="small"
-      class="mr-1"
-      :pk="author.author"
-    />
+    <AuthorAvatar v-if="author" :author="author" class="mr-1" size="small" />
     <RichtextEditor
       ref="editorComponent"
       :placeholder="placeholder"

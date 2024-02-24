@@ -10,8 +10,6 @@ import DropdownMenu from '@/components/DropdownMenu.vue'
 import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
-import User from '@/components/User.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import useUnread from '@/composables/useUnread'
 
 import useTags from '../meetings/useTags'
@@ -23,6 +21,8 @@ import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
 import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
 import type { Author } from '../meetings/types'
+import AuthorName from '../meetings/AuthorName.vue'
+import AuthorAvatar from '../meetings/AuthorAvatar.vue'
 
 const props = defineProps<{
   p: DiscussionPost
@@ -32,7 +32,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { getHTMLTags } = useTags()
 const { meetingId } = useMeeting()
-const { getMeetingGroup, canPostAs } = useMeetingGroups(meetingId)
+const { canPostAs } = useMeetingGroups(meetingId)
 
 const editing = ref(false)
 const saving = ref(false)
@@ -42,9 +42,6 @@ const author = ref({
   meeting_group: props.p.meeting_group
 } as Author)
 const { isUnread } = useUnread(new Date(props.p.created))
-const meetingGroup = computed(
-  () => props.p.meeting_group && getMeetingGroup(props.p.meeting_group)
-)
 
 async function queryDelete() {
   if (
@@ -119,24 +116,10 @@ async function save() {
     class="discussion rounded-ts-xl"
     :class="{ isUnread }"
   >
-    <div class="d-flex" v-if="meetingGroup">
-      <v-avatar color="secondary" class="mr-2" icon="mdi-account-multiple" />
+    <div class="d-flex">
+      <AuthorAvatar :author="p" class="mr-2" />
       <div class="flex-grow-1">
-        {{ meetingGroup.title }}<br />
-        <Moment :date="p.created" />
-      </div>
-    </div>
-    <div class="d-flex" v-else-if="p.author">
-      <UserAvatar popup :pk="p.author" class="mr-2" />
-      <div class="flex-grow-1">
-        <User :pk="p.author" /><br />
-        <Moment :date="p.created" />
-      </div>
-    </div>
-    <div class="d-flex" v-else>
-      <v-avatar color="secondary" class="mr-2"> ? </v-avatar>
-      <div class="flex-grow-1">
-        {{ t('unknownUser') }}<br />
+        <AuthorName :author="p" /><br />
         <Moment :date="p.created" />
       </div>
     </div>

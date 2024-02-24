@@ -15,6 +15,7 @@ import DiscussionPost from './DiscussionPost.vue'
 import DiscussionPostEditor from './DiscussionPostEditor.vue'
 import { discussionPostType } from './contentTypes'
 import type { DiscussionPost as IDiscussionPost } from './types'
+import { isGroupAuthor } from '../meetings/types'
 
 defineProps<{
   comments: IDiscussionPost[]
@@ -51,7 +52,7 @@ const reactions = computed(() =>
 )
 
 function replyTo(post: IDiscussionPost) {
-  if (post.author && !post.meeting_group) {
+  if (!isGroupAuthor(post)) {
     const user = getUser(post.author)
     if (user)
       addContentComponent.value?.setMention({
