@@ -381,8 +381,12 @@
       "members": "Members",
       "membersIn": "Members in {title}",
       "new": "New group",
+      "postAs": "Post as",
+      "postAsDescription": "Group members can make proposals and discussion posts in the name name of this group.",
       "removeUserConfirm": "You're about to remove {user} from this group.\nAre you sure?",
       "role": "Role",
+      "showOnSpeaker": "Speak as",
+      "showOnSpeakerDescription": "The group is shown in speaker lists under members names. Can be multiple groups for the same user.",
       "votes": "Votes"
     },
     "workflow": {

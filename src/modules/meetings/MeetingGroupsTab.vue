@@ -133,6 +133,18 @@
           <th>
             {{ t('meeting.groups.members') }}
           </th>
+          <th v-for="sw in groupSwitches" :key="sw.prop">
+            {{ sw.title }}
+            <v-tooltip :text="sw.description" location="top">
+              <template #activator="{ props }">
+                <v-icon
+                  icon="mdi-help-circle"
+                  v-bind="props"
+                  class="ml-1 my-n2"
+                />
+              </template>
+            </v-tooltip>
+          </th>
           <th
             v-for="{ description, name, title } in columns"
             :key="name"
@@ -185,6 +197,18 @@
               <GroupMemberships :group="group" :editable="canChangeMeeting" />
             </DefaultDialog>
           </td>
+          <th v-for="{ prop } in groupSwitches" :key="prop">
+            <v-btn
+              variant="text"
+              size="small"
+              @click="toggleGroupProp(group, prop)"
+            >
+              <v-icon
+                :icon="group[prop] ? 'mdi-check' : 'mdi-close'"
+                :color="group[prop] ? 'success' : 'warning'"
+              />
+            </v-btn>
+          </th>
           <td v-for="{ component, name, getValue } in columns" :key="name">
             {{ getValue?.(group) }}
             <component v-if="component" :is="component" :group="group" />
@@ -293,6 +317,7 @@ import { meetingGroupTablePlugins } from './registry'
 import useTags, { TagsKey } from './useTags'
 import useUserDetails from '../organisations/useUserDetails'
 import { getFullName } from '@/utils'
+import { PickByType } from '@/utils/types'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -488,6 +513,43 @@ async function deleteGroup(group: MeetingGroup) {
     await meetingGroupType.api.delete(group.pk)
   } catch (e) {
     handleRestError(e)
+  }
+}
+
+/**
+ * Switches to handle group settings for post_as, etc
+ */
+type GroupBoolean = keyof PickByType<MeetingGroup, boolean>
+
+const groupSwitches = computed<
+  {
+    description: string
+    prop: GroupBoolean
+    title: string
+  }[]
+>(() => {
+  if (!canChangeMeeting.value) return []
+  return [
+    {
+      description: t('meeting.groups.showOnSpeakerDescription'),
+      prop: 'show_on_speaker',
+      title: t('meeting.groups.showOnSpeaker')
+    },
+    {
+      description: t('meeting.groups.postAsDescription'),
+      prop: 'post_as',
+      title: t('meeting.groups.postAs')
+    }
+  ]
+})
+
+async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
+  const patchData: Partial<MeetingGroup> = {}
+  patchData[prop] = !group[prop]
+  try {
+    await meetingGroupType.api.patch(group.pk, patchData)
+  } catch (e) {
+    handleRestError(e, prop)
   }
 }
 </script>

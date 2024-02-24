@@ -381,8 +381,12 @@
       "members": "Medlemmar",
       "membersIn": "Medlemmar i {title}",
       "new": "Ny grupp",
+      "postAs": "Posta som",
+      "postAsDescription": "Medlemmar i gruppen kan posta förslag och diskussionsinlägg i gruppens namn.",
       "removeUserConfirm": "Du håller på att ta bort {user} från den här gruppen.\nÄr du säker?",
       "role": "Roll",
+      "showOnSpeaker": "Tala som",
+      "showOnSpeakerDescription": "Gruppen visas i talarlistor under medlemmarnas namn. Kan vara flera grupper för samma användare.",
       "votes": "Röster"
     },
     "workflow": {
