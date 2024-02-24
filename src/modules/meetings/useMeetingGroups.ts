@@ -82,6 +82,15 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
    */
   const userGroups = computed(() => orderedGroups.value.filter(isGroupMember))
 
+  /**
+   * Ordered, annotated groups in current meeting that current user can post as.
+   */
+  const postAsGroups = computed(() =>
+    isModerator.value
+      ? orderedGroups.value
+      : orderedGroups.value.filter((g) => isGroupMember(g) && g.post_as)
+  )
+
   return {
     allGroupMembers,
     canChangeMeeting: computed(() => {
@@ -93,6 +102,7 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
     groupRoles: roles,
     meetingGroups: orderedGroups,
     memberCount,
+    postAsGroups,
     voteCount,
     userGroups,
     getMeetingGroup

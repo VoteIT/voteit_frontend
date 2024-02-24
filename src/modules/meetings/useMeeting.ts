@@ -1,5 +1,5 @@
 import { Dictionary } from 'lodash'
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouteLocationRaw, useRoute, useRouter } from 'vue-router'
 
@@ -7,7 +7,7 @@ import { slugify } from '@/utils'
 
 import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 
-import { MeetingRole } from './types'
+import { Author, MeetingRole } from './types'
 import {
   canChangeMeeting,
   canChangeRolesMeeting,
@@ -20,6 +20,9 @@ import {
 } from './rules'
 import { meetingType } from './contentTypes'
 import { translateMeetingRole } from './utils'
+import { user } from '@/composables/useAuthentication'
+
+const postAsStore = reactive(new Map<number, Author>())
 
 export default function useMeeting() {
   const route = useRoute()
@@ -80,6 +83,21 @@ export default function useMeeting() {
     }
   }
 
+  /**
+   * Remember post_as for this meeting (memory only)
+   */
+  const postAs = computed({
+    get() {
+      return (
+        postAsStore.get(meetingId.value) ??
+        ({ author: user.value?.pk } as Author)
+      )
+    },
+    set(author) {
+      postAsStore.set(meetingId.value, author)
+    }
+  })
+
   return {
     canChange: computed(() => canChangeMeeting(meeting.value)),
     canChangeRoles: computed(
@@ -102,6 +120,7 @@ export default function useMeeting() {
     meetingJoinUrl,
     meetingRoute,
     meetingUrl,
+    postAs,
     roleIcons,
     roleItems,
     roleLabels,
