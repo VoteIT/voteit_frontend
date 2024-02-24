@@ -200,9 +200,28 @@
           <td class="text-right" v-if="canChangeMeeting">
             <DefaultDialog>
               <template #activator="{ props }">
-                <v-btn size="small" color="primary" v-bind="props">
-                  {{ t('edit') }}
-                </v-btn>
+                <ButtonWithDropdown
+                  color="primary"
+                  size="small"
+                  :text="t('edit')"
+                  v-bind="props"
+                >
+                  <v-list density="compact">
+                    <QueryDialog
+                      :text="t('meeting.groups.deleteConfirm', { ...group })"
+                      color="warning"
+                      @confirmed="deleteGroup(group)"
+                    >
+                      <template #activator="{ props }">
+                        <v-list-item
+                          base-color="warning"
+                          v-bind="props"
+                          :title="t('content.delete')"
+                        />
+                      </template>
+                    </QueryDialog>
+                  </v-list>
+                </ButtonWithDropdown>
               </template>
               <template #default="{ close }">
                 <SchemaForm
@@ -216,17 +235,6 @@
                       <v-btn @click="close" variant="text">
                         {{ t('cancel') }}
                       </v-btn>
-                      <QueryDialog
-                        :text="t('meeting.groups.deleteConfirm', { ...group })"
-                        color="warning"
-                        @confirmed="deleteGroup(group, close)"
-                      >
-                        <template #activator="{ props }">
-                          <v-btn variant="text" color="warning" v-bind="props">
-                            {{ t('content.delete') }}
-                          </v-btn>
-                        </template>
-                      </QueryDialog>
                       <v-btn
                         type="submit"
                         color="primary"
@@ -261,15 +269,7 @@
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
 import { chunk, orderBy } from 'lodash'
-import {
-  computed,
-  onBeforeUnmount,
-  onBeforeMount,
-  provide,
-  reactive,
-  ref,
-  watch
-} from 'vue'
+import { computed, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getApiLink } from '@/utils/restApi'
@@ -278,6 +278,7 @@ import Tag from '@/components/Tag.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import useRules from '@/composables/useRules'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { FieldType, FormSchema } from '@/components/types'
@@ -481,11 +482,10 @@ function changeGroup(pk: number) {
   return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
 }
 
-const { handleRestError } = useErrorHandler({ target: 'alert' })
-async function deleteGroup(group: MeetingGroup, close: () => void) {
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
+async function deleteGroup(group: MeetingGroup) {
   try {
     await meetingGroupType.api.delete(group.pk)
-    close()
   } catch (e) {
     handleRestError(e)
   }
