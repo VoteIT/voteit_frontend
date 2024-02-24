@@ -1,6 +1,6 @@
 import { Component } from 'vue'
 import { MeetingPlugin } from '../meetings/PluginHandler'
-import { Meeting } from '../meetings/types'
+import { Author, Meeting } from '../meetings/types'
 
 /* eslint-disable camelcase */
 export enum ProposalState {
@@ -12,7 +12,7 @@ export enum ProposalState {
   Unhandled = 'unhandled'
 }
 
-interface BaseProposal {
+type BaseProposal = {
   pk: number
   title: string
   m: number // Meeting primary key
@@ -26,13 +26,13 @@ interface BaseProposal {
   modified: string
   prop_id: string
   tags: string[]
-}
+} & Author
 
-export interface RichtextProposal extends BaseProposal {
+export type RichtextProposal = BaseProposal & {
   shortname: 'proposal'
 }
 
-export interface DiffProposal extends BaseProposal {
+export type DiffProposal = BaseProposal & {
   shortname: 'diff_proposal'
   body_diff_brief: string
   paragraph: number

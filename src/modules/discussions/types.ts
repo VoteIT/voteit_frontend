@@ -1,11 +1,9 @@
-/* eslint-disable camelcase */
+import { Author } from '../meetings/types'
 
-export interface DiscussionPost {
-  readonly pk: number
+export type DiscussionPost = {
   readonly agenda_item: number
-  readonly author: number | null
-  readonly created: string
   readonly body: string
-  readonly meeting_group: number | null
+  readonly created: string
+  readonly pk: number
   readonly tags: string[]
-}
+} & Author
