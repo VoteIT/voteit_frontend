@@ -1,28 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Tag from '@/components/Tag.vue'
-import useMeetingGroups from '../meetings/useMeetingGroups'
 
 import { Proposal } from './types'
 import ProposalText from './ProposalText.vue'
-import useMeeting from '../meetings/useMeeting'
-import User from '@/components/User.vue'
+import AuthorName from '../meetings/AuthorName.vue'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
-const { getMeetingGroup } = useMeetingGroups(meetingId)
 
-const props = defineProps<{
+defineProps<{
   proposal: Proposal
 }>()
-
-const meetingGroup = computed(
-  () =>
-    props.proposal.meeting_group &&
-    getMeetingGroup(props.proposal.meeting_group)
-)
 </script>
 
 <template>
@@ -36,20 +25,7 @@ const meetingGroup = computed(
       </div>
       <ProposalText :proposal="proposal" />
       <div class="text-secondary">
-        <v-icon
-          v-if="meetingGroup"
-          size="small"
-          class="mr-1"
-          style="position: relative; top: -1px"
-          >mdi-account-multiple</v-icon
-        >
-        <span
-          >{{ t('by') }}
-          <span v-if="meetingGroup">
-            {{ meetingGroup.title }}
-          </span>
-          <User v-else-if="proposal.author" :pk="proposal.author" userid />
-        </span>
+        <AuthorName :author="proposal" icon :prepend-text="t('by')" />
       </div>
       <slot name="append"></slot>
     </div>
