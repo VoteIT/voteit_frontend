@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useIdle } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
@@ -33,7 +32,6 @@ const {
 } = useSpeakerSystem(systemId)
 const { speakerGroups, canEnterList, canLeaveList, enterList, leaveList } =
   useSpeakerList(systemActiveListId)
-const { idle } = useIdle(5000)
 const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 
 const listState = computed(() => list.value && getState(list.value.state))
@@ -101,7 +99,7 @@ const enterLeaveButton = computed(() => {
         <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
       </div>
       <v-fade-transition>
-        <v-btn v-if="enterLeaveButton && !idle" v-bind="enterLeaveButton" />
+        <v-btn v-if="enterLeaveButton" v-bind="enterLeaveButton" />
       </v-fade-transition>
     </div>
     <p v-if="!speaking && !queue?.length" class="text-secondary">

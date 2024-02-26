@@ -21,6 +21,7 @@ const { meetingRoom, passiveMode, roomOpenPoll, textSize, getRoomRoute } =
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 
 const { idle } = useIdle(5_000)
+const passiveIdle = computed(() => passiveMode.value && idle.value)
 
 const textSizes = computed(() => {
   return [
@@ -95,15 +96,29 @@ const currentDisplay = computed(
     </router-link>
     <v-app-bar-title class="text-truncate">
       <v-fade-transition>
-        <small v-show="!idle" class="position-absolute">
+        <small v-show="!passiveMode" class="position-absolute">
           {{ t('room.realTime') }}
         </small>
       </v-fade-transition>
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
+    <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
+      <v-btn
+        v-show="!passiveMode"
+        :text="t('room.toPlenaryView')"
+        append-icon="mdi-chevron-right"
+        variant="tonal"
+        :to="
+          getRoomRoute('room:broadcast', {
+            aid: meetingRoom.agenda_item || agenda[0].pk,
+            tab: 'decisions'
+          })
+        "
+      />
+    </v-fade-transition>
     <DefaultDialog
       :model-value="pollModalOpen"
-      :persistent="idle"
+      :persistent="passiveIdle"
       :title="pollModalTitle"
       @close="isVoting = false"
     >
@@ -118,32 +133,18 @@ const currentDisplay = computed(
         </v-fade-transition>
       </template>
       <RealTimePollModal
-        :dismissible="!idle"
+        :dismissible="!passiveIdle"
         :passive="passiveMode"
         :poll-id="roomOpenPoll?.pk"
         @update:isVoting="isVoting = $event"
         @update:title="pollModalTitle = $event"
       />
     </DefaultDialog>
-    <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
-      <v-btn
-        v-show="!idle"
-        :text="t('room.toPlenaryView')"
-        append-icon="mdi-chevron-right"
-        variant="tonal"
-        :to="
-          getRoomRoute('room:broadcast', {
-            aid: meetingRoom.agenda_item || agenda[0].pk,
-            tab: 'decisions'
-          })
-        "
-      />
-    </v-fade-transition>
     <v-menu>
       <template #activator="{ props, isActive }">
         <v-fade-transition>
           <v-btn
-            v-show="isActive || !idle"
+            v-show="isActive || !passiveIdle"
             v-bind="props"
             prepend-icon="mdi-format-size"
             append-icon="mdi-chevron-down"
@@ -169,7 +170,7 @@ const currentDisplay = computed(
       <template #activator="{ props, isActive }">
         <v-fade-transition>
           <v-btn
-            v-show="isActive || !idle"
+            v-show="isActive || !passiveIdle"
             v-bind="props"
             :prepend-icon="currentDisplay.prependIcon"
             append-icon="mdi-chevron-down"
