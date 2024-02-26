@@ -20,7 +20,7 @@ npm run build
 # Clean up temp file
 rm .env.production
 
-docker pull nginx:1.23-alpine
+docker pull nginx:1.25-alpine
 docker build . -t voteit/voteit4frontend:$VERSION --platform linux/amd64
 
 read -p "Do you want to push to Docker Hub? [y/N] " -n 1 -r
