@@ -81,11 +81,11 @@ function getPollMethod(id: string) {
   return pollPlugins.getPlugin(id)
 }
 
-function getPollStatus(pk: number) {
+export function getPollStatus(pk: number) {
   return pollStatuses.get(pk)
 }
 
-function getUserVote(poll: Poll) {
+export function getUserVote(poll: Poll) {
   return first(userVotes.values(), (vote) => vote.poll === poll.pk)
 }
 

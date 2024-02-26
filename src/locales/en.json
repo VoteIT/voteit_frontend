@@ -828,7 +828,6 @@
     "paused": "Paused...",
     "pauseMessage": "Pause message",
     "pauseMessageDescription": "The pause message will be displayed when the broadcast is active, but the display of both speaker list and proposals is disabled.",
-    "polls": "Poll | Polls",
     "prioritizeProposals": "Prioritize proposals",
     "prioritizeSpeakers": "Prioritize speaker list",
     "realTime": "Realtime view",
@@ -841,7 +840,8 @@
     "settingsHelp": "To access the broadcast view (live decision handling) and speaker lists, you need to configure at least one room in your meeting. If you have a meeting with multiple simultaneous processes, i.e. parallell committees, you may have to configure meeting rooms for those aswell.",
     "settingsTitle": "Meeting rooms and speaker lists",
     "showClock": "Display clock",
-    "toPlenaryView": "To broadcast view"
+    "toPlenaryView": "To broadcast view",
+    "toPoll": "To poll"
   },
   "rules": {
     "maxLength": "Must not be longer than {count} characters",

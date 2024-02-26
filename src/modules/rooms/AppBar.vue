@@ -3,7 +3,6 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
-import DefaultDialog from '@/components/DefaultDialog.vue'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
@@ -12,13 +11,13 @@ import useMeetingPolls from '../polls/useMeetingPolls'
 import RealTimePollModal from './RealTimePollModal.vue'
 import { roomDisplayMode } from './displayOptions'
 import useRoom from './useRoom'
+import RealTimeVotingModal from './RealTimeVotingModal.vue'
 
 const { t } = useI18n()
 const { isModerator, meeting, meetingId, meetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { meetingRoom, passiveMode, roomOpenPoll, textSize, getRoomRoute } =
-  useRoom()
-const { meetingOngoingPolls } = useMeetingPolls(meetingId)
+const { meetingRoom, passiveMode, textSize, getRoomRoute } = useRoom()
+const { firstUnvotedPoll, meetingHasPoll } = useMeetingPolls(meetingId)
 
 const { idle } = useIdle(5_000)
 const passiveIdle = computed(() => passiveMode.value && idle.value)
@@ -47,10 +46,9 @@ const crumbs = computed(() => {
   ]
 })
 
-const hasOpenPoll = computed(() => !!roomOpenPoll.value)
+const hasOpenPoll = computed(() => !!meetingRoom.value?.poll)
 const isVoting = ref(false) // True if user could be voting in poll modal
-const pollModalOpen = ref(!!roomOpenPoll.value)
-const pollModalTitle = ref('') // Weird bidning, but it does the job for now
+const pollModalOpen = ref(!!meetingRoom.value?.poll)
 watch(hasOpenPoll, (value) => (pollModalOpen.value = isVoting.value || value)) // Do not close if user could be voting
 
 const displayOptions: {
@@ -102,11 +100,41 @@ const currentDisplay = computed(
       </v-fade-transition>
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
+    <template v-if="meetingHasPoll">
+      <RealTimeVotingModal v-if="!passiveMode" :open-poll="meetingRoom?.poll">
+        <template #activator="{ props }">
+          <v-btn
+            class="mx-1"
+            :color="firstUnvotedPoll ? 'yellow' : undefined"
+            prepend-icon="mdi-star"
+            :text="t('room.toPoll')"
+            :variant="firstUnvotedPoll ? 'outlined' : undefined"
+            v-bind="props"
+          />
+        </template>
+      </RealTimeVotingModal>
+      <RealTimePollModal
+        v-else-if="meetingRoom?.poll"
+        :passive="passiveMode"
+        :poll-id="meetingRoom.poll"
+        @update:isVoting="isVoting = $event"
+        v-model="pollModalOpen"
+      >
+        <template #activator="{ props }">
+          <v-btn
+            prepend-icon="mdi-star"
+            v-show="hasOpenPoll"
+            :text="t('room.toPoll')"
+            v-bind="props"
+          />
+        </template>
+      </RealTimePollModal>
+    </template>
     <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
       <v-btn
-        v-show="!passiveMode"
-        :text="t('room.toPlenaryView')"
         append-icon="mdi-chevron-right"
+        class="d-none d-lg-flex"
+        :text="t('room.toPlenaryView')"
         variant="tonal"
         :to="
           getRoomRoute('room:broadcast', {
@@ -114,32 +142,9 @@ const currentDisplay = computed(
             tab: 'decisions'
           })
         "
+        v-show="!passiveMode"
       />
     </v-fade-transition>
-    <DefaultDialog
-      :model-value="pollModalOpen"
-      :persistent="passiveIdle"
-      :title="pollModalTitle"
-      @close="isVoting = false"
-    >
-      <template #activator="{ props }">
-        <v-fade-transition>
-          <v-btn
-            prepend-icon="mdi-star"
-            v-show="meetingOngoingPolls.length || hasOpenPoll"
-            :text="t('room.polls', meetingOngoingPolls.length)"
-            v-bind="props"
-          />
-        </v-fade-transition>
-      </template>
-      <RealTimePollModal
-        :dismissible="!passiveIdle"
-        :passive="passiveMode"
-        :poll-id="roomOpenPoll?.pk"
-        @update:isVoting="isVoting = $event"
-        @update:title="pollModalTitle = $event"
-      />
-    </DefaultDialog>
     <v-menu>
       <template #activator="{ props, isActive }">
         <v-fade-transition>

@@ -20,10 +20,12 @@ import { getUserRandomSortValue } from '@/composables/useAuthentication'
 
 const polls = usePolls()
 
-export default function usePoll(pollRef: Ref<number>) {
+export default function usePoll(pollRef: Ref<number | undefined>) {
   const { t } = useI18n()
 
-  const poll = computed(() => polls.getPoll(pollRef.value))
+  const poll = computed(() =>
+    typeof pollRef.value === 'number' ? polls.getPoll(pollRef.value) : undefined
+  )
   const { electoralRegister, erMethod, erMethodWeighted, totalWeight } =
     useElectoralRegister(computed(() => poll.value?.electoral_register))
   const voteCount = computed(() => {

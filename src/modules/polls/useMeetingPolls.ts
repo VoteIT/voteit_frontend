@@ -10,10 +10,14 @@ export default function useMeetingPolls(meeting: Ref<number>) {
   const firstUnvotedPoll = computed(() => getNextUnvotedPoll(meeting.value))
   const meetingHasOngoingPoll = computed(() => anyPoll(isMeetingOngoing))
   const meetingOngoingPolls = computed(() => filterPolls(isMeetingOngoing))
+  const meetingHasPoll = computed(() =>
+    anyPoll((p) => p.meeting === meeting.value)
+  )
 
   return {
     firstUnvotedPoll,
     meetingHasOngoingPoll,
+    meetingHasPoll,
     meetingOngoingPolls
   }
 }

@@ -828,7 +828,6 @@
     "paused": "Paus...",
     "pauseMessage": "Pausmeddelande",
     "pauseMessageDescription": "Pausmeddelandet visas när mötesrummet är öppet, men sändning av både talarlista och förslag är avstängd.",
-    "polls": "Omröstning | Omröstningar",
     "prioritizeProposals": "Prioritera förslag",
     "prioritizeSpeakers": "Prioritera talarlista",
     "realTime": "Realtidsvy",
@@ -841,7 +840,8 @@
     "settingsHelp": "För att få tillgång till sändarvy (beslutshantering) och talarlistor behöver du sätta upp minst ett mötesrum i ditt möte. Om du har ett möte med flera samtidigt pågående processer, exempelvis parallella utskott, kan du behöva sätta upp mötesrum även för dessa.",
     "settingsTitle": "Mötesrum och talarlistor",
     "showClock": "Visa klocka",
-    "toPlenaryView": "Till sändarvy"
+    "toPlenaryView": "Till sändarvy",
+    "toPoll": "Till omröstning"
   },
   "rules": {
     "maxLength": "Får inte vara längre än {count} tecken",

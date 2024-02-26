@@ -29,6 +29,7 @@ const { t } = useI18n()
 
 const pollPlugin = computed(() => pollPlugins.getPlugin(props.poll.method_name))
 const voteComponent = computed(() => pollPlugin.value?.voteComponent)
+const pollHelpText = computed(() => pollPlugin.value?.getHelp(t))
 
 const validVote = ref(props.modelValue) // Gets updates from method vote component, when valid.
 const submitting = ref(false)
@@ -79,6 +80,9 @@ async function abstainVote() {
 
 <template>
   <div>
+    <v-alert type="info" class="my-6">
+      {{ pollHelpText }}
+    </v-alert>
     <component
       class="voting-component"
       :disabled="disabled"
