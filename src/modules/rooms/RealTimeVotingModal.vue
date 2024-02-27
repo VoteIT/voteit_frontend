@@ -77,6 +77,7 @@ const selectedPollId = computed({
   },
   set(value) {
     _selectedId.value = value
+    selectionMenuExpanded.value = false
   }
 })
 
@@ -122,6 +123,11 @@ watch(
     isOpen.value = true
   }
 )
+
+/**
+ * Mobile stuff
+ */
+const selectionMenuExpanded = ref(false)
 </script>
 
 <template>
@@ -130,15 +136,14 @@ watch(
       <slot name="activator" :props="props"></slot>
     </template>
     <template #default="{ isActive }">
-      <v-sheet rounded class="d-flex" style="height: calc(100vh - 48px)">
-        <div
-          class="flex-shrink-0 pa-4"
-          style="
-            background-color: rgba(0, 0, 0, 0.1);
-            width: 360px;
-            overflow-x: auto;
-          "
-        >
+      <v-sheet
+        class="d-flex"
+        :class="{ 'menu-expanded': selectionMenuExpanded }"
+        id="voting-container"
+        rounded
+        style="height: calc(100vh - 48px)"
+      >
+        <div class="flex-shrink-0 pa-4" id="selection">
           <v-slide-x-transition group>
             <template
               v-for="poll in availablePolls"
@@ -190,8 +195,15 @@ watch(
             </template>
           </v-slide-x-transition>
         </div>
-        <div class="flex-grow-1 pa-4" style="overflow-x: auto">
+        <div class="flex-grow-1 pa-4" id="poll">
           <header class="d-flex mb-6">
+            <v-btn
+              class="d-md-none mr-2"
+              icon="mdi-menu-open"
+              size="small"
+              variant="tonal"
+              @click="selectionMenuExpanded = !selectionMenuExpanded"
+            />
             <div class="flex-grow-1">
               <h2>
                 {{ poll?.title ?? t('poll.vote') }}
@@ -285,3 +297,28 @@ watch(
     </template>
   </v-dialog>
 </template>
+
+<style lang="sass" scoped>
+#voting-container
+  > div
+    overflow-x: auto
+
+#selection
+  background-color: rgba(0, 0, 0, 0.1)
+  width: 327px
+
+@media (max-width: 959px)
+  #poll
+    margin-right: 0
+    transition: margin-right 250ms
+
+  #selection
+    margin-left: -327px
+    transition: margin-left 250ms
+
+  .menu-expanded
+    > #selection
+      margin-left: 0
+    > #poll
+      margin-right: -327px
+</style>
