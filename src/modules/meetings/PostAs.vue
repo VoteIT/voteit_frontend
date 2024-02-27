@@ -13,10 +13,14 @@ import { userType } from '../organisations/contentTypes'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { Author, isGroupAuthor, isUserAuthor } from './types'
+import { ComponentPublicInstance } from 'vue'
 
 interface AutocompleteItem {
-  value: string
+  subtitle?: string
+  subtitleIcon?: string
   title: string
+  titleIcon?: string
+  value: string
 }
 
 const emit = defineEmits<{ (e: 'update:modelValue', value: Author): void }>()
@@ -91,14 +95,24 @@ function authorToAutocompleteItem(author: Author): AutocompleteItem {
   const value = authorToString(author)
   const user = getUser(author.author)
   const fullName = user ? getFullName(user) : '-'
-  return {
-    title: isGroupAuthor(author)
-      ? getMeetingGroup(author.meeting_group)?.title ?? '-'
-      : isUserAuthor(author)
-      ? `${fullName} (${user?.userid ?? '-'})`
-      : `${fullName} (${getMeetingGroup(author.meeting_group)?.title ?? '-'})`,
-    value
-  }
+  return isGroupAuthor(author)
+    ? {
+        title: getMeetingGroup(author.meeting_group)?.title ?? '-',
+        titleIcon: 'mdi-account-multiple',
+        value
+      }
+    : isUserAuthor(author)
+    ? {
+        subtitle: user?.userid ?? '-',
+        title: fullName,
+        value
+      }
+    : {
+        subtitle: getMeetingGroup(author.meeting_group)?.title ?? '-',
+        subtitleIcon: 'mdi-account-multiple',
+        title: fullName,
+        value
+      }
 }
 
 function* userToAutocomplete(user: IUser): Generator<AutocompleteItem> {
@@ -190,10 +204,19 @@ const options = computed(() => {
     )
   ]
 })
+
+/**
+ * Blur on selection (to get correct display)
+ */
+const autocomplete = ref<ComponentPublicInstance>()
+watch(postAsSelect, () => {
+  autocomplete.value?.$el.querySelector('input')?.blur()
+})
 </script>
 
 <template>
   <v-autocomplete
+    ref="autocomplete"
     v-if="options"
     :label="t('proposal.postAs')"
     :items="options"
@@ -202,5 +225,30 @@ const options = computed(() => {
     :no-data-text="t('noSuggestions')"
     hide-details
     density="compact"
-  />
+  >
+    <template #item="{ item, props }">
+      <v-list-item v-bind="props">
+        <template #title>
+          <v-icon v-if="item.raw.titleIcon" :icon="item.raw.titleIcon" />
+          {{ item.raw.title }}
+        </template>
+        <template v-if="item.raw.subtitle" #subtitle>
+          <v-icon v-if="item.raw.subtitleIcon" :icon="item.raw.subtitleIcon" />
+          {{ item.raw.subtitle }}
+        </template>
+      </v-list-item>
+    </template>
+    <template #selection="{ item }">
+      <span class="text-truncate">
+        <v-icon v-if="item.raw.titleIcon" :icon="item.raw.titleIcon" />
+        {{ item.raw.title }}
+        <small v-if="item.raw.subtitle"
+          >(<v-icon
+            v-if="item.raw.subtitleIcon"
+            :icon="item.raw.subtitleIcon"
+          />{{ item.raw.subtitle }})</small
+        >
+      </span>
+    </template>
+  </v-autocomplete>
 </template>
