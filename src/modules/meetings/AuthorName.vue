@@ -54,7 +54,7 @@ const groupUserId = computed(() => {
     :transition="false"
   >
     <template #activator="{ props }">
-      <span v-bind="props">
+      <span v-bind="props" class="cursor-pointer">
         <v-icon v-if="icon" size="small" class="mr-1" style="margin-top: -1px"
           >mdi-account-multiple</v-icon
         >
