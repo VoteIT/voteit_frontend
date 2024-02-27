@@ -424,6 +424,7 @@ header .header-tag
   color: rgba(var(--v-theme-on-background), .6)
   border: 2px solid rgba(var(--v-border-color), .6)
   border-radius: 4px
+  white-space: nowrap
 
 #poll-results
   .proposals
