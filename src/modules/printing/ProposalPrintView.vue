@@ -82,8 +82,7 @@ import { useRoute, useRouter } from 'vue-router'
 import useDefaults from '@/composables/useDefaults'
 import User from '@/components/User.vue'
 
-import useMeeting from '../meetings/useMeeting'
-import useMeetingGroups from '../meetings/useMeetingGroups'
+import { getMeetingGroup } from '../meetings/useMeetingGroups'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import { ProposalState, isDiffProposal } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
@@ -93,8 +92,6 @@ import usePrinting from './usePrinting'
 const { t } = useI18n()
 useMeetingTitle('Printing') // TODO
 const { cols } = useDefaults()
-const { meetingId } = useMeeting()
-const { getMeetingGroup } = useMeetingGroups(meetingId)
 const agendaId = computed(() => Number(route.params.aid))
 const { getAgendaProposals } = useProposals()
 const route = useRoute()

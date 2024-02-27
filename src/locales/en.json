@@ -35,6 +35,7 @@
   "pageNotFound": "Page not found",
   "pageNotFoundDescription": "The page you requested can't be found on this server.",
   "post": "Post",
+  "postedBy": "Posted by {name}",
   "preview": "Preview",
   "publish": "Publish",
   "reset": "Reset",

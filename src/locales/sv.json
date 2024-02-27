@@ -35,6 +35,7 @@
   "pageNotFound": "Sidan hittades inte",
   "pageNotFoundDescription": "Sidan du efterfrågade finns inte på den här servern.",
   "post": "Posta",
+  "postedBy": "Postat av {name}",
   "preview": "Förhandsgranska",
   "publish": "Publicera",
   "reset": "Återställ",

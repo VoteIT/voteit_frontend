@@ -3,7 +3,6 @@ import { orderBy } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import User from '@/components/User.vue'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import Tag from '@/components/Tag.vue'
 
@@ -18,7 +17,7 @@ import { isUnresolvedState } from '../proposals/utils'
 
 import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
-import useMeetingGroups from './useMeetingGroups'
+import { getMeetingGroup } from './useMeetingGroups'
 
 const PROPOSAL_ORDERING = {
   created: ['created'],
@@ -68,7 +67,6 @@ const { getState: getAgendaState } = agendaItemType.useWorkflows()
 const { t } = useI18n()
 const { meetingId, isFinishedMeeting, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { getMeetingGroup } = useMeetingGroups(meetingId)
 const { getAgendaProposals } = useProposals()
 
 const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
