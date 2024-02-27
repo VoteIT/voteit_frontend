@@ -14,13 +14,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import { Proposal, ProposalButtonMode } from '../proposals/types'
 
 import useReactions from './useReactions'
 import ReactionButton from './ReactionButton.vue'
 
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { getMeetingButtons } = useReactions()
 
 const props = defineProps<{

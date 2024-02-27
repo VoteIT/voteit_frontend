@@ -29,7 +29,8 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAlert from '@/composables/useAlert'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
+
 import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
 import PresenceCheckControl from './PresenceCheckControl.vue'
@@ -39,9 +40,9 @@ const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
 const { alert } = useAlert()
-const { meetingId } = useMeeting()
-const { presenceCheck, userPresence, isPresent, changePresence } =
-  usePresence(meetingId)
+const { presenceCheck, userPresence, isPresent, changePresence } = usePresence(
+  useMeetingId()
+)
 const working = ref(false)
 
 const canChange = computed(

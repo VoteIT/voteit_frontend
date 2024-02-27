@@ -74,13 +74,13 @@ import SchemaForm from '@/components/SchemaForm.vue'
 import { bugReportType } from './contentTypes'
 import { BugReport } from './types'
 import schema from './schema'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { FormSchema } from '@/components/types'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 
 const submitted = ref(false)
 

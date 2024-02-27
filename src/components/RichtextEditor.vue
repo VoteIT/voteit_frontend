@@ -5,7 +5,7 @@ import { inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getDisplayName, tagify } from '@/utils'
-import useMeeting from '@/modules/meetings/useMeeting'
+import useMeetingId from '@/modules/meetings/useMeetingId'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { meetingRoleType } from '@/modules/meetings/contentTypes'
 import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
@@ -106,7 +106,7 @@ let editor: Quill | undefined
 const editorElement = ref<HTMLElement | null>(null)
 const rootElement = ref<HTMLElement | null>(null)
 
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 
 function toTagObject(tagName: string): TagObject {
   return { id: tagName, value: tagName }

@@ -4,18 +4,18 @@ import { useI18n } from 'vue-i18n'
 
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
-import SpeakerList from '../speakerLists/SpeakerList.vue'
-import { getSpeakerLists } from '../speakerLists/useSpeakerLists'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import useRooms, { meetingRoomStore } from '../rooms/useRooms'
 import useRoom from '../rooms/useRoom'
+import SpeakerList from '../speakerLists/SpeakerList.vue'
+import { getSpeakerLists } from '../speakerLists/useSpeakerLists'
 
 const props = defineProps<{
   agendaId: number
 }>()
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { activeSpeakerSystems, managingSpeakerSystems } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
 

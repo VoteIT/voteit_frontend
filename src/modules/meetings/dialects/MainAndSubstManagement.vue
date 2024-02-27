@@ -12,8 +12,8 @@
 import { computed } from 'vue'
 
 import useActive from '@/modules/active/useActive'
+import useMeetingId from '../useMeetingId'
 import { GroupMembership, MeetingGroup } from '../types'
-import useMeeting from '../useMeeting'
 
 import { isRoleMembership } from './types'
 
@@ -21,8 +21,7 @@ const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
-const { meetingId } = useMeeting()
-const { activeUserIds } = useActive(meetingId)
+const { activeUserIds } = useActive(useMeetingId())
 
 const roleMemberships = computed(() =>
   props.group.memberships.filter(isRoleMembership)

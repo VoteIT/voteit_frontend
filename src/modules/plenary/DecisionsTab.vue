@@ -6,10 +6,12 @@ import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding } from '@vueuse/core'
 
 import Tag from '@/components/Tag.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
 import useAgenda from '../agendas/useAgenda'
-import useMeeting from '../meetings/useMeeting'
+import { AgendaState } from '../agendas/types'
 import useTags from '../meetings/useTags'
+import useMeetingId from '../meetings/useMeetingId'
 import type { Proposal } from '../proposals/types'
 import { ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
@@ -17,13 +19,11 @@ import useProposals from '../proposals/useProposals'
 import useTextDocuments from '../proposals/useTextDocuments'
 import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
+import ProposalSheet from '../proposals/ProposalSheet.vue'
 import useRoom from '../rooms/useRoom'
 
 import usePlenary, { isProposalInPool } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
-import { AgendaState } from '../agendas/types'
-import ProposalSheet from '../proposals/ProposalSheet.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -31,7 +31,7 @@ const AVAILABLE_STATES = [
   ProposalState.Denied
 ] as Readonly<ProposalState[]>
 
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { agendaId, agendaItem } = useAgenda(meetingId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
 const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =

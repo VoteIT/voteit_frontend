@@ -10,7 +10,7 @@ import { Poll } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
 import { PollMethodSettings, PollStartData } from '../polls/methods/types'
 import useRoom from '../rooms/useRoom'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import PollModal from './PollModal.vue'
 
@@ -26,7 +26,7 @@ defineEmits<{
 
 const { t } = useI18n()
 const { getState } = proposalType.useWorkflows()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { nextPollTitle } = useAgendaItem(agendaId)
 const { roomOpenPoll, setPoll } = useRoom()

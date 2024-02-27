@@ -14,12 +14,11 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useMeeting from '../useMeeting'
+import useMeetingId from '../useMeetingId'
 import useElectoralRegisters from './useElectoralRegisters'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
-const { erMethod, erMethodLocked } = useElectoralRegisters(meetingId)
+const { erMethod, erMethodLocked } = useElectoralRegisters(useMeetingId())
 
 /**
  * This might not be needed any more. Backend should provide these values.

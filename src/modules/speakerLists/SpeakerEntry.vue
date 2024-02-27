@@ -3,11 +3,10 @@ import { computed } from 'vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import User from '@/components/User.vue'
 
-import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
+import useMeetingId from '../meetings/useMeetingId'
 
-const { meetingId } = useMeeting()
-const { meetingGroups } = useMeetingGroups(meetingId)
+const { meetingGroups } = useMeetingGroups(useMeetingId())
 
 const props = defineProps<{
   active?: boolean

@@ -4,7 +4,7 @@ import {
   meetingExportPlugins,
   meetingSettingsPlugins
 } from '../meetings/registry'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import useAgenda from './useAgenda'
 
@@ -13,8 +13,7 @@ meetingSettingsPlugins.register({
   route: { name: 'agendaEdit' },
   icon: 'mdi-clipboard-list',
   getDescription(t) {
-    const { meetingId } = useMeeting()
-    const { agenda } = useAgenda(meetingId)
+    const { agenda } = useAgenda(useMeetingId())
     return t('agenda.itemCount', agenda.value.length)
   },
   getTitle(t) {

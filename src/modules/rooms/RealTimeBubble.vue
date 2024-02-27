@@ -1,17 +1,19 @@
 <!-- eslint-disable camelcase -->
 <script setup lang="ts">
+import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { autoEllipsis } from '@/utils'
-import useMeeting from '../meetings/useMeeting'
+
+import useMeetingId from '../meetings/useMeetingId'
 import useRooms from '../rooms/useRooms'
+
 import { IMeetingRoom } from './types'
-import { orderBy } from 'lodash'
 
 const { t } = useI18n()
 
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { meetingRooms } = useRooms(meetingId)
 
 function getSubtitle({ body, send_proposals, send_sls }: IMeetingRoom): string {

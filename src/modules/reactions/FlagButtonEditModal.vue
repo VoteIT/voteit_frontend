@@ -4,12 +4,12 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 
-import useAuthentication from '@/composables/useAuthentication'
+import { user } from '@/composables/useAuthentication'
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
 import useRules from '@/composables/useRules'
 
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import { IFlagButton, ReactionIcon } from './types'
 import { reactionButtonType } from './contentTypes'
@@ -37,14 +37,13 @@ function getDefaults(
   }
 }
 
-const { user } = useAuthentication()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
   // eslint-disable-next-line camelcase, @typescript-eslint/no-unused-vars
   const { change_roles, list_roles, target, ...data } = formData
   if (!data.icon) data.icon = '' // Empty string required by API
-  return data
+  return data as IFlagButton
 })
 const previewActive = ref(true)
 const submitting = ref(false)
@@ -88,7 +87,7 @@ async function save() {
           {{ t('preview') }}
         </h2>
         <FlagButton
-          :button="transformedData as IFlagButton"
+          :button="transformedData"
           v-model="previewActive"
           :can-toggle="true"
         >

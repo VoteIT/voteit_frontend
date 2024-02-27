@@ -19,7 +19,7 @@ import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Dropdown from '@/components/Dropdown.vue'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import PollCard from '../polls/Poll.vue'
 import usePolls from '../polls/usePolls'
 
@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { getPolls, getAiPolls } = usePolls()
 const { getPriorityStates } = pollType.useWorkflows()
 

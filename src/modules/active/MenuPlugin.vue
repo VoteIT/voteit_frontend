@@ -70,14 +70,14 @@ import { useI18n } from 'vue-i18n'
 
 import { sleep } from '@/utils'
 import useDefaults from '@/composables/useDefaults'
-import useMeeting from '../meetings/useMeeting'
+import QueryDialog from '@/components/QueryDialog.vue'
+import useMeetingId from '../meetings/useMeetingId'
 
 import useActive from './useActive'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 const { t } = useI18n()
 const { dialogDefaults } = useDefaults()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 
 const { componentActive, isActive, setActive } = useActive(meetingId)
 

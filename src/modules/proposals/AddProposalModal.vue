@@ -84,18 +84,18 @@ import { useI18n } from 'vue-i18n'
 import { stripHTML } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 import useAgenda from '../agendas/useAgenda'
-import useMeeting from '../meetings/useMeeting'
+import useTags from '../meetings/useTags'
+import useMeetingId from '../meetings/useMeetingId'
 import PostAs from '../meetings/PostAs.vue'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import type { Author } from '../meetings/types'
 
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
-import useTags from '../meetings/useTags'
-import DefaultDialog from '@/components/DefaultDialog.vue'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>
@@ -119,7 +119,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { canPostAs } = useMeetingGroups(meetingId)
 const { getHTMLTags } = useTags()

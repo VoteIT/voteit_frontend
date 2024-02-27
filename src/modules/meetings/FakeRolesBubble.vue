@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-import useMeeting from './useMeeting'
+import useMeetingId from './useMeetingId'
 import { setFakeRoles } from './rules'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 </script>
 
 <template>

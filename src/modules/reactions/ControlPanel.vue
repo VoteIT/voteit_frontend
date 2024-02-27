@@ -9,7 +9,7 @@ import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import HelpSection from '@/components/HelpSection.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import useReactions from './useReactions'
 import ReactionEditModal from './ReactionEditModal.vue'
@@ -22,7 +22,7 @@ import FlagButton from './FlagButton.vue'
 
 const { t } = useI18n()
 const { user } = useAuthentication()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const reactions = useReactions()
 
 const meetingButtons = computed({

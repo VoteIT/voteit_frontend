@@ -73,12 +73,12 @@ import { useI18n } from 'vue-i18n'
 import ComponentQuickPanel from '../meetings/ComponentQuickPanel.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
-import { activeUserType } from './contentTypes'
-import useMeeting from '../meetings/useMeeting'
 import useRules from '@/composables/useRules'
+import useMeetingId from '../meetings/useMeetingId'
+import { activeUserType } from './contentTypes'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const rules = useRules(t)
 
 const hours = ref(1)

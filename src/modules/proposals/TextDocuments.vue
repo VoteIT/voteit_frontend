@@ -8,13 +8,12 @@
 import { computed } from 'vue'
 
 import useAgenda from '../agendas/useAgenda'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import TextDocument from './TextDocument.vue'
 import useTextDocuments from './useTextDocuments'
 
-const { meetingId } = useMeeting()
-const { agendaId } = useAgenda(meetingId)
+const { agendaId } = useAgenda(useMeetingId())
 const { getDocuments } = useTextDocuments()
 const documents = computed(() =>
   getDocuments((doc) => doc.agenda_item === agendaId.value)

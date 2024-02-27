@@ -10,11 +10,11 @@ import type { EditorComponent } from '@/components/types'
 
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import PostAs from '../meetings/PostAs.vue'
-import useMeeting from '../meetings/useMeeting'
 import type { Author } from '../meetings/types'
 
 import type { DiscussionPost } from './types'
 import AuthorAvatar from '../meetings/AuthorAvatar.vue'
+import useMeetingId from '../meetings/useMeetingId'
 
 const props = withDefaults(
   defineProps<{
@@ -38,7 +38,6 @@ const props = withDefaults(
 const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
 
 const active = ref(false)
 const author = ref<Author>()
@@ -52,8 +51,7 @@ const disabled = computed(
 )
 const textLength = computed(() => stripHTML(text.value).length)
 
-if (!meetingId) throw new Error('AddContent requires provided meetingId')
-const { canPostAs } = useMeetingGroups(meetingId)
+const { canPostAs } = useMeetingGroups(useMeetingId())
 
 function reset() {
   active.value = false

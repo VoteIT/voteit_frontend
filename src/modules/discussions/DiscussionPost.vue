@@ -13,16 +13,16 @@ import TagEdit from '@/components/TagEdit.vue'
 import useUnread from '@/composables/useUnread'
 
 import useTags from '../meetings/useTags'
-import useMeeting from '../meetings/useMeeting'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import PostAs from '../meetings/PostAs.vue'
+import type { Author } from '../meetings/types'
+import AuthorName from '../meetings/AuthorName.vue'
+import AuthorAvatar from '../meetings/AuthorAvatar.vue'
+import useMeetingId from '../meetings/useMeetingId'
 
 import { DiscussionPost } from './types'
 import { discussionPostType } from './contentTypes'
 import { canChangeDiscussionPost, canDeleteDiscussionPost } from './rules'
-import type { Author } from '../meetings/types'
-import AuthorName from '../meetings/AuthorName.vue'
-import AuthorAvatar from '../meetings/AuthorAvatar.vue'
 
 const props = defineProps<{
   p: DiscussionPost
@@ -31,8 +31,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const { getHTMLTags } = useTags()
-const { meetingId } = useMeeting()
-const { canPostAs } = useMeetingGroups(meetingId)
+const { canPostAs } = useMeetingGroups(useMeetingId())
 
 const editing = ref(false)
 const saving = ref(false)

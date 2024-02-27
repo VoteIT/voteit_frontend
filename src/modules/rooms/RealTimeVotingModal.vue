@@ -7,7 +7,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
 
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import { filterPolls, getPollStatus, getUserVote } from '../polls/usePolls'
 import { Poll, PollState } from '../polls/types'
 import { canVote } from '../polls/rules'
@@ -22,9 +22,8 @@ const props = defineProps<{
   openPoll?: number | null
 }>()
 
+const meetingId = useMeetingId()
 const { getState } = pollType.useWorkflows()
-
-const { meetingId } = useMeeting()
 
 function annotatePoll(poll: Poll) {
   return {

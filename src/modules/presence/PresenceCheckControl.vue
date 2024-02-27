@@ -39,16 +39,16 @@ import { useI18n } from 'vue-i18n'
 import Moment from '@/components/Moment.vue'
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckClosed } from './events'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
-const { presenceCheck, presenceCount, closeCheck, openCheck } =
-  usePresence(meetingId)
+const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence(
+  useMeetingId()
+)
 
 const submitting = ref(false)
 

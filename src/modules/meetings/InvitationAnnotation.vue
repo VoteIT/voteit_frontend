@@ -3,13 +3,14 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import restApi from '@/utils/restApi'
-import { meetingInviteAnnotationPlugins } from './registry'
-import useMeeting from './useMeeting'
-import { MeetingInvite } from './types'
+import useMeetingId from './useMeetingId'
 import { invitationScopes } from '../organisations/registry'
 
+import { MeetingInvite } from './types'
+import { meetingInviteAnnotationPlugins } from './registry'
+
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 
 type Annotation = { name: string }
 

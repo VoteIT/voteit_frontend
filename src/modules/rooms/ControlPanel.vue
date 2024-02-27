@@ -10,9 +10,12 @@ import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
 
 import { parseRestError } from '@/utils/restApi'
+import { openDialogEvent } from '@/utils/events'
+import { ThemeColor } from '@/utils/types'
+
 import useAgenda from '../agendas/useAgenda'
-import useMeeting from '../meetings/useMeeting'
 import { translateMeetingRole } from '../meetings/utils'
+import useMeetingId from '../meetings/useMeetingId'
 import { IUser } from '../organisations/types'
 import {
   SpeakerSystem,
@@ -27,11 +30,9 @@ import { IMeetingRoom } from './types'
 import useRooms from './useRooms'
 import useRoom from './useRoom'
 import RoomForm from './RoomForm.vue'
-import { openDialogEvent } from '@/utils/events'
-import { ThemeColor } from '@/utils/types'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()

@@ -34,7 +34,7 @@ import { useI18n } from 'vue-i18n'
 import { user } from '@/composables/useAuthentication'
 import UserList from '@/components/UserList.vue'
 
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 
 import RealReactionButton from './RealReactionButton.vue'
 import useReactions from './useReactions'
@@ -44,7 +44,7 @@ import { isFlagButton } from './types'
 const { t } = useI18n()
 
 const reactions = useReactions()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 
 const meetingButtons = computed(() =>
   reactions.getMeetingButtons(meetingId.value)

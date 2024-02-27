@@ -2,12 +2,13 @@
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 
-import useMeeting from '../meetings/useMeeting'
+import { dialogQuery } from '@/utils'
+
+import useMeetingId from '../meetings/useMeetingId'
 import type { Proposal } from '../proposals/types'
 
 import useReactions from './useReactions'
 import { ReactionButton, isFlagButton } from './types'
-import { dialogQuery } from '@/utils'
 
 const props = defineProps<{
   proposals: Proposal[]
@@ -19,7 +20,7 @@ const emit = defineEmits<{ (e: 'selected', value: number[]): void }>()
 const { t } = useI18n()
 const { getMeetingButtons, getButtonReactionCount, getUserReaction } =
   useReactions()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 
 function isTemplateProposal(btn: ReactionButton, proposal: number) {
   const relation = { content_type: 'proposal', object_id: proposal }

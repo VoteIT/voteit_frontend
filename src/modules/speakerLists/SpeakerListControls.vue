@@ -2,6 +2,7 @@
 import { map, range } from 'itertools'
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { onKeyStroke } from '@vueuse/core'
 
 import { openAlertEvent } from '@/utils/events'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -11,11 +12,10 @@ import UserSearch from '@/components/UserSearch.vue'
 import { user } from '@/composables/useAuthentication'
 
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import { IUser } from '../organisations/types'
 
 import useSpeakerList from './useSpeakerList'
-import { onKeyStroke } from '@vueuse/core'
 import * as speakerRules from './rules'
 import SpeakerEntry from './SpeakerEntry.vue'
 
@@ -25,7 +25,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const {
   canStartSpeaker,
   currentSpeaker,

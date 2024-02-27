@@ -83,7 +83,7 @@ import { toggleNavDrawerEvent } from '@/utils/events'
 import useAgenda from '../agendas/useAgenda'
 import { AgendaState } from '../agendas/types'
 import useAgendaTags from '../agendas/useAgendaTags'
-import useMeeting from '../meetings/useMeeting'
+import useMeetingId from '../meetings/useMeetingId'
 import { anyPoll } from '../polls/usePolls'
 import { PollState } from '../polls/types'
 import useProposals from '../proposals/useProposals'
@@ -93,7 +93,7 @@ import { anySpeakerList } from '../speakerLists/useSpeakerLists'
 import usePlenary from './usePlenary'
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { agenda, agendaId, agendaStates } = useAgenda(meetingId)
 const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()

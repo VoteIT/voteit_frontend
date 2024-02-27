@@ -1,12 +1,13 @@
 import { Dictionary } from 'lodash'
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouteLocationRaw, useRoute, useRouter } from 'vue-router'
+import { RouteLocationRaw, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
 
-import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
+import { user } from '@/composables/useAuthentication'
 
+import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 import { Author, MeetingRole } from './types'
 import {
   canChangeMeeting,
@@ -20,12 +21,11 @@ import {
 } from './rules'
 import { meetingType } from './contentTypes'
 import { translateMeetingRole } from './utils'
-import { user } from '@/composables/useAuthentication'
+import useMeetingId from './useMeetingId'
 
 const postAsStore = reactive(new Map<number, Author>())
 
 export default function useMeeting() {
-  const route = useRoute()
   const router = useRouter()
   const meetingRoles = meetingType.useContextRoles()
   const { t } = useI18n()
@@ -49,7 +49,7 @@ export default function useMeeting() {
   const roleLabelsEditable = computed(() =>
     getRoleLabels((role) => !meetingDialect.value?.block_roles?.includes(role))
   )
-  const meetingId = computed(() => Number(route.params.id))
+  const meetingId = useMeetingId()
   const meeting = computed(() => meetings.get(meetingId.value))
   const meetingDialect = computed(() => meeting.value?.dialect)
   const meetingJoinRoute = computed(() => getMeetingRoute('meeting:join'))

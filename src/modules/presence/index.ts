@@ -1,15 +1,15 @@
+import { computed, toRef } from 'vue'
+
 import {
   meetingBubblePlugins,
   meetingSettingsPlugins
 } from '../meetings/registry'
-import useMeeting from '../meetings/useMeeting'
 import useMeetingComponent from '../meetings/useMeetingComponent'
+import useMeetingId from '../meetings/useMeetingId'
 
 import PresenceCheckBubble from './PresenceCheckBubble.vue'
 import usePresence from './usePresence'
-
 import QuickPanel from './QuickPanel.vue'
-import { computed, toRef } from 'vue'
 
 meetingSettingsPlugins.register({
   id: 'presence',
@@ -37,8 +37,7 @@ meetingBubblePlugins.register({
       .value
   },
   requireAttention: computed(() => {
-    const { meetingId } = useMeeting()
-    const { isPresent, presenceCheck } = usePresence(meetingId)
+    const { isPresent, presenceCheck } = usePresence(useMeetingId())
     return !!presenceCheck.value && !isPresent.value
   })
 })

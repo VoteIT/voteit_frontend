@@ -4,18 +4,18 @@ import { useI18n } from 'vue-i18n'
 
 import { getDisplayName } from '@/utils'
 
-import ReactionButton from '../reactions/ReactionButton.vue'
 import useAgenda from '../agendas/useAgenda'
-import useMeeting from '../meetings/useMeeting'
-import useReactions from '../reactions/useReactions'
 import useAgendaItem from '../agendas/useAgendaItem'
+import { isGroupAuthor } from '../meetings/types'
+import useMeetingId from '../meetings/useMeetingId'
 import useUserDetails from '../organisations/useUserDetails'
+import useReactions from '../reactions/useReactions'
+import ReactionButton from '../reactions/ReactionButton.vue'
 
 import DiscussionPost from './DiscussionPost.vue'
 import DiscussionPostEditor from './DiscussionPostEditor.vue'
 import { discussionPostType } from './contentTypes'
 import type { DiscussionPost as IDiscussionPost } from './types'
-import { isGroupAuthor } from '../meetings/types'
 
 defineProps<{
   comments: IDiscussionPost[]
@@ -23,7 +23,7 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
-const { meetingId } = useMeeting()
+const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { getUser } = useUserDetails()
 const { canAddDiscussionPost, agendaItem } = useAgendaItem(agendaId)
