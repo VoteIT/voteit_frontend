@@ -80,7 +80,11 @@ async function abstainVote() {
 
 <template>
   <div>
-    <v-alert type="info" class="my-6">
+    <v-alert
+      type="info"
+      class="my-6"
+      :color="disabled ? 'secondary' : undefined"
+    >
       {{ pollHelpText }}
     </v-alert>
     <component
@@ -91,7 +95,7 @@ async function abstainVote() {
       :proposals="proposals"
       v-model="validVote"
     />
-    <div class="mt-6 d-flex align-end">
+    <div v-if="!disabled" class="mt-6 d-flex align-end">
       <v-btn
         color="primary"
         size="large"
