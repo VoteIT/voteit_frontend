@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <span>
+  <span class="text-no-wrap">
     <v-btn
       :color="color"
       :size="size"
@@ -23,7 +23,7 @@ defineProps<{
           :size="size"
           variant="flat"
           v-bind="props"
-          class="rounded-s-0 px-2"
+          class="rounded-s-0 chevron pl-2 pr-3"
         >
           <v-icon>mdi-chevron-down</v-icon>
         </v-btn>
@@ -32,3 +32,8 @@ defineProps<{
     </v-menu>
   </span>
 </template>
+
+<style lang="sass" scoped>
+.chevron
+  min-width: 0 !important
+</style>
