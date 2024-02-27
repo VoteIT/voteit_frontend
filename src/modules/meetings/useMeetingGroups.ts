@@ -23,11 +23,18 @@ groupRoleType.updateMap(groupRoles)
 const groupMemberships = reactive(new Map<number, GroupMembership>())
 groupMembershipType.updateMap(groupMemberships, { meeting: 'm' })
 
-function getMeetingGroup(pk: number) {
+const { meetings } = useMeetings()
+
+export function getMeetingGroup(pk: number) {
   return meetingGroups.get(pk)
 }
 
-const { meetings } = useMeetings()
+export function isGroupMember(group: number, user: number) {
+  return any(
+    groupMemberships.values(),
+    (gm) => gm.meeting_group === group && gm.user === user
+  )
+}
 
 export default function useMeetingGroups(meetingId: Ref<number>) {
   const { user } = useAuthentication()
