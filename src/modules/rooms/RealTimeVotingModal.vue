@@ -45,7 +45,7 @@ const availablePolls = computed(() => {
     'desc'
   ).slice(0, 3)
 
-  const open = sortBy(
+  const ongoingAndOpen = sortBy(
     filterPolls(
       (p) =>
         p.meeting === meetingId.value &&
@@ -57,7 +57,11 @@ const availablePolls = computed(() => {
     ['started']
   )
 
-  return [...open.map(annotatePoll), '---', ...finished.map(annotatePoll)]
+  return [
+    ...ongoingAndOpen.map(annotatePoll),
+    '---',
+    ...finished.map(annotatePoll)
+  ]
 })
 
 function getFirstPk(): number | undefined {
