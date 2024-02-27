@@ -130,158 +130,156 @@ watch(
       <slot name="activator" :props="props"></slot>
     </template>
     <template #default="{ isActive }">
-      <v-sheet rounded>
-        <div class="d-flex" style="height: calc(100vh - 48px)">
-          <div
-            class="flex-shrink-0 pa-4"
-            style="
-              background-color: rgba(0, 0, 0, 0.1);
-              width: 360px;
-              overflow-x: auto;
-            "
-          >
-            <v-slide-x-transition group>
-              <template
-                v-for="poll in availablePolls"
-                :key="typeof poll === 'string' ? poll : poll.pk"
-              >
-                <template v-if="typeof poll === 'string'">
-                  <p class="text-center text-secondary mt-8">
-                    {{ t('poll.workflow.closed', latestFinishedPolls.length) }}
-                  </p>
-                  <v-divider class="mb-3" />
-                </template>
-                <v-sheet
-                  v-else
-                  class="mb-4 cursor-pointer"
-                  :color="selectedPollId === poll.pk ? 'success' : undefined"
-                  rounded
-                  @click="selectedPollId = poll.pk"
-                >
-                  <div class="pa-3 d-flex">
-                    <div class="flex-grow-1">
-                      <h3 class="text-truncate">
-                        {{ poll.title }}
-                      </h3>
-                      <p style="opacity: 0.7">
-                        {{ poll.methodName }}
-                      </p>
-                    </div>
-                    <v-icon v-if="openPoll === poll.pk" icon="mdi-broadcast" />
-                  </div>
-                  <div
-                    v-if="poll.state === PollState.Ongoing && poll.hasVoted"
-                    class="px-3 py-1 rounded-b text-right"
-                  >
-                    {{ t('poll.youHaveVoted') }}
-                    <v-icon
-                      v-if="poll.hasVoted"
-                      class="mt-n1"
-                      size="small"
-                      icon="mdi-check"
-                    />
-                  </div>
-                  <div
-                    v-else-if="poll.state !== PollState.Finished"
-                    class="px-3 py-1 rounded-b text-right"
-                  >
-                    {{ poll.stateName }}
-                  </div>
-                </v-sheet>
+      <v-sheet rounded class="d-flex" style="height: calc(100vh - 48px)">
+        <div
+          class="flex-shrink-0 pa-4"
+          style="
+            background-color: rgba(0, 0, 0, 0.1);
+            width: 360px;
+            overflow-x: auto;
+          "
+        >
+          <v-slide-x-transition group>
+            <template
+              v-for="poll in availablePolls"
+              :key="typeof poll === 'string' ? poll : poll.pk"
+            >
+              <template v-if="typeof poll === 'string'">
+                <p class="text-center text-secondary mt-8">
+                  {{ t('poll.workflow.closed', latestFinishedPolls.length) }}
+                </p>
+                <v-divider class="mb-3" />
               </template>
-            </v-slide-x-transition>
-          </div>
-          <div class="flex-grow-1 pa-4" style="overflow-x: auto">
-            <header class="d-flex mb-6">
-              <div class="flex-grow-1">
-                <h2>
-                  {{ poll?.title ?? t('poll.vote') }}
-                </h2>
-                <p class="text-secondary">
-                  {{
-                    t('poll.pollDescription', {
-                      method: pollMethodName,
-                      count: proposals.length
-                    })
-                  }}
-                </p>
-                <p v-if="isOngoing && !canVote" class="mt-3">
-                  <span class="header-tag">{{ t('poll.cantVote') }}</span>
-                </p>
-              </div>
-              <v-btn
-                class="mt-n2 mr-n2"
-                icon="mdi-close"
-                size="small"
-                variant="text"
-                @click="isActive.value = false"
-              />
-            </header>
-            <div v-if="!poll" class="my-8 text-center">
-              <v-progress-circular indeterminate color="primary" size="large" />
+              <v-sheet
+                v-else
+                class="mb-4 cursor-pointer"
+                :color="selectedPollId === poll.pk ? 'success' : undefined"
+                rounded
+                @click="selectedPollId = poll.pk"
+              >
+                <div class="pa-3 d-flex">
+                  <div class="flex-grow-1">
+                    <h3 class="text-truncate">
+                      {{ poll.title }}
+                    </h3>
+                    <p style="opacity: 0.7">
+                      {{ poll.methodName }}
+                    </p>
+                  </div>
+                  <v-icon v-if="openPoll === poll.pk" icon="mdi-broadcast" />
+                </div>
+                <div
+                  v-if="poll.state === PollState.Ongoing && poll.hasVoted"
+                  class="px-3 py-1 rounded-b text-right"
+                >
+                  {{ t('poll.youHaveVoted') }}
+                  <v-icon
+                    v-if="poll.hasVoted"
+                    class="mt-n1"
+                    size="small"
+                    icon="mdi-check"
+                  />
+                </div>
+                <div
+                  v-else-if="poll.state !== PollState.Finished"
+                  class="px-3 py-1 rounded-b text-right"
+                >
+                  {{ poll.stateName }}
+                </div>
+              </v-sheet>
+            </template>
+          </v-slide-x-transition>
+        </div>
+        <div class="flex-grow-1 pa-4" style="overflow-x: auto">
+          <header class="d-flex mb-6">
+            <div class="flex-grow-1">
+              <h2>
+                {{ poll?.title ?? t('poll.vote') }}
+              </h2>
+              <p class="text-secondary">
+                {{
+                  t('poll.pollDescription', {
+                    method: pollMethodName,
+                    count: proposals.length
+                  })
+                }}
+              </p>
+              <p v-if="isOngoing && !canVote" class="mt-3">
+                <span class="header-tag">{{ t('poll.cantVote') }}</span>
+              </p>
             </div>
-            <template v-else-if="poll.state === PollState.Finished">
+            <v-btn
+              class="mt-n2 mr-n2"
+              icon="mdi-close"
+              size="small"
+              variant="text"
+              @click="isActive.value = false"
+            />
+          </header>
+          <div v-if="!poll" class="my-8 text-center">
+            <v-progress-circular indeterminate color="primary" size="large" />
+          </div>
+          <template v-else-if="poll.state === PollState.Finished">
+            <ProgressBar
+              class="my-4"
+              :text="voteCount.text"
+              :value="voteCount.voted"
+              :total="voteCount.total"
+            />
+            <h3>
+              {{ t('poll.result.method', { method: pollMethodName }) }}
+            </h3>
+            <component
+              :is="resultComponent"
+              :result="poll.result"
+              :abstainCount="poll.abstain_count"
+              :proposals="poll.proposals"
+            />
+          </template>
+          <template v-else-if="poll.state === PollState.Ongoing">
+            <PollBallot
+              v-if="!canVote || !userVote || changeVote"
+              :disabled="!canVote"
+              :key="poll.pk"
+              :poll="poll"
+              :proposals="proposals"
+              :model-value="userVote?.vote"
+              @voting-complete="changeVote = false"
+            />
+            <template v-else-if="userVote">
               <ProgressBar
                 class="my-4"
-                :text="voteCount.text"
-                :value="voteCount.voted"
-                :total="voteCount.total"
+                :value="pollStatus?.voted"
+                :total="pollStatus?.total"
+              >
+                <span v-if="pollStatus">{{
+                  t(
+                    'poll.votedProgress',
+                    {
+                      ...pollStatus,
+                      percentage: Math.round(
+                        (pollStatus.voted / pollStatus.total) * 100
+                      )
+                    },
+                    pollStatus.voted
+                  )
+                }}</span>
+              </ProgressBar>
+              <v-alert
+                :text="t('poll.voteAddedInfo')"
+                icon="mdi-check-circle"
+                class="mb-4"
+                color="success"
               />
-              <h3>
-                {{ t('poll.result.method', { method: pollMethodName }) }}
-              </h3>
-              <component
-                :is="resultComponent"
-                :result="poll.result"
-                :abstainCount="poll.abstain_count"
-                :proposals="poll.proposals"
+              <v-btn
+                prepend-icon="mdi-vote"
+                :text="t('poll.viewAndChangeVote')"
+                @click="changeVote = true"
+                color="secondary"
               />
             </template>
-            <template v-else-if="poll.state === PollState.Ongoing">
-              <PollBallot
-                v-if="!canVote || !userVote || changeVote"
-                :disabled="!canVote"
-                :key="poll.pk"
-                :poll="poll"
-                :proposals="proposals"
-                :model-value="userVote?.vote"
-                @voting-complete="changeVote = false"
-              />
-              <template v-else-if="userVote">
-                <ProgressBar
-                  class="my-4"
-                  :value="pollStatus?.voted"
-                  :total="pollStatus?.total"
-                >
-                  <span v-if="pollStatus">{{
-                    t(
-                      'poll.votedProgress',
-                      {
-                        ...pollStatus,
-                        percentage: Math.round(
-                          (pollStatus.voted / pollStatus.total) * 100
-                        )
-                      },
-                      pollStatus.voted
-                    )
-                  }}</span>
-                </ProgressBar>
-                <v-alert
-                  :text="t('poll.voteAddedInfo')"
-                  icon="mdi-check-circle"
-                  class="mb-4"
-                  color="success"
-                />
-                <v-btn
-                  prepend-icon="mdi-vote"
-                  :text="t('poll.viewAndChangeVote')"
-                  @click="changeVote = true"
-                  color="secondary"
-                />
-              </template>
-            </template>
-            <WorkflowState v-else :content-type="pollType" :object="poll" />
-          </div>
+          </template>
+          <WorkflowState v-else :content-type="pollType" :object="poll" />
         </div>
       </v-sheet>
     </template>
