@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
+import { useDisplay } from 'vuetify/lib/framework.mjs'
 
 import HeaderMenu from '@/components/HeaderMenu.vue'
 import useAgenda from '../agendas/useAgenda'
@@ -18,6 +19,7 @@ const { isModerator, meeting, meetingId, meetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { meetingRoom, passiveMode, textSize, getRoomRoute } = useRoom()
 const { firstUnvotedPoll, meetingHasPoll } = useMeetingPolls(meetingId)
+const { mobile } = useDisplay()
 
 const { idle } = useIdle(5_000)
 const passiveIdle = computed(() => passiveMode.value && idle.value)
@@ -89,7 +91,7 @@ const currentDisplay = computed(
     </router-link>
     <v-app-bar-title class="text-truncate">
       <v-fade-transition>
-        <small v-show="!passiveMode" class="position-absolute">
+        <small v-show="!passiveMode && !mobile" class="position-absolute">
           {{ t('room.realTime') }}
         </small>
       </v-fade-transition>
@@ -142,7 +144,7 @@ const currentDisplay = computed(
             v-bind="props"
             prepend-icon="mdi-format-size"
             append-icon="mdi-chevron-down"
-            :text="t('content.textSize')"
+            :text="mobile ? undefined : t('content.textSize')"
           />
         </v-fade-transition>
       </template>
@@ -168,7 +170,7 @@ const currentDisplay = computed(
             v-bind="props"
             :prepend-icon="currentDisplay.prependIcon"
             append-icon="mdi-chevron-down"
-            :text="currentDisplay.title"
+            :text="mobile ? undefined : currentDisplay.title"
           />
         </v-fade-transition>
       </template>
