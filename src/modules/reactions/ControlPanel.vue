@@ -4,6 +4,7 @@ import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
+import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAuthentication from '@/composables/useAuthentication'
@@ -194,15 +195,31 @@ const model = reactive<Record<number, boolean>>({})
             <td class="text-right" v-if="canEditButtons">
               <DefaultDialog :title="t('reaction.editButton')">
                 <template #activator="{ props }">
-                  <v-btn
+                  <ButtonWithDropdown
                     prepend-icon="mdi-pencil"
-                    size="small"
-                    class="mr-1"
                     color="primary"
+                    size="small"
+                    :text="t('edit')"
                     v-bind="props"
                   >
-                    {{ t('edit') }}
-                  </v-btn>
+                    <v-list>
+                      <QueryDialog
+                        color="warning"
+                        :text="t('reaction.deleteButtonConfirmation')"
+                        @confirmed="deleteButton(button)"
+                      >
+                        <template #activator="{ props }">
+                          <v-list-item
+                            prepend-icon="mdi-delete"
+                            base-color="warning"
+                            v-bind="props"
+                            size="small"
+                            :title="t('content.delete')"
+                          />
+                        </template>
+                      </QueryDialog>
+                    </v-list>
+                  </ButtonWithDropdown>
                 </template>
                 <template #default="{ close }">
                   <FlagButtonEditModal
@@ -213,22 +230,6 @@ const model = reactive<Record<number, boolean>>({})
                   <ReactionEditModal v-else :data="button" @close="close" />
                 </template>
               </DefaultDialog>
-              <QueryDialog
-                color="warning"
-                :text="t('reaction.deleteButtonConfirmation')"
-                @confirmed="deleteButton(button)"
-              >
-                <template #activator="{ props }">
-                  <v-btn
-                    prepend-icon="mdi-delete"
-                    color="warning"
-                    v-bind="props"
-                    size="small"
-                  >
-                    {{ t('content.delete') }}
-                  </v-btn>
-                </template>
-              </QueryDialog>
             </td>
           </tr>
         </template>
