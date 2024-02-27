@@ -19,7 +19,6 @@ import { pollType } from '../polls/contentTypes'
 import useRoom from './useRoom'
 
 const props = defineProps<{
-  modelValue: boolean
   pollId: number
 }>()
 
@@ -72,11 +71,7 @@ const progressBar = computed(() => {
 </script>
 
 <template>
-  <DefaultDialog
-    :model-value="modelValue"
-    :persistent="idle"
-    :title="poll?.title"
-  >
+  <DefaultDialog :model-value="true" :persistent="idle" :title="poll?.title">
     <template #activator="{ props }">
       <slot name="activator" :props="props"></slot>
     </template>

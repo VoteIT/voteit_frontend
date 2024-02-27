@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
@@ -45,11 +45,6 @@ const crumbs = computed(() => {
     { title: meetingRoom.value?.title ?? '' }
   ]
 })
-
-const hasOpenPoll = computed(() => !!meetingRoom.value?.poll)
-const isVoting = ref(false) // True if user could be voting in poll modal
-const pollModalOpen = ref(!!meetingRoom.value?.poll)
-watch(hasOpenPoll, (value) => (pollModalOpen.value = isVoting.value || value)) // Do not close if user could be voting
 
 const displayOptions: {
   value: (typeof roomDisplayMode)['value']
@@ -115,36 +110,30 @@ const currentDisplay = computed(
       </RealTimeVotingModal>
       <RealTimePollModal
         v-else-if="meetingRoom?.poll"
-        :passive="passiveMode"
         :poll-id="meetingRoom.poll"
-        @update:isVoting="isVoting = $event"
-        v-model="pollModalOpen"
       >
         <template #activator="{ props }">
           <v-btn
             prepend-icon="mdi-star"
-            v-show="hasOpenPoll"
             :text="t('room.toPoll')"
             v-bind="props"
           />
         </template>
       </RealTimePollModal>
     </template>
-    <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
-      <v-btn
-        append-icon="mdi-chevron-right"
-        class="d-none d-lg-flex"
-        :text="t('room.toPlenaryView')"
-        variant="tonal"
-        :to="
-          getRoomRoute('room:broadcast', {
-            aid: meetingRoom.agenda_item || agenda[0].pk,
-            tab: 'decisions'
-          })
-        "
-        v-show="!passiveMode"
-      />
-    </v-fade-transition>
+    <v-btn
+      v-if="!passiveMode && isModerator && meetingRoom && agenda.length"
+      append-icon="mdi-chevron-right"
+      class="d-none d-lg-flex"
+      :text="t('room.toPlenaryView')"
+      variant="tonal"
+      :to="
+        getRoomRoute('room:broadcast', {
+          aid: meetingRoom.agenda_item || agenda[0].pk,
+          tab: 'decisions'
+        })
+      "
+    />
     <v-menu>
       <template #activator="{ props, isActive }">
         <v-fade-transition>
