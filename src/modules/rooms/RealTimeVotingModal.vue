@@ -10,7 +10,6 @@ import useChannel from '@/composables/useChannel'
 import useMeetingId from '../meetings/useMeetingId'
 import { filterPolls, getPollStatus, getUserVote } from '../polls/usePolls'
 import { Poll, PollState } from '../polls/types'
-import { canVote } from '../polls/rules'
 import usePoll from '../polls/usePoll'
 import { pollPlugins } from '../polls/registry'
 import PollBallot from '../polls/PollBallot.vue'
@@ -35,23 +34,26 @@ function annotatePoll(poll: Poll) {
 }
 
 const _selectedId = ref(props.openPoll)
-const availablePolls = computed(() => {
-  const finished = orderBy(
+
+const latestFinishedPolls = computed(() =>
+  orderBy(
     filterPolls(
       (p) => p.meeting === meetingId.value && p.state === PollState.Finished
     ),
     'closed',
     'desc'
   ).slice(0, 3)
+)
 
+const availablePolls = computed(() => {
   const ongoingAndOpen = sortBy(
     filterPolls(
       (p) =>
         p.meeting === meetingId.value &&
-        !finished.some(({ pk }) => pk === p.pk) && // These will already be displayed
+        !latestFinishedPolls.value.some(({ pk }) => pk === p.pk) && // These will already be displayed
         (p.pk === props.openPoll || // Always show broadcasted poll
           p.pk === _selectedId.value || // ... and user currently selected poll
-          (p.state === PollState.Ongoing && canVote(p))) // ... and all ongoing polls where user can vote
+          p.state === PollState.Ongoing) // ... and all ongoing polls
     ),
     ['started']
   )
@@ -59,7 +61,7 @@ const availablePolls = computed(() => {
   return [
     ...ongoingAndOpen.map(annotatePoll),
     '---',
-    ...finished.map(annotatePoll)
+    ...latestFinishedPolls.value.map(annotatePoll)
   ]
 })
 
@@ -79,6 +81,8 @@ const selectedPollId = computed({
 })
 
 const {
+  canVote,
+  isOngoing,
   poll,
   pollMethodName,
   proposals,
@@ -105,10 +109,23 @@ const pollStatus = computed(() =>
     ? getPollStatus(selectedPollId.value)
     : undefined
 )
+
+/**
+ * Open voting modal if broadcast says so. Let user close by themselves, though.
+ */
+const isOpen = ref(!!props.openPoll)
+watch(
+  () => props.openPoll,
+  (value) => {
+    if (!value) return
+    if (!isOpen.value) selectedPollId.value = value
+    isOpen.value = true
+  }
+)
 </script>
 
 <template>
-  <v-dialog max-width="1200px">
+  <v-dialog max-width="1200px" v-model="isOpen">
     <template #activator="{ props }">
       <slot name="activator" :props="props"></slot>
     </template>
@@ -129,8 +146,8 @@ const pollStatus = computed(() =>
                 :key="typeof poll === 'string' ? poll : poll.pk"
               >
                 <template v-if="typeof poll === 'string'">
-                  <p class="text-center text-secondary">
-                    {{ t('poll.workflow.closed', 2) }}
+                  <p class="text-center text-secondary mt-8">
+                    {{ t('poll.workflow.closed', latestFinishedPolls.length) }}
                   </p>
                   <v-divider class="mb-3" />
                 </template>
@@ -175,10 +192,23 @@ const pollStatus = computed(() =>
             </v-slide-x-transition>
           </div>
           <div class="flex-grow-1 pa-4" style="overflow-x: auto">
-            <div class="d-flex">
-              <h2 class="flex-grow-1">
-                {{ poll?.title ?? t('poll.vote') }}
-              </h2>
+            <header class="d-flex mb-6">
+              <div class="flex-grow-1">
+                <h2>
+                  {{ poll?.title ?? t('poll.vote') }}
+                </h2>
+                <p class="text-secondary">
+                  {{
+                    t('poll.pollDescription', {
+                      method: pollMethodName,
+                      count: proposals.length
+                    })
+                  }}
+                </p>
+                <p v-if="isOngoing && !canVote" class="mt-3">
+                  <span class="header-tag">{{ t('poll.cantVote') }}</span>
+                </p>
+              </div>
               <v-btn
                 class="mt-n2 mr-n2"
                 icon="mdi-close"
@@ -186,15 +216,7 @@ const pollStatus = computed(() =>
                 variant="text"
                 @click="isActive.value = false"
               />
-            </div>
-            <p class="text-secondary mb-6">
-              {{
-                t('poll.pollDescription', {
-                  method: pollMethodName,
-                  count: proposals.length
-                })
-              }}
-            </p>
+            </header>
             <div v-if="!poll" class="my-8 text-center">
               <v-progress-circular indeterminate color="primary" size="large" />
             </div>
@@ -217,7 +239,8 @@ const pollStatus = computed(() =>
             </template>
             <template v-else-if="poll.state === PollState.Ongoing">
               <PollBallot
-                v-if="!userVote || changeVote"
+                v-if="!canVote || !userVote || changeVote"
+                :disabled="!canVote"
                 :key="poll.pk"
                 :poll="poll"
                 :proposals="proposals"
