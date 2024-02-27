@@ -1,27 +1,26 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+/**
+ * This if a fully passive poll modal used in passive (projector) mode.
+ * It will only ever show poll selected in bradcast view.
+ * It may be closed by user, though, for example if they need to disable passive mode.
+ */
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
 import ProgressBar from '@/components/ProgressBar.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
 
 import usePoll from '../polls/usePoll'
 import { pollType } from '../polls/contentTypes'
 
 import useRoom from './useRoom'
-import PollBallot from '../polls/PollBallot.vue'
 
 const props = defineProps<{
   modelValue: boolean
-  passive: boolean
   pollId: number
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:isVoting', value: boolean): void
-  (e: 'update:modelValue', value: boolean): void
 }>()
 
 const { t } = useI18n()
@@ -30,39 +29,21 @@ const { idle } = useIdle(5_000)
 const currentPollId = computed(() => props.pollId)
 const { meetingRoom } = useRoom()
 const {
-  canVote,
   isOngoing,
   isFinished,
   isWithheld,
-  nextUnvoted,
   poll,
   pollMethodName,
   pollStatus,
   proposals,
   resultComponent,
-  userVote,
   voteComponent
 } = usePoll(currentPollId)
 
-const changeVote = ref(false)
-// Reset changeVote when switching poll
-watch(currentPollId, () => (changeVote.value = false))
-
-const isVoting = computed(
-  () =>
-    !props.passive &&
-    isOngoing.value &&
-    !!canVote.value &&
-    (changeVote.value || !userVote.value)
-)
-watch(isVoting, (value) => emit('update:isVoting', value), { immediate: true })
-
-// Only follow if ongoing and not currently voting
+// Only follow if ongoing
 useChannel(
   'poll',
-  computed(() =>
-    !isVoting.value && isOngoing.value ? currentPollId.value : undefined
-  )
+  computed(() => (isOngoing.value ? props.pollId : undefined))
 )
 
 const complete = computed(() => {
@@ -88,11 +69,6 @@ const progressBar = computed(() => {
     done: complete.value
   }
 })
-
-const { getState } = pollType.useWorkflows()
-const pollStateText = computed(
-  () => poll.value && getState(poll.value.state)?.getName(t)
-)
 </script>
 
 <template>
@@ -100,7 +76,6 @@ const pollStateText = computed(
     :model-value="modelValue"
     :persistent="idle"
     :title="poll?.title"
-    @close="isVoting = false"
   >
     <template #activator="{ props }">
       <slot name="activator" :props="props"></slot>
@@ -118,51 +93,18 @@ const pollStateText = computed(
             })
           }}
         </p>
-        <PollBallot
-          v-if="isVoting"
-          :model-value="userVote?.vote"
-          :poll="poll"
-          :proposals="proposals"
-          @voting-complete="changeVote = false"
-        />
         <ProgressBar
-          v-else-if="progressBar"
+          v-if="progressBar"
           v-bind="progressBar"
           absolute
           class="mt-8"
-        >
-          <template v-if="!passive && canVote" #right>
-            <span :class="{ active: !!userVote }">
-              {{
-                userVote ? t('poll.youHaveVoted') : t('poll.youHaveNotVoted')
-              }}
-              <v-icon size="x-small" icon="mdi-check" />
-            </span>
-          </template>
-        </ProgressBar>
+        />
         <v-alert
           v-if="poll?.withheld_result"
           :text="t('poll.result.willBeWithheld')"
           type="info"
           class="my-6"
         />
-        <div v-if="(userVote && !changeVote) || nextUnvoted" class="mt-6">
-          <v-btn
-            v-if="userVote && !changeVote"
-            color="secondary"
-            class="mr-1"
-            prepend-icon="mdi-vote"
-            :text="t('poll.viewAndChangeVote')"
-            @click="changeVote = true"
-          />
-          <v-btn
-            v-if="nextUnvoted"
-            color="primary"
-            prepend-icon="mdi-star"
-            :text="t('poll.nextUnvoted', { ...nextUnvoted })"
-            @click="currentPollId = nextUnvoted.pk"
-          />
-        </div>
       </main>
       <DefaultDialog
         :model-value="meetingRoom?.show_ballot"
@@ -197,17 +139,8 @@ const pollStateText = computed(
         type="info"
       />
       <p v-else class="my-2">
-        {{ pollStateText }}
+        <WorkflowState :content-type="pollType" :object="poll" />
       </p>
-      <div class="mt-6" v-if="nextUnvoted">
-        <v-btn
-          v-if="nextUnvoted"
-          color="primary"
-          prepend-icon="mdi-star"
-          :text="t('poll.nextUnvoted', { ...nextUnvoted })"
-          @click="currentPollId = nextUnvoted.pk"
-        />
-      </div>
     </main>
   </DefaultDialog>
 </template>
