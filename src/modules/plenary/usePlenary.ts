@@ -22,10 +22,7 @@ function filterProposalStates(p: Proposal) {
   return !stateFilter.value.length || stateFilter.value.includes(p.state)
 }
 
-export default function usePlenary(
-  meetingId: ComputedRef<number>,
-  agendaItem: ComputedRef<number>
-) {
+export default function usePlenary(agendaItem: ComputedRef<number>) {
   const route = useRoute()
   const router = useRouter()
   const { getRoomRoute } = useRoom()

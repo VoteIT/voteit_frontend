@@ -71,7 +71,7 @@ const { systemActiveList } = useSpeakerSystem(
 )
 
 const { currentTab, stateFilter, selectedProposals, getPlenaryRoute } =
-  usePlenary(meetingId, agendaId)
+  usePlenary(agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 

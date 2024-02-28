@@ -49,10 +49,7 @@ const {
   setBroadcast,
   setHandler
 } = useRoom()
-const { selectedProposalIds, selectProposalIds } = usePlenary(
-  meetingId,
-  agendaId
-)
+const { selectedProposalIds, selectProposalIds } = usePlenary(agendaId)
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const isBroadcastingAI = computed(

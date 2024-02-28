@@ -45,7 +45,7 @@ const {
   filterProposalStates,
   selectProposal,
   selectProposalIds
-} = usePlenary(meetingId, agendaId)
+} = usePlenary(agendaId)
 
 const { t } = useI18n()
 const { getAgendaProposals } = useProposals()

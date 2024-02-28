@@ -97,7 +97,7 @@ const meetingId = useMeetingId()
 const { agenda, agendaId, agendaStates } = useAgenda(meetingId)
 const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
-const { currentTab, filterProposalStates } = usePlenary(meetingId, agendaId)
+const { currentTab, filterProposalStates } = usePlenary(agendaId)
 const { getAgendaProposals } = useProposals()
 
 const isOpen = ref(false)

@@ -21,7 +21,7 @@ const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, canChangeAgendaItem } = useAgendaItem(agendaId)
 const { meetingRoom } = useRoom()
 
-const { getPlenaryRoute } = usePlenary(meetingId, agendaId)
+const { getPlenaryRoute } = usePlenary(agendaId)
 
 /* Agenda navigation */
 function navigateAgendaItem(aid?: number) {
