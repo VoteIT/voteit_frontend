@@ -82,7 +82,6 @@ const textDisplay = computed(() => {
     justify-content: space-between
     color: rgb(var(--v-theme-secondary))
     font-size: 10.5pt
-    margin-top: .5em
   &.failed
     .progress
       background-color: rgb(var(--v-theme-error))

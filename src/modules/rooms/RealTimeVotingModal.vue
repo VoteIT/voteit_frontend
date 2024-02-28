@@ -5,10 +5,9 @@ import { useI18n } from 'vue-i18n'
 
 import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import useChannel from '@/composables/useChannel'
 
 import useMeetingId from '../meetings/useMeetingId'
-import { filterPolls, getPollStatus, getUserVote } from '../polls/usePolls'
+import { filterPolls, getUserVote } from '../polls/usePolls'
 import { Poll, PollState } from '../polls/types'
 import usePoll from '../polls/usePoll'
 import { pollPlugins } from '../polls/registry'
@@ -86,6 +85,7 @@ const {
   isOngoing,
   nextUnvoted,
   poll,
+  pollStatus,
   pollMethodName,
   proposals,
   resultComponent,
@@ -97,21 +97,6 @@ const changeVote = ref(false)
 watch(selectedPollId, () => {
   changeVote.value = false
 })
-
-/**
- * Subscribe to poll channel when ongoing and user has voted.
- */
-const subscribePollId = computed(() => {
-  if (poll.value?.state !== PollState.Ongoing) return // If not ongoing, don't subscribe
-  if (canVote.value && !userVote.value) return // If user can vote but hasn't yet, don't subscribe yet.
-  return selectedPollId.value
-})
-useChannel('poll', subscribePollId)
-const pollStatus = computed(() =>
-  typeof selectedPollId.value === 'number'
-    ? getPollStatus(selectedPollId.value)
-    : undefined
-)
 
 /**
  * Open voting modal if broadcast says so. Let user close by themselves, though.

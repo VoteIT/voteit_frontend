@@ -79,29 +79,23 @@
             pollStatus.voted
           )
         }}</span>
-        <v-btn
-          prepend-icon="mdi-reload"
-          v-else
-          variant="text"
-          size="small"
-          @click="following = true"
-        >
-          {{ t('poll.showProgress') }}
-        </v-btn>
-        <span v-if="userVote" class="active"
-          >{{ t('poll.youHaveVoted') }} <v-icon size="x-small" icon="mdi-check"
-        /></span>
-        <span v-else-if="canVote"
-          >{{ t('poll.youHaveNotVoted') }}
-          <v-icon size="x-small" icon="mdi-check"
-        /></span>
+        <template #right>
+          <span v-if="userVote" class="active"
+            >{{ t('poll.youHaveVoted') }}
+            <v-icon size="x-small" icon="mdi-check"
+          /></span>
+          <span v-else-if="canVote"
+            >{{ t('poll.youHaveNotVoted') }}
+            <v-icon size="x-small" icon="mdi-check"
+          /></span>
+        </template>
       </ProgressBar>
     </div>
   </Widget>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Dropdown from '@/components/Dropdown.vue'
@@ -109,7 +103,6 @@ import Moment from '@/components/Moment.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import Widget from '@/components/Widget.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import useChannel from '@/composables/useChannel'
 
 import usePolls from '../polls/usePolls'
 import useMeeting from '../meetings/useMeeting'
@@ -133,14 +126,6 @@ const {
   pollMethodName,
   voteCount
 } = usePoll(computed(() => props.poll.pk))
-
-const following = ref(false)
-const subscribePk = computed(() => {
-  // Automatically follow with useChannel if it's ongoing and following is set
-  if (isOngoing.value && following.value) return props.poll.pk
-  return undefined
-})
-useChannel('poll', subscribePk, { leaveDelay: 0 })
 
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
 const pollRoute = computed(() =>

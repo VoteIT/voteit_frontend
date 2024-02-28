@@ -6,7 +6,6 @@ import { pollStates } from './workflowStates'
 export const pollType = new ContentType<Poll, PollTransition>({
   states: pollStates,
   name: 'poll',
-  channels: ['poll'],
   restEndpoint: 'polls/'
 })
 

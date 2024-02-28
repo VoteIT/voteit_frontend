@@ -22,9 +22,6 @@ pollType
       pollStatuses.set(item.pk, item)
     }
   })
-  .channel.onLeave((pk) => {
-    pollStatuses.delete(pk)
-  })
 
 // This is not really a channel, per se...
 voteType.updateMap(userVotes)

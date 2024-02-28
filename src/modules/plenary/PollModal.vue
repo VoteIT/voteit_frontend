@@ -106,7 +106,6 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
-import useChannel from '@/composables/useChannel'
 
 import usePoll from '../polls/usePoll'
 import { Poll, PollTransition } from '../polls/types'
@@ -131,8 +130,6 @@ const {
   voteComponent
 } = usePoll(pollId)
 const { isBroadcasting, setPoll, setShowBallot } = useRoom()
-
-useChannel('poll', pollId)
 
 const complete = computed(() => {
   if (!pollStatus.value) return false

@@ -8,7 +8,6 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
-import useChannel from '@/composables/useChannel'
 import ProgressBar from '@/components/ProgressBar.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -38,12 +37,6 @@ const {
   resultComponent,
   voteComponent
 } = usePoll(currentPollId)
-
-// Only follow if ongoing
-useChannel(
-  'poll',
-  computed(() => (isOngoing.value ? props.pollId : undefined))
-)
 
 const complete = computed(() => {
   if (!pollStatus.value) return false
