@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.24.0
+## 0.24.0 (2024-02-28)
 
 Updates to group posting and group display on speakers.
 
