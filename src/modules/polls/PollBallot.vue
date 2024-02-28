@@ -52,7 +52,7 @@ async function castVote() {
 }
 
 async function abstainVote() {
-  if (props.modelValue) {
+  if (validVote.value) {
     if (
       !(await dialogQuery({
         title: t('poll.abstainValidVoteConfirm'),
