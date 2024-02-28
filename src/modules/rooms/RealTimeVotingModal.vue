@@ -84,6 +84,7 @@ const selectedPollId = computed({
 const {
   canVote,
   isOngoing,
+  nextUnvoted,
   poll,
   pollMethodName,
   proposals,
@@ -124,6 +125,9 @@ watch(
     isOpen.value = true
   }
 )
+/**
+ * TODO Guard this modal from closing when started voting!
+ */
 
 /**
  * Mobile stuff
@@ -175,15 +179,18 @@ const selectionMenuExpanded = ref(false)
                   <v-icon v-if="openPoll === poll.pk" icon="mdi-broadcast" />
                 </div>
                 <div
-                  v-if="poll.state === PollState.Ongoing && poll.hasVoted"
-                  class="px-3 py-1 rounded-b text-right"
+                  v-if="canVote && poll.state === PollState.Ongoing"
+                  class="px-3 py-1 text-right"
                 >
-                  {{ t('poll.youHaveVoted') }}
+                  {{
+                    poll.hasVoted
+                      ? t('poll.youHaveVoted')
+                      : t('poll.youHaveNotVoted')
+                  }}
                   <v-icon
-                    v-if="poll.hasVoted"
                     class="mt-n1"
                     size="small"
-                    icon="mdi-check"
+                    :icon="poll.hasVoted ? 'mdi-check' : 'mdi-vote'"
                   />
                 </div>
                 <div
@@ -200,7 +207,7 @@ const selectionMenuExpanded = ref(false)
           <header class="d-flex mb-6">
             <v-btn
               class="d-md-none mr-2"
-              icon="mdi-menu-open"
+              icon="mdi-menu"
               size="small"
               variant="tonal"
               @click="selectionMenuExpanded = !selectionMenuExpanded"
@@ -256,16 +263,17 @@ const selectionMenuExpanded = ref(false)
               :key="poll.pk"
               :poll="poll"
               :proposals="proposals"
-              :model-value="userVote?.vote"
+              :model-value="canVote ? userVote?.vote : undefined"
               @voting-complete="changeVote = false"
             />
             <template v-else-if="userVote">
               <ProgressBar
+                v-if="pollStatus"
                 class="my-4"
-                :value="pollStatus?.voted"
-                :total="pollStatus?.total"
+                :value="pollStatus.voted"
+                :total="pollStatus.total"
               >
-                <span v-if="pollStatus">{{
+                <span>{{
                   t(
                     'poll.votedProgress',
                     {
@@ -284,13 +292,24 @@ const selectionMenuExpanded = ref(false)
                 class="mb-4"
                 color="success"
               />
+            </template>
+            <div v-if="canVote" class="mt-4">
               <v-btn
+                v-if="userVote && !changeVote"
+                class="mr-1"
+                color="secondary"
                 prepend-icon="mdi-vote"
                 :text="t('poll.viewAndChangeVote')"
                 @click="changeVote = true"
-                color="secondary"
               />
-            </template>
+              <v-btn
+                v-if="nextUnvoted"
+                color="primary"
+                prepend-icon="mdi-star"
+                :text="t('poll.nextUnvoted', { ...nextUnvoted })"
+                @click="selectedPollId = nextUnvoted.pk"
+              />
+            </div>
           </template>
           <WorkflowState v-else :content-type="pollType" :object="poll" />
         </div>
