@@ -101,7 +101,8 @@ watch(selectedPollId, () => {
  * Subscribe to poll channel when ongoing and user has voted.
  */
 const subscribePollId = computed(() => {
-  if (!userVote || poll.value?.state !== PollState.Ongoing) return
+  if (poll.value?.state !== PollState.Ongoing) return // If not ongoing, don't subscribe
+  if (canVote.value && !userVote.value) return // If user can vote but hasn't yet, don't subscribe yet.
   return selectedPollId.value
 })
 useChannel('poll', subscribePollId)
