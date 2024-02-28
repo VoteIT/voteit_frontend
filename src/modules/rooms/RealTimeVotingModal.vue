@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
+import Dropdown from '@/components/Dropdown.vue'
 
 import useMeetingId from '../meetings/useMeetingId'
 import { filterPolls, getUserVote } from '../polls/usePolls'
@@ -13,6 +14,7 @@ import usePoll from '../polls/usePoll'
 import { pollPlugins } from '../polls/registry'
 import PollBallot from '../polls/PollBallot.vue'
 import { pollType } from '../polls/contentTypes'
+import PollProgress from '../polls/PollProgress.vue'
 
 const { t } = useI18n()
 
@@ -226,7 +228,7 @@ const selectionMenuExpanded = ref(false)
           </div>
           <template v-else-if="poll.state === PollState.Finished">
             <ProgressBar
-              class="my-4"
+              class="mt-4 mb-8"
               :text="voteCount.text"
               :value="voteCount.voted"
               :total="voteCount.total"
@@ -242,59 +244,54 @@ const selectionMenuExpanded = ref(false)
             />
           </template>
           <template v-else-if="poll.state === PollState.Ongoing">
-            <PollBallot
-              v-if="!canVote || !userVote || changeVote"
-              :disabled="!canVote"
-              :key="poll.pk"
-              :poll="poll"
-              :proposals="proposals"
-              :model-value="canVote ? userVote?.vote : undefined"
-              @voting-complete="changeVote = false"
-            />
-            <template v-else-if="userVote">
-              <ProgressBar
-                v-if="pollStatus"
-                class="my-4"
-                :value="pollStatus.voted"
-                :total="pollStatus.total"
-              >
-                <span>{{
-                  t(
-                    'poll.votedProgress',
-                    {
-                      ...pollStatus,
-                      percentage: Math.round(
-                        (pollStatus.voted / pollStatus.total) * 100
-                      )
-                    },
-                    pollStatus.voted
-                  )
-                }}</span>
-              </ProgressBar>
-              <v-alert
-                :text="t('poll.voteAddedInfo')"
-                icon="mdi-check-circle"
-                class="mb-4"
-                color="success"
+            <template v-if="canVote">
+              <PollBallot
+                v-if="!userVote || changeVote"
+                :disabled="!canVote"
+                :key="poll.pk"
+                :poll="poll"
+                :proposals="proposals"
+                :model-value="canVote ? userVote?.vote : undefined"
+                @voting-complete="changeVote = false"
               />
+              <template v-else-if="userVote">
+                <PollProgress class="mb-8" :poll-status="pollStatus" />
+                <v-alert
+                  :text="t('poll.voteAddedInfo')"
+                  icon="mdi-check-circle"
+                  class="mb-4"
+                  color="success"
+                />
+              </template>
+              <div v-if="canVote" class="mt-4">
+                <v-btn
+                  v-if="userVote && !changeVote"
+                  class="mr-1"
+                  color="secondary"
+                  prepend-icon="mdi-vote"
+                  :text="t('poll.viewAndChangeVote')"
+                  @click="changeVote = true"
+                />
+                <v-btn
+                  v-if="nextUnvoted"
+                  color="primary"
+                  prepend-icon="mdi-star"
+                  :text="t('poll.nextUnvoted', { ...nextUnvoted })"
+                  @click="selectedPollId = nextUnvoted.pk"
+                />
+              </div>
             </template>
-            <div v-if="canVote" class="mt-4">
-              <v-btn
-                v-if="userVote && !changeVote"
-                class="mr-1"
-                color="secondary"
-                prepend-icon="mdi-vote"
-                :text="t('poll.viewAndChangeVote')"
-                @click="changeVote = true"
-              />
-              <v-btn
-                v-if="nextUnvoted"
-                color="primary"
-                prepend-icon="mdi-star"
-                :text="t('poll.nextUnvoted', { ...nextUnvoted })"
-                @click="selectedPollId = nextUnvoted.pk"
-              />
-            </div>
+            <template v-else>
+              <PollProgress class="mb-8" :poll-status="pollStatus" />
+              <Dropdown :title="t('poll.showBallot')">
+                <PollBallot
+                  disabled
+                  :key="poll.pk"
+                  :poll="poll"
+                  :proposals="proposals"
+                />
+              </Dropdown>
+            </template>
           </template>
           <WorkflowState v-else :content-type="pollType" :object="poll" />
         </div>
