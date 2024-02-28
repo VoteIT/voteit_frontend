@@ -42,7 +42,7 @@ export default function usePlenary(
 
   const currentTab = computed({
     get() {
-      return route.params.tab as Tab
+      return (route.params.tab ?? 'decisions') as Tab
     },
     set(tab) {
       router.replace(getPlenaryRoute({ tab }))
