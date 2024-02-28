@@ -4,6 +4,14 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.24.0
+
+Updates to group posting and group display on speakers.
+
+- Toggles for post_as and show_on_speaker in group list [#349](https://github.com/VoteIT/voteit_frontend/issues/349) [#350](https://github.com/VoteIT/voteit_frontend/issues/350)
+- Display group membership(s) on members in speaker lists [#351](https://github.com/VoteIT/voteit_frontend/issues/351)
+- Users can now choose to post as themselves, as member of any group they're member in, or as group [#352](https://github.com/VoteIT/voteit_frontend/issues/352)
+
 ## 0.23.1 (2024-02-22)
 
 - Bug fix: Show correct values in groups "in current ER" count [#348](https://github.com/VoteIT/voteit_frontend/issues/348)
