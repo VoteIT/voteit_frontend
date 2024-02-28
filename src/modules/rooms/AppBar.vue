@@ -126,7 +126,7 @@ const currentDisplay = computed(
     <v-btn
       v-if="!passiveMode && isModerator && meetingRoom && agenda.length"
       append-icon="mdi-chevron-right"
-      class="d-none d-lg-flex"
+      class="d-none d-md-flex"
       :text="t('room.toPlenaryView')"
       variant="tonal"
       :to="
