@@ -15,7 +15,7 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import { pollType } from '../polls/contentTypes'
 import { Poll, PollState } from '../polls/types'
 import { pollPlugins } from '../polls/registry'
-import usePolls from '../polls/usePolls'
+import usePolls, { getPollStatus } from '../polls/usePolls'
 import { proposalStates } from '../proposals/workflowStates'
 import { ProposalState } from '../proposals/types'
 import useProposals from '../proposals/useProposals'
@@ -120,13 +120,17 @@ function pollStateToItems(state: PollState) {
   const wfState = getState(state)
   if (!wfState) throw new Error(`Unknown poll state '${state}'`)
 
-  return getAiPolls(agendaId.value, state).map((poll) => ({
-    active: state === PollState.Ongoing,
-    poll,
-    prependIcon: wfState.icon,
-    subtitle: pollPlugins.getName(poll.method_name, t),
-    title: poll.title
-  }))
+  return getAiPolls(agendaId.value, state).map((poll) => {
+    const active = state === PollState.Ongoing
+    return {
+      active,
+      poll,
+      pollStatus: active ? getPollStatus(poll.pk) : undefined,
+      prependIcon: wfState.icon,
+      subtitle: pollPlugins.getName(poll.method_name, t),
+      title: poll.title
+    }
+  })
 }
 
 const finishedPollItems = computed(() => pollStateToItems(PollState.Finished))
@@ -245,15 +249,29 @@ const ongoingPollCount = computed(
                   />
                 </template>
               </DefaultDialog>
-              <v-divider />
-              <v-list-subheader :title="t('plenary.ongoingPolls')" />
-              <v-list-item
-                v-for="{ poll, ...item } in ongoingPollItems"
-                :key="poll.pk"
-                v-bind="item"
-                @click="openPoll(poll)"
+              <v-divider
+                v-if="ongoingPollItems.length || finishedPollItems.length"
               />
-              <v-list-subheader :title="t('plenary.finishedPolls')" />
+              <v-list-subheader
+                v-if="ongoingPollItems.length"
+                :title="t('plenary.ongoingPolls')"
+              />
+              <template
+                v-for="{ poll, pollStatus, ...item } in ongoingPollItems"
+                :key="poll.pk"
+              >
+                <v-list-item v-bind="item" @click="openPoll(poll)" />
+                <v-progress-linear
+                  v-if="pollStatus"
+                  :model-value="pollStatus.voted"
+                  :max="pollStatus.total"
+                  color="success-lighten-2"
+                />
+              </template>
+              <v-list-subheader
+                v-if="finishedPollItems.length"
+                :title="t('plenary.finishedPolls')"
+              />
               <v-list-item
                 v-for="{ poll, ...item } in finishedPollItems"
                 :key="poll.pk"
