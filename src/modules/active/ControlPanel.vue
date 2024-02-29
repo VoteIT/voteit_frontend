@@ -4,7 +4,10 @@
     :switch-label="t('activeUsers.enable')"
   >
     <template #actions>
-      <DefaultDialog @close="purgedCount = null">
+      <DefaultDialog
+        @close="purgedCount = null"
+        :title="t('activeUsers.purgeInactive')"
+      >
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
@@ -16,50 +19,37 @@
             {{ t('activeUsers.purgeInactive') }}
           </v-btn>
         </template>
-        <template #default="{ close }">
-          <div class="d-flex mb-1">
-            <h2 class="flex-grow-1">
-              {{ t('activeUsers.purgeInactive') }}
-            </h2>
-            <v-btn
-              icon="mdi-close"
-              variant="text"
-              class="mr-n1 mt-n1"
-              @click="close"
-            />
-          </div>
-          <p class="mb-2">
-            {{ t('activeUsers.purgeInactiveHelp') }}
-          </p>
-          <v-form
-            v-if="!working"
-            class="d-flex mb-2"
-            @submit.prevent="purgeInactive"
+        <p class="mb-2">
+          {{ t('activeUsers.purgeInactiveHelp') }}
+        </p>
+        <v-form
+          v-if="!working"
+          class="d-flex mb-2"
+          @submit.prevent="purgeInactive"
+        >
+          <v-text-field
+            type="number"
+            :rules="[rules.required, rules.min(1)]"
+            v-model="hours"
+            :label="t('activeUsers.inactiveHours')"
+            min="1"
+            hide-details
+          />
+          <v-btn
+            type="submit"
+            class="rounded-s-0"
+            :disabled="working"
+            color="primary"
           >
-            <v-text-field
-              type="number"
-              :rules="[rules.required, rules.min(1)]"
-              v-model="hours"
-              :label="t('activeUsers.inactiveHours')"
-              min="1"
-              hide-details
-            />
-            <v-btn
-              type="submit"
-              class="rounded-s-0"
-              :disabled="working"
-              color="primary"
-            >
-              {{ t('clear') }}
-            </v-btn>
-          </v-form>
-          <div v-if="working" class="text-center py-11">
-            <v-progress-circular indeterminate />
-          </div>
-          <v-alert v-else-if="purgedCount !== null">
-            {{ t('activeUsers.purgedCount', purgedCount) }}
-          </v-alert>
-        </template>
+            {{ t('clear') }}
+          </v-btn>
+        </v-form>
+        <div v-if="working" class="text-center py-11">
+          <v-progress-circular indeterminate />
+        </div>
+        <v-alert v-else-if="purgedCount !== null">
+          {{ t('activeUsers.purgedCount', purgedCount) }}
+        </v-alert>
       </DefaultDialog>
     </template>
     {{ t('activeUsers.description') }}
