@@ -731,7 +731,7 @@
     "textBaseTag": "Grundtagg",
     "textBaseTagDefault": "stycke",
     "textModify": "Ändra förslagstext",
-    "textDeleteConfirm": "Du håller på att radera dena här förslagstexten.\nÄr du säker?",
+    "textDeleteConfirm": "Du håller på att radera den här förslagstexten.\nÄr du säker?",
     "tied": "Oavgjort",
     "unknown": "Okänt förslag",
     "workflow": {
