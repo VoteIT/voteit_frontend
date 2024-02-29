@@ -2,6 +2,7 @@
   <AddProposalModal
     v-bind="modalProps"
     :title="proposal ? undefined : t('proposal.change')"
+    @reset="reset"
   >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
@@ -15,7 +16,7 @@
         color="warning"
         prepend-icon="mdi-undo-variant"
         :disabled="!isModified"
-        @click="reset()"
+        @click="reset"
         >{{ t('reset') }}</v-btn
       >
     </template>
@@ -41,17 +42,21 @@ if (!(props.proposal || props.paragraph))
 
 const { t } = useI18n()
 const { getParagraph } = useTextDocuments()
+
 const paragraph = computed(
   () =>
     props.paragraph ??
-    (props.proposal && getParagraph(props.proposal?.paragraph))
-)
-const body = ref(
-  props.proposal ? props.proposal.body : paragraph.value?.body ?? ''
+    (props.proposal && getParagraph(props.proposal.paragraph))
 )
 
+function getInitialBody() {
+  return props.proposal ? props.proposal.body : paragraph.value?.body ?? ''
+}
+
+const body = ref(getInitialBody())
+
 function reset() {
-  body.value = paragraph.value?.body ?? ''
+  body.value = getInitialBody()
 }
 
 const isModified = computed(() => body.value.trim() !== paragraph.value?.body)

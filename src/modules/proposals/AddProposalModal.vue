@@ -3,6 +3,7 @@
     color="background"
     :persistent="!closable"
     :title="proposal ? t('proposal.edit') : t('proposal.add')"
+    @close="resetContent"
   >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
@@ -112,6 +113,10 @@ const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   shortname: 'proposal'
 })
+
+const emit = defineEmits<{
+  (e: 'reset'): void
+}>()
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
@@ -226,6 +231,14 @@ watch(
 const closable = computed(
   () => done.value || (!proposalPreview.value && !previewing.value)
 )
+
+function resetContent() {
+  done.value = false
+  extraTags.value = getExtraTags(props.proposal)
+  body.value = props.proposal?.body ?? ''
+  proposalPreview.value = null
+  emit('reset')
+}
 </script>
 
 <style lang="sass">
