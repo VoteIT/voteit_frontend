@@ -119,8 +119,11 @@ async function save() {
     <div class="d-flex">
       <AuthorAvatar :author="p" class="mr-2" />
       <div class="flex-grow-1">
-        <AuthorName :author="p" /><br />
-        <Moment :date="p.created" />
+        <AuthorName :author="p">
+          <template #appendSecondary>
+            <Moment :date="p.created" />
+          </template>
+        </AuthorName>
       </div>
     </div>
     <div v-if="editing">

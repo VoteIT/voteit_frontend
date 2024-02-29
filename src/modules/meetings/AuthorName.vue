@@ -60,6 +60,10 @@ const groupUserId = computed(() => {
         >
         {{ prependText }}
         {{ groupName }}
+        <slot name="appendMain"></slot>
+        <template v-if="$slots.appendSecondary">
+          <br /><slot name="appendSecondary"></slot>
+        </template>
       </span>
     </template>
     <v-card rounded="lg" class="mb-1" elevation="4">
@@ -83,10 +87,18 @@ const groupUserId = computed(() => {
   <span v-else-if="isUserAuthor(author)">
     {{ prependText }}
     <User :pk="author.author" />
+    <slot name="appendMain"></slot>
+    <template v-if="$slots.appendSecondary">
+      <br /><slot name="appendSecondary"></slot>
+    </template>
   </span>
   <span v-else>
     {{ prependText }}
-    <User :pk="author.author" /><br />
+    <User :pk="author.author" /> <slot name="appendMain"></slot>
+    <template v-if="$slots.appendSecondary">
+      <span class="ml-6"><slot name="appendSecondary"></slot></span>
+    </template>
+    <br />
     <small class="text-secondary"
       ><v-icon icon="mdi-account-multiple" /> {{ groupName }}</small
     >
