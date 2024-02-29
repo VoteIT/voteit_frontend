@@ -2,34 +2,34 @@
 
 exports[`DuttResult component 1`] = `
 "<div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 3</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 15 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\"></i>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 15 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" targetref="[object Object]" aria-describedby="v-tooltip-1"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -39,34 +39,34 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 2</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-3\\"></i>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" targetref="[object Object]" aria-describedby="v-tooltip-3"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -76,34 +76,34 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 1</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-5\\"></i>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" targetref="[object Object]" aria-describedby="v-tooltip-5"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -113,11 +113,11 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div class=\\"v-alert v-theme--light bg-info v-alert--density-default v-alert--variant-flat my-2\\" role=\\"alert\\">
-    <!----><span class=\\"v-alert__underlay\\"></span>
+  <div class="v-alert v-theme--light bg-info v-alert--density-default v-alert--variant-flat my-2" role="alert">
+    <!----><span class="v-alert__underlay"></span>
     <!---->
-    <div class=\\"v-alert__prepend\\"><i class=\\"mdi-alert-decagram mdi v-icon notranslate v-theme--light\\" style=\\"font-size: 28px; height: 28px; width: 28px;\\" aria-hidden=\\"true\\" density=\\"default\\"></i></div>
-    <div class=\\"v-alert__content\\">
+    <div class="v-alert__prepend"><i class="mdi-alert-decagram mdi v-icon notranslate v-theme--light" style="font-size: 28px; height: 28px; width: 28px;" aria-hidden="true" density="default"></i></div>
+    <div class="v-alert__content">
       <!---->poll.method.description.dutt
       <!---->
     </div>
@@ -130,34 +130,34 @@ exports[`DuttResult component 1`] = `
 exports[`MajorityResult component 1`] = `
 "<div>
   <!--v-if-->
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 2</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\"></i>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success" aria-hidden="true" targetref="[object Object]" aria-describedby="v-tooltip-1"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -167,34 +167,34 @@ exports[`MajorityResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 1</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-3\\"></i>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" targetref="[object Object]" aria-describedby="v-tooltip-3"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -209,67 +209,67 @@ exports[`MajorityResult component 1`] = `
 
 exports[`RepeatedIRVResult component 1`] = `
 "<div>
-  <div class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default my-6\\">
-    <div class=\\"v-expansion-panel\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+  <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-6">
+    <div class="v-expansion-panel">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.round 1: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge ml-2\\">
-          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span>poll.result.round 1: poll.STV.elected <div data-v-1b13cba6="" class="v-badge ml-2">
+          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text\\" style=\\"display: none;\\">
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span></button>
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text" style="display: none;">
           <!---->
         </div>
       </transition-stub>
     </div>
-    <div class=\\"v-expansion-panel\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+    <div class="v-expansion-panel">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.round 2: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge ml-2\\">
-          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span>poll.result.round 2: poll.STV.elected <div data-v-1b13cba6="" class="v-badge ml-2">
+          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text\\" style=\\"display: none;\\">
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span></button>
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text" style="display: none;">
           <!---->
         </div>
       </transition-stub>
     </div>
   </div>
-  <div class=\\"v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line\\" tabindex=\\"0\\" role=\\"listbox\\">
-    <div class=\\"v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
+  <div class="v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line" tabindex="0" role="listbox">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
       <!---->
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-subtitle\\">poll.result.complete</div>
-        <div class=\\"v-list-item-title\\">yes</div>
+        <div class="v-list-item-subtitle">poll.result.complete</div>
+        <div class="v-list-item-title">yes</div>
       </div>
       <!---->
     </div>
-    <div class=\\"v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
       <!---->
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-subtitle\\">poll.result.quota</div>
-        <div class=\\"v-list-item-title\\">123</div>
+        <div class="v-list-item-subtitle">poll.result.quota</div>
+        <div class="v-list-item-title">123</div>
       </div>
       <!---->
     </div>
-    <div class=\\"v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
       <!---->
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-subtitle\\">poll.result.randomized</div>
-        <div class=\\"v-list-item-title\\">no</div>
+        <div class="v-list-item-subtitle">poll.result.randomized</div>
+        <div class="v-list-item-title">no</div>
       </div>
       <!---->
     </div>
@@ -278,166 +278,166 @@ exports[`RepeatedIRVResult component 1`] = `
 `;
 
 exports[`RepeatedSchulzeResult component 1`] = `
-"<div data-v-9cc52876=\\"\\">
-  <div data-v-4b57e0f3=\\"\\" data-v-9cc52876=\\"\\" selected=\\"true\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\"><span data-v-9cc52876=\\"\\" class=\\"ordinal\\">1</span>
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+"<div data-v-9cc52876="">
+  <div data-v-4b57e0f3="" data-v-9cc52876="" selected="true" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal"><span data-v-9cc52876="" class="ordinal">1</span>
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 1</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
       </div>
       <!--v-if-->
       <!--v-if-->
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3=\\"\\" data-v-9cc52876=\\"\\" selected=\\"true\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\"><span data-v-9cc52876=\\"\\" class=\\"ordinal\\">2</span>
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" data-v-9cc52876="" selected="true" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal"><span data-v-9cc52876="" class="ordinal">2</span>
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 2</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-1" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
       </div>
       <!--v-if-->
       <!--v-if-->
     </div>
     <!--v-if-->
   </div>
-  <div data-v-9cc52876=\\"\\" class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default\\">
-    <div data-v-9cc52876=\\"\\" class=\\"v-expansion-panel v-expansion-panel--active\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.roundNum<span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
+  <div data-v-9cc52876="" class="v-expansion-panels v-theme--light v-expansion-panels--variant-default">
+    <div data-v-9cc52876="" class="v-expansion-panel v-expansion-panel--active">
+      <div class="v-expansion-panel__shadow"></div><button class="v-expansion-panel-title v-expansion-panel-title--active" type="button" aria-expanded="true"><span class="v-expansion-panel-title__overlay"></span>poll.result.roundNum<span class="v-expansion-panel-title__icon"><i class="mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span></button>
       <!---->
-      <transition-stub data-v-9cc52876=\\"\\" name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text\\">
-          <div class=\\"v-expansion-panel-text__wrapper\\">
-            <div data-v-9cc52876=\\"\\">
+      <transition-stub data-v-9cc52876="" name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text">
+          <div class="v-expansion-panel-text__wrapper">
+            <div data-v-9cc52876="">
               <p>poll.schulze.numTiedWinners</p>
               <!--v-if-->
-              <proposal p=\\"[object Object]\\" readonly=\\"\\" class=\\"my-8\\"></proposal>
-              <div class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default my-4\\">
-                <div class=\\"v-expansion-panel v-expansion-panel--active\\">
-                  <div class=\\"v-expansion-panel__shadow\\"></div>
+              <proposal p="[object Object]" readonly="" class="my-8"></proposal>
+              <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-4">
+                <div class="v-expansion-panel v-expansion-panel--active">
+                  <div class="v-expansion-panel__shadow"></div>
                   <!---->
-                  <!----><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success mr-4\\" aria-hidden=\\"true\\"></i>
-                    <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-                      <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-                        <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <!----><button class="v-expansion-panel-title v-expansion-panel-title--active" type="button" aria-expanded="true"><span class="v-expansion-panel-title__overlay"></span><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success mr-4" aria-hidden="true"></i>
+                    <div data-v-1b13cba6="" class="v-badge">
+                      <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+                        <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                       </div>
-                    </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+                    </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
                   </button>
-                  <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-                    <div class=\\"v-expansion-panel-text my-2\\">
-                      <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-                          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-                            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+                    <div class="v-expansion-panel-text my-2">
+                      <div class="v-expansion-panel-text__wrapper">poll.result.versus: <div data-v-1b13cba6="" class="v-badge">
+                          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+                            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                           </div>
                         </div>
-                        <div class=\\"d-flex justify-space-between mt-2\\"><span class=\\"bg-success px-2 rounded-pill\\">poll.result.approveThis (3)</span><span class=\\"bg-secondary px-2 rounded-pill\\">poll.result.tie (0)</span><span class=\\"bg-warning px-2 rounded-pill\\">poll.result.approveOther (1)</span></div>
-                        <div class=\\"d-flex mt-1 overflow-hidden rounded\\">
-                          <div class=\\"bg-success text-center overflow-hidden text-no-wrap\\" style=\\"width: 75%;\\">75 % </div>
-                          <div class=\\"bg-secondary text-center overflow-hidden text-no-wrap\\" style=\\"width: 0%;\\">0 % </div>
-                          <div class=\\"bg-warning text-center overflow-hidden text-no-wrap\\" style=\\"width: 25%;\\">25 % </div>
+                        <div class="d-flex justify-space-between mt-2"><span class="bg-success px-2 rounded-pill">poll.result.approveThis (3)</span><span class="bg-secondary px-2 rounded-pill">poll.result.tie (0)</span><span class="bg-warning px-2 rounded-pill">poll.result.approveOther (1)</span></div>
+                        <div class="d-flex mt-1 overflow-hidden rounded">
+                          <div class="bg-success text-center overflow-hidden text-no-wrap" style="width: 75%;">75 % </div>
+                          <div class="bg-secondary text-center overflow-hidden text-no-wrap" style="width: 0%;">0 % </div>
+                          <div class="bg-warning text-center overflow-hidden text-no-wrap" style="width: 25%;">25 % </div>
                         </div>
                       </div>
                     </div>
                   </transition-stub>
-                  <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-                    <div class=\\"v-expansion-panel-text my-2\\">
-                      <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-                          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-                            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+                    <div class="v-expansion-panel-text my-2">
+                      <div class="v-expansion-panel-text__wrapper">poll.result.versus: <div data-v-1b13cba6="" class="v-badge">
+                          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+                            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                           </div>
                         </div>
-                        <div class=\\"d-flex justify-space-between mt-2\\"><span class=\\"bg-success px-2 rounded-pill\\">poll.result.approveThis (4)</span><span class=\\"bg-secondary px-2 rounded-pill\\">poll.result.tie (0)</span><span class=\\"bg-warning px-2 rounded-pill\\">poll.result.approveOther (0)</span></div>
-                        <div class=\\"d-flex mt-1 overflow-hidden rounded\\">
-                          <div class=\\"bg-success text-center overflow-hidden text-no-wrap\\" style=\\"width: 100%;\\">100 % </div>
-                          <div class=\\"bg-secondary text-center overflow-hidden text-no-wrap\\" style=\\"width: 0%;\\">0 % </div>
-                          <div class=\\"bg-warning text-center overflow-hidden text-no-wrap\\" style=\\"width: 0%;\\">0 % </div>
+                        <div class="d-flex justify-space-between mt-2"><span class="bg-success px-2 rounded-pill">poll.result.approveThis (4)</span><span class="bg-secondary px-2 rounded-pill">poll.result.tie (0)</span><span class="bg-warning px-2 rounded-pill">poll.result.approveOther (0)</span></div>
+                        <div class="d-flex mt-1 overflow-hidden rounded">
+                          <div class="bg-success text-center overflow-hidden text-no-wrap" style="width: 100%;">100 % </div>
+                          <div class="bg-secondary text-center overflow-hidden text-no-wrap" style="width: 0%;">0 % </div>
+                          <div class="bg-warning text-center overflow-hidden text-no-wrap" style="width: 0%;">0 % </div>
                         </div>
                       </div>
                     </div>
                   </transition-stub>
                 </div>
-                <div class=\\"v-expansion-panel v-expansion-panel--after-active\\">
-                  <div class=\\"v-expansion-panel__shadow\\"></div>
+                <div class="v-expansion-panel v-expansion-panel--after-active">
+                  <div class="v-expansion-panel__shadow"></div>
                   <!---->
-                  <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-                    <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-                      <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-                        <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4" aria-hidden="true"></i>
+                    <div data-v-1b13cba6="" class="v-badge">
+                      <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+                        <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                       </div>
-                    </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+                    </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
                   </button>
-                  <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-                    <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+                  <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+                    <div class="v-expansion-panel-text my-2" style="display: none;">
                       <!---->
                     </div>
                   </transition-stub>
-                  <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-                    <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+                  <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+                    <div class="v-expansion-panel-text my-2" style="display: none;">
                       <!---->
                     </div>
                   </transition-stub>
                 </div>
-                <div class=\\"v-expansion-panel\\">
-                  <div class=\\"v-expansion-panel__shadow\\"></div>
+                <div class="v-expansion-panel">
+                  <div class="v-expansion-panel__shadow"></div>
                   <!---->
-                  <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-                    <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-                      <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-                        <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4" aria-hidden="true"></i>
+                    <div data-v-1b13cba6="" class="v-badge">
+                      <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+                        <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                       </div>
-                    </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+                    </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
                   </button>
-                  <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-                    <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+                  <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+                    <div class="v-expansion-panel-text my-2" style="display: none;">
                       <!---->
                     </div>
                   </transition-stub>
-                  <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-                    <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+                  <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+                    <div class="v-expansion-panel-text my-2" style="display: none;">
                       <!---->
                     </div>
                   </transition-stub>
@@ -448,11 +448,11 @@ exports[`RepeatedSchulzeResult component 1`] = `
         </div>
       </transition-stub>
     </div>
-    <div data-v-9cc52876=\\"\\" class=\\"v-expansion-panel v-expansion-panel--after-active\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>poll.result.roundNum<span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span></button>
+    <div data-v-9cc52876="" class="v-expansion-panel v-expansion-panel--after-active">
+      <div class="v-expansion-panel__shadow"></div><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span>poll.result.roundNum<span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span></button>
       <!---->
-      <transition-stub data-v-9cc52876=\\"\\" name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text\\" style=\\"display: none;\\">
+      <transition-stub data-v-9cc52876="" name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text" style="display: none;">
           <!---->
         </div>
       </transition-stub>
@@ -463,23 +463,23 @@ exports[`RepeatedSchulzeResult component 1`] = `
 
 exports[`STVResult component 1`] = `
 "<div>
-  <div class=\\"v-list v-theme--light bg-background v-list--density-default v-list--one-line\\" tabindex=\\"0\\" role=\\"listbox\\">
-    <div class=\\"v-list-item v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
-      <div class=\\"v-list-item__prepend\\"><span class=\\"text-h6 mr-4 mt-n3\\">1. </span>
-        <div class=\\"v-list-item__spacer\\"></div>
+  <div class="v-list v-theme--light bg-background v-list--density-default v-list--one-line" tabindex="0" role="listbox">
+    <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
+      <div class="v-list-item__prepend"><span class="text-h6 mr-4 mt-n3">1. </span>
+        <div class="v-list-item__spacer"></div>
       </div>
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-title mb-1\\">
-          <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+        <div class="v-list-item-title mb-1">
+          <div data-v-1b13cba6="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
-        <div class=\\"v-list-item-subtitle\\">
+        <div class="v-list-item-subtitle">
           <div>
             <p>Proposal 1</p>
           </div>
@@ -487,22 +487,22 @@ exports[`STVResult component 1`] = `
       </div>
       <!---->
     </div>
-    <div class=\\"v-list-item v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
-      <div class=\\"v-list-item__prepend\\"><span class=\\"text-h6 mr-4 mt-n3\\">2. </span>
-        <div class=\\"v-list-item__spacer\\"></div>
+    <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
+      <div class="v-list-item__prepend"><span class="text-h6 mr-4 mt-n3">2. </span>
+        <div class="v-list-item__spacer"></div>
       </div>
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-title mb-1\\">
-          <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+        <div class="v-list-item-title mb-1">
+          <div data-v-1b13cba6="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
-        <div class=\\"v-list-item-subtitle\\">
+        <div class="v-list-item-subtitle">
           <div>
             <p>Proposal 2</p>
           </div>
@@ -511,102 +511,102 @@ exports[`STVResult component 1`] = `
       <!---->
     </div>
   </div>
-  <hr class=\\"v-divider v-theme--light my-3\\" aria-orientation=\\"horizontal\\" role=\\"separator\\">
-  <div class=\\"v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line\\" tabindex=\\"0\\" role=\\"listbox\\">
-    <div class=\\"v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
+  <hr class="v-divider v-theme--light my-3" aria-orientation="horizontal" role="separator">
+  <div class="v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line" tabindex="0" role="listbox">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
       <!---->
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-subtitle\\">poll.result.complete</div>
-        <div class=\\"v-list-item-title\\">yes</div>
+        <div class="v-list-item-subtitle">poll.result.complete</div>
+        <div class="v-list-item-title">yes</div>
       </div>
       <!---->
     </div>
-    <div class=\\"v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
       <!---->
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-subtitle\\">poll.result.quota</div>
-        <div class=\\"v-list-item-title\\">123</div>
+        <div class="v-list-item-subtitle">poll.result.quota</div>
+        <div class="v-list-item-title">123</div>
       </div>
       <!---->
     </div>
-    <div class=\\"v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text\\">
-      <!----><span class=\\"v-list-item__underlay\\"></span>
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line v-list-item--variant-text">
+      <!----><span class="v-list-item__underlay"></span>
       <!---->
-      <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+      <div class="v-list-item__content" data-no-activator="">
         <!---->
         <!---->
-        <div class=\\"v-list-item-subtitle\\">poll.result.randomized</div>
-        <div class=\\"v-list-item-title\\">no</div>
+        <div class="v-list-item-subtitle">poll.result.randomized</div>
+        <div class="v-list-item-title">no</div>
       </div>
       <!---->
     </div>
   </div>
-  <hr class=\\"v-divider v-theme--light my-3\\" aria-orientation=\\"horizontal\\" role=\\"separator\\">
+  <hr class="v-divider v-theme--light my-3" aria-orientation="horizontal" role="separator">
   <h2>poll.result.electionRounds</h2>
-  <div class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default my-6\\">
-    <div class=\\"v-expansion-panel v-expansion-panel--active\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+  <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-6">
+    <div class="v-expansion-panel v-expansion-panel--active">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>
-        <div class=\\"text-truncate\\">poll.result.round 1: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge mx-1\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title v-expansion-panel-title--active" type="button" aria-expanded="true"><span class="v-expansion-panel-title__overlay"></span>
+        <div class="text-truncate">poll.result.round 1: poll.STV.elected <div data-v-1b13cba6="" class="v-badge mx-1">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
       </button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text\\">
-          <div class=\\"v-expansion-panel-text__wrapper\\">
-            <div class=\\"v-list v-theme--light v-list--density-default v-list--one-line\\" tabindex=\\"0\\" role=\\"listbox\\">
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text">
+          <div class="v-expansion-panel-text__wrapper">
+            <div class="v-list v-theme--light v-list--density-default v-list--one-line" tabindex="0" role="listbox">
               <!--v-if-->
-              <div class=\\"v-list-item v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text\\">
-                <!----><span class=\\"v-list-item__underlay\\"></span>
+              <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text">
+                <!----><span class="v-list-item__underlay"></span>
                 <!---->
-                <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+                <div class="v-list-item__content" data-no-activator="">
                   <!---->
                   <!---->
-                  <div data-v-1b13cba6=\\"\\" class=\\"v-badge mr-2\\">
-                    <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-                      <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <div data-v-1b13cba6="" class="v-badge mr-2">
+                    <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+                      <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                     </div>
                   </div> Vote count: 200
                 </div>
-                <div class=\\"v-list-item__append\\"><i class=\\"mdi-check mdi v-icon notranslate v-theme--light v-icon--size-default text-success\\" aria-hidden=\\"true\\"></i>
-                  <div class=\\"v-list-item__spacer\\"></div>
+                <div class="v-list-item__append"><i class="mdi-check mdi v-icon notranslate v-theme--light v-icon--size-default text-success" aria-hidden="true"></i>
+                  <div class="v-list-item__spacer"></div>
                 </div>
               </div>
-              <hr class=\\"v-divider v-theme--light\\" aria-orientation=\\"horizontal\\" role=\\"separator\\">
-              <div class=\\"v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text\\">
-                <!----><span class=\\"v-list-item__underlay\\"></span>
+              <hr class="v-divider v-theme--light" aria-orientation="horizontal" role="separator">
+              <div class="v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text">
+                <!----><span class="v-list-item__underlay"></span>
                 <!---->
-                <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+                <div class="v-list-item__content" data-no-activator="">
                   <!---->
                   <!---->
-                  <div data-v-1b13cba6=\\"\\" class=\\"v-badge mr-2\\">
-                    <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-                      <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <div data-v-1b13cba6="" class="v-badge mr-2">
+                    <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+                      <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                     </div>
                   </div> Vote count: 100
                 </div>
                 <!---->
               </div>
               <!--v-if-->
-              <div class=\\"v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text\\">
-                <!----><span class=\\"v-list-item__underlay\\"></span>
+              <div class="v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line v-list-item--variant-text">
+                <!----><span class="v-list-item__underlay"></span>
                 <!---->
-                <div class=\\"v-list-item__content\\" data-no-activator=\\"\\">
+                <div class="v-list-item__content" data-no-activator="">
                   <!---->
                   <!---->
-                  <div data-v-1b13cba6=\\"\\" class=\\"v-badge mr-2\\">
-                    <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-                      <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+                  <div data-v-1b13cba6="" class="v-badge mr-2">
+                    <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+                      <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
                     </div>
                   </div> Vote count: 100
                 </div>
@@ -617,19 +617,19 @@ exports[`STVResult component 1`] = `
         </div>
       </transition-stub>
     </div>
-    <div class=\\"v-expansion-panel v-expansion-panel--after-active\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+    <div class="v-expansion-panel v-expansion-panel--after-active">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span>
-        <div class=\\"text-truncate\\">poll.result.round 2: poll.STV.elected <div data-v-1b13cba6=\\"\\" class=\\"v-badge mx-1\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span>
+        <div class="text-truncate">poll.result.round 2: poll.STV.elected <div data-v-1b13cba6="" class="v-badge mx-1">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
       </button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text\\" style=\\"display: none;\\">
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text" style="display: none;">
           <!---->
         </div>
       </transition-stub>
@@ -642,89 +642,89 @@ exports[`SchulzeResult component 1`] = `
 "<div>
   <p>poll.schulze.numTiedWinners</p>
   <!--v-if-->
-  <proposal p=\\"[object Object]\\" readonly=\\"\\" class=\\"my-8\\"></proposal>
-  <div class=\\"v-expansion-panels v-theme--light v-expansion-panels--variant-default my-4\\">
-    <div class=\\"v-expansion-panel v-expansion-panel--active\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+  <proposal p="[object Object]" readonly="" class="my-8"></proposal>
+  <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-4">
+    <div class="v-expansion-panel v-expansion-panel--active">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title v-expansion-panel-title--active\\" type=\\"button\\" aria-expanded=\\"true\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success mr-4\\" aria-hidden=\\"true\\"></i>
-        <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title v-expansion-panel-title--active" type="button" aria-expanded="true"><span class="v-expansion-panel-title__overlay"></span><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success mr-4" aria-hidden="true"></i>
+        <div data-v-1b13cba6="" class="v-badge">
+          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
       </button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text my-2\\">
-          <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-              <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-                <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text my-2">
+          <div class="v-expansion-panel-text__wrapper">poll.result.versus: <div data-v-1b13cba6="" class="v-badge">
+              <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+                <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
               </div>
             </div>
-            <div class=\\"d-flex justify-space-between mt-2\\"><span class=\\"bg-success px-2 rounded-pill\\">poll.result.approveThis (3)</span><span class=\\"bg-secondary px-2 rounded-pill\\">poll.result.tie (0)</span><span class=\\"bg-warning px-2 rounded-pill\\">poll.result.approveOther (1)</span></div>
-            <div class=\\"d-flex mt-1 overflow-hidden rounded\\">
-              <div class=\\"bg-success text-center overflow-hidden text-no-wrap\\" style=\\"width: 75%;\\">75 % </div>
-              <div class=\\"bg-secondary text-center overflow-hidden text-no-wrap\\" style=\\"width: 0%;\\">0 % </div>
-              <div class=\\"bg-warning text-center overflow-hidden text-no-wrap\\" style=\\"width: 25%;\\">25 % </div>
+            <div class="d-flex justify-space-between mt-2"><span class="bg-success px-2 rounded-pill">poll.result.approveThis (3)</span><span class="bg-secondary px-2 rounded-pill">poll.result.tie (0)</span><span class="bg-warning px-2 rounded-pill">poll.result.approveOther (1)</span></div>
+            <div class="d-flex mt-1 overflow-hidden rounded">
+              <div class="bg-success text-center overflow-hidden text-no-wrap" style="width: 75%;">75 % </div>
+              <div class="bg-secondary text-center overflow-hidden text-no-wrap" style="width: 0%;">0 % </div>
+              <div class="bg-warning text-center overflow-hidden text-no-wrap" style="width: 25%;">25 % </div>
             </div>
           </div>
         </div>
       </transition-stub>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text my-2\\">
-          <div class=\\"v-expansion-panel-text__wrapper\\">poll.result.versus: <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-              <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-                <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text my-2">
+          <div class="v-expansion-panel-text__wrapper">poll.result.versus: <div data-v-1b13cba6="" class="v-badge">
+              <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+                <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
               </div>
             </div>
-            <div class=\\"d-flex justify-space-between mt-2\\"><span class=\\"bg-success px-2 rounded-pill\\">poll.result.approveThis (4)</span><span class=\\"bg-secondary px-2 rounded-pill\\">poll.result.tie (0)</span><span class=\\"bg-warning px-2 rounded-pill\\">poll.result.approveOther (0)</span></div>
-            <div class=\\"d-flex mt-1 overflow-hidden rounded\\">
-              <div class=\\"bg-success text-center overflow-hidden text-no-wrap\\" style=\\"width: 100%;\\">100 % </div>
-              <div class=\\"bg-secondary text-center overflow-hidden text-no-wrap\\" style=\\"width: 0%;\\">0 % </div>
-              <div class=\\"bg-warning text-center overflow-hidden text-no-wrap\\" style=\\"width: 0%;\\">0 % </div>
+            <div class="d-flex justify-space-between mt-2"><span class="bg-success px-2 rounded-pill">poll.result.approveThis (4)</span><span class="bg-secondary px-2 rounded-pill">poll.result.tie (0)</span><span class="bg-warning px-2 rounded-pill">poll.result.approveOther (0)</span></div>
+            <div class="d-flex mt-1 overflow-hidden rounded">
+              <div class="bg-success text-center overflow-hidden text-no-wrap" style="width: 100%;">100 % </div>
+              <div class="bg-secondary text-center overflow-hidden text-no-wrap" style="width: 0%;">0 % </div>
+              <div class="bg-warning text-center overflow-hidden text-no-wrap" style="width: 0%;">0 % </div>
             </div>
           </div>
         </div>
       </transition-stub>
     </div>
-    <div class=\\"v-expansion-panel v-expansion-panel--after-active\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+    <div class="v-expansion-panel v-expansion-panel--after-active">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-        <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4" aria-hidden="true"></i>
+        <div data-v-1b13cba6="" class="v-badge">
+          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
       </button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text my-2" style="display: none;">
           <!---->
         </div>
       </transition-stub>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text my-2" style="display: none;">
           <!---->
         </div>
       </transition-stub>
     </div>
-    <div class=\\"v-expansion-panel\\">
-      <div class=\\"v-expansion-panel__shadow\\"></div>
+    <div class="v-expansion-panel">
+      <div class="v-expansion-panel__shadow"></div>
       <!---->
-      <!----><button class=\\"v-expansion-panel-title\\" type=\\"button\\" aria-expanded=\\"false\\"><span class=\\"v-expansion-panel-title__overlay\\"></span><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4\\" aria-hidden=\\"true\\"></i>
-        <div data-v-1b13cba6=\\"\\" class=\\"v-badge\\">
-          <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag disabled\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-            <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+      <!----><button class="v-expansion-panel-title" type="button" aria-expanded="false"><span class="v-expansion-panel-title__overlay"></span><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning mr-4" aria-hidden="true"></i>
+        <div data-v-1b13cba6="" class="v-badge">
+          <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag disabled" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+            <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
           </div>
-        </div><span class=\\"v-expansion-panel-title__icon\\"><i class=\\"mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span>
+        </div><span class="v-expansion-panel-title__icon"><i class="mdi-chevron-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span>
       </button>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text my-2" style="display: none;">
           <!---->
         </div>
       </transition-stub>
-      <transition-stub name=\\"expand-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\">
-        <div class=\\"v-expansion-panel-text my-2\\" style=\\"display: none;\\">
+      <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
+        <div class="v-expansion-panel-text my-2" style="display: none;">
           <!---->
         </div>
       </transition-stub>
@@ -735,40 +735,40 @@ exports[`SchulzeResult component 1`] = `
 
 exports[`SimpleResult component 1`] = `
 "<div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(306, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-1\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-1 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 1</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (67 %) </small></span>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div class="mt-2 flex-grow-1 text-right"><button type="button" class="v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">6 <small class="ml-1"> (67 %) </small></span>
             <!---->
             <!---->
-          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-warning v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">3 <small class=\\"ml-1\\"> (33 %) </small></span>
+          </button><button type="button" class="v-btn v-theme--light text-warning v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">3 <small class="ml-1"> (33 %) </small></span>
             <!---->
             <!---->
-          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">4 <!--v-if--></span>
+          </button><button type="button" class="v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">4 <!--v-if--></span>
             <!---->
             <!---->
           </button></div>
@@ -778,40 +778,40 @@ exports[`SimpleResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(275, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-2\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-2 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 2</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">3 <small class=\\"ml-1\\"> (33 %) </small></span>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div class="mt-2 flex-grow-1 text-right"><button type="button" class="v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">3 <small class="ml-1"> (33 %) </small></span>
             <!---->
             <!---->
-          </button><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-warning v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (67 %) </small></span>
+          </button><button type="button" class="v-btn v-btn--elevated v-theme--light bg-warning v-btn--density-default v-btn--size-default v-btn--variant-elevated"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">6 <small class="ml-1"> (67 %) </small></span>
             <!---->
             <!---->
-          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">4 <!--v-if--></span>
+          </button><button type="button" class="v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">4 <!--v-if--></span>
             <!---->
             <!---->
           </button></div>
@@ -821,40 +821,40 @@ exports[`SimpleResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3=\\"\\" class=\\"my-4\\">
-    <div data-v-4b57e0f3=\\"\\" class=\\"v-sheet v-theme--light elevation-4 v-sheet--rounded proposal\\">
-      <div data-v-4b57e0f3=\\"\\" class=\\"meta d-flex\\">
-        <div data-v-4b57e0f3=\\"\\" class=\\"flex-grow-1\\"><span data-v-4b57e0f3=\\"\\" class=\\"content-type\\">proposal.proposal</span>
-          <div data-v-1b13cba6=\\"\\" data-v-4b57e0f3=\\"\\" class=\\"v-badge\\">
-            <div class=\\"v-badge__wrapper\\"><span data-v-1b13cba6=\\"\\" class=\\"voteit-tag\\" style=\\"background-color: hsl(244, 40%, 80%);\\" data-denotation-char=\\"#\\" data-value=\\"prop-3\\"><i data-v-1b13cba6=\\"\\" class=\\"mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small\\" aria-hidden=\\"true\\"></i> #prop-3 <!--v-if--></span>
-              <transition-stub name=\\"scale-rotate-transition\\" appear=\\"false\\" persisted=\\"false\\" css=\\"true\\"><span class=\\"v-badge__badge v-theme--light bg-secondary\\" style=\\"display: none;\\" aria-atomic=\\"true\\" aria-label=\\"Badge\\" aria-live=\\"polite\\" role=\\"status\\">undefined</span></transition-stub>
+  <div data-v-4b57e0f3="" class="my-4">
+    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-4b57e0f3="" class="meta d-flex">
+        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
           </div>
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3=\\"\\" class=\\"my-3\\">
-        <div class=\\"overflow-hidden position-relative\\">
-          <div class=\\"richtext\\">
+      <div data-v-4b57e0f3="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="richtext">
             <p>Proposal 3</p>
           </div>
-          <div class=\\"overflow-fade\\" style=\\"display: none;\\"></div>
+          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-8\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span targetref="[object Object]" aria-describedby="v-tooltip-8" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
-        <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">2 <small class=\\"ml-1\\"> (25 %) </small></span>
+        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div class="mt-2 flex-grow-1 text-right"><button type="button" class="v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">2 <small class="ml-1"> (25 %) </small></span>
             <!---->
             <!---->
-          </button><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-warning v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (75 %) </small></span>
+          </button><button type="button" class="v-btn v-btn--elevated v-theme--light bg-warning v-btn--density-default v-btn--size-default v-btn--variant-elevated"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">6 <small class="ml-1"> (75 %) </small></span>
             <!---->
             <!---->
-          </button><button type=\\"button\\" class=\\"v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">5 <!--v-if--></span>
+          </button><button type="button" class="v-btn v-theme--light text-secondary v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-cancel mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">5 <!--v-if--></span>
             <!---->
             <!---->
           </button></div>

@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Mount component 1`] = `
-"<div><span class=\\"text-warning\\">5/123</span>
+"<div><span class="text-warning">5/123</span>
   <!--v-if-->
 </div>"
 `;

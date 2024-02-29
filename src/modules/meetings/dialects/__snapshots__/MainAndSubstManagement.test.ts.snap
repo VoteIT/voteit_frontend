@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Mount component 1`] = `
-"<span class=\\"text-warning\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\">1/2</span>
+"<span class="text-warning" targetref="[object Object]" aria-describedby="v-tooltip-0">1/2</span>
 <!--teleport start-->
 <!--teleport end-->"
 `;
