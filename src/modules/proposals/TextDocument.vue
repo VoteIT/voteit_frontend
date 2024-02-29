@@ -34,7 +34,7 @@
             <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
           </v-card-text>
           <v-card-actions v-if="canAddProposal">
-            <DefaultDialog color="background" persistent>
+            <AddTextProposalModal :paragraph="p">
               <template #activator="{ props }">
                 <v-btn
                   size="small"
@@ -46,10 +46,7 @@
                   {{ t('proposal.change') }}
                 </v-btn>
               </template>
-              <template #default="{ close }">
-                <AddTextProposalModal :paragraph="p" @close="close" />
-              </template>
-            </DefaultDialog>
+            </AddTextProposalModal>
           </v-card-actions>
         </template>
       </div>
@@ -64,7 +61,6 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { openModalEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
-import DefaultDialog from '@/components/DefaultDialog.vue'
 import Tag from '@/components/Tag.vue'
 
 import { ProposalText, proposalTextType } from './contentTypes'

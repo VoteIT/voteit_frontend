@@ -717,6 +717,7 @@
     "change": "Propose change",
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "denied": "Denied",
+    "edit": "Edit proposal",
     "notFound": "Proposal not found",
     "ordering": "Proposal order",
     "postAs": "Post as",

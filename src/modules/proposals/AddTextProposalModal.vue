@@ -1,5 +1,11 @@
 <template>
-  <AddProposalModal v-bind="modalProps" @close="$emit('close')">
+  <AddProposalModal
+    v-bind="modalProps"
+    :title="proposal ? undefined : t('proposal.change')"
+  >
+    <template #activator="attrs">
+      <slot name="activator" v-bind="attrs"></slot>
+    </template>
     <template #editor>
       <textarea class="form-control mb-2" v-model="body" required></textarea>
     </template>

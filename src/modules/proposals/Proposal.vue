@@ -68,15 +68,58 @@
           <slot name="buttons"></slot>
         </div>
         <v-spacer />
-        <DropdownMenu size="small" :items="menuItems" />
-        <DefaultDialog v-model="editDialog" color="background" persistent>
-          <AddTextProposalModal
-            v-if="p.shortname === 'diff_proposal'"
-            @close="editDialog = false"
-            :proposal="p"
-          />
-          <AddProposalModal v-else @close="editDialog = false" :proposal="p" />
-        </DefaultDialog>
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn
+              icon="mdi-dots-vertical"
+              v-bind="props"
+              size="small"
+              variant="text"
+              class="ma-n2"
+            />
+          </template>
+          <v-list>
+            <ProposalEditModal v-if="canChangeProposal(p)" :proposal="p">
+              <template #activator="{ props }">
+                <v-list-item
+                  prepend-icon="mdi-pencil"
+                  :title="t('edit')"
+                  v-bind="props"
+                />
+              </template>
+            </ProposalEditModal>
+            <QueryDialog
+              v-if="canRetractProposal(p)"
+              color="warning"
+              :text="t('proposal.retractPrompt')"
+              @confirmed="retract"
+            >
+              <template #activator="{ props }">
+                <v-list-item
+                  base-color="warning"
+                  prepend-icon="mdi-undo"
+                  :title="t('proposal.retract')"
+                  v-bind="props"
+                />
+              </template>
+            </QueryDialog>
+            <QueryDialog
+              v-if="canDeleteProposal(p)"
+              color="warning"
+              :text="t('proposal.deletePrompt')"
+              @confirmed="deleteProposal"
+            >
+              <template #activator="{ props }">
+                <v-list-item
+                  base-color="warning"
+                  prepend-icon="mdi-delete"
+                  :title="t('content.delete')"
+                  v-bind="props"
+                />
+              </template>
+            </QueryDialog>
+          </v-list>
+        </v-menu>
       </footer>
       <footer v-else-if="$slots.buttons">
         <slot name="buttons"></slot>
@@ -100,10 +143,6 @@
 import { ComponentPublicInstance, computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
-import { MenuItem, ThemeColor } from '@/utils/types'
-
-import DropdownMenu from '@/components/DropdownMenu.vue'
 import Moment from '@/components/Moment.vue'
 import Tag from '@/components/Tag.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -124,10 +163,10 @@ import {
 } from './rules'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
-import type { Proposal } from './types'
-import DefaultDialog from '@/components/DefaultDialog.vue'
+import { isRichtextProposal, type Proposal } from './types'
 import ProposalText from './ProposalText.vue'
 import AuthorName from '../meetings/AuthorName.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 const props = defineProps<{
   p: Proposal
@@ -145,24 +184,12 @@ const { getProposalDiscussions } = useDiscussions()
 
 const { isUnread } = useUnread(new Date(props.p.created))
 
-async function queryDelete() {
-  if (
-    await dialogQuery({
-      title: t('proposal.deletePrompt'),
-      theme: ThemeColor.Warning
-    })
-  )
-    proposalType.api.delete(props.p.pk)
+function deleteProposal() {
+  proposalType.api.delete(props.p.pk)
 }
 
-async function retract() {
-  if (
-    await dialogQuery({
-      title: t('proposal.retractPrompt'),
-      theme: ThemeColor.Warning
-    })
-  )
-    proposalType.transitions.make(props.p, 'retract', t)
+function retract() {
+  proposalType.transitions.make(props.p, 'retract', t)
 }
 
 const discussionPosts = computed(() => {
@@ -179,43 +206,19 @@ async function comment() {
   commentsComponent.value?.focus()
 }
 
-const editDialog = ref(false)
-const menuItems = computed<MenuItem[]>(() => {
-  const items: MenuItem[] = []
-  if (canChangeProposal(props.p)) {
-    items.push({
-      title: t('edit'),
-      prependIcon: 'mdi-pencil',
-      onClick: async () => {
-        editDialog.value = true
-      }
-    })
-  }
-  if (canRetractProposal(props.p)) {
-    items.push({
-      title: t('proposal.retract'),
-      prependIcon: 'mdi-undo',
-      onClick: retract,
-      color: ThemeColor.Warning
-    })
-  }
-  if (canDeleteProposal(props.p)) {
-    items.push({
-      title: t('content.delete'),
-      prependIcon: 'mdi-delete',
-      onClick: queryDelete,
-      color: ThemeColor.Warning
-    })
-  }
-  return items
-})
-
 const extraTags = computed(() => {
   const docTags = getHTMLTags(props.p.body)
   return props.p.tags.filter(
     (tag) => !docTags.has(tag) && tag !== props.p.prop_id
   )
 })
+
+/**
+ * Dynamic choice of component for editing proposal
+ */
+const ProposalEditModal = computed(() =>
+  isRichtextProposal(props.p) ? AddProposalModal : AddTextProposalModal
+)
 </script>
 
 <style lang="sass" scoped>

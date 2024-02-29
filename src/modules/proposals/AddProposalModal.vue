@@ -1,68 +1,79 @@
 <template>
-  <div class="d-flex flex-column">
-    <v-expand-transition>
-      <form @submit.prevent="preview" v-show="!done">
-        <slot name="editor">
-          <RichtextEditor
-            v-model="body"
-            class="proposal-editor mb-2"
-            :placeholder="t('proposal.postPlaceholder')"
-          />
-        </slot>
-        <TagEdit v-model="extraTags" class="mb-2" />
-        <div class="d-flex flex-column flex-md-row">
-          <PostAs v-if="canPostAs" v-model="author" />
-          <v-spacer />
-          <slot name="actions"></slot>
-        </div>
-      </form>
-    </v-expand-transition>
-    <v-expand-transition>
-      <div v-if="!proposalPreview">
-        <p v-if="errorText" class="my-6 text-center text-error">
-          {{ errorText }}
-        </p>
-        <p class="text-center my-6" v-else-if="previewing">
-          <v-progress-circular color="primary" indeterminate />
-        </p>
-      </div>
-    </v-expand-transition>
-    <v-expand-transition>
-      <div v-if="proposalPreview" id="proposal-preview">
-        <Proposal
-          readOnly
-          :p="proposalPreview"
-          class="my-6"
-          :class="{ previewing }"
+  <DefaultDialog
+    color="background"
+    :persistent="!closable"
+    :title="proposal ? t('proposal.edit') : t('proposal.add')"
+  >
+    <template #activator="attrs">
+      <slot name="activator" v-bind="attrs"></slot>
+    </template>
+    <template #default="{ close }">
+      <div class="d-flex flex-column">
+        <v-expand-transition>
+          <form @submit.prevent="preview" v-show="!done">
+            <slot name="editor">
+              <RichtextEditor
+                v-model="body"
+                class="proposal-editor mb-2"
+                :placeholder="t('proposal.postPlaceholder')"
+              />
+            </slot>
+            <TagEdit v-model="extraTags" class="mb-2" />
+            <div class="d-flex flex-column flex-md-row">
+              <PostAs v-if="canPostAs" v-model="author" />
+              <v-spacer />
+              <slot name="actions"></slot>
+            </div>
+          </form>
+        </v-expand-transition>
+        <v-expand-transition>
+          <div v-if="!proposalPreview">
+            <p v-if="errorText" class="my-6 text-center text-error">
+              {{ errorText }}
+            </p>
+            <p class="text-center my-6" v-else-if="previewing">
+              <v-progress-circular color="primary" indeterminate />
+            </p>
+          </div>
+        </v-expand-transition>
+        <v-expand-transition>
+          <div v-if="proposalPreview" id="proposal-preview">
+            <Proposal
+              readOnly
+              :p="proposalPreview"
+              class="my-6"
+              :class="{ previewing }"
+            />
+          </div>
+        </v-expand-transition>
+        <v-spacer />
+        <v-alert
+          v-if="done"
+          type="success"
+          :text="t('allDone')"
+          class="mt-8 flex-grow-0"
         />
+        <div v-if="done" class="text-right mt-4">
+          <v-btn color="primary" @click="close">
+            {{ t('close') }}
+          </v-btn>
+        </div>
+        <div v-else class="text-right mt-4">
+          <v-btn variant="text" @click="close">
+            {{ t('cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-text-box-plus-outline"
+            :disabled="!proposalPreview || previewing || saving"
+            @click="saveProposal"
+          >
+            {{ proposal ? t('update') : t('publish') }}
+          </v-btn>
+        </div>
       </div>
-    </v-expand-transition>
-    <v-spacer />
-    <v-alert
-      v-if="done"
-      type="success"
-      :text="t('allDone')"
-      class="mt-8 flex-grow-0"
-    />
-    <div v-if="done" class="text-right mt-4">
-      <v-btn color="primary" @click="$emit('close')">
-        {{ t('close') }}
-      </v-btn>
-    </div>
-    <div v-else class="text-right mt-4">
-      <v-btn variant="text" @click="$emit('close')">
-        {{ t('cancel') }}
-      </v-btn>
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-text-box-plus-outline"
-        :disabled="!proposalPreview || previewing || saving"
-        @click="saveProposal"
-      >
-        {{ proposal ? t('update') : t('publish') }}
-      </v-btn>
-    </div>
-  </div>
+    </template>
+  </DefaultDialog>
 </template>
 
 <script lang="ts" setup>
@@ -83,6 +94,7 @@ import type { Author } from '../meetings/types'
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
 import useTags from '../meetings/useTags'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>
@@ -100,7 +112,6 @@ const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   shortname: 'proposal'
 })
-defineEmits(['close'])
 
 const { t } = useI18n()
 const { meetingId } = useMeeting()
@@ -207,6 +218,13 @@ watch(
     // React when used as subcomponent, i.e. in AddTextProposalModal
     body.value = value
   }
+)
+
+/**
+ * Control modal closing
+ */
+const closable = computed(
+  () => done.value || (!proposalPreview.value && !previewing.value)
 )
 </script>
 

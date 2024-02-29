@@ -66,7 +66,7 @@
     <v-divider class="my-4" />
     <v-row :key="`agenda-filters-${agendaId}`">
       <v-col class="d-flex">
-        <DefaultDialog v-if="canAddProposal" persistent>
+        <AddProposalModal v-if="canAddProposal">
           <template #activator="{ props }">
             <slot name="activator" :props="props">
               <v-btn
@@ -82,10 +82,7 @@
               </v-btn>
             </slot>
           </template>
-          <template #default="{ close }">
-            <AddProposalModal @close="close" />
-          </template>
-        </DefaultDialog>
+        </AddProposalModal>
         <v-tooltip v-else :text="tProposalBlockReason">
           <template #activator="{ props }">
             <v-btn
@@ -196,7 +193,6 @@ import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import usePermission from '@/composables/usePermission'
 import { LastReadKey } from '@/composables/useUnread'
-import DefaultDialog from '@/components/DefaultDialog.vue'
 import useLoader from '@/composables/useLoader'
 import TagEdit from '@/components/TagEdit.vue'
 
