@@ -24,9 +24,10 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 15 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\"></i>
           <!--teleport start-->
@@ -60,9 +61,10 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-3\\"></i>
           <!--teleport start-->
@@ -96,9 +98,10 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-5\\"></i>
           <!--teleport start-->
@@ -149,9 +152,10 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 13 <i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\"></i>
           <!--teleport start-->
@@ -185,9 +189,10 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-2\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <p class=\\"text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2\\">Vote count: 12 <i class=\\"mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning\\" aria-hidden=\\"true\\" targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-3\\"></i>
           <!--teleport start-->
@@ -296,9 +301,10 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
       </div>
       <!--v-if-->
@@ -328,9 +334,10 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-1\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
       </div>
       <!--v-if-->
@@ -750,9 +757,10 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-0\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">6 <small class=\\"ml-1\\"> (67 %) </small></span>
             <!---->
@@ -792,9 +800,10 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-4\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">3 <small class=\\"ml-1\\"> (33 %) </small></span>
             <!---->
@@ -834,9 +843,10 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--></span><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-8\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
+      <div data-v-4b57e0f3=\\"\\" class=\\"author text-secondary d-flex flex-wrap align-end\\"><span data-v-4b57e0f3=\\"\\">by <!--v-if--><span targetref=\\"[object Object]\\" aria-describedby=\\"v-tooltip-8\\" class=\\"ml-6 time\\"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
+        <!--v-if--></span>
         <div data-v-4b57e0f3=\\"\\" class=\\"v-spacer\\"></div>
         <div class=\\"mt-2 flex-grow-1 text-right\\"><button type=\\"button\\" class=\\"v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text\\"><span class=\\"v-btn__overlay\\"></span><span class=\\"v-btn__underlay\\"></span><span class=\\"v-btn__prepend\\"><i class=\\"mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default\\" aria-hidden=\\"true\\"></i></span><span class=\\"v-btn__content\\" data-no-activator=\\"\\">2 <small class=\\"ml-1\\"> (25 %) </small></span>
             <!---->
