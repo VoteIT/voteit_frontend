@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends { pk: number }">
+<script setup lang="ts" generic="T extends { pk: number; body: string }">
 import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -8,15 +8,6 @@ import useTags from '@/modules/meetings/useTags'
 
 import RichtextEditor from './RichtextEditor.vue'
 import { QuillVariant } from './types'
-
-const EXTERNAL_ICON_CLASSES = [
-  'mdi-open-in-new',
-  'mdi',
-  'v-icon',
-  'notranslate',
-  'v-theme--light',
-  'v-icon--size-x-small'
-]
 
 const props = withDefaults(
   defineProps<{
@@ -29,7 +20,7 @@ const props = withDefaults(
     variant?: QuillVariant
   }>(),
   {
-    contentAttribute: 'body' as keyof T,
+    contentAttribute: 'body',
     editing: false,
     noSubmit: false,
     variant: 'restricted'
@@ -39,6 +30,15 @@ const emit = defineEmits<{
   (e: 'edit-done'): void
   (e: 'update:modelValue', value: string): void
 }>()
+
+const EXTERNAL_ICON_CLASSES = [
+  'mdi-open-in-new',
+  'mdi',
+  'v-icon',
+  'notranslate',
+  'v-theme--light',
+  'v-icon--size-x-small'
+]
 
 const { t } = useI18n()
 const router = useRouter()
@@ -50,10 +50,13 @@ function getContent(): string {
 }
 const content = ref(getContent())
 
-watch(props, () => {
-  if (props.editing) return
-  content.value = getContent()
-})
+watch(
+  () => props.editing,
+  (value) => {
+    if (value) return
+    content.value = getContent()
+  }
+)
 watch(content, (value) => {
   nextTick(addExternalIcons)
   emit('update:modelValue', value)
@@ -125,7 +128,7 @@ watch(contentElem, (el) => {
     class="richtext"
     set-focus
     :submit="!noSubmit"
-    @submit="emit('edit-done')"
+    @submit="$emit('edit-done')"
   />
   <div v-else>
     <div class="overflow-hidden position-relative" :style="style">
