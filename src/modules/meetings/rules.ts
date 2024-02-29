@@ -109,10 +109,6 @@ export function canBecomeModerator(): boolean {
   return isOrganisationManager(user.value?.organisation)
 }
 
-function isOpenMeetingInvite(invite: MeetingInvite): boolean {
-  return invite.state === MeetingInviteState.Open
-}
-
 export function canViewMeetingInvite(meeting: Meeting): boolean {
   return !!isModerator(meeting)
 }
@@ -124,5 +120,5 @@ export function canAddMeetingInvite(meeting: Meeting): boolean {
 export function canDeleteMeetingInvite(invite: MeetingInvite): boolean {
   const meeting = meetings.get(invite.meeting)
   if (!meeting) return false
-  return canAddMeetingInvite(meeting) && isOpenMeetingInvite(invite)
+  return canAddMeetingInvite(meeting)
 }
