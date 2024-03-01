@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { filter, map, range } from 'itertools'
-import { flatten, orderBy } from 'lodash'
-import { computed, reactive, ref, watch } from 'vue'
+import { enumerate, filter, map, range } from 'itertools'
+import { flatten, isEqual, orderBy } from 'lodash'
+import { ComponentPublicInstance, computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { onKeyStroke, useElementBounding } from '@vueuse/core'
+import { onKeyStroke, useElementBounding, useTextSelection } from '@vueuse/core'
 
+import { socket } from '@/utils/Socket'
 import Tag from '@/components/Tag.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
@@ -21,6 +22,7 @@ import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import useRoom from '../rooms/useRoom'
+import { ProposalSelection } from '../rooms/events'
 
 import usePlenary, { isProposalInPool } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
@@ -227,6 +229,57 @@ const proposalsStyle = computed(() => {
     '--aiheight': aiHeight.value ? `${aiHeight.value + 24}px` : '0px'
   }
 })
+
+const proposalComponents = ref<ComponentPublicInstance[]>()
+const { ranges } = useTextSelection()
+function findProposalEl(range: Range) {
+  if (!proposalComponents.value) return
+  for (const [i, { $el }] of enumerate(proposalComponents.value)) {
+    const elem = ($el as Element).querySelector(
+      '.proposal-text-paragraph,.richtext'
+    )
+    if (elem && range.intersectsNode(elem))
+      return { i, elem: elem as HTMLElement }
+  }
+}
+
+let delayTimeout: NodeJS.Timeout
+function delayed(cb: () => void) {
+  clearTimeout(delayTimeout)
+  delayTimeout = setTimeout(cb, 250)
+}
+
+let lastSelection: ProposalSelection | undefined
+function clearSelection() {
+  if (!lastSelection) return
+  lastSelection = undefined
+  socket.send('room.mark_text', { room: meetingRoom.value?.pk })
+}
+
+watch(
+  () => ranges.value.at(0),
+  (range) => {
+    if (!meetingRoom.value || !isBroadcastingAI.value) return
+    if (!range?.toString().length) return delayed(clearSelection)
+    const prop = findProposalEl(range)
+    if (!prop) return delayed(clearSelection)
+    const startRange = document.createRange()
+    startRange.setStart(prop.elem, 0)
+    startRange.setEnd(range.startContainer, range.startOffset)
+    const start = startRange.toString().length
+    const selection = {
+      room: meetingRoom.value.pk,
+      proposal: selectedProposalIds.value[prop.i],
+      start,
+      end: Math.min(prop.elem.innerText.length, start + range.toString().length)
+    }
+    if (isEqual(selection, lastSelection)) return
+    lastSelection = selection
+    delayed(() => {
+      socket.send('room.mark_text', selection)
+    })
+  }
+)
 </script>
 
 <template>
@@ -255,6 +308,7 @@ const proposalsStyle = computed(() => {
         v-for="p in selectedProposals"
         :key="p.pk"
         :proposal="p"
+        ref="proposalComponents"
         class="mb-4"
       >
         <template #actions>
