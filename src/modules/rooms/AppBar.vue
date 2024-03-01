@@ -48,11 +48,7 @@ const crumbs = computed(() => {
   ]
 })
 
-const displayOptions: {
-  value: (typeof roomDisplayMode)['value']
-  prependIcon: string
-  title: string
-}[] = [
+const displayOptions = computed(() => [
   {
     value: 'any',
     prependIcon: 'mdi-view-split-vertical',
@@ -78,9 +74,10 @@ const displayOptions: {
     prependIcon: 'mdi-gavel',
     title: t('room.onlyProposals')
   }
-]
+])
 const currentDisplay = computed(
-  () => displayOptions.find(({ value }) => value === roomDisplayMode.value)!
+  () =>
+    displayOptions.value.find(({ value }) => value === roomDisplayMode.value)!
 )
 </script>
 
