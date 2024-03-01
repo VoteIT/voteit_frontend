@@ -6,7 +6,6 @@
       <v-row id="join-meeting" v-if="meeting">
         <v-col v-bind="cols.default">
           <h1>{{ t('join.meetingTitle', { ...meeting }) }}</h1>
-          <Richtext :object="meeting" class="mb-8" />
           <div
             class="btn-controls"
             v-if="canBecomeModeratorMeeting"
@@ -42,7 +41,6 @@ import useLoader from '@/composables/useLoader'
 import { user } from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
 
-import Richtext from '@/components/Richtext.vue'
 import accessPolicies from '@/modules/meetings/accessPolicies'
 import { accessPolicyType, meetingType } from '@/modules/meetings/contentTypes'
 import { AccessPolicy } from '@/contentTypes/types'

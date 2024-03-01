@@ -42,6 +42,13 @@ const author = ref({
 } as Author)
 const { isUnread } = useUnread(new Date(props.p.created))
 
+watch(
+  () => props.p.body,
+  (value) => {
+    if (!editing.value) body.value = value
+  }
+)
+
 async function queryDelete() {
   if (
     await dialogQuery({
@@ -141,7 +148,7 @@ async function save() {
       </div>
     </div>
     <div v-else>
-      <Richtext :object="p" />
+      <Richtext :model-value="p.body" />
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>

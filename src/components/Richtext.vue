@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends { pk: number; body: string }">
+<script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -11,16 +11,13 @@ import { QuillVariant } from './types'
 
 const props = withDefaults(
   defineProps<{
-    contentAttribute?: keyof T
     editing?: boolean
     maxHeight?: number
-    modelValue?: string
+    modelValue: string
     noSubmit?: boolean
-    object?: T
     variant?: QuillVariant
   }>(),
   {
-    contentAttribute: 'body',
     editing: false,
     noSubmit: false,
     variant: 'restricted'
@@ -43,18 +40,19 @@ const EXTERNAL_ICON_CLASSES = [
 const { t } = useI18n()
 const router = useRouter()
 
-function getContent(): string {
-  if (props.object) return props.object[props.contentAttribute!] as string
-  if (typeof props.modelValue === 'string') return props.modelValue
-  throw new Error('RichText needs :object=<object> or v-model=<string>')
-}
-const content = ref(getContent())
+const content = ref(props.modelValue)
 
 watch(
   () => props.editing,
   (value) => {
     if (value) return
-    content.value = getContent()
+    content.value = props.modelValue
+  }
+)
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (!props.editing) content.value = value
   }
 )
 watch(content, (value) => {
