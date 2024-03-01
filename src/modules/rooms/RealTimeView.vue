@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide } from 'vue'
+import { computed, onBeforeUnmount, provide } from 'vue'
 import { RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
@@ -17,6 +17,7 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { roomDisplayMode } from './displayOptions'
+import { proposalSelectionEvent } from './events'
 
 provide(RoleContextKey, 'meeting')
 
@@ -70,6 +71,15 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
       return { speakers, proposals }
   }
 })
+
+/**
+ * Deselect can't be picked up in proposals
+ */
+const evt = proposalSelectionEvent.on((evt) => {
+  if (evt.room !== meetingRoom.value?.pk || evt.proposal) return
+  getSelection()?.removeAllRanges()
+})
+onBeforeUnmount(evt.dispose)
 </script>
 
 <template>
@@ -111,6 +121,7 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
             read-only
             :key="p.pk"
             :proposal="p"
+            :select-in-room="meetingRoom.pk"
             class="my-4"
           >
             <template #append>
