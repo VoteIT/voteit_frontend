@@ -4,7 +4,7 @@ import { toRef } from 'vue'
 import { agendaMenuPlugins } from '../agendas/registry'
 import { AgendaMenuPlugin } from '../agendas/types'
 import useAgenda from '../agendas/useAgenda'
-import useMeeting from '../meetings/useMeeting'
+import { isModerator } from '../meetings/rules'
 import { meetingMenuPlugins } from '../meetings/registry'
 import { Meeting } from '../meetings/types'
 import useRooms from '../rooms/useRooms'
@@ -12,7 +12,7 @@ import { IMeetingRoom } from '../rooms/types'
 
 function checkActive(meeting: Meeting) {
   return (
-    !!useMeeting().isModerator.value &&
+    !!isModerator(meeting) &&
     !!useRooms(toRef(meeting, 'pk')).meetingRooms.value.length
   )
 }
