@@ -421,8 +421,8 @@ header .header-tag
   text-transform: uppercase
   letter-spacing: .03em
   padding: 0 .6em
-  color: rgba(var(--v-theme-on-background), .6)
-  border: 2px solid rgba(var(--v-border-color), .6)
+  color: rgb(var(--v-theme-warning))
+  border: 2px solid rgba(var(--v-theme-warning), .6)
   border-radius: 4px
   white-space: nowrap
 
