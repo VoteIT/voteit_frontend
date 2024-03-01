@@ -117,12 +117,12 @@ function dialogSetPassiveMode(mode: boolean) {
           rounded
           style="width: 50%"
           @click="dialogSetPassiveMode(false)"
-          v-ripple="{ class: 'text-success' }"
+          v-ripple="{ class: 'text-primary' }"
         >
           <v-icon
-            class="my-4"
-            color="error"
-            icon="mdi-projector-off"
+            class="my-3"
+            color="primary"
+            icon="mdi-account"
             size="x-large"
           />
           <p>{{ t('room.moderatorPassiveOff') }}</p>
@@ -136,7 +136,7 @@ function dialogSetPassiveMode(mode: boolean) {
           v-ripple="{ class: 'text-success' }"
         >
           <v-icon
-            class="my-4"
+            class="my-3"
             color="success"
             icon="mdi-projector"
             size="x-large"
