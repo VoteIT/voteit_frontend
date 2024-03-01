@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 import { useDisplay } from 'vuetify/lib/framework.mjs'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
@@ -79,10 +80,71 @@ const currentDisplay = computed(
   () =>
     displayOptions.value.find(({ value }) => value === roomDisplayMode.value)!
 )
+
+/**
+ * Moderators entering real-time view should get the choice to activate passive mode
+ */
+const moderatorPassiveDialog = ref(false)
+watch(
+  isModerator,
+  (value) => {
+    // For moderator only, if not passive mode already, not on mobile.
+    if (!value || passiveMode.value || mobile.value) return
+    moderatorPassiveDialog.value = true
+  },
+  { immediate: true }
+)
+
+function dialogSetPassiveMode(mode: boolean) {
+  passiveMode.value = mode
+  moderatorPassiveDialog.value = false
+}
 </script>
 
 <template>
   <v-app-bar flat color="app-bar">
+    <DefaultDialog
+      v-model="moderatorPassiveDialog"
+      :title="t('room.passiveMode')"
+    >
+      <p class="mb-4">
+        {{ t('room.moderatorPassiveQuery') }}
+      </p>
+      <div class="d-flex" style="gap: 10px">
+        <v-sheet
+          class="cursor-pointer text-center pa-6"
+          color="background"
+          rounded
+          style="width: 50%"
+          @click="dialogSetPassiveMode(false)"
+          v-ripple="{ class: 'text-success' }"
+        >
+          <v-icon
+            class="my-4"
+            color="error"
+            icon="mdi-projector-off"
+            size="x-large"
+          />
+          <p>{{ t('room.moderatorPassiveOff') }}</p>
+        </v-sheet>
+        <v-sheet
+          class="cursor-pointer text-center pa-6"
+          color="background"
+          rounded
+          style="width: 50%"
+          @click="dialogSetPassiveMode(true)"
+          v-ripple="{ class: 'text-success' }"
+        >
+          <v-icon
+            class="my-4"
+            color="success"
+            icon="mdi-projector"
+            size="x-large"
+          />
+          <p>{{ t('room.moderatorPassiveOn') }}</p>
+        </v-sheet>
+      </div>
+    </DefaultDialog>
     <router-link :to="meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
