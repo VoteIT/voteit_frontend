@@ -156,7 +156,7 @@ const selectionMenuExpanded = ref(false)
               >
                 <div class="pa-3 d-flex">
                   <div class="flex-grow-1">
-                    <h3 class="text-truncate">
+                    <h3>
                       {{ poll.title }}
                     </h3>
                     <p style="opacity: 0.7">
