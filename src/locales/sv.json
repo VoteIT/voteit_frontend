@@ -485,6 +485,7 @@
     "pollDescription": "{method} med ett förslag | {method} med {count} förslag",
     "rankingSelectAs": "Välj som",
     "rankingSelectedAs": "Vald som",
+    "showAll": "Visa alla",
     "showBallot": "Visa valsedel",
     "showProgress": "Följ röstning",
     "showVote": "Visa din röst",

@@ -485,6 +485,7 @@
     "pollDescription": "{method} poll with one proposal | {method} poll with {count} proposals",
     "rankingSelectAs": "Select as",
     "rankingSelectedAs": "Selected as",
+    "showAll": "Show all",
     "showBallot": "Show ballot",
     "showProgress": "Show progress",
     "showVote": "Show your vote",

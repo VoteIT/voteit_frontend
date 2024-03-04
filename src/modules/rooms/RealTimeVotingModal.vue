@@ -36,22 +36,39 @@ function annotatePoll(poll: Poll) {
 
 const _selectedId = ref(props.openPoll)
 
-const latestFinishedPolls = computed(() =>
+function isPoll(poll?: Poll | false): poll is Poll {
+  return !!poll
+}
+
+const allFinishedPolls = computed(() =>
   orderBy(
     filterPolls(
       (p) => p.meeting === meetingId.value && p.state === PollState.Finished
     ),
     'closed',
     'desc'
-  ).slice(0, 3)
+  )
 )
+const latestFinishedPolls = computed(() => allFinishedPolls.value.slice(0, 3))
+const finishedPollsExpanded = ref(false)
+const finishedPolls = computed(() => {
+  if (finishedPollsExpanded.value) return allFinishedPolls.value
+  const extra = [...new Set([props.openPoll, _selectedId.value])]
+    .map(
+      (pk) =>
+        !latestFinishedPolls.value.some((p) => p.pk === pk) &&
+        allFinishedPolls.value.find((p) => p.pk === pk)
+    )
+    .filter(isPoll)
+  return [...latestFinishedPolls.value, ...extra]
+})
 
 const availablePolls = computed(() => {
   const ongoingAndOpen = sortBy(
     filterPolls(
       (p) =>
         p.meeting === meetingId.value &&
-        !latestFinishedPolls.value.some(({ pk }) => pk === p.pk) && // These will already be displayed
+        p.state !== PollState.Finished && // These will already be displayed
         (p.pk === props.openPoll || // Always show broadcasted poll
           p.pk === _selectedId.value || // ... and user currently selected poll
           p.state === PollState.Ongoing) // ... and all ongoing polls
@@ -62,7 +79,7 @@ const availablePolls = computed(() => {
   return [
     ...ongoingAndOpen.map(annotatePoll),
     '---',
-    ...latestFinishedPolls.value.map(annotatePoll)
+    ...finishedPolls.value.map(annotatePoll)
   ]
 })
 
@@ -120,6 +137,12 @@ watch(
  * Mobile stuff
  */
 const selectionMenuExpanded = ref(false)
+
+watch(isOpen, (value) => {
+  if (value) return
+  finishedPollsExpanded.value = false
+  selectionMenuExpanded.value = false
+})
 </script>
 
 <template>
@@ -189,6 +212,19 @@ const selectionMenuExpanded = ref(false)
               </v-sheet>
             </template>
           </v-slide-x-transition>
+          <v-btn
+            v-if="
+              !finishedPollsExpanded &&
+              allFinishedPolls.length > latestFinishedPolls.length
+            "
+            block
+            class="mt-n2"
+            :text="t('poll.showAll')"
+            size="small"
+            prepend-icon="mdi-chevron-down"
+            variant="text"
+            @click="finishedPollsExpanded = true"
+          />
         </div>
         <div class="flex-grow-1 pa-4" id="poll">
           <header class="d-flex mb-6">
