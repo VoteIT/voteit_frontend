@@ -4,6 +4,18 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.25.0 (2024-03-04)
+
+Entering speaker list and voting in real-time view.
+
+- Users can now enter and leave currently active speaker list in real-time view.
+- New _projector mode_ in real-time view to disable interaction (enter/leave sl and voting) and follow broadcast completely.
+- Moderators will get an option to activate _projector mode_ when entering real-time view.
+- New poll modal in real-time view that allows voting and looking at results. Opens autmatically when a poll is broadcasted.
+- Poll statuses (progress) are now sent to all on meeting channel. Follow voting-buttons removed.
+- Broadcast view shows ongoing polls progress in menu.
+- New feature in broadcast- and real-time views to send selection of text and highlight proposals.
+
 ## 0.24.1 (2024-02-29)
 
 - Fix new bug in 0.24, when posting multiple proposals
