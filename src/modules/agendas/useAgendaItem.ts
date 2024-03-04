@@ -22,6 +22,7 @@ import useAgenda from './useAgenda'
 export default function useAgendaItem(agendaId: Ref<number | undefined>) {
   const { meetingId, getMeetingRoute } = useMeeting()
   const { getAgendaItem, getAgendaBody } = useAgenda(meetingId)
+
   const agendaItem = computed(() =>
     typeof agendaId.value === 'number'
       ? getAgendaItem(agendaId.value)

@@ -1,41 +1,47 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useIdle } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
 import ProgressBar from '@/components/ProgressBar.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
 
-import { Poll } from '../polls/types'
+import useMeeting from '../meetings/useMeeting'
 import usePoll from '../polls/usePoll'
 import { pollType } from '../polls/contentTypes'
-import DefaultDialog from '@/components/DefaultDialog.vue'
 import useRoom from './useRoom'
-import { useIdle } from '@vueuse/core'
+import useMeetingPolls from '../polls/useMeetingPolls'
 
 const props = defineProps<{
-  poll: Poll
+  pollId?: number
 }>()
 
 const { t } = useI18n()
 const { idle } = useIdle(5_000)
 
-const pollId = computed(() => props.poll.pk)
+const { meetingId } = useMeeting()
+const { meetingOngoingPolls } = useMeetingPolls(meetingId)
+
+const currentPollId = ref(props.pollId || meetingOngoingPolls.value[0].pk)
 const { meetingRoom } = useRoom()
 const {
+  canVote,
   isOngoing,
   isFinished,
   isWithheld,
+  poll,
   pollMethodName,
   pollStatus,
   proposals,
   resultComponent,
   voteComponent
-} = usePoll(pollId)
+} = usePoll(currentPollId)
 
 // Only follow if ongoing
 useChannel(
   'poll',
-  computed(() => (isOngoing.value ? pollId.value : undefined))
+  computed(() => (isOngoing.value ? currentPollId.value : undefined))
 )
 
 const complete = computed(() => {
@@ -63,17 +69,28 @@ const progressBar = computed(() => {
 })
 
 const { getState } = pollType.useWorkflows()
-const pollStateText = computed(() => getState(props.poll.state)?.getName(t))
+const pollStateText = computed(
+  () => poll.value && getState(poll.value.state)?.getName(t)
+)
 </script>
 
 <template>
-  <template v-if="isOngoing">
+  <div v-if="!poll" class="my-8 text-center">
+    <v-progress-circular indeterminate color="primary" />
+  </div>
+  <template v-else-if="isOngoing">
     <main class="mb-8">
+      <component
+        v-if="canVote"
+        :is="voteComponent"
+        :poll="poll"
+        :proposals="proposals"
+      />
       <p>
         {{
           t('poll.pollDescription', {
             method: pollMethodName,
-            count: poll.proposals.length
+            count: proposals.length
           })
         }}
       </p>
@@ -84,7 +101,7 @@ const pollStateText = computed(() => getState(props.poll.state)?.getName(t))
         class="mt-8"
       />
       <v-alert
-        v-if="poll.withheld_result"
+        v-if="poll?.withheld_result"
         :text="t('poll.result.willBeWithheld')"
         type="info"
         class="my-6"

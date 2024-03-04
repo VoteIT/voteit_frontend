@@ -4,17 +4,20 @@ import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import useMeeting from '../meetings/useMeeting'
-import useRoom from './useRoom'
-import RealTimePollModal from './RealTimePollModal.vue'
-import { roomDisplayMode } from './displayOptions'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 import useAgenda from '../agendas/useAgenda'
+import useMeeting from '../meetings/useMeeting'
+import useMeetingPolls from '../polls/useMeetingPolls'
+
+import RealTimePollModal from './RealTimePollModal.vue'
+import { roomDisplayMode } from './displayOptions'
+import useRoom from './useRoom'
 
 const { t } = useI18n()
 const { isModerator, meeting, meetingId, meetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { meetingRoom, roomOpenPoll, textSize, getRoomRoute } = useRoom()
+const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 
 const { idle } = useIdle(5_000)
 
@@ -43,6 +46,7 @@ const crumbs = computed(() => {
 })
 
 const hasOpenPoll = computed(() => !!roomOpenPoll.value)
+
 const pollModalOpen = ref(!!roomOpenPoll.value)
 watch(hasOpenPoll, (value) => (pollModalOpen.value = value))
 
@@ -104,13 +108,13 @@ const currentDisplay = computed(
         <v-fade-transition>
           <v-btn
             prepend-icon="mdi-star"
-            v-show="hasOpenPoll"
-            :text="t('room.polls')"
+            v-show="meetingOngoingPolls.length || hasOpenPoll"
+            :text="t('room.polls', meetingOngoingPolls.length)"
             v-bind="props"
           />
         </v-fade-transition>
       </template>
-      <RealTimePollModal v-if="roomOpenPoll" :poll="roomOpenPoll" />
+      <RealTimePollModal :poll-id="roomOpenPoll?.pk" />
     </DefaultDialog>
     <v-fade-transition v-if="isModerator && meetingRoom && agenda.length">
       <v-btn
