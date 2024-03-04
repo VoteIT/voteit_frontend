@@ -14,6 +14,7 @@ interface OrganisationComponent<Settings = null> {
 }
 
 export interface Organisation {
+  readonly active: boolean
   readonly pk: number
   readonly title: string
   body: string

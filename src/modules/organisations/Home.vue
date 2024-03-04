@@ -48,6 +48,7 @@ const { isAuthenticated, user } = useAuthentication()
 const {
   canAddMeeting,
   canChangeOrganisation,
+  canLogin,
   idLoginURL,
   organisation,
   organisationId,
@@ -299,11 +300,18 @@ const searchInfo = computed<
             block
             v-if="organisation.login_url"
             color="primary"
+            :disabled="!canLogin"
             :href="idLoginURL"
             prepend-icon="mdi-login"
           >
             {{ t('organization.loginTo', { ...organisation }) }}
           </v-btn>
+          <v-alert
+            v-if="!canLogin"
+            class="my-3"
+            :text="t('organization.cantLogin')"
+            type="error"
+          />
           <EditableHelpText :modelValue="organisation.help_info" class="mt-3" />
         </v-col>
         <v-col

@@ -441,6 +441,7 @@
   },
   "organization": {
     "allYears": "All years",
+    "cantLogin": "Organization no longer active - login disabled",
     "loginTo": "Log in to {title}",
     "showMore": "Show more"
   },

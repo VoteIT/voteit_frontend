@@ -441,6 +441,7 @@
   },
   "organization": {
     "allYears": "Alla år",
+    "cantLogin": "Organisationen är inte längre aktiv - inloggning avstängd",
     "loginTo": "Logga in till {title}",
     "showMore": "Visa fler"
   },

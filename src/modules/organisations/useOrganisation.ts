@@ -17,6 +17,11 @@ const organisation = computed(() => {
 })
 
 /**
+ * Can users log in to this organisation?
+ */
+const canLogin = computed(() => organisation.value?.active)
+
+/**
  * Fetch organisation - error must be handled from calling function
  */
 async function fetchOrganisation() {
@@ -68,6 +73,7 @@ export default function useOrganisation() {
   return {
     canAddMeeting,
     canChangeOrganisation,
+    canLogin,
     idLoginURL,
     isOrganisationManager,
     organisation,
