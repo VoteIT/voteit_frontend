@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
 import useLoader from '@/composables/useLoader'
+import Moment from '@/components/Moment.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import { speakerListType } from './contentTypes'
 import { SpeakerGroup } from './types'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
-import Moment from '@/components/Moment.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
 
 const props = defineProps<{
@@ -32,6 +33,7 @@ const {
 const { speakerGroups, canEnterList, canLeaveList, enterList, leaveList } =
   useSpeakerList(systemActiveListId)
 const { idle } = useIdle(5000)
+const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -51,21 +53,36 @@ const groups = computed<SpeakerGroup[]>(() => {
   return speakerGroups.value
 })
 
+const enterLeaveWorking = ref(false)
+function enterLeaveAction(fn: () => Promise<any>) {
+  return async () => {
+    enterLeaveWorking.value = true
+    try {
+      await fn()
+    } catch (e) {
+      handleSocketError(e)
+    }
+    enterLeaveWorking.value = false
+  }
+}
+
 // eslint-disable-next-line vue/return-in-computed-property
 const enterLeaveButton = computed(() => {
   if (canEnterList.value)
     return {
       text: t('speaker.enterList'),
       color: 'primary',
+      disabled: enterLeaveWorking.value,
       prependIcon: 'mdi-account-voice',
-      onClick: enterList
+      onClick: enterLeaveAction(enterList)
     }
   if (canLeaveList.value)
     return {
       text: t('speaker.leaveList'),
       color: 'warning',
+      disabled: enterLeaveWorking.value,
       prependIcon: 'mdi-account-voice-off',
-      onClick: leaveList
+      onClick: enterLeaveAction(leaveList)
     }
 })
 </script>
