@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import Axios from 'axios'
-import { difference, isEqual } from 'lodash'
-import { computed, ref, watch } from 'vue'
+import { difference } from 'lodash'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Draggable from 'vuedraggable'
 
 import { dialogQuery, tagify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
@@ -16,7 +15,6 @@ import QueryDialog from '@/components/QueryDialog.vue'
 
 import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
-import { meetingType } from '../meetings/contentTypes'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import { MeetingState } from '../meetings/types'
 
@@ -25,58 +23,17 @@ import useAgendaTags from './useAgendaTags'
 import { AgendaItem, AgendaState, AgendaTransition } from './types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
+import AgendaOrdering from './AgendaOrdering.vue'
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
 const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
-const { agenda, filteredAgenda, getAgendaItem } = useAgenda(
-  meetingId,
-  agendaTag
-)
+const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
 const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 
 usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
 useMeetingTitle(t('agenda.agenda'))
-
-/*
-/* START agenda ordering
- */
-function isAI(ai?: AgendaItem): ai is AgendaItem {
-  return !!ai
-}
-const actualAgendaOrder = computed(() => agenda.value.map((ai) => ai.pk))
-const agendaItemOrder = ref(actualAgendaOrder.value)
-const agendaOrderChanged = computed(
-  () => !isEqual(agendaItemOrder.value, actualAgendaOrder.value)
-)
-const agendaItems = computed({
-  get: () => agendaItemOrder.value.map(getAgendaItem).filter(isAI),
-  set: (agendaItems: AgendaItem[]) => {
-    agendaItemOrder.value = agendaItems.map((ai) => ai.pk)
-  }
-})
-const orderSaving = ref(false)
-async function saveAgendaOrder() {
-  orderSaving.value = true
-  try {
-    await meetingType.api.action(meetingId.value, 'set_agenda_order', {
-      order: agendaItemOrder.value
-    })
-  } catch {
-    alert("^Couldn't save agenda order")
-  }
-  orderSaving.value = false
-}
-watch(agenda, (agendaItems) => {
-  for (const ai of agendaItems) {
-    if (!agendaItemOrder.value.includes(ai.pk))
-      agendaItemOrder.value = [...agendaItemOrder.value, ai.pk]
-  }
-})
-/*
-/* END agenda ordering
- */
 
 const editModes = computed(() => [
   {
@@ -180,7 +137,7 @@ function patchSelected(data: Partial<AgendaItem>) {
 }
 
 /* TAGS */
-const { agendaTags } = useAgendaTags(agendaItems)
+const { agendaTags } = useAgendaTags(agenda)
 const allSelectedTags = useAgendaTags(selectedAgendaItems).agendaTags
 // const bulkTags = ref(allSelectedTags.value)
 const bulkTags = computed({
@@ -294,7 +251,7 @@ function canSetState(target: AgendaState) {
         :custom-filter="(tags, query) => tags.includes(query)"
         :search="agendaTag"
         :filter-keys="['tags']"
-        :items="agendaItems"
+        :items="agenda"
         :items-per-page="25"
         :page-text="t('content.pageText')"
         :items-per-page-text="t('content.itemsPerPageText')"
@@ -491,50 +448,12 @@ function canSetState(target: AgendaState) {
       </form>
     </v-window-item>
     <v-window-item value="order">
-      <Draggable v-model="agendaItems" item-key="pk">
-        <template #item="{ element }">
-          <div>
-            <v-icon size="small" :icon="getState(element.state)?.icon" />
-            <span>{{ element.title }}</span>
-            <v-icon size="small" icon="mdi-drag-horizontal" />
-          </div>
-        </template>
-      </Draggable>
-      <div class="text-right">
-        <v-btn
-          class="my-1"
-          color="primary"
-          :disabled="!agendaOrderChanged"
-          :loading="orderSaving"
-          @click="saveAgendaOrder"
-        >
-          {{ t('save') }}
-        </v-btn>
-      </div>
+      <AgendaOrdering />
     </v-window-item>
   </v-window>
 </template>
 
 <style lang="sass" scoped>
-[data-draggable]
-  padding: .5em
-  margin-bottom: .3em
-  border: 1px solid #ddd
-  border-radius: 3px
-  display: flex
-  cursor: grab
-  span
-    flex-grow: 1
-    padding: 0 .8em
-  .material-icons
-    color: #999
-
-.sortable-chosen
-  background-color: #eee
-
-.sortable-ghost
-  opacity: .5
-
 #agenda-add-form
   .v-btn
     border-top-left-radius: 0
