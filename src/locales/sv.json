@@ -128,6 +128,7 @@
     "item": "Dagordningspunkt",
     "itemCount": "Mötet har inga dagordningspunkter | Mötet har en dagordningspunkt | Mötet har {count} dagordningspunkter",
     "newItem": "Ny dagordningspunkt",
+    "ordering": "Ändra ordning",
     "setTo": "Sätt som",
     "tagEditInfo": "Taggar - används som filter i dagordningsmenyn",
     "proposalBlocked": {
