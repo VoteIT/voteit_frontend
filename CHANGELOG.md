@@ -4,6 +4,13 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.25.1 (2024-03-05)
+
+- Agenda order moved to modal, to fix upwards scrolling bug. [#353](https://github.com/VoteIT/voteit_frontend/issues/353)
+- Long poll titles now breaks line in real-time voting modal. [#354](https://github.com/VoteIT/voteit_frontend/issues/354)
+- User can now expand to show all closed polls in real-time voting modal. [#355](https://github.com/VoteIT/voteit_frontend/issues/355)
+- Login button disabled if organization is not active. [#356](https://github.com/VoteIT/voteit_frontend/issues/356)
+
 ## 0.25.0 (2024-03-04)
 
 Entering speaker list and voting in real-time view.
