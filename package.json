@@ -9,6 +9,7 @@
     "test": "LANG=en vitest --dom",
     "typeCheck": "vue-tsc --noEmit"
   },
+  "type": "module",
   "dependencies": {
     "@fontsource/noto-sans": "^5.0.17",
     "@mdi/font": "^7.4.47",
