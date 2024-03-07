@@ -17,7 +17,7 @@ import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { roomDisplayMode } from './displayOptions'
-import { proposalSelectionEvent } from './events'
+import { proposalHighlightEvent } from './events'
 
 provide(RoleContextKey, 'meeting')
 
@@ -75,7 +75,7 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 /**
  * Deselect can't be picked up in proposals
  */
-const evt = proposalSelectionEvent.on((evt) => {
+const evt = proposalHighlightEvent.on((evt) => {
   if (evt.room !== meetingRoom.value?.pk || evt.proposal) return
   getSelection()?.removeAllRanges()
 })

@@ -17,3 +17,22 @@ export interface IRoomHighlight {
   pk: number
   highlighted: number[] // Proposal ids
 }
+
+interface ProposalBaseHighlight {
+  room: number
+  proposal?: number
+}
+
+interface ProposalTextHighlight extends ProposalBaseHighlight {
+  proposal: number
+  start: number
+  end: number
+}
+
+export type ProposalHighlight = ProposalBaseHighlight | ProposalTextHighlight
+
+export function isTextHighlight(
+  selection: ProposalHighlight
+): selection is ProposalTextHighlight {
+  return 'start' in selection
+}

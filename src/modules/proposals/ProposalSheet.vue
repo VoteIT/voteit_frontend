@@ -5,7 +5,8 @@ import { useI18n } from 'vue-i18n'
 import Tag from '@/components/Tag.vue'
 
 import AuthorName from '../meetings/AuthorName.vue'
-import { proposalSelectionEvent } from '../rooms/events'
+import { proposalHighlightEvent } from '../rooms/events'
+import { ProposalHighlight, isTextHighlight } from '../rooms/types'
 
 import { Proposal } from './types'
 import ProposalText from './ProposalText.vue'
@@ -24,8 +25,9 @@ function isText(el: Node): el is Text {
   return el.nodeType === el.TEXT_NODE
 }
 
-function select(savedSel: { start: number; end: number }) {
+function select(savedSel: ProposalHighlight) {
   selected.value = true
+  if (!isTextHighlight(savedSel)) return
   const containerEl = textEl.value?.$el as HTMLElement
   const sel = window.getSelection()
   if (!sel || !savedSel || !containerEl) return
@@ -69,7 +71,7 @@ function select(savedSel: { start: number; end: number }) {
   containerEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
 
-const evt = proposalSelectionEvent.on((evt) => {
+const evt = proposalHighlightEvent.on((evt) => {
   if (evt.room === props.selectInRoom && evt.proposal === props.proposal.pk)
     return select(evt)
   selected.value = false
@@ -78,7 +80,7 @@ onBeforeUnmount(evt.dispose)
 </script>
 
 <template>
-  <v-sheet rounded :elevation="selected ? 12 : 0" :class="{ selected }">
+  <v-sheet rounded :elevation="selected ? 8 : 0" :class="{ selected }">
     <div class="pa-4">
       <div class="d-flex">
         <div class="flex-grow-1 mb-3">

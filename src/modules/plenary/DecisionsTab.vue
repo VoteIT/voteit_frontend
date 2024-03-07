@@ -22,10 +22,10 @@ import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import useRoom from '../rooms/useRoom'
-import { ProposalSelection } from '../rooms/events'
 
 import usePlenary, { isProposalInPool } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
+import { ProposalHighlight } from '../rooms/types'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -36,8 +36,13 @@ const AVAILABLE_STATES = [
 const meetingId = useMeetingId()
 const { agendaId, agendaItem } = useAgenda(meetingId)
 const { aiProposalTexts } = useTextDocuments(agendaId)
-const { highlighted, isBroadcasting, meetingRoom, setHighlightedProposals } =
-  useRoom()
+const {
+  highlighted,
+  isBroadcasting,
+  meetingRoom,
+  roomId,
+  setHighlightedProposals
+} = useRoom()
 
 const {
   filteredProposals,
@@ -246,39 +251,47 @@ function findProposalEl(range: Range) {
 let delayTimeout: NodeJS.Timeout
 function delayed(cb: () => void) {
   clearTimeout(delayTimeout)
-  delayTimeout = setTimeout(cb, 250)
+  delayTimeout = setTimeout(cb, 125)
 }
 
-let lastSelection: ProposalSelection | undefined
-function clearSelection() {
-  if (!lastSelection) return
-  lastSelection = undefined
-  socket.send('room.mark_text', { room: meetingRoom.value?.pk })
+let lastSelection: ProposalHighlight | undefined
+
+/**
+ * Get proposal and selection if there is selected proposal text.
+ */
+function getProposalSelection() {
+  const range = ranges.value.at(0)
+  if (!range?.toString().length) return // No selection
+  const prop = findProposalEl(range)
+  if (!prop) return // Selection not in a proposal
+  const startRange = document.createRange()
+  startRange.setStart(prop.elem, 0)
+  startRange.setEnd(range.startContainer, range.startOffset)
+  const start = startRange.toString().length
+  const selection = {
+    room: roomId.value,
+    proposal: selectedProposalIds.value[prop.i],
+    start,
+    end: Math.min(prop.elem.innerText.length, start + range.toString().length)
+  }
+  return selection
+}
+
+const proposalClicked = ref<number>()
+function setHighlight() {
+  if (!isBroadcastingAI.value) return // Only when broadcasting...
+  const selection = getProposalSelection() ?? {
+    room: roomId.value,
+    proposal: proposalClicked.value
+  }
+  if (isEqual(selection, lastSelection)) return
+  lastSelection = selection
+  socket.send('room.mark_text', selection)
 }
 
 watch(
   () => ranges.value.at(0),
-  (range) => {
-    if (!meetingRoom.value || !isBroadcastingAI.value) return
-    if (!range?.toString().length) return delayed(clearSelection)
-    const prop = findProposalEl(range)
-    if (!prop) return delayed(clearSelection)
-    const startRange = document.createRange()
-    startRange.setStart(prop.elem, 0)
-    startRange.setEnd(range.startContainer, range.startOffset)
-    const start = startRange.toString().length
-    const selection = {
-      room: meetingRoom.value.pk,
-      proposal: selectedProposalIds.value[prop.i],
-      start,
-      end: Math.min(prop.elem.innerText.length, start + range.toString().length)
-    }
-    if (isEqual(selection, lastSelection)) return
-    lastSelection = selection
-    delayed(() => {
-      socket.send('room.mark_text', selection)
-    })
-  }
+  () => delayed(setHighlight)
 )
 </script>
 
@@ -303,16 +316,18 @@ watch(
     </v-col>
   </v-row>
   <v-row v-else class="proposals" :style="proposalsStyle">
-    <v-col cols="7" md="8" lg="9">
+    <v-col cols="7" md="8" lg="9" @click="proposalClicked = undefined">
       <ProposalSheet
         v-for="p in selectedProposals"
         :key="p.pk"
-        :proposal="p"
-        ref="proposalComponents"
         class="mb-4"
+        :proposal="p"
+        :selectInRoom="meetingRoom?.pk"
+        ref="proposalComponents"
+        @click.stop="proposalClicked = p.pk"
       >
         <template #actions>
-          <div class="text-right">
+          <div class="text-right" @click.stop>
             <v-btn-group class="mr-2">
               <v-btn
                 v-for="s in getProposalStates(p.state)"

@@ -1,11 +1,11 @@
 import { Ref, computed, reactive } from 'vue'
-import { IMeetingRoom, IRoomHighlight } from './types'
+import { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 import { roomType } from './contentTypes'
 import { Predicate, filter } from 'itertools'
 import { speakerSystems } from '../speakerLists/useSpeakerLists'
 import { SpeakerSystem, SpeakerSystemState } from '../speakerLists/types'
 import { isSystemModerator } from '../speakerLists/rules'
-import { ProposalSelection, proposalSelectionEvent } from './events'
+import { proposalHighlightEvent } from './events'
 
 export const meetingRoomStore = reactive(new Map<number, IMeetingRoom>())
 export const highlightedStore = reactive(new Map<number, IRoomHighlight>())
@@ -15,8 +15,8 @@ roomType
   .on<IRoomHighlight>('highlighted', (data) =>
     highlightedStore.set(data.pk, data)
   )
-  .on<ProposalSelection>('marked', (selection) =>
-    proposalSelectionEvent.emit(selection)
+  .on<ProposalHighlight>('marked', (selection) =>
+    proposalHighlightEvent.emit(selection)
   )
 
 function* iterSpeakerSystems(

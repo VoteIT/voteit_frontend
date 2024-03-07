@@ -1,10 +1,5 @@
 import TypedEvent from '@/utils/TypedEvent'
 
-export interface ProposalSelection {
-  room: number
-  proposal: number
-  start: number
-  end: number
-}
+import { ProposalHighlight } from './types'
 
-export const proposalSelectionEvent = new TypedEvent<ProposalSelection>()
+export const proposalHighlightEvent = new TypedEvent<ProposalHighlight>()
