@@ -2,7 +2,7 @@ import _slugify from 'slugify'
 import { Duration } from 'luxon'
 
 import { Dialog } from '@/composables/types'
-import { SubscribePayload } from './types'
+import { PickByType, SubscribePayload } from './types'
 import { openDialogEvent } from './events'
 import { IUser } from '@/modules/organisations/types'
 
@@ -101,3 +101,11 @@ export function autoEllipsis(text: string, length: number, html = false) {
   if (text.length <= length) return text
   return text.slice(0, length - 1) + '…'
 }
+
+export function getFieldSorter<Key extends string>(fieldName: Key) {
+  // Typing below will actually make TS require objects with only this attribute,
+  // but that is ignored where the method is used anyway.
+  return (obj: { [key in Key]: string }) => obj[fieldName].toLocaleLowerCase()
+}
+
+export const titleSorter = getFieldSorter('title')

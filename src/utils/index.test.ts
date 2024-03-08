@@ -1,9 +1,11 @@
+import { sortBy } from 'lodash'
 import { Duration } from 'luxon'
 import { expect, test } from 'vitest'
 
 import {
   dialogQuery,
   durationToString,
+  getFieldSorter,
   getFullName,
   sleep,
   slugify,
@@ -90,4 +92,12 @@ test('getFullName', () => {
   expect(getFullName({ first_name: 'Jane', last_name: '' })).toEqual('Jane')
   expect(getFullName({ first_name: '', last_name: 'Austen' })).toEqual('Austen')
   expect(getFullName({ first_name: '', last_name: '' })).toEqual('')
+})
+
+test('getFieldSorter', () => {
+  const data = [{ t: 'AAA' }, { t: 'BBB' }, { t: 'abc' }]
+  const sorter = getFieldSorter('t')
+  expect(sorter(data[0])).toEqual('aaa')
+  expect(sortBy(data, 't').map((o) => o.t)).toEqual(['AAA', 'BBB', 'abc'])
+  expect(sortBy(data, sorter).map((o) => o.t)).toEqual(['AAA', 'abc', 'BBB'])
 })
