@@ -2,6 +2,7 @@ import { filter, ifilter, imap } from 'itertools'
 import { countBy, isNumber, orderBy, sortBy } from 'lodash'
 import { computed, onBeforeMount, reactive, watch } from 'vue'
 
+import { titleSorter } from '@/utils'
 import useAuthentication, { user } from '@/composables/useAuthentication'
 import type { LoaderCallback } from '@/composables/useLoader'
 
@@ -29,7 +30,7 @@ const { isAuthenticated } = useAuthentication()
 
 function getMeetingList(
   state: MeetingState,
-  order: keyof Meeting = 'title',
+  order: keyof Meeting | typeof titleSorter = titleSorter,
   direction: 'asc' | 'desc' = 'asc'
 ) {
   return orderBy(

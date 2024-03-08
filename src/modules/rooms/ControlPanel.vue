@@ -3,16 +3,16 @@ import { sortBy } from 'lodash'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { titleSorter } from '@/utils'
+import { parseRestError } from '@/utils/restApi'
+import { openDialogEvent } from '@/utils/events'
+import { ThemeColor } from '@/utils/types'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import HelpSection from '@/components/HelpSection.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserSearch from '@/components/UserSearch.vue'
-
-import { parseRestError } from '@/utils/restApi'
-import { openDialogEvent } from '@/utils/events'
-import { ThemeColor } from '@/utils/types'
 
 import useAgenda from '../agendas/useAgenda'
 import { translateMeetingRole } from '../meetings/utils'
@@ -119,7 +119,7 @@ async function updateRoom(
 }
 
 const editableMeetingRooms = computed(() =>
-  sortBy(meetingRooms.value, 'title').map((r) => {
+  sortBy(meetingRooms.value, titleSorter).map((r) => {
     const speakerSystem = findSpeakerSystem((s) => s.room === r.pk)
     const userIds = speakerSystem ? getUserIds(speakerSystem.pk) : []
     return {

@@ -1,5 +1,5 @@
 import { filter } from 'itertools'
-import { orderBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -64,9 +64,9 @@ export default function useAgenda(
 
   const agenda = computed(() => {
     // Filter on meetingId
-    return orderBy(
+    return sortBy(
       filter(agendaItems.values(), (ai) => ai.meeting === meetingId.value),
-      ['order']
+      'order'
     )
   })
 

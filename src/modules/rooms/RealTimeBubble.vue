@@ -4,7 +4,7 @@ import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { autoEllipsis } from '@/utils'
+import { autoEllipsis, titleSorter } from '@/utils'
 
 import useMeetingId from '../meetings/useMeetingId'
 import useRooms from '../rooms/useRooms'
@@ -41,7 +41,7 @@ const broadcasting = computed(() =>
         subtitle: getSubtitle(room),
         title: room.title
       })),
-    ['active', 'title'],
+    ['active', titleSorter],
     ['desc', 'asc']
   )
 )

@@ -8,6 +8,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 - Bugfix: Text size selection in real-time view now changes size of all proposal text. [#357](https://github.com/VoteIT/voteit_frontend/issues/357)
 - Proposal highlighting in real-time view improved. [#358](https://github.com/VoteIT/voteit_frontend/issues/358)
+- Bugfix: Case insensitive ordering.
 
 ## 0.25.1 (2024-03-05)
 

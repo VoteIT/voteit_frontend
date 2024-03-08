@@ -79,8 +79,8 @@ const proposalResults = computed(() => {
         0,
       icon: getIcon(proposal.pk)
     })),
-    ['votes'],
-    ['desc']
+    'votes',
+    'desc'
   )
 })
 </script>

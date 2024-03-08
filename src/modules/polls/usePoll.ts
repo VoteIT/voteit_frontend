@@ -95,7 +95,7 @@ export default function usePoll(pollRef: Ref<number | undefined>) {
   function getProposalSortValue(proposal: Proposal) {
     switch (poll.value?.p_ord) {
       case 'a':
-        return stripHTML(proposal.body)
+        return stripHTML(proposal.body).toLocaleLowerCase()
       case 'r':
         return getUserRandomSortValue(proposal.pk)
       default:

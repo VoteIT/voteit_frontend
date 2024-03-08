@@ -26,7 +26,7 @@ export default function useSpeakerHistory(
         meeting: meeting.value,
         speaker_system: speakerSystem.value
       })
-      speakerHistory.set(key, orderBy(data, ['seconds_spoken'], ['desc']))
+      speakerHistory.set(key, orderBy(data, 'seconds_spoken', 'desc'))
     },
     { immediate: true }
   )

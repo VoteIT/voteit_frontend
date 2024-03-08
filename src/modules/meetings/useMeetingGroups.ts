@@ -13,6 +13,7 @@ import { canChangeMeeting } from './rules'
 import { GroupMembership, GroupRole, MeetingGroup } from './types'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
+import { titleSorter } from '@/utils'
 
 const meetingGroups = reactive(new Map<number, MeetingGroup>())
 meetingGroupType.updateMap(meetingGroups, { meeting: 'meeting' })
@@ -69,7 +70,7 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
    * Ordered groups in this meeting, annotated with members (user pks) and membership objects.
    */
   const orderedGroups = computed(() => {
-    return sortBy(_meetingGroups.value, 'title').map((g) => {
+    return sortBy(_meetingGroups.value, titleSorter).map((g) => {
       const memberships = filter(
         groupMemberships.values(),
         // eslint-disable-next-line camelcase

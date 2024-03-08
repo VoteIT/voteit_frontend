@@ -140,8 +140,8 @@ export default function useElectoralRegisters(meetingId?: Ref<number>) {
         ...er,
         hasWeightedVotes: hasWeightedVotes(er)
       })),
-      ['created'],
-      ['desc']
+      'created',
+      'desc'
     )
   })
   const currentElectoralRegister = computed(() => {

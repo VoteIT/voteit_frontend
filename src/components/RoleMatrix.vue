@@ -291,7 +291,7 @@ const userMatrix = computed(() => {
   }) => string | boolean | undefined = orderByName
     ? ({ user }) => {
         const _user = getUser(user)
-        if (_user) return getFullName(_user) // Get user full name to order by
+        if (_user) return getFullName(_user).toLocaleLowerCase() // Get user full name to order by
       }
     : ({ row }) => row[orderColumn]
   // Ordering direction

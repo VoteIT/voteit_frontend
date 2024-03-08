@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { enumerate, filter, map, range } from 'itertools'
-import { flatten, isEqual, orderBy } from 'lodash'
+import { flatten, isEqual, sortBy } from 'lodash'
 import { ComponentPublicInstance, computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding, useTextSelection } from '@vueuse/core'
@@ -109,7 +109,7 @@ async function replaceSelection(proposals: number[]) {
 
 function selectTag(tag: string) {
   replaceSelection(
-    orderBy(
+    sortBy(
       getAgendaProposals(
         agendaId.value,
         (p) => filterProposalStates(p) && p.tags.includes(tag)
@@ -193,7 +193,7 @@ const allProposalIds = computed(() =>
  * Ordered by tag name.
  */
 const otherTags = computed(() =>
-  orderBy(
+  sortBy(
     filter(
       proposalTagCount.value.entries(),
       ([tag]) =>

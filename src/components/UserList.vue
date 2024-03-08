@@ -34,7 +34,7 @@ const users = computed(() => {
     props.userIds.map(
       (pk) => getUser(pk) ?? { pk, first_name: '', last_name: '', userid: '' }
     ),
-    getFullName
+    (u) => getFullName(u).toLocaleLowerCase()
   )
 })
 </script>

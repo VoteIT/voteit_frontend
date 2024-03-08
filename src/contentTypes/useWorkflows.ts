@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash'
+import { sortBy } from 'lodash'
 
 import { WorkflowState, WorkflowStates } from './types'
 
@@ -10,9 +10,9 @@ export default function useWorkflows<S>(states: WorkflowStates<S>) {
   function getPriorityStates(
     predicate?: (state: WorkflowState<S>) => boolean
   ): WorkflowState<S>[] {
-    return orderBy(
+    return sortBy(
       states.filter((s) => s.priority && (!predicate || predicate(s))),
-      ['priority']
+      'priority'
     )
   }
 

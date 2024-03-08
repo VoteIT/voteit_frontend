@@ -47,6 +47,7 @@ import { computed, onBeforeMount, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import { titleSorter } from '@/utils'
 import useLoader from '@/composables/useLoader'
 import usePermission from '@/composables/usePermission'
 
@@ -89,7 +90,7 @@ const panelPlugins = computed(() => {
         ...panel
       }
     }),
-    'title'
+    titleSorter
   )
 })
 const currentPanel = computed(() => route.params.panel as string | undefined)

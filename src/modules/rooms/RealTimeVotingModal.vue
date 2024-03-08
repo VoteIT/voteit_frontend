@@ -73,7 +73,7 @@ const availablePolls = computed(() => {
           p.pk === _selectedId.value || // ... and user currently selected poll
           p.state === PollState.Ongoing) // ... and all ongoing polls
     ),
-    ['started']
+    'started'
   )
 
   return [

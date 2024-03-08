@@ -1,6 +1,8 @@
 import { sortBy } from 'lodash'
 import { toRef } from 'vue'
 
+import { titleSorter } from '@/utils'
+
 import { agendaMenuPlugins } from '../agendas/registry'
 import { AgendaMenuPlugin } from '../agendas/types'
 import useAgenda from '../agendas/useAgenda'
@@ -42,7 +44,7 @@ function getItems({ agendaItem, meeting, t }: OptionalAIContext) {
   }
   return meetingRooms.value.length === 1
     ? [getRoomMenu(meetingRooms.value[0], t('plenary.view'))]
-    : sortBy(meetingRooms.value, 'title').map((room) =>
+    : sortBy(meetingRooms.value, titleSorter).map((room) =>
         getRoomMenu(room, `${t('plenary.view')} (${room.title})`)
       )
 }

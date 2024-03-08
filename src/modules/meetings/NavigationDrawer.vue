@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-import { orderBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
@@ -159,7 +159,7 @@ const aiMenus = computed<TreeMenuItem[]>(() => {
 })
 
 const unvotedPolls = computed(() =>
-  orderBy(getUnvotedPolls(meetingId.value), ['started'])
+  sortBy(getUnvotedPolls(meetingId.value), 'started')
 )
 const hasUnvotedPolls = computed(() => !!unvotedPolls.value.length)
 const openPollMenuEvent = new TypedEvent()

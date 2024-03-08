@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { orderBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -20,9 +20,9 @@ import useMeetingTitle from './useMeetingTitle'
 import { getMeetingGroup } from './useMeetingGroups'
 
 const PROPOSAL_ORDERING = {
-  created: ['created'],
+  created: 'created',
   modified: ['modified', 'created']
-}
+} as const
 
 const AGENDA_STATE_ODER = [
   AgendaState.Upcoming,
@@ -126,7 +126,7 @@ const annotatedAgenda = computed(() => {
   return agenda.value
     .map(({ pk, state, title }) => {
       const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
-        const proposals = orderBy(
+        const proposals = sortBy(
           getAgendaProposals(pk, (p) => p.state === state),
           PROPOSAL_ORDERING[settings.proposalOrder]
         )

@@ -65,6 +65,8 @@ import { sortBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { titleSorter } from '@/utils'
+
 import { meetingExportPlugins } from './registry'
 import useMeeting from './useMeeting'
 
@@ -100,7 +102,7 @@ const exportPlugins = computed(() => {
         }
       })
       .filter((e) => e.exports.length),
-    'title'
+    titleSorter
   )
 })
 </script>
