@@ -178,15 +178,21 @@ onBeforeUnmount(evt.dispose)
 
 
 .text-size-large
+  :deep(.richtext ol),
   :deep(.richtext p),
+  :deep(.richtext ul),
   :deep(.timer),
-  :deep(.v-list-item-title)
+  :deep(.v-list-item-title),
+  :deep(.proposal-text-paragraph)
     font-size: large !important
 
 .text-size-x-large
+  :deep(.richtext ol),
   :deep(.richtext p),
+  :deep(.richtext ul),
   :deep(.timer),
-  :deep(.v-list-item-title)
+  :deep(.v-list-item-title),
+  :deep(.proposal-text-paragraph)
     font-size: x-large !important
 
 h2
