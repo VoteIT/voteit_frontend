@@ -29,10 +29,10 @@
         >
           <v-text-field
             type="number"
-            :rules="[rules.required, rules.min(1)]"
+            :rules="[rules.required, rules.min(0)]"
             v-model="hours"
             :label="t('activeUsers.inactiveHours')"
-            min="1"
+            min="0"
             hide-details
           />
           <v-btn
