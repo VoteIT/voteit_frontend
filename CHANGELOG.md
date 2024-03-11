@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.25.3 (2024-03-11)
+
+- Bugfix: Presence check bubble didn't open
+
 ## 0.25.2 (2024-03-06)
 
 - Bugfix: Text size selection in real-time view now changes size of all proposal text. [#357](https://github.com/VoteIT/voteit_frontend/issues/357)
