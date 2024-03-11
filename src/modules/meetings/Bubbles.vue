@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { sortBy } from 'lodash'
+import { isFunction, sortBy } from 'lodash'
 import { computed, ref } from 'vue'
 
 import { meetingBubblePlugins } from './registry'
@@ -48,7 +48,9 @@ const bubbles = computed(() =>
   activePlugins.value.map((plugin) => {
     return {
       ...plugin,
-      requireAttention: plugin.requireAttention.value
+      requireAttention: isFunction(plugin.requireAttention)
+        ? plugin.requireAttention(meeting.value)
+        : plugin.requireAttention
     }
   })
 )

@@ -1,5 +1,5 @@
 import { Dictionary } from 'lodash'
-import { Component, ComputedRef, Ref } from 'vue'
+import { Component, Ref } from 'vue'
 
 import PluginHandler from './PluginHandler'
 
@@ -13,7 +13,7 @@ interface MeetingBubblePlugin extends MeetingPlugin {
   component: Component
   icon: string
   order: number
-  requireAttention: ComputedRef<boolean>
+  requireAttention: boolean | ((meeting?: Meeting) => boolean)
 }
 
 interface ExportsPlugin extends MeetingPlugin {

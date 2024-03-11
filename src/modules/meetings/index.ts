@@ -167,6 +167,6 @@ meetingBubblePlugins.register({
   checkActive(meeting) {
     return hasFakeRoles(meeting.pk)
   },
-  requireAttention: computed(() => false),
+  requireAttention: false,
   order: -1
 })

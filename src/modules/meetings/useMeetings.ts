@@ -20,7 +20,7 @@ export function getMeetingRoleIcon(role: MeetingRole) {
   return roleIcons[role]
 }
 
-export const meetings = reactive<Map<number, Meeting>>(new Map())
+export const meetings = reactive(new Map<number, Meeting>())
 
 meetingType.updateMap(meetings)
 

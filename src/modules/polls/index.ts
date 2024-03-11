@@ -12,7 +12,7 @@ meetingBubblePlugins.register({
   icon: 'mdi-vote',
   id: 'unvotedPolls',
   order: 0,
-  requireAttention: computed(() => true),
+  requireAttention: true,
   checkActive(meeting) {
     return !!getNextUnvotedPoll(meeting.pk)
   }

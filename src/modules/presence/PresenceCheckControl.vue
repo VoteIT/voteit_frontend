@@ -11,7 +11,7 @@
       :disabled="submitting"
       :loading="submitting"
       v-if="canChange"
-      @click="close()"
+      @click="close"
       color="warning"
       prepend-icon="mdi-stop"
     >
@@ -24,7 +24,7 @@
       :loading="submitting"
       size="large"
       color="primary"
-      @click="open()"
+      @click="open"
       prepend-icon="mdi-hand-wave"
     >
       {{ t('presence.newCheck') }}

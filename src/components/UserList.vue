@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import useUserDetails from '@/modules/organisations/useUserDetails'
+import UserAvatar from './UserAvatar.vue'
 
 defineEmits<{
   (e: 'update:modelValue', value: Value): void

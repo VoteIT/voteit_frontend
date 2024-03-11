@@ -26,7 +26,7 @@ meetingSettingsPlugins.register({
 })
 
 meetingBubblePlugins.register({
-  id: 'presence_check',
+  id: 'presenceCheck',
   component: PresenceCheckBubble,
   icon: 'mdi-hand-wave',
   order: 10,
@@ -36,8 +36,9 @@ meetingBubblePlugins.register({
     return useMeetingComponent(meetingId, 'presence_check').componentActive
       .value
   },
-  requireAttention: computed(() => {
-    const { isPresent, presenceCheck } = usePresence(useMeetingId())
+  requireAttention: (meeting) => {
+    if (!meeting) return false
+    const { isPresent, presenceCheck } = usePresence(toRef(meeting, 'pk'))
     return !!presenceCheck.value && !isPresent.value
-  })
+  }
 })

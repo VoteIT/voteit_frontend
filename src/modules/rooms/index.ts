@@ -25,7 +25,7 @@ meetingSettingsPlugins.register({
 })
 
 meetingBubblePlugins.register({
-  id: 'presence_check',
+  id: 'meetingRoom',
   component: RealTimeBubble,
   icon: 'mdi-television-play',
   order: 10,
@@ -35,7 +35,7 @@ meetingBubblePlugins.register({
       (r) => r.meeting === meeting.pk && r.open
     )
   },
-  requireAttention: computed(() => false)
+  requireAttention: false
 })
 
 router.addRoute({
