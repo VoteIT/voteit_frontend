@@ -4,9 +4,9 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.25.3 (2024-03-11)
+## 0.26.0 (2024-03-11)
 
-- Bugfix: Presence check bubble didn't open
+- Drop presence check component
 
 ## 0.25.2 (2024-03-06)
 

@@ -92,44 +92,6 @@
           <MeetingGroupsTab />
         </v-window-item>
 
-        <v-window-item value="presence" v-if="canManagePresence">
-          <PresenceCheckControl class="text-center" />
-          <template v-if="presenceCheck">
-            <v-divider class="my-4" />
-            <h2 class="mb-4">
-              {{ t('presence.presentCount', presentUserIds.length) }}
-            </h2>
-            <UserSearch
-              class="mb-6"
-              @submit="changePresence($event, true)"
-              instant
-              :filter="presenceFilter"
-              :params="{ meeting: meetingId }"
-              :label="
-                t('content.addName', {
-                  name: t('presence.presence').toLowerCase()
-                })
-              "
-            />
-            <UserList
-              v-if="presentUserIds.length"
-              :userIds="presentUserIds"
-              class="my-2"
-              bgColor="background"
-              density="default"
-            >
-              <template #appendItem="{ user }">
-                <v-btn
-                  size="small"
-                  variant="text"
-                  icon="mdi-close"
-                  @click="changePresence(user, false)"
-                />
-              </template>
-            </UserList>
-          </template>
-        </v-window-item>
-
         <v-window-item value="speakerHistory" v-if="hasSpeakerSystems">
           <SpeakerHistory />
         </v-window-item>
@@ -149,20 +111,15 @@ import { useI18n } from 'vue-i18n'
 import { getFullName } from '@/utils'
 import restApi from '@/utils/restApi'
 import { openAlertEvent } from '@/utils/events'
-import UserList from '@/components/UserList.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import { UserContextRoles } from '@/composables/types'
 import useAuthentication from '@/composables/useAuthentication'
-import useAlert from '@/composables/useAlert'
 import useTabRoute from '@/composables/useTabRoute'
 
 import { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 import useOrganisation from '../organisations/useOrganisation'
-import usePresence from '../presence/usePresence'
-import PresenceCheckControl from '../presence/PresenceCheckControl.vue'
-import { presenceType } from '../presence/contentTypes'
 import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
@@ -189,9 +146,6 @@ const {
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
-const { canManagePresence, presenceCheck, presentUserIds } =
-  usePresence(meetingId)
-const { alert } = useAlert()
 const { isOrganisationManager } = useOrganisation()
 
 useMeetingTitle(t('meeting.participants'))
@@ -240,11 +194,6 @@ const { currentTab } = useTabRoute(
 )
 
 function* getExtraTabs() {
-  if (canManagePresence.value)
-    yield {
-      value: 'presence',
-      text: t('presence.presence')
-    }
   if (hasSpeakerSystems.value)
     yield {
       value: 'speakerHistory',
@@ -270,23 +219,6 @@ const tabs = computed(() => {
     ...getExtraTabs()
   ]
 })
-
-function changePresence(user: number, present: boolean) {
-  if (!presenceCheck.value) return
-  try {
-    presenceType.methodCall('change', {
-      presence_check: presenceCheck.value.pk,
-      present,
-      user
-    })
-  } catch {
-    alert(`Cound not ${present ? 'add' : 'remove'} presence`)
-  }
-}
-
-function presenceFilter({ pk }: IUser) {
-  return !presentUserIds.value.includes(pk)
-}
 
 /* Filter for RoleMatrix */
 const participantFilter = reactive<{

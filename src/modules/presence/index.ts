@@ -1,11 +1,10 @@
-import { computed, toRef } from 'vue'
+import { toRef } from 'vue'
 
 import {
   meetingBubblePlugins,
   meetingSettingsPlugins
 } from '../meetings/registry'
 import useMeetingComponent from '../meetings/useMeetingComponent'
-import useMeetingId from '../meetings/useMeetingId'
 
 import PresenceCheckBubble from './PresenceCheckBubble.vue'
 import usePresence from './usePresence'
