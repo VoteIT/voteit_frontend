@@ -2,6 +2,7 @@ import { any, filter } from 'itertools'
 import { sortBy } from 'lodash'
 import { computed, reactive, Ref } from 'vue'
 
+import { titleSorter } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
 
 import {
@@ -9,11 +10,9 @@ import {
   groupRoleType,
   meetingGroupType
 } from './contentTypes'
-import { canChangeMeeting } from './rules'
+import { canChangeMeeting, isModerator } from './rules'
 import { GroupMembership, GroupRole, MeetingGroup } from './types'
-import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
-import { titleSorter } from '@/utils'
 
 const meetingGroups = reactive(new Map<number, MeetingGroup>())
 meetingGroupType.updateMap(meetingGroups, { meeting: 'meeting' })
@@ -39,7 +38,6 @@ export function isGroupMember(group: number, user: number) {
 
 export default function useMeetingGroups(meetingId: Ref<number>) {
   const { user } = useAuthentication()
-  const { isModerator } = useMeeting() // Warning: If meetingId above differs from useMeeting computed meetingId, we get the wrong value. This is inconsequential.
 
   function isGroupMember(
     group: (typeof orderedGroups)['value'][number]
@@ -61,7 +59,9 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
   const voteCount = computed(() =>
     allGroupMembers.value.reduce((acc, { votes }) => acc + (votes || 0), 0)
   )
-  const canPostAs = computed(() => isModerator.value || userGroups.value.length)
+  const canPostAs = computed(
+    () => isModerator(meetingId.value) || userGroups.value.length
+  )
   const roles = computed(() =>
     filter(groupRoles.values(), ({ meeting }) => meetingId.value === meeting)
   )
@@ -94,7 +94,7 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
    * Ordered, annotated groups in current meeting that current user can post as.
    */
   const postAsGroups = computed(() =>
-    isModerator.value
+    isModerator(meetingId.value)
       ? orderedGroups.value
       : orderedGroups.value.filter((g) => isGroupMember(g) && g.post_as)
   )
