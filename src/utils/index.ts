@@ -2,7 +2,7 @@ import _slugify from 'slugify'
 import { Duration } from 'luxon'
 
 import { Dialog } from '@/composables/types'
-import { PickByType, SubscribePayload } from './types'
+import { SubscribePayload } from './types'
 import { openDialogEvent } from './events'
 import { IUser } from '@/modules/organisations/types'
 
