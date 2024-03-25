@@ -71,7 +71,13 @@
           <slot name="buttons"></slot>
         </div>
         <v-spacer />
-        <v-menu>
+        <v-menu
+          v-if="
+            canChangeProposal(p) ||
+            canRetractProposal(p) ||
+            canDeleteProposal(p)
+          "
+        >
           <template #activator="{ props }">
             <v-btn
               icon="mdi-dots-vertical"
