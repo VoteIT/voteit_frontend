@@ -27,4 +27,11 @@ read -p "Do you want to push to Docker Hub? [y/N] " -n 1 -r
 echo
 if [[ "$REPLY" =~ ^[yY]$ ]]; then
   docker push voteit/voteit4frontend:$VERSION
+
+  read -p "Do you want to add and push git tag 'v${VERSION}' [y/N] " -n 1 -r
+  echo
+  if [[ "$REPLY" =~ ^[yY]$ ]]; then
+    git tag v${VERSION}
+    git push --tags
+  fi
 fi
