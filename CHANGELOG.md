@@ -4,6 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.2 (2024-04-02)
+
+- Manual Electoral Register weight input fixed (min-width)
+- User count added to name column in role matrix
+- Replace buttons with switches in group tab and room control panel
+
 ## 0.26.1 (2024-03-25)
 
 - Bugfix: Could not show invite annotations
