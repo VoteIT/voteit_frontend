@@ -198,16 +198,12 @@
             </DefaultDialog>
           </td>
           <th v-for="{ prop } in groupSwitches" :key="prop">
-            <v-btn
-              variant="text"
-              size="small"
+            <v-switch
+              color="primary"
+              hide-details
+              :model-value="group[prop]"
               @click="toggleGroupProp(group, prop)"
-            >
-              <v-icon
-                :icon="group[prop] ? 'mdi-check' : 'mdi-close'"
-                :color="group[prop] ? 'success' : 'warning'"
-              />
-            </v-btn>
+            />
           </th>
           <td v-for="{ component, name, getValue } in columns" :key="name">
             {{ getValue?.(group) }}
