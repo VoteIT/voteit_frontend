@@ -77,17 +77,19 @@
             <div v-if="isSelected">
               <v-text-field
                 v-if="erMethodWeighted"
+                class="er-weight"
                 density="compact"
                 hide-details
-                type="number"
-                required
                 :label="t('electoralRegister.weight')"
+                required
                 :min="minWeight"
                 :model-value="createSelection.get(user)"
                 :step="minWeight"
-                @update:modelValue="createSelection.set(user, round($event))"
+                type="number"
+                variant="solo"
                 @click.stop
                 @keydown.stop
+                @update:modelValue="createSelection.set(user, round($event))"
               />
               <v-icon v-else>mdi-check-circle</v-icon>
             </div>
@@ -413,3 +415,8 @@ const currentERText = computed(() => {
 
 const { cols } = useDefaults()
 </script>
+
+<style scoped lang="sass">
+.er-weight
+  min-width: 80px
+</style>
