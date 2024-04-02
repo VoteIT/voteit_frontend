@@ -26,6 +26,7 @@
   "login": "Log in",
   "modified": "Modified",
   "name": "Name",
+  "nameCount": "Name | Name | {count} names",
   "newestFirst": "Newest first",
   "no": "No",
   "noSuggestions": "No suggestions available",

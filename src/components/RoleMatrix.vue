@@ -27,7 +27,7 @@
       <thead>
         <tr>
           <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
-            {{ t('name') }}
+            {{ t('nameCount', userMatrix.length) }}
           </th>
           <th v-if="admin">
             {{ t('email') }}

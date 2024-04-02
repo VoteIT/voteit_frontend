@@ -26,6 +26,7 @@
   "login": "Logga in",
   "modified": "Ändrad",
   "name": "Namn",
+  "nameCount": "Namn | Namn | {count} namn",
   "newestFirst": "Nyaste först",
   "no": "Nej",
   "noSuggestions": "Inga förslag tillgängliga",
