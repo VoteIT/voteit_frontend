@@ -211,17 +211,16 @@ async function deleteRoom(pk: number) {
           <td>
             {{ room.title }}
           </td>
-          <td>
-            <v-btn
-              @click="setOpen(room.pk, !room.open)"
-              :color="room.open ? 'success' : 'warning'"
-              variant="text"
-            >
-              <v-icon :icon="room.open ? 'mdi-check' : 'mdi-close'" />
-            </v-btn>
+          <td class="d-flex align-center">
+            <v-switch
+              color="primary"
+              hide-details
+              :model-value="room.open"
+              @update:model-value="setOpen(room.pk, !!$event)"
+            />
             <v-btn
               v-if="agenda.length"
-              class="ml-2"
+              class="ml-4"
               color="primary"
               prepend-icon="mdi-broadcast"
               size="small"
