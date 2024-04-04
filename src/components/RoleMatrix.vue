@@ -21,13 +21,12 @@
     />
     <v-table
       class="context-roles"
-      v-if="userMatrix.length"
       :class="{ orderReversed: ordering.reversed, admin }"
     >
       <thead>
         <tr>
           <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
-            {{ t('nameCount', userMatrix.length) }}
+            {{ t('name') }} ({{ allRoles.length }})
           </th>
           <th v-if="admin">
             {{ t('email') }}
@@ -50,6 +49,11 @@
         </tr>
       </thead>
       <tbody>
+        <tr v-if="!userMatrix.length">
+          <td class="text-center" :colspan="(admin ? 3 : 1) + columns.length">
+            <em>{{ t('noFilteredRoles', allRoles.length) }}</em>
+          </td>
+        </tr>
         <tr
           v-for="{ user, row } in pageUsers"
           :key="user"
@@ -278,9 +282,12 @@ function isCurrentUser(roles: { user: number }): boolean {
   return roles.user === user.value?.pk
 }
 
+const allRoles = computed(() => contextRoles.getAll<Role>(props.pk))
+
 const userMatrix = computed(() => {
-  let userRoles = contextRoles.getAll<string>(props.pk)
-  if (props.filter) userRoles = userRoles.filter(props.filter)
+  const userRoles = props.filter
+    ? allRoles.value.filter(props.filter)
+    : allRoles.value
   const matrix = userRoles.map(getRow)
   const orderByName = ordering.column === null
   const orderColumn = columns.value.findIndex((c) => c.name === ordering.column)
@@ -327,7 +334,7 @@ const pageUsers = computed(() => {
       position: absolute
       top: 12px
       padding: 0 4px
-      transition: transform .1s
+      transition: transform 150ms
   &.orderReversed
     th::after
       transform: rotate(180deg)
