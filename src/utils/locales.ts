@@ -40,10 +40,13 @@ export const currentLocale = computed<Locale>({
   }
 })
 
-export function setLocale(locale: Locale) {
-  if (!isLocale(locale)) throw new Error(`"${locale}" is not a valid locale`)
-  selectedLocale.value = locale
-}
+watch(
+  currentLocale,
+  (locale) => {
+    document.querySelector('html')!.lang = locale
+  },
+  { immediate: true }
+)
 
 export const i18n = createI18n({
   legacy: false,
