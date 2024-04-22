@@ -172,6 +172,7 @@ function childHasActive(index: number) {
 <style lang="sass">
 ul.menu-tree
   margin-bottom: 8px
+  list-style: none
   .mdi
     transition: transform .2s
   li.open > a .mdi-chevron-right
