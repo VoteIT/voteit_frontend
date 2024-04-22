@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.3 (2024-04-22)
+
+- Update html lang attribute dynamically to reflect selected locale
+- Safari UI fixes for menu
+
 ## 0.26.2 (2024-04-02)
 
 - Manual Electoral Register weight input fixed (min-width)
