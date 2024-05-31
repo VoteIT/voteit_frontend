@@ -12,7 +12,6 @@ const DEFAULT_CONFIG: SocketOptions['config'] = {
 const OUTGOING_HEARTBEAT_MS = 60_000
 
 export const SocketState = {
-  Undefined: undefined,
   Connecting: 0,
   Open: 1,
   Closing: 2,
