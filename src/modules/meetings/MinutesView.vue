@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import Tag from '@/components/Tag.vue'
+import User from '@/components/User.vue' // TS plugin shows as never read, but component is used in template
 
 import useAgenda from '../agendas/useAgenda'
 import { AgendaState } from '../agendas/types'
