@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.5 (2024-08-27)
+
+- Fix: Poll body HTML was incorrectly rendered
+
 ## 0.26.4 (2024-06-05)
 
 - Author user names were not displayed in MinutesView
