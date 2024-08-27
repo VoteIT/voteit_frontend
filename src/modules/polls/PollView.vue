@@ -54,7 +54,7 @@
           </div>
           <DropdownMenu :items="menuItems" />
         </header>
-        <p v-if="poll.body">{{ poll.body }}</p>
+        <div v-if="poll.body" v-html="poll.body"></div>
         <template v-if="isOngoing">
           <v-alert type="success" v-if="votingComplete" class="my-6">
             {{ t('poll.voteAddedInfo') }}
