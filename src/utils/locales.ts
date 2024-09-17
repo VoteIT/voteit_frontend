@@ -8,7 +8,10 @@ import en from '../locales/en.json'
 
 const defaultLanguage = 'en'
 
-const locales = import.meta.glob('@/locales/*.json', { as: 'raw' })
+const locales = import.meta.glob('@/locales/*.json', {
+  query: '?raw',
+  import: 'default'
+})
 export const languages = Object.keys(locales).map(
   (path) => path.split('/').at(-1)!.split('.').at(0)!
 )
