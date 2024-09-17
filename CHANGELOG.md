@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.6 (2024-09-17)
+
+- Bugfix: Electoral register fetch rewritten to avoid self-DDOS when starting polls
+
 ## 0.26.5 (2024-08-27)
 
 - Fix: Poll body HTML was incorrectly rendered
