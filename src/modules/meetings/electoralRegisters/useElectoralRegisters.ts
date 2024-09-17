@@ -1,14 +1,15 @@
 import { orderBy } from 'lodash'
 import { computed, reactive, ref, Ref } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
+
+import { sleep } from '@/utils'
 
 import { electoralRegisterType, erMethodType } from '../contentTypes'
 import { meetings } from '../useMeetings'
-
 import type { ElectoralRegister, ErMethod } from './types'
-import { ComposerTranslation } from 'vue-i18n'
 
 // Needs reactive, so that permission checks are run again when an ER is inserted.
-const registers = reactive<Map<number, ElectoralRegister | null>>(new Map())
+const registers = reactive<Map<number, ElectoralRegister>>(new Map())
 
 electoralRegisterType.updateMap(
   registers as Map<number, ElectoralRegister>, // Don't bother about that null value. That's ok.
@@ -28,19 +29,26 @@ function getErMethod(name: string) {
   return _erMethods.value?.find((erm) => erm.name === name)
 }
 
-async function fetchRegister(pk: number) {
-  registers.set(pk, null) // If it has any value, will not fetch again
+const fetchingRegisters = new Set<number>() // Register ids that are already being fetched
+async function fetchRegister(pk: number, retries = 3) {
+  // Wait 250-1250 ms to avoid self-DDOS of fetch when already got value from websocket channel
+  await sleep(250 + Math.random())
+  if (registers.has(pk) || fetchingRegisters.has(pk)) return // Stop: Got it, or already fetching
+  fetchingRegisters.add(pk)
   try {
     const { data } = await electoralRegisterType.api.retrieve(pk)
     registers.set(pk, data)
-  } catch {
-    registers.delete(pk) // Enables trying again.
+  } catch (e) {
+    if (retries < 1) return console.error(e)
+    fetchingRegisters.delete(pk)
+    fetchRegister(pk, retries - 1)
   }
+  fetchingRegisters.delete(pk)
 }
 
 function getRegister(pk: number) {
-  if (!registers.has(pk)) fetchRegister(pk) // Will set register to null while getting
-  return registers.get(pk) as ElectoralRegister | null
+  if (!registers.has(pk)) fetchRegister(pk) // computed objects will trigger again if registers changes
+  return registers.get(pk)
 }
 
 function hasWeightedVotes({ weights }: ElectoralRegister) {
