@@ -18,6 +18,7 @@ import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { roomDisplayMode } from './displayOptions'
 import { proposalHighlightEvent } from './events'
+import UserActiveDialog from '../active/UserActiveDialog.vue'
 
 provide(RoleContextKey, 'meeting')
 
@@ -84,6 +85,7 @@ onBeforeUnmount(evt.dispose)
 
 <template>
   <AppBar />
+  <UserActiveDialog v-if="!passiveMode" />
   <v-main :class="`text-size-${textSize}`">
     <div v-if="!meetingRoom?.open" class="text-center pa-6">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />

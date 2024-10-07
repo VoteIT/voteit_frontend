@@ -12,7 +12,7 @@ import { ThemeColor } from '@/utils/types'
 const { t } = useI18n()
 const { isActive, dismiss } = useActive(useMeetingId())
 
-async function confirmSetActive(value: boolean) {
+async function confirmSetActive(value: boolean | null) {
   if (!value) {
     if (
       await dialogQuery({
@@ -23,7 +23,7 @@ async function confirmSetActive(value: boolean) {
       dismiss()
     else return
   }
-  isActive.value = value
+  isActive.value = value || false // ts says value could be null?
 }
 </script>
 
