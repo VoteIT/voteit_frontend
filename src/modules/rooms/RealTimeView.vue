@@ -102,7 +102,7 @@ onBeforeUnmount(evt.dispose)
       </p>
       <ClockFace v-if="meetingRoom.show_time" :target-time="targetTime" />
     </div>
-    <div v-else class="d-flex full-height">
+    <div v-else class="d-flex">
       <div v-if="display.speakers" class="left flex-grow-1 pa-6">
         <ActiveSpeakerList
           :passive="passiveMode"
@@ -162,12 +162,11 @@ onBeforeUnmount(evt.dispose)
 .left,
 .right
   flex-basis: 50%
+  overflow-y: auto
+  height: calc(100vh - var(--v-layout-bottom) - var(--v-layout-top))
 
 .right
   background-color: rgba(0,0,0,.04)
-
-.full-height
-  height: 100%
 
 .paus-message
   font-size: large !important
