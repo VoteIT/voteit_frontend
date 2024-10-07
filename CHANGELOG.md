@@ -6,6 +6,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 0.26.7 (2024-10-07)
 
+- Left and right separately scrolled in real-time view
 - Ask participants to confirm setting as non-active in meeting
 - Ask in real-time view if user is active in meeting
 
