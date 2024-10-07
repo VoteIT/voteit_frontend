@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isActive" v-bind="dialogDefaults" :persistent="persistent">
     <template #activator="attrs">
-      <slot name="activator" v-bind="attrs" />
+      <slot name="activator" v-bind="attrs"></slot>
     </template>
     <v-sheet class="pa-4">
       <div class="text-right">

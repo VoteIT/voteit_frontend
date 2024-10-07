@@ -1,10 +1,12 @@
 import { computed, reactive, Ref } from 'vue'
 
 import { user } from '@/composables/useAuthentication'
-import { activeUserType } from './contentTypes'
+
 import { meetingType } from '../meetings/contentTypes'
 import { NoSettingsComponent } from '../meetings/types'
 import useMeetingComponents from '../meetings/useMeetingComponent'
+
+import { activeUserType } from './contentTypes'
 
 interface ActiveUsersMsg {
   meeting: number
@@ -32,6 +34,8 @@ meetingType.channel.onLeave((pk) => {
   meetingActiveUsers.delete(pk)
 })
 
+const dismissedMeetings = reactive(new Set<number>())
+
 export default function useActive(meetingId: Ref<number>) {
   const { componentActive } = useMeetingComponents<
     NoSettingsComponent<'active_users'>
@@ -51,6 +55,8 @@ export default function useActive(meetingId: Ref<number>) {
     }
   })
 
+  const isDismissed = computed(() => dismissedMeetings.has(meetingId.value))
+
   async function setActive(active: boolean) {
     if (!user.value)
       throw new Error('Must have authenticated user to set active')
@@ -61,12 +67,18 @@ export default function useActive(meetingId: Ref<number>) {
     })
   }
 
+  function dismiss() {
+    dismissedMeetings.add(meetingId.value)
+  }
+
   return {
     activeUserIds: computed(
       () => meetingActiveUsers.get(meetingId.value) || []
     ),
     componentActive,
     isActive,
+    isDismissed,
+    dismiss,
     checkActive,
     setActive
   }
