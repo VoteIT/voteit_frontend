@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.7 (2024-10-07)
+
+- Ask participants to confirm setting as non-active in meeting
+- Ask in real-time view if user is active in meeting
+
 ## 0.26.6 (2024-09-17)
 
 - Bugfix: Electoral register fetch rewritten to avoid self-DDOS when starting polls
