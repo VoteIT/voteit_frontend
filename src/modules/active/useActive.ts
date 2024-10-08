@@ -1,4 +1,4 @@
-import { computed, reactive, Ref } from 'vue'
+import { computed, reactive, Ref, watch } from 'vue'
 
 import { user } from '@/composables/useAuthentication'
 
@@ -40,6 +40,9 @@ export default function useActive(meetingId: Ref<number>) {
   const { componentActive } = useMeetingComponents<
     NoSettingsComponent<'active_users'>
   >(meetingId, 'active_users')
+
+  // If Active component if switched on/off, clear dismissed status.
+  watch(componentActive, () => dismissedMeetings.delete(meetingId.value))
 
   function checkActive(user: number) {
     return !!meetingActiveUsers.get(meetingId.value)?.includes(user)
