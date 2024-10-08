@@ -85,7 +85,7 @@
     }
   },
   "activeUsers": {
-    "confirmDismiss": "Choosing to retain inactive status in a meeting may affect voting rights in polls.\nAre you sure?",
+    "confirmDismiss": "Setting inactive status in a meeting may affect voting rights.\nAre you sure?",
     "description": "Users will be asked if they're active in meeting.",
     "enable": "Activate active users system",
     "active": "Active in meeting",

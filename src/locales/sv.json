@@ -85,7 +85,7 @@
     }
   },
   "activeUsers": {
-    "confirmDismiss": "Valet att stå som inaktiv i mötet kan påverka rösträtt i omröstningar.\nÄr du säker?",
+    "confirmDismiss": "Valet att stå som inaktiv i mötet kan påverka rösträtt.\nÄr du säker?",
     "description": "Användare uppmanas svara på om de är aktiva i mötet.",
     "enable": "Aktivera system för aktiva användare",
     "active": "Aktiv i mötet",
