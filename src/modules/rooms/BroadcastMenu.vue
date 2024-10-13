@@ -130,11 +130,7 @@ async function savePauseMessage(pauseBroadcast = false) {
             <v-alert type="info" class="my-3">
               {{ t('room.pauseMessageDescription') }}
             </v-alert>
-            <RichtextEditor
-              v-model="pauseEdit.body"
-              class="mb-2"
-              @keydown.stop
-            />
+            <RichtextEditor v-model="pauseEdit.body" class="mb-2" />
             <v-switch
               v-model="pauseEdit.show_time"
               color="primary"

@@ -251,7 +251,7 @@ ol.speaker-queue
                 </h3>
                 <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
                   <template #top v-if="canManageSystem">
-                    <DefaultDialog>
+                    <DefaultDialog :title="$t('speaker.editList')">
                       <template #activator="{ props }">
                         <v-list-item
                           v-bind="props"
@@ -260,24 +260,11 @@ ol.speaker-queue
                         />
                       </template>
                       <template #default="{ close }">
-                        <div class="d-flex mb-2">
-                          <h2 class="flex-grow-1">
-                            {{ t('speaker.editList') }}
-                          </h2>
-                          <v-btn
-                            @click="close"
-                            class="mt-n2 mr-n2"
-                            icon="mdi-close"
-                            size="small"
-                            variant="text"
-                          />
-                        </div>
                         <SchemaForm
                           :schema="speakerListSchema"
                           :model-value="{ title: list.title }"
                           :handler="createEditHandler(list.pk)"
                           @saved="close"
-                          @keydown.stop
                         >
                           <template #buttons="{ disabled }">
                             <div class="text-right">

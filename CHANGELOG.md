@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.8 (??)
+
+- Plenary keyboard navigation exceptions (on keymod or when target is in overlay or .no-keynav)
+
 ## 0.26.7 (2024-10-07)
 
 - Left and right separately scrolled in real-time view
