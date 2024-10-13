@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
 import { toggleNavDrawerEvent } from '@/utils/events'
+import { navigationEventAllowed } from '@/utils/keyNavigation'
 import WorkflowState from '@/components/WorkflowState.vue'
 
 import { agendaItemType } from '../agendas/contentTypes'
@@ -28,13 +29,18 @@ function navigateAgendaItem(aid?: number) {
   if (!aid) return
   router.push(getPlenaryRoute({ aid }))
 }
+
 onKeyStroke(
   'ArrowLeft',
-  (event) => !event.altKey && navigateAgendaItem(previousAgendaItem.value?.pk)
+  (event) =>
+    navigationEventAllowed(event) &&
+    navigateAgendaItem(previousAgendaItem.value?.pk)
 )
 onKeyStroke(
   'ArrowRight',
-  (event) => !event.altKey && navigateAgendaItem(nextAgendaItem.value?.pk)
+  (event) =>
+    navigationEventAllowed(event) &&
+    navigateAgendaItem(nextAgendaItem.value?.pk)
 )
 
 const breadcrumbs = computed(() => [
