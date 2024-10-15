@@ -47,7 +47,7 @@ const SETTING_DEFAULTS = {
     showAgendaBody: false,
     showMeetingBody: false,
     showUnresolvedWarning: true,
-    proposalStates: [ProposalState.Approved, ProposalState.Denied],
+    proposalStates: [ProposalState.Approved],
     agendaStates: [...AGENDA_STATE_ODER],
     unresolvedStates: 'all'
   },
