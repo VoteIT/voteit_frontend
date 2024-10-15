@@ -177,6 +177,10 @@ function canSetState(target: AgendaState) {
     )
   )
 }
+
+function tagFilter(tags: string[], query: string) {
+  return tags.includes(query)
+}
 </script>
 
 <template>
@@ -246,7 +250,7 @@ function canSetState(target: AgendaState) {
     show-select
     v-model="editSelected"
     item-value="pk"
-    :custom-filter="(tags, query) => tags.includes(query)"
+    :custom-filter="tagFilter"
     :search="agendaTag"
     :filter-keys="['tags']"
     :items="agenda"
