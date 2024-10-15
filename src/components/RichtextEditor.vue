@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ifilter, imap } from 'itertools'
 import Quill from 'quill'
 import 'quill-mention/autoregister'
 import { inject, onMounted, ref } from 'vue'
@@ -12,9 +11,44 @@ import { meetingRoleType } from '@/modules/meetings/contentTypes'
 
 import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 
+const tags = inject(TagsKey, ref(new Set<string>()))
+
+function toTagObject(tagName: string) {
+  return { id: tagName, value: tagName }
+}
+
+function* iterTagObjects(query: string) {
+  if (query.length) yield toTagObject(tagify(query))
+  for (const tag of tags.value) {
+    if (tag === query) continue // Exact query already yielded
+    if (tag.startsWith(query)) yield toTagObject(tag)
+  }
+}
+
+async function getUserObjects(query: string) {
+  if (!query.length) return []
+  const { data } = await meetingRoleType.api.list({
+    search: query.toLowerCase(),
+    meeting: meetingId.value
+  })
+  return data.map(({ user }) => ({
+    id: user.pk,
+    value: getDisplayName(user)
+  }))
+}
+
 const mentionOptions = {
   allowedChars: /^[0-9A-Za-z\-_\sÅÄÖåäö]*$/,
-  mentionDenotationChars: ['@', '#']
+  mentionDenotationChars: ['@', '#'],
+  source(
+    query: string,
+    renderList: (tags: TagObject[]) => void,
+    mentionChar: string
+  ) {
+    if (mentionChar === '#') return renderList([...iterTagObjects(query)])
+    if (mentionChar === '@') return getUserObjects(query).then(renderList)
+    throw new Error(`Unknown denotation character: ${mentionChar}`)
+  }
 }
 
 const variants: Record<
@@ -103,55 +137,11 @@ interface Emits {
 const emit = defineEmits<Emits>()
 
 const { t } = useI18n()
-const tags = inject(TagsKey, ref(new Set<string>()))
 let editor: Quill | undefined
 const editorElement = ref<HTMLElement | null>(null)
 const rootElement = ref<HTMLElement | null>(null)
 
 const meetingId = useMeetingId()
-
-function toTagObject(tagName: string) {
-  return { id: tagName, value: tagName }
-}
-
-function getTagObjects(query: string) {
-  return [
-    toTagObject(tagify(query)), // Exact query, tagified
-    ...imap(
-      ifilter(
-        tags.value,
-        (tag: string) => tag.startsWith(query) && tag !== query // Exact query already in array
-      ),
-      toTagObject
-    )
-  ]
-}
-
-async function mentionSource(
-  searchTerm: string,
-  renderList: (tags: TagObject[]) => void,
-  mentionChar: string
-) {
-  switch (mentionChar) {
-    case '#':
-      renderList(getTagObjects(searchTerm))
-      break
-    case '@': {
-      if (!searchTerm.length) return renderList([])
-      const { data } = await meetingRoleType.api.list({
-        search: searchTerm.toLowerCase(),
-        meeting: meetingId.value
-      })
-      renderList(
-        data.map(({ user }) => ({
-          id: user.pk,
-          value: getDisplayName(user)
-        }))
-      )
-      break
-    }
-  }
-}
 
 onMounted(() => {
   if (!editorElement.value)
@@ -176,7 +166,6 @@ onMounted(() => {
       if (!value) return
       editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
     }
-  config.modules.mention.source = mentionSource
   editor = new Quill(editorElement.value, config)
   editor.on('text-change', async () => {
     if (!editor)
