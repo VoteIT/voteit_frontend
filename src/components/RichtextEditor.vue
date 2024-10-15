@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import { ifilter, imap } from 'itertools'
 import Quill from 'quill'
-import 'quill-mention'
+import 'quill-mention/autoregister'
 import { inject, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -8,6 +9,7 @@ import { getDisplayName, tagify } from '@/utils'
 import useMeetingId from '@/modules/meetings/useMeetingId'
 import useTags, { TagsKey } from '@/modules/meetings/useTags'
 import { meetingRoleType } from '@/modules/meetings/contentTypes'
+
 import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
 
 const mentionOptions = {
@@ -108,16 +110,21 @@ const rootElement = ref<HTMLElement | null>(null)
 
 const meetingId = useMeetingId()
 
-function toTagObject(tagName: string): TagObject {
+function toTagObject(tagName: string) {
   return { id: tagName, value: tagName }
 }
 
-function* filterTagObjects(
-  filter: (tag: string) => boolean
-): Generator<TagObject, void> {
-  for (const tag of tags.value) {
-    if (filter(tag)) yield toTagObject(tag)
-  }
+function getTagObjects(query: string) {
+  return [
+    toTagObject(tagify(query)), // Exact query, tagified
+    ...imap(
+      ifilter(
+        tags.value,
+        (tag: string) => tag.startsWith(query) && tag !== query // Exact query already in array
+      ),
+      toTagObject
+    )
+  ]
 }
 
 async function mentionSource(
@@ -127,12 +134,7 @@ async function mentionSource(
 ) {
   switch (mentionChar) {
     case '#':
-      renderList([
-        toTagObject(tagify(searchTerm)),
-        ...filterTagObjects(
-          (tag) => tag.startsWith(searchTerm) && tag !== searchTerm
-        )
-      ])
+      renderList(getTagObjects(searchTerm))
       break
     case '@': {
       if (!searchTerm.length) return renderList([])
@@ -141,12 +143,10 @@ async function mentionSource(
         meeting: meetingId.value
       })
       renderList(
-        data.map(({ user }) => {
-          return {
-            id: user.pk,
-            value: getDisplayName(user)
-          }
-        })
+        data.map(({ user }) => ({
+          id: user.pk,
+          value: getDisplayName(user)
+        }))
       )
       break
     }
@@ -161,14 +161,13 @@ onMounted(() => {
     ...variants[props.variant],
     placeholder: props.placeholder
   }
-  if (props.submit) {
+  if (props.submit)
     config.modules.keyboard.bindings.submit = {
       key: 'Enter',
       ctrlKey: true,
       handler: () => emit('submit')
     }
-  }
-  if (config.modules.toolbar && 'handlers' in config.modules.toolbar) {
+  if (config.modules.toolbar && 'handlers' in config.modules.toolbar)
     config.modules.toolbar.handlers.image = () => {
       if (!editor) return
       const range = editor.getSelection()
@@ -177,7 +176,6 @@ onMounted(() => {
       if (!value) return
       editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
     }
-  }
   config.modules.mention.source = mentionSource
   editor = new Quill(editorElement.value, config)
   editor.on('text-change', async () => {
@@ -256,6 +254,9 @@ defineExpose({
   margin-bottom: .5em !important
   &:last-child
     margin-bottom: 0 !important
+
+.ql-tooltip
+  z-index: 100
 
 ul.ql-mention-list
   padding: 0 !important

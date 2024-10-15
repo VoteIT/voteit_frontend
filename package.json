@@ -23,8 +23,8 @@
     "itertools": "^1.7.1",
     "lodash": "^4.17.21",
     "luxon": "^3.3.0",
-    "quill": "^1.3.7",
-    "quill-mention": "^4.0.0",
+    "quill": "^2.0.2",
+    "quill-mention": "^6.0.1",
     "register-service-worker": "^1.7.2",
     "resize-observer-polyfill": "^1.5.1",
     "roboto-fontface": "*",
@@ -38,7 +38,6 @@
   "devDependencies": {
     "@types/lodash": "^4.14.185",
     "@types/luxon": "^3.2.0",
-    "@types/quill": "^2.0.9",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vitejs/plugin-vue": "^4.6.2",
