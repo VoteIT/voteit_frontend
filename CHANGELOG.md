@@ -4,9 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.26.8 (??)
+## 0.26.8 (2024-10-16)
 
 - Plenary keyboard navigation exceptions (on keymod or when target is in overlay or .no-keynav)
+- Meeting minutes now defaults to showing only approved proposals
+- Dependecy updates (npm audit fixes)
+- Bugfix: Richtext editor allowed empty tags
 
 ## 0.26.7 (2024-10-07)
 
