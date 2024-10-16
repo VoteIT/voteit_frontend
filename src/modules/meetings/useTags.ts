@@ -1,3 +1,4 @@
+import { imap } from 'itertools'
 import {
   InjectionKey,
   onMounted,
@@ -19,11 +20,10 @@ export const TagsKey: InjectionKey<Ref<Set<string>>> = Symbol('tags')
 export const tagClickEvent = new TypedEvent<string>()
 
 function setTagColors(container: HTMLElement) {
-  for (const tagElem of <NodeListOf<HTMLElement>>(
-    container.querySelectorAll('.mention[data-denotation-char="#"]')
-  )) {
+  for (const tagElem of container.querySelectorAll<HTMLElement>(
+    '.mention[data-denotation-char="#"]'
+  ))
     tagElem.style.backgroundColor = cache.get(tagElem.dataset.value ?? '')
-  }
 }
 
 function clickHandler(evt: MouseEvent) {
@@ -36,15 +36,11 @@ function clickHandler(evt: MouseEvent) {
     tagClickEvent.emit(tagElem.dataset.value)
 }
 
-function getHTMLTags(html: string): Set<string> {
-  const body = domParser.parseFromString(html, 'text/html')
-  const docTags = new Set<string>()
-  for (const tagElem of body.querySelectorAll<HTMLElement>(
-    '[data-denotation-char="#"]'
-  )) {
-    docTags.add(tagify(tagElem.dataset.value!))
-  }
-  return docTags
+function getHTMLTags(html: string) {
+  const tagElems = domParser
+    .parseFromString(html, 'text/html')
+    .querySelectorAll<HTMLElement>('[data-denotation-char="#"]')
+  return new Set(imap(tagElems, (elem) => tagify(elem.dataset.value!)))
 }
 
 export default function useTags(
