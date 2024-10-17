@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.9 (2024-10-17)
+
+- Minor bugfixes regarding Richtext editing
+
 ## 0.26.8 (2024-10-16)
 
 - Plenary keyboard navigation exceptions (on keymod or when target is in overlay or .no-keynav)
