@@ -195,7 +195,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="richtext-editor" ref="rootElement">
+  <div class="richtext richtext-editor" ref="rootElement">
     <div ref="editorElement"></div>
     <p v-if="errors" class="text-error">
       {{ errors.join(', ') }}
