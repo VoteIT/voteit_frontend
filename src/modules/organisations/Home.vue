@@ -386,7 +386,7 @@ function cancelEdit() {
                   <DropdownMenu :items="menu" />
                 </header>
                 <Richtext
-                  :model-value="organisation.body"
+                  :value="organisation.body"
                   :maxHeight="collapsedBodyHeightMobile"
                 />
               </template>

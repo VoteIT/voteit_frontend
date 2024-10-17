@@ -114,7 +114,7 @@ function submit() {
         type="warning"
         class="my-2"
       />
-      <Richtext v-model="meeting.body" />
+      <Richtext :value="meeting.body" />
     </v-col>
   </v-row>
 </template>

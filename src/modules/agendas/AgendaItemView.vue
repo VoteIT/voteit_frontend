@@ -341,7 +341,11 @@ const { collapsedBodyHeight } = useDefaults()
             </div>
             <DropdownMenu :items="menuItems" />
           </div>
-          <Richtext v-model="content.body" :maxHeight="collapsedBodyHeight" />
+          <Richtext
+            v-if="agendaBody"
+            :value="agendaBody"
+            :maxHeight="collapsedBodyHeight"
+          />
         </div>
         <TextDocuments />
       </v-col>

@@ -148,7 +148,7 @@ async function save() {
       </div>
     </div>
     <div v-else>
-      <Richtext :model-value="p.body" />
+      <Richtext :value="p.body" />
       <div class="mt-6 mb-3" v-if="extraTags.length">
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>

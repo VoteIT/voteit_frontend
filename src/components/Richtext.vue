@@ -6,21 +6,9 @@ import { useElementBounding } from '@vueuse/core'
 
 import useTags from '@/modules/meetings/useTags'
 
-import RichtextEditor from './RichtextEditor.vue'
-import { QuillVariant } from './types'
-
-const props = withDefaults(
-  defineProps<{
-    editing?: boolean
-    maxHeight?: number
-    modelValue: string
-    variant?: QuillVariant
-  }>(),
-  { variant: 'restricted' }
-)
-const emit = defineEmits<{
-  (e: 'submit'): void
-  (e: 'update:modelValue', value: string): void
+const props = defineProps<{
+  maxHeight?: number
+  value: string
 }>()
 
 const EXTERNAL_ICON_CLASSES = [
@@ -35,25 +23,10 @@ const EXTERNAL_ICON_CLASSES = [
 const { t } = useI18n()
 const router = useRouter()
 
-const content = ref(props.modelValue)
-
 watch(
-  () => props.editing,
-  (value) => {
-    if (value) return
-    content.value = props.modelValue
-  }
+  () => props.value,
+  () => nextTick(addExternalIcons)
 )
-watch(
-  () => props.modelValue,
-  (value) => {
-    if (!props.editing) content.value = value
-  }
-)
-watch(content, (value) => {
-  nextTick(addExternalIcons)
-  emit('update:modelValue', value)
-})
 
 const contentElem = ref<HTMLElement | null>(null)
 useTags(contentElem)
@@ -114,17 +87,9 @@ watch(contentElem, (el) => {
 </script>
 
 <template>
-  <RichtextEditor
-    v-if="editing"
-    v-model="content"
-    :variant="variant"
-    class="richtext"
-    set-focus
-    @submit="$emit('submit')"
-  />
-  <div v-else>
+  <div>
     <div class="overflow-hidden position-relative" :style="style">
-      <div ref="contentElem" class="richtext" v-html="content"></div>
+      <div ref="contentElem" class="richtext" v-html="value"></div>
       <div class="overflow-fade" v-show="isOverflowing && !userExpanded"></div>
     </div>
     <v-btn

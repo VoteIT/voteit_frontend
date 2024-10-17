@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <Richtext v-if="isRichtextProposal(proposal)" :model-value="proposal.body" />
+  <Richtext v-if="isRichtextProposal(proposal)" :value="proposal.body" />
   <div
     v-else-if="isDiffProposal(proposal)"
     v-html="proposal.body_diff_brief"
