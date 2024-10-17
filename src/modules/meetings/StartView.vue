@@ -7,6 +7,7 @@ import { MenuItem } from '@/utils/types'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
+import RichtextEditor from '@/components/RichtextEditor.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useDefaults from '@/composables/useDefaults'
 
@@ -77,7 +78,25 @@ function submit() {
 
 <template>
   <v-row v-if="meeting">
-    <v-col v-bind="cols.default">
+    <v-col v-if="editing" class="py-6" v-bind="cols.default">
+      <Headline v-model="content.title" class="mb-2" editing @submit="submit" />
+      <RichtextEditor
+        v-model="content.body"
+        class="mb-3"
+        @submit="submit"
+        variant="full"
+      />
+      <div class="text-right">
+        <v-btn :text="$t('cancel')" variant="text" @click="cancelEdit" />
+        <v-btn
+          :text="$t('save')"
+          color="primary"
+          :disabled="!contentChanged"
+          @click="submit"
+        />
+      </div>
+    </v-col>
+    <v-col v-else v-bind="cols.default">
       <header class="d-flex">
         <div class="flex-grow-1">
           <WorkflowState
@@ -85,11 +104,7 @@ function submit() {
             :contentType="meetingType"
             :object="meeting"
           />
-          <Headline
-            v-model="content.title"
-            :editing="editing"
-            @submit="submit"
-          />
+          <h1>{{ meeting.title }}</h1>
         </div>
         <DropdownMenu :items="menuItems" />
       </header>
@@ -99,21 +114,7 @@ function submit() {
         type="warning"
         class="my-2"
       />
-      <Richtext
-        v-model="content.body"
-        :editing="editing"
-        @submit="submit"
-        variant="full"
-      />
-      <div v-if="editing" class="text-right">
-        <v-btn :text="$t('cancel')" variant="text" @click="cancelEdit" />
-        <v-btn
-          :text="$t('save')"
-          color="primary"
-          :disabled="!contentChanged"
-          @click="submit"
-        />
-      </div>
+      <Richtext v-model="meeting.body" />
     </v-col>
   </v-row>
 </template>
