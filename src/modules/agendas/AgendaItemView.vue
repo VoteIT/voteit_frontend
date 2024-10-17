@@ -17,6 +17,7 @@ import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
+import RichtextEditor from '@/components/RichtextEditor.vue'
 import Tag from '@/components/Tag.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
@@ -299,44 +300,48 @@ const { collapsedBodyHeight } = useDefaults()
   <template v-if="agendaItem">
     <v-row :key="`agenda-header-${agendaId}`">
       <v-col cols="12" lg="8">
-        <div class="d-flex">
-          <div class="flex-grow-1">
-            <WorkflowState
-              :admin="canChangeAgendaItem"
-              :content-type="agendaItemType"
-              :object="agendaItem"
-            />
-            <Headline
-              :editing="editing"
-              v-model="content.title"
-              @submit="submit"
+        <div v-if="editing" class="mt-6 mb-8">
+          <Headline
+            v-model="content.title"
+            class="mb-2"
+            editing
+            @submit="submit"
+          />
+          <RichtextEditor
+            v-model="content.body"
+            class="mb-2"
+            variant="full"
+            @submit="submit"
+          />
+          <TagEdit
+            v-model="content.tags"
+            class="mb-2"
+            :label="t('agenda.tagEditInfo')"
+          />
+          <div class="text-right">
+            <v-btn variant="text" :text="t('cancel')" @click="cancelEdit" />
+            <v-btn
+              color="primary"
+              :disabled="!editingModified"
+              :loading="submitting"
+              :text="t('save')"
+              @click="submit"
             />
           </div>
-          <DropdownMenu :items="menuItems" />
         </div>
-        <Richtext
-          v-model="content.body"
-          :class="editing ? '' : 'mb-8'"
-          :editing="editing"
-          variant="full"
-          :maxHeight="collapsedBodyHeight"
-          @submit="submit"
-        />
-        <TagEdit
-          v-if="editing"
-          v-model="content.tags"
-          class="my-2"
-          :label="t('agenda.tagEditInfo')"
-        />
-        <div v-if="editing" class="text-right">
-          <v-btn variant="text" :text="t('cancel')" @click="cancelEdit" />
-          <v-btn
-            color="primary"
-            :disabled="!editingModified"
-            :loading="submitting"
-            :text="t('save')"
-            @click="submit"
-          />
+        <div v-else class="mb-8">
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <WorkflowState
+                :admin="canChangeAgendaItem"
+                :content-type="agendaItemType"
+                :object="agendaItem"
+              />
+              <h1>{{ agendaItem.title }}</h1>
+            </div>
+            <DropdownMenu :items="menuItems" />
+          </div>
+          <Richtext v-model="content.body" :maxHeight="collapsedBodyHeight" />
         </div>
         <TextDocuments />
       </v-col>
