@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { stripHTML } from '@/utils'
 import Richtext from './Richtext.vue'
+import RichtextEditor from './RichtextEditor.vue'
 
 const props = defineProps<{
   editable?: boolean
@@ -13,8 +13,6 @@ const props = defineProps<{
 }>()
 if (props.editable && !props.handler)
   throw new Error('EditableHelpText: handler required with editable property')
-
-const { t } = useI18n()
 
 const model = ref(props.modelValue ?? '')
 const editing = ref(false)
@@ -41,26 +39,40 @@ async function save() {
   <v-alert v-if="visible">
     <p v-if="!hasValue && !editing" class="my-1">
       <em>
-        {{ placeholder || t('helpText.defaultPlaceholder') }}
+        {{ placeholder || $t('helpText.defaultPlaceholder') }}
       </em>
     </p>
-    <Richtext
-      v-if="hasValue || editing"
+    <RichtextEditor
+      v-if="editing"
       v-model="model"
       variant="full"
-      :editing="editing"
-      :placeholder="placeholder || t('helpText.defaultPlaceholder')"
-      @edit-done="save"
+      :placeholder="placeholder ?? $t('helpText.defaultPlaceholder')"
+      @submit="save"
     />
-    <div class="text-right mt-2">
+    <Richtext v-else-if="modelValue" :model-value="modelValue" />
+    <div v-if="editable" class="text-right mt-2">
       <v-btn
-        v-if="editable && !editing"
+        v-if="editing"
         size="small"
+        :text="$t('cancel')"
+        variant="text"
+        @click="editing = false"
+      />
+      <v-btn
+        v-if="editing"
+        color="primary"
+        :disabled="model === modelValue"
+        size="small"
+        :text="$t('save')"
+        @click="save"
+      />
+      <v-btn
+        v-else
+        size="small"
+        :text="$t('edit')"
         variant="tonal"
         @click="editing = true"
-      >
-        Ändra
-      </v-btn>
+      />
     </div>
   </v-alert>
 </template>

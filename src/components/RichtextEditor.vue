@@ -2,7 +2,6 @@
 import Quill from 'quill'
 import 'quill-mention/autoregister'
 import { inject, onMounted, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getDisplayName, tagify } from '@/utils'
 import useMeetingId from '@/modules/meetings/useMeetingId'
@@ -116,14 +115,10 @@ const props = withDefaults(
     modelValue?: string
     placeholder?: string
     setFocus?: boolean
-    submit?: boolean
-    submitIcon?: string
-    submitText?: string
     variant?: QuillVariant
   }>(),
   {
     modelValue: '',
-    submitIcon: 'mdi-check',
     variant: 'restricted'
   }
 )
@@ -136,7 +131,6 @@ interface Emits {
 }
 const emit = defineEmits<Emits>()
 
-const { t } = useI18n()
 let editor: Quill | undefined
 const editorElement = ref<HTMLElement | null>(null)
 const rootElement = ref<HTMLElement | null>(null)
@@ -151,12 +145,13 @@ onMounted(() => {
     ...variants[props.variant],
     placeholder: props.placeholder
   }
-  if (props.submit)
-    config.modules.keyboard.bindings.submit = {
-      key: 'Enter',
-      ctrlKey: true,
-      handler: () => emit('submit')
+  config.modules.keyboard.bindings.submit = {
+    key: 'Enter',
+    ctrlKey: true,
+    handler() {
+      emit('submit')
     }
+  }
   if (config.modules.toolbar && 'handlers' in config.modules.toolbar)
     config.modules.toolbar.handlers.image = () => {
       if (!editor) return
@@ -206,17 +201,6 @@ defineExpose({
       {{ errors.join(', ') }}
     </p>
     <slot name="controls"></slot>
-    <div class="btn-controls" v-if="submit && !$slots.controls">
-      <v-btn
-        :prepend-icon="submitIcon"
-        color="primary"
-        :disabled="disabled"
-        size="small"
-        @click="$emit('submit')"
-      >
-        {{ submitText || t('save') }}
-      </v-btn>
-    </div>
   </div>
 </template>
 
@@ -225,12 +209,6 @@ defineExpose({
 @import quill/dist/quill.bubble.css
 @import quill/dist/quill.snow.css
 @import quill-mention/dist/quill.mention.css
-
-.richtext-editor
-  .btn-controls
-    justify-content: flex-end
-    margin-top: -3px
-    margin-right: 6px
 
 .ql-container
   background-color: rgb(var(--v-theme-surface))

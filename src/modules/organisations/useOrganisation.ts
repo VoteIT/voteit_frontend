@@ -29,6 +29,17 @@ async function fetchOrganisation() {
   currentOrganisation.value = data.length ? data[0] : false
 }
 
+async function updateOrganisation(
+  partial: Partial<Pick<Organisation, 'body' | 'help_info' | 'page_title'>>
+) {
+  if (!organisationId.value) throw new Error('No organisation')
+  const { data } = await organisationType.api.patch(
+    organisationId.value,
+    partial
+  )
+  currentOrganisation.value = data
+}
+
 function buildIdServerURL(path: string) {
   if (!organisation.value?.id_host) return
   return `${organisation.value.id_host}${path}`
@@ -82,6 +93,7 @@ export default function useOrganisation() {
     manageAccountURL,
     proxyLogoutURL,
     fetchOrganisation,
-    getOrganisationComponent
+    getOrganisationComponent,
+    updateOrganisation
   }
 }

@@ -1,17 +1,3 @@
-<template>
-  <component :is="tag" class="editable-headline" @click="onClick">
-    <input
-      ref="inputEl"
-      v-if="editActive"
-      v-model="content"
-      :maxlength="maxlength"
-      @keydown.ctrl.enter="done"
-      @keydown.enter.exact="done"
-    />
-    <template v-else>{{ content }}</template>
-  </component>
-</template>
-
 <script lang="ts" setup>
 import { onClickOutside } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'
@@ -26,7 +12,11 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   tag: 'h1'
 })
-const emit = defineEmits(['update:modelValue', 'update:editing', 'edit-done'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'update:editing', value: boolean): void
+  (e: 'submit'): void
+}>()
 
 const content = ref(props.modelValue)
 const editActive = ref(props.editing)
@@ -58,7 +48,7 @@ async function onClick() {
 function done() {
   if (content.value !== props.modelValue)
     emit('update:modelValue', content.value)
-  emit('edit-done')
+  emit('submit')
   editActive.value = false
 }
 
@@ -68,6 +58,20 @@ onClickOutside(inputEl, () => {
   editActive.value = false
 })
 </script>
+
+<template>
+  <component :is="tag" class="editable-headline" @click="onClick">
+    <input
+      ref="inputEl"
+      v-if="editActive"
+      v-model="content"
+      :maxlength="maxlength"
+      @keydown.ctrl.enter="done"
+      @keydown.enter.exact="done"
+    />
+    <template v-else>{{ content }}</template>
+  </component>
+</template>
 
 <style lang="sass">
 .editable-headline

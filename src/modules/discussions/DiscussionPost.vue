@@ -133,7 +133,7 @@ async function save() {
       </div>
     </div>
     <div v-if="editing">
-      <RichtextEditor v-if="editing" v-model="body" />
+      <RichtextEditor v-model="body" />
       <TagEdit v-model="extraTags" />
       <br />
       <PostAs v-show="canPostAs" v-model="author" class="my-2" />

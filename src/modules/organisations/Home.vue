@@ -12,6 +12,7 @@ import AppBar from '@/components/AppBar.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
+import RichtextEditor from '@/components/RichtextEditor.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import UserSearch from '@/components/UserSearch.vue'
@@ -53,7 +54,8 @@ const {
   organisation,
   organisationId,
   organisationIsUnavailable,
-  fetchOrganisation
+  fetchOrganisation,
+  updateOrganisation
 } = useOrganisation()
 
 const currentTab = ref('default')
@@ -148,14 +150,8 @@ const tabs = computed(() => {
 })
 
 async function save() {
-  if (!organisationId.value) throw new Error('No organisation')
-  await organisationType.api.patch(organisationId.value, changeForm)
+  if (formChanged.value) await updateOrganisation(changeForm)
   editing.value = false
-}
-
-async function saveHelpText(text: string) {
-  if (!organisationId.value) throw new Error('No organisation')
-  await organisationType.api.patch(organisationId.value, { help_info: text })
 }
 
 function addUser(user: number) {
@@ -287,6 +283,19 @@ const searchInfo = computed<
     text: t('home.noMatchingMeetings')
   }
 })
+
+const formChanged = computed(
+  () =>
+    changeForm.body !== organisation.value?.body ||
+    changeForm.page_title !== organisation.value.page_title
+)
+
+function cancelEdit() {
+  editing.value = false
+  if (!organisation.value) return
+  changeForm.body = organisation.value.body
+  changeForm.page_title = organisation.value.page_title
+}
 </script>
 
 <template>
@@ -304,12 +313,12 @@ const searchInfo = computed<
             :href="idLoginURL"
             prepend-icon="mdi-login"
           >
-            {{ t('organization.loginTo', { ...organisation }) }}
+            {{ $t('organization.loginTo', { ...organisation }) }}
           </v-btn>
           <v-alert
             v-if="!canLogin"
             class="my-3"
-            :text="t('organization.cantLogin')"
+            :text="$t('organization.cantLogin')"
             type="error"
           />
           <EditableHelpText :modelValue="organisation.help_info" class="mt-3" />
@@ -334,33 +343,53 @@ const searchInfo = computed<
             <v-window-item value="default">
               <v-alert
                 v-if="tabs && requiresCheck"
-                :title="t('home.contactInfo.requiresCheck')"
-                :text="t('home.contactInfo.requiresCheckDescription')"
+                :title="$t('home.contactInfo.requiresCheck')"
+                :text="$t('home.contactInfo.requiresCheckDescription')"
                 type="warning"
                 class="mb-4"
               >
                 <template #append>
                   <v-btn
-                    :text="t('home.contactInfo.check')"
+                    :text="$t('home.contactInfo.check')"
                     @click="currentTab = 'contactInfo'"
                   />
                 </template>
               </v-alert>
-              <header class="d-flex">
+              <template v-if="editing">
                 <Headline
                   v-model="changeForm.page_title"
-                  :editing="editing"
-                  class="flex-grow-1"
+                  editing
+                  @submit="save"
                 />
-                <DropdownMenu :items="menu" />
-              </header>
-              <Richtext
-                v-model="changeForm.body"
-                :editing="editing"
-                @edit-done="save()"
-                variant="full"
-                :maxHeight="collapsedBodyHeightMobile"
-              />
+                <RichtextEditor
+                  v-model="changeForm.body"
+                  variant="full"
+                  @submit="save"
+                />
+                <div class="text-right">
+                  <v-btn
+                    :text="$t('cancel')"
+                    variant="text"
+                    @click="cancelEdit"
+                  />
+                  <v-btn
+                    color="primary"
+                    :disabled="!formChanged"
+                    :text="$t('save')"
+                    @click="save"
+                  />
+                </div>
+              </template>
+              <template v-else>
+                <header class="d-flex">
+                  <h1 class="flex-grow-1">{{ organisation.page_title }}</h1>
+                  <DropdownMenu :items="menu" />
+                </header>
+                <Richtext
+                  :model-value="organisation.body"
+                  :maxHeight="collapsedBodyHeightMobile"
+                />
+              </template>
             </v-window-item>
 
             <template v-if="canChangeOrganisation">
@@ -384,7 +413,7 @@ const searchInfo = computed<
         <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
           <div v-if="userMeetingInvites.length" class="mb-4">
             <h2 class="mb-2">
-              {{ t('join.invites', userMeetingInvites.length) }}
+              {{ $t('join.invites', userMeetingInvites.length) }}
             </h2>
             <Invite
               v-for="inv in userMeetingInvites"
@@ -394,7 +423,7 @@ const searchInfo = computed<
             />
           </div>
           <h2 class="mb-3">
-            {{ t('home.yourMeetings', meetingCount) }}
+            {{ $t('home.yourMeetings', meetingCount) }}
           </h2>
           <div
             v-for="{ expandable, meetings, title } in meetingGroups"
@@ -445,14 +474,14 @@ const searchInfo = computed<
                 @click="groupsExpanded = true"
                 variant="text"
               >
-                {{ t('organization.showMore') }}
+                {{ $t('organization.showMore') }}
               </v-btn>
             </v-list>
           </div>
           <p v-if="!meetingGroups.length" class="mb-4">
-            <em>{{ t('home.noCurrentMeetings') }}</em>
+            <em>{{ $t('home.noCurrentMeetings') }}</em>
           </p>
-          <DefaultDialog v-if="canAddMeeting" :title="t('meeting.create')">
+          <DefaultDialog v-if="canAddMeeting" :title="$t('meeting.create')">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -461,14 +490,14 @@ const searchInfo = computed<
                 variant="text"
                 color="primary"
               >
-                {{ t('meeting.create') }}
+                {{ $t('meeting.create') }}
               </v-btn>
             </template>
             <template v-slot="{ close }">
               <AddMeeting @close="close" />
             </template>
           </DefaultDialog>
-          <DefaultDialog v-if="otherMeetingsExist" :title="t('meeting.find')">
+          <DefaultDialog v-if="otherMeetingsExist" :title="$t('meeting.find')">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -478,11 +507,11 @@ const searchInfo = computed<
                 prepend-icon="mdi-calendar-plus"
                 size="x-large"
               >
-                {{ t('meeting.find') }}
+                {{ $t('meeting.find') }}
               </v-btn>
             </template>
             <v-select
-              :label="t('state')"
+              :label="$t('state')"
               chips
               closable-chips
               density="comfortable"
@@ -495,14 +524,14 @@ const searchInfo = computed<
             />
             <div class="d-flex mb-1">
               <v-text-field
-                :label="t('search')"
+                :label="$t('search')"
                 v-model="searchFilter.search"
                 class="mr-1"
                 hide-details
                 clearable
               />
               <v-select
-                :label="t('meeting.yearStarted')"
+                :label="$t('meeting.yearStarted')"
                 :items="yearItems"
                 v-model="searchFilter.year"
                 hide-details
@@ -567,18 +596,17 @@ const searchInfo = computed<
                     color="primary"
                     variant="tonal"
                   >
-                    {{ t('join.meeting') }}
+                    {{ $t('join.meeting') }}
                   </v-btn>
                 </template>
               </v-list-item>
             </v-list>
           </DefaultDialog>
-
           <EditableHelpText
             :modelValue="organisation.help_info"
             :editable="!!canChangeOrganisation"
-            :handler="saveHelpText"
-            :placeholder="t('home.helpInfoPlaceholder')"
+            :handler="(help_info) => updateOrganisation({ help_info })"
+            :placeholder="$t('home.helpInfoPlaceholder')"
             class="mt-3"
           />
         </v-col>
@@ -587,10 +615,10 @@ const searchInfo = computed<
         <v-col v-bind="cols">
           <v-sheet class="py-8 px-4 text-center" :border="true" rounded>
             <h1 class="mb-4 flex-grow-1">
-              {{ t('home.noOrganisationTitle') }}
+              {{ $t('home.noOrganisationTitle') }}
             </h1>
             <p class="mb-12">
-              {{ t('home.noOrganisationDescription') }}
+              {{ $t('home.noOrganisationDescription') }}
             </p>
             <p>
               <i18n-t keypath="home.noOrganisationTryItOut">

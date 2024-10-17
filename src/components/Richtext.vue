@@ -14,17 +14,12 @@ const props = withDefaults(
     editing?: boolean
     maxHeight?: number
     modelValue: string
-    noSubmit?: boolean
     variant?: QuillVariant
   }>(),
-  {
-    editing: false,
-    noSubmit: false,
-    variant: 'restricted'
-  }
+  { variant: 'restricted' }
 )
 const emit = defineEmits<{
-  (e: 'edit-done'): void
+  (e: 'submit'): void
   (e: 'update:modelValue', value: string): void
 }>()
 
@@ -125,8 +120,7 @@ watch(contentElem, (el) => {
     :variant="variant"
     class="richtext"
     set-focus
-    :submit="!noSubmit"
-    @submit="$emit('edit-done')"
+    @submit="$emit('submit')"
   />
   <div v-else>
     <div class="overflow-hidden position-relative" :style="style">

@@ -1,37 +1,3 @@
-<template>
-  <v-row v-if="meeting">
-    <v-col v-bind="cols.default">
-      <header class="d-flex">
-        <div class="flex-grow-1">
-          <WorkflowState
-            :admin="isModerator"
-            :contentType="meetingType"
-            :object="meeting"
-          />
-          <Headline
-            v-model="content.title"
-            :editing="editing"
-            @edit-done="submit()"
-          />
-        </div>
-        <DropdownMenu :items="menuItems" />
-      </header>
-      <v-alert
-        v-if="meeting.state == MeetingState.Deleting"
-        :text="t('meeting.markedForDeleteWarn')"
-        type="warning"
-        class="my-2"
-      />
-      <Richtext
-        v-model="content.body"
-        :editing="editing"
-        @edit-done="submit()"
-        variant="full"
-      />
-    </v-col>
-  </v-row>
-</template>
-
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -89,13 +55,65 @@ function* iterMenu() {
 
 const menuItems = computed<MenuItem[]>(() => [...iterMenu()])
 
+const contentChanged = computed(
+  () =>
+    content.title !== meeting.value?.title ||
+    content.body !== meeting.value?.body
+)
+
+function cancelEdit() {
+  editing.value = false
+  if (!meeting.value) return
+  content.body = meeting.value.body
+  content.title = meeting.value.title
+}
+
 function submit() {
   editing.value = false
-  if (
-    content.title === meeting.value?.title &&
-    content.body === meeting.value?.body
-  )
-    return
-  meetingType.api.patch(meetingId.value, { ...content })
+  if (contentChanged.value)
+    meetingType.api.patch(meetingId.value, { ...content })
 }
 </script>
+
+<template>
+  <v-row v-if="meeting">
+    <v-col v-bind="cols.default">
+      <header class="d-flex">
+        <div class="flex-grow-1">
+          <WorkflowState
+            :admin="isModerator"
+            :contentType="meetingType"
+            :object="meeting"
+          />
+          <Headline
+            v-model="content.title"
+            :editing="editing"
+            @submit="submit"
+          />
+        </div>
+        <DropdownMenu :items="menuItems" />
+      </header>
+      <v-alert
+        v-if="meeting.state == MeetingState.Deleting"
+        :text="t('meeting.markedForDeleteWarn')"
+        type="warning"
+        class="my-2"
+      />
+      <Richtext
+        v-model="content.body"
+        :editing="editing"
+        @submit="submit"
+        variant="full"
+      />
+      <div v-if="editing" class="text-right">
+        <v-btn :text="$t('cancel')" variant="text" @click="cancelEdit" />
+        <v-btn
+          :text="$t('save')"
+          color="primary"
+          :disabled="!contentChanged"
+          @click="submit"
+        />
+      </div>
+    </v-col>
+  </v-row>
+</template>

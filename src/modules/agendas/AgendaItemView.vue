@@ -1,173 +1,3 @@
-<template>
-  <template v-if="agendaItem">
-    <v-row :key="`agenda-header-${agendaId}`">
-      <v-col cols="12" lg="8">
-        <div class="d-flex">
-          <div class="flex-grow-1">
-            <WorkflowState
-              :admin="canChangeAgendaItem"
-              :content-type="agendaItemType"
-              :object="agendaItem"
-            />
-            <Headline
-              :editing="editing"
-              v-model="content.title"
-              @edit-done="submit"
-            />
-          </div>
-          <DropdownMenu :items="menuItems" />
-        </div>
-        <Richtext
-          :editing="editing"
-          v-model="content.body"
-          :class="editing ? '' : 'mb-8'"
-          no-submit
-          variant="full"
-          :maxHeight="collapsedBodyHeight"
-        />
-        <TagEdit
-          v-if="editing"
-          v-model="content.tags"
-          class="my-2"
-          :label="t('agenda.tagEditInfo')"
-        />
-        <div v-if="editing" class="text-right">
-          <v-btn variant="text" :text="t('cancel')" @click="editing = false" />
-          <v-btn
-            color="primary"
-            :disabled="!editingModified"
-            :loading="submitting"
-            :text="t('save')"
-            @click="submit"
-          />
-        </div>
-        <TextDocuments />
-      </v-col>
-      <v-col cols="12" lg="4">
-        <Dropdown
-          v-if="pollCount || canAddPoll"
-          :title="t('poll.pollCount', pollCount)"
-          modelValue
-        >
-          <template #actions>
-            <v-btn
-              :disabled="!hasPublishedProposals"
-              icon="mdi-star-plus"
-              size="small"
-              :to="toNewPoll"
-              variant="text"
-            />
-          </template>
-          <PollList :agendaItem="agendaId" class="ml-4" />
-        </Dropdown>
-        <AISpeakerLists :agendaId="agendaId" />
-      </v-col>
-    </v-row>
-    <v-divider class="my-4" />
-    <v-row :key="`agenda-filters-${agendaId}`">
-      <v-col class="d-flex">
-        <AddProposalModal v-if="canAddProposal">
-          <template #activator="{ props }">
-            <slot name="activator" :props="props">
-              <v-btn
-                :prepend-icon="
-                  agendaItem.block_proposals
-                    ? 'mdi-lock-outline'
-                    : 'mdi-text-box-plus-outline'
-                "
-                color="primary"
-                v-bind="props"
-              >
-                {{ t('proposal.add') }}
-              </v-btn>
-            </slot>
-          </template>
-        </AddProposalModal>
-        <v-tooltip v-else :text="tProposalBlockReason">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              prepend-icon="mdi-text-box-plus-outline"
-              color="primary"
-              variant="tonal"
-            >
-              {{ t('proposal.add') }}
-            </v-btn>
-          </template>
-        </v-tooltip>
-        <v-spacer />
-        <AgendaFilters ref="filterComponent" />
-      </v-col>
-    </v-row>
-    <v-row :key="`agenda-content-${agendaId}`">
-      <v-col cols="12" md="7" class="agenda-proposals">
-        <h2 class="mb-2">
-          {{ t('proposal.proposals') }}
-        </h2>
-        <v-alert
-          type="info"
-          icon="mdi-filter-outline"
-          v-if="!hasProposals"
-          class="mb-2"
-        >
-          {{ t('agenda.helpNoProposals') }}
-        </v-alert>
-        <v-alert
-          type="info"
-          icon="mdi-filter-outline"
-          v-else-if="filterTag"
-          class="mb-2"
-        >
-          {{ t('agenda.filteringOnTag') }}
-          <Tag :name="filterTag" disabled class="ml-2" />
-          <template #append>
-            <v-btn
-              size="small"
-              @click="clearFilters"
-              prepend-icon="mdi-undo-variant"
-            >
-              {{ t('defaultFilters') }}
-            </v-btn>
-          </template>
-        </v-alert>
-        <v-alert
-          type="info"
-          icon="mdi-filter-outline"
-          v-else-if="hasProposals && !sortedProposals.length"
-          class="mb-2"
-        >
-          {{ t('agenda.helpNoProposalsInFilter') }}
-          <template #append>
-            <v-btn
-              size="small"
-              v-if="isModified"
-              @click="clearFilters"
-              prepend-icon="mdi-undo-variant"
-            >
-              {{ t('defaultFilters') }}
-            </v-btn>
-          </template>
-        </v-alert>
-        <AgendaProposals :proposals="sortedProposals" />
-        <Dropdown
-          class="mt-8"
-          v-if="hiddenProposals.length"
-          :title="t('agenda.hiddenProposals', hiddenProposals.length)"
-        >
-          <AgendaProposals :proposals="hiddenProposals" />
-        </Dropdown>
-      </v-col>
-      <v-col cols="12" md="5" class="agenda-discussions">
-        <h2 class="mb-2">
-          {{ t('discussion.discussions') }}
-        </h2>
-        <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
-        <Comments :comments="sortedDiscussions" />
-      </v-col>
-    </v-row>
-  </template>
-</template>
-
 <script lang="ts" setup>
 import { isEqual } from 'lodash'
 import {
@@ -441,6 +271,14 @@ const editingModified = computed(
       content.body !== agendaBody.value ||
       !isEqual(content.tags, agendaItem.value.tags))
 )
+
+function cancelEdit() {
+  editing.value = false
+  content.body = agendaBody.value ?? ''
+  content.tags = extraTags.value
+  content.title = agendaItem.value?.title ?? ''
+}
+
 async function submit() {
   if (!editingModified.value) return
   submitting.value = true
@@ -456,3 +294,173 @@ provide(TagsKey, allTags)
 
 const { collapsedBodyHeight } = useDefaults()
 </script>
+
+<template>
+  <template v-if="agendaItem">
+    <v-row :key="`agenda-header-${agendaId}`">
+      <v-col cols="12" lg="8">
+        <div class="d-flex">
+          <div class="flex-grow-1">
+            <WorkflowState
+              :admin="canChangeAgendaItem"
+              :content-type="agendaItemType"
+              :object="agendaItem"
+            />
+            <Headline
+              :editing="editing"
+              v-model="content.title"
+              @submit="submit"
+            />
+          </div>
+          <DropdownMenu :items="menuItems" />
+        </div>
+        <Richtext
+          v-model="content.body"
+          :class="editing ? '' : 'mb-8'"
+          :editing="editing"
+          variant="full"
+          :maxHeight="collapsedBodyHeight"
+          @submit="submit"
+        />
+        <TagEdit
+          v-if="editing"
+          v-model="content.tags"
+          class="my-2"
+          :label="t('agenda.tagEditInfo')"
+        />
+        <div v-if="editing" class="text-right">
+          <v-btn variant="text" :text="t('cancel')" @click="cancelEdit" />
+          <v-btn
+            color="primary"
+            :disabled="!editingModified"
+            :loading="submitting"
+            :text="t('save')"
+            @click="submit"
+          />
+        </div>
+        <TextDocuments />
+      </v-col>
+      <v-col cols="12" lg="4">
+        <Dropdown
+          v-if="pollCount || canAddPoll"
+          :title="t('poll.pollCount', pollCount)"
+          modelValue
+        >
+          <template #actions>
+            <v-btn
+              :disabled="!hasPublishedProposals"
+              icon="mdi-star-plus"
+              size="small"
+              :to="toNewPoll"
+              variant="text"
+            />
+          </template>
+          <PollList :agendaItem="agendaId" class="ml-4" />
+        </Dropdown>
+        <AISpeakerLists :agendaId="agendaId" />
+      </v-col>
+    </v-row>
+    <v-divider class="my-4" />
+    <v-row :key="`agenda-filters-${agendaId}`">
+      <v-col class="d-flex">
+        <AddProposalModal v-if="canAddProposal">
+          <template #activator="{ props }">
+            <slot name="activator" :props="props">
+              <v-btn
+                :prepend-icon="
+                  agendaItem.block_proposals
+                    ? 'mdi-lock-outline'
+                    : 'mdi-text-box-plus-outline'
+                "
+                color="primary"
+                v-bind="props"
+              >
+                {{ t('proposal.add') }}
+              </v-btn>
+            </slot>
+          </template>
+        </AddProposalModal>
+        <v-tooltip v-else :text="tProposalBlockReason">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              prepend-icon="mdi-text-box-plus-outline"
+              color="primary"
+              variant="tonal"
+            >
+              {{ t('proposal.add') }}
+            </v-btn>
+          </template>
+        </v-tooltip>
+        <v-spacer />
+        <AgendaFilters ref="filterComponent" />
+      </v-col>
+    </v-row>
+    <v-row :key="`agenda-content-${agendaId}`">
+      <v-col cols="12" md="7" class="agenda-proposals">
+        <h2 class="mb-2">
+          {{ t('proposal.proposals') }}
+        </h2>
+        <v-alert
+          type="info"
+          icon="mdi-filter-outline"
+          v-if="!hasProposals"
+          class="mb-2"
+        >
+          {{ t('agenda.helpNoProposals') }}
+        </v-alert>
+        <v-alert
+          type="info"
+          icon="mdi-filter-outline"
+          v-else-if="filterTag"
+          class="mb-2"
+        >
+          {{ t('agenda.filteringOnTag') }}
+          <Tag :name="filterTag" disabled class="ml-2" />
+          <template #append>
+            <v-btn
+              size="small"
+              @click="clearFilters"
+              prepend-icon="mdi-undo-variant"
+            >
+              {{ t('defaultFilters') }}
+            </v-btn>
+          </template>
+        </v-alert>
+        <v-alert
+          type="info"
+          icon="mdi-filter-outline"
+          v-else-if="hasProposals && !sortedProposals.length"
+          class="mb-2"
+        >
+          {{ t('agenda.helpNoProposalsInFilter') }}
+          <template #append>
+            <v-btn
+              size="small"
+              v-if="isModified"
+              @click="clearFilters"
+              prepend-icon="mdi-undo-variant"
+            >
+              {{ t('defaultFilters') }}
+            </v-btn>
+          </template>
+        </v-alert>
+        <AgendaProposals :proposals="sortedProposals" />
+        <Dropdown
+          class="mt-8"
+          v-if="hiddenProposals.length"
+          :title="t('agenda.hiddenProposals', hiddenProposals.length)"
+        >
+          <AgendaProposals :proposals="hiddenProposals" />
+        </Dropdown>
+      </v-col>
+      <v-col cols="12" md="5" class="agenda-discussions">
+        <h2 class="mb-2">
+          {{ t('discussion.discussions') }}
+        </h2>
+        <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
+        <Comments :comments="sortedDiscussions" />
+      </v-col>
+    </v-row>
+  </template>
+</template>
