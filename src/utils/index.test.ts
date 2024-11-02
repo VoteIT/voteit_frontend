@@ -32,6 +32,7 @@ test('slugify', () => {
   expect(slugify('1. Meeting opening')).toEqual('1-meeting-opening')
   expect(slugify('åäö ÅÄÖ')).toEqual('aao-aao')
   expect(slugify('!?~^---"\'Hello')).toEqual('hello')
+  expect(slugify('👀👀')).toEqual('-')
 })
 
 test('tagify', () => {

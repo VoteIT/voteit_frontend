@@ -22,11 +22,13 @@ export function uriToPayload(uri: string): SubscribePayload {
 
 export function slugify(text?: string) {
   if (!text) return '-'
-  return _slugify(text, {
-    lower: true,
-    strict: true,
-    locale: document.documentElement.lang
-  })
+  return (
+    _slugify(text, {
+      lower: true,
+      strict: true,
+      locale: document.documentElement.lang
+    }) || '-'
+  )
 }
 
 export function tagify(text: string) {
