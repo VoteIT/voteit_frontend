@@ -3,11 +3,11 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 import usePoll from './usePoll'
 import { pollType } from './contentTypes'
 import { PollTransition } from './types'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 const props = defineProps<{
   pollId: number
@@ -26,65 +26,54 @@ const showResult = ref(false)
 
 <template>
   <v-alert v-if="!poll"></v-alert>
-  <v-alert v-else type="info" :title="t('poll.result.withheld')">
+  <v-alert v-else type="info" :title="$t('poll.result.withheld')">
     <p class="mt-2">
-      {{ t('poll.result.withheldExplanation') }}
+      {{ $t('poll.result.withheldExplanation') }}
     </p>
     <div v-if="poll.result" class="mt-4">
-      <DefaultDialog @close="showResult = false">
+      <DefaultDialog
+        :title="$t('poll.result.show')"
+        @close="showResult = false"
+      >
         <template #activator="{ props }">
           <v-btn color="warning" v-bind="props" prepend-icon="mdi-eye">
-            {{ t('poll.result.show') }}
+            {{ $t('poll.result.show') }}
           </v-btn>
         </template>
-        <template #default="{ close }">
-          <div class="d-flex">
-            <h2 class="mb-2 flex-grow-1">
-              {{ t('poll.result.show') }}
-            </h2>
-            <v-btn
-              icon="mdi-close"
-              @click="close"
-              variant="text"
-              size="small"
-              class="mt-n2 mr-n2"
-            />
-          </div>
-          <div v-if="poll && showResult">
-            <component
-              :is="resultComponent"
-              :abstain-count="poll.abstain_count"
-              :proposals="poll.proposals"
-              :result="poll.result"
-              class="mb-6"
-            />
-            <QueryDialog
-              @confirmed="publishNow"
-              :text="t('poll.result.withheldPublishConfirm')"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  color="primary"
-                  block
-                  prepend-icon="mdi-check"
-                >
-                  {{ t('poll.result.withheldPublish') }}
-                </v-btn>
-              </template>
-            </QueryDialog>
-          </div>
-          <div v-else>
-            <p class="mb-6">
-              {{ t('poll.result.withheldDisplayWarning') }}
-            </p>
-            <p class="text-center">
-              <v-btn color="warning" @click="showResult = true">
-                {{ t('poll.result.withheldDisplayConfirm') }}
+        <div v-if="poll && showResult">
+          <component
+            :is="resultComponent"
+            :abstain-count="poll.abstain_count"
+            :proposals="poll.proposals"
+            :result="poll.result"
+            class="mb-6"
+          />
+          <QueryDialog
+            @confirmed="publishNow"
+            :text="$t('poll.result.withheldPublishConfirm')"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                color="primary"
+                block
+                prepend-icon="mdi-check"
+              >
+                {{ $t('poll.result.withheldPublish') }}
               </v-btn>
-            </p>
-          </div>
-        </template>
+            </template>
+          </QueryDialog>
+        </div>
+        <div v-else>
+          <p class="mb-6">
+            {{ $t('poll.result.withheldDisplayWarning') }}
+          </p>
+          <p class="text-center">
+            <v-btn color="warning" @click="showResult = true">
+              {{ $t('poll.result.withheldDisplayConfirm') }}
+            </v-btn>
+          </p>
+        </div>
       </DefaultDialog>
     </div>
   </v-alert>
