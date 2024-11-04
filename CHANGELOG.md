@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.10 (2024-11-04)
+
+- Bugfix: menu crashed for agenda item title w/o latin chars (slugify)
+- Bugfix: Hidden result dialog had double close buttons
+
 ## 0.26.9 (2024-10-17)
 
 - Minor bugfixes regarding Richtext editing
