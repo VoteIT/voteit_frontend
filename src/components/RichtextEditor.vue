@@ -106,7 +106,7 @@ const props = withDefaults(
     errors?: string[]
     modelValue?: string
     placeholder?: string
-    setFocus?: boolean
+    autofocus?: boolean
     variant?: QuillVariant
   }>(),
   {
@@ -153,7 +153,7 @@ onMounted(() => {
       )
     emit('update:modelValue', editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Replace all non-beaking spaces - they often show up by accident
   })
-  if (props.setFocus) focus()
+  if (props.autofocus) focus()
   editor.root.addEventListener('focus', () => emit('focus'))
   editor.root.addEventListener('blur', () => emit('blur'))
   // Allow tabbing to next input
