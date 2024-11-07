@@ -64,18 +64,8 @@ function addExternalIcons() {
 // Force external links to open in new tab
 watch(contentElem, (el) => {
   if (!el) return
-  function getAnchorElement(
-    current: HTMLElement | null
-  ): HTMLAnchorElement | undefined {
-    // Move up the tree until we get to container or an anchor
-    while (current && current !== el) {
-      if (current.tagName === 'A' && 'href' in current)
-        return current as HTMLAnchorElement
-      current = current.parentElement
-    }
-  }
   el.addEventListener('click', (event) => {
-    const anchor = getAnchorElement(event.target as HTMLElement)
+    const anchor = (event.target as HTMLElement).closest('a')
     if (!anchor) return
     event.preventDefault()
     if (isExternal(anchor)) return window.open(anchor.href, '_blank')
