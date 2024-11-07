@@ -20,7 +20,7 @@ export enum QuillFormat {
   Link = 'link',
   Size = 'size',
   Strikethrough = 'strike',
-  Script = 'script',
+  Script = 'script', // Subscript / Superscript
   Underline = 'underline',
   // Block
   BlockQuote = 'blockquote',
@@ -49,6 +49,7 @@ type QuillToolbarGroup =
   | Record<string, (string | number | false)[]>[]
 
 export interface QuillOptions {
+  bounds: string
   theme: 'bubble' | 'snow'
   debug?: 'error' | 'warn' | 'log' | 'info' | boolean
   formats?: QuillFormat[]

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Quill from 'quill'
 import 'quill-mention/autoregister'
-import { inject, onMounted, ref } from 'vue'
+import { computed, getCurrentInstance, inject, onMounted, ref } from 'vue'
 
 import { getDisplayName, tagify } from '@/utils'
 import useMeetingId from '@/modules/meetings/useMeetingId'
@@ -76,6 +76,21 @@ const variants: Record<
   },
   full: {
     theme: 'snow',
+    formats: [
+      QuillFormat.BlockQuote,
+      QuillFormat.Bold,
+      QuillFormat.Header,
+      QuillFormat.Image,
+      QuillFormat.Indent,
+      QuillFormat.InlineCode,
+      QuillFormat.Italic,
+      QuillFormat.Link,
+      QuillFormat.List,
+      QuillFormat.Mention,
+      QuillFormat.Script,
+      QuillFormat.TextAlignment,
+      QuillFormat.Video
+    ],
     modules: {
       toolbar: {
         container: [
@@ -128,12 +143,17 @@ const rootElement = ref<HTMLElement | null>(null)
 
 const meetingId = useMeetingId()
 
+// GET uid for unique element id
+const instance = getCurrentInstance()
+const editorId = computed(() => `quill-editor-${instance?.uid}`)
+
 onMounted(() => {
   if (!editorElement.value)
     throw new Error('Richtext editor element not available')
   editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
   const config: QuillOptions = {
     ...variants[props.variant],
+    bounds: '#' + editorId.value,
     placeholder: props.placeholder
   }
   if (config.modules.toolbar && 'handlers' in config.modules.toolbar)
@@ -182,7 +202,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="richtext richtext-editor" ref="rootElement">
+  <div class="richtext richtext-editor" :id="editorId" ref="rootElement">
     <div ref="editorElement"></div>
     <p v-if="errors" class="text-error">
       {{ errors.join(', ') }}
