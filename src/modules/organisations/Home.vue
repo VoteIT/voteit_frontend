@@ -364,7 +364,7 @@ function cancelEdit() {
                 <RichtextEditor
                   v-model="changeForm.body"
                   variant="full"
-                  @submit="save"
+                  @keydown.ctrl.enter="save"
                 />
                 <div class="text-right">
                   <v-btn

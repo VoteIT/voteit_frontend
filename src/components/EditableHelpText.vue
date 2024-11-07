@@ -47,7 +47,7 @@ async function save() {
       v-model="model"
       variant="full"
       :placeholder="placeholder ?? $t('helpText.defaultPlaceholder')"
-      @submit="save"
+      @keydown.ctrl.enter="save"
     />
     <Richtext v-else-if="modelValue" :value="modelValue" />
     <div v-if="editable" class="text-right mt-2">

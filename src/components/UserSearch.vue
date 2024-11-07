@@ -92,7 +92,7 @@ if (props.instant) {
       v-bind="props"
       class="user-search d-flex"
       :class="{ instant }"
-      @submit.prevent="submit()"
+      @submit.prevent="submit"
     >
       <v-autocomplete
         clearable

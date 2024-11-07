@@ -83,7 +83,7 @@ function submit() {
       <RichtextEditor
         v-model="content.body"
         class="mb-3"
-        @submit="submit"
+        @keydown.ctrl.enter="submit"
         variant="full"
       />
       <div class="text-right">

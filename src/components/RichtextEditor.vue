@@ -71,11 +71,6 @@ const variants: Record<
         QuillFormat.Link,
         QuillFormat.BlockQuote
       ],
-      keyboard: {
-        bindings: {
-          tab: null // Disable default tab behaviour
-        }
-      },
       mention: mentionOptions
     }
   },
@@ -100,9 +95,6 @@ const variants: Record<
         ],
         handlers: {}
       },
-      keyboard: {
-        bindings: {}
-      },
       mention: mentionOptions
     }
   }
@@ -126,7 +118,6 @@ const props = withDefaults(
 interface Emits {
   (e: 'blur'): void
   (e: 'focus'): void
-  (e: 'submit'): void
   (e: 'update:modelValue', value: string): void
 }
 const emit = defineEmits<Emits>()
@@ -144,13 +135,6 @@ onMounted(() => {
   const config: QuillOptions = {
     ...variants[props.variant],
     placeholder: props.placeholder
-  }
-  config.modules.keyboard.bindings.submit = {
-    key: 'Enter',
-    ctrlKey: true,
-    handler() {
-      emit('submit')
-    }
   }
   if (config.modules.toolbar && 'handlers' in config.modules.toolbar)
     config.modules.toolbar.handlers.image = () => {
@@ -172,6 +156,9 @@ onMounted(() => {
   if (props.setFocus) focus()
   editor.root.addEventListener('focus', () => emit('focus'))
   editor.root.addEventListener('blur', () => emit('blur'))
+  // Allow tabbing to next input
+  const keyboard = editor.getModule('keyboard') as any
+  delete keyboard.bindings.Tab
 })
 
 function focus() {

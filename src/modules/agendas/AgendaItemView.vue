@@ -311,7 +311,7 @@ const { collapsedBodyHeight } = useDefaults()
             v-model="content.body"
             class="mb-2"
             variant="full"
-            @submit="submit"
+            @keydown.ctrl.enter="submit"
           />
           <TagEdit
             v-model="content.tags"

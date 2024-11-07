@@ -135,7 +135,7 @@ defineExpose({
       :disabled="disabled"
       v-model="text"
       submit
-      @submit="submit"
+      @keydown.ctrl.enter="submit"
       @focus="active = true"
       class="flex-grow-1"
     >

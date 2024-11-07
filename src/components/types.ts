@@ -60,16 +60,6 @@ export interface QuillOptions {
           container: QuillToolbarGroup[]
           handlers: Record<string, () => void>
         }
-    keyboard: {
-      bindings: {
-        tab?: null
-        submit?: {
-          key: string
-          ctrlKey?: boolean
-          handler: () => void
-        }
-      }
-    }
     mention: {
       allowedChars: RegExp
       mentionDenotationChars: string[]

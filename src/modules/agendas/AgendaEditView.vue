@@ -424,7 +424,7 @@ function tagFilter(tags: string[], query: string) {
   <v-divider class="mt-6 mb-2" />
   <h2>{{ t('agenda.newItem') }}</h2>
   <form
-    @submit.prevent="addAgendaItem()"
+    @submit.prevent="addAgendaItem"
     id="agenda-add-form"
     class="d-flex mb-2"
   >
