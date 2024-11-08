@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { onKeyStroke } from '@vueuse/core'
 
 import { openAlertEvent } from '@/utils/events'
+import { navigationEventAllowed } from '@/utils/keyNavigation'
 import UserAvatar from '@/components/UserAvatar.vue'
 import User from '@/components/User.vue'
 import Moment from '@/components/Moment.vue'
@@ -18,7 +19,6 @@ import { IUser } from '../organisations/types'
 import useSpeakerList from './useSpeakerList'
 import * as speakerRules from './rules'
 import SpeakerEntry from './SpeakerEntry.vue'
-import { navigationEventAllowed } from '@/utils/keyNavigation'
 
 const props = defineProps<{
   listId: number

@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding, useTextSelection } from '@vueuse/core'
 
 import { socket } from '@/utils/Socket'
+import { navigationEventAllowed } from '@/utils/keyNavigation'
 import Tag from '@/components/Tag.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
@@ -22,10 +23,10 @@ import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import useRoom from '../rooms/useRoom'
+import { ProposalHighlight } from '../rooms/types'
 
 import usePlenary, { isProposalInPool } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
-import { ProposalHighlight } from '../rooms/types'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -208,6 +209,7 @@ useTags(undefined, selectTag)
 
 // 1-9 selects or deselects (w altKey) proposals in order
 onKeyStroke(map(range(1, 10), String), (e) => {
+  if (!navigationEventAllowed(e, ['altKey'])) return
   e.preventDefault()
   const num = Number(e.key) - 1
   const proposal = e.altKey
@@ -219,11 +221,14 @@ onKeyStroke(map(range(1, 10), String), (e) => {
 })
 
 // Esc to deselect all proposals
-onKeyStroke('Escape', () => replaceSelection([]))
+onKeyStroke('Escape', (e) => navigationEventAllowed(e) && replaceSelection([]))
 // 'n' to select next proposal text tag
 onKeyStroke(
   'n',
-  () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value[0])
+  (e) =>
+    navigationEventAllowed(e) &&
+    nextTextProposalTag.value &&
+    selectTag(nextTextProposalTag.value[0])
 )
 
 // Handle height of agenda info alert
