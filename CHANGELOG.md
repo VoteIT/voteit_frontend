@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.26.12 (2024-11-08)
+
+- Allow starting repeated Schulze poll with 2 proposals+deny
+- Bugfix: Keyboard nav in plenary view disabled input fields in modals
+
 ## 0.26.11 (2024-11-07)
 
 - Some richtext editor issues resolved
