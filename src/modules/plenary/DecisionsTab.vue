@@ -208,27 +208,31 @@ const otherTags = computed(() =>
 useTags(undefined, selectTag)
 
 // 1-9 selects or deselects (w altKey) proposals in order
-onKeyStroke(map(range(1, 10), String), (e) => {
-  if (!navigationEventAllowed(e, ['altKey'])) return
-  e.preventDefault()
-  const num = Number(e.key) - 1
-  const proposal = e.altKey
-    ? selectedProposals.value.at(num)
-    : pool.value.at(num)
-  if (!proposal) return
-  if (e.altKey) deselect(proposal)
-  else select(proposal)
-})
+onKeyStroke(
+  (e) =>
+    map(range(1, 10), String).includes(e.key) &&
+    navigationEventAllowed(e, ['altKey']),
+  (e) => {
+    e.preventDefault()
+    const num = Number(e.key) - 1
+    const proposal = e.altKey
+      ? selectedProposals.value.at(num)
+      : pool.value.at(num)
+    if (!proposal) return
+    if (e.altKey) deselect(proposal)
+    else select(proposal)
+  }
+)
 
 // Esc to deselect all proposals
-onKeyStroke('Escape', (e) => navigationEventAllowed(e) && replaceSelection([]))
+onKeyStroke(
+  (e) => e.key == 'Escape' && navigationEventAllowed(e),
+  () => replaceSelection([])
+)
 // 'n' to select next proposal text tag
 onKeyStroke(
-  'n',
-  (e) =>
-    navigationEventAllowed(e) &&
-    nextTextProposalTag.value &&
-    selectTag(nextTextProposalTag.value[0])
+  (e) => e.key === 'n' && navigationEventAllowed(e),
+  () => nextTextProposalTag.value && selectTag(nextTextProposalTag.value[0])
 )
 
 // Handle height of agenda info alert

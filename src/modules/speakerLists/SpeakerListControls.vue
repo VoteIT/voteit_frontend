@@ -102,20 +102,25 @@ async function addParticipantNumbers() {
 /*
  * Keyboard navigation
  */
-onKeyStroke(map(range(1, 10), String), (e) => {
-  if (!navigationEventAllowed(e)) return
-  const speaker = speakerQueue.value[Number(e.key) - 1]
-  if (!speaker) return
-  startSpeaker(speaker)
-})
 onKeyStroke(
-  'z',
-  (e) => navigationEventAllowed(e, ['ctrlKey']) && e.ctrlKey && undoSpeaker()
+  (e) => map(range(1, 10), String).includes(e.key) && navigationEventAllowed(e),
+  (e) => {
+    const speaker = speakerQueue.value[Number(e.key) - 1]
+    if (!speaker) return
+    startSpeaker(speaker)
+  }
 )
-onKeyStroke('s', (e) => navigationEventAllowed(e) && startSpeaker())
 onKeyStroke(
-  'e',
-  (e) => navigationEventAllowed(e) && currentSpeaker.value && stopSpeaker()
+  (e) => e.key === 'z' && navigationEventAllowed(e, ['ctrlKey']),
+  (e) => e.ctrlKey && undoSpeaker()
+)
+onKeyStroke(
+  (e) => e.key === 's' && navigationEventAllowed(e),
+  () => startSpeaker()
+)
+onKeyStroke(
+  (e) => e.key === 'e' && navigationEventAllowed(e),
+  (e) => currentSpeaker.value && stopSpeaker()
 )
 /*
  * End keyboard navigation

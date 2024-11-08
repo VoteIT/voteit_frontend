@@ -31,16 +31,12 @@ function navigateAgendaItem(aid?: number) {
 }
 
 onKeyStroke(
-  'ArrowLeft',
-  (event) =>
-    navigationEventAllowed(event) &&
-    navigateAgendaItem(previousAgendaItem.value?.pk)
+  (e) => e.key === 'ArrowLeft' && navigationEventAllowed(e),
+  () => navigateAgendaItem(previousAgendaItem.value?.pk)
 )
 onKeyStroke(
-  'ArrowRight',
-  (event) =>
-    navigationEventAllowed(event) &&
-    navigateAgendaItem(nextAgendaItem.value?.pk)
+  (e) => e.key === 'ArrowRight' && navigationEventAllowed(e),
+  () => navigateAgendaItem(nextAgendaItem.value?.pk)
 )
 
 const breadcrumbs = computed(() => [
