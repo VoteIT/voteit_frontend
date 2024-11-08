@@ -141,7 +141,7 @@ pollPlugins.register({
           label: t('winners'),
           hint: t('poll.repeated_schulze.winnersHint'),
           minimum: 1,
-          maximum: proposals - 1
+          maximum: proposals
         },
         ...properties
       },
@@ -153,7 +153,7 @@ pollPlugins.register({
     stars: 5
   },
   multipleWinners: true,
-  proposalsMin: 3,
+  proposalsMin: 2,
   resultComponent: RepeatedSchulzeResult,
   voteComponent: Schulze
 })
