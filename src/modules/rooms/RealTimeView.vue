@@ -4,6 +4,8 @@ import { RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
 import useChannel from '@/composables/useChannel'
+
+import UserActiveDialog from '../active/UserActiveDialog.vue'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
@@ -18,7 +20,6 @@ import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { roomDisplayMode } from './displayOptions'
 import { proposalHighlightEvent } from './events'
-import UserActiveDialog from '../active/UserActiveDialog.vue'
 
 provide(RoleContextKey, 'meeting')
 

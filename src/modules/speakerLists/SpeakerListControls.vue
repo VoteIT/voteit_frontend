@@ -18,6 +18,7 @@ import { IUser } from '../organisations/types'
 import useSpeakerList from './useSpeakerList'
 import * as speakerRules from './rules'
 import SpeakerEntry from './SpeakerEntry.vue'
+import { navigationEventAllowed } from '@/utils/keyNavigation'
 
 const props = defineProps<{
   listId: number
@@ -99,37 +100,25 @@ async function addParticipantNumbers() {
 }
 
 /*
- * Navigation
+ * Keyboard navigation
  */
-
-function onNonInputTarget(fn: (e: KeyboardEvent) => void) {
-  return (evt: KeyboardEvent) => {
-    if (((evt.target as Element) || null)?.tagName === 'INPUT') return
-    fn(evt)
-  }
-}
-onKeyStroke(
-  map(range(1, 10), String),
-  onNonInputTarget((e) => {
-    const speaker = speakerQueue.value[Number(e.key) - 1]
-    if (!speaker) return
-    startSpeaker(speaker)
-  })
-)
+onKeyStroke(map(range(1, 10), String), (e) => {
+  if (!navigationEventAllowed(e)) return
+  const speaker = speakerQueue.value[Number(e.key) - 1]
+  if (!speaker) return
+  startSpeaker(speaker)
+})
 onKeyStroke(
   'z',
-  onNonInputTarget((e) => e.ctrlKey && undoSpeaker())
+  (e) => navigationEventAllowed(e, ['ctrlKey']) && e.ctrlKey && undoSpeaker()
 )
-onKeyStroke(
-  's',
-  onNonInputTarget(() => startSpeaker())
-)
+onKeyStroke('s', (e) => navigationEventAllowed(e) && startSpeaker())
 onKeyStroke(
   'e',
-  onNonInputTarget(() => currentSpeaker.value && stopSpeaker())
+  (e) => navigationEventAllowed(e) && currentSpeaker.value && stopSpeaker()
 )
 /*
- * End navigation
+ * End keyboard navigation
  */
 </script>
 
