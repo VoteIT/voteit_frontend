@@ -99,6 +99,7 @@
     "purgedCount": "Inga användare markerades som inaktiva | En användare markerades som inaktiv | {count} användare markerades som inaktiva",
     "purgeInactive": "Rensa inaktiva",
     "purgeInactiveHelp": "Du kan rensa aktiv-status på deltagare i mötet som inte visat någon aktivitet på ett visst antal timmar.",
+    "roleHelp": "Markerad som aktiv i mötet. Detta kan påverka rösträtten.",
     "title": "Aktiva användare",
     "yesImActive": "Ja, jag är aktiv"
   },

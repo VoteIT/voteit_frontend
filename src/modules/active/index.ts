@@ -57,6 +57,9 @@ meetingRolePlugins.register({
         getCount() {
           return activeUserIds.value.length
         },
+        getDescription(t) {
+          return t('activeUsers.roleHelp')
+        },
         getTitle(t) {
           return t('activeUsers.active')
         },

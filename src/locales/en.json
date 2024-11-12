@@ -99,6 +99,7 @@
     "purgedCount": "No users were marked as inactive | One user was marked as inactive | {count} users were marked as inactive",
     "purgeInactive": "Purge inactive",
     "purgeInactiveHelp": "You can clear active status for participants in this meeting that hasn't shown any activity for selected amount of hours.",
+    "roleHelp": "Marked as active in meeting. This can affect voting rights.",
     "title": "Active users",
     "yesImActive": "Yes, I'm active"
   },
