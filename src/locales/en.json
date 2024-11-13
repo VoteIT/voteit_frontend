@@ -259,7 +259,7 @@
     "filterMatchRoles": "Match roles exactly",
     "filterOnStatus": "Filter on status",
     "helpTextTitle": "Do you want to send the invitations?",
-    "helpTextBody": "An invitation means that a user with that email address will be able to join your meeting. Men VoteIT will not send invitation emails - you have to do that yourself. Use the copy button below to copy all email addresses in the list.",
+    "helpTextBody": "An invitation means that a user with that email address will be able to join your meeting. But VoteIT will not send invitation emails - you have to do that yourself. Use the copy button below to copy all email addresses in the list.",
     "invitedAs": "Invited as",
     "invites": "Invitations",
     "invitesGoTo": "To invite users, go to {link}",
