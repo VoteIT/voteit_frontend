@@ -99,7 +99,8 @@ async function abstainVote() {
       <v-btn
         color="primary"
         size="large"
-        :disabled="!validVote || submitting"
+        :disabled="!validVote"
+        :loading="submitting"
         @click="castVote"
         prepend-icon="mdi-vote"
       >
@@ -107,7 +108,7 @@ async function abstainVote() {
       </v-btn>
       <v-btn
         color="warning"
-        :disabled="submitting"
+        :loading="submitting"
         @click="abstainVote"
         prepend-icon="mdi-cancel"
         class="ml-1"
