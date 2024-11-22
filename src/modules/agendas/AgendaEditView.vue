@@ -178,7 +178,8 @@ function canSetState(target: AgendaState) {
   )
 }
 
-function tagFilter(tags: string[], query: string) {
+function tagFilter(tags: string | string[], query: string) {
+  if (!Array.isArray(tags)) tags = [tags]
   return tags.includes(query)
 }
 </script>
