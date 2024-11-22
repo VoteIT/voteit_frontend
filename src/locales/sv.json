@@ -755,6 +755,7 @@
     "displayOn": "Visning",
     "editButton": "Ändra reaktionsknapp",
     "flag": "Flagga",
+    "flags": "Flaggor",
     "listRolesRequired": "Roller som kan se vem som reagerat",
     "none": "Inga reaktioner",
     "onPresentation": "Realtids- och sändarvy",

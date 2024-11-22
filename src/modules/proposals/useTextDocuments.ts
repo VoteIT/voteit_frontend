@@ -1,5 +1,5 @@
 import { filter } from 'itertools'
-import { computed, reactive, readonly, Ref } from 'vue'
+import { computed, MaybeRef, reactive, readonly, unref } from 'vue'
 
 import { ProposalText, proposalTextType } from './contentTypes'
 
@@ -21,10 +21,11 @@ function getParagraph(pk: number) {
   }
 }
 
-export default function useTextDocuments(agendaItem?: Ref<number>) {
+export default function useTextDocuments(agendaItem?: MaybeRef<number>) {
   const aiProposalTexts = computed(() => {
-    if (!agendaItem?.value) return []
-    return getDocuments((doc) => doc.agenda_item === agendaItem.value)
+    const ai = unref(agendaItem)
+    if (!ai) return []
+    return getDocuments((doc) => doc.agenda_item === ai)
   })
 
   return {

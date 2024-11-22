@@ -27,6 +27,7 @@ import { ProposalHighlight } from '../rooms/types'
 
 import usePlenary, { isProposalInPool } from './usePlenary'
 import AgendaInfoAlert from './AgendaInfoAlert.vue'
+import { plenarySuggestions } from './registry'
 
 const AVAILABLE_STATES = [
   ProposalState.Published,
@@ -180,30 +181,15 @@ const proposalTagCount = computed(() => {
   return counter
 })
 
+const suggestions = computed(() => [
+  ...plenarySuggestions.iterPlugins(t, filteredProposals.value)
+])
+
 const nextTextProposalTag = computed(() => {
   const tag = textProposalTags.value.find(tagInPool)
   if (!tag) return
   return [tag, proposalTagCount.value.get(tag) || 0] as const
 })
-
-const allProposalIds = computed(() =>
-  filteredProposals.value.map((p) => p.prop_id)
-)
-/**
- * Tags that are not prop ids, and not next paragraph tag.
- * Ordered by tag name.
- */
-const otherTags = computed(() =>
-  sortBy(
-    filter(
-      proposalTagCount.value.entries(),
-      ([tag]) =>
-        !allProposalIds.value.includes(tag) &&
-        tag !== nextTextProposalTag.value?.[0]
-    ),
-    ([tag]) => tag
-  )
-)
 
 useTags(undefined, selectTag)
 
@@ -369,27 +355,32 @@ watch(
         v-if="!selectedProposals.length"
         class="text-h4 text-center text-secondary mt-12"
       >
-        <template v-if="nextTextProposalTag || otherTags.length">
-          <template v-if="nextTextProposalTag">
-            <p class="mb-1">
-              {{ t('plenary.nextParagraph') }}
-            </p>
-            <Tag
-              :name="nextTextProposalTag[0]"
-              :count="nextTextProposalTag[1]"
-              style="transform: scale(1.4)"
-            />
-          </template>
-          <template v-if="otherTags.length">
-            <p class="mt-12 mb-1">
-              {{ t('plenary.otherTags', otherTags.length) }}
-            </p>
-            <span v-for="[tag, count] in otherTags" :key="tag" class="mx-5">
-              <Tag :name="tag" :count="count" style="transform: scale(1.2)" />
-            </span>
-          </template>
-        </template>
-        <template v-else>
+        <div
+          class="my-12"
+          v-for="plugin in suggestions"
+          :key="plugin.title"
+          :style="plugin.style"
+        >
+          <p class="mb-1">
+            {{ plugin.title }}
+          </p>
+          <Tag
+            v-if="plugin.v === 'tags'"
+            v-for="{ tag, count } in plugin.tags"
+            :key="tag"
+            class="mx-5"
+            :count="count"
+            :name="tag"
+            style="transform: scale(var(--tag-scale, 1.2))"
+          />
+          <component
+            v-else
+            :is="plugin.component"
+            v-bind="plugin.props"
+            @selected="replaceSelection"
+          />
+        </div>
+        <template v-if="!suggestions.length">
           {{ t('plenary.selectProposals') }}
           <v-icon icon="mdi-chevron-right" />
         </template>
