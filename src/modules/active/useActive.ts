@@ -1,4 +1,4 @@
-import { computed, reactive, Ref, watch } from 'vue'
+import { computed, reactive, ref, Ref, watch } from 'vue'
 
 import { user } from '@/composables/useAuthentication'
 
@@ -7,6 +7,7 @@ import { NoSettingsComponent } from '../meetings/types'
 import useMeetingComponents from '../meetings/useMeetingComponent'
 
 import { activeUserType } from './contentTypes'
+import { sleep } from '@/utils'
 
 interface ActiveUsersMsg {
   meeting: number
@@ -59,15 +60,19 @@ export default function useActive(meetingId: Ref<number>) {
   })
 
   const isDismissed = computed(() => dismissedMeetings.has(meetingId.value))
+  const isBusy = ref(false)
 
   async function setActive(active: boolean) {
     if (!user.value)
       throw new Error('Must have authenticated user to set active')
+    isBusy.value = true
     await activeUserType.methodCall('set', {
       active,
       meeting: meetingId.value,
       user: user.value.pk
     })
+    await sleep(2_000)
+    isBusy.value = false
   }
 
   function dismiss() {
@@ -80,6 +85,7 @@ export default function useActive(meetingId: Ref<number>) {
     ),
     componentActive,
     isActive,
+    isBusy,
     isDismissed,
     dismiss,
     checkActive,

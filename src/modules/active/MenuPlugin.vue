@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -10,7 +10,7 @@ import UserActiveDialog from './UserActiveDialog.vue'
 import { ThemeColor } from '@/utils/types'
 
 const { t } = useI18n()
-const { isActive, dismiss } = useActive(useMeetingId())
+const { isActive, isBusy, dismiss } = useActive(useMeetingId())
 
 async function confirmSetActive(value: boolean | null) {
   if (!value) {
@@ -35,6 +35,7 @@ async function confirmSetActive(value: boolean | null) {
       </strong>
     </p>
     <v-switch
+      :disabled="isBusy"
       :modelValue="isActive"
       @update:modelValue="confirmSetActive"
       hide-details

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed } from 'vue'
 
-import { sleep } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useDefaults from '@/composables/useDefaults'
@@ -12,25 +11,21 @@ import useActive from './useActive'
 
 const { dialogDefaults } = useDefaults()
 const meetingId = useMeetingId()
-const { componentActive, isActive, isDismissed, dismiss, setActive } =
+const { componentActive, isActive, isBusy, isDismissed, dismiss, setActive } =
   useActive(meetingId)
 
 const dialogActive = computed(
   () =>
-    working.value ||
+    isBusy.value ||
     (componentActive.value && !isActive.value && !isDismissed.value)
 )
 
-const working = ref(false)
 async function dialogSetActive() {
-  working.value = true
   try {
     await setActive(true)
-    await sleep(1_000)
   } catch {
     alert('Unknown error: Could not set active status')
   }
-  working.value = false
 }
 </script>
 
@@ -71,7 +66,7 @@ async function dialogSetActive() {
         <v-btn
           prepend-icon="mdi-check"
           color="primary"
-          :loading="working"
+          :loading="isBusy"
           @click="dialogSetActive"
         >
           {{ $t('activeUsers.yesImActive') }}
