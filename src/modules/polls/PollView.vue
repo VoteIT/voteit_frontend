@@ -284,7 +284,7 @@ const subscribeAgendaItem = computed(() => {
   return poll.value?.agenda_item
 })
 useChannel('agenda_item', subscribeAgendaItem)
-useMeetingTitle(computed(() => poll.value?.title ?? t('poll.polls')))
+useMeetingTitle(computed(() => poll.value?.title ?? t('poll.poll', 2)))
 
 const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
 const votingComplete = ref(!!userVote.value) // Set to false to allow changing vote

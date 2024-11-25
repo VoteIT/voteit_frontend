@@ -48,6 +48,6 @@ plenarySuggestions.register({
     }
   },
   getTitle(t) {
-    return t('reaction.flags')
+    return t('reaction.flags', 2)
   }
 })

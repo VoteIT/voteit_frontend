@@ -64,7 +64,7 @@ const {
   setPoll,
   setSlsBroadcast
 } = useRoom()
-const { getState } = pollType.useWorkflows()
+const { getState, getPriorityStates } = pollType.useWorkflows()
 const { systemActiveList } = useSpeakerSystem(
   computed(() => speakerSystem.value?.pk || 0), // userSpeakerSystem requires computed number
   agendaId
@@ -133,8 +133,25 @@ function pollStateToItems(state: PollState) {
   })
 }
 
-const finishedPollItems = computed(() => pollStateToItems(PollState.Finished))
-const ongoingPollItems = computed(() => pollStateToItems(PollState.Ongoing))
+/**
+ * Preexisting polls to display in poll menu.
+ * Display order important.
+ */
+function* iterMenuPollStates() {
+  for (const { state, getName } of getPriorityStates()) {
+    if (state === PollState.Canceled) continue // No need to display actively canceled polls
+    const polls = pollStateToItems(state)
+    if (polls.length)
+      yield {
+        polls,
+        title: `${getName(t, polls.length)} ${t(
+          'poll.poll',
+          polls.length
+        ).toLocaleLowerCase()}`
+      }
+  }
+}
+const menuPollStates = computed(() => [...iterMenuPollStates()])
 
 function openPoll(poll: Poll) {
   if (isBroadcasting.value) setPoll(poll.pk)
@@ -226,7 +243,7 @@ const ongoingPollCount = computed(
               <v-btn
                 append-icon="mdi-chevron-down"
                 v-bind="props"
-                :text="t('poll.polls')"
+                :text="t('poll.poll', 2)"
               />
             </template>
             <v-list>
@@ -249,35 +266,22 @@ const ongoingPollCount = computed(
                   />
                 </template>
               </DefaultDialog>
-              <v-divider
-                v-if="ongoingPollItems.length || finishedPollItems.length"
-              />
-              <v-list-subheader
-                v-if="ongoingPollItems.length"
-                :title="t('plenary.ongoingPolls')"
-              />
-              <template
-                v-for="{ poll, pollStatus, ...item } in ongoingPollItems"
-                :key="poll.pk"
-              >
-                <v-list-item v-bind="item" @click="openPoll(poll)" />
-                <v-progress-linear
-                  v-if="pollStatus"
-                  :model-value="pollStatus.voted"
-                  :max="pollStatus.total"
-                  color="success-lighten-2"
-                />
+              <v-divider v-if="menuPollStates.length" class="my-3" />
+              <template v-for="{ title, polls } in menuPollStates" :key="title">
+                <v-list-subheader :title="title" />
+                <template
+                  v-for="{ poll, pollStatus, ...props } in polls"
+                  :key="poll.pk"
+                >
+                  <v-list-item v-bind="props" @click="openPoll(poll)" />
+                  <v-progress-linear
+                    v-if="pollStatus"
+                    :model-value="pollStatus.voted"
+                    :max="pollStatus.total"
+                    color="success-lighten-2"
+                  />
+                </template>
               </template>
-              <v-list-subheader
-                v-if="finishedPollItems.length"
-                :title="t('plenary.finishedPolls')"
-              />
-              <v-list-item
-                v-for="{ poll, ...item } in finishedPollItems"
-                :key="poll.pk"
-                v-bind="item"
-                @click="openPoll(poll)"
-              />
             </v-list>
           </v-menu>
         </v-badge>

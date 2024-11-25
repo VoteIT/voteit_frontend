@@ -222,7 +222,7 @@ const menu = computed<TreeMenu[]>(() => {
       icon: 'mdi-home'
     },
     {
-      title: t('poll.polls'),
+      title: t('poll.poll', 2),
       items: pollMenus.value,
       icon: hasUnvotedPolls.value ? 'mdi-star' : 'mdi-star-outline',
       openEvent: openPollMenuEvent

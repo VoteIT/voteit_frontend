@@ -110,7 +110,7 @@ const model = reactive<Record<number, boolean>>({})
           <DefaultDialog :title="t('reaction.addButton')">
             <template #activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-flag">
-                {{ t('reaction.flag') }}
+                {{ t('reaction.flags') }}
               </v-list-item>
             </template>
             <template #default="{ close }">

@@ -1,3 +1,79 @@
+<script setup lang="ts">
+import { computed, ref, toRef, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import ProgressBar from '@/components/ProgressBar.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+
+import usePoll from '../polls/usePoll'
+import { Poll, PollTransition } from '../polls/types'
+import { pollType } from '../polls/contentTypes'
+import useRoom from '../rooms/useRoom'
+
+const props = defineProps<{
+  data: Poll
+}>()
+
+const { t } = useI18n()
+const pollId = toRef(props.data, 'pk')
+const {
+  canChange,
+  isOngoing,
+  isFinished,
+  isWithheld,
+  poll,
+  pollMethodName,
+  pollStatus,
+  proposals,
+  resultComponent,
+  voteComponent
+} = usePoll(pollId)
+const { isBroadcasting, setPoll, setShowBallot } = useRoom()
+
+const complete = computed(() => {
+  if (!pollStatus.value) return false
+  return pollStatus.value.voted === pollStatus.value.total
+})
+const progressText = computed(() => {
+  if (!pollStatus.value) return ''
+  return t(
+    'poll.numVoted',
+    pollStatus.value as Record<string, any>,
+    pollStatus.value.voted
+  )
+})
+const progressBar = computed(() => {
+  if (!pollStatus.value) return
+  return {
+    value: pollStatus.value.voted,
+    total: pollStatus.value.total,
+    text: progressText.value,
+    done: complete.value
+  }
+})
+
+const working = ref(false)
+
+async function cancel() {
+  working.value = true
+  await pollType.transitions.make(poll.value!, PollTransition.Cancel, t)
+}
+
+async function close() {
+  working.value = true
+  await pollType.transitions.make(poll.value!, PollTransition.Close, t)
+}
+
+/**
+ * Unsets active poll in room, whether from created poll or broadcaster clicked to open an existing poll.
+ */
+onBeforeUnmount(() => {
+  if (isBroadcasting.value) setPoll(null)
+})
+</script>
+
 <template>
   <main v-if="!poll" class="text-center">
     <v-progress-circular
@@ -94,81 +170,11 @@
       :text="t('poll.result.withheldExplanation')"
       type="info"
     />
-    <WorkflowState v-else :content-type="pollType" :object="poll" />
+    <WorkflowState
+      v-else
+      :admin="canChange"
+      :content-type="pollType"
+      :object="poll"
+    />
   </main>
 </template>
-
-<script setup lang="ts">
-import { computed, ref, toRef, onBeforeUnmount } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import ProgressBar from '@/components/ProgressBar.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
-
-import usePoll from '../polls/usePoll'
-import { Poll, PollTransition } from '../polls/types'
-import { pollType } from '../polls/contentTypes'
-import useRoom from '../rooms/useRoom'
-
-const props = defineProps<{
-  data: Poll
-}>()
-
-const { t } = useI18n()
-const pollId = toRef(props.data, 'pk')
-const {
-  isOngoing,
-  isFinished,
-  isWithheld,
-  poll,
-  pollMethodName,
-  pollStatus,
-  proposals,
-  resultComponent,
-  voteComponent
-} = usePoll(pollId)
-const { isBroadcasting, setPoll, setShowBallot } = useRoom()
-
-const complete = computed(() => {
-  if (!pollStatus.value) return false
-  return pollStatus.value.voted === pollStatus.value.total
-})
-const progressText = computed(() => {
-  if (!pollStatus.value) return ''
-  return t(
-    'poll.numVoted',
-    pollStatus.value as Record<string, any>,
-    pollStatus.value.voted
-  )
-})
-const progressBar = computed(() => {
-  if (!pollStatus.value) return
-  return {
-    value: pollStatus.value.voted,
-    total: pollStatus.value.total,
-    text: progressText.value,
-    done: complete.value
-  }
-})
-
-const working = ref(false)
-
-async function cancel() {
-  working.value = true
-  await pollType.transitions.make(poll.value!, PollTransition.Cancel, t)
-}
-
-async function close() {
-  working.value = true
-  await pollType.transitions.make(poll.value!, PollTransition.Close, t)
-}
-
-/**
- * Unsets active poll in room, whether from created poll or broadcaster clicked to open an existing poll.
- */
-onBeforeUnmount(() => {
-  if (isBroadcasting.value) setPoll(null)
-})
-</script>
