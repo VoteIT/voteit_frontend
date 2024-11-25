@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
+import { sleep } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -21,6 +22,7 @@ const { meeting, meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
 const { agendaItem, canChangeAgendaItem } = useAgendaItem(agendaId)
 const { meetingRoom } = useRoom()
+const agendaApi = agendaItemType.getContentApi()
 
 const { getPlenaryRoute } = usePlenary(agendaId)
 
@@ -44,6 +46,14 @@ const breadcrumbs = computed(() => [
   { title: meetingRoom.value?.title ?? '-' },
   { title: agendaItem.value?.title ?? '-' }
 ])
+
+const settingAllowedProps = ref(false)
+async function setProposalsAllowed(value: boolean | null) {
+  settingAllowedProps.value = true
+  await agendaApi.patch(agendaId.value, { block_proposals: !value })
+  await sleep(250)
+  settingAllowedProps.value = false
+}
 </script>
 
 <template>
@@ -61,9 +71,19 @@ const breadcrumbs = computed(() => [
       <WorkflowState
         v-if="agendaItem"
         :admin="canChangeAgendaItem"
+        class="mr-4"
         color="background"
         :content-type="agendaItemType"
         :object="agendaItem"
+      />
+      <v-switch
+        v-if="canChangeAgendaItem"
+        color="white"
+        :disabled="settingAllowedProps"
+        :label="$t('agenda.allowProposals')"
+        :model-value="!agendaItem?.block_proposals"
+        hide-details
+        @update:model-value="setProposalsAllowed($event)"
       />
       <div class="pa-3"></div>
       <template v-if="agendaItem">

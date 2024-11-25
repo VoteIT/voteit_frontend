@@ -12,7 +12,7 @@
         class="text-no-wrap"
         size="x-small"
         variant="flat"
-        v-bind="props"
+        v-bind="{ ...$attrs, ...props }"
         :color="currentState.color || color"
       >
         {{ currentState.getName(t) }}
