@@ -1,6 +1,6 @@
 import path from 'path'
 import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
+import Vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,7 +8,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1600,
     target: 'es2019'
   },
-  plugins: [vue()],
+  plugins: [Vue()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
