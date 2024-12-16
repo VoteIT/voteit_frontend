@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.29.0 (2024-12-16)
+
+- Use bulk change/delete messages in agenda edit
+
 ## 0.26.12 (2024-11-08)
 
 - Allow starting repeated Schulze poll with 2 proposals+deny
