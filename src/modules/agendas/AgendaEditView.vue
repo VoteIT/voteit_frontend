@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import Axios from 'axios'
 import { difference } from 'lodash'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, tagify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
-import { WorkflowState } from '@/contentTypes/types'
 import { AlertLevel } from '@/composables/types'
 import usePermission from '@/composables/usePermission'
 import QueryDialog from '@/components/QueryDialog.vue'
@@ -21,10 +20,11 @@ import { MeetingState } from '../meetings/types'
 
 import useAgenda from './useAgenda'
 import useAgendaTags from './useAgendaTags'
-import { AgendaItem, AgendaState, AgendaTransition } from './types'
+import { AgendaItem, AgendaState } from './types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
 import AgendaOrdering from './AgendaOrdering.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
@@ -32,6 +32,7 @@ const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
 const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
 const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
+const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 
 usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
 useMeetingTitle(t('agenda.agenda'))
@@ -46,19 +47,25 @@ async function addAgendaItem() {
 }
 
 const editSelected = ref<number[]>([])
+/**
+ * Keep track of available items and clear non-existing from selected
+ */
+watch(filteredAgenda, (items) => {
+  const existingIds = new Set(items.map((ai) => ai.pk))
+  editSelected.value = editSelected.value.filter((id) => existingIds.has(id))
+})
+
 const selectedAgendaItems = computed(() =>
   filteredAgenda.value.filter((ai) => editSelected.value.includes(ai.pk))
 )
 const editManyWorking = ref(false)
 
-// eslint-disable-next-line no-undef
 function isRejected(
   settled: PromiseSettledResult<unknown>
 ): settled is PromiseRejectedResult {
   return settled.status === 'rejected'
 }
 
-// eslint-disable-next-line no-undef
 function getRejectedDescriptions(settled: PromiseSettledResult<unknown>[]) {
   const rejectedDescriptions = settled.filter(isRejected).map(({ reason }) => {
     if (Axios.isAxiosError(reason))
@@ -103,24 +110,36 @@ async function actionOnSelected(
   editManyWorking.value = false
 }
 
-function deleteSelected() {
-  actionOnSelected((ai) => agendaApi.delete(ai.pk))
-}
-
-function setStateSelected(state: WorkflowState<AgendaState, AgendaTransition>) {
-  actionOnSelected((ai) => {
-    if (ai.state === state.state) return Promise.resolve()
-    if (!state.transition) return Promise.reject(new Error('No transition'))
-    return agendaItemType.transitions.make(ai, state.transition, t)
-  })
+async function deleteSelected() {
+  bulkChanging.value = true
+  try {
+    await agendaItemType.methodCall('bulk_delete', {
+      meeting: meetingId.value,
+      agenda_items: editSelected.value
+    })
+  } catch (e) {
+    handleSocketError(e, '__root__')
+  }
+  bulkChanging.value = false
 }
 
 function patchAgendaItem(ai: AgendaItem, data: Partial<AgendaItem>) {
   agendaApi.patch(ai.pk, data)
 }
 
-function patchSelected(data: Partial<AgendaItem>) {
-  actionOnSelected((ai) => agendaApi.patch(ai.pk, data))
+const bulkChanging = ref(false)
+async function patchSelected(data: Partial<AgendaItem>) {
+  bulkChanging.value = true
+  try {
+    await agendaItemType.methodCall('bulk_update', {
+      meeting: meetingId.value,
+      agenda_items: editSelected.value,
+      ...data
+    })
+  } catch (e) {
+    handleSocketError(e, '__root__')
+  }
+  bulkChanging.value = false
 }
 
 /* TAGS */
@@ -234,6 +253,7 @@ function tagFilter(tags: string | string[], query: string) {
     density="compact"
     class="mb-1"
     style="max-width: 280px"
+    variant="outlined"
   />
   <v-data-table
     :headers="[
@@ -342,73 +362,82 @@ function tagFilter(tags: string | string[], query: string) {
       :border="true"
       rounded
       v-if="selectedAgendaItems.length"
-      class="pa-2"
+      class="pa-4 d-flex flex-column ga-2"
     >
-      <h2 class="my-2">
+      <h2>
         {{ t('agenda.changeMany', selectedAgendaItems.length) }}
       </h2>
-      <QueryDialog
-        :text="t('agenda.deleteSelectedConfirm', editSelected.length)"
-        color="warning"
-        @confirmed="deleteSelected"
-      >
-        <template #activator="{ props }">
-          <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
-            {{ t('content.delete') }}
-          </v-btn>
-        </template>
-      </QueryDialog>
-      <div class="my-2">
+      <div>
+        <QueryDialog
+          :text="t('agenda.deleteSelectedConfirm', editSelected.length)"
+          color="warning"
+          @confirmed="deleteSelected"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              color="warning"
+              :disabled="bulkChanging"
+              prepend-icon="mdi-delete"
+              v-bind="props"
+            >
+              {{ t('content.delete') }}
+            </v-btn>
+          </template>
+        </QueryDialog>
+      </div>
+      <div class="d-flex flex-wrap ga-1">
         <v-btn
           color="primary"
-          class="mt-1 mr-1"
+          :disabled="bulkChanging || !canSetState(state.state)"
+          :key="state.state"
           :prepend-icon="state.icon"
           v-for="state in agendaItemType.transitions.states.filter(
             (s) => s.transition
           )"
-          :key="state.state"
-          :disabled="!canSetState(state.state)"
-          @click="setStateSelected(state)"
-          >{{ t('agenda.setTo') }} {{ state.getName(t, 2) }}</v-btn
-        >
+          :text="`${$t('agenda.setTo')} ${state.getName($t, 2)}`"
+          @click="patchSelected({ state: state.state })"
+        />
       </div>
-      <div class="my-2">
+      <div class="d-flex flex-wrap ga-1">
         <v-btn
           color="success"
-          class="mr-1"
+          :disabled="bulkChanging"
           prepend-icon="mdi-text-box-plus-outline"
+          :text="$t('agenda.allowProposals')"
           @click="patchSelected({ block_proposals: false })"
-          >{{ t('agenda.allowProposals') }}</v-btn
-        >
+        />
         <v-btn
           color="warning"
+          :disabled="bulkChanging"
           prepend-icon="mdi-text-box-plus-outline"
+          :text="$t('agenda.blockProposals')"
           @click="patchSelected({ block_proposals: true })"
-          >{{ t('agenda.blockProposals') }}</v-btn
-        >
+        />
       </div>
-      <div class="my-2">
+      <div class="d-flex flex-wrap ga-1">
         <v-btn
           color="success"
-          class="mr-1"
+          :disabled="bulkChanging"
           prepend-icon="mdi-comment-outline"
+          :text="$t('agenda.allowDiscussion')"
           @click="patchSelected({ block_discussion: false })"
-          >{{ t('agenda.allowDiscussion') }}</v-btn
-        >
+        />
         <v-btn
           color="warning"
+          :disabled="bulkChanging"
           prepend-icon="mdi-comment-outline"
+          :text="$t('agenda.blockDiscussion')"
           @click="patchSelected({ block_discussion: true })"
-          >{{ t('agenda.blockDiscussion') }}</v-btn
-        >
+        />
       </div>
-      <div class="my-2">
+      <div class="mt-4">
         <v-combobox
           v-model="bulkTags"
           :items="agendaTags"
           hide-details
-          multiple
           :label="t('tags')"
+          multiple
+          variant="outlined"
         >
           <template #chip="{ item, props }">
             <v-chip
@@ -423,24 +452,22 @@ function tagFilter(tags: string | string[], query: string) {
     </v-sheet>
   </v-expand-transition>
   <v-divider class="mt-6 mb-2" />
-  <h2>{{ t('agenda.newItem') }}</h2>
-  <form
-    @submit.prevent="addAgendaItem"
-    id="agenda-add-form"
-    class="d-flex mb-2"
-  >
+  <h2 class="mb-2">{{ t('agenda.newItem') }}</h2>
+  <form @submit.prevent="addAgendaItem" id="agenda-add-form" class="d-flex">
     <v-text-field
       :label="t('title')"
       required
       maxlength="100"
       v-model="newAgendaTitle"
       hide-details
-      class="flex-grow-1 hide-details"
+      class="flex-grow-1 hide-details rounded-0"
+      variant="outlined"
     />
     <v-btn
       prepend-icon="mdi-plus"
       type="submit"
       :disabled="!newAgendaTitle"
+      class="rounded-s-0"
       color="primary"
       >{{ t('add') }}</v-btn
     >
@@ -450,7 +477,9 @@ function tagFilter(tags: string | string[], query: string) {
 <style lang="sass" scoped>
 #agenda-add-form
   .v-btn
-    border-top-left-radius: 0
-    border-bottom-left-radius: 0
     height: auto
+
+  :deep(.v-field)
+    border-top-right-radius: 0
+    border-bottom-right-radius: 0
 </style>
