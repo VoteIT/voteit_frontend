@@ -718,6 +718,7 @@
     "deletePrompt": "Du håller på att permanent radera ett förslag.\nÄr du säker?",
     "denied": "Avslaget",
     "edit": "Redigera förslag",
+    "fullProposalText": "Hela förslagstexten",
     "notFound": "Förslaget hittades inte",
     "ordering": "Förslagsordning",
     "postAs": "Posta som",

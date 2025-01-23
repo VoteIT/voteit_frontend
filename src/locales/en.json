@@ -718,6 +718,7 @@
     "deletePrompt": "You are about to delete a proposal permanently.\nAre you sure?",
     "denied": "Denied",
     "edit": "Edit proposal",
+    "fullProposalText": "Full proposal text",
     "notFound": "Proposal not found",
     "ordering": "Proposal order",
     "postAs": "Post as",

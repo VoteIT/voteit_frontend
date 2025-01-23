@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, provide } from 'vue'
-import { RoleContextKey } from '@/injectionKeys'
+import { ReadonlyViewKey, RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
 import useChannel from '@/composables/useChannel'
@@ -26,6 +26,8 @@ provide(RoleContextKey, 'meeting')
 const { t } = useI18n()
 
 const { highlightedProposals, meetingRoom, passiveMode, textSize } = useRoom()
+provide(ReadonlyViewKey, passiveMode)
+
 const { agendaItem } = useAgendaItem(
   computed(() => meetingRoom.value?.agenda_item ?? -1) // Can be undefined
 )
