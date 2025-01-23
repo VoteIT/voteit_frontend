@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.29.1 (2025-01-23)
+
+- Allow displaying full proposal text on diff proposals
+
 ## 0.29.0 (2024-12-16)
 
 - Use bulk change/delete messages in agenda edit
