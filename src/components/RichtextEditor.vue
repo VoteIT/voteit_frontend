@@ -102,8 +102,8 @@ const variants: Record<
             QuillFormat.InlineCode
           ],
           [{ script: 'sub' }, { script: 'super' }],
-          [{ indent: '-1' }, { indent: '+1' }],
-          [QuillFormat.BlockQuote],
+          [QuillFormat.BlockQuote, { indent: '-1' }, { indent: '+1' }],
+          [{ list: 'ordered' }, { list: 'bullet' }],
           [QuillFormat.Image, QuillFormat.Video],
           [{ align: [] }],
           ['clean']
@@ -202,7 +202,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="richtext richtext-editor" :id="editorId" ref="rootElement">
+  <div :id="editorId" ref="rootElement">
     <div ref="editorElement"></div>
     <p v-if="errors" class="text-error">
       {{ errors.join(', ') }}

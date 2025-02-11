@@ -79,7 +79,7 @@ watch(contentElem, (el) => {
 <template>
   <div>
     <div class="overflow-hidden position-relative" :style="style">
-      <div ref="contentElem" class="richtext" v-html="value"></div>
+      <div ref="contentElem" class="ql-editor pa-0" v-html="value"></div>
       <div class="overflow-fade" v-show="isOverflowing && !userExpanded"></div>
     </div>
     <v-btn
@@ -96,34 +96,10 @@ watch(contentElem, (el) => {
 </template>
 
 <style lang="sass">
-.richtext
-  margin: .4em 0
-  ul, ol
-    padding-left: 2.5em
-  blockquote
-    border-left: 3px solid rgb(var(--v-border-color))
-    padding: .2em 0 .2em .6em
-    font-style: italic
-  ol, ul, blockquote, p
-    margin-bottom: .5em
-    line-height: 1.3em
-  ol, ul, blockquote, p, h2, h3, h4
-    &.ql-indent-1
-      margin-left: 2em
-    &.ql-indent-2
-      margin-left: 4em
-    &.ql-indent-3
-      margin-left: 6em
-    &.ql-indent-4
-      margin-left: 8em
-    &.ql-align-center
-      text-align: center
-    &.ql-align-right
-      text-align: right
-    &.ql-align-justify
-      text-align: justify
-      img
-        width: 100%
+.ql-editor
+  .ql-align-justify
+    img
+      width: 100%
 
   iframe.ql-video
     width: 100%
@@ -138,11 +114,12 @@ watch(contentElem, (el) => {
       margin-left: auto
   img
     max-width: 100%
+  blockquote
+    border-left: 3px solid rgb(var(--v-border-color))
+    padding: .2em 0 .2em .6em
+    font-style: italic
   code
     color: rgb(var(--v-theme-secondary))
-
-.richtext,
-.ql-editor
   p
     font-size: 10.5pt
     line-height: 1.5

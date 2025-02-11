@@ -43,10 +43,11 @@ export interface TagObject {
   value: string
 }
 
-type QuillToolbarGroup =
-  | string[]
-  | Record<string, number | string>[]
-  | Record<string, (string | number | false)[]>[]
+type QuillToolbarGroup = (
+  | string
+  | Record<string, number | string>
+  | Record<string, (string | number | false)[]>
+)[]
 
 export interface QuillOptions {
   bounds: string
