@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.29.2 (2025-02-11)
+
+- Bugfix: Support Quill list formats
+
 ## 0.29.1 (2025-01-23)
 
 - Allow displaying full proposal text on diff proposals
