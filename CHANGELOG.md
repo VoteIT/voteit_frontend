@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.29.3 (2025-02-18)
+
+- Bugfix: Disable keynav in speaker management when in user serach input field
+
 ## 0.29.2 (2025-02-11)
 
 - Bugfix: Support Quill list formats
