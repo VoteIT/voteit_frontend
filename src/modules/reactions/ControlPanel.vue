@@ -203,7 +203,7 @@ const model = reactive<Record<number, boolean>>({})
                     <v-list>
                       <QueryDialog
                         color="warning"
-                        :text="$t(('reaction.deleteButtonConfirmation')"
+                        :text="$t('reaction.deleteButtonConfirmation')"
                         @confirmed="deleteButton(button)"
                       >
                         <template #activator="{ props }">
