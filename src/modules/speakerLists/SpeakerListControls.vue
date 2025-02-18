@@ -149,7 +149,7 @@ onKeyStroke(
         ><v-icon icon="mdi-shuffle-variant"
       /></v-btn>
     </div>
-    <div class="d-flex" v-if="canManageSystem">
+    <div class="d-flex no-keynav" v-if="canManageSystem">
       <UserSearch
         :label="t('speaker.addByName')"
         :filter="userSearchFilter"
