@@ -303,10 +303,10 @@ watch(
       class="text-center text-secondary mt-12"
     >
       <h2 class="text-h4 mb-6">
-        {{ t('plenary.noProposalsInFilter') }}
+        {{ $t('plenary.noProposalsInFilter') }}
       </h2>
       <p>
-        {{ t('plenary.hintModifyFilter') }}
+        {{ $t('plenary.hintModifyFilter') }}
       </p>
     </v-col>
   </v-row>
@@ -381,7 +381,7 @@ watch(
           />
         </div>
         <template v-if="!suggestions.length">
-          {{ t('plenary.selectProposals') }}
+          {{ $t('plenary.selectProposals') }}
           <v-icon icon="mdi-chevron-right" />
         </template>
       </div>

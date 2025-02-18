@@ -10,12 +10,12 @@
           <div class="text-secondary">
             <Moment
               v-if="isOngoing && poll.started"
-              :prepend="t('poll.started')"
+              :prepend="$t('poll.started')"
               :date="poll.started"
             />
             <Moment
               v-else-if="isFinished && poll.closed"
-              :prepend="t('poll.finished')"
+              :prepend="$t('poll.finished')"
               :date="poll.closed"
             />
           </div>
@@ -38,7 +38,7 @@
       <template v-if="isFinished">
         <Dropdown
           v-if="approved.length"
-          :title="t('poll.numApproved', approved.length)"
+          :title="$t('poll.numApproved', approved.length)"
           class="mb-2"
         >
           <div class="proposals approved">
@@ -47,7 +47,7 @@
         </Dropdown>
         <Dropdown
           v-if="denied.length"
-          :title="t('poll.numDenied', denied.length)"
+          :title="$t('poll.numDenied', denied.length)"
           class="mb-2"
         >
           <div class="proposals denied">
@@ -81,11 +81,11 @@
         }}</span>
         <template #right>
           <span v-if="userVote" class="active"
-            >{{ t('poll.youHaveVoted') }}
+            >{{ $t('poll.youHaveVoted') }}
             <v-icon size="x-small" icon="mdi-check"
           /></span>
           <span v-else-if="canVote"
-            >{{ t('poll.youHaveNotVoted') }}
+            >{{ $t('poll.youHaveNotVoted') }}
             <v-icon size="x-small" icon="mdi-check"
           /></span>
         </template>
@@ -98,6 +98,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { slugify } from '@/utils'
 import Dropdown from '@/components/Dropdown.vue'
 import Moment from '@/components/Moment.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -107,7 +108,6 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import usePolls from '../polls/usePolls'
 import useMeeting from '../meetings/useMeeting'
 
-import { slugify } from '@/utils'
 import { pollType } from './contentTypes'
 import usePoll from './usePoll'
 import { Poll } from './types'

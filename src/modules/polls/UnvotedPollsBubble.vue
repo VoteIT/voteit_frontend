@@ -1,10 +1,10 @@
 <template>
   <div>
     <h2>
-      {{ t('poll.timeToVote') }}
+      {{ $t('poll.timeToVote') }}
     </h2>
     <p class="mb-2">
-      {{ t('poll.timeToVoteDescription', unvoted.length) }}
+      {{ $t('poll.timeToVoteDescription', unvoted.length) }}
     </p>
     <v-list>
       <v-list-item

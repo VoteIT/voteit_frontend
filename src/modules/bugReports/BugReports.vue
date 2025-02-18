@@ -46,7 +46,7 @@
             <template #buttons="{ disabled, submitting }">
               <div class="text-right">
                 <v-btn variant="text" @click="close" :disabled="submitting">
-                  {{ t('cancel') }}
+                  {{ $t('cancel') }}
                 </v-btn>
                 <v-btn
                   type="submit"
@@ -70,16 +70,15 @@
 import { ref } from 'vue'
 
 import SchemaForm from '@/components/SchemaForm.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import { FormSchema } from '@/components/types'
+
+import useMeetingId from '../meetings/useMeetingId'
 
 import { bugReportType } from './contentTypes'
 import { BugReport } from './types'
 import schema from './schema'
-import useMeetingId from '../meetings/useMeetingId'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import { useI18n } from 'vue-i18n'
-import { FormSchema } from '@/components/types'
 
-const { t } = useI18n()
 const meetingId = useMeetingId()
 
 const submitted = ref(false)

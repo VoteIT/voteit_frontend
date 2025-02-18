@@ -2,10 +2,10 @@
   <div>
     <p v-if="!result.winner">
       <!-- On deny win, there will be no winning proposals -->
-      {{ t('poll.schulze.allDenied') }}
+      {{ $t('poll.schulze.allDenied') }}
     </p>
     <p v-else>
-      {{ t('poll.schulze.numTiedWinners', tiedWinners.length) }}
+      {{ $t('poll.schulze.numTiedWinners', tiedWinners.length) }}
     </p>
     <p v-if="tiedWinners.length" class="my-2">
       <Tag
@@ -18,12 +18,12 @@
     </p>
     <template v-if="denyProposalWon">
       <h3 v-if="denyProposalWon || winningProposal" class="mt-8 mb-1">
-        {{ t('poll.winningProposal') }}
+        {{ $t('poll.winningProposal') }}
       </h3>
       <v-card
         v-if="denyProposalWon"
         color="warning"
-        :title="t('poll.deny')"
+        :title="$t('poll.deny')"
         class="mb-8"
       />
     </template>
@@ -35,7 +35,7 @@
     >
       <template #bottom-right>
         <v-btn color="success" prepend-icon="mdi-thumb-up">
-          {{ t('poll.winningProposal') }}
+          {{ $t('poll.winningProposal') }}
         </v-btn>
       </template>
     </Proposal>
@@ -56,20 +56,20 @@
           :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0}`"
           class="my-2"
         >
-          {{ t('poll.result.versus') }}:
+          {{ $t('poll.result.versus') }}:
           <Tag v-if="pair.proposal" disabled :name="pair.proposal.prop_id" />
           <span v-else class="rounded bg-warning px-2">{{
             t('poll.deny')
           }}</span>
           <div class="d-flex justify-space-between mt-2">
             <span class="bg-success px-2 rounded-pill"
-              >{{ t('poll.result.approveThis') }} ({{ pair.approve }})</span
+              >{{ $t('poll.result.approveThis') }} ({{ pair.approve }})</span
             >
             <span class="bg-secondary px-2 rounded-pill"
-              >{{ t('poll.result.tie') }} ({{ pair.tie }})</span
+              >{{ $t('poll.result.tie') }} ({{ pair.tie }})</span
             >
             <span class="bg-warning px-2 rounded-pill"
-              >{{ t('poll.result.approveOther') }} ({{ pair.deny }})</span
+              >{{ $t('poll.result.approveOther') }} ({{ pair.deny }})</span
             >
           </div>
           <div class="d-flex mt-1 overflow-hidden rounded">
@@ -90,15 +90,15 @@
 </template>
 
 <script setup lang="ts">
+import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
 import useProposals from '@/modules/proposals/useProposals'
 
-import { ThemeColor } from '@/utils/types'
 import { SchulzeResult } from './types'
-import { orderBy } from 'lodash'
 
 const props = defineProps<{
   abstainCount: number

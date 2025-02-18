@@ -5,14 +5,14 @@
     <v-container>
       <v-row id="join-meeting" v-if="meeting">
         <v-col v-bind="cols.default">
-          <h1>{{ t('join.meetingTitle', { ...meeting }) }}</h1>
+          <h1>{{ $t('join.meetingTitle', { ...meeting }) }}</h1>
           <div
             class="btn-controls"
             v-if="canBecomeModeratorMeeting"
             @click="joinAsModerator()"
           >
             <v-btn color="warning" prepend-icon="mdi-gavel">
-              {{ t('join.asModerator') }}
+              {{ $t('join.asModerator') }}
             </v-btn>
           </div>
           <div class="btn-controls" v-else-if="policyComponents.length">
@@ -24,7 +24,7 @@
             />
           </div>
           <p v-else>
-            <em>{{ t('join.noAccess') }}</em>
+            <em>{{ $t('join.noAccess') }}</em>
           </p>
         </v-col>
       </v-row>
@@ -37,21 +37,21 @@ import { computed, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
+import AppBar from '@/components/AppBar.vue'
+import UserMenu from '@/components/UserMenu.vue'
 import useLoader from '@/composables/useLoader'
 import { user } from '@/composables/useAuthentication'
 import useDefaults from '@/composables/useDefaults'
-
-import accessPolicies from '@/modules/meetings/accessPolicies'
-import { accessPolicyType, meetingType } from '@/modules/meetings/contentTypes'
 import { AccessPolicy } from '@/contentTypes/types'
-import { dialogQuery } from '@/utils'
-import { ThemeColor } from '@/utils/types'
+
+import accessPolicies from './accessPolicies'
+import { accessPolicyType, meetingType } from './contentTypes'
 import { MeetingRole } from './types'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 import { canBecomeModerator } from './rules'
-import AppBar from '@/components/AppBar.vue'
-import UserMenu from '@/components/UserMenu.vue'
 
 const { t } = useI18n()
 const { meetingId, meetingRoute } = useMeeting()

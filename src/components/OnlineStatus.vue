@@ -9,7 +9,7 @@
     <span class="mx-4">{{ displayText }}</span>
     <v-progress-circular v-if="isConnecting" size="small" indeterminate />
     <v-btn v-if="retryBtn" v-bind="retryBtn">
-      {{ t('tryAgain') }}
+      {{ $t('tryAgain') }}
     </v-btn>
     <v-spacer />
     <v-btn

@@ -92,7 +92,7 @@ const enterLeaveButton = computed(() => {
     <div class="d-sm-flex">
       <div class="flex-grow-1">
         <h2 class="mb-2 flex-grow-1">
-          <small>{{ t('speaker.list') }}</small
+          <small>{{ $t('speaker.list') }}</small
           ><br />
           {{ list.title }}
         </h2>
@@ -103,7 +103,7 @@ const enterLeaveButton = computed(() => {
       </v-fade-transition>
     </div>
     <p v-if="!speaking && !queue?.length" class="text-secondary">
-      {{ t('speaker.queueEmpty') }}
+      {{ $t('speaker.queueEmpty') }}
     </p>
     <v-list bg-color="background">
       <v-slide-x-transition group>
@@ -131,10 +131,10 @@ const enterLeaveButton = computed(() => {
     </v-list>
   </div>
   <h2 v-else>
-    <small>{{ t('speaker.list') }}</small
+    <small>{{ $t('speaker.list') }}</small
     ><br />
     <em>
-      {{ t('speaker.noActiveList') }}
+      {{ $t('speaker.noActiveList') }}
     </em>
   </h2>
 </template>

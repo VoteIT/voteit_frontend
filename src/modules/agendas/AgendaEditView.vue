@@ -204,15 +204,15 @@ function tagFilter(tags: string | string[], query: string) {
 </script>
 
 <template>
-  <MeetingToolbar :title="t('agenda.agenda')">
+  <MeetingToolbar :title="$t('agenda.agenda')">
     <v-spacer />
-    <DefaultDialog :title="t('agenda.ordering')">
+    <DefaultDialog :title="$t('agenda.ordering')">
       <template #activator="{ props }">
         <v-btn
           v-bind="props"
           color="primary"
           prepend-icon="mdi-reorder-horizontal"
-          :text="t('agenda.ordering')"
+          :text="$t('agenda.ordering')"
           variant="elevated"
         />
       </template>
@@ -240,13 +240,13 @@ function tagFilter(tags: string | string[], query: string) {
       prepend-icon="mdi-close"
       color="warning"
     >
-      {{ t('clear') }}
+      {{ $t('clear') }}
     </v-chip>
   </div>
   <v-select
     v-else
     v-model="agendaTag"
-    :label="t('agenda.filterOnTag')"
+    :label="$t('agenda.filterOnTag')"
     :items="agendaTags"
     hide-details
     clearable
@@ -257,15 +257,15 @@ function tagFilter(tags: string | string[], query: string) {
   />
   <v-data-table
     :headers="[
-      { title: t('state'), key: 'state' },
-      { title: t('title'), key: 'title' },
+      { title: $t('state'), key: 'state' },
+      { title: $t('title'), key: 'title' },
       {
-        title: t('tags'),
+        title: $t('tags'),
         key: 'tags',
         sortable: false
       },
-      { title: t('proposal.proposals'), key: 'block_proposals' },
-      { title: t('discussion.discussions'), key: 'block_discussion' },
+      { title: $t('proposal.proposals'), key: 'block_proposals' },
+      { title: $t('discussion.discussions'), key: 'block_discussion' },
       { title: '', key: 'pk', sortable: false, align: 'end' }
     ]"
     show-select
@@ -276,13 +276,13 @@ function tagFilter(tags: string | string[], query: string) {
     :filter-keys="['tags']"
     :items="agenda"
     :items-per-page="25"
-    :page-text="t('content.pageText')"
-    :items-per-page-text="t('content.itemsPerPageText')"
+    :page-text="$t('content.pageText')"
+    :items-per-page-text="$t('content.itemsPerPageText')"
     class="mb-2"
   >
     <template #no-data>
       <em class="text-secondary">
-        {{ t('agenda.editNoItems') }}
+        {{ $t('agenda.editNoItems') }}
       </em>
     </template>
     <template #item.state="{ value }">
@@ -298,10 +298,10 @@ function tagFilter(tags: string | string[], query: string) {
       />
     </template>
     <template #header.tags>
-      <v-tooltip :text="t('agenda.helpEditTags')" location="top">
+      <v-tooltip :text="$t('agenda.helpEditTags')" location="top">
         <template #activator="{ props }">
           <span v-bind="props" class="text-no-wrap">
-            {{ t('tags') }} <v-icon icon="mdi-help-circle" />
+            {{ $t('tags') }} <v-icon icon="mdi-help-circle" />
           </span>
         </template>
       </v-tooltip>
@@ -341,7 +341,7 @@ function tagFilter(tags: string | string[], query: string) {
       <QueryDialog
         v-if="canDeleteAgendaItem(item)"
         color="warning"
-        :text="t('agenda.deleteItemConfirm')"
+        :text="$t('agenda.deleteItemConfirm')"
         @confirmed="agendaApi.delete(value)"
       >
         <template #activator="{ props }">
@@ -351,7 +351,7 @@ function tagFilter(tags: string | string[], query: string) {
             size="small"
             v-bind="props"
           >
-            {{ t('content.delete') }}
+            {{ $t('content.delete') }}
           </v-btn>
         </template>
       </QueryDialog>
@@ -365,11 +365,11 @@ function tagFilter(tags: string | string[], query: string) {
       class="pa-4 d-flex flex-column ga-2"
     >
       <h2>
-        {{ t('agenda.changeMany', selectedAgendaItems.length) }}
+        {{ $t('agenda.changeMany', selectedAgendaItems.length) }}
       </h2>
       <div>
         <QueryDialog
-          :text="t('agenda.deleteSelectedConfirm', editSelected.length)"
+          :text="$t('agenda.deleteSelectedConfirm', editSelected.length)"
           color="warning"
           @confirmed="deleteSelected"
         >
@@ -380,7 +380,7 @@ function tagFilter(tags: string | string[], query: string) {
               prepend-icon="mdi-delete"
               v-bind="props"
             >
-              {{ t('content.delete') }}
+              {{ $t('content.delete') }}
             </v-btn>
           </template>
         </QueryDialog>
@@ -435,7 +435,7 @@ function tagFilter(tags: string | string[], query: string) {
           v-model="bulkTags"
           :items="agendaTags"
           hide-details
-          :label="t('tags')"
+          :label="$t('tags')"
           multiple
           variant="outlined"
         >
@@ -452,10 +452,10 @@ function tagFilter(tags: string | string[], query: string) {
     </v-sheet>
   </v-expand-transition>
   <v-divider class="mt-6 mb-2" />
-  <h2 class="mb-2">{{ t('agenda.newItem') }}</h2>
+  <h2 class="mb-2">{{ $t('agenda.newItem') }}</h2>
   <form @submit.prevent="addAgendaItem" id="agenda-add-form" class="d-flex">
     <v-text-field
-      :label="t('title')"
+      :label="$t('title')"
       required
       maxlength="100"
       v-model="newAgendaTitle"
@@ -469,7 +469,7 @@ function tagFilter(tags: string | string[], query: string) {
       :disabled="!newAgendaTitle"
       class="rounded-s-0"
       color="primary"
-      >{{ t('add') }}</v-btn
+      >{{ $t('add') }}</v-btn
     >
   </form>
 </template>

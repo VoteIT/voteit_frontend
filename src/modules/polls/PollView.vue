@@ -22,7 +22,7 @@
               }}
             </p>
             <p v-if="agendaItem && agendaItemRoute">
-              {{ t('agenda.item') }}:
+              {{ $t('agenda.item') }}:
               <router-link :to="agendaItemRoute">
                 {{ agendaItem.title }}
               </router-link>
@@ -33,8 +33,8 @@
                   <span v-bind="props">
                     {{
                       erPreliminary
-                        ? t('electoralRegister.preliminary')
-                        : t('electoralRegister.electoralRegister')
+                        ? $t('electoralRegister.preliminary')
+                        : $t('electoralRegister.electoralRegister')
                     }}:
                     <span class="text-secondary">
                       {{
@@ -57,7 +57,7 @@
         <div v-if="poll.body" v-html="poll.body"></div>
         <template v-if="isOngoing">
           <v-alert type="success" v-if="votingComplete" class="my-6">
-            {{ t('poll.voteAddedInfo') }}
+            {{ $t('poll.voteAddedInfo') }}
           </v-alert>
           <v-alert type="info" v-else class="my-6">
             {{ pollHelpText }}
@@ -81,7 +81,7 @@
           :total="voteCount.total"
         />
         <h3>
-          {{ t('poll.result.method', { method: pollMethodName }) }}
+          {{ $t('poll.result.method', { method: pollMethodName }) }}
         </h3>
         <component
           v-if="resultComponent"
@@ -93,7 +93,7 @@
         />
         <div v-else class="mt-4">
           <h2>
-            {{ t('poll.numApproved', approved.length) }}
+            {{ $t('poll.numApproved', approved.length) }}
           </h2>
           <Proposal
             v-for="proposal in approved"
@@ -102,7 +102,7 @@
             readOnly
             :p="proposal"
           />
-          <Dropdown :title="t('poll.numDenied', approved.length)">
+          <Dropdown :title="$t('poll.numDenied', approved.length)">
             <Proposal
               v-for="proposal in denied"
               :key="proposal.pk"
@@ -116,10 +116,10 @@
       <div v-else-if="isPrivateOrUpcoming">
         <v-divider class="my-3" />
         <h2>
-          {{ t('poll.ballot') }}
+          {{ $t('poll.ballot') }}
         </h2>
         <p class="text-secondary mb-4">
-          {{ t('proposal.ordering') }}: {{ proposalOrderingTitle }}
+          {{ $t('proposal.ordering') }}: {{ proposalOrderingTitle }}
         </p>
         <component
           :is="voteComponent"
@@ -148,7 +148,7 @@
             @click="castVote"
             prepend-icon="mdi-vote"
           >
-            {{ t('poll.vote') }}
+            {{ $t('poll.vote') }}
           </v-btn>
           <v-btn
             color="warning"
@@ -156,7 +156,7 @@
             @click="abstainVote"
             prepend-icon="mdi-cancel"
           >
-            {{ t('poll.abstain') }}
+            {{ $t('poll.abstain') }}
           </v-btn>
         </div>
       </template>
@@ -171,7 +171,7 @@
         </v-btn>
         <DefaultDialog
           v-if="isFinished && isPollVoter"
-          :title="t('poll.yourVote')"
+          :title="$t('poll.yourVote')"
         >
           <template #activator="{ props }">
             <v-btn
@@ -179,15 +179,15 @@
               color="secondary mb-1"
               prepend-icon="mdi-vote"
             >
-              {{ t('poll.showVote') }}
+              {{ $t('poll.showVote') }}
             </v-btn>
           </template>
           <template v-slot="{ close }">
             <p v-if="!userVote">
-              {{ t('poll.didNotVote') }}
+              {{ $t('poll.didNotVote') }}
             </p>
             <p v-else-if="userVote.abstain">
-              {{ t('poll.abstained') }}
+              {{ $t('poll.abstained') }}
             </p>
             <component
               v-else
@@ -201,7 +201,7 @@
             <v-spacer />
             <div class="text-right">
               <v-btn color="primary" @click="close">
-                {{ t('close') }}
+                {{ $t('close') }}
               </v-btn>
             </div>
           </template>

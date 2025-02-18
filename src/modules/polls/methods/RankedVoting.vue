@@ -32,7 +32,7 @@
               size="small"
               @click="toggleSelected(p)"
             >
-              {{ t('poll.rankingSelectedAs') }}
+              {{ $t('poll.rankingSelectedAs') }}
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>
           </div>
@@ -44,7 +44,7 @@
               size="small"
               @click="toggleSelected(p)"
             >
-              {{ t('clear') }}
+              {{ $t('clear') }}
             </v-btn>
           </div>
         </div>
@@ -55,7 +55,7 @@
               color="primary"
               @click="toggleSelected(p)"
             >
-              {{ t('poll.rankingSelectAs') }}
+              {{ $t('poll.rankingSelectAs') }}
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>
           </div>
@@ -72,10 +72,10 @@ import { useI18n } from 'vue-i18n'
 
 import { getProposals } from '@/modules/proposals/useProposals'
 import type { Proposal } from '@/modules/proposals/types'
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 import { Poll } from '../types'
 import { RankedVote, isRepeatedIRVPoll } from './types'
-import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 const props = defineProps<{
   disabled?: boolean

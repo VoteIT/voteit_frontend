@@ -1,11 +1,11 @@
 <template>
   <MeetingToolbar>
     <v-toolbar-title>
-      {{ t('electoralRegister.plural') }}
+      {{ $t('electoralRegister.plural') }}
     </v-toolbar-title>
     <DefaultDialog
       v-if="canTriggerERCreation"
-      :title="t('electoralRegister.establish')"
+      :title="$t('electoralRegister.establish')"
       @open="triggerERCreation"
     >
       <template #activator="{ props }">
@@ -15,7 +15,7 @@
           variant="tonal"
           prepend-icon="mdi-star-check"
         >
-          {{ t('electoralRegister.establish') }}
+          {{ $t('electoralRegister.establish') }}
         </v-btn>
       </template>
       <template #default="{ close }">
@@ -37,14 +37,14 @@
             @click="close"
             prepend-icon="mdi-close"
           >
-            {{ t('close') }}
+            {{ $t('close') }}
           </v-btn>
         </div>
       </template>
     </DefaultDialog>
     <DefaultDialog
       v-if="erMethodAllowsManual && isModerator && isActiveMeeting"
-      :title="t('electoralRegister.createManual')"
+      :title="$t('electoralRegister.createManual')"
       @open="fetchRoles"
     >
       <template #activator="{ props }">
@@ -53,18 +53,18 @@
           variant="tonal"
           prepend-icon="mdi-book-open-variant"
         >
-          {{ t('electoralRegister.createManual') }}
+          {{ $t('electoralRegister.createManual') }}
         </v-btn>
       </template>
       <template #default="{ close }">
         <v-alert
           type="info"
           class="my-2"
-          :text="t('electoralRegister.createHelp')"
+          :text="$t('electoralRegister.createHelp')"
         />
         <div>
           <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
-          <v-chip>{{ t('selectedCount', createSelection.size) }}</v-chip>
+          <v-chip>{{ $t('selectedCount', createSelection.size) }}</v-chip>
         </div>
         <UserList
           multiple
@@ -80,7 +80,7 @@
                 class="er-weight"
                 density="compact"
                 hide-details
-                :label="t('electoralRegister.weight')"
+                :label="$t('electoralRegister.weight')"
                 required
                 :min="minWeight"
                 :model-value="createSelection.get(user)"
@@ -97,7 +97,7 @@
         </UserList>
         <div class="text-right">
           <v-btn variant="text" @click="close">
-            {{ t('cancel') }}
+            {{ $t('cancel') }}
           </v-btn>
           <v-btn
             prepend-icon="mdi-account-plus"
@@ -105,7 +105,7 @@
             @click="createRegister().then(close)"
             :disabled="createSelection.size === 0"
           >
-            {{ t('create') }}
+            {{ $t('create') }}
           </v-btn>
         </div>
       </template>
@@ -125,7 +125,7 @@
         </p>
         <p v-if="!registers.length" class="text-secondary my-4">
           <em>
-            {{ t('electoralRegister.none') }}
+            {{ $t('electoralRegister.none') }}
           </em>
         </p>
         <v-expansion-panels class="mt-3">
@@ -141,7 +141,7 @@
           >
             <v-expansion-panel-title class="d-flex">
               <span class="text-left mr-2" style="min-width: 92px">
-                {{ t('electoralRegister.voterCount', weights.length) }}
+                {{ $t('electoralRegister.voterCount', weights.length) }}
               </span>
               <small class="text-secondary flex-grow-1">
                 <span v-if="source">
@@ -164,7 +164,7 @@
                       color="primary"
                       variant="tonal"
                     >
-                      {{ t('download') }}
+                      {{ $t('download') }}
                     </v-btn>
                   </template>
                   <v-list>
@@ -188,14 +188,14 @@
               <UserList :userIds="weights.map((v) => v.user)">
                 <template #appendItem="{ user }" v-if="hasWeightedVotes">
                   <v-chip>
-                    {{ t('electoralRegister.weight') }}:
+                    {{ $t('electoralRegister.weight') }}:
                     {{ weights.find((w) => w.user === user)?.weight }}
                   </v-chip>
                 </template>
               </UserList>
             </v-expansion-panel-text>
             <v-expansion-panel-text v-else class="pt-2 text-center">
-              <em> - {{ t('electoralRegister.empty') }} - </em>
+              <em> - {{ $t('electoralRegister.empty') }} - </em>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>

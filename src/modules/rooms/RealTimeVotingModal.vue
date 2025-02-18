@@ -166,7 +166,7 @@ watch(isOpen, (value) => {
             >
               <template v-if="typeof poll === 'string'">
                 <p class="text-center text-secondary mt-8">
-                  {{ t('poll.workflow.closed', latestFinishedPolls.length) }}
+                  {{ $t('poll.workflow.closed', latestFinishedPolls.length) }}
                 </p>
                 <v-divider class="mb-3" />
               </template>
@@ -194,8 +194,8 @@ watch(isOpen, (value) => {
                 >
                   {{
                     poll.hasVoted
-                      ? t('poll.youHaveVoted')
-                      : t('poll.youHaveNotVoted')
+                      ? $t('poll.youHaveVoted')
+                      : $t('poll.youHaveNotVoted')
                   }}
                   <v-icon
                     class="mt-n1"
@@ -219,7 +219,7 @@ watch(isOpen, (value) => {
             "
             block
             class="mt-n2"
-            :text="t('poll.showAll')"
+            :text="$t('poll.showAll')"
             size="small"
             prepend-icon="mdi-chevron-down"
             variant="text"
@@ -237,7 +237,7 @@ watch(isOpen, (value) => {
             />
             <div class="flex-grow-1">
               <h2>
-                {{ poll?.title ?? t('poll.vote') }}
+                {{ poll?.title ?? $t('poll.vote') }}
               </h2>
               <p class="text-secondary">
                 {{
@@ -248,7 +248,7 @@ watch(isOpen, (value) => {
                 }}
               </p>
               <p v-if="isOngoing && !canVote" class="mt-3">
-                <span class="header-tag">{{ t('poll.cantVote') }}</span>
+                <span class="header-tag">{{ $t('poll.cantVote') }}</span>
               </p>
             </div>
             <v-btn
@@ -270,7 +270,7 @@ watch(isOpen, (value) => {
               :total="voteCount.total"
             />
             <h3>
-              {{ t('poll.result.method', { method: pollMethodName }) }}
+              {{ $t('poll.result.method', { method: pollMethodName }) }}
             </h3>
             <component
               :is="resultComponent"
@@ -293,7 +293,7 @@ watch(isOpen, (value) => {
               <template v-else-if="userVote">
                 <PollProgress class="mb-8" :poll-status="pollStatus" />
                 <v-alert
-                  :text="t('poll.voteAddedInfo')"
+                  :text="$t('poll.voteAddedInfo')"
                   icon="mdi-check-circle"
                   class="mb-4"
                   color="success"
@@ -305,21 +305,21 @@ watch(isOpen, (value) => {
                   class="mr-1"
                   color="secondary"
                   prepend-icon="mdi-vote"
-                  :text="t('poll.viewAndChangeVote')"
+                  :text="$t('poll.viewAndChangeVote')"
                   @click="changeVote = true"
                 />
                 <v-btn
                   v-if="nextUnvoted"
                   color="primary"
                   prepend-icon="mdi-star"
-                  :text="t('poll.nextUnvoted', { ...nextUnvoted })"
+                  :text="$t('poll.nextUnvoted', { ...nextUnvoted })"
                   @click="selectedPollId = nextUnvoted.pk"
                 />
               </div>
             </template>
             <template v-else>
               <PollProgress class="mb-8" :poll-status="pollStatus" />
-              <Dropdown :title="t('poll.showBallot')">
+              <Dropdown :title="$t('poll.showBallot')">
                 <PollBallot
                   disabled
                   :key="poll.pk"

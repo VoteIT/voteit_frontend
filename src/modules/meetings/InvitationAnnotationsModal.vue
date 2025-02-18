@@ -91,7 +91,7 @@ function getSum(result: AnnotationProgress) {
 <template>
   <template v-if="annotationForm.submitting">
     <p class="mb-3">
-      {{ t('invites.annotate.working') }}
+      {{ $t('invites.annotate.working') }}
     </p>
     <v-progress-linear
       :max="annotationForm.expected"
@@ -112,7 +112,7 @@ function getSum(result: AnnotationProgress) {
   </template>
   <template v-else-if="annotationForm.results.length">
     <p class="mb-3">
-      {{ t('invites.annotate.done') }}
+      {{ $t('invites.annotate.done') }}
     </p>
     <v-table>
       <thead>
@@ -136,14 +136,14 @@ function getSum(result: AnnotationProgress) {
     </v-table>
     <div class="text-right">
       <v-btn @click="$emit('close')" color="primary">
-        {{ t('close') }}
+        {{ $t('close') }}
       </v-btn>
     </div>
   </template>
   <template v-else>
-    <v-alert type="info" :title="t('invites.annotate.helpTitle')" class="mb-3">
+    <v-alert type="info" :title="$t('invites.annotate.helpTitle')" class="mb-3">
       <p class="mb-3">
-        {{ t('invites.annotate.helpText') }}
+        {{ $t('invites.annotate.helpText') }}
       </p>
       <v-table density="compact">
         <thead>
@@ -161,7 +161,7 @@ function getSum(result: AnnotationProgress) {
             >
               <DefaultDialog
                 v-if="possibleValues"
-                :title="t('invites.annotate.possibleValuesFor', { name })"
+                :title="$t('invites.annotate.possibleValuesFor', { name })"
               >
                 <template #activator="{ props }">
                   <v-btn
@@ -175,8 +175,8 @@ function getSum(result: AnnotationProgress) {
                   <v-table>
                     <thead>
                       <tr>
-                        <th>{{ t('value') }}</th>
-                        <th>{{ t('description') }}</th>
+                        <th>{{ $t('value') }}</th>
+                        <th>{{ $t('description') }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -193,7 +193,7 @@ function getSum(result: AnnotationProgress) {
                   </v-table>
                   <div class="text-right">
                     <v-btn variant="elevated" color="primary" @click="close">
-                      {{ t('close') }}
+                      {{ $t('close') }}
                     </v-btn>
                   </div>
                 </template>
@@ -225,7 +225,7 @@ function getSum(result: AnnotationProgress) {
       />
       <div class="text-right">
         <v-btn @click="$emit('close')" variant="text">
-          {{ t('cancel') }}
+          {{ $t('cancel') }}
         </v-btn>
         <v-btn
           type="submit"
@@ -235,7 +235,7 @@ function getSum(result: AnnotationProgress) {
           :disabled="!annotationForm.valid || annotationForm.submitting"
           variant="elevated"
         >
-          {{ t('add') }}
+          {{ $t('add') }}
         </v-btn>
       </div>
     </v-form>

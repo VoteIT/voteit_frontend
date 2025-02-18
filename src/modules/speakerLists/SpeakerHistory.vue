@@ -84,7 +84,7 @@ const annotatedHistory = computed(
             color="primary"
             :disabled="!annotatedHistory?.length"
           >
-            {{ t('download') }}
+            {{ $t('download') }}
           </v-btn>
         </template>
         <v-list>
@@ -105,13 +105,13 @@ const annotatedHistory = computed(
       <thead>
         <tr>
           <th>
-            {{ t('name') }}
+            {{ $t('name') }}
           </th>
           <th>
-            {{ t('speaker.timesSpoken', totalTimes) }}
+            {{ $t('speaker.timesSpoken', totalTimes) }}
           </th>
           <th>
-            {{ t('speaker.timeSpoken', { time: totalTime }) }}
+            {{ $t('speaker.timeSpoken', { time: totalTime }) }}
           </th>
         </tr>
       </thead>

@@ -40,11 +40,11 @@ import { useI18n } from 'vue-i18n'
 
 import DefaultMap from '@/utils/DefaultMap'
 import type { Proposal } from '@/modules/proposals/types'
+import VoteProposal from '@/modules/proposals/VoteProposal.vue'
+import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
 
 import { SimpleVote, SimpleChoice, SimpleChoiceDesc, SimplePoll } from './types'
 import { simpleChoices } from './simple'
-import VoteProposal from '@/modules/proposals/VoteProposal.vue'
-import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
 
 const props = defineProps<{
   disabled?: boolean

@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-
 import useMeetingId from './useMeetingId'
 import { setFakeRoles } from './rules'
 
-const { t } = useI18n()
 const meetingId = useMeetingId()
 </script>
 
 <template>
   <div class="container">
     <h2>
-      {{ t('admin.testMode') }}
+      {{ $t('admin.testMode') }}
     </h2>
     <p class="mb-3">
-      {{ t('admin.testModeActive') }}
+      {{ $t('admin.testModeActive') }}
     </p>
     <v-btn @click="setFakeRoles(meetingId)" color="primary" block>
-      {{ t('reset') }}
+      {{ $t('reset') }}
     </v-btn>
   </div>
 </template>

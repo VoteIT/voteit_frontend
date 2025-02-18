@@ -87,13 +87,13 @@ onBeforeMount(updateContactInfo)
       @click="updateContactInfo"
       prepend-icon="mdi-autorenew"
     >
-      {{ t('tryAgain') }}
+      {{ $t('tryAgain') }}
     </v-btn>
   </div>
   <div v-else>
     <v-alert
       :type="requiresCheck ? 'warning' : 'info'"
-      :text="t('home.contactInfo.help')"
+      :text="$t('home.contactInfo.help')"
       class="my-3"
     />
     <SchemaForm
@@ -105,7 +105,7 @@ onBeforeMount(updateContactInfo)
       <template #buttons="{ disabled, submitting }">
         <div class="d-flex">
           <p v-if="contactInfoModified" class="text-secondary">
-            {{ t('home.contactInfo.modified') }}
+            {{ $t('home.contactInfo.modified') }}
           </p>
           <v-spacer />
           <v-btn
@@ -114,7 +114,7 @@ onBeforeMount(updateContactInfo)
             :loading="submitting"
             :disabled="disabled"
           >
-            {{ t('save') }}
+            {{ $t('save') }}
           </v-btn>
         </div>
       </template>

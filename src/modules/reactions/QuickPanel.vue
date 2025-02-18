@@ -1,6 +1,6 @@
 <template>
   <v-card-text>
-    {{ t('reaction.buttonCount', meetingButtons.length) }}
+    {{ $t('reaction.buttonCount', meetingButtons.length) }}
   </v-card-text>
   <v-card-actions v-if="meetingButtons.length">
     <template v-for="button in meetingButtons" :key="button.pk">
@@ -29,7 +29,6 @@
 
 <script lang="ts" setup>
 import { computed, reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
 import UserList from '@/components/UserList.vue'
@@ -40,8 +39,6 @@ import RealReactionButton from './RealReactionButton.vue'
 import useReactions from './useReactions'
 import FlagButton from './FlagButton.vue'
 import { isFlagButton } from './types'
-
-const { t } = useI18n()
 
 const reactions = useReactions()
 const meetingId = useMeetingId()

@@ -78,7 +78,6 @@ const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
 provide(agendaIdKey, agendaId)
 
-// eslint-disable-next-line vue/return-in-computed-property
 const tProposalBlockReason = computed(() => {
   switch (proposalBlockReason.value) {
     case 'blocked':
@@ -316,15 +315,15 @@ const { collapsedBodyHeight } = useDefaults()
           <TagEdit
             v-model="content.tags"
             class="mb-2"
-            :label="t('agenda.tagEditInfo')"
+            :label="$t('agenda.tagEditInfo')"
           />
           <div class="text-right">
-            <v-btn variant="text" :text="t('cancel')" @click="cancelEdit" />
+            <v-btn variant="text" :text="$t('cancel')" @click="cancelEdit" />
             <v-btn
               color="primary"
               :disabled="!editingModified"
               :loading="submitting"
-              :text="t('save')"
+              :text="$t('save')"
               @click="submit"
             />
           </div>
@@ -352,7 +351,7 @@ const { collapsedBodyHeight } = useDefaults()
       <v-col cols="12" lg="4">
         <Dropdown
           v-if="pollCount || canAddPoll"
-          :title="t('poll.pollCount', pollCount)"
+          :title="$t('poll.pollCount', pollCount)"
           modelValue
         >
           <template #actions>
@@ -384,7 +383,7 @@ const { collapsedBodyHeight } = useDefaults()
                 color="primary"
                 v-bind="props"
               >
-                {{ t('proposal.add') }}
+                {{ $t('proposal.add') }}
               </v-btn>
             </slot>
           </template>
@@ -397,7 +396,7 @@ const { collapsedBodyHeight } = useDefaults()
               color="primary"
               variant="tonal"
             >
-              {{ t('proposal.add') }}
+              {{ $t('proposal.add') }}
             </v-btn>
           </template>
         </v-tooltip>
@@ -408,7 +407,7 @@ const { collapsedBodyHeight } = useDefaults()
     <v-row :key="`agenda-content-${agendaId}`">
       <v-col cols="12" md="7" class="agenda-proposals">
         <h2 class="mb-2">
-          {{ t('proposal.proposals') }}
+          {{ $t('proposal.proposals') }}
         </h2>
         <v-alert
           type="info"
@@ -416,7 +415,7 @@ const { collapsedBodyHeight } = useDefaults()
           v-if="!hasProposals"
           class="mb-2"
         >
-          {{ t('agenda.helpNoProposals') }}
+          {{ $t('agenda.helpNoProposals') }}
         </v-alert>
         <v-alert
           type="info"
@@ -424,7 +423,7 @@ const { collapsedBodyHeight } = useDefaults()
           v-else-if="filterTag"
           class="mb-2"
         >
-          {{ t('agenda.filteringOnTag') }}
+          {{ $t('agenda.filteringOnTag') }}
           <Tag :name="filterTag" disabled class="ml-2" />
           <template #append>
             <v-btn
@@ -432,7 +431,7 @@ const { collapsedBodyHeight } = useDefaults()
               @click="clearFilters"
               prepend-icon="mdi-undo-variant"
             >
-              {{ t('defaultFilters') }}
+              {{ $t('defaultFilters') }}
             </v-btn>
           </template>
         </v-alert>
@@ -442,7 +441,7 @@ const { collapsedBodyHeight } = useDefaults()
           v-else-if="hasProposals && !sortedProposals.length"
           class="mb-2"
         >
-          {{ t('agenda.helpNoProposalsInFilter') }}
+          {{ $t('agenda.helpNoProposalsInFilter') }}
           <template #append>
             <v-btn
               size="small"
@@ -450,7 +449,7 @@ const { collapsedBodyHeight } = useDefaults()
               @click="clearFilters"
               prepend-icon="mdi-undo-variant"
             >
-              {{ t('defaultFilters') }}
+              {{ $t('defaultFilters') }}
             </v-btn>
           </template>
         </v-alert>
@@ -458,14 +457,14 @@ const { collapsedBodyHeight } = useDefaults()
         <Dropdown
           class="mt-8"
           v-if="hiddenProposals.length"
-          :title="t('agenda.hiddenProposals', hiddenProposals.length)"
+          :title="$t('agenda.hiddenProposals', hiddenProposals.length)"
         >
           <AgendaProposals :proposals="hiddenProposals" />
         </Dropdown>
       </v-col>
       <v-col cols="12" md="5" class="agenda-discussions">
         <h2 class="mb-2">
-          {{ t('discussion.discussions') }}
+          {{ $t('discussion.discussions') }}
         </h2>
         <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
         <Comments :comments="sortedDiscussions" />

@@ -119,17 +119,17 @@ const canSwitchUser = computed(() => {
       <v-divider v-if="$slots.prependProfile" class="my-3" />
       <slot name="prependProfile"></slot>
       <v-divider class="my-3" />
-      <DefaultDialog :title="t('profile.changeUserid')">
+      <DefaultDialog :title="$t('profile.changeUserid')">
         <template #activator="{ props }">
           <v-list-item
             prepend-icon="mdi-account"
-            :title="t('profile.profile')"
+            :title="$t('profile.profile')"
             v-bind="props"
           />
         </template>
         <template v-slot="{ close }">
           <v-alert
-            :text="t('profile.editProfileHelp')"
+            :text="$t('profile.editProfileHelp')"
             type="info"
             class="my-4"
           />
@@ -144,7 +144,7 @@ const canSwitchUser = computed(() => {
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
                   <v-btn variant="text" @click="close">
-                    {{ t('cancel') }}
+                    {{ $t('cancel') }}
                   </v-btn>
                   <v-btn
                     color="primary"
@@ -153,7 +153,7 @@ const canSwitchUser = computed(() => {
                     :loading="submitting"
                     :disabled="disabled"
                   >
-                    {{ t('save') }}
+                    {{ $t('save') }}
                   </v-btn>
                 </div>
               </template>
@@ -164,11 +164,11 @@ const canSwitchUser = computed(() => {
           </v-defaults-provider>
         </template>
       </DefaultDialog>
-      <DefaultDialog v-if="canSwitchUser" :title="t('profile.switchUser')">
+      <DefaultDialog v-if="canSwitchUser" :title="$t('profile.switchUser')">
         <template #activator="{ props }">
           <v-list-item
             prepend-icon="mdi-account-switch"
-            :title="t('profile.switchUser')"
+            :title="$t('profile.switchUser')"
             v-bind="props"
           />
         </template>
@@ -192,17 +192,17 @@ const canSwitchUser = computed(() => {
           </v-list-item>
         </v-list>
       </DefaultDialog>
-      <DefaultDialog :title="t('language.choose')">
+      <DefaultDialog :title="$t('language.choose')">
         <template #activator="{ props }">
           <v-list-item
             prepend-icon="mdi-translate"
-            :title="t('language.choose')"
+            :title="$t('language.choose')"
             v-bind="props"
           />
         </template>
         <template #default="{ close }">
           <p class="my-2">
-            {{ t('language.disclaimer') }}
+            {{ $t('language.disclaimer') }}
           </p>
           <v-list class="my-4" color="primary">
             <v-list-item
@@ -218,7 +218,7 @@ const canSwitchUser = computed(() => {
           </v-list>
           <div class="text-right">
             <v-btn @click="close" variant="text">
-              {{ t('cancel') }}
+              {{ $t('cancel') }}
             </v-btn>
           </div>
         </template>
@@ -229,12 +229,12 @@ const canSwitchUser = computed(() => {
         <v-list-item
           prepend-icon="mdi-account"
           :href="manageAccountURL"
-          :title="t('auth.manageAccount')"
+          :title="$t('auth.manageAccount')"
         />
         <v-list-item
           prepend-icon="mdi-logout"
           @click="logout"
-          :title="t('auth.logout')"
+          :title="$t('auth.logout')"
         />
       </v-list>
     </template>

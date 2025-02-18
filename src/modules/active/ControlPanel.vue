@@ -1,12 +1,12 @@
 <template>
   <ComponentQuickPanel
     component-name="active_users"
-    :switch-label="t('activeUsers.enable')"
+    :switch-label="$t('activeUsers.enable')"
   >
     <template #actions>
       <DefaultDialog
         @close="purgedCount = null"
-        :title="t('activeUsers.purgeInactive')"
+        :title="$t('activeUsers.purgeInactive')"
       >
         <template #activator="{ props }">
           <v-btn
@@ -15,12 +15,11 @@
             color="secondary"
             prepend-icon="mdi-account-clock"
             size="small"
-          >
-            {{ t('activeUsers.purgeInactive') }}
-          </v-btn>
+            :text="$t('activeUsers.purgeInactive')"
+          />
         </template>
         <p class="mb-2">
-          {{ t('activeUsers.purgeInactiveHelp') }}
+          {{ $t('activeUsers.purgeInactiveHelp') }}
         </p>
         <v-form
           v-if="!working"
@@ -31,7 +30,7 @@
             type="number"
             :rules="[rules.required, rules.min(0)]"
             v-model="hours"
-            :label="t('activeUsers.inactiveHours')"
+            :label="$t('activeUsers.inactiveHours')"
             min="0"
             hide-details
           />
@@ -40,19 +39,19 @@
             class="rounded-s-0"
             :disabled="working"
             color="primary"
-          >
-            {{ t('clear') }}
-          </v-btn>
+            :text="$t('clear')"
+          />
         </v-form>
         <div v-if="working" class="text-center py-11">
           <v-progress-circular indeterminate />
         </div>
-        <v-alert v-else-if="purgedCount !== null">
-          {{ t('activeUsers.purgedCount', purgedCount) }}
-        </v-alert>
+        <v-alert
+          v-else-if="purgedCount !== null"
+          :text="$t('activeUsers.purgedCount', purgedCount)"
+        />
       </DefaultDialog>
     </template>
-    {{ t('activeUsers.description') }}
+    {{ $t('activeUsers.description') }}
   </ComponentQuickPanel>
 </template>
 

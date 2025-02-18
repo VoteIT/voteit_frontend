@@ -4,7 +4,7 @@
     <template #prependProfile v-if="roleList.length || userGroups.length">
       <template v-if="roleList.length">
         <v-list-subheader>
-          {{ t('meeting.yourRoles') }}
+          {{ $t('meeting.yourRoles') }}
         </v-list-subheader>
         <v-list-item
           v-for="props in roleList"
@@ -14,7 +14,7 @@
         />
         <DefaultDialog
           v-if="isActualModerator"
-          :title="t('admin.testMode')"
+          :title="$t('admin.testMode')"
           v-model="testDialogOpen"
         >
           <template #activator="{ props }">
@@ -22,12 +22,12 @@
               v-bind="props"
               density="compact"
               prepend-icon="mdi-account-hard-hat"
-              :title="t('admin.testMode')"
+              :title="$t('admin.testMode')"
             />
           </template>
           <v-alert
             type="info"
-            :text="t('admin.testModeDescription')"
+            :text="$t('admin.testModeDescription')"
             class="mb-3"
           />
           <JsonSchemaForm
@@ -38,7 +38,7 @@
       </template>
       <template v-if="userGroups.length">
         <v-list-subheader>
-          {{ t('meeting.yourGroups') }}
+          {{ $t('meeting.yourGroups') }}
         </v-list-subheader>
         <v-list-item
           v-for="props in groupList"

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useElementBounding } from '@vueuse/core'
 
@@ -20,7 +19,6 @@ const EXTERNAL_ICON_CLASSES = [
   'v-icon--size-x-small'
 ]
 
-const { t } = useI18n()
 const router = useRouter()
 
 watch(
@@ -90,7 +88,7 @@ watch(contentElem, (el) => {
       @click="userExpanded = !userExpanded"
       :append-icon="expandIcon"
     >
-      {{ userExpanded ? t('collapse') : t('expand') }}
+      {{ userExpanded ? $t('collapse') : $t('expand') }}
     </v-btn>
   </div>
 </template>

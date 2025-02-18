@@ -6,7 +6,7 @@
           <span class="text-h6 mr-4 mt-n3"> {{ i + 1 }}. </span>
         </template>
         <v-list-item-title v-if="!proposal">
-          - {{ t('proposal.unknown') }} -
+          - {{ $t('proposal.unknown') }} -
         </v-list-item-title>
         <template v-else>
           <v-list-item-title class="mb-1">
@@ -31,7 +31,7 @@
     </v-list>
     <v-divider class="my-3" />
     <h2>
-      {{ t('poll.result.electionRounds', rounds.length) }}
+      {{ $t('poll.result.electionRounds', rounds.length) }}
     </h2>
     <v-expansion-panels class="my-6">
       <v-expansion-panel v-for="round in rounds" :key="round.title">

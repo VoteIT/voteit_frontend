@@ -11,7 +11,7 @@
         <p
           class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2"
         >
-          {{ t('poll.result.voteCount', votes) }}
+          {{ $t('poll.result.voteCount', votes) }}
           <v-tooltip location="top right">
             <template #activator="{ props }">
               <v-icon :icon="icon.icon" v-bind="props" :color="icon.color" />
@@ -22,7 +22,7 @@
       </template>
     </Proposal>
     <v-alert
-      :text="t('poll.method.description.dutt')"
+      :text="$t('poll.method.description.dutt')"
       type="info"
       icon="mdi-alert-decagram"
       class="my-2"

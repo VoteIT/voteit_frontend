@@ -165,7 +165,7 @@ const formData = reactive(getDefaults())
     />
     <div class="text-right">
       <v-btn variant="text" @click="$emit('cancel')">
-        {{ t('cancel') }}
+        {{ $t('cancel') }}
       </v-btn>
       <v-btn
         color="primary"
@@ -173,7 +173,7 @@ const formData = reactive(getDefaults())
         :disabled="!isValid.value"
         :loading="working"
       >
-        {{ data ? t('save') : t('create') }}
+        {{ data ? $t('save') : $t('create') }}
       </v-btn>
     </div>
   </v-form>

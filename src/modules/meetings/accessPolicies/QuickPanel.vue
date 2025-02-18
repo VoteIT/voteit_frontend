@@ -1,12 +1,12 @@
 <template>
   <template v-if="hasAutomatic">
     <v-card-text>
-      {{ t('accessPolicies.automatic.isActive') }}
+      {{ $t('accessPolicies.automatic.isActive') }}
     </v-card-text>
     <v-card-actions>
       <v-tooltip
         :model-value="copied"
-        :text="t('copied')"
+        :text="$t('copied')"
         :open-on-hover="false"
       >
         <template #activator="{ props }">
@@ -17,20 +17,19 @@
             :color="copied ? 'success' : 'primary'"
             @click.prevent="copy(meetingJoinUrl)"
           >
-            {{ t('meeting.copyUrl') }}
+            {{ $t('meeting.copyUrl') }}
           </v-btn>
         </template>
       </v-tooltip>
     </v-card-actions>
   </template>
   <v-card-text v-else>
-    {{ t('accessPolicy.settings') }}
+    {{ $t('accessPolicy.settings') }}
   </v-card-text>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useClipboard } from '@vueuse/core'
 
 import { AccessPolicyType } from '@/contentTypes/types'
@@ -39,7 +38,6 @@ import useMeeting from '../useMeeting'
 
 import useAccessPolicies from './useAccessPolicies'
 
-const { t } = useI18n()
 const { copy, copied } = useClipboard()
 const { meetingId, meetingJoinUrl } = useMeeting()
 const { accessPolicies } = useAccessPolicies(meetingId)

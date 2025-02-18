@@ -75,7 +75,7 @@ const progressBar = computed(() => {
       <main>
         <p class="mb-4">
           {{
-            t('poll.pollDescription', {
+            $t('poll.pollDescription', {
               method: pollMethodName,
               count: proposals.length
             })
@@ -89,7 +89,7 @@ const progressBar = computed(() => {
         />
         <v-alert
           v-if="poll?.withheld_result"
-          :text="t('poll.result.willBeWithheld')"
+          :text="$t('poll.result.willBeWithheld')"
           type="info"
           class="my-6"
         />
@@ -97,7 +97,7 @@ const progressBar = computed(() => {
       <DefaultDialog
         :model-value="meetingRoom?.show_ballot"
         :persistent="idle"
-        :title="t('poll.ballot')"
+        :title="$t('poll.ballot')"
         width="600px"
       >
         <component
@@ -110,7 +110,7 @@ const progressBar = computed(() => {
     </template>
     <main v-else>
       <p class="mb-4">
-        {{ t('poll.result.method', { method: pollMethodName }) }}
+        {{ $t('poll.result.method', { method: pollMethodName }) }}
       </p>
       <div v-if="isFinished">
         <component
@@ -123,7 +123,7 @@ const progressBar = computed(() => {
       <v-alert
         v-else-if="isWithheld"
         class="mt-6"
-        :text="t('poll.result.withheldExplanation')"
+        :text="$t('poll.result.withheldExplanation')"
         type="info"
       />
       <p v-else class="my-2">

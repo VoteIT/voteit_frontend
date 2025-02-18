@@ -2,7 +2,7 @@
   <DefaultDialog
     color="background"
     :persistent="!closable"
-    :title="proposal ? t('proposal.edit') : t('proposal.add')"
+    :title="proposal ? $t('proposal.edit') : $t('proposal.add')"
     @close="resetContent"
   >
     <template #activator="attrs">
@@ -16,7 +16,7 @@
               <RichtextEditor
                 v-model="body"
                 class="proposal-editor mb-2"
-                :placeholder="t('proposal.postPlaceholder')"
+                :placeholder="$t('proposal.postPlaceholder')"
               />
             </slot>
             <TagEdit v-model="extraTags" class="mb-2" />
@@ -51,17 +51,17 @@
         <v-alert
           v-if="done"
           type="success"
-          :text="t('allDone')"
+          :text="$t('allDone')"
           class="mt-8 flex-grow-0"
         />
         <div v-if="done" class="text-right mt-4">
           <v-btn color="primary" @click="close">
-            {{ t('close') }}
+            {{ $t('close') }}
           </v-btn>
         </div>
         <div v-else class="text-right mt-4">
           <v-btn variant="text" @click="close">
-            {{ t('cancel') }}
+            {{ $t('cancel') }}
           </v-btn>
           <v-btn
             color="primary"
@@ -69,7 +69,7 @@
             :disabled="!proposalPreview || previewing || saving"
             @click="saveProposal"
           >
-            {{ proposal ? t('update') : t('publish') }}
+            {{ proposal ? $t('update') : $t('publish') }}
           </v-btn>
         </div>
       </div>
@@ -79,7 +79,6 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { stripHTML } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
@@ -118,7 +117,6 @@ const emit = defineEmits<{
   (e: 'reset'): void
 }>()
 
-const { t } = useI18n()
 const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { canPostAs } = useMeetingGroups(meetingId)

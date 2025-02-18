@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ComponentPublicInstance, computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getDisplayName } from '@/utils'
 
@@ -22,7 +21,6 @@ defineProps<{
   setTag?: string
 }>()
 
-const { t } = useI18n()
 const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { getUser } = useUserDetails()
@@ -98,12 +96,12 @@ defineExpose({
     <DiscussionPostEditor
       v-if="canAddDiscussionPost"
       ref="addContentComponent"
-      :name="t('discussion.discussion')"
+      :name="$t('discussion.discussion')"
       :handler="submit"
-      :placeholder="t('discussion.postPlaceholder')"
+      :placeholder="$t('discussion.postPlaceholder')"
       :setTag="setTag"
       :submitIcon="submitIcon"
-      :submitText="t('post')"
+      :submitText="$t('post')"
     />
   </div>
 </template>

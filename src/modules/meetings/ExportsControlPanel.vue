@@ -2,7 +2,7 @@
   <div>
     <header class="mb-6">
       <h1>
-        {{ t('meeting.exports') }}
+        {{ $t('meeting.exports') }}
       </h1>
       <i18n-t keypath="meeting.exportsLongDescription">
         <template #csv>
@@ -21,7 +21,7 @@
       <thead>
         <tr>
           <th colspan="2">
-            {{ t('meeting.exports') }}
+            {{ $t('meeting.exports') }}
           </th>
         </tr>
       </thead>
@@ -39,7 +39,7 @@
                   variant="tonal"
                   color="primary"
                 >
-                  {{ t('download') }}
+                  {{ $t('download') }}
                 </v-btn>
               </template>
               <v-list>

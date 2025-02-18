@@ -29,7 +29,7 @@
       class="pa-4"
     >
       <h2 class="text-center">
-        {{ t('poll.deny') }}
+        {{ $t('poll.deny') }}
       </h2>
       <div class="text-center">
         <v-rating
@@ -48,7 +48,6 @@
 
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import Widget from '@/components/Widget.vue'
 import VoteProposal from '@/modules/proposals/VoteProposal.vue'
@@ -68,8 +67,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', vote?: SchulzeVote): void
 }>()
-
-const { t } = useI18n()
 
 function getGrades() {
   if (props.modelValue) return Object.fromEntries(props.modelValue.ranking)

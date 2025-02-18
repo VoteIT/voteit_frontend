@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-import { PollStatus } from './types'
 import ProgressBar from '@/components/ProgressBar.vue'
+import { PollStatus } from './types'
 
 defineProps<{
   pollStatus?: PollStatus
 }>()
-
-const { t } = useI18n()
 </script>
 
 <template>
@@ -18,7 +15,7 @@ const { t } = useI18n()
     :total="pollStatus.total"
   >
     <span>{{
-      t(
+      $t(
         'poll.votedProgress',
         {
           ...pollStatus,

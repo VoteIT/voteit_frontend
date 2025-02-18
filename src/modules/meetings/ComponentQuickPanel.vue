@@ -1,7 +1,7 @@
 <template>
   <v-card-text v-if="isBlocked">
     <em>
-      {{ t('meeting.componentBlocked') }}
+      {{ $t('meeting.componentBlocked') }}
     </em>
   </v-card-text>
   <v-card-text v-else>
@@ -20,7 +20,7 @@
           :icon="warnRequired ? 'mdi-alert' : 'mdi-information'"
           class="mr-2"
         />
-        {{ t('meeting.componentRequired') }}
+        {{ $t('meeting.componentRequired') }}
       </v-chip>
     </div>
   </v-card-text>
@@ -31,7 +31,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import useMeeting from './useMeeting'
 import useComponentApi from './useComponentApi'
@@ -39,8 +38,6 @@ import { isActiveMeeting } from './rules'
 import type { NoSettingsComponent } from './types'
 
 const props = defineProps<{ componentName: string; switchLabel: string }>()
-
-const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
 const isBlocked = computed(

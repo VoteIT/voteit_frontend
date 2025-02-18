@@ -170,13 +170,13 @@ function getProposalBody(p: Proposal) {
         class="mb-1"
       >
         <v-btn size="large" value="documents" prepend-icon="mdi-file-document">
-          {{ t('minutes.documents') }}
+          {{ $t('minutes.documents') }}
         </v-btn>
         <v-btn size="large" value="minutes" prepend-icon="mdi-file-sign">
-          {{ t('minutes.minutes') }}
+          {{ $t('minutes.minutes') }}
         </v-btn>
         <v-btn size="large" value="remaining" prepend-icon="mdi-file-clock">
-          {{ t('minutes.remaining') }}
+          {{ $t('minutes.remaining') }}
         </v-btn>
       </v-btn-toggle>
     </div>
@@ -188,14 +188,14 @@ function getProposalBody(p: Proposal) {
         class="pa-4 d-print-none"
       >
         <h3>
-          {{ t('minutes.includeAgendaStates') }}
+          {{ $t('minutes.includeAgendaStates') }}
         </h3>
         <CheckboxMultipleSelect
           v-model="settings.agendaStates"
           :settings="agendaStateSettings"
         />
         <h3 class="mb-1">
-          {{ t('minutes.unresolvedProposals') }}
+          {{ $t('minutes.unresolvedProposals') }}
         </h3>
         <v-btn-toggle
           mandatory
@@ -204,24 +204,24 @@ function getProposalBody(p: Proposal) {
           class="mb-4"
         >
           <v-btn value="all" prepend-icon="mdi-asterisk">
-            {{ t('all') }}
+            {{ $t('all') }}
           </v-btn>
           <v-btn :value="true" prepend-icon="mdi-alert">
-            {{ t('minutes.unresolved') }}
+            {{ $t('minutes.unresolved') }}
           </v-btn>
           <v-btn :value="false" prepend-icon="mdi-check-all">
-            {{ t('minutes.noUnresolved') }}
+            {{ $t('minutes.noUnresolved') }}
           </v-btn>
         </v-btn-toggle>
         <h3>
-          {{ t('minutes.includeProposalStates') }}
+          {{ $t('minutes.includeProposalStates') }}
         </h3>
         <CheckboxMultipleSelect
           v-model="settings.proposalStates"
           :settings="proposalStateSettings"
         />
         <h3 class="mb-1">
-          {{ t('minutes.proposalOrder') }}
+          {{ $t('minutes.proposalOrder') }}
         </h3>
         <v-btn-toggle
           mandatory
@@ -230,47 +230,47 @@ function getProposalBody(p: Proposal) {
           class="mb-4"
         >
           <v-btn value="created" prepend-icon="mdi-sort">
-            {{ t('created') }}
+            {{ $t('created') }}
           </v-btn>
           <v-btn value="modified" prepend-icon="mdi-sort">
-            {{ t('modified') }}
+            {{ $t('modified') }}
           </v-btn>
         </v-btn-toggle>
         <v-switch
           color="primary"
           hide-details
           v-model="settings.showProposalTag"
-          :label="t('minutes.showProposalTag')"
+          :label="$t('minutes.showProposalTag')"
         />
         <v-switch
           color="primary"
           hide-details
           v-model="settings.showAuthors"
-          :label="t('minutes.showAuthors')"
+          :label="$t('minutes.showAuthors')"
         />
         <v-switch
           color="primary"
           hide-details
           v-model="settings.showSeparators"
-          :label="t('minutes.showSeparators')"
+          :label="$t('minutes.showSeparators')"
         />
         <v-switch
           color="primary"
           hide-details
           v-model="settings.showMeetingBody"
-          :label="t('minutes.showMeetingBody')"
+          :label="$t('minutes.showMeetingBody')"
         />
         <v-switch
           color="primary"
           hide-details
           v-model="settings.showUnresolvedWarning"
-          :label="t('minutes.showUnresolvedWarning')"
+          :label="$t('minutes.showUnresolvedWarning')"
         />
         <!-- <v-switch
           color="primary"
           hide-details
           v-model="settings.showAgendaBody"
-          :label="t('minutes.showAIBody')"
+          :label="$t('minutes.showAIBody')"
         /> -->
         <div class="text-right">
           <v-btn
@@ -281,7 +281,7 @@ function getProposalBody(p: Proposal) {
             variant="flat"
             onclick="window.print()"
           >
-            {{ t('minutes.print') }}
+            {{ $t('minutes.print') }}
           </v-btn>
         </div>
       </v-sheet>
@@ -291,7 +291,7 @@ function getProposalBody(p: Proposal) {
         v-if="baseSetting === 'minutes' && !isFinishedMeeting"
         type="warning"
         class="my-2"
-        :text="t('minutes.warningMeetingNotFinished')"
+        :text="$t('minutes.warningMeetingNotFinished')"
       />
       <template v-if="meeting">
         <h1 class="mt-8">
@@ -314,7 +314,7 @@ function getProposalBody(p: Proposal) {
           <v-tooltip
             v-if="settings.showUnresolvedWarning && hasUnresolved"
             location="bottom"
-            :text="t('minutes.warningAIUnresolved')"
+            :text="$t('minutes.warningAIUnresolved')"
           >
             <template #activator="{ props }">
               <v-icon v-bind="props" color="warning" size="large" class="ml-2">
@@ -326,7 +326,7 @@ function getProposalBody(p: Proposal) {
         <!-- <p v-if="settings.showAgendaBody && body" v-html="body" class="my-4" /> -->
         <p v-if="!proposalStates.length">
           <em>
-            {{ t('minutes.noInformation') }}
+            {{ $t('minutes.noInformation') }}
           </em>
         </p>
         <div v-for="{ proposals, state, title } in proposalStates" :key="state">

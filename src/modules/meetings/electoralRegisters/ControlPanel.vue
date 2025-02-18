@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h2>{{ t('electoralRegister.settings') }}</h2>
+    <h2>{{ $t('electoralRegister.settings') }}</h2>
     <v-alert
       v-if="erMethodLocked"
       icon="mdi-cancel"
-      :text="t('electoralRegister.dialectChangeMethodDisallowed')"
+      :text="$t('electoralRegister.dialectChangeMethodDisallowed')"
       color="secondary"
       class="my-4"
     />

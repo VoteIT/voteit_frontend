@@ -177,16 +177,16 @@ async function deleteRoom(pk: number) {
 <template>
   <div>
     <HelpSection id="room.settings" class="mb-3">
-      {{ t('room.settingsHelp') }}
+      {{ $t('room.settingsHelp') }}
     </HelpSection>
     <div class="d-flex mb-2">
       <h2 class="flex-grow-1">
-        {{ t('room.settings') }}
+        {{ $t('room.settings') }}
       </h2>
-      <DefaultDialog v-model="createOpen" :title="t('room.create')">
+      <DefaultDialog v-model="createOpen" :title="$t('room.create')">
         <template #activator="{ props }">
           <v-btn color="primary" prepend-icon="mdi-plus" v-bind="props">
-            {{ t('room.create') }}
+            {{ $t('room.create') }}
           </v-btn>
         </template>
         <template #default="{ close }">
@@ -198,10 +198,10 @@ async function deleteRoom(pk: number) {
       <thead>
         <tr>
           <th>
-            {{ t('title') }}
+            {{ $t('title') }}
           </th>
           <th>
-            {{ t('room.open') }}
+            {{ $t('room.open') }}
           </th>
           <th></th>
         </tr>
@@ -225,7 +225,7 @@ async function deleteRoom(pk: number) {
               prepend-icon="mdi-broadcast"
               size="small"
               variant="tonal"
-              :text="t('room.toPlenaryView')"
+              :text="$t('room.toPlenaryView')"
               :to="
                 getRoomRoute('room:broadcast', {
                   id: meetingId,
@@ -237,26 +237,26 @@ async function deleteRoom(pk: number) {
             />
           </td>
           <td class="text-right">
-            <DefaultDialog :title="t('room.edit')">
+            <DefaultDialog :title="$t('room.edit')">
               <template #activator="{ props }">
                 <ButtonWithDropdown
                   v-bind="props"
                   color="primary"
                   prepend-icon="mdi-pencil"
                   size="small"
-                  :text="t('edit')"
+                  :text="$t('edit')"
                 >
                   <v-list>
                     <DefaultDialog
                       v-if="room.formData.room.speakers"
-                      :title="t('speaker.handleRoles')"
+                      :title="$t('speaker.handleRoles')"
                     >
                       <template #activator="{ props }">
                         <v-list-item
                           prepend-icon="mdi-account-group"
                           v-bind="props"
                         >
-                          {{ t('speaker.handleRoles') }}
+                          {{ $t('speaker.handleRoles') }}
                         </v-list-item>
                       </template>
                       <p class="mb-3">
@@ -288,7 +288,7 @@ async function deleteRoom(pk: number) {
                       <UserSearch class="mb-2" v-bind="room.userSearch" />
                     </DefaultDialog>
                     <QueryDialog
-                      :text="t('room.confirmDelete')"
+                      :text="$t('room.confirmDelete')"
                       color="warning"
                       @confirmed="deleteRoom(room.pk)"
                     >
@@ -299,7 +299,7 @@ async function deleteRoom(pk: number) {
                           v-bind="props"
                           prepend-icon="mdi-delete"
                         >
-                          {{ t('content.delete') }}
+                          {{ $t('content.delete') }}
                         </v-list-item>
                       </template>
                     </QueryDialog>

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { enumerate } from 'itertools'
 import { computed, reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
@@ -21,7 +20,6 @@ import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 
-const { t } = useI18n()
 const { user } = useAuthentication()
 const meetingId = useMeetingId()
 const reactions = useReactions()
@@ -72,45 +70,45 @@ const model = reactive<Record<number, boolean>>({})
   <div>
     <HelpSection id="reactionControls" start-open class="mb-4">
       <h2 class="mb-2">
-        {{ t('reaction.help.title') }}
+        {{ $t('reaction.help.title') }}
       </h2>
       <p class="mb-2">
         <strong>
-          {{ t('reaction.help.description') }}
+          {{ $t('reaction.help.description') }}
         </strong>
       </p>
       <div class="d-flex">
         <v-icon icon="mdi-gesture-tap-button" class="mr-3 mt-1" />
         <p class="mb-2">
-          {{ t('reaction.help.reactionButton') }}
+          {{ $t('reaction.help.reactionButton') }}
         </p>
       </div>
       <div class="d-flex">
         <v-icon icon="mdi-flag" class="mr-3 mt-1" />
         <p class="mb-2">
-          {{ t('reaction.help.flagButton') }}
+          {{ $t('reaction.help.flagButton') }}
         </p>
       </div>
     </HelpSection>
     <div class="d-flex mb-4">
-      <h2>{{ t('reaction.settings') }}</h2>
+      <h2>{{ $t('reaction.settings') }}</h2>
       <v-spacer />
       <v-menu v-if="canEditButtons">
         <v-list>
-          <DefaultDialog :title="t('reaction.addButton')">
+          <DefaultDialog :title="$t('reaction.addButton')">
             <template #activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-gesture-tap-button">
-                {{ t('reaction.button') }}
+                {{ $t('reaction.button') }}
               </v-list-item>
             </template>
             <template #default="{ close }">
               <ReactionEditModal @close="close" />
             </template>
           </DefaultDialog>
-          <DefaultDialog :title="t('reaction.addButton')">
+          <DefaultDialog :title="$t('reaction.addButton')">
             <template #activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-flag">
-                {{ t('reaction.flags') }}
+                {{ $t('reaction.flags') }}
               </v-list-item>
             </template>
             <template #default="{ close }">
@@ -120,7 +118,7 @@ const model = reactive<Record<number, boolean>>({})
         </v-list>
         <template #activator="{ props }">
           <v-btn v-bind="props" append-icon="mdi-chevron-down" color="primary">
-            {{ t('reaction.addButton') }}
+            {{ $t('reaction.addButton') }}
           </v-btn>
         </template>
       </v-menu>
@@ -129,16 +127,16 @@ const model = reactive<Record<number, boolean>>({})
       <thead>
         <tr>
           <th>
-            {{ t('reaction.buttons') }}
+            {{ $t('reaction.buttons') }}
           </th>
           <th>
-            {{ t('reaction.active') }}
+            {{ $t('reaction.active') }}
           </th>
           <th>
-            {{ t('proposal.proposals') }}
+            {{ $t('proposal.proposals') }}
           </th>
           <th>
-            {{ t('discussion.discussions') }}
+            {{ $t('discussion.discussions') }}
           </th>
           <th v-if="canEditButtons"></th>
         </tr>
@@ -193,19 +191,19 @@ const model = reactive<Record<number, boolean>>({})
               />
             </td>
             <td class="text-right" v-if="canEditButtons">
-              <DefaultDialog :title="t('reaction.editButton')">
+              <DefaultDialog :title="$t('reaction.editButton')">
                 <template #activator="{ props }">
                   <ButtonWithDropdown
                     prepend-icon="mdi-pencil"
                     color="primary"
                     size="small"
-                    :text="t('edit')"
+                    :text="$t('edit')"
                     v-bind="props"
                   >
                     <v-list>
                       <QueryDialog
                         color="warning"
-                        :text="t('reaction.deleteButtonConfirmation')"
+                        :text="$t(('reaction.deleteButtonConfirmation')"
                         @confirmed="deleteButton(button)"
                       >
                         <template #activator="{ props }">
@@ -214,7 +212,7 @@ const model = reactive<Record<number, boolean>>({})
                             base-color="warning"
                             v-bind="props"
                             size="small"
-                            :title="t('content.delete')"
+                            :title="$t('content.delete')"
                           />
                         </template>
                       </QueryDialog>

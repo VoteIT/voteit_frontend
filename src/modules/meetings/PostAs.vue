@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, Ref, ref, watch } from 'vue'
+import { computed, Ref, ref, watch, type ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
@@ -12,7 +12,6 @@ import { userType } from '../organisations/contentTypes'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { Author, isGroupAuthor, isUserAuthor } from './types'
-import { ComponentPublicInstance } from 'vue'
 
 interface AutocompleteItem {
   subtitle?: string
@@ -217,11 +216,11 @@ watch(postAsSelect, () => {
   <v-autocomplete
     ref="autocomplete"
     v-if="options"
-    :label="t('proposal.postAs')"
+    :label="$t('proposal.postAs')"
     :items="options"
     v-model="postAsSelect"
     v-model:search="search"
-    :no-data-text="t('noSuggestions')"
+    :no-data-text="$t('noSuggestions')"
     hide-details
     density="compact"
   >

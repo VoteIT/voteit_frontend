@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { isEqual } from 'lodash'
 import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import Draggable from 'vuedraggable'
 
 import useMeetingId from '../meetings/useMeetingId'
@@ -16,7 +15,6 @@ const emit = defineEmits<{
   (e: 'saved'): void
 }>()
 
-const { t } = useI18n()
 const meetingId = useMeetingId()
 const { agenda, getAgendaItem } = useAgenda(meetingId)
 const { getState } = agendaItemType.useWorkflows()
@@ -82,7 +80,7 @@ watch(agenda, (agendaItems) => {
         :loading="orderSaving"
         @click="saveAgendaOrder"
       >
-        {{ t('save') }}
+        {{ $t('save') }}
       </v-btn>
     </div>
   </div>

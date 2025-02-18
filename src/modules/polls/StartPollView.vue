@@ -2,14 +2,16 @@
   <v-row id="start-poll">
     <v-col lg="8" offset-lg="2">
       <header class="mb-4">
-        <h1>{{ t('poll.start') }}</h1>
+        <h1>{{ $t('poll.start') }}</h1>
       </header>
-      <h2 class="mb-2">{{ t('step', 1) }}: {{ t('poll.selectAgendaItem') }}</h2>
+      <h2 class="mb-2">
+        {{ $t('step', 1) }}: {{ $t('poll.selectAgendaItem') }}
+      </h2>
       <v-alert
         class="mt-4"
         v-if="!pollableAgendaItems.length"
         type="info"
-        :text="t('poll.noPollableAgendaItems')"
+        :text="$t('poll.noPollableAgendaItems')"
       />
       <v-list bg-color="background">
         <v-list-item
@@ -29,7 +31,9 @@
         </v-list-item>
       </v-list>
       <template v-if="agendaId">
-        <h2 class="my-2">{{ t('step', 2) }}: {{ t('poll.pickProposals') }}</h2>
+        <h2 class="my-2">
+          {{ $t('step', 2) }}: {{ $t('poll.pickProposals') }}
+        </h2>
         <v-item-group v-model="selectedProposalIds" multiple>
           <v-item
             v-for="p in availableProposals"
@@ -50,7 +54,7 @@
           </v-item>
         </v-item-group>
         <p v-if="!availableProposals.length">
-          <em>{{ t('poll.noAiPublishedProposals') }}</em>
+          <em>{{ $t('poll.noAiPublishedProposals') }}</em>
         </p>
         <div v-if="!pickMethod" class="btn-group mt-3">
           <v-btn
@@ -58,7 +62,7 @@
             color="primary"
             @click="toggleAll"
           >
-            {{ t('all') }}
+            {{ $t('all') }}
           </v-btn>
           <v-btn
             prepend-icon="mdi-arrow-right-bold"
@@ -66,12 +70,12 @@
             :disabled="!selectedProposals.length"
             @click="pickMethod = true"
           >
-            {{ t('navigation.continue') }}
+            {{ $t('navigation.continue') }}
           </v-btn>
         </div>
       </template>
       <template v-if="pickMethod">
-        <h2 class="my-2">{{ t('step', 3) }}: {{ t('poll.chooseMethod') }}</h2>
+        <h2 class="my-2">{{ $t('step', 3) }}: {{ $t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
           <v-expansion-panel
             v-for="{
@@ -116,7 +120,7 @@
                 </div>
               </v-tooltip>
               <h3 class="my-2">
-                {{ t('options') }}
+                {{ $t('options') }}
               </h3>
               <SchemaForm
                 v-if="methodSchema"
@@ -134,14 +138,14 @@
             prepend-icon="mdi-undo-variant"
             @click="pickMethod = false"
             color="primary"
-            >{{ t('navigation.back') }}</v-btn
+            >{{ $t('navigation.back') }}</v-btn
           >
           <v-btn
             prepend-icon="mdi-check"
             color="primary"
             :disabled="!readyToCreate"
             @click="createPoll()"
-            >{{ t('create') }}</v-btn
+            >{{ $t('create') }}</v-btn
           >
           <v-btn
             v-if="agendaItem?.state === 'ongoing'"
@@ -149,7 +153,7 @@
             color="primary"
             :disabled="!readyToCreate"
             @click="createPoll(true)"
-            >{{ t('poll.createAndStart') }}</v-btn
+            >{{ $t('poll.createAndStart') }}</v-btn
           >
         </div>
       </template>
@@ -158,7 +162,7 @@
         type="info"
         class="mt-2"
       >
-        {{ t('poll.cantStartWithoutOngoing') }}
+        {{ $t('poll.cantStartWithoutOngoing') }}
       </v-alert>
     </v-col>
   </v-row>

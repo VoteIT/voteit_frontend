@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-alert type="info" class="mb-4">
-      {{ t('meeting.groups.help') }}
+      {{ $t('meeting.groups.help') }}
     </v-alert>
-    <v-toolbar :title="t('meeting.groups.groups')" color="secondary">
+    <v-toolbar :title="$t('meeting.groups.groups')" color="secondary">
       <v-btn
         class="mr-2 d-none d-md-inline"
         :variant="groupFilter.open ? 'elevated' : 'text'"
@@ -11,13 +11,13 @@
         :color="groupFilter.open ? 'secondary-lighten-2' : undefined"
       >
         <v-icon start>mdi-filter-menu</v-icon>
-        {{ t('filter') }}
+        {{ $t('filter') }}
       </v-btn>
       <template v-if="canChangeMeeting">
-        <DefaultDialog :title="t('meeting.groups.import')">
+        <DefaultDialog :title="$t('meeting.groups.import')">
           <template #activator="{ props }">
             <v-btn prepend-icon="mdi-file-import" v-bind="props">
-              {{ t('meeting.groups.import') }}
+              {{ $t('meeting.groups.import') }}
             </v-btn>
           </template>
           <template #default="{ close }">
@@ -26,8 +26,8 @@
               class="mb-2"
               :text="
                 meeting?.group_votes_active
-                  ? t('meeting.groups.importWithVotesHelp')
-                  : t('meeting.groups.importHelp')
+                  ? $t('meeting.groups.importWithVotesHelp')
+                  : $t('meeting.groups.importHelp')
               "
             />
             <SchemaForm
@@ -44,7 +44,7 @@
                     :disabled="disabled"
                     prepend-icon="mdi-send"
                   >
-                    {{ t('meeting.groups.import') }}
+                    {{ $t('meeting.groups.import') }}
                   </v-btn>
                 </div>
               </template>
@@ -54,26 +54,26 @@
         <v-menu v-if="orderedMeetingGroups.length">
           <template #activator="{ props }">
             <v-btn prepend-icon="mdi-download" v-bind="props">
-              {{ t('download') }}
+              {{ $t('download') }}
             </v-btn>
           </template>
           <v-list>
             <v-list-item
               append-icon="mdi-file-download"
-              :title="t('meeting.groups.groups') + ' (CSV)'"
+              :title="$t('meeting.groups.groups') + ' (CSV)'"
               :href="getApiLink(`export-meeting-groups/${meetingId}/csv/`)"
             />
             <v-list-item
               append-icon="mdi-file-download"
-              :title="t('meeting.groups.groups') + ' (JSON)'"
+              :title="$t('meeting.groups.groups') + ' (JSON)'"
               :href="getApiLink(`export-meeting-groups/${meetingId}/json/`)"
             />
           </v-list>
         </v-menu>
-        <DefaultDialog :title="t('meeting.groups.new')">
+        <DefaultDialog :title="$t('meeting.groups.new')">
           <template #activator="{ props }">
             <v-btn prepend-icon="mdi-account-multiple-plus" v-bind="props">
-              {{ t('meeting.groups.create') }}
+              {{ $t('meeting.groups.create') }}
             </v-btn>
           </template>
           <template #default="{ close }">
@@ -85,7 +85,7 @@
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
                   <v-btn variant="text" @click="close">
-                    {{ t('cancel') }}
+                    {{ $t('cancel') }}
                   </v-btn>
                   <v-btn
                     type="submit"
@@ -94,7 +94,7 @@
                     :disabled="disabled"
                     prepend-icon="mdi-account-multiple-plus"
                   >
-                    {{ t('meeting.groups.create') }}
+                    {{ $t('meeting.groups.create') }}
                   </v-btn>
                 </div>
               </template>
@@ -107,12 +107,12 @@
       <v-sheet v-show="groupFilter.open" color="secondary" class="rounded-b">
         <div class="pa-4">
           <v-text-field
-            :label="t('search')"
+            :label="$t('search')"
             v-model="groupFilter.search"
             clearable
           />
           <v-switch
-            :label="t('meeting.groups.filterMine')"
+            :label="$t('meeting.groups.filterMine')"
             hide-details
             v-model="groupFilter.mine"
           />
@@ -128,10 +128,10 @@
       <thead>
         <tr>
           <th>
-            {{ t('name') }}
+            {{ $t('name') }}
           </th>
           <th>
-            {{ t('meeting.groups.members') }}
+            {{ $t('meeting.groups.members') }}
           </th>
           <th v-for="sw in groupSwitches" :key="sw.prop">
             {{ sw.title }}
@@ -164,7 +164,7 @@
             </v-tooltip>
           </th>
           <th v-if="allTags.size">
-            {{ t('tags') }}
+            {{ $t('tags') }}
           </th>
           <th v-if="canChangeMeeting"></th>
         </tr>
@@ -182,7 +182,7 @@
             {{ group.members.length || '-' }}
             <DefaultDialog
               v-if="group.members.length || canChangeMeeting"
-              :title="t('meeting.groups.membersIn', { ...group })"
+              :title="$t('meeting.groups.membersIn', { ...group })"
             >
               <template #activator="{ props }">
                 <v-btn
@@ -191,7 +191,7 @@
                   color="secondary"
                   class="ml-2"
                 >
-                  {{ canChangeMeeting ? t('handle') : t('show') }}
+                  {{ canChangeMeeting ? $t('handle') : $t('show') }}
                 </v-btn>
               </template>
               <GroupMemberships :group="group" :editable="canChangeMeeting" />
@@ -223,12 +223,12 @@
                 <ButtonWithDropdown
                   color="primary"
                   size="small"
-                  :text="t('edit')"
+                  :text="$t('edit')"
                   v-bind="props"
                 >
                   <v-list density="compact">
                     <QueryDialog
-                      :text="t('meeting.groups.deleteConfirm', { ...group })"
+                      :text="$t('meeting.groups.deleteConfirm', { ...group })"
                       color="warning"
                       @confirmed="deleteGroup(group)"
                     >
@@ -236,7 +236,7 @@
                         <v-list-item
                           base-color="warning"
                           v-bind="props"
-                          :title="t('content.delete')"
+                          :title="$t('content.delete')"
                         />
                       </template>
                     </QueryDialog>
@@ -253,7 +253,7 @@
                   <template #buttons="{ disabled, submitting }">
                     <div class="text-right">
                       <v-btn @click="close" variant="text">
-                        {{ t('cancel') }}
+                        {{ $t('cancel') }}
                       </v-btn>
                       <v-btn
                         type="submit"
@@ -261,7 +261,7 @@
                         :loading="submitting"
                         :disabled="disabled"
                       >
-                        {{ t('save') }}
+                        {{ $t('save') }}
                       </v-btn>
                     </div>
                   </template>
@@ -273,7 +273,7 @@
       </tbody>
       <tfoot v-if="hasCountColumns">
         <tr>
-          <th>{{ t('total') }}</th>
+          <th>{{ $t('total') }}</th>
           <th></th>
           <th v-for="{ name, getCount } in columns" :key="name">
             {{ getCount?.() || '-' }}
@@ -292,6 +292,8 @@ import { chunk, orderBy } from 'lodash'
 import { computed, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { getFullName } from '@/utils'
+import { PickByType } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
 import SchemaForm from '@/components/SchemaForm.vue'
 import Tag from '@/components/Tag.vue'
@@ -303,17 +305,15 @@ import useRules from '@/composables/useRules'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { FieldType, FormSchema } from '@/components/types'
 
-import useMeeting from './useMeeting'
+import useUserDetails from '../organisations/useUserDetails'
 
+import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
 import useTags, { TagsKey } from './useTags'
-import useUserDetails from '../organisations/useUserDetails'
-import { getFullName } from '@/utils'
-import { PickByType } from '@/utils/types'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()

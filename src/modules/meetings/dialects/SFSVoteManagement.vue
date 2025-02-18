@@ -40,7 +40,7 @@
       />
       <div class="text-right">
         <v-btn variant="text" :disabled="working" @click="editing = false">
-          {{ t('cancel') }}
+          {{ $t('cancel') }}
         </v-btn>
         <v-btn
           color="primary"
@@ -48,7 +48,7 @@
           :disabled="!!editUnassignedVotes"
           @click="saveUserVotes"
         >
-          {{ t('save') }}
+          {{ $t('save') }}
         </v-btn>
       </div>
     </DefaultDialog>

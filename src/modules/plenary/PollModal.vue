@@ -101,20 +101,20 @@ onBeforeUnmount(() => {
       />
       <v-alert
         v-if="poll.withheld_result"
-        :text="t('poll.result.willBeWithheld')"
+        :text="$t('poll.result.willBeWithheld')"
         type="info"
         class="my-6"
       />
     </main>
     <div class="actions text-right">
       <DefaultDialog
-        :title="t('poll.ballot')"
+        :title="$t('poll.ballot')"
         @update:model-value="isBroadcasting && setShowBallot($event)"
         width="600px"
       >
         <template #activator="{ props }">
           <v-btn variant="text" v-bind="props" prepend-icon="mdi-vote">
-            {{ t('poll.showBallot') }}
+            {{ $t('poll.showBallot') }}
           </v-btn>
         </template>
         <component
@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
       </DefaultDialog>
       <QueryDialog
         @confirmed="cancel"
-        :text="t('poll.confirmCancel')"
+        :text="$t('poll.confirmCancel')"
         color="warning"
       >
         <template #activator="{ props }">
@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
             prepend-icon="mdi-cancel"
             v-bind="props"
           >
-            {{ t('poll.cancel') }}
+            {{ $t('poll.cancel') }}
           </v-btn>
         </template>
       </QueryDialog>
@@ -148,13 +148,13 @@ onBeforeUnmount(() => {
         prepend-icon="mdi-gavel"
         @click="close"
       >
-        {{ t('poll.close') }}
+        {{ $t('poll.close') }}
       </v-btn>
     </div>
   </template>
   <main v-else>
     <p class="mb-4">
-      {{ t('poll.result.method', { method: pollMethodName }) }}
+      {{ $t('poll.result.method', { method: pollMethodName }) }}
     </p>
     <div v-if="isFinished">
       <component
@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
     <v-alert
       v-else-if="isWithheld"
       class="mt-6"
-      :text="t('poll.result.withheldExplanation')"
+      :text="$t('poll.result.withheldExplanation')"
       type="info"
     />
     <WorkflowState

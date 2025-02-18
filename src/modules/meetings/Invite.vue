@@ -5,7 +5,7 @@
     class="rounded-te-xl rounded-bs-xl"
   >
     <v-list density="compact">
-      <v-list-subheader> {{ t('invites.invitedAs') }}: </v-list-subheader>
+      <v-list-subheader> {{ $t('invites.invitedAs') }}: </v-list-subheader>
       <v-list-item
         v-for="{ icon, scope, subtitle, title } in invitedUserdata"
         :key="scope"
@@ -22,7 +22,7 @@
         :disabled="submitting"
         @click="rejectInvite(invite)"
       >
-        {{ t('join.rejectInvite') }}
+        {{ $t('join.rejectInvite') }}
       </v-btn>
       <v-btn
         variant="elevated"
@@ -31,7 +31,7 @@
         :disabled="submitting"
         @click="acceptInvite(invite)"
       >
-        {{ t('join.acceptInvite') }}
+        {{ $t('join.acceptInvite') }}
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -43,12 +43,13 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, slugify } from '@/utils'
+import { ThemeColor } from '@/utils/types'
+import { invitationScopes } from '../organisations/registry'
+
 import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 import useMeetingInvites from './useMeetingInvites'
 import useMeetings from './useMeetings'
-import { ThemeColor } from '@/utils/types'
-import { invitationScopes } from '../organisations/registry'
 import { translateInviteType } from './utils'
 
 const { fetchInvites } = useMeetingInvites()

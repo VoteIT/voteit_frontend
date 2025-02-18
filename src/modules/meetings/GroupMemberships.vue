@@ -16,19 +16,19 @@
       <thead>
         <tr>
           <th>
-            {{ t('name') }}
+            {{ $t('name') }}
           </th>
           <th v-if="groupRoles.length">
-            {{ t('meeting.groups.role') }}
+            {{ $t('meeting.groups.role') }}
           </th>
           <th v-if="componentActive">
-            {{ t('activeUsers.active') }}
+            {{ $t('activeUsers.active') }}
           </th>
           <th v-if="displayGroupVotes">
-            {{ t('meeting.groups.votes') }}
+            {{ $t('meeting.groups.votes') }}
           </th>
           <th>
-            {{ t('electoralRegister.inCurrent') }}
+            {{ $t('electoralRegister.inCurrent') }}
           </th>
           <th v-if="editable"></th>
         </tr>
@@ -136,7 +136,7 @@
     <v-alert
       v-if="editable && !group.memberships.length"
       type="info"
-      :text="t('meeting.groups.addMemberEmptyHelp')"
+      :text="$t('meeting.groups.addMemberEmptyHelp')"
       class="mt-4"
     />
   </div>
@@ -144,12 +144,12 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import Tag from '@/components/Tag.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useActive from '../active/useActive'
 import useUserDetails from '../organisations/useUserDetails'
 import type { IUser } from '../organisations/types'
 
@@ -157,10 +157,7 @@ import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { groupMembershipType } from './contentTypes'
 import type { GroupMembership, MeetingGroup } from './types'
-import useActive from '../active/useActive'
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
-
-const { t } = useI18n()
 
 const props = defineProps<{
   editable?: boolean

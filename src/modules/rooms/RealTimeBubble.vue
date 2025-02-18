@@ -56,9 +56,9 @@ const broadcasting = computed(() =>
       class="mr-4 mt-1"
     />
     <div class="flex-grow-1">
-      <h2>{{ t('room.realTime') }}</h2>
+      <h2>{{ $t('room.realTime') }}</h2>
       <p class="text-secondary">
-        {{ t('room.realTimeDescription') }}
+        {{ $t('room.realTimeDescription') }}
       </p>
     </div>
   </div>

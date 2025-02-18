@@ -16,7 +16,7 @@
       <v-expansion-panel
         v-for="(round, i) in result.rounds"
         :key="i"
-        :title="t('poll.result.roundNum', i + 1)"
+        :title="$t('poll.result.roundNum', i + 1)"
       >
         <v-expansion-panel-text>
           <SchulzeResult
@@ -32,7 +32,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import useProposals from '@/modules/proposals/useProposals'
 import Proposal from '@/modules/proposals/Proposal.vue'
@@ -47,7 +46,6 @@ const props = defineProps<{
   result: RepeatedSchulzeResult
 }>()
 
-const { t } = useI18n()
 const { getProposal } = useProposals()
 
 const orderedProposals = computed(() => {

@@ -10,7 +10,7 @@
       <slot name="top"></slot>
       <div class="meta d-flex">
         <div class="flex-grow-1">
-          <span class="content-type">{{ t('proposal.proposal') }}</span>
+          <span class="content-type">{{ $t('proposal.proposal') }}</span>
           <Tag :name="p.prop_id" />
         </div>
         <slot name="actions">
@@ -28,7 +28,7 @@
         <Tag v-for="tag in extraTags" :key="tag" :name="tag" class="mr-1" />
       </div>
       <div class="author text-secondary d-flex flex-wrap align-end">
-        <AuthorName :author="p" icon :prepend-text="t('by')">
+        <AuthorName :author="p" icon :prepend-text="$t('by')">
           <template #appendMain>
             <Moment :date="p.created" class="ml-6" />
           </template>
@@ -48,7 +48,7 @@
             v-if="canAddDiscussionPost"
             @click="comment"
           >
-            {{ t('discussion.comment') }}
+            {{ $t('discussion.comment') }}
           </v-btn>
           <v-btn
             prepend-icon="mdi-chevron-up"
@@ -57,7 +57,7 @@
             v-if="showComments"
             @click="showComments = false"
           >
-            {{ t('discussion.hideComments') }}
+            {{ $t('discussion.hideComments') }}
           </v-btn>
           <v-btn
             prepend-icon="mdi-chevron-down"
@@ -66,7 +66,7 @@
             v-else-if="discussionPosts.length"
             @click="showComments = true"
           >
-            {{ t('discussion.comments', { count: discussionPosts.length }) }}
+            {{ $t('discussion.comments', { count: discussionPosts.length }) }}
           </v-btn>
           <slot name="buttons"></slot>
         </div>
@@ -92,7 +92,7 @@
               <template #activator="{ props }">
                 <v-list-item
                   prepend-icon="mdi-pencil"
-                  :title="t('edit')"
+                  :title="$t('edit')"
                   v-bind="props"
                 />
               </template>
@@ -100,14 +100,14 @@
             <QueryDialog
               v-if="canRetractProposal(p)"
               color="warning"
-              :text="t('proposal.retractPrompt')"
+              :text="$t('proposal.retractPrompt')"
               @confirmed="retract"
             >
               <template #activator="{ props }">
                 <v-list-item
                   base-color="warning"
                   prepend-icon="mdi-undo"
-                  :title="t('proposal.retract')"
+                  :title="$t('proposal.retract')"
                   v-bind="props"
                 />
               </template>
@@ -115,14 +115,14 @@
             <QueryDialog
               v-if="canDeleteProposal(p)"
               color="warning"
-              :text="t('proposal.deletePrompt')"
+              :text="$t('proposal.deletePrompt')"
               @confirmed="deleteProposal"
             >
               <template #activator="{ props }">
                 <v-list-item
                   base-color="warning"
                   prepend-icon="mdi-delete"
-                  :title="t('content.delete')"
+                  :title="$t('content.delete')"
                   v-bind="props"
                 />
               </template>
@@ -136,7 +136,7 @@
       <slot name="bottom"></slot>
     </v-sheet>
     <v-sheet rounded elevation="2" v-else class="proposal">
-      <em>{{ t('proposal.notFound') }}</em>
+      <em>{{ $t('proposal.notFound') }}</em>
     </v-sheet>
     <Comments
       class="proposal-comments mt-4 mb-8 ml-1 mr-4 mr-sm-8 mr-lg-12"
@@ -154,6 +154,7 @@ import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
 import Tag from '@/components/Tag.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useUnread from '@/composables/useUnread'
 
@@ -163,6 +164,7 @@ import Comments from '../discussions/Comments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
 import useTags from '../meetings/useTags'
+import AuthorName from '../meetings/AuthorName.vue'
 
 import { proposalType } from './contentTypes'
 import {
@@ -174,8 +176,6 @@ import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import { isRichtextProposal, type Proposal } from './types'
 import ProposalText from './ProposalText.vue'
-import AuthorName from '../meetings/AuthorName.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 const props = defineProps<{
   p: Proposal

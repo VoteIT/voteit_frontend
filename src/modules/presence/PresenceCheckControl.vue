@@ -1,11 +1,11 @@
 <template>
   <div v-if="presenceCheck">
-    <h2>{{ t('presence.ongoingCheck') }}</h2>
+    <h2>{{ $t('presence.ongoingCheck') }}</h2>
     <p>
-      <Moment :prepend="t('presence.openedAt')" :date="presenceCheck.opened" />
+      <Moment :prepend="$t('presence.openedAt')" :date="presenceCheck.opened" />
     </p>
     <p class="my-2">
-      {{ t('presence.presentCount', presenceCount) }}
+      {{ $t('presence.presentCount', presenceCount) }}
     </p>
     <v-btn
       :disabled="submitting"
@@ -15,7 +15,7 @@
       color="warning"
       prepend-icon="mdi-stop"
     >
-      {{ t('presence.closeCheck') }}
+      {{ $t('presence.closeCheck') }}
     </v-btn>
   </div>
   <div v-else class="text-center my-8">
@@ -27,14 +27,13 @@
       @click="open"
       prepend-icon="mdi-hand-wave"
     >
-      {{ t('presence.newCheck') }}
+      {{ $t('presence.newCheck') }}
     </v-btn>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
 import useChannel from '@/composables/useChannel'
@@ -45,7 +44,6 @@ import usePresence from './usePresence'
 import { canChangePresenceCheck } from './rules'
 import { presenceCheckClosed } from './events'
 
-const { t } = useI18n()
 const { presenceCheck, presenceCount, closeCheck, openCheck } = usePresence(
   useMeetingId()
 )

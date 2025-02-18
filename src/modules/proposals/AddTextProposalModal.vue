@@ -17,7 +17,7 @@
         prepend-icon="mdi-undo-variant"
         :disabled="!isModified"
         @click="reset"
-        >{{ t('reset') }}</v-btn
+        >{{ $t('reset') }}</v-btn
       >
     </template>
   </AddProposalModal>

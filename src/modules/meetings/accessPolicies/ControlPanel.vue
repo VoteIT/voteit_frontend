@@ -1,34 +1,34 @@
 <template>
   <div>
     <h2 class="mb-2">
-      {{ t('accessPolicy.settings') }}
+      {{ $t('accessPolicy.settings') }}
     </h2>
     <v-row>
       <v-col>
         <v-alert type="info" title="Bjud in deltagare">
           <p class="mb-2">
-            {{ t('accessPolicy.invitationsAlert') }}
+            {{ $t('accessPolicy.invitationsAlert') }}
           </p>
           <v-btn
             color="primary"
             :to="getMeetingRoute('participants')"
             prepend-icon="mdi-account"
           >
-            {{ t('meeting.participants') }}
+            {{ $t('meeting.participants') }}
           </v-btn>
         </v-alert>
         <v-switch
-          :label="t('meeting.visibleInLists')"
+          :label="$t('meeting.visibleInLists')"
           v-model="meetingListed"
           color="primary"
-          :messages="t('accessPolicy.listedMeetingHelp')"
+          :messages="$t('accessPolicy.listedMeetingHelp')"
         />
         <v-expand-transition>
           <div v-if="meetingListed && !hasActivePolicy">
             <v-alert
               type="warning"
-              :title="t('accessPolicy.noAccessPolicies')"
-              :text="t('accessPolicy.noAccessPoliciesAlert')"
+              :title="$t('accessPolicy.noAccessPolicies')"
+              :text="$t('accessPolicy.noAccessPoliciesAlert')"
               class="my-4"
             />
           </div>
@@ -42,7 +42,7 @@
             size="large"
             color="primary"
           >
-            {{ t('accessPolicies.automatic.add') }}
+            {{ $t('accessPolicies.automatic.add') }}
           </v-btn>
         </div>
         <v-card v-for="p in annotatedPolicies" :key="p.pk">
@@ -54,7 +54,7 @@
               color="primary"
               :modelValue="p.active"
               @update:modelValue="setActive(p, $event!)"
-              :label="t('active')"
+              :label="$t('active')"
               class="flex-grow-0"
               hide-details
             />
@@ -64,7 +64,7 @@
               {{ p.description }}
             </p>
             <h2 class="text-h6 mb-2">
-              {{ t('selectRoles') }}
+              {{ $t('selectRoles') }}
             </h2>
             <div>
               <v-chip-group
@@ -86,7 +86,7 @@
             <v-tooltip
               v-if="p.active"
               :model-value="copied"
-              :text="t('copied')"
+              :text="$t('copied')"
               location="top"
               :open-on-hover="false"
             >
@@ -98,18 +98,18 @@
                   variant="elevated"
                   @click="copy(meetingJoinUrl)"
                 >
-                  {{ t('meeting.copyUrl') }}
+                  {{ $t('meeting.copyUrl') }}
                 </v-btn>
               </template>
             </v-tooltip>
             <QueryDialog
-              :text="t('accessPolicy.confirmDelete')"
+              :text="$t('accessPolicy.confirmDelete')"
               color="warning"
               @confirmed="deletePolicy(p)"
             >
               <template #activator="{ props }">
                 <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
-                  {{ t('content.delete') }}
+                  {{ $t('content.delete') }}
                 </v-btn>
               </template>
             </QueryDialog>
@@ -125,15 +125,16 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClipboard } from '@vueuse/core'
 
+import QueryDialog from '@/components/QueryDialog.vue'
 import useAlert from '@/composables/useAlert'
 import { AccessPolicyType } from '@/contentTypes/types'
-import useMeeting from '@/modules/meetings/useMeeting'
 
-import useAccessPolicies from './useAccessPolicies'
+import useMeeting from '../useMeeting'
 import { MeetingRole } from '../types'
-import { meetingType } from '../contentTypes'
-import QueryDialog from '@/components/QueryDialog.vue'
 import { translateMeetingRole } from '../utils'
+
+import { meetingType } from '../contentTypes'
+import useAccessPolicies from './useAccessPolicies'
 
 const NON_MODIFIABLE_ROLES = Object.freeze([
   MeetingRole.Participant,

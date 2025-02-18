@@ -9,7 +9,7 @@
           :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
           @click="filterMenuOpen = !filterMenuOpen"
         >
-          {{ t('filter') }}
+          {{ $t('filter') }}
         </v-btn>
         <v-btn
           variant="text"

@@ -104,7 +104,7 @@ async function abstainVote() {
         @click="castVote"
         prepend-icon="mdi-vote"
       >
-        {{ t('poll.vote') }}
+        {{ $t('poll.vote') }}
       </v-btn>
       <v-btn
         color="warning"
@@ -113,7 +113,7 @@ async function abstainVote() {
         prepend-icon="mdi-cancel"
         class="ml-1"
       >
-        {{ t('poll.abstain') }}
+        {{ $t('poll.abstain') }}
       </v-btn>
     </div>
   </div>

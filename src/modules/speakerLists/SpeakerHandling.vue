@@ -163,7 +163,7 @@ ol.speaker-queue
     <v-col cols="12" order-sm="1" sm="5" md="5" class="speaker-lists">
       <div class="d-flex mb-3">
         <h2 class="flex-grow-1">
-          {{ t('speaker.listChoices') }}
+          {{ $t('speaker.listChoices') }}
         </h2>
         <v-btn-group>
           <v-btn
@@ -173,9 +173,9 @@ ol.speaker-queue
             @click="addSpeakerList()"
             size="small"
           >
-            {{ t('speaker.newList') }}
+            {{ $t('speaker.newList') }}
           </v-btn>
-          <v-menu :text="t('speaker.addQuick')" location="bottom right">
+          <v-menu :text="$t('speaker.addQuick')" location="bottom right">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -191,7 +191,7 @@ ol.speaker-queue
                 <template #activator="{ props }">
                   <v-list-item
                     v-bind="props"
-                    :title="t('speaker.addWithName')"
+                    :title="$t('speaker.addWithName')"
                   />
                 </template>
                 <template #default="{ close }">
@@ -204,14 +204,14 @@ ol.speaker-queue
                     <template #buttons="{ disabled }">
                       <div class="text-right">
                         <v-btn @click="close" variant="text">
-                          {{ t('cancel') }}
+                          {{ $t('cancel') }}
                         </v-btn>
                         <v-btn
                           color="primary"
                           :disabled="disabled"
                           type="submit"
                         >
-                          {{ t('save') }}
+                          {{ $t('save') }}
                         </v-btn>
                       </div>
                     </template>
@@ -256,7 +256,7 @@ ol.speaker-queue
                         <v-list-item
                           v-bind="props"
                           prepend-icon="mdi-pencil"
-                          :title="t('edit')"
+                          :title="$t('edit')"
                         />
                       </template>
                       <template #default="{ close }">
@@ -269,14 +269,14 @@ ol.speaker-queue
                           <template #buttons="{ disabled }">
                             <div class="text-right">
                               <v-btn @click="close" variant="text">
-                                {{ t('cancel') }}
+                                {{ $t('cancel') }}
                               </v-btn>
                               <v-btn
                                 color="primary"
                                 :disabled="disabled"
                                 type="submit"
                               >
-                                {{ t('save') }}
+                                {{ $t('save') }}
                               </v-btn>
                             </div>
                           </template>
@@ -287,7 +287,7 @@ ol.speaker-queue
                 </DropdownMenu>
               </div>
               <p>
-                {{ t('speaker.speakerCount', list.queue.length) }}
+                {{ $t('speaker.speakerCount', list.queue.length) }}
               </p>
             </div>
             <template v-if="canChangeSpeakerList">
@@ -296,28 +296,28 @@ ol.speaker-queue
                 <v-btn
                   v-if="isSelected"
                   @click="setActive(list, false)"
-                  :text="t('speaker.deactivateList')"
+                  :text="$t('speaker.deactivateList')"
                   variant="text"
                   class="mr-1"
                 />
                 <v-btn
                   v-else
                   @click="setActive(list)"
-                  :text="t('speaker.activateList')"
+                  :text="$t('speaker.activateList')"
                   variant="text"
                   class="mr-1"
                 />
                 <v-btn
                   v-if="list.state === SpeakerListState.Open"
                   @click="transitionList(list, 'close')"
-                  :text="t('speaker.closeList')"
+                  :text="$t('speaker.closeList')"
                   class="mr-1"
                   variant="text"
                 />
                 <v-btn
                   v-else
                   @click="transitionList(list, 'open')"
-                  :text="t('speaker.openList')"
+                  :text="$t('speaker.openList')"
                   class="mr-1"
                   variant="text"
                 />
@@ -328,7 +328,7 @@ ol.speaker-queue
               class="bg-success-lighten-4 rounded-b px-3 py-1"
             >
               <v-icon icon="mdi-television-play" color="success" class="mr-2" />
-              {{ t('speaker.listActive') }}
+              {{ $t('speaker.listActive') }}
             </div>
           </v-sheet>
         </v-item>

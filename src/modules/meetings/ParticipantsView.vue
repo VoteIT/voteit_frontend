@@ -16,7 +16,7 @@
             :pk="meetingId"
             :readonly-roles="readonlyRoles"
             :remove-confirm="removeConfirm"
-            :remove-confirm-text="t('meeting.confirmRemoveParticipant')"
+            :remove-confirm-text="$t('meeting.confirmRemoveParticipant')"
           >
             <template #filter>
               <div class="d-flex">
@@ -40,13 +40,13 @@
           <div v-if="canChangeRoles" class="d-flex flex-wrap mt-6">
             <UserSearch
               v-if="isOrganisationManager"
-              :label="t('meeting.addParticipant')"
+              :label="$t('meeting.addParticipant')"
               class="flex-grow-1"
               @submit="addUser"
               :filter="searchFilter"
             >
               <template #hint>
-                {{ t('invites.addUserInvitesWarning') }}
+                {{ $t('invites.addUserInvitesWarning') }}
               </template>
             </UserSearch>
             <div v-else class="flex-grow-1">
@@ -56,7 +56,7 @@
                     to="participants"
                     @click.prevent="currentTab = 'invites'"
                   >
-                    {{ t('invites.invites').toLocaleLowerCase() }}
+                    {{ $t('invites.invites').toLocaleLowerCase() }}
                   </router-link>
                 </template>
               </i18n-t>
@@ -69,7 +69,7 @@
                   variant="tonal"
                   color="primary"
                 >
-                  {{ t('download') }}
+                  {{ $t('download') }}
                 </v-btn>
               </template>
               <v-list>

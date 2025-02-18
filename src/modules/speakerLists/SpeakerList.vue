@@ -73,11 +73,11 @@ const fullscreenPath = computed(
         {{ list.title }}
       </h3>
       <p v-if="list.current" class="mb-2">
-        {{ t('speaker.currentlySpeaking') }}:
+        {{ $t('speaker.currentlySpeaking') }}:
         <strong><User :pk="list.current" /></strong>
       </p>
       <h4>
-        {{ t('speaker.queue') }}
+        {{ $t('speaker.queue') }}
         <v-btn
           :class="{ expanded: expandQueue }"
           variant="text"
@@ -103,7 +103,7 @@ const fullscreenPath = computed(
         </template>
       </div>
       <p v-else class="mb-2">
-        <em>{{ t('speaker.queueEmpty') }}</em>
+        <em>{{ $t('speaker.queueEmpty') }}</em>
       </p>
       <v-btn v-if="enterLeaveBtn" variant="elevated" v-bind="enterLeaveBtn" />
     </div>
@@ -114,7 +114,7 @@ const fullscreenPath = computed(
           v-if="fullscreenPath"
           color="primary"
           :to="fullscreenPath"
-          :text="t('speaker.fullscreen')"
+          :text="$t('speaker.fullscreen')"
           variant="text"
         />
         <v-btn
@@ -130,13 +130,13 @@ const fullscreenPath = computed(
           "
           variant="text"
         >
-          {{ t('speaker.manage') }}
+          {{ $t('speaker.manage') }}
         </v-btn>
       </div>
     </template>
     <div v-if="isActive" class="bg-success-lighten-4 rounded-b px-3 py-1">
       <v-icon icon="mdi-television-play" color="success" class="mr-2" />
-      {{ t('speaker.listActive') }}
+      {{ $t('speaker.listActive') }}
     </div>
   </v-sheet>
 </template>

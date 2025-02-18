@@ -70,7 +70,7 @@ const inviteData = computed(() => {
   </div>
   <v-list v-else-if="annotationList">
     <v-list-subheader>
-      {{ t('invites.annotate.annotatedData') }}
+      {{ $t('invites.annotate.annotatedData') }}
     </v-list-subheader>
     <v-list-item v-for="(props, i) in annotationList" :key="i" v-bind="props" />
   </v-list>

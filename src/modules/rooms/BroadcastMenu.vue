@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { autoEllipsis } from '@/utils'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -10,7 +9,6 @@ import useRoom from './useRoom'
 import { roomType } from './contentTypes'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 
-const { t } = useI18n()
 const {
   hasSpeakerLists,
   isBroadcasting,
@@ -54,16 +52,16 @@ async function savePauseMessage(pauseBroadcast = false) {
         :variant="isBroadcasting ? 'flat' : undefined"
         :color="isBroadcasting ? 'yellow' : undefined"
       >
-        {{ t('room.broadcast') }}
+        {{ $t('room.broadcast') }}
       </v-btn>
     </template>
     <HeaderMenu
       icon="mdi-broadcast"
       :icon-color="isBroadcasting ? 'warning' : undefined"
       :subtitle="
-        isBroadcasting ? t('room.isBroadcasting') : t('room.broadcastDesc')
+        isBroadcasting ? $t('room.isBroadcasting') : $t('room.broadcastDesc')
       "
-      :title="t('room.broadcast')"
+      :title="$t('room.broadcast')"
     >
       <v-list v-if="meetingRoom">
         <v-list-item
@@ -76,10 +74,10 @@ async function savePauseMessage(pauseBroadcast = false) {
           :active="meetingRoom.open"
           :subtitle="
             meetingRoom.open
-              ? t('room.isOpenDescription')
-              : t('room.isNotOpenDescription')
+              ? $t('room.isOpenDescription')
+              : $t('room.isNotOpenDescription')
           "
-          :title="t('room.isOpen')"
+          :title="$t('room.isOpen')"
           @click.stop="setOpen(!meetingRoom.open)"
         />
         <v-list-item
@@ -91,7 +89,7 @@ async function savePauseMessage(pauseBroadcast = false) {
           "
           :active="meetingRoom.send_sls"
           :disabled="!meetingRoom.open"
-          :title="t('room.displaySpeakers')"
+          :title="$t('room.displaySpeakers')"
           @click.stop="setSlsBroadcast(!meetingRoom.send_sls)"
         />
         <v-list-item
@@ -103,11 +101,11 @@ async function savePauseMessage(pauseBroadcast = false) {
           "
           :active="meetingRoom.send_proposals"
           :disabled="!meetingRoom.open"
-          :title="t('room.displayProposals')"
+          :title="$t('room.displayProposals')"
           @click.stop="setProposalBroadcast(!meetingRoom.send_proposals)"
         />
         <DefaultDialog
-          :title="t('room.pauseMessage')"
+          :title="$t('room.pauseMessage')"
           v-model="pauseEdit.isOpen"
         >
           <template #activator="{ props }">
@@ -120,7 +118,7 @@ async function savePauseMessage(pauseBroadcast = false) {
                 !meetingRoom.send_proposals &&
                 !!meetingRoom.body?.length
               "
-              :title="t('room.pauseMessage')"
+              :title="$t('room.pauseMessage')"
               :subtitle="
                 meetingRoom.body && autoEllipsis(meetingRoom.body, 20, true)
               "
@@ -128,27 +126,27 @@ async function savePauseMessage(pauseBroadcast = false) {
           </template>
           <template #default="{ close }">
             <v-alert type="info" class="my-3">
-              {{ t('room.pauseMessageDescription') }}
+              {{ $t('room.pauseMessageDescription') }}
             </v-alert>
             <RichtextEditor v-model="pauseEdit.body" class="mb-2" />
             <v-switch
               v-model="pauseEdit.show_time"
               color="primary"
-              :label="t('room.showClock')"
+              :label="$t('room.showClock')"
             />
             <div class="text-right">
-              <v-btn variant="text" @click="close" :text="t('cancel')" />
+              <v-btn variant="text" @click="close" :text="$t('cancel')" />
               <v-btn
                 color="primary"
                 @click="savePauseMessage()"
-                :text="t('save')"
+                :text="$t('save')"
               />
               <v-btn
                 class="ml-1"
                 prepend-icon="mdi-broadcast-off"
                 color="primary"
                 @click="savePauseMessage(true)"
-                :text="t('plenary.saveAndPauseBroadcast')"
+                :text="$t('plenary.saveAndPauseBroadcast')"
               />
             </div>
           </template>
@@ -158,13 +156,13 @@ async function savePauseMessage(pauseBroadcast = false) {
           v-if="isModerator"
           append-icon="mdi-chevron-right"
           :to="realTimeRoute"
-          :title="t('plenary.toRealTimeView')"
+          :title="$t('plenary.toRealTimeView')"
         />
         <v-list-item
           v-if="isModerator"
           append-icon="mdi-chevron-right"
           :to="getMeetingRoute('controlPanel', { panel: 'rooms' })"
-          :title="t('room.settings')"
+          :title="$t('room.settings')"
         />
       </v-list>
     </HeaderMenu>

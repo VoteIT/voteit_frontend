@@ -9,20 +9,20 @@
           icon="mdi-undo-variant"
           @click="clearFilters"
           :disabled="!isModified"
-          :title="t('defaultFilters')"
+          :title="$t('defaultFilters')"
         />
         <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
           <v-icon
             class="d-sm-none"
             :icon="isModified ? 'mdi-filter' : 'mdi-filter-outline'"
           />
-          <span class="d-none d-sm-inline">{{ t('sortAndFilter') }}</span>
+          <span class="d-none d-sm-inline">{{ $t('sortAndFilter') }}</span>
         </v-btn>
       </span>
     </template>
     <v-list density="comfortable" class="agenda-filters">
       <template v-if="activeFilter.tags.size">
-        <v-list-subheader class="tag-header">{{ t('tag') }}</v-list-subheader>
+        <v-list-subheader class="tag-header">{{ $t('tag') }}</v-list-subheader>
         <v-list-item>
           <Tag
             class="mr-1"
@@ -35,7 +35,7 @@
         </v-list-item>
         <v-divider />
       </template>
-      <v-list-subheader>{{ t('sortBy') }}</v-list-subheader>
+      <v-list-subheader>{{ $t('sortBy') }}</v-list-subheader>
       <v-list-item
         v-for="f in orders"
         :key="f.id"
@@ -50,7 +50,7 @@
         {{ f.label }}
       </v-list-item>
       <v-divider />
-      <v-list-subheader>{{ t('state') }}</v-list-subheader>
+      <v-list-subheader>{{ $t('state') }}</v-list-subheader>
       <v-list-item
         :prepend-icon="
           f.active ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'

@@ -153,7 +153,7 @@ defineExpose({
         <div class="d-flex mt-1">
           <v-spacer />
           <v-btn v-if="active" variant="text" @click="reset" size="small">
-            {{ t('cancel') }}
+            {{ $t('cancel') }}
           </v-btn>
           <v-btn
             color="primary"

@@ -2,6 +2,8 @@ import { sortBy } from 'lodash'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { stripHTML } from '@/utils'
+import { getUserRandomSortValue } from '@/composables/useAuthentication'
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
 import { getProposals } from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
@@ -15,8 +17,6 @@ import {
 import { pollPlugins } from './registry'
 import { PollState } from './types'
 import usePolls from './usePolls'
-import { stripHTML } from '@/utils'
-import { getUserRandomSortValue } from '@/composables/useAuthentication'
 
 const polls = usePolls()
 

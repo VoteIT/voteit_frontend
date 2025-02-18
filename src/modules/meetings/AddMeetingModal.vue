@@ -25,7 +25,7 @@
       />
       <template v-else-if="currentStep === 0">
         <v-text-field
-          :label="t('title')"
+          :label="$t('title')"
           :rules="[rules.required, rules.minLength(5), rules.maxLength(100)]"
           maxlength="100"
           v-model="formData.meeting.title"
@@ -34,8 +34,8 @@
           v-if="installableDialects"
           clearable
           item-value="name"
-          :label="t('meeting.dialect')"
-          :hint="t('meeting.dialectHint')"
+          :label="$t('meeting.dialect')"
+          :hint="$t('meeting.dialectHint')"
           :items="installableDialects"
           v-model="formData.meeting.install_dialect"
         >
@@ -43,7 +43,7 @@
             <v-list-item
               v-bind="{ ...props, ...item.props }"
               :subtitle="
-                item.raw.description ?? t('meeting.dialectNoDescription')
+                item.raw.description ?? $t('meeting.dialectNoDescription')
               "
             />
           </template>
@@ -52,35 +52,35 @@
       <template v-else-if="currentStep === 1">
         <v-checkbox
           hide-details
-          :label="t('room.create')"
+          :label="$t('room.create')"
           v-model="formData.createRoom"
         />
         <v-text-field
           :disabled="!formData.createRoom"
-          :label="t('title')"
+          :label="$t('title')"
           v-model="formData.room.title"
           :rules="[rules.required]"
         />
         <v-checkbox
           hide-details
           :disabled="!formData.createRoom"
-          :label="t('speaker.useSpeakerLists')"
+          :label="$t('speaker.useSpeakerLists')"
           :model-value="formData.createRoom && formData.createSpeakerSystem"
           @update:model-value="formData.createSpeakerSystem = !!$event"
         />
         <v-select
           :disabled="!formData.createRoom || !formData.createSpeakerSystem"
           :items="systemMethods"
-          :label="t('speaker.systemMethod')"
+          :label="$t('speaker.systemMethod')"
           v-model="formData.sls.method_name"
         />
         <v-expand-transition>
           <v-select
             v-if="formData.sls.method_name === SpeakerSystemMethod.Priority"
             :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-            :hint="t('speaker.orderMethod.maxTimesHint')"
+            :hint="$t('speaker.orderMethod.maxTimesHint')"
             itemValue="const"
-            :label="t('speaker.orderMethod.maxTimes')"
+            :label="$t('speaker.orderMethod.maxTimes')"
             :items="
               map(range(10), (n) => ({
                 const: n,
@@ -92,13 +92,13 @@
         </v-expand-transition>
         <v-select
           :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-          :hint="t('speaker.safePositionsHint')"
+          :hint="$t('speaker.safePositionsHint')"
           itemValue="const"
-          :label="t('speaker.safePositions')"
+          :label="$t('speaker.safePositions')"
           :items="
             map(range(3), (n) => ({
               const: n,
-              title: t('speaker.safePositionsValue', n)
+              title: $t('speaker.safePositionsValue', n)
             }))
           "
           v-model="formData.sls.safe_positions"
@@ -106,7 +106,7 @@
         <v-select
           multiple
           :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-          :label="t('speaker.speakerRoles')"
+          :label="$t('speaker.speakerRoles')"
           :items="roleItems"
           v-model="formData.sls.meeting_roles_to_speaker"
         />
@@ -130,14 +130,14 @@
       </template>
       <div class="text-right mt-3">
         <v-btn variant="text" @click="$emit('close')" class="mr-2">
-          {{ t('cancel') }}
+          {{ $t('cancel') }}
         </v-btn>
         <v-btn-group>
           <v-btn
             color="secondary"
             prepend-icon="mdi-chevron-left"
             :disabled="currentStep === 0"
-            :text="t('navigation.back')"
+            :text="$t('navigation.back')"
             @click="prevStep"
           />
           <v-btn

@@ -1,7 +1,7 @@
 <template>
   <div>
     <HelpSection :id="`roleMatrix-${contentType.name}`" start-open class="mb-4">
-      <p class="mb-4">{{ t('role.help.intro') }}</p>
+      <p class="mb-4">{{ $t('role.help.intro') }}</p>
       <ul>
         <li
           class="mb-1"
@@ -26,10 +26,10 @@
       <thead>
         <tr>
           <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
-            {{ t('name') }} ({{ allRoles.length }})
+            {{ $t('name') }} ({{ allRoles.length }})
           </th>
           <th v-if="admin">
-            {{ t('email') }}
+            {{ $t('email') }}
           </th>
           <th
             v-for="{ count, icon, name, title } in columnTitles"
@@ -51,7 +51,7 @@
       <tbody>
         <tr v-if="!userMatrix.length">
           <td class="text-center" :colspan="(admin ? 3 : 1) + columns.length">
-            <em>{{ t('noFilteredRoles', allRoles.length) }}</em>
+            <em>{{ $t('noFilteredRoles', allRoles.length) }}</em>
           </td>
         </tr>
         <tr

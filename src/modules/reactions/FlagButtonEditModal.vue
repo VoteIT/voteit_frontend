@@ -84,7 +84,7 @@ async function save() {
     <main>
       <Widget>
         <h2 class="mb-1">
-          {{ t('preview') }}
+          {{ $t('preview') }}
         </h2>
         <FlagButton
           :button="transformedData"
@@ -104,17 +104,17 @@ async function save() {
       >
         <v-text-field
           required
-          :label="t('title')"
+          :label="$t('title')"
           v-model="formData.title"
           :rules="[rules.required, rules.maxLength(20)]"
         />
         <v-text-field
-          :label="t('description')"
+          :label="$t('description')"
           v-model="formData.description"
           :rules="[rules.maxLength(100)]"
         />
         <div>
-          <label>{{ t('color') }}</label>
+          <label>{{ $t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
             <v-item
               v-for="value in Object.values(ThemeColor)"
@@ -132,7 +132,7 @@ async function save() {
           </v-item-group>
         </div>
         <div>
-          <label>{{ t('icon') }}</label>
+          <label>{{ $t('icon') }}</label>
           <v-item-group class="btn-controls" v-model="formData.icon">
             <v-item
               v-for="value in Object.values(ReactionIcon)"
@@ -163,7 +163,7 @@ async function save() {
             color="secondary"
             @click="close"
           >
-            {{ t('cancel') }}
+            {{ $t('cancel') }}
           </v-btn>
           <v-btn
             type="submit"
@@ -171,7 +171,7 @@ async function save() {
             prepend-icon="mdi-check"
             :disabled="!isValid || submitting"
           >
-            {{ formData.pk ? t('update') : t('create') }}
+            {{ formData.pk ? $t('update') : $t('create') }}
           </v-btn>
         </div>
       </v-form>

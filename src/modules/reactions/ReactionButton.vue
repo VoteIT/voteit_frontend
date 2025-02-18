@@ -19,7 +19,7 @@
     <template #userList>
       <UserList :userIds="reactionUsers" v-if="count" />
       <em v-else>
-        {{ t('reaction.none') }}
+        {{ $t('reaction.none') }}
       </em>
     </template>
   </RealReactionButton>
@@ -27,7 +27,6 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import UserList from '@/components/UserList.vue'
 
@@ -47,7 +46,6 @@ const props = defineProps<{
   relation: ReactionRelation
 }>()
 
-const { t } = useI18n()
 const {
   fetchReactions,
   getUserReaction,

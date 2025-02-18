@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { durationToString } from '@/utils'
 import User from '@/components/User.vue'
@@ -29,7 +28,6 @@ const props = defineProps<{
   list: SpeakerList
 }>()
 
-const { t } = useI18n()
 const { speakerHistory } = useSpeakerList(computed(() => props.list.pk))
 
 const speakerHistoryExpanded = ref(false)
@@ -68,7 +66,7 @@ async function deleteHistory(pk: number) {
 <template>
   <div v-if="list && annotatedSpeakerHistory.length">
     <h2>
-      {{ t('speaker.history') }}
+      {{ $t('speaker.history') }}
     </h2>
     <v-list bg-color="background">
       <v-list-item
@@ -86,7 +84,7 @@ async function deleteHistory(pk: number) {
         </v-list-item-subtitle>
         <template #append>
           <span class="btn-group d-flex flex-nowrap">
-            <DefaultDialog :title="t('speaker.editSpeakerTime')">
+            <DefaultDialog :title="$t('speaker.editSpeakerTime')">
               <template #activator="{ props }">
                 <v-btn size="x-small" color="secondary" v-bind="props">
                   <v-icon icon="mdi-pencil" />
@@ -102,7 +100,7 @@ async function deleteHistory(pk: number) {
                   <template #buttons>
                     <div class="text-right">
                       <v-btn type="submit" color="primary">
-                        {{ t('save') }}
+                        {{ $t('save') }}
                       </v-btn>
                     </div>
                   </template>
@@ -111,7 +109,7 @@ async function deleteHistory(pk: number) {
             </DefaultDialog>
             <QueryDialog
               @confirmed="deleteHistory(pk)"
-              :text="t('speaker.confirmSpeakerDeletion')"
+              :text="$t('speaker.confirmSpeakerDeletion')"
               color="warning"
             >
               <template #activator="{ props }">
@@ -130,7 +128,7 @@ async function deleteHistory(pk: number) {
         @click="speakerHistoryExpanded = !speakerHistoryExpanded"
         :append-icon="`mdi-chevron-${speakerHistoryExpanded ? 'up' : 'down'}`"
       >
-        {{ speakerHistoryExpanded ? t('collapse') : t('expand') }}
+        {{ speakerHistoryExpanded ? $t('collapse') : $t('expand') }}
       </v-btn>
     </v-list>
   </div>

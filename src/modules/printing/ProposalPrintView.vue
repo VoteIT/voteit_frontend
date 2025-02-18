@@ -4,7 +4,7 @@
       <v-sheet class="d-print-none pa-4 mb-8" :border="true" rounded>
         <div class="d-flex">
           <h2>
-            {{ t('printing.selectProposals') }}
+            {{ $t('printing.selectProposals') }}
           </h2>
           <v-fade-transition>
             <v-btn
@@ -15,7 +15,7 @@
               size="small"
               @click="allSelected = true"
             >
-              {{ t('printing.selectAll') }}
+              {{ $t('printing.selectAll') }}
             </v-btn>
           </v-fade-transition>
           <v-spacer />
@@ -40,7 +40,7 @@
       <v-alert
         type="info"
         class="my-8 d-print-none"
-        :text="t('printing.proposalHelpText')"
+        :text="$t('printing.proposalHelpText')"
       />
       <div
         v-for="p in selectedProposals"
@@ -76,7 +76,6 @@ import {
   onBeforeUnmount,
   onMounted
 } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
 import useDefaults from '@/composables/useDefaults'
@@ -89,7 +88,6 @@ import useProposals from '../proposals/useProposals'
 
 import usePrinting from './usePrinting'
 
-const { t } = useI18n()
 useMeetingTitle('Printing') // TODO
 const { cols } = useDefaults()
 const agendaId = computed(() => Number(route.params.aid))

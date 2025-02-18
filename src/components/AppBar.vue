@@ -7,7 +7,7 @@
       color="background"
       @click.stop="toggleNavDrawerEvent.emit()"
     />
-    <router-link to="/" :title="t('home.home')">
+    <router-link to="/" :title="$t('home.home')">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
     <v-app-bar-title>
@@ -31,7 +31,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
@@ -43,7 +42,6 @@ import UserAvatar from './UserAvatar.vue'
 
 defineProps<{ hasNavDrawer?: boolean; title?: string }>()
 
-const { t } = useI18n()
 const { user } = useAuthentication()
 const { organisation } = useOrganisation()
 

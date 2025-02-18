@@ -225,7 +225,7 @@ const ongoingPollCount = computed(
         <v-fade-transition>
           <v-btn
             v-if="toActiveProposals"
-            :text="t('plenary.toActiveAgendaItem')"
+            :text="$t('plenary.toActiveAgendaItem')"
             :to="toActiveProposals"
             variant="tonal"
           />
@@ -243,15 +243,15 @@ const ongoingPollCount = computed(
               <v-btn
                 append-icon="mdi-chevron-down"
                 v-bind="props"
-                :text="t('poll.poll', 2)"
+                :text="$t('poll.poll', 2)"
               />
             </template>
             <v-list>
-              <v-list-subheader :title="t('plenary.startPoll')" />
+              <v-list-subheader :title="$t('plenary.startPoll')" />
               <DefaultDialog
                 v-for="{ id, settings, ...item } in pollMethodMenu"
                 :key="id"
-                :title="roomOpenPoll?.title ?? t('plenary.startPoll')"
+                :title="roomOpenPoll?.title ?? $t('plenary.startPoll')"
                 @close="setPoll(null)"
               >
                 <template #activator="{ props }">
@@ -290,7 +290,7 @@ const ongoingPollCount = computed(
             <v-btn
               append-icon="mdi-chevron-down"
               v-bind="props"
-              :text="t('filter')"
+              :text="$t('filter')"
             />
           </template>
           <v-list>
@@ -306,7 +306,7 @@ const ongoingPollCount = computed(
                   :prepend-icon="state.icon"
                   :active="isSelected"
                   :title="title"
-                  :subtitle="t('proposal.proposalCount', { count }, count)"
+                  :subtitle="$t('proposal.proposalCount', { count }, count)"
                 />
               </v-item>
             </v-item-group>
@@ -317,7 +317,7 @@ const ongoingPollCount = computed(
         <v-fade-transition>
           <v-btn
             v-if="toActiveSpeakerList"
-            :text="t('plenary.toActiveSpeakerList')"
+            :text="$t('plenary.toActiveSpeakerList')"
             :to="toActiveSpeakerList"
             variant="tonal"
           />
@@ -334,21 +334,21 @@ const ongoingPollCount = computed(
         class="mb-6"
         :border="true"
         type="info"
-        :title="t('room.displaySpeakers')"
-        :text="t('room.displaySpeakersDescription')"
+        :title="$t('room.displaySpeakers')"
+        :text="$t('room.displaySpeakersDescription')"
       >
         <template #append>
           <v-btn
             @click="setSlsBroadcast()"
             prepend-icon="mdi-bullhorn"
-            :text="t('room.displaySpeakers')"
+            :text="$t('room.displaySpeakers')"
           />
         </template>
       </v-alert>
       <SpeakerHandling v-if="speakerSystem" :system-id="speakerSystem.pk" />
       <p v-else>
         <em>
-          {{ t('plenary.noSpeakerSystem') }}
+          {{ $t('plenary.noSpeakerSystem') }}
         </em>
       </p>
     </template>

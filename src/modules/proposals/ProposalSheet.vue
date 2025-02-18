@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ComponentPublicInstance, onBeforeUnmount, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import Tag from '@/components/Tag.vue'
 
@@ -10,8 +9,6 @@ import { ProposalHighlight, isTextHighlight } from '../rooms/types'
 
 import { Proposal } from './types'
 import ProposalText from './ProposalText.vue'
-
-const { t } = useI18n()
 
 const props = defineProps<{
   proposal: Proposal
@@ -90,7 +87,7 @@ onBeforeUnmount(evt.dispose)
       </div>
       <ProposalText :proposal="proposal" ref="textEl" />
       <div class="text-secondary">
-        <AuthorName :author="proposal" icon :prepend-text="t('by')" />
+        <AuthorName :author="proposal" icon :prepend-text="$t('by')" />
       </div>
       <slot name="append"></slot>
     </div>

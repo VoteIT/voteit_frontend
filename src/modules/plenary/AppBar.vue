@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
@@ -16,7 +15,6 @@ import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import usePlenary from './usePlenary'
 
-const { t } = useI18n()
 const router = useRouter()
 const { meeting, meetingId, meetingRoute } = useMeeting()
 const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
@@ -63,7 +61,7 @@ async function setProposalsAllowed(value: boolean | null) {
     </router-link>
     <v-app-bar-title class="text-truncate">
       <small class="position-absolute">
-        {{ t('plenary.view') }}
+        {{ $t('plenary.view') }}
       </small>
       <v-breadcrumbs :items="breadcrumbs" />
     </v-app-bar-title>

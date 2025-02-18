@@ -21,14 +21,13 @@
       v-if="hasMultipleActive"
       @click="dismiss()"
     >
-      {{ t('dismissAll') }}
+      {{ $t('dismissAll') }}
     </v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeMount, reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { clearAlertsEvent, openAlertEvent } from '@/utils/events'
 import { Alert, AlertLevel } from '@/composables/types'
@@ -40,7 +39,6 @@ const DEFAULTS = {
   active: true
 }
 
-const { t } = useI18n()
 const alerts = reactive<Alert[]>([])
 
 const hasMultipleActive = computed(

@@ -23,7 +23,7 @@
         </v-btn>
         <DefaultDialog
           @update:modelValue="$event && emit('listOpen')"
-          :title="t('reaction.peopleReacted')"
+          :title="$t('reaction.peopleReacted')"
         >
           <template #activator="{ props }">
             <v-btn
@@ -46,7 +46,6 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { ReactionButton } from './types'
@@ -61,8 +60,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:modelValue', 'listOpen'])
-
-const { t } = useI18n()
 
 const meetsTarget = computed(() => {
   if (!props.button.target) return

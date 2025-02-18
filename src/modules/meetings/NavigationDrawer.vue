@@ -18,7 +18,7 @@
             "
             @click="filterMenuOpen = !filterMenuOpen"
           >
-            {{ t('filter') }}
+            {{ $t('filter') }}
           </v-btn>
           <v-btn
             variant="text"

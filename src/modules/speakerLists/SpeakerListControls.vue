@@ -151,7 +151,7 @@ onKeyStroke(
     </div>
     <div class="d-flex no-keynav" v-if="canManageSystem">
       <UserSearch
-        :label="t('speaker.addByName')"
+        :label="$t('speaker.addByName')"
         :filter="userSearchFilter"
         @submit="moderatorEnterList"
         :params="userSearchParams"
@@ -161,7 +161,7 @@ onKeyStroke(
       <template v-if="hasParticipantNumbers">
         <div style="width: 10px"></div>
         <v-text-field
-          :label="t('speaker.addByParticipantNumber')"
+          :label="$t('speaker.addByParticipantNumber')"
           class="mb-0 flex-grow-1"
           v-model="participantNumberInput"
           @keydown.enter="addParticipantNumbers()"
@@ -169,7 +169,7 @@ onKeyStroke(
       </template>
     </div>
     <p v-else>
-      <em>{{ t('speaker.cantManageList') }}</em>
+      <em>{{ $t('speaker.cantManageList') }}</em>
     </p>
     <v-sheet elevation="4" rounded="lg" v-if="currentSpeaker" class="my-4 pa-3">
       <div class="d-flex mb-2 align-center">
@@ -218,7 +218,7 @@ onKeyStroke(
       </template>
     </v-list>
     <p v-else class="mt-4">
-      <em>{{ t('speaker.queueEmpty') }}</em>
+      <em>{{ $t('speaker.queueEmpty') }}</em>
     </p>
   </div>
 </template>

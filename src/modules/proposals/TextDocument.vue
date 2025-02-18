@@ -43,7 +43,7 @@
                   color="primary"
                   v-bind="props"
                 >
-                  {{ t('proposal.change') }}
+                  {{ $t('proposal.change') }}
                 </v-btn>
               </template>
             </AddTextProposalModal>

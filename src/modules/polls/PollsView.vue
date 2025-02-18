@@ -3,7 +3,7 @@
     <v-col offset-lg="2" lg="8">
       <header class="d-flex align-end mb-4">
         <h1 class="flex-grow-1">
-          {{ t('poll.all') }}
+          {{ $t('poll.all') }}
         </h1>
         <v-btn
           v-if="canAddPoll"
@@ -11,14 +11,14 @@
           prepend-icon="mdi-star-plus"
           :to="toAddPoll"
         >
-          {{ t('poll.new') }}
+          {{ $t('poll.new') }}
         </v-btn>
       </header>
       <v-divider />
       <PollList groupClass="mt-4" pollClass="my-3" v-model="pollStatesOpen">
         <template v-slot="{ empty }">
           <p v-if="empty">
-            <em>{{ t('poll.noPublishedPolls') }}</em>
+            <em>{{ $t('poll.noPublishedPolls') }}</em>
           </p>
         </template>
       </PollList>

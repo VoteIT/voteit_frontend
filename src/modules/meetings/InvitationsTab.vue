@@ -1,17 +1,17 @@
 <template>
   <v-alert
     class="mb-4"
-    :title="t('invites.helpTextTitle')"
-    :text="t('invites.helpTextBody')"
+    :title="$t('invites.helpTextTitle')"
+    :text="$t('invites.helpTextBody')"
     color="primary"
     icon="mdi-email-off"
   />
-  <v-toolbar color="secondary" :title="t('invites.existing')">
+  <v-toolbar color="secondary" :title="$t('invites.existing')">
     <v-tooltip
       v-if="existingInviteScopes.length === 1"
       :modelValue="copied"
       location="top"
-      :text="t('copied')"
+      :text="$t('copied')"
       :open-on-hover="false"
     >
       <template #activator="{ props }">
@@ -21,7 +21,7 @@
           @click="copyFilteredData()"
           :color="copied ? 'success' : undefined"
           :variant="copied ? 'elevated' : 'text'"
-          :title="t('invites.copyMatchingTooltip')"
+          :title="$t('invites.copyMatchingTooltip')"
         >
           <v-icon>mdi-content-copy</v-icon>
         </v-btn>
@@ -33,7 +33,7 @@
           <v-tooltip
             :modelValue="copied"
             location="top"
-            :text="t('copied')"
+            :text="$t('copied')"
             :open-on-hover="false"
           >
             <template #activator="{ props }">
@@ -59,7 +59,7 @@
       :color="filterMenu ? 'secondary-lighten-2' : undefined"
     >
       <v-icon start>mdi-filter-menu</v-icon>
-      {{ t('filter') }}
+      {{ $t('filter') }}
     </v-btn>
     <v-btn
       class="mr-2 d-md-none"
@@ -69,14 +69,14 @@
     >
       <v-icon>mdi-filter-menu</v-icon>
     </v-btn>
-    <DefaultDialog v-if="scopeItems.length === 1" :title="t('invites.add')">
+    <DefaultDialog v-if="scopeItems.length === 1" :title="$t('invites.add')">
       <template #activator="{ props }">
         <v-btn
           v-bind="props"
           prepend-icon="mdi-account-multiple-plus"
           class="text-no-wrap"
         >
-          {{ t('invites.add') }}
+          {{ $t('invites.add') }}
         </v-btn>
       </template>
       <template #default="{ close }">
@@ -94,14 +94,14 @@
           append-icon="mdi-chevron-down"
           class="text-no-wrap"
         >
-          {{ t('invites.add') }}
+          {{ $t('invites.add') }}
         </v-btn>
       </template>
       <v-list>
         <DefaultDialog
           v-for="{ icon, title, value } in scopeItems"
           :key="value"
-          :title="t('invites.add')"
+          :title="$t('invites.add')"
         >
           <template #activator="{ props }">
             <v-list-item v-bind="props" :title="title" :prepend-icon="icon" />
@@ -110,11 +110,11 @@
             <InvitationModal :type="value" :meeting="meetingId" @done="close" />
           </template>
         </DefaultDialog>
-        <DefaultDialog :title="t('invites.add')">
+        <DefaultDialog :title="$t('invites.add')">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
-              :title="t('invites.mixed.typeLabel')"
+              :title="$t('invites.mixed.typeLabel')"
               prepend-icon="mdi-account-star"
             />
           </template>
@@ -125,10 +125,10 @@
       </v-list>
     </v-menu>
     <v-btn-group variant="text" color="white" density="compact">
-      <DefaultDialog :title="t('invites.annotate.title')">
+      <DefaultDialog :title="$t('invites.annotate.title')">
         <template #activator="{ props }">
           <v-btn prepend-icon="mdi-badge-account" v-bind="props">
-            {{ t('invites.annotate.title') }}
+            {{ $t('invites.annotate.title') }}
           </v-btn>
         </template>
         <template #default="{ close }">
@@ -145,7 +145,7 @@
           <QueryDialog
             v-for="{ name, title } in clearableDataTypes"
             :key="name"
-            :text="t('invites.annotate.confirmClearType', { title })"
+            :text="$t('invites.annotate.confirmClearType', { title })"
             color="warning"
             @confirmed="clearAnnotationType(name)"
           >
@@ -153,7 +153,7 @@
               <v-list-item
                 v-bind="props"
                 prepend-icon="mdi-delete-forever"
-                :title="t('invites.annotate.clearType', { title })"
+                :title="$t('invites.annotate.clearType', { title })"
               />
             </template>
           </QueryDialog>
@@ -165,24 +165,24 @@
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
       <div class="pa-4">
         <v-text-field
-          :label="t('search')"
+          :label="$t('search')"
           v-model="inviteFilter.search"
           clearable
         />
         <CheckboxMultipleSelect
           v-model="inviteFilter.states"
           :settings="{ options: stateLabels }"
-          :label="t('invites.filterOnStatus')"
+          :label="$t('invites.filterOnStatus')"
         />
         <CheckboxMultipleSelect
           v-model="inviteFilter.roles"
           :settings="{ options: roleLabelsEditable }"
-          :label="t('invites.filterOnRoles')"
+          :label="$t('invites.filterOnRoles')"
           :requiredValues="[MeetingRole.Participant]"
         />
         <v-switch
           v-model="inviteFilter.exactRoles"
-          :label="t('invites.filterMatchRoles')"
+          :label="$t('invites.filterMatchRoles')"
         />
       </div>
     </v-sheet>
@@ -203,13 +203,13 @@
           {{ typeLabel }}
         </th>
         <th>
-          {{ t('roles') }}
+          {{ $t('roles') }}
         </th>
         <th v-if="hasAnnotations">
-          {{ t('invites.annotate.annotated') }}
+          {{ $t('invites.annotate.annotated') }}
         </th>
         <th>
-          {{ t('state') }}
+          {{ $t('state') }}
         </th>
       </tr>
     </thead>
@@ -242,7 +242,7 @@
             <th v-if="hasAnnotations">
               <DefaultDialog
                 v-if="invite.has_annotations"
-                :title="t('invites.annotate.annotatedTitle')"
+                :title="$t('invites.annotate.annotatedTitle')"
               >
                 <template #activator="{ props }">
                   <v-icon v-bind="props" icon="mdi-badge-account" />
@@ -251,7 +251,7 @@
                   <InvitationAnnotation :invite="invite" />
                   <div class="text-right">
                     <v-btn @click="close" color="primary">
-                      {{ t('close') }}
+                      {{ $t('close') }}
                     </v-btn>
                   </div>
                 </template>
@@ -283,7 +283,7 @@
     <v-sheet rounded border v-show="selectedInvites.length">
       <div class="ma-4">
         <h2 class="mb-2">
-          {{ t('invites.bulkChange', selectedInvites.length) }}
+          {{ $t('invites.bulkChange', selectedInvites.length) }}
         </h2>
         <v-btn
           prepend-icon="mdi-undo"
@@ -292,7 +292,7 @@
           @click="revokeSelected"
           class="mr-1"
         >
-          {{ t('invites.revoke') }}
+          {{ $t('invites.revoke') }}
         </v-btn>
         <v-btn
           prepend-icon="mdi-delete"
@@ -300,7 +300,7 @@
           :disabled="!selectedHasDeletable"
           @click="deleteSelected"
         >
-          {{ t('content.delete') }}
+          {{ $t('content.delete') }}
         </v-btn>
       </div>
     </v-sheet>
@@ -316,20 +316,20 @@ import { chunk, isEqual } from 'lodash'
 import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-
+import QueryDialog from '@/components/QueryDialog.vue'
 import useChannel from '@/composables/useChannel'
 import usePermission from '@/composables/usePermission'
+
+import { invitationScopes } from '../organisations/registry'
 
 import useMeeting from './useMeeting'
 import useMeetingInvites from './useMeetingInvites'
 import { canDeleteMeetingInvite } from './rules'
 import { meetingInviteType } from './contentTypes'
 import { MeetingInvite, MeetingRole } from './types'
-import { invitationScopes } from '../organisations/registry'
 import InvitationModal from './InvitationModal.vue'
 import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
 import InvitationAnnotation from './InvitationAnnotation.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import useInviteAnnotations from './useInviteAnnotations'
 import { translateInviteType, translateMeetingRole } from './utils'
 import { meetingInviteStates } from './workflowStates'

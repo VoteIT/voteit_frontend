@@ -16,7 +16,7 @@
           />
         </v-expansion-panel-title>
         <v-expansion-panel-text>
-          {{ t('poll.IRV.repeatedRoundResult') }}
+          {{ $t('poll.IRV.repeatedRoundResult') }}
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -35,11 +35,12 @@
 </template>
 
 <script lang="ts" setup>
-import useProposals from '@/modules/proposals/useProposals'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Tag from '@/components/Tag.vue'
+import useProposals from '@/modules/proposals/useProposals'
+
 import { ScottishSTVResult } from './types'
 import { translateSTVStatus } from './utils'
 

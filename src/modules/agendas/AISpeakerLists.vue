@@ -58,11 +58,11 @@ const manageSpeakerListsMenu = computed(() => {
 <template>
   <Dropdown
     v-if="speakerLists.length || manageSpeakerListsMenu.length"
-    :title="t('speaker.lists', speakerLists.length)"
+    :title="$t('speaker.lists', speakerLists.length)"
     modelValue
   >
     <template #actions v-if="manageSpeakerListsMenu.length">
-      <v-tooltip :text="t('speaker.manageLists')">
+      <v-tooltip :text="$t('speaker.manageLists')">
         <template #activator="{ props }">
           <DropdownMenu
             v-if="manageSpeakerListsMenu.length > 1"

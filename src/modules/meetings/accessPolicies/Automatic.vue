@@ -1,7 +1,7 @@
 <template>
   <div>
     <p class="mb-1">
-      {{ t('accessPolicies.automatic.joinDescription') }}
+      {{ $t('accessPolicies.automatic.joinDescription') }}
     </p>
     <div class="mb-4">
       <v-chip v-for="role in policy.roles_given" :key="role">
@@ -15,7 +15,7 @@
         :disabled="submitting"
         prepend-icon="mdi-door-open"
         @click="joinNow()"
-        >{{ t('join.now') }}</v-btn
+        >{{ $t('join.now') }}</v-btn
       >
     </div>
   </div>

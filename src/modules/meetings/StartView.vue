@@ -110,7 +110,7 @@ function submit() {
       </header>
       <v-alert
         v-if="meeting.state == MeetingState.Deleting"
-        :text="t('meeting.markedForDeleteWarn')"
+        :text="$t('meeting.markedForDeleteWarn')"
         type="warning"
         class="my-2"
       />

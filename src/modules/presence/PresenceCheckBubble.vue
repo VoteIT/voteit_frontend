@@ -1,11 +1,11 @@
 <template>
   <div>
     <h2>
-      {{ t('presence.check') }}
+      {{ $t('presence.check') }}
     </h2>
     <p class="my-2">
       {{
-        userPresence ? t('presence.presenceNoted') : t('presence.notePresent')
+        userPresence ? $t('presence.presenceNoted') : $t('presence.notePresent')
       }}
     </p>
     <v-btn
@@ -15,7 +15,7 @@
       :disabled="working"
       :loading="working"
     >
-      {{ userPresence ? t('undo') : t('presence.imHere') }}
+      {{ userPresence ? $t('undo') : $t('presence.imHere') }}
     </v-btn>
     <template v-if="canChange">
       <v-divider class="mt-4 mb-2" />
@@ -26,7 +26,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import useAlert from '@/composables/useAlert'
 import useMeetingId from '../meetings/useMeetingId'
@@ -38,7 +37,6 @@ import PresenceCheckControl from './PresenceCheckControl.vue'
 defineProps<{ modelValue?: boolean }>()
 const emit = defineEmits(['update:modelValue'])
 
-const { t } = useI18n()
 const { alert } = useAlert()
 const { presenceCheck, userPresence, isPresent, changePresence } = usePresence(
   useMeetingId()

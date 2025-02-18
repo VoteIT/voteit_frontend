@@ -140,10 +140,10 @@ async function save() {
       <div class="d-flex mt-1">
         <v-spacer />
         <v-btn @click="cancel" variant="text" size="small">
-          {{ t('cancel') }}
+          {{ $t('cancel') }}
         </v-btn>
         <v-btn type="submit" color="primary" @click="save" size="small">
-          {{ t('save') }}
+          {{ $t('save') }}
         </v-btn>
       </div>
     </div>

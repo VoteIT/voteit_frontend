@@ -5,6 +5,8 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
+import useErrorHandler from '@/composables/useErrorHandler'
+
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { AgendaState, AgendaTransition } from '../agendas/types'
@@ -18,7 +20,6 @@ import { filterProposals } from '../proposals/useProposals'
 import { ProposalState } from '../proposals/types'
 
 import usePlenary from './usePlenary'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 interface IAlertInfo {
   actions?: {

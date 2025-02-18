@@ -5,12 +5,12 @@
   </span>
   <span v-else-if="delegatedFrom.length">
     <DefaultDialog
-      :title="t('meeting.groups.delegatedFrom', delegatedFrom.length)"
+      :title="$t('meeting.groups.delegatedFrom', delegatedFrom.length)"
     >
       <template #activator="{ props }">
         <v-chip
           v-bind="props"
-          :text="t('meeting.groups.delegatedFrom', delegatedFrom.length)"
+          :text="$t('meeting.groups.delegatedFrom', delegatedFrom.length)"
         />
       </template>
       <template #default="{ close }">
@@ -20,12 +20,12 @@
             :key="pk"
             prepend-icon="mdi-account-group"
             :title="title"
-            :subtitle="t('poll.result.voteCount', votes || 0)"
+            :subtitle="$t('poll.result.voteCount', votes || 0)"
           />
         </v-list>
         <div class="text-right">
           <v-btn variant="text" @click="close">
-            {{ t('close') }}
+            {{ $t('close') }}
           </v-btn>
         </div>
       </template>
@@ -38,25 +38,24 @@
     hide-details
     density="compact"
     :items="delegateOptions"
-    :label="t('meeting.groups.delegateTo')"
+    :label="$t('meeting.groups.delegateTo')"
   />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
+
 import useMeetingGroups from '../useMeetingGroups'
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeeting from '../useMeeting'
-import { useI18n } from 'vue-i18n'
 import { meetingGroupType } from '../contentTypes'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
-const { t } = useI18n()
 
 const { canChange, meetingId } = useMeeting()
 const { meetingGroups, getMeetingGroup } = useMeetingGroups(meetingId)

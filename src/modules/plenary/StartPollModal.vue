@@ -93,10 +93,10 @@ onMounted(() => {
     </p>
     <div class="text-right">
       <v-btn variant="text" @click="$emit('cancel')">
-        {{ t('cancel') }}
+        {{ $t('cancel') }}
       </v-btn>
       <v-btn color="warning" @click="createPoll">
-        {{ t('plenary.startPoll') }}
+        {{ $t('plenary.startPoll') }}
       </v-btn>
     </div>
   </div>

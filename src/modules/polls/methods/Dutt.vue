@@ -22,7 +22,7 @@
                 :disabled="disabled"
                 :modelValue="isSelected"
                 hide-details
-                :label="t('select')"
+                :label="$t('select')"
                 class="d-inline-block mb-n2"
                 density="compact"
               />
@@ -52,7 +52,6 @@ const props = defineProps<{
   proposals: Proposal[]
 }>()
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'update:modelValue', vote?: DuttVote): void
 }>()

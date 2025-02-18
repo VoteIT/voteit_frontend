@@ -93,7 +93,7 @@ onBeforeUnmount(evt.dispose)
     <div v-if="!meetingRoom?.open" class="text-center pa-6">
       <v-icon icon="mdi-broadcast-off" size="x-large" color="warning" /><br />
       <em>
-        {{ t('room.closed') }}
+        {{ $t('room.closed') }}
       </em>
     </div>
     <div v-else-if="paused" class="pa-6">
@@ -103,7 +103,7 @@ onBeforeUnmount(evt.dispose)
         class="paus-message text-center my-8"
       ></div>
       <p v-else class="paus-message text-center my-8">
-        {{ t('room.paused') }}
+        {{ $t('room.paused') }}
       </p>
       <ClockFace v-if="meetingRoom.show_time" :target-time="targetTime" />
     </div>
@@ -116,7 +116,7 @@ onBeforeUnmount(evt.dispose)
       </div>
       <div v-if="display.proposals" class="right flex-grow-1 pa-6">
         <h2 class="mb-2">
-          <small>{{ t('proposal.proposals') }}</small
+          <small>{{ $t('proposal.proposals') }}</small
           ><br />
           {{ agendaItem?.title }}
         </h2>
@@ -138,14 +138,14 @@ onBeforeUnmount(evt.dispose)
                 class="bg-success-lighten-4 rounded-b py-2 px-4 d-flex"
               >
                 <v-icon icon="mdi-check-circle" color="success" class="mr-2" />
-                {{ t('proposal.approved') }}
+                {{ $t('proposal.approved') }}
               </div>
               <div
                 v-else-if="p.state === ProposalState.Denied"
                 class="bg-warning-lighten-4 rounded-b py-2 px-4 d-flex"
               >
                 <v-icon icon="mdi-close-circle" color="warning" class="mr-2" />
-                {{ t('proposal.denied') }}
+                {{ $t('proposal.denied') }}
               </div>
             </template>
           </ProposalSheet>
@@ -155,7 +155,7 @@ onBeforeUnmount(evt.dispose)
         <!-- In display mode is only one kind, and that type is not active -->
         <p class="text-center my-8">
           <em>
-            {{ t('room.nothingToDisplay') }}
+            {{ $t('room.nothingToDisplay') }}
           </em>
         </p>
       </div>

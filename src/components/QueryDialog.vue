@@ -22,7 +22,7 @@
       <div class="text-right mt-4">
         <slot name="buttons" :close="close">
           <v-btn variant="text" @click="close" class="mr-1">
-            {{ t('no') }}
+            {{ $t('no') }}
           </v-btn>
           <v-btn variant="flat" :color="color" @click="confirm">
             {{ confirmText || t('yes') }}

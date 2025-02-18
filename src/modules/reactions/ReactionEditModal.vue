@@ -56,7 +56,7 @@ const transformedData = computed(() => {
   const data = { ...formData }
   if (!data.target) data.target = null
   if (!data.icon) data.icon = '' // Empty string required by API
-  return data
+  return data as ReactionButton
 })
 const previewActive = ref(true)
 const previewCount = computed(() => {
@@ -106,10 +106,10 @@ async function save() {
     <main>
       <Widget>
         <h2 class="mb-1">
-          {{ t('preview') }}
+          {{ $t('preview') }}
         </h2>
         <RealReactionButton
-          :button="transformedData as ReactionButton"
+          :button="transformedData"
           v-model="previewActive"
           :count="previewCount"
         >
@@ -126,17 +126,17 @@ async function save() {
       >
         <v-text-field
           required
-          :label="t('title')"
+          :label="$t('title')"
           v-model="formData.title"
           :rules="[rules.required, rules.maxLength(20)]"
         />
         <v-text-field
-          :label="t('description')"
+          :label="$t('description')"
           v-model="formData.description"
           :rules="[rules.maxLength(100)]"
         />
         <div>
-          <label>{{ t('color') }}</label>
+          <label>{{ $t('color') }}</label>
           <v-item-group class="btn-controls" mandatory v-model="formData.color">
             <v-item
               v-for="value in Object.values(ThemeColor)"
@@ -154,7 +154,7 @@ async function save() {
           </v-item-group>
         </div>
         <div>
-          <label>{{ t('icon') }}</label>
+          <label>{{ $t('icon') }}</label>
           <v-item-group class="btn-controls" v-model="formData.icon">
             <v-item
               v-for="value in Object.values(ReactionIcon)"
@@ -178,7 +178,7 @@ async function save() {
           v-model:vote-template="formData.vote_template"
         />
         <div>
-          <label>{{ t('reaction.rolesRequired') }}</label>
+          <label>{{ $t('reaction.rolesRequired') }}</label>
           <CheckboxMultipleSelect
             v-model="formData.change_roles"
             :settings="{ options: roleLabels }"
@@ -186,7 +186,7 @@ async function save() {
           />
         </div>
         <div>
-          <label>{{ t('reaction.listRolesRequired') }}</label>
+          <label>{{ $t('reaction.listRolesRequired') }}</label>
           <CheckboxMultipleSelect
             v-model="formData.list_roles"
             :settings="{ options: roleLabels }"
@@ -196,9 +196,9 @@ async function save() {
         <v-text-field
           type="number"
           v-model="formData.target"
-          :label="t('reaction.threshold')"
+          :label="$t('reaction.threshold')"
           :rules="[rules.min(0)]"
-          :hint="t('reaction.thresholdHint')"
+          :hint="$t('reaction.thresholdHint')"
         />
         <div class="btn-controls submit mt-4">
           <v-spacer />
@@ -208,7 +208,7 @@ async function save() {
             color="secondary"
             @click="close"
           >
-            {{ t('cancel') }}
+            {{ $t('cancel') }}
           </v-btn>
           <v-btn
             type="submit"
@@ -216,7 +216,7 @@ async function save() {
             prepend-icon="mdi-check"
             :disabled="!isValid || submitting"
           >
-            {{ formData.pk ? t('update') : t('create') }}
+            {{ formData.pk ? $t('update') : $t('create') }}
           </v-btn>
         </div>
       </v-form>

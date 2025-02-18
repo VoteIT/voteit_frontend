@@ -2,7 +2,7 @@
   <MeetingToolbar>
     <v-breadcrumbs v-if="breadcrumbs" :items="breadcrumbs" />
     <v-toolbar-title v-else>
-      {{ t('meeting.controlPanel') }}
+      {{ $t('meeting.controlPanel') }}
     </v-toolbar-title>
   </MeetingToolbar>
   <v-row id="setting-panels">

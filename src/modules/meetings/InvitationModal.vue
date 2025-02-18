@@ -89,7 +89,7 @@ async function submitInvites() {
 <template>
   <div v-if="result">
     <p class="mb-3">
-      {{ t('invites.done') }}
+      {{ $t('invites.done') }}
     </p>
     <v-table>
       <thead>
@@ -109,7 +109,7 @@ async function submitInvites() {
     </v-table>
     <div class="text-right">
       <v-btn variant="elevated" color="primary" @click="$emit('done')">
-        {{ t('close') }}
+        {{ $t('close') }}
       </v-btn>
     </div>
   </div>
@@ -118,10 +118,10 @@ async function submitInvites() {
       v-if="!type"
       type="info"
       class="my-3"
-      :title="t('invites.mixed.helpTitle')"
+      :title="$t('invites.mixed.helpTitle')"
     >
       <p class="mb-3">
-        {{ t('invites.mixed.helpText') }}
+        {{ $t('invites.mixed.helpText') }}
       </p>
       <v-table density="compact">
         <tbody>
@@ -148,7 +148,7 @@ async function submitInvites() {
     <CheckboxMultipleSelect
       v-model="inviteData.roles"
       :settings="{ options: roleLabelsEditable }"
-      :label="t('selectRoles')"
+      :label="$t('selectRoles')"
       :requiredValues="rolesRequired"
     />
     <div class="text-right">
@@ -160,7 +160,7 @@ async function submitInvites() {
         :disabled="!inviteData.valid || submittingInvites"
         variant="elevated"
       >
-        {{ t('add') }}
+        {{ $t('add') }}
       </v-btn>
     </div>
   </v-form>

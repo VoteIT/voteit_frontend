@@ -64,7 +64,7 @@ async function selectButtonProposals(btn: ReactionButton) {
     v-if="activeFlagButtons.length"
     :border="true"
     rounded
-    :title="t('reaction.templateCount', activeFlagButtons.length)"
+    :title="$t('reaction.templateCount', activeFlagButtons.length)"
   >
     <v-btn
       v-if="singleButton"
@@ -83,7 +83,7 @@ async function selectButtonProposals(btn: ReactionButton) {
           color="primary"
           variant="flat"
         >
-          {{ t('reaction.selectTemplate') }}
+          {{ $t('reaction.selectTemplate') }}
         </v-btn>
       </template>
       <v-list>

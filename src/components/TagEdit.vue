@@ -15,7 +15,7 @@
       :list="tagUid"
       type="text"
       class="tag-input"
-      :placeholder="t('addTag')"
+      :placeholder="$t('addTag')"
       v-model="newTag"
       @keydown.enter.prevent="addTag()"
       @input="detectTagClick"
@@ -28,7 +28,6 @@
 
 <script setup lang="ts">
 import { inject, reactive, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { tagify } from '@/utils'
 
@@ -49,7 +48,6 @@ const props = withDefaults(
   }
 )
 
-const { t } = useI18n()
 const allTags = inject(TagsKey)
 uid++
 

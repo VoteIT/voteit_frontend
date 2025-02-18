@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
 
 const props = defineProps<{
   allowedModels: string[]
@@ -46,11 +43,11 @@ const onProposals = computed({
 
 <template>
   <div class="mb-4">
-    <label>{{ t('reaction.displayOn') }}</label>
+    <label>{{ $t('reaction.displayOn') }}</label>
     <div class="d-flex flex-wrap">
       <v-checkbox
         v-model="onProposals"
-        :label="t('proposal.proposal')"
+        :label="$t('proposal.proposal')"
         density="compact"
         hide-details
         class="flex-grow-0 mr-8"
@@ -59,7 +56,7 @@ const onProposals = computed({
         :modelValue="onProposals && onPresentation"
         :disabled="!onProposals"
         @update:modelValue="emit('update:onPresentation', $event!)"
-        :label="t('reaction.onPresentation')"
+        :label="$t('reaction.onPresentation')"
         density="compact"
         hide-details
         class="flex-grow-0 mr-1"
@@ -68,7 +65,7 @@ const onProposals = computed({
         :modelValue="onProposals && onVote"
         :disabled="!onProposals"
         @update:modelValue="emit('update:onVote', $event!)"
-        :label="t('reaction.onPoll')"
+        :label="$t('reaction.onPoll')"
         density="compact"
         hide-details
         class="flex-grow-0 mr-1"
@@ -77,7 +74,7 @@ const onProposals = computed({
         :modelValue="onProposals && voteTemplate"
         :disabled="!onProposals"
         @update:modelValue="emit('update:voteTemplate', $event!)"
-        :label="t('reaction.voteTemplate')"
+        :label="$t('reaction.voteTemplate')"
         density="compact"
         hide-details
         class="flex-grow-0 mr-1"
@@ -86,7 +83,7 @@ const onProposals = computed({
     <div>
       <v-checkbox
         v-model="onDiscussions"
-        :label="t('discussion.discussions')"
+        :label="$t('discussion.discussions')"
         density="compact"
         hide-details
         class="flex-grow-0"

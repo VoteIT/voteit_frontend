@@ -105,10 +105,10 @@ function dialogSetPassiveMode(mode: boolean) {
   <v-app-bar flat color="app-bar">
     <DefaultDialog
       v-model="moderatorPassiveDialog"
-      :title="t('room.passiveMode')"
+      :title="$t('room.passiveMode')"
     >
       <p class="mb-4">
-        {{ t('room.moderatorPassiveQuery') }}
+        {{ $t('room.moderatorPassiveQuery') }}
       </p>
       <div class="d-flex" style="gap: 10px">
         <v-sheet
@@ -125,7 +125,7 @@ function dialogSetPassiveMode(mode: boolean) {
             icon="mdi-account"
             size="x-large"
           />
-          <p>{{ t('room.moderatorPassiveOff') }}</p>
+          <p>{{ $t('room.moderatorPassiveOff') }}</p>
         </v-sheet>
         <v-sheet
           class="cursor-pointer text-center pa-6"
@@ -141,7 +141,7 @@ function dialogSetPassiveMode(mode: boolean) {
             icon="mdi-projector"
             size="x-large"
           />
-          <p>{{ t('room.moderatorPassiveOn') }}</p>
+          <p>{{ $t('room.moderatorPassiveOn') }}</p>
         </v-sheet>
       </div>
     </DefaultDialog>
@@ -151,7 +151,7 @@ function dialogSetPassiveMode(mode: boolean) {
     <v-app-bar-title class="text-truncate">
       <v-fade-transition>
         <small v-show="!passiveMode && !mobile" class="position-absolute">
-          {{ t('room.realTime') }}
+          {{ $t('room.realTime') }}
         </small>
       </v-fade-transition>
       <v-breadcrumbs :items="crumbs" />
@@ -163,7 +163,7 @@ function dialogSetPassiveMode(mode: boolean) {
             class="mx-1"
             :color="firstUnvotedPoll ? 'yellow' : undefined"
             prepend-icon="mdi-star"
-            :text="t('room.toPoll')"
+            :text="$t('room.toPoll')"
             :variant="firstUnvotedPoll ? 'outlined' : undefined"
             v-bind="props"
           />
@@ -176,7 +176,7 @@ function dialogSetPassiveMode(mode: boolean) {
         <template #activator="{ props }">
           <v-btn
             prepend-icon="mdi-star"
-            :text="t('room.toPoll')"
+            :text="$t('room.toPoll')"
             v-bind="props"
           />
         </template>
@@ -186,7 +186,7 @@ function dialogSetPassiveMode(mode: boolean) {
       v-if="!passiveMode && isModerator && meetingRoom && agenda.length"
       append-icon="mdi-chevron-right"
       class="d-none d-md-flex"
-      :text="t('room.toPlenaryView')"
+      :text="$t('room.toPlenaryView')"
       variant="tonal"
       :to="
         getRoomRoute('room:broadcast', {
@@ -207,7 +207,7 @@ function dialogSetPassiveMode(mode: boolean) {
           />
         </v-fade-transition>
       </template>
-      <HeaderMenu :title="t('content.textSize')" icon="mdi-format-size">
+      <HeaderMenu :title="$t('content.textSize')" icon="mdi-format-size">
         <v-list :selected="[textSize]" @update:selected="textSize = $event[0]">
           <v-list-item
             v-for="{ value, title } in textSizes"
@@ -234,8 +234,8 @@ function dialogSetPassiveMode(mode: boolean) {
         </v-fade-transition>
       </template>
       <HeaderMenu
-        :title="t('room.realTime')"
-        :subtitle="t('room.displayOptions')"
+        :title="$t('room.realTime')"
+        :subtitle="$t('room.displayOptions')"
         icon="mdi-television-play"
       >
         <v-list>
@@ -259,8 +259,8 @@ function dialogSetPassiveMode(mode: boolean) {
                   ? 'mdi-checkbox-marked'
                   : 'mdi-checkbox-blank-outline'
               "
-              :title="t('room.passiveMode')"
-              :subtitle="t('room.passiveModeHint')"
+              :title="$t('room.passiveMode')"
+              :subtitle="$t('room.passiveModeHint')"
               @click.stop="passiveMode = !passiveMode"
             />
           </v-item-group>
