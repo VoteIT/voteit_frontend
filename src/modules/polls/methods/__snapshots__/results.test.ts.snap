@@ -16,7 +16,7 @@ exports[`DuttResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 3</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -53,7 +53,7 @@ exports[`DuttResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -90,7 +90,7 @@ exports[`DuttResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -144,7 +144,7 @@ exports[`MajorityResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -181,7 +181,7 @@ exports[`MajorityResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -293,7 +293,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -326,7 +326,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -749,7 +749,7 @@ exports[`SimpleResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -792,7 +792,7 @@ exports[`SimpleResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
@@ -835,7 +835,7 @@ exports[`SimpleResult component 1`] = `
       </div>
       <div data-v-4b57e0f3="" class="my-3">
         <div class="overflow-hidden position-relative">
-          <div class="richtext">
+          <div class="ql-editor pa-0">
             <p>Proposal 3</p>
           </div>
           <div class="overflow-fade" style="display: none;"></div>
