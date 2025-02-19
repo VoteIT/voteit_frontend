@@ -8,7 +8,9 @@
       v-model="dropdowns[state]"
       :class="groupClass"
     >
-      <PollCard :poll="p" v-for="p in polls" :key="p.pk" :class="pollClass" />
+      <div class="d-flex flex-column ga-1">
+        <PollCard :poll="p" v-for="p in polls" :key="p.pk" :class="pollClass" />
+      </div>
     </Dropdown>
   </div>
 </template>
@@ -31,18 +33,20 @@ const STATE_ORDERS: Partial<Record<PollState, [keyof Poll, 'asc' | 'desc']>> = {
   finished: ['closed', 'desc']
 }
 
-interface Props {
-  agendaItem?: number
-  groupClass?: string | object
-  modelValue?: PollState[]
-  pollClass?: string | object
-}
-const props = withDefaults(defineProps<Props>(), {
-  modelValue() {
-    return [PollState.Ongoing]
-  },
-  pollClass: 'my-1'
-})
+const props = withDefaults(
+  defineProps<{
+    agendaItem?: number
+    groupClass?: string | object
+    modelValue?: PollState[]
+    pollClass?: string | object
+  }>(),
+  {
+    modelValue() {
+      return [PollState.Ongoing]
+    },
+    pollClass: 'my-1'
+  }
+)
 
 const emit = defineEmits(['update:modelValue'])
 

@@ -15,7 +15,7 @@
         </v-btn>
       </header>
       <v-divider />
-      <PollList groupClass="mt-4" pollClass="my-3" v-model="pollStatesOpen">
+      <PollList groupClass="mt-4" v-model="pollStatesOpen">
         <template v-slot="{ empty }">
           <p v-if="empty">
             <em>{{ $t('poll.noPublishedPolls') }}</em>

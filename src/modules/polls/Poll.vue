@@ -1,5 +1,5 @@
 <template>
-  <Widget class="poll">
+  <Widget class="poll" ref="rootEl" :style="{ '--columns': proposalColumns }">
     <header class="mb-1">
       <div class="d-flex">
         <router-link :to="pollRoute" class="flex-grow-1">
@@ -41,7 +41,7 @@
           :title="$t('poll.numApproved', approved.length)"
           class="mb-2"
         >
-          <div class="proposals approved">
+          <div class="proposals ga-2">
             <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
@@ -50,12 +50,11 @@
           :title="$t('poll.numDenied', denied.length)"
           class="mb-2"
         >
-          <div class="proposals denied">
+          <div class="proposals ga-2">
             <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
         <ProgressBar
-          class="my-4"
           :text="voteCount.text"
           :value="voteCount.voted"
           :total="voteCount.total"
@@ -95,8 +94,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useElementSize } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import Dropdown from '@/components/Dropdown.vue'
@@ -127,6 +127,10 @@ const {
   voteCount
 } = usePoll(computed(() => props.poll.pk))
 
+const rootEl = ref<HTMLDivElement>()
+const { width } = useElementSize(rootEl)
+const proposalColumns = computed(() => (width.value < 640 ? 1 : 2))
+
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
 const pollRoute = computed(() =>
   getMeetingRoute('poll', {
@@ -137,38 +141,16 @@ const pollRoute = computed(() =>
 const userVote = computed(() => getUserVote(props.poll))
 </script>
 
-<style lang="sass">
-div.poll
-  header
-    a
-      text-decoration: none
-      color: rgb(var(--v-theme-on-surface))
-  .voting-info
-    margin-top: 1em
+<style lang="sass" scoped>
+header
+  a
+    text-decoration: none
+    color: rgb(var(--v-theme-on-surface))
 
-  .proposals
-    display: flex
-    margin: -10px
-    flex-flow: wrap
-    > *
-      margin: 10px
-      flex: 0 1 calc(50% - 20px)
+.voting-info
+  margin-top: 1em
 
-  .progress-bar
-    span .mdi
-      color: rgb(var(--v-border-color))
-      vertical-align: initial
-    span.active
-      color: rgb(var(--v-theme-on-surface))
-      .mdi
-        color: rgb(var(--v-theme-on-surface))
-        display: inline-block
-        background-color: rgb(var(--v-theme-success))
-        border-radius: 4px
-        text-align: center
-        width: 18px
-        height: 18px
-
-body.no-scroll
-  overflow: hidden
+.proposals
+  display: grid
+  grid-template-columns: repeat(var(--columns, 1), 1fr)
 </style>

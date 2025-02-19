@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { enumerate, filter, map, range } from 'itertools'
+import { enumerate, map, range } from 'itertools'
 import { flatten, isEqual, sortBy } from 'lodash'
 import { ComponentPublicInstance, computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -400,7 +400,7 @@ watch(
   </v-row>
 </template>
 
-<style lang="sass">
+<style scoped lang="sass">
 .proposals
   height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - var(--aiheight) - 12px) !important
   overflow: hidden !important
