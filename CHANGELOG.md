@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.29.4 (2025-02-19)
+
+- Design fix for proposals in poll cards for finished polls
+- Bugfix: Lists and block quotes should not be allowed in restricted richtext editor (proposals, etc)
+
 ## 0.29.3 (2025-02-18)
 
 - Bugfix: Disable keynav in speaker management when in user serach input field
