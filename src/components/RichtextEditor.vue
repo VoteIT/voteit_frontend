@@ -60,17 +60,10 @@ const variants: Record<
       QuillFormat.Bold,
       QuillFormat.Italic,
       QuillFormat.Link,
-      QuillFormat.BlockQuote,
-      QuillFormat.List,
       QuillFormat.Mention
     ],
     modules: {
-      toolbar: [
-        QuillFormat.Bold,
-        QuillFormat.Italic,
-        QuillFormat.Link,
-        QuillFormat.BlockQuote
-      ],
+      toolbar: [QuillFormat.Bold, QuillFormat.Italic, QuillFormat.Link],
       mention: mentionOptions
     }
   },
