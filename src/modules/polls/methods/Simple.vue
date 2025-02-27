@@ -15,7 +15,7 @@
         class="mb-4"
       >
         <template #vote>
-          <div class="simple-options">
+          <div class="d-flex justify-center ga-2">
             <v-btn
               :disabled="disabled"
               v-for="opt in options"
@@ -53,7 +53,6 @@ const props = defineProps<{
   proposals: Proposal[]
 }>()
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'update:modelValue', vote?: SimpleVote): void
 }>()
@@ -100,12 +99,3 @@ function selectIds(proposals: number[]) {
   }
 }
 </script>
-
-<style lang="sass">
-.simple-options
-  text-align: center
-  button
-    margin-right: .4rem
-    &:last-child
-      margin-right: 0
-</style>

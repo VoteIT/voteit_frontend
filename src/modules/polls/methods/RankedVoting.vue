@@ -19,13 +19,16 @@
   <div v-else id="scottish-stv-voting">
     <VoteProposal v-for="p in proposals" :key="p.pk" :proposal="p" class="mb-4">
       <template #vote>
-        <div class="voting-controls" v-if="ranking.includes(p.pk)">
-          <div class="left">
+        <div
+          class="voting-controls d-flex align-center"
+          v-if="ranking.includes(p.pk)"
+        >
+          <div class="side text-left">
             <span class="number">
               {{ ranking.indexOf(p.pk) + 1 }}
             </span>
           </div>
-          <div class="center">
+          <div class="flex-grow-1 text-center">
             <v-btn
               :disabled="disabled"
               variant="text"
@@ -36,7 +39,7 @@
               {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
             </v-btn>
           </div>
-          <div class="right">
+          <div class="side text-right">
             <v-btn
               :disabled="disabled"
               outlined
@@ -49,7 +52,7 @@
           </div>
         </div>
         <div class="voting-controls" v-else>
-          <div class="center">
+          <div class="text-center flex-grow-1">
             <v-btn
               :disabled="disabled"
               color="primary"
@@ -167,17 +170,8 @@ const validHelpText = computed(() => {
       cursor: grab
 
   .voting-controls
-    display: flex
-    align-items: center
-    .center
-      text-align: center
-      flex: 1 0 50%
-    .left
-      text-align: left
-      flex: 0 1 25%
-    .right
-      text-align: right
-      flex: 0 1 25%
+    .side
+      flex-basis: 25%
 
   .number
     display: inline-block
