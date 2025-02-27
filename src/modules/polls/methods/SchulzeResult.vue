@@ -27,7 +27,7 @@
         class="mb-8"
       />
     </template>
-    <Proposal
+    <ProposalCard
       v-else-if="winningProposal"
       :p="winningProposal"
       readOnly
@@ -38,7 +38,7 @@
           {{ $t('poll.winningProposal') }}
         </v-btn>
       </template>
-    </Proposal>
+    </ProposalCard>
     <v-expansion-panels multiple class="my-4">
       <v-expansion-panel
         v-for="{ btn, proposal, pairs } in proposalPairs"
@@ -97,6 +97,7 @@ import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
 import useProposals from '@/modules/proposals/useProposals'
+import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 
 import { SchulzeResult } from './types'
 

@@ -6,8 +6,6 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
-import Proposal from './modules/proposals/Proposal.vue'
-
 // REGISTER PLUGINS
 import './modules/meetings'
 import './modules/meetings/dialects'
@@ -19,14 +17,8 @@ import './modules/polls'
 import './modules/polls/methods'
 import './modules/proposals'
 import './modules/reactions'
-// import './modules/presence'
 import './modules/printing'
 import './modules/speakerLists'
 import './modules/rooms'
 
-createApp(App)
-  .use(i18n)
-  .use(router)
-  .use(vuetify)
-  .component('Proposal', Proposal)
-  .mount('#app')
+createApp(App).use(i18n).use(router).use(vuetify).mount('#app')

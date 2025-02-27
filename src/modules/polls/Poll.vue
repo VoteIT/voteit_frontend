@@ -42,7 +42,7 @@
           class="mb-2"
         >
           <div class="proposals ga-2">
-            <Proposal v-for="p in approved" :key="p.pk" :p="p" read-only />
+            <ProposalCard v-for="p in approved" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
         <Dropdown
@@ -51,7 +51,7 @@
           class="mb-2"
         >
           <div class="proposals ga-2">
-            <Proposal v-for="p in denied" :key="p.pk" :p="p" read-only />
+            <ProposalCard v-for="p in denied" :key="p.pk" :p="p" read-only />
           </div>
         </Dropdown>
         <ProgressBar
@@ -111,6 +111,7 @@ import useMeeting from '../meetings/useMeeting'
 import { pollType } from './contentTypes'
 import usePoll from './usePoll'
 import { Poll } from './types'
+import ProposalCard from '../proposals/ProposalCard.vue'
 
 const props = defineProps<{ poll: Poll }>()
 

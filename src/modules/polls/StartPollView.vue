@@ -42,7 +42,7 @@
             v-slot="{ toggle, isSelected }"
           >
             <v-expand-transition>
-              <Proposal
+              <ProposalCard
                 v-show="!pickMethod || selectedProposalIds.includes(p.pk)"
                 read-only
                 :p="p"
@@ -190,6 +190,7 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposals from '../proposals/useProposals'
 import useProposalOrdering from '../proposals/useProposalOrdering'
 import { ProposalState } from '../proposals/types'
+import ProposalCard from '../proposals/ProposalCard.vue'
 
 import { Conditional, PollBaseSettings, PollCriteria } from './methods/types'
 import type { PollStartData, PollMethodSettings } from './methods/types'

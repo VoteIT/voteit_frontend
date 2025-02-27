@@ -95,7 +95,7 @@
           <h2>
             {{ $t('poll.numApproved', approved.length) }}
           </h2>
-          <Proposal
+          <ProposalCard
             v-for="proposal in approved"
             :key="proposal.pk"
             class="my-3"
@@ -103,7 +103,7 @@
             :p="proposal"
           />
           <Dropdown :title="$t('poll.numDenied', approved.length)">
-            <Proposal
+            <ProposalCard
               v-for="proposal in denied"
               :key="proposal.pk"
               class="my-3"
@@ -230,7 +230,7 @@ import useChannel from '@/composables/useChannel'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
-import Proposal from '../proposals/Proposal.vue'
+import ProposalCard from '../proposals/ProposalCard.vue'
 import { proposalButtonPlugins } from '../proposals/registry'
 import useProposalOrdering from '../proposals/useProposalOrdering'
 

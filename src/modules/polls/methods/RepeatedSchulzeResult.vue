@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Proposal
+    <ProposalCard
       v-for="(proposal, i) in orderedProposals"
       :key="proposal.pk"
       :selected="proposal && result.approved.includes(proposal.pk)"
@@ -11,7 +11,7 @@
       <template #top>
         <span class="ordinal">{{ i + 1 }}</span>
       </template>
-    </Proposal>
+    </ProposalCard>
     <v-expansion-panels>
       <v-expansion-panel
         v-for="(round, i) in result.rounds"
@@ -34,7 +34,7 @@
 import { computed } from 'vue'
 
 import useProposals from '@/modules/proposals/useProposals'
-import Proposal from '@/modules/proposals/Proposal.vue'
+import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal as P } from '@/modules/proposals/types'
 
 import { RepeatedSchulzeResult } from './types'

@@ -1,4 +1,4 @@
-import { flatMap, sortBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { getApiLink } from '@/utils/restApi'
 
 import { meetingExportPlugins } from '../meetings/registry'
@@ -9,6 +9,9 @@ import { UNRESOLVED_STATES } from './constants'
 import { plenarySuggestions } from '../plenary/registry'
 import useTextDocuments from './useTextDocuments'
 import { Proposal } from './types'
+import { proposalTypeRegistry } from './registry'
+import AddProposalModal from './AddProposalModal.vue'
+import AddTextProposalModal from './AddTextProposalModal.vue'
 
 function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
   return {
@@ -85,4 +88,11 @@ plenarySuggestions.register({
   getTitle(t) {
     return t('plenary.otherTags')
   }
+})
+
+proposalTypeRegistry.register('proposal', {
+  editComponent: AddProposalModal
+})
+proposalTypeRegistry.register('diff_proposal', {
+  editComponent: AddTextProposalModal
 })

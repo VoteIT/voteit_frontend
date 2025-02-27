@@ -172,10 +172,9 @@ import {
   canDeleteProposal,
   canRetractProposal
 } from './rules'
-import AddProposalModal from './AddProposalModal.vue'
-import AddTextProposalModal from './AddTextProposalModal.vue'
-import { isRichtextProposal, type Proposal } from './types'
 import ProposalText from './ProposalText.vue'
+import { type Proposal } from './types'
+import { proposalTypeRegistry } from './registry'
 
 const props = defineProps<{
   p: Proposal
@@ -211,7 +210,6 @@ const commentsComponent = ref<null | ComponentPublicInstance<{
 async function comment() {
   showComments.value = true
   await nextTick()
-  // eslint-disable-next-line no-unused-expressions
   commentsComponent.value?.focus()
 }
 
@@ -226,7 +224,7 @@ const extraTags = computed(() => {
  * Dynamic choice of component for editing proposal
  */
 const ProposalEditModal = computed(() =>
-  isRichtextProposal(props.p) ? AddProposalModal : AddTextProposalModal
+  proposalTypeRegistry.getEditModal(props.p.shortname)
 )
 </script>
 

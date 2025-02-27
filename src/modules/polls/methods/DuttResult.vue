@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Proposal
+    <ProposalCard
       v-for="{ icon, proposal, votes } in results"
       :key="proposal.pk"
       :p="proposal"
@@ -20,7 +20,7 @@
           </v-tooltip>
         </p>
       </template>
-    </Proposal>
+    </ProposalCard>
     <v-alert
       :text="$t('poll.method.description.dutt')"
       type="info"
@@ -36,7 +36,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getProposals } from '@/modules/proposals/useProposals'
-import Proposal from '@/modules/proposals/Proposal.vue'
+import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal as P } from '../../proposals/types'
 import type { DuttResult } from './types'
 

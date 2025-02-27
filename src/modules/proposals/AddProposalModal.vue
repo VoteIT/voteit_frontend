@@ -39,7 +39,7 @@
         </v-expand-transition>
         <v-expand-transition>
           <div v-if="proposalPreview" id="proposal-preview">
-            <Proposal
+            <ProposalCard
               readOnly
               :p="proposalPreview"
               class="my-6"
@@ -95,6 +95,7 @@ import type { Author } from '../meetings/types'
 
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
+import ProposalCard from './ProposalCard.vue'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>

@@ -6,7 +6,7 @@
       class="mt-4 mb-8"
       :text="$t('poll.majority.tiedResult')"
     />
-    <Proposal
+    <ProposalCard
       v-for="{ icon, proposal, votes } in proposalResults"
       :key="proposal.pk"
       :p="proposal"
@@ -26,7 +26,7 @@
           </v-tooltip>
         </p>
       </template>
-    </Proposal>
+    </ProposalCard>
   </div>
 </template>
 
@@ -37,7 +37,7 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 import { getProposals } from '@/modules/proposals/useProposals'
-import Proposal from '@/modules/proposals/Proposal.vue'
+import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { MajorityResult } from './types'
 
 const { t } = useI18n()

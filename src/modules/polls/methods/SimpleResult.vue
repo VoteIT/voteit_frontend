@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Proposal
+    <ProposalCard
       v-for="{ choices, proposal } in results"
       :key="proposal.pk"
       :p="proposal"
@@ -19,7 +19,7 @@
           </v-btn>
         </div>
       </template>
-    </Proposal>
+    </ProposalCard>
   </div>
 </template>
 
@@ -28,14 +28,14 @@ import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
 import { getProposals } from '@/modules/proposals/useProposals'
-import Proposal from '@/modules/proposals/Proposal.vue'
-import type { Proposal as P } from '@/modules/proposals/types'
+import ProposalCard from '@/modules/proposals/ProposalCard.vue'
+import type { Proposal } from '@/modules/proposals/types'
 
 import { SimpleChoice, CombinedSimpleResult } from './types'
 import { simpleChoices } from './simple'
 
 interface ProposalResult {
-  proposal: P
+  proposal: Proposal
   choices: {
     key: string
     percentage?: number
@@ -59,7 +59,7 @@ function getActiveChoice(pk: number): SimpleChoice | undefined {
   if (props.result.denied.includes(pk)) return SimpleChoice.No
 }
 
-function transformResult(proposal: P): ProposalResult {
+function transformResult(proposal: Proposal): ProposalResult {
   const pk = proposal.pk
   const result = props.result.results[pk]
   const total = result[SimpleChoice.Yes] + result[SimpleChoice.No]
