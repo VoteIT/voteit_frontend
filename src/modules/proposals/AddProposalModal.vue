@@ -160,7 +160,7 @@ function getCreateData() {
 }
 
 const api = proposalType.getContentApi({ alertOnError: false })
-const proposalPreview = ref<Partial<Proposal> | null>(null)
+const proposalPreview = ref<Proposal>()
 const errors = ref<Record<string, string[]>>({})
 const errorText = computed(() => {
   const errs = errors.value.body ?? errors.value.__root__
@@ -180,9 +180,9 @@ async function preview() {
       created: new Date().toISOString(),
       pk: 0,
       shortname: props.shortname
-    } as Partial<Proposal>
+    } as Proposal
   } catch (e) {
-    proposalPreview.value = null
+    proposalPreview.value = undefined
     errors.value = parseRestError(e)
   }
   previewing.value = false
@@ -206,7 +206,7 @@ function setPreviewTimeout() {
   clearTimeout(previewTimeout)
   if (!stripHTML(body.value)) {
     previewing.value = false
-    proposalPreview.value = null
+    proposalPreview.value = undefined
     return
   }
   previewing.value = true
@@ -235,7 +235,7 @@ function resetContent() {
   done.value = false
   extraTags.value = getExtraTags(props.proposal)
   body.value = props.proposal?.body ?? ''
-  proposalPreview.value = null
+  proposalPreview.value = undefined
   emit('reset')
 }
 </script>
