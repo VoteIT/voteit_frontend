@@ -2,11 +2,11 @@
 
 exports[`DuttResult component 1`] = `
 "<div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -14,7 +14,7 @@ exports[`DuttResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 3</p>
@@ -24,11 +24,11 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 15 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-1"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -39,11 +39,11 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -51,7 +51,7 @@ exports[`DuttResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
@@ -61,11 +61,11 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-3"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -76,11 +76,11 @@ exports[`DuttResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -88,7 +88,7 @@ exports[`DuttResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
@@ -98,11 +98,11 @@ exports[`DuttResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-5"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -130,11 +130,11 @@ exports[`DuttResult component 1`] = `
 exports[`MajorityResult component 1`] = `
 "<div>
   <!--v-if-->
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -142,7 +142,7 @@ exports[`MajorityResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
@@ -152,11 +152,11 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success" aria-hidden="true" aria-describedby="v-tooltip-1"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -167,11 +167,11 @@ exports[`MajorityResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -179,7 +179,7 @@ exports[`MajorityResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
@@ -189,11 +189,11 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-3"></i>
           <!--teleport start-->
           <!--teleport end-->
@@ -279,11 +279,11 @@ exports[`RepeatedIRVResult component 1`] = `
 
 exports[`RepeatedSchulzeResult component 1`] = `
 "<div data-v-9cc52876="">
-  <div data-v-4b57e0f3="" data-v-9cc52876="" selected="true" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal"><span data-v-9cc52876="" class="ordinal">1</span>
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" data-v-9cc52876="" selected="true" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal"><span data-v-9cc52876="" class="ordinal">1</span>
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -291,7 +291,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
@@ -301,22 +301,22 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
       </div>
       <!--v-if-->
       <!--v-if-->
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3="" data-v-9cc52876="" selected="true" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal"><span data-v-9cc52876="" class="ordinal">2</span>
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" data-v-9cc52876="" selected="true" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal"><span data-v-9cc52876="" class="ordinal">2</span>
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -324,7 +324,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
@@ -334,11 +334,11 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-1" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-1" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
       </div>
       <!--v-if-->
       <!--v-if-->
@@ -355,7 +355,42 @@ exports[`RepeatedSchulzeResult component 1`] = `
             <div data-v-9cc52876="">
               <p>poll.schulze.numTiedWinners</p>
               <!--v-if-->
-              <proposal p="[object Object]" readonly="" class="my-8"></proposal>
+              <div data-v-776ee898="" class="my-8">
+                <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+                  <div data-v-776ee898="" class="meta d-flex">
+                    <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+                      <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
+                        <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+                          <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
+                        </div>
+                      </div>
+                    </div>
+                    <!--v-if-->
+                  </div>
+                  <div data-v-776ee898="" class="my-3">
+                    <div class="overflow-hidden position-relative">
+                      <div class="ql-editor pa-0">
+                        <p>Proposal 1</p>
+                      </div>
+                      <div class="overflow-fade" style="display: none;"></div>
+                    </div>
+                    <!--v-if-->
+                  </div>
+                  <!--v-if-->
+                  <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
+                    <!--teleport start-->
+                    <!--teleport end-->
+                    <!--v-if--></span>
+                    <div data-v-776ee898="" class="v-spacer"></div><button type="button" class="v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">poll.winningProposal</span>
+                      <!---->
+                      <!---->
+                    </button>
+                  </div>
+                  <!--v-if-->
+                  <!--v-if-->
+                </div>
+                <!--v-if-->
+              </div>
               <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-4">
                 <div class="v-expansion-panel v-expansion-panel--active">
                   <div class="v-expansion-panel__shadow"></div>
@@ -642,7 +677,42 @@ exports[`SchulzeResult component 1`] = `
 "<div>
   <p>poll.schulze.numTiedWinners</p>
   <!--v-if-->
-  <proposal p="[object Object]" readonly="" class="my-8"></proposal>
+  <div data-v-776ee898="" class="my-8">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
+            <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
+              <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
+            </div>
+          </div>
+        </div>
+        <!--v-if-->
+      </div>
+      <div data-v-776ee898="" class="my-3">
+        <div class="overflow-hidden position-relative">
+          <div class="ql-editor pa-0">
+            <p>Proposal 1</p>
+          </div>
+          <div class="overflow-fade" style="display: none;"></div>
+        </div>
+        <!--v-if-->
+      </div>
+      <!--v-if-->
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+        <!--teleport start-->
+        <!--teleport end-->
+        <!--v-if--></span>
+        <div data-v-776ee898="" class="v-spacer"></div><button type="button" class="v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">poll.winningProposal</span>
+          <!---->
+          <!---->
+        </button>
+      </div>
+      <!--v-if-->
+      <!--v-if-->
+    </div>
+    <!--v-if-->
+  </div>
   <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-4">
     <div class="v-expansion-panel v-expansion-panel--active">
       <div class="v-expansion-panel__shadow"></div>
@@ -735,11 +805,11 @@ exports[`SchulzeResult component 1`] = `
 
 exports[`SimpleResult component 1`] = `
 "<div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(306, 40%, 80%);" data-denotation-char="#" data-value="prop-1"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-1 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -747,7 +817,7 @@ exports[`SimpleResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
@@ -757,11 +827,11 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <div class="mt-2 flex-grow-1 text-right"><button type="button" class="v-btn v-btn--elevated v-theme--light bg-success v-btn--density-default v-btn--size-default v-btn--variant-elevated"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">6 <small class="ml-1"> (67 %) </small></span>
             <!---->
             <!---->
@@ -778,11 +848,11 @@ exports[`SimpleResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(275, 40%, 80%);" data-denotation-char="#" data-value="prop-2"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-2 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -790,7 +860,7 @@ exports[`SimpleResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
@@ -800,11 +870,11 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <div class="mt-2 flex-grow-1 text-right"><button type="button" class="v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">3 <small class="ml-1"> (33 %) </small></span>
             <!---->
             <!---->
@@ -821,11 +891,11 @@ exports[`SimpleResult component 1`] = `
     </div>
     <!--v-if-->
   </div>
-  <div data-v-4b57e0f3="" class="my-4">
-    <div data-v-4b57e0f3="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
-      <div data-v-4b57e0f3="" class="meta d-flex">
-        <div data-v-4b57e0f3="" class="flex-grow-1"><span data-v-4b57e0f3="" class="content-type">proposal.proposal</span>
-          <div data-v-1b13cba6="" data-v-4b57e0f3="" class="v-badge">
+  <div data-v-776ee898="" class="my-4">
+    <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">
+      <div data-v-776ee898="" class="meta d-flex">
+        <div data-v-776ee898="" class="flex-grow-1"><span data-v-776ee898="" class="content-type">proposal.proposal</span>
+          <div data-v-1b13cba6="" data-v-776ee898="" class="v-badge">
             <div class="v-badge__wrapper"><span data-v-1b13cba6="" class="voteit-tag" style="background-color: hsl(244, 40%, 80%);" data-denotation-char="#" data-value="prop-3"><i data-v-1b13cba6="" class="mdi-tag-outline mdi v-icon notranslate v-theme--light v-icon--size-x-small" aria-hidden="true"></i> #prop-3 <!--v-if--></span>
               <transition-stub name="scale-rotate-transition" appear="false" persisted="false" css="true"><span class="v-badge__badge v-theme--light bg-secondary" style="display: none;" aria-atomic="true" aria-label="Badge" aria-live="polite" role="status">undefined</span></transition-stub>
             </div>
@@ -833,7 +903,7 @@ exports[`SimpleResult component 1`] = `
         </div>
         <!--v-if-->
       </div>
-      <div data-v-4b57e0f3="" class="my-3">
+      <div data-v-776ee898="" class="my-3">
         <div class="overflow-hidden position-relative">
           <div class="ql-editor pa-0">
             <p>Proposal 3</p>
@@ -843,11 +913,11 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-4b57e0f3="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-4b57e0f3="">by <!--v-if--><span aria-describedby="v-tooltip-8" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-8" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
-        <div data-v-4b57e0f3="" class="v-spacer"></div>
+        <div data-v-776ee898="" class="v-spacer"></div>
         <div class="mt-2 flex-grow-1 text-right"><button type="button" class="v-btn v-theme--light text-success v-btn--density-default v-btn--size-default v-btn--variant-text"><span class="v-btn__overlay"></span><span class="v-btn__underlay"></span><span class="v-btn__prepend"><i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true"></i></span><span class="v-btn__content" data-no-activator="">2 <small class="ml-1"> (25 %) </small></span>
             <!---->
             <!---->

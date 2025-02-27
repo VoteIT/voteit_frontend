@@ -184,9 +184,11 @@ test('RepeatedSchulzeResult component', async () => {
       }
     }
   })
-  wrapper.find('button').trigger('click')
+  wrapper.find('button.v-expansion-panel-title').trigger('click')
   await nextTick()
-  wrapper.find('.v-expansion-panel-text button').trigger('click')
+  wrapper
+    .find('.v-expansion-panel-text button.v-expansion-panel-title')
+    .trigger('click')
   await nextTick()
   expect(wrapper.html()).toMatchSnapshot()
   expect(wrapper.text()).toContain('#prop-1')
@@ -220,7 +222,7 @@ test('SchulzeResult component', async () => {
       }
     }
   })
-  wrapper.find('button').trigger('click')
+  wrapper.find('button.v-expansion-panel-title').trigger('click')
   await nextTick()
   expect(wrapper.html()).toMatchSnapshot()
   expect(wrapper.text()).toContain('#prop-1')
