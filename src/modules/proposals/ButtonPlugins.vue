@@ -6,16 +6,10 @@ import useMeeting from '../meetings/useMeeting'
 import { proposalButtonPlugins } from './registry'
 import type { Proposal, ProposalButtonMode } from './types'
 
-const props = withDefaults(
-  defineProps<{
-    mode?: ProposalButtonMode
-    proposal: Proposal
-    tag?: string
-  }>(),
-  {
-    tag: 'div'
-  }
-)
+const props = defineProps<{
+  mode?: ProposalButtonMode
+  proposal: Proposal
+}>()
 
 const { meeting } = useMeeting()
 
@@ -27,7 +21,7 @@ const plugins = computed(() =>
 </script>
 
 <template>
-  <component v-if="plugins.length" :is="tag">
+  <div class="d-flex flex-wrap ga-1" v-if="plugins.length">
     <component
       v-for="plugin in plugins"
       :key="plugin.id"
@@ -35,5 +29,5 @@ const plugins = computed(() =>
       :mode="mode"
       :proposal="proposal"
     />
-  </component>
+  </div>
 </template>

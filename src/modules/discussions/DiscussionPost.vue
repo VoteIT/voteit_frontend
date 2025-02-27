@@ -157,7 +157,7 @@ async function save() {
       v-if="!readOnly && ($slots.buttons || $slots.preMenu || menuItems.length)"
       class="d-flex"
     >
-      <div class="d-flex flex-wrap">
+      <div class="d-flex flex-wrap ga-1">
         <slot name="buttons"></slot>
       </div>
       <v-spacer />

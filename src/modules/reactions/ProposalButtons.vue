@@ -5,7 +5,6 @@
     :button="btn"
     :readonly="!!mode"
     :relation="{ content_type: 'proposal', object_id: proposal.pk }"
-    class="mr-1"
   >
     {{ btn.title }}
   </ReactionButton>

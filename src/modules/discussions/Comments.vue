@@ -74,7 +74,6 @@ defineExpose({
         <template #buttons>
           <ReactionButton
             v-for="btn in reactions"
-            class="mr-1"
             :key="btn.pk"
             :button="btn"
             :relation="{ content_type: 'discussion_post', object_id: c.pk }"
