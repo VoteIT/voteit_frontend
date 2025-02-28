@@ -281,20 +281,18 @@ watch(agendaId, () => {
         </p>
         <div v-if="!pickMethod" class="btn-group mt-3">
           <v-btn
-            prepend-icon="mdi-check-all"
             color="primary"
+            prepend-icon="mdi-check-all"
+            :text="$t('all')"
             @click="toggleAll"
-          >
-            {{ $t('all') }}
-          </v-btn>
+          />
           <v-btn
-            prepend-icon="mdi-arrow-right-bold"
             color="primary"
             :disabled="!selectedProposals.length"
+            prepend-icon="mdi-arrow-right-bold"
+            :text="$t('navigation.continue')"
             @click="pickMethod = true"
-          >
-            {{ $t('navigation.continue') }}
-          </v-btn>
+          />
         </div>
       </template>
       <template v-if="pickMethod">
@@ -358,35 +356,37 @@ watch(agendaId, () => {
         </v-expansion-panels>
         <div class="btn-group mt-3">
           <v-btn
-            prepend-icon="mdi-undo-variant"
-            @click="pickMethod = false"
             color="primary"
-            >{{ $t('navigation.back') }}</v-btn
-          >
+            prepend-icon="mdi-undo-variant"
+            :text="$t('navigation.back')"
+            variant="flat"
+            @click="pickMethod = false"
+          />
           <v-btn
-            prepend-icon="mdi-check"
             color="primary"
             :disabled="!readyToCreate"
+            prepend-icon="mdi-check"
+            :text="$t('create')"
+            variant="flat"
             @click="createPoll()"
-            >{{ $t('create') }}</v-btn
-          >
+          />
           <v-btn
             v-if="agendaItem?.state === 'ongoing'"
-            prepend-icon="mdi-play"
             color="primary"
             :disabled="!readyToCreate"
+            prepend-icon="mdi-play"
+            :text="$t('poll.createAndStart')"
+            variant="flat"
             @click="createPoll(true)"
-            >{{ $t('poll.createAndStart') }}</v-btn
-          >
+          />
         </div>
       </template>
       <v-alert
         v-if="agendaItem && agendaItem.state !== 'ongoing'"
-        type="info"
         class="mt-2"
-      >
-        {{ $t('poll.cantStartWithoutOngoing') }}
-      </v-alert>
+        :text="$t('poll.cantStartWithoutOngoing')"
+        type="info"
+      />
     </v-col>
   </v-row>
 </template>
