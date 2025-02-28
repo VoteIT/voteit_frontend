@@ -8,7 +8,7 @@
       :class="{ isUnread }"
     >
       <slot name="top"></slot>
-      <div class="meta d-flex">
+      <div class="meta d-flex ga-1">
         <div class="flex-grow-1">
           <span class="content-type">{{ $t('proposal.proposal') }}</span>
           <Tag :name="p.prop_id" />
@@ -39,37 +39,35 @@
       <v-sheet v-if="$slots.vote" class="vote-slot">
         <slot name="vote"></slot>
       </v-sheet>
-      <footer v-if="!readOnly" class="mt-2 d-flex">
-        <div class="d-flex flex-wrap">
-          <v-btn
-            prepend-icon="mdi-comment-outline"
-            size="small"
-            variant="text"
-            v-if="canAddDiscussionPost"
-            @click="comment"
-          >
-            {{ $t('discussion.comment') }}
-          </v-btn>
-          <v-btn
-            prepend-icon="mdi-chevron-up"
-            size="small"
-            variant="text"
-            v-if="showComments"
-            @click="showComments = false"
-          >
-            {{ $t('discussion.hideComments') }}
-          </v-btn>
-          <v-btn
-            prepend-icon="mdi-chevron-down"
-            size="small"
-            variant="text"
-            v-else-if="discussionPosts.length"
-            @click="showComments = true"
-          >
-            {{ $t('discussion.comments', { count: discussionPosts.length }) }}
-          </v-btn>
-          <slot name="buttons"></slot>
-        </div>
+      <footer v-if="!readOnly" class="mt-2 d-flex flex-wrap ga-1">
+        <v-btn
+          prepend-icon="mdi-comment-outline"
+          size="small"
+          variant="text"
+          v-if="canAddDiscussionPost"
+          @click="comment"
+        >
+          {{ $t('discussion.comment') }}
+        </v-btn>
+        <v-btn
+          prepend-icon="mdi-chevron-up"
+          size="small"
+          variant="text"
+          v-if="showComments"
+          @click="showComments = false"
+        >
+          {{ $t('discussion.hideComments') }}
+        </v-btn>
+        <v-btn
+          prepend-icon="mdi-chevron-down"
+          size="small"
+          variant="text"
+          v-else-if="discussionPosts.length"
+          @click="showComments = true"
+        >
+          {{ $t('discussion.comments', { count: discussionPosts.length }) }}
+        </v-btn>
+        <slot name="buttons"></slot>
         <v-spacer />
         <v-menu
           v-if="
@@ -84,7 +82,7 @@
               v-bind="props"
               size="small"
               variant="text"
-              class="ma-n2"
+              class="my-n2 mr-n2 ml-auto"
             />
           </template>
           <v-list>
@@ -130,7 +128,7 @@
           </v-list>
         </v-menu>
       </footer>
-      <footer v-else-if="$slots.buttons">
+      <footer v-else-if="$slots.buttons" class="d-flex flex-wrap ga-1">
         <slot name="buttons"></slot>
       </footer>
       <slot name="bottom"></slot>

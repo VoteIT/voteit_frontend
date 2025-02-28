@@ -21,13 +21,11 @@ const plugins = computed(() =>
 </script>
 
 <template>
-  <div class="d-flex flex-wrap ga-1" v-if="plugins.length">
-    <component
-      v-for="plugin in plugins"
-      :key="plugin.id"
-      :is="plugin.component"
-      :mode="mode"
-      :proposal="proposal"
-    />
-  </div>
+  <component
+    v-for="plugin in plugins"
+    :key="plugin.id"
+    :is="plugin.component"
+    :mode="mode"
+    :proposal="proposal"
+  />
 </template>

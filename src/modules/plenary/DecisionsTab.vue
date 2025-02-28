@@ -348,7 +348,9 @@ watch(
           </div>
         </template>
         <template #append>
-          <ButtonPlugins mode="presentation" :proposal="p" class="mt-2" />
+          <div class="d-flex flex-wrap ga-1 mt-2">
+            <ButtonPlugins mode="presentation" :proposal="p" />
+          </div>
         </template>
       </ProposalSheet>
       <div

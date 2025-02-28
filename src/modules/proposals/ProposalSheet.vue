@@ -79,7 +79,7 @@ onBeforeUnmount(evt.dispose)
 <template>
   <v-sheet rounded :elevation="selected ? 8 : 0" :class="{ selected }">
     <div class="pa-4">
-      <div class="d-flex">
+      <div class="d-flex ga-1">
         <div class="flex-grow-1 mb-3">
           <Tag :name="proposal.prop_id" />
         </div>

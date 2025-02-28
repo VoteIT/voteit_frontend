@@ -14,7 +14,7 @@ defineProps<{
       <slot name="vote"></slot>
     </template>
     <template #actions>
-      <ButtonPlugins :proposal="proposal" mode="vote" class="mt-2" />
+      <ButtonPlugins :proposal="proposal" mode="vote" />
     </template>
   </ProposalCard>
 </template>
