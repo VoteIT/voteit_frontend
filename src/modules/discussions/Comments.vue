@@ -87,7 +87,7 @@ defineExpose({
             size="small"
             variant="text"
             @click="replyTo(c)"
-            class="mx-2 reply-button"
+            class="reply-button"
           />
         </template>
       </DiscussionPost>
@@ -112,10 +112,4 @@ defineExpose({
     display: flex
     .richtext-editor
       flex: 1 0 80%
-</style>
-
-<style scoped lang="sass">
-.reply-button
-  margin-top: -6px
-  margin-bottom: -6px
 </style>

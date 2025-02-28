@@ -155,14 +155,13 @@ async function save() {
     </div>
     <footer
       v-if="!readOnly && ($slots.buttons || $slots.preMenu || menuItems.length)"
-      class="d-flex"
+      class="d-flex flex-wrap ga-1"
     >
-      <div class="d-flex flex-wrap ga-1">
-        <slot name="buttons"></slot>
+      <slot name="buttons"></slot>
+      <div class="ml-auto flex-shrink-0 d-flex my-n2 mr-n2">
+        <slot name="preMenu"></slot>
+        <DropdownMenu :items="menuItems" size="small" />
       </div>
-      <v-spacer />
-      <slot name="preMenu"></slot>
-      <DropdownMenu :items="menuItems" size="small" />
     </footer>
   </v-sheet>
 </template>
@@ -177,9 +176,6 @@ async function save() {
     border-top: 1px solid rgba(var(--v-border-color), .4)
     margin: 0 -10px
     padding: 10px 10px 0
-
-    .context-menu
-      margin: -6px
 
   p
     margin: .5rem 0
