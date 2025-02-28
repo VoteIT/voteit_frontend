@@ -56,7 +56,11 @@ const pollableAgendaItems = computed(() => {
     .map((ai) => ({
       ai,
       to: getMeetingRoute('pollStartAI', { aid: ai.pk }),
-      title: `${ai.title} (${getPublishedProposals(ai.pk).length || '-'})`
+      subtitle: t(
+        'proposal.proposalCount',
+        getPublishedProposals(ai.pk).length
+      ),
+      title: ai.title
     }))
 })
 const availableProposals = computed(() => getPublishedProposals(agendaId.value))
@@ -135,7 +139,6 @@ async function createPoll(start = false) {
     return alert(`*${methodSelected.value} not implemented`)
 
   working.value = true
-  // eslint-disable-next-line camelcase
   const { title, p_ord, withheld_result, ...settings } = methodSettings.value
   // For Repeated Schulze
   if (
@@ -147,13 +150,11 @@ async function createPoll(start = false) {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
     title,
-    // eslint-disable-next-line camelcase
     p_ord,
     proposals: [...selectedProposalIds.value],
     method_name: methodSelected.value,
     start,
     settings: settingsOrNull(settings),
-    // eslint-disable-next-line camelcase
     withheld_result
   }
   try {
@@ -216,14 +217,14 @@ watch(agendaId, () => {
         type="info"
         :text="$t('poll.noPollableAgendaItems')"
       />
-      <v-list bg-color="background">
+      <v-list bg-color="transparent">
         <v-list-item
           v-show="!agendaId || agendaId === ai.pk"
           v-for="{ ai, ...bind } in pollableAgendaItems"
           :key="ai.pk"
           v-bind="bind"
         >
-          <template #append v-if="agendaId">
+          <template #append v-if="agendaId === ai.pk">
             <v-btn
               size="small"
               variant="text"
@@ -237,7 +238,11 @@ watch(agendaId, () => {
         <h2 class="my-2">
           {{ $t('step', 2) }}: {{ $t('poll.pickProposals') }}
         </h2>
-        <v-item-group v-model="selectedProposalIds" multiple>
+        <v-item-group
+          class="d-flex flex-column ga-3 mb-4"
+          v-model="selectedProposalIds"
+          multiple
+        >
           <v-item
             v-for="p in availableProposals"
             :key="p.pk"
@@ -250,9 +255,29 @@ watch(agendaId, () => {
                 read-only
                 :p="p"
                 @click="!pickMethod && toggle?.()"
-                :class="{ isSelected, locked: pickMethod }"
-                class="mb-4"
-              />
+                :class="{
+                  isSelected,
+                  'cursor-pointer': !pickMethod,
+                  'cursor-not-allowed': pickMethod
+                }"
+              >
+                <template v-if="isSelected" #actions>
+                  <v-icon
+                    v-if="pickMethod"
+                    class="mt-n4 mr-n4"
+                    color="secondary"
+                    icon="mdi-lock"
+                    size="xx-large"
+                  />
+                  <v-icon
+                    v-else
+                    class="mt-n4 mr-n4"
+                    color="success"
+                    icon="mdi-check-circle"
+                    size="xx-large"
+                  />
+                </template>
+              </ProposalCard>
             </v-expand-transition>
           </v-item>
         </v-item-group>
@@ -373,49 +398,10 @@ watch(agendaId, () => {
 
 <style lang="sass">
 #start-poll
-  .method-list > div
-    border-top: 1px solid rgb(var(--v-border-color))
-    &:last-child
-      border-bottom: 1px solid rgb(var(--v-border-color))
-    > div
-      padding: .5rem 1.5rem
-    .number label
-      display: block
-    a
-      display: block
-      text-decoration: none
-      padding: 6px
-      color: rgb(var(--v-theme-on-background))
-      &::before
-        content: ''
-        width: 1.2rem
-        display: inline-block
-        line-height: 1
-    &.isSelected
-      background-color: rgb(var(--v-theme-surface))
-      a::before
-        content: '✔'
-      &.locked
-        background-color: #ddd
-    span
-      display: block
-      padding: 6px 6px 6px calc(6px + 1.2em)
-
   .proposal
     opacity: .6
 
-  .isSelected
-    .proposal
-      opacity: 1
-      border-color: rgb(var(--v-theme-success))
-      background-color: #fff
-      position: relative
-      &::after
-        content: '✓'
-        font-size: 36pt
-        position: absolute
-        top: -15px
-        right: 0
-  .locked .proposal
-    background-color: rgba(var(--v-theme-secondary), .1)
+  .isSelected .proposal
+    opacity: 1
+    border-color: rgb(var(--v-theme-success))
 </style>
