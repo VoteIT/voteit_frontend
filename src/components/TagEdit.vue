@@ -1,28 +1,29 @@
 <template>
   <div :class="{ 'mb-4': !!label }">
-    <p v-if="label" class="mb-1 text-secondary">
-      <label>{{ label }}</label>
-    </p>
-    <Tag
-      v-for="tag in tags"
-      :key="tag"
-      :name="tag"
-      class="mr-1"
-      :closer="tag !== setTag"
-      @remove="tags.delete(tag)"
-    />
-    <input
-      :list="tagUid"
-      type="text"
-      class="tag-input"
-      :placeholder="$t('addTag')"
-      v-model="newTag"
-      @keydown.enter.prevent="addTag()"
-      @input="detectTagClick"
-    />
-    <datalist :id="tagUid">
-      <option v-for="tag in allTags" :key="tag" :value="tag"></option>
-    </datalist>
+    <div class="d-flex flex-wrap ga-1">
+      <p v-if="label" class="text-secondary">
+        <label>{{ label }}</label>
+      </p>
+      <Tag
+        v-for="tag in tags"
+        :key="tag"
+        :name="tag"
+        :closer="tag !== setTag"
+        @remove="tags.delete(tag)"
+      />
+      <input
+        :list="tagUid"
+        type="text"
+        class="tag-input"
+        :placeholder="$t('addTag')"
+        v-model="newTag"
+        @keydown.enter.prevent="addTag()"
+        @input="detectTagClick"
+      />
+      <datalist :id="tagUid">
+        <option v-for="tag in allTags" :key="tag" :value="tag"></option>
+      </datalist>
+    </div>
   </div>
 </template>
 

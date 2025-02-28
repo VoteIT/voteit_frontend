@@ -148,23 +148,25 @@ defineExpose({
             class="mt-1"
           />
         </v-expand-transition>
-        <br />
         <PostAs v-show="active && canPostAs" v-model="author" class="mt-1" />
         <div class="d-flex mt-1">
           <v-spacer />
-          <v-btn v-if="active" variant="text" @click="reset" size="small">
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn
+            v-if="active"
+            size="small"
+            :text="$t('cancel')"
+            variant="text"
+            @click="reset"
+          />
           <v-btn
             color="primary"
-            :loading="submitting"
             :disabled="disabled"
+            :loading="submitting"
             :prepend-icon="submitIcon"
             size="small"
+            :text="submitText"
             @click="submit"
-          >
-            {{ submitText }}
-          </v-btn>
+          />
         </div>
       </template>
     </RichtextEditor>
