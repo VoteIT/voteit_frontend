@@ -1,173 +1,3 @@
-<template>
-  <v-row id="start-poll">
-    <v-col lg="8" offset-lg="2">
-      <header class="mb-4">
-        <h1>{{ $t('poll.start') }}</h1>
-      </header>
-      <h2 class="mb-2">
-        {{ $t('step', 1) }}: {{ $t('poll.selectAgendaItem') }}
-      </h2>
-      <v-alert
-        class="mt-4"
-        v-if="!pollableAgendaItems.length"
-        type="info"
-        :text="$t('poll.noPollableAgendaItems')"
-      />
-      <v-list bg-color="background">
-        <v-list-item
-          v-show="!agendaId || agendaId === ai.pk"
-          v-for="{ ai, ...bind } in pollableAgendaItems"
-          :key="ai.pk"
-          v-bind="bind"
-        >
-          <template #append v-if="agendaId">
-            <v-btn
-              size="small"
-              variant="text"
-              icon="mdi-close"
-              :to="getMeetingRoute('pollStart')"
-            />
-          </template>
-        </v-list-item>
-      </v-list>
-      <template v-if="agendaId">
-        <h2 class="my-2">
-          {{ $t('step', 2) }}: {{ $t('poll.pickProposals') }}
-        </h2>
-        <v-item-group v-model="selectedProposalIds" multiple>
-          <v-item
-            v-for="p in availableProposals"
-            :key="p.pk"
-            :value="p.pk"
-            v-slot="{ toggle, isSelected }"
-          >
-            <v-expand-transition>
-              <ProposalCard
-                v-show="!pickMethod || selectedProposalIds.includes(p.pk)"
-                read-only
-                :p="p"
-                @click="!pickMethod && toggle?.()"
-                :class="{ isSelected, locked: pickMethod }"
-                class="mb-4"
-              />
-            </v-expand-transition>
-          </v-item>
-        </v-item-group>
-        <p v-if="!availableProposals.length">
-          <em>{{ $t('poll.noAiPublishedProposals') }}</em>
-        </p>
-        <div v-if="!pickMethod" class="btn-group mt-3">
-          <v-btn
-            prepend-icon="mdi-check-all"
-            color="primary"
-            @click="toggleAll"
-          >
-            {{ $t('all') }}
-          </v-btn>
-          <v-btn
-            prepend-icon="mdi-arrow-right-bold"
-            color="primary"
-            :disabled="!selectedProposals.length"
-            @click="pickMethod = true"
-          >
-            {{ $t('navigation.continue') }}
-          </v-btn>
-        </div>
-      </template>
-      <template v-if="pickMethod">
-        <h2 class="my-2">{{ $t('step', 3) }}: {{ $t('poll.chooseMethod') }}</h2>
-        <v-expansion-panels v-model="methodSelected">
-          <v-expansion-panel
-            v-for="{
-              id,
-              criterion,
-              discouraged,
-              getName,
-              getDescription
-            } in availableMethods"
-            :key="id"
-            :title="getName(t)"
-            :value="id"
-          >
-            <v-expansion-panel-text>
-              <v-alert
-                class="my-4"
-                type="info"
-                :icon="discouraged && 'mdi-alert-decagram'"
-              >
-                {{ getDescription(t) }}
-              </v-alert>
-              <h3 class="my-2">Valkriterier</h3>
-              <v-tooltip
-                v-for="{
-                  criteria,
-                  color,
-                  description,
-                  icon,
-                  title
-                } in criterion"
-                :key="criteria"
-                location="top"
-              >
-                <template #activator="{ props }">
-                  <v-chip class="ma-1" :color="color" v-bind="props">
-                    <v-icon start :icon="icon" />
-                    {{ title }}
-                  </v-chip>
-                </template>
-                <div style="max-width: 200px">
-                  {{ description }}
-                </div>
-              </v-tooltip>
-              <h3 class="my-2">
-                {{ $t('options') }}
-              </h3>
-              <SchemaForm
-                v-if="methodSchema"
-                :key="`options-${id}`"
-                :schema="methodSchema"
-                v-model="methodSettings"
-                @update:valid="settingsValid = $event"
-                validate-immediately
-              />
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-        <div class="btn-group mt-3">
-          <v-btn
-            prepend-icon="mdi-undo-variant"
-            @click="pickMethod = false"
-            color="primary"
-            >{{ $t('navigation.back') }}</v-btn
-          >
-          <v-btn
-            prepend-icon="mdi-check"
-            color="primary"
-            :disabled="!readyToCreate"
-            @click="createPoll()"
-            >{{ $t('create') }}</v-btn
-          >
-          <v-btn
-            v-if="agendaItem?.state === 'ongoing'"
-            prepend-icon="mdi-play"
-            color="primary"
-            :disabled="!readyToCreate"
-            @click="createPoll(true)"
-            >{{ $t('poll.createAndStart') }}</v-btn
-          >
-        </div>
-      </template>
-      <v-alert
-        v-if="agendaItem && agendaItem.state !== 'ongoing'"
-        type="info"
-        class="mt-2"
-      >
-        {{ $t('poll.cantStartWithoutOngoing') }}
-      </v-alert>
-    </v-col>
-  </v-row>
-</template>
-
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -370,6 +200,176 @@ watch(agendaId, () => {
   selectedProposalIds.value.length = 0
 })
 </script>
+
+<template>
+  <v-row id="start-poll">
+    <v-col lg="8" offset-lg="2">
+      <header class="mb-4">
+        <h1>{{ $t('poll.start') }}</h1>
+      </header>
+      <h2 class="mb-2">
+        {{ $t('step', 1) }}: {{ $t('poll.selectAgendaItem') }}
+      </h2>
+      <v-alert
+        class="mt-4"
+        v-if="!pollableAgendaItems.length"
+        type="info"
+        :text="$t('poll.noPollableAgendaItems')"
+      />
+      <v-list bg-color="background">
+        <v-list-item
+          v-show="!agendaId || agendaId === ai.pk"
+          v-for="{ ai, ...bind } in pollableAgendaItems"
+          :key="ai.pk"
+          v-bind="bind"
+        >
+          <template #append v-if="agendaId">
+            <v-btn
+              size="small"
+              variant="text"
+              icon="mdi-close"
+              :to="getMeetingRoute('pollStart')"
+            />
+          </template>
+        </v-list-item>
+      </v-list>
+      <template v-if="agendaId">
+        <h2 class="my-2">
+          {{ $t('step', 2) }}: {{ $t('poll.pickProposals') }}
+        </h2>
+        <v-item-group v-model="selectedProposalIds" multiple>
+          <v-item
+            v-for="p in availableProposals"
+            :key="p.pk"
+            :value="p.pk"
+            v-slot="{ toggle, isSelected }"
+          >
+            <v-expand-transition>
+              <ProposalCard
+                v-show="!pickMethod || selectedProposalIds.includes(p.pk)"
+                read-only
+                :p="p"
+                @click="!pickMethod && toggle?.()"
+                :class="{ isSelected, locked: pickMethod }"
+                class="mb-4"
+              />
+            </v-expand-transition>
+          </v-item>
+        </v-item-group>
+        <p v-if="!availableProposals.length">
+          <em>{{ $t('poll.noAiPublishedProposals') }}</em>
+        </p>
+        <div v-if="!pickMethod" class="btn-group mt-3">
+          <v-btn
+            prepend-icon="mdi-check-all"
+            color="primary"
+            @click="toggleAll"
+          >
+            {{ $t('all') }}
+          </v-btn>
+          <v-btn
+            prepend-icon="mdi-arrow-right-bold"
+            color="primary"
+            :disabled="!selectedProposals.length"
+            @click="pickMethod = true"
+          >
+            {{ $t('navigation.continue') }}
+          </v-btn>
+        </div>
+      </template>
+      <template v-if="pickMethod">
+        <h2 class="my-2">{{ $t('step', 3) }}: {{ $t('poll.chooseMethod') }}</h2>
+        <v-expansion-panels v-model="methodSelected">
+          <v-expansion-panel
+            v-for="{
+              id,
+              criterion,
+              discouraged,
+              getName,
+              getDescription
+            } in availableMethods"
+            :key="id"
+            :title="getName(t)"
+            :value="id"
+          >
+            <v-expansion-panel-text>
+              <v-alert
+                class="my-4"
+                type="info"
+                :icon="discouraged && 'mdi-alert-decagram'"
+              >
+                {{ getDescription(t) }}
+              </v-alert>
+              <h3 class="my-2">Valkriterier</h3>
+              <v-tooltip
+                v-for="{
+                  criteria,
+                  color,
+                  description,
+                  icon,
+                  title
+                } in criterion"
+                :key="criteria"
+                location="top"
+              >
+                <template #activator="{ props }">
+                  <v-chip class="ma-1" :color="color" v-bind="props">
+                    <v-icon start :icon="icon" />
+                    {{ title }}
+                  </v-chip>
+                </template>
+                <div style="max-width: 200px">
+                  {{ description }}
+                </div>
+              </v-tooltip>
+              <h3 class="my-2">
+                {{ $t('options') }}
+              </h3>
+              <SchemaForm
+                v-if="methodSchema"
+                :key="`options-${id}`"
+                :schema="methodSchema"
+                v-model="methodSettings"
+                @update:valid="settingsValid = $event"
+                validate-immediately
+              />
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+        <div class="btn-group mt-3">
+          <v-btn
+            prepend-icon="mdi-undo-variant"
+            @click="pickMethod = false"
+            color="primary"
+            >{{ $t('navigation.back') }}</v-btn
+          >
+          <v-btn
+            prepend-icon="mdi-check"
+            color="primary"
+            :disabled="!readyToCreate"
+            @click="createPoll()"
+            >{{ $t('create') }}</v-btn
+          >
+          <v-btn
+            v-if="agendaItem?.state === 'ongoing'"
+            prepend-icon="mdi-play"
+            color="primary"
+            :disabled="!readyToCreate"
+            @click="createPoll(true)"
+            >{{ $t('poll.createAndStart') }}</v-btn
+          >
+        </div>
+      </template>
+      <v-alert
+        v-if="agendaItem && agendaItem.state !== 'ongoing'"
+        type="info"
+        class="mt-2"
+      >
+        {{ $t('poll.cantStartWithoutOngoing') }}
+      </v-alert>
+    </v-col>
+  </v-row>
+</template>
 
 <style lang="sass">
 #start-poll
