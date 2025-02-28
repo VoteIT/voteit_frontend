@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.29.5 (??)
+
+- Improved spacing and positions on proposal and discussion posts buttons.
+
 ## 0.29.4 (2025-02-19)
 
 - Design fix for proposals in poll cards for finished polls
