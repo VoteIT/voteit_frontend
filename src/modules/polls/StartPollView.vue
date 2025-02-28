@@ -284,6 +284,7 @@ watch(agendaId, () => {
             color="primary"
             prepend-icon="mdi-check-all"
             :text="$t('all')"
+            variant="flat"
             @click="toggleAll"
           />
           <v-btn
@@ -291,6 +292,7 @@ watch(agendaId, () => {
             :disabled="!selectedProposals.length"
             prepend-icon="mdi-arrow-right-bold"
             :text="$t('navigation.continue')"
+            variant="flat"
             @click="pickMethod = true"
           />
         </div>
