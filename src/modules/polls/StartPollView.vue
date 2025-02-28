@@ -261,21 +261,16 @@ watch(agendaId, () => {
                   'cursor-not-allowed': pickMethod
                 }"
               >
-                <template v-if="isSelected" #actions>
-                  <v-icon
-                    v-if="pickMethod"
-                    class="mt-n4 mr-n4"
-                    color="secondary"
-                    icon="mdi-lock"
-                    size="xx-large"
-                  />
-                  <v-icon
-                    v-else
-                    class="mt-n4 mr-n4"
-                    color="success"
-                    icon="mdi-check-circle"
-                    size="xx-large"
-                  />
+                <template #actions>
+                  <v-fade-transition>
+                    <v-icon
+                      v-if="isSelected"
+                      class="check-icon mt-n4 mr-n4"
+                      :color="pickMethod ? 'secondary' : 'success'"
+                      icon="mdi-check-circle"
+                      size="xx-large"
+                    />
+                  </v-fade-transition>
                 </template>
               </ProposalCard>
             </v-expand-transition>
@@ -396,12 +391,14 @@ watch(agendaId, () => {
   </v-row>
 </template>
 
-<style lang="sass">
-#start-poll
-  .proposal
-    opacity: .6
+<style lang="sass" scoped>
+:deep(.proposal)
+  opacity: .6
 
-  .isSelected .proposal
-    opacity: 1
-    border-color: rgb(var(--v-theme-success))
+.isSelected :deep(.proposal)
+  opacity: 1
+  border-color: rgb(var(--v-theme-success))
+
+.check-icon
+  transition: 250ms
 </style>
