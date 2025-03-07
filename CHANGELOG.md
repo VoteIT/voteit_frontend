@@ -6,7 +6,8 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 0.29.5 (??)
 
-- Improved spacing and positions on proposal and discussion posts buttons.
+- Improved spacing and positions on proposal and discussion posts buttons
+- Bugfix: Participant group tab totals footer was improperly offset
 
 ## 0.29.4 (2025-02-19)
 
