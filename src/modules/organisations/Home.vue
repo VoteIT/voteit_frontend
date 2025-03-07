@@ -306,15 +306,14 @@ function cancelEdit() {
       <v-row v-if="organisation" class="home mt-4 mb-4">
         <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
           <v-btn
+            v-if="idLoginURL"
             block
-            v-if="organisation.login_url"
             color="primary"
             :disabled="!canLogin"
             :href="idLoginURL"
             prepend-icon="mdi-login"
-          >
-            {{ $t('organization.loginTo', { ...organisation }) }}
-          </v-btn>
+            :text="$t('organization.loginTo', { ...organisation })"
+          />
           <v-alert
             v-if="!canLogin"
             class="my-3"

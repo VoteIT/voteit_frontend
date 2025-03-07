@@ -48,9 +48,13 @@ function buildIdServerURL(path: string) {
 // URLs
 const manageAccountURL = computed(() => buildIdServerURL('/'))
 const proxyLogoutURL = computed(() => buildIdServerURL('/log-out'))
-const idLoginURL = computed(() =>
-  buildIdServerURL(`/login-to/${location.hostname}`)
-)
+const idLoginURL = computed(() => {
+  const params =
+    location.pathname === '/'
+      ? ''
+      : `?next=${encodeURIComponent(location.pathname)}`
+  return buildIdServerURL(`/login-to/${location.hostname}${params}`)
+})
 
 const organisationId = computed(() => organisation.value?.pk)
 const organisationIsUnavailable = computed(
