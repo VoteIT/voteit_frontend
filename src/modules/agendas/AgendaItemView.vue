@@ -39,7 +39,7 @@ import useProposals, {
 } from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
 import { DiscussionPost } from '../discussions/types'
-import useTags, { TagsKey } from '../meetings/useTags'
+import useTags, { TagClickHandlerKey, TagsKey } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
 import usePolls from '../polls/usePolls'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
@@ -230,7 +230,9 @@ watch(agendaBody, (value) => {
 })
 
 const filterComponent = ref<ComponentPublicInstance | null>(null)
-async function selectTag(tagName: string) {
+const filterTag = computed(() => [...activeFilter.value.tags][0])
+const { getHTMLTags } = useTags()
+provide(TagClickHandlerKey, async (tagName) => {
   activeFilter.value.tags = new Set([tagName])
   activeFilter.value.states = new Set([
     ProposalState.Approved,
@@ -247,9 +249,7 @@ async function selectTag(tagName: string) {
     top: el.offsetTop - 12,
     behavior: 'smooth'
   })
-}
-const filterTag = computed(() => [...activeFilter.value.tags][0])
-const { getHTMLTags } = useTags(undefined, selectTag)
+})
 
 const extraTags = computed(() => {
   if (!agendaItem.value || !agendaBody.value) return []

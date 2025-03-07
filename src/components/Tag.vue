@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
 import stringToHSL from '@/utils/stringToHSL'
-import { tagClickEvent } from '@/modules/meetings/useTags'
+import { TagClickHandlerKey } from '@/modules/meetings/useTags'
+
+const clickHandler = inject(TagClickHandlerKey)
 
 defineEmits(['remove'])
 const props = defineProps<{
@@ -27,11 +29,11 @@ const badgeContent = computed(() => String(props.count))
   >
     <span
       class="voteit-tag"
-      :class="{ disabled }"
+      :class="{ disabled, 'cursor-pointer': !!clickHandler }"
       :style="style"
       data-denotation-char="#"
       :data-value="name"
-      @click="tagClickEvent.emit(name)"
+      @click="clickHandler?.(name)"
     >
       <v-icon size="x-small" icon="mdi-tag-outline" />
       #{{ name }}
@@ -53,9 +55,8 @@ const badgeContent = computed(() => String(props.count))
   color: #000
   font-size: 10pt
 
-span[data-denotation-char="#"]:not(.disabled)
+span[data-denotation-char="#"]
   user-select: unset
-  cursor: pointer
 
 .mdi-close
   position: relative

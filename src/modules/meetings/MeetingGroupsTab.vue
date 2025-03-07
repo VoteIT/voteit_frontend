@@ -25,7 +25,7 @@ import { meetingGroupType } from './contentTypes'
 import { MeetingGroup, MeetingGroupColumn } from './types'
 import GroupMemberships from './GroupMemberships.vue'
 import { meetingGroupTablePlugins } from './registry'
-import useTags, { TagsKey } from './useTags'
+import { TagClickHandlerKey, TagsKey } from './useTags'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -45,11 +45,10 @@ const groupFilter = reactive<{
 })
 
 // Set search query on tag click
-function tagClick(tag: string) {
+provide(TagClickHandlerKey, (tag) => {
   groupFilter.open = true
   groupFilter.search = '#' + tag
-}
-useTags(undefined, tagClick)
+})
 
 function searchGroup({
   tags,
