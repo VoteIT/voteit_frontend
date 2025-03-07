@@ -8,6 +8,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 - Improved spacing and positions on proposal and discussion posts buttons
 - Bugfix: Participant group tab totals footer was improperly offset
+- Show login info and button for unauthenticated users on meeting join page
 
 ## 0.29.4 (2025-02-19)
 
