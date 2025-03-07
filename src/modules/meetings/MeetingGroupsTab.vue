@@ -538,7 +538,7 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
       <tfoot v-if="hasCountColumns">
         <tr>
           <th>{{ $t('total') }}</th>
-          <th></th>
+          <th :colspan="groupSwitches.length + 1"></th>
           <th v-for="{ name, getCount } in columns" :key="name">
             {{ getCount?.() || '-' }}
           </th>
