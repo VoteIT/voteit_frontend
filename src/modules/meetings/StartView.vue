@@ -3,13 +3,13 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 
+import { cols } from '@/utils/defaults'
 import { MenuItem } from '@/utils/types'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import useDefaults from '@/composables/useDefaults'
 
 import { meetingType } from './contentTypes'
 import useMeeting from './useMeeting'
@@ -17,7 +17,6 @@ import { MeetingState } from './types'
 import { meetingMenuPlugins } from './registry'
 
 const { t } = useI18n()
-const { cols } = useDefaults()
 
 const editing = ref(false)
 const { meeting, meetingId, canChange, isModerator } = useMeeting()

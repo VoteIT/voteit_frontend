@@ -1,14 +1,6 @@
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
 
-const cols = {
-  default: {
-    cols: 12,
-    lg: 8,
-    offsetLg: 2
-  }
-}
-
 export default function useDefaults() {
   const { mobile } = useDisplay()
 
@@ -26,7 +18,6 @@ export default function useDefaults() {
   return {
     collapsedBodyHeight,
     collapsedBodyHeightMobile,
-    cols,
     dialogDefaults
   }
 }

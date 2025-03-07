@@ -2,12 +2,12 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { cols } from '@/utils/defaults'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import useLoader from '@/composables/useLoader'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useAuthentication, { user } from '@/composables/useAuthentication'
-import useDefaults from '@/composables/useDefaults'
 import { AccessPolicy } from '@/contentTypes/types'
 import useOrganisation from '../organisations/useOrganisation'
 
@@ -25,7 +25,6 @@ const loader = useLoader('JoinMeeting')
 const { meetings } = useMeetings(loader.call)
 const router = useRouter()
 const policies = ref<AccessPolicy[]>([])
-const { cols } = useDefaults()
 
 const policyComponents = computed(() => {
   return policies.value

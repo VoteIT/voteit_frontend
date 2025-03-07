@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
+import { cols } from '@/utils/defaults'
 import { MenuItem } from '@/utils/types'
 
 import AppBar from '@/components/AppBar.vue'
@@ -163,7 +164,7 @@ function addUser(user: number) {
   )
 }
 
-const { collapsedBodyHeightMobile, cols } = useDefaults()
+const { collapsedBodyHeightMobile } = useDefaults()
 
 /* Meetings listed upfront */
 const groupRules = [

@@ -78,7 +78,7 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import useDefaults from '@/composables/useDefaults'
+import { cols } from '@/utils/defaults'
 import User from '@/components/User.vue'
 
 import { getMeetingGroup } from '../meetings/useMeetingGroups'
@@ -89,7 +89,6 @@ import useProposals from '../proposals/useProposals'
 import usePrinting from './usePrinting'
 
 useMeetingTitle('Printing') // TODO
-const { cols } = useDefaults()
 const agendaId = computed(() => Number(route.params.aid))
 const { getAgendaProposals } = useProposals()
 const route = useRoute()

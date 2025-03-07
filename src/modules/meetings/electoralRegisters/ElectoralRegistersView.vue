@@ -217,11 +217,11 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { cols } from '@/utils/defaults'
 import restApi from '@/utils/restApi'
 import { socket } from '@/utils/Socket'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
-import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
 import { presenceCheckClosed } from '@/modules/presence/events'
 import usePolls from '@/modules/polls/usePolls'
@@ -412,8 +412,6 @@ const currentERText = computed(() => {
       })
     : t('electoralRegister.voterCount', weights.length)
 })
-
-const { cols } = useDefaults()
 </script>
 
 <style scoped lang="sass">

@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { dialogDefaults } from '@/utils/defaults'
 import { ThemeColor } from '@/utils/types'
 import QueryDialog from '@/components/QueryDialog.vue'
-import useDefaults from '@/composables/useDefaults'
 
 import useMeetingId from '../meetings/useMeetingId'
 
 import useActive from './useActive'
 
-const { dialogDefaults } = useDefaults()
 const meetingId = useMeetingId()
 const { componentActive, isActive, isBusy, isDismissed, dismiss, setActive } =
   useActive(meetingId)

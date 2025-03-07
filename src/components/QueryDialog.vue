@@ -37,11 +37,10 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useDefaults from '@/composables/useDefaults'
+import { dialogDefaults } from '@/utils/defaults'
 import { Color } from '@/utils/types'
 
 const { t } = useI18n()
-const { dialogDefaults } = useDefaults()
 
 const emit = defineEmits(['confirmed'])
 

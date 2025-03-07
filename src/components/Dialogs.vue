@@ -49,12 +49,11 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { dialogDefaults } from '@/utils/defaults'
 import { openDialogEvent } from '@/utils/events'
 import { Dialog } from '@/composables/types'
-import useDefaults from '@/composables/useDefaults'
 
 const { t } = useI18n()
-const { dialogDefaults } = useDefaults()
 
 const window = ref<ComponentPublicInstance | null>(null)
 let savedFocusEl: HTMLElement | null
