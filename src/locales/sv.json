@@ -309,9 +309,10 @@
   "join": {
     "acceptInvite": "Acceptera",
     "asModerator": "Hantera möte",
-    "asModeratorDescription": " Som administratör kan du gå med I alla möten som moderator. Detta gör dig till en synlig deltagare i mötet.\nVill du gå med som moderator?",
+    "asModeratorDescription": "Som administratör kan du gå med I alla möten som moderator. Detta gör dig till en synlig deltagare i mötet.",
+    "asModeratorQuery": "Detta gör dig till en synlig deltagare i mötet.\nVill du gå med som moderator?",
     "invites": "Mötesinbjudan | Mötesinbjudningar",
-    "loginDescription": "Du behöver logga in för att gå med i det här mötet. Klicka på inloggningsknappen nedan för att komma vidare.",
+    "loginDescription": "Du behöver logga in för att gå med i möten. Klicka på inloggningsknappen nedan för att komma vidare.",
     "loginRequired": "Inloggning krävs",
     "meeting": "Gå med",
     "meetingTitle": "Gå med i möte: {title}",

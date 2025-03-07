@@ -309,9 +309,10 @@
   "join": {
     "acceptInvite": "Accept invitation",
     "asModerator": "Manage meeting",
-    "asModeratorDescription": "As an organization manager, you can join any meeting as moderator. This will make you a visible participant in the meeting.\nDo you want to join as moderator?",
+    "asModeratorDescription": "As an organization manager, you can join any meeting as moderator. This will make you a visible participant in the meeting.",
+    "asModeratorQuery": "This will make you a visible participant in the meeting.\nDo you want to join as moderator?",
     "invites": "Meeting invitation | Meeting invitations",
-    "loginDescription": "You need to log in to join this meeting. Click login button below to continue.",
+    "loginDescription": "You need to log in to join meetings. Click login button below to continue.",
     "loginRequired": "Login required",
     "meeting": "Join",
     "meetingTitle": "Join meeting: {title}",

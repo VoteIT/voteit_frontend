@@ -1,24 +1,31 @@
 <template>
-  <div>
-    <p class="mb-1">
-      {{ $t('accessPolicies.automatic.joinDescription') }}
-    </p>
-    <div class="mb-4 d-flex ga-1">
+  <v-alert icon="mdi-door-open" :title="$t('accessPolicies.automatic.title')">
+    <p class="mb-2">{{ $t('accessPolicies.automatic.joinDescription') }}</p>
+    <div class="mb-4 d-flex flex-wrap ga-1">
       <v-chip v-for="role in policy.roles_given" :key="role">
         {{ meetingType.getRole(role).translateName($t) }}
       </v-chip>
     </div>
-    <div class="text-right">
+    <div class="d-sm-none text-right">
       <v-btn
         color="primary"
         :disabled="submitting"
         :loading="submitting"
-        prepend-icon="mdi-door-open"
         :text="$t('join.now')"
         @click="joinNow"
       />
     </div>
-  </div>
+    <template #append>
+      <v-btn
+        class="d-none d-sm-flex"
+        color="primary"
+        :disabled="submitting"
+        :loading="submitting"
+        :text="$t('join.now')"
+        @click="joinNow"
+      />
+    </template>
+  </v-alert>
 </template>
 
 <script lang="ts" setup>

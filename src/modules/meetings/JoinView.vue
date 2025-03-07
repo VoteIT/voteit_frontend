@@ -66,22 +66,27 @@ onBeforeMount(() => {
     <v-container>
       <v-row id="join-meeting" v-if="meeting">
         <v-col v-bind="cols.default">
-          <h1>{{ $t('join.meetingTitle', { ...meeting }) }}</h1>
-          <div class="btn-controls" v-if="canBecomeModeratorMeeting">
-            <QueryDialog
-              :confirm-text="$t('join.asModeratorDescription')"
-              @confirmed="joinAsModerator"
+          <h1 class="mb-4">{{ $t('join.meetingTitle', { ...meeting }) }}</h1>
+          <div class="d-flex flex-column ga-4" v-if="policyComponents.length">
+            <v-alert
+              v-if="canBecomeModeratorMeeting"
+              color="warning"
+              icon="mdi-gavel"
+              :text="$t('join.asModeratorDescription')"
+              :title="$t('join.asModerator')"
             >
-              <template #activator="{ props }">
-                <v-btn
+              <template #append>
+                <QueryDialog
                   color="warning"
-                  prepend-icon="mdi-gavel"
-                  :text="$t('join.asModerator')"
-                />
+                  :text="$t('join.asModeratorQuery')"
+                  @confirmed="joinAsModerator"
+                >
+                  <template #activator="{ props }">
+                    <v-btn :text="$t('join.asModerator')" v-bind="props" />
+                  </template>
+                </QueryDialog>
               </template>
-            </QueryDialog>
-          </div>
-          <div class="btn-controls" v-else-if="policyComponents.length">
+            </v-alert>
             <component
               v-for="{ component, policy } in policyComponents"
               :is="component"
@@ -96,19 +101,20 @@ onBeforeMount(() => {
       </v-row>
       <v-row v-else-if="!isAuthenticated">
         <v-col v-bind="cols.default">
-          <header class="mb-6">
-            <h1 class="mb-1">{{ $t('join.loginRequired') }}</h1>
-            <p>{{ $t('join.loginDescription') }}</p>
-          </header>
-          <v-btn
-            v-if="idLoginURL"
-            block
-            color="primary"
-            :disabled="!canLogin"
-            :href="idLoginURL"
-            prepend-icon="mdi-login"
-            :text="$t('organization.loginTo', { ...organisation })"
-          />
+          <v-alert
+            :title="$t('join.loginRequired')"
+            :text="$t('join.loginDescription')"
+          >
+            <div v-if="idLoginURL" class="mt-2 text-right">
+              <v-btn
+                color="primary"
+                :disabled="!canLogin"
+                :href="idLoginURL"
+                prepend-icon="mdi-login"
+                :text="$t('organization.loginTo', { ...organisation })"
+              />
+            </div>
+          </v-alert>
         </v-col>
       </v-row>
     </v-container>
