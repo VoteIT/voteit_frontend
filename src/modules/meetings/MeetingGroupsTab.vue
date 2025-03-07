@@ -1,3 +1,267 @@
+<script lang="ts" setup>
+import { any, flatmap } from 'itertools'
+import { chunk, orderBy } from 'lodash'
+import { computed, provide, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { getFullName } from '@/utils'
+import { PickByType } from '@/utils/types'
+import { getApiLink } from '@/utils/restApi'
+import SchemaForm from '@/components/SchemaForm.vue'
+import Tag from '@/components/Tag.vue'
+import useAuthentication from '@/composables/useAuthentication'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
+import useRules from '@/composables/useRules'
+import useErrorHandler from '@/composables/useErrorHandler'
+import { FieldType, FormSchema } from '@/components/types'
+
+import useUserDetails from '../organisations/useUserDetails'
+
+import useMeeting from './useMeeting'
+import useMeetingGroups from './useMeetingGroups'
+import { meetingGroupType } from './contentTypes'
+import { MeetingGroup, MeetingGroupColumn } from './types'
+import GroupMemberships from './GroupMemberships.vue'
+import { meetingGroupTablePlugins } from './registry'
+import useTags, { TagsKey } from './useTags'
+
+const { t } = useI18n()
+const { meeting, meetingId } = useMeeting()
+const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
+const { user } = useAuthentication()
+const { getUser } = useUserDetails()
+const rules = useRules(t)
+
+const groupFilter = reactive<{
+  mine: boolean
+  open: boolean
+  search: string | null
+}>({
+  mine: false,
+  open: false,
+  search: null
+})
+
+// Set search query on tag click
+function tagClick(tag: string) {
+  groupFilter.open = true
+  groupFilter.search = '#' + tag
+}
+useTags(undefined, tagClick)
+
+function searchGroup({
+  tags,
+  title,
+  members
+}: (typeof meetingGroups.value)[number]) {
+  if (!groupFilter.search) return true
+  const query = groupFilter.search.toLowerCase()
+  // Start by title search (cheapest)
+  if (title.toLowerCase().includes(query)) return true
+  // Tags are always lowercase
+  if (tags.some((tag) => ('#' + tag).includes(query))) return true
+  // Lastly, search members
+  return members.some((id) => {
+    const user = getUser(id)
+    if (!user) return false
+    return (
+      !!user.userid?.includes(query) ||
+      getFullName(user).toLowerCase().includes(query)
+    )
+  })
+}
+
+const orderedMeetingGroups = computed(() => {
+  return orderBy(
+    meetingGroups.value
+      .map((g) => ({
+        ...g,
+        isMember: g.members.includes(user.value!.pk)
+      }))
+      .filter((g) => {
+        if (groupFilter.mine && !g.isMember) return false
+        if (groupFilter.search && !searchGroup(g)) return false
+        return true
+      }),
+    'isMember',
+    'desc'
+  )
+})
+
+const columns = computed(() => {
+  if (!meeting.value) return []
+  const plugins = meetingGroupTablePlugins.getActivePlugins(meeting.value)
+  let columns: MeetingGroupColumn[] = []
+  for (const plugin of plugins) {
+    columns = plugin.transform(columns, meeting.value)
+  }
+  return columns.map((col) => ({
+    ...col,
+    count: col.getCount?.(),
+    description: col.getDescription?.(t),
+    title: col.getTitle(t)
+  }))
+})
+const hasCountColumns = computed(() => any(columns.value, (c) => !!c.getCount))
+
+const importSchema = computed<FormSchema>(() => {
+  const validate = rules.multiline(
+    rules.or(
+      rules.tabSeparated(rules.minLength(1), rules.minLength(1)),
+      rules.tabSeparated(rules.minLength(1), rules.minLength(1), rules.min(0))
+    )
+  )
+  return [
+    {
+      label: t('meeting.groups.groups'),
+      name: 'groups',
+      type: FieldType.TextArea,
+      rules: [
+        {
+          props: {
+            required: true
+          },
+          validate
+        }
+      ]
+    }
+  ]
+})
+/**
+ * Socket call to import groups.
+ */
+async function createGroups(data: { groups: string }) {
+  await meetingGroupType.methodCall('bulk_create', {
+    meeting: meetingId.value,
+    ...data
+  })
+}
+
+// Paginate
+const GROUPS_PER_PAGE = 20
+const currentPage = ref(1)
+const groupChunks = computed(() =>
+  chunk(orderedMeetingGroups.value, GROUPS_PER_PAGE)
+)
+watch(groupChunks, (chunks) => {
+  const maxPage = chunks.length + 1
+  if (currentPage.value > maxPage) currentPage.value = maxPage
+})
+
+// Provide tag autocompletion
+const allTags = computed(
+  () => new Set(flatmap(meetingGroups.value, (group) => group.tags))
+)
+provide(TagsKey, allTags)
+
+const groupSchema = computed(() => {
+  const schema: FormSchema = [
+    {
+      name: 'title',
+      type: FieldType.Text,
+      label: t('name'),
+      rules: [
+        {
+          props: {
+            maxlength: 100,
+            required: true
+          },
+          validate: rules.required
+        }
+      ]
+    },
+    {
+      name: 'body',
+      type: FieldType.TextArea,
+      label: t('textBody')
+    },
+    {
+      name: 'tags',
+      type: FieldType.Tags,
+      label: t('tags')
+    }
+  ]
+  if (meeting.value?.group_votes_active) {
+    schema.push({
+      name: 'votes',
+      type: FieldType.Number,
+      label: t('meeting.groups.votes'),
+      rules: [
+        {
+          props: {
+            min: 0
+          },
+          validate: rules.min(0)
+        }
+      ]
+    })
+  }
+  return schema
+})
+
+async function createGroup(data: Partial<MeetingGroup>) {
+  if (!user.value) throw new Error('User not authenticated')
+  await meetingGroupType.api.add({
+    ...data,
+    meeting: meetingId.value
+    // body: '',
+    // tags: [],
+  })
+}
+
+function changeGroup(pk: number) {
+  return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
+}
+
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
+async function deleteGroup(group: MeetingGroup) {
+  try {
+    await meetingGroupType.api.delete(group.pk)
+  } catch (e) {
+    handleRestError(e)
+  }
+}
+
+/**
+ * Switches to handle group settings for post_as, etc
+ */
+type GroupBoolean = keyof PickByType<MeetingGroup, boolean>
+
+const groupSwitches = computed<
+  {
+    description: string
+    prop: GroupBoolean
+    title: string
+  }[]
+>(() => {
+  if (!canChangeMeeting.value) return []
+  return [
+    {
+      description: t('meeting.groups.showOnSpeakerDescription'),
+      prop: 'show_on_speaker',
+      title: t('meeting.groups.showOnSpeaker')
+    },
+    {
+      description: t('meeting.groups.postAsDescription'),
+      prop: 'post_as',
+      title: t('meeting.groups.postAs')
+    }
+  ]
+})
+
+async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
+  const patchData: Partial<MeetingGroup> = {}
+  patchData[prop] = !group[prop]
+  try {
+    await meetingGroupType.api.patch(group.pk, patchData)
+  } catch (e) {
+    handleRestError(e, prop)
+  }
+}
+</script>
+
 <template>
   <div>
     <v-alert type="info" class="mb-4">
@@ -285,267 +549,3 @@
     </v-table>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { any, flatmap } from 'itertools'
-import { chunk, orderBy } from 'lodash'
-import { computed, provide, reactive, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { getFullName } from '@/utils'
-import { PickByType } from '@/utils/types'
-import { getApiLink } from '@/utils/restApi'
-import SchemaForm from '@/components/SchemaForm.vue'
-import Tag from '@/components/Tag.vue'
-import useAuthentication from '@/composables/useAuthentication'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
-import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
-import useRules from '@/composables/useRules'
-import useErrorHandler from '@/composables/useErrorHandler'
-import { FieldType, FormSchema } from '@/components/types'
-
-import useUserDetails from '../organisations/useUserDetails'
-
-import useMeeting from './useMeeting'
-import useMeetingGroups from './useMeetingGroups'
-import { meetingGroupType } from './contentTypes'
-import { MeetingGroup, MeetingGroupColumn } from './types'
-import GroupMemberships from './GroupMemberships.vue'
-import { meetingGroupTablePlugins } from './registry'
-import useTags, { TagsKey } from './useTags'
-
-const { t } = useI18n()
-const { meeting, meetingId } = useMeeting()
-const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
-const { user } = useAuthentication()
-const { getUser } = useUserDetails()
-const rules = useRules(t)
-
-const groupFilter = reactive<{
-  mine: boolean
-  open: boolean
-  search: string | null
-}>({
-  mine: false,
-  open: false,
-  search: null
-})
-
-// Set search query on tag click
-function tagClick(tag: string) {
-  groupFilter.open = true
-  groupFilter.search = '#' + tag
-}
-useTags(undefined, tagClick)
-
-function searchGroup({
-  tags,
-  title,
-  members
-}: (typeof meetingGroups.value)[number]) {
-  if (!groupFilter.search) return true
-  const query = groupFilter.search.toLowerCase()
-  // Start by title search (cheapest)
-  if (title.toLowerCase().includes(query)) return true
-  // Tags are always lowercase
-  if (tags.some((tag) => ('#' + tag).includes(query))) return true
-  // Lastly, search members
-  return members.some((id) => {
-    const user = getUser(id)
-    if (!user) return false
-    return (
-      !!user.userid?.includes(query) ||
-      getFullName(user).toLowerCase().includes(query)
-    )
-  })
-}
-
-const orderedMeetingGroups = computed(() => {
-  return orderBy(
-    meetingGroups.value
-      .map((g) => ({
-        ...g,
-        isMember: g.members.includes(user.value!.pk)
-      }))
-      .filter((g) => {
-        if (groupFilter.mine && !g.isMember) return false
-        if (groupFilter.search && !searchGroup(g)) return false
-        return true
-      }),
-    'isMember',
-    'desc'
-  )
-})
-
-const columns = computed(() => {
-  if (!meeting.value) return []
-  const plugins = meetingGroupTablePlugins.getActivePlugins(meeting.value)
-  let columns: MeetingGroupColumn[] = []
-  for (const plugin of plugins) {
-    columns = plugin.transform(columns, meeting.value)
-  }
-  return columns.map((col) => ({
-    ...col,
-    count: col.getCount?.(),
-    description: col.getDescription?.(t),
-    title: col.getTitle(t)
-  }))
-})
-const hasCountColumns = computed(() => any(columns.value, (c) => !!c.getCount))
-
-const importSchema = computed<FormSchema>(() => {
-  const validate = rules.multiline(
-    rules.or(
-      rules.tabSeparated(rules.minLength(1), rules.minLength(1)),
-      rules.tabSeparated(rules.minLength(1), rules.minLength(1), rules.min(0))
-    )
-  )
-  return [
-    {
-      label: t('meeting.groups.groups'),
-      name: 'groups',
-      type: FieldType.TextArea,
-      rules: [
-        {
-          props: {
-            required: true
-          },
-          validate
-        }
-      ]
-    }
-  ]
-})
-/**
- * Socket call to import groups.
- */
-async function createGroups(data: { groups: string }) {
-  await meetingGroupType.methodCall('bulk_create', {
-    meeting: meetingId.value,
-    ...data
-  })
-}
-
-// Paginate
-const GROUPS_PER_PAGE = 20
-const currentPage = ref(1)
-const groupChunks = computed(() =>
-  chunk(orderedMeetingGroups.value, GROUPS_PER_PAGE)
-)
-watch(groupChunks, (chunks) => {
-  const maxPage = chunks.length + 1
-  if (currentPage.value > maxPage) currentPage.value = maxPage
-})
-
-// Provide tag autocompletion
-const allTags = computed(
-  () => new Set(flatmap(meetingGroups.value, (group) => group.tags))
-)
-provide(TagsKey, allTags)
-
-const groupSchema = computed(() => {
-  const schema: FormSchema = [
-    {
-      name: 'title',
-      type: FieldType.Text,
-      label: t('name'),
-      rules: [
-        {
-          props: {
-            maxlength: 100,
-            required: true
-          },
-          validate: rules.required
-        }
-      ]
-    },
-    {
-      name: 'body',
-      type: FieldType.TextArea,
-      label: t('textBody')
-    },
-    {
-      name: 'tags',
-      type: FieldType.Tags,
-      label: t('tags')
-    }
-  ]
-  if (meeting.value?.group_votes_active) {
-    schema.push({
-      name: 'votes',
-      type: FieldType.Number,
-      label: t('meeting.groups.votes'),
-      rules: [
-        {
-          props: {
-            min: 0
-          },
-          validate: rules.min(0)
-        }
-      ]
-    })
-  }
-  return schema
-})
-
-async function createGroup(data: Partial<MeetingGroup>) {
-  if (!user.value) throw new Error('User not authenticated')
-  await meetingGroupType.api.add({
-    ...data,
-    meeting: meetingId.value
-    // body: '',
-    // tags: [],
-  })
-}
-
-function changeGroup(pk: number) {
-  return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
-}
-
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
-async function deleteGroup(group: MeetingGroup) {
-  try {
-    await meetingGroupType.api.delete(group.pk)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
-
-/**
- * Switches to handle group settings for post_as, etc
- */
-type GroupBoolean = keyof PickByType<MeetingGroup, boolean>
-
-const groupSwitches = computed<
-  {
-    description: string
-    prop: GroupBoolean
-    title: string
-  }[]
->(() => {
-  if (!canChangeMeeting.value) return []
-  return [
-    {
-      description: t('meeting.groups.showOnSpeakerDescription'),
-      prop: 'show_on_speaker',
-      title: t('meeting.groups.showOnSpeaker')
-    },
-    {
-      description: t('meeting.groups.postAsDescription'),
-      prop: 'post_as',
-      title: t('meeting.groups.postAs')
-    }
-  ]
-})
-
-async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
-  const patchData: Partial<MeetingGroup> = {}
-  patchData[prop] = !group[prop]
-  try {
-    await meetingGroupType.api.patch(group.pk, patchData)
-  } catch (e) {
-    handleRestError(e, prop)
-  }
-}
-</script>
