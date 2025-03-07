@@ -70,6 +70,7 @@ export const pollStates: WorkflowStates<PollState, PollTransition> = [
   },
   {
     icon: 'mdi-cancel',
+    isFinal: true,
     state: PollState.NoResult,
     priority: 9,
     getName(t, count = 1) {

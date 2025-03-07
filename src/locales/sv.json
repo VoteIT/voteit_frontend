@@ -632,7 +632,7 @@
     },
     "workflow": {
       "canceled": "Avbruten | Avbrutna",
-      "closed": "Avslutad | Avslutade",
+      "closed": "Stängd | Stängda",
       "failed": "Misslyckades | Misslyckade",
       "finished": "Avslutad | Avslutade",
       "no_result": "Inget resultat | Inga resultat",
