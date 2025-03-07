@@ -13,7 +13,7 @@
 import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
-import { onBeforeMount, provide, watch } from 'vue'
+import { nextTick, onBeforeMount, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { RoleContextKey } from './injectionKeys'
@@ -26,7 +26,6 @@ import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
 import useOrganisation from './modules/organisations/useOrganisation'
-import { useRoute, useRouter } from 'vue-router'
 import { frontendVersion } from './utils/Socket'
 import { openDialogEvent } from './utils/events'
 
@@ -34,8 +33,6 @@ const { t } = useI18n()
 const loader = useLoader('App')
 const { fetchAuthenticatedUser } = useAuthentication()
 const { fetchOrganisation } = useOrganisation()
-const route = useRoute()
-const router = useRouter()
 
 onBeforeMount(async () => {
   try {
@@ -43,10 +40,7 @@ onBeforeMount(async () => {
       fetchAuthenticatedUser(),
       fetchOrganisation()
     ])
-    if (!user) {
-      if (route.path !== '/') await router.push('/') // Reroute unauthenticated user to start page
-      loader.setLoaded()
-    }
+    if (!user) loader.setLoaded()
   } catch {
     loader.setLoaded(false)
   }

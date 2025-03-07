@@ -1,3 +1,5 @@
+import { RouteRecordRaw } from 'vue-router'
+
 import AgendaEditView from '../agendas/AgendaEditView.vue'
 import AgendaItemView from '../agendas/AgendaItemView.vue'
 import polls from '../polls/router'
@@ -70,8 +72,8 @@ export default [
   },
   // Join has url outside meeting, so users don't need meeting roles to visit this view.
   {
-    path: '/join/:id/:slug',
+    component: JoinMeeting,
     name: 'meeting:join',
-    component: JoinMeeting
+    path: '/join/:id/:slug'
   }
-]
+] as RouteRecordRaw[]
