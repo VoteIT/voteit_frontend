@@ -33,7 +33,7 @@ function isHTMLElement(el: EventTarget): el is HTMLElement {
 }
 
 export default function useTags(el?: Ref<HTMLElement | null>) {
-  const outerClickHandler = inject(TagClickHandlerKey)
+  const outerClickHandler = inject(TagClickHandlerKey, undefined)
 
   if (el) {
     function clickHandler(ev: MouseEvent) {

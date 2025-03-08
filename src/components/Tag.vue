@@ -4,7 +4,7 @@ import { computed, inject } from 'vue'
 import stringToHSL from '@/utils/stringToHSL'
 import { TagClickHandlerKey } from '@/modules/meetings/useTags'
 
-const clickHandler = inject(TagClickHandlerKey)
+const clickHandler = inject(TagClickHandlerKey, undefined)
 
 defineEmits(['remove'])
 const props = defineProps<{
