@@ -4,11 +4,14 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.29.5 (??)
+## 0.29.5 (2023-03-10)
 
 - Improved spacing and positions on proposal and discussion posts buttons
 - Bugfix: Participant group tab totals footer was improperly offset
 - Show login info and button for unauthenticated users on meeting join page
+- "next" query param added to login url
+- Refactoring of tag click logic using provide/inject of click handler
+- Refactoring and fixes to meeting join page
 
 ## 0.29.4 (2025-02-19)
 
