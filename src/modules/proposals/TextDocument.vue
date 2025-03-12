@@ -37,14 +37,13 @@
             <AddTextProposalModal :paragraph="p">
               <template #activator="{ props }">
                 <v-btn
-                  size="small"
-                  variant="elevated"
-                  prepend-icon="mdi-text-box-plus-outline"
                   color="primary"
+                  prepend-icon="mdi-text-box-plus-outline"
+                  size="small"
+                  :text="$t('proposal.change')"
+                  variant="elevated"
                   v-bind="props"
-                >
-                  {{ $t('proposal.change') }}
-                </v-btn>
+                />
               </template>
             </AddTextProposalModal>
           </v-card-actions>

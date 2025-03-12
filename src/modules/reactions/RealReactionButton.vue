@@ -12,15 +12,14 @@
         class="btn-group"
       >
         <v-btn
-          size="small"
           class="pr-2"
           :disabled="disabled"
           :loading="working"
           :prepend-icon="button.icon"
+          size="small"
+          :text="button.title"
           @click.prevent="emit('update:modelValue', !modelValue)"
-        >
-          {{ button.title }}
-        </v-btn>
+        />
         <DefaultDialog
           @update:modelValue="$event && emit('listOpen')"
           :title="$t('reaction.peopleReacted')"

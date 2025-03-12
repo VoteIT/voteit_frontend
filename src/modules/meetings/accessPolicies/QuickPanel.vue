@@ -11,14 +11,13 @@
       >
         <template #activator="{ props }">
           <v-btn
-            v-bind="props"
-            variant="elevated"
-            prepend-icon="mdi-content-copy"
             :color="copied ? 'success' : 'primary'"
+            prepend-icon="mdi-content-copy"
+            :text="$t('meeting.copyUrl')"
+            variant="elevated"
+            v-bind="props"
             @click.prevent="copy(meetingJoinUrl)"
-          >
-            {{ $t('meeting.copyUrl') }}
-          </v-btn>
+          />
         </template>
       </v-tooltip>
     </v-card-actions>

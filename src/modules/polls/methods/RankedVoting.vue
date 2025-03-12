@@ -31,36 +31,35 @@
           <div class="flex-grow-1 text-center">
             <v-btn
               :disabled="disabled"
-              variant="text"
               size="small"
+              :text="`${$t('poll.rankingSelectedAs')} ${
+                ranking.indexOf(p.pk) + 1 || ranking.length + 1
+              }`"
+              variant="text"
               @click="toggleSelected(p)"
-            >
-              {{ $t('poll.rankingSelectedAs') }}
-              {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
-            </v-btn>
+            />
           </div>
           <div class="side text-right">
             <v-btn
+              color="primary"
               :disabled="disabled"
               outlined
-              color="primary"
               size="small"
+              :text="$t('clear')"
               @click="toggleSelected(p)"
-            >
-              {{ $t('clear') }}
-            </v-btn>
+            />
           </div>
         </div>
         <div class="voting-controls" v-else>
           <div class="text-center flex-grow-1">
             <v-btn
-              :disabled="disabled"
               color="primary"
+              :disabled="disabled"
+              :text="`${$t('poll.rankingSelectAs')} ${
+                ranking.indexOf(p.pk) + 1 || ranking.length + 1
+              }`"
               @click="toggleSelected(p)"
-            >
-              {{ $t('poll.rankingSelectAs') }}
-              {{ ranking.indexOf(p.pk) + 1 || ranking.length + 1 }}
-            </v-btn>
+            />
           </div>
         </div>
       </template>

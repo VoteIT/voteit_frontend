@@ -99,9 +99,7 @@ async function deleteHistory(pk: number) {
                 >
                   <template #buttons>
                     <div class="text-right">
-                      <v-btn type="submit" color="primary">
-                        {{ $t('save') }}
-                      </v-btn>
+                      <v-btn color="primary" :text="$t('save')" type="submit" />
                     </div>
                   </template>
                 </SchemaForm>
@@ -123,13 +121,12 @@ async function deleteHistory(pk: number) {
       </v-list-item>
       <v-btn
         v-if="speakerHistoryExpandable"
+        :append-icon="`mdi-chevron-${speakerHistoryExpanded ? 'up' : 'down'}`"
         block
+        :text="speakerHistoryExpanded ? $t('collapse') : $t('expand')"
         variant="text"
         @click="speakerHistoryExpanded = !speakerHistoryExpanded"
-        :append-icon="`mdi-chevron-${speakerHistoryExpanded ? 'up' : 'down'}`"
-      >
-        {{ speakerHistoryExpanded ? $t('collapse') : $t('expand') }}
-      </v-btn>
+      />
     </v-list>
   </div>
 </template>

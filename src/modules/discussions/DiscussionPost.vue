@@ -139,12 +139,19 @@ async function save() {
       <PostAs v-show="canPostAs" v-model="author" class="my-2" />
       <div class="d-flex mt-1">
         <v-spacer />
-        <v-btn @click="cancel" variant="text" size="small">
-          {{ $t('cancel') }}
-        </v-btn>
-        <v-btn type="submit" color="primary" @click="save" size="small">
-          {{ $t('save') }}
-        </v-btn>
+        <v-btn
+          size="small"
+          :text="$t('cancel')"
+          variant="text"
+          @click="cancel"
+        />
+        <v-btn
+          color="primary"
+          size="small"
+          :text="$t('save')"
+          type="submit"
+          @click="save"
+        />
       </div>
     </div>
     <div v-else>

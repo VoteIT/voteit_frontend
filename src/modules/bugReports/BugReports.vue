@@ -5,23 +5,21 @@
       <template #activator="{ props }">
         <v-btn
           block
+          prepend-icon="mdi-alert-decagram"
+          text="Felrapport"
           variant="outlined"
           v-bind="props"
-          prepend-icon="mdi-alert-decagram"
-        >
-          Felrapport
-        </v-btn>
+        />
       </template>
       <template #default="{ close }">
         <template v-if="submitted">
           <p class="mt-2 mb-6 text-secondary">Tack för din felrapport!</p>
           <v-btn
             color="secondary"
-            @click="submitted = false"
             prepend-icon="mdi-undo"
-          >
-            Ny felrapport
-          </v-btn>
+            text="Ny felrapport"
+            @click="submitted = false"
+          />
         </template>
         <template v-else>
           <p class="my-2">
@@ -45,18 +43,20 @@
           >
             <template #buttons="{ disabled, submitting }">
               <div class="text-right">
-                <v-btn variant="text" @click="close" :disabled="submitting">
-                  {{ $t('cancel') }}
-                </v-btn>
                 <v-btn
-                  type="submit"
+                  :disabled="submitting"
+                  :text="$t('cancel')"
+                  variant="text"
+                  @click="close"
+                />
+                <v-btn
                   color="primary"
-                  prepend-icon="mdi-send"
-                  :loading="submitting"
                   :disabled="disabled"
-                >
-                  Skicka
-                </v-btn>
+                  :loading="submitting"
+                  prepend-icon="mdi-send"
+                  text="Skicka"
+                  type="submit"
+                />
               </div>
             </template>
           </SchemaForm>

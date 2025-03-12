@@ -9,14 +9,13 @@
           <v-fade-transition>
             <v-btn
               v-show="!allSelected"
+              class="mx-4"
               color="primary"
               prepend-icon="mdi-check-all"
-              class="mx-4"
               size="small"
+              :text="$t('printing.selectAll')"
               @click="allSelected = true"
-            >
-              {{ $t('printing.selectAll') }}
-            </v-btn>
+            />
           </v-fade-transition>
           <v-spacer />
           <v-btn

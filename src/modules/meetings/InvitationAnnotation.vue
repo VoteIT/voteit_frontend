@@ -63,15 +63,12 @@ const inviteData = computed(() => {
       @click="fetchAnnotations"
       prepend-icon="mdi-reload"
       size="large"
+      :text="$t('tryAgain')"
       variant="tonal"
-    >
-      Try again
-    </v-btn>
+    />
   </div>
   <v-list v-else-if="annotationList">
-    <v-list-subheader>
-      {{ $t('invites.annotate.annotatedData') }}
-    </v-list-subheader>
+    <v-list-subheader :title="$t('invites.annotate.annotatedData')" />
     <v-list-item v-for="(props, i) in annotationList" :key="i" v-bind="props" />
   </v-list>
   <div v-else class="my-3 text-center">

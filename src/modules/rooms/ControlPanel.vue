@@ -185,9 +185,12 @@ async function deleteRoom(pk: number) {
       </h2>
       <DefaultDialog v-model="createOpen" :title="$t('room.create')">
         <template #activator="{ props }">
-          <v-btn color="primary" prepend-icon="mdi-plus" v-bind="props">
-            {{ $t('room.create') }}
-          </v-btn>
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            :text="$t('room.create')"
+            v-bind="props"
+          />
         </template>
         <template #default="{ close }">
           <RoomForm :working="working" @submit="create" @cancel="close" />

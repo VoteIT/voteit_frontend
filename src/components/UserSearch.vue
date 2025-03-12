@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ComponentPublicInstance, computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import { userType } from '@/modules/organisations/contentTypes'
@@ -35,7 +34,6 @@ function annotateFullName(user: IUser) {
   }
 }
 
-const { t } = useI18n()
 const query = ref('')
 const results = ref<FullNameUser[]>([])
 const selected = ref<IUser | null>(null)
@@ -81,9 +79,7 @@ const btnProps = computed(() => ({
   disabled: !selected.value
 }))
 
-if (props.instant) {
-  watch(selected, submit)
-}
+if (props.instant) watch(selected, submit)
 </script>
 
 <template>
@@ -120,13 +116,12 @@ if (props.instant) {
       </v-autocomplete>
       <v-btn
         v-if="!instant"
+        class="rounded-s-0"
+        color="primary"
+        :text="buttonText || $t('add')"
         type="submit"
         v-bind="btnProps"
-        color="primary"
-        class="rounded-s-0"
-      >
-        {{ buttonText || t('add') }}
-      </v-btn>
+      />
     </v-form>
     <slot name="hint"></slot>
   </div>

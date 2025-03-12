@@ -24,15 +24,18 @@
         {{ active.title }}
       </p>
       <div class="btn-controls justify-end">
-        <v-btn v-if="active.no" variant="text" @click="deny(true)">{{
-          active.no
-        }}</v-btn>
+        <v-btn
+          v-if="active.no"
+          :text="active.no"
+          variant="text"
+          @click="deny(true)"
+        />
         <v-btn
           v-if="active.yes"
           :color="active.theme ?? 'primary'"
+          :text="active.yes"
           @click="accept"
-          >{{ active.yes }}</v-btn
-        >
+        />
       </div>
     </v-sheet>
   </v-dialog>

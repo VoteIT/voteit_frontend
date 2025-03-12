@@ -279,9 +279,11 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
       <template v-if="canChangeMeeting">
         <DefaultDialog :title="$t('meeting.groups.import')">
           <template #activator="{ props }">
-            <v-btn prepend-icon="mdi-file-import" v-bind="props">
-              {{ $t('meeting.groups.import') }}
-            </v-btn>
+            <v-btn
+              prepend-icon="mdi-file-import"
+              :text="$t('meeting.groups.import')"
+              v-bind="props"
+            />
           </template>
           <template #default="{ close }">
             <v-alert
@@ -301,14 +303,13 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
                   <v-btn
-                    type="submit"
                     color="primary"
-                    :loading="submitting"
                     :disabled="disabled"
+                    :loading="submitting"
                     prepend-icon="mdi-send"
-                  >
-                    {{ $t('meeting.groups.import') }}
-                  </v-btn>
+                    :text="$t('meeting.groups.import')"
+                    type="submit"
+                  />
                 </div>
               </template>
             </SchemaForm>
@@ -316,9 +317,11 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
         </DefaultDialog>
         <v-menu v-if="orderedMeetingGroups.length">
           <template #activator="{ props }">
-            <v-btn prepend-icon="mdi-download" v-bind="props">
-              {{ $t('download') }}
-            </v-btn>
+            <v-btn
+              prepend-icon="mdi-download"
+              :text="$t('download')"
+              v-bind="props"
+            />
           </template>
           <v-list>
             <v-list-item
@@ -335,9 +338,11 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
         </v-menu>
         <DefaultDialog :title="$t('meeting.groups.new')">
           <template #activator="{ props }">
-            <v-btn prepend-icon="mdi-account-multiple-plus" v-bind="props">
-              {{ $t('meeting.groups.create') }}
-            </v-btn>
+            <v-btn
+              prepend-icon="mdi-account-multiple-plus"
+              :text="$t('meeting.groups.create')"
+              v-bind="props"
+            />
           </template>
           <template #default="{ close }">
             <SchemaForm
@@ -347,18 +352,15 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
             >
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
-                  <v-btn variant="text" @click="close">
-                    {{ $t('cancel') }}
-                  </v-btn>
+                  <v-btn :text="$t('cancel')" variant="text" @click="close" />
                   <v-btn
-                    type="submit"
                     color="primary"
-                    :loading="submitting"
                     :disabled="disabled"
+                    :loading="submitting"
                     prepend-icon="mdi-account-multiple-plus"
-                  >
-                    {{ $t('meeting.groups.create') }}
-                  </v-btn>
+                    :text="$t('meeting.groups.create')"
+                    type="submit"
+                  />
                 </div>
               </template>
             </SchemaForm>
@@ -449,13 +451,12 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
             >
               <template #activator="{ props }">
                 <v-btn
-                  v-bind="props"
-                  size="small"
                   color="secondary"
                   class="ml-2"
-                >
-                  {{ canChangeMeeting ? $t('handle') : $t('show') }}
-                </v-btn>
+                  size="small"
+                  :text="canChangeMeeting ? $t('handle') : $t('show')"
+                  v-bind="props"
+                />
               </template>
               <GroupMemberships :group="group" :editable="canChangeMeeting" />
             </DefaultDialog>
@@ -515,17 +516,18 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
                 >
                   <template #buttons="{ disabled, submitting }">
                     <div class="text-right">
-                      <v-btn @click="close" variant="text">
-                        {{ $t('cancel') }}
-                      </v-btn>
                       <v-btn
-                        type="submit"
+                        :text="$t('cancel')"
+                        variant="text"
+                        @click="close"
+                      />
+                      <v-btn
                         color="primary"
-                        :loading="submitting"
                         :disabled="disabled"
-                      >
-                        {{ $t('save') }}
-                      </v-btn>
+                        :loading="submitting"
+                        :text="$t('save')"
+                        type="submit"
+                      />
                     </div>
                   </template>
                 </SchemaForm>

@@ -12,9 +12,8 @@
         :to="{ name: 'home' }"
         color="primary"
         prepend-icon="mdi-home"
-      >
-        {{ $t('home.home') }}
-      </v-btn>
+        :text="$t('home.home')"
+      />
     </v-col>
   </v-row>
 </template>

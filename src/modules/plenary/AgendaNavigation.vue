@@ -3,18 +3,17 @@
     <template v-if="agendaTags.length">
       <div class="d-flex mb-1">
         <v-btn
-          class="flex-grow-1"
-          variant="text"
-          size="small"
           :append-icon="filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-          @click="filterMenuOpen = !filterMenuOpen"
-        >
-          {{ $t('filter') }}
-        </v-btn>
-        <v-btn
-          variant="text"
+          class="flex-grow-1"
           size="small"
+          :text="$t('filter')"
+          variant="text"
+          @click="filterMenuOpen = !filterMenuOpen"
+        />
+        <v-btn
           :disabled="!selectedAgendaTag"
+          size="small"
+          variant="text"
           @click="selectedAgendaTag = undefined"
         >
           <v-icon icon="mdi-undo" />

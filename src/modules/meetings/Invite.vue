@@ -18,21 +18,19 @@
       <v-spacer />
       <v-btn
         color="warning"
+        :disabled="submitting"
         prepend-icon="mdi-close"
-        :disabled="submitting"
+        :text="$t('join.rejectInvite')"
         @click="rejectInvite(invite)"
-      >
-        {{ $t('join.rejectInvite') }}
-      </v-btn>
+      />
       <v-btn
-        variant="elevated"
         color="primary"
-        prepend-icon="mdi-door-open"
         :disabled="submitting"
+        prepend-icon="mdi-door-open"
+        :text="$t('join.acceptInvite')"
+        variant="elevated"
         @click="acceptInvite(invite)"
-      >
-        {{ $t('join.acceptInvite') }}
-      </v-btn>
+      />
     </v-card-actions>
   </v-card>
 </template>

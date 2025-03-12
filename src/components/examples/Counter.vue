@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="!counting">
-      <v-btn color="primary" @click="countToTen(true)">Count to 10</v-btn>
-      <v-btn color="primary" @click="countToTen(false)">Fail at 5</v-btn>
+      <v-btn color="primary" text="Count to 10" @click="countToTen(true)" />
+      <v-btn color="primary" text="Fail at 5" @click="countToTen(false)" />
     </div>
     <ProgressBar
       v-else

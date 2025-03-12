@@ -34,9 +34,11 @@
       class="my-8"
     >
       <template #bottom-right>
-        <v-btn color="success" prepend-icon="mdi-thumb-up">
-          {{ $t('poll.winningProposal') }}
-        </v-btn>
+        <v-btn
+          color="success"
+          prepend-icon="mdi-thumb-up"
+          :text="$t('poll.winningProposal')"
+        />
       </template>
     </ProposalCard>
     <v-expansion-panels multiple class="my-4">

@@ -81,15 +81,14 @@ watch(contentElem, (el) => {
       <div class="overflow-fade" v-show="isOverflowing && !userExpanded"></div>
     </div>
     <v-btn
-      block
       v-if="isOverflowing"
-      variant="text"
-      color="primary"
-      @click="userExpanded = !userExpanded"
       :append-icon="expandIcon"
-    >
-      {{ userExpanded ? $t('collapse') : $t('expand') }}
-    </v-btn>
+      block
+      color="primary"
+      :text="userExpanded ? $t('collapse') : $t('expand')"
+      variant="text"
+      @click="userExpanded = !userExpanded"
+    />
   </div>
 </template>
 

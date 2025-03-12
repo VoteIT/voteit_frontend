@@ -36,9 +36,12 @@ const showResult = ref(false)
         @close="showResult = false"
       >
         <template #activator="{ props }">
-          <v-btn color="warning" v-bind="props" prepend-icon="mdi-eye">
-            {{ $t('poll.result.show') }}
-          </v-btn>
+          <v-btn
+            color="warning"
+            prepend-icon="mdi-eye"
+            :text="$t('poll.result.show')"
+            v-bind="props"
+          />
         </template>
         <div v-if="poll && showResult">
           <component
@@ -49,18 +52,17 @@ const showResult = ref(false)
             class="mb-6"
           />
           <QueryDialog
-            @confirmed="publishNow"
             :text="$t('poll.result.withheldPublishConfirm')"
+            @confirmed="publishNow"
           >
             <template #activator="{ props }">
               <v-btn
-                v-bind="props"
-                color="primary"
                 block
+                color="primary"
                 prepend-icon="mdi-check"
-              >
-                {{ $t('poll.result.withheldPublish') }}
-              </v-btn>
+                :text="$t('poll.result.withheldPublish')"
+                v-bind="props"
+              />
             </template>
           </QueryDialog>
         </div>
@@ -69,9 +71,11 @@ const showResult = ref(false)
             {{ $t('poll.result.withheldDisplayWarning') }}
           </p>
           <p class="text-center">
-            <v-btn color="warning" @click="showResult = true">
-              {{ $t('poll.result.withheldDisplayConfirm') }}
-            </v-btn>
+            <v-btn
+              color="warning"
+              :text="$t('poll.result.withheldDisplayConfirm')"
+              @click="showResult = true"
+            />
           </p>
         </div>
       </DefaultDialog>

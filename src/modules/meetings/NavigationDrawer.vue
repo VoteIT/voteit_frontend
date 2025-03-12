@@ -10,16 +10,15 @@
       <template #tagFilter v-if="agendaTags.length">
         <div class="d-flex ml-8 mb-1 mr-2">
           <v-btn
-            class="flex-grow-1"
-            variant="text"
-            size="small"
             :append-icon="
               filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'
             "
+            class="flex-grow-1"
+            size="small"
+            :text="$t('filter')"
+            variant="text"
             @click="filterMenuOpen = !filterMenuOpen"
-          >
-            {{ $t('filter') }}
-          </v-btn>
+          />
           <v-btn
             variant="text"
             size="small"

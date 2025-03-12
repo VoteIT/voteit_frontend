@@ -64,13 +64,12 @@
             <v-menu>
               <template #activator="{ props }">
                 <v-btn
-                  v-bind="props"
-                  prepend-icon="mdi-download"
-                  variant="tonal"
                   color="primary"
-                >
-                  {{ $t('download') }}
-                </v-btn>
+                  prepend-icon="mdi-download"
+                  :text="$t('download')"
+                  variant="tonal"
+                  v-bind="props"
+                />
               </template>
               <v-list>
                 <v-list-item

@@ -13,9 +13,12 @@ const meetingId = useMeetingId()
     <p class="mb-3">
       {{ $t('admin.testModeActive') }}
     </p>
-    <v-btn @click="setFakeRoles(meetingId)" color="primary" block>
-      {{ $t('reset') }}
-    </v-btn>
+    <v-btn
+      block
+      color="primary"
+      :text="$t('reset')"
+      @click="setFakeRoles(meetingId)"
+    />
   </div>
 </template>
 

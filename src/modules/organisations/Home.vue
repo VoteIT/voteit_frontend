@@ -469,13 +469,12 @@ function cancelEdit() {
                 </template>
               </v-list-item>
               <v-btn
-                block
                 v-if="expandable && !groupsExpanded"
-                @click="groupsExpanded = true"
+                block
+                :text="$t('organization.showMore')"
                 variant="text"
-              >
-                {{ $t('organization.showMore') }}
-              </v-btn>
+                @click="groupsExpanded = true"
+              />
             </v-list>
           </div>
           <p v-if="!meetingGroups.length" class="mb-4">
@@ -484,14 +483,13 @@ function cancelEdit() {
           <DefaultDialog v-if="canAddMeeting" :title="$t('meeting.create')">
             <template #activator="{ props }">
               <v-btn
-                v-bind="props"
                 block
-                prepend-icon="mdi-plus"
-                variant="text"
                 color="primary"
-              >
-                {{ $t('meeting.create') }}
-              </v-btn>
+                prepend-icon="mdi-plus"
+                :text="$t('meeting.create')"
+                variant="text"
+                v-bind="props"
+              />
             </template>
             <template v-slot="{ close }">
               <AddMeeting @close="close" />
@@ -500,15 +498,14 @@ function cancelEdit() {
           <DefaultDialog v-if="otherMeetingsExist" :title="$t('meeting.find')">
             <template #activator="{ props }">
               <v-btn
-                v-bind="props"
                 block
-                variant="elevated"
                 color="primary"
                 prepend-icon="mdi-calendar-plus"
                 size="x-large"
-              >
-                {{ $t('meeting.find') }}
-              </v-btn>
+                :text="$t('meeting.find')"
+                variant="elevated"
+                v-bind="props"
+              />
             </template>
             <v-select
               :label="$t('state')"
@@ -588,16 +585,15 @@ function cancelEdit() {
                 </template>
                 <template v-else #append>
                   <v-btn
+                    append-icon="mdi-arrow-right-circle"
+                    color="primary"
+                    :text="$t('join.meeting')"
                     :to="{
                       name: 'meeting:join',
                       params: { id: pk, slug: slugify(title) }
                     }"
-                    append-icon="mdi-arrow-right-circle"
-                    color="primary"
                     variant="tonal"
-                  >
-                    {{ $t('join.meeting') }}
-                  </v-btn>
+                  />
                 </template>
               </v-list-item>
             </v-list>

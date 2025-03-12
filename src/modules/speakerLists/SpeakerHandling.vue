@@ -170,11 +170,10 @@ ol.speaker-queue
             color="primary"
             :disabled="!canManageSystem"
             prepend-icon="mdi-plus"
-            @click="addSpeakerList()"
             size="small"
-          >
-            {{ $t('speaker.newList') }}
-          </v-btn>
+            :text="$t('speaker.newList')"
+            @click="addSpeakerList()"
+          />
           <v-menu :text="$t('speaker.addQuick')" location="bottom right">
             <template #activator="{ props }">
               <v-btn
@@ -203,16 +202,17 @@ ol.speaker-queue
                   >
                     <template #buttons="{ disabled }">
                       <div class="text-right">
-                        <v-btn @click="close" variant="text">
-                          {{ $t('cancel') }}
-                        </v-btn>
+                        <v-btn
+                          :text="$t('cancel')"
+                          variant="text"
+                          @click="close"
+                        />
                         <v-btn
                           color="primary"
                           :disabled="disabled"
+                          :text="$t('save')"
                           type="submit"
-                        >
-                          {{ $t('save') }}
-                        </v-btn>
+                        />
                       </div>
                     </template>
                   </SchemaForm>
@@ -268,16 +268,17 @@ ol.speaker-queue
                         >
                           <template #buttons="{ disabled }">
                             <div class="text-right">
-                              <v-btn @click="close" variant="text">
-                                {{ $t('cancel') }}
-                              </v-btn>
+                              <v-btn
+                                :text="$t('cancel')"
+                                variant="text"
+                                @click="close"
+                              />
                               <v-btn
                                 color="primary"
                                 :disabled="disabled"
+                                :text="$t('save')"
                                 type="submit"
-                              >
-                                {{ $t('save') }}
-                              </v-btn>
+                              />
                             </div>
                           </template>
                         </SchemaForm>

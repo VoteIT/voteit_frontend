@@ -135,9 +135,7 @@ function getSum(result: AnnotationProgress) {
       </tbody>
     </v-table>
     <div class="text-right">
-      <v-btn @click="$emit('close')" color="primary">
-        {{ $t('close') }}
-      </v-btn>
+      <v-btn color="primary" :text="$t('close')" @click="$emit('close')" />
     </div>
   </template>
   <template v-else>
@@ -192,9 +190,12 @@ function getSum(result: AnnotationProgress) {
                     </tbody>
                   </v-table>
                   <div class="text-right">
-                    <v-btn variant="elevated" color="primary" @click="close">
-                      {{ $t('close') }}
-                    </v-btn>
+                    <v-btn
+                      color="primary"
+                      :text="$t('close')"
+                      variant="elevated"
+                      @click="close"
+                    />
                   </div>
                 </template>
               </DefaultDialog>
@@ -224,19 +225,16 @@ function getSum(result: AnnotationProgress) {
         ]"
       />
       <div class="text-right">
-        <v-btn @click="$emit('close')" variant="text">
-          {{ $t('cancel') }}
-        </v-btn>
+        <v-btn :text="$t('cancel')" variant="text" @click="$emit('close')" />
         <v-btn
-          type="submit"
           color="primary"
-          prepend-icon="mdi-badge-account"
-          :loading="annotationForm.submitting"
           :disabled="!annotationForm.valid || annotationForm.submitting"
+          :loading="annotationForm.submitting"
+          prepend-icon="mdi-badge-account"
+          :text="$t('add')"
+          type="submit"
           variant="elevated"
-        >
-          {{ $t('add') }}
-        </v-btn>
+        />
       </div>
     </v-form>
   </template>

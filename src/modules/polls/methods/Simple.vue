@@ -17,16 +17,15 @@
         <template #vote>
           <div class="d-flex justify-center ga-2">
             <v-btn
-              :disabled="disabled"
               v-for="opt in options"
               :key="opt.value"
               :color="opt.color"
-              :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'"
+              :disabled="disabled"
               :prepend-icon="opt.icon"
+              :text="opt.getTitle($t)"
+              :variant="opt.value === votes.get(p.pk) ? 'elevated' : 'outlined'"
               @click="change(p, opt)"
-            >
-              {{ opt.getTitle(t) }}
-            </v-btn>
+            />
           </div>
         </template>
       </VoteProposal>
@@ -36,7 +35,6 @@
 
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import DefaultMap from '@/utils/DefaultMap'
 import type { Proposal } from '@/modules/proposals/types'
@@ -57,7 +55,6 @@ const emit = defineEmits<{
   (e: 'update:modelValue', vote?: SimpleVote): void
 }>()
 
-const { t } = useI18n()
 const votes = reactive<Map<number, SimpleChoice>>(new Map())
 
 if (props.modelValue) {

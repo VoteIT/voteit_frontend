@@ -120,6 +120,7 @@ const fullscreenPath = computed(
         <v-btn
           v-if="canChange"
           color="primary"
+          :text="$t('speaker.manage')"
           :to="
             getRoomRoute('room:broadcast', {
               id: list.room.meeting,
@@ -129,9 +130,7 @@ const fullscreenPath = computed(
             })
           "
           variant="text"
-        >
-          {{ $t('speaker.manage') }}
-        </v-btn>
+        />
       </div>
     </template>
     <div v-if="isActive" class="bg-success-lighten-4 rounded-b px-3 py-1">

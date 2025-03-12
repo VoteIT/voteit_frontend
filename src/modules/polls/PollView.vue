@@ -143,44 +143,40 @@
         <div class="btn-controls mt-6" v-if="canVote">
           <v-btn
             color="primary"
-            size="large"
             :disabled="!validVote || submitting"
-            @click="castVote"
+            size="large"
+            :text="$t('poll.vote')"
             prepend-icon="mdi-vote"
-          >
-            {{ $t('poll.vote') }}
-          </v-btn>
+            @click="castVote"
+          />
           <v-btn
             color="warning"
             :disabled="submitting"
-            @click="abstainVote"
             prepend-icon="mdi-cancel"
-          >
-            {{ $t('poll.abstain') }}
-          </v-btn>
+            :text="$t('poll.abstain')"
+            @click="abstainVote"
+          />
         </div>
       </template>
       <div class="mt-6">
         <v-btn
           v-for="{ props, title } in buttons"
           :key="title"
-          v-bind="props"
           class="mr-1 mb-1"
-        >
-          {{ title }}
-        </v-btn>
+          :text="title"
+          v-bind="props"
+        />
         <DefaultDialog
           v-if="isFinished && isPollVoter"
           :title="$t('poll.yourVote')"
         >
           <template #activator="{ props }">
             <v-btn
-              v-bind="props"
               color="secondary mb-1"
               prepend-icon="mdi-vote"
-            >
-              {{ $t('poll.showVote') }}
-            </v-btn>
+              :text="$t('poll.showVote')"
+              v-bind="props"
+            />
           </template>
           <template v-slot="{ close }">
             <p v-if="!userVote">
@@ -200,9 +196,7 @@
             />
             <v-spacer />
             <div class="text-right">
-              <v-btn color="primary" @click="close">
-                {{ $t('close') }}
-              </v-btn>
+              <v-btn color="primary" :text="$t('close')" @click="close" />
             </div>
           </template>
         </DefaultDialog>

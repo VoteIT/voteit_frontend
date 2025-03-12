@@ -9,14 +9,13 @@
       }}
     </p>
     <v-btn
-      @click="togglePresence"
       color="primary"
-      :prepend-icon="userPresence ? 'mdi-undo-variant' : 'mdi-hand-wave'"
       :disabled="working"
       :loading="working"
-    >
-      {{ userPresence ? $t('undo') : $t('presence.imHere') }}
-    </v-btn>
+      :prepend-icon="userPresence ? 'mdi-undo-variant' : 'mdi-hand-wave'"
+      :text="userPresence ? $t('undo') : $t('presence.imHere')"
+      @click="togglePresence"
+    />
     <template v-if="canChange">
       <v-divider class="mt-4 mb-2" />
       <PresenceCheckControl />

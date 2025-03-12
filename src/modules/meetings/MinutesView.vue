@@ -169,15 +169,24 @@ function getProposalBody(p: Proposal) {
         v-model="baseSetting"
         class="mb-1"
       >
-        <v-btn size="large" value="documents" prepend-icon="mdi-file-document">
-          {{ $t('minutes.documents') }}
-        </v-btn>
-        <v-btn size="large" value="minutes" prepend-icon="mdi-file-sign">
-          {{ $t('minutes.minutes') }}
-        </v-btn>
-        <v-btn size="large" value="remaining" prepend-icon="mdi-file-clock">
-          {{ $t('minutes.remaining') }}
-        </v-btn>
+        <v-btn
+          prepend-icon="mdi-file-document"
+          size="large"
+          :text="$t('minutes.documents')"
+          value="documents"
+        />
+        <v-btn
+          prepend-icon="mdi-file-sign"
+          size="large"
+          :text="$t('minutes.minutes')"
+          value="minutes"
+        />
+        <v-btn
+          prepend-icon="mdi-file-clock"
+          size="large"
+          :text="$t('minutes.remaining')"
+          value="remaining"
+        />
       </v-btn-toggle>
     </div>
     <v-expand-transition>
@@ -203,15 +212,17 @@ function getProposalBody(p: Proposal) {
           v-model="settings.unresolvedStates"
           class="mb-4"
         >
-          <v-btn value="all" prepend-icon="mdi-asterisk">
-            {{ $t('all') }}
-          </v-btn>
-          <v-btn :value="true" prepend-icon="mdi-alert">
-            {{ $t('minutes.unresolved') }}
-          </v-btn>
-          <v-btn :value="false" prepend-icon="mdi-check-all">
-            {{ $t('minutes.noUnresolved') }}
-          </v-btn>
+          <v-btn prepend-icon="mdi-asterisk" :text="$t('all')" value="all" />
+          <v-btn
+            prepend-icon="mdi-alert"
+            :text="$t('minutes.unresolved')"
+            :value="true"
+          />
+          <v-btn
+            prepend-icon="mdi-check-all"
+            :text="$t('minutes.noUnresolved')"
+            :value="false"
+          />
         </v-btn-toggle>
         <h3>
           {{ $t('minutes.includeProposalStates') }}
@@ -229,12 +240,16 @@ function getProposalBody(p: Proposal) {
           v-model="settings.proposalOrder"
           class="mb-4"
         >
-          <v-btn value="created" prepend-icon="mdi-sort">
-            {{ $t('created') }}
-          </v-btn>
-          <v-btn value="modified" prepend-icon="mdi-sort">
-            {{ $t('modified') }}
-          </v-btn>
+          <v-btn
+            prepend-icon="mdi-sort"
+            :text="$t('created')"
+            value="created"
+          />
+          <v-btn
+            prepend-icon="mdi-sort"
+            :text="$t('modified')"
+            value="modified"
+          />
         </v-btn-toggle>
         <v-switch
           color="primary"
@@ -277,12 +292,11 @@ function getProposalBody(p: Proposal) {
             color="primary"
             prepend-icon="mdi-printer"
             size="large"
+            :text="$t('minutes.print')"
             value="minutes"
             variant="flat"
             onclick="window.print()"
-          >
-            {{ $t('minutes.print') }}
-          </v-btn>
+          />
         </div>
       </v-sheet>
     </v-expand-transition>

@@ -129,9 +129,12 @@
         </CardSelector>
       </template>
       <div class="text-right mt-3">
-        <v-btn variant="text" @click="$emit('close')" class="mr-2">
-          {{ $t('cancel') }}
-        </v-btn>
+        <v-btn
+          class="mr-2"
+          :text="$t('cancel')"
+          variant="text"
+          @click="$emit('close')"
+        />
         <v-btn-group>
           <v-btn
             color="secondary"

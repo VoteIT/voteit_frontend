@@ -55,13 +55,12 @@
             <v-menu v-if="editable">
               <template #activator="{ props }">
                 <v-btn
-                  v-bind="props"
                   append-icon="mdi-chevron-down"
                   color="secondary"
                   size="small"
-                >
-                  {{ getRoleTitle(role) }}
-                </v-btn>
+                  :text="getRoleTitle(role)"
+                  v-bind="props"
+                />
               </template>
               <v-list>
                 <v-list-item

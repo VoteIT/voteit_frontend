@@ -79,13 +79,12 @@ const annotatedHistory = computed(
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
-            prepend-icon="mdi-download"
-            variant="tonal"
             color="primary"
             :disabled="!annotatedHistory?.length"
-          >
-            {{ $t('download') }}
-          </v-btn>
+            prepend-icon="mdi-download"
+            :text="$t('download')"
+            variant="tonal"
+          />
         </template>
         <v-list>
           <v-list-item

@@ -9,16 +9,15 @@
         <v-btn
           v-if="modelValue || !disabled"
           v-bind="$attrs"
-          size="small"
           :color="button.color"
           :disabled="disabled"
           :loading="working"
           :prepend-icon="button.icon"
+          size="small"
+          :text="button.title"
           :variant="variant"
           @click.prevent="emit('update:modelValue', !modelValue)"
-        >
-          {{ button.title }}
-        </v-btn>
+        />
       </span>
     </template>
   </v-tooltip>

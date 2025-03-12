@@ -72,12 +72,11 @@
     <DefaultDialog v-if="scopeItems.length === 1" :title="$t('invites.add')">
       <template #activator="{ props }">
         <v-btn
-          v-bind="props"
-          prepend-icon="mdi-account-multiple-plus"
           class="text-no-wrap"
-        >
-          {{ $t('invites.add') }}
-        </v-btn>
+          prepend-icon="mdi-account-multiple-plus"
+          :text="$t('invites.add')"
+          v-bind="props"
+        />
       </template>
       <template #default="{ close }">
         <InvitationModal
@@ -90,12 +89,11 @@
     <v-menu v-else-if="scopeItems.length > 1">
       <template #activator="{ props }">
         <v-btn
-          v-bind="props"
           append-icon="mdi-chevron-down"
           class="text-no-wrap"
-        >
-          {{ $t('invites.add') }}
-        </v-btn>
+          :text="$t('invites.add')"
+          v-bind="props"
+        />
       </template>
       <v-list>
         <DefaultDialog
@@ -127,9 +125,11 @@
     <v-btn-group variant="text" color="white" density="compact">
       <DefaultDialog :title="$t('invites.annotate.title')">
         <template #activator="{ props }">
-          <v-btn prepend-icon="mdi-badge-account" v-bind="props">
-            {{ $t('invites.annotate.title') }}
-          </v-btn>
+          <v-btn
+            prepend-icon="mdi-badge-account"
+            :text="$t('invites.annotate.title')"
+            v-bind="props"
+          />
         </template>
         <template #default="{ close }">
           <InvitationAnnotationsModal :meeting="meetingId" @close="close" />
@@ -250,9 +250,7 @@
                 <template #default="{ close }">
                   <InvitationAnnotation :invite="invite" />
                   <div class="text-right">
-                    <v-btn @click="close" color="primary">
-                      {{ $t('close') }}
-                    </v-btn>
+                    <v-btn color="primary" :text="$t('close')" @click="close" />
                   </div>
                 </template>
               </DefaultDialog>
@@ -286,22 +284,20 @@
           {{ $t('invites.bulkChange', selectedInvites.length) }}
         </h2>
         <v-btn
-          prepend-icon="mdi-undo"
+          class="mr-1"
           color="primary"
           :disabled="!selectedHasDeletable"
+          prepend-icon="mdi-undo"
+          :text="$t('invites.revoke')"
           @click="revokeSelected"
-          class="mr-1"
-        >
-          {{ $t('invites.revoke') }}
-        </v-btn>
+        />
         <v-btn
-          prepend-icon="mdi-delete"
           color="warning"
           :disabled="!selectedHasDeletable"
+          prepend-icon="mdi-delete"
+          :text="$t('content.delete')"
           @click="deleteSelected"
-        >
-          {{ $t('content.delete') }}
-        </v-btn>
+        />
       </div>
     </v-sheet>
   </v-expand-transition>

@@ -2,27 +2,25 @@
   <div class="page-dropdown">
     <div v-if="$slots.actions" class="d-flex">
       <v-btn
+        :class="{ isOpen }"
+        class="collapse flex-grow-1"
         prepend-icon="mdi-chevron-right"
+        :text="title"
         variant="text"
         @click="toggle"
-        class="collapse flex-grow-1"
-        :class="{ isOpen }"
-      >
-        {{ title }}
-      </v-btn>
+      />
       <slot name="actions"></slot>
     </div>
     <v-btn
       v-else
-      prepend-icon="mdi-chevron-right"
-      variant="text"
       block
-      @click="toggle"
       class="collapse"
       :class="{ isOpen }"
-    >
-      {{ title }}
-    </v-btn>
+      prepend-icon="mdi-chevron-right"
+      :title="title"
+      variant="text"
+      @click="toggle"
+    />
     <v-expand-transition>
       <div class="dropdown-content" v-show="isOpen">
         <slot v-if="eager || isOpen"></slot>

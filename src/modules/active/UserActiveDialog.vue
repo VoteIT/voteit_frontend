@@ -53,23 +53,21 @@ async function dialogSetActive() {
         >
           <template #activator="{ props }">
             <v-btn
-              prepend-icon="mdi-close"
-              variant="tonal"
               class="mr-2"
+              prepend-icon="mdi-close"
+              :text="$t('close')"
+              variant="tonal"
               v-bind="props"
-            >
-              {{ $t('close') }}
-            </v-btn>
+            />
           </template>
         </QueryDialog>
         <v-btn
-          prepend-icon="mdi-check"
           color="primary"
           :loading="isBusy"
+          prepend-icon="mdi-check"
+          :text="$t('activeUsers.yesImActive')"
           @click="dialogSetActive"
-        >
-          {{ $t('activeUsers.yesImActive') }}
-        </v-btn>
+        />
       </div>
     </v-sheet>
   </v-dialog>

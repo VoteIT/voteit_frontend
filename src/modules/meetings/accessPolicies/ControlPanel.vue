@@ -11,11 +11,10 @@
           </p>
           <v-btn
             color="primary"
-            :to="getMeetingRoute('participants')"
             prepend-icon="mdi-account"
-          >
-            {{ $t('meeting.participants') }}
-          </v-btn>
+            :text="$t('meeting.participants')"
+            :to="getMeetingRoute('participants')"
+          />
         </v-alert>
         <v-switch
           :label="$t('meeting.visibleInLists')"
@@ -37,13 +36,12 @@
         <div class="my-12 text-center">
           <v-btn
             v-if="!accessPolicies.length"
-            @click="addAutomaticAccess"
+            color="primary"
             prepend-icon="mdi-account-cog"
             size="large"
-            color="primary"
-          >
-            {{ $t('accessPolicies.automatic.add') }}
-          </v-btn>
+            :text="$t('accessPolicies.automatic.add')"
+            @click="addAutomaticAccess"
+          />
         </div>
         <v-card v-for="p in annotatedPolicies" :key="p.pk">
           <div class="d-flex align-start pr-3">
@@ -92,14 +90,13 @@
             >
               <template #activator="{ props }">
                 <v-btn
-                  v-bind="props"
-                  prepend-icon="mdi-content-copy"
                   :color="copied ? 'success' : 'primary'"
+                  prepend-icon="mdi-content-copy"
+                  :text="$t('meeting.copyUrl')"
                   variant="elevated"
+                  v-bind="props"
                   @click="copy(meetingJoinUrl)"
-                >
-                  {{ $t('meeting.copyUrl') }}
-                </v-btn>
+                />
               </template>
             </v-tooltip>
             <QueryDialog
@@ -108,9 +105,12 @@
               @confirmed="deletePolicy(p)"
             >
               <template #activator="{ props }">
-                <v-btn color="warning" prepend-icon="mdi-delete" v-bind="props">
-                  {{ $t('content.delete') }}
-                </v-btn>
+                <v-btn
+                  color="warning"
+                  prepend-icon="mdi-delete"
+                  :text="$t('content.delete')"
+                  v-bind="props"
+                />
               </template>
             </QueryDialog>
           </v-card-actions>

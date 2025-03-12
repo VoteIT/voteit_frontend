@@ -4,14 +4,13 @@
       <template #vote>
         <div class="text-center">
           <v-btn
-            :disabled="disabled"
             :color="option.color"
-            :variant="choice === p.pk ? 'elevated' : 'outlined'"
+            :disabled="disabled"
             :prepend-icon="option.icon"
+            :text="option.getTitle($t)"
+            :variant="choice === p.pk ? 'elevated' : 'outlined'"
             @click="select(p)"
-          >
-            {{ option.getTitle(t) }}
-          </v-btn>
+          />
         </div>
       </template>
     </VoteProposal>
@@ -20,7 +19,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import type { Proposal } from '@/modules/proposals/types'
 
@@ -35,12 +33,10 @@ const props = defineProps<{
   proposals: Proposal[]
 }>()
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'update:modelValue', vote?: MajorityVote): void
 }>()
 
-const { t } = useI18n()
 const choice = ref<number | undefined>(props.modelValue?.choice)
 
 const option = simpleChoices.find((c) => c.value === SimpleChoice.Yes)!

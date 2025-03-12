@@ -55,22 +55,17 @@
           class="mt-8 flex-grow-0"
         />
         <div v-if="done" class="text-right mt-4">
-          <v-btn color="primary" @click="close">
-            {{ $t('close') }}
-          </v-btn>
+          <v-btn color="primary" :text="$t('close')" @click="close" />
         </div>
         <div v-else class="text-right mt-4">
-          <v-btn variant="text" @click="close">
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn :text="$t('cancel')" variant="text" @click="close" />
           <v-btn
             color="primary"
-            prepend-icon="mdi-text-box-plus-outline"
             :disabled="!proposalPreview || previewing || saving"
+            prepend-icon="mdi-text-box-plus-outline"
+            :text="proposal ? $t('update') : $t('publish')"
             @click="saveProposal"
-          >
-            {{ proposal ? $t('update') : $t('publish') }}
-          </v-btn>
+          />
         </div>
       </div>
     </template>

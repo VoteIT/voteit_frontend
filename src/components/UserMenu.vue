@@ -143,18 +143,15 @@ const canSwitchUser = computed(() => {
             >
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
-                  <v-btn variant="text" @click="close">
-                    {{ $t('cancel') }}
-                  </v-btn>
+                  <v-btn :text="$t('cancel')" variant="text" @click="close" />
                   <v-btn
                     color="primary"
-                    variant="elevated"
-                    type="submit"
-                    :loading="submitting"
                     :disabled="disabled"
-                  >
-                    {{ $t('save') }}
-                  </v-btn>
+                    :loading="submitting"
+                    :text="$t('save')"
+                    type="submit"
+                    variant="elevated"
+                  />
                 </div>
               </template>
             </SchemaForm>
@@ -217,9 +214,7 @@ const canSwitchUser = computed(() => {
             />
           </v-list>
           <div class="text-right">
-            <v-btn @click="close" variant="text">
-              {{ $t('cancel') }}
-            </v-btn>
+            <v-btn :text="$t('cancel')" variant="text" @click="close" />
           </div>
         </template>
       </DefaultDialog>

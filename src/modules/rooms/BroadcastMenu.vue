@@ -48,12 +48,11 @@ async function savePauseMessage(pauseBroadcast = false) {
       <v-btn
         append-icon="mdi-chevron-down"
         class="mr-2"
-        v-bind="props"
-        :variant="isBroadcasting ? 'flat' : undefined"
         :color="isBroadcasting ? 'yellow' : undefined"
-      >
-        {{ $t('room.broadcast') }}
-      </v-btn>
+        :text="$t('room.broadcast')"
+        :variant="isBroadcasting ? 'flat' : undefined"
+        v-bind="props"
+      />
     </template>
     <HeaderMenu
       icon="mdi-broadcast"

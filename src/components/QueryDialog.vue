@@ -21,12 +21,13 @@
       </p>
       <div class="text-right mt-4">
         <slot name="buttons" :close="close">
-          <v-btn variant="text" @click="close" class="mr-1">
-            {{ $t('no') }}
-          </v-btn>
-          <v-btn variant="flat" :color="color" @click="confirm">
-            {{ confirmText || t('yes') }}
-          </v-btn>
+          <v-btn class="mr-1" :text="$t('no')" variant="text" @click="close" />
+          <v-btn
+            :color="color"
+            :text="confirmText || t('yes')"
+            variant="flat"
+            @click="confirm"
+          />
         </slot>
       </div>
     </v-sheet>

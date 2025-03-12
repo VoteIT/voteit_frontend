@@ -5,9 +5,13 @@
     >
     <DefaultDialog v-if="canAssignVotes" v-model="editing">
       <template #activator="{ props }">
-        <v-btn size="small" color="accent" class="ml-2" v-bind="props">
-          Fördela röster
-        </v-btn>
+        <v-btn
+          class="ml-2"
+          color="accent"
+          size="small"
+          text="Fördela röster"
+          v-bind="props"
+        />
       </template>
       <UserList :user-ids="editUserIds">
         <template #appendItem="{ user }">
@@ -39,17 +43,19 @@
         class="mb-2"
       />
       <div class="text-right">
-        <v-btn variant="text" :disabled="working" @click="editing = false">
-          {{ $t('cancel') }}
-        </v-btn>
+        <v-btn
+          :disabled="working"
+          :text="$t('cancel')"
+          variant="text"
+          @click="editing = false"
+        />
         <v-btn
           color="primary"
-          :loading="working"
           :disabled="!!editUnassignedVotes"
+          :loading="working"
+          :text="$t('save')"
           @click="saveUserVotes"
-        >
-          {{ $t('save') }}
-        </v-btn>
+        />
       </div>
     </DefaultDialog>
   </div>

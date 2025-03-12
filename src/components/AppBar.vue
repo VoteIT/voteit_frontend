@@ -1,31 +1,34 @@
 <template>
-  <v-app-bar flat class="d-print-none" color="app-bar">
-    <v-app-bar-nav-icon
-      v-if="hasNavDrawer"
-      class="d-md-none"
-      variant="text"
-      color="background"
-      @click.stop="toggleNavDrawerEvent.emit()"
-    />
-    <router-link to="/" :title="$t('home.home')">
-      <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
-    </router-link>
-    <v-app-bar-title>
-      {{ title || organisation?.title }}
-    </v-app-bar-title>
-    <div v-if="user">
-      <v-btn
-        class="user-menu"
-        :class="{ open: userMenuOpen }"
+  <v-app-bar
+    flat
+    class="d-print-none"
+    color="app-bar"
+    :title="title || organisation?.title"
+  >
+    <template #prepend>
+      <v-app-bar-nav-icon
+        v-if="hasNavDrawer"
+        class="d-md-none"
+        color="background"
         variant="text"
-        @click="toggleUserMenu.emit()"
-      >
-        <UserAvatar color="background" />
-        <span class="ml-2 d-none d-sm-inline">{{
-          getFullName(user) || user.userid
-        }}</span>
-      </v-btn>
-    </div>
+        @click.stop="toggleNavDrawerEvent.emit()"
+      />
+      <router-link to="/" :title="$t('home.home')">
+        <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
+      </router-link>
+    </template>
+    <v-btn
+      v-if="user"
+      class="user-menu"
+      :class="{ open: userMenuOpen }"
+      variant="text"
+      @click="toggleUserMenu.emit()"
+    >
+      <UserAvatar color="background" />
+      <span class="ml-2 d-none d-sm-inline">{{
+        getFullName(user) || user.userid
+      }}</span>
+    </v-btn>
   </v-app-bar>
 </template>
 

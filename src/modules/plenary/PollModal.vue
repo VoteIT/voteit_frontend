@@ -113,9 +113,12 @@ onBeforeUnmount(() => {
         width="600px"
       >
         <template #activator="{ props }">
-          <v-btn variant="text" v-bind="props" prepend-icon="mdi-vote">
-            {{ $t('poll.showBallot') }}
-          </v-btn>
+          <v-btn
+            prepend-icon="mdi-vote"
+            :text="$t('poll.showBallot')"
+            variant="text"
+            v-bind="props"
+          />
         </template>
         <component
           :is="voteComponent"
@@ -131,25 +134,23 @@ onBeforeUnmount(() => {
       >
         <template #activator="{ props }">
           <v-btn
-            variant="text"
-            :disabled="working"
             color="warning"
+            :disabled="working"
             prepend-icon="mdi-cancel"
+            :text="$t('poll.cancel')"
+            variant="text"
             v-bind="props"
-          >
-            {{ $t('poll.cancel') }}
-          </v-btn>
+          />
         </template>
       </QueryDialog>
       <v-btn
-        variant="elevated"
-        :disabled="working"
         color="primary"
+        :disabled="working"
         prepend-icon="mdi-gavel"
+        :text="$t('poll.close')"
+        variant="elevated"
         @click="close"
-      >
-        {{ $t('poll.close') }}
-      </v-btn>
+      />
     </div>
   </template>
   <main v-else>

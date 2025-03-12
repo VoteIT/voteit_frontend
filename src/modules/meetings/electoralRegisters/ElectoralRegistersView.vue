@@ -10,13 +10,12 @@
     >
       <template #activator="{ props }">
         <v-btn
-          v-bind="props"
           color="primary"
-          variant="tonal"
           prepend-icon="mdi-star-check"
-        >
-          {{ $t('electoralRegister.establish') }}
-        </v-btn>
+          :text="$t('electoralRegister.establish')"
+          variant="tonal"
+          v-bind="props"
+        />
       </template>
       <template #default="{ close }">
         <div class="text-center py-4" v-if="erTriggerResult === 'waiting'">
@@ -34,11 +33,10 @@
           <v-btn
             color="primary"
             :disabled="erTriggerResult === 'waiting'"
-            @click="close"
             prepend-icon="mdi-close"
-          >
-            {{ $t('close') }}
-          </v-btn>
+            :text="$t('close')"
+            @click="close"
+          />
         </div>
       </template>
     </DefaultDialog>
@@ -49,12 +47,11 @@
     >
       <template #activator="{ props }">
         <v-btn
-          v-bind="props"
-          variant="tonal"
           prepend-icon="mdi-book-open-variant"
-        >
-          {{ $t('electoralRegister.createManual') }}
-        </v-btn>
+          :text="$t('electoralRegister.createManual')"
+          variant="tonal"
+          v-bind="props"
+        />
       </template>
       <template #default="{ close }">
         <v-alert
@@ -64,7 +61,7 @@
         />
         <div>
           <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
-          <v-chip>{{ $t('selectedCount', createSelection.size) }}</v-chip>
+          <v-chip :text="$t('selectedCount', createSelection.size)" />
         </div>
         <UserList
           multiple
@@ -96,17 +93,14 @@
           </template>
         </UserList>
         <div class="text-right">
-          <v-btn variant="text" @click="close">
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn :text="$t('cancel')" variant="text" @click="close" />
           <v-btn
-            prepend-icon="mdi-account-plus"
             color="primary"
-            @click="createRegister().then(close)"
             :disabled="createSelection.size === 0"
-          >
-            {{ $t('create') }}
-          </v-btn>
+            prepend-icon="mdi-account-plus"
+            :text="$t('create')"
+            @click="createRegister().then(close)"
+          />
         </div>
       </template>
     </DefaultDialog>
@@ -159,13 +153,12 @@
                 <v-menu>
                   <template #activator="{ props }">
                     <v-btn
-                      v-bind="props"
-                      prepend-icon="mdi-download"
                       color="primary"
+                      prepend-icon="mdi-download"
+                      :text="$t('download')"
                       variant="tonal"
-                    >
-                      {{ $t('download') }}
-                    </v-btn>
+                      v-bind="props"
+                    />
                   </template>
                   <v-list>
                     <v-list-item

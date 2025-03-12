@@ -98,23 +98,21 @@ async function abstainVote() {
     <div v-if="!disabled" class="mt-6 d-flex align-end">
       <v-btn
         color="primary"
-        size="large"
         :disabled="!validVote"
         :loading="submitting"
-        @click="castVote"
         prepend-icon="mdi-vote"
-      >
-        {{ $t('poll.vote') }}
-      </v-btn>
+        size="large"
+        :text="$t('poll.vote')"
+        @click="castVote"
+      />
       <v-btn
+        class="ml-1"
         color="warning"
         :loading="submitting"
-        @click="abstainVote"
         prepend-icon="mdi-cancel"
-        class="ml-1"
-      >
-        {{ $t('poll.abstain') }}
-      </v-btn>
+        :text="$t('poll.abstain')"
+        @click="abstainVote"
+      />
     </div>
   </div>
 </template>

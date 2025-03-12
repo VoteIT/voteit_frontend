@@ -41,32 +41,29 @@
       </v-sheet>
       <footer v-if="!readOnly" class="mt-2 d-flex flex-wrap ga-1">
         <v-btn
+          v-if="canAddDiscussionPost"
           prepend-icon="mdi-comment-outline"
           size="small"
+          :text="$t('discussion.comment')"
           variant="text"
-          v-if="canAddDiscussionPost"
           @click="comment"
-        >
-          {{ $t('discussion.comment') }}
-        </v-btn>
+        />
         <v-btn
+          v-if="showComments"
           prepend-icon="mdi-chevron-up"
           size="small"
+          :text="$t('discussion.hideComments')"
           variant="text"
-          v-if="showComments"
           @click="showComments = false"
-        >
-          {{ $t('discussion.hideComments') }}
-        </v-btn>
+        />
         <v-btn
+          v-else-if="discussionPosts.length"
           prepend-icon="mdi-chevron-down"
           size="small"
+          :text="$t('discussion.comments', { count: discussionPosts.length })"
           variant="text"
-          v-else-if="discussionPosts.length"
           @click="showComments = true"
-        >
-          {{ $t('discussion.comments', { count: discussionPosts.length }) }}
-        </v-btn>
+        />
         <slot name="buttons"></slot>
         <v-spacer />
         <v-menu

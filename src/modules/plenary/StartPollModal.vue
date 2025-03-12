@@ -92,12 +92,12 @@ onMounted(() => {
       </i18n-t>
     </p>
     <div class="text-right">
-      <v-btn variant="text" @click="$emit('cancel')">
-        {{ $t('cancel') }}
-      </v-btn>
-      <v-btn color="warning" @click="createPoll">
-        {{ $t('plenary.startPoll') }}
-      </v-btn>
+      <v-btn :text="$t('cancel')" variant="text" @click="$emit('cancel')" />
+      <v-btn
+        color="warning"
+        :text="$t('plenary.startPoll')"
+        @click="createPoll"
+      />
     </div>
   </div>
   <v-progress-circular indeterminate v-else class="mb-4" />

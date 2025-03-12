@@ -24,9 +24,7 @@
           />
         </v-list>
         <div class="text-right">
-          <v-btn variant="text" @click="close">
-            {{ $t('close') }}
-          </v-btn>
+          <v-btn :text="$t('close')" variant="text" @click="close" />
         </div>
       </template>
     </DefaultDialog>

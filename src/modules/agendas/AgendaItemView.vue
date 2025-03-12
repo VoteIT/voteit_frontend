@@ -375,29 +375,27 @@ const { collapsedBodyHeight } = useDefaults()
           <template #activator="{ props }">
             <slot name="activator" :props="props">
               <v-btn
+                color="primary"
                 :prepend-icon="
                   agendaItem.block_proposals
                     ? 'mdi-lock-outline'
                     : 'mdi-text-box-plus-outline'
                 "
-                color="primary"
+                :text="$t('proposal.add')"
                 v-bind="props"
-              >
-                {{ $t('proposal.add') }}
-              </v-btn>
+              />
             </slot>
           </template>
         </AddProposalModal>
         <v-tooltip v-else :text="tProposalBlockReason">
           <template #activator="{ props }">
             <v-btn
-              v-bind="props"
-              prepend-icon="mdi-text-box-plus-outline"
               color="primary"
+              prepend-icon="mdi-text-box-plus-outline"
+              :text="$t('proposal.add')"
               variant="tonal"
-            >
-              {{ $t('proposal.add') }}
-            </v-btn>
+              v-bind="props"
+            />
           </template>
         </v-tooltip>
         <v-spacer />
@@ -427,30 +425,28 @@ const { collapsedBodyHeight } = useDefaults()
           <Tag :name="filterTag" disabled class="ml-2" />
           <template #append>
             <v-btn
-              size="small"
-              @click="clearFilters"
               prepend-icon="mdi-undo-variant"
-            >
-              {{ $t('defaultFilters') }}
-            </v-btn>
+              size="small"
+              :text="$t('defaultFilters')"
+              @click="clearFilters"
+            />
           </template>
         </v-alert>
         <v-alert
-          type="info"
-          icon="mdi-filter-outline"
           v-else-if="hasProposals && !sortedProposals.length"
           class="mb-2"
+          icon="mdi-filter-outline"
+          :text="$t('agenda.helpNoProposalsInFilter')"
+          type="info"
         >
-          {{ $t('agenda.helpNoProposalsInFilter') }}
           <template #append>
             <v-btn
-              size="small"
               v-if="isModified"
-              @click="clearFilters"
               prepend-icon="mdi-undo-variant"
-            >
-              {{ $t('defaultFilters') }}
-            </v-btn>
+              size="small"
+              :text="$t('defaultFilters')"
+              @click="clearFilters"
+            />
           </template>
         </v-alert>
         <AgendaProposals :proposals="sortedProposals" />

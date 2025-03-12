@@ -70,21 +70,19 @@ async function selectButtonProposals(btn: ReactionButton) {
       v-if="singleButton"
       :color="singleButton.color"
       :prepend-icon="singleButton.icon"
+      :text="singleButton.title"
       variant="flat"
       @click="selectButtonProposals(singleButton)"
-    >
-      {{ singleButton.title }}
-    </v-btn>
+    />
     <v-menu v-else>
       <template #activator="{ props }">
         <v-btn
           v-bind="props"
           append-icon="mdi-chevron-down"
           color="primary"
+          :text="$t('reaction.selectTemplate')"
           variant="flat"
-        >
-          {{ $t('reaction.selectTemplate') }}
-        </v-btn>
+        />
       </template>
       <v-list>
         <v-list-item

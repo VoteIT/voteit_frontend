@@ -8,27 +8,25 @@
       {{ $t('presence.presentCount', presenceCount) }}
     </p>
     <v-btn
+      v-if="canChange"
+      color="warning"
       :disabled="submitting"
       :loading="submitting"
-      v-if="canChange"
-      @click="close"
-      color="warning"
       prepend-icon="mdi-stop"
-    >
-      {{ $t('presence.closeCheck') }}
-    </v-btn>
+      :text="$t('presence.closeCheck')"
+      @click="close"
+    />
   </div>
   <div v-else class="text-center my-8">
     <v-btn
+      color="primary"
       :disabled="submitting"
       :loading="submitting"
-      size="large"
-      color="primary"
-      @click="open"
       prepend-icon="mdi-hand-wave"
-    >
-      {{ $t('presence.newCheck') }}
-    </v-btn>
+      size="large"
+      :text="$t('presence.newCheck')"
+      @click="open"
+    />
   </div>
 </template>
 

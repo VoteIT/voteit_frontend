@@ -108,9 +108,12 @@ async function submitInvites() {
       </tbody>
     </v-table>
     <div class="text-right">
-      <v-btn variant="elevated" color="primary" @click="$emit('done')">
-        {{ $t('close') }}
-      </v-btn>
+      <v-btn
+        color="primary"
+        :text="$t('close')"
+        variant="elevated"
+        @click="$emit('done')"
+      />
     </div>
   </div>
   <v-form v-else @submit.prevent="submitInvites" v-model="inviteData.valid">
@@ -153,15 +156,14 @@ async function submitInvites() {
     />
     <div class="text-right">
       <v-btn
-        type="submit"
         color="primary"
-        prepend-icon="mdi-account-multiple-plus"
-        :loading="submittingInvites"
         :disabled="!inviteData.valid || submittingInvites"
+        :loading="submittingInvites"
+        prepend-icon="mdi-account-multiple-plus"
+        :text="$t('add')"
+        type="submit"
         variant="elevated"
-      >
-        {{ $t('add') }}
-      </v-btn>
+      />
     </div>
   </v-form>
 </template>

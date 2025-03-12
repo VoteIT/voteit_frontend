@@ -349,28 +349,27 @@ function tagFilter(tags: string | string[], query: string) {
             color="warning"
             prepend-icon="mdi-delete"
             size="small"
+            :text="$t('content.delete')"
             v-bind="props"
-          >
-            {{ $t('content.delete') }}
-          </v-btn>
+          />
         </template>
       </QueryDialog>
     </template>
   </v-data-table>
   <v-expand-transition>
     <v-sheet
-      :border="true"
-      rounded
       v-if="selectedAgendaItems.length"
+      :border="true"
       class="pa-4 d-flex flex-column ga-2"
+      rounded
     >
       <h2>
         {{ $t('agenda.changeMany', selectedAgendaItems.length) }}
       </h2>
       <div>
         <QueryDialog
-          :text="$t('agenda.deleteSelectedConfirm', editSelected.length)"
           color="warning"
+          :text="$t('agenda.deleteSelectedConfirm', editSelected.length)"
           @confirmed="deleteSelected"
         >
           <template #activator="{ props }">
@@ -378,10 +377,9 @@ function tagFilter(tags: string | string[], query: string) {
               color="warning"
               :disabled="bulkChanging"
               prepend-icon="mdi-delete"
+              :text="$t('content.delete')"
               v-bind="props"
-            >
-              {{ $t('content.delete') }}
-            </v-btn>
+            />
           </template>
         </QueryDialog>
       </div>

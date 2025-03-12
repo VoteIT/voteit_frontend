@@ -9,10 +9,9 @@
           v-if="canAddPoll"
           color="primary"
           prepend-icon="mdi-star-plus"
+          :text="$t('poll.new')"
           :to="toAddPoll"
-        >
-          {{ $t('poll.new') }}
-        </v-btn>
+        />
       </header>
       <v-divider />
       <PollList groupClass="mt-4" v-model="pollStatesOpen">

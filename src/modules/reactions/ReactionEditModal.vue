@@ -203,21 +203,19 @@ async function save() {
         <div class="btn-controls submit mt-4">
           <v-spacer />
           <v-btn
-            preprend-icon="mdi-cancel"
-            variant="text"
             color="secondary"
+            preprend-icon="mdi-cancel"
+            :text="$t('cancel')"
+            variant="text"
             @click="close"
-          >
-            {{ $t('cancel') }}
-          </v-btn>
+          />
           <v-btn
-            type="submit"
             color="primary"
-            prepend-icon="mdi-check"
             :disabled="!isValid || submitting"
-          >
-            {{ formData.pk ? $t('update') : $t('create') }}
-          </v-btn>
+            prepend-icon="mdi-check"
+            :text="formData.pk ? $t('update') : $t('create')"
+            type="submit"
+          />
         </div>
       </v-form>
     </main>

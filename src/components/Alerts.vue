@@ -15,14 +15,13 @@
       </div>
     </v-alert>
     <v-btn
+      v-if="hasMultipleActive"
+      class="dismiss-all"
       color="secondary"
       prepend-icon="mdi-notification-clear-all"
-      class="dismiss-all"
-      v-if="hasMultipleActive"
+      :text="$t('dismissAll')"
       @click="dismiss()"
-    >
-      {{ $t('dismissAll') }}
-    </v-btn>
+    />
   </div>
 </template>
 

@@ -6,17 +6,16 @@
   >
     <template #activator="{ props }">
       <v-btn
-        :disabled="working"
-        :prepend-icon="currentState.icon"
         append-icon="mdi-chevron-down"
         class="text-no-wrap"
+        :color="currentState.color || color"
+        :disabled="working"
+        :prepend-icon="currentState.icon"
         size="x-small"
+        :text="currentState.getName(t)"
         variant="flat"
         v-bind="{ ...$attrs, ...props }"
-        :color="currentState.color || color"
-      >
-        {{ currentState.getName(t) }}
-      </v-btn>
+      />
     </template>
     <v-list density="comfortable">
       <div v-if="fetching" class="text-center">
@@ -37,26 +36,24 @@
   </v-menu>
   <v-btn
     v-else-if="currentState"
-    :prepend-icon="currentState.icon"
     class="text-no-wrap"
-    disabled
-    size="x-small"
-    variant="flat"
     :color="currentState.color || color"
-  >
-    {{ currentState.getName(t) }}
-  </v-btn>
+    disabled
+    :prepend-icon="currentState.icon"
+    size="x-small"
+    :text="currentState.getName(t)"
+    variant="flat"
+  />
   <v-btn
     v-else
     class="text-no-wrap"
+    :color="color"
     disabled
     prepend-icon="mdi-help"
     size="x-small"
+    :text="`Unknown state: ${props.object.state}`"
     variant="flat"
-    :color="color"
-  >
-    {{ `Unknown state: ${props.object.state}` }}
-  </v-btn>
+  />
 </template>
 
 <script

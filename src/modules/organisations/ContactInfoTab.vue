@@ -84,11 +84,10 @@ onBeforeMount(updateContactInfo)
     <p class="my-4 text-warning">Could not fetch contact info</p>
     <v-btn
       color="primary"
-      @click="updateContactInfo"
       prepend-icon="mdi-autorenew"
-    >
-      {{ $t('tryAgain') }}
-    </v-btn>
+      :text="$t('tryAgain')"
+      @click="updateContactInfo"
+    />
   </div>
   <div v-else>
     <v-alert
@@ -110,12 +109,11 @@ onBeforeMount(updateContactInfo)
           <v-spacer />
           <v-btn
             color="primary"
-            type="submit"
-            :loading="submitting"
             :disabled="disabled"
-          >
-            {{ $t('save') }}
-          </v-btn>
+            :loading="submitting"
+            :text="$t('save')"
+            type="submit"
+          />
         </div>
       </template>
     </SchemaForm>

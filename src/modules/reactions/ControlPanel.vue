@@ -117,9 +117,12 @@ const model = reactive<Record<number, boolean>>({})
           </DefaultDialog>
         </v-list>
         <template #activator="{ props }">
-          <v-btn v-bind="props" append-icon="mdi-chevron-down" color="primary">
-            {{ $t('reaction.addButton') }}
-          </v-btn>
+          <v-btn
+            append-icon="mdi-chevron-down"
+            color="primary"
+            :text="$t('reaction.addButton')"
+            v-bind="props"
+          />
         </template>
       </v-menu>
     </div>

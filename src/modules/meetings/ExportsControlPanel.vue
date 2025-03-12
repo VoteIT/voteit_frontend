@@ -34,13 +34,12 @@
             <v-menu location="bottom right">
               <template #activator="{ props }">
                 <v-btn
-                  v-bind="props"
                   append-icon="mdi-download"
-                  variant="tonal"
                   color="primary"
-                >
-                  {{ $t('download') }}
-                </v-btn>
+                  :text="$t('download')"
+                  variant="tonal"
+                  v-bind="props"
+                />
               </template>
               <v-list>
                 <v-list-item

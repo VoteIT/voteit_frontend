@@ -78,10 +78,9 @@ watch(agenda, (agendaItems) => {
         color="primary"
         :disabled="!agendaOrderChanged"
         :loading="orderSaving"
+        :text="$t('save')"
         @click="saveAgendaOrder"
-      >
-        {{ $t('save') }}
-      </v-btn>
+      />
     </div>
   </div>
 </template>

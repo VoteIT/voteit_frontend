@@ -164,17 +164,14 @@ const formData = reactive(getDefaults())
       v-model="formData.speakerSystem"
     />
     <div class="text-right">
-      <v-btn variant="text" @click="$emit('cancel')">
-        {{ $t('cancel') }}
-      </v-btn>
+      <v-btn variant="text" :text="$t('cancel')" @click="$emit('cancel')" />
       <v-btn
         color="primary"
-        type="submit"
         :disabled="!isValid.value"
         :loading="working"
-      >
-        {{ data ? $t('save') : $t('create') }}
-      </v-btn>
+        :text="data ? $t('save') : $t('create')"
+        type="submit"
+      />
     </div>
   </v-form>
 </template>
