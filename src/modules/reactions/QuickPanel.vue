@@ -9,12 +9,10 @@
         :button="button"
         :can-toggle="true"
         v-model="model[button.pk]"
-        class="mr-1"
       />
       <RealReactionButton
         v-else
         :button="button"
-        class="mr-1"
         :count="Number(!!model[button.pk])"
         :disabled="!button.active"
         v-model="model[button.pk]"
