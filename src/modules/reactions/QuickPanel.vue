@@ -7,7 +7,7 @@
       <FlagButton
         v-if="isFlagButton(button)"
         :button="button"
-        :can-toggle="true"
+        can-toggle
         v-model="model[button.pk]"
       />
       <RealReactionButton
