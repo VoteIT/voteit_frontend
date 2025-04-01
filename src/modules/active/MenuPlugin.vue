@@ -11,7 +11,7 @@ import { ThemeColor } from '@/utils/types'
 const { t } = useI18n()
 const { isActive, isBusy, dismiss } = useActive(useMeetingId())
 
-async function confirmSetActive(value: boolean | null) {
+async function confirmSetActive(value: boolean) {
   if (!value) {
     if (
       await dialogQuery({
@@ -22,7 +22,7 @@ async function confirmSetActive(value: boolean | null) {
       dismiss()
     else return
   }
-  isActive.value = value || false // ts says value could be null?
+  isActive.value = value
 }
 </script>
 
@@ -36,7 +36,7 @@ async function confirmSetActive(value: boolean | null) {
     <v-switch
       :disabled="isBusy"
       :modelValue="isActive"
-      @update:modelValue="confirmSetActive"
+      @update:modelValue="confirmSetActive(!!$event)"
       hide-details
       color="surface"
       class="flex-grow-0"

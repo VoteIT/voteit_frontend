@@ -43,36 +43,26 @@
 
 <script lang="ts" setup>
 import { sortBy } from 'lodash'
-import { computed, onBeforeMount, onUnmounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { titleSorter } from '@/utils'
-import useLoader from '@/composables/useLoader'
 import usePermission from '@/composables/usePermission'
 
 import { meetingSettingsPlugins } from './registry'
 import MeetingToolbar from './MeetingToolbar.vue'
 import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
-import useComponentApi from './useComponentApi'
-
 import './controlPanels'
 import type { Meeting } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
-const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, getMeetingRoute } = useMeeting()
 
 useMeetingTitle(t('settings'))
 usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
-const { fetchComponents, clearComponents } = useComponentApi(meetingId)
-const loader = useLoader('ControlPanel')
-
-onBeforeMount(() => {
-  loader.call(fetchComponents)
-})
-onUnmounted(clearComponents)
 
 const panelPlugins = computed(() => {
   if (!meeting.value) return []

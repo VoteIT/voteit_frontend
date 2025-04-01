@@ -2,9 +2,9 @@
 import { computed } from 'vue'
 
 import useMeeting from './useMeeting'
-import useComponentApi from './useComponentApi'
 import { isActiveMeeting } from './rules'
 import type { NoSettingsComponent } from './types'
+import useMeetingComponent from './useMeetingComponent'
 
 const props = defineProps<{ componentName: string; switchLabel: string }>()
 
@@ -19,21 +19,22 @@ const isRequired = computed(
       ({ name }) => name === props.componentName
     )
 )
-const warnRequired = computed(() => !active.value && isRequired.value)
-const { component, addComponent, setComponentState } = useComponentApi<
-  NoSettingsComponent<string>
->(meetingId, props.componentName)
+const { component, componentActive, addComponent, setComponentState } =
+  useMeetingComponent<NoSettingsComponent<string>>(
+    meetingId,
+    props.componentName
+  )
+const warnRequired = computed(() => !componentActive.value && isRequired.value)
 
-const active = computed({
-  get() {
-    return component.value?.state === 'on'
-  },
-  set(value) {
-    if (!component.value) return addComponent(null, true)
-    // TODO error handling here
-    setComponentState(component.value, value)
+async function setActive(state: boolean) {
+  try {
+    if (!component.value) await addComponent(null, state)
+    else await setComponentState(state)
+  } catch (e) {
+    console.debug('Failed to set component state', e)
+    alert(`Failed to set ${props.componentName}: ${state}`)
   }
-})
+}
 </script>
 
 <template>
@@ -49,7 +50,8 @@ const active = computed({
       color="primary"
       hide-details
       :label="switchLabel"
-      v-model="active"
+      :model-value="componentActive"
+      @update:model-value="setActive(!!$event)"
     />
     <div v-if="isRequired" class="mt-2">
       <v-chip>
@@ -62,7 +64,7 @@ const active = computed({
       </v-chip>
     </div>
   </v-card-text>
-  <v-card-actions v-if="$slots.actions && active">
+  <v-card-actions v-if="$slots.actions && componentActive">
     <slot name="actions"></slot>
   </v-card-actions>
 </template>
