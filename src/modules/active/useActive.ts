@@ -4,7 +4,7 @@ import { user } from '@/composables/useAuthentication'
 
 import { meetingType } from '../meetings/contentTypes'
 import { NoSettingsComponent } from '../meetings/types'
-import useMeetingComponents from '../meetings/useMeetingComponent'
+import useMeetingComponent from '../meetings/useMeetingComponent'
 
 import { activeUserType } from './contentTypes'
 import { sleep } from '@/utils'
@@ -38,9 +38,7 @@ meetingType.channel.onLeave((pk) => {
 const dismissedMeetings = reactive(new Set<number>())
 
 export default function useActive(meetingId: Ref<number>) {
-  const { componentActive } = useMeetingComponents<
-    NoSettingsComponent<'active_users'>
-  >(meetingId, 'active_users')
+  const { componentActive } = useMeetingComponent(meetingId, 'active_users')
 
   // If Active component if switched on/off, clear dismissed status.
   watch(componentActive, () => dismissedMeetings.delete(meetingId.value))

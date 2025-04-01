@@ -1,5 +1,3 @@
-import { ref, toRef } from 'vue'
-
 import { PresenceCheckState } from '@/modules/presence/workflowStates'
 import { PresenceCheck } from '@/contentTypes/types'
 import { isActiveMeeting, isModerator } from '../meetings/rules'
@@ -7,8 +5,7 @@ import type { Meeting } from '../meetings/types'
 import useMeetingComponent from '../meetings/useMeetingComponent'
 
 function isActivePresenceComponent(meeting: Meeting | number) {
-  const meetingId =
-    typeof meeting === 'number' ? ref(meeting) : toRef(meeting, 'pk')
+  const meetingId = typeof meeting === 'number' ? meeting : meeting.pk
   return useMeetingComponent(meetingId, 'presence_check').componentActive.value
 }
 

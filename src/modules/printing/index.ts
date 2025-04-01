@@ -1,9 +1,8 @@
-import { ref } from 'vue'
 import router from '@/router'
 
 import { meetingSettingsPlugins } from '../meetings/registry'
 import useMeetingComponent from '../meetings/useMeetingComponent'
-import { Meeting, NoSettingsComponent } from '../meetings/types'
+import { Meeting } from '../meetings/types'
 import { proposalButtonPlugins } from '../proposals/registry'
 
 import ProposalPrintButton from './ProposalPrintButton.vue'
@@ -11,11 +10,7 @@ import ProposalPrintView from './ProposalPrintView.vue'
 import ControlPanel from './ControlPanel.vue'
 
 function checkActive(meeting: Meeting) {
-  const { component } = useMeetingComponent<NoSettingsComponent>(
-    ref(meeting.pk),
-    'proposal_print'
-  )
-  return component.value?.state === 'on'
+  return useMeetingComponent(meeting.pk, 'proposal_print').componentActive.value
 }
 
 proposalButtonPlugins.register({

@@ -3,7 +3,6 @@ import { computed } from 'vue'
 
 import useMeeting from './useMeeting'
 import { isActiveMeeting } from './rules'
-import type { NoSettingsComponent } from './types'
 import useMeetingComponent from './useMeetingComponent'
 
 const props = defineProps<{ componentName: string; switchLabel: string }>()
@@ -20,10 +19,7 @@ const isRequired = computed(
     )
 )
 const { component, componentActive, addComponent, setComponentState } =
-  useMeetingComponent<NoSettingsComponent<string>>(
-    meetingId,
-    props.componentName
-  )
+  useMeetingComponent(meetingId, props.componentName)
 const warnRequired = computed(() => !componentActive.value && isRequired.value)
 
 async function setActive(state: boolean) {

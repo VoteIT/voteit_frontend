@@ -1,3 +1,4 @@
+import { Predicate } from 'itertools'
 import { ref, toRef } from 'vue'
 
 import {
@@ -6,7 +7,7 @@ import {
   meetingSettingsPlugins,
   meetingSlotPlugins
 } from '../meetings/registry'
-import useMeetingComponents from '../meetings/useMeetingComponent'
+import useMeetingComponent from '../meetings/useMeetingComponent'
 import {
   GroupMembership,
   Meeting,
@@ -18,15 +19,11 @@ import ControlPanel from './ControlPanel.vue'
 import MenuPlugin from './MenuPlugin.vue'
 import useActive from './useActive'
 // import useMeetingGroups from '../meetings/useMeetingGroups'
-import { Predicate } from 'itertools'
 
 const COMPONENT_NAME = 'active_users'
 
 function checkActive(meeting: Meeting) {
-  const { component } = useMeetingComponents<
-    NoSettingsComponent<typeof COMPONENT_NAME>
-  >(ref(meeting.pk), COMPONENT_NAME)
-  return component.value?.state === 'on'
+  return useMeetingComponent(meeting.pk, COMPONENT_NAME).componentActive.value
 }
 
 meetingSettingsPlugins.register({

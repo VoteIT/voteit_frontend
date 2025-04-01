@@ -30,9 +30,8 @@ meetingBubblePlugins.register({
   icon: 'mdi-hand-wave',
   order: 10,
   checkActive(meeting) {
-    const meetingId = toRef(meeting, 'pk')
-    if (!usePresence(meetingId).presenceCheck.value) return false
-    return useMeetingComponent(meetingId, 'presence_check').componentActive
+    if (!usePresence(toRef(meeting, 'pk')).presenceCheck.value) return false
+    return useMeetingComponent(meeting.pk, 'presence_check').componentActive
       .value
   },
   requireAttention: (meeting) => {
