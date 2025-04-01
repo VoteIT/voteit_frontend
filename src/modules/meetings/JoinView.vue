@@ -66,7 +66,10 @@ onBeforeMount(() => {
       <v-row id="join-meeting" v-if="meeting">
         <v-col v-bind="cols.default">
           <h1 class="mb-4">{{ $t('join.meetingTitle', { ...meeting }) }}</h1>
-          <div class="d-flex flex-column ga-4" v-if="policyComponents.length">
+          <div
+            class="d-flex flex-column ga-4"
+            v-if="policyComponents.length || canBecomeModeratorMeeting"
+          >
             <v-alert
               v-if="canBecomeModeratorMeeting"
               color="warning"
