@@ -17,11 +17,11 @@
       <template #activator="{ props }">
         <v-btn
           class="mr-2"
+          :color="copied ? 'success' : undefined"
+          :title="$t('invites.copyMatchingTooltip')"
+          :variant="copied ? 'elevated' : 'text'"
           v-bind="props"
           @click="copyFilteredData()"
-          :color="copied ? 'success' : undefined"
-          :variant="copied ? 'elevated' : 'text'"
-          :title="$t('invites.copyMatchingTooltip')"
         >
           <v-icon>mdi-content-copy</v-icon>
         </v-btn>

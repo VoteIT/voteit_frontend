@@ -3,13 +3,13 @@
     <template v-slot:activator="{ toggle }">
       <span class="text-no-wrap">
         <v-btn
-          size="small"
           :color="isModified ? 'warning' : undefined"
-          variant="text"
-          icon="mdi-undo-variant"
-          @click="clearFilters"
           :disabled="!isModified"
+          icon="mdi-undo-variant"
+          variant="text"
+          size="small"
           :title="$t('defaultFilters')"
+          @click="clearFilters"
         />
         <v-btn variant="text" @click="toggle()" append-icon="mdi-chevron-down">
           <v-icon

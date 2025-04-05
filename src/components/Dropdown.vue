@@ -17,7 +17,7 @@
       class="collapse"
       :class="{ isOpen }"
       prepend-icon="mdi-chevron-right"
-      :title="title"
+      :text="title"
       variant="text"
       @click="toggle"
     />
