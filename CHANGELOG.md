@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.30.1 (2025-04-05)
+
+- Bugfix: Dropdown btn texts was bank (title instead of text)
+
 ## 0.30.0 (2025-04-02)
 
 - Meeting components (active, etc) are now fully reactive through sockets
