@@ -4,9 +4,13 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.30.2 (2025-05-11)
+
+- Bugfix: Text size for normal proposals in real-time view
+
 ## 0.30.1 (2025-04-05)
 
-- Bugfix: Dropdown btn texts was bank (title instead of text)
+- Bugfix: Dropdown btn texts was blank (title instead of text)
 
 ## 0.30.0 (2025-04-02)
 
