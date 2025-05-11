@@ -184,18 +184,18 @@ onBeforeUnmount(evt.dispose)
 
 
 .text-size-large
-  :deep(.richtext ol),
-  :deep(.richtext p),
-  :deep(.richtext ul),
+  :deep(.ql-editor ol),
+  :deep(.ql-editor p),
+  :deep(.ql-editor ul),
   :deep(.timer),
   :deep(.v-list-item-title),
   :deep(.proposal-text-paragraph)
     font-size: large !important
 
 .text-size-x-large
-  :deep(.richtext ol),
-  :deep(.richtext p),
-  :deep(.richtext ul),
+  :deep(.ql-editor ol),
+  :deep(.ql-editor p),
+  :deep(.ql-editor ul),
   :deep(.timer),
   :deep(.v-list-item-title),
   :deep(.proposal-text-paragraph)
