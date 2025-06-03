@@ -100,7 +100,7 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
   // Start by user pk, or first in queue
   function startSpeaker(user?: number) {
     user = user || speakerQueue.value[0]
-    speakerListType.methodCall('start_user', {
+    return speakerListType.methodCall('start_user', {
       pk: listId.value,
       user
     })
@@ -110,22 +110,21 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
     if (!listId.value)
       throw new Error("Can't stop speaker on undefined list id")
     const current = getCurrent(listId.value)
-    if (current) {
-      await speakerListType.methodCall('stop_user', {
-        pk: listId.value,
-        user: current.user
-      })
-    }
+    if (!current) return
+    await speakerListType.methodCall('stop_user', {
+      pk: listId.value,
+      user: current.user
+    })
   }
 
   function undoSpeaker() {
-    speakerListType.methodCall('mod_undo', {
+    return speakerListType.methodCall('mod_undo', {
       pk: listId.value
     })
   }
 
   function shuffleList() {
-    speakerListType.methodCall('mod_shuffle', {
+    return speakerListType.methodCall('mod_shuffle', {
       pk: listId.value
     })
   }

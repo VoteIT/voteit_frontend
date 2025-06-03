@@ -11,6 +11,7 @@ import User from '@/components/User.vue'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import { user } from '@/composables/useAuthentication'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import useMeetingId from '../meetings/useMeetingId'
@@ -99,6 +100,17 @@ async function addParticipantNumbers() {
   participantNumberInput.value = ''
 }
 
+const { handleSocketError } = useErrorHandler({
+  target: 'alert'
+})
+function errorWrapper(
+  fnOrPromise: Promise<unknown> | (() => Promise<unknown>)
+) {
+  ;(typeof fnOrPromise === 'function' ? fnOrPromise() : fnOrPromise).catch(
+    handleSocketError
+  )
+}
+
 /*
  * Keyboard navigation
  */
@@ -107,20 +119,20 @@ onKeyStroke(
   (e) => {
     const speaker = speakerQueue.value[Number(e.key) - 1]
     if (!speaker) return
-    startSpeaker(speaker)
+    errorWrapper(startSpeaker(speaker))
   }
 )
 onKeyStroke(
   (e) => e.key === 'z' && navigationEventAllowed(e, ['ctrlKey']),
-  (e) => e.ctrlKey && undoSpeaker()
+  (e) => e.ctrlKey && errorWrapper(undoSpeaker)
 )
 onKeyStroke(
   (e) => e.key === 's' && navigationEventAllowed(e),
-  () => startSpeaker()
+  () => errorWrapper(startSpeaker)
 )
 onKeyStroke(
   (e) => e.key === 'e' && navigationEventAllowed(e),
-  (e) => currentSpeaker.value && stopSpeaker()
+  () => currentSpeaker.value && errorWrapper(stopSpeaker)
 )
 /*
  * End keyboard navigation
@@ -136,16 +148,22 @@ onKeyStroke(
         @click="startSpeaker()"
         ><v-icon icon="mdi-play"
       /></v-btn>
-      <v-btn color="primary" :disabled="!currentSpeaker" @click="stopSpeaker"
+      <v-btn
+        color="primary"
+        :disabled="!currentSpeaker"
+        @click="errorWrapper(stopSpeaker)"
         ><v-icon icon="mdi-stop"
       /></v-btn>
-      <v-btn color="primary" :disabled="!currentSpeaker" @click="undoSpeaker"
+      <v-btn
+        color="primary"
+        :disabled="!currentSpeaker"
+        @click="errorWrapper(undoSpeaker)"
         ><v-icon icon="mdi-undo"
       /></v-btn>
       <v-btn
         color="primary"
         :disabled="!speakerQueue.length"
-        @click="shuffleList"
+        @click="errorWrapper(shuffleList)"
         ><v-icon icon="mdi-shuffle-variant"
       /></v-btn>
     </div>
