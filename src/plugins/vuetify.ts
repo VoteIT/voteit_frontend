@@ -3,7 +3,7 @@ import 'vuetify/lib/styles/main.sass'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import colors from 'vuetify/lib/util/colors'
+import colors from 'vuetify/util/colors'
 
 const light = {
   colors: {

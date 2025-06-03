@@ -13,7 +13,7 @@
 import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
-import { nextTick, onBeforeMount, provide, watch } from 'vue'
+import { onBeforeMount, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { RoleContextKey } from './injectionKeys'

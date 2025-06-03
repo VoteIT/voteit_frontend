@@ -51,7 +51,7 @@ watch(
   { immediate: true }
 )
 
-export const i18n = createI18n({
+export const i18n = createI18n<[typeof en], 'en'>({
   legacy: false,
   locale: currentLocale.value,
   fallbackLocale: 'en',
