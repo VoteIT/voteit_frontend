@@ -240,7 +240,7 @@ function findProposalEl(range: Range) {
   if (!proposalComponents.value) return
   for (const [i, { $el }] of enumerate(proposalComponents.value)) {
     const elem = ($el as Element).querySelector(
-      '.proposal-text-paragraph,.richtext'
+      '.proposal-text-paragraph,.ql-editor'
     )
     if (elem && range.intersectsNode(elem))
       return { i, elem: elem as HTMLElement }

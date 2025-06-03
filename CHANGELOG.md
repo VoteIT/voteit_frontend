@@ -8,6 +8,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 - NPM package updates
 - Bugfix: Last read on Agenda Items didn't update when leaving AgendaItemView
+- Bugfix: Proposal text selection was not sent in decisions tab
 
 ## 0.30.2 (2025-05-11)
 
