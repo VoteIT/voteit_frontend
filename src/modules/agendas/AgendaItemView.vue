@@ -54,6 +54,7 @@ import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
 import AISpeakerLists from './AISpeakerLists.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
@@ -215,15 +216,15 @@ function setLastRead(ai: AgendaItem, force = false) {
     agenda_item: ai.pk
   })
 }
-watch(agendaItem, (to, from) => {
-  // When leaving agenda item
-  // FIXME should react to agendaId or onRouteLeave
-  if (from) setLastRead(from)
-  if (to) {
-    editing.value = false
-    content.title = to.title // Body from agendaBody, see below
-    content.tags = extraTags.value
-  }
+onBeforeRouteLeave(() => {
+  // Set last read when leaving route.
+  if (agendaItem.value) setLastRead(agendaItem.value)
+})
+watch(agendaItem, (to) => {
+  if (!to) return
+  editing.value = false
+  content.title = to.title // Body from agendaBody, see below
+  content.tags = extraTags.value
 })
 watch(agendaBody, (value) => {
   content.body = value ?? ''
