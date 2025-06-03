@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.30.3 (2025-06-03)
+
+- NPM package updates
+- Bugfix: Last read on Agenda Items didn't update when leaving AgendaItemView
+
 ## 0.30.2 (2025-05-11)
 
 - Bugfix: Text size for normal proposals in real-time view
