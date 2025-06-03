@@ -24,7 +24,7 @@ speakerListType.updateMap(speakerLists, {
 speakerType.updateMap(speakers, { sls: 'sls' })
 
 /**
- * Check in any speaker list matches predicate (lazy way)
+ * Check if any speaker list matches predicate (lazy way)
  */
 export function anySpeakerList(predicate: Predicate<SpeakerList>) {
   return any(speakerLists.values(), predicate)
@@ -34,10 +34,10 @@ export function anySpeakerList(predicate: Predicate<SpeakerList>) {
  * Get current speaker for speaker list, if any.
  */
 export function getCurrent(list: number) {
-  for (const speaker of speakers.values()) {
-    if (speaker.speaker_list === list && isCurrentSpeaker(speaker))
-      return speaker
-  }
+  return first(
+    speakers.values(),
+    (s) => s.speaker_list === list && isCurrentSpeaker(s)
+  )
 }
 
 /**
