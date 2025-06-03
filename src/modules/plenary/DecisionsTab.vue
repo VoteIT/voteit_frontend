@@ -82,38 +82,35 @@ const isBroadcastingAI = computed(
 )
 
 async function select(proposal: Proposal) {
-  if (isBroadcastingAI.value) {
-    try {
-      await setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
-      selectProposal(proposal.pk)
-    } catch (e) {
-      handleRestError(e, 'highlighted')
-    }
-  } else selectProposal(proposal.pk)
+  if (!isBroadcastingAI.value) return selectProposal(proposal.pk)
+  try {
+    await setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
+    selectProposal(proposal.pk)
+  } catch (e) {
+    handleRestError(e, 'highlighted')
+  }
 }
 
 async function deselect(proposal: Proposal) {
-  if (isBroadcastingAI.value) {
-    try {
-      await setHighlightedProposals(
-        selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
-      )
-      deselectProposal(proposal.pk)
-    } catch (e) {
-      handleRestError(e, 'highlighted')
-    }
-  } else deselectProposal(proposal.pk)
+  if (!isBroadcastingAI.value) return deselectProposal(proposal.pk)
+  try {
+    await setHighlightedProposals(
+      selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
+    )
+    deselectProposal(proposal.pk)
+  } catch (e) {
+    handleRestError(e, 'highlighted')
+  }
 }
 
 async function replaceSelection(proposals: number[]) {
-  if (isBroadcastingAI.value) {
-    try {
-      await setHighlightedProposals(proposals)
-      selectProposalIds(proposals)
-    } catch (e) {
-      handleRestError(e, 'highlighted')
-    }
-  } else selectProposalIds(proposals)
+  if (!isBroadcastingAI.value) return selectProposalIds(proposals)
+  try {
+    await setHighlightedProposals(proposals)
+    selectProposalIds(proposals)
+  } catch (e) {
+    handleRestError(e, 'highlighted')
+  }
 }
 
 function selectTag(tag: string) {
