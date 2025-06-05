@@ -31,7 +31,6 @@ export default createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    console.debug(to, from, savedPosition)
     return savedPosition || { top: 0 }
   }
 })

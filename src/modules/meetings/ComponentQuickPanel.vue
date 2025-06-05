@@ -27,7 +27,7 @@ async function setActive(state: boolean) {
     if (!component.value) await addComponent(null, state)
     else await setComponentState(state)
   } catch (e) {
-    console.debug('Failed to set component state', e)
+    console.error('Failed to set component state', e)
     alert(`Failed to set ${props.componentName}: ${state}`)
   }
 }
