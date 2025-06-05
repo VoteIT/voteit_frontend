@@ -133,10 +133,15 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
     () => !!user.value && speakerQueue.value.includes(user.value.pk)
   )
 
+  const userIsCurrentSpeaker = computed(
+    () => speakerList.value?.current === user.value?.pk
+  )
+
   return {
     canEnterList: computed(
       () =>
         !userInQueue.value &&
+        !userIsCurrentSpeaker &&
         speakerList.value &&
         canEnterList(speakerList.value)
     ),
