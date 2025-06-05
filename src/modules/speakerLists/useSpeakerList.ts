@@ -138,7 +138,7 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
     canEnterList: computed(
       () =>
         !userInQueue.value &&
-        !userIsCurrentSpeaker &&
+        !userIsCurrentSpeaker.value &&
         speakerList.value &&
         canEnterList(speakerList.value)
     ),
