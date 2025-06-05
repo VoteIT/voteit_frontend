@@ -70,7 +70,6 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
       ),
       ([title, posUsers]) => ({
         title, // groupby key is title
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         queue: map(posUsers, ([pos, user]) => user) // Deconstruct enumeration into an array of users (number[])
       })
     )
