@@ -4,6 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.31.0 (2025-06-05)
+
+- Do not allow adding currently speaking user to speaker list
+- Changes to stop speaker API (no need to send user id)
+
 ## 0.30.3 (2025-06-03)
 
 - NPM package updates
