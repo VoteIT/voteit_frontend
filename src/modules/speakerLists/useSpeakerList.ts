@@ -109,11 +109,8 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
   async function stopSpeaker() {
     if (!listId.value)
       throw new Error("Can't stop speaker on undefined list id")
-    const current = getCurrent(listId.value)
-    if (!current) return
     await speakerListType.methodCall('stop_user', {
-      pk: listId.value,
-      user: current.user
+      pk: listId.value
     })
   }
 
