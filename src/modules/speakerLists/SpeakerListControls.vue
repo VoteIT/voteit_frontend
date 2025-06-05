@@ -145,7 +145,7 @@ onKeyStroke(
       <v-btn
         color="primary"
         :disabled="!canStartSpeaker || !speakerQueue.length"
-        @click="startSpeaker()"
+        @click="errorWrapper(startSpeaker)"
         ><v-icon icon="mdi-play"
       /></v-btn>
       <v-btn
@@ -171,7 +171,7 @@ onKeyStroke(
       <UserSearch
         :label="$t('speaker.addByName')"
         :filter="userSearchFilter"
-        @submit="moderatorEnterList"
+        @submit="errorWrapper(moderatorEnterList($event))"
         :params="userSearchParams"
         instant
         class="flex-grow-1"
@@ -182,7 +182,7 @@ onKeyStroke(
           :label="$t('speaker.addByParticipantNumber')"
           class="mb-0 flex-grow-1"
           v-model="participantNumberInput"
-          @keydown.enter="addParticipantNumbers()"
+          @keydown.enter="errorWrapper(addParticipantNumbers)"
         />
       </template>
     </div>
