@@ -32,6 +32,7 @@ const {
   canStartSpeaker,
   currentSpeaker,
   speakerGroups,
+  speakerList,
   speakerSystem,
   speakerQueue,
   moderatorEnterList,
@@ -48,6 +49,15 @@ const canManageSystem = computed(
   () => speakerSystem.value && speakerRules.canManageSystem(speakerSystem.value)
 )
 
+/**
+ * Users that are already speaking or in queue can't be added to queue
+ */
+function checkUserInQueue(user: number) {
+  return (
+    !!speakerQueue.value?.includes(user) || speakerList.value?.current === user
+  )
+}
+
 // For user search
 const userSearchParams = computed(() => {
   return {
@@ -55,10 +65,10 @@ const userSearchParams = computed(() => {
     any_roles: speakerSystem.value?.meeting_roles_to_speaker.join(',')
   }
 })
-// Filter on users that are speakers but not already in queue
-function userSearchFilter(user: IUser): boolean {
+// Filter on users that are speakers but not already in queue or speaking
+function userSearchFilter({ pk }: IUser): boolean {
   if (!speakerQueue.value || !speakerSystem.value) return false
-  return !speakerQueue.value.includes(user.pk)
+  return !checkUserInQueue(pk)
 }
 
 function isSelf(userId: number) {
@@ -76,7 +86,7 @@ async function addParticipantNumbers() {
   for (const n of numbers) {
     const user = participantNumbers.value.find((pn) => pn.number === n)?.user
     if (!user) missing.push(n)
-    else if (speakerQueue.value?.includes(user)) inList.push(n)
+    else if (checkUserInQueue(user)) inList.push(n)
     else moderatorEnterList(user)
   }
   if (missing.length)
