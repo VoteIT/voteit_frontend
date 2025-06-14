@@ -1,5 +1,4 @@
 <template>
-  <p>{{ active }}</p>
   <v-dialog
     v-model="isActive"
     v-bind="dialogDefaults"
