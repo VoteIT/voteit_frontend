@@ -91,6 +91,7 @@ if (props.instant) watch(selected, submit)
       @submit.prevent="submit"
     >
       <v-autocomplete
+        autocomplete="off"
         clearable
         hide-details
         hide-no-data
