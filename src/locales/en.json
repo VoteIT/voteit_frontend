@@ -874,7 +874,7 @@
     "closeList": "Close list",
     "confirmSpeakerDeletion": "You're about to delete this speaker entry.\nAre you sure?",
     "confirmListDeletion": "You are about to delete this speaker list.\nAre you sure?",
-    "confirmStopActiveSpeaker": "The list \"{title}\" has an active speaker. To switch active list, you need to stop that speaker first.\nDo you want to do that?",
+    "confirmStopActiveSpeaker": "There is an active speaker on the list \"{title}\". You need to stop that speaker first.\nDo that now?",
     "currentlySpeaking": "Now speaking",
     "deactivateList": "Deactivate",
     "displayTimer": "Show timer in real-time view",

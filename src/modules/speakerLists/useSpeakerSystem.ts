@@ -1,22 +1,25 @@
-import { computed, Ref } from 'vue'
+import { computed, MaybeRef, Ref, unref } from 'vue'
 
 import {
   getCurrent,
-  getSystemSpeakerLists,
+  getSpeakerLists,
+  getRoomSpeakerSystem,
   speakerLists,
-  speakerSystems
+  speakerSystems,
+  getRoomSpeakerLists
 } from './useSpeakerLists'
 import { canManageSystem } from './rules'
-import { SpeakerList } from './types'
 import useSpeakerList from './useSpeakerList'
-import { speakerListType } from './contentTypes'
+import { speakerSystemType } from './contentTypes'
 
 export default function useSpeakerSystem(
-  systemId: Ref<number>,
+  room: MaybeRef<number>,
   agendaItem?: Ref<number>
 ) {
-  const speakerSystem = computed(() => speakerSystems.get(systemId.value))
-  const systemActiveListId = computed(() => speakerSystem.value?.active_list)
+  const speakerSystem = computed(() => getRoomSpeakerSystem(unref(room)))
+  const systemActiveListId = computed(
+    () => speakerSystem.value?.active_list ?? null
+  )
   const systemActiveList = computed(() =>
     speakerSystem.value?.active_list
       ? speakerLists.get(speakerSystem.value.active_list)
@@ -25,14 +28,18 @@ export default function useSpeakerSystem(
   const currentlySpeaking = computed(
     () => systemActiveList.value && getCurrent(systemActiveList.value.pk)
   )
-  const currentSpeakerQueue = computed(
-    () => systemActiveList.value && systemActiveList.value.queue
-  )
+  const currentSpeakerQueue = computed(() => systemActiveList.value?.queue)
 
   const { stopSpeaker } = useSpeakerList(systemActiveListId)
-  async function setActiveList(list: SpeakerList, stopActiveSpeaker = false) {
+  async function setActiveList(
+    system: number,
+    active_list: number | null,
+    stopActiveSpeaker = false
+  ) {
     if (stopActiveSpeaker && systemActiveListId.value) await stopSpeaker()
-    await speakerListType.methodCall('set_active', { pk: list.pk })
+    await speakerSystemType.update(system, {
+      active_list
+    })
   }
 
   return {
@@ -43,9 +50,7 @@ export default function useSpeakerSystem(
     currentlySpeaking,
     speakerSystem,
     speakerLists: computed(() =>
-      systemId.value
-        ? getSystemSpeakerLists(systemId.value, agendaItem?.value)
-        : []
+      getRoomSpeakerLists(unref(room), agendaItem?.value)
     ),
     systemActiveList,
     systemActiveListId,

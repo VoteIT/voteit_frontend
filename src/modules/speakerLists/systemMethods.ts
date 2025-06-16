@@ -1,6 +1,6 @@
 import { ComposerTranslation } from 'vue-i18n'
 
-import { SpeakerSystem, SpeakerSystemMethod } from './types'
+import { Speaker, SpeakerSystem, SpeakerSystemMethod } from './types'
 import { timesSpokenGetter } from './useSpeakerLists'
 
 interface ISystemMethod {
@@ -8,7 +8,7 @@ interface ISystemMethod {
     t: ComposerTranslation,
     settings: SpeakerSystem['settings'],
     listId: number
-  ): (user: number) => string
+  ): (speaker: Speaker) => string
 }
 
 const systemMethods: Record<SpeakerSystemMethod, ISystemMethod> = {
@@ -22,7 +22,8 @@ const systemMethods: Record<SpeakerSystemMethod, ISystemMethod> = {
           ? Math.min(spoken, settings.max_times)
           : spoken
       }
-      return (user) => t('speaker.listNumber', maxListValue(user) + 1)
+      return (speaker) =>
+        t('speaker.listNumber', maxListValue(speaker.user) + 1)
     }
   },
   [SpeakerSystemMethod.Simple]: {

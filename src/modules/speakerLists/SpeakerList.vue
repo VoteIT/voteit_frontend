@@ -5,32 +5,37 @@ import { useI18n } from 'vue-i18n'
 import User from '@/components/User.vue'
 import { user } from '@/composables/useAuthentication'
 
+import useRoom from '../rooms/useRoom'
 import { IMeetingRoom } from '../rooms/types'
 
 import { canChangeSpeakerList } from './rules'
 import { SpeakerList } from './types'
 import useSpeakerSystem from './useSpeakerSystem'
 import useSpeakerList from './useSpeakerList'
-import useRoom from '../rooms/useRoom'
 
 const props = defineProps<{
-  list: SpeakerList & { room: IMeetingRoom }
+  list: SpeakerList
+  room: IMeetingRoom
 }>()
 
 const { t } = useI18n()
 
-const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'speaker_system'))
-const { canEnterList, canLeaveList, enterList, leaveList } = useSpeakerList(
-  toRef(props.list, 'pk')
-)
+const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'room'))
+const { canEnterList, canLeaveList, currentSpeaker, enterList, leaveList } =
+  useSpeakerList(toRef(props.list, 'pk'))
 const { getRoomRoute } = useRoom()
+
+const queue = computed(() =>
+  currentSpeaker.value
+    ? props.list.queue.filter((user) => user !== currentSpeaker.value?.user)
+    : props.list.queue
+)
 
 const isActive = computed(
   () => speakerSystem.value?.active_list === props.list.pk
 )
 const expandQueue = ref(false)
 
-// eslint-disable-next-line vue/return-in-computed-property
 const enterLeaveBtn = computed(() => {
   if (canEnterList.value)
     return {
@@ -52,13 +57,13 @@ const canChange = computed(() => canChangeSpeakerList(props.list))
 
 const fullscreenPath = computed(
   () =>
-    props.list.room.open &&
-    props.list.room.send_sls &&
+    props.room.open &&
+    props.room.send_sls &&
     isActive.value && {
       name: 'room:main',
       params: {
-        id: props.list.room.meeting,
-        roomId: props.list.room.pk,
+        id: props.room.meeting,
+        roomId: props.room.pk,
         aid: props.list.agenda_item,
         tab: 'discussion'
       }
@@ -72,9 +77,9 @@ const fullscreenPath = computed(
       <h3 class="text-truncate mb-2">
         {{ list.title }}
       </h3>
-      <p v-if="list.current" class="mb-2">
+      <p v-if="currentSpeaker" class="mb-2">
         {{ $t('speaker.currentlySpeaking') }}:
-        <strong><User :pk="list.current" /></strong>
+        <strong><User :pk="currentSpeaker.user" /></strong>
       </p>
       <h4>
         {{ $t('speaker.queue') }}
@@ -83,15 +88,14 @@ const fullscreenPath = computed(
           variant="text"
           size="small"
           v-if="
-            list.queue.length > 1 &&
-            (list.queue.length !== 2 || list.queue[1] !== user?.pk)
+            queue.length > 1 && (queue.length !== 2 || queue[1] !== user?.pk)
           "
           @click="expandQueue = !expandQueue"
           icon="mdi-chevron-down"
         />
       </h4>
-      <div v-if="list.queue.length" class="mb-2">
-        <template v-for="(userPk, i) in list.queue" :key="userPk">
+      <div v-if="queue.length" class="mb-2">
+        <template v-for="(userPk, i) in queue" :key="userPk">
           <v-expand-transition>
             <div
               :class="{ self: userPk === user?.pk }"
@@ -123,8 +127,8 @@ const fullscreenPath = computed(
           :text="$t('speaker.manage')"
           :to="
             getRoomRoute('room:broadcast', {
-              id: list.room.meeting,
-              roomId: list.room.pk,
+              id: room.meeting,
+              roomId: room.pk,
               aid: list.agenda_item,
               tab: 'discussion'
             })

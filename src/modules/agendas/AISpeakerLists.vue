@@ -23,15 +23,11 @@ const speakerLists = computed(() =>
   getSpeakerLists(
     (list) =>
       list.agenda_item === props.agendaId &&
-      activeSpeakerSystems.value.some(
-        (system) => system.pk === list.speaker_system
-      )
+      activeSpeakerSystems.value.some((system) => system.room === list.room)
   ).map((list) => ({
-    ...list,
-    // Annotate with room information
+    list,
     room: meetingRoomStore.get(
-      activeSpeakerSystems.value.find((sls) => sls.pk === list.speaker_system)
-        ?.room!
+      activeSpeakerSystems.value.find((sls) => sls.room === list.room)?.room!
     )!
   }))
 )
@@ -83,9 +79,10 @@ const manageSpeakerListsMenu = computed(() => {
       </v-tooltip>
     </template>
     <SpeakerList
-      v-for="list in speakerLists"
+      v-for="{ list, room } in speakerLists"
       :key="list.pk"
       :list="list"
+      :room="room"
       class="mb-2"
     />
   </Dropdown>

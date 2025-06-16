@@ -11,7 +11,6 @@ import User from '@/components/User.vue'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import { user } from '@/composables/useAuthentication'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import useMeetingId from '../meetings/useMeetingId'
@@ -20,6 +19,7 @@ import { IUser } from '../organisations/types'
 import useSpeakerList from './useSpeakerList'
 import * as speakerRules from './rules'
 import SpeakerEntry from './SpeakerEntry.vue'
+import { speakerApi } from './useSpeakerLists'
 
 const props = defineProps<{
   listId: number
@@ -32,11 +32,9 @@ const {
   canStartSpeaker,
   currentSpeaker,
   speakerGroups,
-  speakerList,
   speakerSystem,
   speakerQueue,
-  moderatorEnterList,
-  moderatorLeaveList,
+  userQueue,
   shuffleList,
   startSpeaker,
   stopSpeaker,
@@ -53,9 +51,7 @@ const canManageSystem = computed(
  * Users that are already speaking or in queue can't be added to queue
  */
 function checkUserInQueue(user: number) {
-  return (
-    !!speakerQueue.value?.includes(user) || speakerList.value?.current === user
-  )
+  return !!userQueue.value?.includes(user)
 }
 
 // For user search
@@ -87,7 +83,7 @@ async function addParticipantNumbers() {
     const user = participantNumbers.value.find((pn) => pn.number === n)?.user
     if (!user) missing.push(n)
     else if (checkUserInQueue(user)) inList.push(n)
-    else moderatorEnterList(user)
+    else speakerApi.add(props.listId, user)
   }
   if (missing.length)
     openAlertEvent.emit(
@@ -110,17 +106,6 @@ async function addParticipantNumbers() {
   participantNumberInput.value = ''
 }
 
-const { handleSocketError } = useErrorHandler({
-  target: 'alert'
-})
-function errorWrapper(
-  fnOrPromise: Promise<unknown> | (() => Promise<unknown>)
-) {
-  ;(typeof fnOrPromise === 'function' ? fnOrPromise() : fnOrPromise).catch(
-    handleSocketError
-  )
-}
-
 /*
  * Keyboard navigation
  */
@@ -129,20 +114,20 @@ onKeyStroke(
   (e) => {
     const speaker = speakerQueue.value[Number(e.key) - 1]
     if (!speaker) return
-    errorWrapper(startSpeaker(speaker))
+    startSpeaker(speaker.pk)
   }
 )
 onKeyStroke(
   (e) => e.key === 'z' && navigationEventAllowed(e, ['ctrlKey']),
-  (e) => e.ctrlKey && errorWrapper(undoSpeaker)
+  (e) => e.ctrlKey && undoSpeaker()
 )
 onKeyStroke(
   (e) => e.key === 's' && navigationEventAllowed(e),
-  () => errorWrapper(startSpeaker)
+  () => startSpeaker()
 )
 onKeyStroke(
   (e) => e.key === 'e' && navigationEventAllowed(e),
-  () => currentSpeaker.value && errorWrapper(stopSpeaker)
+  () => currentSpeaker.value && stopSpeaker()
 )
 /*
  * End keyboard navigation
@@ -155,25 +140,19 @@ onKeyStroke(
       <v-btn
         color="primary"
         :disabled="!canStartSpeaker || !speakerQueue.length"
-        @click="errorWrapper(startSpeaker)"
+        @click="startSpeaker()"
         ><v-icon icon="mdi-play"
       /></v-btn>
-      <v-btn
-        color="primary"
-        :disabled="!currentSpeaker"
-        @click="errorWrapper(stopSpeaker)"
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="stopSpeaker"
         ><v-icon icon="mdi-stop"
       /></v-btn>
-      <v-btn
-        color="primary"
-        :disabled="!currentSpeaker"
-        @click="errorWrapper(undoSpeaker)"
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="undoSpeaker"
         ><v-icon icon="mdi-undo"
       /></v-btn>
       <v-btn
         color="primary"
         :disabled="!speakerQueue.length"
-        @click="errorWrapper(shuffleList)"
+        @click="shuffleList"
         ><v-icon icon="mdi-shuffle-variant"
       /></v-btn>
     </div>
@@ -181,7 +160,7 @@ onKeyStroke(
       <UserSearch
         :label="$t('speaker.addByName')"
         :filter="userSearchFilter"
-        @submit="errorWrapper(moderatorEnterList($event))"
+        @submit="speakerApi.add(listId, $event)"
         :params="userSearchParams"
         instant
         class="flex-grow-1"
@@ -192,7 +171,7 @@ onKeyStroke(
           :label="$t('speaker.addByParticipantNumber')"
           class="mb-0 flex-grow-1"
           v-model="participantNumberInput"
-          @keydown.enter="errorWrapper(addParticipantNumbers)"
+          @keydown.enter="addParticipantNumbers"
         />
       </template>
     </div>
@@ -218,24 +197,24 @@ onKeyStroke(
           {{ title }}
         </v-list-subheader>
         <SpeakerEntry
-          v-for="user in queue"
-          :key="user"
-          :user="user"
-          :class="{ self: isSelf(user) }"
+          v-for="speaker in queue"
+          :key="speaker.pk"
+          :user="speaker.user"
+          :class="{ self: isSelf(speaker.user) }"
         >
           <template #append>
             <span class="btn-group d-flex flex-nowrap">
               <v-btn
                 color="primary"
                 :disabled="!canStartSpeaker"
-                @click="startSpeaker(user)"
+                @click="speakerApi.start(speaker.pk)"
                 size="x-small"
               >
                 <v-icon icon="mdi-play" />
               </v-btn>
               <v-btn
                 color="warning"
-                @click="moderatorLeaveList(user)"
+                @click="speakerApi.delete(speaker.pk)"
                 size="x-small"
               >
                 <v-icon icon="mdi-delete" />

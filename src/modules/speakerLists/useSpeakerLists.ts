@@ -8,7 +8,8 @@ import {
   Speaker,
   HistoricSpeaker,
   isCurrentSpeaker,
-  isHistoricSpeaker
+  isHistoricSpeaker,
+  CurrentSpeaker
 } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
@@ -18,10 +19,10 @@ const speakers = reactive<Map<number, Speaker>>(new Map())
 
 speakerSystemType.updateMap(speakerSystems, { meeting: 'meeting' })
 speakerListType.updateMap(speakerLists, {
-  sls: 'speaker_system',
+  room: 'room',
   agenda_item: 'agenda_item'
 })
-speakerType.updateMap(speakers, { sls: 'sls' })
+speakerType.updateMap(speakers, { room: 'room' })
 
 /**
  * Check if any speaker list matches predicate (lazy way)
@@ -37,6 +38,16 @@ export function getCurrent(list: number) {
   return first(
     speakers.values(),
     (s) => s.speaker_list === list && isCurrentSpeaker(s)
+  ) as CurrentSpeaker | undefined
+}
+
+/**
+ * Get speaker object for user in queue (used to map queue of user ids to speaker objects)
+ */
+export function userToSpeaker(list: number, user: number) {
+  return first(
+    speakers.values(),
+    (s) => s.speaker_list === list && s.user === user && !isHistoricSpeaker(s)
   )
 }
 
@@ -89,13 +100,41 @@ export function getSpeakerLists(predicate: Predicate<SpeakerList>) {
   return filter(speakerLists.values(), predicate)
 }
 
-export function getSystemSpeakerLists(systemId: number, agendaItem?: number) {
+/**
+ * Get the speaker system object for a room.
+ */
+export function getRoomSpeakerSystem(room: number) {
+  return first(speakerSystems.values(), (sls) => sls.room === room)
+}
+
+export function getRoomSpeakerLists(room: number, agendaItem?: number) {
+  const speakerSystem = getRoomSpeakerSystem(room)
   return filter(
     speakerLists.values(),
     (list) =>
-      list.speaker_system === systemId &&
-      (!agendaItem || list.agenda_item === agendaItem)
-  )
+      list.room === room && (!agendaItem || list.agenda_item === agendaItem)
+  ).map((l) => ({
+    ...l,
+    isActive: l.pk === speakerSystem?.active_list
+  }))
+}
+
+export const speakerApi = {
+  add(speaker_list: number, user: number) {
+    return speakerType.api.add({ speaker_list, user })
+  },
+  delete(speaker: number) {
+    return speakerType.api.delete(speaker)
+  },
+  start(speaker: number) {
+    return speakerType.api.action(speaker, 'start')
+  },
+  stop(speaker: number) {
+    return speakerType.api.action(speaker, 'stop')
+  },
+  undo(speaker: number) {
+    return speakerType.api.action(speaker, 'undo')
+  }
 }
 
 /*
@@ -106,12 +145,11 @@ export default function useSpeakerLists(meeting: Ref<number>) {
   const speakerSystems = computed(() => getSpeakerSystems(meeting.value))
 
   function getUniqueListTitle(title: string): string {
-    const systemIds = speakerSystems.value.map((s) => s.pk)
+    const roomsIds = speakerSystems.value.map((s) => s.room)
     function checkUnique(title: string) {
       return !any(
         speakerLists.values(),
-        (list) =>
-          systemIds.includes(list.speaker_system) && list.title === title
+        (list) => roomsIds.includes(list.room) && list.title === title
       )
     }
     if (checkUnique(title)) return title

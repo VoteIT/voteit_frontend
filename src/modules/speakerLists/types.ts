@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import { BaseContent } from '@/contentTypes/types'
 import { MeetingRole } from '../meetings/types'
 
@@ -24,7 +22,7 @@ type SpeakerSystemSettings = { max_times: number } | null
 export interface SpeakerSystem {
   pk: number
   state: SpeakerSystemState
-  active_list?: number
+  active_list: number | null
   meeting: number
   meeting_roles_to_speaker: MeetingRole[]
   method_name: SpeakerSystemMethod
@@ -41,10 +39,9 @@ export enum SpeakerListState {
 
 export interface SpeakerList extends BaseContent {
   state: SpeakerListState
-  readonly speaker_system: number
   readonly agenda_item: number
+  readonly room: number
   readonly queue: number[]
-  readonly current: number | null
 }
 
 // Historical speaker data, for a meeting or speaker_system
@@ -57,7 +54,7 @@ export interface SpeakerHistory {
 export interface SpeakerGroup {
   active?: boolean
   title?: string
-  queue: number[]
+  queue: QueuedSpeaker[] | CurrentSpeaker[]
 }
 
 export interface SpeakerListAddMessage {
@@ -66,34 +63,33 @@ export interface SpeakerListAddMessage {
   agenda_item: number
 }
 
-export interface QueuedSpeaker {
+export interface Speaker {
   pk: number
-  sls: number
+  room: number
   speaker_list: number
-  started: string
+  started: string | null
   user: number
+  seconds: number | null
+}
+
+export interface QueuedSpeaker extends Speaker {
+  started: null
   seconds: null
 }
 
-export interface CurrentSpeaker {
-  pk: number
-  sls: number
-  speaker_list: number
+export interface CurrentSpeaker extends Speaker {
   started: string
-  user: number
   seconds: null
 }
 
-export interface HistoricSpeaker {
-  pk: number
-  sls: number
-  speaker_list: number
+export interface HistoricSpeaker extends Speaker {
   started: string
-  user: number
   seconds: number
 }
 
-export type Speaker = QueuedSpeaker | CurrentSpeaker | HistoricSpeaker
+export function isQueuedSpeaker(speaker?: Speaker): speaker is QueuedSpeaker {
+  return !!speaker && !speaker.seconds && !speaker.started
+}
 
 export function isCurrentSpeaker(speaker: Speaker): speaker is CurrentSpeaker {
   return !speaker.seconds && !!speaker.started

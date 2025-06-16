@@ -1,37 +1,49 @@
 import { enumerate, groupby, map } from 'itertools'
-import { computed, Ref } from 'vue'
+import { computed, MaybeRef, Ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
-import { SpeakerSystem } from './types'
+import { isQueuedSpeaker, Speaker, SpeakerSystem } from './types'
 import {
   getCurrent,
   getHistory,
+  getRoomSpeakerSystem,
+  speakerApi,
   speakerLists,
-  speakerSystems
+  speakerSystems,
+  userToSpeaker
 } from './useSpeakerLists'
-import { speakerListType } from './contentTypes'
+import { speakerListType, speakerType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
 import systemMethods from './systemMethods'
 
-export default function useSpeakerList(listId: Ref<number | undefined>) {
+export default function useSpeakerList(listId: MaybeRef<number | null>) {
   const { t } = useI18n()
 
   const speakerHistory = computed(() => {
-    if (!listId.value) throw new Error('Speaker history requires list value')
-    return getHistory(listId.value)
+    const list = unref(listId)
+    if (!list) throw new Error('Speaker history requires list value')
+    return getHistory(list)
   })
-  const speakerList = computed(() =>
-    listId.value ? speakerLists.get(listId.value) : undefined
-  )
-  const speakerQueue = computed(() => speakerList.value?.queue ?? [])
+  const speakerList = computed(() => {
+    const list = unref(listId)
+    return list ? speakerLists.get(list) : undefined
+  })
+  const userQueue = computed(() => speakerList.value?.queue ?? [])
+  const speakerQueue = computed(() => {
+    const list = unref(listId)
+    if (!list) throw new Error('No listID, cant get speaker queue')
+    return userQueue.value
+      .map((user) => userToSpeaker(list, user))
+      .filter(isQueuedSpeaker)
+  })
   const speakerSystem = computed(
-    () =>
-      speakerList.value && speakerSystems.get(speakerList.value.speaker_system)
+    () => speakerList.value && getRoomSpeakerSystem(speakerList.value.room)
   )
-  const currentSpeaker = computed(() =>
-    listId.value ? getCurrent(listId.value) : undefined
-  )
+  const currentSpeaker = computed(() => {
+    const list = unref(listId)
+    return list ? getCurrent(list) : undefined
+  })
 
   /**
    * Creates a key function to be used by itertools.groupby to create speakerGroups.
@@ -44,11 +56,11 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
       system.settings,
       listId
     )
-    return ([position, user]: [number, number]) => {
+    return ([position, speaker]: [number, Speaker]) => {
       // Safe positions first, then system method logic.
       return position <= safePositions
         ? t('speaker.lockedPositions')
-        : methodKeyFn(user)
+        : methodKeyFn(speaker)
     }
   }
 
@@ -62,75 +74,65 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
    * ]
    */
   const speakerGroups = computed(() => {
-    if (!speakerSystem.value || !listId.value) return []
+    const list = unref(listId)
+    if (!speakerSystem.value || !list) return []
     return map(
       groupby(
         enumerate(speakerQueue.value, 1), // Start at position 1
-        getGroupKeyFn(speakerSystem.value, listId.value) // Create a key function
+        getGroupKeyFn(speakerSystem.value, list) // Create a key function
       ),
       ([title, posUsers]) => ({
         title, // groupby key is title
-        queue: map(posUsers, ([pos, user]) => user) // Deconstruct enumeration into an array of users (number[])
+        queue: map(posUsers, ([_, speaker]) => speaker) // Deconstruct enumeration into an array of speakers
       })
     )
   })
 
   function enterList() {
-    return speakerListType.methodCall('enter', { pk: listId.value })
+    const list = unref(listId)
+    if (!list) throw new Error('Enter list requires list id')
+    return speakerListType.api.action(list, 'enter')
   }
   function leaveList() {
-    if (!listId.value) throw new Error('Leave list requires list id')
-    return speakerListType.methodCall('leave', { pk: listId.value })
-  }
-
-  function moderatorEnterList(user: number) {
-    return speakerListType.methodCall('mod_enter', {
-      pk: listId.value,
-      user
-    })
-  }
-  function moderatorLeaveList(user: number) {
-    return speakerListType.methodCall('mod_leave', {
-      pk: listId.value,
-      user
-    })
+    const list = unref(listId)
+    if (!list) throw new Error('Leave list requires list id')
+    return speakerListType.api.action(list, 'leave')
   }
 
   // Start by user pk, or first in queue
-  function startSpeaker(user?: number) {
-    user = user || speakerQueue.value[0]
-    return speakerListType.methodCall('start_user', {
-      pk: listId.value,
-      user
-    })
+  function startSpeaker(speaker?: number) {
+    speaker = speaker || speakerQueue.value.at(0)?.pk
+    if (!speaker) throw new Error('No speaker to start')
+    return speakerApi.start(speaker)
   }
 
   async function stopSpeaker() {
-    if (!listId.value)
-      throw new Error("Can't stop speaker on undefined list id")
-    await speakerListType.methodCall('stop_user', {
-      pk: listId.value
-    })
+    if (!currentSpeaker.value)
+      throw new Error('No current speaker found on this list')
+    await speakerApi.stop(currentSpeaker.value.pk)
   }
 
   function undoSpeaker() {
-    return speakerListType.methodCall('mod_undo', {
-      pk: listId.value
-    })
+    if (!currentSpeaker.value)
+      throw new Error('No current speaker found on this list')
+    return speakerApi.undo(currentSpeaker.value.pk)
   }
 
   function shuffleList() {
-    return speakerListType.methodCall('mod_shuffle', {
-      pk: listId.value
-    })
+    const list = unref(listId)
+    if (!list) throw new Error('No list id to shuffle')
+    return speakerListType.api.action(list, 'shuffle')
   }
 
-  const userInQueue = computed(
-    () => !!user.value && speakerQueue.value.includes(user.value.pk)
+  const userIsCurrentSpeaker = computed(
+    () => currentSpeaker.value?.user === user.value?.pk
   )
 
-  const userIsCurrentSpeaker = computed(
-    () => speakerList.value?.current === user.value?.pk
+  const userInQueue = computed(
+    () =>
+      !userIsCurrentSpeaker.value &&
+      !!user.value &&
+      userQueue.value.includes(user.value.pk)
   )
 
   return {
@@ -156,10 +158,9 @@ export default function useSpeakerList(listId: Ref<number | undefined>) {
     speakerGroups,
     speakerSystem,
     speakerQueue,
+    userQueue,
     enterList,
     leaveList,
-    moderatorEnterList,
-    moderatorLeaveList,
     startSpeaker,
     stopSpeaker,
     shuffleList,

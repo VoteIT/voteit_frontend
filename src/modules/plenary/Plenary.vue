@@ -2,6 +2,7 @@
 import { computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { openModalEvent } from '@/utils/events'
 import { RoleContextKey } from '@/injectionKeys'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
@@ -31,7 +32,6 @@ import { QuickStartMethod } from './types'
 import usePlenary from './usePlenary'
 import StartPollModal from './StartPollModal.vue'
 import PollModal from './PollModal.vue'
-import { openModalEvent } from '@/utils/events'
 
 const { t } = useI18n()
 
@@ -59,16 +59,14 @@ const {
   hasSpeakerLists,
   isBroadcasting,
   meetingRoom,
+  roomId,
   roomOpenPoll,
   speakerSystem,
   setPoll,
   setSlsBroadcast
 } = useRoom()
 const { getState, getPriorityStates } = pollType.useWorkflows()
-const { systemActiveList } = useSpeakerSystem(
-  computed(() => speakerSystem.value?.pk || 0), // userSpeakerSystem requires computed number
-  agendaId
-)
+const { systemActiveList } = useSpeakerSystem(roomId, agendaId)
 
 const { currentTab, stateFilter, selectedProposals, getPlenaryRoute } =
   usePlenary(agendaId)
@@ -76,14 +74,7 @@ const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 
 useMeetingChannel()
-useLoader(
-  'Plenary',
-  useChannel('agenda_item', agendaId).promise,
-  useChannel(
-    'sls',
-    computed(() => speakerSystem.value?.pk)
-  ).promise
-)
+useLoader('Plenary', useChannel('agenda_item', agendaId).promise)
 useMeetingTitle(t('plenary.view'))
 
 function getStateProposalCount(state: ProposalState) {
@@ -345,12 +336,7 @@ const ongoingPollCount = computed(
           />
         </template>
       </v-alert>
-      <SpeakerHandling v-if="speakerSystem" :system-id="speakerSystem.pk" />
-      <p v-else>
-        <em>
-          {{ $t('plenary.noSpeakerSystem') }}
-        </em>
-      </p>
+      <SpeakerHandling :room="roomId" />
     </template>
     <DecisionsTab v-if="currentTab === 'decisions'" />
   </v-main>

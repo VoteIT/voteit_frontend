@@ -2,8 +2,6 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useChannel from '@/composables/useChannel'
-import useLoader from '@/composables/useLoader'
 import Moment from '@/components/Moment.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 
@@ -15,12 +13,10 @@ import SpeakerEntry from './SpeakerEntry.vue'
 
 const props = defineProps<{
   passive: boolean
-  systemId: number
+  room: number
 }>()
 
 const { t } = useI18n()
-const systemId = computed(() => props.systemId)
-useLoader('ActiveSpeakerList', useChannel('sls', systemId).promise)
 
 const { getState } = speakerListType.useWorkflows()
 const {
@@ -29,10 +25,10 @@ const {
   speakerSystem: system,
   currentSpeakerQueue: queue,
   currentlySpeaking: speaking
-} = useSpeakerSystem(systemId)
+} = useSpeakerSystem(computed(() => props.room))
 const { speakerGroups, canEnterList, canLeaveList, enterList, leaveList } =
   useSpeakerList(systemActiveListId)
-const { handleSocketError } = useErrorHandler({ target: 'dialog' })
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -44,7 +40,7 @@ const groups = computed<SpeakerGroup[]>(() => {
       {
         active: true,
         title: t('speaker.currentlySpeaking'),
-        queue: [speaking.value.user]
+        queue: [speaking.value]
       },
       ...speakerGroups.value
     ]
@@ -59,13 +55,12 @@ function enterLeaveAction(fn: () => Promise<any>) {
     try {
       await fn()
     } catch (e) {
-      handleSocketError(e)
+      handleRestError(e)
     }
     enterLeaveWorking.value = false
   }
 }
 
-// eslint-disable-next-line vue/return-in-computed-property
 const enterLeaveButton = computed(() => {
   if (props.passive) return
   if (canEnterList.value)
@@ -115,8 +110,8 @@ const enterLeaveButton = computed(() => {
             <v-divider />
           </div>
           <SpeakerEntry
-            v-for="user in queue"
-            :key="user"
+            v-for="{ pk, user } in queue"
+            :key="pk"
             :active="active"
             :user="user"
           >

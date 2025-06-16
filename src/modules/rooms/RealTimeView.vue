@@ -109,10 +109,7 @@ onBeforeUnmount(evt.dispose)
     </div>
     <div v-else class="d-flex">
       <div v-if="display.speakers" class="left flex-grow-1 pa-6">
-        <ActiveSpeakerList
-          :passive="passiveMode"
-          :system-id="speakerSystemActive!.pk"
-        />
+        <ActiveSpeakerList :passive="passiveMode" :room="meetingRoom.pk" />
       </div>
       <div v-if="display.proposals" class="right flex-grow-1 pa-6">
         <h2 class="mb-2">
