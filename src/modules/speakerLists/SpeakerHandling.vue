@@ -21,7 +21,7 @@ import {
   hasActiveSpeaker
 } from './rules'
 import { speakerListType } from './contentTypes'
-import useSpeakerLists from './useSpeakerLists'
+import useSpeakerLists, { listApi } from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
 import {
   SpeakerListState,
@@ -30,6 +30,7 @@ import {
 } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 const props = defineProps<{
   room: number
@@ -285,6 +286,19 @@ ol.speaker-queue
                     </SchemaForm>
                   </template>
                 </DefaultDialog>
+                <QueryDialog
+                  :text="$t('speaker.shuffleListConfirm')"
+                  @confirmed="listApi.shuffle(list.pk)"
+                >
+                  <template #activator="{ props }">
+                    <v-list-item
+                      :disabled="!list.queue.length || !!list.current"
+                      prepend-icon="mdi-shuffle-variant"
+                      :title="$t('speaker.shuffleList')"
+                      v-bind="props"
+                    />
+                  </template>
+                </QueryDialog>
               </template>
             </DropdownMenu>
           </div>

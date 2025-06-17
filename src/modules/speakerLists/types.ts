@@ -40,6 +40,7 @@ export enum SpeakerListState {
 export interface SpeakerList extends BaseContent {
   state: SpeakerListState
   readonly agenda_item: number
+  readonly current: number
   readonly room: number
   readonly queue: number[]
 }

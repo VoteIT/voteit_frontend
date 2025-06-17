@@ -35,7 +35,6 @@ const {
   speakerSystem,
   speakerQueue,
   userQueue,
-  shuffleList,
   startSpeaker,
   stopSpeaker,
   undoSpeaker
@@ -148,12 +147,6 @@ onKeyStroke(
       /></v-btn>
       <v-btn color="primary" :disabled="!currentSpeaker" @click="undoSpeaker"
         ><v-icon icon="mdi-undo"
-      /></v-btn>
-      <v-btn
-        color="primary"
-        :disabled="!speakerQueue.length"
-        @click="shuffleList"
-        ><v-icon icon="mdi-shuffle-variant"
       /></v-btn>
     </div>
     <div class="d-flex no-keynav" v-if="canManageSystem">

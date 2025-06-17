@@ -119,6 +119,12 @@ export function getRoomSpeakerLists(room: number, agendaItem?: number) {
   }))
 }
 
+export const listApi = {
+  shuffle(list: number) {
+    return speakerListType.api.action(list, 'shuffle')
+  }
+}
+
 export const speakerApi = {
   add(speaker_list: number, user: number) {
     return speakerType.api.add({ speaker_list, user })

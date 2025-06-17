@@ -82,11 +82,10 @@ export function canDeleteSpeakerSystem(system: SpeakerSystem): boolean {
 
 function isActiveList(list: SpeakerList): boolean {
   const system = getRoomSpeakerSystem(list.room)
-  // eslint-disable-next-line camelcase
   return system?.active_list === list.pk
 }
 
-function isOpenList(list: SpeakerList): boolean {
+export function isOpenList(list: SpeakerList): boolean {
   return list.state === SpeakerListState.Open
 }
 
@@ -132,10 +131,7 @@ export function canStopSpeaker(list: SpeakerList): boolean {
 export function canEnterList(list: SpeakerList): boolean {
   const system = getRoomSpeakerSystem(list.room)
   if (!system) return false
-  return (
-    (isActiveSystem(system) && isOpenList(list) && !!isSystemSpeaker(system)) ||
-    (!!isSystemModerator(system) && !isArchivedSystem(system))
-  )
+  return isActiveSystem(system) && isOpenList(list) && !!isSystemSpeaker(system)
 }
 
 export function canLeaveList(list: SpeakerList): boolean {

@@ -1,5 +1,5 @@
 import { enumerate, groupby, map } from 'itertools'
-import { computed, MaybeRef, Ref, unref } from 'vue'
+import { computed, MaybeRef, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
@@ -10,10 +10,9 @@ import {
   getRoomSpeakerSystem,
   speakerApi,
   speakerLists,
-  speakerSystems,
   userToSpeaker
 } from './useSpeakerLists'
-import { speakerListType, speakerType } from './contentTypes'
+import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
 import systemMethods from './systemMethods'
 
@@ -118,14 +117,8 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
     return speakerApi.undo(currentSpeaker.value.pk)
   }
 
-  function shuffleList() {
-    const list = unref(listId)
-    if (!list) throw new Error('No list id to shuffle')
-    return speakerListType.api.action(list, 'shuffle')
-  }
-
   const userIsCurrentSpeaker = computed(
-    () => currentSpeaker.value?.user === user.value?.pk
+    () => speakerList.value?.current === user.value?.pk
   )
 
   const userInQueue = computed(
@@ -163,7 +156,6 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
     leaveList,
     startSpeaker,
     stopSpeaker,
-    shuffleList,
     undoSpeaker
   }
 }
