@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.32.0 (??)
 
 - Speaker lists refactoring
+- Bug reports module removed
 
 ## 0.31.0 (2025-06-05)
 
