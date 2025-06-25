@@ -16,7 +16,7 @@ import { useI18n } from 'vue-i18n'
 import useLoader from '@/composables/useLoader'
 import { InitState } from '@/composables/types'
 
-let dotInterval: NodeJS.Timer
+let dotInterval: NodeJS.Timeout
 let visibleTimeout: NodeJS.Timeout
 const DOT_INTERVAL = 333
 

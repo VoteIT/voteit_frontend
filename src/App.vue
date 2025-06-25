@@ -80,7 +80,7 @@ watch(
 </script>
 
 <style lang="sass">
-@import './theme/fonts.sass'
+@use './theme/fonts.sass'
 
 *
   box-sizing: border-box

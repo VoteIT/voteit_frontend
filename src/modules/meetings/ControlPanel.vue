@@ -107,7 +107,7 @@ const breadcrumbs = computed(() => {
 </script>
 
 <style lang="sass" scoped>
-@import vuetify/lib/styles/tools/display
+@use 'vuetify/lib/styles/tools/display'
 
 #setting-panels
   a
@@ -118,10 +118,10 @@ const breadcrumbs = computed(() => {
   width: 100%
   gap: 1rem
   grid-template-columns: repeat(var(--cols, 1), 1fr)
-  +media-breakpoint-up(sm)
+  +display.media-breakpoint-up(sm)
     --cols: 2
-  +media-breakpoint-up(lg)
+  +display.media-breakpoint-up(lg)
     --cols: 3
-  +media-breakpoint-up(xl)
+  +display.media-breakpoint-up(xl)
     --cols: 4
 </style>
