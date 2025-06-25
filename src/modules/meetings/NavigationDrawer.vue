@@ -50,9 +50,6 @@
     </MenuTree>
     <template #append>
       <ComponentSlot name="appendMenu" />
-      <v-defaults-provider :defaults="{ VList: { bgColor: 'surface' } }">
-        <BugReports v-if="isModerator" class="ma-2" />
-      </v-defaults-provider>
     </template>
   </v-navigation-drawer>
 </template>
@@ -67,7 +64,6 @@ import { slugify } from '@/utils'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
 import MenuTree from '@/components/MenuTree.vue'
-import BugReports from '@/modules/bugReports/BugReports.vue'
 import useLoader from '@/composables/useLoader'
 import { WorkflowState } from '@/contentTypes/types'
 
