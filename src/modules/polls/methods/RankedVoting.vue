@@ -86,7 +86,6 @@ const props = defineProps<{
   proposals: Proposal[]
 }>()
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'update:modelValue', vote?: RankedVote): void
 }>()

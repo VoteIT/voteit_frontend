@@ -26,78 +26,76 @@ export default function createFormSchema<T extends {}>(
       : [...(generator || []), { props: { clearable: true } }]
   }
 
-  return (
-    (Object.entries(schema.properties) as [keyof T, Field][])
-      // eslint-disable-next-line array-callback-return
-      .map(([name, field]) => {
-        switch (field.type) {
-          case 'array':
-            return {
-              name: name as string,
-              type: FieldType.Select,
-              label: field.label,
-              hint: field.hint,
-              rules: withRequired(name),
-              items: field.items.oneOf.map((i) => ({
-                value: i.const,
-                title: i.title
-              }))
-            }
-          case 'boolean': {
-            return {
-              name: name as string,
-              type: FieldType.Checkbox,
-              label: field.label,
-              hint: field.hint,
-              rules: withRequired(name)
-            }
+  return (Object.entries(schema.properties) as [keyof T, Field][]).map(
+    ([name, field]) => {
+      switch (field.type) {
+        case 'array':
+          return {
+            name: name as string,
+            type: FieldType.Select,
+            label: field.label,
+            hint: field.hint,
+            rules: withRequired(name),
+            items: field.items.oneOf.map((i) => ({
+              value: i.const,
+              title: i.title
+            }))
           }
-          case 'number': {
-            const max = field.exclusiveMaximum
-              ? field.exclusiveMaximum - 1
-              : field.maximum
-            const min = field.exclusiveMinimum
-              ? field.exclusiveMinimum + 1
-              : field.minimum
-            function* getRules(): Generator<FieldRule> {
-              if (typeof max === 'number')
-                yield { props: { max }, validate: rules.max(max) }
-              if (typeof min === 'number')
-                yield { props: { min }, validate: rules.min(min) }
-            }
-            return {
-              name: name as string,
-              type: FieldType.Number,
-              label: field.label,
-              hint: field.hint,
-              rules: withRequired(name, getRules())
-            }
-          }
-          case 'string': {
-            function* getRules({
-              maxLength,
-              minLength
-            }: StringField): Generator<FieldRule> {
-              if (maxLength)
-                yield {
-                  props: { maxlength: maxLength },
-                  validate: rules.maxLength(maxLength)
-                }
-              if (minLength)
-                yield {
-                  props: { minlength: minLength },
-                  validate: rules.minLength(minLength)
-                }
-            }
-            return {
-              name: name as string,
-              type: FieldType.Text,
-              label: field.label,
-              hint: field.hint,
-              rules: withRequired(name, getRules(field))
-            }
+        case 'boolean': {
+          return {
+            name: name as string,
+            type: FieldType.Checkbox,
+            label: field.label,
+            hint: field.hint,
+            rules: withRequired(name)
           }
         }
-      })
+        case 'number': {
+          const max = field.exclusiveMaximum
+            ? field.exclusiveMaximum - 1
+            : field.maximum
+          const min = field.exclusiveMinimum
+            ? field.exclusiveMinimum + 1
+            : field.minimum
+          function* getRules(): Generator<FieldRule> {
+            if (typeof max === 'number')
+              yield { props: { max }, validate: rules.max(max) }
+            if (typeof min === 'number')
+              yield { props: { min }, validate: rules.min(min) }
+          }
+          return {
+            name: name as string,
+            type: FieldType.Number,
+            label: field.label,
+            hint: field.hint,
+            rules: withRequired(name, getRules())
+          }
+        }
+        case 'string': {
+          function* getRules({
+            maxLength,
+            minLength
+          }: StringField): Generator<FieldRule> {
+            if (maxLength)
+              yield {
+                props: { maxlength: maxLength },
+                validate: rules.maxLength(maxLength)
+              }
+            if (minLength)
+              yield {
+                props: { minlength: minLength },
+                validate: rules.minLength(minLength)
+              }
+          }
+          return {
+            name: name as string,
+            type: FieldType.Text,
+            label: field.label,
+            hint: field.hint,
+            rules: withRequired(name, getRules(field))
+          }
+        }
+      }
+    }
   )
 }

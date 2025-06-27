@@ -9,7 +9,6 @@ const props = defineProps<{
   modelValue?: boolean
 }>()
 
-// eslint-disable-next-line func-call-spacing
 defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()

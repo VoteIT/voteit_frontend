@@ -60,14 +60,12 @@ const { t } = useI18n()
 
 const selected = ref<number[]>(props.modelValue?.choices ?? [])
 
-// eslint-disable-next-line vue/return-in-computed-property
 const missingProposals = computed(() => {
   const len = selected.value.length
   const { min } = props.poll.settings
   if (min > 0 && len < min) return min - len
 })
 
-// eslint-disable-next-line vue/return-in-computed-property
 const surplusProposals = computed(() => {
   const len = selected.value.length
   const { max } = props.poll.settings

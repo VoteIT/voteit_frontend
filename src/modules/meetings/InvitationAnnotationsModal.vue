@@ -26,7 +26,6 @@ function isAnnotationProgress(p: Progress): p is AnnotationProgress {
 const { t } = useI18n()
 const rules = useRules(t)
 // Not used in template
-// eslint-disable-next-line vue/no-dupe-keys
 const { meeting } = useMeeting()
 const { allDataTypes } = useInviteAnnotations(meeting)
 

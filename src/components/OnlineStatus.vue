@@ -81,7 +81,6 @@ watch(isAuthenticated, async (value) => {
   else socket.close()
 })
 
-// eslint-disable-next-line vue/return-in-computed-property
 const displayText = computed(() => {
   if (!isOnline.value) return t('network.none')
   if (!isAuthenticated.value) return

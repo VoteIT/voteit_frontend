@@ -19,7 +19,6 @@ const target = computed(() => props.targetTime && getTime(props.targetTime))
 const hours = ref(0)
 const minutes = ref(0)
 
-// eslint-disable-next-line vue/return-in-computed-property
 const timeToGo = computed(() => {
   if (!target.value) return
   const minutesToGo = target.value.minutes - minutes.value

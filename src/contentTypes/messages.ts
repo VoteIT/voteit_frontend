@@ -11,7 +11,6 @@ export interface RoleChangeMessage {
 export interface RolesGetMessage {
   model: string // Context model
   pk: number // Context primary key
-  // eslint-disable-next-line camelcase
   filter_users?: number[]
 }
 

@@ -82,7 +82,6 @@ import { channelSubscribedEvent } from '@/composables/events'
 import ComponentSlot from './ComponentSlot.vue'
 
 const agendaLoadedEvent = new TypedEvent()
-// eslint-disable-next-line camelcase
 channelSubscribedEvent.on(({ channelType }) => {
   // Agenda is loaded when "participants" or "moderators" channels are subscribed
   if (['participants', 'moderators'].includes(channelType))

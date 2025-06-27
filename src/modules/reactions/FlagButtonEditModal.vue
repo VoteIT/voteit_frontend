@@ -40,7 +40,6 @@ function getDefaults(
 const meetingId = useMeetingId()
 const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
-  // eslint-disable-next-line camelcase, @typescript-eslint/no-unused-vars
   const { change_roles, list_roles, target, ...data } = formData
   if (!data.icon) data.icon = '' // Empty string required by API
   return data as IFlagButton

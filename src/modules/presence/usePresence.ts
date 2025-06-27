@@ -54,17 +54,14 @@ export default function usePresence(meetingId: Ref<number>) {
     })
   }
 
-  // eslint-disable-next-line camelcase
   function changePresence(presence_check: number, present: boolean) {
     return presenceType.methodCall('change', {
-      // eslint-disable-next-line camelcase
       presence_check,
       present
     })
   }
 
   const canManagePresence = computed(() => canAddPresenceCheck(meetingId.value))
-  // eslint-disable-next-line vue/return-in-computed-property
   const presenceCheck = computed(() => {
     for (const pc of presenceChecks.values()) {
       if (pc.meeting === meetingId.value && pc.state === 'open') {

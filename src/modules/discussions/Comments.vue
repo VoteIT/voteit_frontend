@@ -40,7 +40,6 @@ async function submit(post: Partial<IDiscussionPost>) {
 }
 
 const addContentComponent = ref<null | ComponentPublicInstance<{
-  // eslint-disable-next-line func-call-spacing
   focus(): void
   setMention(user: { id: number; value: string }): void
   addTag(...tags: string[]): void

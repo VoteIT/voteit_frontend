@@ -73,7 +73,6 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
     return sortBy(_meetingGroups.value, titleSorter).map((g) => {
       const memberships = filter(
         groupMemberships.values(),
-        // eslint-disable-next-line camelcase
         ({ meeting_group }) => g.pk === meeting_group
       )
       const members = memberships.map((m) => m.user)

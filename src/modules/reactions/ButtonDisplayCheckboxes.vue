@@ -8,7 +8,6 @@ const props = defineProps<{
   voteTemplate?: boolean
 }>()
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'update:allowedModels', data: string[]): void
   (e: 'update:onPresentation', data: boolean): void
