@@ -39,7 +39,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: Build distribution files
         run: |
-          echo VITE_FRONTEND_VERSION=${{ steps.meta.outputs.version }} > .env/production
+          echo VITE_FRONTEND_VERSION=${{ steps.meta.outputs.version }} > .env.production
           npm ci
           npm run build
       - name: Build and push docker image
