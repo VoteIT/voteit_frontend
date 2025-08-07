@@ -19,6 +19,7 @@ import './modules/proposals'
 import './modules/reactions'
 import './modules/printing'
 import './modules/speakerLists'
+import './modules/speakerLists/genderTags'
 import './modules/rooms'
 
 createApp(App).use(i18n).use(router).use(vuetify).mount('#app')
