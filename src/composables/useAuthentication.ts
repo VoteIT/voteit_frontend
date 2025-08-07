@@ -1,12 +1,14 @@
-import { readonly, ref } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import { AxiosError } from 'axios'
 
-import useContextRoles from './useContextRoles'
+import { hasher } from '@/utils/stringToHSL'
 import { IUser } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
-import { hasher } from '@/utils/stringToHSL'
+import useContextRoles from './useContextRoles'
 
 export const user = ref<IUser | null>(null)
+export const userId = computed(() => user.value?.pk)
+
 const alternateUsers = ref<IUser[]>([])
 const isAuthenticated = ref<boolean | undefined>(undefined)
 const organizationRoles = useContextRoles('organisation') // Avoid circular import
