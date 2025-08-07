@@ -1,5 +1,5 @@
 import { Predicate } from 'itertools'
-import { ref, toRef } from 'vue'
+import { toRef } from 'vue'
 
 import {
   meetingGroupTablePlugins,
@@ -8,12 +8,7 @@ import {
   meetingSlotPlugins
 } from '../meetings/registry'
 import useMeetingComponent from '../meetings/useMeetingComponent'
-import {
-  GroupMembership,
-  Meeting,
-  MeetingState,
-  NoSettingsComponent
-} from '../meetings/types'
+import { GroupMembership, Meeting, MeetingState } from '../meetings/types'
 
 import ControlPanel from './ControlPanel.vue'
 import MenuPlugin from './MenuPlugin.vue'
