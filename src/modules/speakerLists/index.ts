@@ -1,12 +1,14 @@
-import restApi from '@/utils/restApi'
 import { filter } from 'itertools'
 
-import { meetingExportPlugins } from '../meetings/registry'
-import { anySpeakerList, speakerSystems } from './useSpeakerLists'
-import { meetingRoomStore } from '../rooms/useRooms'
+import restApi from '@/utils/restApi'
+
 import { agendaItemType } from '../agendas/contentTypes'
 import { AgendaTransition } from '../agendas/types'
+import { meetingExportPlugins } from '../meetings/registry'
+import { meetingRoomStore } from '../rooms/useRooms'
+
 import useSpeakerList from './useSpeakerList'
+import { anySpeakerList, speakerSystems } from './useSpeakerLists'
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
