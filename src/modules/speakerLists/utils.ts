@@ -10,6 +10,8 @@ export function translateOrderMethod(
   t: ComposerTranslation
 ): string {
   switch (method) {
+    case 'gender_prio':
+      return t('speaker.orderMethod.genderPriority')
     case 'priority':
       return t('speaker.orderMethod.priority')
     case 'simple':

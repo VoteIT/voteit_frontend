@@ -58,29 +58,31 @@ const schema = computed(
     }) as JsonSchema<RoomEditData>
 )
 
-const speakerMethodSettingSchema: Partial<
-  Record<SpeakerSystemMethod, JsonObject<{ max_times: number }>>
-> = {
-  priority: {
-    type: 'object',
-    properties: {
-      max_times: {
-        type: 'number',
-        label: t('speaker.orderMethod.maxTimes'),
-        hint: t('speaker.orderMethod.maxTimesHint'),
-        minimum: 0,
-        oneOf: map(range(10), (n) => ({
-          const: n,
-          title: t('speaker.orderMethod.maxTimesValue', n)
-        }))
-      }
-    },
-    required: ['max_times']
-  }
+const prioritySchema: JsonObject<{ max_times: number }> = {
+  type: 'object',
+  properties: {
+    max_times: {
+      type: 'number',
+      label: t('speaker.orderMethod.maxTimes'),
+      hint: t('speaker.orderMethod.maxTimesHint'),
+      minimum: 0,
+      oneOf: map(range(10), (n) => ({
+        const: n,
+        title: t('speaker.orderMethod.maxTimesValue', n)
+      }))
+    }
+  },
+  required: ['max_times']
 }
 
-// TODO any?
-function getSettings(method: SpeakerSystemMethod): any {
+const speakerMethodSettingSchema: Partial<
+  Record<SpeakerSystemMethod, typeof prioritySchema>
+> = {
+  gender_prio: prioritySchema,
+  priority: prioritySchema
+} as const
+
+function getSettings(method: SpeakerSystemMethod) {
   const properties = speakerMethodSettingSchema[method]
   if (properties) return { settings: properties }
 }
@@ -93,9 +95,14 @@ const slsSchema = computed(
           readOnly: !!props.slsDisabled,
           type: 'string',
           label: t('speaker.systemMethod'),
-          oneOf: [SpeakerSystemMethod.Simple, SpeakerSystemMethod.Priority].map(
-            (m) => ({ const: m, title: translateOrderMethod(m, t) })
-          )
+          oneOf: [
+            SpeakerSystemMethod.Simple,
+            SpeakerSystemMethod.Priority,
+            SpeakerSystemMethod.GenderPriority
+          ].map((m) => ({
+            const: m,
+            title: translateOrderMethod(m, t)
+          }))
         },
         ...getSettings(formData.speakerSystem.method_name),
         safe_positions: {

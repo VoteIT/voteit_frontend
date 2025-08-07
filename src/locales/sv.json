@@ -920,6 +920,7 @@
       "yours": "Ditt kön"
     },
     "orderMethod": {
+      "genderPriority": "Prioritera upp kvinnor och icke-binära varannan gång",
       "priority": "Prioritera talare som talat mindre",
       "simple": "Kronologisk",
       "maxTimes": "Prioriteringsgräns",

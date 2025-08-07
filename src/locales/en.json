@@ -920,6 +920,7 @@
       "yours": "Your gender"
     },
     "orderMethod": {
+      "genderPriority": "Prioritize women and non-binary every other time",
       "priority": "Prioritize speakers who've spoken less",
       "simple": "Chronological",
       "maxTimes": "Priority limit",

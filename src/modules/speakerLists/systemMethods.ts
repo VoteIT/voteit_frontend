@@ -11,20 +11,28 @@ interface ISystemMethod {
   ): (speaker: Speaker) => string
 }
 
+const priorityGroupKeyFn: ISystemMethod['getGroupKeyFn'] = (
+  t,
+  settings: { max_times: number },
+  listId
+) => {
+  const timesSpoken = timesSpokenGetter(listId)
+  // A speaker system can have a maximum amount of lists. This will get spoken times up to that max value.
+  function maxListValue(user: number) {
+    const spoken = timesSpoken(user)
+    return settings.max_times > 0
+      ? Math.min(spoken, settings.max_times)
+      : spoken
+  }
+  return (speaker) => t('speaker.listNumber', maxListValue(speaker.user) + 1)
+}
+
 const systemMethods: Record<SpeakerSystemMethod, ISystemMethod> = {
+  [SpeakerSystemMethod.GenderPriority]: {
+    getGroupKeyFn: priorityGroupKeyFn
+  },
   [SpeakerSystemMethod.Priority]: {
-    getGroupKeyFn(t, settings: { max_times: number }, listId) {
-      const timesSpoken = timesSpokenGetter(listId)
-      // A speaker system can have a maximum amount of lists. This will get spoken times up to that max value.
-      function maxListValue(user: number) {
-        const spoken = timesSpoken(user)
-        return settings.max_times > 0
-          ? Math.min(spoken, settings.max_times)
-          : spoken
-      }
-      return (speaker) =>
-        t('speaker.listNumber', maxListValue(speaker.user) + 1)
-    }
+    getGroupKeyFn: priorityGroupKeyFn
   },
   [SpeakerSystemMethod.Simple]: {
     getGroupKeyFn(t) {

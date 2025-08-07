@@ -13,6 +13,7 @@ export enum SpeakerSystemRole {
 }
 
 export enum SpeakerSystemMethod {
+  GenderPriority = 'gender_prio',
   Simple = 'simple',
   Priority = 'priority'
 }
