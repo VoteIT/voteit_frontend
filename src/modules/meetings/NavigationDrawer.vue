@@ -1,59 +1,3 @@
-<template>
-  <v-navigation-drawer
-    app
-    id="meeting-navigation"
-    v-model="isOpen"
-    width="348"
-    class="d-print-none"
-  >
-    <MenuTree v-if="initDone" :items="menu" @navigation="toggleDrawer">
-      <template #tagFilter v-if="agendaTags.length">
-        <div class="d-flex ml-8 mb-1 mr-2">
-          <v-btn
-            :append-icon="
-              filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'
-            "
-            class="flex-grow-1"
-            size="small"
-            :text="$t('filter')"
-            variant="text"
-            @click="filterMenuOpen = !filterMenuOpen"
-          />
-          <v-btn
-            variant="text"
-            size="small"
-            :disabled="!selectedAgendaTag"
-            @click="selectedAgendaTag = undefined"
-          >
-            <v-icon icon="mdi-undo" />
-          </v-btn>
-        </div>
-        <v-expand-transition>
-          <v-chip-group
-            column
-            class="ml-8"
-            v-model="selectedAgendaTag"
-            :items="agendaTags"
-            v-show="filterMenuOpen"
-          >
-            <v-chip
-              v-for="tag in agendaTags"
-              :key="tag"
-              :value="tag"
-              size="small"
-            >
-              {{ tag }}
-            </v-chip>
-          </v-chip-group>
-        </v-expand-transition>
-      </template>
-    </MenuTree>
-    <template #append>
-      <ComponentSlot name="appendMenu" />
-    </template>
-  </v-navigation-drawer>
-</template>
-
 <script lang="ts" setup>
 import { sortBy } from 'lodash'
 import { computed, ref, watch } from 'vue'
@@ -249,6 +193,62 @@ toggleNavDrawerEvent.on(toggleDrawer)
 
 const filterMenuOpen = ref(false)
 </script>
+
+<template>
+  <v-navigation-drawer
+    app
+    id="meeting-navigation"
+    v-model="isOpen"
+    width="348"
+    class="d-print-none"
+  >
+    <MenuTree v-if="initDone" :items="menu" @navigation="toggleDrawer">
+      <template #tagFilter v-if="agendaTags.length">
+        <div class="d-flex ml-8 mb-1 mr-2">
+          <v-btn
+            :append-icon="
+              filterMenuOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'
+            "
+            class="flex-grow-1"
+            size="small"
+            :text="$t('filter')"
+            variant="text"
+            @click="filterMenuOpen = !filterMenuOpen"
+          />
+          <v-btn
+            variant="text"
+            size="small"
+            :disabled="!selectedAgendaTag"
+            @click="selectedAgendaTag = undefined"
+          >
+            <v-icon icon="mdi-undo" />
+          </v-btn>
+        </div>
+        <v-expand-transition>
+          <v-chip-group
+            column
+            class="ml-8"
+            v-model="selectedAgendaTag"
+            :items="agendaTags"
+            v-show="filterMenuOpen"
+          >
+            <v-chip
+              v-for="tag in agendaTags"
+              :key="tag"
+              :value="tag"
+              size="small"
+            >
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
+        </v-expand-transition>
+      </template>
+    </MenuTree>
+    <template #append>
+      <ComponentSlot name="appendMenu" />
+    </template>
+  </v-navigation-drawer>
+</template>
 
 <style lang="sass">
 #meeting-navigation
