@@ -1,69 +1,3 @@
-<template>
-  <AppBar hasNavDrawer :title="meeting?.title" />
-  <UserMenu>
-    <template #prependProfile v-if="roleList.length || userGroups.length">
-      <template v-if="roleList.length">
-        <v-list-subheader>
-          {{ $t('meeting.yourRoles') }}
-        </v-list-subheader>
-        <v-list-item
-          v-for="props in roleList"
-          :key="props.title"
-          v-bind="props"
-          density="compact"
-        />
-        <DefaultDialog
-          v-if="isActualModerator"
-          :title="$t('admin.testMode')"
-          v-model="testDialogOpen"
-        >
-          <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              density="compact"
-              prepend-icon="mdi-account-hard-hat"
-              :title="$t('admin.testMode')"
-            />
-          </template>
-          <v-alert
-            type="info"
-            :text="$t('admin.testModeDescription')"
-            class="mb-3"
-          />
-          <JsonSchemaForm
-            :schema="fakeRolesSchema"
-            v-model="fakeMeetingRoles"
-          />
-        </DefaultDialog>
-      </template>
-      <template v-if="userGroups.length">
-        <v-list-subheader>
-          {{ $t('meeting.yourGroups') }}
-        </v-list-subheader>
-        <v-list-item
-          v-for="props in groupList"
-          :key="props.title"
-          v-bind="props"
-          density="compact"
-        />
-      </template>
-    </template>
-  </UserMenu>
-  <NavigationDrawer />
-  <v-main>
-    <div id="toolbar"></div>
-    <v-container>
-      <template v-if="isLoaded">
-        <router-view />
-        <Bubbles />
-      </template>
-      <div v-else class="my-8 text-center">
-        <v-progress-circular indeterminate />
-      </div>
-    </v-container>
-  </v-main>
-</template>
-
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -184,3 +118,69 @@ const fakeRolesSchema = computed(() => {
 // Clear fake roles when leaving meeting
 onBeforeUnmount(() => setFakeRoles(meetingId.value))
 </script>
+
+<template>
+  <AppBar hasNavDrawer :title="meeting?.title" />
+  <UserMenu>
+    <template #prependProfile v-if="roleList.length || userGroups.length">
+      <template v-if="roleList.length">
+        <v-list-subheader>
+          {{ $t('meeting.yourRoles') }}
+        </v-list-subheader>
+        <v-list-item
+          v-for="props in roleList"
+          :key="props.title"
+          v-bind="props"
+          density="compact"
+        />
+        <DefaultDialog
+          v-if="isActualModerator"
+          :title="$t('admin.testMode')"
+          v-model="testDialogOpen"
+        >
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              density="compact"
+              prepend-icon="mdi-account-hard-hat"
+              :title="$t('admin.testMode')"
+            />
+          </template>
+          <v-alert
+            type="info"
+            :text="$t('admin.testModeDescription')"
+            class="mb-3"
+          />
+          <JsonSchemaForm
+            :schema="fakeRolesSchema"
+            v-model="fakeMeetingRoles"
+          />
+        </DefaultDialog>
+      </template>
+      <template v-if="userGroups.length">
+        <v-list-subheader>
+          {{ $t('meeting.yourGroups') }}
+        </v-list-subheader>
+        <v-list-item
+          v-for="props in groupList"
+          :key="props.title"
+          v-bind="props"
+          density="compact"
+        />
+      </template>
+    </template>
+  </UserMenu>
+  <NavigationDrawer />
+  <v-main>
+    <div id="toolbar"></div>
+    <v-container>
+      <template v-if="isLoaded">
+        <router-view />
+        <Bubbles />
+      </template>
+      <div v-else class="my-8 text-center">
+        <v-progress-circular indeterminate />
+      </div>
+    </v-container>
+  </v-main>
+</template>
