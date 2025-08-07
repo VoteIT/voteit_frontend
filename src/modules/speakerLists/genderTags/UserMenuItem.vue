@@ -1,20 +1,13 @@
 <script setup lang="ts">
+import { sorted } from 'itertools'
 import { computed } from 'vue'
-
-import DefaultDialog from '@/components/DefaultDialog.vue'
+import { useI18n } from 'vue-i18n'
 
 import useParticipantTags from '@/modules/meetings/participantTags/useParticipantTags'
 import useMeetingId from '@/modules/meetings/useMeetingId'
 import { user } from '@/composables/useAuthentication'
-import { translateGender } from './utils'
-import { useI18n } from 'vue-i18n'
-import { sorted } from 'itertools'
 
-const GENDER_ICONS = {
-  f: 'mdi-gender-female',
-  m: 'mdi-gender-male',
-  nb: 'mdi-gender-non-binary'
-} as const
+import { GENDER_ICONS, getGenderIcon, translateGender } from './utils'
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
@@ -39,9 +32,7 @@ const genderChoices = computed(() =>
 const genderText = computed(
   () => genderTag.value && translateGender(t, genderTag.value)
 )
-const genderIcon = computed(() =>
-  genderTag.value ? GENDER_ICONS[genderTag.value] : 'mdi-gender-male-female'
-)
+const genderIcon = computed(() => getGenderIcon(genderTag.value))
 </script>
 
 <template>

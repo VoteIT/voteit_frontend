@@ -1,5 +1,11 @@
 import { ComposerTranslation } from 'vue-i18n'
 
+export const GENDER_ICONS = {
+  f: 'mdi-gender-female',
+  m: 'mdi-gender-male',
+  nb: 'mdi-gender-non-binary'
+} as const
+
 export function translateGender(t: ComposerTranslation, tag: GenderTag) {
   switch (tag) {
     case 'f':
@@ -11,4 +17,8 @@ export function translateGender(t: ComposerTranslation, tag: GenderTag) {
     default:
       return tag
   }
+}
+
+export function getGenderIcon(tag?: GenderTag) {
+  return tag ? GENDER_ICONS[tag] : 'mdi-gender-male-female'
 }
