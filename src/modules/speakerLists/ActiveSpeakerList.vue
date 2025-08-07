@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 import { speakerListType } from './contentTypes'
 import { SpeakerGroup } from './types'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
+import EnterLeaveButton from './EnterLeaveButton.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
 
 const props = defineProps<{
@@ -26,9 +26,7 @@ const {
   currentSpeakerQueue: queue,
   currentlySpeaking: speaking
 } = useSpeakerSystem(computed(() => props.room))
-const { speakerGroups, canEnterList, canLeaveList, enterList, leaveList } =
-  useSpeakerList(systemActiveListId)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { speakerGroups } = useSpeakerList(systemActiveListId)
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -47,39 +45,6 @@ const groups = computed<SpeakerGroup[]>(() => {
   }
   return speakerGroups.value
 })
-
-const enterLeaveWorking = ref(false)
-function enterLeaveAction(fn: () => Promise<any>) {
-  return async () => {
-    enterLeaveWorking.value = true
-    try {
-      await fn()
-    } catch (e) {
-      handleRestError(e)
-    }
-    enterLeaveWorking.value = false
-  }
-}
-
-const enterLeaveButton = computed(() => {
-  if (props.passive) return
-  if (canEnterList.value)
-    return {
-      text: t('speaker.enterList'),
-      color: 'primary',
-      disabled: enterLeaveWorking.value,
-      prependIcon: 'mdi-account-voice',
-      onClick: enterLeaveAction(enterList)
-    }
-  if (canLeaveList.value)
-    return {
-      text: t('speaker.leaveList'),
-      color: 'warning',
-      disabled: enterLeaveWorking.value,
-      prependIcon: 'mdi-account-voice-off',
-      onClick: enterLeaveAction(leaveList)
-    }
-})
 </script>
 
 <template>
@@ -94,7 +59,7 @@ const enterLeaveButton = computed(() => {
         <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
       </div>
       <v-fade-transition>
-        <v-btn v-if="enterLeaveButton" v-bind="enterLeaveButton" />
+        <EnterLeaveButton :list="list" />
       </v-fade-transition>
     </div>
     <p v-if="!speaking && !queue?.length" class="text-secondary">

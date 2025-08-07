@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, toRef } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import User from '@/components/User.vue'
 import { user } from '@/composables/useAuthentication'
@@ -11,19 +10,14 @@ import { IMeetingRoom } from '../rooms/types'
 import { canChangeSpeakerList, isOpenList } from './rules'
 import { SpeakerList } from './types'
 import useSpeakerSystem from './useSpeakerSystem'
-import useSpeakerList from './useSpeakerList'
+import EnterLeaveButton from './EnterLeaveButton.vue'
 
 const props = defineProps<{
   list: SpeakerList
   room: IMeetingRoom
 }>()
 
-const { t } = useI18n()
-
 const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'room'))
-const { canEnterList, canLeaveList, enterList, leaveList } = useSpeakerList(
-  toRef(props.list, 'pk')
-)
 const { getRoomRoute } = useRoom()
 
 const queue = computed(() =>
@@ -34,23 +28,6 @@ const isActive = computed(
   () => speakerSystem.value?.active_list === props.list.pk
 )
 const expandQueue = ref(false)
-
-const enterLeaveBtn = computed(() => {
-  if (canEnterList.value)
-    return {
-      prependIcon: 'mdi-playlist-plus',
-      text: t('speaker.enterList'),
-      color: 'primary',
-      onClick: enterList
-    }
-  if (canLeaveList.value)
-    return {
-      prependIcon: 'mdi-playlist-remove',
-      text: t('speaker.leaveList'),
-      color: 'warning',
-      onClick: leaveList
-    }
-})
 
 const canChange = computed(() => canChangeSpeakerList(props.list))
 
@@ -108,7 +85,7 @@ const fullscreenPath = computed(
       <p v-else class="mb-2">
         <em>{{ $t('speaker.queueEmpty') }}</em>
       </p>
-      <v-btn v-if="enterLeaveBtn" variant="elevated" v-bind="enterLeaveBtn" />
+      <EnterLeaveButton :list="list" />
     </div>
     <template v-if="canChange || isActive">
       <v-divider />
