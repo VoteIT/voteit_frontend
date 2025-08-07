@@ -1,13 +1,13 @@
 import { Dictionary } from 'lodash'
 import { Component, Ref } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
+
+import { MenuItem } from '@/utils/types'
+import { RoleMatrixColumn } from '@/components/types'
 
 import PluginHandler from './PluginHandler'
-
 import type { MeetingPlugin } from './PluginHandler'
 import type { Meeting, MeetingGroupColumn } from './types'
-import { ComposerTranslation } from 'vue-i18n'
-import { RoleMatrixColumn } from '@/components/types'
-import { MenuItem } from '@/utils/types'
 
 interface MeetingBubblePlugin extends MeetingPlugin {
   component: Component
@@ -39,7 +39,7 @@ interface SettingsPlugin extends MeetingPlugin {
 }
 
 interface MeetingSlotPlugin extends MeetingPlugin {
-  slot: 'appendMenu' | 'presenceMain'
+  slot: 'appendMenu' | 'presenceMain' | 'appendUserMenu'
   component: Component
 }
 

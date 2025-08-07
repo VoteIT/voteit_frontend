@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isEqual } from 'lodash'
 import { computed, onBeforeUnmount, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -14,16 +15,16 @@ import JsonSchemaForm from '../forms/JsonSchemaForm.vue'
 import { JsonSchema } from '../forms/types'
 
 import Bubbles from './Bubbles.vue'
+import ComponentSlot from './ComponentSlot.vue'
+import NavigationDrawer from './NavigationDrawer.vue'
 import useMeetingChannel from './useMeetingChannel'
 import useMeetings from './useMeetings'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
-import NavigationDrawer from './NavigationDrawer.vue'
 import { MeetingRole } from './types'
 import { DEFAULT_ROLE_ORDER } from './constants'
 import { translateMeetingRole } from './utils'
 import { hasMeetingRole, setFakeRoles } from './rules'
-import { isEqual } from 'lodash'
 
 const { t } = useI18n()
 const { meeting, meetingId, roleItems, userRoles } = useMeeting()
@@ -168,6 +169,7 @@ onBeforeUnmount(() => setFakeRoles(meetingId.value))
           density="compact"
         />
       </template>
+      <ComponentSlot name="appendUserMenu" />
     </template>
   </UserMenu>
   <NavigationDrawer />
