@@ -6,12 +6,17 @@ import User from '@/components/User.vue'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import useMeetingId from '../meetings/useMeetingId'
 
-const { meetingGroups } = useMeetingGroups(useMeetingId())
+import useGenderTag from './genderTags/useGenderTag'
+import { getGenderIcon, translateGender } from './genderTags/utils'
 
 const props = defineProps<{
   active?: boolean
   user: number
 }>()
+
+const meetingId = useMeetingId()
+const { meetingGroups } = useMeetingGroups(meetingId)
+const genderTag = useGenderTag(meetingId, props.user)
 
 const subtitle = computed(() => {
   const userGroups = meetingGroups.value
@@ -29,17 +34,18 @@ const subtitle = computed(() => {
     <template v-if="$slots.append" #append>
       <slot name="append"></slot>
     </template>
-    <v-list-item-title>
+    <v-list-item-title class="d-flex ga-1">
       <User :pk="user" />
-      <v-icon
-        v-if="active"
-        icon="mdi-account-voice"
-        size="x-small"
-        class="ml-1"
-      />
+      <v-spacer />
+      <v-icon v-if="active" icon="mdi-account-voice" size="small" />
     </v-list-item-title>
-    <v-list-item-subtitle>
+    <v-list-item-subtitle v-if="subtitle">
+      <v-icon icon="mdi-account-multiple" size="small" />
       {{ subtitle }}
+    </v-list-item-subtitle>
+    <v-list-item-subtitle v-if="genderTag">
+      <v-icon :icon="getGenderIcon(genderTag)" size="small" />
+      {{ translateGender($t, genderTag) }}
     </v-list-item-subtitle>
   </v-list-item>
 </template>
