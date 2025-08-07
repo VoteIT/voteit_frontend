@@ -911,6 +911,14 @@
     "timeSpoken": "Time ({time})",
     "timesSpoken": "Count ({count})",
     "useSpeakerLists": "Use speaker lists",
+    "gender": {
+      "female": "Female",
+      "male": "Male",
+      "nonBinary": "Non-binary",
+      "select": "Select gender",
+      "selectDescription": "Gender is displayed in speaker lists and can be used to order speakers.",
+      "yours": "Your gender"
+    },
     "orderMethod": {
       "priority": "Prioritize speakers who've spoken less",
       "simple": "Chronological",

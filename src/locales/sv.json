@@ -911,6 +911,14 @@
     "timeSpoken": "Tid ({time})",
     "timesSpoken": "Antal gånger ({count})",
     "useSpeakerLists": "Använd talarlistor",
+    "gender": {
+      "female": "Kvinna",
+      "male": "Man",
+      "nonBinary": "Icke-binär",
+      "select": "Ange kön",
+      "selectDescription": "Kön visas i talarlistor och kan användas för kvotering av talare.",
+      "yours": "Ditt kön"
+    },
     "orderMethod": {
       "priority": "Prioritera talare som talat mindre",
       "simple": "Kronologisk",
