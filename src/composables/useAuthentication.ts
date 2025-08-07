@@ -3,8 +3,9 @@ import { AxiosError } from 'axios'
 
 import { hasher } from '@/utils/stringToHSL'
 import { IUser } from '@/modules/organisations/types'
+
+import useContextRoles from './useContextRoles' // Import order important!
 import { profileType } from '@/modules/organisations/contentTypes'
-import useContextRoles from './useContextRoles'
 
 export const user = ref<IUser | null>(null)
 export const userId = computed(() => user.value?.pk)
