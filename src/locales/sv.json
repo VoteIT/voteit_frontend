@@ -917,6 +917,8 @@
       "nonBinary": "Icke-binär",
       "select": "Ange kön",
       "selectDescription": "Kön visas i talarlistor och kan användas för kvotering av talare.",
+      "selectToEnter": "Den här talarlistan prioriterar ordning baserat på kön. Ditt val kommer synas för andra deltagare.",
+      "skip": "Jag vill inte berätta",
       "yours": "Ditt kön"
     },
     "orderMethod": {

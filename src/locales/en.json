@@ -917,6 +917,8 @@
       "nonBinary": "Non-binary",
       "select": "Select gender",
       "selectDescription": "Gender is displayed in speaker lists and can be used to order speakers.",
+      "selectToEnter": "This speaker list prioritize order based on gender. Your selection will be visible to other participants.",
+      "skip": "I'm not telling",
       "yours": "Your gender"
     },
     "orderMethod": {

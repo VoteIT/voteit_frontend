@@ -106,7 +106,6 @@ const genderChoices = Object.entries(GENDER_ICONS).map(([tag, icon]) => ({
           />
           <v-btn
             color="secondary"
-            prepend-icon="mdi-cancel"
             :text="$t('speaker.gender.skip')"
             @click="enter(undefined, close)"
           />
