@@ -8,6 +8,8 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 - Speaker lists refactoring
 - Bug reports module removed
+- Gender priority speaker list method added
+- Entering speaker list in closed meeting no longer allowed [#377](https://github.com/VoteIT/voteit_frontend/issues/377)
 
 ## 0.31.0 (2025-06-05)
 
@@ -22,7 +24,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 0.30.2 (2025-05-11)
 
-- Bugfix: Text size for normal proposals in real-time view
+- Bugfix: Text size for normal proposals in real-time view [#376](https://github.com/VoteIT/voteit_frontend/issues/376)
 
 ## 0.30.1 (2025-04-05)
 
@@ -36,7 +38,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.29.5 (2025-03-10)
 
 - Improved spacing and positions on proposal and discussion posts buttons
-- Bugfix: Participant group tab totals footer was improperly offset
+- Bugfix: Participant group tab totals footer was improperly offset [#361](https://github.com/VoteIT/voteit_frontend/issues/361)
 - Show login info and button for unauthenticated users on meeting join page
 - "next" query param added to login url
 - Refactoring of tag click logic using provide/inject of click handler
