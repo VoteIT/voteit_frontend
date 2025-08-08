@@ -30,7 +30,7 @@ export interface SpeakerSystem {
   room: number
   safe_positions?: number
   settings?: SpeakerSystemSettings
-  show_time: boolean
+  show_time: boolean // Display spoken time in real-time view
 }
 
 export enum SpeakerListState {

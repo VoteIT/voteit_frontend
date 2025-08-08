@@ -9,7 +9,7 @@ export interface IMeetingRoom {
   send_sls: boolean
   send_proposals: boolean
   show_ballot: boolean
-  show_time: boolean
+  show_time: boolean // Clock face when paused
   title: string
 }
 
