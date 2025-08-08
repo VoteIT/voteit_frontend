@@ -28,10 +28,19 @@ export interface SpeakerSystem {
   meeting_roles_to_speaker: MeetingRole[]
   method_name: SpeakerSystemMethod
   room: number
-  safe_positions?: number
-  settings?: SpeakerSystemSettings
+  safe_positions: number | null
+  settings: SpeakerSystemSettings
   show_time: boolean // Display spoken time in real-time view
 }
+
+export type SpeakerSystemEditable = Pick<
+  SpeakerSystem,
+  | 'meeting_roles_to_speaker'
+  | 'method_name'
+  | 'safe_positions'
+  | 'settings'
+  | 'show_time'
+>
 
 export enum SpeakerListState {
   Open = 'open',

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { map, range } from 'itertools'
 import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -10,8 +9,12 @@ import useRules from '@/composables/useRules'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 import { IMeetingRoom } from '../rooms/types'
-import { SpeakerSystem, SpeakerSystemMethod } from '../speakerLists/types'
-import { translateOrderMethod } from '../speakerLists/utils'
+import SpeakerSystemForm from '../rooms/SpeakerSystemForm.vue'
+import {
+  SpeakerSystem,
+  SpeakerSystemEditable,
+  SpeakerSystemMethod
+} from '../speakerLists/types'
 
 import { meetingType } from './contentTypes'
 import useElectoralRegisters, {
@@ -32,14 +35,7 @@ type FormData = {
   room: {
     title: string
   }
-  sls: {
-    meeting_roles_to_speaker: MeetingRole[]
-    method_name: SpeakerSystemMethod
-    safe_positions: number
-    settings: {
-      max_times: number
-    }
-  }
+  sls: SpeakerSystemEditable
 }
 
 defineEmits(['close'])
@@ -111,22 +107,14 @@ const formData = reactive<FormData>({
     title: t('room.defaultName')
   },
   sls: {
+    meeting_roles_to_speaker: [MeetingRole.Discusser],
     method_name: SpeakerSystemMethod.Simple,
     safe_positions: 1,
-    settings: {
-      max_times: 1
-    },
-    meeting_roles_to_speaker: [MeetingRole.Discusser]
+    settings: null,
+    show_time: false
   }
 })
 const formReady = ref(false)
-
-const systemMethods = computed(() =>
-  [SpeakerSystemMethod.Simple, SpeakerSystemMethod.Priority].map((value) => ({
-    value,
-    title: translateOrderMethod(value, t)
-  }))
-)
 
 function annotateErMethod(
   method: NonNullable<(typeof availableErMethods)['value']>[number]
@@ -250,47 +238,10 @@ async function addMeeting() {
           :model-value="formData.createRoom && formData.createSpeakerSystem"
           @update:model-value="formData.createSpeakerSystem = !!$event"
         />
-        <v-select
+        <SpeakerSystemForm
           :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-          :items="systemMethods"
-          :label="$t('speaker.systemMethod')"
-          v-model="formData.sls.method_name"
-        />
-        <v-expand-transition>
-          <v-select
-            v-if="formData.sls.method_name === SpeakerSystemMethod.Priority"
-            :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-            :hint="$t('speaker.orderMethod.maxTimesHint')"
-            itemValue="const"
-            :label="$t('speaker.orderMethod.maxTimes')"
-            :items="
-              map(range(10), (n) => ({
-                const: n,
-                title: t('speaker.orderMethod.maxTimesValue', n)
-              }))
-            "
-            v-model="formData.sls.settings.max_times"
-          />
-        </v-expand-transition>
-        <v-select
-          :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-          :hint="$t('speaker.safePositionsHint')"
-          itemValue="const"
-          :label="$t('speaker.safePositions')"
-          :items="
-            map(range(3), (n) => ({
-              const: n,
-              title: $t('speaker.safePositionsValue', n)
-            }))
-          "
-          v-model="formData.sls.safe_positions"
-        />
-        <v-select
-          multiple
-          :disabled="!formData.createRoom || !formData.createSpeakerSystem"
-          :label="$t('speaker.speakerRoles')"
-          :items="roleItems"
-          v-model="formData.sls.meeting_roles_to_speaker"
+          v-model="formData.sls"
+          hide-time-option
         />
       </template>
       <template v-else-if="currentStep === 2">
