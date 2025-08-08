@@ -922,9 +922,12 @@
       "yours": "Ditt kön"
     },
     "orderMethod": {
-      "genderPriority": "Prioritera upp kvinnor och icke-binära varannan gång",
+      "genderPriority": "Könskvotering",
+      "genderPriorityDescription": "Kvinnor och icke-binära prioriteras varannan gång.",
       "priority": "Prioritera talare som talat mindre",
+      "priorityDescription": "Metoden använder flera listor. De som talat färre gånger prioriteras.",
       "simple": "Kronologisk",
+      "simpleDescription": "Den som satt upp sig först får tala först.",
       "maxTimes": "Prioriteringsgräns",
       "maxTimesHint": "Antal gånger återkommande talare nedprioriteras till förmån för talare som talat färre gånger.",
       "maxTimesValue": "Prioritera alltid | Prioritera en gång | Prioritera {count} gånger"

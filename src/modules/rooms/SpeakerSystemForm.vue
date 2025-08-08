@@ -56,10 +56,14 @@ const systemMethods = computed(() =>
       SpeakerSystemMethod.Simple,
       SpeakerSystemMethod.Priority,
       SpeakerSystemMethod.GenderPriority
-    ].map((value) => ({
-      value,
-      title: translateOrderMethod(value, t)
-    })),
+    ].map((value) => {
+      const { description, title } = translateOrderMethod(value, t)
+      return {
+        value,
+        title,
+        props: { subtitle: description }
+      }
+    }),
     (m) => m.title
   )
 )
@@ -78,12 +82,11 @@ const systemMethods = computed(() =>
         v-if="formData.settings"
         :disabled="disabled"
         :hint="$t('speaker.orderMethod.maxTimesHint')"
-        itemValue="const"
         :label="$t('speaker.orderMethod.maxTimes')"
         :items="
-          map(range(10), (n) => ({
-            const: n,
-            title: t('speaker.orderMethod.maxTimesValue', n)
+          map(range(10), (value) => ({
+            value,
+            title: t('speaker.orderMethod.maxTimesValue', value)
           }))
         "
         v-model="formData.settings.max_times"
@@ -92,12 +95,11 @@ const systemMethods = computed(() =>
     <v-select
       :disabled="disabled"
       :hint="$t('speaker.safePositionsHint')"
-      itemValue="const"
       :label="$t('speaker.safePositions')"
       :items="
-        map(range(3), (n) => ({
-          const: n,
-          title: $t('speaker.safePositionsValue', n)
+        map(range(3), (value) => ({
+          value,
+          title: $t('speaker.safePositionsValue', value)
         }))
       "
       v-model="formData.safe_positions"
