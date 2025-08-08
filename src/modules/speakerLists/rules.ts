@@ -26,7 +26,10 @@ function getActiveList(system: SpeakerSystem) {
 }
 
 function isActiveSystem(system: SpeakerSystem): boolean {
-  return system.state === SpeakerSystemState.Active
+  return (
+    system.state === SpeakerSystemState.Active &&
+    isActiveMeeting(system.meeting)
+  )
 }
 
 function isArchivedSystem(system: SpeakerSystem): boolean {
