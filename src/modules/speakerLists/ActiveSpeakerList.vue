@@ -5,11 +5,11 @@ import { useI18n } from 'vue-i18n'
 import Moment from '@/components/Moment.vue'
 
 import { speakerListType } from './contentTypes'
-import { SpeakerGroup } from './types'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
 import EnterLeaveButton from './EnterLeaveButton.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
+import { CurrentSpeaker, QueuedSpeaker } from './types'
 
 const props = defineProps<{
   passive: boolean
@@ -23,27 +23,35 @@ const {
   systemActiveList: list,
   systemActiveListId,
   speakerSystem: system,
-  currentSpeakerQueue: queue,
-  currentlySpeaking: speaking
+  currentSpeakerQueue: queue
 } = useSpeakerSystem(computed(() => props.room))
-const { speakerGroups } = useSpeakerList(systemActiveListId)
+const { currentSpeaker, speakerGroups } = useSpeakerList(systemActiveListId)
 
 const listState = computed(() => list.value && getState(list.value.state))
+
+type Annotated<T extends {}> = T & {
+  annotations: { icon: string; text: string }[]
+}
+
+interface SpeakerGroup {
+  active?: boolean
+  title?: string
+  queue: Annotated<QueuedSpeaker>[] | Annotated<CurrentSpeaker>[]
+}
 
 const groups = computed<SpeakerGroup[]>(() => {
   if (!list.value || !system.value || !queue.value || !speakerGroups.value)
     return []
-  if (speaking.value) {
-    return [
-      {
-        active: true,
-        title: t('speaker.currentlySpeaking'),
-        queue: [speaking.value]
-      },
-      ...speakerGroups.value
-    ]
-  }
-  return speakerGroups.value
+  return currentSpeaker.value
+    ? [
+        {
+          active: true,
+          title: t('speaker.currentlySpeaking'),
+          queue: [currentSpeaker.value]
+        },
+        ...speakerGroups.value
+      ]
+    : speakerGroups.value
 })
 </script>
 
@@ -62,7 +70,7 @@ const groups = computed<SpeakerGroup[]>(() => {
         <EnterLeaveButton :list="list" />
       </v-fade-transition>
     </div>
-    <p v-if="!speaking && !queue?.length" class="text-secondary">
+    <p v-if="!currentSpeaker && !queue?.length" class="text-secondary">
       {{ $t('speaker.queueEmpty') }}
     </p>
     <v-list bg-color="background">
@@ -75,14 +83,18 @@ const groups = computed<SpeakerGroup[]>(() => {
             <v-divider />
           </div>
           <SpeakerEntry
-            v-for="{ pk, user } in queue"
+            v-for="{ pk, annotations, user } in queue"
             :key="pk"
+            :annotations="annotations"
             :active="active"
             :user="user"
           >
-            <template v-if="system?.show_time && active && speaking" #append>
+            <template
+              v-if="system?.show_time && active && currentSpeaker"
+              #append
+            >
               <span class="timer px-4 text-primary">
-                <Moment in-seconds ordinary :date="speaking.started" />
+                <Moment in-seconds ordinary :date="currentSpeaker.started" />
               </span>
             </template>
           </SpeakerEntry>

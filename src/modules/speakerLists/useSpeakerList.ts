@@ -3,6 +3,7 @@ import { computed, MaybeRef, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
+import useMeetingId from '../meetings/useMeetingId'
 import { isQueuedSpeaker, Speaker, SpeakerSystem } from './types'
 import {
   getCurrent,
@@ -15,9 +16,11 @@ import {
 import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
 import systemMethods from './systemMethods'
+import useSpeakerAnnotations from './useSpeakerAnnotations'
 
 export default function useSpeakerList(listId: MaybeRef<number | null>) {
   const { t } = useI18n()
+  const { annotateSpeaker } = useSpeakerAnnotations(useMeetingId())
 
   const speakerHistory = computed(() => {
     const list = unref(listId)
@@ -41,7 +44,9 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
   )
   const currentSpeaker = computed(() => {
     const list = unref(listId)
-    return list ? getCurrent(list) : undefined
+    if (!list) return
+    const speaker = getCurrent(list)
+    if (speaker) return annotateSpeaker(speaker)
   })
 
   /**
@@ -82,9 +87,9 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
       ),
       ([title, posUsers]) => ({
         title, // groupby key is title
-        queue: map(posUsers, ([_, speaker]) => speaker) // Deconstruct enumeration into an array of speakers
+        queue: map(posUsers, ([_, speaker]) => annotateSpeaker(speaker))
       })
-    )
+    ) // Deconstruct enumeration into an array of speakers
   })
 
   function enterList() {

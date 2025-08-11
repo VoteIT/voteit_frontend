@@ -1,7 +1,9 @@
-import { computed, toRef } from 'vue'
+import { toRef } from 'vue'
 
 import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
+import { speakerAnnotationRegistry } from '../speakerLists/registry'
+
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 
 import FakeRolesBubble from './FakeRolesBubble.vue'
@@ -169,4 +171,20 @@ meetingBubblePlugins.register({
   },
   requireAttention: false,
   order: -1
+})
+
+speakerAnnotationRegistry.register({
+  checkActive() {
+    return true
+  },
+  *iterAnnotations(meeting, user) {
+    const groups = useMeetingGroups(meeting).meetingGroups.value.filter(
+      (g) => g.show_on_speaker && g.members.includes(user)
+    )
+    if (!groups.length) return
+    yield {
+      icon: 'mdi-account-multiple',
+      text: groups.map((g) => g.title).join(', ')
+    }
+  }
 })

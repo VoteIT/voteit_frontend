@@ -192,6 +192,7 @@ onKeyStroke(
         <SpeakerEntry
           v-for="speaker in queue"
           :key="speaker.pk"
+          :annotations="speaker.annotations"
           :user="speaker.user"
           :class="{ self: isSelf(speaker.user) }"
         >

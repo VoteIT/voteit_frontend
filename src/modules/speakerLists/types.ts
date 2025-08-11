@@ -62,12 +62,6 @@ export interface SpeakerHistory {
   seconds_spoken: number
 }
 
-export interface SpeakerGroup {
-  active?: boolean
-  title?: string
-  queue: QueuedSpeaker[] | CurrentSpeaker[]
-}
-
 export interface SpeakerListAddMessage {
   title: string
   speaker_system: number
