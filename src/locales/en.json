@@ -922,8 +922,8 @@
       "yours": "Your gender"
     },
     "orderMethod": {
-      "genderPriority": "Gender priority",
-      "genderPriorityDescription": "Women and non-binary speakers are prioritized every other time.",
+      "genderPriority": "Spoken less + Gender priority",
+      "genderPriorityDescription": "Multiple lists. Women and non-binary are prioritized if unbalanced.",
       "priority": "Prioritize speakers who've spoken less",
       "priorityDescription": "Uses multiple lists. Those who've spoken fewer times are prioritized.",
       "simple": "Chronological",

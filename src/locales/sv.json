@@ -922,8 +922,8 @@
       "yours": "Ditt kön"
     },
     "orderMethod": {
-      "genderPriority": "Könskvotering",
-      "genderPriorityDescription": "Kvinnor och icke-binära prioriteras varannan gång.",
+      "genderPriority": "Talat mindre + Könskvotering",
+      "genderPriorityDescription": "Flera listor. Kvinnor och icke-binära prioriteras upp vid obalans.",
       "priority": "Prioritera talare som talat mindre",
       "priorityDescription": "Metoden använder flera listor. De som talat färre gånger prioriteras.",
       "simple": "Kronologisk",
