@@ -1,6 +1,6 @@
 import { any, filter } from 'itertools'
 import { sortBy } from 'lodash'
-import { computed, reactive, Ref } from 'vue'
+import { computed, MaybeRef, reactive, unref } from 'vue'
 
 import { titleSorter } from '@/utils'
 import useAuthentication from '@/composables/useAuthentication'
@@ -36,7 +36,7 @@ export function isGroupMember(group: number, user: number) {
   )
 }
 
-export default function useMeetingGroups(meetingId: Ref<number>) {
+export default function useMeetingGroups(meetingId: MaybeRef<number>) {
   const { user } = useAuthentication()
 
   function isGroupMember(
@@ -48,7 +48,10 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
   }
 
   const _meetingGroups = computed(() =>
-    filter(meetingGroups.values(), (group) => group.meeting === meetingId.value)
+    filter(
+      meetingGroups.values(),
+      (group) => group.meeting === unref(meetingId)
+    )
   )
   const allGroupMembers = computed(() =>
     filter(groupMemberships.values(), (m) =>
@@ -60,10 +63,10 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
     allGroupMembers.value.reduce((acc, { votes }) => acc + (votes || 0), 0)
   )
   const canPostAs = computed(
-    () => isModerator(meetingId.value) || userGroups.value.length
+    () => isModerator(unref(meetingId)) || userGroups.value.length
   )
   const roles = computed(() =>
-    filter(groupRoles.values(), ({ meeting }) => meetingId.value === meeting)
+    filter(groupRoles.values(), ({ meeting }) => unref(meetingId) === meeting)
   )
 
   /**
@@ -93,7 +96,7 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
    * Ordered, annotated groups in current meeting that current user can post as.
    */
   const postAsGroups = computed(() =>
-    isModerator(meetingId.value)
+    isModerator(unref(meetingId))
       ? orderedGroups.value
       : orderedGroups.value.filter((g) => isGroupMember(g) && g.post_as)
   )
@@ -101,7 +104,7 @@ export default function useMeetingGroups(meetingId: Ref<number>) {
   return {
     allGroupMembers,
     canChangeMeeting: computed(() => {
-      const meeting = meetings.get(meetingId.value)
+      const meeting = meetings.get(unref(meetingId))
       if (!meeting) return false
       return canChangeMeeting(meeting)
     }),
