@@ -1,5 +1,5 @@
 import { orderBy } from 'lodash'
-import { computed, reactive, ref, Ref } from 'vue'
+import { computed, MaybeRef, reactive, ref, unref } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
 import { sleep } from '@/utils'
@@ -88,8 +88,12 @@ export function* getErAttributes(method: ErMethod, t: ComposerTranslation) {
     }
 }
 
-export default function useElectoralRegisters(meetingId?: Ref<number>) {
-  const meeting = computed(() => meetingId && meetings.get(meetingId.value))
+export default function useElectoralRegisters(meetingId?: MaybeRef<number>) {
+  const meeting = computed(() => {
+    const meeting = unref(meetingId)
+    if (!meeting) return
+    return meetings.get(meeting)
+  })
 
   const availableErMethods = computed(() => {
     if (erMethod.value && erMethodLocked.value) return [erMethod.value]
@@ -124,7 +128,7 @@ export default function useElectoralRegisters(meetingId?: Ref<number>) {
       )
     try {
       const { data } = await electoralRegisterType.api.list({
-        meeting: meetingId.value
+        meeting: unref(meetingId)
       })
       for (const er of data) {
         registers.set(er.pk, er)
@@ -133,7 +137,7 @@ export default function useElectoralRegisters(meetingId?: Ref<number>) {
   }
 
   function isMeetingER(er: ElectoralRegister | null): er is ElectoralRegister {
-    return er?.meeting === meetingId?.value
+    return er?.meeting === unref(meetingId)
   }
 
   function getWeightInCurrent(user: number) {
