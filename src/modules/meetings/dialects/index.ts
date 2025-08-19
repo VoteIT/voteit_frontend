@@ -1,5 +1,3 @@
-import { toRef } from 'vue'
-
 import { meetingGroupTablePlugins } from '../registry'
 import { MeetingGroupColumn, MeetingState } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
@@ -27,7 +25,7 @@ meetingGroupTablePlugins.register({
       voteManagementComponents[
         meeting.dialect?.view_components?.votes_management as string
       ] // Weird annotation, but undefined works as key
-    const { meetingGroups } = useMeetingGroups(toRef(meeting, 'pk'))
+    const { meetingGroups } = useMeetingGroups(meeting.pk)
     return [
       ...columns,
       {
@@ -52,14 +50,14 @@ meetingGroupTablePlugins.register({
   checkActive(meeting) {
     return (
       [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) &&
-      meeting.er_policy_name === 'main_subst_active' &&
-      !!useElectoralRegisters(toRef(meeting, 'pk')).currentElectoralRegister
-        .value
+      ['main_subst_active', 'main_subst_delegate'].includes(
+        meeting.er_policy_name!
+      ) &&
+      !!useElectoralRegisters(meeting.pk).currentElectoralRegister.value
     )
   },
   transform(columns, meeting) {
-    const meetingId = toRef(meeting, 'pk')
-    const { usersInCurrentRegister } = useElectoralRegisters(meetingId)
+    const { usersInCurrentRegister } = useElectoralRegisters(meeting.pk)
     return [
       ...columns,
       {
