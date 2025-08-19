@@ -82,18 +82,30 @@ function doVoteTransfer(source: number, target: number) {
 
 <template>
   <DefaultDialog
-    v-if="userHasVoteRole"
     :title="$t('erMethods.mainSubstDelegate.votesIn', { ...group })"
   >
     <template #activator="{ props }">
       <v-btn
+        v-if="userHasVoteRole"
         color="primary"
         size="small"
         :text="$t('erMethods.mainSubstDelegate.handle')"
         v-bind="props"
       />
+      <v-btn
+        v-else
+        color="secondary"
+        size="small"
+        :text="$t('erMethods.mainSubstDelegate.display')"
+        v-bind="props"
+      />
     </template>
     <template #default="{ close }">
+      <v-alert
+        class="mb-3"
+        :text="$t('erMethods.mainSubstDelegate.voteErAlert')"
+        type="info"
+      />
       <v-list>
         <v-list-item v-for="m in annotatedMembers" :subtitle="m.roleTitle">
           <template #prepend>
@@ -103,7 +115,7 @@ function doVoteTransfer(source: number, target: number) {
             <User :pk="m.user" userid />
           </template>
           <template #append>
-            <v-menu v-if="m.canTransfer">
+            <v-menu v-if="userHasVoteRole && m.canTransfer">
               <template #activator="{ props }">
                 <v-btn
                   append-icon="mdi-chevron-down"
@@ -131,10 +143,11 @@ function doVoteTransfer(source: number, target: number) {
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-icon
+            <v-chip
               v-if="m.hasVoteInGroup"
+              append-icon="mdi-check-circle"
               color="success"
-              icon="mdi-check-circle"
+              :text="$t('erMethods.mainSubstDelegate.hasVote')"
             />
           </template>
         </v-list-item>
@@ -146,7 +159,7 @@ function doVoteTransfer(source: number, target: number) {
             <th>Från</th>
             <th></th>
             <th>Till</th>
-            <th></th>
+            <th v-if="userHasVoteRole"></th>
           </tr>
         </thead>
         <tbody>
@@ -154,7 +167,7 @@ function doVoteTransfer(source: number, target: number) {
             <td><User :pk="t.source" userid /></td>
             <td><v-icon icon="mdi-arrow-right" /></td>
             <td><User :pk="t.target" userid /></td>
-            <td>
+            <td v-if="userHasVoteRole">
               <v-menu>
                 <template #activator="{ props }">
                   <v-btn
@@ -193,24 +206,6 @@ function doVoteTransfer(source: number, target: number) {
         </tbody>
       </v-table>
       <div class="text-right mt-3">
-        <v-btn :text="$t('close')" variant="text" @click="close" />
-      </div>
-    </template>
-  </DefaultDialog>
-  <DefaultDialog
-    v-else
-    :title="$t('erMethods.mainSubstDelegate.votesIn', { ...group })"
-  >
-    <template #activator="{ props }">
-      <v-btn
-        color="secondary"
-        size="small"
-        :text="$t('erMethods.mainSubstDelegate.display')"
-        v-bind="props"
-      />
-    </template>
-    <template #default="{ close }">
-      <div class="text-right">
         <v-btn :text="$t('close')" variant="text" @click="close" />
       </div>
     </template>
