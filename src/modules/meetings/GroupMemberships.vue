@@ -102,7 +102,7 @@
             />
           </td>
           <td v-if="editable">
-            <QueryDialog @confirmed="removeMember(pk)">
+            <QueryDialog @confirmed="removeMember(pk)" color="warning">
               <template #activator="{ props }">
                 <v-btn
                   v-if="editable"
