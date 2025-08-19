@@ -206,6 +206,17 @@
     "auto_before_poll": {
       "title": "Automatic on poll"
     },
+    "mainSubstDelegate": {
+      "change": "Change",
+      "display": "Display",
+      "handle": "Handle",
+      "return": "Return",
+      "transfer": "Transfer",
+      "voteInOtherGroup": "Has voting right in another group",
+      "votes": "Voting rights",
+      "votesDescription": "Display and handle voting rights in groups.",
+      "votesIn": "Voting rights {title}"
+    },
     "manual": {
       "title": "Manual"
     },

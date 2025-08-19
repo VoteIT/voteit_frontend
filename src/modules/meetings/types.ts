@@ -181,3 +181,10 @@ export interface MeetingGroupColumn {
     group: MeetingGroup & { memberships: GroupMembership[] }
   ): string | number
 }
+
+export interface IVoteTransfer {
+  meeting: number
+  pk: number
+  source: number
+  target: number
+}

@@ -5,7 +5,7 @@ import useMeetingGroups from '../useMeetingGroups'
 import SFSVoteManagement from './SFSVoteManagement.vue'
 import GroupDelegationManagement from './GroupDelegationManagement.vue'
 import useElectoralRegisters from '../electoralRegisters/useElectoralRegisters'
-// import MainAndSubstManagement from './MainAndSubstManagement.vue'
+import MainSubstDelegation from './MainSubstDelegation.vue'
 
 export const voteManagementComponents: Partial<
   Record<string, MeetingGroupColumn['component']>
@@ -50,9 +50,7 @@ meetingGroupTablePlugins.register({
   checkActive(meeting) {
     return (
       [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) &&
-      ['main_subst_active', 'main_subst_delegate'].includes(
-        meeting.er_policy_name!
-      ) &&
+      meeting.er_policy_name === 'main_subst_active' &&
       !!useElectoralRegisters(meeting.pk).currentElectoralRegister.value
     )
   },
@@ -74,6 +72,31 @@ meetingGroupTablePlugins.register({
               usersInCurrentRegister.value.has(user) ? acc + 1 : acc,
             0
           )
+        }
+      }
+    ]
+  }
+})
+
+meetingGroupTablePlugins.register({
+  id: 'mainAndSubst',
+  checkActive(meeting) {
+    return (
+      [MeetingState.Upcoming, MeetingState.Ongoing].includes(meeting.state) &&
+      meeting.er_policy_name === 'main_subst_delegate'
+    )
+  },
+  transform(columns) {
+    return [
+      ...columns,
+      {
+        name: 'mainSubstDelegate',
+        component: MainSubstDelegation,
+        getDescription(t) {
+          return t('erMethods.mainSubstDelegate.votesDescription')
+        },
+        getTitle(t) {
+          return t('erMethods.mainSubstDelegate.votes')
         }
       }
     ]

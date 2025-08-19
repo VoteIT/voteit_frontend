@@ -65,9 +65,10 @@ export default function useMeetingGroups(meetingId: MaybeRef<number>) {
   const canPostAs = computed(
     () => isModerator(unref(meetingId)) || userGroups.value.length
   )
-  const roles = computed(() =>
-    filter(groupRoles.values(), ({ meeting }) => unref(meetingId) === meeting)
-  )
+  const roles = computed(() => {
+    const meeting = unref(meetingId)
+    return filter(groupRoles.values(), (g) => g.meeting === meeting)
+  })
 
   /**
    * Ordered groups in this meeting, annotated with members (user pks) and membership objects.

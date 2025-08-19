@@ -6,6 +6,7 @@ import {
   ComponentBase,
   GroupMembership,
   GroupRole,
+  IVoteTransfer,
   Meeting,
   MeetingDialectDefinition,
   MeetingGroup,
@@ -116,3 +117,8 @@ export const meetingDialectType = new BaseContentType<MeetingDialectDefinition>(
     restEndpoint: 'meeting-dialects/'
   }
 )
+
+export const voteTransferType = new ContentType<IVoteTransfer>({
+  name: 'vt',
+  restEndpoint: 'vote-transfer/'
+})
