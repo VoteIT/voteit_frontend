@@ -14,15 +14,33 @@ const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
-const { groupRoles } = useMeetingGroups(props.group.meeting)
-const { api, mainRole, substRole, canRecieveVote, getForUsers } =
-  useVoteTransfers(props.group.meeting)
+const { allGroupMembers, groupRoles } = useMeetingGroups(props.group.meeting)
+const {
+  api,
+  canRecieveVote,
+  getForUsers,
+  hasMainRole,
+  hasSubstRole,
+  hasVoteRole
+} = useVoteTransfers(props.group.meeting)
 
 const groupTransfers = computed(() =>
   getForUsers(mains.value, substitutes.value)
 )
 
-const voteRoleIds = computed(() => [mainRole.value?.pk, substRole.value?.pk])
+const problemMembers = computed(() =>
+  props.group.memberships.filter((gm) => {
+    if (!gm.role) return
+    const others = allGroupMembers.value.filter(
+      (other) => other.role && other.pk !== gm.pk && other.user === gm.user
+    )
+    return (
+      !others.length ||
+      hasMainRole(gm) ||
+      (hasSubstRole(gm) && others.some(hasMainRole))
+    )
+  })
+)
 
 /**
  * User ids available for vote transfer
@@ -31,7 +49,7 @@ const availableTargets = computed(() =>
   props.group.memberships
     .filter(
       (gm) =>
-        gm.role === substRole.value?.pk && // Must have subst role in this group
+        hasSubstRole(gm) && // Must have subst role in this group
         !groupTransfers.value.some((t) => t.target === gm.user) // Remove transfers in this group
     )
     .map((gm) => ({ ...gm, disabled: !canRecieveVote(gm.user) }))
@@ -39,12 +57,12 @@ const availableTargets = computed(() =>
 
 const annotatedMembers = computed(() =>
   props.group.memberships
-    .filter((gm) => gm.role && voteRoleIds.value.includes(gm.role))
+    .filter((gm) => gm.role && hasVoteRole(gm))
     .map((gm) => {
       const transfer = groupTransfers.value.find(
         (vt) => vt.source === gm.user || vt.target === gm.user
       )
-      const isMain = gm.role === mainRole.value?.pk
+      const isMain = hasMainRole(gm)
       return {
         ...gm,
         canTransfer: !!availableTargets.value.length && isMain && !transfer,
@@ -70,8 +88,7 @@ const substitutes = computed(() => {
 
 const userHasVoteRole = computed(() =>
   props.group.memberships.some(
-    (m) =>
-      m.user === userId.value && m.role && voteRoleIds.value.includes(m.role)
+    (gm) => gm.user === userId.value && gm.role && hasVoteRole(gm)
   )
 )
 
@@ -210,4 +227,12 @@ function doVoteTransfer(source: number, target: number) {
       </div>
     </template>
   </DefaultDialog>
+  <v-tooltip
+    v-if="problemMembers.length"
+    :text="$t('erMethods.mainSubstDelegate.mainUserProblem')"
+  >
+    <template #activator="{ props }">
+      <v-icon class="ml-1" color="red" icon="mdi-alert" v-bind="props" />
+    </template>
+  </v-tooltip>
 </template>

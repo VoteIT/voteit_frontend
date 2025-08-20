@@ -2,7 +2,7 @@ import { filter } from 'itertools'
 import { computed, MaybeRef, reactive, unref } from 'vue'
 
 import { voteTransferType } from '../contentTypes'
-import { IVoteTransfer } from '../types'
+import { GroupMembership, IVoteTransfer } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 
 const voteTransfers = reactive(new Map<number, IVoteTransfer>())
@@ -24,20 +24,28 @@ export default function useVoteTransfers(meeting: MaybeRef<number>) {
     groupRoles.value.find((r) => r.role_id === 'substitute')
   )
 
+  function hasMainRole(gm: GroupMembership) {
+    return gm.role === substRole.value?.pk
+  }
+
+  function hasSubstRole(gm: GroupMembership) {
+    return gm.role === mainRole.value?.pk
+  }
+
+  function hasVoteRole(gm: GroupMembership) {
+    return hasMainRole(gm) || hasSubstRole(gm)
+  }
+
   const freeTargetUsers = computed(() => {
     const targets = new Set(transfers.value.map((t) => t.target))
     const mainUsers = new Set(
-      allGroupMembers.value
-        .filter((gm) => gm.role === mainRole.value?.pk)
-        .map((gm) => gm.user)
+      allGroupMembers.value.filter(hasMainRole).map((gm) => gm.user)
     )
     return new Set(
       allGroupMembers.value
         .filter(
           (gm) =>
-            gm.role === substRole.value?.pk &&
-            !mainUsers.has(gm.user) &&
-            !targets.has(gm.user)
+            hasSubstRole(gm) && !mainUsers.has(gm.user) && !targets.has(gm.user)
         )
         .map((gm) => gm.user)
     )
@@ -82,6 +90,9 @@ export default function useVoteTransfers(meeting: MaybeRef<number>) {
     substRole,
     voteTransfers: transfers,
     canRecieveVote,
-    getForUsers
+    getForUsers,
+    hasMainRole,
+    hasSubstRole,
+    hasVoteRole
   }
 }
