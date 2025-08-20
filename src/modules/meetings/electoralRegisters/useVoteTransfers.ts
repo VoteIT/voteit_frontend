@@ -25,15 +25,17 @@ export default function useVoteTransfers(meeting: MaybeRef<number>) {
       }) as const
   )
 
-  function hasMainRole(gm: GroupMembership) {
+  type RoleMembership = GroupMembership & { role: number }
+
+  function hasMainRole(gm: GroupMembership): gm is RoleMembership {
     return gm.role === roleIds.value.main
   }
 
-  function hasSubstRole(gm: GroupMembership) {
+  function hasSubstRole(gm: GroupMembership): gm is RoleMembership {
     return gm.role === roleIds.value.subst
   }
 
-  function hasVoteRole(gm: GroupMembership) {
+  function hasVoteRole(gm: GroupMembership): gm is RoleMembership {
     return hasMainRole(gm) || hasSubstRole(gm)
   }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { any, sorted } from 'itertools'
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import { userId } from '@/composables/useAuthentication'
@@ -14,17 +14,15 @@ import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 import useVoteTransfers from '../electoralRegisters/useVoteTransfers'
 import useMeeting from '../useMeeting'
-import { sorted } from 'itertools'
 
 const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
-const { t } = useI18n()
-const { allGroupMembers, groupRoles, getMeetingGroup } = useMeetingGroups(
+const { allGroupMembers, getMeetingGroup, getRole } = useMeetingGroups(
   props.group.meeting
 )
-const { isModerator } = useMeeting() // TODO: Permissions for all actions
+const { isModerator } = useMeeting()
 const { getUser } = useUserDetails()
 const {
   api,
@@ -48,19 +46,12 @@ const availableTargets = computed(() =>
     .map((gm) => ({ ...gm, disabled: !canRecieveVote(gm.user) }))
 )
 
-const mains = computed(() => {
-  const roleId = groupRoles.value.find((r) => r.role_id === 'main')?.pk
-  return props.group.memberships
-    .filter((gm) => gm.role === roleId)
-    .map((gm) => gm.user)
-})
-
-const substitutes = computed(() => {
-  const roleId = groupRoles.value.find((r) => r.role_id === 'substitute')?.pk
-  return props.group.memberships
-    .filter((gm) => gm.role === roleId)
-    .map((gm) => gm.user)
-})
+const mains = computed(() =>
+  props.group.memberships.filter(hasMainRole).map((gm) => gm.user)
+)
+const substitutes = computed(() =>
+  props.group.memberships.filter(hasSubstRole).map((gm) => gm.user)
+)
 
 // TODO: Annotate with handling permissions
 const groupTransfers = computed(() =>
@@ -73,43 +64,30 @@ const groupTransfers = computed(() =>
   }))
 )
 
-function joinGroupNames(memberships: GroupMembership[]) {
-  return memberships
-    .map((o) => getMeetingGroup(o.meeting_group)?.title ?? '?')
-    .join(', ')
-}
-
-function* iterProblemMembers() {
+function* iterRoleProblems() {
   for (const gm of props.group.memberships) {
-    if (!gm.role) continue
-    const others = allGroupMembers.value.filter(
-      (other) =>
-        other.pk !== gm.pk && other.user === gm.user && hasVoteRole(other)
-    )
+    if (!hasVoteRole(gm)) continue
+    const others = allGroupMembers.value
+      .filter((other) => other.pk !== gm.pk && other.user === gm.user)
+      .filter(hasVoteRole)
     if (!others.length) continue
     const user = getUser(gm.user)
     if (!user) continue
-    const translationBase = {
-      ...user,
-      fullName: getFullName(user)
+    //
+    const problems = hasMainRole(gm) ? others : others.filter(hasMainRole)
+    for (const problem of problems) {
+      yield {
+        fullName: getFullName(user),
+        groupName: getMeetingGroup(problem.meeting_group)?.title ?? '?',
+        roleName: getRole(problem.role)?.title ?? '?',
+        userid: user.userid
+      }
     }
-    if (hasMainRole(gm))
-      yield t('erMethods.mainSubstDelegate.mainProblemDetails', {
-        ...translationBase,
-        count: others.length,
-        groupNames: joinGroupNames(others)
-      })
-    const mainRoles = others.filter(hasMainRole)
-    if (hasSubstRole(gm) && mainRoles.length)
-      yield t('erMethods.mainSubstDelegate.mainProblemSubstDetails', {
-        ...translationBase,
-        count: mainRoles.length,
-        groupNames: joinGroupNames(mainRoles)
-      })
   }
 }
 
-const problemMembers = computed(() => [...iterProblemMembers()])
+const roleProblems = computed(() => [...iterRoleProblems()])
+const hasRoleProblem = computed(() => any(iterRoleProblems()))
 
 function orderByName(gm: { user: number }) {
   const user = getUser(gm.user)
@@ -119,24 +97,22 @@ function orderByName(gm: { user: number }) {
 
 const annotatedMembers = computed(() =>
   sorted(
-    props.group.memberships
-      .filter((gm) => gm.role && hasVoteRole(gm))
-      .map((gm) => {
-        const transfer = groupTransfers.value.find(
-          (vt) => vt.source === gm.user || vt.target === gm.user
-        )
-        const isMain = hasMainRole(gm)
-        return {
-          ...gm,
-          canTransfer:
-            !!availableTargets.value.length &&
-            isMain &&
-            !transfer &&
-            (isModerator.value || gm.user === userId.value),
-          hasVoteInGroup: !transfer === isMain,
-          roleTitle: groupRoles.value.find((gr) => gr.pk === gm.role)?.title
-        }
-      }),
+    props.group.memberships.filter(hasVoteRole).map((gm) => {
+      const transfer = groupTransfers.value.find(
+        (vt) => vt.source === gm.user || vt.target === gm.user
+      )
+      const isMain = hasMainRole(gm)
+      return {
+        ...gm,
+        canTransfer:
+          !!availableTargets.value.length &&
+          isMain &&
+          !transfer &&
+          (isModerator.value || gm.user === userId.value),
+        hasVoteInGroup: !transfer === isMain,
+        roleTitle: getRole(gm.role)?.title
+      }
+    }),
     orderByName
   )
 )
@@ -172,14 +148,27 @@ const canManageVotes = computed(
     </template>
     <template #default="{ close }">
       <v-alert
-        v-if="problemMembers.length"
+        v-if="roleProblems.length"
         class="mb-3"
         :text="$t('erMethods.mainSubstDelegate.mainProblemText')"
         :title="$t('erMethods.mainSubstDelegate.mainProblemTitle')"
         type="warning"
       >
         <ul class="my-2">
-          <li v-for="problem in problemMembers">• {{ problem }}</li>
+          <li v-for="problem in roleProblems">
+            •
+            <i18n-t keypath="erMethods.mainSubstDelegate.mainProblemDetail">
+              <template #user>
+                {{ problem.fullName }} <small>({{ problem.userid }})</small>
+              </template>
+              <template #role>
+                <em>{{ problem.roleName }}</em>
+              </template>
+              <template #group>
+                <em>{{ problem.groupName }}</em>
+              </template>
+            </i18n-t>
+          </li>
         </ul>
       </v-alert>
       <v-alert
@@ -292,7 +281,7 @@ const canManageVotes = computed(
     </template>
   </DefaultDialog>
   <v-tooltip
-    v-if="problemMembers.length"
+    v-if="hasRoleProblem"
     :text="$t('erMethods.mainSubstDelegate.mainProblemTitle')"
   >
     <template #activator="{ props }">

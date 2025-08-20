@@ -116,6 +116,9 @@ export default function useMeetingGroups(meetingId: MaybeRef<number>) {
     postAsGroups,
     voteCount,
     userGroups,
-    getMeetingGroup
+    getMeetingGroup,
+    getRole(pk: number) {
+      return roles.value.find((r) => r.pk === pk)
+    }
   }
 }
