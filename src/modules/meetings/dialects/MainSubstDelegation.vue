@@ -35,6 +35,19 @@ const {
   hasVoteRole
 } = useVoteTransfers(props.group.meeting)
 
+/**
+ * User ids available for vote transfer
+ */
+const availableTargets = computed(() =>
+  props.group.memberships
+    .filter(
+      (gm) =>
+        hasSubstRole(gm) && // Must have subst role in this group
+        !groupTransfers.value.some((t) => t.target === gm.user) // Remove transfers in this group
+    )
+    .map((gm) => ({ ...gm, disabled: !canRecieveVote(gm.user) }))
+)
+
 const mains = computed(() => {
   const roleId = groupRoles.value.find((r) => r.role_id === 'main')?.pk
   return props.group.memberships
@@ -49,8 +62,15 @@ const substitutes = computed(() => {
     .map((gm) => gm.user)
 })
 
+// TODO: Annotate with handling permissions
 const groupTransfers = computed(() =>
-  getForUsers(mains.value, substitutes.value)
+  getForUsers(mains.value, substitutes.value).map((t) => ({
+    ...t,
+    canManage:
+      isModerator.value ||
+      t.source === userId.value ||
+      t.target === userId.value
+  }))
 )
 
 function joinGroupNames(memberships: GroupMembership[]) {
@@ -90,19 +110,6 @@ function* iterProblemMembers() {
 }
 
 const problemMembers = computed(() => [...iterProblemMembers()])
-
-/**
- * User ids available for vote transfer
- */
-const availableTargets = computed(() =>
-  props.group.memberships
-    .filter(
-      (gm) =>
-        hasSubstRole(gm) && // Must have subst role in this group
-        !groupTransfers.value.some((t) => t.target === gm.user) // Remove transfers in this group
-    )
-    .map((gm) => ({ ...gm, disabled: !canRecieveVote(gm.user) }))
-)
 
 function orderByName(gm: { user: number }) {
   const user = getUser(gm.user)
@@ -241,7 +248,7 @@ const canManageVotes = computed(
             <td><User :pk="t.source" userid /></td>
             <td><v-icon icon="mdi-arrow-right" /></td>
             <td><User :pk="t.target" userid /></td>
-            <td v-if="canManageVotes">
+            <td v-if="t.canManage">
               <v-menu>
                 <template #activator="{ props }">
                   <v-btn
