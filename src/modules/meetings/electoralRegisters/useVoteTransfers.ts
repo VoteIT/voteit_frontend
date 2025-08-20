@@ -17,19 +17,20 @@ export default function useVoteTransfers(meeting: MaybeRef<number>) {
 
   const { allGroupMembers, groupRoles } = useMeetingGroups(meeting)
 
-  const mainRole = computed(() =>
-    groupRoles.value.find((r) => r.role_id === 'main')
-  )
-  const substRole = computed(() =>
-    groupRoles.value.find((r) => r.role_id === 'substitute')
+  const roleIds = computed(
+    () =>
+      ({
+        main: groupRoles.value.find((r) => r.role_id === 'main')?.pk,
+        subst: groupRoles.value.find((r) => r.role_id === 'substitute')?.pk
+      }) as const
   )
 
   function hasMainRole(gm: GroupMembership) {
-    return gm.role === mainRole.value?.pk
+    return gm.role === roleIds.value.main
   }
 
   function hasSubstRole(gm: GroupMembership) {
-    return gm.role === substRole.value?.pk
+    return gm.role === roleIds.value.subst
   }
 
   function hasVoteRole(gm: GroupMembership) {
@@ -86,8 +87,6 @@ export default function useVoteTransfers(meeting: MaybeRef<number>) {
 
   return {
     api,
-    mainRole,
-    substRole,
     voteTransfers: transfers,
     canRecieveVote,
     getForUsers,
