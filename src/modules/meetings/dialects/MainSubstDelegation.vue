@@ -72,7 +72,6 @@ function* iterRoleProblems() {
     if (!others.length) continue
     const user = getUser(gm.user)
     if (!user) continue
-    //
     const problems = hasMainRole(gm) ? others : others.filter(hasMainRole)
     for (const problem of problems) {
       yield {
