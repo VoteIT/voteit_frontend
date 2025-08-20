@@ -13,6 +13,8 @@ import useUserDetails from '@/modules/organisations/useUserDetails'
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 import useVoteTransfers from '../electoralRegisters/useVoteTransfers'
+import useMeeting from '../useMeeting'
+import { sorted } from 'itertools'
 
 const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
@@ -22,6 +24,7 @@ const { t } = useI18n()
 const { allGroupMembers, groupRoles, getMeetingGroup } = useMeetingGroups(
   props.group.meeting
 )
+const { isModerator } = useMeeting() // TODO: Permissions for all actions
 const { getUser } = useUserDetails()
 const {
   api,
@@ -101,27 +104,42 @@ const availableTargets = computed(() =>
     .map((gm) => ({ ...gm, disabled: !canRecieveVote(gm.user) }))
 )
 
+function orderByName(gm: { user: number }) {
+  const user = getUser(gm.user)
+  if (!user) return ''
+  return getFullName(user)
+}
+
 const annotatedMembers = computed(() =>
-  props.group.memberships
-    .filter((gm) => gm.role && hasVoteRole(gm))
-    .map((gm) => {
-      const transfer = groupTransfers.value.find(
-        (vt) => vt.source === gm.user || vt.target === gm.user
-      )
-      const isMain = hasMainRole(gm)
-      return {
-        ...gm,
-        canTransfer: !!availableTargets.value.length && isMain && !transfer,
-        hasVoteInGroup: !transfer === isMain,
-        roleTitle: groupRoles.value.find((gr) => gr.pk === gm.role)?.title
-      }
-    })
+  sorted(
+    props.group.memberships
+      .filter((gm) => gm.role && hasVoteRole(gm))
+      .map((gm) => {
+        const transfer = groupTransfers.value.find(
+          (vt) => vt.source === gm.user || vt.target === gm.user
+        )
+        const isMain = hasMainRole(gm)
+        return {
+          ...gm,
+          canTransfer:
+            !!availableTargets.value.length &&
+            isMain &&
+            !transfer &&
+            (isModerator.value || gm.user === userId.value),
+          hasVoteInGroup: !transfer === isMain,
+          roleTitle: groupRoles.value.find((gr) => gr.pk === gm.role)?.title
+        }
+      }),
+    orderByName
+  )
 )
 
-const userHasVoteRole = computed(() =>
-  props.group.memberships.some(
-    (gm) => gm.user === userId.value && gm.role && hasVoteRole(gm)
-  )
+const canManageVotes = computed(
+  () =>
+    isModerator.value ||
+    props.group.memberships.some(
+      (gm) => gm.user === userId.value && gm.role && hasVoteRole(gm)
+    )
 )
 </script>
 
@@ -131,7 +149,7 @@ const userHasVoteRole = computed(() =>
   >
     <template #activator="{ props }">
       <v-btn
-        v-if="userHasVoteRole"
+        v-if="canManageVotes"
         color="primary"
         size="small"
         :text="$t('erMethods.mainSubstDelegate.handle')"
@@ -171,7 +189,7 @@ const userHasVoteRole = computed(() =>
             <User :pk="m.user" userid />
           </template>
           <template #append>
-            <v-menu v-if="userHasVoteRole && m.canTransfer">
+            <v-menu v-if="canManageVotes && m.canTransfer">
               <template #activator="{ props }">
                 <v-btn
                   append-icon="mdi-chevron-down"
@@ -215,7 +233,7 @@ const userHasVoteRole = computed(() =>
             <th>Från</th>
             <th></th>
             <th>Till</th>
-            <th v-if="userHasVoteRole"></th>
+            <th v-if="canManageVotes"></th>
           </tr>
         </thead>
         <tbody>
@@ -223,7 +241,7 @@ const userHasVoteRole = computed(() =>
             <td><User :pk="t.source" userid /></td>
             <td><v-icon icon="mdi-arrow-right" /></td>
             <td><User :pk="t.target" userid /></td>
-            <td v-if="userHasVoteRole">
+            <td v-if="canManageVotes">
               <v-menu>
                 <template #activator="{ props }">
                   <v-btn
