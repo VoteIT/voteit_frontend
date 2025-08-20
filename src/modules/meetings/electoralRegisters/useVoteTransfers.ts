@@ -25,11 +25,11 @@ export default function useVoteTransfers(meeting: MaybeRef<number>) {
   )
 
   function hasMainRole(gm: GroupMembership) {
-    return gm.role === substRole.value?.pk
+    return gm.role === mainRole.value?.pk
   }
 
   function hasSubstRole(gm: GroupMembership) {
-    return gm.role === mainRole.value?.pk
+    return gm.role === substRole.value?.pk
   }
 
   function hasVoteRole(gm: GroupMembership) {
