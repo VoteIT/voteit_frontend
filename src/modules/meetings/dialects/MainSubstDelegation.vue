@@ -53,7 +53,6 @@ const substitutes = computed(() =>
   props.group.memberships.filter(hasSubstRole).map((gm) => gm.user)
 )
 
-// TODO: Annotate with handling permissions
 const groupTransfers = computed(() =>
   getForUsers(mains.value, substitutes.value).map((t) => ({
     ...t,
