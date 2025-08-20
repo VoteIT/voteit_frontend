@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+import { getFullName } from '@/utils'
 import { userId } from '@/composables/useAuthentication'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import User from '@/components/User.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+
+import useUserDetails from '@/modules/organisations/useUserDetails'
 
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
@@ -14,7 +18,11 @@ const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
-const { allGroupMembers, groupRoles } = useMeetingGroups(props.group.meeting)
+const { t } = useI18n()
+const { allGroupMembers, groupRoles, getMeetingGroup } = useMeetingGroups(
+  props.group.meeting
+)
+const { getUser } = useUserDetails()
 const {
   api,
   canRecieveVote,
@@ -24,23 +32,61 @@ const {
   hasVoteRole
 } = useVoteTransfers(props.group.meeting)
 
+const mains = computed(() => {
+  const roleId = groupRoles.value.find((r) => r.role_id === 'main')?.pk
+  return props.group.memberships
+    .filter((gm) => gm.role === roleId)
+    .map((gm) => gm.user)
+})
+
+const substitutes = computed(() => {
+  const roleId = groupRoles.value.find((r) => r.role_id === 'substitute')?.pk
+  return props.group.memberships
+    .filter((gm) => gm.role === roleId)
+    .map((gm) => gm.user)
+})
+
 const groupTransfers = computed(() =>
   getForUsers(mains.value, substitutes.value)
 )
 
-const problemMembers = computed(() =>
-  props.group.memberships.filter((gm) => {
-    if (!gm.role) return
+function joinGroupNames(memberships: GroupMembership[]) {
+  return memberships
+    .map((o) => getMeetingGroup(o.meeting_group)?.title ?? '?')
+    .join(', ')
+}
+
+function* iterProblemMembers() {
+  for (const gm of props.group.memberships) {
+    if (!gm.role) continue
     const others = allGroupMembers.value.filter(
-      (other) => other.role && other.pk !== gm.pk && other.user === gm.user
+      (other) =>
+        other.pk !== gm.pk && other.user === gm.user && hasVoteRole(other)
     )
-    return (
-      !others.length ||
-      hasMainRole(gm) ||
-      (hasSubstRole(gm) && others.some(hasMainRole))
-    )
-  })
-)
+    if (!others.length) continue
+    const user = getUser(gm.user)
+    if (!user) continue
+    const translationBase = {
+      ...user,
+      fullName: getFullName(user)
+    }
+    if (hasMainRole(gm))
+      yield t('erMethods.mainSubstDelegate.mainProblemDetails', {
+        ...translationBase,
+        count: others.length,
+        groupNames: joinGroupNames(others)
+      })
+    const mainRoles = others.filter(hasMainRole)
+    if (hasSubstRole(gm) && mainRoles.length)
+      yield t('erMethods.mainSubstDelegate.mainProblemSubstDetails', {
+        ...translationBase,
+        count: mainRoles.length,
+        groupNames: joinGroupNames(mainRoles)
+      })
+  }
+}
+
+const problemMembers = computed(() => [...iterProblemMembers()])
 
 /**
  * User ids available for vote transfer
@@ -72,29 +118,11 @@ const annotatedMembers = computed(() =>
     })
 )
 
-const mains = computed(() => {
-  const roleId = groupRoles.value.find((r) => r.role_id === 'main')?.pk
-  return props.group.memberships
-    .filter((gm) => gm.role === roleId)
-    .map((gm) => gm.user)
-})
-
-const substitutes = computed(() => {
-  const roleId = groupRoles.value.find((r) => r.role_id === 'substitute')?.pk
-  return props.group.memberships
-    .filter((gm) => gm.role === roleId)
-    .map((gm) => gm.user)
-})
-
 const userHasVoteRole = computed(() =>
   props.group.memberships.some(
     (gm) => gm.user === userId.value && gm.role && hasVoteRole(gm)
   )
 )
-
-function doVoteTransfer(source: number, target: number) {
-  api.add(source, target)
-}
 </script>
 
 <template>
@@ -118,6 +146,17 @@ function doVoteTransfer(source: number, target: number) {
       />
     </template>
     <template #default="{ close }">
+      <v-alert
+        v-if="problemMembers.length"
+        class="mb-3"
+        :text="$t('erMethods.mainSubstDelegate.mainProblemText')"
+        :title="$t('erMethods.mainSubstDelegate.mainProblemTitle')"
+        type="warning"
+      >
+        <ul class="my-2">
+          <li v-for="problem in problemMembers">• {{ problem }}</li>
+        </ul>
+      </v-alert>
       <v-alert
         class="mb-3"
         :text="$t('erMethods.mainSubstDelegate.voteErAlert')"
@@ -152,7 +191,7 @@ function doVoteTransfer(source: number, target: number) {
                       ? $t('erMethods.mainSubstDelegate.voteInOtherGroup')
                       : undefined
                   "
-                  @click="doVoteTransfer(m.user, user)"
+                  @click="api.add(m.user, user)"
                 >
                   <template #title>
                     <User :pk="user" userid no-popup />
@@ -229,7 +268,7 @@ function doVoteTransfer(source: number, target: number) {
   </DefaultDialog>
   <v-tooltip
     v-if="problemMembers.length"
-    :text="$t('erMethods.mainSubstDelegate.mainUserProblem')"
+    :text="$t('erMethods.mainSubstDelegate.mainProblemTitle')"
   >
     <template #activator="{ props }">
       <v-icon class="ml-1" color="red" icon="mdi-alert" v-bind="props" />
