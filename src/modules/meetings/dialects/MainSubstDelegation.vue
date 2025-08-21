@@ -118,7 +118,7 @@ const canManageVotes = computed(
   () =>
     isModerator.value ||
     props.group.memberships.some(
-      (gm) => gm.user === userId.value && gm.role && hasVoteRole(gm)
+      (gm) => gm.user === userId.value && hasVoteRole(gm)
     )
 )
 </script>
