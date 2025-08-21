@@ -125,6 +125,7 @@ const canManageVotes = computed(
 
 <template>
   <DefaultDialog
+    v-if="annotatedMembers.length"
     :title="$t('erMethods.mainSubstDelegate.votesIn', { ...group })"
   >
     <template #activator="{ props }">
@@ -280,4 +281,5 @@ const canManageVotes = computed(
       </div>
     </template>
   </DefaultDialog>
+  <span v-else>-</span>
 </template>
