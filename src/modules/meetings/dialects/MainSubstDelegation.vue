@@ -73,14 +73,13 @@ function* iterRoleProblems() {
     const user = getUser(gm.user)
     if (!user) continue
     const problems = hasMainRole(gm) ? others : others.filter(hasMainRole)
-    for (const problem of problems) {
+    for (const problem of problems)
       yield {
         fullName: getFullName(user),
         groupName: getMeetingGroup(problem.meeting_group)?.title ?? '?',
         roleName: getRole(problem.role)?.title ?? '?',
         userid: user.userid
       }
-    }
   }
 }
 
@@ -129,25 +128,28 @@ const canManageVotes = computed(
     :title="$t('erMethods.mainSubstDelegate.votesIn', { ...group })"
   >
     <template #activator="{ props }">
-      <v-btn
-        v-if="canManageVotes"
-        color="primary"
-        size="small"
-        :text="$t('erMethods.mainSubstDelegate.handle')"
-        v-bind="props"
-      />
-      <v-btn
-        v-else
-        color="secondary"
-        size="small"
-        :text="$t('erMethods.mainSubstDelegate.display')"
-        v-bind="props"
-      />
+      <v-badge color="warning" icon="mdi-alert" :model-value="hasRoleProblem">
+        <v-btn
+          v-if="canManageVotes"
+          color="primary"
+          size="small"
+          :text="$t('erMethods.mainSubstDelegate.handle')"
+          v-bind="props"
+        />
+        <v-btn
+          v-else
+          color="secondary"
+          size="small"
+          :text="$t('erMethods.mainSubstDelegate.display')"
+          v-bind="props"
+        />
+      </v-badge>
     </template>
     <template #default="{ close }">
       <v-alert
         v-if="roleProblems.length"
         class="mb-3"
+        icon="mdi-alert"
         :text="$t('erMethods.mainSubstDelegate.mainProblemText')"
         :title="$t('erMethods.mainSubstDelegate.mainProblemTitle')"
         type="warning"
@@ -278,12 +280,4 @@ const canManageVotes = computed(
       </div>
     </template>
   </DefaultDialog>
-  <v-tooltip
-    v-if="hasRoleProblem"
-    :text="$t('erMethods.mainSubstDelegate.mainProblemTitle')"
-  >
-    <template #activator="{ props }">
-      <v-icon class="ml-1" color="red" icon="mdi-alert" v-bind="props" />
-    </template>
-  </v-tooltip>
 </template>
