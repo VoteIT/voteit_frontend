@@ -46,11 +46,11 @@ import { invitationScopes } from '../organisations/registry'
 
 import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
-import useMeetingInvites from './useMeetingInvites'
+import useMatchedInvites from './useMatchedInvites'
 import useMeetings from './useMeetings'
 import { translateInviteType } from './utils'
 
-const { fetchInvites } = useMeetingInvites()
+const { fetchInvites } = useMatchedInvites()
 const { fetchMeetings } = useMeetings()
 
 const props = defineProps<{ invite: MeetingInvite }>()

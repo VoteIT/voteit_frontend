@@ -26,7 +26,7 @@ import EditableHelpText from '@/components/EditableHelpText.vue'
 import useRules from '@/composables/useRules'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
-import useMeetingInvites from '../meetings/useMeetingInvites'
+import useMatchedInvites from '../meetings/useMatchedInvites'
 import Invite from '../meetings/Invite.vue'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
@@ -38,7 +38,7 @@ import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 
-const { userMeetingInvites, clearInvites, fetchInvites } = useMeetingInvites()
+const { matchedInvites, clearInvites, fetchInvites } = useMatchedInvites()
 
 const organisationIcons: Record<OrganisationRole, string> = {
   meeting_creator: 'mdi-calendar-plus',
@@ -90,7 +90,12 @@ useTitle(
 )
 
 function fetchInvitesIfAuthenticated() {
-  if (user.value) fetchInvites()
+  if (!user.value) return
+  try {
+    fetchInvites()
+  } catch {
+    // Ignore matched invite fetch errors. User doesn't need to know.
+  }
 }
 
 watch(user, () => {
@@ -107,7 +112,12 @@ useIntervalFn(
 onBeforeMount(() => {
   // App.vue loads organisation data at first load
   // Call again to update page content
-  if (loader.initDone.value) fetchOrganisation()
+  if (!loader.initDone.value) return
+  try {
+    fetchOrganisation()
+  } catch {
+    // Ignore org fetch here. We should already have data, so it's just an update that failed.
+  }
 })
 
 const editing = ref(false)
@@ -411,12 +421,12 @@ function cancelEdit() {
         </v-col>
         <v-divider vertical />
         <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
-          <div v-if="userMeetingInvites.length" class="mb-4">
+          <div v-if="matchedInvites.length" class="mb-4">
             <h2 class="mb-2">
-              {{ $t('join.invites', userMeetingInvites.length) }}
+              {{ $t('join.invites', matchedInvites.length) }}
             </h2>
             <Invite
-              v-for="inv in userMeetingInvites"
+              v-for="inv in matchedInvites"
               :key="inv.pk"
               :invite="inv"
               class="mb-4"
