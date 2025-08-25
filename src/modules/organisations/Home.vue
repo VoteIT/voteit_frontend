@@ -89,10 +89,10 @@ useTitle(
   )
 )
 
-function fetchInvitesIfAuthenticated() {
+async function fetchInvitesIfAuthenticated() {
   if (!user.value) return
   try {
-    fetchInvites()
+    await fetchInvites()
   } catch {
     // Ignore matched invite fetch errors. User doesn't need to know.
   }
@@ -109,12 +109,12 @@ useIntervalFn(
   { immediateCallback: true }
 )
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   // App.vue loads organisation data at first load
   // Call again to update page content
   if (!loader.initDone.value) return
   try {
-    fetchOrganisation()
+    await fetchOrganisation()
   } catch {
     // Ignore org fetch here. We should already have data, so it's just an update that failed.
   }
