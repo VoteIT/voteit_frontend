@@ -22,7 +22,6 @@ import useElectoralRegisters, {
 } from './electoralRegisters/useElectoralRegisters'
 import useDialects from './dialects/useDialects'
 import { Meeting, MeetingRole } from './types'
-import useMeeting from './useMeeting'
 
 type FormData = {
   meeting: {
@@ -42,7 +41,6 @@ defineEmits(['close'])
 
 const { t } = useI18n()
 const router = useRouter()
-const { roleItems } = useMeeting()
 const { availableErMethods } = useElectoralRegisters()
 const { installableDialects } = useDialects()
 const rules = useRules(t)
