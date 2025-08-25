@@ -4,7 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.32.0 (??)
+## 0.33.0 (??)
+
+- Dialect support: Main/substitute delegation. (Voting rights comes from main and subst roles in groups. Voters can pass their vote to accessible subst.)
+
+## 0.32.0 (2025-08-11)
 
 - Speaker lists refactoring
 - Bug reports module removed
