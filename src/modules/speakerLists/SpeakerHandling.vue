@@ -4,13 +4,13 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import createFormSchema from '@/utils/createFormSchema'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
-import SchemaForm from '@/components/SchemaForm.vue'
-import { FormSchema } from '@/components/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
+import QueryDialog from '@/components/QueryDialog.vue'
+import useRules from '@/composables/useRules'
+import DefaultForm from '@/components/DefaultForm.vue'
 
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
@@ -30,7 +30,6 @@ import {
 } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 const props = defineProps<{
   room: number
@@ -41,6 +40,7 @@ const { t } = useI18n()
 const { meetingId, meetingRoute } = useMeeting()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
 const { agendaId, agendaItem } = useAgenda(meetingId)
+const rules = useRules(t)
 
 const {
   canManageSystem,
@@ -61,37 +61,25 @@ const currentList = computed<SpeakerList | undefined>(() => {
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 usePermission(canManageSystem, { to: meetingRoute.value })
 
-const speakerListSchema: FormSchema = createFormSchema(t, {
-  properties: {
-    title: {
-      label: t('name'),
-      type: 'string',
-      minLength: 3
-    }
-  },
-  required: ['title']
-})
-
 const nextSpeakerListName = computed(() =>
   agendaItem.value ? getUniqueListTitle(agendaItem.value.title) : ''
 )
-async function addSpeakerList(data?: { title: string }) {
+
+const speakerApi = speakerListType.getContentApi({ alertOnError: false })
+async function addSpeakerList(data: { title: string }) {
   if (!agendaItem.value)
     throw new Error("No agenda item; can't add speaker list")
   if (!speakerSystem.value)
     throw new Error("No speaker system; can't add speaker list")
   const listData: SpeakerListAddMessage = {
-    title: nextSpeakerListName.value, // Default / fallback value
     speaker_system: speakerSystem.value.pk,
     agenda_item: agendaItem.value.pk,
     ...data
   }
-  await speakerListType.api.add(listData)
+  await speakerApi.add(listData)
 }
-function createEditHandler(list: number) {
-  return async (data: { title: string }) => {
-    await speakerListType.api.patch(list, data)
-  }
+function updateSpeakerList(data: { title: string; pk: number }) {
+  return speakerApi.patch(data.pk, { title: data.title })
 }
 
 async function deleteList(list: SpeakerList) {
@@ -154,19 +142,6 @@ async function transitionList(list: SpeakerList, transition: 'close' | 'open') {
 }
 </script>
 
-<style lang="sass">
-div.speaker-lists
-  .v-card
-    overflow: visible
-    z-index: unset
-
-ol.speaker-queue
-  margin-left: 1.2em
-  li
-    &.self
-      font-weight: 700
-</style>
-
 <template>
   <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="5" class="speaker-lists">
@@ -181,7 +156,7 @@ ol.speaker-queue
             prepend-icon="mdi-plus"
             size="small"
             :text="$t('speaker.newList')"
-            @click="addSpeakerList()"
+            @click="addSpeakerList({ title: nextSpeakerListName })"
           />
           <v-menu :text="$t('speaker.addQuick')" location="bottom right">
             <template #activator="{ props }">
@@ -203,28 +178,19 @@ ol.speaker-queue
                   />
                 </template>
                 <template #default="{ close }">
-                  <SchemaForm
-                    :schema="speakerListSchema"
+                  <DefaultForm
                     :model-value="{ title: nextSpeakerListName }"
                     :handler="addSpeakerList"
-                    @saved="close"
+                    @done="close"
+                    v-slot="{ errors, formData }"
                   >
-                    <template #buttons="{ disabled }">
-                      <div class="text-right">
-                        <v-btn
-                          :text="$t('cancel')"
-                          variant="text"
-                          @click="close"
-                        />
-                        <v-btn
-                          color="primary"
-                          :disabled="disabled"
-                          :text="$t('save')"
-                          type="submit"
-                        />
-                      </div>
-                    </template>
-                  </SchemaForm>
+                    <v-text-field
+                      :label="$t('name')"
+                      :error-messages="errors.title"
+                      v-model="formData.title"
+                      :rules="[rules.required, rules.minLength(3)]"
+                    />
+                  </DefaultForm>
                 </template>
               </DefaultDialog>
             </v-list>
@@ -262,28 +228,19 @@ ol.speaker-queue
                     />
                   </template>
                   <template #default="{ close }">
-                    <SchemaForm
-                      :schema="speakerListSchema"
-                      :model-value="{ title: list.title }"
-                      :handler="createEditHandler(list.pk)"
-                      @saved="close"
+                    <DefaultForm
+                      :model-value="{ title: list.title, pk: list.pk }"
+                      :handler="updateSpeakerList"
+                      @done="close"
+                      v-slot="{ errors, formData }"
                     >
-                      <template #buttons="{ disabled }">
-                        <div class="text-right">
-                          <v-btn
-                            :text="$t('cancel')"
-                            variant="text"
-                            @click="close"
-                          />
-                          <v-btn
-                            color="primary"
-                            :disabled="disabled"
-                            :text="$t('save')"
-                            type="submit"
-                          />
-                        </div>
-                      </template>
-                    </SchemaForm>
+                      <v-text-field
+                        :label="$t('name')"
+                        :error-messages="errors.title"
+                        v-model="formData.title"
+                        :rules="[rules.required, rules.minLength(3)]"
+                      />
+                    </DefaultForm>
                   </template>
                 </DefaultDialog>
                 <QueryDialog
@@ -354,3 +311,16 @@ ol.speaker-queue
     </v-col>
   </v-row>
 </template>
+
+<style lang="sass">
+div.speaker-lists
+  .v-card
+    overflow: visible
+    z-index: unset
+
+ol.speaker-queue
+  margin-left: 1.2em
+  li
+    &.self
+      font-weight: 700
+</style>
