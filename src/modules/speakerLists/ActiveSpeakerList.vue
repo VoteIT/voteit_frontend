@@ -10,6 +10,7 @@ import useSpeakerSystem from './useSpeakerSystem'
 import EnterLeaveButton from './EnterLeaveButton.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
 import { CurrentSpeaker, QueuedSpeaker } from './types'
+import useSpeakerGroups from './useSpeakerGroups'
 
 const props = defineProps<{
   passive: boolean
@@ -25,7 +26,8 @@ const {
   speakerSystem: system,
   currentSpeakerQueue: queue
 } = useSpeakerSystem(computed(() => props.room))
-const { currentSpeaker, speakerGroups } = useSpeakerList(systemActiveListId)
+const { currentSpeaker } = useSpeakerList(systemActiveListId)
+const speakerGroups = useSpeakerGroups(systemActiveListId, t)
 
 const listState = computed(() => list.value && getState(list.value.state))
 
