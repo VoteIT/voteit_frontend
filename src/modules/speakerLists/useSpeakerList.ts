@@ -1,10 +1,8 @@
-import { enumerate, groupby, map } from 'itertools'
 import { computed, MaybeRef, unref } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
 import useMeetingId from '../meetings/useMeetingId'
-import { isQueuedSpeaker, Speaker, SpeakerSystem } from './types'
+import { isQueuedSpeaker } from './types'
 import {
   getCurrent,
   getHistory,
@@ -15,11 +13,9 @@ import {
 } from './useSpeakerLists'
 import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
-import systemMethods from './systemMethods'
 import useSpeakerAnnotations from './useSpeakerAnnotations'
 
 export default function useSpeakerList(listId: MaybeRef<number | null>) {
-  const { t } = useI18n()
   const { annotateSpeaker } = useSpeakerAnnotations(useMeetingId())
 
   const speakerHistory = computed(() => {
@@ -47,49 +43,6 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
     if (!list) return
     const speaker = getCurrent(list)
     if (speaker) return annotateSpeaker(speaker)
-  })
-
-  /**
-   * Creates a key function to be used by itertools.groupby to create speakerGroups.
-   * systemMethods is a half-baked plugin architecture, to be extended at a later point.
-   */
-  function getGroupKeyFn(system: SpeakerSystem, listId: number) {
-    const safePositions = system.safe_positions ?? 0
-    const methodKeyFn = systemMethods[system.method_name].getGroupKeyFn(
-      t,
-      system.settings,
-      listId
-    )
-    return ([position, speaker]: [number, Speaker]) => {
-      // Safe positions first, then system method logic.
-      return position <= safePositions
-        ? t('speaker.lockedPositions')
-        : methodKeyFn(speaker)
-    }
-  }
-
-  /**
-   * Speaker groups
-   * @example
-   * [
-   *   { title: 'Safe positions', queue: [1] },
-   *   { title: 'List 1': queue: [2, 3] },
-   *   { title: 'List 2': queue: [4] }
-   * ]
-   */
-  const speakerGroups = computed(() => {
-    const list = unref(listId)
-    if (!speakerSystem.value || !list) return []
-    return map(
-      groupby(
-        enumerate(speakerQueue.value, 1), // Start at position 1
-        getGroupKeyFn(speakerSystem.value, list) // Create a key function
-      ),
-      ([title, posUsers]) => ({
-        title, // groupby key is title
-        queue: map(posUsers, ([_, speaker]) => annotateSpeaker(speaker))
-      })
-    ) // Deconstruct enumeration into an array of speakers
   })
 
   function enterList() {
@@ -153,7 +106,6 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
     currentSpeaker,
     speakerHistory,
     speakerList,
-    speakerGroups,
     speakerSystem,
     speakerQueue,
     userQueue,

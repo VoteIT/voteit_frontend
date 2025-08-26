@@ -20,6 +20,7 @@ import useSpeakerList from './useSpeakerList'
 import * as speakerRules from './rules'
 import SpeakerEntry from './SpeakerEntry.vue'
 import { speakerApi } from './useSpeakerLists'
+import useSpeakerGroups from './useSpeakerGroups'
 
 const props = defineProps<{
   listId: number
@@ -28,10 +29,10 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const meetingId = useMeetingId()
+const listId = computed(() => props.listId)
 const {
   canStartSpeaker,
   currentSpeaker,
-  speakerGroups,
   speakerSystem,
   speakerQueue,
   userQueue,
@@ -39,6 +40,7 @@ const {
   stopSpeaker,
   undoSpeaker
 } = useSpeakerList(toRef(props, 'listId'))
+const speakerGroups = useSpeakerGroups(listId, t)
 const { hasParticipantNumbers, participantNumbers } =
   useParticipantNumbers(meetingId)
 
