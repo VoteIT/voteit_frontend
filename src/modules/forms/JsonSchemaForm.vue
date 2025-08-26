@@ -27,7 +27,7 @@ const nonFieldErrors = computed(() => {
       </p>
     </div>
     <JsonProperties
-      :modelValue="modelValue as T"
+      :modelValue="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
       :errors="errors"
       :properties="schema.properties"
