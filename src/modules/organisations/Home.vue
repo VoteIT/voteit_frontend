@@ -91,11 +91,7 @@ useTitle(
 
 async function fetchInvitesIfAuthenticated() {
   if (!user.value) return
-  try {
-    await fetchInvites()
-  } catch {
-    // Ignore matched invite fetch errors. User doesn't need to know.
-  }
+  await fetchInvites()
 }
 
 watch(user, () => {
