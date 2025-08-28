@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { JsonSchema } from '../forms/types'
-import JsonSchemaForm from '../forms/JsonSchemaForm.vue'
+import useRules from '@/composables/useRules'
 import {
   SpeakerSystemEditable,
   SpeakerSystemMethod
@@ -13,42 +12,25 @@ import { MeetingRole } from '../meetings/types'
 import { IMeetingRoom } from './types'
 import SpeakerSystemForm from './SpeakerSystemForm.vue'
 
-type RoomEditData = Pick<IMeetingRoom, 'title'> & { speakers: boolean }
+interface IFormData {
+  room: Pick<IMeetingRoom, 'title'> & { speakers: boolean }
+  speakerSystem?: SpeakerSystemEditable
+}
 
 const props = defineProps<{
-  data?: {
-    room: RoomEditData
-    speakerSystem?: SpeakerSystemEditable
-  }
+  data?: IFormData
   slsDisabled?: boolean
   working: boolean
 }>()
 
 defineEmits<{
   (e: 'cancel'): void
-  (e: 'submit', data: NonNullable<(typeof props)['data']>): void
+  (e: 'submit', data: IFormData): void
 }>()
 
 const { t } = useI18n()
 
-const schema = computed(
-  () =>
-    ({
-      properties: {
-        title: {
-          type: 'string',
-          label: t('title'),
-          maxLength: 100
-        },
-        speakers: {
-          readOnly: !!props.slsDisabled,
-          type: 'boolean',
-          label: t('speaker.lists', 2)
-        }
-      },
-      required: ['title']
-    }) as JsonSchema<RoomEditData>
-)
+const rules = useRules(t)
 
 function getDefaults() {
   const { room, speakerSystem } = props.data || {}
@@ -61,9 +43,7 @@ function getDefaults() {
       meeting_roles_to_speaker: [MeetingRole.Discusser],
       method_name: SpeakerSystemMethod.Simple,
       safe_positions: 1,
-      settings: {
-        max_times: 1
-      },
+      settings: null,
       show_time: false
     }
   }
@@ -74,7 +54,16 @@ const formData = reactive(getDefaults())
 
 <template>
   <v-form @submit.prevent="$emit('submit', formData)" v-slot="{ isValid }">
-    <JsonSchemaForm :schema="schema" v-model="formData.room" />
+    <v-text-field
+      :label="$t('title')"
+      :rules="[rules.required, rules.maxLength(100)]"
+      v-model="formData.room.title"
+    />
+    <v-checkbox
+      :readonly="slsDisabled"
+      :label="$t('speaker.lists', 2)"
+      v-model="formData.room.speakers"
+    />
     <SpeakerSystemForm
       class="mb-3"
       :disabled="!formData.room.speakers"

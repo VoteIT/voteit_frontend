@@ -34,9 +34,7 @@ const formData = reactive<SpeakerSystemEditable>(
   props.modelValue || {
     method_name: SpeakerSystemMethod.Simple,
     safe_positions: 1,
-    settings: {
-      max_times: 1
-    },
+    settings: null,
     meeting_roles_to_speaker: [MeetingRole.Discusser],
     show_time: false
   }
