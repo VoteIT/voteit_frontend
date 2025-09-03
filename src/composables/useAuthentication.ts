@@ -1,7 +1,6 @@
 import { computed, readonly, ref } from 'vue'
 import { AxiosError } from 'axios'
 
-import { hasher } from '@/utils/stringToHSL'
 import { IUser } from '@/modules/organisations/types'
 
 import useContextRoles from './useContextRoles' // Import order important!
@@ -19,9 +18,11 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 /**
  * Turn number into a pseudo random sort value, based on user pk
  */
-export function getUserRandomSortValue(number: number) {
-  const userPk = user.value?.pk ?? 1
-  return [...`${number ** ((userPk % 16) + 2)}-voteit`].reduce(hasher, userPk)
+export function getUserRandomSortValue(value: number) {
+  const userPk = user.value?.pk ?? 0
+  let n = userPk * 374761393 + value * 668265263 // big primes
+  n = (n ^ (n >> 13)) * 1274126177
+  return (n ^ (n >> 16)) >>> 0 // ensure unsigned 32-bit
 }
 
 export default function useAuthentication() {

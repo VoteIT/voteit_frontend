@@ -29,27 +29,27 @@ test('getUserRandomSortValue', () => {
   // @ts-ignore
   user.value = { pk: 1 }
   expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
-    1, 5, 3, 2, 4
+    4, 2, 5, 1, 3
   ])
   // @ts-ignore
   user.value = { pk: 2 }
   expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
-    4, 1, 5, 2, 3
+    1, 5, 3, 2, 4
   ])
   // @ts-ignore
   user.value = { pk: 3 }
   expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
-    4, 1, 2, 5, 3
+    5, 1, 3, 4, 2
   ])
   // @ts-ignore
   user.value = { pk: 123 }
   expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
-    5, 3, 1, 2, 4
+    4, 3, 1, 2, 5
   ])
   // @ts-ignore
   user.value = { pk: 12345 }
   expect(sortBy(sortObjects, shuffleOrder).map((o) => o.pk)).toEqual([
-    5, 1, 2, 4, 3
+    1, 4, 3, 2, 5
   ])
   expect(
     getDistribution(
@@ -57,11 +57,11 @@ test('getUserRandomSortValue', () => {
       10_000
     )
   ).toEqual({
-    123: 2108,
-    132: 1465,
-    213: 1562,
-    231: 1947,
-    312: 1481,
-    321: 1436
+    123: 1694,
+    132: 1642,
+    213: 1646,
+    231: 1671,
+    312: 1630,
+    321: 1716
   })
 })
