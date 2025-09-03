@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.33.2 (??)
 
 - Bugfix: Speaker room form had incorrect initial settings [#379](https://github.com/VoteIT/voteit_frontend/issues/379)
+- Improved pseudo random sort order algorithm
 
 ## 0.33.1 (2025-08-27)
 
