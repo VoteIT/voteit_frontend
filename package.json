@@ -16,7 +16,7 @@
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vueuse/components": "^10.9.0",
     "@vueuse/core": "^10.9.0",
-    "axios": "^1.6.7",
+    "axios": "^1.12.0",
     "caniuse-lite": "^1.0.30001431",
     "core-js": "^3.36.0",
     "envelope-client": "github:VoteIT/envelope_client",
