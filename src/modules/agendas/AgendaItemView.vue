@@ -10,6 +10,7 @@ import {
   watch
 } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { onBeforeRouteLeave } from 'vue-router'
 
 import { openModalEvent } from '@/utils/events'
 import { MenuItem } from '@/utils/types'
@@ -54,7 +55,6 @@ import { agendaItemType, lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
 import AISpeakerLists from './AISpeakerLists.vue'
-import { onBeforeRouteLeave } from 'vue-router'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
