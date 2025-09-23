@@ -206,22 +206,17 @@ const menuItems = computed<MenuItem[]>(() => {
 
 const hasProposals = computed(() => anyProposal(isAIProposal))
 
-function setLastRead(ai: AgendaItem) {
+function setLastRead(ai?: AgendaItem) {
   // Return if there is no new content
   if (!ai || !hasNewItems(ai)) return
-  lastReadType.methodCall('change', {
-    agenda_item: ai.pk
-  })
+  lastReadType.methodCall('change', { agenda_item: ai.pk })
 }
-watch(agendaItem, (_, leavingAi) => {
+// Set last read when leaving route.
+onBeforeRouteLeave(() => setLastRead(agendaItem.value))
+
+watch(agendaItem, (to, from) => {
   // Set last read when switching agenda item
-  if (leavingAi) setLastRead(leavingAi)
-})
-onBeforeRouteLeave(() => {
-  // Set last read when leaving route.
-  if (agendaItem.value) setLastRead(agendaItem.value)
-})
-watch(agendaItem, (to) => {
+  setLastRead(from)
   if (!to) return
   editing.value = false
   content.title = to.title // Body from agendaBody, see below
