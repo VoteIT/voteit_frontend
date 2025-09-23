@@ -206,10 +206,7 @@ const menuItems = computed<MenuItem[]>(() => {
 
 const hasProposals = computed(() => anyProposal(isAIProposal))
 
-function setLastRead(ai: AgendaItem, force = false) {
-  // Allow forcing read marker, on user demand
-  if (force)
-    return lastReadType.methodCall('last_read.change', { agenda_item: ai.pk })
+function setLastRead(ai: AgendaItem) {
   // Return if there is no new content
   if (!ai || !hasNewItems(ai)) return
   lastReadType.methodCall('change', {
