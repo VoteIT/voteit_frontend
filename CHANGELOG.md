@@ -4,9 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.33.2 (??)
+## 0.33.2 (2025-09-23)
 
 - Bugfix: Speaker room form had incorrect initial settings [#379](https://github.com/VoteIT/voteit_frontend/issues/379)
+- Bugfix: Agenda Item unread ws not triggered when navigating between agenda items
 - Improved pseudo random sort order algorithm
 
 ## 0.33.1 (2025-08-27)

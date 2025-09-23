@@ -216,6 +216,10 @@ function setLastRead(ai: AgendaItem, force = false) {
     agenda_item: ai.pk
   })
 }
+watch(agendaItem, (_, leavingAi) => {
+  // Set last read when switching agenda item
+  if (leavingAi) setLastRead(leavingAi)
+})
 onBeforeRouteLeave(() => {
   // Set last read when leaving route.
   if (agendaItem.value) setLastRead(agendaItem.value)
