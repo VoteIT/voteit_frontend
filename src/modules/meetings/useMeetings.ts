@@ -96,9 +96,8 @@ const existingMeetingYears = computed(() => {
 
 function setMeeting(meeting: Meeting) {
   meetings.set(meeting.pk, meeting)
-  if (meeting.current_user_roles && user.value) {
+  if (meeting.current_user_roles && user.value)
     meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
-  }
 }
 
 async function fetchMeeting(pk: number) {
@@ -109,9 +108,7 @@ async function fetchMeeting(pk: number) {
 
 async function fetchMeetings() {
   const { data } = await meetingType.api.list()
-  for (const m of data) {
-    meetings.set(m.pk, m)
-  }
+  for (const m of data) meetings.set(m.pk, m)
 }
 
 function clearMeetings() {
@@ -135,25 +132,23 @@ export default function useMeetings(
     // User could be logged in/out or switched directly. Always clear meetings first.
     watch(user, (value) => {
       clearMeetings()
-      if (value) {
-        fetchMeetings()
-      }
+      if (value) fetchMeetings()
     })
   }
 
   return {
-    clearMeetings,
     existingMeetingYears,
-    fetchMeeting,
-    fetchMeetings,
-    filterMeetings,
-    getMeetingRoleIcon,
     meetingStateCount,
     meetings,
     otherMeetingsExist,
     participatingClosedMeetings,
     participatingOngoingMeetings,
     participatingUpcomingMeetings,
-    roleIcons
+    roleIcons,
+    clearMeetings,
+    fetchMeeting,
+    fetchMeetings,
+    filterMeetings,
+    getMeetingRoleIcon
   }
 }
