@@ -1,40 +1,3 @@
-<template>
-  <v-card
-    :title="invite.meeting_title"
-    elevation="4"
-    class="rounded-te-xl rounded-bs-xl"
-  >
-    <v-list density="compact">
-      <v-list-subheader> {{ $t('invites.invitedAs') }}: </v-list-subheader>
-      <v-list-item
-        v-for="{ icon, scope, subtitle, title } in invitedUserdata"
-        :key="scope"
-        :prepend-icon="icon"
-        :subtitle="subtitle"
-        :title="title"
-      />
-    </v-list>
-    <v-card-actions class="flex-wrap">
-      <v-spacer />
-      <v-btn
-        color="warning"
-        :disabled="submitting"
-        prepend-icon="mdi-close"
-        :text="$t('join.rejectInvite')"
-        @click="rejectInvite(invite)"
-      />
-      <v-btn
-        color="primary"
-        :disabled="submitting"
-        prepend-icon="mdi-door-open"
-        :text="$t('join.acceptInvite')"
-        variant="elevated"
-        @click="acceptInvite(invite)"
-      />
-    </v-card-actions>
-  </v-card>
-</template>
-
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -103,3 +66,40 @@ const invitedUserdata = computed(() => {
     })
 })
 </script>
+
+<template>
+  <v-card
+    :title="invite.meeting_title"
+    elevation="4"
+    class="rounded-te-xl rounded-bs-xl"
+  >
+    <v-list density="compact">
+      <v-list-subheader> {{ $t('invites.invitedAs') }}: </v-list-subheader>
+      <v-list-item
+        v-for="{ icon, scope, subtitle, title } in invitedUserdata"
+        :key="scope"
+        :prepend-icon="icon"
+        :subtitle="subtitle"
+        :title="title"
+      />
+    </v-list>
+    <v-card-actions class="flex-wrap">
+      <v-spacer />
+      <v-btn
+        color="warning"
+        :disabled="submitting"
+        prepend-icon="mdi-close"
+        :text="$t('join.rejectInvite')"
+        @click="rejectInvite(invite)"
+      />
+      <v-btn
+        color="primary"
+        :disabled="submitting"
+        prepend-icon="mdi-door-open"
+        :text="$t('join.acceptInvite')"
+        variant="elevated"
+        @click="acceptInvite(invite)"
+      />
+    </v-card-actions>
+  </v-card>
+</template>
