@@ -100,6 +100,11 @@ function setMeeting(meeting: Meeting) {
     meetingRoles.set(meeting.pk, user.value.pk, meeting.current_user_roles)
 }
 
+/**
+ * Try to fetch a meeting. Resolves to boolean, representing user meeting access.
+ *
+ * true: User currently has meeting role(s)
+ */
 async function fetchMeeting(pk: number) {
   const { data } = await meetingType.api.retrieve(pk)
   setMeeting(data)

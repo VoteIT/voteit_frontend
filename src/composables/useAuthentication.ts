@@ -1,7 +1,7 @@
 import { computed, readonly, ref } from 'vue'
 import { AxiosError } from 'axios'
 
-import { IUser } from '@/modules/organisations/types'
+import { IUser, OrganisationRole } from '@/modules/organisations/types'
 
 import useContextRoles from './useContextRoles' // Import order important!
 import { profileType } from '@/modules/organisations/contentTypes'
@@ -11,7 +11,7 @@ export const userId = computed(() => user.value?.pk)
 
 const alternateUsers = ref<IUser[]>([])
 const isAuthenticated = ref<boolean | undefined>(undefined)
-const organizationRoles = useContextRoles('organisation') // Avoid circular import
+const organizationRoles = useContextRoles<OrganisationRole>('organisation') // Avoid circular import
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

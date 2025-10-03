@@ -4,7 +4,7 @@ import useContextRoles from '@/composables/useContextRoles'
 import { Organisation, OrganisationRole } from './types'
 
 const { user } = useAuthentication()
-const { hasRole } = useContextRoles('organisation') // Avoid circular import
+const { hasRole } = useContextRoles<OrganisationRole>('organisation') // Avoid circular import
 
 // Special rule case: Accept organisation by pk. We won't always have organization data.
 export function isOrganisationManager(org?: number): boolean {
