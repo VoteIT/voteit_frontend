@@ -9,16 +9,7 @@ import { user } from '@/composables/useAuthentication'
 
 import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 import { Author, MeetingRole } from './types'
-import {
-  canChangeMeeting,
-  canChangeRolesMeeting,
-  canAddMeetingInvite,
-  canViewMeetingInvite,
-  canViewMeeting,
-  isModerator,
-  isFinishedMeeting,
-  isActiveMeeting
-} from './rules'
+import * as rules from './rules'
 import { meetingType } from './contentTypes'
 import { translateMeetingRole } from './utils'
 import useMeetingId from './useMeetingId'
@@ -99,20 +90,20 @@ export default function useMeeting() {
   })
 
   return {
-    canChange: computed(() => canChangeMeeting(meeting.value)),
+    canChange: computed(() => rules.canChangeMeeting(meeting.value)),
     canChangeRoles: computed(
-      () => meeting.value && canChangeRolesMeeting(meeting.value)
+      () => meeting.value && rules.canChangeRolesMeeting(meeting.value)
     ),
     canAddMeetingInvite: computed(
-      () => meeting.value && canAddMeetingInvite(meeting.value)
+      () => meeting.value && rules.canAddMeetingInvite(meeting.value)
     ),
-    canViewMeeting: computed(() => canViewMeeting(meeting.value)),
+    canViewMeeting: computed(() => rules.canViewMeeting(meeting.value)),
     canViewMeetingInvite: computed(
-      () => meeting.value && canViewMeetingInvite(meeting.value)
+      () => meeting.value && rules.canViewMeetingInvite(meeting.value)
     ),
-    isFinishedMeeting: computed(() => isFinishedMeeting(meeting.value)),
-    isActiveMeeting: computed(() => isActiveMeeting(meeting.value)),
-    isModerator: computed(() => isModerator(meeting.value)),
+    isFinishedMeeting: computed(() => rules.isFinishedMeeting(meeting.value)),
+    isActiveMeeting: computed(() => rules.isActiveMeeting(meeting.value)),
+    isModerator: computed(() => rules.isModerator(meeting.value)),
     meeting,
     meetingId,
     meetingDialect,
