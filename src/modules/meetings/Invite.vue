@@ -4,17 +4,16 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, slugify } from '@/utils'
+import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
 
 import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 import useMatchedInvites from './useMatchedInvites'
-import useMeetings from './useMeetings'
 import { translateInviteType } from './utils'
 
 const { fetchInvites } = useMatchedInvites()
-const { fetchMeetings } = useMeetings()
 
 const props = defineProps<{ invite: MeetingInvite }>()
 
@@ -26,13 +25,13 @@ async function acceptInvite(inv: MeetingInvite) {
   submitting.value = true
   try {
     await matchedInviteType.api.action(inv.pk, 'accept')
-    await fetchMeetings()
-    router.push(
+    await router.push(
       `/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`
     )
   } catch {
-    submitting.value = false
+    openAlertEvent.emit('^Failed accepting invite')
   }
+  submitting.value = false
 }
 async function rejectInvite(inv: MeetingInvite) {
   if (
@@ -47,8 +46,9 @@ async function rejectInvite(inv: MeetingInvite) {
     await matchedInviteType.api.action(inv.pk, 'reject')
     fetchInvites()
   } catch {
-    submitting.value = false
+    openAlertEvent.emit('^Invite rejection failed')
   }
+  submitting.value = false
 }
 
 const invitedUserdata = computed(() => {
