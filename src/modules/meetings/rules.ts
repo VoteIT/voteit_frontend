@@ -5,7 +5,6 @@ import useContextRoles from '@/composables/useContextRoles'
 import {
   Meeting,
   MeetingInvite,
-  MeetingInviteState,
   MeetingRole,
   MeetingState
 } from '@/modules/meetings/types'
@@ -14,7 +13,7 @@ import { meetingStates } from './workflowStates'
 import { isOrganisationManager } from '../organisations/rules'
 import { meetings } from './useMeetings'
 
-const { hasRole } = useContextRoles('meeting')
+const { hasRole } = useContextRoles<MeetingRole>('meeting')
 // Import this a bit differently, to avoid cirkular imports
 const { getState } = useWorkflows(meetingStates)
 
@@ -41,9 +40,11 @@ export function hasMeetingRole(
   if (!meeting) return
   if (typeof meeting !== 'number') meeting = meeting.pk
   // Meeting can have fake roles for testing purposes (only set by moderators)
+  if (actualRole) return hasRole(meeting, role)
   const meetingFakeRoles = fakeRoles.get(meeting)
-  if (actualRole || !meetingFakeRoles) return hasRole(meeting, role)
-  return meetingFakeRoles.includes(role)
+  return meetingFakeRoles
+    ? meetingFakeRoles.includes(role)
+    : hasRole(meeting, role)
 }
 
 export function hasFakeRoles(meeting: number) {
