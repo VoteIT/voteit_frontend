@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, slugify } from '@/utils'
+import { dialogQuery, sleep, slugify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
@@ -20,18 +20,20 @@ const props = defineProps<{ invite: MeetingInvite }>()
 const { t } = useI18n()
 const router = useRouter()
 
-const submitting = ref(false)
+const submitting = ref<'accept' | 'reject'>()
+
 async function acceptInvite(inv: MeetingInvite) {
-  submitting.value = true
+  submitting.value = 'accept'
   try {
     await matchedInviteType.api.action(inv.pk, 'accept')
+    await sleep(250) // Slight delay for user, before sending to meeting page
     await router.push(
       `/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`
     )
   } catch {
     openAlertEvent.emit('^Failed accepting invite')
   }
-  submitting.value = false
+  submitting.value = undefined
 }
 async function rejectInvite(inv: MeetingInvite) {
   if (
@@ -41,14 +43,14 @@ async function rejectInvite(inv: MeetingInvite) {
     }))
   )
     return
-  submitting.value = true
+  submitting.value = 'reject'
   try {
     await matchedInviteType.api.action(inv.pk, 'reject')
     fetchInvites()
   } catch {
     openAlertEvent.emit('^Invite rejection failed')
   }
-  submitting.value = false
+  submitting.value = undefined
 }
 
 const invitedUserdata = computed(() => {
@@ -87,14 +89,14 @@ const invitedUserdata = computed(() => {
       <v-spacer />
       <v-btn
         color="warning"
-        :disabled="submitting"
+        :loading="submitting === 'reject'"
         prepend-icon="mdi-close"
         :text="$t('join.rejectInvite')"
         @click="rejectInvite(invite)"
       />
       <v-btn
         color="primary"
-        :disabled="submitting"
+        :loading="submitting === 'accept'"
         prepend-icon="mdi-door-open"
         :text="$t('join.acceptInvite')"
         variant="elevated"
