@@ -16,19 +16,21 @@ export default function useMeetingChannel() {
 
   const fetchFailed = ref(false)
 
-  const roleChannel = computed(() => {
-    if (
-      !meeting.value ||
-      !userRoles.value?.size ||
-      isModerator.value === undefined
-    )
-      return
-    return isModerator.value ? 'moderators' : 'participants'
-  })
+  /** Ensure we have valid user roles before attempting to subscribe */
+  const conditionalMeetingId = computed(() =>
+    userRoles.value?.size ? meetingId.value : undefined
+  )
+
+  const roleChannel = computed(() =>
+    isModerator.value ? 'moderators' : 'participants'
+  )
 
   const channels = [
-    useChannel('meeting', meetingId, channelConfig),
-    useChannel(roleChannel, meetingId, { ...channelConfig, leaveDelay: 500 })
+    useChannel('meeting', conditionalMeetingId, channelConfig),
+    useChannel(roleChannel, conditionalMeetingId, {
+      ...channelConfig,
+      leaveDelay: 500
+    })
   ]
 
   const loader = useLoader(
