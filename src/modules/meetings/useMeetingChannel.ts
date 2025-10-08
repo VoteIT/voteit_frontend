@@ -45,8 +45,6 @@ export default function useMeetingChannel() {
           await router.push(meetingJoinRoute.value) // Fetch was OK, but user has no meeting role
       } catch {
         fetchFailed.value = true
-        // await router.push({ name: 'home' })
-        // loader.reset()
       }
     })
   })
