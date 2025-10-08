@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.34.0 (??)
 
 - Addressing issues to do with loading meeting after accepting invitation [#382](https://github.com/VoteIT/voteit/issues/382)
+- Bugfix: Tried to subscribe to participant channel when kicked out of meeting
 
 ## 0.33.2 (2025-09-23)
 
