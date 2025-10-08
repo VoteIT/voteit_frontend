@@ -1,24 +1,40 @@
 import type { Dictionary } from 'lodash'
-import type { Component } from 'vue'
+import type { Component, DefineComponent } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 
-import type { SchemaGenerator } from '@/components/inputs/types'
-import type { OrganisationPlugin } from '../organisations/PluginHandler'
+import PluginHandler, {
+  OrganisationPlugin
+} from '../organisations/PluginHandler'
 import type { PollMethodCriterion, PollMethodSettings } from './methods/types'
-import PluginHandler from '../organisations/PluginHandler'
+
+type SettingsComponent<T> = DefineComponent<
+  {
+    modelValue: T
+    proposals: number
+  },
+  {},
+  any,
+  {},
+  {},
+  {},
+  {},
+  {
+    'update:modelValue': (value: T) => void
+  }
+>
 
 export interface PollPlugin extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
+  getDefaultSettings?(proposals: number): PollMethodSettings
   getDescription(t: ComposerTranslation): string
   getHelp(t: ComposerTranslation): string
   getName(t: ComposerTranslation): string
-  getSchema?: SchemaGenerator
-  initialSettings?: PollMethodSettings
   multipleWinners?: boolean
   proposalsMax?: number
   proposalsMin: number
   resultComponent: Component
+  settingsComponent?: SettingsComponent<PollMethodSettings>
   voteComponent: Component
 }
 

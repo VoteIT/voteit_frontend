@@ -2,23 +2,18 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { isEmpty } from 'lodash'
 
 import { slugify } from '@/utils'
-import { required, maxLength } from '@/utils/rules'
 
 import useAlert from '@/composables/useAlert'
 
-import SchemaForm from '@/components/SchemaForm.vue'
 import usePermission from '@/composables/usePermission'
-import { FieldType, FormSchema } from '@/components/types'
 
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposals from '../proposals/useProposals'
-import useProposalOrdering from '../proposals/useProposalOrdering'
 import { ProposalState } from '../proposals/types'
 import ProposalCard from '../proposals/ProposalCard.vue'
 
@@ -29,6 +24,8 @@ import type { Poll } from './types'
 import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 import { PollPlugin, pollPlugins } from './registry'
+import StartPollForm from './StartPollForm.vue'
+import { AgendaState } from '../agendas/types'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -37,7 +34,6 @@ const { isModerator, meetingRoute, meetingId, getMeetingRoute } = useMeeting()
 const { agendaId, agenda } = useAgenda(meetingId)
 const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
 const { alert } = useAlert()
-const { proposalOrderingOptions } = useProposalOrdering(t)
 
 usePermission(isModerator, { to: meetingRoute }) // TODO canAddPoll might be different in the future
 
@@ -111,7 +107,10 @@ const methodSettings = ref<
 >({ title: '', p_ord: 'c', withheld_result: false })
 watch(methodSelected, (name) => {
   if (!name) return
-  const initial = methodSelectedPlugin.value?.initialSettings || {}
+  const initial =
+    methodSelectedPlugin.value?.getDefaultSettings?.(
+      selectedProposals.value.length
+    ) || {}
   methodSettings.value = {
     ...initial,
     title: nextPollTitle.value,
@@ -120,81 +119,26 @@ watch(methodSelected, (name) => {
   }
 })
 
-const working = ref(false)
-const settingsValid = ref(false)
-const readyToCreate = computed(() => {
-  return methodSelected.value && !working.value && settingsValid.value
-})
-
-function settingsOrNull(
-  settings: PollMethodSettings | {}
-): PollMethodSettings | null {
-  if (isEmpty(settings)) return null
-  return settings as PollMethodSettings
-}
-
-async function createPoll(start = false) {
+async function createPoll(
+  poll: Pick<PollStartData, 'p_ord' | 'settings' | 'title' | 'withheld_result'>,
+  start = false
+) {
   if (!methodSelected.value) return
   if (!pollPlugins.getPlugin(methodSelected.value))
     return alert(`*${methodSelected.value} not implemented`)
-
-  working.value = true
-  const { title, p_ord, withheld_result, ...settings } = methodSettings.value
-  // For Repeated Schulze
-  if (
-    'winners' in settings &&
-    settings.winners === selectedProposals.value.length
-  )
-    settings.winners = null
   const pollData: PollStartData = {
+    ...poll,
     agenda_item: agendaId.value,
     meeting: meetingId.value,
-    title,
-    p_ord,
     proposals: [...selectedProposalIds.value],
     method_name: methodSelected.value,
-    start,
-    settings: settingsOrNull(settings),
-    withheld_result
+    start
   }
-  try {
-    const { data } = await pollType.api.add(pollData as Partial<Poll>)
-    router.push(
-      getMeetingRoute('poll', { pid: data.pk, pslug: slugify(data.title) })
-    )
-  } catch {}
-  working.value = false
+  const { data } = await pollType.api.add(pollData)
+  router.push(
+    getMeetingRoute('poll', { pid: data.pk, pslug: slugify(data.title) })
+  )
 }
-
-const methodSchema = computed<FormSchema | undefined>(() => {
-  if (!methodSelected.value) return
-  const specifics =
-    methodSelectedPlugin.value?.getSchema?.(
-      t,
-      selectedProposals.value.length
-    ) || []
-  return [
-    {
-      type: FieldType.Text,
-      name: 'title',
-      rules: [required, maxLength(70)],
-      label: t('title')
-    },
-    {
-      type: FieldType.Select,
-      name: 'p_ord',
-      rules: [required],
-      label: t('proposal.ordering'),
-      items: proposalOrderingOptions.value
-    },
-    ...specifics,
-    {
-      type: FieldType.Checkbox,
-      name: 'withheld_result',
-      label: t('poll.result.withhold')
-    }
-  ]
-})
 
 watch(agendaId, () => {
   pickMethod.value = false
@@ -279,7 +223,16 @@ watch(agendaId, () => {
         <p v-if="!availableProposals.length">
           <em>{{ $t('poll.noAiPublishedProposals') }}</em>
         </p>
-        <div v-if="!pickMethod" class="btn-group mt-3">
+        <div v-if="pickMethod" class="my-3">
+          <v-btn
+            prepend-icon="mdi-undo-variant"
+            :text="$t('poll.pickProposals')"
+            variant="tonal"
+            @click="pickMethod = false"
+          />
+        </div>
+
+        <div v-else class="btn-group mt-3">
           <v-btn
             color="primary"
             prepend-icon="mdi-check-all"
@@ -301,24 +254,18 @@ watch(agendaId, () => {
         <h2 class="my-2">{{ $t('step', 3) }}: {{ $t('poll.chooseMethod') }}</h2>
         <v-expansion-panels v-model="methodSelected">
           <v-expansion-panel
-            v-for="{
-              id,
-              criterion,
-              discouraged,
-              getName,
-              getDescription
-            } in availableMethods"
-            :key="id"
-            :title="getName(t)"
-            :value="id"
+            v-for="{ criterion, ...method } in availableMethods"
+            :key="method.id"
+            :title="method.getName(t)"
+            :value="method.id"
           >
-            <v-expansion-panel-text>
+            <template #text>
               <v-alert
                 class="my-4"
                 type="info"
-                :icon="discouraged && 'mdi-alert-decagram'"
+                :icon="method.discouraged && 'mdi-alert-decagram'"
               >
-                {{ getDescription(t) }}
+                {{ method.getDescription(t) }}
               </v-alert>
               <h3 class="my-2">Valkriterier</h3>
               <v-tooltip
@@ -345,46 +292,19 @@ watch(agendaId, () => {
               <h3 class="my-2">
                 {{ $t('options') }}
               </h3>
-              <SchemaForm
-                v-if="methodSchema"
-                :key="`options-${id}`"
-                :schema="methodSchema"
-                v-model="methodSettings"
-                @update:valid="settingsValid = $event"
-                validate-immediately
+              <StartPollForm
+                :allow-start="agendaItem?.state === AgendaState.Ongoing"
+                :create-handler="createPoll"
+                :poll-method="method"
+                :proposals="selectedProposals.length"
+                :title="nextPollTitle"
               />
-            </v-expansion-panel-text>
+            </template>
           </v-expansion-panel>
         </v-expansion-panels>
-        <div class="btn-group mt-3">
-          <v-btn
-            color="primary"
-            prepend-icon="mdi-undo-variant"
-            :text="$t('navigation.back')"
-            variant="flat"
-            @click="pickMethod = false"
-          />
-          <v-btn
-            color="primary"
-            :disabled="!readyToCreate"
-            prepend-icon="mdi-check"
-            :text="$t('create')"
-            variant="flat"
-            @click="createPoll()"
-          />
-          <v-btn
-            v-if="agendaItem?.state === 'ongoing'"
-            color="primary"
-            :disabled="!readyToCreate"
-            prepend-icon="mdi-play"
-            :text="$t('poll.createAndStart')"
-            variant="flat"
-            @click="createPoll(true)"
-          />
-        </div>
       </template>
       <v-alert
-        v-if="agendaItem && agendaItem.state !== 'ongoing'"
+        v-if="agendaItem && agendaItem.state !== AgendaState.Ongoing"
         class="mt-2"
         :text="$t('poll.cantStartWithoutOngoing')"
         type="info"

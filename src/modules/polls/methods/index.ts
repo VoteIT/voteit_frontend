@@ -1,46 +1,26 @@
-import { ComposerTranslation } from 'vue-i18n'
-
-import createFormSchema from '@/utils/createFormSchema'
 import useOrganisation from '@/modules/organisations/useOrganisation'
-import { pollPlugins } from '../registry'
+import { PollPlugin, pollPlugins } from '../registry'
 
-import Dutt from './Dutt.vue'
+import Dutt from './Approval.vue'
 import Majority from './Majority.vue'
 import RankedVoting from './RankedVoting.vue'
 import Simple from './Simple.vue'
 import Schulze from './Schulze.vue'
-
-import DuttResult from './DuttResult.vue'
+import DuttResult from './ApprovalResult.vue'
 import MajorityResult from './MajorityResult.vue'
 import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
 import RepeatedIRVResult from './RepeatedIRVResult.vue'
 import SimpleResult from './SimpleResult.vue'
 import SchulzeResult from './SchulzeResult.vue'
 import STVResult from './STVResult.vue'
-import { JsonSchema } from '@/modules/forms/types'
+import SchulzeSettings from './SchulzeSettings.vue'
+import RepeatedSchulzeSettings from './RepeatedSchulzeSettings.vue'
+import IRVSettings from './IRVSettings.vue'
+import ScottishSTVSettings from './ScottishSTVSettings.vue'
+import ApprovalSettings from './ApprovalSettings.vue'
+import RepeatedIRVSettings from './RepeatedIRVSettings.vue'
 
 const { getOrganisationComponent } = useOrganisation()
-
-function getSchulzeSchema(
-  t: ComposerTranslation,
-  proposals: number
-): JsonSchema<{ deny_proposal: boolean; stars: number }> {
-  return {
-    properties: {
-      stars: {
-        type: 'number',
-        label: t('poll.schulze.numberOfStars'),
-        maximum: 20,
-        minimum: 3
-      },
-      deny_proposal: {
-        type: 'boolean',
-        label: t('poll.schulze.addDenyProposal')
-      }
-    },
-    required: proposals < 3 ? ['deny_proposal', 'stars'] : ['stars']
-  }
-}
 
 pollPlugins.register({
   id: 'combined_simple',
@@ -72,6 +52,12 @@ pollPlugins.register({
     majorityWinner: true,
     mutualMajority: true
   },
+  getDefaultSettings(proposals) {
+    return {
+      deny_proposal: proposals === 2,
+      stars: 5
+    }
+  },
   getDescription(t) {
     return t('poll.method.description.schulze')
   },
@@ -81,16 +67,11 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.schulze')
   },
-  getSchema(t, proposals) {
-    return createFormSchema(t, getSchulzeSchema(t, proposals))
-  },
-  initialSettings: {
-    stars: 5
-  },
   proposalsMin: 2,
   resultComponent: SchulzeResult,
+  settingsComponent: SchulzeSettings,
   voteComponent: Schulze
-})
+} as PollPlugin)
 
 pollPlugins.register({
   id: 'majority',
@@ -123,6 +104,13 @@ pollPlugins.register({
     majorityWinner: true,
     proportional: false
   },
+  getDefaultSettings(proposals) {
+    return {
+      deny_proposal: proposals === 2,
+      stars: 5,
+      winners: null
+    }
+  },
   getDescription(t) {
     return t('poll.method.description.repeated_schulze')
   },
@@ -132,31 +120,12 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.repeated_schulze')
   },
-  getSchema(t, proposals) {
-    const { properties, required } = getSchulzeSchema(t, proposals)
-    return createFormSchema(t, {
-      properties: {
-        winners: {
-          type: 'number',
-          label: t('winners'),
-          hint: t('poll.repeated_schulze.winnersHint'),
-          minimum: 1,
-          maximum: proposals
-        },
-        ...properties
-      },
-      required
-    })
-  },
-  initialSettings: {
-    winners: 2,
-    stars: 5
-  },
   multipleWinners: true,
   proposalsMin: 2,
   resultComponent: RepeatedSchulzeResult,
+  settingsComponent: RepeatedSchulzeSettings,
   voteComponent: Schulze
-})
+} as PollPlugin)
 
 pollPlugins.register({
   id: 'scottish_stv',
@@ -167,6 +136,12 @@ pollPlugins.register({
     majorityLoser: false,
     majorityWinner: false
   },
+  getDefaultSettings() {
+    return {
+      allow_random: true,
+      winners: 2
+    }
+  },
   getDescription(t) {
     return t('poll.method.description.scottish_stv')
   },
@@ -176,32 +151,12 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.scottish_stv')
   },
-  getSchema(t, proposals) {
-    return createFormSchema(t, {
-      properties: {
-        winners: {
-          type: 'number',
-          label: t('winners'),
-          minimum: 1,
-          maximum: proposals - 1
-        },
-        allow_random: {
-          type: 'boolean',
-          label: t('poll.allowRandomTiebreaker')
-        }
-      },
-      required: ['winners']
-    })
-  },
-  initialSettings: {
-    winners: 2,
-    allow_random: true
-  },
   multipleWinners: true,
   proposalsMin: 3,
   resultComponent: STVResult,
+  settingsComponent: ScottishSTVSettings,
   voteComponent: RankedVoting
-})
+} as PollPlugin)
 
 pollPlugins.register({
   id: 'irv',
@@ -212,6 +167,11 @@ pollPlugins.register({
     majorityWinner: false,
     proportional: false
   },
+  getDefaultSettings() {
+    return {
+      allow_random: true
+    }
+  },
   getDescription(t) {
     return t('poll.method.description.irv')
   },
@@ -221,23 +181,11 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.irv')
   },
-  getSchema(t) {
-    return createFormSchema(t, {
-      properties: {
-        allow_random: {
-          type: 'boolean',
-          label: t('poll.allowRandomTiebreaker')
-        }
-      }
-    })
-  },
-  initialSettings: {
-    allow_random: true
-  },
   proposalsMin: 3,
   resultComponent: STVResult,
+  settingsComponent: IRVSettings,
   voteComponent: RankedVoting
-})
+} as PollPlugin)
 
 pollPlugins.register({
   id: 'dutt',
@@ -251,6 +199,12 @@ pollPlugins.register({
     proportional: false
   },
   discouraged: true,
+  getDefaultSettings() {
+    return {
+      max: 0,
+      min: 1
+    }
+  },
   getDescription(t) {
     return t('poll.method.description.dutt')
   },
@@ -260,35 +214,11 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.dutt')
   },
-  getSchema(t, proposals) {
-    return createFormSchema(t, {
-      properties: {
-        min: {
-          type: 'number',
-          label: t('poll.dutt.min'),
-          minimum: 0,
-          // Don't allow requiring to select all proposals
-          maximum: proposals - 1,
-          hint: t('poll.dutt.minMaxHint')
-        },
-        max: {
-          type: 'number',
-          label: t('poll.dutt.max'),
-          minimum: 0,
-          maximum: proposals,
-          hint: t('poll.dutt.minMaxHint')
-        }
-      }
-    })
-  },
-  initialSettings: {
-    min: 0,
-    max: 0
-  },
   proposalsMin: 3,
   resultComponent: DuttResult,
+  settingsComponent: ApprovalSettings,
   voteComponent: Dutt
-})
+} as PollPlugin)
 
 pollPlugins.register({
   id: 'repeated_irv',
@@ -301,6 +231,14 @@ pollPlugins.register({
   },
   discouraged: true,
   checkActive: () => !!getOrganisationComponent('repeated_irv'),
+  getDefaultSettings() {
+    return {
+      allow_random: true,
+      max: 0,
+      min: 1,
+      winners: 2
+    }
+  },
   getDescription(t) {
     return t('poll.method.description.repeated_irv')
   },
@@ -310,42 +248,8 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.repeated_irv')
   },
-  getSchema(t, proposals) {
-    return createFormSchema(t, {
-      properties: {
-        winners: {
-          type: 'number',
-          label: t('winners'),
-          minimum: 2,
-          maximum: proposals
-        },
-        allow_random: {
-          type: 'boolean',
-          label: t('poll.allowRandomTiebreaker')
-        },
-        min: {
-          label: t('poll.minRanked'),
-          maximum: proposals,
-          minimum: 1,
-          type: 'number'
-        },
-        max: {
-          hint: t('poll.dutt.minMaxHint'),
-          label: t('poll.maxRanked'),
-          maximum: proposals,
-          minimum: 0,
-          type: 'number'
-        }
-      },
-      required: ['winners', 'min']
-    })
-  },
-  initialSettings: {
-    allow_random: true,
-    min: 1,
-    winners: 2
-  },
   proposalsMin: 3,
   resultComponent: RepeatedIRVResult,
+  settingsComponent: RepeatedIRVSettings,
   voteComponent: RankedVoting
-})
+} as PollPlugin)

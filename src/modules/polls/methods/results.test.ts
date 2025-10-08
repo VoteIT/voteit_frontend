@@ -5,7 +5,7 @@ import { createI18n } from 'vue-i18n'
 
 import router from '@/router'
 import vuetify from '@/plugins/vuetify'
-import DuttResult from './DuttResult.vue'
+import DuttResult from './ApprovalResult.vue'
 import MajorityResult from './MajorityResult.vue'
 import RepeatedIRVResult from './RepeatedIRVResult.vue'
 import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
