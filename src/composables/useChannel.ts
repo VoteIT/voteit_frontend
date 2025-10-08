@@ -42,23 +42,24 @@ export default function useChannel(
 
   async function subscribe() {
     // Must only be called if name and pk is set
-    const channelType = unref(name)!
-    subscription = socket.channels.subscribe(channelType, pk.value!)
+    const channelType = unref(name)
+    if (!channelType || !pk.value)
+      throw new Error('Channel subscript called with channel name or pk unset')
+    subscription = socket.channels.subscribe(channelType, pk.value)
     try {
       await subscription.promise
     } catch (e) {
-      if (config?.critical) {
-        openDialogEvent.emit({
-          dismissible: false,
-          title: t('meeting.subscriptionFailedMessage'),
-          theme: ThemeColor.Error,
-          no: false,
-          yes: t('meeting.subscriptionFailedButton'),
-          resolve: async () => {
-            router.push('/')
-          }
-        })
-      }
+      if (!config?.critical) return
+      openDialogEvent.emit({
+        dismissible: false,
+        title: t('meeting.subscriptionFailedMessage'),
+        theme: ThemeColor.Error,
+        no: false,
+        yes: t('meeting.subscriptionFailedButton'),
+        resolve() {
+          router.push({ name: 'home' })
+        }
+      })
     }
   }
 

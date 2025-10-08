@@ -9,15 +9,20 @@ import useMeetings from './useMeetings'
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel() {
-  const { isModerator, meetingId, meeting, meetingJoinRoute } = useMeeting()
+  const { isModerator, meetingId, meeting, meetingJoinRoute, userRoles } =
+    useMeeting()
   const { fetchMeeting } = useMeetings()
   const router = useRouter()
 
   const fetchFailed = ref(false)
 
   const roleChannel = computed(() => {
-    if (!meeting.value) return
-    if (isModerator.value === undefined) return
+    if (
+      !meeting.value ||
+      !userRoles.value?.size ||
+      isModerator.value === undefined
+    )
+      return
     return isModerator.value ? 'moderators' : 'participants'
   })
 
