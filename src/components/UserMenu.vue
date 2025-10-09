@@ -1,28 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import { getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
-import * as rules from '@/utils/rules'
-import useAlert from '@/composables/useAlert'
 import useAuthentication from '@/composables/useAuthentication'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { IUser } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
 
 import DefaultDialog from './DefaultDialog.vue'
-import SchemaForm from './SchemaForm.vue'
-import { FieldType } from './types'
-import type { FormSchema } from './types'
 import { toggleUserMenu } from './events'
 import UserAvatar from './UserAvatar.vue'
+import DefaultForm from './DefaultForm.vue'
+import useRules from '@/composables/useRules'
+import SlugField from './inputs/SlugField.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+const rules = useRules(t)
 
-const { alert } = useAlert()
 const { alternateUsers, user, ...auth } = useAuthentication()
 const { manageAccountURL, proxyLogoutURL } = useOrganisation()
 
@@ -47,8 +45,11 @@ function updateProfile(data: IUser) {
   return auth.updateProfile(data)
 }
 
-const emailChoices = ref<string[] | null>(null)
+const emailChoices = shallowRef<string[] | null>(null)
+const emailError = shallowRef(false)
 async function fetchEmailChoices() {
+  if (emailChoices.value) return
+  emailError.value = false
   try {
     const { data } = await profileType.api.listAction<{ emails: string[] }>(
       'email_choices',
@@ -57,43 +58,9 @@ async function fetchEmailChoices() {
     )
     emailChoices.value = data.emails
   } catch {
-    alert('^Could not load email address options')
+    emailError.value = true
   }
 }
-
-const profileSchema = computed<FormSchema | undefined>(() => {
-  if (!emailChoices.value) {
-    fetchEmailChoices()
-    return
-  }
-  return [
-    {
-      name: 'first_name',
-      label: 'Förnamn',
-      type: FieldType.Text,
-      rules: [rules.required]
-    },
-    {
-      name: 'last_name',
-      label: 'Efternamn',
-      type: FieldType.Text,
-      rules: [rules.required]
-    },
-    {
-      name: 'email',
-      label: 'E-post',
-      type: FieldType.Select,
-      rules: [rules.required],
-      items: emailChoices.value.map((v) => ({ value: v, title: v }))
-    },
-    {
-      name: 'userid',
-      label: 'Användar-ID',
-      type: FieldType.Text,
-      rules: [rules.slug, rules.required]
-    }
-  ]
-})
 
 const canSwitchUser = computed(() => {
   return !!alternateUsers.value.length
@@ -119,7 +86,10 @@ const canSwitchUser = computed(() => {
       <v-divider v-if="$slots.prependProfile" class="my-3" />
       <slot name="prependProfile"></slot>
       <v-divider class="my-3" />
-      <DefaultDialog :title="$t('profile.changeUserid')">
+      <DefaultDialog
+        :title="$t('profile.changeUserid')"
+        @open="fetchEmailChoices"
+      >
         <template #activator="{ props }">
           <v-list-item
             prepend-icon="mdi-account"
@@ -134,30 +104,50 @@ const canSwitchUser = computed(() => {
             class="my-4"
           />
           <v-defaults-provider :defaults="{ VList: { bgColor: 'surface' } }">
-            <SchemaForm
-              v-if="profileSchema"
-              :schema="profileSchema"
+            <DefaultForm
               :modelValue="user"
               :handler="updateProfile"
-              @saved="close"
+              @done="close"
+              v-slot="{ errors, formData }"
             >
-              <template #buttons="{ disabled, submitting }">
-                <div class="text-right">
-                  <v-btn :text="$t('cancel')" variant="text" @click="close" />
-                  <v-btn
-                    color="primary"
-                    :disabled="disabled"
-                    :loading="submitting"
-                    :text="$t('save')"
-                    type="submit"
-                    variant="elevated"
-                  />
-                </div>
-              </template>
-            </SchemaForm>
-            <div v-else class="text-center">
-              <v-progress-circular indeterminate color="primary" />
-            </div>
+              <v-text-field
+                :error-messages="errors.first_name"
+                :label="$t('profile.firstName')"
+                :rules="[rules.required]"
+                v-model="formData.first_name"
+              />
+              <v-text-field
+                :error-messages="errors.last_name"
+                :label="$t('profile.lastName')"
+                :rules="[rules.required]"
+                v-model="formData.last_name"
+              />
+              <v-select
+                v-if="emailChoices"
+                :error-messages="errors.email"
+                :items="emailChoices"
+                :label="$t('profile.email')"
+                v-model="formData.email"
+              />
+              <v-alert
+                v-else-if="emailError"
+                class="mb-5"
+                icon="mdi-email-off"
+                :text="$t('profile.emailFetchFailed')"
+              />
+              <v-progress-linear
+                v-else
+                class="my-4"
+                indeterminate
+                color="primary"
+              />
+              <SlugField
+                :error-messages="errors.userid"
+                :label="$t('profile.userId')"
+                :rules="[rules.required]"
+                v-model="formData.userid!"
+              />
+            </DefaultForm>
           </v-defaults-provider>
         </template>
       </DefaultDialog>
