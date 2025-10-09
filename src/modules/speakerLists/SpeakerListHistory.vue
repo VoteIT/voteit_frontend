@@ -5,24 +5,16 @@ import { computed, ref } from 'vue'
 import { durationToString } from '@/utils'
 import User from '@/components/User.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import SchemaForm from '@/components/SchemaForm.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import { FieldType, FormSchema } from '@/components/types'
+import DefaultForm from '@/components/DefaultForm.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import DurationInput from '@/components/inputs/DurationInput.vue'
 
 import useSpeakerList from './useSpeakerList'
 import { SpeakerList } from './types'
 import { speakerType } from './contentTypes'
 
 const SPEAKER_HISTORY_CAP = 3
-
-const timeSpokenSchema: FormSchema = [
-  {
-    label: 'Time spoken',
-    name: 'seconds',
-    type: FieldType.Duration
-  }
-]
 
 const props = defineProps<{
   list: SpeakerList
@@ -91,18 +83,14 @@ async function deleteHistory(pk: number) {
                 </v-btn>
               </template>
               <template #default="{ close }">
-                <SchemaForm
-                  :schema="timeSpokenSchema"
+                <DefaultForm
                   :handler="timeSpokenHandler(pk)"
-                  @saved="close"
-                  :modelValue="{ seconds }"
+                  :model-value="{ seconds }"
+                  @done="close"
+                  v-slot="{ formData }"
                 >
-                  <template #buttons>
-                    <div class="text-right">
-                      <v-btn color="primary" :text="$t('save')" type="submit" />
-                    </div>
-                  </template>
-                </SchemaForm>
+                  <DurationInput v-model="formData.seconds" />
+                </DefaultForm>
               </template>
             </DefaultDialog>
             <QueryDialog
