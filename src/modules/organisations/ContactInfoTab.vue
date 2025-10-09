@@ -2,49 +2,13 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import SchemaForm from '@/components/SchemaForm.vue'
-import { FieldType, FormSchema } from '@/components/types'
 import useRules from '@/composables/useRules'
 import useContactInfo, { type ContactInfo } from './useContactInfo'
 import useErrorHandler from '@/composables/useErrorHandler'
+import DefaultForm from '@/components/DefaultForm.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
-
-const contactForm: FormSchema = [
-  {
-    type: FieldType.Text,
-    label: t('home.contactInfo.genericEmail'),
-    name: 'generic_email',
-    rules: [
-      {
-        props: { type: 'email' },
-        validate: rules.email
-      }
-    ]
-  },
-  {
-    type: FieldType.TextArea,
-    label: t('home.contactInfo.text'),
-    name: 'text'
-  },
-  {
-    type: FieldType.Text,
-    label: t('home.contactInfo.invoiceEmail'),
-    name: 'invoice_email',
-    rules: [
-      {
-        props: { type: 'email' },
-        validate: rules.email
-      }
-    ]
-  },
-  {
-    type: FieldType.TextArea,
-    label: t('home.contactInfo.invoiceInfo'),
-    name: 'invoice_info'
-  }
-]
 
 const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 const { contactInfo, requiresCheck, fetchContactInfo, saveContactInfo } =
@@ -95,12 +59,35 @@ onBeforeMount(updateContactInfo)
       :text="$t('home.contactInfo.help')"
       class="my-3"
     />
-    <SchemaForm
+    <DefaultForm
       v-if="changeForm"
-      :schema="contactForm"
-      v-model="changeForm"
+      :model-value="changeForm"
       :handler="saveHandler"
     >
+      <template #default="{ errors, formData }">
+        <v-text-field
+          :error-messages="errors.generic_email"
+          :label="$t('home.contactInfo.genericEmail')"
+          :rules="[rules.email]"
+          type="email"
+          v-model="formData.generic_email"
+        />
+        <v-textarea
+          :label="$t('home.contactInfo.text')"
+          v-model="formData.text"
+        />
+        <v-text-field
+          :error-messages="errors.invoice_email"
+          :label="$t('home.contactInfo.invoiceEmail')"
+          :rules="[rules.email]"
+          type="email"
+          v-model="formData.invoice_email"
+        />
+        <v-textarea
+          :label="$t('home.contactInfo.invoiceInfo')"
+          v-model="formData.invoice_info"
+        />
+      </template>
       <template #buttons="{ disabled, submitting }">
         <div class="d-flex">
           <p v-if="contactInfoModified" class="text-secondary">
@@ -116,7 +103,7 @@ onBeforeMount(updateContactInfo)
           />
         </div>
       </template>
-    </SchemaForm>
+    </DefaultForm>
     <div v-else class="py-8 text-center">
       <v-progress-circular indeterminate color="primary" />
     </div>

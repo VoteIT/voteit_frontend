@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends {}">
-import { reactive, watch } from 'vue'
+import { reactive, shallowRef, watch } from 'vue'
 
 import useErrorHandler from '@/composables/useErrorHandler'
 
@@ -23,7 +23,10 @@ watch(formData, (value) => {
   clearErrors()
 })
 
+const submitting = shallowRef(false)
+
 async function submit() {
+  submitting.value = true
   try {
     await props.handler(formData as T)
     emit('done')
@@ -31,6 +34,7 @@ async function submit() {
     handleRestError(e)
     emit('error')
   }
+  submitting.value = false
 }
 </script>
 
@@ -38,11 +42,12 @@ async function submit() {
   <v-form @submit.prevent="submit" v-slot="{ isValid }">
     <slot :formData="formData" :errors="fieldErrors"></slot>
     <div class="text-right">
-      <slot name="buttons" :disabled="!isValid.value">
+      <slot name="buttons" :disabled="!isValid.value" :submitting="submitting">
         <v-btn :text="$t('cancel')" variant="text" @click="$emit('done')" />
         <v-btn
           color="primary"
           :disabled="!isValid.value"
+          :loading="submitting"
           :text="$t('save')"
           type="submit"
         />
