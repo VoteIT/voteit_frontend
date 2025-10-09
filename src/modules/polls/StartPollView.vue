@@ -179,9 +179,21 @@ watch(agendaId, () => {
         </v-list-item>
       </v-list>
       <template v-if="agendaId">
-        <h2 class="my-2">
-          {{ $t('step', 2) }}: {{ $t('poll.pickProposals') }}
-        </h2>
+        <div class="d-flex my-2">
+          <h2 class="flex-grow-1">
+            {{ $t('step', 2) }}: {{ $t('poll.pickProposals') }}
+          </h2>
+          <v-fade-transition>
+            <v-btn
+              v-if="pickMethod"
+              prepend-icon="mdi-undo-variant"
+              size="small"
+              :text="$t('poll.pickProposals')"
+              variant="tonal"
+              @click="pickMethod = false"
+            />
+          </v-fade-transition>
+        </div>
         <v-item-group
           class="d-flex flex-column ga-3 mb-4"
           v-model="selectedProposalIds"
@@ -223,16 +235,7 @@ watch(agendaId, () => {
         <p v-if="!availableProposals.length">
           <em>{{ $t('poll.noAiPublishedProposals') }}</em>
         </p>
-        <div v-if="pickMethod" class="my-3">
-          <v-btn
-            prepend-icon="mdi-undo-variant"
-            :text="$t('poll.pickProposals')"
-            variant="tonal"
-            @click="pickMethod = false"
-          />
-        </div>
-
-        <div v-else class="btn-group mt-3">
+        <div v-if="!pickMethod" class="btn-group mt-3">
           <v-btn
             color="primary"
             prepend-icon="mdi-check-all"
