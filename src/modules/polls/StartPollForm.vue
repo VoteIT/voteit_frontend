@@ -72,7 +72,7 @@ async function createPoll(start = false) {
       />
       <v-btn
         v-if="allowStart"
-        color="primary"
+        color="accent"
         :disabled="!isValid.value"
         :loading="working"
         prepend-icon="mdi-play"
