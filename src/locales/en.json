@@ -645,10 +645,11 @@
     },
     "STV": {
       "direct": "Direct",
-      "excluded": "Excluded",
       "elected": "Elected",
-      "tiebreakRandom": "Tiebreak (random)",
-      "noCompetition": "No competition left"
+      "excluded": "Excluded",
+      "requireMultipleWinners": "Scottish STV is for electing multiple winners. Use IRV to elect a single winner.",
+      "noCompetition": "No competition left",
+      "tiebreakRandom": "Tiebreak (random)"
     },
     "workflow": {
       "canceled": "Cancelled",

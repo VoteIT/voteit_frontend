@@ -2,7 +2,6 @@
 import { shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useRules from '@/composables/useRules'
 import type { ScottishSTVSettings as Settings } from './types'
 
 const props = defineProps<{
@@ -15,7 +14,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { required, max, min } = useRules(t)
+
+function multipleWinners(value: number) {
+  return value > 1 || t('poll.STV.requireMultipleWinners')
+}
 
 const settings = shallowReactive(props.modelValue)
 
@@ -23,14 +25,18 @@ watch(settings, (value) => emit('update:modelValue', value))
 </script>
 
 <template>
-  <v-text-field
+  <v-slider
     :label="$t('winners')"
     :max="proposals - 1"
-    min="2"
-    :rules="[max(proposals - 1), min(2), required]"
-    type="number"
+    min="1"
+    :rules="[multipleWinners]"
+    step="1"
     v-model="settings.winners"
-  />
+  >
+    <template #append>
+      <v-avatar color="secondary" :text="settings.winners.toString()" />
+    </template>
+  </v-slider>
   <v-checkbox
     hide-details
     :label="$t('poll.allowRandomTiebreaker')"

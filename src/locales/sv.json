@@ -645,10 +645,11 @@
     },
     "STV": {
       "direct": "Direktvald",
-      "excluded": "Uteslöt",
       "elected": "Valde",
-      "tiebreakRandom": "Tiebreak (slumpmässig)",
-      "noCompetition": "Kvarvarande förslag"
+      "excluded": "Uteslöt",
+      "requireMultipleWinners": "Skotsk STV är till för att utse flera vinnare. Använd IRV för att utse en vinnare.",
+      "noCompetition": "Kvarvarande förslag",
+      "tiebreakRandom": "Tiebreak (slumpmässig)"
     },
     "workflow": {
       "canceled": "Avbruten | Avbrutna",
