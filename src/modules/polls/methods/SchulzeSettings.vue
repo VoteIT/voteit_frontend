@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { shallowReactive, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import useRules from '@/composables/useRules'
 
 interface Settings {
   deny_proposal: boolean
@@ -18,23 +15,24 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: Settings): void
 }>()
 
-const { t } = useI18n()
-const { required, max, min } = useRules(t)
-
 const settings = shallowReactive(props.modelValue)
 
 watch(settings, (value) => emit('update:modelValue', value))
 </script>
 
 <template>
-  <v-text-field
+  <v-slider
     :label="$t('poll.schulze.numberOfStars')"
-    max="20"
+    hide-details
     min="3"
-    :rules="[max(20), min(3), required]"
-    type="number"
+    max="20"
+    step="1"
     v-model="settings.stars"
-  />
+  >
+    <template #append>
+      <v-avatar color="secondary" :text="settings.stars.toString()" />
+    </template>
+  </v-slider>
   <v-checkbox
     :disabled="proposals === 2"
     hide-details

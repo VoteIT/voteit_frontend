@@ -612,9 +612,6 @@
         "repeated_schulze": "Rate proposals with stars - more is better. To rate two or more proposals equal, set the same amount of stars. You don't have to rate every proposal."
       }
     },
-    "repeated_schulze": {
-      "winnersHint": "Leave empty to get a result with all proposals sorted"
-    },
     "result": {
       "approveOther": "Approve other proposal",
       "approveThis": "Approve",
@@ -642,7 +639,9 @@
       "addDenyProposal": "Add deny proposal",
       "allDenied": "All proposals were denied.",
       "numberOfStars": "Number of stars",
-      "numTiedWinners": "A clear winner was established. | One ring to rule them all, and in the darkness bind them. | There was a tie between { count } proposals. The winner was randomly selected among those."
+      "numTiedWinners": "A clear winner was established. | One ring to rule them all, and in the darkness bind them. | There was a tie between { count } proposals. The winner was randomly selected among those.",
+      "rankAll": "Rank all proposals",
+      "winnerCount": "{count} winners"
     },
     "STV": {
       "direct": "Direct",
