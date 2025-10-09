@@ -392,6 +392,7 @@
       "delegateTo": "Delegate votes",
       "delegations": "Delegations",
       "deleteConfirm": "You're about to permanently delete the group {title}.\nAre you sure?",
+      "edit": "Edit group",
       "filterMine": "Only my groups",
       "group": "Group",
       "groups": "Groups",
@@ -728,10 +729,15 @@
     "selectProposals": "Select proposals"
   },
   "profile": {
-    "editProfileHelp": "You can only add email addresses you've validated already. Go to handle account to validate a new adress.",
     "changeUserid": "Change user ID",
+    "editProfileHelp": "You can only add email addresses you've validated already. Go to handle account to validate a new adress.",
+    "email": "Email",
+    "emailFetchFailed": "Couldn't fetch your email addresses.",
+    "firstName": "First name",
+    "lastName": "Last name",
     "profile": "Profile",
-    "switchUser": "Switch user"
+    "switchUser": "Switch user",
+    "userId": "User ID"
   },
   "proposal": {
     "add": "Add proposal",

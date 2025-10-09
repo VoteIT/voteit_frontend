@@ -7,7 +7,6 @@ import { useI18n } from 'vue-i18n'
 import { getFullName } from '@/utils'
 import { PickByType } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
-import SchemaForm from '@/components/SchemaForm.vue'
 import Tag from '@/components/Tag.vue'
 import useAuthentication from '@/composables/useAuthentication'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -15,7 +14,8 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import useRules from '@/composables/useRules'
 import useErrorHandler from '@/composables/useErrorHandler'
-import { FieldType, FormSchema } from '@/components/types'
+import DefaultForm from '@/components/DefaultForm.vue'
+import TagEdit from '@/components/TagEdit.vue'
 
 import useUserDetails from '../organisations/useUserDetails'
 
@@ -105,29 +105,13 @@ const columns = computed(() => {
 })
 const hasCountColumns = computed(() => any(columns.value, (c) => !!c.getCount))
 
-const importSchema = computed<FormSchema>(() => {
-  const validate = rules.multiline(
-    rules.or(
-      rules.tabSeparated(rules.minLength(1), rules.minLength(1)),
-      rules.tabSeparated(rules.minLength(1), rules.minLength(1), rules.min(0))
-    )
+const groupImportMultiline = rules.multiline(
+  rules.or(
+    rules.tabSeparated(rules.minLength(1), rules.minLength(1)),
+    rules.tabSeparated(rules.minLength(1), rules.minLength(1), rules.min(0))
   )
-  return [
-    {
-      label: t('meeting.groups.groups'),
-      name: 'groups',
-      type: FieldType.TextArea,
-      rules: [
-        {
-          props: {
-            required: true
-          },
-          validate
-        }
-      ]
-    }
-  ]
-})
+)
+
 /**
  * Socket call to import groups.
  */
@@ -154,51 +138,6 @@ const allTags = computed(
   () => new Set(flatmap(meetingGroups.value, (group) => group.tags))
 )
 provide(TagsKey, allTags)
-
-const groupSchema = computed(() => {
-  const schema: FormSchema = [
-    {
-      name: 'title',
-      type: FieldType.Text,
-      label: t('name'),
-      rules: [
-        {
-          props: {
-            maxlength: 100,
-            required: true
-          },
-          validate: rules.required
-        }
-      ]
-    },
-    {
-      name: 'body',
-      type: FieldType.TextArea,
-      label: t('textBody')
-    },
-    {
-      name: 'tags',
-      type: FieldType.Tags,
-      label: t('tags')
-    }
-  ]
-  if (meeting.value?.group_votes_active) {
-    schema.push({
-      name: 'votes',
-      type: FieldType.Number,
-      label: t('meeting.groups.votes'),
-      rules: [
-        {
-          props: {
-            min: 0
-          },
-          validate: rules.min(0)
-        }
-      ]
-    })
-  }
-  return schema
-})
 
 async function createGroup(data: Partial<MeetingGroup>) {
   if (!user.value) throw new Error('User not authenticated')
@@ -295,11 +234,19 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
                   : $t('meeting.groups.importHelp')
               "
             />
-            <SchemaForm
-              :schema="importSchema"
+            <DefaultForm
               :handler="createGroups"
-              @saved="close"
+              :modelValue="{ groups: '' }"
+              @done="close"
             >
+              <template #default="{ errors, formData }">
+                <v-textarea
+                  :label="$t('meeting.groups.groups')"
+                  :error-messages="errors.groups"
+                  :rules="[rules.required, groupImportMultiline]"
+                  v-model="formData.groups"
+                />
+              </template>
               <template #buttons="{ disabled, submitting }">
                 <div class="text-right">
                   <v-btn
@@ -312,7 +259,7 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
                   />
                 </div>
               </template>
-            </SchemaForm>
+            </DefaultForm>
           </template>
         </DefaultDialog>
         <v-menu v-if="orderedMeetingGroups.length">
@@ -345,25 +292,35 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
             />
           </template>
           <template #default="{ close }">
-            <SchemaForm
-              :schema="groupSchema"
+            <DefaultForm
               :handler="createGroup"
-              @saved="close"
+              :model-value="{ title: '', body: '', tags: [], votes: null }"
+              :saveText="$t('meeting.groups.create')"
+              v-slot="{ errors, formData }"
+              @done="close"
             >
-              <template #buttons="{ disabled, submitting }">
-                <div class="text-right">
-                  <v-btn :text="$t('cancel')" variant="text" @click="close" />
-                  <v-btn
-                    color="primary"
-                    :disabled="disabled"
-                    :loading="submitting"
-                    prepend-icon="mdi-account-multiple-plus"
-                    :text="$t('meeting.groups.create')"
-                    type="submit"
-                  />
-                </div>
-              </template>
-            </SchemaForm>
+              <v-text-field
+                :errors="errors.title"
+                :label="$t('name')"
+                :rules="[rules.maxLength(100), rules.required]"
+                v-model="formData.title"
+              />
+              <v-textarea
+                :errors="errors.body"
+                :label="$t('textBody')"
+                v-model="formData.body"
+              />
+              <TagEdit :label="$t('tags')" v-model="formData.tags" />
+              <v-text-field
+                v-if="meeting?.group_votes_active"
+                :errors="errors.votes"
+                :label="$t('meeting.groups.votes')"
+                min="0"
+                :rules="[rules.min(0)]"
+                type="number"
+                v-model="formData.votes"
+              />
+            </DefaultForm>
           </template>
         </DefaultDialog>
       </template>
@@ -482,7 +439,7 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
             />
           </td>
           <td class="text-right" v-if="canChangeMeeting">
-            <DefaultDialog>
+            <DefaultDialog :title="$t('meeting.groups.edit')">
               <template #activator="{ props }">
                 <ButtonWithDropdown
                   color="primary"
@@ -508,29 +465,34 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
                 </ButtonWithDropdown>
               </template>
               <template #default="{ close }">
-                <SchemaForm
-                  :schema="groupSchema"
+                <DefaultForm
                   :handler="changeGroup(group.pk)"
                   :modelValue="{ ...group }"
-                  @saved="close"
+                  @done="close"
+                  v-slot="{ errors, formData }"
                 >
-                  <template #buttons="{ disabled, submitting }">
-                    <div class="text-right">
-                      <v-btn
-                        :text="$t('cancel')"
-                        variant="text"
-                        @click="close"
-                      />
-                      <v-btn
-                        color="primary"
-                        :disabled="disabled"
-                        :loading="submitting"
-                        :text="$t('save')"
-                        type="submit"
-                      />
-                    </div>
-                  </template>
-                </SchemaForm>
+                  <v-text-field
+                    :errors="errors.title"
+                    :label="$t('name')"
+                    :rules="[rules.maxLength(100), rules.required]"
+                    v-model="formData.title!"
+                  />
+                  <v-textarea
+                    :errors="errors.body"
+                    :label="$t('textBody')"
+                    v-model="formData.body!"
+                  />
+                  <TagEdit :label="$t('tags')" v-model="formData.tags" />
+                  <v-text-field
+                    v-if="meeting?.group_votes_active"
+                    :errors="errors.votes"
+                    :label="$t('meeting.groups.votes')"
+                    min="0"
+                    :rules="[rules.min(0)]"
+                    type="number"
+                    v-model="formData.votes"
+                  />
+                </DefaultForm>
               </template>
             </DefaultDialog>
           </td>

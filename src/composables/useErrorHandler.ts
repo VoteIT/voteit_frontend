@@ -1,6 +1,6 @@
 import { isEmpty, type Dictionary } from 'lodash'
 import { computed, ref } from 'vue'
-import { parseSocketError } from 'envelope-client'
+import { isValidationError, parseSocketError } from 'envelope-client'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
 import { parseRestError } from '@/utils/restApi'
@@ -95,6 +95,10 @@ export default function useErrorHandler(
     fieldErrors,
     hasError,
     clearErrors,
+    handleError(e: unknown) {
+      if (isValidationError(e)) handleSocketError(e)
+      else handleRestError(e)
+    },
     handleSocketError,
     handleRestError
   }

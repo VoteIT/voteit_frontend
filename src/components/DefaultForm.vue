@@ -4,8 +4,9 @@ import { reactive, shallowRef, watch } from 'vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 const props = defineProps<{
-  modelValue: T
   handler(value: T): Promise<unknown>
+  modelValue: T
+  saveText?: string
 }>()
 
 const emit = defineEmits<{
@@ -14,7 +15,7 @@ const emit = defineEmits<{
   (e: 'done'): void
 }>()
 
-const { fieldErrors, clearErrors, handleRestError } = useErrorHandler()
+const { fieldErrors, clearErrors, handleError } = useErrorHandler()
 
 const formData = reactive(props.modelValue)
 
@@ -31,7 +32,7 @@ async function submit() {
     await props.handler(formData as T)
     emit('done')
   } catch (e) {
-    handleRestError(e)
+    handleError(e)
     emit('error')
   }
   submitting.value = false
@@ -48,7 +49,7 @@ async function submit() {
           color="primary"
           :disabled="!isValid.value"
           :loading="submitting"
-          :text="$t('save')"
+          :text="saveText ?? $t('save')"
           type="submit"
         />
       </slot>
