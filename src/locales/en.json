@@ -494,8 +494,6 @@
     "finalVoteCountWeighted": "{votes} of {total} votes ({abstains} abstains)",
     "finalVoteCountNoEr": "{votes} voted, {abstains} abstained actively, no electoral register",
     "finished": "Finished",
-    "maxRanked": "Maximum proposals to rank",
-    "minRanked": "Minimum proposals to rank",
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",
     "numDenied": "Denied proposal | Denied proposals",
@@ -560,16 +558,23 @@
       }
     },
     "dutt": {
+      "cantRequireAll": "You can't demand all proposals to be selected. That makes no sense.",
+      "limitExact": "Select exactly one proposal | Select exactly {min} proposals",
+      "limitMin": "Select at least one proposal | Select at least {min} proposals",
+      "limitRange": "Select {min} to {max} proposals",
       "majorityProposal": "A majority of the voters selected the proposal",
       "minorityProposal": "The proposal was not selected by a majority",
-      "max": "Require max proposals",
       "maxHelpText": "Select one less proposal for a valid vote | Select {count} fewer proposals for a valid vote",
-      "min": "Require min proposals",
       "minHelpText": "Select one more proposal for a valid vote | Select {count} more proposals for a valid vote",
-      "minMaxHint": "0 = no limit",
+      "rangeLimit": "Required number of selections",
       "validVoteHelpText": "Your vote is valid."
     },
     "IRV": {
+      "limitAll": "Rank all proposals",
+      "limitExact": "Rank exactly one proposal | Rank exactly {min} proposals",
+      "limitMin": "Rank at least one proposal | Rank at least {min} proposals",
+      "limitRange": "Rank {min} to {max} proposals",
+      "rangeLimit": "Require ranking of a number of proposals",
       "repeatedRoundResult": "IRV is not a method deisgned to elect multiple winenrs. Each round in a repeated IRV is a simple IRV, with the winners from previous rounds omited. Because each simple IRV has several rounds, there is no simple answer to how many votes a proposal got, other than that it would have at some point got a mojority of the votes. How many rounds that took is irrelevant."
     },
     "majority": {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
 
 import useRules from '@/composables/useRules'
 import type { RepeatedIRVSettings } from './types'
@@ -10,27 +11,37 @@ const props = defineProps<{
   proposals: number
 }>()
 
+const initialValue = { min: props.modelValue.min, max: props.modelValue.max }
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: RepeatedIRVSettings): void
 }>()
 
 const { t } = useI18n()
 const { max, min, required } = useRules(t)
+const { smAndUp } = useDisplay()
 
 const settings = shallowReactive(props.modelValue)
 
 watch(settings, (value) => emit('update:modelValue', value))
 
-const maxContraints = computed(() => [
-  max(props.proposals),
-  min(Math.max(0, settings.min || 0))
-])
+const hint = computed(() => {
+  if (settings.min === props.proposals) return t('poll.IRV.limitAll')
+  if ((settings.max || props.proposals) === settings.min)
+    return t('poll.IRV.limitExact', { ...settings }, settings.min)
+  if (!settings.max)
+    return t('poll.IRV.limitMin', { ...settings }, settings.min || 1)
+  return t('poll.IRV.limitRange', { ...settings })
+})
 
-const minContraints = computed(() => [
-  max(Math.min(props.proposals, settings.max || 1_000)),
-  min(0),
-  required
-])
+function setRange([min, max]: [number, number]) {
+  settings.min = min
+  settings.max = max === props.proposals ? 0 : max
+}
+
+function resetSlider() {
+  Object.assign(settings, initialValue)
+}
 </script>
 
 <template>
@@ -47,23 +58,29 @@ const minContraints = computed(() => [
     :label="$t('poll.allowRandomTiebreaker')"
     v-model="settings.allow_random"
   />
-  <v-text-field
-    :label="$t('poll.minRanked')"
+  <v-label v-if="!smAndUp" :text="$t('poll.IRV.rangeLimit')" />
+  <v-range-slider
+    :label="smAndUp ? $t('poll.IRV.rangeLimit') : undefined"
     :max="proposals"
+    :hint="hint"
     min="1"
-    :rules="minContraints"
-    type="number"
-    :modelValue="settings.min"
-    @update:model-value="settings.min = Number($event)"
-  />
-  <v-text-field
-    :hint="$t('poll.dutt.minMaxHint')"
-    :label="$t('poll.maxRanked')"
-    :max="proposals"
-    min="0"
-    :rules="maxContraints"
-    type="number"
-    :modelValue="settings.max"
-    @update:model-value="settings.max = Number($event)"
-  />
+    persistent-hint
+    show-ticks="always"
+    step="1"
+    :model-value="[settings.min || 1, settings.max || proposals]"
+    @update:model-value="setRange"
+  >
+    <template #append>
+      <v-btn
+        :disabled="
+          settings.min === initialValue.min && settings.max === initialValue.max
+        "
+        icon="mdi-undo"
+        size="small"
+        :text="$t('reset')"
+        variant="tonal"
+        @click="resetSlider"
+      />
+    </template>
+  </v-range-slider>
 </template>

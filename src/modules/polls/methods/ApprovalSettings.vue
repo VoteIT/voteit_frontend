@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
 
-import useRules from '@/composables/useRules'
 import type { DuttSettings } from './types'
 
 const props = defineProps<{
@@ -10,47 +10,66 @@ const props = defineProps<{
   proposals: number
 }>()
 
+const initialValue = { ...props.modelValue }
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: DuttSettings): void
 }>()
 
 const { t } = useI18n()
-const { max, min, required } = useRules(t)
+const { smAndUp } = useDisplay()
 
 const settings = shallowReactive(props.modelValue)
 
 watch(settings, (value) => emit('update:modelValue', value))
 
-const maxContraints = computed(() => [
-  max(props.proposals - 1),
-  min(Math.max(0, settings.min || 0))
-])
+function notAll([min]: [number, number]) {
+  return min !== props.proposals || t('poll.dutt.cantRequireAll')
+}
 
-const minContraints = computed(() => [
-  max(Math.min(props.proposals - 1, settings.max || 1_000)),
-  min(1),
-  required
-])
+const hint = computed(() => {
+  if ((settings.max || props.proposals) === settings.min)
+    return t('poll.dutt.limitExact', { ...settings }, settings.min)
+  if (!settings.max)
+    return t('poll.dutt.limitMin', { ...settings }, settings.min)
+  return t('poll.dutt.limitRange', { ...settings })
+})
+
+function resetSlider() {
+  Object.assign(settings, initialValue)
+}
+
+function setRange([min, max]: [number, number]) {
+  settings.min = min
+  settings.max = max === props.proposals ? 0 : max
+}
 </script>
 
 <template>
-  <v-text-field
-    :label="$t('poll.dutt.min')"
-    :max="proposals - 1"
+  <v-label v-if="!smAndUp" :text="$t('poll.dutt.rangeLimit')" />
+  <v-range-slider
+    :label="smAndUp ? $t('poll.dutt.rangeLimit') : undefined"
+    :max="proposals"
+    :hint="hint"
     min="1"
-    :rules="minContraints"
-    type="number"
-    :modelValue="settings.min"
-    @update:model-value="settings.min = Number($event)"
-  />
-  <v-text-field
-    :hint="$t('poll.dutt.minMaxHint')"
-    :label="$t('poll.dutt.max')"
-    :max="proposals - 1"
-    min="0"
-    :rules="maxContraints"
-    type="number"
-    :modelValue="settings.max"
-    @update:model-value="settings.max = Number($event)"
-  />
+    persistent-hint
+    :rules="[notAll]"
+    show-ticks="always"
+    step="1"
+    :model-value="[settings.min, settings.max || proposals]"
+    @update:model-value="setRange"
+  >
+    <template #append>
+      <v-btn
+        :disabled="
+          settings.min === initialValue.min && settings.max === initialValue.max
+        "
+        icon="mdi-undo"
+        size="small"
+        :text="$t('reset')"
+        variant="tonal"
+        @click="resetSlider"
+      />
+    </template>
+  </v-range-slider>
 </template>

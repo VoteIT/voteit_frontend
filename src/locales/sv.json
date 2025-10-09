@@ -494,8 +494,6 @@
     "finalVoteCountWeighted": "{votes} av {total} röster ({abstains} avstå)",
     "finalVoteCountNoEr": "{votes} röstade, {abstains} avstod aktivt, röstlängd saknas",
     "finished": "Avslutad",
-    "maxRanked": "Högst antal att rangordna",
-    "minRanked": "Lägst antal att rangordna",
     "noPollableAgendaItems": "Det finns inga dagordningspunkter där du kan starta en omröstning.",
     "numApproved": "Bifallet förslag | Bifallna förslag",
     "numDenied": "Avslaget förslag | Avslagna förslag",
@@ -560,16 +558,23 @@
       }
     },
     "dutt": {
+      "cantRequireAll": "Du kan inte kräva att alla förslag ska väljas.",
+      "limitExact": "Välj exakt ett förslag | Välj exakt {min} förslag",
+      "limitMin": "Välj minst ett förslag | Välj minst {min} förslag",
+      "limitRange": "Välj {min} till {max} förslag",
       "majorityProposal": "En majoritet av de röstande valde förslaget",
       "minorityProposal": "Förslaget valdes inte av en majoritet",
-      "max": "Max antal förslag att välja",
       "maxHelpText": "Välj bort ett förslag för en giltig röst | Välj bort {count} förslag för en giltig röst",
-      "min": "Lägst antal förslag att välja",
       "minHelpText": "Välj ytterligare ett förslag för en giltig röst | Välj ytterligare {count} förslag för en giltig röst",
-      "minMaxHint": "0 = ingen begränsning",
+      "rangeLimit": "Krävt antal val",
       "validVoteHelpText": "Din röst är giltig."
     },
     "IRV": {
+      "limitAll": "Rangordna alla förslag",
+      "limitExact": "Rangordna exakt ett förslag | Rangordna exakt {min} förslag",
+      "limitMin": "Rangordna minst ett förslag | Rangordna minst {min} förslag",
+      "limitRange": "Rangordna {min} till {max} förslag",
+      "rangeLimit": "Krävt antal att rangordna",
       "repeatedRoundResult": "IRV är inte en metod som är avsedd för att utse flera vinnare. Varje omgång i en upprepad IRV är en enkel IRV, med tidigare omgångars vinnare borttagna. Eftersom varje enkel IRV har flera omgångar finns det inget svar på hur många röster ett förslag fått, men i slutändan har det uppnått en majoritet av rösterna. Hur många omgångar som krävdes är irrelevant."
     },
     "majority": {
