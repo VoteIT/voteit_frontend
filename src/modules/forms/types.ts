@@ -1,7 +1,3 @@
-// interface IntegerField {
-//   type: 'integer'
-// }
-
 export interface BooleanField {
   type: 'boolean'
   label: string
