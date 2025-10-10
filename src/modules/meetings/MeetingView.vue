@@ -33,12 +33,12 @@ function nonParticipantRole(role: MeetingRole) {
 }
 
 const roleList = computed(() => {
-  return (DEFAULT_ROLE_ORDER as MeetingRole[])
-    .filter((role) => nonParticipantRole(role) && userRoles.value?.has(role))
-    .map((role) => ({
-      prependIcon: getMeetingRoleIcon(role),
-      title: translateMeetingRole(role, t)
-    }))
+  return DEFAULT_ROLE_ORDER.filter(
+    (role) => nonParticipantRole(role) && userRoles.value?.has(role)
+  ).map((role) => ({
+    prependIcon: getMeetingRoleIcon(role),
+    title: translateMeetingRole(role, t)
+  }))
 })
 
 const groupList = computed(() => {
