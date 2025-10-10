@@ -1,6 +1,7 @@
+import { ComposerTranslation } from 'vue-i18n'
+
 import { ThemeColor } from '@/utils/types'
 import { Poll, VoteResult } from '../types'
-import { ComposerTranslation } from 'vue-i18n'
 
 export enum PollCriteria {
   MajorityWinner = 'majorityWinner',
@@ -33,6 +34,10 @@ export enum SimpleChoice {
 
 export type MajorityVote = { choice: number }
 export type SimpleVote = Record<SimpleChoice, number[]>
+
+export interface ApprovalVote {
+  choices: number[]
+}
 
 export interface SimpleChoiceDesc {
   value: SimpleChoice
@@ -131,11 +136,7 @@ export interface RepeatedIRVPoll extends Poll {
   }
 }
 
-export interface DuttVote {
-  choices: number[]
-}
-
-export interface DuttPoll extends Poll {
+export interface ApprovalPoll extends Poll {
   method_name: 'dutt'
   result?: VoteResult & {
     results: {

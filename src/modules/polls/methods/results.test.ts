@@ -5,7 +5,7 @@ import { createI18n } from 'vue-i18n'
 
 import router from '@/router'
 import vuetify from '@/plugins/vuetify'
-import DuttResult from './ApprovalResult.vue'
+import ApprovalResult from './ApprovalResult.vue'
 import MajorityResult from './MajorityResult.vue'
 import RepeatedIRVResult from './RepeatedIRVResult.vue'
 import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
@@ -46,11 +46,11 @@ vi.mock('@/modules/proposals/useProposals', () => {
   }
 })
 
-test('DuttResult component', () => {
-  expect(DuttResult).toBeTruthy()
+test('ApprovalResult component', () => {
+  expect(ApprovalResult).toBeTruthy()
   // This does not test management, only number display
   // @ts-ignore
-  const wrapper = mount(DuttResult, {
+  const wrapper = mount(ApprovalResult, {
     global,
     props: {
       abstainCount: 3,

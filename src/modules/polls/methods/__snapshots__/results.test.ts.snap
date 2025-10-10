@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`DuttResult component 1`] = `
+exports[`ApprovalResult component 1`] = `
 "<div>
   <div data-v-776ee898="" class="my-4">
     <div data-v-776ee898="" class="v-sheet v-theme--light elevation-4 v-sheet--rounded proposal">

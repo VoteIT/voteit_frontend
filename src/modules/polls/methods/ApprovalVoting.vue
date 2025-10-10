@@ -43,17 +43,17 @@ import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 import FlagVoteSelector from '@/modules/reactions/FlagVoteSelector.vue'
 import type { Proposal } from '@/modules/proposals/types'
 
-import type { DuttPoll, DuttVote } from './types'
+import type { ApprovalPoll, ApprovalVote } from './types'
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: DuttVote
-  poll: DuttPoll
+  modelValue?: ApprovalVote
+  poll: ApprovalPoll
   proposals: Proposal[]
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', vote?: DuttVote): void
+  (e: 'update:modelValue', vote?: ApprovalVote): void
 }>()
 
 const { t } = useI18n()

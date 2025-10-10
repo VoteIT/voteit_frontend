@@ -6,7 +6,7 @@ import Majority from './Majority.vue'
 import RankedVoting from './RankedVoting.vue'
 import Simple from './Simple.vue'
 import Schulze from './Schulze.vue'
-import DuttResult from './ApprovalResult.vue'
+import ApprovalResult from './ApprovalResult.vue'
 import MajorityResult from './MajorityResult.vue'
 import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
 import RepeatedIRVResult from './RepeatedIRVResult.vue'
@@ -20,7 +20,7 @@ import ScottishSTVSettings from './ScottishSTVSettings.vue'
 import ApprovalSettings from './ApprovalSettings.vue'
 import RepeatedIRVSettings from './RepeatedIRVSettings.vue'
 import {
-  DuttPoll,
+  ApprovalPoll,
   InstantRunoffPoll,
   MajorityPoll,
   RepeatedIRVPoll,
@@ -234,10 +234,10 @@ pollPlugins.register({
     return t('poll.method.dutt')
   },
   proposalsMin: 3,
-  resultComponent: DuttResult,
+  resultComponent: ApprovalResult,
   settingsComponent: ApprovalSettings,
   voteComponent: ApprovalVoting
-} as PollPlugin<DuttPoll>)
+} as PollPlugin<ApprovalPoll>)
 
 pollPlugins.register({
   id: 'repeated_irv',
