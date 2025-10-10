@@ -38,7 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { getProposals } from '@/modules/proposals/useProposals'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal as P } from '../../proposals/types'
-import type { DuttResult } from './types'
+import type { DuttPoll } from './types'
 
 const { t } = useI18n()
 
@@ -69,7 +69,7 @@ function getFractionIcon(fraction: number) {
 const props = defineProps<{
   abstainCount: number
   proposals: number[]
-  result: DuttResult
+  result: NonNullable<DuttPoll['result']>
 }>()
 
 function getIcon(votes: number) {

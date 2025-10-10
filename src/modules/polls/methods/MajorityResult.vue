@@ -38,14 +38,14 @@ import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 import { getProposals } from '@/modules/proposals/useProposals'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
-import type { MajorityResult } from './types'
+import type { MajorityPoll } from './types'
 
 const { t } = useI18n()
 
 const props = defineProps<{
   abstainCount: number
   proposals: number[]
-  result: MajorityResult
+  result: NonNullable<MajorityPoll['result']>
 }>()
 
 function getIcon(proposal: number) {

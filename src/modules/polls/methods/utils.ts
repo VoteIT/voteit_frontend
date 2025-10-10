@@ -1,5 +1,5 @@
 import { ComposerTranslation } from 'vue-i18n'
-import { PollCriteria, ScottishSTVRound } from './types'
+import { PollCriteria, STVResult } from './types'
 
 export function translateCriteria(
   criteria: PollCriteria,
@@ -44,8 +44,10 @@ export function translateCriteria(
   }
 }
 
+type STVRound = STVResult['rounds'][number]
+
 export function translateSTVStatus(
-  status: ScottishSTVRound['status'],
+  status: STVRound['status'],
   t: ComposerTranslation
 ): string {
   switch (status) {
@@ -57,7 +59,7 @@ export function translateSTVStatus(
 }
 
 export function translateSTVMethod(
-  status: ScottishSTVRound['method'],
+  status: STVRound['method'],
   t: ComposerTranslation
 ): string {
   switch (status) {

@@ -18,7 +18,7 @@ import { ProposalState } from '../proposals/types'
 import ProposalCard from '../proposals/ProposalCard.vue'
 
 import { Conditional, PollBaseSettings, PollCriteria } from './methods/types'
-import type { PollStartData, PollMethodSettings } from './methods/types'
+import type { PollStartData } from './methods/types'
 import { translateCriteria } from './methods/utils'
 import type { Poll } from './types'
 import { canAddPoll } from './rules'
@@ -102,9 +102,11 @@ const methodSelected = ref<Poll['method_name'] | null>(null)
 const methodSelectedPlugin = computed(() =>
   pollPlugins.getPlugin(methodSelected.value || '')
 )
-const methodSettings = ref<
-  PollBaseSettings | (PollBaseSettings & PollMethodSettings)
->({ title: '', p_ord: 'c', withheld_result: false })
+const methodSettings = ref<PollBaseSettings>({
+  title: '',
+  p_ord: 'c',
+  withheld_result: false
+})
 watch(methodSelected, (name) => {
   if (!name) return
   const initial =

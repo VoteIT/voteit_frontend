@@ -31,7 +31,7 @@ import { getProposals } from '@/modules/proposals/useProposals'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal } from '@/modules/proposals/types'
 
-import { SimpleChoice, CombinedSimpleResult } from './types'
+import { SimpleChoice, SimplePoll } from './types'
 import { simpleChoices } from './simple'
 
 interface ProposalResult {
@@ -51,7 +51,7 @@ interface ProposalResult {
 const props = defineProps<{
   abstainCount: number
   proposals: number[]
-  result: CombinedSimpleResult
+  result: NonNullable<SimplePoll['result']>
 }>()
 
 function getActiveChoice(pk: number): SimpleChoice | undefined {

@@ -3,17 +3,17 @@ import { computed, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
-import type { DuttSettings } from './types'
+import type { DuttPoll } from './types'
 
 const props = defineProps<{
-  modelValue: DuttSettings
+  modelValue: DuttPoll['settings']
   proposals: number
 }>()
 
 const initialValue = { ...props.modelValue }
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: DuttSettings): void
+  (e: 'update:modelValue', value: DuttPoll['settings']): void
 }>()
 
 const { t } = useI18n()

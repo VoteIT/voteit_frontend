@@ -41,13 +41,13 @@ import { useI18n } from 'vue-i18n'
 import Tag from '@/components/Tag.vue'
 import useProposals from '@/modules/proposals/useProposals'
 
-import { ScottishSTVResult } from './types'
+import { STVResult } from './types'
 import { translateSTVStatus } from './utils'
 
 const props = defineProps<{
   abstainCount: number
   proposals: number[]
-  result: ScottishSTVResult
+  result: STVResult
 }>()
 
 const { getProposal } = useProposals()

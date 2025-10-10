@@ -2,15 +2,15 @@
 import { shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { ScottishSTVSettings as Settings } from './types'
+import type { ScottishSTVPoll } from './types'
 
 const props = defineProps<{
-  modelValue: Settings
+  modelValue: ScottishSTVPoll['settings']
   proposals: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Settings): void
+  (e: 'update:modelValue', value: ScottishSTVPoll['settings']): void
 }>()
 
 const { t } = useI18n()

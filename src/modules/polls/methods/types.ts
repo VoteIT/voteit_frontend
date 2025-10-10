@@ -31,6 +31,9 @@ export enum SimpleChoice {
   No = 'no'
 }
 
+export type MajorityVote = { choice: number }
+export type SimpleVote = Record<SimpleChoice, number[]>
+
 export interface SimpleChoiceDesc {
   value: SimpleChoice
   icon: string
@@ -38,19 +41,7 @@ export interface SimpleChoiceDesc {
   color: ThemeColor
 }
 
-export type SimpleProposalResult = Record<SimpleChoice, number>
-type SimpleResultMap = Record<number, SimpleProposalResult>
-
-export interface CombinedSimpleResult extends VoteResult {
-  results: SimpleResultMap
-}
-
-export interface MajorityResult extends VoteResult {
-  results: { proposal: number; votes: number }[]
-}
-
 type SchulzePair = [[number, number], number]
-
 export interface SchulzeResult extends VoteResult {
   winner: number
   candidates: number[]
@@ -60,134 +51,102 @@ export interface SchulzeResult extends VoteResult {
   votes?: number
 }
 
-export interface RepeatedSchulzeResult extends VoteResult {
-  rounds: SchulzeResult[]
-  candidates: number[]
-}
-
-type ScottishSTVVoteCount = [number, number]
-
-export interface ScottishSTVRound {
-  status: 'Excluded' | 'Elected'
-  selected: number[]
-  method: 'Direct' | 'Tiebreak (Random)' | 'No competition left'
-  vote_count: ScottishSTVVoteCount[]
-}
-
-export interface ScottishSTVResult extends VoteResult {
+export interface STVResult extends VoteResult {
   quota: number
   complete: boolean
   randomized: boolean
-  rounds: ScottishSTVRound[]
+  rounds: {
+    status: 'Excluded' | 'Elected'
+    selected: number[]
+    method: 'Direct' | 'Tiebreak (Random)' | 'No competition left'
+    vote_count: [number, number][]
+  }[]
   runtime: number
 }
-export type InstantRunoffResult = ScottishSTVResult
-
-export type MajorityVote = { choice: number }
-export type SimpleVote = Record<SimpleChoice, number[]>
 
 export type PollBaseSettings = Pick<Poll, 'title' | 'p_ord' | 'withheld_result'>
 
-export interface DuttSettings {
-  min: number
-  max: number
-}
-
-export interface RepeatedSchulzeSettings {
-  stars?: number
-  winners: number | null
-}
-
-export interface ScottishSTVSettings {
-  winners: number
-  allow_random: boolean
-}
-
-export interface InstantRunoffSettings {
-  allow_random: boolean
-}
-
-export interface RepeatedIRVSettings {
-  allow_random: boolean
-  max: number | null
-  min: number | null
-  winners: number
-}
-
-export interface SchulzeSettings {
-  stars?: number
-  deny_proposal?: boolean
-}
-
-export type PollMethodSettings =
-  | RepeatedSchulzeSettings
-  | ScottishSTVSettings
-  | InstantRunoffSettings
-  | RepeatedIRVSettings
-  | SchulzeSettings
-  | DuttSettings
-
 export interface SimplePoll extends Poll {
   method_name: 'combined_simple'
-  result: CombinedSimpleResult
+  result?: VoteResult & {
+    results: Record<number, Record<SimpleChoice, number>>
+  }
   settings: null
 }
 
 export interface SchulzePoll extends Poll {
   method_name: 'schulze'
-  result: SchulzeResult
-  settings: SchulzeSettings
+  result?: SchulzeResult
+  settings: {
+    stars?: number
+    deny_proposal?: boolean
+  }
 }
 
 export interface MajorityPoll extends Poll {
   method_name: 'majority'
-  result: MajorityResult
+  result?: VoteResult & {
+    results: { proposal: number; votes: number }[]
+  }
   settings: null
 }
 
 export interface RepeatedSchulzePoll extends Poll {
   method_name: 'repeated_schulze'
-  result: RepeatedSchulzeResult
-  settings: RepeatedSchulzeSettings
+  result?: VoteResult & {
+    rounds: SchulzeResult[]
+    candidates: number[]
+  }
+  settings: {
+    stars?: number
+    winners: number | null
+  }
 }
 
 export interface ScottishSTVPoll extends Poll {
   method_name: 'scottish_stv'
-  result: ScottishSTVResult
-  settings: ScottishSTVSettings
+  result?: STVResult
+  settings: {
+    winners: number
+    allow_random: boolean
+  }
 }
 
 export interface InstantRunoffPoll extends Poll {
   method_name: 'irv'
-  result: ScottishSTVResult // TODO: Rename to something more general
-  settings: InstantRunoffSettings
+  result?: STVResult
+  settings: {
+    allow_random: boolean
+  }
 }
 
 export interface RepeatedIRVPoll extends Poll {
   method_name: 'repeated_irv'
-  result: ScottishSTVResult // TODO: Rename to something more general
-  settings: RepeatedIRVSettings
-}
-
-export function isRepeatedIRVPoll(poll: Poll): poll is RepeatedIRVPoll {
-  return poll.method_name === 'repeated_irv'
+  result?: STVResult
+  settings: {
+    allow_random: boolean
+    max: number | null
+    min: number | null
+    winners: number
+  }
 }
 
 export interface DuttVote {
   choices: number[]
 }
 
-export interface DuttResult extends VoteResult {
-  results: {
-    votes: number
-    proposal: number
-  }[]
-}
-
 export interface DuttPoll extends Poll {
   method_name: 'dutt'
-  result: DuttResult
-  settings: DuttSettings
+  result?: VoteResult & {
+    results: {
+      votes: number
+      proposal: number
+    }[]
+  }
+  settings: {
+    min: number
+    max: number
+  }
 }
 
 export type PollStartData = Pick<

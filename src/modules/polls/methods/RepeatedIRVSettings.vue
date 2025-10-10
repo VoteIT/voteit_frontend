@@ -4,17 +4,17 @@ import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
 import useRules from '@/composables/useRules'
-import type { RepeatedIRVSettings } from './types'
+import type { RepeatedIRVPoll } from './types'
 
 const props = defineProps<{
-  modelValue: RepeatedIRVSettings
+  modelValue: RepeatedIRVPoll['settings']
   proposals: number
 }>()
 
 const initialValue = { min: props.modelValue.min, max: props.modelValue.max }
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: RepeatedIRVSettings): void
+  (e: 'update:modelValue', value: RepeatedIRVPoll['settings']): void
 }>()
 
 const { t } = useI18n()

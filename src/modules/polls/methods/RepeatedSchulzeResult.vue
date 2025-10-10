@@ -37,13 +37,13 @@ import useProposals from '@/modules/proposals/useProposals'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal as P } from '@/modules/proposals/types'
 
-import { RepeatedSchulzeResult } from './types'
+import { RepeatedSchulzePoll } from './types'
 import SchulzeResult from './SchulzeResult.vue'
 
 const props = defineProps<{
   abstainCount: number
   proposals: number[]
-  result: RepeatedSchulzeResult
+  result: NonNullable<RepeatedSchulzePoll['result']>
 }>()
 
 const { getProposal } = useProposals()

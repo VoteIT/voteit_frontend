@@ -8,7 +8,7 @@ import { Proposal, ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
 import { Poll } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
-import { PollMethodSettings, PollStartData } from '../polls/methods/types'
+import { PollStartData } from '../polls/methods/types'
 import useRoom from '../rooms/useRoom'
 import useMeetingId from '../meetings/useMeetingId'
 
@@ -17,7 +17,7 @@ import PollModal from './PollModal.vue'
 const props = defineProps<{
   methodName: Poll['method_name']
   proposals: Proposal[]
-  settings: PollMethodSettings | null
+  settings: object | null
 }>()
 
 defineEmits<{

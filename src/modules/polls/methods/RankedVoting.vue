@@ -77,7 +77,7 @@ import type { Proposal } from '@/modules/proposals/types'
 import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 import { Poll } from '../types'
-import { RankedVote, isRepeatedIRVPoll } from './types'
+import { RankedVote } from './types'
 import { pollPlugins } from '../registry'
 
 const props = defineProps<{
