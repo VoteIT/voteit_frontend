@@ -1,7 +1,7 @@
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { PollPlugin, pollPlugins } from '../registry'
 
-import Dutt from './Approval.vue'
+import ApprovalVoting from './ApprovalVoting.vue'
 import Majority from './Majority.vue'
 import RankedVoting from './RankedVoting.vue'
 import Simple from './Simple.vue'
@@ -236,7 +236,7 @@ pollPlugins.register({
   proposalsMin: 3,
   resultComponent: DuttResult,
   settingsComponent: ApprovalSettings,
-  voteComponent: Dutt
+  voteComponent: ApprovalVoting
 } as PollPlugin<DuttPoll>)
 
 pollPlugins.register({

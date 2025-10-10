@@ -107,7 +107,8 @@ export interface InstantRunoffSettings {
   allow_random: boolean
 }
 
-export interface RepeatedIRVSettings extends InstantRunoffSettings {
+export interface RepeatedIRVSettings {
+  allow_random: boolean
   max: number | null
   min: number | null
   winners: number
