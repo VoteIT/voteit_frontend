@@ -283,11 +283,10 @@ watch(isOpen, (value) => {
             <template v-if="canVote">
               <PollBallot
                 v-if="!userVote || changeVote"
-                :disabled="!canVote"
                 :key="poll.pk"
                 :poll="poll"
                 :proposals="proposals"
-                :model-value="canVote ? userVote?.vote : undefined"
+                :model-value="userVote?.vote"
                 @voting-complete="changeVote = false"
               />
               <template v-else-if="userVote">
@@ -299,10 +298,9 @@ watch(isOpen, (value) => {
                   color="success"
                 />
               </template>
-              <div v-if="canVote" class="mt-4">
+              <div class="d-flex ga-1 mt-4">
                 <v-btn
                   v-if="userVote && !changeVote"
-                  class="mr-1"
                   color="secondary"
                   prepend-icon="mdi-vote"
                   :text="$t('poll.viewAndChangeVote')"
