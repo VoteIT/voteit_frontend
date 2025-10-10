@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+import { DefineComponent } from 'vue'
 import { RouteLocationNamedRaw } from 'vue-router'
 
 import TypedEvent from './TypedEvent'
@@ -8,6 +8,21 @@ export type Nullable<T> = T | null | undefined
 export type PickByType<T, Value> = {
   [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]
 }
+
+export type VModelComponent<T, Props extends {} = {}> = DefineComponent<
+  {
+    modelValue: T
+  } & Props,
+  {},
+  any,
+  {},
+  {},
+  {},
+  {},
+  {
+    'update:modelValue': (value: T) => void
+  }
+>
 
 // For Channels
 export enum State {

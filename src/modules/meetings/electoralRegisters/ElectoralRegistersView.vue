@@ -99,7 +99,7 @@
             :disabled="createSelection.size === 0"
             prepend-icon="mdi-account-plus"
             :text="$t('create')"
-            @click="createRegister().then(close)"
+            @click="createRegister(close)"
           />
         </div>
       </template>
@@ -328,7 +328,7 @@ function updateCreateSelection() {
 watch(currentElectoralRegister, updateCreateSelection)
 watch(potentialVoters, updateCreateSelection)
 
-async function createRegister() {
+async function createRegister(close: () => void) {
   if (!erMethod.value) return
   const weights = [...createSelection.entries()].map(([user, weight]) => ({
     user,
@@ -339,11 +339,9 @@ async function createRegister() {
       meeting: meetingId.value,
       weights
     })
-    return true
+    close()
   } catch {
-    // TODO
     alert('*Could not create electoral register')
-    return false
   }
 }
 

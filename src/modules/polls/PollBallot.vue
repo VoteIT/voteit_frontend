@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TPoll extends Poll">
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -15,7 +15,7 @@ import { voteType } from './contentTypes'
 
 const props = defineProps<{
   disabled?: boolean
-  poll: TPoll
+  poll: Poll
   proposals: Proposal[]
   modelValue?: object
 }>()

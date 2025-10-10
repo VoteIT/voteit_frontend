@@ -32,7 +32,6 @@
             />
           </div>
         </v-expand-transition>
-        <!-- TODO Add more access policies later! -->
         <div class="my-12 text-center">
           <v-btn
             v-if="!accessPolicies.length"

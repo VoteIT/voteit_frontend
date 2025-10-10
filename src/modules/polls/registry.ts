@@ -1,30 +1,17 @@
 import type { Dictionary } from 'lodash'
-import type { Component, DefineComponent } from 'vue'
+import type { Component } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 
+import { VModelComponent } from '@/utils/types'
 import PluginHandler, {
   OrganisationPlugin
 } from '../organisations/PluginHandler'
 import type { PollMethodCriterion } from './methods/types'
 import { Poll } from './types'
+import { Proposal } from '../proposals/types'
 
-type SettingsComponent<T> = DefineComponent<
-  {
-    modelValue: T
-    proposals: number
-  },
-  {},
-  any,
-  {},
-  {},
-  {},
-  {},
-  {
-    'update:modelValue': (value: T) => void
-  }
->
-
-export interface PollPlugin<T extends Poll = any> extends OrganisationPlugin {
+export interface PollPlugin<T extends Poll = any, TVote extends {} = any>
+  extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
   getDefaultSettings?(proposals: number): T['settings']
@@ -39,8 +26,16 @@ export interface PollPlugin<T extends Poll = any> extends OrganisationPlugin {
   proposalsMax?: number
   proposalsMin: number
   resultComponent: Component
-  settingsComponent?: SettingsComponent<T['settings']>
-  voteComponent: Component
+  settingsComponent?: VModelComponent<T['settings'], { proposals: number }>
+  voteComponent: VModelComponent<
+    TVote,
+    {
+      disabled?: boolean
+      modelValue?: TVote
+      poll: Poll
+      proposals: Proposal[]
+    }
+  >
 }
 
 const LEGACY_POLL_NAMES: Dictionary<string> = {

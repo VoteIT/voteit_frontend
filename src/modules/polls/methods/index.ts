@@ -21,13 +21,18 @@ import ApprovalSettings from './ApprovalSettings.vue'
 import RepeatedIRVSettings from './RepeatedIRVSettings.vue'
 import {
   ApprovalPoll,
+  ApprovalVote,
   InstantRunoffPoll,
   MajorityPoll,
+  MajorityVote,
+  RankedVote,
   RepeatedIRVPoll,
   RepeatedSchulzePoll,
   SchulzePoll,
+  SchulzeVote,
   ScottishSTVPoll,
-  SimplePoll
+  SimplePoll,
+  SimpleVote
 } from './types'
 
 const { getOrganisationComponent } = useOrganisation()
@@ -50,7 +55,7 @@ pollPlugins.register({
   proposalsMin: 1,
   resultComponent: SimpleResult,
   voteComponent: Simple
-} as PollPlugin<SimplePoll>)
+} as PollPlugin<SimplePoll, SimpleVote>)
 
 pollPlugins.register({
   id: 'schulze',
@@ -81,7 +86,7 @@ pollPlugins.register({
   resultComponent: SchulzeResult,
   settingsComponent: SchulzeSettings,
   voteComponent: Schulze
-} as PollPlugin<SchulzePoll>)
+} as PollPlugin<SchulzePoll, SchulzeVote>)
 
 pollPlugins.register({
   id: 'majority',
@@ -102,7 +107,7 @@ pollPlugins.register({
   proposalsMax: 2,
   resultComponent: MajorityResult,
   voteComponent: Majority
-} as PollPlugin<MajorityPoll>)
+} as PollPlugin<MajorityPoll, MajorityVote>)
 
 pollPlugins.register({
   id: 'repeated_schulze',
@@ -135,7 +140,7 @@ pollPlugins.register({
   resultComponent: RepeatedSchulzeResult,
   settingsComponent: RepeatedSchulzeSettings,
   voteComponent: Schulze
-} as PollPlugin<RepeatedSchulzePoll>)
+} as PollPlugin<RepeatedSchulzePoll, SchulzeVote>)
 
 pollPlugins.register({
   id: 'scottish_stv',
@@ -172,7 +177,7 @@ pollPlugins.register({
   resultComponent: STVResult,
   settingsComponent: ScottishSTVSettings,
   voteComponent: RankedVoting
-} as PollPlugin<ScottishSTVPoll>)
+} as PollPlugin<ScottishSTVPoll, RankedVote>)
 
 pollPlugins.register({
   id: 'irv',
@@ -204,7 +209,7 @@ pollPlugins.register({
   resultComponent: STVResult,
   settingsComponent: IRVSettings,
   voteComponent: RankedVoting
-} as PollPlugin<InstantRunoffPoll>)
+} as PollPlugin<InstantRunoffPoll, RankedVote>)
 
 pollPlugins.register({
   id: 'dutt',
@@ -237,7 +242,7 @@ pollPlugins.register({
   resultComponent: ApprovalResult,
   settingsComponent: ApprovalSettings,
   voteComponent: ApprovalVoting
-} as PollPlugin<ApprovalPoll>)
+} as PollPlugin<ApprovalPoll, ApprovalVote>)
 
 pollPlugins.register({
   id: 'repeated_irv',
@@ -274,4 +279,4 @@ pollPlugins.register({
   resultComponent: RepeatedIRVResult,
   settingsComponent: RepeatedIRVSettings,
   voteComponent: RankedVoting
-} as PollPlugin<RepeatedIRVPoll>)
+} as PollPlugin<RepeatedIRVPoll, RankedVote>)
