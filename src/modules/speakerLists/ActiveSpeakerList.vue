@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import Moment from '@/components/Moment.vue'
 
 import { speakerListType } from './contentTypes'
-import useSpeakerList from './useSpeakerList'
 import useSpeakerSystem from './useSpeakerSystem'
 import EnterLeaveButton from './EnterLeaveButton.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
@@ -26,8 +25,10 @@ const {
   speakerSystem: system,
   currentSpeakerQueue: queue
 } = useSpeakerSystem(computed(() => props.room))
-const { currentSpeaker } = useSpeakerList(systemActiveListId)
-const speakerGroups = useSpeakerGroups(systemActiveListId, t)
+const { currentSpeaker, speakerGroups } = useSpeakerGroups(
+  systemActiveListId,
+  t
+)
 
 const listState = computed(() => list.value && getState(list.value.state))
 

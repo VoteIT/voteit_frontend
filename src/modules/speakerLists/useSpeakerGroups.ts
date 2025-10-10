@@ -1,19 +1,21 @@
+import { enumerate, groupby, map } from 'itertools'
 import { computed, Ref } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
+
+import useMeetingId from '../meetings/useMeetingId'
 
 import { Speaker, SpeakerSystem } from './types'
 import systemMethods from './systemMethods'
 import useSpeakerList from './useSpeakerList'
-import { enumerate, groupby, map } from 'itertools'
 import useSpeakerAnnotations from './useSpeakerAnnotations'
-import useMeetingId from '../meetings/useMeetingId'
+import { getCurrent } from './useSpeakerLists'
 
 export default function useSpeakerGroups(
   listId: Ref<number | null>,
   t: ComposerTranslation
 ) {
   const { speakerSystem, speakerQueue } = useSpeakerList(listId)
-  const { annotateSpeaker } = useSpeakerAnnotations(useMeetingId())
+  const { annotateSpeaker } = useSpeakerAnnotations(useMeetingId(), t)
 
   /**
    * Creates a key function to be used by itertools.groupby to create speakerGroups.
@@ -33,6 +35,12 @@ export default function useSpeakerGroups(
         : methodKeyFn(speaker)
     }
   }
+
+  const currentSpeaker = computed(() => {
+    if (!listId.value) return
+    const speaker = getCurrent(listId.value)
+    if (speaker) return annotateSpeaker(speaker)
+  })
 
   /**
    * Speaker groups
@@ -57,5 +65,8 @@ export default function useSpeakerGroups(
     ) // Deconstruct enumeration into an array of speakers
   })
 
-  return speakerGroups
+  return {
+    currentSpeaker,
+    speakerGroups
+  }
 }

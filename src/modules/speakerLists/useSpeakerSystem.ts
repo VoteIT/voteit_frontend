@@ -1,4 +1,5 @@
 import { computed, MaybeRef, Ref, unref } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
 
 import {
   getCurrent,

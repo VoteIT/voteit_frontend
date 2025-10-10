@@ -1,4 +1,5 @@
 import { computed, MaybeRef, unref } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
 
 import { user } from '@/composables/useAuthentication'
 import useMeetingId from '../meetings/useMeetingId'
@@ -16,8 +17,6 @@ import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
 import useSpeakerAnnotations from './useSpeakerAnnotations'
 
 export default function useSpeakerList(listId: MaybeRef<number | null>) {
-  const { annotateSpeaker } = useSpeakerAnnotations(useMeetingId())
-
   const speakerHistory = computed(() => {
     const list = unref(listId)
     if (!list) throw new Error('Speaker history requires list value')
@@ -38,11 +37,14 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
   const speakerSystem = computed(
     () => speakerList.value && getRoomSpeakerSystem(speakerList.value.room)
   )
+
+  /**
+   * Not exported
+   */
   const currentSpeaker = computed(() => {
     const list = unref(listId)
     if (!list) return
-    const speaker = getCurrent(list)
-    if (speaker) return annotateSpeaker(speaker)
+    return getCurrent(list)
   })
 
   function enterList() {
@@ -103,7 +105,6 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
     canStartSpeaker: computed(
       () => speakerList.value && canStartSpeaker(speakerList.value)
     ),
-    currentSpeaker,
     speakerHistory,
     speakerList,
     speakerSystem,

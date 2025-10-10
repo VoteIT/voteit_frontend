@@ -32,7 +32,6 @@ const meetingId = useMeetingId()
 const listId = computed(() => props.listId)
 const {
   canStartSpeaker,
-  currentSpeaker,
   speakerSystem,
   speakerQueue,
   userQueue,
@@ -40,7 +39,7 @@ const {
   stopSpeaker,
   undoSpeaker
 } = useSpeakerList(toRef(props, 'listId'))
-const speakerGroups = useSpeakerGroups(listId, t)
+const { currentSpeaker, speakerGroups } = useSpeakerGroups(listId, t)
 const { hasParticipantNumbers, participantNumbers } =
   useParticipantNumbers(meetingId)
 

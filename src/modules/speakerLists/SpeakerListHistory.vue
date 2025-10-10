@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Duration } from 'luxon'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { durationToString } from '@/utils'
 import User from '@/components/User.vue'

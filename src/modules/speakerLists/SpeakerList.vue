@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, toRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import User from '@/components/User.vue'
 import { user } from '@/composables/useAuthentication'
@@ -17,6 +18,7 @@ const props = defineProps<{
   room: IMeetingRoom
 }>()
 
+const { t } = useI18n()
 const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'room'))
 const { getRoomRoute } = useRoom()
 

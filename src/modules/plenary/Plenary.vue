@@ -61,7 +61,6 @@ const {
   meetingRoom,
   roomId,
   roomOpenPoll,
-  speakerSystem,
   setPoll,
   setSlsBroadcast
 } = useRoom()

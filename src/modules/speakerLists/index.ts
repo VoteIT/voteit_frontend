@@ -7,8 +7,7 @@ import { AgendaTransition } from '../agendas/types'
 import { meetingExportPlugins } from '../meetings/registry'
 import { meetingRoomStore } from '../rooms/useRooms'
 
-import useSpeakerList from './useSpeakerList'
-import { anySpeakerList, speakerSystems } from './useSpeakerLists'
+import { anySpeakerList, getCurrent, speakerSystems } from './useSpeakerLists'
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
@@ -37,11 +36,6 @@ meetingExportPlugins.register({
 })
 
 agendaItemType.transitions.registerGuard(AgendaTransition.Close, (ai, t) => {
-  if (
-    anySpeakerList(
-      (sl) =>
-        sl.agenda_item === ai.pk && !!useSpeakerList(sl.pk).currentSpeaker.value
-    )
-  )
+  if (anySpeakerList((sl) => sl.agenda_item === ai.pk && !!getCurrent(sl.pk)))
     return { text: t('speaker.agendaItemHasOngoingSpeaker'), isBlocking: true }
 })

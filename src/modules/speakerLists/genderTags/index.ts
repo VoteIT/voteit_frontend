@@ -21,10 +21,9 @@ speakerAnnotationRegistry.register({
   checkActive(meeting) {
     return useMeetingComponent(meeting, 'gtags').componentActive.value
   },
-  *iterAnnotations(meeting, user) {
+  *iterAnnotations(meeting, user, t) {
     const tag = useGenderTag(meeting, user).value
     if (!tag) return
-    const { t } = useI18n()
     yield {
       icon: getGenderIcon(tag),
       text: translateGender(t, tag)
