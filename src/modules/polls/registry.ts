@@ -5,7 +5,8 @@ import type { ComposerTranslation } from 'vue-i18n'
 import PluginHandler, {
   OrganisationPlugin
 } from '../organisations/PluginHandler'
-import type { PollMethodCriterion, PollMethodSettings } from './methods/types'
+import type { PollMethodCriterion } from './methods/types'
+import { Poll } from './types'
 
 type SettingsComponent<T> = DefineComponent<
   {
@@ -23,18 +24,22 @@ type SettingsComponent<T> = DefineComponent<
   }
 >
 
-export interface PollPlugin extends OrganisationPlugin {
+export interface PollPlugin<T extends Poll = any> extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
-  getDefaultSettings?(proposals: number): PollMethodSettings
+  getDefaultSettings?(proposals: number): T['settings']
   getDescription(t: ComposerTranslation): string
   getHelp(t: ComposerTranslation): string
+  getSelectionRange?(settings: T['settings']): {
+    min: number
+    max: number | null
+  } // For ranked or approval polls
   getName(t: ComposerTranslation): string
   multipleWinners?: boolean
   proposalsMax?: number
   proposalsMin: number
   resultComponent: Component
-  settingsComponent?: SettingsComponent<PollMethodSettings>
+  settingsComponent?: SettingsComponent<T['settings']>
   voteComponent: Component
 }
 

@@ -78,6 +78,7 @@ import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
 import { Poll } from '../types'
 import { RankedVote, isRepeatedIRVPoll } from './types'
+import { pollPlugins } from '../registry'
 
 const props = defineProps<{
   disabled?: boolean
@@ -92,6 +93,8 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+const pollMethod = computed(() => pollPlugins.getPlugin(props.poll.method_name))
+
 const ranking = ref<number[]>(props.modelValue?.ranking ?? [])
 
 function setOrder(order?: number[]) {
@@ -99,22 +102,23 @@ function setOrder(order?: number[]) {
   emit('update:modelValue', { ranking: ranking.value })
 }
 
-const minMaxSettings = computed(() => {
-  // TODO: Decouple from this component
-  if (isRepeatedIRVPoll(props.poll)) return props.poll.settings
-})
-const maxRanked = computed(() => minMaxSettings.value?.max)
-const minRanked = computed(() => minMaxSettings.value?.min ?? 1)
+const selectionRange = computed(
+  () =>
+    pollMethod.value?.getSelectionRange?.(props.poll.settings) ?? {
+      min: 1,
+      max: null
+    }
+)
 
 const missingProposals = computed(() => {
   const len = ranking.value.length
-  const min = minRanked.value
-  if (min > 0 && len < min) return min - len
+  const { min } = selectionRange.value
+  if (min && len < min) return min - len
 })
 
 const surplusProposals = computed(() => {
   const len = ranking.value.length
-  const max = maxRanked.value
+  const { max } = selectionRange.value
   if (max && len > max) return len - max
 })
 const isValid = computed(

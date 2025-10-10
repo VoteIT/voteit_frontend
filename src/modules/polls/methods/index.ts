@@ -19,6 +19,16 @@ import IRVSettings from './IRVSettings.vue'
 import ScottishSTVSettings from './ScottishSTVSettings.vue'
 import ApprovalSettings from './ApprovalSettings.vue'
 import RepeatedIRVSettings from './RepeatedIRVSettings.vue'
+import {
+  DuttPoll,
+  InstantRunoffPoll,
+  MajorityPoll,
+  RepeatedIRVPoll,
+  RepeatedSchulzePoll,
+  SchulzePoll,
+  ScottishSTVPoll,
+  SimplePoll
+} from './types'
 
 const { getOrganisationComponent } = useOrganisation()
 
@@ -40,7 +50,7 @@ pollPlugins.register({
   proposalsMin: 1,
   resultComponent: SimpleResult,
   voteComponent: Simple
-})
+} as PollPlugin<SimplePoll>)
 
 pollPlugins.register({
   id: 'schulze',
@@ -71,7 +81,7 @@ pollPlugins.register({
   resultComponent: SchulzeResult,
   settingsComponent: SchulzeSettings,
   voteComponent: Schulze
-} as PollPlugin)
+} as PollPlugin<SchulzePoll>)
 
 pollPlugins.register({
   id: 'majority',
@@ -92,7 +102,7 @@ pollPlugins.register({
   proposalsMax: 2,
   resultComponent: MajorityResult,
   voteComponent: Majority
-})
+} as PollPlugin<MajorityPoll>)
 
 pollPlugins.register({
   id: 'repeated_schulze',
@@ -125,7 +135,7 @@ pollPlugins.register({
   resultComponent: RepeatedSchulzeResult,
   settingsComponent: RepeatedSchulzeSettings,
   voteComponent: Schulze
-} as PollPlugin)
+} as PollPlugin<RepeatedSchulzePoll>)
 
 pollPlugins.register({
   id: 'scottish_stv',
@@ -151,12 +161,18 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.scottish_stv')
   },
+  getSelectionRange() {
+    return {
+      min: 1,
+      max: null
+    }
+  },
   multipleWinners: true,
   proposalsMin: 3,
   resultComponent: STVResult,
   settingsComponent: ScottishSTVSettings,
   voteComponent: RankedVoting
-} as PollPlugin)
+} as PollPlugin<ScottishSTVPoll>)
 
 pollPlugins.register({
   id: 'irv',
@@ -181,11 +197,14 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.irv')
   },
+  getSelectionRange() {
+    return { min: 1, max: null }
+  },
   proposalsMin: 3,
   resultComponent: STVResult,
   settingsComponent: IRVSettings,
   voteComponent: RankedVoting
-} as PollPlugin)
+} as PollPlugin<InstantRunoffPoll>)
 
 pollPlugins.register({
   id: 'dutt',
@@ -218,7 +237,7 @@ pollPlugins.register({
   resultComponent: DuttResult,
   settingsComponent: ApprovalSettings,
   voteComponent: Dutt
-} as PollPlugin)
+} as PollPlugin<DuttPoll>)
 
 pollPlugins.register({
   id: 'repeated_irv',
@@ -248,8 +267,11 @@ pollPlugins.register({
   getName(t) {
     return t('poll.method.repeated_irv')
   },
+  getSelectionRange({ max, min }) {
+    return { max, min }
+  },
   proposalsMin: 3,
   resultComponent: RepeatedIRVResult,
   settingsComponent: RepeatedIRVSettings,
   voteComponent: RankedVoting
-} as PollPlugin)
+} as PollPlugin<RepeatedIRVPoll>)

@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { shallowReactive, watch } from 'vue'
 
-interface Settings {
-  allow_random: boolean
-}
+import { InstantRunoffPoll } from './types'
 
 const props = defineProps<{
-  modelValue: Settings
+  modelValue: InstantRunoffPoll['settings']
   proposals: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: Settings): void
+  (e: 'update:modelValue', value: InstantRunoffPoll['settings']): void
 }>()
 
 const settings = shallowReactive(props.modelValue)

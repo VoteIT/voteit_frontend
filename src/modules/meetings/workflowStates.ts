@@ -81,7 +81,7 @@ export const meetingInviteStates: WorkflowStates<
   'accept' | 'reject' | 'revoke'
 > = [
   {
-    icon: 'mdi-todo', // TODO
+    icon: 'mdi-email-open',
     state: MeetingInviteState.Open,
     getName(t, count = 1) {
       return t('invites.workflow.open', count)
@@ -129,7 +129,7 @@ export const meetingComponentStates: WorkflowStates<
   'disable' | 'enable'
 > = [
   {
-    icon: 'mdi-todo', // TODO
+    icon: 'mdi-close',
     state: MeetingComponentState.Off,
     transition: 'disable',
     getName(t) {
@@ -137,7 +137,7 @@ export const meetingComponentStates: WorkflowStates<
     }
   },
   {
-    icon: 'mdi-todo', // TODO
+    icon: 'mdi-check',
     state: MeetingComponentState.On,
     transition: 'enable',
     getName(t) {
