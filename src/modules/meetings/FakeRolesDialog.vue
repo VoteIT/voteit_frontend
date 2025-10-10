@@ -24,16 +24,12 @@ function setFakeRole(role: MeetingRole, value: boolean) {
   const currentRoles = DEFAULT_ROLE_ORDER.filter((r) =>
     hasMeetingRole(meetingId.value, r)
   )
-  if (value) {
-    if (currentRoles.includes(role)) return
-    setFakeRoles(meetingId.value, [...currentRoles, role])
-  } else {
-    if (!currentRoles.includes(role)) return
-    setFakeRoles(
-      meetingId.value,
-      currentRoles.filter((r) => r !== role)
-    )
-  }
+  // Already correctly set
+  if (currentRoles.includes(role) === value) return
+  const newRoles = value
+    ? [...currentRoles, role]
+    : currentRoles.filter((r) => r !== role)
+  setFakeRoles(meetingId.value, newRoles)
 }
 
 const fakeableRoles = computed(() =>
