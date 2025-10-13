@@ -4,6 +4,13 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.34.1 (2025-10-13)
+
+- Start poll forms updated, using sliders or range sliders for poll settings
+- Bugfix: Speaker list with genders could possibly crash current speaker list component (vueI18n related)
+- Refactoring: Json Schema forms dropped
+- TypeScript typing improvements for polls
+
 ## 0.34.0 (2025-10-08)
 
 - Addressing issues to do with loading meeting after accepting invitation [#382](https://github.com/VoteIT/voteit/issues/382)
