@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.36.0 (??)
+
+- Invites bulk handling
+
 ## 0.34.1 (2025-10-13)
 
 - Start poll forms updated, using sliders or range sliders for poll settings

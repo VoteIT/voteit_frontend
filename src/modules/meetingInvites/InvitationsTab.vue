@@ -11,21 +11,21 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import useChannel from '@/composables/useChannel'
 import usePermission from '@/composables/usePermission'
 
-import { meetingInviteType } from '../meetingInvites/contentTypes'
-import { MeetingInvite } from '../meetingInvites/types'
-import { meetingInviteStates } from '../meetingInvites/workflowStates'
-import { translateInviteType } from '../meetingInvites/utils'
-import useMeetingInvites from '../meetingInvites/useMeetingInvites'
-import { invitationScopes } from '../organisations/registry'
-
-import useMeeting from './useMeeting'
-import { MeetingRole } from './types'
+import useMeeting from '../meetings/useMeeting'
+import { MeetingRole } from '../meetings/types'
 import InvitationModal from '../meetingInvites/InvitationModal.vue'
 import InvitationAnnotationsModal from '../meetingInvites/InvitationAnnotationsModal.vue'
 import InvitationAnnotation from '../meetingInvites/InvitationAnnotation.vue'
-import useInviteAnnotations from '../meetingInvites/useInviteAnnotations'
-import { translateMeetingRole } from './utils'
-import { canDeleteMeetingInvite } from './rules'
+import useInviteAnnotations from './useInviteAnnotations'
+import { translateMeetingRole } from '../meetings/utils'
+import { canDeleteMeetingInvite } from '../meetings/rules'
+import { invitationScopes } from '../organisations/registry'
+
+import { MeetingInvite } from './types'
+import { meetingInviteStates } from './workflowStates'
+import { translateInviteType } from './utils'
+import useMeetingInvites from './useMeetingInvites'
+import useInviteStore from './useInviteStore'
 
 const PAGE_LENGTH = 25
 
@@ -39,6 +39,7 @@ const {
   roleLabelsEditable,
   getMeetingRoleIcon
 } = useMeeting()
+const { bulkDelete, bulkRevoke } = useInviteStore()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
@@ -173,17 +174,19 @@ function copyFilteredData(scope?: string) {
 
 async function deleteSelected() {
   // Delete any selected deletable invites
-  // TODO Warn if any were not deletable
-  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-    meetingInviteType.api.delete(pk)
+  try {
+    await bulkDelete(meetingId.value, selectedInviteIds.value)
+  } catch {
+    alert("^Couldn't delete invitations")
   }
 }
 
 async function revokeSelected() {
   // Revoke any selected deletable invites (same as revokable?)
-  // TODO Warn if any were not revokable
-  for (const inv of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-    meetingInviteType.transitions.make(inv, 'revoke', t)
+  try {
+    await bulkRevoke(meetingId.value, selectedInviteIds.value)
+  } catch {
+    alert("^Couldn't revoke invitations")
   }
 }
 

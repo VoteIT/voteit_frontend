@@ -22,9 +22,19 @@ export default defineStore('inviteStore', () => {
     matchedInvites.value = data
   }
 
+  function bulkDelete(meeting: number, invites: number[]) {
+    return meetingInviteType.api.listAction('bulk-delete', { invites, meeting })
+  }
+
+  function bulkRevoke(meeting: number, invites: number[]) {
+    return meetingInviteType.api.listAction('bulk-revoke', { invites, meeting })
+  }
+
   return {
     matchedInvites,
     meetingInvites,
+    bulkDelete,
+    bulkRevoke,
     clearMatchedInvites,
     fetchMatchedInvites
   }
