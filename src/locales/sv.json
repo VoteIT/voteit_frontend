@@ -125,7 +125,7 @@
     "helpEditTags": "Välj dagordningspunkter till vänster för att redigera taggar",
     "helpNoProposals": "Den här dagordningspunkten har inga förslag än.",
     "helpNoProposalsInFilter": "Det finns förslag på den här dagordningspunkten som inte visas på grund av dina filterinställningar.",
-    "hiddenProposals": "{count} bortfiltrerade förslag",
+    "hiddenProposals": "Ett bortfiltrerat förslag | {count} bortfiltrerade förslag",
     "item": "Dagordningspunkt",
     "itemCount": "Mötet har inga dagordningspunkter | Mötet har en dagordningspunkt | Mötet har {count} dagordningspunkter",
     "newItem": "Ny dagordningspunkt",

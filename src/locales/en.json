@@ -125,7 +125,7 @@
     "helpEditTags": "Select agenda items to the left to edit tags",
     "helpNoProposals": "This agenda item has no proposals yet.",
     "helpNoProposalsInFilter": "There are proposals on this agenda item that are not shown because of your filter settings.",
-    "hiddenProposals": "{count} proposals hidden by filter",
+    "hiddenProposals": "One proposal hidden by filter | {count} proposals hidden by filter",
     "item": "Agenda item",
     "itemCount": "The meeting has no agenda items | The meeting has one agenda item | The meeting has {count} agenda items",
     "newItem": "New Agenda Item",
