@@ -24,6 +24,7 @@ type BaseProposal = {
   meeting_group: number | null
   modified: string
   prop_id: string
+  shortname: string
   tags: string[]
 } & Author
 
