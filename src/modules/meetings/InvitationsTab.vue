@@ -171,7 +171,6 @@ function copyFilteredData(scope?: string) {
 
 async function deleteSelected() {
   // Delete any selected deletable invites
-  // TODO Confirm dialog
   // TODO Warn if any were not deletable
   for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
     meetingInviteType.api.delete(pk)
@@ -499,21 +498,36 @@ async function clearAnnotationType(type: string) {
         <h2 class="mb-2">
           {{ $t('invites.bulkChange', selectedInvites.length) }}
         </h2>
-        <v-btn
-          class="mr-1"
-          color="primary"
-          :disabled="!selectedHasDeletable"
-          prepend-icon="mdi-undo"
-          :text="$t('invites.revoke')"
-          @click="revokeSelected"
-        />
-        <v-btn
+        <QueryDialog
+          :text="$t('invites.confirmRevoke', selectedInvites.length)"
+          @confirmed="revokeSelected"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              class="mr-1"
+              color="primary"
+              :disabled="!selectedHasDeletable"
+              prepend-icon="mdi-undo"
+              :text="$t('invites.revoke')"
+              v-bind="props"
+            />
+          </template>
+        </QueryDialog>
+        <QueryDialog
           color="warning"
-          :disabled="!selectedHasDeletable"
-          prepend-icon="mdi-delete"
-          :text="$t('content.delete')"
-          @click="deleteSelected"
-        />
+          :text="$t('invites.confirmDelete', selectedInvites.length)"
+          @confirmed="deleteSelected"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              color="warning"
+              :disabled="!selectedHasDeletable"
+              prepend-icon="mdi-delete"
+              :text="$t('content.delete')"
+              v-bind="props"
+            />
+          </template>
+        </QueryDialog>
       </div>
     </v-sheet>
   </v-expand-transition>

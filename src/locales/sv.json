@@ -268,6 +268,8 @@
     "add": "Lägg till inbjudningar",
     "addUserInvitesWarning": "Använd med försiktighet! Deltagare ska i första hand läggas till genom inbjudningar.",
     "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
+    "confirmDelete": "Vill du radera en inbjudan? | Vill du radera {count} inbjudningar?",
+    "confirmRevoke": "Vill du dra tillbaka en inbjudan? | Vill du dra tillbaka {count} inbjudningar?",
     "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
     "done": "Dina inbjudningar har lagts till.",
     "existing": "Existerande inbjudningar",
