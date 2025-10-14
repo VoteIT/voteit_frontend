@@ -1,3 +1,219 @@
+<script lang="ts" setup>
+import { computed, reactive, ref, watch } from 'vue'
+import { useClipboard } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
+import { chunk, isEqual } from 'lodash'
+
+import { socket } from '@/utils/Socket'
+import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import useChannel from '@/composables/useChannel'
+import usePermission from '@/composables/usePermission'
+
+import { invitationScopes } from '../organisations/registry'
+
+import useMeeting from './useMeeting'
+import useMeetingInvites from './useMeetingInvites'
+import { canDeleteMeetingInvite } from './rules'
+import { meetingInviteType } from './contentTypes'
+import { MeetingInvite, MeetingRole } from './types'
+import InvitationModal from './InvitationModal.vue'
+import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
+import InvitationAnnotation from './InvitationAnnotation.vue'
+import useInviteAnnotations from './useInviteAnnotations'
+import { translateInviteType, translateMeetingRole } from './utils'
+import { meetingInviteStates } from './workflowStates'
+
+const PAGE_LENGTH = 25
+
+const emit = defineEmits(['denied'])
+
+const { t } = useI18n()
+const {
+  isModerator,
+  meeting,
+  meetingId,
+  roleLabelsEditable,
+  getMeetingRoleIcon
+} = useMeeting()
+const { meetingInvites } = useMeetingInvites(meetingId)
+const { clearableDataTypes } = useInviteAnnotations(meeting)
+const { copy, copied } = useClipboard()
+
+const { isSubscribed } = useChannel('invites', meetingId)
+usePermission(isModerator, {}, () => {
+  emit('denied')
+})
+
+const scopeItems = computed(() => {
+  const activeScopes = invitationScopes.getActivePlugins()
+  return activeScopes.map(({ icon, id }) => ({
+    icon,
+    title: translateInviteType(id, t).typeLabel,
+    value: id
+  }))
+})
+
+const inviteFilter = reactive<{
+  roles: string[]
+  exactRoles: boolean
+  search: string | null
+  states: string[]
+}>({
+  roles: [MeetingRole.Participant],
+  exactRoles: false,
+  search: null,
+  states: ['open']
+})
+const stateLabels = computed(() => {
+  return Object.fromEntries(
+    meetingInviteStates.map(({ getName, state }) => [state, getName(t, 2)])
+  )
+})
+const selectedInviteIds = ref<number[]>([])
+const selectedInvites = computed(() =>
+  filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk))
+)
+const selectedHasDeletable = computed(() =>
+  selectedInvites.value.some(canDeleteMeetingInvite)
+)
+
+const allInvitesSelected = computed({
+  get() {
+    if (!filteredInvites.value.length) return false
+    return filteredInvites.value.every((inv) =>
+      selectedInviteIds.value.includes(inv.pk)
+    )
+  },
+  set(value) {
+    selectedInviteIds.value = value
+      ? filteredInvites.value.map((inv) => inv.pk)
+      : []
+  }
+})
+
+function search(inv: MeetingInvite) {
+  const searchLower = inviteFilter.search?.toLocaleLowerCase()
+  return (
+    !searchLower ||
+    Object.values(inv.user_data).some((data) =>
+      data.toLocaleLowerCase().includes(searchLower)
+    )
+  )
+}
+
+const existingInviteScopes = computed(() => {
+  return invitationScopes
+    .getActivePlugins()
+    .filter((scope) =>
+      meetingInvites.value.some((inv) => scope.id in inv.user_data)
+    )
+    .map((scope) => ({
+      ...scope,
+      typeLabel: translateInviteType(scope.id, t).typeLabel
+    }))
+})
+
+function transformUserdata(userData: MeetingInvite['user_data']) {
+  return Object.fromEntries(
+    Object.entries(userData).map(([scope, value]) => {
+      const plugin = invitationScopes.getPlugin(scope)
+      if (!plugin) throw new Error(`Bad user data scope: ${scope}`)
+      return [scope, plugin.transformData?.(value) || value]
+    })
+  )
+}
+
+const filteredInvites = computed(() => {
+  const roleSet = new Set(inviteFilter.roles)
+  const roleFilter = inviteFilter.exactRoles
+    ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
+    : (invite: MeetingInvite) =>
+        inviteFilter.roles.every((role) =>
+          invite.roles.includes(role as MeetingRole)
+        )
+  return meetingInvites.value
+    .filter(
+      (inv) =>
+        search(inv) &&
+        roleFilter(inv) &&
+        inviteFilter.states.includes(inv.state)
+    )
+    .map((inv) => {
+      return {
+        ...inv,
+        user_data: transformUserdata(inv.user_data),
+        rolesDescription: inv.roles.map((role) => ({
+          title: translateMeetingRole(role, t),
+          icon: getMeetingRoleIcon(role)
+        })),
+        stateLabel: stateLabels.value[inv.state]
+      }
+    })
+})
+
+const pages = computed(() => chunk(filteredInvites.value, PAGE_LENGTH))
+const currentPage = ref(1)
+// When filtering, the number of pages might change. Make sure currentPage is never higher than number of pages.
+watch(pages, (value) => {
+  if (currentPage.value > value.length) currentPage.value = value.length || 1
+})
+
+function copyFilteredData(scope?: string) {
+  copy(
+    filteredInvites.value
+      .map((i) => i.user_data[scope || existingInviteScopes.value[0].id])
+      .filter(Boolean)
+      .join('\n') + '\n'
+  )
+}
+
+async function deleteSelected() {
+  // Delete any selected deletable invites
+  // TODO Confirm dialog
+  // TODO Warn if any were not deletable
+  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
+    meetingInviteType.api.delete(pk)
+  }
+}
+
+async function revokeSelected() {
+  // Revoke any selected deletable invites (same as revokable?)
+  // TODO Warn if any were not revokable
+  for (const inv of selectedInvites.value.filter(canDeleteMeetingInvite)) {
+    meetingInviteType.transitions.make(inv, 'revoke', t)
+  }
+}
+
+const inviteHelp = computed(() => {
+  if (!meetingInvites.value.length) {
+    return {
+      text: t('invites.noInvitesHelp')
+    }
+  }
+  if (!filteredInvites.value.length) {
+    return {
+      text: t('invites.noFilteredInvitesHelp'),
+      icon: 'mdi-filter-off'
+    }
+  }
+  return undefined
+})
+
+const filterMenu = ref(false)
+const hasAnnotations = computed(() =>
+  meetingInvites.value.some((inv) => inv.has_annotations)
+)
+
+async function clearAnnotationType(type: string) {
+  await socket.call('invites.clear_annotations', {
+    meeting: meetingId.value,
+    types: [type]
+  })
+}
+</script>
+
 <template>
   <v-alert
     class="mb-4"
@@ -302,219 +518,3 @@
     </v-sheet>
   </v-expand-transition>
 </template>
-
-<script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue'
-import { useClipboard } from '@vueuse/core'
-import { useI18n } from 'vue-i18n'
-import { chunk, isEqual } from 'lodash'
-
-import { socket } from '@/utils/Socket'
-import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
-import useChannel from '@/composables/useChannel'
-import usePermission from '@/composables/usePermission'
-
-import { invitationScopes } from '../organisations/registry'
-
-import useMeeting from './useMeeting'
-import useMeetingInvites from './useMeetingInvites'
-import { canDeleteMeetingInvite } from './rules'
-import { meetingInviteType } from './contentTypes'
-import { MeetingInvite, MeetingRole } from './types'
-import InvitationModal from './InvitationModal.vue'
-import InvitationAnnotationsModal from './InvitationAnnotationsModal.vue'
-import InvitationAnnotation from './InvitationAnnotation.vue'
-import useInviteAnnotations from './useInviteAnnotations'
-import { translateInviteType, translateMeetingRole } from './utils'
-import { meetingInviteStates } from './workflowStates'
-
-const PAGE_LENGTH = 25
-
-const emit = defineEmits(['denied'])
-
-const { t } = useI18n()
-const {
-  isModerator,
-  meeting,
-  meetingId,
-  roleLabelsEditable,
-  getMeetingRoleIcon
-} = useMeeting()
-const { meetingInvites } = useMeetingInvites(meetingId)
-const { clearableDataTypes } = useInviteAnnotations(meeting)
-const { copy, copied } = useClipboard()
-
-const { isSubscribed } = useChannel('invites', meetingId)
-usePermission(isModerator, {}, () => {
-  emit('denied')
-})
-
-const scopeItems = computed(() => {
-  const activeScopes = invitationScopes.getActivePlugins()
-  return activeScopes.map(({ icon, id }) => ({
-    icon,
-    title: translateInviteType(id, t).typeLabel,
-    value: id
-  }))
-})
-
-const inviteFilter = reactive<{
-  roles: string[]
-  exactRoles: boolean
-  search: string | null
-  states: string[]
-}>({
-  roles: [MeetingRole.Participant],
-  exactRoles: false,
-  search: null,
-  states: ['open']
-})
-const stateLabels = computed(() => {
-  return Object.fromEntries(
-    meetingInviteStates.map(({ getName, state }) => [state, getName(t, 2)])
-  )
-})
-const selectedInviteIds = ref<number[]>([])
-const selectedInvites = computed(() =>
-  filteredInvites.value.filter(({ pk }) => selectedInviteIds.value.includes(pk))
-)
-const selectedHasDeletable = computed(() =>
-  selectedInvites.value.some(canDeleteMeetingInvite)
-)
-
-const allInvitesSelected = computed({
-  get() {
-    if (!filteredInvites.value.length) return false
-    return filteredInvites.value.every((inv) =>
-      selectedInviteIds.value.includes(inv.pk)
-    )
-  },
-  set(value) {
-    selectedInviteIds.value = value
-      ? filteredInvites.value.map((inv) => inv.pk)
-      : []
-  }
-})
-
-function search(inv: MeetingInvite) {
-  const searchLower = inviteFilter.search?.toLocaleLowerCase()
-  return (
-    !searchLower ||
-    Object.values(inv.user_data).some((data) =>
-      data.toLocaleLowerCase().includes(searchLower)
-    )
-  )
-}
-
-const existingInviteScopes = computed(() => {
-  return invitationScopes
-    .getActivePlugins()
-    .filter((scope) =>
-      meetingInvites.value.some((inv) => scope.id in inv.user_data)
-    )
-    .map((scope) => ({
-      ...scope,
-      typeLabel: translateInviteType(scope.id, t).typeLabel
-    }))
-})
-
-function transformUserdata(userData: MeetingInvite['user_data']) {
-  return Object.fromEntries(
-    Object.entries(userData).map(([scope, value]) => {
-      const plugin = invitationScopes.getPlugin(scope)
-      if (!plugin) throw new Error(`Bad user data scope: ${scope}`)
-      return [scope, plugin.transformData?.(value) || value]
-    })
-  )
-}
-
-const filteredInvites = computed(() => {
-  const roleSet = new Set(inviteFilter.roles)
-  const roleFilter = inviteFilter.exactRoles
-    ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
-    : (invite: MeetingInvite) =>
-        inviteFilter.roles.every((role) =>
-          invite.roles.includes(role as MeetingRole)
-        )
-  return meetingInvites.value
-    .filter(
-      (inv) =>
-        search(inv) &&
-        roleFilter(inv) &&
-        inviteFilter.states.includes(inv.state)
-    )
-    .map((inv) => {
-      return {
-        ...inv,
-        user_data: transformUserdata(inv.user_data),
-        rolesDescription: inv.roles.map((role) => ({
-          title: translateMeetingRole(role, t),
-          icon: getMeetingRoleIcon(role)
-        })),
-        stateLabel: stateLabels.value[inv.state]
-      }
-    })
-})
-
-const pages = computed(() => chunk(filteredInvites.value, PAGE_LENGTH))
-const currentPage = ref(1)
-// When filtering, the number of pages might change. Make sure currentPage is never higher than number of pages.
-watch(pages, (value) => {
-  if (currentPage.value > value.length) currentPage.value = value.length || 1
-})
-
-function copyFilteredData(scope?: string) {
-  copy(
-    filteredInvites.value
-      .map((i) => i.user_data[scope || existingInviteScopes.value[0].id])
-      .filter(Boolean)
-      .join('\n') + '\n'
-  )
-}
-
-async function deleteSelected() {
-  // Delete any selected deletable invites
-  // TODO Confirm dialog
-  // TODO Warn if any were not deletable
-  for (const { pk } of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-    meetingInviteType.api.delete(pk)
-  }
-}
-
-async function revokeSelected() {
-  // Revoke any selected deletable invites (same as revokable?)
-  // TODO Warn if any were not revokable
-  for (const inv of selectedInvites.value.filter(canDeleteMeetingInvite)) {
-    meetingInviteType.transitions.make(inv, 'revoke', t)
-  }
-}
-
-const inviteHelp = computed(() => {
-  if (!meetingInvites.value.length) {
-    return {
-      text: t('invites.noInvitesHelp')
-    }
-  }
-  if (!filteredInvites.value.length) {
-    return {
-      text: t('invites.noFilteredInvitesHelp'),
-      icon: 'mdi-filter-off'
-    }
-  }
-  return undefined
-})
-
-const filterMenu = ref(false)
-const hasAnnotations = computed(() =>
-  meetingInvites.value.some((inv) => inv.has_annotations)
-)
-
-async function clearAnnotationType(type: string) {
-  await socket.call('invites.clear_annotations', {
-    meeting: meetingId.value,
-    types: [type]
-  })
-}
-</script>
