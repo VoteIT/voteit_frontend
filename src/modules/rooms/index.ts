@@ -1,5 +1,4 @@
 import { any } from 'itertools'
-import { computed } from 'vue'
 
 import router from '@/router'
 import {
@@ -11,11 +10,13 @@ import ControlPanel from './ControlPanel.vue'
 import RealTimeBubble from './RealTimeBubble.vue'
 import RealTimeView from './RealTimeView.vue'
 import { meetingRoomStore } from './useRooms'
+import QuickPanel from './QuickPanel.vue'
 
 meetingSettingsPlugins.register({
   id: 'rooms',
   component: ControlPanel,
   icon: 'mdi-lectern',
+  quickComponent: QuickPanel,
   getTitle(t) {
     return t('room.settingsTitle')
   },

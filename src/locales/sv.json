@@ -854,6 +854,7 @@
     "moderatorPassiveOn": "Använd på projektor",
     "moderatorPassiveQuery": "Projektorläget ställer in realtidsvyn för publik visning. Du kan slå av eller på projektorläget när som helst i visningsmenyn ovan. Vill du aktivera projektorläge på den här skärmen?",
     "noBroadcast": "Paus",
+    "notConfigured": "Ej konfigurerat",
     "nothingToDisplay": "Det finns inget att visa. Ändra visningsinställningar om du vill se mer.",
     "onlyProposals": "Endast förslag",
     "onlySpeakers": "Endast talarlista",

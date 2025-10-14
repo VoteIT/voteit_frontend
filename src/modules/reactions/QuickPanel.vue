@@ -1,3 +1,25 @@
+<script lang="ts" setup>
+import { computed, reactive } from 'vue'
+
+import { user } from '@/composables/useAuthentication'
+import UserList from '@/components/UserList.vue'
+
+import useMeetingId from '../meetings/useMeetingId'
+
+import RealReactionButton from './RealReactionButton.vue'
+import useReactions from './useReactions'
+import FlagButton from './FlagButton.vue'
+import { isFlagButton } from './types'
+
+const reactions = useReactions()
+const meetingId = useMeetingId()
+
+const meetingButtons = computed(() =>
+  reactions.getMeetingButtons(meetingId.value)
+)
+const model = reactive<Record<number, boolean>>({})
+</script>
+
 <template>
   <v-card-text>
     {{ $t('reaction.buttonCount', meetingButtons.length) }}
@@ -24,28 +46,6 @@
     </template>
   </v-card-actions>
 </template>
-
-<script lang="ts" setup>
-import { computed, reactive } from 'vue'
-
-import { user } from '@/composables/useAuthentication'
-import UserList from '@/components/UserList.vue'
-
-import useMeetingId from '../meetings/useMeetingId'
-
-import RealReactionButton from './RealReactionButton.vue'
-import useReactions from './useReactions'
-import FlagButton from './FlagButton.vue'
-import { isFlagButton } from './types'
-
-const reactions = useReactions()
-const meetingId = useMeetingId()
-
-const meetingButtons = computed(() =>
-  reactions.getMeetingButtons(meetingId.value)
-)
-const model = reactive<Record<number, boolean>>({})
-</script>
 
 <style lang="sass">
 .v-card-actions .v-btn

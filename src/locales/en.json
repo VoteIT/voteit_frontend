@@ -854,6 +854,7 @@
     "moderatorPassiveOn": "Use on projector",
     "moderatorPassiveQuery": "The projector mode sets the real-time view up for public display. You can enable/disable the projector mode at any time in the display menu above. Do you want to activate projector mode on this screen?",
     "noBroadcast": "Pause",
+    "notConfigured": "Not configured",
     "nothingToDisplay": "There's nothing to display. Change display options if you want to show more.",
     "onlyProposals": "Only proposals",
     "onlySpeakers": "Only speaker list",
