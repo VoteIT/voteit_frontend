@@ -3,6 +3,7 @@ import App from './App.vue'
 // import './registerServiceWorker'
 import router from './router'
 
+import pinia from './plugins/pinia'
 import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
@@ -22,4 +23,4 @@ import './modules/speakerLists'
 import './modules/speakerLists/genderTags'
 import './modules/rooms'
 
-createApp(App).use(i18n).use(router).use(vuetify).mount('#app')
+createApp(App).use(i18n).use(pinia).use(router).use(vuetify).mount('#app')

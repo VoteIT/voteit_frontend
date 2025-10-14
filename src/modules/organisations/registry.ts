@@ -1,7 +1,7 @@
 import PluginHandler from '@/utils/PluginHandler'
 
 import useOrganisation from './useOrganisation'
-import { MeetingInvite } from '../meetings/types'
+import { MeetingInvite } from '../meetingInvites/types'
 
 const { organisation } = useOrganisation()
 

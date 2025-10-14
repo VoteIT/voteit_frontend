@@ -8,8 +8,10 @@ import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useRules from '@/composables/useRules'
 import { invitationScopes } from '../organisations/registry'
-import useMeeting from './useMeeting'
-import { MeetingInvite, MeetingRole } from './types'
+import useMeeting from '../meetings/useMeeting'
+import { MeetingRole } from '../meetings/types'
+
+import { MeetingInvite } from './types'
 import { translateInviteType } from './utils'
 
 interface InviteResult {

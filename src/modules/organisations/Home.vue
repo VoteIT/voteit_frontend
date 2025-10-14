@@ -24,10 +24,11 @@ import useLoader from '@/composables/useLoader'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
 import useRules from '@/composables/useRules'
+
+import useInviteStore from '../meetingInvites/useInviteStore'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
-import useMatchedInvites from '../meetings/useMatchedInvites'
-import Invite from '../meetings/Invite.vue'
+import Invite from '../meetingInvites/Invite.vue'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
 import { meetingStates } from '../meetings/workflowStates'
@@ -38,7 +39,7 @@ import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 
-const { matchedInvites, clearInvites, fetchInvites } = useMatchedInvites()
+const inviteStore = useInviteStore()
 
 const organisationIcons: Record<OrganisationRole, string> = {
   meeting_creator: 'mdi-calendar-plus',
@@ -91,11 +92,11 @@ useTitle(
 
 async function fetchInvitesIfAuthenticated() {
   if (!user.value) return
-  await fetchInvites()
+  await inviteStore.fetchMatchedInvites()
 }
 
 watch(user, () => {
-  clearInvites()
+  inviteStore.clearMatchedInvites()
   fetchInvitesIfAuthenticated()
 })
 const { idle } = useIdle()
@@ -417,12 +418,12 @@ function cancelEdit() {
         </v-col>
         <v-divider vertical />
         <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
-          <div v-if="matchedInvites.length" class="mb-4">
+          <div v-if="inviteStore.matchedInvites.length" class="mb-4">
             <h2 class="mb-2">
-              {{ $t('join.invites', matchedInvites.length) }}
+              {{ $t('join.invites', inviteStore.matchedInvites.length) }}
             </h2>
             <Invite
-              v-for="inv in matchedInvites"
+              v-for="inv in inviteStore.matchedInvites"
               :key="inv.pk"
               :invite="inv"
               class="mb-4"

@@ -54,18 +54,6 @@ type MeetingGroupTablePlugin = MeetingPlugin & {
   ): MeetingGroupColumn[]
 }
 
-export interface MeetingInviteAnnotationPlugin<
-  T extends { name: string } = { name: string }
-> extends MeetingPlugin {
-  getTranslator?(
-    t: ComposerTranslation,
-    meeting: Ref<number>
-  ): (annotation: T) => { subtitle?: string; title: string }
-  getPossibleValues?(
-    meeting: Meeting
-  ): { value: string; description?: string }[]
-}
-
 export interface MeetingMenuPlugin extends MeetingPlugin {
   getItems(context: {
     meeting: Meeting
@@ -81,6 +69,4 @@ export const meetingRolePlugins = new PluginHandler<MeetingRolePlugin>()
 export const meetingGroupTablePlugins =
   new PluginHandler<MeetingGroupTablePlugin>()
 export const meetingBubblePlugins = new PluginHandler<MeetingBubblePlugin>()
-export const meetingInviteAnnotationPlugins =
-  new PluginHandler<MeetingInviteAnnotationPlugin>()
 export const meetingMenuPlugins = new PluginHandler<MeetingMenuPlugin>()

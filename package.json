@@ -23,6 +23,7 @@
     "itertools": "^1.7.1",
     "lodash": "^4.17.21",
     "luxon": "^3.3.0",
+    "pinia": "^3.0.3",
     "quill": "^2.0.2",
     "quill-mention": "^6.0.1",
     "register-service-worker": "^1.7.2",

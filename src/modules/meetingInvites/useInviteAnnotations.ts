@@ -1,7 +1,8 @@
 import { Ref, computed, onBeforeMount, ref, watch } from 'vue'
 
 import restApi from '@/utils/restApi'
-import { Meeting } from './types'
+import { Meeting } from '../meetings/types'
+
 import { meetingInviteAnnotationPlugins } from './registry'
 
 interface InviteDataType {

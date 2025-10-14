@@ -10,14 +10,9 @@ import {
   Meeting,
   MeetingDialectDefinition,
   MeetingGroup,
-  MeetingInvite,
   MeetingRole
 } from './types'
-import {
-  meetingComponentStates,
-  meetingInviteStates,
-  meetingStates
-} from './workflowStates'
+import { meetingComponentStates, meetingStates } from './workflowStates'
 
 export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
   name: 'access_policy',
@@ -71,20 +66,6 @@ export const meetingType = new ContentType<
       translateName: (t) => t('role.proposer')
     }
   }
-})
-
-export const matchedInviteType = new ContentType<MeetingInvite>({
-  name: 'meeting_invite',
-  restEndpoint: 'handle-matched-invites/'
-})
-
-export const meetingInviteType = new ContentType<
-  MeetingInvite,
-  ExtractTransition<typeof meetingInviteStates>
->({
-  name: 'meeting_invite',
-  restEndpoint: 'meeting-invites/',
-  states: meetingInviteStates
 })
 
 export const meetingGroupType = new ContentType<MeetingGroup>({

@@ -10,10 +10,10 @@ import { invitationScopes } from '../organisations/registry'
 
 import { matchedInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
-import useMatchedInvites from './useMatchedInvites'
 import { translateInviteType } from './utils'
+import useInviteStore from './useInviteStore'
 
-const { fetchInvites } = useMatchedInvites()
+const { fetchMatchedInvites } = useInviteStore()
 
 const props = defineProps<{ invite: MeetingInvite }>()
 
@@ -46,7 +46,7 @@ async function rejectInvite(inv: MeetingInvite) {
   submitting.value = 'reject'
   try {
     await matchedInviteType.api.action(inv.pk, 'reject')
-    fetchInvites()
+    fetchMatchedInvites()
   } catch {
     openAlertEvent.emit('^Invite rejection failed')
   }

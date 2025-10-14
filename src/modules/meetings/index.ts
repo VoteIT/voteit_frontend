@@ -5,13 +5,15 @@ import { getApiLink } from '@/utils/restApi'
 import { speakerAnnotationRegistry } from '../speakerLists/registry'
 
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
+import {
+  MeetingInviteAnnotationPlugin,
+  meetingInviteAnnotationPlugins
+} from '../meetingInvites/registry'
 
 import FakeRolesBubble from './FakeRolesBubble.vue'
 import {
-  MeetingInviteAnnotationPlugin,
   meetingBubblePlugins,
   meetingExportPlugins,
-  meetingInviteAnnotationPlugins,
   meetingRolePlugins
 } from './registry'
 import useMeetingGroups from './useMeetingGroups'
@@ -145,7 +147,7 @@ meetingInviteAnnotationPlugins.register({
       }
     }
   }
-} as MeetingInviteAnnotationPlugin)
+})
 
 meetingInviteAnnotationPlugins.register({
   id: 'grouprole',

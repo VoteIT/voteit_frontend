@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import restApi from '@/utils/restApi'
-import useMeetingId from './useMeetingId'
+import useMeetingId from '../meetings/useMeetingId'
 import { invitationScopes } from '../organisations/registry'
 
 import { MeetingInvite } from './types'

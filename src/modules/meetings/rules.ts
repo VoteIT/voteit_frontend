@@ -2,16 +2,12 @@ import { reactive } from 'vue'
 import useAuthentication, { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
 
-import {
-  Meeting,
-  MeetingInvite,
-  MeetingRole,
-  MeetingState
-} from '@/modules/meetings/types'
+import { Meeting, MeetingRole, MeetingState } from '@/modules/meetings/types'
 import useWorkflows from '@/contentTypes/useWorkflows'
 import { meetingStates } from './workflowStates'
 import { isOrganisationManager } from '../organisations/rules'
 import { meetings } from './useMeetings'
+import { MeetingInvite } from '../meetingInvites/types'
 
 const { hasRole } = useContextRoles<MeetingRole>('meeting')
 // Import this a bit differently, to avoid cirkular imports

@@ -6,11 +6,12 @@ import { parseSocketError } from 'envelope-client'
 
 import { socket } from '@/utils/Socket'
 import { Progress } from '@/utils/types'
-import useRules from '@/composables/useRules'
-import useInviteAnnotations from './useInviteAnnotations'
-import useMeeting from './useMeeting'
-import { meetingInviteAnnotationPlugins } from './registry'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import useRules from '@/composables/useRules'
+import useMeeting from '../meetings/useMeeting'
+
+import useInviteAnnotations from './useInviteAnnotations'
+import { meetingInviteAnnotationPlugins } from './registry'
 
 interface AnnotationProgress extends Progress {
   added: number
