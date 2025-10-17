@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, shallowRef } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
-import { Proposal, ProposalState } from '../proposals/types'
-import { proposalType } from '../proposals/contentTypes'
+import { Proposal } from '../proposals/types'
 import { Poll } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
 import { PollStartData } from '../polls/methods/types'
@@ -13,6 +11,7 @@ import useRoom from '../rooms/useRoom'
 import useMeetingId from '../meetings/useMeetingId'
 
 import PollModal from './PollModal.vue'
+import useMeetingPolls from '../polls/useMeetingPolls'
 
 const props = defineProps<{
   methodName: Poll['method_name']
@@ -24,33 +23,30 @@ defineEmits<{
   (e: 'cancel'): void
 }>()
 
-const { t } = useI18n()
-const { getState } = proposalType.useWorkflows()
 const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { nextPollTitle } = useAgendaItem(agendaId)
 const { isBroadcasting, roomOpenPoll, setBroadcast, setHandler, setPoll } =
   useRoom()
+const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 
-const UNPROTECTED_STATES: ProposalState[] = [
-  ProposalState.Published,
-  ProposalState.Voting
-] as const
-
-const protectedProposals = computed(() =>
-  props.proposals.filter((p) => !UNPROTECTED_STATES.includes(p.state))
+/**
+ * Ongoing polls with any on the selected proposals.
+ * If user tries to start a poll with any of these, have them confirm that it's ok
+ */
+const blockingPolls = computed(() =>
+  meetingOngoingPolls.value.filter((poll) =>
+    poll.proposals.some((pid) =>
+      props.proposals.some((prop) => prop.pk === pid)
+    )
+  )
 )
 
 /**
- * Selected proposals that are in a protected state (not published or voting)
- * If user tries to start a poll with any of these, have them confirm that it's ok
+ * Blocking poll names for template
  */
-const protectedProposalStates = computed(() =>
-  [
-    ...new Set(
-      protectedProposals.value.map((p) => getState(p.state)?.getName(t))
-    )
-  ].join(', ')
+const blockingPollNames = computed(() =>
+  blockingPolls.value.map((p) => p.title).join(', ')
 )
 
 const createdId = shallowRef<number>()
@@ -98,7 +94,7 @@ async function takeOverAndStart() {
 }
 
 onMounted(() => {
-  if (!isBroadcasting.value || protectedProposals.value.length) return
+  if (!isBroadcasting.value || blockingPolls.value.length) return
   createPoll()
 })
 </script>
@@ -124,15 +120,15 @@ onMounted(() => {
     </div>
   </div>
   <PollModal v-else-if="createdPoll" :data="createdPoll" />
-  <div v-else-if="!createState && protectedProposals.length">
+  <div v-else-if="!createState && blockingPolls.length">
     <p class="mb-6">
       <i18n-t
-        keypath="plenary.confirmStartProtectedStates"
-        :plural="protectedProposals.length"
+        keypath="plenary.confirmStartBlockingPolls"
+        :plural="blockingPolls.length"
       >
-        <template #states>
+        <template #polls>
           <em>
-            {{ protectedProposalStates }}
+            {{ blockingPollNames }}
           </em>
         </template>
       </i18n-t>

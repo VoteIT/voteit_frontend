@@ -672,7 +672,7 @@
     "closeAIDescription": "Det finns inga pågående omröstningar eller obehandlade förslag på den här dagordningspunkten. Vill du stänga den och gå vidare till nästa?",
     "closedAI": "Avslutad dagordningspunkt",
     "closedAIDescription": "Den här dagordningspunkten är avslutad. Om du behöver hantera flera beslut på den här dagordningspunkten behöver du ändra den till pågående igen.",
-    "confirmStartProtectedStates": "Du har valt ett förslag som är {states}.\nVill du ändå starta omröstningen? | Du har valt {count} förslag som är {states}.\nVill du ändå starta omröstningen?",
+    "confirmStartBlockingPolls": "Du har valt förslag som redan ingår i en pågående omröstning ({polls}).\nVill du ändå starta omröstningen? | Du har valt förslag som redan ingår i pågående omröstningar ({polls}).\nVill du ändå starta omröstningen?",
     "decisions": "Beslut",
     "discussion": "Talarlista",
     "displayApprovedProposals": "Visa bifallet förslag | Visa bifallna förslag",
