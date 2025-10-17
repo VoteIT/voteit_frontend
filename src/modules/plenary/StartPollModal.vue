@@ -32,12 +32,17 @@ const { nextPollTitle } = useAgendaItem(agendaId)
 const { isBroadcasting, roomOpenPoll, setBroadcast, setHandler, setPoll } =
   useRoom()
 
+const UNPROTECTED_STATES: ProposalState[] = [
+  ProposalState.Published,
+  ProposalState.Voting
+] as const
+
 const protectedProposals = computed(() =>
-  props.proposals.filter((p) => p.state !== ProposalState.Published)
+  props.proposals.filter((p) => !UNPROTECTED_STATES.includes(p.state))
 )
 
 /**
- * Selected proposals that are in a protected state (not published)
+ * Selected proposals that are in a protected state (not published or voting)
  * If user tries to start a poll with any of these, have them confirm that it's ok
  */
 const protectedProposalStates = computed(() =>
