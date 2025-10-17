@@ -7,6 +7,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.36.2 (2025-10-17)
 
 - Starting poll in sender view requies broadcasting (suggests take-over)
+- Bugfix: Protecting proposal state "voting" when starting poll in plenary view caused problems
 
 ## 0.36.1 (2025-10-15)
 
