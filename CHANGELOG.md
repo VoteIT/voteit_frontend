@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.36.2 (??)
+## 0.36.2 (2025-10-17)
 
 - Starting poll in sender view requies broadcasting (suggests take-over)
 
