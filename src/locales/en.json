@@ -691,6 +691,8 @@
     "otherTags": "Other tags",
     "privateAI": "Private Agenda Item",
     "privateAIDescription": "This Agenda Item is private, and can't be broadcasted to meeting participants.",
+    "requiresBroadcasting": "Requires broadcasting",
+    "requiresBroadcastingDescription": "You can't start polls in this view unless you're handling the broadcast.",
     "saveAndPauseBroadcast": "Save and pause broadcast",
     "selectMinProposals": "Select at least one proposal | Select at least {count} proposals",
     "selectExactProposals": "Select {count} proposals",

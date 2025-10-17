@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useAgenda from '../agendas/useAgenda'
@@ -29,7 +29,8 @@ const { getState } = proposalType.useWorkflows()
 const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { nextPollTitle } = useAgendaItem(agendaId)
-const { roomOpenPoll, setPoll } = useRoom()
+const { isBroadcasting, roomOpenPoll, setBroadcast, setHandler, setPoll } =
+  useRoom()
 
 const protectedProposals = computed(() =>
   props.proposals.filter((p) => p.state !== ProposalState.Published)
@@ -47,11 +48,11 @@ const protectedProposalStates = computed(() =>
   ].join(', ')
 )
 
-const createdId = ref<number>()
+const createdId = shallowRef<number>()
 const createdPoll = computed(() =>
   roomOpenPoll.value?.pk === createdId.value ? roomOpenPoll.value : undefined
 )
-const working = ref(false)
+const working = shallowRef(false)
 async function createPoll() {
   working.value = true
   const pollData: Omit<PollStartData, 'p_ord' | 'withheld_result'> = {
@@ -67,17 +68,55 @@ async function createPoll() {
     const { data } = await pollType.api.add(pollData)
     createdId.value = data.pk
     setPoll(data.pk)
-  } catch {}
+  } catch {
+    alert("^Couldn't create poll!")
+  }
   working.value = false
 }
 
+const takingOver = shallowRef(false)
+async function takeOverAndStart() {
+  takingOver.value = true
+  try {
+    await setHandler()
+    await setBroadcast({
+      agenda_item: agendaId.value,
+      highlighted: props.proposals.map((p) => p.pk)
+    })
+  } catch {
+    alert("^Couldn't take over broadcast")
+  }
+  takingOver.value = false
+  createPoll()
+}
+
 onMounted(() => {
-  if (!protectedProposals.value.length) createPoll()
+  if (!isBroadcasting.value || protectedProposals.value.length) return
+  createPoll()
 })
 </script>
 
 <template>
-  <PollModal v-if="createdPoll" :data="createdPoll" />
+  <div v-if="!isBroadcasting">
+    <v-alert
+      class="mb-4"
+      icon="mdi-broadcast-off"
+      :text="$t('plenary.requiresBroadcastingDescription')"
+      :title="$t('plenary.requiresBroadcasting')"
+      type="warning"
+    />
+    <div class="text-right">
+      <v-btn :text="$t('cancel')" variant="text" @click="$emit('cancel')" />
+      <v-btn
+        color="warning"
+        :loading="takingOver"
+        prepend-icon="mdi-broadcast"
+        :text="$t('plenary.takeOverBroadcast')"
+        @click="takeOverAndStart"
+      />
+    </div>
+  </div>
+  <PollModal v-else-if="createdPoll" :data="createdPoll" />
   <div v-else-if="protectedProposals.length">
     <p class="mb-6">
       <i18n-t
