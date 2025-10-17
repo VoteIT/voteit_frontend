@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.36.2 (??)
+
+- Starting poll in sender view requies broadcasting (suggests take-over)
+
 ## 0.36.1 (2025-10-15)
 
 - Useful info in room quick panel
