@@ -52,9 +52,10 @@ const createdId = shallowRef<number>()
 const createdPoll = computed(() =>
   roomOpenPoll.value?.pk === createdId.value ? roomOpenPoll.value : undefined
 )
-const working = shallowRef(false)
+
+const createState = shallowRef<'creating' | 'done' | 'failed'>()
 async function createPoll() {
-  working.value = true
+  createState.value = 'creating'
   const pollData: Omit<PollStartData, 'p_ord' | 'withheld_result'> = {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
@@ -68,10 +69,11 @@ async function createPoll() {
     const { data } = await pollType.api.add(pollData)
     createdId.value = data.pk
     setPoll(data.pk)
+    createState.value = 'done'
   } catch {
+    createState.value = 'failed'
     alert("^Couldn't create poll!")
   }
-  working.value = false
 }
 
 const takingOver = shallowRef(false)
@@ -117,7 +119,7 @@ onMounted(() => {
     </div>
   </div>
   <PollModal v-else-if="createdPoll" :data="createdPoll" />
-  <div v-else-if="protectedProposals.length">
+  <div v-else-if="!createState && protectedProposals.length">
     <p class="mb-6">
       <i18n-t
         keypath="plenary.confirmStartProtectedStates"
@@ -134,6 +136,7 @@ onMounted(() => {
       <v-btn :text="$t('cancel')" variant="text" @click="$emit('cancel')" />
       <v-btn
         color="warning"
+        :loading="!!createState"
         :text="$t('plenary.startPoll')"
         @click="createPoll"
       />
