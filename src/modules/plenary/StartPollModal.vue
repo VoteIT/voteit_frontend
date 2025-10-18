@@ -3,15 +3,15 @@ import { computed, onMounted, shallowRef } from 'vue'
 
 import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
-import { Proposal } from '../proposals/types'
-import { Poll } from '../polls/types'
-import { pollType } from '../polls/contentTypes'
-import { PollStartData } from '../polls/methods/types'
 import useRoom from '../rooms/useRoom'
 import useMeetingId from '../meetings/useMeetingId'
+import { Poll } from '../polls/types'
+import { PollStartData } from '../polls/methods/types'
+import useMeetingPolls from '../polls/useMeetingPolls'
+import usePolls from '../polls/usePolls'
+import { Proposal } from '../proposals/types'
 
 import PollModal from './PollModal.vue'
-import useMeetingPolls from '../polls/useMeetingPolls'
 
 const props = defineProps<{
   methodName: Poll['method_name']
@@ -26,9 +26,9 @@ defineEmits<{
 const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { nextPollTitle } = useAgendaItem(agendaId)
-const { isBroadcasting, roomOpenPoll, setBroadcast, setHandler, setPoll } =
-  useRoom()
+const { isBroadcasting, setBroadcast, setHandler, setPoll } = useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
+const { createPoll: create, getPoll } = usePolls()
 
 /**
  * Ongoing polls with any on the selected proposals.
@@ -51,25 +51,25 @@ const blockingPollNames = computed(() =>
 
 const createdId = shallowRef<number>()
 const createdPoll = computed(() =>
-  roomOpenPoll.value?.pk === createdId.value ? roomOpenPoll.value : undefined
+  typeof createdId.value === 'number' ? getPoll(createdId.value) : undefined
 )
 
 const createState = shallowRef<'creating' | 'done' | 'failed'>()
 async function createPoll() {
   createState.value = 'creating'
-  const pollData: Omit<PollStartData, 'p_ord' | 'withheld_result'> = {
+  const pollData: PollStartData = {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
-    title: nextPollTitle.value as string,
     proposals: props.proposals.map((p) => p.pk),
     method_name: props.methodName,
     start: true,
-    settings: props.settings
+    settings: props.settings,
+    title: nextPollTitle.value
   }
   try {
-    const { data } = await pollType.api.add(pollData)
-    createdId.value = data.pk
-    setPoll(data.pk)
+    const { pk } = await create(pollData)
+    createdId.value = pk
+    setPoll(pk)
     createState.value = 'done'
   } catch {
     createState.value = 'failed'

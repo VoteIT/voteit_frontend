@@ -8,6 +8,7 @@ import { pollType, voteType } from './contentTypes'
 import { canVote } from './rules'
 import { Poll, PollState, PollStatus } from './types'
 import { pollPlugins } from './registry'
+import { PollStartData } from './methods/types'
 
 export const polls = reactive<Map<number, Poll>>(new Map())
 const userVotes = reactive<Map<number, Vote>>(new Map())
@@ -36,6 +37,12 @@ agendaDeletedEvent.on((pk) => {
     }
   }
 })
+
+async function createPoll(pollData: PollStartData) {
+  const { data } = await pollType.api.add(pollData)
+  polls.set(data.pk, data)
+  return data
+}
 
 /**
  * Used to compute a unique poll title
@@ -120,6 +127,7 @@ export default function usePolls() {
   return {
     allPollTitles,
     anyPoll,
+    createPoll,
     getPolls,
     getAiPolls,
     getPoll,

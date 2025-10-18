@@ -152,12 +152,6 @@ export interface ApprovalPoll extends Poll {
 
 export type PollStartData = Pick<
   Poll,
-  | 'agenda_item'
-  | 'meeting'
-  | 'method_name'
-  | 'p_ord'
-  | 'proposals'
-  | 'settings'
-  | 'title'
-  | 'withheld_result'
-> & { start: boolean }
+  'agenda_item' | 'meeting' | 'method_name' | 'proposals' | 'settings' | 'title'
+> &
+  Partial<Pick<Poll, 'p_ord' | 'withheld_result'>> & { start: boolean }
