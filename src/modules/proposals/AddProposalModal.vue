@@ -72,7 +72,7 @@
   </DefaultDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends Proposal">
 import { computed, ref, watch } from 'vue'
 
 import { stripHTML } from '@/utils'
@@ -96,10 +96,10 @@ const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>
 
 interface Props {
-  extra?: Partial<Proposal>
+  extra?: Partial<T>
   modelValue?: string
-  proposal?: Proposal
-  shortname?: Proposal['shortname']
+  proposal?: T
+  shortname?: string
 }
 const props = withDefaults(defineProps<Props>(), {
   extra() {

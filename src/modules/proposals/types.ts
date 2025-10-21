@@ -12,7 +12,7 @@ export enum ProposalState {
   Unhandled = 'unhandled'
 }
 
-type BaseProposal = {
+export type Proposal = {
   pk: number
   title: string
   m: number // Meeting primary key
@@ -28,17 +28,15 @@ type BaseProposal = {
   tags: string[]
 } & Author
 
-export type RichtextProposal = BaseProposal & {
+export type RichtextProposal = Proposal & {
   shortname: 'proposal'
 }
 
-export type DiffProposal = BaseProposal & {
+export type DiffProposal = Proposal & {
   shortname: 'diff_proposal'
   body_diff_brief: string
   paragraph: number
 }
-
-export type Proposal = RichtextProposal | DiffProposal
 
 export function isProposal(prop?: Proposal): prop is Proposal {
   return !!prop
