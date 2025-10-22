@@ -3,7 +3,11 @@ import { ref } from 'vue'
 import { Socket, SocketOptions } from 'envelope-client'
 
 import hostname from '@/utils/hostname'
-import { channelLeftEvent, channelSubscribedEvent } from '@/composables/events'
+import {
+  beforeAppStateEvent,
+  channelLeftEvent,
+  channelSubscribedEvent
+} from '@/composables/events'
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: SocketOptions['config'] = {
@@ -22,6 +26,9 @@ type SocketStateValue = (typeof SocketState)[keyof typeof SocketState]
 export const frontendVersion = ref<string | undefined>()
 export const socketState = ref<SocketStateValue>()
 export const socket = new Socket(`${wsProtocol}//${hostname}/ws/`, {
+  beforeAppStateHandler(channel) {
+    beforeAppStateEvent.emit(channel)
+  },
   config: DEFAULT_CONFIG,
   debug: import.meta.env.NODE_ENV === 'development',
   manual: true

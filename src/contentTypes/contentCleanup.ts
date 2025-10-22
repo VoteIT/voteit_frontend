@@ -1,4 +1,4 @@
-import { channelLeftEvent } from '@/composables/events'
+import { beforeAppStateEvent, channelLeftEvent } from '@/composables/events'
 import { socket } from '@/utils/Socket'
 
 // Utility type to get keys where the property has certain types
@@ -13,7 +13,7 @@ type ChannelMapEntry<T extends PKContent> = {
   channelMap: ChannelMap<T>
   map: Map<number, T>
 }
-const channelMaps: ChannelMapEntry<any>[] = [] // Why any?
+const channelMaps: ChannelMapEntry<PKContent>[] = []
 
 /**
  * Check if any subscribed channel type and pk is mapped to an attribute of obj
@@ -22,11 +22,10 @@ function checkProtectingChannels<T extends PKContent>(
   obj: T,
   channelMap: ChannelMap<T>
 ) {
-  for (const { channelType, pk } of socket.channels.getSubscribedChannels()) {
+  return socket.channels.getSubscribedChannels().some(({ channelType, pk }) => {
     const attr = channelMap[channelType]
-    if (attr && obj[attr] === pk) return true
-  }
-  return false
+    return attr && obj[attr] === pk
+  })
 }
 
 /**
@@ -37,18 +36,29 @@ function cleanupContentType<T extends PKContent>(
   map: Map<number, T>,
   channelMap: ChannelMap<T>
 ) {
-  for (const obj of map.values()) {
+  for (const obj of map.values())
     if (!checkProtectingChannels(obj, channelMap)) map.delete(obj.pk)
-  }
 }
+
+/**
+ * Clean up channels before processing app_state (just delete all cleanable data)
+ */
+beforeAppStateEvent.on(({ channelType, pk }) => {
+  for (const { channelMap, map } of channelMaps) {
+    const attr = channelMap[channelType]
+    if (!attr) continue
+    for (const [key, obj] of map.entries()) {
+      if (obj[attr] === pk) map.delete(key)
+    }
+  }
+})
 
 /**
  * Set up event to clean all registered content types on channel left event
  */
 channelLeftEvent.on(({ channelType }) => {
-  for (const { channelMap, map } of channelMaps) {
+  for (const { channelMap, map } of channelMaps)
     if (channelType in channelMap) cleanupContentType(map, channelMap)
-  }
 })
 
 export default {

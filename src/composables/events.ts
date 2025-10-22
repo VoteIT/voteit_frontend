@@ -8,3 +8,7 @@ interface PathedChannel {
 
 export const channelLeftEvent = new TypedEvent<PathedChannel>()
 export const channelSubscribedEvent = new TypedEvent<PathedChannel>()
+export const beforeAppStateEvent = new TypedEvent<{
+  channelType: string
+  pk: number
+}>()
