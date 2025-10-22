@@ -1,3 +1,33 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import { ReactionButton } from './types'
+
+const props = defineProps<{
+  button: ReactionButton
+  count: number
+  disabled?: boolean
+  listDisabled?: boolean
+  working?: boolean
+  modelValue?: boolean
+}>()
+
+const emit = defineEmits(['update:modelValue', 'listOpen'])
+
+const meetsTarget = computed(() => {
+  if (!props.button.target) return
+  return props.count >= props.button.target
+})
+const variant = computed(() => {
+  return props.modelValue ? 'flat' : 'tonal'
+})
+const countText = computed(() => {
+  if (!props.button.target || meetsTarget.value) return String(props.count)
+  return `${props.count}/${props.button.target}`
+})
+</script>
+
 <template>
   <v-tooltip
     :disabled="!button.description"
@@ -42,36 +72,6 @@
     </template>
   </v-tooltip>
 </template>
-
-<script lang="ts" setup>
-import { computed } from 'vue'
-
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import { ReactionButton } from './types'
-
-const props = defineProps<{
-  button: ReactionButton
-  count: number
-  disabled?: boolean
-  listDisabled?: boolean
-  working?: boolean
-  modelValue?: boolean
-}>()
-
-const emit = defineEmits(['update:modelValue', 'listOpen'])
-
-const meetsTarget = computed(() => {
-  if (!props.button.target) return
-  return props.count >= props.button.target
-})
-const variant = computed(() => {
-  return props.modelValue ? 'flat' : 'tonal'
-})
-const countText = computed(() => {
-  if (!props.button.target || meetsTarget.value) return String(props.count)
-  return `${props.count}/${props.button.target}`
-})
-</script>
 
 <style lang="sass" scoped>
 .reaction-count
