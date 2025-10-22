@@ -11,12 +11,10 @@ import useReactions from './useReactions'
 import FlagButton from './FlagButton.vue'
 import { isFlagButton } from './types'
 
-const reactions = useReactions()
+const { getMeetingButtons } = useReactions()
 const meetingId = useMeetingId()
 
-const meetingButtons = computed(() =>
-  reactions.getMeetingButtons(meetingId.value)
-)
+const meetingButtons = computed(() => getMeetingButtons(meetingId.value))
 const model = reactive<Record<number, boolean>>({})
 </script>
 
@@ -24,7 +22,7 @@ const model = reactive<Record<number, boolean>>({})
   <v-card-text>
     {{ $t('reaction.buttonCount', meetingButtons.length) }}
   </v-card-text>
-  <v-card-actions v-if="meetingButtons.length">
+  <v-card-actions v-if="meetingButtons.length" class="overflow-x-auto">
     <template v-for="button in meetingButtons" :key="button.pk">
       <FlagButton
         v-if="isFlagButton(button)"
@@ -32,17 +30,19 @@ const model = reactive<Record<number, boolean>>({})
         can-toggle
         v-model="model[button.pk]"
       />
-      <RealReactionButton
-        v-else
-        :button="button"
-        :count="Number(!!model[button.pk])"
-        :disabled="!button.active"
-        v-model="model[button.pk]"
-      >
-        <template #userList>
-          <UserList v-if="user" :user-ids="[user.pk]" />
-        </template>
-      </RealReactionButton>
+      <div v-else>
+        <!-- Div is needed here, or btn disappears (vuetify issue) -->
+        <RealReactionButton
+          :button="button"
+          :count="Number(!!model[button.pk])"
+          :disabled="!button.active"
+          v-model="model[button.pk]"
+        >
+          <template #userList>
+            <UserList v-if="user" :user-ids="[user.pk]" />
+          </template>
+        </RealReactionButton>
+      </div>
     </template>
   </v-card-actions>
 </template>
