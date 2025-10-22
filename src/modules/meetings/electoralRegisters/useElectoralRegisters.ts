@@ -13,7 +13,7 @@ const registers = reactive<Map<number, ElectoralRegister>>(new Map())
 
 electoralRegisterType.updateMap(
   registers as Map<number, ElectoralRegister>, // Don't bother about that null value. That's ok.
-  { meeting: 'meeting', test: 'pk' }
+  { meeting: 'meeting' }
 )
 
 const _erMethods = ref<ErMethod[] | null>(null)
