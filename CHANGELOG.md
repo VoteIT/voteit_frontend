@@ -7,6 +7,8 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 ## 0.36.3 (2025-10-22)
 
 - Cleanup of data when receiving channel app_state (envelope client changes)
+- Fixed strange spacing for flag buttons
+- 3+ flag buttons collapsed into menu when editing
 
 ## 0.36.2 (2025-10-17)
 
