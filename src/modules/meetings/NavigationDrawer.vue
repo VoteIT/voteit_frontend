@@ -5,32 +5,25 @@ import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
 import { slugify } from '@/utils'
+import { toggleNavDrawerEvent } from '@/utils/events'
 import { TreeMenu, TreeMenuItem, TreeMenuLink } from '@/utils/types'
 import TypedEvent from '@/utils/TypedEvent'
 import MenuTree from '@/components/MenuTree.vue'
 import useLoader from '@/composables/useLoader'
 import { WorkflowState } from '@/contentTypes/types'
 
+import { agendaLoadedEvent } from '../agendas/events'
 import useAgenda from '../agendas/useAgenda'
 import useAgendaTags from '../agendas/useAgendaTags'
 import { agendaItemType } from '../agendas/contentTypes'
 import usePolls from '../polls/usePolls'
-import useProposals from '../proposals/useProposals'
 import { PollState } from '../polls/types'
 import { canAddPoll } from '../polls/rules'
+import useProposals from '../proposals/useProposals'
 
 import useMeeting from './useMeeting'
 import { canChangeMeeting } from './rules'
-import { toggleNavDrawerEvent } from '@/utils/events'
-import { channelSubscribedEvent } from '@/composables/events'
 import ComponentSlot from './ComponentSlot.vue'
-
-const agendaLoadedEvent = new TypedEvent()
-channelSubscribedEvent.on(({ channelType }) => {
-  // Agenda is loaded when "participants" or "moderators" channels are subscribed
-  if (['participants', 'moderators'].includes(channelType))
-    agendaLoadedEvent.emit()
-})
 
 const { t } = useI18n()
 const { mobile } = useDisplay()
