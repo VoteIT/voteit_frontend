@@ -22,19 +22,13 @@ import { canAddPoll } from '../polls/rules'
 import useProposals from '../proposals/useProposals'
 
 import useMeeting from './useMeeting'
-import { canChangeMeeting } from './rules'
+import { canChangeMeeting, hasMeetingRole } from './rules'
 import ComponentSlot from './ComponentSlot.vue'
 
 const { t } = useI18n()
 const { mobile } = useDisplay()
-const {
-  meeting,
-  meetingId,
-  isModerator,
-  meetingRoute,
-  getMeetingRoute,
-  hasRole
-} = useMeeting()
+const { meeting, meetingId, isModerator, meetingRoute, getMeetingRoute } =
+  useMeeting()
 const { agenda, filteredAgenda, hasNewItems } = useAgenda(
   meetingId,
   computed(() => selectedAgendaTag.value)
@@ -51,7 +45,7 @@ function getAiType(state: string) {
 
 const aiGroups = computed(() =>
   agendaWorkflows.getPriorityStates(
-    (s) => s && (!s.requiresRole || !!hasRole(s.requiresRole))
+    (s) => !s.requiresRole || !!hasMeetingRole(meetingId.value, s.requiresRole)
   )
 )
 
@@ -68,25 +62,27 @@ function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
 }
 
 const aiMenus = computed<TreeMenuItem[]>(() => {
-  const menus: TreeMenuItem[] = []
-  if (isModerator.value) {
-    menus.push({
-      title: t('agenda.edit'),
-      to: getMeetingRoute('agendaEdit'),
-      icons: ['mdi-pencil']
-    })
+  function* iterMenus(): Iterable<TreeMenuItem> {
+    if (isModerator.value) {
+      yield {
+        title: t('agenda.edit'),
+        to: getMeetingRoute('agendaEdit'),
+        icons: ['mdi-pencil']
+      }
+    }
+    for (const s of aiGroups.value) {
+      const items = getAIMenuItems(s)
+      yield {
+        items,
+        title: s.getName(t, items.length),
+        showCount: true,
+        showCountTotal: agenda.value.filter((ai) => ai.state === s.state)
+          .length,
+        loadedEvent: agendaLoadedEvent
+      }
+    }
   }
-  for (const s of aiGroups.value) {
-    const items = getAIMenuItems(s)
-    menus.push({
-      items,
-      title: s.getName(t, items.length),
-      showCount: true,
-      showCountTotal: agenda.value.filter((ai) => ai.state === s.state).length,
-      loadedEvent: agendaLoadedEvent
-    })
-  }
-  return menus
+  return [...iterMenus()]
 })
 
 const unvotedPolls = computed(() =>
@@ -98,37 +94,44 @@ watch(hasUnvotedPolls, (value, oldValue) => {
   if (value && !oldValue) openPollMenuEvent.emit()
 })
 
-const pollMenus = computed<TreeMenuItem[]>(() => {
-  const menus: TreeMenuItem[] = [
-    {
+const pollMenus = computed(() => {
+  function* iterMenus(): Iterable<TreeMenuItem> {
+    yield {
       exactActive: true,
       title: t('poll.all'),
       to: getMeetingRoute('polls')
     }
-  ]
-  if (meeting.value && canAddPoll(meeting.value)) {
-    menus.push({
-      title: t('poll.new'),
-      to: getMeetingRoute('pollStart'),
-      icons: ['mdi-star-plus']
-    })
+    if (meeting.value && canAddPoll(meeting.value))
+      yield {
+        title: t('poll.new'),
+        to: getMeetingRoute('pollStart'),
+        icons: ['mdi-star-plus']
+      }
+    if (unvotedPolls.value.length)
+      yield {
+        title: t('poll.unvoted'),
+        items: unvotedPolls.value.map((p) => ({
+          title: p.title,
+          to: getMeetingRoute('poll', { pid: p.pk, pslug: slugify(p.title) }),
+          icons: ['mdi-star']
+        })),
+        defaultOpen: true
+      }
   }
-  if (unvotedPolls.value.length) {
-    menus.push({
-      title: t('poll.unvoted'),
-      items: unvotedPolls.value.map((p) => ({
-        title: p.title,
-        to: getMeetingRoute('poll', { pid: p.pk, pslug: slugify(p.title) }),
-        icons: ['mdi-star']
-      })),
-      defaultOpen: true
-    })
-  }
-  return menus
+  return [...iterMenus()]
 })
 
-const menu = computed<TreeMenu[]>(() => {
-  const items: TreeMenu[] = [
+const menu = computed(() => {
+  function* iterMeetingItems(): Iterable<TreeMenuItem> {
+    if (canChangeMeeting(meeting.value)) {
+      yield {
+        icons: ['mdi-cog'],
+        title: t('meeting.controlPanel'),
+        to: getMeetingRoute('settings')
+      }
+    }
+  }
+  return [
     {
       title: t('meeting.meeting'),
       items: [
@@ -148,7 +151,8 @@ const menu = computed<TreeMenu[]>(() => {
         {
           title: t('minutes.documents'),
           to: getMeetingRoute('meetingMinutes')
-        }
+        },
+        ...iterMeetingItems()
       ],
       icon: 'mdi-home'
     },
@@ -167,15 +171,7 @@ const menu = computed<TreeMenu[]>(() => {
       loadedEvent: agendaLoadedEvent,
       slotBefore: 'tagFilter'
     }
-  ]
-  if (canChangeMeeting(meeting.value)) {
-    items[0].items.push({
-      icons: ['mdi-cog'],
-      title: t('meeting.controlPanel'),
-      to: getMeetingRoute('settings')
-    })
-  }
-  return items
+  ] as TreeMenu[]
 })
 
 const isOpen = ref(!mobile.value)
