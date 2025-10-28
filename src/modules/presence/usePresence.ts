@@ -1,13 +1,13 @@
 import { filter, ifilter, map } from 'itertools'
 import { computed, reactive, Ref } from 'vue'
 
-import useAuthentication from '@/composables/useAuthentication'
 import { Presence, PresenceCheck } from '@/contentTypes/types'
 
 import { PresenceCheckState } from './workflowStates'
 import { presenceCheckType, presenceType } from './contentTypes'
 import { canAddPresenceCheck } from './rules'
 import { UnguardedTransition } from '@/contentTypes/useTransitions'
+import useAuthStore from '../auth/useAuthStore'
 
 const presenceChecks = reactive<Map<number, PresenceCheck>>(new Map())
 const presence = reactive<Map<number, Presence>>(new Map())
@@ -15,9 +15,12 @@ const presence = reactive<Map<number, Presence>>(new Map())
 presenceCheckType.updateMap(presenceChecks, { meeting: 'meeting' })
 presenceType.updateMap(presence, { presence_check: 'presence_check' })
 
-const { user } = useAuthentication()
-
+/**
+ * @deprecated Use module active
+ */
 export default function usePresence(meetingId: Ref<number>) {
+  const authStore = useAuthStore()
+
   const closedPresenceChecks = computed(() =>
     filter(
       presenceChecks.values(),
@@ -30,7 +33,7 @@ export default function usePresence(meetingId: Ref<number>) {
     check: number,
     userPk?: number
   ): Presence | undefined {
-    userPk = userPk || user.value?.pk
+    userPk = userPk || authStore.user?.pk
     for (const p of presence.values()) {
       if (p.presence_check === check && p.user === userPk) return p
     }

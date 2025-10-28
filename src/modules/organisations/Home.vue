@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { chunk } from 'lodash'
 import { DateTime } from 'luxon'
+import { storeToRefs } from 'pinia'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
@@ -17,7 +18,6 @@ import RichtextEditor from '@/components/RichtextEditor.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import UserSearch from '@/components/UserSearch.vue'
-import useAuthentication from '@/composables/useAuthentication'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
@@ -25,6 +25,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
 import useRules from '@/composables/useRules'
 
+import useAuthStore from '../auth/useAuthStore'
 import useInviteStore from '../meetingInvites/useInviteStore'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
@@ -47,7 +48,7 @@ const organisationIcons: Record<OrganisationRole, string> = {
 }
 
 const { t } = useI18n()
-const { isAuthenticated, user } = useAuthentication()
+const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const {
   canAddMeeting,
   canChangeOrganisation,

@@ -1,8 +1,7 @@
-import useAuthentication from '@/composables/useAuthentication'
-
 import { agendaItems } from '../agendas/useAgenda'
 import { AgendaItem } from '../agendas/types'
 import { isAIModerator, isArchivedAI, isFinishedAI } from '../agendas/rules'
+import useAuthStore from '../auth/useAuthStore'
 import { meetings } from '../meetings/useMeetings'
 import useElectoralRegisters from '../meetings/electoralRegisters/useElectoralRegisters'
 import {
@@ -14,16 +13,16 @@ import { Meeting } from '../meetings/types'
 
 import { Poll, PollState } from './types'
 
-const { user } = useAuthentication()
 const { getRegister } = useElectoralRegisters()
 
 const PERMISSIVE_STATES = [PollState.Private, PollState.Upcoming] // States where moderators can make changes
 
 export function isPollVoter(poll: Poll): boolean {
-  if (!poll.electoral_register || !user.value) return false
+  const { user } = useAuthStore()
+  if (!poll.electoral_register || !user) return false
   const register = getRegister(poll.electoral_register)
   if (!register) return false
-  return !!register.weights.find((v) => v.user === user.value?.pk)
+  return !!register.weights.find((v) => v.user === user?.pk)
 }
 
 function isOngoingPoll(poll: Poll): boolean {

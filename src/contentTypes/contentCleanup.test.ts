@@ -1,8 +1,9 @@
 import { expect, test } from 'vitest'
-import contentCleanup from './contentCleanup'
+import WS from 'vitest-websocket-mock'
+
 import { sleep } from '@/utils'
 import { socket } from '@/utils/Socket'
-import WS from 'vitest-websocket-mock'
+import contentCleanup from './contentCleanup'
 
 declare namespace global {
   const WS: WS

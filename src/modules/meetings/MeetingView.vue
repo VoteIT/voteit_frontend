@@ -5,10 +5,10 @@ import { useI18n } from 'vue-i18n'
 import { RoleContextKey } from '@/injectionKeys'
 import UserMenu from '@/components/UserMenu.vue'
 import AppBar from '@/components/AppBar.vue'
-import { user } from '@/composables/useAuthentication'
 import usePermission, {
   PermissionDeniedStrategy
 } from '@/composables/usePermission'
+import useAuthStore from '../auth/useAuthStore'
 
 import Bubbles from './Bubbles.vue'
 import ComponentSlot from './ComponentSlot.vue'
@@ -23,6 +23,7 @@ import { DEFAULT_ROLE_ORDER } from './constants'
 import { translateMeetingRole } from './utils'
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const { meeting, meetingId, userRoles } = useMeeting()
 const { getMeetingRoleIcon } = useMeetings()
 
@@ -44,7 +45,7 @@ const roleList = computed(() => {
 const groupList = computed(() => {
   return userGroups.value.map(({ title, memberships }) => {
     const groupRole = memberships.find(
-      (membership) => membership.user === user.value?.pk
+      (membership) => membership.user === authStore.user?.pk
     )?.role
     return {
       prependIcon: 'mdi-account-group',
@@ -61,7 +62,7 @@ const viewPermission = computed(
   () => !fetchFailed.value && canViewMeeting.value
 )
 
-usePermission(viewPermission, undefined, PermissionDeniedStrategy.RequireLogin)
+usePermission(viewPermission, {}, PermissionDeniedStrategy.RequireLogin)
 
 provide(RoleContextKey, 'meeting')
 </script>

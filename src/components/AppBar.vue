@@ -33,11 +33,12 @@
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 import { getFullName } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
-import useAuthentication from '@/composables/useAuthentication'
+import useAuthStore from '@/modules/auth/useAuthStore'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 
 import { toggleUserMenu } from './events'
@@ -45,7 +46,7 @@ import UserAvatar from './UserAvatar.vue'
 
 defineProps<{ hasNavDrawer?: boolean; title?: string }>()
 
-const { user } = useAuthentication()
+const { user } = storeToRefs(useAuthStore())
 const { organisation } = useOrganisation()
 
 const userMenuOpen = ref(false)

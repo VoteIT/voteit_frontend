@@ -4,7 +4,7 @@ import { RouteLocationNamedRaw, useRoute } from 'vue-router'
 import { useStorage } from '@vueuse/core'
 
 import useChannel from '@/composables/useChannel'
-import { user } from '@/composables/useAuthentication'
+import useAuthStore from '../auth/useAuthStore'
 import usePoll from '../polls/usePoll'
 import { getProposals } from '../proposals/useProposals'
 import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
@@ -25,6 +25,7 @@ const textSize = useStorage<'normal' | 'large' | 'x-large'>(
 )
 
 export default function useRoom() {
+  const authStore = useAuthStore()
   const route = useRoute()
   const roomId = computed(() => Number(route.params.roomId))
   useChannel('room', roomId)
@@ -50,7 +51,9 @@ export default function useRoom() {
    */
   const isBroadcasting = computed(() => {
     if (!meetingRoom.value) return false
-    return hasBroadcast.value && meetingRoom.value.handler === user.value?.pk
+    return (
+      hasBroadcast.value && meetingRoom.value.handler === authStore.user?.pk
+    )
   })
 
   /**
@@ -79,7 +82,7 @@ export default function useRoom() {
     agenda_item?: number
     highlighted: number[]
   }) {
-    if (!user.value)
+    if (!authStore.user)
       throw new Error(
         'No authenticated user available when trying to set broadcast'
       )
@@ -95,7 +98,7 @@ export default function useRoom() {
         send_proposals: true
       })
     // Make sure user is handler
-    if (handler !== user.value?.pk) await setHandler()
+    if (handler !== authStore.user?.pk) await setHandler()
     // Set content
     if (content)
       await roomType.api.action(roomId.value, 'handle', content, 'patch')

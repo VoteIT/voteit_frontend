@@ -10,8 +10,8 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import User from '@/components/User.vue'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
-import { user } from '@/composables/useAuthentication'
 
+import useAuthStore from '../auth/useAuthStore'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
 import useMeetingId from '../meetings/useMeetingId'
 import { IUser } from '../organisations/types'
@@ -27,6 +27,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 
 const meetingId = useMeetingId()
 const listId = computed(() => props.listId)
@@ -68,7 +69,7 @@ function userSearchFilter({ pk }: IUser): boolean {
 }
 
 function isSelf(userId: number) {
-  return user.value?.pk === userId
+  return authStore.user?.pk === userId
 }
 
 const participantNumberInput = ref('')

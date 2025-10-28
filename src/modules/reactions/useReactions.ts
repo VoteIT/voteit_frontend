@@ -1,8 +1,5 @@
-import { filter } from 'itertools'
-import { sortBy } from 'lodash'
+import { filter, sorted } from 'itertools'
 import { reactive } from 'vue'
-
-import useAuthentication from '@/composables/useAuthentication'
 
 import { reactionButtonType, reactionType } from './contentTypes'
 import {
@@ -14,6 +11,7 @@ import {
   isFlagButton
 } from './types'
 import { ProposalButtonMode } from '../proposals/types'
+import useAuthStore from '../auth/useAuthStore'
 
 function getCountKey(contentType: string, objectId: number, button: number) {
   return `${contentType}/${objectId}/${button}`
@@ -22,8 +20,6 @@ function getCountKey(contentType: string, objectId: number, button: number) {
 export const reactionButtons = reactive<Map<number, ReactionButton>>(new Map())
 const reactions = reactive<Map<number, Reaction>>(new Map())
 const reactionCounts = reactive<Map<string, number>>(new Map())
-
-const { user } = useAuthentication()
 
 reactionButtonType.updateMap(reactionButtons, { meeting: 'meeting' })
 reactionType
@@ -42,7 +38,7 @@ function getMeetingButtons(
   contentType?: string,
   mode?: ProposalButtonMode
 ) {
-  return sortBy(
+  return sorted(
     filter(reactionButtons.values(), (b) => {
       if (b.meeting !== meeting) return false
       if (contentType && !b.allowed_models.includes(contentType)) return false
@@ -50,7 +46,7 @@ function getMeetingButtons(
       if (mode && !b[`on_${mode}`]) return false
       return true
     }),
-    'order'
+    (b) => b.order
   )
 }
 
@@ -71,7 +67,7 @@ function getUserReaction(
       r.button === button.pk &&
       r.content_type === relation.content_type &&
       r.object_id === relation.object_id &&
-      r.user === user.value?.pk
+      r.user === useAuthStore().user?.pk
     )
       return r
   }
@@ -81,7 +77,7 @@ function setUserReacted(button: ReactionButton, relation: ReactionRelation) {
   return reactionType.add({
     button: button.pk,
     ...relation,
-    user: user.value?.pk
+    user: useAuthStore().user?.pk
   })
 }
 

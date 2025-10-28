@@ -3,7 +3,7 @@ import { sortBy } from 'lodash'
 import { computed, MaybeRef, reactive, unref } from 'vue'
 
 import { titleSorter } from '@/utils'
-import useAuthentication from '@/composables/useAuthentication'
+import useAuthStore from '../auth/useAuthStore'
 
 import {
   groupMembershipType,
@@ -37,13 +37,13 @@ export function isGroupMember(group: number, user: number) {
 }
 
 export default function useMeetingGroups(meetingId: MaybeRef<number>) {
-  const { user } = useAuthentication()
+  const authStore = useAuthStore()
 
   function isGroupMember(
     group: (typeof orderedGroups)['value'][number]
   ): boolean {
     return group.memberships.some(
-      (membership) => membership.user === user.value?.pk
+      (membership) => membership.user === authStore.user?.pk
     )
   }
 

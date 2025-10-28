@@ -6,9 +6,9 @@ import Draggable from 'vuedraggable'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
-import useAuthentication from '@/composables/useAuthentication'
 import HelpSection from '@/components/HelpSection.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
 import useReactions from './useReactions'
@@ -20,7 +20,7 @@ import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 
-const { user } = useAuthentication()
+const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const reactions = useReactions()
 
@@ -166,7 +166,10 @@ const model = reactive<Record<number, boolean>>({})
                 v-model="model[button.pk]"
               >
                 <template #userList>
-                  <UserList v-if="user" :userIds="[user.pk]" />
+                  <UserList
+                    v-if="authStore.user"
+                    :userIds="[authStore.user.pk]"
+                  />
                 </template>
               </RealReactionButton>
             </td>

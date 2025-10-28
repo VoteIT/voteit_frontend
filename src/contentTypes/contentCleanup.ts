@@ -1,3 +1,5 @@
+import { any } from 'itertools'
+
 import { beforeAppStateEvent, channelLeftEvent } from '@/composables/events'
 import { socket } from '@/utils/Socket'
 
@@ -22,7 +24,7 @@ function checkProtectingChannels<T extends PKContent>(
   obj: T,
   channelMap: ChannelMap<T>
 ) {
-  return socket.channels.getSubscribedChannels().some(({ channelType, pk }) => {
+  return any(socket.channels.getSubscribedChannels(), ({ channelType, pk }) => {
     const attr = channelMap[channelType]
     return attr && obj[attr] === pk
   })

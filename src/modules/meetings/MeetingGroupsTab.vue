@@ -8,7 +8,6 @@ import { getFullName } from '@/utils'
 import { PickByType } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
 import Tag from '@/components/Tag.vue'
-import useAuthentication from '@/composables/useAuthentication'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
@@ -17,6 +16,7 @@ import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultForm from '@/components/DefaultForm.vue'
 import TagEdit from '@/components/TagEdit.vue'
 
+import useAuthStore from '../auth/useAuthStore'
 import useUserDetails from '../organisations/useUserDetails'
 
 import useMeeting from './useMeeting'
@@ -30,7 +30,7 @@ import { TagClickHandlerKey, TagsKey } from './useTags'
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
-const { user } = useAuthentication()
+const authStore = useAuthStore()
 const { getUser } = useUserDetails()
 const rules = useRules(t)
 
@@ -77,7 +77,7 @@ const orderedMeetingGroups = computed(() => {
     meetingGroups.value
       .map((g) => ({
         ...g,
-        isMember: g.members.includes(user.value!.pk)
+        isMember: g.members.includes(authStore.user!.pk)
       }))
       .filter((g) => {
         if (groupFilter.mine && !g.isMember) return false
@@ -140,7 +140,7 @@ const allTags = computed(
 provide(TagsKey, allTags)
 
 async function createGroup(data: Partial<MeetingGroup>) {
-  if (!user.value) throw new Error('User not authenticated')
+  if (!authStore.user) throw new Error('User not authenticated')
   await meetingGroupType.api.add({
     ...data,
     meeting: meetingId.value

@@ -18,7 +18,7 @@
 import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
-import { user as currentUser } from '@/composables/useAuthentication'
+import useAuthStore from '@/modules/auth/useAuthStore'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 import type { IUser } from '@/modules/organisations/types'
 
@@ -37,10 +37,11 @@ const props = withDefaults(
   }
 )
 
+const authStore = useAuthStore()
 const { getUser } = useUserDetails()
 
 const computedUser = computed(
-  () => props.user ?? (props.pk ? getUser(props.pk) : currentUser.value)
+  () => props.user ?? (props.pk ? getUser(props.pk) : authStore.user)
 )
 
 const bg = computed(() => {

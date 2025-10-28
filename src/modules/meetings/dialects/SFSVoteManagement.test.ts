@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { expect, test } from 'vitest'
 import { createI18n } from 'vue-i18n'
+import { createTestingPinia } from '@pinia/testing'
 
 import router from '@/router'
 import vuetify from '@/plugins/vuetify'
@@ -16,7 +17,7 @@ test('Mount component', () => {
   // @ts-ignore
   const wrapper = mount(SFSVoteManagement, {
     global: {
-      plugins: [i18n, router, vuetify]
+      plugins: [i18n, router, vuetify, createTestingPinia()]
     },
     props: {
       group: {

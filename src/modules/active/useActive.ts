@@ -1,13 +1,12 @@
 import { computed, reactive, ref, Ref, watch } from 'vue'
 
-import { user } from '@/composables/useAuthentication'
-
 import { meetingType } from '../meetings/contentTypes'
-import { NoSettingsComponent } from '../meetings/types'
 import useMeetingComponent from '../meetings/useMeetingComponent'
 
 import { activeUserType } from './contentTypes'
 import { sleep } from '@/utils'
+import { storeToRefs } from 'pinia'
+import useAuthStore from '../auth/useAuthStore'
 
 interface ActiveUsersMsg {
   meeting: number
@@ -38,6 +37,7 @@ meetingType.channel.onLeave((pk) => {
 const dismissedMeetings = reactive(new Set<number>())
 
 export default function useActive(meetingId: Ref<number>) {
+  const authStore = useAuthStore()
   const { componentActive } = useMeetingComponent(meetingId, 'active_users')
 
   // If Active component if switched on/off, clear dismissed status.
@@ -49,8 +49,8 @@ export default function useActive(meetingId: Ref<number>) {
 
   const isActive = computed({
     get() {
-      if (!user.value) return false
-      return checkActive(user.value.pk)
+      if (!authStore.user) return false
+      return checkActive(authStore.user.pk)
     },
     set(value) {
       setActive(value)
@@ -61,13 +61,13 @@ export default function useActive(meetingId: Ref<number>) {
   const isBusy = ref(false)
 
   async function setActive(active: boolean) {
-    if (!user.value)
+    if (!authStore.user)
       throw new Error('Must have authenticated user to set active')
     isBusy.value = true
     await activeUserType.methodCall('set', {
       active,
       meeting: meetingId.value,
-      user: user.value.pk
+      user: authStore.user.pk
     })
     await sleep(2_000)
     isBusy.value = false

@@ -4,8 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { RouteLocationRaw, useRouter } from 'vue-router'
 
 import { slugify } from '@/utils'
-
-import { user } from '@/composables/useAuthentication'
+import useAuthStore from '../auth/useAuthStore'
 
 import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 import { Author, MeetingRole } from './types'
@@ -17,6 +16,7 @@ import useMeetingId from './useMeetingId'
 const postAsStore = reactive(new Map<number, Author>())
 
 export default function useMeeting() {
+  const authStore = useAuthStore()
   const router = useRouter()
   const meetingRoles = meetingType.useContextRoles()
   const { t } = useI18n()
@@ -81,7 +81,7 @@ export default function useMeeting() {
     get() {
       return (
         postAsStore.get(meetingId.value) ??
-        ({ author: user.value?.pk } as Author)
+        ({ author: authStore.user?.pk } as Author)
       )
     },
     set(author) {

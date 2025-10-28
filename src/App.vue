@@ -17,7 +17,6 @@ import { onBeforeMount, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { RoleContextKey } from './injectionKeys'
-import useAuthentication from './composables/useAuthentication'
 import useLoader from './composables/useLoader'
 
 import Alerts from './components/Alerts.vue'
@@ -25,13 +24,14 @@ import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
+import useAuthStore from './modules/auth/useAuthStore'
 import useOrganisation from './modules/organisations/useOrganisation'
 import { frontendVersion } from './utils/Socket'
 import { openDialogEvent } from './utils/events'
 
 const { t } = useI18n()
 const loader = useLoader('App')
-const { fetchAuthenticatedUser } = useAuthentication()
+const { fetchAuthenticatedUser } = useAuthStore()
 const { fetchOrganisation } = useOrganisation()
 
 onBeforeMount(async () => {

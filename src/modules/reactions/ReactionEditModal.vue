@@ -4,12 +4,12 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 
-import useAuthentication from '@/composables/useAuthentication'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
 import useRules from '@/composables/useRules'
 
+import useAuthStore from '../auth/useAuthStore'
 import useMeeting from '../meetings/useMeeting'
 import { MeetingRole } from '../meetings/types'
 
@@ -49,7 +49,7 @@ function getDefaults(
   }
 }
 
-const { user } = useAuthentication()
+const authStore = useAuthStore()
 const { meetingId, roleLabels } = useMeeting()
 const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
@@ -114,7 +114,7 @@ async function save() {
           :count="previewCount"
         >
           <template #userList>
-            <UserList v-if="user" :user-ids="[user.pk]" />
+            <UserList v-if="authStore.user" :user-ids="[authStore.user.pk]" />
           </template>
         </RealReactionButton>
       </Widget>

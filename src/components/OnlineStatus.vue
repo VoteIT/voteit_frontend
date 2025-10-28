@@ -21,21 +21,22 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import { vElementHover } from '@vueuse/components'
-
-import useAuthentication from '@/composables/useAuthentication'
-import { socket, socketState } from '@/utils/Socket'
 import { useI18n } from 'vue-i18n'
+import { vElementHover } from '@vueuse/components'
 import { useOnline } from '@vueuse/core'
+
+import { socket, socketState } from '@/utils/Socket'
 import { ThemeColor } from '@/utils/types'
+import useAuthStore from '@/modules/auth/useAuthStore'
 
 const MAX_RETRIES = 5
 
 const { t } = useI18n()
 const isOnline = useOnline()
 
-const { isAuthenticated } = useAuthentication()
+const { isAuthenticated } = storeToRefs(useAuthStore())
 
 const reconnectTime = ref(1)
 const reconnectTries = ref(1)
@@ -76,7 +77,7 @@ watch(socketState, (state) => {
   }
 })
 
-watch(isAuthenticated, async (value) => {
+watch(isAuthenticated, (value) => {
   if (value) socket.connect()
   else socket.close()
 })

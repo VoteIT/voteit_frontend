@@ -1,5 +1,5 @@
-import { user } from '@/composables/useAuthentication'
 import useContextRoles from '@/composables/useContextRoles'
+import useAuthStore from '../auth/useAuthStore'
 import { isActiveMeeting, isModerator } from '../meetings/rules'
 import { Meeting, MeetingRole } from '../meetings/types'
 
@@ -93,7 +93,7 @@ export function isOpenList(list: SpeakerList): boolean {
 }
 
 function isCurrentlySpeaking(list: SpeakerList): boolean {
-  return getCurrent(list.pk) === user.value?.pk
+  return getCurrent(list.pk) === useAuthStore().user?.pk
 }
 
 export function canChangeSpeakerList(list: SpeakerList): boolean {

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { computed, reactive } from 'vue'
 
-import { user } from '@/composables/useAuthentication'
 import UserList from '@/components/UserList.vue'
 
+import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
 import RealReactionButton from './RealReactionButton.vue'
@@ -11,6 +11,7 @@ import useReactions from './useReactions'
 import FlagButton from './FlagButton.vue'
 import { isFlagButton } from './types'
 
+const authStore = useAuthStore()
 const { getMeetingButtons } = useReactions()
 const meetingId = useMeetingId()
 
@@ -39,7 +40,7 @@ const model = reactive<Record<number, boolean>>({})
           v-model="model[button.pk]"
         >
           <template #userList>
-            <UserList v-if="user" :user-ids="[user.pk]" />
+            <UserList v-if="authStore.user" :user-ids="[authStore.user.pk]" />
           </template>
         </RealReactionButton>
       </div>

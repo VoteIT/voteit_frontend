@@ -1,20 +1,17 @@
-import { computed, ref, watch } from 'vue'
+import { computed, shallowRef } from 'vue'
 
 import { clearAlertsEvent } from '@/utils/events'
-import { socketState } from '@/utils/Socket'
 
-import useAuthentication from './useAuthentication'
 import { InitState } from './types'
-
-const { isAuthenticated } = useAuthentication()
+import { readyToLoadEvent } from './events'
 
 export type LoaderCallback = () => Promise<unknown>
 let callbacks: LoaderCallback[] = []
 
-const initState = ref(InitState.Loading)
+const initState = shallowRef<InitState>()
 const initFailed = computed(() => initState.value === InitState.Failed)
 const initDone = computed(() => initState.value === InitState.Done)
-const isReady = computed(() => isAuthenticated.value && socketState.value)
+// const isReady = computed(() => isAuthenticated.value && socketState.value)
 
 async function _failure(name?: string) {
   console.error('Loading failed', name)
@@ -26,6 +23,7 @@ function _success() {
 }
 
 async function performLoad() {
+  initState.value = InitState.Loading
   try {
     await Promise.all(callbacks.map((cb) => cb()))
     _success()
@@ -35,19 +33,15 @@ async function performLoad() {
   callbacks = []
 }
 
-watch(isReady, (value) => {
-  if (!value) return
-  performLoad()
-})
+readyToLoadEvent.once(performLoad)
 
 function call(...cbs: (() => Promise<unknown>)[]) {
-  // If isReady, load is already performed. Therefore, call immediately.
-  if (isReady.value) return cbs.forEach((cb) => cb())
+  // If it has an init state, load is already started. Therefore, call immediately.
+  if (!!initState.value) return cbs.forEach((cb) => cb())
   cbs.forEach((cb) => callbacks.push(cb))
 }
 
 function reset() {
-  initState.value = InitState.Loading
   clearAlertsEvent.emit()
   performLoad()
 }

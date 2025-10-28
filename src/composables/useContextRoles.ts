@@ -2,9 +2,10 @@ import { map } from 'itertools'
 import { defer } from 'lodash'
 import { reactive } from 'vue'
 
-import { user } from './useAuthentication'
-import { ContextRoles, UserContextRoles } from './types'
 import ContentType from '@/contentTypes/ContentType'
+import useAuthStore from '@/modules/auth/useAuthStore'
+
+import { ContextRoles, UserContextRoles } from './types'
 
 const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
@@ -63,7 +64,7 @@ export default function useContextRoles<T extends string>(contentType: string) {
   }
 
   function getUserRoles(pk: number, userId?: number) {
-    userId = userId ?? user.value?.pk
+    userId = userId ?? useAuthStore().user?.pk
     if (!userId) return
     const key = getRoleKey(contentType, pk, userId)
     return contextRoles.get(key)

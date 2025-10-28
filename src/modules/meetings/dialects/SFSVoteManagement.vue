@@ -69,9 +69,9 @@ import { useI18n } from 'vue-i18n'
 import { socket } from '@/utils/Socket'
 import UserList from '@/components/UserList.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import { user } from '@/composables/useAuthentication'
 import useErrorHandler from '@/composables/useErrorHandler'
 import useRules from '@/composables/useRules'
+import useAuthStore from '@/modules/auth/useAuthStore'
 
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
@@ -83,6 +83,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const { isModerator, meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
 const rules = useRules(t)
@@ -117,14 +118,15 @@ const leaderRoleId = computed(
  * Meeting is in active state (upcoming, ongoing), and user is moderator or group manager,
  */
 const canAssignVotes = computed(() => {
-  if (!user.value || !props.group.votes || !roleMemberships.value.length)
+  if (!authStore.user || !props.group.votes || !roleMemberships.value.length)
     return false
   return (
     !isFinishedMeeting(meetingId.value) &&
     (isModerator.value ||
       props.group.memberships.some(
         (member) =>
-          member.user === user.value?.pk && member.role === leaderRoleId.value
+          member.user === authStore.user?.pk &&
+          member.role === leaderRoleId.value
       ))
   )
 })

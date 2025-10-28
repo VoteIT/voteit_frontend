@@ -7,8 +7,8 @@ import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import useLoader from '@/composables/useLoader'
 import QueryDialog from '@/components/QueryDialog.vue'
-import useAuthentication, { user } from '@/composables/useAuthentication'
 import { AccessPolicy } from '@/contentTypes/types'
+import useAuthStore from '../auth/useAuthStore'
 import useOrganisation from '../organisations/useOrganisation'
 
 import accessPolicies from './accessPolicies'
@@ -18,7 +18,7 @@ import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
 import { canBecomeModerator } from './rules'
 
-const { isAuthenticated } = useAuthentication()
+const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
 const { canLogin, idLoginURL, organisation } = useOrganisation()
 const loader = useLoader('JoinMeeting')
@@ -41,10 +41,10 @@ const canBecomeModeratorMeeting = computed(
 )
 
 async function joinAsModerator() {
-  if (!user.value) throw new Error('Anonymous tried to join as moderator')
+  if (!authStore.user) throw new Error('Anonymous tried to join as moderator')
   await meetingType.addRoles(
     meetingId.value,
-    user.value.pk,
+    authStore.user.pk,
     MeetingRole.Moderator
   )
   router.push(meetingRoute.value)
@@ -101,7 +101,7 @@ onBeforeMount(() => {
           </p>
         </v-col>
       </v-row>
-      <v-row v-else-if="!isAuthenticated">
+      <v-row v-else-if="!authStore.isAuthenticated">
         <v-col v-bind="cols.default">
           <v-alert
             :title="$t('join.loginRequired')"

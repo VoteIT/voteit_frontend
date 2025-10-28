@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { expect, test, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { createI18n } from 'vue-i18n'
+import { createTestingPinia } from '@pinia/testing'
 
 import router from '@/router'
 import vuetify from '@/plugins/vuetify'
@@ -19,7 +20,7 @@ const i18n = createI18n({
 })
 
 const global = {
-  plugins: [i18n, router, vuetify]
+  plugins: [i18n, router, vuetify, createTestingPinia()]
 }
 
 function getProposal(pk: number) {

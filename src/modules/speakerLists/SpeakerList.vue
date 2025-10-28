@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, toRef } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import User from '@/components/User.vue'
-import { user } from '@/composables/useAuthentication'
 
+import useAuthStore from '../auth/useAuthStore'
 import useRoom from '../rooms/useRoom'
 import { IMeetingRoom } from '../rooms/types'
 
@@ -18,7 +17,7 @@ const props = defineProps<{
   room: IMeetingRoom
 }>()
 
-const { t } = useI18n()
+const authStore = useAuthStore()
 const { speakerSystem } = useSpeakerSystem(toRef(props.list, 'room'))
 const { getRoomRoute } = useRoom()
 
@@ -66,7 +65,8 @@ const fullscreenPath = computed(
           variant="text"
           size="small"
           v-if="
-            queue.length > 1 && (queue.length !== 2 || queue[1] !== user?.pk)
+            queue.length > 1 &&
+            (queue.length !== 2 || queue[1] !== authStore.user?.pk)
           "
           @click="expandQueue = !expandQueue"
           icon="mdi-chevron-down"
@@ -76,8 +76,8 @@ const fullscreenPath = computed(
         <template v-for="(userPk, i) in queue" :key="userPk">
           <v-expand-transition>
             <div
-              :class="{ self: userPk === user?.pk }"
-              v-show="expandQueue || i === 0 || userPk === user?.pk"
+              :class="{ self: userPk === authStore.user?.pk }"
+              v-show="expandQueue || i === 0 || userPk === authStore.user?.pk"
             >
               {{ i + 1 }}. <User :pk="userPk" />
             </div>

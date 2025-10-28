@@ -110,23 +110,22 @@
 <script lang="ts" setup generic="Role extends string">
 import { ifilter } from 'itertools'
 import { Dictionary, orderBy as _orderBy } from 'lodash'
-import { computed, onBeforeMount, reactive, ref } from 'vue'
+import { computed, onBeforeMount, reactive, ref, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import useLoader from '@/composables/useLoader'
 import { ContextRole, UserContextRoles } from '@/composables/types'
-import { user } from '@/composables/useAuthentication'
 import ContentType from '@/contentTypes/ContentType'
-import useUserDetails from '@/modules/organisations/useUserDetails'
+import useAuthStore from '@/modules/auth/useAuthStore'
 import { meetingRolePlugins } from '@/modules/meetings/registry'
 import useMeeting from '@/modules/meetings/useMeeting'
+import useUserDetails from '@/modules/organisations/useUserDetails'
 
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import HelpSection from './HelpSection.vue'
 import QueryDialog from './QueryDialog.vue'
 import User from './User.vue'
-import { Ref } from 'vue'
 
 const USERS_PER_PAGE = 50
 
@@ -149,6 +148,7 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const { getUser } = useUserDetails()
 const loader = useLoader('RoleMatrix')
 const { meeting } = useMeeting()
@@ -279,7 +279,7 @@ function getRow(userRoles: UserContextRoles) {
 }
 
 function isCurrentUser(roles: { user: number }): boolean {
-  return roles.user === user.value?.pk
+  return roles.user === authStore.user?.pk
 }
 
 const allRoles = computed(() => contextRoles.getAll<Role>(props.pk))

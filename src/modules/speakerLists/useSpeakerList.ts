@@ -1,8 +1,7 @@
 import { computed, MaybeRef, unref } from 'vue'
-import { ComposerTranslation } from 'vue-i18n'
 
-import { user } from '@/composables/useAuthentication'
-import useMeetingId from '../meetings/useMeetingId'
+import useAuthStore from '../auth/useAuthStore'
+
 import { isQueuedSpeaker } from './types'
 import {
   getCurrent,
@@ -14,9 +13,10 @@ import {
 } from './useSpeakerLists'
 import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
-import useSpeakerAnnotations from './useSpeakerAnnotations'
 
 export default function useSpeakerList(listId: MaybeRef<number | null>) {
+  const authStore = useAuthStore()
+
   const speakerHistory = computed(() => {
     const list = unref(listId)
     if (!list) throw new Error('Speaker history requires list value')
@@ -78,14 +78,14 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
   }
 
   const userIsCurrentSpeaker = computed(
-    () => speakerList.value?.current === user.value?.pk
+    () => speakerList.value?.current === authStore.user?.pk
   )
 
   const userInQueue = computed(
     () =>
       !userIsCurrentSpeaker.value &&
-      !!user.value &&
-      userQueue.value.includes(user.value.pk)
+      !!authStore.user &&
+      userQueue.value.includes(authStore.user.pk)
   )
 
   return {

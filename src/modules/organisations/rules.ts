@@ -1,23 +1,21 @@
-import useAuthentication from '@/composables/useAuthentication'
-
 import useContextRoles from '@/composables/useContextRoles'
-import { Organisation, OrganisationRole } from './types'
 
-const { user } = useAuthentication()
+import { Organisation, OrganisationRole } from './types'
+import useAuthStore from '../auth/useAuthStore'
+
 const { hasRole } = useContextRoles<OrganisationRole>('organisation') // Avoid circular import
 
 // Special rule case: Accept organisation by pk. We won't always have organization data.
 export function isOrganisationManager(org?: number): boolean {
-  if (!user.value) return false
-  return !!hasRole(org || user.value.organisation, OrganisationRole.Manager)
+  const { user } = useAuthStore()
+  if (!user) return false
+  return !!hasRole(org || user.organisation, OrganisationRole.Manager)
 }
 
 export function isMeetingCreator(org?: number): boolean {
-  if (!user.value) return false
-  return !!hasRole(
-    org || user.value.organisation,
-    OrganisationRole.MeetingCreator
-  )
+  const { user } = useAuthStore()
+  if (!user) return false
+  return !!hasRole(org || user.organisation, OrganisationRole.MeetingCreator)
 }
 
 export function canAddMeeting(org?: number): boolean {

@@ -3,7 +3,7 @@ import { any, sorted } from 'itertools'
 import { computed } from 'vue'
 
 import { getFullName } from '@/utils'
-import { userId } from '@/composables/useAuthentication'
+import useAuthStore from '@/modules/auth/useAuthStore'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import User from '@/components/User.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -22,6 +22,7 @@ const props = defineProps<{
 const { allGroupMembers, getMeetingGroup, getRole } = useMeetingGroups(
   props.group.meeting
 )
+const authStore = useAuthStore()
 const { isModerator } = useMeeting()
 const { getUser } = useUserDetails()
 const {
@@ -58,8 +59,8 @@ const groupTransfers = computed(() =>
     ...t,
     canManage:
       isModerator.value ||
-      t.source === userId.value ||
-      t.target === userId.value
+      t.source === authStore.user?.pk ||
+      t.target === authStore.user?.pk
   }))
 )
 
@@ -105,7 +106,7 @@ const annotatedMembers = computed(() =>
           !!availableTargets.value.length &&
           isMain &&
           !transfer &&
-          (isModerator.value || gm.user === userId.value),
+          (isModerator.value || gm.user === authStore.user?.pk),
         hasVoteInGroup: !transfer === isMain,
         roleTitle: getRole(gm.role)?.title
       }
@@ -118,7 +119,7 @@ const canManageVotes = computed(
   () =>
     isModerator.value ||
     props.group.memberships.some(
-      (gm) => gm.user === userId.value && hasVoteRole(gm)
+      (gm) => gm.user === authStore.user?.pk && hasVoteRole(gm)
     )
 )
 </script>

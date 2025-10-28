@@ -3,7 +3,6 @@ import { computed, Ref, ref, watch, type ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
-import useAuthentication from '@/composables/useAuthentication'
 
 import type { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
@@ -12,6 +11,7 @@ import { userType } from '../organisations/contentTypes'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { Author, isGroupAuthor, isUserAuthor } from './types'
+import useAuthStore from '../auth/useAuthStore'
 
 interface AutocompleteItem {
   subtitle?: string
@@ -26,8 +26,7 @@ const props = defineProps<{
   modelValue?: Author
 }>()
 
-const { t } = useI18n()
-const { user } = useAuthentication()
+const authStore = useAuthStore()
 const { isModerator, meetingId, postAs } = useMeeting()
 const { meetingGroups, postAsGroups, getMeetingGroup } =
   useMeetingGroups(meetingId)
@@ -162,11 +161,13 @@ watch(search, async (search) => {
     search
   })
   searchOptions.value = [
-    ...usersToAutocomplete(data.filter(({ pk }) => user.value?.pk !== pk))
+    ...usersToAutocomplete(data.filter(({ pk }) => authStore.user?.pk !== pk))
   ]
 })
 
-const currentUserOptions = computed(() => [...userToAutocomplete(user.value!)])
+const currentUserOptions = computed(() => [
+  ...userToAutocomplete(authStore.user!)
+])
 
 const selectedAuthorOption = computed(() =>
   authorToAutocompleteItem(author.value)
@@ -176,7 +177,7 @@ const groupOptions = computed(() =>
   postAsGroups.value.map(({ pk }) =>
     authorToAutocompleteItem({
       as_group: true,
-      author: user.value!.pk,
+      author: authStore.user!.pk,
       meeting_group: pk
     })
   )

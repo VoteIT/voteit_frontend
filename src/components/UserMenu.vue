@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 
 import { getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
-import useAuthentication from '@/composables/useAuthentication'
 import useOrganisation from '@/modules/organisations/useOrganisation'
 import { IUser } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
@@ -16,12 +15,13 @@ import UserAvatar from './UserAvatar.vue'
 import DefaultForm from './DefaultForm.vue'
 import useRules from '@/composables/useRules'
 import SlugField from './inputs/SlugField.vue'
+import useAuthStore from '@/modules/auth/useAuthStore'
 
 const { t } = useI18n()
 const router = useRouter()
 const rules = useRules(t)
 
-const { alternateUsers, user, ...auth } = useAuthentication()
+const authStore = useAuthStore()
 const { manageAccountURL, proxyLogoutURL } = useOrganisation()
 
 const userMenuOpen = ref(false)
@@ -36,13 +36,13 @@ function setCurrentLocale(locale: string, close: () => void) {
 
 async function logout() {
   userMenuOpen.value = false
-  await auth.logout()
+  await authStore.logout()
   if (proxyLogoutURL.value) location.assign(proxyLogoutURL.value)
   else router.push({ name: 'home' })
 }
 
 function updateProfile(data: IUser) {
-  return auth.updateProfile(data)
+  return authStore.updateProfile(data)
 }
 
 const emailChoices = shallowRef<string[] | null>(null)
@@ -63,13 +63,13 @@ async function fetchEmailChoices() {
 }
 
 const canSwitchUser = computed(() => {
-  return !!alternateUsers.value.length
+  return !!authStore.alternateUsers.length
 })
 </script>
 
 <template>
   <v-navigation-drawer
-    v-if="user"
+    v-if="authStore.user"
     location="right"
     v-model="userMenuOpen"
     disable-resize-watcher
@@ -79,9 +79,9 @@ const canSwitchUser = computed(() => {
       <v-list-item class="no-prepend">
         <UserAvatar size="large" class="my-2" />
         <v-list-item-title class="text-h6 pb-1">{{
-          getFullName(user)
+          getFullName(authStore.user)
         }}</v-list-item-title>
-        <v-list-item-subtitle>{{ user.userid }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ authStore.user.userid }}</v-list-item-subtitle>
       </v-list-item>
       <v-divider v-if="$slots.prependProfile" class="my-3" />
       <slot name="prependProfile"></slot>
@@ -105,7 +105,7 @@ const canSwitchUser = computed(() => {
           />
           <v-defaults-provider :defaults="{ VList: { bgColor: 'surface' } }">
             <DefaultForm
-              :modelValue="user"
+              :modelValue="authStore.user"
               :handler="updateProfile"
               @done="close"
               v-slot="{ errors, formData }"
@@ -161,12 +161,12 @@ const canSwitchUser = computed(() => {
         </template>
         <v-list>
           <v-list-item
-            v-for="user in alternateUsers"
+            v-for="user in authStore.alternateUsers"
             :key="user.pk"
-            @click="auth.switchUser(user)"
+            @click="authStore.switchUser(user)"
           >
             <template #prepend>
-              <UserAvatar :user="user as IUser" />
+              <UserAvatar :user="user" />
             </template>
             <v-list-item-title
               :class="{ 'text-secondary': !getFullName(user) }"

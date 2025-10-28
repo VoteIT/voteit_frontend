@@ -4,11 +4,11 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 
-import { user } from '@/composables/useAuthentication'
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
 import useRules from '@/composables/useRules'
 
+import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
 import { IFlagButton, ReactionIcon } from './types'
@@ -17,6 +17,7 @@ import FlagButton from './FlagButton.vue'
 import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const rules = useRules(t)
 const emit = defineEmits(['close'])
 const props = defineProps<{
@@ -91,7 +92,7 @@ async function save() {
           :can-toggle="true"
         >
           <template #userList>
-            <UserList v-if="user" :user-ids="[user.pk]" />
+            <UserList v-if="authStore.user" :user-ids="[authStore.user.pk]" />
           </template>
         </FlagButton>
       </Widget>

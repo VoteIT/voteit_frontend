@@ -1,13 +1,15 @@
 import { reactive } from 'vue'
-import useAuthentication, { user } from '@/composables/useAuthentication'
-import useContextRoles from '@/composables/useContextRoles'
 
-import { Meeting, MeetingRole, MeetingState } from '@/modules/meetings/types'
+import useContextRoles from '@/composables/useContextRoles'
 import useWorkflows from '@/contentTypes/useWorkflows'
-import { meetingStates } from './workflowStates'
-import { isOrganisationManager } from '../organisations/rules'
-import { meetings } from './useMeetings'
+
+import useAuthStore from '../auth/useAuthStore'
+import { Meeting, MeetingRole, MeetingState } from '../meetings/types'
 import { MeetingInvite } from '../meetingInvites/types'
+import { isOrganisationManager } from '../organisations/rules'
+
+import { meetings } from './useMeetings'
+import { meetingStates } from './workflowStates'
 
 const { hasRole } = useContextRoles<MeetingRole>('meeting')
 // Import this a bit differently, to avoid cirkular imports
@@ -22,8 +24,6 @@ const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
 type MeetingT = Meeting | number | undefined
 
-const { isAuthenticated } = useAuthentication()
-
 const fakeRoles = reactive(new Map<number, MeetingRole[]>())
 
 export function hasMeetingRole(
@@ -31,8 +31,8 @@ export function hasMeetingRole(
   role: MeetingRole,
   actualRole = false
 ): boolean | undefined {
-  // isAuthenticated false means user is definitely not authenticated.
-  if (isAuthenticated.value === false) return false
+  // isAnonymous means user is definitely not authenticated.
+  if (useAuthStore().isAnonymous) return false
   if (!meeting) return
   if (typeof meeting !== 'number') meeting = meeting.pk
   // Meeting can have fake roles for testing purposes (only set by moderators)
@@ -98,12 +98,13 @@ export function canChangeMeeting(meeting?: Meeting): boolean {
 export function canChangeRolesMeeting(meeting: Meeting): boolean {
   return (
     !isArchivedMeeting(meeting) &&
-    (isModerator(meeting) || isOrganisationManager(user.value?.organisation))
+    (isModerator(meeting) ||
+      isOrganisationManager(useAuthStore().user?.organisation))
   )
 }
 
 export function canBecomeModerator(): boolean {
-  return isOrganisationManager(user.value?.organisation)
+  return isOrganisationManager(useAuthStore().user?.organisation)
 }
 
 export function canViewMeetingInvite(meeting: Meeting): boolean {

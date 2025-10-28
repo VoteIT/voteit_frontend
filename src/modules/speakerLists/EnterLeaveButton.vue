@@ -2,9 +2,9 @@
 import { computed, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { userId } from '@/composables/useAuthentication'
 import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 import useParticipantTags from '../meetings/participantTags/useParticipantTags'
 
@@ -18,11 +18,15 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { canEnterList, canLeaveList, speakerSystem, enterList, leaveList } =
   useSpeakerList(props.list.pk)
-const genderTag = useGenderTag(meetingId, userId)
+const genderTag = useGenderTag(
+  meetingId,
+  computed(() => authStore.user?.pk)
+)
 const { setTags } = useParticipantTags(meetingId)
 
 const genderWanted = computed(

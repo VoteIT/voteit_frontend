@@ -113,9 +113,9 @@ import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import { UserContextRoles } from '@/composables/types'
-import useAuthentication from '@/composables/useAuthentication'
 import useTabRoute from '@/composables/useTabRoute'
 
+import useAuthStore from '../auth/useAuthStore'
 import InvitationsTab from '../meetingInvites/InvitationsTab.vue'
 import { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
@@ -132,7 +132,7 @@ import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import MeetingToolbar from './MeetingToolbar.vue'
 
 const { t } = useI18n()
-const { user } = useAuthentication()
+const authStore = useAuthStore()
 const {
   meetingId,
   meetingDialect,
@@ -174,7 +174,7 @@ const readonlyRoles = computed(() => {
 })
 
 async function removeConfirm(userPk: number, role: string) {
-  if (userPk === user.value?.pk && role === 'moderator') {
+  if (userPk === authStore.user?.pk && role === 'moderator') {
     openAlertEvent.emit('*' + t('meeting.cantRemoveSelfModerator'))
     return false
   }

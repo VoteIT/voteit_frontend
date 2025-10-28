@@ -4,7 +4,7 @@ import { shallowReactive, shallowRef } from 'vue'
 import { matchedInviteType, meetingInviteType } from './contentTypes'
 import { MeetingInvite } from './types'
 
-export default defineStore('inviteStore', () => {
+export default defineStore('invites', () => {
   const matchedInvites = shallowRef<MeetingInvite[]>([])
   const meetingInvites = shallowReactive<Map<number, MeetingInvite>>(new Map())
 

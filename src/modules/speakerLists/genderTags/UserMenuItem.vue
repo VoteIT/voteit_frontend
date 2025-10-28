@@ -3,7 +3,7 @@ import { sorted } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { userId } from '@/composables/useAuthentication'
+import useAuthStore from '@/modules/auth/useAuthStore'
 import useParticipantTags from '@/modules/meetings/participantTags/useParticipantTags'
 import useMeetingId from '@/modules/meetings/useMeetingId'
 
@@ -11,9 +11,13 @@ import { GENDER_ICONS, getGenderIcon, translateGender } from './utils'
 import useGenderTag from './useGenderTag'
 
 const { t } = useI18n()
+const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { removeNamespace, setTags } = useParticipantTags(meetingId)
-const genderTag = useGenderTag(meetingId, userId)
+const genderTag = useGenderTag(
+  meetingId,
+  computed(() => authStore.user?.pk)
+)
 
 const genderChoices = computed(() =>
   sorted(

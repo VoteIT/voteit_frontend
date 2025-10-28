@@ -4,8 +4,8 @@ import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
+import useAuthStore from '@/modules/auth/useAuthStore'
 import useOrganisation from '@/modules/organisations/useOrganisation'
-import useAuthentication from './useAuthentication'
 
 interface PermissionOptions {
   message?: string
@@ -28,7 +28,6 @@ const DEFAULT_OPTIONS: PermissionOptions = {
 }
 
 const { idLoginURL } = useOrganisation()
-const { isAuthenticated } = useAuthentication()
 
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   default({ message, to }, router, t, changed) {
@@ -46,7 +45,7 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     })
   },
   requireLogin(options, router, t, changed) {
-    if (isAuthenticated.value !== false)
+    if (useAuthStore().isAuthenticated)
       return strategies.default(options, router, t, changed)
     openDialogEvent.emit({
       title: options.message ?? t('permission.defaultLoginMessage'),
