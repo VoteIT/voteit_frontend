@@ -1,13 +1,13 @@
 import ContentType from '@/contentTypes/ContentType'
 import {
-  Organisation,
+  IOrganisation,
   OrganisationRole,
   IOrganisationUser,
   IUser
 } from './types'
 
 export const organisationType = new ContentType<
-  Organisation,
+  IOrganisation,
   string,
   OrganisationRole
 >({

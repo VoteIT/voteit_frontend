@@ -53,7 +53,7 @@ const {
   canAddMeeting,
   canChangeOrganisation,
   canLogin,
-  idLoginURL,
+  loginURL,
   organisation,
   organisationId,
   organisationIsUnavailable,
@@ -315,11 +315,11 @@ function cancelEdit() {
       <v-row v-if="organisation" class="home mt-4 mb-4">
         <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
           <v-btn
-            v-if="idLoginURL"
+            v-if="loginURL"
             block
             color="primary"
             :disabled="!canLogin"
-            :href="idLoginURL"
+            :href="loginURL"
             prepend-icon="mdi-login"
             :text="$t('organization.loginTo', { ...organisation })"
           />

@@ -20,7 +20,7 @@ import { canBecomeModerator } from './rules'
 
 const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
-const { canLogin, idLoginURL, organisation } = useOrganisation()
+const { canLogin, loginURL, organisation } = useOrganisation()
 const loader = useLoader('JoinMeeting')
 const { meetings } = useMeetings(loader.call)
 const router = useRouter()
@@ -107,11 +107,11 @@ onBeforeMount(() => {
             :title="$t('join.loginRequired')"
             :text="$t('join.loginDescription')"
           >
-            <div v-if="idLoginURL" class="mt-2 text-right">
+            <div v-if="loginURL" class="mt-2 text-right">
               <v-btn
                 color="primary"
                 :disabled="!canLogin"
-                :href="idLoginURL"
+                :href="loginURL"
                 prepend-icon="mdi-login"
                 :text="$t('organization.loginTo', { ...organisation })"
               />

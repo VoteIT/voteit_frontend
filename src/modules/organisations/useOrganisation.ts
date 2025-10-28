@@ -3,14 +3,16 @@ import { computed, ref } from 'vue'
 import * as orgRules from './rules'
 
 import { organisationType } from './contentTypes'
-import type { Organisation } from './types'
+import type { IOrganisation } from './types'
+import hostname from '@/utils/hostname'
+import { buildServerURL } from '@/utils/restApi'
 
 /**
  * Current organisation
  * null = not fetched yet
  * false = No organisation on this domain
  */
-const currentOrganisation = ref<Organisation | null | false>(null)
+const currentOrganisation = ref<IOrganisation | null | false>(null)
 const organisation = computed(() => {
   if (!currentOrganisation.value) return
   return currentOrganisation.value
@@ -30,7 +32,7 @@ async function fetchOrganisation() {
 }
 
 async function updateOrganisation(
-  partial: Partial<Pick<Organisation, 'body' | 'help_info' | 'page_title'>>
+  partial: Partial<Pick<IOrganisation, 'body' | 'help_info' | 'page_title'>>
 ) {
   if (!organisationId.value) throw new Error('No organisation')
   const { data } = await organisationType.api.patch(
@@ -48,12 +50,12 @@ function buildIdServerURL(path: string) {
 // URLs
 const manageAccountURL = computed(() => buildIdServerURL('/'))
 const proxyLogoutURL = computed(() => buildIdServerURL('/log-out'))
-const idLoginURL = computed(() => {
+const loginURL = computed(() => {
   const params =
     location.pathname === '/'
       ? ''
       : `?next=${encodeURIComponent(location.pathname)}`
-  return buildIdServerURL(`/login-to/${location.hostname}${params}`)
+  return buildServerURL(`/login/idproxy/${params}`)
 })
 
 const organisationId = computed(() => organisation.value?.pk)
@@ -89,7 +91,7 @@ export default function useOrganisation() {
     canAddMeeting,
     canChangeOrganisation,
     canLogin,
-    idLoginURL,
+    loginURL,
     isOrganisationManager,
     organisation,
     organisationId,

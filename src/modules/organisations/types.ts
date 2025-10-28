@@ -13,7 +13,7 @@ interface OrganisationComponent<Settings = null> {
   readonly state: 'on' | 'off'
 }
 
-export interface Organisation {
+export interface IOrganisation {
   readonly active: boolean
   readonly pk: number
   readonly title: string

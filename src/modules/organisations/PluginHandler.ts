@@ -1,13 +1,13 @@
 import PluginHandler from '@/utils/PluginHandler'
 
-import { Organisation } from './types'
+import { IOrganisation } from './types'
 import useOrganisation from './useOrganisation'
 
 const { organisation } = useOrganisation()
 
 export interface OrganisationPlugin {
   id: string
-  checkActive?: (org: Organisation) => boolean
+  checkActive?: (org: IOrganisation) => boolean
 }
 
 export default class OrganisationPluginHandler<

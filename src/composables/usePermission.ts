@@ -27,7 +27,7 @@ const DEFAULT_OPTIONS: PermissionOptions = {
   to: { name: 'home' }
 }
 
-const { idLoginURL } = useOrganisation()
+const { loginURL } = useOrganisation()
 
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   default({ message, to }, router, t, changed) {
@@ -50,7 +50,7 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     openDialogEvent.emit({
       title: options.message ?? t('permission.defaultLoginMessage'),
       resolve: (doLogin) => {
-        if (doLogin) location.assign(idLoginURL.value!)
+        if (doLogin) location.assign(loginURL.value!)
         else router.push({ name: 'home' })
       },
       dismissible: false,

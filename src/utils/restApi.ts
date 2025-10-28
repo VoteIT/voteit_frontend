@@ -12,12 +12,20 @@ export function parseRestError(e: unknown): Dictionary<string[]> {
   return { __root__: ['Unknown error'] }
 }
 
+/**
+ * Build a server URL
+ * @param path Should begin with /
+ */
+export function buildServerURL(path: string) {
+  return `${location.protocol}//${hostname}${path}`
+}
+
 export function getApiLink(path: string) {
-  return restApi.defaults.baseURL + path
+  return buildServerURL(`/api/${path}`)
 }
 
 const restApi = axios.create({
-  baseURL: `${location.protocol}//${hostname}/api/`,
+  baseURL: buildServerURL('/api/'),
   withCredentials: true,
   withXSRFToken: import.meta.env.VITE_BACKEND_PORT && true, // Should be true for dev environment, undefined for prod
   // Django CSRF setup
