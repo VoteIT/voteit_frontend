@@ -1,6 +1,6 @@
 import { SocketState, socket, socketState } from '@/utils/Socket'
 import { computed, ref, watch } from 'vue'
-import useOrganisation from './useOrganisation'
+import useOrgStore from './useOrgStore'
 
 export interface ContactInfo {
   text: string
@@ -13,7 +13,6 @@ export interface ContactInfo {
   requires_check: boolean
 }
 
-const { canChangeOrganisation } = useOrganisation()
 const contactInfo = ref<ContactInfo | null>(null)
 const requiresCheck = computed(() => contactInfo.value?.requires_check)
 
@@ -35,9 +34,11 @@ async function saveContactInfo(data: ContactInfo) {
  */
 export default function useContactInfo(quietCheck = false) {
   // Trigger when socket is open, user is manager and quietCheck is set
+  const orgStore = useOrgStore()
+
   watch(
     () =>
-      canChangeOrganisation.value &&
+      orgStore.canChangeOrganisation &&
       socketState.value === SocketState.Open &&
       quietCheck,
     async (value) => {

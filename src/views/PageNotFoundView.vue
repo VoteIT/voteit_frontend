@@ -23,15 +23,15 @@ import { computed } from 'vue'
 import { useTitle } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
-import useOrganisation from '@/modules/organisations/useOrganisation'
+import useOrgStore from '@/modules/organisations/useOrgStore'
 
 const { t } = useI18n()
-const { organisation } = useOrganisation()
+const orgStore = useOrgStore()
 
 useTitle(
   computed(() => {
-    if (organisation.value)
-      return `${t('pageNotFound')} | ${organisation.value.title}`
+    if (orgStore.organisation)
+      return `${t('pageNotFound')} | ${orgStore.organisation.title}`
     return t('pageNotFound')
   })
 )

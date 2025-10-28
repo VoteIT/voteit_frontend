@@ -1,9 +1,7 @@
 import PluginHandler from '@/utils/PluginHandler'
 
-import useOrganisation from './useOrganisation'
+import useOrgStore from './useOrgStore'
 import { MeetingInvite } from '../meetingInvites/types'
-
-const { organisation } = useOrganisation()
 
 interface InvitationScope {
   id: keyof MeetingInvite['user_data']
@@ -13,8 +11,9 @@ interface InvitationScope {
 
 class InvitationScopePluginHandler extends PluginHandler<InvitationScope> {
   public getActivePlugins() {
+    const { organisation } = useOrgStore()
     return this.getPlugins(
-      ({ id }) => organisation.value?.scope.includes(id) || false
+      ({ id }) => organisation?.scope.includes(id) || false
     )
   }
 }

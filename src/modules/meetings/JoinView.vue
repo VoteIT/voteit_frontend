@@ -9,7 +9,7 @@ import useLoader from '@/composables/useLoader'
 import QueryDialog from '@/components/QueryDialog.vue'
 import { AccessPolicy } from '@/contentTypes/types'
 import useAuthStore from '../auth/useAuthStore'
-import useOrganisation from '../organisations/useOrganisation'
+import useOrgStore from '../organisations/useOrgStore'
 
 import accessPolicies from './accessPolicies'
 import { accessPolicyType, meetingType } from './contentTypes'
@@ -20,7 +20,7 @@ import { canBecomeModerator } from './rules'
 
 const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
-const { canLogin, loginURL, organisation } = useOrganisation()
+const orgStore = useOrgStore()
 const loader = useLoader('JoinMeeting')
 const { meetings } = useMeetings(loader.call)
 const router = useRouter()
@@ -107,13 +107,13 @@ onBeforeMount(() => {
             :title="$t('join.loginRequired')"
             :text="$t('join.loginDescription')"
           >
-            <div v-if="loginURL" class="mt-2 text-right">
+            <div v-if="orgStore.loginURL" class="mt-2 text-right">
               <v-btn
                 color="primary"
-                :disabled="!canLogin"
-                :href="loginURL"
+                :disabled="!orgStore.canLogin"
+                :href="orgStore.loginURL"
                 prepend-icon="mdi-login"
-                :text="$t('organization.loginTo', { ...organisation })"
+                :text="$t('organization.loginTo', { ...orgStore.organisation })"
               />
             </div>
           </v-alert>

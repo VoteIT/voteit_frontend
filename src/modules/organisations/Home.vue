@@ -35,7 +35,7 @@ import { translateMeetingRole } from '../meetings/utils'
 import { meetingStates } from '../meetings/workflowStates'
 
 import ContactInfoTab from './ContactInfoTab.vue'
-import useOrganisation from './useOrganisation'
+import useOrgStore from './useOrgStore'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
@@ -49,22 +49,12 @@ const organisationIcons: Record<OrganisationRole, string> = {
 
 const { t } = useI18n()
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
-const {
-  canAddMeeting,
-  canChangeOrganisation,
-  canLogin,
-  loginURL,
-  organisation,
-  organisationId,
-  organisationIsUnavailable,
-  fetchOrganisation,
-  updateOrganisation
-} = useOrganisation()
+const orgStore = useOrgStore()
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
   if (currentTab.value !== 'roles') return
-  return organisationId.value
+  return orgStore.organisation?.pk
 })
 const loader = useLoader(
   'Home',
@@ -87,7 +77,7 @@ const { requiresCheck } = useContactInfo(true)
 
 useTitle(
   computed(() =>
-    organisation.value ? `${organisation.value.title} | VoteIT` : 'VoteIT'
+    orgStore.organisation ? `${orgStore.organisation.title} | VoteIT` : 'VoteIT'
   )
 )
 
@@ -112,7 +102,7 @@ onBeforeMount(async () => {
   // Call again to update page content
   if (!loader.initDone.value) return
   try {
-    await fetchOrganisation()
+    await orgStore.fetchOrganisation()
   } catch {
     // Ignore org fetch here. We should already have data, so it's just an update that failed.
   }
@@ -120,16 +110,19 @@ onBeforeMount(async () => {
 
 const editing = ref(false)
 const changeForm = reactive({
-  body: organisation.value?.body ?? '',
-  page_title: organisation.value?.page_title ?? ''
+  body: orgStore.organisation?.body ?? '',
+  page_title: orgStore.organisation?.page_title ?? ''
 })
-watch(organisation, (org) => {
-  changeForm.body = org?.body ?? ''
-  changeForm.page_title = org?.page_title ?? ''
-})
+watch(
+  () => orgStore.organisation,
+  (org) => {
+    changeForm.body = org?.body ?? ''
+    changeForm.page_title = org?.page_title ?? ''
+  }
+)
 
 const menu = computed<MenuItem[]>(() => {
-  if (!organisation.value || !canChangeOrganisation.value) return []
+  if (!orgStore.organisation || !orgStore.canChangeOrganisation) return []
   return [
     {
       title: t('edit'),
@@ -141,7 +134,7 @@ const menu = computed<MenuItem[]>(() => {
   ]
 })
 const tabs = computed(() => {
-  if (!canChangeOrganisation.value) return
+  if (!orgStore.canChangeOrganisation) return
   return [
     {
       value: 'default',
@@ -159,14 +152,14 @@ const tabs = computed(() => {
 })
 
 async function save() {
-  if (formChanged.value) await updateOrganisation(changeForm)
+  if (formChanged.value) await orgStore.updateOrganisation(changeForm)
   editing.value = false
 }
 
 function addUser(user: number) {
-  if (!organisation.value) throw new Error('No organisation')
+  if (!orgStore.organisation) throw new Error('No organisation')
   organisationType.addRoles(
-    organisation.value.pk,
+    orgStore.organisation.pk,
     user,
     OrganisationRole.MeetingCreator
   )
@@ -295,15 +288,15 @@ const searchInfo = computed<
 
 const formChanged = computed(
   () =>
-    changeForm.body !== organisation.value?.body ||
-    changeForm.page_title !== organisation.value.page_title
+    changeForm.body !== orgStore.organisation?.body ||
+    changeForm.page_title !== orgStore.organisation.page_title
 )
 
 function cancelEdit() {
   editing.value = false
-  if (!organisation.value) return
-  changeForm.body = organisation.value.body
-  changeForm.page_title = organisation.value.page_title
+  if (!orgStore.organisation) return
+  changeForm.body = orgStore.organisation.body
+  changeForm.page_title = orgStore.organisation.page_title
 }
 </script>
 
@@ -312,24 +305,27 @@ function cancelEdit() {
   <UserMenu />
   <v-main>
     <v-container>
-      <v-row v-if="organisation" class="home mt-4 mb-4">
+      <v-row v-if="orgStore.organisation" class="home mt-4 mb-4">
         <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
           <v-btn
-            v-if="loginURL"
+            v-if="orgStore.loginURL"
             block
             color="primary"
-            :disabled="!canLogin"
-            :href="loginURL"
+            :disabled="!orgStore.canLogin"
+            :href="orgStore.loginURL"
             prepend-icon="mdi-login"
-            :text="$t('organization.loginTo', { ...organisation })"
+            :text="$t('organization.loginTo', { ...orgStore.organisation })"
           />
           <v-alert
-            v-if="!canLogin"
+            v-if="!orgStore.canLogin"
             class="my-3"
             :text="$t('organization.cantLogin')"
             type="error"
           />
-          <EditableHelpText :modelValue="organisation.help_info" class="mt-3" />
+          <EditableHelpText
+            :modelValue="orgStore.organisation.help_info"
+            class="mt-3"
+          />
         </v-col>
         <v-col
           cols="12"
@@ -390,23 +386,25 @@ function cancelEdit() {
               </template>
               <template v-else>
                 <header class="d-flex">
-                  <h1 class="flex-grow-1">{{ organisation.page_title }}</h1>
+                  <h1 class="flex-grow-1">
+                    {{ orgStore.organisation.page_title }}
+                  </h1>
                   <DropdownMenu :items="menu" />
                 </header>
                 <Richtext
-                  :value="organisation.body"
+                  :value="orgStore.organisation.body"
                   :maxHeight="collapsedBodyHeightMobile"
                 />
               </template>
             </v-window-item>
 
-            <template v-if="canChangeOrganisation">
+            <template v-if="orgStore.canChangeOrganisation">
               <v-window-item value="roles">
                 <UserSearch class="mb-6" @submit="addUser" />
                 <RoleMatrix
                   admin
                   :contentType="organisationType"
-                  :pk="organisation.pk"
+                  :pk="orgStore.organisation.pk"
                   :icons="organisationIcons"
                 />
               </v-window-item>
@@ -488,7 +486,10 @@ function cancelEdit() {
           <p v-if="!meetingGroups.length" class="mb-4">
             <em>{{ $t('home.noCurrentMeetings') }}</em>
           </p>
-          <DefaultDialog v-if="canAddMeeting" :title="$t('meeting.create')">
+          <DefaultDialog
+            v-if="orgStore.canAddMeeting"
+            :title="$t('meeting.create')"
+          >
             <template #activator="{ props }">
               <v-btn
                 block
@@ -607,15 +608,15 @@ function cancelEdit() {
             </v-list>
           </DefaultDialog>
           <EditableHelpText
-            :modelValue="organisation.help_info"
-            :editable="!!canChangeOrganisation"
-            :handler="(help_info) => updateOrganisation({ help_info })"
+            :modelValue="orgStore.organisation.help_info"
+            :editable="!!orgStore.canChangeOrganisation"
+            :handler="(help_info) => orgStore.updateOrganisation({ help_info })"
             :placeholder="$t('home.helpInfoPlaceholder')"
             class="mt-3"
           />
         </v-col>
       </v-row>
-      <v-row v-else-if="organisationIsUnavailable">
+      <v-row v-else-if="orgStore.organisationIsUnavailable">
         <v-col v-bind="cols">
           <v-sheet class="py-8 px-4 text-center" :border="true" rounded>
             <h1 class="mb-4 flex-grow-1">

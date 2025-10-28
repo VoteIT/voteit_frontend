@@ -25,14 +25,14 @@ import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
 import useAuthStore from './modules/auth/useAuthStore'
-import useOrganisation from './modules/organisations/useOrganisation'
+import useOrgStore from './modules/organisations/useOrgStore'
 import { frontendVersion } from './utils/Socket'
 import { openDialogEvent } from './utils/events'
 
 const { t } = useI18n()
 const loader = useLoader('App')
 const { fetchAuthenticatedUser } = useAuthStore()
-const { fetchOrganisation } = useOrganisation()
+const { fetchOrganisation } = useOrgStore()
 
 onBeforeMount(async () => {
   try {

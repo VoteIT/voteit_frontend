@@ -5,7 +5,7 @@ import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import useAuthStore from '@/modules/auth/useAuthStore'
-import useOrganisation from '@/modules/organisations/useOrganisation'
+import useOrgStore from '@/modules/organisations/useOrgStore'
 
 interface PermissionOptions {
   message?: string
@@ -26,8 +26,6 @@ type PermissionDeniedHandler = (
 const DEFAULT_OPTIONS: PermissionOptions = {
   to: { name: 'home' }
 }
-
-const { loginURL } = useOrganisation()
 
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   default({ message, to }, router, t, changed) {
@@ -50,7 +48,7 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     openDialogEvent.emit({
       title: options.message ?? t('permission.defaultLoginMessage'),
       resolve: (doLogin) => {
-        if (doLogin) location.assign(loginURL.value!)
+        if (doLogin) location.assign(useOrgStore().loginURL)
         else router.push({ name: 'home' })
       },
       dismissible: false,

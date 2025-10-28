@@ -39,7 +39,7 @@ import { ref } from 'vue'
 import { getFullName } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import useAuthStore from '@/modules/auth/useAuthStore'
-import useOrganisation from '@/modules/organisations/useOrganisation'
+import useOrgStore from '@/modules/organisations/useOrgStore'
 
 import { toggleUserMenu } from './events'
 import UserAvatar from './UserAvatar.vue'
@@ -47,7 +47,7 @@ import UserAvatar from './UserAvatar.vue'
 defineProps<{ hasNavDrawer?: boolean; title?: string }>()
 
 const { user } = storeToRefs(useAuthStore())
-const { organisation } = useOrganisation()
+const { organisation } = storeToRefs(useOrgStore())
 
 const userMenuOpen = ref(false)
 </script>

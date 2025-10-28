@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 
 import { getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
-import useOrganisation from '@/modules/organisations/useOrganisation'
+import useOrgStore from '@/modules/organisations/useOrgStore'
 import { IUser } from '@/modules/organisations/types'
 import { profileType } from '@/modules/organisations/contentTypes'
 
@@ -22,7 +22,7 @@ const router = useRouter()
 const rules = useRules(t)
 
 const authStore = useAuthStore()
-const { manageAccountURL, proxyLogoutURL } = useOrganisation()
+const orgStore = useOrgStore()
 
 const userMenuOpen = ref(false)
 toggleUserMenu.on(() => {
@@ -37,7 +37,7 @@ function setCurrentLocale(locale: string, close: () => void) {
 async function logout() {
   userMenuOpen.value = false
   await authStore.logout()
-  if (proxyLogoutURL.value) location.assign(proxyLogoutURL.value)
+  if (orgStore.proxyLogoutURL) location.assign(orgStore.proxyLogoutURL)
   else router.push({ name: 'home' })
 }
 
@@ -213,7 +213,7 @@ const canSwitchUser = computed(() => {
       <v-list nav density="comfortable">
         <v-list-item
           prepend-icon="mdi-account"
-          :href="manageAccountURL"
+          :href="orgStore.manageAccountURL"
           :title="$t('auth.manageAccount')"
         />
         <v-list-item

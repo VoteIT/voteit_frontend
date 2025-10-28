@@ -39,7 +39,7 @@
           </RoleMatrix>
           <div v-if="canChangeRoles" class="d-flex flex-wrap mt-6">
             <UserSearch
-              v-if="isOrganisationManager"
+              v-if="orgStore.isOrganisationManager"
               :label="$t('meeting.addParticipant')"
               class="flex-grow-1"
               @submit="addUser"
@@ -119,7 +119,7 @@ import useAuthStore from '../auth/useAuthStore'
 import InvitationsTab from '../meetingInvites/InvitationsTab.vue'
 import { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
-import useOrganisation from '../organisations/useOrganisation'
+import useOrgStore from '../organisations/useOrgStore'
 import SpeakerHistory from '../speakerLists/SpeakerHistory.vue'
 import useSpeakerSystems from '../speakerLists/useSpeakerSystems'
 
@@ -145,7 +145,7 @@ const {
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
-const { isOrganisationManager } = useOrganisation()
+const orgStore = useOrgStore()
 
 useMeetingTitle(t('meeting.participants'))
 

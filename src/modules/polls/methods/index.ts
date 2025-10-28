@@ -1,4 +1,4 @@
-import useOrganisation from '@/modules/organisations/useOrganisation'
+import useOrgStore from '@/modules/organisations/useOrgStore'
 import { PollPlugin, pollPlugins } from '../registry'
 
 import ApprovalVoting from './ApprovalVoting.vue'
@@ -34,8 +34,6 @@ import {
   SimplePoll,
   SimpleVote
 } from './types'
-
-const { getOrganisationComponent } = useOrganisation()
 
 pollPlugins.register({
   id: 'combined_simple',
@@ -254,7 +252,7 @@ pollPlugins.register({
     proportional: false
   },
   discouraged: true,
-  checkActive: () => !!getOrganisationComponent('repeated_irv'),
+  checkActive: () => !!useOrgStore().getOrganisationComponent('repeated_irv'),
   getDefaultSettings() {
     return {
       allow_random: true,
