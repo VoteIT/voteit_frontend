@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
-import { buildServerURL } from '@/utils/restApi'
-
 import { IOrganisation } from './types'
 import * as orgRules from './rules'
 import { organisationType } from './contentTypes'
@@ -35,11 +33,12 @@ export default defineStore('organisations', () => {
   const manageAccountURL = computed(() => buildIdServerURL('/'))
   const proxyLogoutURL = computed(() => buildIdServerURL('/log-out'))
   const loginURL = computed(() => {
+    if (!organisation.value) return
     const params =
       location.pathname === '/'
         ? ''
         : `?next=${encodeURIComponent(location.pathname)}`
-    return buildServerURL(`/login/idproxy/${params}`)
+    return organisation.value.login_url + params
   })
 
   // Permissions
