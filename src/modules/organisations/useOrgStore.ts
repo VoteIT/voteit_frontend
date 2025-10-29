@@ -1,10 +1,10 @@
+import { first } from 'itertools'
 import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
 import { IOrganisation } from './types'
 import * as orgRules from './rules'
 import { organisationType } from './contentTypes'
-import { first } from 'itertools'
 
 export default defineStore('organisations', () => {
   /**
