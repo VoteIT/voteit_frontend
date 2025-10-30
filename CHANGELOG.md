@@ -6,7 +6,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 0.38.0 (??)
 
-_0.37 skipped to beek versions synced w backend_
+_0.37 skipped to keep versions synced w backend_
 
 - Refactoring to login mechanics
 - Refactoring to start using Pinia (auth and org stores)
