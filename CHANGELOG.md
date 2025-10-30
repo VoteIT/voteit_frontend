@@ -4,6 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.37.0 (2025-10-30)
+
+- Refactoring to login mechanics
+- Refactoring to start using Pinia (auth and org stores)
+- Navigation drawer refactoring
+
 ## 0.36.3 (2025-10-22)
 
 - Cleanup of data when receiving channel app_state (envelope client changes)
