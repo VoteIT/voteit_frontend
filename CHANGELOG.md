@@ -4,7 +4,9 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.37.0 (2025-10-30)
+## 0.38.0 (??)
+
+_0.37 skipped to beek versions synced w backend_
 
 - Refactoring to login mechanics
 - Refactoring to start using Pinia (auth and org stores)
