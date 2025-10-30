@@ -48,7 +48,9 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
     openDialogEvent.emit({
       title: options.message ?? t('permission.defaultLoginMessage'),
       resolve: (doLogin) => {
-        if (doLogin) location.assign(useOrgStore().loginURL)
+        const { loginURL } = useOrgStore()
+        if (!loginURL) throw new Error('No login URL available')
+        if (doLogin) location.assign(loginURL)
         else router.push({ name: 'home' })
       },
       dismissible: false,
