@@ -146,6 +146,7 @@
     }
   },
   "auth": {
+    "error": "Login error",
     "logout": "Log out",
     "manageAccount": "Manage account"
   },

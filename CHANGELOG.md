@@ -11,6 +11,7 @@ _0.37 skipped to keep versions synced w backend_
 - Refactoring to login mechanics
 - Refactoring to start using Pinia (auth and org stores)
 - Navigation drawer refactoring
+- /error displays messages from backend (Auth error)
 
 ## 0.36.3 (2025-10-22)
 

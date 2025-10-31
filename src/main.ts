@@ -8,6 +8,7 @@ import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
 // REGISTER PLUGINS
+import './modules/auth'
 import './modules/meetings'
 import './modules/meetings/dialects'
 import './modules/active'

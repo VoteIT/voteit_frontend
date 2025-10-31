@@ -146,6 +146,7 @@
     }
   },
   "auth": {
+    "error": "Inloggningsfel",
     "logout": "Logga ut",
     "manageAccount": "Hantera konto"
   },
