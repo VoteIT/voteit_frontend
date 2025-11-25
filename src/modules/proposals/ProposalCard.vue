@@ -158,7 +158,7 @@ import useAgendaFilter from '../agendas/useAgendaFilter'
 import Comments from '../discussions/Comments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
-import useTags from '../meetings/useTags'
+import { getHTMLTags } from '../meetings/useTags'
 import AuthorName from '../meetings/AuthorName.vue'
 
 import { proposalType } from './contentTypes'
@@ -181,7 +181,6 @@ const { isModerator } = useMeeting()
 const agendaId = computed(() => props.p.agenda_item)
 const { orderContent } = useAgendaFilter(agendaId)
 const { canAddDiscussionPost } = useAgendaItem(agendaId)
-const { getHTMLTags } = useTags()
 const showComments = ref(false)
 const { getProposalDiscussions } = useDiscussions()
 

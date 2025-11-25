@@ -12,7 +12,7 @@ import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 import useUnread from '@/composables/useUnread'
 
-import useTags from '../meetings/useTags'
+import { getHTMLTags } from '../meetings/useTags'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import PostAs from '../meetings/PostAs.vue'
 import type { Author } from '../meetings/types'
@@ -30,7 +30,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { getHTMLTags } = useTags()
 const { canPostAs } = useMeetingGroups(useMeetingId())
 
 const editing = ref(false)

@@ -82,7 +82,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 import useAgenda from '../agendas/useAgenda'
-import useTags from '../meetings/useTags'
+import { getHTMLTags } from '../meetings/useTags'
 import useMeetingId from '../meetings/useMeetingId'
 import PostAs from '../meetings/PostAs.vue'
 import useMeetingGroups from '../meetings/useMeetingGroups'
@@ -116,7 +116,6 @@ const emit = defineEmits<{
 const meetingId = useMeetingId()
 const { agendaId } = useAgenda(meetingId)
 const { canPostAs } = useMeetingGroups(meetingId)
-const { getHTMLTags } = useTags()
 
 const body = ref(props.proposal ? props.proposal.body : props.modelValue)
 function getExtraTags(proposal?: Proposal) {

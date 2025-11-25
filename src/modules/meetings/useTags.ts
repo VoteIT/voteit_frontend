@@ -21,7 +21,7 @@ function setTagColors(container: HTMLElement) {
     tagElem.style.backgroundColor = cache.get(tagElem.dataset.value ?? '')
 }
 
-function getHTMLTags(html: string) {
+export function getHTMLTags(html: string) {
   const tagElems = domParser
     .parseFromString(html, 'text/html')
     .querySelectorAll<HTMLElement>('[data-denotation-char="#"]')
@@ -56,9 +56,5 @@ export default function useTags(el?: Ref<HTMLElement | null>) {
     watch(el, (elem) => {
       if (elem) elem.addEventListener('click', clickHandler)
     })
-  }
-
-  return {
-    getHTMLTags
   }
 }
