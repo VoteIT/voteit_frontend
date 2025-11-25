@@ -1,12 +1,10 @@
 <script lang="ts" setup>
-import { isEqual } from 'lodash'
 import {
   ComponentPublicInstance,
   computed,
   nextTick,
   provide,
-  reactive,
-  ref,
+  shallowRef,
   watch
 } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -16,17 +14,11 @@ import { openModalEvent } from '@/utils/events'
 import { MenuItem } from '@/utils/types'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
-import Headline from '@/components/Headline.vue'
-import Richtext from '@/components/Richtext.vue'
-import RichtextEditor from '@/components/RichtextEditor.vue'
 import Tag from '@/components/Tag.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
-import useDefaults from '@/composables/useDefaults'
 import usePermission from '@/composables/usePermission'
 import { LastReadKey } from '@/composables/useUnread'
 import useLoader from '@/composables/useLoader'
-import TagEdit from '@/components/TagEdit.vue'
 
 import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
@@ -40,7 +32,7 @@ import useProposals, {
 } from '../proposals/useProposals'
 import { Proposal, ProposalState } from '../proposals/types'
 import { DiscussionPost } from '../discussions/types'
-import useTags, { TagClickHandlerKey, TagsKey } from '../meetings/useTags'
+import { TagClickHandlerKey, TagsKey } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
 import usePolls from '../polls/usePolls'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
@@ -51,17 +43,18 @@ import AgendaFilters from './AgendaFilters.vue'
 import useAgendaFilter from './useAgendaFilter'
 import { AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
-import { agendaItemType, lastReadType } from './contentTypes'
+import { lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
 import AISpeakerLists from './AISpeakerLists.vue'
+import AgendaItemDescription from './AgendaItemDescription.vue'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
 const proposals = useProposals()
 const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
-const { agendaId, agenda, agendaItemLastRead, hasNewItems } =
+const { agendaId, agenda, agendaItemLastRead, getAgendaItem, hasNewItems } =
   useAgenda(meetingId)
 const { activeFilter, isModified, clearFilters, orderContent } =
   useAgendaFilter(agendaId)
@@ -78,6 +71,7 @@ const {
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
 provide(agendaIdKey, agendaId)
+provide(LastReadKey, agendaItemLastRead)
 
 const tProposalBlockReason = computed(() => {
   switch (proposalBlockReason.value) {
@@ -140,6 +134,7 @@ const allTags = computed<Set<string>>(() => {
     ...transform(discussions.getAgendaDiscussions)
   ])
 })
+provide(TagsKey, allTags)
 
 const toNewPoll = computed(() =>
   getMeetingRoute('pollStartAI', { aid: agendaId.value })
@@ -164,6 +159,7 @@ const hasPublishedProposals = computed(() =>
   anyProposal((p) => isAIProposal(p) && p.state === ProposalState.Published)
 )
 
+const editDescription = shallowRef(false)
 const menuItems = computed<MenuItem[]>(() => {
   if (!agendaItem.value) return []
   const items: MenuItem[] = []
@@ -180,7 +176,7 @@ const menuItems = computed<MenuItem[]>(() => {
       title: t('edit'),
       prependIcon: 'mdi-pencil',
       onClick: async () => {
-        editing.value = true
+        editDescription.value = true
       }
     })
   }
@@ -206,29 +202,21 @@ const menuItems = computed<MenuItem[]>(() => {
 
 const hasProposals = computed(() => anyProposal(isAIProposal))
 
-function setLastRead(ai?: AgendaItem) {
+function setLastRead(agenda_item: number) {
   // Return if there is no new content
+  const ai = getAgendaItem(agenda_item)
   if (!ai || !hasNewItems(ai)) return
-  lastReadType.methodCall('change', { agenda_item: ai.pk })
+  lastReadType.methodCall('change', { agenda_item })
 }
 // Set last read when leaving route.
-onBeforeRouteLeave(() => setLastRead(agendaItem.value))
-
-watch(agendaItem, (to, from) => {
+onBeforeRouteLeave(() => setLastRead(agendaId.value))
+watch(agendaId, (_, leaving) => {
   // Set last read when switching agenda item
-  setLastRead(from)
-  if (!to) return
-  editing.value = false
-  content.title = to.title // Body from agendaBody, see below
-  content.tags = extraTags.value
-})
-watch(agendaBody, (value) => {
-  content.body = value ?? ''
+  setLastRead(leaving)
 })
 
-const filterComponent = ref<ComponentPublicInstance | null>(null)
+const filterComponent = shallowRef<ComponentPublicInstance | null>(null)
 const filterTag = computed(() => [...activeFilter.value.tags][0])
-const { getHTMLTags } = useTags()
 provide(TagClickHandlerKey, async (tagName) => {
   activeFilter.value.tags = new Set([tagName])
   activeFilter.value.states = new Set([
@@ -247,102 +235,22 @@ provide(TagClickHandlerKey, async (tagName) => {
     behavior: 'smooth'
   })
 })
-
-const extraTags = computed(() => {
-  if (!agendaItem.value || !agendaBody.value) return []
-  const docTags = getHTMLTags(agendaBody.value)
-  return agendaItem.value.tags.filter((tag) => !docTags.has(tag))
-})
-watch(extraTags, (tags) => (content.tags = tags))
-const editing = ref(false)
-const content = reactive({
-  body: agendaBody.value ?? '',
-  tags: extraTags.value,
-  title: agendaItem.value?.title ?? ''
-})
-const submitting = ref(false)
-const editingModified = computed(
-  () =>
-    !!agendaItem.value &&
-    (content.title !== agendaItem.value.title ||
-      content.body !== agendaBody.value ||
-      !isEqual(content.tags, agendaItem.value.tags))
-)
-
-function cancelEdit() {
-  editing.value = false
-  content.body = agendaBody.value ?? ''
-  content.tags = extraTags.value
-  content.title = agendaItem.value?.title ?? ''
-}
-
-async function submit() {
-  if (!editingModified.value) return
-  submitting.value = true
-  try {
-    await agendaItemType.update(agendaId.value, { ...content })
-    editing.value = false
-  } catch {} // TODO
-  submitting.value = false
-}
-
-provide(LastReadKey, agendaItemLastRead)
-provide(TagsKey, allTags)
-
-const { collapsedBodyHeight } = useDefaults()
 </script>
 
 <template>
   <template v-if="agendaItem">
     <v-row :key="`agenda-header-${agendaId}`">
       <v-col cols="12" lg="8">
-        <div v-if="editing" class="mt-6 mb-8">
-          <Headline
-            v-model="content.title"
-            class="mb-2"
-            editing
-            @submit="submit"
-          />
-          <RichtextEditor
-            v-model="content.body"
-            class="mb-2"
-            variant="full"
-            @keydown.ctrl.enter="submit"
-          />
-          <TagEdit
-            v-model="content.tags"
-            class="mb-2"
-            :label="$t('agenda.tagEditInfo')"
-          />
-          <div class="text-right">
-            <v-btn variant="text" :text="$t('cancel')" @click="cancelEdit" />
-            <v-btn
-              color="primary"
-              :disabled="!editingModified"
-              :loading="submitting"
-              :text="$t('save')"
-              @click="submit"
-            />
-          </div>
-        </div>
-        <div v-else class="mb-8">
-          <div class="d-flex">
-            <div class="flex-grow-1">
-              <WorkflowState
-                :admin="canChangeAgendaItem"
-                :content-type="agendaItemType"
-                :object="agendaItem"
-              />
-              <h1>{{ agendaItem.title }}</h1>
-            </div>
+        <AgendaItemDescription
+          :agenda-item="agendaItem"
+          :body="agendaBody"
+          :can-edit="canChangeAgendaItem"
+          v-model:editing="editDescription"
+        >
+          <template #appendTitle>
             <DropdownMenu :items="menuItems" />
-          </div>
-          <Richtext
-            v-if="agendaBody"
-            :value="agendaBody"
-            :maxHeight="collapsedBodyHeight"
-          />
-        </div>
+          </template>
+        </AgendaItemDescription>
         <TextDocuments />
       </v-col>
       <v-col cols="12" lg="4">
