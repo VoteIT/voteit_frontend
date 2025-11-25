@@ -2,9 +2,9 @@
 import { ComponentPublicInstance, computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ThemeColor } from '@/utils/types'
-
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
+import IconSearchInput from '@/components/inputs/IconSearchInput.vue'
+import ColorInput from '@/components/inputs/ColorInput.vue'
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
 import useRules from '@/composables/useRules'
@@ -13,7 +13,7 @@ import useAuthStore from '../auth/useAuthStore'
 import useMeeting from '../meetings/useMeeting'
 import { MeetingRole } from '../meetings/types'
 
-import { ReactionButton, ReactionIcon } from './types'
+import { ReactionButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
@@ -135,42 +135,21 @@ async function save() {
           v-model="formData.description"
           :rules="[rules.maxLength(100)]"
         />
-        <div>
-          <label>{{ $t('color') }}</label>
-          <v-item-group class="btn-controls" mandatory v-model="formData.color">
-            <v-item
-              v-for="value in Object.values(ThemeColor)"
-              :key="value"
-              :value="value"
-              v-slot="{ toggle, isSelected }"
-            >
-              <v-btn
-                :icon="isSelected ? 'mdi-brush' : 'mdi-circle'"
-                :variant="isSelected ? 'elevated' : 'text'"
-                :color="value"
-                @click="toggle"
-              />
-            </v-item>
-          </v-item-group>
-        </div>
-        <div>
-          <label>{{ $t('icon') }}</label>
-          <v-item-group class="btn-controls" v-model="formData.icon">
-            <v-item
-              v-for="value in Object.values(ReactionIcon)"
-              :key="value"
-              :value="value"
-              v-slot="{ toggle, isSelected }"
-            >
-              <v-btn
-                :variant="isSelected ? 'elevated' : 'text'"
-                :color="formData.color"
-                :icon="value"
-                @click="toggle"
-              />
-            </v-item>
-          </v-item-group>
-        </div>
+        <ColorInput
+          class="mb-2"
+          :icon="formData.icon"
+          :label="$t('color')"
+          v-model="formData.color"
+        />
+        <IconSearchInput
+          class="mb-3"
+          :label="$t('icon')"
+          v-model="formData.icon"
+        >
+          <template #icon="{ icon }">
+            <v-avatar :color="formData.color" :icon="icon" />
+          </template>
+        </IconSearchInput>
         <ButtonDisplayCheckboxes
           v-model:allowed-models="formData.allowed_models"
           v-model:on-presentation="formData.on_presentation"
@@ -178,19 +157,19 @@ async function save() {
           v-model:vote-template="formData.vote_template"
         />
         <div>
-          <label>{{ $t('reaction.rolesRequired') }}</label>
           <CheckboxMultipleSelect
-            v-model="formData.change_roles"
-            :settings="{ options: roleLabels }"
+            :label="$t('reaction.rolesRequired')"
             :required-values="['moderator']"
+            :settings="{ options: roleLabels }"
+            v-model="formData.change_roles"
           />
         </div>
         <div>
-          <label>{{ $t('reaction.listRolesRequired') }}</label>
           <CheckboxMultipleSelect
-            v-model="formData.list_roles"
-            :settings="{ options: roleLabels }"
+            :label="$t('reaction.listRolesRequired')"
             :required-values="['moderator']"
+            :settings="{ options: roleLabels }"
+            v-model="formData.list_roles"
           />
         </div>
         <v-text-field

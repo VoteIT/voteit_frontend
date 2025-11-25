@@ -42,7 +42,7 @@ const onProposals = computed({
 
 <template>
   <div class="mb-4">
-    <label>{{ $t('reaction.displayOn') }}</label>
+    <v-label :text="$t('reaction.displayOn')" />
     <div class="d-flex flex-wrap">
       <v-checkbox
         v-model="onProposals"

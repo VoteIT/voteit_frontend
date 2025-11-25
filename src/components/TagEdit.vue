@@ -1,9 +1,7 @@
 <template>
   <div :class="{ 'mb-4': !!label }">
     <div class="d-flex flex-wrap ga-1">
-      <p v-if="label" class="text-secondary">
-        <label>{{ label }}</label>
-      </p>
+      <v-label v-if="label" :text="label" />
       <Tag
         v-for="tag in tags"
         :key="tag"

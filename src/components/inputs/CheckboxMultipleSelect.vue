@@ -1,5 +1,5 @@
 <template>
-  <label v-if="label">{{ label }}</label>
+  <v-label v-if="label" :text="label" />
   <div class="mb-4 d-flex flex-wrap">
     <v-checkbox
       v-for="[key, label] in Object.entries(settings.options)"

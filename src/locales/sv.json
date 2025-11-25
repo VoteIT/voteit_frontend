@@ -154,6 +154,7 @@
     "delete": "Radera",
     "itemsPerPageText": "Objekt per sida",
     "pageText": "{'{'}0{'}'}-{'{'}1{'}'} av {'{'}2{'}'}",
+    "suggestions": "Förslag",
     "textSize": "Textstorlek",
     "textSizeNormal": "Normal text",
     "textSizeLarge": "Stor text",

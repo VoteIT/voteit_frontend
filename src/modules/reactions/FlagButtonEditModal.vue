@@ -11,10 +11,12 @@ import useRules from '@/composables/useRules'
 import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
-import { IFlagButton, ReactionIcon } from './types'
+import { IFlagButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import FlagButton from './FlagButton.vue'
 import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
+import IconSearchInput from '@/components/inputs/IconSearchInput.vue'
+import ColorInput from '@/components/inputs/ColorInput.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -113,42 +115,21 @@ async function save() {
           v-model="formData.description"
           :rules="[rules.maxLength(100)]"
         />
-        <div>
-          <label>{{ $t('color') }}</label>
-          <v-item-group class="btn-controls" mandatory v-model="formData.color">
-            <v-item
-              v-for="value in Object.values(ThemeColor)"
-              :key="value"
-              :value="value"
-              v-slot="{ toggle, isSelected }"
-            >
-              <v-btn
-                :icon="isSelected ? 'mdi-brush' : 'mdi-circle'"
-                :variant="isSelected ? 'elevated' : 'text'"
-                :color="value"
-                @click="toggle"
-              />
-            </v-item>
-          </v-item-group>
-        </div>
-        <div>
-          <label>{{ $t('icon') }}</label>
-          <v-item-group class="btn-controls" v-model="formData.icon">
-            <v-item
-              v-for="value in Object.values(ReactionIcon)"
-              :key="value"
-              :value="value"
-              v-slot="{ toggle, isSelected }"
-            >
-              <v-btn
-                :variant="isSelected ? 'elevated' : 'text'"
-                :color="formData.color"
-                :icon="value"
-                @click="toggle"
-              />
-            </v-item>
-          </v-item-group>
-        </div>
+        <ColorInput
+          class="mb-2"
+          :icon="formData.icon"
+          :label="$t('color')"
+          v-model="formData.color"
+        />
+        <IconSearchInput
+          class="mb-3"
+          :label="$t('icon')"
+          v-model="formData.icon"
+        >
+          <template #icon="{ icon }">
+            <v-avatar :color="formData.color" :icon="icon" />
+          </template>
+        </IconSearchInput>
         <ButtonDisplayCheckboxes
           v-model:allowed-models="formData.allowed_models"
           v-model:on-presentation="formData.on_presentation"
