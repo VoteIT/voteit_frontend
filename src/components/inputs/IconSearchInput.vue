@@ -31,11 +31,12 @@ const emit = defineEmits<{
 }>()
 
 const selectedIcon = shallowRef(props.modelValue?.slice(4))
-const searchQuery = shallowRef<string>()
+const mdiIcon = computed(() =>
+  selectedIcon.value ? 'mdi-' + selectedIcon.value : undefined
+)
+watch(mdiIcon, (value) => emit('update:modelValue', value))
 
-watch(selectedIcon, (value) => {
-  emit('update:modelValue', value ? 'mdi-' + value : undefined)
-})
+const searchQuery = shallowRef<string>()
 
 function hasSelectorText(
   rule: CSSRule
@@ -75,10 +76,6 @@ const iconList = computed(() => {
     return allAvailable.filter((name) => name.includes(query))
   return props.suggestions
 })
-
-const mdiIcon = computed(() =>
-  selectedIcon.value ? 'mdi-' + selectedIcon.value : undefined
-)
 </script>
 
 <template>
