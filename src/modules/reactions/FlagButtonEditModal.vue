@@ -57,9 +57,7 @@ function close() {
 const form = ref<ComponentPublicInstance<{ validate(): void }> | null>(null)
 watch(form, (value) => value?.validate(), { immediate: true })
 const formValid = ref(true)
-const isValid = computed(() => {
-  return formValid.value && formData.color
-})
+const isValid = computed(() => formValid.value && formData.color)
 
 async function save() {
   submitting.value = true
