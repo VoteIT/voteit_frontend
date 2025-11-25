@@ -87,8 +87,9 @@ function prevStep() {
   currentStep.value--
 }
 
+const formValid = ref(false)
 function nextStep() {
-  // TODO Check if current is done
+  if (!formValid.value) return
   if (currentStep.value === steps.value.length - 1) addMeeting()
   else currentStep.value++
 }
@@ -112,7 +113,6 @@ const formData = reactive<FormData>({
     show_time: false
   }
 })
-const formReady = ref(false)
 
 function annotateErMethod(
   method: NonNullable<(typeof availableErMethods)['value']>[number]
@@ -184,7 +184,7 @@ async function addMeeting() {
         />
       </template>
     </v-card>
-    <v-form @submit.prevent="nextStep" v-model="formReady" v-slot="{ isValid }">
+    <v-form @submit.prevent="nextStep" v-model="formValid" v-slot="{ isValid }">
       <v-progress-circular
         v-if="submitting"
         class="my-8"
