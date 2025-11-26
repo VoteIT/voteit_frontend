@@ -67,19 +67,21 @@ async function addAgendaItem() {
   adding.submitting = false
 }
 
-const editSelected = ref<number[]>([])
+const bulkEdit = shallowReactive({
+  selected: [] as number[],
+  working: false
+})
 /**
  * Keep track of available items and clear non-existing from selected
  */
 watch(filteredAgenda, (items) => {
   const existingIds = new Set(items.map((ai) => ai.pk))
-  editSelected.value = editSelected.value.filter((id) => existingIds.has(id))
+  bulkEdit.selected = bulkEdit.selected.filter((id) => existingIds.has(id))
 })
 
 const selectedAgendaItems = computed(() =>
-  filteredAgenda.value.filter((ai) => editSelected.value.includes(ai.pk))
+  filteredAgenda.value.filter((ai) => bulkEdit.selected.includes(ai.pk))
 )
-const editManyWorking = ref(false)
 
 function isRejected(
   settled: PromiseSettledResult<unknown>
@@ -100,8 +102,8 @@ async function actionOnSelected(
   fn: (ai: AgendaItem) => Promise<any>,
   confirm?: string
 ) {
-  if (editManyWorking.value) return
-  editManyWorking.value = true
+  if (bulkEdit.working) return
+  bulkEdit.working = true
   if (
     confirm &&
     !(await dialogQuery({
@@ -109,26 +111,23 @@ async function actionOnSelected(
       theme: ThemeColor.Warning
     }))
   ) {
-    editManyWorking.value = false
+    bulkEdit.working = false
     return
   }
   const settled = await Promise.allSettled(selectedAgendaItems.value.map(fn))
   const rejectedDescriptions = getRejectedDescriptions(settled)
-  if (rejectedDescriptions.length) {
+  if (rejectedDescriptions.length)
     openAlertEvent.emit({
       title: t('error.error'),
       level: AlertLevel.Error,
       sticky: true,
       text: t(
         'agenda.changeManyFailed',
-        {
-          reason: rejectedDescriptions.join(', ')
-        },
+        { reason: rejectedDescriptions.join(', ') },
         rejectedDescriptions.length
       )
     })
-  }
-  editManyWorking.value = false
+  bulkEdit.working = false
 }
 
 async function deleteSelected() {
@@ -136,7 +135,7 @@ async function deleteSelected() {
   try {
     await agendaItemType.methodCall('bulk_delete', {
       meeting: meetingId.value,
-      agenda_items: editSelected.value
+      agenda_items: bulkEdit.selected
     })
   } catch (e) {
     handleSocketError(e, '__root__')
@@ -154,7 +153,7 @@ async function patchSelected(data: Partial<AgendaItem>) {
   try {
     await agendaItemType.methodCall('bulk_update', {
       meeting: meetingId.value,
-      agenda_items: editSelected.value,
+      agenda_items: bulkEdit.selected,
       ...data
     })
   } catch (e) {
@@ -247,22 +246,20 @@ function tagFilter(tags: string | string[], query: string) {
       <v-chip
         v-for="tag in agendaTags"
         :key="tag"
-        :value="tag"
-        size="small"
         color="primary"
-      >
-        {{ tag }}
-      </v-chip>
+        size="small"
+        :text="tag"
+        :value="tag"
+      />
     </v-chip-group>
     <v-chip
       v-if="agendaTag"
-      size="small"
-      @click="agendaTag = undefined"
-      prepend-icon="mdi-close"
       color="warning"
-    >
-      {{ $t('clear') }}
-    </v-chip>
+      prepend-icon="mdi-close"
+      size="small"
+      :text="$t('clear')"
+      @click="agendaTag = undefined"
+    />
   </div>
   <v-select
     v-else
@@ -290,7 +287,7 @@ function tagFilter(tags: string | string[], query: string) {
       { title: '', key: 'pk', sortable: false, align: 'end' }
     ]"
     show-select
-    v-model="editSelected"
+    v-model="bulkEdit.selected"
     v-model:items-per-page="pages.itemsPerPage"
     v-model:page="pages.current"
     item-value="pk"
@@ -333,12 +330,11 @@ function tagFilter(tags: string | string[], query: string) {
         <v-chip
           v-for="tag in value"
           :key="tag"
-          :value="tag"
-          size="small"
           color="primary"
-        >
-          {{ tag }}
-        </v-chip>
+          size="small"
+          :text="tag"
+          :value="tag"
+        />
       </v-chip-group>
     </template>
     <template #item.block_proposals="{ item, value }">
@@ -391,7 +387,7 @@ function tagFilter(tags: string | string[], query: string) {
       <div>
         <QueryDialog
           color="warning"
-          :text="$t('agenda.deleteSelectedConfirm', editSelected.length)"
+          :text="$t('agenda.deleteSelectedConfirm', bulkEdit.selected.length)"
           @confirmed="deleteSelected"
         >
           <template #activator="{ props }">
