@@ -24,12 +24,12 @@ exports[`ApprovalResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
         <div data-v-776ee898="" class="v-spacer"></div>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 15 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-1"></i>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 15 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-v-1"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -61,12 +61,12 @@ exports[`ApprovalResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
         <div data-v-776ee898="" class="v-spacer"></div>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-3"></i>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-v-3"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -98,12 +98,12 @@ exports[`ApprovalResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-4" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
         <div data-v-776ee898="" class="v-spacer"></div>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-5"></i>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-circle-slice-1 mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-v-5"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -116,7 +116,7 @@ exports[`ApprovalResult component 1`] = `
   <div class="v-alert v-theme--light bg-info v-alert--density-default v-alert--variant-flat my-2" role="alert">
     <!----><span class="v-alert__underlay"></span>
     <!---->
-    <div class="v-alert__prepend"><i class="mdi-alert-decagram mdi v-icon notranslate v-theme--light" style="font-size: 28px; height: 28px; width: 28px;" aria-hidden="true" density="default"></i></div>
+    <div class="v-alert__prepend"><i class="mdi-alert-decagram mdi v-icon notranslate v-theme--light v-icon--size-default" aria-hidden="true" density="default"></i></div>
     <div class="v-alert__content">
       <!---->poll.method.description.dutt
       <!---->
@@ -152,12 +152,12 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
         <div data-v-776ee898="" class="v-spacer"></div>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success" aria-hidden="true" aria-describedby="v-tooltip-1"></i>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 13 <i class="mdi-thumb-up mdi v-icon notranslate v-theme--light v-icon--size-default text-success" aria-hidden="true" aria-describedby="v-tooltip-v-1"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -189,12 +189,12 @@ exports[`MajorityResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-2" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-2" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
         <div data-v-776ee898="" class="v-spacer"></div>
-        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-3"></i>
+        <p class="text-subtitle flex-grow-1 text-right text-no-wrap text-black mt-2">Vote count: 12 <i class="mdi-thumb-down mdi v-icon notranslate v-theme--light v-icon--size-default text-warning" aria-hidden="true" aria-describedby="v-tooltip-v-3"></i>
           <!--teleport start-->
           <!--teleport end-->
         </p>
@@ -239,8 +239,8 @@ exports[`RepeatedIRVResult component 1`] = `
       </transition-stub>
     </div>
   </div>
-  <div class="v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line" tabindex="0" role="listbox">
-    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+  <div class="v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line" tabindex="0" role="list">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <!---->
       <div class="v-list-item__content" data-no-activator="">
@@ -251,7 +251,7 @@ exports[`RepeatedIRVResult component 1`] = `
       </div>
       <!---->
     </div>
-    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <!---->
       <div class="v-list-item__content" data-no-activator="">
@@ -262,7 +262,7 @@ exports[`RepeatedIRVResult component 1`] = `
       </div>
       <!---->
     </div>
-    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <!---->
       <div class="v-list-item__content" data-no-activator="">
@@ -301,7 +301,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -334,7 +334,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-1" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-1" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -377,7 +377,7 @@ exports[`RepeatedSchulzeResult component 1`] = `
                     <!--v-if-->
                   </div>
                   <!--v-if-->
-                  <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
+                  <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-4" class="ml-6 time"> 0 seconds ago</span>
                     <!--teleport start-->
                     <!--teleport end-->
                     <!--v-if--></span>
@@ -498,8 +498,8 @@ exports[`RepeatedSchulzeResult component 1`] = `
 
 exports[`STVResult component 1`] = `
 "<div>
-  <div class="v-list v-theme--light bg-background v-list--density-default v-list--one-line" tabindex="0" role="listbox">
-    <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+  <div class="v-list v-theme--light bg-background v-list--density-default v-list--one-line" tabindex="0" role="list">
+    <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <div class="v-list-item__prepend"><span class="text-h6 mr-4 mt-n3">1. </span>
         <div class="v-list-item__spacer"></div>
@@ -522,7 +522,7 @@ exports[`STVResult component 1`] = `
       </div>
       <!---->
     </div>
-    <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+    <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <div class="v-list-item__prepend"><span class="text-h6 mr-4 mt-n3">2. </span>
         <div class="v-list-item__spacer"></div>
@@ -546,9 +546,9 @@ exports[`STVResult component 1`] = `
       <!---->
     </div>
   </div>
-  <hr class="v-divider v-theme--light my-3" aria-orientation="horizontal" role="separator">
-  <div class="v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line" tabindex="0" role="listbox">
-    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+  <hr class="v-divider v-theme--light my-3" style="border-style: solid;" aria-orientation="horizontal" role="separator">
+  <div class="v-list v-theme--light bg-background v-list--density-comfortable v-list--one-line" tabindex="0" role="list">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <!---->
       <div class="v-list-item__content" data-no-activator="">
@@ -559,7 +559,7 @@ exports[`STVResult component 1`] = `
       </div>
       <!---->
     </div>
-    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <!---->
       <div class="v-list-item__content" data-no-activator="">
@@ -570,7 +570,7 @@ exports[`STVResult component 1`] = `
       </div>
       <!---->
     </div>
-    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+    <div class="v-list-item v-theme--light v-list-item--density-comfortable v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
       <!----><span class="v-list-item__underlay"></span>
       <!---->
       <div class="v-list-item__content" data-no-activator="">
@@ -582,7 +582,7 @@ exports[`STVResult component 1`] = `
       <!---->
     </div>
   </div>
-  <hr class="v-divider v-theme--light my-3" aria-orientation="horizontal" role="separator">
+  <hr class="v-divider v-theme--light my-3" style="border-style: solid;" aria-orientation="horizontal" role="separator">
   <h2>poll.result.electionRounds</h2>
   <div class="v-expansion-panels v-theme--light v-expansion-panels--variant-default my-6">
     <div class="v-expansion-panel v-expansion-panel--active">
@@ -599,9 +599,9 @@ exports[`STVResult component 1`] = `
       <transition-stub name="expand-transition" appear="false" persisted="false" css="true">
         <div class="v-expansion-panel-text">
           <div class="v-expansion-panel-text__wrapper">
-            <div class="v-list v-theme--light v-list--density-default v-list--one-line" tabindex="0" role="listbox">
+            <div class="v-list v-theme--light v-list--density-default v-list--one-line" tabindex="0" role="list">
               <!--v-if-->
-              <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+              <div class="v-list-item v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
                 <!----><span class="v-list-item__underlay"></span>
                 <!---->
                 <div class="v-list-item__content" data-no-activator="">
@@ -617,8 +617,8 @@ exports[`STVResult component 1`] = `
                   <div class="v-list-item__spacer"></div>
                 </div>
               </div>
-              <hr class="v-divider v-theme--light" aria-orientation="horizontal" role="separator">
-              <div class="v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+              <hr class="v-divider v-theme--light" style="border-style: solid;" aria-orientation="horizontal" role="separator">
+              <div class="v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
                 <!----><span class="v-list-item__underlay"></span>
                 <!---->
                 <div class="v-list-item__content" data-no-activator="">
@@ -633,7 +633,7 @@ exports[`STVResult component 1`] = `
                 <!---->
               </div>
               <!--v-if-->
-              <div class="v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" aria-selected="false">
+              <div class="v-list-item v-list-item--disabled v-theme--light v-list-item--density-default v-list-item--one-line rounded-0 v-list-item--variant-text" role="listitem">
                 <!----><span class="v-list-item__underlay"></span>
                 <!---->
                 <div class="v-list-item__content" data-no-activator="">
@@ -699,7 +699,7 @@ exports[`SchulzeResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -827,7 +827,7 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-0" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-0" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -870,7 +870,7 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-4" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-4" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
@@ -913,7 +913,7 @@ exports[`SimpleResult component 1`] = `
         <!--v-if-->
       </div>
       <!--v-if-->
-      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-8" class="ml-6 time"> 0 seconds ago</span>
+      <div data-v-776ee898="" class="author text-secondary d-flex flex-wrap align-end"><span data-v-776ee898="">by <!--v-if--><span aria-describedby="v-tooltip-v-8" class="ml-6 time"> 0 seconds ago</span>
         <!--teleport start-->
         <!--teleport end-->
         <!--v-if--></span>
