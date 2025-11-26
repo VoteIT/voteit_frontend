@@ -16,7 +16,6 @@ const props = withDefaults(
     openEvent?: TypedEvent
     openFirstNonEmpty?: boolean
     showCount?: boolean
-    slotAfter?: string
     slotBefore?: string
     title?: string
   }>(),
@@ -162,9 +161,6 @@ function childHasActive(index: number) {
           </template>
         </MenuTree>
       </v-expand-transition>
-    </li>
-    <li v-if="slotAfter">
-      <slot :name="slotAfter"></slot>
     </li>
   </ul>
 </template>
