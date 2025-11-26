@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Axios from 'axios'
 import { difference } from 'lodash'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, tagify } from '@/utils'
@@ -9,9 +9,10 @@ import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import Headline from '@/components/Headline.vue'
 import { AlertLevel } from '@/composables/types'
-import usePermission from '@/composables/usePermission'
 import QueryDialog from '@/components/QueryDialog.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
+import usePermission from '@/composables/usePermission'
 
 import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
@@ -19,16 +20,17 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import { MeetingState } from '../meetings/types'
 
 import useAgenda from './useAgenda'
+import useAgendaStore from './useAgendaStore'
 import useAgendaTags from './useAgendaTags'
 import { AgendaItem, AgendaState } from './types'
 import { canDeleteAgendaItem } from './rules'
 import { agendaItemType } from './contentTypes'
 import AgendaOrdering from './AgendaOrdering.vue'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
 const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
+const { createAgendaItem } = useAgendaStore()
 const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
 const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
@@ -37,12 +39,26 @@ const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
 useMeetingTitle(t('agenda.agenda'))
 
+const pages = shallowReactive({
+  current: 1,
+  itemsPerPage: 25
+})
+/**
+ * Go to a specifik agenda item by setting page on the data-table.
+ */
+function goToAgendaItem(ai: number) {
+  const index = agenda.value.findIndex(({ pk }) => pk === ai)
+  pages.current = Math.floor(index / pages.itemsPerPage) + 1
+}
+
 const newAgendaTitle = ref('')
 async function addAgendaItem() {
-  await agendaApi.add({
-    meeting: meetingId.value,
-    title: newAgendaTitle.value
-  })
+  try {
+    const { pk } = await createAgendaItem(meetingId.value, newAgendaTitle.value)
+    goToAgendaItem(pk)
+  } catch {
+    alert("Couldn't create agenda item")
+  }
   newAgendaTitle.value = ''
 }
 
@@ -270,12 +286,13 @@ function tagFilter(tags: string | string[], query: string) {
     ]"
     show-select
     v-model="editSelected"
+    v-model:items-per-page="pages.itemsPerPage"
+    v-model:page="pages.current"
     item-value="pk"
     :custom-filter="tagFilter"
     :search="agendaTag"
     :filter-keys="['tags']"
     :items="agenda"
-    :items-per-page="25"
     :page-text="$t('content.pageText')"
     :items-per-page-text="$t('content.itemsPerPageText')"
     class="mb-2"
@@ -462,13 +479,13 @@ function tagFilter(tags: string | string[], query: string) {
       variant="outlined"
     />
     <v-btn
-      prepend-icon="mdi-plus"
-      type="submit"
-      :disabled="!newAgendaTitle"
       class="rounded-s-0"
       color="primary"
-      >{{ $t('add') }}</v-btn
-    >
+      :disabled="!newAgendaTitle"
+      prepend-icon="mdi-plus"
+      :text="$t('add')"
+      type="submit"
+    />
   </form>
 </template>
 
