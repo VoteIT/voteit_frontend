@@ -17,10 +17,9 @@ import { navigationEventAllowed } from '@/utils/keyNavigation'
 import Tag from '@/components/Tag.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
-import useAgenda from '../agendas/useAgenda'
 import { AgendaState } from '../agendas/types'
+import useAgendaItem from '../agendas/useAgendaItem'
 import { TagClickHandlerKey } from '../meetings/useTags'
-import useMeetingId from '../meetings/useMeetingId'
 import type { Proposal } from '../proposals/types'
 import { ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
@@ -42,8 +41,7 @@ const AVAILABLE_STATES = [
   ProposalState.Denied
 ] as Readonly<ProposalState[]>
 
-const meetingId = useMeetingId()
-const { agendaId, agendaItem } = useAgenda(meetingId)
+const { agendaId, agendaItem } = useAgendaItem()
 const { aiProposalTexts } = useTextDocuments(agendaId)
 const {
   highlighted,

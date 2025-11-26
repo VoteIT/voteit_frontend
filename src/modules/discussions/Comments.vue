@@ -3,7 +3,6 @@ import { ComponentPublicInstance, computed, ref } from 'vue'
 
 import { getDisplayName } from '@/utils'
 
-import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { isGroupAuthor } from '../meetings/types'
 import useMeetingId from '../meetings/useMeetingId'
@@ -22,9 +21,8 @@ defineProps<{
 }>()
 
 const meetingId = useMeetingId()
-const { agendaId } = useAgenda(meetingId)
 const { getUser } = useUserDetails()
-const { canAddDiscussionPost, agendaItem } = useAgendaItem(agendaId)
+const { agendaId, agendaItem, canAddDiscussionPost } = useAgendaItem()
 const { getMeetingButtons } = useReactions()
 
 const submitIcon = computed(() =>

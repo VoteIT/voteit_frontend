@@ -54,20 +54,21 @@ const discussions = useDiscussions()
 const proposals = useProposals()
 const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
-const { agendaId, agenda, agendaItemLastRead, hasNewItems } =
-  useAgenda(meetingId)
-const { getAgendaItem } = useAgendaStore()
-const { activeFilter, isModified, clearFilters, orderContent } =
-  useAgendaFilter(agendaId)
+const { agenda } = useAgenda(meetingId)
+const { getAgendaItem, hasNewContent } = useAgendaStore()
 const {
+  agendaId,
   agendaItem,
+  agendaItemLastRead,
   agendaBody,
   canAddDocument,
   canAddPoll,
   canAddProposal,
   canChangeAgendaItem,
   proposalBlockReason
-} = useAgendaItem(agendaId)
+} = useAgendaItem()
+const { activeFilter, isModified, clearFilters, orderContent } =
+  useAgendaFilter(agendaId)
 
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
@@ -206,7 +207,7 @@ const hasProposals = computed(() => anyProposal(isAIProposal))
 function setLastRead(agenda_item: number) {
   // Return if there is no new content
   const ai = getAgendaItem(agenda_item)
-  if (!ai || !hasNewItems(ai)) return
+  if (!ai || !hasNewContent(ai)) return
   lastReadType.methodCall('change', { agenda_item })
 }
 // Set last read when leaving route.

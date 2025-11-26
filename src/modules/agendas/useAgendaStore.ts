@@ -56,6 +56,17 @@ export default defineStore('agendas', () => {
     return agendaItemsLastRead.get(ai)
   }
 
+  /**
+   * Check if an agenda item has new content
+   */
+  function hasNewContent(agendaItem: AgendaItem): boolean {
+    // If no content, there are no new items
+    if (!agendaItem.related_modified) return false
+    const lastRead = getLastRead(agendaItem.pk)
+    // Else, if no lastRead or set to earlier time, there are new items
+    return !lastRead || new Date(agendaItem.related_modified) > lastRead
+  }
+
   return {
     // agendaBodies,
     // agendaItems,
@@ -63,6 +74,7 @@ export default defineStore('agendas', () => {
     getAgendaBody,
     getAgendaItem,
     getAgendaItems,
-    getLastRead
+    getLastRead,
+    hasNewContent
   }
 })

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, shallowRef } from 'vue'
 
-import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useRoom from '../rooms/useRoom'
 import useMeetingId from '../meetings/useMeetingId'
@@ -24,8 +23,7 @@ defineEmits<{
 }>()
 
 const meetingId = useMeetingId()
-const { agendaId } = useAgenda(meetingId)
-const { nextPollTitle } = useAgendaItem(agendaId)
+const { agendaId, nextPollTitle } = useAgendaItem()
 const { isBroadcasting, setBroadcast, setHandler, setPoll } = useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 const { createPoll: create, getPoll } = usePolls()

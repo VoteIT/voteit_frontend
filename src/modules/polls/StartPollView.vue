@@ -31,8 +31,8 @@ const { t } = useI18n()
 const router = useRouter()
 const proposals = useProposals()
 const { isModerator, meetingRoute, meetingId, getMeetingRoute } = useMeeting()
-const { agendaId, agenda } = useAgenda(meetingId)
-const { agendaItem, nextPollTitle } = useAgendaItem(agendaId)
+const { agenda } = useAgenda(meetingId)
+const { agendaId, agendaItem, nextPollTitle } = useAgendaItem()
 const { alert } = useAlert()
 
 usePermission(isModerator, { to: meetingRoute }) // TODO canAddPoll might be different in the future

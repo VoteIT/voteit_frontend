@@ -9,16 +9,20 @@ import { navigationEventAllowed } from '@/utils/keyNavigation'
 import WorkflowState from '@/components/WorkflowState.vue'
 
 import { agendaItemType } from '../agendas/contentTypes'
-import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import usePlenary from './usePlenary'
 
 const router = useRouter()
-const { meeting, meetingId, meetingRoute } = useMeeting()
-const { agendaId, previousAgendaItem, nextAgendaItem } = useAgenda(meetingId)
-const { agendaItem, canChangeAgendaItem } = useAgendaItem(agendaId)
+const { meeting, meetingRoute } = useMeeting()
+const {
+  agendaId,
+  agendaItem,
+  canChangeAgendaItem,
+  nextAgendaItem,
+  previousAgendaItem
+} = useAgendaItem()
 const { meetingRoom } = useRoom()
 const agendaApi = agendaItemType.getContentApi()
 

@@ -14,6 +14,7 @@ import { WorkflowState } from '@/contentTypes/types'
 
 import { agendaLoadedEvent } from '../agendas/events'
 import useAgenda from '../agendas/useAgenda'
+import useAgendaStore from '../agendas/useAgendaStore'
 import useAgendaTags from '../agendas/useAgendaTags'
 import { agendaItemType } from '../agendas/contentTypes'
 import usePolls from '../polls/usePolls'
@@ -29,10 +30,11 @@ const { t } = useI18n()
 const { mobile } = useDisplay()
 const { meeting, meetingId, isModerator, meetingRoute, getMeetingRoute } =
   useMeeting()
-const { agenda, filteredAgenda, hasNewItems } = useAgenda(
+const { agenda, filteredAgenda } = useAgenda(
   meetingId,
   computed(() => selectedAgendaTag.value)
 )
+const { hasNewContent } = useAgendaStore()
 const { agendaTags, selectedAgendaTag } = useAgendaTags(agenda)
 const agendaWorkflows = agendaItemType.useWorkflows()
 const { getAiPolls, getUnvotedPolls } = usePolls()
@@ -57,7 +59,7 @@ function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
       ? ['mdi-star-outline']
       : [],
     count: getAgendaProposals(ai.pk).length || undefined,
-    hasNewItems: hasNewItems(ai)
+    hasNewItems: hasNewContent(ai)
   }))
 }
 

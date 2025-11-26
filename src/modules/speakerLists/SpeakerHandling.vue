@@ -12,7 +12,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import useRules from '@/composables/useRules'
 import DefaultForm from '@/components/DefaultForm.vue'
 
-import useAgenda from '../agendas/useAgenda'
+import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 
 import {
@@ -39,7 +39,7 @@ const { t } = useI18n()
 
 const { meetingId, meetingRoute } = useMeeting()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
-const { agendaId, agendaItem } = useAgenda(meetingId)
+const { agendaId, agendaItem } = useAgendaItem()
 const rules = useRules(t)
 
 const {

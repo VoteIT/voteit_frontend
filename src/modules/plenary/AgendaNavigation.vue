@@ -79,8 +79,9 @@ import { useI18n } from 'vue-i18n'
 
 import { toggleNavDrawerEvent } from '@/utils/events'
 
-import useAgenda from '../agendas/useAgenda'
 import { AgendaState } from '../agendas/types'
+import useAgenda from '../agendas/useAgenda'
+import useAgendaItem from '../agendas/useAgendaItem'
 import useAgendaTags from '../agendas/useAgendaTags'
 import useMeetingId from '../meetings/useMeetingId'
 import { anyPoll } from '../polls/usePolls'
@@ -93,7 +94,8 @@ import usePlenary from './usePlenary'
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
-const { agenda, agendaId, agendaStates } = useAgenda(meetingId)
+const { agenda, agendaStates } = useAgenda(meetingId)
+const { agendaId } = useAgendaItem()
 const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
 const { currentTab, filterProposalStates } = usePlenary(agendaId)

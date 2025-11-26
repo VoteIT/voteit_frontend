@@ -7,7 +7,6 @@ import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 
-import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { AgendaState, AgendaTransition } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
@@ -37,11 +36,10 @@ interface IAlertInfo {
 
 const { t } = useI18n()
 
-const { meeting, meetingId } = useMeeting()
+const { meeting } = useMeeting()
 const { getUser } = useUserDetails()
-const { agendaId } = useAgenda(meetingId)
-const { agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
-  useAgendaItem(agendaId)
+const { agendaId, agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
+  useAgendaItem()
 const {
   hasBroadcast,
   highlighted,

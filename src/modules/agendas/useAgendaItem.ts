@@ -1,5 +1,7 @@
+import type { Maybe } from 'itertools/types'
 import type { Dictionary } from 'lodash'
-import { computed, Ref } from 'vue'
+import { computed, MaybeRef, unref } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { autoEllipsis, slugify } from '@/utils'
 
@@ -18,30 +20,57 @@ import { isUnresolvedState } from '../proposals/utils'
 
 import { canChangeAgendaItem as canChange } from './rules'
 import useAgendaStore from './useAgendaStore'
+import { AgendaItem } from './types'
 
-export default function useAgendaItem(agendaId: Ref<number | undefined>) {
+export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   const { getMeetingRoute } = useMeeting()
-  const { getAgendaItem, getAgendaBody } = useAgendaStore()
+  const { getAgendaItem, getAgendaItems, getAgendaBody, getLastRead } =
+    useAgendaStore()
+  const route = useRoute()
+
+  const _agendaId = computed(() => unref(agendaId) ?? Number(route.params.aid))
 
   const agendaItem = computed(() =>
-    typeof agendaId.value === 'number'
-      ? getAgendaItem(agendaId.value)
+    typeof _agendaId.value === 'number'
+      ? getAgendaItem(_agendaId.value)
       : undefined
   )
   const agendaBody = computed(() =>
-    typeof agendaId.value === 'number'
-      ? getAgendaBody(agendaId.value)?.body
+    typeof _agendaId.value === 'number'
+      ? getAgendaBody(_agendaId.value)?.body
       : undefined
   )
   const { allPollTitles } = usePolls()
+
+  const agendaItemLastRead = computed(
+    () => getLastRead(_agendaId.value) ?? new Date(0)
+  ) // Default to epoch
+
+  // NEXT / PREVIOUS
+  function getRelativeAgendaItem(
+    agendaItem: AgendaItem,
+    positions: number
+  ): Maybe<AgendaItem> {
+    const agenda = getAgendaItems((ai) => ai.meeting === agendaItem.meeting)
+    const index = agenda.indexOf(agendaItem)
+    return agenda[index + positions]
+  }
+
+  const previousAgendaItem = computed(
+    () => agendaItem.value && getRelativeAgendaItem(agendaItem.value, -1)
+  )
+  const nextAgendaItem = computed(
+    () => agendaItem.value && getRelativeAgendaItem(agendaItem.value, 1)
+  )
+  // END OF NEXT / PREVIOUS
 
   function getAgendaItemRoute(
     name: string = 'agendaItem',
     params?: Dictionary<string | number>
   ) {
-    if (!agendaId.value) return
+    if (!_agendaId.value) return
     return getMeetingRoute(name, {
-      aid: agendaId.value,
+      aid: _agendaId.value,
       aslug: slugify(agendaItem.value?.title),
       ...params
     })
@@ -91,18 +120,20 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
 
   const hasOngoingPolls = computed(() =>
     anyPoll(
-      (p) => p.agenda_item === agendaId.value && p.state === PollState.Ongoing
+      (p) => p.agenda_item === _agendaId.value && p.state === PollState.Ongoing
     )
   )
 
   const hasUnresolvedProposals = computed(() =>
     anyProposal(
-      (p) => p.agenda_item === agendaId.value && isUnresolvedState(p.state)
+      (p) => p.agenda_item === _agendaId.value && isUnresolvedState(p.state)
     )
   )
 
   return {
+    agendaId: _agendaId,
     agendaItem,
+    agendaItemLastRead,
     agendaBody,
     agendaItemRoute,
     canAddDiscussionPost,
@@ -112,7 +143,9 @@ export default function useAgendaItem(agendaId: Ref<number | undefined>) {
     canChangeAgendaItem,
     hasOngoingPolls,
     hasUnresolvedProposals,
+    nextAgendaItem,
     nextPollTitle,
+    previousAgendaItem,
     proposalBlockReason,
     getAgendaItemRoute
   }

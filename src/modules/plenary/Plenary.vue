@@ -9,7 +9,7 @@ import { LastReadKey } from '@/composables/useUnread'
 import useLoader from '@/composables/useLoader'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
-import useAgenda from '../agendas/useAgenda'
+import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingChannel from '../meetings/useMeetingChannel'
 import useMeetingTitle from '../meetings/useMeetingTitle'
@@ -53,8 +53,8 @@ const tabs = computed(() => [
   }
 ])
 
-const { isModerator, meetingId } = useMeeting()
-const { agendaId } = useAgenda(meetingId)
+const { isModerator } = useMeeting()
+const { agendaId } = useAgendaItem()
 const {
   hasSpeakerLists,
   isBroadcasting,
