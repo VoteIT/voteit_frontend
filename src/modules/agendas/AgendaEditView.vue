@@ -7,10 +7,10 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery, tagify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
-import Headline from '@/components/Headline.vue'
-import { AlertLevel } from '@/composables/types'
-import QueryDialog from '@/components/QueryDialog.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import Headline from '@/components/Headline.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import { AlertLevel } from '@/composables/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
 
@@ -51,15 +51,20 @@ function goToAgendaItem(ai: number) {
   pages.current = Math.floor(index / pages.itemsPerPage) + 1
 }
 
-const newAgendaTitle = ref('')
+const adding = shallowReactive({
+  title: '',
+  submitting: false
+})
 async function addAgendaItem() {
+  adding.submitting = true
   try {
-    const { pk } = await createAgendaItem(meetingId.value, newAgendaTitle.value)
+    const { pk } = await createAgendaItem(meetingId.value, adding.title)
     goToAgendaItem(pk)
+    adding.title = ''
   } catch {
     alert("Couldn't create agenda item")
   }
-  newAgendaTitle.value = ''
+  adding.submitting = false
 }
 
 const editSelected = ref<number[]>([])
@@ -468,20 +473,20 @@ function tagFilter(tags: string | string[], query: string) {
   </v-expand-transition>
   <v-divider class="mt-6 mb-2" />
   <h2 class="mb-2">{{ $t('agenda.newItem') }}</h2>
-  <form @submit.prevent="addAgendaItem" id="agenda-add-form" class="d-flex">
+  <form class="d-flex" id="agenda-add-form" @submit.prevent="addAgendaItem">
     <v-text-field
-      :label="$t('title')"
-      required
-      maxlength="100"
-      v-model="newAgendaTitle"
-      hide-details
       class="flex-grow-1 hide-details rounded-0"
+      hide-details
+      :label="$t('title')"
+      maxlength="100"
       variant="outlined"
+      v-model="adding.title"
     />
     <v-btn
       class="rounded-s-0"
       color="primary"
-      :disabled="!newAgendaTitle"
+      :disabled="!adding.title"
+      :loading="adding.submitting"
       prepend-icon="mdi-plus"
       :text="$t('add')"
       type="submit"
