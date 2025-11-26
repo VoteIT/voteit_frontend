@@ -17,11 +17,11 @@ import { anyProposal } from '../proposals/useProposals'
 import { isUnresolvedState } from '../proposals/utils'
 
 import { canChangeAgendaItem as canChange } from './rules'
-import useAgenda from './useAgenda'
+import useAgendaStore from './useAgendaStore'
 
 export default function useAgendaItem(agendaId: Ref<number | undefined>) {
-  const { meetingId, getMeetingRoute } = useMeeting()
-  const { getAgendaItem, getAgendaBody } = useAgenda(meetingId)
+  const { getMeetingRoute } = useMeeting()
+  const { getAgendaItem, getAgendaBody } = useAgendaStore()
 
   const agendaItem = computed(() =>
     typeof agendaId.value === 'number'

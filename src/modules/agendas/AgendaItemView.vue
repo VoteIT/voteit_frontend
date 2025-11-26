@@ -41,21 +41,22 @@ import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 import useAgenda from './useAgenda'
 import AgendaFilters from './AgendaFilters.vue'
 import useAgendaFilter from './useAgendaFilter'
-import { AgendaItem } from './types'
 import useAgendaItem from './useAgendaItem'
 import { lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
 import AISpeakerLists from './AISpeakerLists.vue'
 import AgendaItemDescription from './AgendaItemDescription.vue'
+import useAgendaStore from './useAgendaStore'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
 const proposals = useProposals()
 const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
-const { agendaId, agenda, agendaItemLastRead, getAgendaItem, hasNewItems } =
+const { agendaId, agenda, agendaItemLastRead, hasNewItems } =
   useAgenda(meetingId)
+const { getAgendaItem } = useAgendaStore()
 const { activeFilter, isModified, clearFilters, orderContent } =
   useAgendaFilter(agendaId)
 const {

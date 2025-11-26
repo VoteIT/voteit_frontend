@@ -10,13 +10,15 @@ import useAgenda from './useAgenda'
 import { AgendaItem } from './types'
 import { meetingType } from '../meetings/contentTypes'
 import { sleep } from '@/utils'
+import useAgendaStore from './useAgendaStore'
 
 const emit = defineEmits<{
   (e: 'saved'): void
 }>()
 
+const { getAgendaItem } = useAgendaStore()
 const meetingId = useMeetingId()
-const { agenda, getAgendaItem } = useAgenda(meetingId)
+const { agenda } = useAgenda(meetingId)
 const { getState } = agendaItemType.useWorkflows()
 
 function isAI(ai?: AgendaItem): ai is AgendaItem {

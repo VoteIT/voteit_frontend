@@ -1,4 +1,4 @@
-import { agendaItems } from '../agendas/useAgenda'
+import { isAuthor } from '@/contentTypes/rules'
 import {
   isAIModerator,
   isFinishedAI,
@@ -6,14 +6,14 @@ import {
   isProposalBlocked
 } from '../agendas/rules'
 import { AgendaItem } from '../agendas/types'
+import useAgendaStore from '../agendas/useAgendaStore'
+import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
+import { polls } from '../polls/usePolls'
 
 import { ProposalText } from './contentTypes'
 import useProposals from './useProposals'
 import useTextDocuments from './useTextDocuments'
 import { Proposal, ProposalState } from './types'
-import { polls } from '../polls/usePolls'
-import { isAuthor } from '@/contentTypes/rules'
-import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
 
 const { anyProposal } = useProposals()
 const { proposalTexts } = useTextDocuments()
@@ -41,7 +41,7 @@ export function canAddDocument(ai: AgendaItem): boolean {
 }
 
 export function canChangeDocument(doc: ProposalText): boolean {
-  const ai = agendaItems.get(doc.agenda_item)
+  const ai = useAgendaStore().getAgendaItem(doc.agenda_item)
   return (
     !!ai &&
     !!isAIModerator(ai) &&
@@ -82,7 +82,7 @@ export function canAddProposal(agendaItem: AgendaItem): boolean {
 }
 
 export function canChangeProposal(proposal: Proposal): boolean {
-  const agendaItem = agendaItems.get(proposal.agenda_item)
+  const agendaItem = useAgendaStore().getAgendaItem(proposal.agenda_item)
   if (!agendaItem) return false
   return (
     !isFinishedMeeting(agendaItem.meeting) && !!isModerator(agendaItem.meeting)
@@ -94,7 +94,7 @@ export function canDeleteProposal(proposal: Proposal): boolean {
 }
 
 export function canRetractProposal(proposal: Proposal): boolean {
-  const agendaItem = agendaItems.get(proposal.agenda_item)
+  const agendaItem = useAgendaStore().getAgendaItem(proposal.agenda_item)
   if (!agendaItem) return false
   if (isFinishedAI(agendaItem)) return false
   return (

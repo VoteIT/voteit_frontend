@@ -3,7 +3,7 @@ import { orderBy } from 'lodash'
 import { reactive } from 'vue'
 
 import { agendaDeletedEvent } from '../agendas/events'
-import { agendaItems } from '../agendas/useAgenda'
+import useAgendaStore from '../agendas/useAgendaStore'
 import { meetingType } from '../meetings/contentTypes'
 
 import { isProposal, Proposal } from './types'
@@ -16,7 +16,7 @@ proposalType.updateMap(proposals, { participants: 'm', moderators: 'm' })
 // Automatically clear proposals for meeting when leaving.
 meetingType.channel.onLeave((meeting) => {
   for (const p of proposals.values()) {
-    const ai = agendaItems.get(p.agenda_item)
+    const ai = useAgendaStore().getAgendaItem(p.agenda_item)
     if (ai?.meeting === meeting) {
       proposals.delete(p.pk)
     }
