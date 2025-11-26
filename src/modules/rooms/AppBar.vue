@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
 import { useIdle } from '@vueuse/core'
-import { useDisplay } from 'vuetify/lib/framework.mjs'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import HeaderMenu from '@/components/HeaderMenu.vue'
@@ -25,29 +25,25 @@ const { mobile } = useDisplay()
 const { idle } = useIdle(5_000)
 const passiveIdle = computed(() => passiveMode.value && idle.value)
 
-const textSizes = computed(() => {
-  return [
-    {
-      value: 'normal',
-      title: t('content.textSizeNormal')
-    },
-    {
-      value: 'large',
-      title: t('content.textSizeLarge')
-    },
-    {
-      value: 'x-large',
-      title: t('content.textSizeXLarge')
-    }
-  ]
-})
+const textSizes = computed(() => [
+  {
+    value: 'normal',
+    title: t('content.textSizeNormal')
+  },
+  {
+    value: 'large',
+    title: t('content.textSizeLarge')
+  },
+  {
+    value: 'x-large',
+    title: t('content.textSizeXLarge')
+  }
+])
 
-const crumbs = computed(() => {
-  return [
-    { title: meeting.value?.title ?? '', to: meetingRoute.value },
-    { title: meetingRoom.value?.title ?? '' }
-  ]
-})
+const crumbs = computed(() => [
+  { title: meeting.value?.title ?? '', to: meetingRoute.value },
+  { title: meetingRoom.value?.title ?? '' }
+])
 
 const displayOptions = computed(() => [
   {
