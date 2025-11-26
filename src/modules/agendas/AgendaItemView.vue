@@ -67,8 +67,14 @@ const {
   canChangeAgendaItem,
   proposalBlockReason
 } = useAgendaItem()
-const { activeFilter, isModified, clearFilters, orderContent } =
-  useAgendaFilter(agendaId)
+const {
+  agendaFilter,
+  isModified,
+  clearFilter,
+  stateIncluded,
+  tagIncluded,
+  orderContent
+} = useAgendaFilter()
 
 const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
 useLoader('AgendaItem', promise)
@@ -93,30 +99,27 @@ const agendaItemExists = computed(() => {
 usePermission(agendaItemExists, { to: getMeetingRoute() })
 useMeetingTitle(computed(() => agendaItem.value?.title ?? t('agenda.item')))
 
-function proposalFilter(p: Proposal): boolean {
-  const { tags, states } = activeFilter.value
-  if (tags.size && p.tags.every((t) => !tags.has(t))) return false
-  return states.has(p.state)
+function proposalFilter(p: Proposal) {
+  return tagIncluded(p.tags) && stateIncluded(p.state)
 }
 const sortedProposals = computed(() =>
   filterProposals(
     (p) => isAIProposal(p) && proposalFilter(p),
     'created',
-    activeFilter.value.order
+    agendaFilter.order
   )
 )
 const hiddenProposals = computed(() =>
   filterProposals(
     (p) => isAIProposal(p) && !proposalFilter(p),
     'created',
-    activeFilter.value.order
+    agendaFilter.order
   )
 )
 const pollCount = computed(() => getAiPolls(agendaId.value).length)
 
-function discussionFilter(d: DiscussionPost): boolean {
-  const { tags } = activeFilter.value
-  return !tags.size || d.tags.some((t) => tags.has(t))
+function discussionFilter(d: DiscussionPost) {
+  return tagIncluded(d.tags)
 }
 const sortedDiscussions = computed(() =>
   orderContent(
@@ -218,17 +221,8 @@ watch(agendaId, (_, leaving) => {
 })
 
 const filterComponent = shallowRef<ComponentPublicInstance | null>(null)
-const filterTag = computed(() => [...activeFilter.value.tags][0])
 provide(TagClickHandlerKey, async (tagName) => {
-  activeFilter.value.tags = new Set([tagName])
-  activeFilter.value.states = new Set([
-    ProposalState.Approved,
-    ProposalState.Denied,
-    ProposalState.Published,
-    ProposalState.Retracted,
-    ProposalState.Unhandled,
-    ProposalState.Voting
-  ])
+  agendaFilter.tag = tagName
   const el: HTMLElement = filterComponent.value?.$el
   if (!el) return
   await nextTick()
@@ -315,27 +309,26 @@ provide(TagClickHandlerKey, async (tagName) => {
           {{ $t('proposal.proposals') }}
         </h2>
         <v-alert
-          type="info"
-          icon="mdi-filter-outline"
           v-if="!hasProposals"
           class="mb-2"
-        >
-          {{ $t('agenda.helpNoProposals') }}
-        </v-alert>
-        <v-alert
-          type="info"
           icon="mdi-filter-outline"
-          v-else-if="filterTag"
+          :text="$t('agenda.helpNoProposals')"
+          type="info"
+        />
+        <v-alert
+          v-else-if="agendaFilter.tag"
           class="mb-2"
+          icon="mdi-filter-outline"
+          type="info"
         >
           {{ $t('agenda.filteringOnTag') }}
-          <Tag :name="filterTag" disabled class="ml-2" />
+          <Tag :name="agendaFilter.tag" disabled class="ml-2" />
           <template #append>
             <v-btn
               prepend-icon="mdi-undo-variant"
               size="small"
               :text="$t('defaultFilters')"
-              @click="clearFilters"
+              @click="clearFilter"
             />
           </template>
         </v-alert>
@@ -352,7 +345,7 @@ provide(TagClickHandlerKey, async (tagName) => {
               prepend-icon="mdi-undo-variant"
               size="small"
               :text="$t('defaultFilters')"
-              @click="clearFilters"
+              @click="clearFilter"
             />
           </template>
         </v-alert>

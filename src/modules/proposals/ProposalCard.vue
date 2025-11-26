@@ -179,7 +179,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { isModerator } = useMeeting()
 const agendaId = computed(() => props.p.agenda_item)
-const { orderContent } = useAgendaFilter(agendaId)
+const { orderContent } = useAgendaFilter()
 const { canAddDiscussionPost } = useAgendaItem(agendaId)
 const showComments = ref(false)
 const { getProposalDiscussions } = useDiscussions()

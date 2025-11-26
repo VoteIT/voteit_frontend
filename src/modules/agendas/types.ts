@@ -38,10 +38,10 @@ export interface AgendaBody {
   body: string
 }
 
-export interface Filter {
+export interface AgendaFilter {
   order: 'asc' | 'desc'
-  states: Set<ProposalState>
-  tags: Set<string>
+  states: ProposalState[]
+  tag: string | null
 }
 
 export interface AgendaMenuPlugin extends MeetingPlugin {
