@@ -41,6 +41,9 @@ const aiGroups = computed(() =>
   )
 )
 
+/**
+ * Get menu items for a given agenda state
+ */
 function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
   return getAiType(s.state).map((ai) => ({
     title: ai.title,
@@ -75,10 +78,6 @@ const MENU_STATES = [
   AgendaState.Private,
   AgendaState.Upcoming
 ] as const
-console.debug(
-  initialAiState,
-  Object.fromEntries(MENU_STATES.map((s) => [s, s === initialAiState]))
-)
 
 const openMenus = shallowReactive(
   Object.fromEntries(MENU_STATES.map((s) => [s, s === initialAiState]))
