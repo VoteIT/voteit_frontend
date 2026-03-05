@@ -4,11 +4,13 @@ import { useI18n } from 'vue-i18n'
 
 import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
 import useMeeting from '../useMeeting'
+import { meetingNavPlugins } from '../registry'
 
 const { t } = useI18n()
-const { canChange, meetingRoute, getMeetingRoute } = useMeeting()
+const { canChange, meeting, meetingRoute, getMeetingRoute } = useMeeting()
 
 function* iterMeetingItems() {
+  if (!meeting.value) return
   yield* [
     {
       exactActive: true,
@@ -34,6 +36,8 @@ function* iterMeetingItems() {
       title: t('meeting.controlPanel'),
       to: getMeetingRoute('settings')
     }
+  for (const plugin of meetingNavPlugins.getActivePlugins(meeting.value))
+    yield* plugin.iterItems({ meeting: meeting.value, menu: 'meeting', t })
 }
 
 const meetingLinks = computed(() => [...iterMeetingItems()])

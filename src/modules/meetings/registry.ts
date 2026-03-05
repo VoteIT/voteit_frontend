@@ -2,7 +2,7 @@ import { Dictionary } from 'lodash'
 import { Component, Ref } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
-import { MenuItem } from '@/utils/types'
+import { MenuItem, TreeMenuLink } from '@/utils/types'
 import { RoleMatrixColumn } from '@/components/types'
 
 import PluginHandler from './PluginHandler'
@@ -62,6 +62,14 @@ export interface MeetingMenuPlugin extends MeetingPlugin {
   }): MenuItem[]
 }
 
+export interface MeetingNavPlugin extends MeetingPlugin {
+  iterItems(context: {
+    meeting: Meeting
+    menu: string
+    t: ComposerTranslation
+  }): Generator<TreeMenuLink>
+}
+
 export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()
 export const meetingSettingsPlugins = new PluginHandler<SettingsPlugin>()
 export const meetingSlotPlugins = new PluginHandler<MeetingSlotPlugin>()
@@ -70,3 +78,4 @@ export const meetingGroupTablePlugins =
   new PluginHandler<MeetingGroupTablePlugin>()
 export const meetingBubblePlugins = new PluginHandler<MeetingBubblePlugin>()
 export const meetingMenuPlugins = new PluginHandler<MeetingMenuPlugin>()
+export const meetingNavPlugins = new PluginHandler<MeetingNavPlugin>()
