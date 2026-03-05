@@ -1,5 +1,7 @@
 import { ComposerTranslation } from 'vue-i18n'
-import { MeetingRole } from './types'
+import { Meeting, MeetingRole } from './types'
+import { Dictionary } from 'lodash'
+import { slugify } from '@/utils'
 
 /**
  * Translation method to avoid dynamic translation strings
@@ -19,5 +21,23 @@ export function translateMeetingRole(
       return t('role.potential_voter')
     case MeetingRole.Proposer:
       return t('role.proposer')
+  }
+}
+
+/**
+ * Convenience fn to create a meeting route
+ */
+export function getMeetingRoute(
+  meeting: Pick<Meeting, 'title' | 'pk'>,
+  name: string = 'meeting',
+  extraParams?: Dictionary<string | number>
+) {
+  return {
+    name,
+    params: {
+      id: meeting.pk,
+      slug: slugify(meeting.title),
+      ...extraParams
+    }
   }
 }

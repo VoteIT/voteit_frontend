@@ -10,7 +10,10 @@ import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 import { Author, MeetingRole } from './types'
 import * as rules from './rules'
 import { meetingType } from './contentTypes'
-import { translateMeetingRole } from './utils'
+import {
+  getMeetingRoute as _getMeetingRoute,
+  translateMeetingRole
+} from './utils'
 import useMeetingId from './useMeetingId'
 
 const postAsStore = reactive(new Map<number, Author>())
@@ -64,14 +67,11 @@ export default function useMeeting() {
     name: string = 'meeting',
     extraParams?: Dictionary<string | number>
   ) {
-    return {
+    return _getMeetingRoute(
+      { pk: meetingId.value, title: meeting.value?.title ?? '' },
       name,
-      params: {
-        id: meetingId.value,
-        slug: slugify(meeting.value?.title),
-        ...extraParams
-      }
-    }
+      extraParams
+    )
   }
 
   /**
