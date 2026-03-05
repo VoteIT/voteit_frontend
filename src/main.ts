@@ -8,6 +8,7 @@ import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
 // REGISTER PLUGINS
+// Registration order matters.
 import './modules/auth'
 import './modules/meetings'
 import './modules/meetings/dialects'
@@ -23,5 +24,6 @@ import './modules/printing'
 import './modules/speakerLists'
 import './modules/speakerLists/genderTags'
 import './modules/rooms'
+import './modules/notes'
 
 createApp(App).use(i18n).use(pinia).use(router).use(vuetify).mount('#app')

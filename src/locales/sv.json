@@ -459,6 +459,17 @@
     "none": "Inget nätverk",
     "reconnecting": "Försöker koppla upp... | Försöker koppla upp om 1 sekund | Försöker koppla upp om {s} sekunder"
   },
+  "notes": {
+    "bodyPlaceholder": "Skriv en anteckning...",
+    "confirmDelete": "Detta raderar din personliga anteckning.\nÄr du säker?",
+    "description": "Tillåter användare att lägga till personliga anteckningar till förslag.",
+    "enable": "Aktivera förslagsanteckningar",
+    "intentApprove": "Förslag: Bifall",
+    "intentBlank": "Endast anteckning",
+    "intentDeny": "Förslag: Avslag",
+    "personal": "Personlig anteckning | Personliga anteckningar",
+    "title": "Anteckning | Anteckningar"
+  },
   "order": {
     "alphabetical": "Alfabetisk",
     "chronological": "Kronologisk",

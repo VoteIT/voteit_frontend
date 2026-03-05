@@ -8,6 +8,7 @@ export type Nullable<T> = T | null | undefined
 export type PickByType<T, Value> = {
   [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]
 }
+export type ValueOf<T extends {}> = T[keyof T]
 
 export type VModelComponent<T, Props extends {} = {}> = DefineComponent<
   {

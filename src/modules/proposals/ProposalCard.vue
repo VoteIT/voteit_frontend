@@ -40,31 +40,29 @@
         <slot name="vote"></slot>
       </v-sheet>
       <footer v-if="!readOnly" class="mt-2 d-flex flex-wrap ga-1">
-        <v-btn
-          v-if="canAddDiscussionPost"
-          prepend-icon="mdi-comment-outline"
-          size="small"
-          :text="$t('discussion.comment')"
-          variant="text"
-          @click="comment"
-        />
-        <v-btn
-          v-if="showComments"
-          prepend-icon="mdi-chevron-up"
-          size="small"
-          :text="$t('discussion.hideComments')"
-          variant="text"
-          @click="showComments = false"
-        />
-        <v-btn
-          v-else-if="discussionPosts.length"
-          prepend-icon="mdi-chevron-down"
-          size="small"
-          :text="$t('discussion.comments', { count: discussionPosts.length })"
-          variant="text"
-          @click="showComments = true"
-        />
-        <slot name="buttons"></slot>
+        <v-defaults-provider
+          :defaults="{ VBtn: { size: 'small', variant: 'text' } }"
+        >
+          <v-btn
+            v-if="canAddDiscussionPost"
+            prepend-icon="mdi-comment-outline"
+            :text="$t('discussion.comment')"
+            @click="comment"
+          />
+          <v-btn
+            v-if="showComments"
+            prepend-icon="mdi-chevron-up"
+            :text="$t('discussion.hideComments')"
+            @click="showComments = false"
+          />
+          <v-btn
+            v-else-if="discussionPosts.length"
+            prepend-icon="mdi-chevron-down"
+            :text="$t('discussion.comments', { count: discussionPosts.length })"
+            @click="showComments = true"
+          />
+          <slot name="buttons"></slot>
+        </v-defaults-provider>
         <v-spacer />
         <v-menu
           v-if="
@@ -126,7 +124,11 @@
         </v-menu>
       </footer>
       <footer v-else-if="$slots.buttons" class="d-flex flex-wrap ga-1">
-        <slot name="buttons"></slot>
+        <v-defaults-provider
+          :defaults="{ VBtn: { size: 'small', variant: 'text' } }"
+        >
+          <slot name="buttons"></slot>
+        </v-defaults-provider>
       </footer>
       <slot name="bottom"></slot>
     </v-sheet>
