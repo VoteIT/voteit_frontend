@@ -13,15 +13,17 @@
           <span class="content-type">{{ $t('proposal.proposal') }}</span>
           <Tag :name="p.prop_id" />
         </div>
-        <slot name="actions">
-          <WorkflowState
-            right
-            v-if="!readOnly && (isModerator || p.state !== 'published')"
-            :admin="isModerator"
-            :object="p"
-            :content-type="proposalType"
-          />
-        </slot>
+        <v-defaults-provider :defaults="BTN_DEFAULTS">
+          <slot name="actions">
+            <WorkflowState
+              right
+              v-if="!readOnly && (isModerator || p.state !== 'published')"
+              :admin="isModerator"
+              :object="p"
+              :content-type="proposalType"
+            />
+          </slot>
+        </v-defaults-provider>
       </div>
       <ProposalText :proposal="p" class="my-3" />
       <div class="mt-6 mb-3" v-if="extraTags.length">
@@ -40,9 +42,7 @@
         <slot name="vote"></slot>
       </v-sheet>
       <footer v-if="!readOnly" class="mt-2 d-flex flex-wrap ga-1">
-        <v-defaults-provider
-          :defaults="{ VBtn: { size: 'small', variant: 'text' } }"
-        >
+        <v-defaults-provider :defaults="BTN_DEFAULTS">
           <v-btn
             v-if="canAddDiscussionPost"
             prepend-icon="mdi-comment-outline"
@@ -124,9 +124,7 @@
         </v-menu>
       </footer>
       <footer v-else-if="$slots.buttons" class="d-flex flex-wrap ga-1">
-        <v-defaults-provider
-          :defaults="{ VBtn: { size: 'small', variant: 'text' } }"
-        >
+        <v-defaults-provider :defaults="BTN_DEFAULTS">
           <slot name="buttons"></slot>
         </v-defaults-provider>
       </footer>
@@ -172,6 +170,8 @@ import {
 import ProposalText from './ProposalText.vue'
 import { type Proposal } from './types'
 import { proposalTypeRegistry } from './registry'
+
+const BTN_DEFAULTS = { VBtn: { size: 'small', variant: 'text' } }
 
 const props = defineProps<{
   p: Proposal
