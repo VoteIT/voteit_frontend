@@ -4,7 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.38.0 (??)
+## 0.39.0 (??)
+
+- New notes app, allowing users to add personal notes to proposals
+
+## 0.38.0 (2025-11-26)
 
 _0.37 skipped to keep versions synced w backend_
 
