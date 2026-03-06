@@ -459,6 +459,25 @@
     "none": "No network",
     "reconnecting": "Trying to reconnect... | Trying to reconnect in 1 second | Trying to reconnect in {s} seconds"
   },
+  "notes": {
+    "bodyPlaceholder": "Add a note...",
+    "confirmDelete": "This deletes your personal note.\nAre you sure?",
+    "confirmDeleteAll": "This deletes ALL of your personal notes. You won't be able to undo this action.\nAre you sure?",
+    "deleteAll": "Delete all",
+    "description": "You can all personal notas to proposals in this meeting. We will only show these notes for you, but keep in mind that others may be ably to see your screen.",
+    "edit": "Edit note",
+    "enable": "Activate proposal notes",
+    "hideIntentOnDevice": "Hide approve / deny",
+    "hideIntentOnDeviceHint": "This hides your choice of approve or deny in the proposal list on agenda items. Only affects this device.",
+    "intentApprove": "I want to approve",
+    "intentBlank": "Only note",
+    "intentDeny": "I want to deny",
+    "noNotesDescription": "You havn't added any notes yet. You can add notes on proposals on an agenda item.",
+    "noText": "No text",
+    "personal": "Personal note | Personal notes",
+    "settings": "Your settings",
+    "title": "Note | Notes"
+  },
   "order": {
     "alphabetical": "Alphabetical",
     "chronological": "Chronological",

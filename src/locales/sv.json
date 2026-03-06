@@ -462,12 +462,20 @@
   "notes": {
     "bodyPlaceholder": "Skriv en anteckning...",
     "confirmDelete": "Detta raderar din personliga anteckning.\nÄr du säker?",
-    "description": "Tillåter användare att lägga till personliga anteckningar till förslag.",
+    "confirmDeleteAll": "Detta raderar ALLA dina personliga anteckningar. Du kommer inte kunna ångra raderingen.\nÄr du säker?",
+    "deleteAll": "Radera alla",
+    "description": "Du kan lägga personliga anteckningar till förslag i det här mötet. Vi visar bara anteckningarna för dig, men tänk på att andra människor ibland kan se din skärm.",
+    "edit": "Redigera anteckning",
     "enable": "Aktivera förslagsanteckningar",
-    "intentApprove": "Förslag: Bifall",
+    "hideIntentOnDevice": "Dölj bifall / avslag",
+    "hideIntentOnDeviceHint": "Detta döljer ditt val av bifall / avslag i förslagslistan på dagordningspunkter. Gäller endast den här enheten.",
+    "intentApprove": "Jag vill bifalla",
     "intentBlank": "Endast anteckning",
-    "intentDeny": "Förslag: Avslag",
+    "intentDeny": "Jag vill avslå",
+    "noNotesDescription": "Du har inte gjort några anteckningar än. Du skapar anteckningar under förslag på en dagordningspunkt.",
+    "noText": "Ingen text",
     "personal": "Personlig anteckning | Personliga anteckningar",
+    "settings": "Dina inställningar",
     "title": "Anteckning | Anteckningar"
   },
   "order": {

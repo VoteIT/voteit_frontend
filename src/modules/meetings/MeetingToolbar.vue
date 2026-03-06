@@ -6,9 +6,13 @@
       class="text-black"
       :title="title"
     >
-      <slot></slot>
+      <v-defaults-provider :defaults="{ VBtn: { variant: 'tonal' } }">
+        <slot></slot>
+      </v-defaults-provider>
       <template v-if="$slots.extension" #extension>
-        <slot name="extension"></slot>
+        <v-defaults-provider :defaults="{ VBtn: { variant: 'tonal' } }">
+          <slot name="extension"></slot>
+        </v-defaults-provider>
       </template>
     </v-toolbar>
   </teleport>

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, shallowReactive, shallowRef, watch } from 'vue'
-
-import { Proposal, ProposalButtonMode } from '../proposals/types'
-import useNotesStore from './useNotesStore'
-import { IProposalNote, ProposalIntent } from './types'
-import Richtext from '@/components/Richtext.vue'
-import { noteType } from './contentTypes'
-import RichtextEditor from '@/components/RichtextEditor.vue'
 import { useI18n } from 'vue-i18n'
+
+import Richtext from '@/components/Richtext.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import QueryDialog from '@/components/QueryDialog.vue'
-import { stripHTML } from '@/utils'
+import { Proposal, ProposalButtonMode } from '../proposals/types'
+
+import useNotesStore from './useNotesStore'
+import { IProposalNote, ProposalIntent } from './types'
+import { noteType } from './contentTypes'
+import NoteForm from './NoteForm.vue'
 
 const props = defineProps<{
   mode?: ProposalButtonMode
@@ -18,19 +18,22 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { getProposalNote } = useNotesStore()
+const store = useNotesStore()
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
-const proposalNote = computed(() => getProposalNote(props.proposal.pk))
+const proposalNote = computed(() => store.getProposalNote(props.proposal.pk))
 const form = shallowReactive({
-  body: '',
+  data: {
+    body: '',
+    intent: ProposalIntent.BLANK as IProposalNote['intent']
+  },
   editing: false,
-  intent: ProposalIntent.BLANK as IProposalNote['intent']
+  valid: false
 })
 watch(
   proposalNote,
   (n) => {
-    Object.assign(form, {
+    Object.assign(form.data, {
       body: n?.body ?? '',
       intent: n?.intent ?? ProposalIntent.BLANK
     })
@@ -39,7 +42,15 @@ watch(
 )
 
 const badge = computed(() => {
-  switch (proposalNote.value?.intent) {
+  if (!proposalNote.value) return
+  // If in agenda item view, check if intent should be shown
+  if (!props.mode && store.hideIntent) {
+    return {
+      color: 'secondary',
+      icon: 'mdi-note'
+    }
+  }
+  switch (proposalNote.value.intent) {
     case ProposalIntent.APPROVE:
       return {
         color: 'success',
@@ -57,8 +68,9 @@ const badge = computed(() => {
       }
   }
 })
+
 const intentText = computed(() => {
-  switch (form.intent) {
+  switch (form.data.intent) {
     case ProposalIntent.APPROVE:
       return t('notes.intentApprove')
     case ProposalIntent.BLANK:
@@ -70,9 +82,9 @@ const intentText = computed(() => {
 })
 
 async function saveNote() {
-  const { body, intent } = form
+  const { body, intent } = form.data
   if (proposalNote.value)
-    await noteType.api.patch(proposalNote.value.pk, { body, intent })
+    await noteType.api.patch(proposalNote.value.pk, form.data)
   else await noteType.api.add({ body, intent, proposal: props.proposal.pk })
   form.editing = false
 }
@@ -99,11 +111,6 @@ async function clearNote() {
   }
   clearing.value = false
 }
-
-// Require body if no intent selected
-const canSave = computed(
-  () => form.intent !== ProposalIntent.BLANK || !!stripHTML(form.body)
-)
 
 // Only editable in normal proposal display (on agenda item)
 const isEditable = computed(() => !props.mode)
@@ -144,8 +151,10 @@ const isVisible = computed(
           >
             <template #activator="{ props }">
               <v-btn
+                color="warning"
                 :loading="clearing"
                 :text="$t('content.delete')"
+                variant="flat"
                 v-bind="props"
               />
             </template>
@@ -161,36 +170,14 @@ const isVisible = computed(
         @click.stop
       >
         <template #text>
-          <v-btn-toggle
-            class="mb-1"
-            density="comfortable"
-            mandatory
-            v-model="form.intent"
-          >
-            <v-btn
-              color="secondary"
-              icon="mdi-text"
-              :value="ProposalIntent.BLANK"
-            />
-            <v-btn
-              color="success"
-              icon="mdi-thumb-up"
-              :value="ProposalIntent.APPROVE"
-            />
-            <v-btn
-              color="warning"
-              icon="mdi-thumb-down"
-              :value="ProposalIntent.DENY"
-            />
-          </v-btn-toggle>
-          <RichtextEditor v-model="form.body" />
+          <NoteForm v-model="form.data" v-model:valid="form.valid" />
         </template>
         <template #actions>
           <v-spacer />
           <v-btn :text="$t('cancel')" @click="cancelEdit" />
           <v-btn
             color="primary"
-            :disabled="!canSave"
+            :disabled="!form.valid"
             :text="$t('save')"
             variant="flat"
             @click="saveNote"
