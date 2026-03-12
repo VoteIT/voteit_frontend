@@ -464,7 +464,7 @@
     "confirmDelete": "This deletes your personal note.\nAre you sure?",
     "confirmDeleteAll": "This deletes ALL of your personal notes. You won't be able to undo this action.\nAre you sure?",
     "deleteAll": "Delete all",
-    "description": "You can all personal notas to proposals in this meeting. We will only show these notes for you, but keep in mind that others may be ably to see your screen.",
+    "description": "Users can add personal notes to proposals, including voting intent.",
     "edit": "Edit note",
     "enable": "Activate proposal notes",
     "hideIntentOnDevice": "Hide approve / deny",
@@ -475,6 +475,7 @@
     "noNotesDescription": "You havn't added any notes yet. You can add notes on proposals on an agenda item.",
     "noText": "No text",
     "personal": "Personal note | Personal notes",
+    "personalDescription": "You can all personal notas to proposals in this meeting. We will only show these notes for you, but keep in mind that others may be ably to see your screen.",
     "settings": "Your settings",
     "title": "Note | Notes"
   },

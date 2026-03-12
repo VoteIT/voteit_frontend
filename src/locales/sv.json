@@ -464,7 +464,7 @@
     "confirmDelete": "Detta raderar din personliga anteckning.\nÄr du säker?",
     "confirmDeleteAll": "Detta raderar ALLA dina personliga anteckningar. Du kommer inte kunna ångra raderingen.\nÄr du säker?",
     "deleteAll": "Radera alla",
-    "description": "Du kan lägga personliga anteckningar till förslag i det här mötet. Vi visar bara anteckningarna för dig, men tänk på att andra människor ibland kan se din skärm.",
+    "description": "Användare kan lägga personliga anteckningar till förslag, inklusive hur de avser rösta.",
     "edit": "Redigera anteckning",
     "enable": "Aktivera förslagsanteckningar",
     "hideIntentOnDevice": "Dölj bifall / avslag",
@@ -475,6 +475,7 @@
     "noNotesDescription": "Du har inte gjort några anteckningar än. Du skapar anteckningar under förslag på en dagordningspunkt.",
     "noText": "Ingen text",
     "personal": "Personlig anteckning | Personliga anteckningar",
+    "personalDescription": "Du kan lägga personliga anteckningar till förslag i det här mötet. Vi visar bara anteckningarna för dig, men tänk på att andra människor ibland kan se din skärm.",
     "settings": "Dina inställningar",
     "title": "Anteckning | Anteckningar"
   },

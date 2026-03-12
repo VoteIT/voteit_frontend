@@ -189,7 +189,7 @@ async function deleteNote(note: number) {
       </MeetingToolbar>
       <v-alert
         icon="mdi-incognito"
-        :text="$t('notes.description')"
+        :text="$t('notes.personalDescription')"
         :title="$t('notes.personal')"
         type="info"
       />
