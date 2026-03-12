@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.39.1 (2026-03-12)
+
+- Fix i18n mistake in notes app
+
 ## 0.39.0 (2026-03-11)
 
 - New notes app, allowing users to add personal notes to proposals
