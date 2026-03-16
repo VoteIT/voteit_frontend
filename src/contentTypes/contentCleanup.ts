@@ -18,7 +18,8 @@ type ChannelMapEntry<T extends PKContent> = {
 const channelMaps: ChannelMapEntry<PKContent>[] = []
 
 /**
- * Check if any subscribed channel type and pk is mapped to an attribute of obj
+ * Check if any subscribed channel type and pk is mapped to an attribute of obj.
+ * @returns true if obj is protected
  */
 function checkProtectingChannels<T extends PKContent>(
   obj: T,
@@ -50,7 +51,9 @@ beforeAppStateEvent.on(({ channelType, pk }) => {
     const attr = channelMap[channelType]
     if (!attr) continue
     for (const [key, obj] of map.entries()) {
-      if (obj[attr] === pk) map.delete(key)
+      // Delete only if obj belongs to this channel, and isn't protected from another subscribed channel
+      if (obj[attr] !== pk || checkProtectingChannels(obj, channelMap)) continue
+      map.delete(key)
     }
   }
 })
