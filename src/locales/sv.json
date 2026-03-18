@@ -162,6 +162,7 @@
     "warnShorterThan": "Ditt inlägg är färre än {length} tecken.\nÄr du säker?"
   },
   "discussion": {
+    "closed": "Diskussion avstängd",
     "comments": "Inga kommentarer | En kommentar | {count} kommentarer",
     "comment": "Kommentera",
     "deletePrompt": "Du håller på att radera ett diskussionsinlägg.\nÄr du säker?",

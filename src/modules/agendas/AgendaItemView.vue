@@ -363,6 +363,12 @@ provide(TagClickHandlerKey, async (tagName) => {
           {{ $t('discussion.discussions') }}
         </h2>
         <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
+        <v-alert
+          v-if="agendaItem.block_discussion"
+          class="mb-4"
+          icon="mdi-cancel"
+          :text="$t('discussion.closed')"
+        />
         <Comments :comments="sortedDiscussions" />
       </v-col>
     </v-row>

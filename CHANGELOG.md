@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.39.2 (??)
+
+- Added info on agenda item when discussion is closed
+
 ## 0.39.2 (2026-03-16)
 
 - Bugfix: Content cleanup before app_state loading would sometimes delete objects incorrectly

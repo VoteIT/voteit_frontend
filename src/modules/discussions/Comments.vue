@@ -65,9 +65,9 @@ defineExpose({
 </script>
 
 <template>
-  <div class="comments">
+  <div class="comments d-flex flex-column ga-4">
     <v-slide-x-transition group>
-      <DiscussionPost v-for="c in comments" :key="c.pk" :p="c" class="mb-4">
+      <DiscussionPost v-for="c in comments" :key="c.pk" :p="c">
         <template #buttons>
           <ReactionButton
             v-for="btn in reactions"
