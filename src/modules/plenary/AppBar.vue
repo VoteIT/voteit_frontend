@@ -21,7 +21,8 @@ const {
   agendaItem,
   canChangeAgendaItem,
   nextAgendaItem,
-  previousAgendaItem
+  previousAgendaItem,
+  agendaItemRoute
 } = useAgendaItem()
 const { meetingRoom } = useRoom()
 const agendaApi = agendaItemType.getContentApi()
@@ -45,8 +46,8 @@ onKeyStroke(
 
 const breadcrumbs = computed(() => [
   { title: meeting.value?.title ?? '', to: meetingRoute.value },
-  { title: meetingRoom.value?.title ?? '-' },
-  { title: agendaItem.value?.title ?? '-' }
+  { title: agendaItem.value?.title ?? '-', to: agendaItemRoute.value },
+  { title: meetingRoom.value?.title ?? '-' }
 ])
 
 const settingAllowedProps = ref(false)
