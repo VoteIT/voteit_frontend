@@ -21,6 +21,7 @@ import { isUnresolvedState } from '../proposals/utils'
 import { canChangeAgendaItem as canChange } from './rules'
 import useAgendaStore from './useAgendaStore'
 import { AgendaItem } from './types'
+import useAgendaTags from './useAgendaTags'
 
 export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   const { getMeetingRoute } = useMeeting()
@@ -47,11 +48,21 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   ) // Default to epoch
 
   // NEXT / PREVIOUS
+  // Get selected agenda tag so that arrow navigation stays within selected tag
+  const { selectedAgendaTag } = useAgendaTags(
+    computed(() =>
+      getAgendaItems((ai) => ai.meeting === agendaItem.value?.meeting)
+    )
+  )
   function getRelativeAgendaItem(
     agendaItem: AgendaItem,
     positions: number
   ): Maybe<AgendaItem> {
-    const agenda = getAgendaItems((ai) => ai.meeting === agendaItem.meeting)
+    const agenda = getAgendaItems(
+      (ai) =>
+        ai.meeting === agendaItem.meeting &&
+        (!selectedAgendaTag.value || ai.tags.includes(selectedAgendaTag.value))
+    )
     const index = agenda.indexOf(agendaItem)
     return agenda[index + positions]
   }

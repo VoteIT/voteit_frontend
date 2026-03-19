@@ -2,6 +2,7 @@ import { computed, reactive, Ref } from 'vue'
 
 import { AgendaItem } from './types'
 
+// Map meeting id to selected tag
 const selectedTags = reactive(new Map<number, string>())
 
 export default function useAgendaTags(agendaItems: Ref<AgendaItem[]>) {

@@ -1,5 +1,5 @@
 import { all, sorted } from 'itertools'
-import { computed, reactive, Ref } from 'vue'
+import { computed, reactive } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 
 import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
