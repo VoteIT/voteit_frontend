@@ -884,6 +884,7 @@
     "onlyProposals": "Only proposals",
     "onlySpeakers": "Only speaker list",
     "open": "Open",
+    "otherRoomsSpeakerlists": "Open speaker list in other room | Open speaker lists in other rooms",
     "passiveMode": "Projector mode",
     "passiveModeHint": "Disable user interaction",
     "paused": "Paused...",

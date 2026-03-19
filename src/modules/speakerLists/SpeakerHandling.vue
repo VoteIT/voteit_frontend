@@ -21,7 +21,7 @@ import {
   hasActiveSpeaker
 } from './rules'
 import { speakerListType } from './contentTypes'
-import useSpeakerLists, { listApi } from './useSpeakerLists'
+import useSpeakerLists, { getSpeakerLists, listApi } from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
 import {
   SpeakerListState,
@@ -30,6 +30,8 @@ import {
 } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
+import { meetingRoomStore } from '../rooms/useRooms'
+import { filter, map } from 'itertools'
 
 const props = defineProps<{
   room: number
@@ -140,15 +142,60 @@ async function transitionList(list: SpeakerList, transition: 'close' | 'open') {
     handleRestError(e)
   }
 }
+
+// Warn if there are other rooms with speaker lists
+const otherRoomsWithLists = computed(() => {
+  const rooms = new Set(
+    getSpeakerLists(
+      (sl) =>
+        sl.room !== props.room &&
+        sl.agenda_item === agendaId.value &&
+        sl.state === SpeakerListState.Open
+    ).map((sl) => sl.room)
+  )
+  return filter(meetingRoomStore.values(), (room) => rooms.has(room.pk))
+})
 </script>
 
 <template>
   <v-row v-if="speakerSystem">
     <v-col cols="12" order-sm="1" sm="5" md="5" class="speaker-lists">
-      <div class="d-flex mb-3">
+      <div class="d-flex ga-1 mb-3">
         <h2 class="flex-grow-1">
           {{ $t('speaker.listChoices') }}
         </h2>
+        <v-menu v-if="otherRoomsWithLists.length">
+          <template #activator="{ props }">
+            <v-btn
+              color="warning"
+              icon="mdi-alert"
+              variant="tonal"
+              v-bind="props"
+            />
+          </template>
+          <v-card
+            :title="
+              $t('room.otherRoomsSpeakerlists', otherRoomsWithLists.length)
+            "
+          >
+            <v-list>
+              <v-list-item
+                v-for="room in otherRoomsWithLists"
+                prepend-icon="mdi-lectern"
+                :title="room.title"
+                :to="{
+                  name: 'room:broadcast',
+                  params: {
+                    aid: agendaId,
+                    id: meetingId,
+                    roomId: room.pk,
+                    tab: 'discussion'
+                  }
+                }"
+              />
+            </v-list>
+          </v-card>
+        </v-menu>
         <v-btn-group>
           <v-btn
             color="primary"
