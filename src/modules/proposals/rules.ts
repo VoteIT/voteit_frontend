@@ -96,13 +96,9 @@ export function canDeleteProposal(proposal: Proposal): boolean {
 export function canRetractProposal(proposal: Proposal): boolean {
   const agendaItem = useAgendaStore().getAgendaItem(proposal.agenda_item)
   if (!agendaItem) return false
-  if (isFinishedAI(agendaItem)) return false
+  if (isFinishedAI(agendaItem) || !isPublishedProposal(proposal)) return false
   return (
     isAIModerator(agendaItem) ||
-    (isAuthor(proposal) &&
-      isPublishedProposal(proposal) &&
-      !isProposalBlocked(agendaItem) &&
-      !isPrivateAI(agendaItem))
+    (isAuthor(proposal) && !isProposalBlocked(agendaItem))
   )
-  // return isAuthor(proposal) && isPublishedProposal(proposal) && !isProposalBlocked(agendaItem) && !isFinishedAI(agendaItem) && !isPrivateAI(agendaItem)
 }
