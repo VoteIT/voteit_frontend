@@ -4,9 +4,14 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.39.2 (??)
+## 0.39.3 (2026-03-19)
 
 - Added info on agenda item when discussion is closed
+- Retracted proposals not counted in agenda menu
+- Speaker handling now warns about open speaker lists in other rooms
+- Fix proposal retract rule (only published props)
+- Plenary now has link to default agenda item view
+- Arrow navigation in plenary now follows active tag filter
 
 ## 0.39.2 (2026-03-16)
 
