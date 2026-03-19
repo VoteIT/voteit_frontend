@@ -17,6 +17,7 @@ import usePolls from '@/modules/polls/usePolls'
 import { PollState } from '@/modules/polls/types'
 import useProposals from '@/modules/proposals/useProposals'
 import useMeeting from '../useMeeting'
+import { Proposal, ProposalState } from '@/modules/proposals/types'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -42,6 +43,13 @@ const aiGroups = computed(() =>
 )
 
 /**
+ * Retracted proposals shouldn't be counted in agenda item menu
+ */
+function isCountedProposal({ state }: Proposal) {
+  return state !== ProposalState.Retracted
+}
+
+/**
  * Get menu items for a given agenda state
  */
 function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
@@ -51,7 +59,7 @@ function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
     icons: getAiPolls(ai.pk, PollState.Ongoing).length
       ? ['mdi-star-outline']
       : [],
-    count: getAgendaProposals(ai.pk).length || undefined,
+    count: getAgendaProposals(ai.pk, isCountedProposal).length || undefined,
     hasNewItems: hasNewContent(ai)
   }))
 }
@@ -90,7 +98,7 @@ const AgendaMenus = computed(() =>
       ? `${items.length}/${
           agenda.value.filter((ai) => ai.state === s.state).length
         }`
-      : items.length.toString()
+      : items.length
     return {
       count,
       items,
