@@ -112,8 +112,8 @@
     "agenda": "Agenda",
     "allowProposals": "Allow proposals",
     "allowDiscussion": "Allow discussion",
-    "blockProposals": "Block proposals",
-    "blockDiscussion": "Block discussion",
+    "blockProposals": "Disallow proposals",
+    "blockDiscussion": "Disallow discussion",
     "changeMany": "Change one agenda item | Change {count} agenda items",
     "changeManyFailed": "Operation failed for one agenda item ({reason}) | Operation failed for {count} agenda items ({reason})",
     "deleteItemConfirm": "You are about to delete an Agenda Item permanently.\nAre you sure?",
@@ -133,7 +133,7 @@
     "setTo": "Set to",
     "tagEditInfo": "Tags - used as filters in agenda menu",
     "proposalBlocked": {
-      "blocked": "Proposals are blocked",
+      "blocked": "Proposals are not allowed",
       "closed": "This agenda item is closed",
       "nonProposer": "You don't have proposal permissions"
     },

@@ -112,8 +112,8 @@
     "agenda": "Dagordning",
     "allowProposals": "Tillåt förslag",
     "allowDiscussion": "Tillåt diskussion",
-    "blockProposals": "Blockera förslag",
-    "blockDiscussion": "Blockera diskussion",
+    "blockProposals": "Stäng av förslag",
+    "blockDiscussion": "Stäng av diskussion",
     "changeMany": "Ändra en dagordningspunkt | Ändra {count} dagordningspunkter",
     "changeManyFailed": "Åtgärden misslyckades för en dagordningspunkt ({reason}) | Åtgärden misslyckades för {count} dagordningspunkter ({reason})",
     "deleteItemConfirm": "Du är på väg att radera en dagordningspunkt.\nÄr du säker?",
@@ -133,7 +133,7 @@
     "setTo": "Sätt som",
     "tagEditInfo": "Taggar - används som filter i dagordningsmenyn",
     "proposalBlocked": {
-      "blocked": "Förslag är blockerade",
+      "blocked": "Förslag tillåts ej",
       "closed": "Dagordningspunkten är avslutad",
       "nonProposer": "Du har inte förslagsrätt"
     },
