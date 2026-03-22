@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.39.4 (??)
+
+- Realtime/plenary: Add choice to automatically follow agenda item when broadcasting
+
 ## 0.39.3 (2026-03-19)
 
 - Added info on agenda item when discussion is closed
