@@ -2,6 +2,7 @@
 import { reactive, watch } from 'vue'
 
 import { autoEllipsis } from '@/utils'
+import CheckableListItem from '@/components/CheckableListItem.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import useMeeting from '../meetings/useMeeting'
@@ -63,45 +64,32 @@ async function savePauseMessage(pauseBroadcast = false) {
       :title="$t('room.broadcast')"
     >
       <v-list v-if="meetingRoom">
-        <v-list-item
+        <CheckableListItem
           v-if="isModerator"
-          :prepend-icon="
-            meetingRoom.open
-              ? 'mdi-checkbox-marked'
-              : 'mdi-checkbox-blank-outline'
-          "
-          :active="meetingRoom.open"
+          :model-value="meetingRoom.open"
           :subtitle="
             meetingRoom.open
               ? $t('room.isOpenDescription')
               : $t('room.isNotOpenDescription')
           "
           :title="$t('room.isOpen')"
-          @click.stop="setOpen(!meetingRoom.open)"
+          @update:model-value="setOpen($event)"
         />
-        <v-list-item
+        <CheckableListItem
           v-if="hasSpeakerLists"
-          :prepend-icon="
-            meetingRoom.send_sls
-              ? 'mdi-checkbox-marked'
-              : 'mdi-checkbox-blank-outline'
-          "
-          :active="meetingRoom.send_sls"
+          :model-value="meetingRoom.send_sls"
           :disabled="!meetingRoom.open"
           :title="$t('room.displaySpeakers')"
-          @click.stop="setSlsBroadcast(!meetingRoom.send_sls)"
+          @update:model-value="setSlsBroadcast($event)"
         />
-        <v-list-item
+        <CheckableListItem
           v-if="isModerator"
-          :prepend-icon="
-            meetingRoom.send_proposals
-              ? 'mdi-checkbox-marked'
-              : 'mdi-checkbox-blank-outline'
-          "
-          :active="meetingRoom.send_proposals"
+          :model-value="meetingRoom.send_proposals"
           :disabled="!meetingRoom.open"
           :title="$t('room.displayProposals')"
-          @click.stop="setProposalBroadcast(!meetingRoom.send_proposals)"
+          @update:model-value="
+            setProposalBroadcast(!meetingRoom.send_proposals)
+          "
         />
         <DefaultDialog
           :title="$t('room.pauseMessage')"
