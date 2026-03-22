@@ -5,8 +5,8 @@ import { autoEllipsis } from '@/utils'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import useMeeting from '../meetings/useMeeting'
-import useRoom from './useRoom'
-import { roomType } from './contentTypes'
+import useRoom from '../rooms/useRoom'
+import { roomType } from '../rooms/contentTypes'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 
 const {
