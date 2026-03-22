@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { useIdle } from '@vueuse/core'
 
-import DefaultDialog from '@/components/DefaultDialog.vue'
+import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import HeaderMenu from '@/components/HeaderMenu.vue'
 import useAgenda from '../agendas/useAgenda'
 import useMeeting from '../meetings/useMeeting'
@@ -91,56 +91,35 @@ watch(
   { immediate: true }
 )
 
-function dialogSetPassiveMode(mode: boolean) {
+async function dialogSetPassiveMode(mode: boolean) {
   passiveMode.value = mode
-  moderatorPassiveDialog.value = false
 }
+
+const passiveModeOptions = [
+  {
+    color: 'primary',
+    icon: 'mdi-account',
+    title: t('room.moderatorPassiveOff'),
+    value: false
+  },
+  {
+    color: 'success',
+    icon: 'mdi-projector',
+    title: t('room.moderatorPassiveOn'),
+    value: true
+  }
+]
 </script>
 
 <template>
   <v-app-bar flat color="app-bar">
-    <DefaultDialog
-      v-model="moderatorPassiveDialog"
+    <ChoiceDialog
+      :description="$t('room.moderatorPassiveQuery')"
+      :handler="dialogSetPassiveMode"
+      :options="passiveModeOptions"
       :title="$t('room.passiveMode')"
-    >
-      <p class="mb-4">
-        {{ $t('room.moderatorPassiveQuery') }}
-      </p>
-      <div class="d-flex" style="gap: 10px">
-        <v-sheet
-          class="cursor-pointer text-center pa-6"
-          color="background"
-          rounded
-          style="width: 50%"
-          @click="dialogSetPassiveMode(false)"
-          v-ripple="{ class: 'text-primary' }"
-        >
-          <v-icon
-            class="my-3"
-            color="primary"
-            icon="mdi-account"
-            size="x-large"
-          />
-          <p>{{ $t('room.moderatorPassiveOff') }}</p>
-        </v-sheet>
-        <v-sheet
-          class="cursor-pointer text-center pa-6"
-          color="background"
-          rounded
-          style="width: 50%"
-          @click="dialogSetPassiveMode(true)"
-          v-ripple="{ class: 'text-success' }"
-        >
-          <v-icon
-            class="my-3"
-            color="success"
-            icon="mdi-projector"
-            size="x-large"
-          />
-          <p>{{ $t('room.moderatorPassiveOn') }}</p>
-        </v-sheet>
-      </div>
-    </DefaultDialog>
+      v-model="moderatorPassiveDialog"
+    />
     <router-link :to="meetingRoute">
       <img src="@/assets/voteit-logo.svg" alt="VoteIT" id="navbar-logo" />
     </router-link>
