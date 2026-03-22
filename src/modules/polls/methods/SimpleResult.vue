@@ -27,7 +27,7 @@
 import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
-import { getProposals } from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal } from '@/modules/proposals/types'
 
@@ -53,6 +53,8 @@ const props = defineProps<{
   proposals: number[]
   result: NonNullable<SimplePoll['result']>
 }>()
+
+const { getProposals } = useProposalStore()
 
 function getActiveChoice(pk: number): SimpleChoice | undefined {
   if (props.result.approved.includes(pk)) return SimpleChoice.Yes

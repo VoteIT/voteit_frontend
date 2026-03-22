@@ -6,7 +6,7 @@ import { useStorage } from '@vueuse/core'
 import useChannel from '@/composables/useChannel'
 import useAuthStore from '../auth/useAuthStore'
 import usePoll from '../polls/usePoll'
-import { getProposals } from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 import { SpeakerSystemState } from '../speakerLists/types'
 
@@ -26,6 +26,7 @@ const textSize = useStorage<'normal' | 'large' | 'x-large'>(
 
 export default function useRoom() {
   const authStore = useAuthStore()
+  const proposalStore = useProposalStore()
   const route = useRoute()
   const roomId = computed(() => Number(route.params.roomId))
   useChannel('room', roomId)
@@ -35,7 +36,7 @@ export default function useRoom() {
     () => highlightedStore.get(roomId.value)?.highlighted
   )
   const highlightedProposals = computed(() =>
-    highlighted.value ? getProposals(highlighted.value) : []
+    highlighted.value ? proposalStore.getProposals(highlighted.value) : []
   )
 
   /**

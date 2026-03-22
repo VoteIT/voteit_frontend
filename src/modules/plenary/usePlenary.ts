@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { StorageSerializers, useStorage } from '@vueuse/core'
 
 import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
-import useProposals from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
 
 /**
@@ -16,8 +16,6 @@ export const broadcastFollowAgendaItem = useStorage<boolean | undefined>(
   { serializer: StorageSerializers.object }
 )
 
-const { getAgendaProposals, getProposal } = useProposals()
-
 const stateFilter = ref([ProposalState.Published, ProposalState.Voting])
 const selectedProposalIds = ref<number[]>([])
 
@@ -29,6 +27,9 @@ export function isProposalInPool(proposal: Proposal) {
   return !isSelectedProposal(proposal)
 }
 
+/**
+ * Filter proposal states based in current state filter
+ */
 function filterProposalStates(p: Proposal) {
   return !stateFilter.value.length || stateFilter.value.includes(p.state)
 }
@@ -36,6 +37,7 @@ function filterProposalStates(p: Proposal) {
 export default function usePlenary(agendaItem: ComputedRef<number>) {
   const route = useRoute()
   const router = useRouter()
+  const { filterProposals, getProposal } = useProposalStore()
   const { isBroadcasting, meetingRoom, getRoomRoute } = useRoom()
 
   type Tab = 'discussion' | 'decisions'
@@ -87,7 +89,10 @@ export default function usePlenary(agendaItem: ComputedRef<number>) {
   )
 
   const filteredProposals = computed(() =>
-    getAgendaProposals(agendaItem.value, filterProposalStates)
+    filterProposals(
+      (prop) =>
+        prop.agenda_item === agendaItem.value && filterProposalStates(prop)
+    )
   )
 
   return {

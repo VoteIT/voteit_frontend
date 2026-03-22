@@ -13,6 +13,8 @@ import RepeatedSchulzeResult from './RepeatedSchulzeResult.vue'
 import SchulzeResult from './SchulzeResult.vue'
 import SimpleResult from './SimpleResult.vue'
 import STVResult from './STVResult.vue'
+import useProposalStore from '@/modules/proposals/useProposalStore'
+import { Proposal, ProposalState } from '@/modules/proposals/types'
 
 const i18n = createI18n({
   legacy: false,
@@ -25,27 +27,27 @@ const global = {
 
 function getProposal(pk: number) {
   return {
-    created: new Date().toISOString(),
+    agenda_item: 1,
+    as_group: false,
+    author: 1,
     body: `<p>Proposal ${pk}</p>`,
+    created: new Date().toISOString(),
+    m: 1,
+    meeting_group: null,
+    modified: '',
+    name: '',
     pk,
     prop_id: `prop-${pk}`,
     shortname: 'proposal',
-    tags: []
-  }
+    state: ProposalState.Published,
+    tags: [],
+    title: ''
+  } as Proposal
 }
 
-vi.mock('@/modules/proposals/useProposals', () => {
-  return {
-    default() {
-      return {
-        getProposal
-      }
-    },
-    getProposals(pks: number[]) {
-      return pks.map(getProposal)
-    }
-  }
-})
+const proposalStore = useProposalStore()
+proposalStore.getProposal = getProposal
+proposalStore.getProposals = (pks) => pks.map(getProposal)
 
 test('ApprovalResult component', () => {
   expect(ApprovalResult).toBeTruthy()

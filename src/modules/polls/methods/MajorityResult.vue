@@ -36,11 +36,12 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
-import { getProposals } from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { MajorityPoll } from './types'
 
 const { t } = useI18n()
+const { getProposals } = useProposalStore()
 
 const props = defineProps<{
   abstainCount: number

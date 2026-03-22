@@ -19,7 +19,7 @@ import { pollPlugins } from '../polls/registry'
 import usePolls, { getPollStatus } from '../polls/usePolls'
 import { proposalStates } from '../proposals/workflowStates'
 import { ProposalState } from '../proposals/types'
-import useProposals from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
 import SpeakerHandling from '../speakerLists/SpeakerHandling.vue'
 import useSpeakerSystem from '../speakerLists/useSpeakerSystem'
@@ -74,7 +74,7 @@ const {
   selectedProposals,
   getPlenaryRoute
 } = usePlenary(agendaId)
-const { getAgendaProposals } = useProposals()
+const { countProposals } = useProposalStore()
 const { getAiPolls, getPollMethod } = usePolls()
 
 useMeetingChannel()
@@ -82,7 +82,9 @@ useLoader('Plenary', useChannel('agenda_item', agendaId).promise)
 useMeetingTitle(t('plenary.view'))
 
 function getStateProposalCount(state: ProposalState) {
-  return getAgendaProposals(agendaId.value, (p) => p.state === state).length
+  return countProposals(
+    (p) => p.agenda_item == agendaId.value && p.state === state
+  )
 }
 
 function getActiveAIRoute(agendaItem?: number | null) {

@@ -13,7 +13,7 @@ import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import useProposals from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import { ProposalState } from '../proposals/types'
 import ProposalCard from '../proposals/ProposalCard.vue'
 
@@ -29,7 +29,7 @@ import { AgendaState } from '../agendas/types'
 
 const { t } = useI18n()
 const router = useRouter()
-const proposals = useProposals()
+const { filterProposals } = useProposalStore()
 const { isModerator, meetingRoute, meetingId, getMeetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { agendaId, agendaItem, nextPollTitle } = useAgendaItem()
@@ -41,9 +41,8 @@ useMeetingTitle(t('poll.start'))
 
 const selectedProposalIds = ref<number[]>([])
 function getPublishedProposals(agendaItem: number) {
-  return proposals.getAgendaProposals(
-    agendaItem,
-    (p) => p.state === ProposalState.Published
+  return filterProposals(
+    (p) => p.agenda_item === agendaItem && p.state === ProposalState.Published
   )
 }
 const pollableAgendaItems = computed(() => {

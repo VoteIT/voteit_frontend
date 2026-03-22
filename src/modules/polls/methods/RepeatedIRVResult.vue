@@ -39,7 +39,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Tag from '@/components/Tag.vue'
-import useProposals from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 
 import { STVResult } from './types'
 import { translateSTVStatus } from './utils'
@@ -50,7 +50,7 @@ const props = defineProps<{
   result: STVResult
 }>()
 
-const { getProposal } = useProposals()
+const { getProposal } = useProposalStore()
 const { t } = useI18n()
 
 const metadata = computed(() => [

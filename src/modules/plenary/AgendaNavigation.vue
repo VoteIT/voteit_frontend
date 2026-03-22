@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { sortBy } from 'lodash'
+import { sorted } from 'itertools'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -86,7 +86,7 @@ import useAgendaTags from '../agendas/useAgendaTags'
 import useMeetingId from '../meetings/useMeetingId'
 import { anyPoll } from '../polls/usePolls'
 import { PollState } from '../polls/types'
-import useProposals from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
 import { anySpeakerList } from '../speakerLists/useSpeakerLists'
 
@@ -99,7 +99,7 @@ const { agendaId } = useAgendaItem()
 const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
 const { currentTab, filterProposalStates } = usePlenary(agendaId)
-const { getAgendaProposals } = useProposals()
+const { countProposals } = useProposalStore()
 
 const isOpen = ref(false)
 
@@ -142,15 +142,17 @@ function* getSymbols(ai: number) {
 }
 
 const annotatedAgendaStates = computed(() => {
-  return sortBy(
+  return sorted(
     agendaStates.value.map(({ state, items }) => {
       return {
         state,
         items: items.filter(aiMatchesTag).map((ai) => ({
           ...ai,
           proposals: {
-            filtered: getAgendaProposals(ai.pk, filterProposalStates).length,
-            total: getAgendaProposals(ai.pk).length
+            filtered: countProposals(
+              (prop) => prop.agenda_item === ai.pk && filterProposalStates(prop)
+            ),
+            total: countProposals((prop) => prop.agenda_item === ai.pk)
           },
           symbols: [...getSymbols(ai.pk)]
         }))

@@ -26,10 +26,7 @@ import TextDocuments from '../proposals/TextDocuments.vue'
 import useDiscussions from '../discussions/useDiscussions'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
-import useProposals, {
-  anyProposal,
-  filterProposals
-} from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import { Proposal, ProposalState } from '../proposals/types'
 import { DiscussionPost } from '../discussions/types'
 import { TagClickHandlerKey, TagsKey } from '../meetings/useTags'
@@ -51,7 +48,7 @@ import useAgendaStore from './useAgendaStore'
 
 const { t } = useI18n()
 const discussions = useDiscussions()
-const proposals = useProposals()
+const { anyProposal, filterProposals } = useProposalStore()
 const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
@@ -105,15 +102,15 @@ function proposalFilter(p: Proposal) {
 const sortedProposals = computed(() =>
   filterProposals(
     (p) => isAIProposal(p) && proposalFilter(p),
-    'created',
-    agendaFilter.order
+    (p) => p.created,
+    agendaFilter.order === 'desc'
   )
 )
 const hiddenProposals = computed(() =>
   filterProposals(
     (p) => isAIProposal(p) && !proposalFilter(p),
-    'created',
-    agendaFilter.order
+    (p) => p.created,
+    agendaFilter.order === 'desc'
   )
 )
 const pollCount = computed(() => getAiPolls(agendaId.value).length)
@@ -135,7 +132,7 @@ const allTags = computed<Set<string>>(() => {
       getter(agendaId.value).map((i) => i.tags)
     )
   return new Set([
-    ...transform(proposals.getAgendaProposals),
+    ...transform((ai) => filterProposals((p) => p.agenda_item === ai)),
     ...transform(discussions.getAgendaDiscussions)
   ])
 })

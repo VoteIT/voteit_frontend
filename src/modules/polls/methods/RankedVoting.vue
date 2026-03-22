@@ -72,7 +72,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getProposals } from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import type { Proposal } from '@/modules/proposals/types'
 import VoteProposal from '@/modules/proposals/VoteProposal.vue'
 
@@ -92,6 +92,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { getProposals } = useProposalStore()
 
 const pollMethod = computed(() => pollPlugins.getPlugin(props.poll.method_name))
 

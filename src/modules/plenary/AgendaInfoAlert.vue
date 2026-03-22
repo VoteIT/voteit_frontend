@@ -15,7 +15,7 @@ import { agendaItemType } from '../agendas/contentTypes'
 import useUserDetails from '../organisations/useUserDetails'
 import { MeetingState } from '../meetings/types'
 import { meetingType } from '../meetings/contentTypes'
-import { filterProposals } from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import { ProposalState } from '../proposals/types'
 
 import usePlenary from './usePlenary'
@@ -38,6 +38,7 @@ const { t } = useI18n()
 
 const { meeting } = useMeeting()
 const { getUser } = useUserDetails()
+const { filterProposals } = useProposalStore()
 const { agendaId, agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
   useAgendaItem()
 const {
@@ -162,7 +163,7 @@ const selectApprovedAction = computed(() => {
   const proposals = filterProposals(
     (p) =>
       p.agenda_item === agendaId.value && p.state === ProposalState.Approved,
-    'modified'
+    (p) => p.modified
   ).map((p) => p.pk)
   if (
     !isBroadcasting.value ||

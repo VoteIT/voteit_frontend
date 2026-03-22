@@ -35,12 +35,13 @@ import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getProposals } from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal as P } from '../../proposals/types'
 import type { ApprovalPoll } from './types'
 
 const { t } = useI18n()
+const { getProposals } = useProposalStore()
 
 const PARTIAL_ICONS = [
   'mdi-circle-slice-1',

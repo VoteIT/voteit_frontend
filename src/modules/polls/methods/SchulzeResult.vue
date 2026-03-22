@@ -98,7 +98,7 @@ import { useI18n } from 'vue-i18n'
 
 import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
-import useProposals from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 
 import { SchulzeResult } from './types'
@@ -110,7 +110,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { getProposal } = useProposals()
+const { getProposal } = useProposalStore()
 
 const tiedWinners = computed(() => {
   if (!props.result.tied_winners) return []

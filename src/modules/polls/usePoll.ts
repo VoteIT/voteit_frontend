@@ -5,8 +5,8 @@ import { useI18n } from 'vue-i18n'
 import { stripHTML } from '@/utils'
 import useAuthStore from '../auth/useAuthStore'
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
-import { getProposals } from '../proposals/useProposals'
 import type { Proposal } from '../proposals/types'
+import useProposalStore from '../proposals/useProposalStore'
 
 import {
   canChangePoll,
@@ -23,6 +23,7 @@ const polls = usePolls()
 export default function usePoll(pollRef: Ref<number | undefined>) {
   const { t } = useI18n()
   const { getUserRandomSortValue } = useAuthStore()
+  const { getProposals } = useProposalStore()
 
   const poll = computed(() =>
     typeof pollRef.value === 'number' ? polls.getPoll(pollRef.value) : undefined

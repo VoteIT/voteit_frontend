@@ -15,7 +15,7 @@ import {
   canAddDocument as _canAddDocument,
   getProposalBlockReason
 } from '../proposals/rules'
-import { anyProposal } from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import { isUnresolvedState } from '../proposals/utils'
 
 import { canChangeAgendaItem as canChange } from './rules'
@@ -27,6 +27,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   const { getMeetingRoute } = useMeeting()
   const { getAgendaItem, getAgendaItems, getAgendaBody, getLastRead } =
     useAgendaStore()
+  const { anyProposal } = useProposalStore()
   const route = useRoute()
 
   const _agendaId = computed(() => unref(agendaId) ?? Number(route.params.aid))

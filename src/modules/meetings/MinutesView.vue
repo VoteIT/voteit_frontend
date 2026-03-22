@@ -12,7 +12,7 @@ import { AgendaState } from '../agendas/types'
 import { agendaItemType } from '../agendas/contentTypes'
 import { proposalType } from '../proposals/contentTypes'
 import { Proposal, ProposalState, isDiffProposal } from '../proposals/types'
-import useProposals from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import { PROPOSAL_STATE_ORDER } from '../proposals/constants'
 import { isUnresolvedState } from '../proposals/utils'
 
@@ -68,7 +68,7 @@ const { getState: getAgendaState } = agendaItemType.useWorkflows()
 const { t } = useI18n()
 const { meetingId, isFinishedMeeting, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { getAgendaProposals } = useProposals()
+const { filterProposals } = useProposalStore()
 
 const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
 useMeetingTitle(
@@ -128,7 +128,7 @@ const annotatedAgenda = computed(() => {
     .map(({ pk, state, title }) => {
       const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
         const proposals = sortBy(
-          getAgendaProposals(pk, (p) => p.state === state),
+          filterProposals((p) => p.agenda_item === pk && p.state === state),
           PROPOSAL_ORDERING[settings.proposalOrder]
         )
         return {

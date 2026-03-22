@@ -11,18 +11,17 @@ import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
 import { polls } from '../polls/usePolls'
 
 import { ProposalText } from './contentTypes'
-import useProposals from './useProposals'
 import useTextDocuments from './useTextDocuments'
 import { Proposal, ProposalState } from './types'
+import useProposalStore from './useProposalStore'
 
-const { anyProposal } = useProposals()
 const { proposalTexts } = useTextDocuments()
 
 /* Proposal texts / documents */
 
 export function documentHasProposals(doc: ProposalText): boolean {
   const tags = doc.paragraphs.map((p) => p.tag)
-  return anyProposal(
+  return useProposalStore().anyProposal(
     (prop) =>
       prop.agenda_item === doc.agenda_item &&
       tags.some((tag) => prop.tags.includes(tag))

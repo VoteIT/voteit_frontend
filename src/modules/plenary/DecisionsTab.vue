@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { enumerate, map, range } from 'itertools'
+import { enumerate, map, range, sorted } from 'itertools'
 import { flatten, isEqual, sortBy } from 'lodash'
 import {
   ComponentPublicInstance,
@@ -25,7 +25,7 @@ import { TagClickHandlerKey } from '../meetings/useTags'
 import type { Proposal } from '../proposals/types'
 import { ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
-import useProposals from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import useTextDocuments from '../proposals/useTextDocuments'
 import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
@@ -66,7 +66,7 @@ const {
 } = usePlenary(agendaId)
 
 const { t } = useI18n()
-const { getAgendaProposals } = useProposals()
+const { filterProposals } = useProposalStore()
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const canChangeProposalState = computed(
@@ -117,12 +117,14 @@ async function replaceSelection(proposals: number[]) {
 
 function selectTag(tag: string) {
   replaceSelection(
-    sortBy(
-      getAgendaProposals(
-        agendaId.value,
-        (p) => filterProposalStates(p) && p.tags.includes(tag)
+    sorted(
+      filterProposals(
+        (p) =>
+          p.agenda_item === agendaId.value &&
+          filterProposalStates(p) &&
+          p.tags.includes(tag)
       ),
-      'created'
+      (p) => p.created
     ).map((p) => p.pk)
   )
 }

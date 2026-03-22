@@ -63,10 +63,10 @@ import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
 
 import { ProposalText, proposalTextType } from './contentTypes'
-import useProposals from './useProposals'
 import useTextDocument from './useTextDocument'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
+import useProposalStore from './useProposalStore'
 
 const props = defineProps<{
   document: ProposalText
@@ -74,13 +74,15 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const { getAgendaProposals } = useProposals()
+const { countProposals } = useProposalStore()
 const proposalCount = computed(() => {
   const mapping: Record<string, number> = {}
   for (const p of props.document.paragraphs) {
-    mapping[p.tag] = getAgendaProposals(props.document.agenda_item, (prop) =>
-      prop.tags.includes(p.tag)
-    ).length
+    mapping[p.tag] = countProposals(
+      (prop) =>
+        prop.agenda_item === props.document.agenda_item &&
+        prop.tags.includes(p.tag)
+    )
   }
   return mapping
 })

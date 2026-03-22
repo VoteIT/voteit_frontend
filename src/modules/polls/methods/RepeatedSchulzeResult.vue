@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import useProposals from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 import type { Proposal as P } from '@/modules/proposals/types'
 
@@ -46,7 +46,7 @@ const props = defineProps<{
   result: NonNullable<RepeatedSchulzePoll['result']>
 }>()
 
-const { getProposal } = useProposals()
+const { getProposal } = useProposalStore()
 
 const orderedProposals = computed(() => {
   return props.result.rounds

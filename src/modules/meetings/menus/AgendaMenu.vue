@@ -15,7 +15,7 @@ import useAgenda from '@/modules/agendas/useAgenda'
 import useAgendaStore from '@/modules/agendas/useAgendaStore'
 import usePolls from '@/modules/polls/usePolls'
 import { PollState } from '@/modules/polls/types'
-import useProposals from '@/modules/proposals/useProposals'
+import useProposalStore from '@/modules/proposals/useProposalStore'
 import useMeeting from '../useMeeting'
 import { Proposal, ProposalState } from '@/modules/proposals/types'
 
@@ -30,7 +30,7 @@ const { agenda, filteredAgenda } = useAgenda(
 const agendaWorkflows = agendaItemType.useWorkflows()
 const { agendaTags, selectedAgendaTag } = useAgendaTags(agenda)
 const { getAiPolls } = usePolls()
-const { getAgendaProposals } = useProposals()
+const { countProposals } = useProposalStore()
 
 function getAiType(state: string) {
   return filteredAgenda.value.filter((ai) => ai.state === state)
@@ -59,7 +59,9 @@ function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
     icons: getAiPolls(ai.pk, PollState.Ongoing).length
       ? ['mdi-star-outline']
       : [],
-    count: getAgendaProposals(ai.pk, isCountedProposal).length || undefined,
+    count:
+      countProposals((p) => p.agenda_item === ai.pk && isCountedProposal(p)) ||
+      undefined,
     hasNewItems: hasNewContent(ai)
   }))
 }

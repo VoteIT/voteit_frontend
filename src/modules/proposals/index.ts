@@ -4,7 +4,6 @@ import { getApiLink } from '@/utils/restApi'
 import { meetingExportPlugins } from '../meetings/registry'
 import { agendaItemType } from '../agendas/contentTypes'
 import { AgendaTransition } from '../agendas/types'
-import { anyProposal } from './useProposals'
 import { UNRESOLVED_STATES } from './constants'
 import { plenarySuggestions } from '../plenary/registry'
 import useTextDocuments from './useTextDocuments'
@@ -12,6 +11,7 @@ import { Proposal } from './types'
 import { proposalTypeRegistry } from './registry'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
+import useProposalStore from './useProposalStore'
 
 function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
   return {
@@ -39,7 +39,7 @@ meetingExportPlugins.register({
 
 agendaItemType.transitions.registerGuard(AgendaTransition.Close, (obj, t) => {
   if (
-    anyProposal(
+    useProposalStore().anyProposal(
       (p) => p.agenda_item === obj.pk && UNRESOLVED_STATES.includes(p.state)
     )
   )

@@ -11,7 +11,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import useAgenda from '../agendas/useAgenda'
 import MeetingToolbar from '../meetings/MeetingToolbar.vue'
 import useMeeting from '../meetings/useMeeting'
-import useProposals from '../proposals/useProposals'
+import useProposalStore from '../proposals/useProposalStore'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 
 import { noteType } from './contentTypes'
@@ -21,7 +21,7 @@ import useNotesStore from './useNotesStore'
 
 const { meetingId, getMeetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { getProposal } = useProposals()
+const { getProposal } = useProposalStore()
 const store = useNotesStore()
 
 const personalNotes = shallowRef<IProposalNote[]>([])
