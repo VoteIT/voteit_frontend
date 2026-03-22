@@ -729,7 +729,14 @@
     "toRealTimeView": "To real-time view",
     "upcomingAI": "Upcoming Agenda Item",
     "upcomingAIDescription": "This Agenda Item is not ongoing. Press the button 'Start decisions' to make it ongoing and start broadcasting. The 'Broadcast this' option leaves the Agenda Item in upcoming state.",
-    "view": "Plenary view"
+    "view": "Plenary view",
+    "follow": {
+      "automatic": "Automatic: Broadcast changes agenda item when you do",
+      "description": "You can choose whether the broadcast automatically should follow the agenda item you're on, or if you want to control the broadcast manually. If unsure, choose automatic.",
+      "manual": "Manual: You choose when an agenda item is broadcasted",
+      "subtitle": "Activate for automatic broadcast",
+      "title": "Follow agenda item"
+    }
   },
   "presence": {
     "activateSystem": "Activate presence check system",

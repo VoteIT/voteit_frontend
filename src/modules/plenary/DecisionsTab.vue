@@ -6,14 +6,16 @@ import {
   computed,
   provide,
   reactive,
-  ref,
-  watch
+  shallowRef,
+  watch,
+  watchEffect
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding, useTextSelection } from '@vueuse/core'
 
 import { socket } from '@/utils/Socket'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
+import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import Tag from '@/components/Tag.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
@@ -48,10 +50,12 @@ const {
   isBroadcasting,
   meetingRoom,
   roomId,
+  setBroadcast,
   setHighlightedProposals
 } = useRoom()
 
 const {
+  broadcastFollowAgendaItem,
   filteredProposals,
   selectedProposalIds,
   selectedProposals,
@@ -224,7 +228,7 @@ onKeyStroke(
 )
 
 // Handle height of agenda info alert
-const agendaInfoEl = ref<HTMLDivElement | undefined>()
+const agendaInfoEl = shallowRef<HTMLDivElement | undefined>()
 const { height: aiHeight } = useElementBounding(agendaInfoEl)
 const proposalsStyle = computed(() => {
   return {
@@ -232,7 +236,7 @@ const proposalsStyle = computed(() => {
   }
 })
 
-const proposalComponents = ref<ComponentPublicInstance[]>()
+const proposalComponents = shallowRef<ComponentPublicInstance[]>()
 const { ranges } = useTextSelection()
 function findProposalEl(range: Range) {
   if (!proposalComponents.value) return
@@ -274,7 +278,7 @@ function getProposalSelection() {
   return selection
 }
 
-const proposalClicked = ref<number>()
+const proposalClicked = shallowRef<number>()
 function setHighlight() {
   if (!isBroadcastingAI.value) return // Only when broadcasting...
   const selection = getProposalSelection() ?? {
@@ -290,12 +294,63 @@ watch(
   () => ranges.value.at(0),
   () => delayed(setHighlight)
 )
+
+/**
+ * Make user choose whether to follow my Agenda Item of if that shoud be an active choice
+ */
+const followChoiceDialog = computed(
+  () => isBroadcasting.value && broadcastFollowAgendaItem.value === undefined
+)
+
+const broadcastFollowOptions = [
+  {
+    color: 'success',
+    icon: 'mdi-cast-connected',
+    title: t('plenary.follow.automatic'),
+    value: true
+  },
+  {
+    color: 'primary',
+    icon: 'mdi-gesture-tap-button',
+    title: t('plenary.follow.manual'),
+    value: false
+  }
+]
+
+async function setFollowAI(value: boolean) {
+  broadcastFollowAgendaItem.value = value
+}
+
+/**
+ * If we should follow users broadcast, make sure we're broadcasting current one.
+ */
+watchEffect(() => {
+  if (
+    !isBroadcasting.value ||
+    !broadcastFollowAgendaItem.value ||
+    !agendaItem.value ||
+    agendaItem.value.state === AgendaState.Private
+  )
+    return
+  if (meetingRoom.value?.agenda_item !== agendaId.value)
+    setBroadcast({
+      agenda_item: agendaId.value,
+      highlighted: selectedProposalIds.value
+    })
+})
 </script>
 
 <template>
   <div ref="agendaInfoEl">
     <AgendaInfoAlert class="mb-6" />
   </div>
+  <ChoiceDialog
+    :description="$t('plenary.follow.description')"
+    :handler="setFollowAI"
+    :options="broadcastFollowOptions"
+    :title="$t('plenary.follow.title')"
+    v-model="followChoiceDialog"
+  />
   <v-row v-if="!selectedProposals.length && !pool.length">
     <v-col
       md="8"

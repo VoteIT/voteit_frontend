@@ -48,13 +48,9 @@ const {
   setBroadcast,
   setHandler
 } = useRoom()
-const { selectedProposalIds, selectProposalIds } = usePlenary(agendaId)
+const { isBroadcastingAI, selectedProposalIds, selectProposalIds } =
+  usePlenary(agendaId)
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
-
-const isBroadcastingAI = computed(
-  () =>
-    isBroadcasting.value && meetingRoom.value?.agenda_item === agendaId.value
-)
 
 function getMeetingStateAlert(): IAlertInfo | undefined {
   switch (meeting.value?.state) {
@@ -92,6 +88,65 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
           type: 'warning'
         }
       }
+  }
+}
+
+function getUpcomingAlert(): IAlertInfo | undefined {
+  const actions = isBroadcastingAI.value
+    ? [
+        {
+          prependIcon: 'mdi-gavel',
+          text: t('plenary.toDecisionMode'),
+          async onClick() {
+            try {
+              await agendaItemType.transitions.make(
+                agendaItem.value!,
+                AgendaTransition.Ongoing,
+                t
+              )
+            } catch (e) {
+              handleRestError(e)
+            }
+          }
+        }
+      ]
+    : [
+        {
+          prependIcon: 'mdi-gavel',
+          text: t('plenary.toDecisionMode'),
+          async onClick() {
+            try {
+              await agendaItemType.transitions.make(
+                agendaItem.value!,
+                AgendaTransition.Ongoing,
+                t
+              )
+              await broadcastThis()
+            } catch (e) {
+              handleRestError(e)
+            }
+          }
+        },
+        {
+          prependIcon: 'mdi-broadcast',
+          text: t('plenary.broadcastAI'),
+          async onClick() {
+            try {
+              await broadcastThis()
+            } catch (e) {
+              handleRestError(e)
+            }
+          }
+        }
+      ]
+  return {
+    props: {
+      icon: 'mdi-broadcast',
+      title: t('plenary.upcomingAI'),
+      text: t('plenary.upcomingAIDescription'),
+      type: 'info'
+    },
+    actions
   }
 }
 
@@ -200,44 +255,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
         }
       }
     case AgendaState.Upcoming:
-      if (isBroadcastingAI.value) return
-      return {
-        props: {
-          icon: 'mdi-broadcast',
-          title: t('plenary.upcomingAI'),
-          text: t('plenary.upcomingAIDescription'),
-          type: 'info'
-        },
-        actions: [
-          {
-            prependIcon: 'mdi-gavel',
-            text: t('plenary.toDecisionMode'),
-            async onClick() {
-              try {
-                await agendaItemType.transitions.make(
-                  agendaItem.value!,
-                  AgendaTransition.Ongoing,
-                  t
-                )
-                await broadcastThis()
-              } catch (e) {
-                handleRestError(e)
-              }
-            }
-          },
-          {
-            prependIcon: 'mdi-broadcast',
-            text: t('plenary.broadcastAI'),
-            async onClick() {
-              try {
-                await broadcastThis()
-              } catch (e) {
-                handleRestError(e)
-              }
-            }
-          }
-        ]
-      }
+      return getUpcomingAlert()
     case AgendaState.Ongoing:
       if (
         isBroadcastingAI.value &&

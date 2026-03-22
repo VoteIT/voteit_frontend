@@ -4,11 +4,13 @@ import { reactive, watch } from 'vue'
 import { autoEllipsis } from '@/utils'
 import CheckableListItem from '@/components/CheckableListItem.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import HeaderMenu from '@/components/HeaderMenu.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
+
 import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import { roomType } from '../rooms/contentTypes'
-import HeaderMenu from '@/components/HeaderMenu.vue'
+import { broadcastFollowAgendaItem } from './usePlenary'
 
 const {
   hasSpeakerLists,
@@ -61,6 +63,7 @@ async function savePauseMessage(pauseBroadcast = false) {
       :subtitle="
         isBroadcasting ? $t('room.isBroadcasting') : $t('room.broadcastDesc')
       "
+      max-width="340"
       :title="$t('room.broadcast')"
     >
       <v-list v-if="meetingRoom">
@@ -138,6 +141,11 @@ async function savePauseMessage(pauseBroadcast = false) {
             </div>
           </template>
         </DefaultDialog>
+        <CheckableListItem
+          :subtitle="$t('plenary.follow.subtitle')"
+          :title="$t('plenary.follow.title')"
+          v-model="broadcastFollowAgendaItem"
+        />
         <v-divider v-if="isModerator" class="mt-2" />
         <v-list-item
           v-if="isModerator"

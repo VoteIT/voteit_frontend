@@ -1,9 +1,20 @@
 import { ComputedRef, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { StorageSerializers, useStorage } from '@vueuse/core'
 
 import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
 import useProposals from '@/modules/proposals/useProposals'
 import useRoom from '../rooms/useRoom'
+
+/**
+ * Whether broadcast should follow the senders agenda item or wait for sender to broadcast item.
+ */
+export const broadcastFollowAgendaItem = useStorage<boolean | undefined>(
+  'broadcast:followAgendaItem',
+  undefined,
+  localStorage,
+  { serializer: StorageSerializers.object }
+)
 
 const { getAgendaProposals, getProposal } = useProposals()
 
@@ -25,7 +36,7 @@ function filterProposalStates(p: Proposal) {
 export default function usePlenary(agendaItem: ComputedRef<number>) {
   const route = useRoute()
   const router = useRouter()
-  const { getRoomRoute } = useRoom()
+  const { isBroadcasting, meetingRoom, getRoomRoute } = useRoom()
 
   type Tab = 'discussion' | 'decisions'
 
@@ -45,6 +56,17 @@ export default function usePlenary(agendaItem: ComputedRef<number>) {
       router.replace(getPlenaryRoute({ tab }))
     }
   })
+
+  /**
+   * Is the current user broadcasting this AI.
+   * If we're in follow mode, assume yes if broadcasting.
+   */
+  const isBroadcastingAI = computed(
+    () =>
+      isBroadcasting.value &&
+      (broadcastFollowAgendaItem.value ||
+        meetingRoom.value?.agenda_item === agendaItem.value)
+  )
 
   function selectProposal(proposal: number) {
     if (selectedProposalIds.value.includes(proposal)) return
@@ -69,7 +91,9 @@ export default function usePlenary(agendaItem: ComputedRef<number>) {
   )
 
   return {
+    broadcastFollowAgendaItem,
     currentTab,
+    isBroadcastingAI,
     filteredProposals,
     selectedProposalIds,
     selectedProposals,

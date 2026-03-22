@@ -67,8 +67,13 @@ const {
 const { getState, getPriorityStates } = pollType.useWorkflows()
 const { systemActiveList } = useSpeakerSystem(roomId, agendaId)
 
-const { currentTab, stateFilter, selectedProposals, getPlenaryRoute } =
-  usePlenary(agendaId)
+const {
+  currentTab,
+  isBroadcastingAI,
+  stateFilter,
+  selectedProposals,
+  getPlenaryRoute
+} = usePlenary(agendaId)
 const { getAgendaProposals } = useProposals()
 const { getAiPolls, getPollMethod } = usePolls()
 
@@ -91,9 +96,10 @@ function getActiveAIRoute(agendaItem?: number | null) {
 const toActiveSpeakerList = computed(() =>
   getActiveAIRoute(systemActiveList.value?.agenda_item)
 )
-const toActiveProposals = computed(() =>
-  getActiveAIRoute(meetingRoom.value?.agenda_item)
-)
+const toActiveProposals = computed(() => {
+  if (!isBroadcastingAI.value)
+    return getActiveAIRoute(meetingRoom.value?.agenda_item)
+})
 
 const filterStates = computed(() => {
   return proposalStates.map((state) => {

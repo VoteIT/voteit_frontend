@@ -3,6 +3,7 @@ withDefaults(
   defineProps<{
     icon: string
     iconColor?: string
+    maxWidth?: string | number
     title: string
     subtitle?: string
   }>(),
@@ -13,7 +14,7 @@ withDefaults(
 </script>
 
 <template>
-  <v-sheet>
+  <v-sheet :max-width="maxWidth">
     <div class="d-flex pa-1 mt-4 mx-4 mb-2">
       <v-icon
         :icon="icon"

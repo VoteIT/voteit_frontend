@@ -729,7 +729,14 @@
     "toRealTimeView": "Till realtidsvy",
     "upcomingAI": "Kommande dagordningspunkt",
     "upcomingAIDescription": "Den här dagordningspunkten står som kommande. Tryck på 'Till beslut' för att göra den pågående och börja sändning. Alternativet 'Sänd denna' lämnar dagordningspunkten som kommande.",
-    "view": "Sändarvy"
+    "view": "Sändarvy",
+    "follow": {
+      "automatic": "Automatisk: Sändningen byter dagordningspunkt när du gör det",
+      "description": "Du kan välja om sändningen automatiskt ska följa den dagordningspunkt du är på, eller om du vill styra visning manuellt. Om du är osäker, välj automatisk.",
+      "manual": "Manuell: Du väljer själv när en dagordningspunkt ska sändas",
+      "subtitle": "Aktivera för automatisk sändning",
+      "title": "Följ dagordningspunkt"
+    }
   },
   "presence": {
     "activateSystem": "Aktivera system för närvarokontroll",
