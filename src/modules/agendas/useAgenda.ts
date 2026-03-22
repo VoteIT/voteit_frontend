@@ -1,5 +1,4 @@
 import { computed, MaybeRef, Ref, unref } from 'vue'
-import { useRoute } from 'vue-router'
 
 import { AgendaItem } from '@/modules/agendas/types'
 import { agendaItemStates } from './workflowStates'
@@ -11,8 +10,7 @@ export default function useAgenda(
   meetingId: MaybeRef<number>,
   tag?: Ref<string | undefined>
 ) {
-  const { getAgendaItems, getLastRead } = useAgendaStore()
-  const route = useRoute()
+  const { getAgendaItems } = useAgendaStore()
 
   function isMeetingAI({ meeting }: AgendaItem) {
     return meeting === unref(meetingId)
