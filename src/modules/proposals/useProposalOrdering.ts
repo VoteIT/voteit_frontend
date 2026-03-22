@@ -1,6 +1,5 @@
-import { MaybeRef, get } from '@vueuse/core'
-import { computed } from 'vue'
-import { ComposerTranslation } from 'vue-i18n'
+import { computed, unref, type MaybeRef } from 'vue'
+import type { ComposerTranslation } from 'vue-i18n'
 
 export default function useProposalOrdering(
   t: ComposerTranslation,
@@ -11,11 +10,13 @@ export default function useProposalOrdering(
     { title: t('order.alphabetical'), value: 'a' },
     { title: t('order.random'), value: 'r' }
   ])
-  const proposalOrderingTitle = computed(
-    () =>
-      proposalOrderingOptions.value.find((o) => o.value === get(ordering))
-        ?.title ?? t('unknown')
-  )
+  const proposalOrderingTitle = computed(() => {
+    const ord = unref(ordering)
+    return (
+      proposalOrderingOptions.value.find((o) => o.value === ord)?.title ??
+      t('unknown')
+    )
+  })
 
   return {
     proposalOrderingOptions,
