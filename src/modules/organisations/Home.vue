@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { chunked, type Primitive } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
@@ -8,7 +7,7 @@ import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
-import { MenuItem, PickByType } from '@/utils/types'
+import { MenuItem } from '@/utils/types'
 
 import AppBar from '@/components/AppBar.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
@@ -23,14 +22,13 @@ import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
-import useRules from '@/composables/useRules'
 
 import useAuthStore from '../auth/useAuthStore'
 import useInviteStore from '../meetingInvites/useInviteStore'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
 import Invite from '../meetingInvites/Invite.vue'
-import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
+import { MeetingState } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
 import { meetingStates } from '../meetings/workflowStates'
 import useMeetingStore from '../meetings/useMeetingStore'
@@ -40,6 +38,8 @@ import useOrgStore from './useOrgStore'
 import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
+import FindMeetingDialog from './FindMeetingDialog.vue'
+import { displayRoles } from './utils'
 
 const inviteStore = useInviteStore()
 
@@ -55,8 +55,7 @@ const meetingStore = useMeetingStore()
 const {
   participatingClosedMeetings,
   participatingOngoingMeetings,
-  participatingUpcomingMeetings,
-  stateCount
+  participatingUpcomingMeetings
 } = storeToRefs(meetingStore)
 
 const currentTab = ref('default')
@@ -70,7 +69,6 @@ const loader = useLoader(
 )
 
 useMeetings(loader.call)
-const rules = useRules(t)
 
 const { requiresCheck } = useContactInfo(true)
 
@@ -197,93 +195,9 @@ const meetingGroups = computed(() => {
     .filter(({ meetings }) => meetings.length)
 })
 const groupsExpanded = ref(false)
-const displayRoles = [
-  { role: MeetingRole.PotentialVoter, icon: 'mdi-star-outline' },
-  { role: MeetingRole.Moderator, icon: 'mdi-gavel' }
-]
 const meetingCount = computed(() =>
   groupRules.reduce((acc, { meetings }) => acc + meetings.value.length, 0)
 )
-
-/* Meeting search */
-const yearItems = computed(() => [
-  {
-    value: null,
-    title: t('organization.allYears')
-  },
-  ...meetingStore.existingMeetingYears.map((value) => ({
-    value,
-    title: value.toFixed()
-  }))
-])
-
-const stateItems = computed(() =>
-  meetingStates
-    .filter(({ state }) => state in stateCount.value)
-    .map(({ state, getName }) => {
-      const count = stateCount.value[state]!
-      return {
-        value: state,
-        title: `${getName(t, count)} (${count})`
-      }
-    })
-)
-
-const INCLUDE_STATES = [MeetingState.Ongoing, MeetingState.Upcoming]
-const searchFilter = reactive<{
-  search: string
-  states: MeetingState[]
-  year: number | null
-  order: keyof PickByType<Meeting, Primitive>
-}>({
-  order: 'title',
-  search: '',
-  states: [],
-  year: null
-})
-watch(stateCount, (value) => {
-  // If no ongoing or upcoming meetings, default to showing closed meetings
-  searchFilter.states =
-    MeetingState.Ongoing in value || MeetingState.Upcoming in value
-      ? INCLUDE_STATES.filter((s) => s in value)
-      : [MeetingState.Closed].filter((s) => s in value)
-})
-
-const currentSearchPage = ref(1)
-const searchedMeetings = computed(() =>
-  meetingStore.filterMeetings(
-    searchFilter.states,
-    searchFilter.order,
-    searchFilter.search,
-    searchFilter.year
-  )
-)
-const chunkedMeetings = computed(() => [...chunked(searchedMeetings.value, 10)])
-watch(searchedMeetings, () => {
-  currentSearchPage.value = 1
-})
-
-const searchInfo = computed<
-  { type: 'info' | 'warning'; text: string } | undefined
->(() => {
-  if (searchedMeetings.value.length) return
-  if (!meetingStore.hasVisibleMeetings) {
-    return {
-      type: 'info',
-      text: t('home.noVisibleMeetings')
-    }
-  }
-  if (!searchFilter.states.length) {
-    return {
-      type: 'warning',
-      text: t('home.noMeetingStates')
-    }
-  }
-  return {
-    type: 'info',
-    text: t('home.noMatchingMeetings')
-  }
-})
 
 const formChanged = computed(
   () =>
@@ -503,112 +417,7 @@ function cancelEdit() {
               <AddMeeting @close="close" />
             </template>
           </DefaultDialog>
-          <DefaultDialog
-            v-if="meetingStore.hasHiddenMeetings"
-            :title="$t('meeting.find')"
-          >
-            <template #activator="{ props }">
-              <v-btn
-                block
-                color="primary"
-                prepend-icon="mdi-calendar-plus"
-                size="x-large"
-                :text="$t('meeting.find')"
-                variant="elevated"
-                v-bind="props"
-              />
-            </template>
-            <v-select
-              :label="$t('state')"
-              chips
-              closable-chips
-              density="comfortable"
-              :items="stateItems"
-              v-model="searchFilter.states"
-              multiple
-              hide-details
-              class="mb-1"
-              :rules="[rules.required]"
-            />
-            <div class="d-flex mb-1">
-              <v-text-field
-                :label="$t('search')"
-                v-model="searchFilter.search"
-                class="mr-1"
-                hide-details
-                clearable
-              />
-              <v-select
-                :label="$t('meeting.yearStarted')"
-                :items="yearItems"
-                v-model="searchFilter.year"
-                hide-details
-              />
-            </div>
-
-            <v-alert
-              v-if="searchInfo"
-              class="mt-4"
-              prominent
-              v-bind="searchInfo"
-            />
-
-            <v-pagination
-              v-if="chunkedMeetings.length > 1"
-              v-model="currentSearchPage"
-              :length="chunkedMeetings.length"
-            />
-            <v-list v-if="chunkedMeetings.length">
-              <v-list-item
-                v-for="{
-                  pk,
-                  title,
-                  state,
-                  current_user_roles
-                } in chunkedMeetings[currentSearchPage - 1]"
-                :key="pk"
-                :title="title"
-                :subtitle="
-                  meetingStates.find((s) => s.state === state)?.getName(t)
-                "
-                :to="
-                  current_user_roles
-                    ? {
-                        name: 'meeting',
-                        params: { id: pk, slug: slugify(title) }
-                      }
-                    : undefined
-                "
-              >
-                <template #append v-if="current_user_roles">
-                  <v-tooltip
-                    v-for="{ role, icon } in displayRoles"
-                    :key="role"
-                    :text="translateMeetingRole(role, t)"
-                  >
-                    <template
-                      #activator="{ props }"
-                      v-if="current_user_roles?.includes(role)"
-                    >
-                      <v-icon v-bind="props" :icon="icon" />
-                    </template>
-                  </v-tooltip>
-                </template>
-                <template v-else #append>
-                  <v-btn
-                    append-icon="mdi-arrow-right-circle"
-                    color="primary"
-                    :text="$t('join.meeting')"
-                    :to="{
-                      name: 'meeting:join',
-                      params: { id: pk, slug: slugify(title) }
-                    }"
-                    variant="tonal"
-                  />
-                </template>
-              </v-list-item>
-            </v-list>
-          </DefaultDialog>
+          <FindMeetingDialog v-if="meetingStore.hasHiddenMeetings" />
           <EditableHelpText
             :modelValue="orgStore.organisation.help_info"
             :editable="!!orgStore.canChangeOrganisation"
