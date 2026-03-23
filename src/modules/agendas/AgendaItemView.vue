@@ -23,7 +23,7 @@ import useLoader from '@/composables/useLoader'
 import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
 import TextDocuments from '../proposals/TextDocuments.vue'
-import useDiscussions from '../discussions/useDiscussions'
+import useDiscussionStore from '../discussions/useDiscussionStore'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposalStore from '../proposals/useProposalStore'
@@ -47,7 +47,7 @@ import AgendaItemDescription from './AgendaItemDescription.vue'
 import useAgendaStore from './useAgendaStore'
 
 const { t } = useI18n()
-const discussions = useDiscussions()
+const { filterDiscussions } = useDiscussionStore()
 const { anyProposal, filterProposals } = useProposalStore()
 const { getAiPolls } = usePolls()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
@@ -115,12 +115,11 @@ const hiddenProposals = computed(() =>
 )
 const pollCount = computed(() => getAiPolls(agendaId.value).length)
 
-function discussionFilter(d: DiscussionPost) {
-  return tagIncluded(d.tags)
-}
 const sortedDiscussions = computed(() =>
   orderContent(
-    discussions.getAgendaDiscussions(agendaId.value, discussionFilter)
+    filterDiscussions(
+      (d) => d.agenda_item === agendaId.value && tagIncluded(d.tags)
+    )
   )
 )
 
@@ -133,7 +132,7 @@ const allTags = computed<Set<string>>(() => {
     )
   return new Set([
     ...transform((ai) => filterProposals((p) => p.agenda_item === ai)),
-    ...transform(discussions.getAgendaDiscussions)
+    ...transform((ai) => filterDiscussions((p) => p.agenda_item === ai))
   ])
 })
 provide(TagsKey, allTags)

@@ -156,7 +156,7 @@ import useUnread from '@/composables/useUnread'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useAgendaFilter from '../agendas/useAgendaFilter'
 import Comments from '../discussions/Comments.vue'
-import useDiscussions from '../discussions/useDiscussions'
+import useDiscussionStore from '../discussions/useDiscussionStore'
 import useMeeting from '../meetings/useMeeting'
 import { getHTMLTags } from '../meetings/useTags'
 import AuthorName from '../meetings/AuthorName.vue'
@@ -184,7 +184,7 @@ const agendaId = computed(() => props.p.agenda_item)
 const { orderContent } = useAgendaFilter()
 const { canAddDiscussionPost } = useAgendaItem(agendaId)
 const showComments = ref(false)
-const { getProposalDiscussions } = useDiscussions()
+const { getProposalDiscussions } = useDiscussionStore()
 
 const { isUnread } = useUnread(new Date(props.p.created))
 
