@@ -8,7 +8,7 @@ import WorkflowState from '@/components/WorkflowState.vue'
 import Dropdown from '@/components/Dropdown.vue'
 
 import useMeetingId from '../meetings/useMeetingId'
-import { filterPolls, getUserVote } from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import { Poll, PollState } from '../polls/types'
 import usePoll from '../polls/usePoll'
 import { pollPlugins } from '../polls/registry'
@@ -22,6 +22,7 @@ const props = defineProps<{
   openPoll?: number | null
 }>()
 
+const { filterPolls, getUserVote } = usePollStore()
 const meetingId = useMeetingId()
 const { getState } = pollType.useWorkflows()
 

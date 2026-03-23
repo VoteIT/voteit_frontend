@@ -8,7 +8,7 @@ import {
 import { AgendaItem } from '../agendas/types'
 import useAgendaStore from '../agendas/useAgendaStore'
 import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
-import { polls } from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 
 import { ProposalText } from './contentTypes'
 import useTextDocuments from './useTextDocuments'
@@ -58,10 +58,7 @@ function isPublishedProposal(proposal: Proposal): boolean {
 }
 
 function isUsedInPoll(proposal: Proposal): boolean {
-  for (const poll of polls.values()) {
-    if (poll.proposals.includes(proposal.pk)) return true
-  }
-  return false
+  return usePollStore().anyPoll((p) => p.proposals.includes(proposal.pk))
 }
 
 export function getProposalBlockReason(agendaItem: AgendaItem) {

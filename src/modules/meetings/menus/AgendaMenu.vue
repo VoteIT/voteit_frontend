@@ -13,7 +13,7 @@ import { agendaLoadedEvent } from '@/modules/agendas/events'
 import useAgendaTags from '@/modules/agendas/useAgendaTags'
 import useAgenda from '@/modules/agendas/useAgenda'
 import useAgendaStore from '@/modules/agendas/useAgendaStore'
-import usePolls from '@/modules/polls/usePolls'
+import usePollStore from '@/modules/polls/usePollStore'
 import { PollState } from '@/modules/polls/types'
 import useProposalStore from '@/modules/proposals/useProposalStore'
 import useMeeting from '../useMeeting'
@@ -29,7 +29,7 @@ const { agenda, filteredAgenda } = useAgenda(
 )
 const agendaWorkflows = agendaItemType.useWorkflows()
 const { agendaTags, selectedAgendaTag } = useAgendaTags(agenda)
-const { getAiPolls } = usePolls()
+const { getAiPolls } = usePollStore()
 const { countProposals } = useProposalStore()
 
 function getAiType(state: string) {

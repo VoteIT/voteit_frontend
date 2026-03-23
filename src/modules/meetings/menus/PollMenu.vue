@@ -7,13 +7,13 @@ import { slugify } from '@/utils'
 import TypedEvent from '@/utils/TypedEvent'
 import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
 import { canAddPoll } from '@/modules/polls/rules'
-import usePolls from '@/modules/polls/usePolls'
+import usePollStore from '@/modules/polls/usePollStore'
 
 import useMeeting from '../useMeeting'
 
 const { t } = useI18n()
 const { meeting, meetingId, getMeetingRoute } = useMeeting()
-const { getUnvotedPolls } = usePolls()
+const { getUnvotedPolls } = usePollStore()
 
 const unvotedPolls = computed(() =>
   sorted(getUnvotedPolls(meetingId.value), (p) => p.started ?? '')

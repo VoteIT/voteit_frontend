@@ -1,8 +1,10 @@
 import { Ref, computed } from 'vue'
-import { anyPoll, getNextUnvotedPoll, filterPolls } from './usePolls'
+import usePollStore from './usePollStore'
 import { Poll, PollState } from './types'
 
 export default function useMeetingPolls(meeting: Ref<number>) {
+  const { anyPoll, filterPolls, getNextUnvotedPoll } = usePollStore()
+
   function isMeetingOngoing(poll: Poll) {
     return poll.meeting === meeting.value && poll.state === PollState.Ongoing
   }

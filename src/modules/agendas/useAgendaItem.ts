@@ -8,7 +8,7 @@ import { autoEllipsis, slugify } from '@/utils'
 import useMeeting from '../meetings/useMeeting'
 import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
 import { canAddPoll as _canAddPoll } from '../polls/rules'
-import usePolls, { anyPoll } from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import { PollState } from '../polls/types'
 import {
   canAddProposal as _canAddProposal,
@@ -32,17 +32,9 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
 
   const _agendaId = computed(() => unref(agendaId) ?? Number(route.params.aid))
 
-  const agendaItem = computed(() =>
-    typeof _agendaId.value === 'number'
-      ? getAgendaItem(_agendaId.value)
-      : undefined
-  )
-  const agendaBody = computed(() =>
-    typeof _agendaId.value === 'number'
-      ? getAgendaBody(_agendaId.value)?.body
-      : undefined
-  )
-  const { allPollTitles } = usePolls()
+  const agendaItem = computed(() => getAgendaItem(_agendaId.value))
+  const agendaBody = computed(() => getAgendaBody(_agendaId.value)?.body)
+  const pollStore = usePollStore()
 
   const agendaItemLastRead = computed(
     () => getLastRead(_agendaId.value) ?? new Date(0)
@@ -97,7 +89,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
         agendaItem.value.title,
         70 - addLength
       )} ${n}`
-      if (!allPollTitles.value.includes(title)) return title
+      if (!pollStore.allPollTitles.includes(title)) return title
     }
   })
 
@@ -131,7 +123,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   })
 
   const hasOngoingPolls = computed(() =>
-    anyPoll(
+    pollStore.anyPoll(
       (p) => p.agenda_item === _agendaId.value && p.state === PollState.Ongoing
     )
   )

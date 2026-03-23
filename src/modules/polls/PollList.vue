@@ -23,7 +23,7 @@ import { useI18n } from 'vue-i18n'
 import Dropdown from '@/components/Dropdown.vue'
 import useMeetingId from '../meetings/useMeetingId'
 import PollCard from '../polls/Poll.vue'
-import usePolls from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 
 import { pollType } from './contentTypes'
 import { Poll, PollState } from './types'
@@ -52,7 +52,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
-const { getPolls, getAiPolls } = usePolls()
+const { getMeetingPolls, getAiPolls } = usePollStore()
 const { getPriorityStates } = pollType.useWorkflows()
 
 const dropdowns = reactive(
@@ -74,7 +74,7 @@ const tabStates = computed(() => {
       const [attr, direction] = STATE_ORDERS[s.state] || ['pk', 'asc']
       const polls = props.agendaItem
         ? getAiPolls(props.agendaItem, s.state)
-        : getPolls(meetingId.value, s.state)
+        : getMeetingPolls(meetingId.value, s.state)
       return {
         ...s,
         polls: orderBy(polls, attr, direction),

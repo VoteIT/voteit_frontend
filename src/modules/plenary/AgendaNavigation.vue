@@ -84,7 +84,7 @@ import useAgenda from '../agendas/useAgenda'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useAgendaTags from '../agendas/useAgendaTags'
 import useMeetingId from '../meetings/useMeetingId'
-import { anyPoll } from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import { PollState } from '../polls/types'
 import useProposalStore from '../proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
@@ -99,6 +99,7 @@ const { agendaId } = useAgendaItem()
 const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
 const { currentTab, filterProposalStates } = usePlenary(agendaId)
+const { anyPoll } = usePollStore()
 const { countProposals } = useProposalStore()
 
 const isOpen = ref(false)

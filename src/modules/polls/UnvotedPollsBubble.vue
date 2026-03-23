@@ -29,7 +29,7 @@ import { useI18n } from 'vue-i18n'
 import { slugify } from '@/utils'
 
 import useMeeting from '../meetings/useMeeting'
-import usePolls from './usePolls'
+import usePollStore from './usePollStore'
 import { pollPlugins } from './registry'
 
 defineProps<{ modelValue?: boolean }>()
@@ -37,7 +37,7 @@ defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
-const { getUnvotedPolls } = usePolls()
+const { getUnvotedPolls } = usePollStore()
 
 const unvoted = computed(() => {
   return getUnvotedPolls(meetingId.value).map((poll) => ({

@@ -217,7 +217,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useLoader from '@/composables/useLoader'
 import { presenceCheckClosed } from '@/modules/presence/events'
-import usePolls from '@/modules/polls/usePolls'
+import usePollStore from '@/modules/polls/usePollStore'
 import { PollState } from '@/modules/polls/types'
 
 import useMeeting from '../useMeeting'
@@ -241,7 +241,7 @@ const {
 } = useElectoralRegisters(meetingId)
 const { fetchMeetingRegisters, getErMethod } = useERStore()
 const loader = useLoader('ElectoralRegisters')
-const { anyPoll } = usePolls()
+const { anyPoll } = usePollStore()
 
 useMeetingTitle(t('electoralRegister.plural'))
 

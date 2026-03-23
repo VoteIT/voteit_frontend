@@ -3,9 +3,7 @@ import { computed } from 'vue'
 import { meetingBubblePlugins } from '../meetings/registry'
 
 import UnvotedPollsBubble from './UnvotedPollsBubble.vue'
-import usePolls from './usePolls'
-
-const { getNextUnvotedPoll } = usePolls()
+import usePollStore from './usePollStore'
 
 meetingBubblePlugins.register({
   component: UnvotedPollsBubble,
@@ -14,6 +12,6 @@ meetingBubblePlugins.register({
   order: 0,
   requireAttention: true,
   checkActive(meeting) {
-    return !!getNextUnvotedPoll(meeting.pk)
+    return !!usePollStore().getNextUnvotedPoll(meeting.pk)
   }
 })

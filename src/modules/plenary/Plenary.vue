@@ -16,7 +16,7 @@ import useMeetingTitle from '../meetings/useMeetingTitle'
 import { pollType } from '../polls/contentTypes'
 import { Poll, PollState } from '../polls/types'
 import { pollPlugins } from '../polls/registry'
-import usePolls, { getPollStatus } from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import { proposalStates } from '../proposals/workflowStates'
 import { ProposalState } from '../proposals/types'
 import useProposalStore from '../proposals/useProposalStore'
@@ -75,7 +75,7 @@ const {
   getPlenaryRoute
 } = usePlenary(agendaId)
 const { countProposals } = useProposalStore()
-const { getAiPolls, getPollMethod } = usePolls()
+const { getAiPolls, getPollMethod, getPollStatus } = usePollStore()
 
 useMeetingChannel()
 useLoader('Plenary', useChannel('agenda_item', agendaId).promise)

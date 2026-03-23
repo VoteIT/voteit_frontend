@@ -105,7 +105,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import Widget from '@/components/Widget.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 
-import usePolls from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import useMeeting from '../meetings/useMeeting'
 
 import { pollType } from './contentTypes'
@@ -117,7 +117,7 @@ const props = defineProps<{ poll: Poll }>()
 
 const { t } = useI18n()
 const { isModerator, getMeetingRoute } = useMeeting()
-const { getPollStatus, getUserVote } = usePolls()
+const { getPollStatus, getUserVote } = usePollStore()
 const {
   canVote,
   approved,

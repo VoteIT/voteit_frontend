@@ -7,7 +7,7 @@ import useMeetingId from '../meetings/useMeetingId'
 import { Poll } from '../polls/types'
 import { PollStartData } from '../polls/methods/types'
 import useMeetingPolls from '../polls/useMeetingPolls'
-import usePolls from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import { Proposal } from '../proposals/types'
 
 import PollModal from './PollModal.vue'
@@ -26,7 +26,7 @@ const meetingId = useMeetingId()
 const { agendaId, nextPollTitle } = useAgendaItem()
 const { isBroadcasting, setBroadcast, setHandler, setPoll } = useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
-const { createPoll: create, getPoll } = usePolls()
+const { createPoll: create, getPoll } = usePollStore()
 
 /**
  * Ongoing polls with any on the selected proposals.

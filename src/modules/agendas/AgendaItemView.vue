@@ -28,10 +28,9 @@ import useMeeting from '../meetings/useMeeting'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useProposalStore from '../proposals/useProposalStore'
 import { Proposal, ProposalState } from '../proposals/types'
-import { DiscussionPost } from '../discussions/types'
 import { TagClickHandlerKey, TagsKey } from '../meetings/useTags'
 import PollList from '../polls/PollList.vue'
-import usePolls from '../polls/usePolls'
+import usePollStore from '../polls/usePollStore'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 
@@ -49,7 +48,7 @@ import useAgendaStore from './useAgendaStore'
 const { t } = useI18n()
 const { filterDiscussions } = useDiscussionStore()
 const { anyProposal, filterProposals } = useProposalStore()
-const { getAiPolls } = usePolls()
+const { getAiPolls } = usePollStore()
 const { meetingId, meeting, getMeetingRoute } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { getAgendaItem, hasNewContent } = useAgendaStore()
