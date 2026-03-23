@@ -1,8 +1,9 @@
 <script lang="ts" setup>
+import { chunked } from 'itertools'
+import { isEqual } from 'lodash'
 import { computed, reactive, ref, watch } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { chunk, isEqual } from 'lodash'
 
 import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
@@ -17,7 +18,7 @@ import InvitationModal from '../meetingInvites/InvitationModal.vue'
 import InvitationAnnotationsModal from '../meetingInvites/InvitationAnnotationsModal.vue'
 import InvitationAnnotation from '../meetingInvites/InvitationAnnotation.vue'
 import useInviteAnnotations from './useInviteAnnotations'
-import { translateMeetingRole } from '../meetings/utils'
+import { getMeetingRoleIcon, translateMeetingRole } from '../meetings/utils'
 import { canDeleteMeetingInvite } from '../meetings/rules'
 import { invitationScopes } from '../organisations/registry'
 
@@ -32,13 +33,7 @@ const PAGE_LENGTH = 25
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const {
-  isModerator,
-  meeting,
-  meetingId,
-  roleLabelsEditable,
-  getMeetingRoleIcon
-} = useMeeting()
+const { isModerator, meeting, meetingId, roleLabelsEditable } = useMeeting()
 const { bulkDelete, bulkRevoke } = useInviteStore()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { clearableDataTypes } = useInviteAnnotations(meeting)
@@ -156,7 +151,7 @@ const filteredInvites = computed(() => {
     })
 })
 
-const pages = computed(() => chunk(filteredInvites.value, PAGE_LENGTH))
+const pages = computed(() => [...chunked(filteredInvites.value, PAGE_LENGTH)])
 const currentPage = ref(1)
 // When filtering, the number of pages might change. Make sure currentPage is never higher than number of pages.
 watch(pages, (value) => {

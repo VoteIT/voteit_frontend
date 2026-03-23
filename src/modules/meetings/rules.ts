@@ -8,8 +8,8 @@ import { Meeting, MeetingRole, MeetingState } from '../meetings/types'
 import { MeetingInvite } from '../meetingInvites/types'
 import { isOrganisationManager } from '../organisations/rules'
 
-import { meetings } from './useMeetings'
 import { meetingStates } from './workflowStates'
+import useMeetingStore from './useMeetingStore'
 
 const { hasRole } = useContextRoles<MeetingRole>('meeting')
 // Import this a bit differently, to avoid cirkular imports
@@ -73,17 +73,20 @@ export function isModerator(meeting: MeetingT): boolean | undefined {
 }
 
 export function isActiveMeeting(meeting: MeetingT): boolean {
-  if (typeof meeting === 'number') meeting = meetings.get(meeting)
+  if (typeof meeting === 'number')
+    meeting = useMeetingStore().getMeeting(meeting)
   return !!meeting && ACTIVE_STATES.includes(meeting.state)
 }
 
 export function isArchivedMeeting(meeting: MeetingT): boolean {
-  if (typeof meeting === 'number') meeting = meetings.get(meeting)
+  if (typeof meeting === 'number')
+    meeting = useMeetingStore().getMeeting(meeting)
   return !!meeting && !!getState(meeting.state)?.isFinal
 }
 
 export function isFinishedMeeting(meeting: MeetingT): boolean {
-  if (typeof meeting === 'number') meeting = meetings.get(meeting)
+  if (typeof meeting === 'number')
+    meeting = useMeetingStore().getMeeting(meeting)
   return !!meeting && FINISHED_STATES.includes(meeting.state)
 }
 
@@ -116,7 +119,7 @@ export function canAddMeetingInvite(meeting: Meeting): boolean {
 }
 
 export function canDeleteMeetingInvite(invite: MeetingInvite): boolean {
-  const meeting = meetings.get(invite.meeting)
+  const meeting = useMeetingStore().getMeeting(invite.meeting)
   if (!meeting) return false
   return canAddMeetingInvite(meeting)
 }

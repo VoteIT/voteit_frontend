@@ -2,8 +2,7 @@ import { AgendaItem } from '../agendas/types'
 import { isAIModerator, isArchivedAI, isFinishedAI } from '../agendas/rules'
 import useAgendaStore from '../agendas/useAgendaStore'
 import useAuthStore from '../auth/useAuthStore'
-import { meetings } from '../meetings/useMeetings'
-import useElectoralRegisters from '../meetings/electoralRegisters/useElectoralRegisters'
+import useMeetingStore from '../meetings/useMeetingStore'
 import {
   isArchivedMeeting,
   isFinishedMeeting,
@@ -53,7 +52,7 @@ export function canChangePoll(poll: Poll): boolean {
 export function canDeletePoll(poll: Poll): boolean {
   const agendaItem = useAgendaStore().getAgendaItem(poll.agenda_item)
   if (!agendaItem) return false
-  const meeting = meetings.get(agendaItem.meeting)
+  const meeting = useMeetingStore().getMeeting(agendaItem.meeting)
   return (
     !isArchivedMeeting(meeting) &&
     !isArchivedAI(agendaItem) &&

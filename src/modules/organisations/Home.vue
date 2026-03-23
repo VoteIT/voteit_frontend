@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { chunk } from 'lodash'
+import { chunked, type Primitive } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
@@ -8,7 +8,7 @@ import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
-import { MenuItem } from '@/utils/types'
+import { MenuItem, PickByType } from '@/utils/types'
 
 import AppBar from '@/components/AppBar.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
@@ -33,6 +33,7 @@ import Invite from '../meetingInvites/Invite.vue'
 import { Meeting, MeetingState, MeetingRole } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
 import { meetingStates } from '../meetings/workflowStates'
+import useMeetingStore from '../meetings/useMeetingStore'
 
 import ContactInfoTab from './ContactInfoTab.vue'
 import useOrgStore from './useOrgStore'
@@ -50,6 +51,13 @@ const organisationIcons: Record<OrganisationRole, string> = {
 const { t } = useI18n()
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
+const meetingStore = useMeetingStore()
+const {
+  participatingClosedMeetings,
+  participatingOngoingMeetings,
+  participatingUpcomingMeetings,
+  stateCount
+} = storeToRefs(meetingStore)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -61,16 +69,7 @@ const loader = useLoader(
   useChannel('organisation', subscribeOrganisationId).promise
 )
 
-const {
-  existingMeetingYears,
-  meetings,
-  meetingStateCount,
-  participatingClosedMeetings,
-  participatingOngoingMeetings,
-  participatingUpcomingMeetings,
-  otherMeetingsExist,
-  filterMeetings
-} = useMeetings(loader.call)
+useMeetings(loader.call)
 const rules = useRules(t)
 
 const { requiresCheck } = useContactInfo(true)
@@ -207,42 +206,42 @@ const meetingCount = computed(() =>
 )
 
 /* Meeting search */
-const yearItems = computed(() => {
-  return [
-    {
-      value: null,
-      title: t('organization.allYears')
-    },
-    ...existingMeetingYears.value.map((value) => ({
-      value,
-      title: value.toFixed()
-    }))
-  ]
-})
-const stateItems = computed(() => {
-  return meetingStates
-    .filter(({ state }) => state in meetingStateCount.value)
+const yearItems = computed(() => [
+  {
+    value: null,
+    title: t('organization.allYears')
+  },
+  ...meetingStore.existingMeetingYears.map((value) => ({
+    value,
+    title: value.toFixed()
+  }))
+])
+
+const stateItems = computed(() =>
+  meetingStates
+    .filter(({ state }) => state in stateCount.value)
     .map(({ state, getName }) => {
-      const count = meetingStateCount.value[state]!
+      const count = stateCount.value[state]!
       return {
         value: state,
         title: `${getName(t, count)} (${count})`
       }
     })
-})
+)
+
 const INCLUDE_STATES = [MeetingState.Ongoing, MeetingState.Upcoming]
 const searchFilter = reactive<{
   search: string
   states: MeetingState[]
   year: number | null
-  order: keyof Meeting
+  order: keyof PickByType<Meeting, Primitive>
 }>({
   order: 'title',
   search: '',
   states: [],
   year: null
 })
-watch(meetingStateCount, (value) => {
+watch(stateCount, (value) => {
   // If no ongoing or upcoming meetings, default to showing closed meetings
   searchFilter.states =
     MeetingState.Ongoing in value || MeetingState.Upcoming in value
@@ -252,14 +251,14 @@ watch(meetingStateCount, (value) => {
 
 const currentSearchPage = ref(1)
 const searchedMeetings = computed(() =>
-  filterMeetings(
+  meetingStore.filterMeetings(
     searchFilter.states,
     searchFilter.order,
     searchFilter.search,
     searchFilter.year
   )
 )
-const chunkedMeetings = computed(() => chunk(searchedMeetings.value, 10))
+const chunkedMeetings = computed(() => [...chunked(searchedMeetings.value, 10)])
 watch(searchedMeetings, () => {
   currentSearchPage.value = 1
 })
@@ -268,7 +267,7 @@ const searchInfo = computed<
   { type: 'info' | 'warning'; text: string } | undefined
 >(() => {
   if (searchedMeetings.value.length) return
-  if (!meetings.size) {
+  if (!meetingStore.hasVisibleMeetings) {
     return {
       type: 'info',
       text: t('home.noVisibleMeetings')
@@ -504,7 +503,10 @@ function cancelEdit() {
               <AddMeeting @close="close" />
             </template>
           </DefaultDialog>
-          <DefaultDialog v-if="otherMeetingsExist" :title="$t('meeting.find')">
+          <DefaultDialog
+            v-if="meetingStore.hasHiddenMeetings"
+            :title="$t('meeting.find')"
+          >
             <template #activator="{ props }">
               <v-btn
                 block

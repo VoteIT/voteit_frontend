@@ -12,7 +12,7 @@ import {
 } from './contentTypes'
 import { canChangeMeeting, isModerator } from './rules'
 import { GroupMembership, GroupRole, MeetingGroup } from './types'
-import useMeetings from './useMeetings'
+import useMeetingStore from './useMeetingStore'
 
 const meetingGroups = reactive(new Map<number, MeetingGroup>())
 meetingGroupType.updateMap(meetingGroups, { meeting: 'meeting' })
@@ -22,8 +22,6 @@ groupRoleType.updateMap(groupRoles)
 
 const groupMemberships = reactive(new Map<number, GroupMembership>())
 groupMembershipType.updateMap(groupMemberships, { meeting: 'm' })
-
-const { meetings } = useMeetings()
 
 export function getMeetingGroup(pk: number) {
   return meetingGroups.get(pk)
@@ -38,6 +36,7 @@ export function isGroupMember(group: number, user: number) {
 
 export default function useMeetingGroups(meetingId: MaybeRef<number>) {
   const authStore = useAuthStore()
+  const { getMeeting } = useMeetingStore()
 
   function isGroupMember(
     group: (typeof orderedGroups)['value'][number]
@@ -105,7 +104,7 @@ export default function useMeetingGroups(meetingId: MaybeRef<number>) {
   return {
     allGroupMembers,
     canChangeMeeting: computed(() => {
-      const meeting = meetings.get(unref(meetingId))
+      const meeting = getMeeting(unref(meetingId))
       if (!meeting) return false
       return canChangeMeeting(meeting)
     }),

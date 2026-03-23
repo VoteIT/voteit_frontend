@@ -1,18 +1,20 @@
 import { sorted } from 'itertools'
 import { computed, MaybeRef, unref } from 'vue'
 
-import { meetings } from '../useMeetings'
+import useMeetingStore from '../useMeetingStore'
+
 import type { ElectoralRegister } from './types'
 import { hasWeightedVotes } from './utils'
 import useERStore from './useERStore'
 
 export default function useElectoralRegisters(meetingId?: MaybeRef<number>) {
   const store = useERStore()
+  const { getMeeting } = useMeetingStore()
 
   const meeting = computed(() => {
     const meeting = unref(meetingId)
     if (!meeting) return
-    return meetings.get(meeting)
+    return getMeeting(meeting)
   })
 
   const availableErMethods = computed(() => {

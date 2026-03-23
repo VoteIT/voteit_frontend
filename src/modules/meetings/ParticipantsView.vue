@@ -130,6 +130,7 @@ import { meetingType } from './contentTypes'
 import useMeetingTitle from './useMeetingTitle'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import MeetingToolbar from './MeetingToolbar.vue'
+import { roleIcons } from './utils'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -138,7 +139,6 @@ const {
   meetingDialect,
   canChangeRoles,
   canViewMeetingInvite,
-  roleIcons,
   roleItems,
   getMeetingRoute
 } = useMeeting()

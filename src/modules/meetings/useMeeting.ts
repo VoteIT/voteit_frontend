@@ -3,23 +3,25 @@ import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouteLocationRaw, useRouter } from 'vue-router'
 
-import { slugify } from '@/utils'
 import useAuthStore from '../auth/useAuthStore'
 
-import { meetings, roleIcons, getMeetingRoleIcon } from './useMeetings'
 import { Author, MeetingRole } from './types'
 import * as rules from './rules'
 import { meetingType } from './contentTypes'
 import {
   getMeetingRoute as _getMeetingRoute,
+  getMeetingRoleIcon,
+  roleIcons,
   translateMeetingRole
 } from './utils'
 import useMeetingId from './useMeetingId'
+import useMeetingStore from './useMeetingStore'
 
 const postAsStore = reactive(new Map<number, Author>())
 
 export default function useMeeting() {
   const authStore = useAuthStore()
+  const { getMeeting } = useMeetingStore()
   const router = useRouter()
   const meetingRoles = meetingType.useContextRoles()
   const { t } = useI18n()
@@ -44,7 +46,7 @@ export default function useMeeting() {
     getRoleLabels((role) => !meetingDialect.value?.block_roles?.includes(role))
   )
   const meetingId = useMeetingId()
-  const meeting = computed(() => meetings.get(meetingId.value))
+  const meeting = computed(() => getMeeting(meetingId.value))
   const meetingDialect = computed(() => meeting.value?.dialect)
   const meetingJoinRoute = computed(() => getMeetingRoute('meeting:join'))
   const meetingRoute = computed(() => getMeetingRoute())
@@ -112,12 +114,10 @@ export default function useMeeting() {
     meetingRoute,
     meetingUrl,
     postAs,
-    roleIcons,
     roleItems,
     roleLabels,
     roleLabelsEditable,
     userRoles,
-    getMeetingRoleIcon,
     getMeetingRoute,
     getRoleLabels,
     hasRole

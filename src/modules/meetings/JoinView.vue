@@ -16,13 +16,15 @@ import { accessPolicyType, meetingType } from './contentTypes'
 import { MeetingRole } from './types'
 import useMeeting from './useMeeting'
 import useMeetings from './useMeetings'
+import useMeetingStore from './useMeetingStore'
 import { canBecomeModerator } from './rules'
 
 const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
+const { getMeeting } = useMeetingStore()
 const orgStore = useOrgStore()
 const loader = useLoader('JoinMeeting')
-const { meetings } = useMeetings(loader.call)
+useMeetings(loader.call)
 const router = useRouter()
 const policies = ref<AccessPolicy[]>([])
 
@@ -35,7 +37,7 @@ const policyComponents = computed(() => {
     }))
 })
 
-const meeting = computed(() => meetings.get(meetingId.value))
+const meeting = computed(() => getMeeting(meetingId.value))
 const canBecomeModeratorMeeting = computed(
   () => meeting.value && canBecomeModerator()
 )

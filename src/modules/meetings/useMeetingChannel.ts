@@ -4,14 +4,14 @@ import { useRouter } from 'vue-router'
 import useLoader from '@/composables/useLoader'
 import useChannel from '@/composables/useChannel'
 import useMeeting from './useMeeting'
-import useMeetings from './useMeetings'
+import useMeetingStore from './useMeetingStore'
 
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel() {
   const { isModerator, meetingId, meeting, meetingJoinRoute, userRoles } =
     useMeeting()
-  const { fetchMeeting } = useMeetings()
+  const { fetchMeeting } = useMeetingStore()
   const router = useRouter()
 
   const fetchFailed = ref(false)

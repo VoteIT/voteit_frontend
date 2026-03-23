@@ -15,17 +15,15 @@ import ComponentSlot from './ComponentSlot.vue'
 import FakeRolesDialog from './FakeRolesDialog.vue'
 import NavigationDrawer from './NavigationDrawer.vue'
 import useMeetingChannel from './useMeetingChannel'
-import useMeetings from './useMeetings'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { MeetingRole } from './types'
 import { DEFAULT_ROLE_ORDER } from './constants'
-import { translateMeetingRole } from './utils'
+import { getMeetingRoleIcon, translateMeetingRole } from './utils'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const { meeting, meetingId, userRoles } = useMeeting()
-const { getMeetingRoleIcon } = useMeetings()
 
 const { groupRoles, userGroups } = useMeetingGroups(meetingId)
 
