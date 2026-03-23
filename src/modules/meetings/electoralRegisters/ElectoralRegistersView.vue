@@ -226,6 +226,8 @@ import { MeetingRole } from '../types'
 import { electoralRegisterType, meetingType } from '../contentTypes'
 import MeetingToolbar from '../MeetingToolbar.vue'
 import useElectoralRegisters from './useElectoralRegisters'
+import useERStore from './useERStore'
+import { hasWeightedVotes } from './utils'
 
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
@@ -235,11 +237,9 @@ const {
   currentElectoralRegister,
   erMethod,
   erMethodWeighted,
-  fetchRegisters,
-  getErMethod,
-  hasWeightedVotes,
   erMethodAllowsManual
 } = useElectoralRegisters(meetingId)
+const { fetchMeetingRegisters, getErMethod } = useERStore()
 const loader = useLoader('ElectoralRegisters')
 const { anyPoll } = usePolls()
 
@@ -343,6 +343,11 @@ async function createRegister(close: () => void) {
   } catch {
     alert('*Could not create electoral register')
   }
+}
+
+async function fetchRegisters() {
+  // TODO: Handle errors?
+  await fetchMeetingRegisters(meetingId.value).catch()
 }
 
 onBeforeMount(() => {

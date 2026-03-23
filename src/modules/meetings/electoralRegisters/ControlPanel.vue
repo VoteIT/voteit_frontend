@@ -74,7 +74,8 @@ import useAlert from '@/composables/useAlert'
 import { meetingType } from '../contentTypes'
 import useMeeting from '../useMeeting'
 
-import useElectoralRegisters, { getErAttributes } from './useElectoralRegisters'
+import useElectoralRegisters from './useElectoralRegisters'
+import { iterErAttributes } from './utils'
 
 const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
@@ -105,21 +106,22 @@ const currentName = computed({
   }
 })
 
-const methods = computed(() => {
-  return availableErMethods.value?.map((method) => {
-    const isCurrent = method.name === currentName.value
-    return {
-      ...method,
-      attributes: [...getErAttributes(method, t)],
-      isCurrent,
-      props: {
-        elevation: isCurrent ? 6 : 0,
-        color: isCurrent ? 'info' : undefined,
-        class: {
-          'pa-4': isCurrent
+const methods = computed(
+  () =>
+    availableErMethods.value?.map((method) => {
+      const isCurrent = method.name === currentName.value
+      return {
+        ...method,
+        attributes: [...iterErAttributes(method, t)],
+        isCurrent,
+        props: {
+          elevation: isCurrent ? 6 : 0,
+          color: isCurrent ? 'info' : undefined,
+          class: {
+            'pa-4': isCurrent
+          }
         }
       }
-    }
-  })
-})
+    })
+)
 </script>

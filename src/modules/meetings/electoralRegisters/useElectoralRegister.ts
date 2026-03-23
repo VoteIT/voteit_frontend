@@ -1,18 +1,18 @@
 import { computed, Ref } from 'vue'
 
-import useElectoralRegisters from './useElectoralRegisters'
+import useERStore from './useERStore'
 
 export default function useElectoralRegister(pk: Ref<number | undefined>) {
-  const { getRegister, erMethods } = useElectoralRegisters()
+  const store = useERStore()
 
   const electoralRegister = computed(() => {
     if (!pk.value) return
-    return getRegister(pk.value)
+    return store.getRegister(pk.value)
   })
 
   const erMethod = computed(
     () =>
-      erMethods.value?.find(
+      store.erMethods?.find(
         (erm) => erm.name === electoralRegister.value?.source
       )
   )

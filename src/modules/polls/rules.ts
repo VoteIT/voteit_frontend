@@ -12,15 +12,14 @@ import {
 import { Meeting } from '../meetings/types'
 
 import { Poll, PollState } from './types'
-
-const { getRegister } = useElectoralRegisters()
+import useERStore from '../meetings/electoralRegisters/useERStore'
 
 const PERMISSIVE_STATES = [PollState.Private, PollState.Upcoming] // States where moderators can make changes
 
 export function isPollVoter(poll: Poll): boolean {
   const { user } = useAuthStore()
   if (!poll.electoral_register || !user) return false
-  const register = getRegister(poll.electoral_register)
+  const register = useERStore().getRegister(poll.electoral_register)
   if (!register) return false
   return !!register.weights.find((v) => v.user === user?.pk)
 }

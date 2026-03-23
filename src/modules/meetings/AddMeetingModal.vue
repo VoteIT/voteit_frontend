@@ -17,10 +17,9 @@ import {
 } from '../speakerLists/types'
 
 import { meetingType } from './contentTypes'
-import useElectoralRegisters, {
-  getErAttributes
-} from './electoralRegisters/useElectoralRegisters'
 import useDialects from './dialects/useDialects'
+import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
+import { iterErAttributes } from './electoralRegisters/utils'
 import { Meeting, MeetingRole } from './types'
 
 type FormData = {
@@ -118,7 +117,7 @@ function annotateErMethod(
   method: NonNullable<(typeof availableErMethods)['value']>[number]
 ) {
   return {
-    attributes: [...getErAttributes(method, t)],
+    attributes: [...iterErAttributes(method, t)],
     text: method.description,
     value: method.name,
     ...method
