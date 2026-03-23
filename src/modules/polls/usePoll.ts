@@ -21,13 +21,11 @@ import usePollStore from './usePollStore'
 export default function usePoll(pollRef: Ref<number | undefined>) {
   const { t } = useI18n()
   const { getUserRandomSortValue } = useAuthStore()
-  const pollStore = usePollStore()
+  const store = usePollStore()
   const { getProposals } = useProposalStore()
 
   const poll = computed(() =>
-    typeof pollRef.value === 'number'
-      ? pollStore.getPoll(pollRef.value)
-      : undefined
+    typeof pollRef.value === 'number' ? store.getPoll(pollRef.value) : undefined
   )
   const { electoralRegister, erMethod, erMethodWeighted, totalWeight } =
     useElectoralRegister(computed(() => poll.value?.electoral_register))
@@ -59,11 +57,11 @@ export default function usePoll(pollRef: Ref<number | undefined>) {
 
   const pollStatus = computed(() => {
     if (!poll.value) return
-    return pollStore.getPollStatus(poll.value.pk)
+    return store.getPollStatus(poll.value.pk)
   })
   const nextUnvoted = computed(() => {
     if (!poll.value) return
-    const next = pollStore.getNextUnvotedPoll(poll.value.meeting, poll.value)
+    const next = store.getNextUnvotedPoll(poll.value.meeting, poll.value)
     if (!next || next.pk === poll.value.pk) return
     return next
   })
@@ -76,9 +74,7 @@ export default function usePoll(pollRef: Ref<number | undefined>) {
   )
   const isOngoing = computed(() => poll.value?.state === PollState.Ongoing)
   const isWithheld = computed(() => poll.value?.state === PollState.Withheld)
-  const userVote = computed(
-    () => poll.value && pollStore.getUserVote(poll.value)
-  )
+  const userVote = computed(() => poll.value && store.getUserVote(poll.value))
 
   const canChange = computed(() => poll.value && canChangePoll(poll.value))
   const canDelete = computed(() => poll.value && canDeletePoll(poll.value))
