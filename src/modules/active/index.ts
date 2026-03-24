@@ -1,6 +1,6 @@
-import { Predicate } from 'itertools'
 import { toRef } from 'vue'
 
+import { countMatching } from '@/utils'
 import {
   meetingGroupTablePlugins,
   meetingRolePlugins,
@@ -8,12 +8,11 @@ import {
   meetingSlotPlugins
 } from '../meetings/registry'
 import useMeetingComponent from '../meetings/useMeetingComponent'
-import { GroupMembership, Meeting, MeetingState } from '../meetings/types'
+import { Meeting, MeetingState } from '../meetings/types'
 
 import ControlPanel from './ControlPanel.vue'
 import MenuPlugin from './MenuPlugin.vue'
 import useActive from './useActive'
-// import useMeetingGroups from '../meetings/useMeetingGroups'
 
 const COMPONENT_NAME = 'active_users'
 
@@ -66,16 +65,6 @@ meetingRolePlugins.register({
   }
 })
 
-function countActive(
-  memberships: GroupMembership[],
-  checkActive: Predicate<number>
-) {
-  return memberships.reduce(
-    (acc, { user }) => acc + Number(checkActive(user)),
-    0
-  )
-}
-
 meetingGroupTablePlugins.register({
   checkActive,
   id: COMPONENT_NAME,
@@ -84,19 +73,15 @@ meetingGroupTablePlugins.register({
       return columns
     const meetingId = toRef(meeting, 'pk')
     const { checkActive } = useActive(meetingId)
-    // const { allGroupMembers } = useMeetingGroups(meetingId)
     return [
       ...columns,
       {
         name: COMPONENT_NAME,
-        // getCount () {
-        //   return countActive(allGroupMembers.value, checkActive)
-        // },
         getDescription(t) {
           return t('activeUsers.groupActiveDescription')
         },
         getValue(group) {
-          return countActive(group.memberships, checkActive)
+          return countMatching(group.memberships, (m) => checkActive(m.user))
         },
         getTitle(t) {
           return t('activeUsers.activePlural')

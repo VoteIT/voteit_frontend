@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { imap, sum } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
@@ -196,7 +197,7 @@ const meetingGroups = computed(() => {
 })
 const groupsExpanded = ref(false)
 const meetingCount = computed(() =>
-  groupRules.reduce((acc, { meetings }) => acc + meetings.value.length, 0)
+  sum(imap(groupRules, ({ meetings }) => meetings.value.length))
 )
 
 const formChanged = computed(

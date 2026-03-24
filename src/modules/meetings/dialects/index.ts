@@ -1,3 +1,5 @@
+import { imap, sum } from 'itertools'
+import { countMatching } from '@/utils'
 import { meetingGroupTablePlugins } from '../registry'
 import { MeetingGroupColumn, MeetingState } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
@@ -32,7 +34,7 @@ meetingGroupTablePlugins.register({
         component,
         name: 'groupVotes',
         getCount() {
-          return meetingGroups.value.reduce((acc, g) => acc + (g.votes || 0), 0)
+          return sum(imap(meetingGroups.value, (g) => g.votes ?? 0))
         },
         getTitle(t) {
           return t('meeting.groups.votes')
@@ -67,10 +69,8 @@ meetingGroupTablePlugins.register({
           return t('electoralRegister.inCurrent')
         },
         getValue(group) {
-          return group.memberships.reduce(
-            (acc, { user }) =>
-              usersInCurrentRegister.value.has(user) ? acc + 1 : acc,
-            0
+          return countMatching(group.memberships, (m) =>
+            usersInCurrentRegister.value.has(m.user)
           )
         }
       }

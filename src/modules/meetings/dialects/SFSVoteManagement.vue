@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { sum } from 'itertools'
+import { imap, sum } from 'itertools'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -102,12 +102,9 @@ const roleMemberships = computed(() =>
 )
 
 const groupVotes = computed(() => props.group.votes || 0)
-const assignedVotes = computed(() => {
-  return roleMemberships.value.reduce(
-    (acc, member) => acc + (member.votes ?? 0),
-    0
-  )
-})
+const assignedVotes = computed(() =>
+  sum(imap(roleMemberships.value, (m) => m.votes ?? 0))
+)
 
 const allAssigned = computed(() => props.group.votes === assignedVotes.value)
 const leaderRoleId = computed(

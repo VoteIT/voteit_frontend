@@ -1,15 +1,8 @@
-import {
-  any,
-  filter,
-  map,
-  Predicate,
-  Primitive,
-  reduce,
-  sorted
-} from 'itertools'
+import { any, filter, map, Predicate, Primitive, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
+import { countMatching } from '@/utils'
 import useAgendaStore from '../agendas/useAgendaStore'
 import { agendaDeletedEvent } from '../agendas/events'
 import { meetingType } from '../meetings/contentTypes'
@@ -46,7 +39,7 @@ export default defineStore('proposals', () => {
   }
 
   function countProposals(predicate: Predicate<Proposal>) {
-    return reduce(iterProposals(predicate), (acc) => acc + 1, 0)
+    return countMatching(proposals.values(), predicate)
   }
 
   function anyProposal(predicate: Predicate<Proposal>): boolean {

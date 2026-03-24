@@ -1,3 +1,4 @@
+import { imap, sum } from 'itertools'
 import { computed, Ref } from 'vue'
 
 import useERStore from './useERStore'
@@ -21,12 +22,8 @@ export default function useElectoralRegister(pk: Ref<number | undefined>) {
   const erWeightMultiplier = computed(() => {
     return erWeightDecimals.value === 0 ? 1 : 10 ** erWeightDecimals.value
   })
-  const totalWeight = computed(
-    () =>
-      electoralRegister.value?.weights.reduce(
-        (acc, { weight }) => acc + weight,
-        0
-      )
+  const totalWeight = computed(() =>
+    sum(imap(electoralRegister.value?.weights ?? [], (w) => w.weight))
   )
 
   const toInteger = (weight: number) =>

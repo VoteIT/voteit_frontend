@@ -198,7 +198,7 @@
 </template>
 
 <script lang="ts" setup>
-import { partition } from 'itertools'
+import { imap, partition, sum } from 'itertools'
 import { DateTime } from 'luxon'
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -392,7 +392,7 @@ const currentERText = computed(() => {
   return hasWeightedVotes(currentElectoralRegister.value)
     ? t('electoralRegister.weightedVoterCount', {
         count: weights.length,
-        total: weights.reduce((curr, w) => curr + w.weight, 0)
+        total: sum(imap(weights, (w) => w.weight))
       })
     : t('electoralRegister.voterCount', weights.length)
 })

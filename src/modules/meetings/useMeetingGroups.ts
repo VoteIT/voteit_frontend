@@ -1,4 +1,4 @@
-import { any, filter } from 'itertools'
+import { any, filter, imap, sum } from 'itertools'
 import { sortBy } from 'lodash'
 import { computed, MaybeRef, reactive, unref } from 'vue'
 
@@ -59,7 +59,7 @@ export default function useMeetingGroups(meetingId: MaybeRef<number>) {
   )
   const memberCount = computed(() => allGroupMembers.value.length)
   const voteCount = computed(() =>
-    allGroupMembers.value.reduce((acc, { votes }) => acc + (votes || 0), 0)
+    sum(imap(allGroupMembers.value, (m) => m.votes ?? 0))
   )
   const canPostAs = computed(
     () => isModerator(unref(meetingId)) || userGroups.value.length
