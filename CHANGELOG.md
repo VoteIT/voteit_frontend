@@ -4,9 +4,11 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.39.4 (??)
+## 0.39.4 (2026-03-24)
 
 - Realtime/plenary: Add choice to automatically follow agenda item when broadcasting
+- Pinia store refactoring
+- Bugfix: Stores would sometimes miss messages due to race condition (queue introduced)
 
 ## 0.39.3 (2026-03-19)
 
