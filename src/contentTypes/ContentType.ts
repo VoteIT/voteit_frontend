@@ -49,10 +49,12 @@ export class BaseContentType<
   protected readonly contentType: CType<T, Transition, Role>
   protected methodHandlers: Map<string, MethodHandler<any>>
   private _api?: ContentAPI<T>
+  private messageQueue: Map<string, ChannelsMessage['p'][]> // Payloads
 
   constructor(contentType: CType<T, Transition, Role>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
+    this.messageQueue = new Map()
     socket.addTypeHandler(this.name, this.handleMessage.bind(this))
   }
 
@@ -60,10 +62,35 @@ export class BaseContentType<
     return this.contentType.name
   }
 
-  private handleMessage(msg: ChannelsMessage) {
-    const method = msg.t.split('.')[1]
+  /**
+   * If we get a message that has no handler yet, queue that message for when/if we get a handler.
+   */
+  private queueMessage(method: string, payload: ChannelsMessage['p']) {
+    if (!this.messageQueue.has(method)) this.messageQueue.set(method, [])
+    this.messageQueue.get(method)!.push(payload)
+    // If no handler was registered within a minute, throw away message queue.
+    setTimeout(() => {
+      this.messageQueue.delete(method)
+    }, 60_000)
+  }
+
+  /**
+   * Whenever a handler is registered, check for queued messages and send immediately.
+   * Queue will then be cleared.
+   */
+  private sendQueuedMessages(method: string, handler: MethodHandler<any>) {
+    const queuedMessages = this.messageQueue.get(method)
+    if (!queuedMessages) return
+    for (const payload of queuedMessages) handler(payload)
+    // Clear queue
+    this.messageQueue.delete(method)
+  }
+
+  private handleMessage({ p, t }: ChannelsMessage) {
+    const method = t.split('.')[1]
     const handler = this.methodHandlers.get(method)
-    if (handler) handler(msg.p)
+    if (handler) handler(p)
+    else this.queueMessage(method, p)
   }
 
   public methodCall<RT = T>(
@@ -77,6 +104,7 @@ export class BaseContentType<
   public on<LT = T>(method: string, fn: MethodHandler<LT>, override = true) {
     if (override || !this.methodHandlers.has(method))
       this.methodHandlers.set(method, fn)
+    this.sendQueuedMessages(method, fn)
     return this
   }
 
