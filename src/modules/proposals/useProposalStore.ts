@@ -65,8 +65,11 @@ export default defineStore('proposals', () => {
     return proposals.get(pk)
   }
 
+  /**
+   * Get proposals from primary keys, in same order.
+   */
   function getProposals(pks: number[]) {
-    return filter(proposals.values(), (p) => pks.includes(p.pk))
+    return pks.map(getProposal).filter((p) => !!p)
   }
 
   // Text documents (diff stuff)
