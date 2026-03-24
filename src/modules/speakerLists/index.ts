@@ -5,7 +5,7 @@ import restApi from '@/utils/restApi'
 import { agendaItemType } from '../agendas/contentTypes'
 import { AgendaTransition } from '../agendas/types'
 import { meetingExportPlugins } from '../meetings/registry'
-import { meetingRoomStore } from '../rooms/useRooms'
+import useRoomStore from '../rooms/useRoomStore'
 
 import { anySpeakerList, speakerSystems } from './useSpeakerLists'
 
@@ -23,9 +23,10 @@ meetingExportPlugins.register({
       speakerSystems.values(),
       (s) => s.meeting === meetingId
     )
+    const store = useRoomStore()
     return systems.map(({ pk, room }) => {
       return {
-        title: meetingRoomStore.get(room)?.title ?? '-',
+        title: store.getRoom(room)?.title ?? '-',
         formats: [getDownloadFormat(pk, 'csv'), getDownloadFormat(pk, 'json')]
       }
     })

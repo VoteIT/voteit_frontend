@@ -5,7 +5,8 @@ import { useI18n } from 'vue-i18n'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import useMeetingId from '../meetings/useMeetingId'
-import useRooms, { meetingRoomStore } from '../rooms/useRooms'
+import useRooms from '../rooms/useRooms'
+import useRoomStore from '../rooms/useRoomStore'
 import useRoom from '../rooms/useRoom'
 import SpeakerList from '../speakerLists/SpeakerList.vue'
 import { getSpeakerLists } from '../speakerLists/useSpeakerLists'
@@ -16,6 +17,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
+const { getRoom } = useRoomStore()
 const { activeSpeakerSystems, managingSpeakerSystems } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
 
@@ -26,7 +28,7 @@ const speakerLists = computed(() =>
       activeSpeakerSystems.value.some((system) => system.room === list.room)
   ).map((list) => ({
     list,
-    room: meetingRoomStore.get(
+    room: getRoom(
       activeSpeakerSystems.value.find((sls) => sls.room === list.room)?.room!
     )!
   }))
@@ -34,7 +36,7 @@ const speakerLists = computed(() =>
 
 const manageSpeakerListsMenu = computed(() => {
   return managingSpeakerSystems.value.map((system) => {
-    const room = meetingRoomStore.get(system.room)
+    const room = getRoom(system.room)
     return {
       title: t('speaker.manageSystem', { ...room }),
       prependIcon: 'mdi-bullhorn',

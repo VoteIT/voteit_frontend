@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { filter } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -30,8 +31,7 @@ import {
 } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
-import { meetingRoomStore } from '../rooms/useRooms'
-import { filter, map } from 'itertools'
+import useRoomStore from '../rooms/useRoomStore'
 
 const props = defineProps<{
   room: number
@@ -40,6 +40,7 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const { meetingId, meetingRoute } = useMeeting()
+const { filterRooms } = useRoomStore()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
 const { agendaId, agendaItem } = useAgendaItem()
 const rules = useRules(t)
@@ -153,7 +154,7 @@ const otherRoomsWithLists = computed(() => {
         sl.state === SpeakerListState.Open
     ).map((sl) => sl.room)
   )
-  return filter(meetingRoomStore.values(), (room) => rooms.has(room.pk))
+  return filterRooms((room) => rooms.has(room.pk))
 })
 </script>
 

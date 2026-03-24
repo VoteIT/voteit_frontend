@@ -10,7 +10,7 @@ import useProposalStore from '../proposals/useProposalStore'
 import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 import { SpeakerSystemState } from '../speakerLists/types'
 
-import { highlightedStore, meetingRoomStore } from './useRooms'
+import useRoomStore from './useRoomStore'
 import { roomType } from './contentTypes'
 
 /**
@@ -26,15 +26,14 @@ const textSize = useStorage<'normal' | 'large' | 'x-large'>(
 
 export default function useRoom() {
   const authStore = useAuthStore()
+  const { getHighlighted, getRoom } = useRoomStore()
   const proposalStore = useProposalStore()
   const route = useRoute()
   const roomId = computed(() => Number(route.params.roomId))
   useChannel('room', roomId)
 
-  const meetingRoom = computed(() => meetingRoomStore.get(roomId.value))
-  const highlighted = computed(
-    () => highlightedStore.get(roomId.value)?.highlighted
-  )
+  const meetingRoom = computed(() => getRoom(roomId.value))
+  const highlighted = computed(() => getHighlighted(roomId.value)?.highlighted)
   const highlightedProposals = computed(() =>
     highlighted.value ? proposalStore.getProposals(highlighted.value) : []
   )

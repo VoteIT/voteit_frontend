@@ -8,10 +8,10 @@ import { durationToString } from '@/utils'
 import restApi from '@/utils/restApi'
 import User from '@/components/User.vue'
 import useMeeting from '../meetings/useMeeting'
+import useRoomStore from '../rooms/useRoomStore'
 
 import useSpeakerHistory from './useSpeakerHistory'
 import useSpeakerSystems from './useSpeakerSystems'
-import { meetingRoomStore } from '../rooms/useRooms'
 
 function getDownloadUrl(system: number, type: 'csv' | 'json') {
   return `${restApi.defaults.baseURL}export-speakers/${system}/${type}/`
@@ -19,6 +19,7 @@ function getDownloadUrl(system: number, type: 'csv' | 'json') {
 
 const { t } = useI18n()
 const { isModerator, meetingId } = useMeeting()
+const { getRoom } = useRoomStore()
 const { allSpeakerSystems } = useSpeakerSystems(meetingId)
 const currentTab = ref('default')
 const speakerSystem = computed(() => {
@@ -33,7 +34,7 @@ function secondsToTimeDisplay(seconds: number) {
 
 function* getSystemTabs() {
   for (const system of allSpeakerSystems.value) {
-    const room = meetingRoomStore.get(system.room)
+    const room = getRoom(system.room)
     yield {
       value: String(system.pk),
       text: room?.title ?? '-'
