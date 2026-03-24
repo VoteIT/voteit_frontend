@@ -3,19 +3,20 @@ import { computed, MaybeRef, unref } from 'vue'
 import useAuthStore from '../auth/useAuthStore'
 
 import { isQueuedSpeaker } from './types'
-import {
-  getCurrent,
-  getHistory,
-  getRoomSpeakerSystem,
-  speakerApi,
-  speakerLists,
-  userToSpeaker
-} from './useSpeakerLists'
 import { speakerListType } from './contentTypes'
 import { canEnterList, canLeaveList, canStartSpeaker } from './rules'
+import useSpeakerStore from './useSpeakerStore'
 
 export default function useSpeakerList(listId: MaybeRef<number | null>) {
   const authStore = useAuthStore()
+  const {
+    getCurrent,
+    getHistory,
+    getSpeakerList,
+    getRoomSpeakerSystem,
+    speakerApi,
+    userToSpeaker
+  } = useSpeakerStore()
 
   const speakerHistory = computed(() => {
     const list = unref(listId)
@@ -24,7 +25,7 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
   })
   const speakerList = computed(() => {
     const list = unref(listId)
-    return list ? speakerLists.get(list) : undefined
+    return list ? getSpeakerList(list) : undefined
   })
   const userQueue = computed(() => speakerList.value?.queue ?? [])
   const speakerQueue = computed(() => {

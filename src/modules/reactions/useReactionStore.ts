@@ -19,8 +19,6 @@ function getCountKey(contentType: string, objectId: number, button: number) {
 }
 
 export default defineStore('reactions', () => {
-  const authStore = useAuthStore()
-
   const reactionButtons = reactive<Map<number, ReactionButton>>(new Map())
   const reactions = reactive<Map<number, Reaction>>(new Map())
   const reactionCounts = reactive<Map<string, number>>(new Map())
@@ -36,6 +34,8 @@ export default defineStore('reactions', () => {
       )
       reactionCounts.set(key, payload.count)
     })
+
+  const authStore = useAuthStore()
 
   function iterMeetingButtons(
     meeting: number,

@@ -8,12 +8,13 @@ import { Speaker, SpeakerSystem } from './types'
 import systemMethods from './systemMethods'
 import useSpeakerList from './useSpeakerList'
 import useSpeakerAnnotations from './useSpeakerAnnotations'
-import { getCurrent } from './useSpeakerLists'
+import useSpeakerStore from './useSpeakerStore'
 
 export default function useSpeakerGroups(
   listId: Ref<number | null>,
   t: ComposerTranslation
 ) {
+  const { getCurrent } = useSpeakerStore()
   const { speakerSystem, speakerQueue } = useSpeakerList(listId)
   const { annotateSpeaker } = useSpeakerAnnotations(useMeetingId(), t)
 

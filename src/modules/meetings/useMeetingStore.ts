@@ -18,12 +18,12 @@ const MAIN_PAGE_MEETING_STATES: MeetingState[] = [
 ]
 
 export default defineStore('meetings', () => {
-  const authStore = useAuthStore()
-
   const meetings = reactive(new Map<number, Meeting>())
   const meetingRoles = meetingType.useContextRoles()
 
   meetingType.updateMap(meetings)
+
+  const authStore = useAuthStore()
 
   function getMeeting(meeting: number) {
     return meetings.get(meeting)

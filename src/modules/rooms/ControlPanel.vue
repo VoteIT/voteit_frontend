@@ -24,7 +24,7 @@ import {
   SpeakerSystemState
 } from '../speakerLists/types'
 import { speakerSystemType } from '../speakerLists/contentTypes'
-import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
+import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
 import { roomType } from './contentTypes'
 import { IMeetingRoom } from './types'
@@ -37,6 +37,7 @@ const meetingId = useMeetingId()
 const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
+const { findSpeakerSystem } = useSpeakerStore()
 
 const { getUserIds } = speakerSystemType.useContextRoles()
 

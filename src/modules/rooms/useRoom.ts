@@ -7,8 +7,8 @@ import useChannel from '@/composables/useChannel'
 import useAuthStore from '../auth/useAuthStore'
 import usePoll from '../polls/usePoll'
 import useProposalStore from '../proposals/useProposalStore'
-import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
 import { SpeakerSystemState } from '../speakerLists/types'
+import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
 import useRoomStore from './useRoomStore'
 import { roomType } from './contentTypes'
@@ -27,6 +27,7 @@ const textSize = useStorage<'normal' | 'large' | 'x-large'>(
 export default function useRoom() {
   const authStore = useAuthStore()
   const { getHighlighted, getRoom } = useRoomStore()
+  const { findSpeakerSystem } = useSpeakerStore()
   const proposalStore = useProposalStore()
   const route = useRoute()
   const roomId = computed(() => Number(route.params.roomId))

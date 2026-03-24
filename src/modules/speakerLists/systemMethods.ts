@@ -1,7 +1,7 @@
 import { ComposerTranslation } from 'vue-i18n'
 
 import { Speaker, SpeakerSystem, SpeakerSystemMethod } from './types'
-import { timesSpokenGetter } from './useSpeakerLists'
+import useSpeakerStore from './useSpeakerStore'
 
 interface ISystemMethod {
   getGroupKeyFn(
@@ -16,7 +16,7 @@ const priorityGroupKeyFn: ISystemMethod['getGroupKeyFn'] = (
   settings: { max_times: number },
   listId
 ) => {
-  const timesSpoken = timesSpokenGetter(listId)
+  const timesSpoken = useSpeakerStore().timesSpokenGetter(listId)
   // A speaker system can have a maximum amount of lists. This will get spoken times up to that max value.
   function maxListValue(user: number) {
     const spoken = timesSpoken(user)

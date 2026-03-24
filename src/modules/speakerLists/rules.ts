@@ -4,17 +4,13 @@ import { isActiveMeeting, isModerator } from '../meetings/rules'
 import { Meeting, MeetingRole } from '../meetings/types'
 
 import {
-  SpeakerList,
+  type SpeakerList,
   SpeakerListState,
-  SpeakerSystem,
+  type SpeakerSystem,
   SpeakerSystemRole,
   SpeakerSystemState
 } from './types'
-import {
-  getCurrent,
-  getRoomSpeakerSystem,
-  speakerLists
-} from './useSpeakerLists'
+import useSpeakerStore from './useSpeakerStore'
 
 const { hasRole } = useContextRoles<SpeakerSystemRole>('speaker_system')
 const meetingRoles = useContextRoles<MeetingRole>('meeting')
@@ -22,7 +18,9 @@ const meetingRoles = useContextRoles<MeetingRole>('meeting')
 /* Speaker Systems */
 
 function getActiveList(system: SpeakerSystem) {
-  return system.active_list && speakerLists.get(system.active_list)
+  return (
+    system.active_list && useSpeakerStore().getSpeakerList(system.active_list)
+  )
 }
 
 function isActiveSystem(system: SpeakerSystem): boolean {
@@ -58,7 +56,7 @@ export function isSystemSpeaker(
 
 export function hasActiveSpeaker(system: SpeakerSystem) {
   const active = getActiveList(system)
-  return !!(active && getCurrent(active.pk))
+  return !!(active && useSpeakerStore().getCurrent(active.pk))
 }
 
 export function canAddSpeakerSystem(meeting: Meeting): boolean {
@@ -84,7 +82,7 @@ export function canDeleteSpeakerSystem(system: SpeakerSystem): boolean {
 /* Speaker Lists */
 
 function isActiveList(list: SpeakerList): boolean {
-  const system = getRoomSpeakerSystem(list.room)
+  const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   return system?.active_list === list.pk
 }
 
@@ -93,17 +91,17 @@ export function isOpenList(list: SpeakerList): boolean {
 }
 
 function isCurrentlySpeaking(list: SpeakerList): boolean {
-  return getCurrent(list.pk) === useAuthStore().user?.pk
+  return useSpeakerStore().getCurrent(list.pk) === useAuthStore().user?.pk
 }
 
 export function canChangeSpeakerList(list: SpeakerList): boolean {
-  const system = getRoomSpeakerSystem(list.room)
+  const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   return !!system && canManageSystem(system)
 }
 export const canDeleteSpeakerList = canChangeSpeakerList
 
 export function canActivateList(list: SpeakerList): boolean {
-  const system = getRoomSpeakerSystem(list.room)
+  const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   return (
     !!system &&
     canManageSystem(system) &&
@@ -117,7 +115,7 @@ export function canManageSystem(system: SpeakerSystem): boolean {
 }
 
 export function canStartSpeaker(list: SpeakerList): boolean {
-  const system = getRoomSpeakerSystem(list.room)
+  const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   return (
     !!system &&
     isActiveList(list) &&
@@ -127,12 +125,12 @@ export function canStartSpeaker(list: SpeakerList): boolean {
 }
 
 export function canStopSpeaker(list: SpeakerList): boolean {
-  const system = getRoomSpeakerSystem(list.room)
+  const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   return !!system && isActiveList(list) && !!isSystemModerator(system)
 }
 
 export function canEnterList(list: SpeakerList): boolean {
-  const system = getRoomSpeakerSystem(list.room)
+  const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   if (!system) return false
   return isActiveSystem(system) && isOpenList(list) && !!isSystemSpeaker(system)
 }

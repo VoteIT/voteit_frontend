@@ -7,7 +7,7 @@ import { AgendaTransition } from '../agendas/types'
 import { meetingExportPlugins } from '../meetings/registry'
 import useRoomStore from '../rooms/useRoomStore'
 
-import { anySpeakerList, speakerSystems } from './useSpeakerLists'
+import useSpeakerStore from './useSpeakerStore'
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
@@ -19,14 +19,11 @@ function getDownloadFormat(system: number, format: 'csv' | 'json') {
 meetingExportPlugins.register({
   id: 'speakerHistory',
   getExports(t, meetingId) {
-    const systems = filter(
-      speakerSystems.values(),
-      (s) => s.meeting === meetingId
-    )
-    const store = useRoomStore()
+    const systems = useSpeakerStore().getSpeakerSystems(meetingId)
+    const { getRoom } = useRoomStore()
     return systems.map(({ pk, room }) => {
       return {
-        title: store.getRoom(room)?.title ?? '-',
+        title: getRoom(room)?.title ?? '-',
         formats: [getDownloadFormat(pk, 'csv'), getDownloadFormat(pk, 'json')]
       }
     })
@@ -37,6 +34,10 @@ meetingExportPlugins.register({
 })
 
 agendaItemType.transitions.registerGuard(AgendaTransition.Close, (ai, t) => {
-  if (anySpeakerList((sl) => sl.agenda_item === ai.pk && !!sl.current))
+  if (
+    useSpeakerStore().anySpeakerList(
+      (sl) => sl.agenda_item === ai.pk && !!sl.current
+    )
+  )
     return { text: t('speaker.agendaItemHasOngoingSpeaker'), isBlocking: true }
 })

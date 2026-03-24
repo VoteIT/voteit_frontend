@@ -9,7 +9,7 @@ import useRooms from '../rooms/useRooms'
 import useRoomStore from '../rooms/useRoomStore'
 import useRoom from '../rooms/useRoom'
 import SpeakerList from '../speakerLists/SpeakerList.vue'
-import { getSpeakerLists } from '../speakerLists/useSpeakerLists'
+import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
 const props = defineProps<{
   agendaId: number
@@ -18,6 +18,8 @@ const props = defineProps<{
 const { t } = useI18n()
 const meetingId = useMeetingId()
 const { getRoom } = useRoomStore()
+const { getSpeakerLists } = useSpeakerStore()
+
 const { activeSpeakerSystems, managingSpeakerSystems } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
 

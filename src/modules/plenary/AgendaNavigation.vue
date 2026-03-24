@@ -88,7 +88,7 @@ import usePollStore from '../polls/usePollStore'
 import { PollState } from '../polls/types'
 import useProposalStore from '../proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
-import { anySpeakerList } from '../speakerLists/useSpeakerLists'
+import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
 import usePlenary from './usePlenary'
 
@@ -101,6 +101,7 @@ const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
 const { currentTab, filterProposalStates } = usePlenary(agendaId)
 const { anyPoll } = usePollStore()
 const { countProposals } = useProposalStore()
+const { anySpeakerList } = useSpeakerStore()
 
 const isOpen = ref(false)
 

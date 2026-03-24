@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { filter } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -15,6 +14,7 @@ import DefaultForm from '@/components/DefaultForm.vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
+import useRoomStore from '../rooms/useRoomStore'
 
 import {
   canChangeSpeakerList,
@@ -22,7 +22,7 @@ import {
   hasActiveSpeaker
 } from './rules'
 import { speakerListType } from './contentTypes'
-import useSpeakerLists, { getSpeakerLists, listApi } from './useSpeakerLists'
+import useSpeakerLists from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
 import {
   SpeakerListState,
@@ -31,7 +31,7 @@ import {
 } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
-import useRoomStore from '../rooms/useRoomStore'
+import useSpeakerStore from './useSpeakerStore'
 
 const props = defineProps<{
   room: number
@@ -41,6 +41,7 @@ const { t } = useI18n()
 
 const { meetingId, meetingRoute } = useMeeting()
 const { filterRooms } = useRoomStore()
+const { listApi, getSpeakerLists } = useSpeakerStore()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
 const { agendaId, agendaItem } = useAgendaItem()
 const rules = useRules(t)

@@ -14,7 +14,7 @@ import { ProposalState } from '../proposals/types'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import useRoom from '../rooms/useRoom'
 import ActiveSpeakerList from '../speakerLists/ActiveSpeakerList.vue'
-import { findSpeakerSystem } from '../speakerLists/useSpeakerLists'
+import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
 import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
@@ -26,6 +26,7 @@ provide(RoleContextKey, 'meeting')
 const { t } = useI18n()
 
 const { highlightedProposals, meetingRoom, passiveMode, textSize } = useRoom()
+const { findSpeakerSystem } = useSpeakerStore()
 provide(ReadonlyViewKey, passiveMode)
 
 const { agendaItem } = useAgendaItem(

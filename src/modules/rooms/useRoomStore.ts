@@ -2,11 +2,9 @@ import { type Predicate, any, filter } from 'itertools'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
-import { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 import { roomType } from './contentTypes'
-import { speakerSystems } from '../speakerLists/useSpeakerLists'
-import { SpeakerSystem } from '../speakerLists/types'
 import { proposalHighlightEvent } from './events'
+import type { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 
 export default defineStore('rooms', () => {
   const meetingRooms = reactive(new Map<number, IMeetingRoom>())
@@ -35,21 +33,10 @@ export default defineStore('rooms', () => {
     return filter(meetingRooms.values(), predicate)
   }
 
-  function* iterSpeakerSystems(
-    meeting: number,
-    predicate?: Predicate<SpeakerSystem>
-  ) {
-    for (const system of speakerSystems.values()) {
-      if (system.meeting !== meeting) continue
-      if (!predicate || predicate(system)) yield system
-    }
-  }
-
   return {
     anyRoom,
     filterRooms,
     getHighlighted,
-    getRoom,
-    iterSpeakerSystems
+    getRoom
   }
 })

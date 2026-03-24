@@ -1,12 +1,6 @@
 import { computed, MaybeRef, Ref, unref } from 'vue'
-import { ComposerTranslation } from 'vue-i18n'
 
-import {
-  getCurrent,
-  getRoomSpeakerSystem,
-  speakerLists,
-  getRoomSpeakerLists
-} from './useSpeakerLists'
+import useSpeakerStore from './useSpeakerStore'
 import { canManageSystem } from './rules'
 import useSpeakerList from './useSpeakerList'
 import { speakerSystemType } from './contentTypes'
@@ -15,6 +9,12 @@ export default function useSpeakerSystem(
   room: MaybeRef<number>,
   agendaItem?: Ref<number>
 ) {
+  const {
+    getCurrent,
+    getSpeakerList,
+    getRoomSpeakerLists,
+    getRoomSpeakerSystem
+  } = useSpeakerStore()
   const speakerSystem = computed(() => getRoomSpeakerSystem(unref(room)))
   /**
    * The ID of currently active speaker list on this system
@@ -24,7 +24,7 @@ export default function useSpeakerSystem(
   )
   const systemActiveList = computed(() =>
     speakerSystem.value?.active_list
-      ? speakerLists.get(speakerSystem.value.active_list)
+      ? getSpeakerList(speakerSystem.value.active_list)
       : undefined
   )
   const currentlySpeaking = computed(
