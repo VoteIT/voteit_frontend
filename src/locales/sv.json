@@ -58,7 +58,6 @@
   "total": "Totalt",
   "tryAgain": "Försök igen",
   "update": "Uppdatera",
-  "undo": "Ångra",
   "unknown": "Okänd",
   "unknownUser": "okänd",
   "value": "Värde",
@@ -736,23 +735,6 @@
       "manual": "Manuell: Du väljer själv när en dagordningspunkt ska sändas",
       "subtitle": "Aktivera för automatisk sändning",
       "title": "Följ dagordningspunkt"
-    }
-  },
-  "presence": {
-    "activateSystem": "Aktivera system för närvarokontroll",
-    "check": "Närvarokontroll",
-    "closeCheck": "Avsluta närvarokontroll",
-    "imHere": "Jag är här!",
-    "newCheck": "Ny närvarokontroll",
-    "notePresent": "Markera din närvaro",
-    "ongoingCheck": "Pågående närvarokontroll",
-    "openedAt": "Öppnades",
-    "presenceNoted": "Vi har noterat din närvaro",
-    "presentCount": "Inga närvarande deltagare | En närvarande deltagare | {count} närvarande deltagare",
-    "recommendActive": "Om du inte har en specifik anledning att använda närvarokontroll rekommenderas att använda \"Aktiva användare\" istället.",
-    "workflow": {
-      "closed": "Avslutad | Avslutade",
-      "open": "Öppen | Öppna"
     }
   },
   "printing": {

@@ -58,7 +58,6 @@
   "total": "Total",
   "tryAgain": "Try again",
   "update": "Update",
-  "undo": "Undo",
   "unknown": "Unknown",
   "unknownUser": "unknown",
   "value": "Value",
@@ -736,23 +735,6 @@
       "manual": "Manual: You choose when an agenda item is broadcasted",
       "subtitle": "Activate for automatic broadcast",
       "title": "Follow agenda item"
-    }
-  },
-  "presence": {
-    "activateSystem": "Activate presence check system",
-    "check": "Presence check",
-    "closeCheck": "Close presence check",
-    "imHere": "I'm here!",
-    "newCheck": "New presence check",
-    "notePresent": "click to note your presence",
-    "ongoingCheck": "Ongoing presence check",
-    "openedAt": "Opened",
-    "presenceNoted": "We have noted your presence",
-    "presentCount": "No participants present | One present participant | {count} present participants",
-    "recommendActive": "If you don't have a specific reason to use presence check, we recommend using \"Active users\" instead.",
-    "workflow": {
-      "closed": "Closed",
-      "open": "Open"
     }
   },
   "printing": {
