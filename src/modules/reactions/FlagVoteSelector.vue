@@ -7,7 +7,7 @@ import { dialogQuery } from '@/utils'
 import useMeetingId from '../meetings/useMeetingId'
 import type { Proposal } from '../proposals/types'
 
-import useReactions from './useReactions'
+import useReactionStore from './useReactionStore'
 import { ReactionButton, isFlagButton } from './types'
 
 const props = defineProps<{
@@ -19,7 +19,7 @@ const emit = defineEmits<{ (e: 'selected', value: number[]): void }>()
 
 const { t } = useI18n()
 const { getMeetingButtons, getButtonReactionCount, getUserReaction } =
-  useReactions()
+  useReactionStore()
 const meetingId = useMeetingId()
 
 function isTemplateProposal(btn: ReactionButton, proposal: number) {

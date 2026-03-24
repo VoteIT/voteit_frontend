@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import useMeeting from '../meetings/useMeeting'
 import { Proposal, ProposalButtonMode } from '../proposals/types'
 
-import useReactions from './useReactions'
+import useReactionStore from './useReactionStore'
 import ReactionButton from './ReactionButton.vue'
 import { isFlagButton, IFlagButton } from './types'
 
@@ -14,7 +14,7 @@ const {
   getMeetingButtons,
   removeUserReacted,
   setUserReacted
-} = useReactions()
+} = useReactionStore()
 
 const props = defineProps<{
   mode?: ProposalButtonMode

@@ -7,12 +7,12 @@ import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
 import RealReactionButton from './RealReactionButton.vue'
-import useReactions from './useReactions'
+import useReactionStore from './useReactionStore'
 import FlagButton from './FlagButton.vue'
 import { isFlagButton } from './types'
 
 const authStore = useAuthStore()
-const { getMeetingButtons } = useReactions()
+const { getMeetingButtons } = useReactionStore()
 const meetingId = useMeetingId()
 
 const meetingButtons = computed(() => getMeetingButtons(meetingId.value))

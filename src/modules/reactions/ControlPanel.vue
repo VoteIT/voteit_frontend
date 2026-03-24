@@ -11,7 +11,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
-import useReactions from './useReactions'
+import useReactionStore from './useReactionStore'
 import ReactionEditModal from './ReactionEditModal.vue'
 import FlagButtonEditModal from './FlagButtonEditModal.vue'
 import { canAddReactionButton } from './rules'
@@ -22,11 +22,11 @@ import FlagButton from './FlagButton.vue'
 
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
-const reactions = useReactions()
+const { getMeetingButtons } = useReactionStore()
 
 const meetingButtons = computed({
   get() {
-    return reactions.getMeetingButtons(meetingId.value)
+    return getMeetingButtons(meetingId.value)
   },
   set(btns) {
     for (const [order, btn] of enumerate(btns, 1)) {

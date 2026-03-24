@@ -5,7 +5,7 @@ import { Proposal } from '../proposals/types'
 
 import FlagButton from './FlagButton.vue'
 import { IFlagButton } from './types'
-import useReactions from './useReactions'
+import useReactionStore from './useReactionStore'
 
 const props = defineProps<{
   buttons: IFlagButton[]
@@ -16,7 +16,7 @@ defineEmits<{
   (e: 'selected', proposals: number[]): void
 }>()
 
-const { getButtonReactionCount } = useReactions()
+const { getButtonReactionCount } = useReactionStore()
 
 const annotated = computed(() =>
   props.buttons.map((button) => {

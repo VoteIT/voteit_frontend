@@ -7,7 +7,7 @@ import useAgendaItem from '../agendas/useAgendaItem'
 import { isGroupAuthor } from '../meetings/types'
 import useMeetingId from '../meetings/useMeetingId'
 import useUserDetails from '../organisations/useUserDetails'
-import useReactions from '../reactions/useReactions'
+import useReactionStore from '../reactions/useReactionStore'
 import ReactionButton from '../reactions/ReactionButton.vue'
 
 import DiscussionPost from './DiscussionPost.vue'
@@ -23,7 +23,7 @@ defineProps<{
 const meetingId = useMeetingId()
 const { getUser } = useUserDetails()
 const { agendaId, agendaItem, canAddDiscussionPost } = useAgendaItem()
-const { getMeetingButtons } = useReactions()
+const { getMeetingButtons } = useReactionStore()
 
 const submitIcon = computed(() =>
   agendaItem.value?.block_discussion

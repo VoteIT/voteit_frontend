@@ -30,7 +30,7 @@ import { computed, ref } from 'vue'
 
 import UserList from '@/components/UserList.vue'
 
-import useReactions from './useReactions'
+import useReactionStore from './useReactionStore'
 import {
   canAddReaction,
   canDeleteReaction,
@@ -52,7 +52,7 @@ const {
   setUserReacted,
   removeUserReacted,
   getButtonReactionCount
-} = useReactions()
+} = useReactionStore()
 const reaction = computed(() => getUserReaction(props.button, props.relation))
 const count = computed(() =>
   getButtonReactionCount(props.button, props.relation)

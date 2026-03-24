@@ -1,7 +1,7 @@
 import { meetingType } from '../meetings/contentTypes'
 import { isActiveMeeting, isModerator } from '../meetings/rules'
 
-import { reactionButtons } from './useReactions'
+import useReactionStore from './useReactionStore'
 import { Reaction, ReactionButton, isFlagButton } from './types'
 
 const { hasRole } = meetingType.useContextRoles()
@@ -14,7 +14,7 @@ export function canAddReaction(button: ReactionButton): boolean {
 }
 
 export function canDeleteReaction(reaction: Reaction): boolean {
-  const button = reactionButtons.get(reaction.button)
+  const button = useReactionStore().getButton(reaction.button)
   return !!button && canAddReaction(button)
 }
 
