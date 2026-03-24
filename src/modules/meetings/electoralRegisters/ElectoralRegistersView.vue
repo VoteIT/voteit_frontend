@@ -200,14 +200,7 @@
 <script lang="ts" setup>
 import { partition } from 'itertools'
 import { DateTime } from 'luxon'
-import {
-  computed,
-  onBeforeMount,
-  onBeforeUnmount,
-  reactive,
-  ref,
-  watch
-} from 'vue'
+import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { cols } from '@/utils/defaults'
@@ -216,7 +209,6 @@ import { socket } from '@/utils/Socket'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useLoader from '@/composables/useLoader'
-import { presenceCheckClosed } from '@/modules/presence/events'
 import usePollStore from '@/modules/polls/usePollStore'
 import { PollState } from '@/modules/polls/types'
 
@@ -352,10 +344,6 @@ async function fetchRegisters() {
 
 onBeforeMount(() => {
   loader.call(fetchRegisters)
-  presenceCheckClosed.on(fetchRegisters)
-})
-onBeforeUnmount(() => {
-  presenceCheckClosed.off(fetchRegisters)
 })
 
 function fetchRoles() {

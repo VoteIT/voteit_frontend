@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import { MeetingRole } from '@/modules/meetings/types'
-import { ChannelsConfig, ThemeColor } from '@/utils/types'
-import { PresenceCheckState } from '../modules/presence/workflowStates'
 import { ComposerTranslation } from 'vue-i18n'
+
+import { ChannelsConfig, ThemeColor } from '@/utils/types'
+import { MeetingRole } from '@/modules/meetings/types'
 
 export interface WorkflowState<
   State = string,
@@ -59,22 +59,6 @@ export interface BaseContent {
 
 export interface StateContent extends BaseContent {
   state: string
-}
-
-export interface PresenceCheck {
-  pk: number
-  meeting: number
-  presence_system: number
-  state: PresenceCheckState
-  opened: string
-  closed: string
-}
-
-export interface Presence {
-  pk: number
-  user: number
-  presence_check: number
-  created: string
 }
 
 export interface Vote {
