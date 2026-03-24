@@ -1,58 +1,3 @@
-<template>
-  <v-card class="my-2 proposal-text" :border="true">
-    <v-card-title class="d-flex">
-      <!-- Empty title not really allowed, so no translation needed here -->
-      <span class="text-truncate flex-grow-1">{{
-        document.title || '-- text document --'
-      }}</span>
-      <v-btn
-        v-if="canChangeDocument"
-        icon="mdi-pencil"
-        variant="text"
-        @click="editDocument"
-      />
-      <v-btn
-        v-if="canDeleteDocument"
-        icon="mdi-delete"
-        variant="text"
-        color="warning"
-        @click="deleteDocument"
-      />
-      <v-btn
-        variant="text"
-        icon="mdi-chevron-up"
-        :class="{ collapsed }"
-        @click="collapsed = !collapsed"
-      />
-    </v-card-title>
-    <v-expand-transition>
-      <div v-show="!collapsed">
-        <template v-for="p in document.paragraphs" :key="p.pk">
-          <v-divider />
-          <v-card-text>
-            <Tag :name="p.tag" :count="proposalCount[p.tag]" />
-            <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
-          </v-card-text>
-          <v-card-actions v-if="canAddProposal">
-            <AddTextProposalModal :paragraph="p">
-              <template #activator="{ props }">
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-text-box-plus-outline"
-                  size="small"
-                  :text="$t('proposal.change')"
-                  variant="elevated"
-                  v-bind="props"
-                />
-              </template>
-            </AddTextProposalModal>
-          </v-card-actions>
-        </template>
-      </div>
-    </v-expand-transition>
-  </v-card>
-</template>
-
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -62,11 +7,13 @@ import { openModalEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
 
+import useAgendaStore from '../agendas/useAgendaStore'
+
 import { ProposalText, proposalTextType } from './contentTypes'
-import useTextDocument from './useTextDocument'
 import EditTextDocumentModal from './EditProposalTextModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import useProposalStore from './useProposalStore'
+import { canChangeDocument, canDeleteDocument, canAddProposal } from './rules'
 
 const props = defineProps<{
   document: ProposalText
@@ -75,6 +22,17 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const { countProposals } = useProposalStore()
+const { getAgendaItem } = useAgendaStore()
+
+const perms = computed(() => {
+  const ai = getAgendaItem(props.document.agenda_item)
+  return {
+    change: canChangeDocument(props.document),
+    delete: canDeleteDocument(props.document),
+    addProposal: !!ai && canAddProposal(ai)
+  }
+})
+
 const proposalCount = computed(() => {
   const mapping: Record<string, number> = {}
   for (const p of props.document.paragraphs) {
@@ -105,9 +63,62 @@ async function deleteDocument() {
 }
 
 const collapsed = ref(false)
-const { canAddProposal, canChangeDocument, canDeleteDocument } =
-  useTextDocument(ref(props.document))
 </script>
+
+<template>
+  <v-card class="my-2 proposal-text" :border="true">
+    <v-card-title class="d-flex">
+      <!-- Empty title not really allowed, so no translation needed here -->
+      <span class="text-truncate flex-grow-1">{{
+        document.title || '-- text document --'
+      }}</span>
+      <v-btn
+        v-if="perms.change"
+        icon="mdi-pencil"
+        variant="text"
+        @click="editDocument"
+      />
+      <v-btn
+        v-if="perms.delete"
+        icon="mdi-delete"
+        variant="text"
+        color="warning"
+        @click="deleteDocument"
+      />
+      <v-btn
+        variant="text"
+        icon="mdi-chevron-up"
+        :class="{ collapsed }"
+        @click="collapsed = !collapsed"
+      />
+    </v-card-title>
+    <v-expand-transition>
+      <div v-show="!collapsed">
+        <template v-for="p in document.paragraphs" :key="p.pk">
+          <v-divider />
+          <v-card-text>
+            <Tag :name="p.tag" :count="proposalCount[p.tag]" />
+            <p class="mt-2 proposal-text-paragraph">{{ p.body }}</p>
+          </v-card-text>
+          <v-card-actions v-if="perms.addProposal">
+            <AddTextProposalModal :paragraph="p">
+              <template #activator="{ props }">
+                <v-btn
+                  color="primary"
+                  prepend-icon="mdi-text-box-plus-outline"
+                  size="small"
+                  :text="$t('proposal.change')"
+                  variant="elevated"
+                  v-bind="props"
+                />
+              </template>
+            </AddTextProposalModal>
+          </v-card-actions>
+        </template>
+      </div>
+    </v-expand-transition>
+  </v-card>
+</template>
 
 <style lang="sass">
 .proposal-text
