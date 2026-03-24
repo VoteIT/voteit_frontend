@@ -15,12 +15,14 @@ import { agendaDeletedEvent } from '../agendas/events'
 import { meetingType } from '../meetings/contentTypes'
 
 import { Proposal } from './types'
-import { proposalType } from './contentTypes'
+import { ProposalText, proposalTextType, proposalType } from './contentTypes'
 
 export default defineStore('proposals', () => {
   const proposals = reactive<Map<number, Proposal>>(new Map())
+  const proposalTexts = reactive<Map<number, ProposalText>>(new Map())
 
   proposalType.updateMap(proposals, { participants: 'm', moderators: 'm' })
+  proposalTextType.updateMap(proposalTexts, { agenda_item: 'agenda_item' })
 
   // Automatically clear proposals for meeting when leaving.
   meetingType.channel.onLeave((meeting) => {
@@ -74,11 +76,36 @@ export default defineStore('proposals', () => {
     return filter(proposals.values(), (p) => pks.includes(p.pk))
   }
 
+  // Text documents (diff stuff)
+
+  function anyDocument(predicate: Predicate<ProposalText>) {
+    return any(proposalTexts.values(), predicate)
+  }
+
+  /**
+   * Get a list of documents matching predicate
+   */
+  function getDocuments(predicate: Predicate<ProposalText>) {
+    return filter(proposalTexts.values(), predicate)
+  }
+
+  /**
+   * Get document paragraph by primary key
+   */
+  function getParagraph(pk: number) {
+    for (const document of proposalTexts.values())
+      for (const paragraph of document.paragraphs)
+        if (paragraph.pk === pk) return paragraph
+  }
+
   return {
+    anyDocument,
     countProposals,
     anyProposal,
     filterProposals,
     forProposals,
+    getDocuments,
+    getParagraph,
     getProposal,
     getProposals
   }

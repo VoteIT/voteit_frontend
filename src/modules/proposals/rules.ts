@@ -11,11 +11,8 @@ import { isFinishedMeeting, isModerator, isProposer } from '../meetings/rules'
 import usePollStore from '../polls/usePollStore'
 
 import { ProposalText } from './contentTypes'
-import useTextDocuments from './useTextDocuments'
 import { Proposal, ProposalState } from './types'
 import useProposalStore from './useProposalStore'
-
-const { proposalTexts } = useTextDocuments()
 
 /* Proposal texts / documents */
 
@@ -29,10 +26,7 @@ export function documentHasProposals(doc: ProposalText): boolean {
 }
 
 function agendaItemHasDocuments(ai: AgendaItem): boolean {
-  for (const doc of proposalTexts.values()) {
-    if (doc.agenda_item === ai.pk) return true
-  }
-  return false
+  return useProposalStore().anyDocument((doc) => doc.agenda_item === ai.pk)
 }
 
 export function canAddDocument(ai: AgendaItem): boolean {

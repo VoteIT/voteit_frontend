@@ -27,9 +27,9 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { TextParagraph } from './contentTypes'
 import AddProposalModal from './AddProposalModal.vue'
-import useTextDocuments from './useTextDocuments'
+import useProposalStore from './useProposalStore'
+import type { TextParagraph } from './contentTypes'
 import type { DiffProposal } from './types'
 
 const props = defineProps<{
@@ -41,7 +41,7 @@ if (!(props.proposal || props.paragraph))
   throw new Error('AddTextProposalModal requires either paragraph or proposal')
 
 const { t } = useI18n()
-const { getParagraph } = useTextDocuments()
+const { getParagraph } = useProposalStore()
 
 const paragraph = computed(
   () =>

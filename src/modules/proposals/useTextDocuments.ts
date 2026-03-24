@@ -1,27 +1,10 @@
-import { filter } from 'itertools'
-import { computed, MaybeRef, reactive, readonly, unref } from 'vue'
+import { computed, MaybeRef, unref } from 'vue'
 
-import { ProposalText, proposalTextType } from './contentTypes'
-
-const proposalTexts = reactive<Map<number, ProposalText>>(new Map())
-
-proposalTextType.updateMap(proposalTexts, { agenda_item: 'agenda_item' })
-
-type DocFilter = (document: ProposalText) => boolean
-
-function getDocuments(_filter: DocFilter) {
-  return filter(proposalTexts.values(), _filter)
-}
-
-function getParagraph(pk: number) {
-  for (const document of proposalTexts.values()) {
-    for (const paragraph of document.paragraphs) {
-      if (paragraph.pk === pk) return paragraph
-    }
-  }
-}
+import useProposalStore from './useProposalStore'
 
 export default function useTextDocuments(agendaItem?: MaybeRef<number>) {
+  const { getDocuments } = useProposalStore()
+
   const aiProposalTexts = computed(() => {
     const ai = unref(agendaItem)
     if (!ai) return []
@@ -29,10 +12,6 @@ export default function useTextDocuments(agendaItem?: MaybeRef<number>) {
   })
 
   return {
-    proposalTexts: readonly(proposalTexts),
-    aiProposalTexts,
-    api: proposalTextType.api,
-    getDocuments,
-    getParagraph
+    aiProposalTexts
   }
 }

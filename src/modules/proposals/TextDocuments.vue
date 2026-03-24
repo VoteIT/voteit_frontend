@@ -10,10 +10,10 @@ import { computed } from 'vue'
 import useAgendaItem from '../agendas/useAgendaItem'
 
 import TextDocument from './TextDocument.vue'
-import useTextDocuments from './useTextDocuments'
+import useProposalStore from './useProposalStore'
 
 const { agendaId } = useAgendaItem()
-const { getDocuments } = useTextDocuments()
+const { getDocuments } = useProposalStore()
 const documents = computed(() =>
   getDocuments((doc) => doc.agenda_item === agendaId.value)
 )
