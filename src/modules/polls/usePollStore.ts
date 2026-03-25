@@ -20,9 +20,9 @@ import { Poll, PollState, PollStatus } from './types'
 import type { PollStartData } from './methods/types'
 
 export default defineStore('polls', () => {
-  const polls = reactive<Map<number, Poll>>(new Map())
-  const userVotes = reactive<Map<number, Vote>>(new Map())
-  const pollStatuses = reactive<Map<number, PollStatus>>(new Map())
+  const polls = reactive(new Map<number, Poll>())
+  const userVotes = reactive(new Map<number, Vote>())
+  const pollStatuses = reactive(new Map<number, PollStatus>())
 
   pollType
     .updateMap(polls, { participants: 'meeting', moderators: 'meeting' })

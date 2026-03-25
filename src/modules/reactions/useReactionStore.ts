@@ -19,9 +19,9 @@ function getCountKey(contentType: string, objectId: number, button: number) {
 }
 
 export default defineStore('reactions', () => {
-  const reactionButtons = reactive<Map<number, ReactionButton>>(new Map())
-  const reactions = reactive<Map<number, Reaction>>(new Map())
-  const reactionCounts = reactive<Map<string, number>>(new Map())
+  const reactionButtons = reactive(new Map<number, ReactionButton>())
+  const reactions = reactive(new Map<number, Reaction>())
+  const reactionCounts = reactive(new Map<string, number>())
 
   reactionButtonType.updateMap(reactionButtons, { meeting: 'meeting' })
   reactionType

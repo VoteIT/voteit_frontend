@@ -11,8 +11,8 @@ import { Proposal } from './types'
 import { ProposalText, proposalTextType, proposalType } from './contentTypes'
 
 export default defineStore('proposals', () => {
-  const proposals = reactive<Map<number, Proposal>>(new Map())
-  const proposalTexts = reactive<Map<number, ProposalText>>(new Map())
+  const proposals = reactive(new Map<number, Proposal>())
+  const proposalTexts = reactive(new Map<number, ProposalText>())
 
   proposalType.updateMap(proposals, { participants: 'm', moderators: 'm' })
   proposalTextType.updateMap(proposalTexts, { agenda_item: 'agenda_item' })

@@ -6,7 +6,7 @@ import { MeetingInvite } from './types'
 
 export default defineStore('invites', () => {
   const matchedInvites = shallowRef<MeetingInvite[]>([])
-  const meetingInvites = shallowReactive<Map<number, MeetingInvite>>(new Map())
+  const meetingInvites = shallowReactive(new Map<number, MeetingInvite>())
 
   meetingInviteType.updateMap(meetingInvites)
 

@@ -15,9 +15,9 @@ import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 import { countBy } from 'lodash'
 
 export default defineStore('speakers', () => {
-  const speakerSystems = reactive<Map<number, SpeakerSystem>>(new Map())
-  const speakerLists = reactive<Map<number, SpeakerList>>(new Map())
-  const speakers = reactive<Map<number, Speaker>>(new Map())
+  const speakerSystems = reactive(new Map<number, SpeakerSystem>())
+  const speakerLists = reactive(new Map<number, SpeakerList>())
+  const speakers = reactive(new Map<number, Speaker>())
 
   speakerSystemType.updateMap(speakerSystems, { meeting: 'meeting' })
   speakerListType.updateMap(speakerLists, {

@@ -7,7 +7,7 @@ import { discussionPostType } from './contentTypes'
 import { DiscussionPost } from './types'
 
 export default defineStore('discussions', () => {
-  const discussions = reactive<Map<number, DiscussionPost>>(new Map())
+  const discussions = reactive(new Map<number, DiscussionPost>())
 
   discussionPostType.updateMap(discussions, { agenda_item: 'agenda_item' })
 
