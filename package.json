@@ -54,7 +54,7 @@
     "happy-dom": "^20.0.8",
     "sass": "^1.54.9",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^7.3.2",
     "vitest": "^3.2.4",
     "vitest-websocket-mock": "^0.5.0",
     "vue-i18n-extract": "^2.0.7",
