@@ -852,7 +852,7 @@
     "create": "Create room",
     "confirmBroadcastTakeover": "You're about to take over the broadcast in this room.\nAre you sure?",
     "confirmDelete": "This deletes the room. You can't undo that.\nAre you sure?",
-    "couldNotDelete": "This room has at least one speaker list with speaker history and/or registered speakers. It can therefore not be deleted.",
+    "confirmDeleteWithContent": "This room has speaker lists / speakers that will be deleted with the room.\n\nSpeaker lists: {speaker_lists}\nSpeakers: {speakers}\n\nDo you still want to delete?",
     "defaultName": "Plenum",
     "displayAny": "Display any",
     "displayOptions": "Choose content to display",

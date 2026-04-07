@@ -3,7 +3,7 @@ import { sortBy } from 'lodash'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { titleSorter } from '@/utils'
+import { dialogQuery, titleSorter } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
@@ -31,6 +31,7 @@ import { IMeetingRoom } from './types'
 import useRooms from './useRooms'
 import useRoom from './useRoom'
 import RoomForm from './RoomForm.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
@@ -38,6 +39,7 @@ const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
 const { findSpeakerSystem } = useSpeakerStore()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const { getUserIds } = speakerSystemType.useContextRoles()
 
@@ -161,16 +163,22 @@ const systemIcons = {
 
 async function deleteRoom(pk: number) {
   try {
+    const { data } = await roomType.api.action<{
+      speakers: number
+      speaker_lists: number
+    }>(pk, 'status', undefined, 'get')
+    if (data.speakers || data.speaker_lists) {
+      if (
+        !(await dialogQuery({
+          title: t('room.confirmDeleteWithContent', data),
+          theme: ThemeColor.Warning
+        }))
+      )
+        return
+    }
     await roomType.delete(pk)
   } catch (e) {
-    const err = parseRestError(e)
-    openDialogEvent.emit({
-      title: 'force' in err ? t('room.couldNotDelete') : t('error.unknown'),
-      resolve() {},
-      no: false,
-      yes: t('ok'),
-      theme: ThemeColor.Error
-    })
+    handleRestError(e)
   }
 }
 </script>
@@ -302,9 +310,8 @@ async function deleteRoom(pk: number) {
                           :disabled="room.open"
                           v-bind="props"
                           prepend-icon="mdi-delete"
-                        >
-                          {{ $t('content.delete') }}
-                        </v-list-item>
+                          :title="$t('content.delete')"
+                        />
                       </template>
                     </QueryDialog>
                   </v-list>
