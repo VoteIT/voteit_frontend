@@ -33,10 +33,53 @@ export default defineStore('rooms', () => {
     return filter(meetingRooms.values(), predicate)
   }
 
+  type RoomHandleData = Pick<
+    IMeetingRoom,
+    'poll' | 'agenda_item' | 'send_proposals' | 'show_ballot'
+  > & {
+    highlighted?: number[]
+  }
+
+  async function handleRoom(room: number, values: Partial<RoomHandleData>) {
+    const { data } = await roomType.api.action<RoomHandleData>(
+      room,
+      'handle',
+      values,
+      'patch'
+    )
+    // Update data from response
+    const { highlighted, ...partial } = data
+    if (highlighted) highlights.set(room, { pk: room, highlighted })
+    const _room = meetingRooms.get(room)
+    if (_room) meetingRooms.set(room, { ..._room, ...partial })
+  }
+
+  type SpeakerHandleData = Pick<
+    IMeetingRoom,
+    'body' | 'open' | 'show_time' | 'send_sls'
+  >
+
+  async function handleSpeaker(
+    room: number,
+    values: Partial<SpeakerHandleData>
+  ) {
+    const { data } = await roomType.api.action<SpeakerHandleData>(
+      room,
+      'handle-speaker',
+      values,
+      'patch'
+    )
+    // Update data from response
+    const _room = meetingRooms.get(room)
+    if (_room) meetingRooms.set(room, { ..._room, ...data })
+  }
+
   return {
     anyRoom,
     filterRooms,
     getHighlighted,
-    getRoom
+    getRoom,
+    handleRoom,
+    handleSpeaker
   }
 })

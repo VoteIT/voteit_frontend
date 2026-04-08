@@ -46,7 +46,7 @@ const {
   highlighted,
   isBroadcasting,
   meetingRoom,
-  setBroadcast,
+  handleBroadcast,
   setHandler
 } = useRoom()
 const { isBroadcastingAI, selectedProposalIds, selectProposalIds } =
@@ -153,9 +153,10 @@ function getUpcomingAlert(): IAlertInfo | undefined {
 
 function broadcastThis() {
   // This does not need to call selectProposalIds(), because it uses selected ids already
-  return setBroadcast({
+  return handleBroadcast({
     agenda_item: agendaId.value,
-    highlighted: [...selectedProposalIds.value]
+    highlighted: [...selectedProposalIds.value],
+    send_proposals: true
   })
 }
 
@@ -178,7 +179,7 @@ const selectApprovedAction = computed(() => {
       text: t('plenary.displayApprovedProposals', proposals.length),
       async onClick() {
         try {
-          await setBroadcast({
+          await handleBroadcast({
             agenda_item: agendaId.value,
             highlighted: proposals
           })

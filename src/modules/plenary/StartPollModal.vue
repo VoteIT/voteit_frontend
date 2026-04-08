@@ -24,7 +24,7 @@ defineEmits<{
 
 const meetingId = useMeetingId()
 const { agendaId, nextPollTitle } = useAgendaItem()
-const { isBroadcasting, setBroadcast, setHandler, setPoll } = useRoom()
+const { isBroadcasting, handleBroadcast, setHandler } = useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 const { createPoll: create, getPoll } = usePollStore()
 
@@ -67,7 +67,7 @@ async function createPoll() {
   try {
     const { pk } = await create(pollData)
     createdId.value = pk
-    setPoll(pk)
+    handleBroadcast({ poll: pk })
     createState.value = 'done'
   } catch {
     createState.value = 'failed'
@@ -80,7 +80,7 @@ async function takeOverAndStart() {
   takingOver.value = true
   try {
     await setHandler()
-    await setBroadcast({
+    await handleBroadcast({
       agenda_item: agendaId.value,
       highlighted: props.proposals.map((p) => p.pk)
     })

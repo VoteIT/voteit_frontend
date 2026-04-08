@@ -30,7 +30,7 @@ const {
   resultComponent,
   voteComponent
 } = usePoll(pollId)
-const { isBroadcasting, setPoll, setShowBallot } = useRoom()
+const { isBroadcasting, handleBroadcast } = useRoom()
 
 const complete = computed(() => {
   if (!pollStatus.value) return false
@@ -70,7 +70,7 @@ async function close() {
  * Unsets active poll in room, whether from created poll or broadcaster clicked to open an existing poll.
  */
 onBeforeUnmount(() => {
-  if (isBroadcasting.value) setPoll(null)
+  if (isBroadcasting.value) handleBroadcast({ poll: null })
 })
 </script>
 
@@ -109,7 +109,9 @@ onBeforeUnmount(() => {
     <div class="actions text-right">
       <DefaultDialog
         :title="$t('poll.ballot')"
-        @update:model-value="isBroadcasting && setShowBallot($event)"
+        @update:model-value="
+          isBroadcasting && handleBroadcast({ show_ballot: $event })
+        "
         width="600px"
       >
         <template #activator="{ props }">

@@ -17,9 +17,9 @@ const {
   isBroadcasting,
   meetingRoom,
   realTimeRoute,
-  setOpen,
-  setProposalBroadcast,
-  setSlsBroadcast
+  handleBroadcast,
+  handleSpeaker,
+  setOpen
 } = useRoom()
 const { isModerator, getMeetingRoute } = useMeeting()
 
@@ -83,16 +83,14 @@ async function savePauseMessage(pauseBroadcast = false) {
           :model-value="meetingRoom.send_sls"
           :disabled="!meetingRoom.open"
           :title="$t('room.displaySpeakers')"
-          @update:model-value="setSlsBroadcast($event)"
+          @update:model-value="handleSpeaker({ send_sls: $event })"
         />
         <CheckableListItem
           v-if="isModerator"
           :model-value="meetingRoom.send_proposals"
           :disabled="!meetingRoom.open"
           :title="$t('room.displayProposals')"
-          @update:model-value="
-            setProposalBroadcast(!meetingRoom.send_proposals)
-          "
+          @update:model-value="handleBroadcast({ send_proposals: $event })"
         />
         <DefaultDialog
           :title="$t('room.pauseMessage')"

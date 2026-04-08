@@ -61,8 +61,8 @@ const {
   meetingRoom,
   roomId,
   roomOpenPoll,
-  setPoll,
-  setSlsBroadcast
+  handleBroadcast,
+  handleSpeaker
 } = useRoom()
 const { getState, getPriorityStates } = pollType.useWorkflows()
 const { systemActiveList } = useSpeakerSystem(roomId, agendaId)
@@ -152,7 +152,7 @@ function* iterMenuPollStates() {
 const menuPollStates = computed(() => [...iterMenuPollStates()])
 
 function openPoll(poll: Poll) {
-  if (isBroadcasting.value) setPoll(poll.pk)
+  if (isBroadcasting.value) handleBroadcast({ poll: poll.pk })
   openModalEvent.emit({
     component: PollModal,
     data: poll,
@@ -250,7 +250,7 @@ const ongoingPollCount = computed(
                 v-for="{ id, settings, ...item } in pollMethodMenu"
                 :key="id"
                 :title="roomOpenPoll?.title ?? $t('plenary.startPoll')"
-                @close="setPoll(null)"
+                @close="handleBroadcast({ poll: null })"
               >
                 <template #activator="{ props }">
                   <v-list-item v-bind="{ ...item, ...props }" />
@@ -337,7 +337,7 @@ const ongoingPollCount = computed(
       >
         <template #append>
           <v-btn
-            @click="setSlsBroadcast()"
+            @click="handleSpeaker({ send_sls: true })"
             prepend-icon="mdi-bullhorn"
             :text="$t('room.displaySpeakers')"
           />

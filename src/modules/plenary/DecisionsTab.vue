@@ -45,14 +45,8 @@ const AVAILABLE_STATES = [
 
 const { agendaId, agendaItem } = useAgendaItem()
 const { aiProposalTexts } = useTextDocuments(agendaId)
-const {
-  highlighted,
-  isBroadcasting,
-  meetingRoom,
-  roomId,
-  setBroadcast,
-  setHighlightedProposals
-} = useRoom()
+const { highlighted, isBroadcasting, meetingRoom, roomId, handleBroadcast } =
+  useRoom()
 
 const {
   broadcastFollowAgendaItem,
@@ -86,7 +80,9 @@ const isBroadcastingAI = computed(
 async function select(proposal: Proposal) {
   if (!isBroadcastingAI.value) return selectProposal(proposal.pk)
   try {
-    await setHighlightedProposals([...selectedProposalIds.value, proposal.pk])
+    await handleBroadcast({
+      highlighted: [...selectedProposalIds.value, proposal.pk]
+    })
     selectProposal(proposal.pk)
   } catch (e) {
     handleRestError(e, 'highlighted')
@@ -96,9 +92,9 @@ async function select(proposal: Proposal) {
 async function deselect(proposal: Proposal) {
   if (!isBroadcastingAI.value) return deselectProposal(proposal.pk)
   try {
-    await setHighlightedProposals(
-      selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
-    )
+    await handleBroadcast({
+      highlighted: selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
+    })
     deselectProposal(proposal.pk)
   } catch (e) {
     handleRestError(e, 'highlighted')
@@ -108,7 +104,7 @@ async function deselect(proposal: Proposal) {
 async function replaceSelection(proposals: number[]) {
   if (!isBroadcastingAI.value) return selectProposalIds(proposals)
   try {
-    await setHighlightedProposals(proposals)
+    await handleBroadcast({ highlighted: proposals })
     selectProposalIds(proposals)
   } catch (e) {
     handleRestError(e, 'highlighted')
@@ -335,7 +331,7 @@ watchEffect(() => {
   )
     return
   if (meetingRoom.value?.agenda_item !== agendaId.value)
-    setBroadcast({
+    handleBroadcast({
       agenda_item: agendaId.value,
       highlighted: selectedProposalIds.value
     })
