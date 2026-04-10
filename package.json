@@ -15,7 +15,7 @@
     "@mdi/font": "^7.4.47",
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
-    "axios": "^1.6.7",
+    "axios": "^1.15.0",
     "caniuse-lite": "^1.0.30001431",
     "core-js": "^3.36.0",
     "envelope-client": "github:VoteIT/envelope_client",
