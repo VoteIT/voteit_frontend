@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.39.5 (2026-03-13)
+
+- Find meeting button is now always visible
+
 ## 0.39.4 (2026-03-24)
 
 - Realtime/plenary: Add choice to automatically follow agenda item when broadcasting
