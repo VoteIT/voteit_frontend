@@ -242,6 +242,7 @@
     "helpInfoPlaceholder": "Add contact info, that participants can use to get help.",
     "home": "Home",
     "noCurrentMeetings": "You have no meetings.",
+    "noCurrentMeetingsText": "There are no meetings to display at the moment. If you have been invited to a meeting, please make sure you are logged in with the credentials you were invited with.",
     "noOrganisationTitle": "No organisation!",
     "noOrganisationDescription": "There is no organisation registered on this URL. Check the spelling or contact your organisation to get the correct URL.",
     "noOrganisationTryItOut": "Do you want to try VoteIT out? Read more at {projectURL}.",

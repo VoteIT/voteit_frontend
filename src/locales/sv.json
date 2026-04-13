@@ -242,6 +242,7 @@
     "helpInfoPlaceholder": "Lägg till kontaktinfo dit deltagare kan vända sig för hjälp.",
     "home": "Hem",
     "noCurrentMeetings": "Inga möten",
+    "noCurrentMeetingsText": "Det finns inga möten att visa just nu. Om du har fått en inbjudan till ett möte, se till att du loggat in med de uppgifter du bjöds in med.",
     "noOrganisationTitle": "Ingen organisation!",
     "noOrganisationDescription": "Det finns ingen organisation registrerad på den här webbadressen. Kontrollera stavningen eller kontakta din organisation för att få rätt webbadress.",
     "noOrganisationTryItOut": "Vill du testa VoteIT? Läs mer på {projectURL}.",

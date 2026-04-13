@@ -1,4 +1,5 @@
-import { any, ifilter, imap, type Primitive, reduce, sorted } from 'itertools'
+import { any, ifilter, imap, reduce, sorted } from 'itertools'
+import type { Predicate, Primitive } from 'itertools'
 import { defineStore } from 'pinia'
 import { computed, reactive } from 'vue'
 
@@ -27,6 +28,10 @@ export default defineStore('meetings', () => {
 
   function getMeeting(meeting: number) {
     return meetings.get(meeting)
+  }
+
+  function anyMeeting(predicate: Predicate<Meeting>) {
+    return any(meetings.values(), predicate)
   }
 
   /**
@@ -71,28 +76,24 @@ export default defineStore('meetings', () => {
     )
   }
 
-  const participatingClosedMeetings = computed(() =>
-    getMeetingList(MeetingState.Closed, 'end_time', true)
-  )
-  const participatingOngoingMeetings = computed(() =>
-    getMeetingList(MeetingState.Ongoing)
-  )
-  const participatingUpcomingMeetings = computed(() =>
-    getMeetingList(MeetingState.Upcoming)
-  )
+  /**
+   * Meetings that the current user is already participant in.
+   */
+  const participatingMeetings = computed(() => ({
+    [MeetingState.Closed]: getMeetingList(
+      MeetingState.Closed,
+      'end_time',
+      true
+    ),
+    [MeetingState.Ongoing]: getMeetingList(MeetingState.Ongoing),
+    [MeetingState.Upcoming]: getMeetingList(MeetingState.Upcoming)
+  }))
 
   /**
    * For no visible meetings info (closed, ongoing, upcoming)
    */
   const hasVisibleMeetings = computed(() =>
     any(meetings.values(), (m) => MAIN_PAGE_MEETING_STATES.includes(m.state))
-  )
-
-  /**
-   * For other meetings button (not closed, ongoing, upcoming)
-   */
-  const hasHiddenMeetings = computed(() =>
-    any(meetings.values(), (m) => !MAIN_PAGE_MEETING_STATES.includes(m.state))
   )
 
   /**
@@ -155,12 +156,10 @@ export default defineStore('meetings', () => {
 
   return {
     existingMeetingYears,
-    hasHiddenMeetings,
     hasVisibleMeetings,
     stateCount,
-    participatingClosedMeetings,
-    participatingOngoingMeetings,
-    participatingUpcomingMeetings,
+    participatingMeetings,
+    anyMeeting,
     clearMeetings,
     fetchMeeting,
     fetchMeetings,
