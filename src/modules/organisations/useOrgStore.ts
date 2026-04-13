@@ -1,12 +1,13 @@
+import { isAxiosError } from 'axios'
 import { first } from 'itertools'
 import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
+import restApi from '@/utils/restApi'
 import { IOrganisation } from './types'
 import * as orgRules from './rules'
-import { organisationType } from './contentTypes'
 
-export default defineStore('organisations', () => {
+export default defineStore('organisation', () => {
   /**
    * Current organisation
    * undefined = not fetched yet
@@ -52,19 +53,23 @@ export default defineStore('organisations', () => {
   )
 
   /**
-   * Fetch organisation - error must be handled from calling function
+   * Fetch organisation - error other than 404 must be handled from calling function
    */
   async function fetchOrganisation() {
-    const { data } = await organisationType.api.list()
-    currentOrganisation.value = data.length ? data[0] : false
+    try {
+      const { data } = await restApi.get<IOrganisation>('organisation/')
+      currentOrganisation.value = data
+    } catch (e) {
+      if (!isAxiosError(e) || e.response?.status !== 404) throw e
+      currentOrganisation.value = false // Unavailable
+    }
   }
 
   async function updateOrganisation(
     partial: Partial<Pick<IOrganisation, 'body' | 'help_info' | 'page_title'>>
   ) {
-    if (!organisation.value) throw new Error('No organisation')
-    const { data } = await organisationType.api.patch(
-      organisation.value.pk,
+    const { data } = await restApi.patch<IOrganisation>(
+      'organisation/change/',
       partial
     )
     currentOrganisation.value = data

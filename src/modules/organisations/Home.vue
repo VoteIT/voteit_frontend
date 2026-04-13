@@ -428,7 +428,7 @@ function cancelEdit() {
       <v-row v-else-if="orgStore.organisationIsUnavailable">
         <v-col v-bind="cols">
           <v-sheet class="py-8 px-4 text-center" :border="true" rounded>
-            <h1 class="mb-4 flex-grow-1">
+            <h1 class="mb-4">
               {{ $t('home.noOrganisationTitle') }}
             </h1>
             <p class="mb-12">
