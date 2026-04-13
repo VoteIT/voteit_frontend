@@ -53,11 +53,6 @@ const { t } = useI18n()
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
-const {
-  participatingClosedMeetings,
-  participatingOngoingMeetings,
-  participatingUpcomingMeetings
-} = storeToRefs(meetingStore)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -165,22 +160,24 @@ function addUser(user: number) {
 
 const { collapsedBodyHeightMobile } = useDefaults()
 
-/* Meetings listed upfront */
-const groupRules = [
-  {
-    meetings: participatingOngoingMeetings,
-    state: meetingStates.find((s) => s.state === MeetingState.Ongoing)!
-  },
-  {
-    meetings: participatingUpcomingMeetings,
-    state: meetingStates.find((s) => s.state === MeetingState.Upcoming)!
-  },
-  {
-    meetings: participatingClosedMeetings,
-    state: meetingStates.find((s) => s.state === MeetingState.Closed)!,
-    maxLength: 3
+function mkGroupRule(
+  state: keyof (typeof meetingStore)['participatingMeetings'],
+  maxLength?: number
+) {
+  return {
+    meetings: computed(() => meetingStore.participatingMeetings[state]),
+    state: meetingStates.find((s) => s.state === state)!,
+    maxLength
   }
+}
+
+/** Meetings listed upfront */
+const groupRules = [
+  mkGroupRule(MeetingState.Ongoing),
+  mkGroupRule(MeetingState.Upcoming),
+  mkGroupRule(MeetingState.Closed, 3)
 ]
+
 const meetingGroups = computed(() => {
   return groupRules
     .map(({ maxLength, meetings, state }) => {
@@ -418,7 +415,7 @@ function cancelEdit() {
               <AddMeeting @close="close" />
             </template>
           </DefaultDialog>
-          <FindMeetingDialog v-if="meetingStore.hasHiddenMeetings" />
+          <FindMeetingDialog />
           <EditableHelpText
             :modelValue="orgStore.organisation.help_info"
             :editable="!!orgStore.canChangeOrganisation"

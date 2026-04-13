@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { chunked, Primitive } from 'itertools'
 import { computed, reactive, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -21,13 +20,13 @@ const rules = useRules(t)
 
 const INCLUDE_STATES = [MeetingState.Ongoing, MeetingState.Upcoming]
 
-function getInitialStates() {
-  // If no ongoing or upcoming meetings, default to showing closed meetings
+/** If no ongoing or upcoming meetings, default to showing closed meetings */
+const initialStates = computed(() => {
   const sCount = meetingStore.stateCount
   return MeetingState.Ongoing in sCount || MeetingState.Upcoming in sCount
     ? INCLUDE_STATES.filter((s) => s in sCount)
     : [MeetingState.Closed].filter((s) => s in sCount)
-}
+})
 
 const searchFilter = reactive<{
   order: keyof PickByType<Meeting, Primitive>
@@ -37,9 +36,18 @@ const searchFilter = reactive<{
 }>({
   order: 'title',
   search: '',
-  states: getInitialStates(),
+  states: initialStates.value,
   year: null
 })
+
+/** React to change in initial states that should be displayed, so that it's updated when meetings are loaded */
+watch(initialStates, (states) => {
+  if (searchFilter.states.length) return
+  searchFilter.states = states
+})
+
+/** There are no meetings to be found for this user */
+const noMeetings = computed(() => !meetingStore.anyMeeting((m) => !!m))
 
 const currentSearchPage = shallowRef(1)
 const searchedMeetings = computed(() =>
@@ -82,6 +90,12 @@ const searchInfo = computed<
   { type: 'info' | 'warning'; text: string } | undefined
 >(() => {
   if (searchedMeetings.value.length) return
+  if (noMeetings.value)
+    return {
+      type: 'info',
+      text: t('home.noCurrentMeetingsText'),
+      title: t('home.noCurrentMeetings')
+    }
   if (!meetingStore.hasVisibleMeetings) {
     return {
       type: 'info',
@@ -114,33 +128,36 @@ const searchInfo = computed<
         v-bind="props"
       />
     </template>
-    <v-select
-      :label="$t('state')"
-      chips
-      closable-chips
-      density="comfortable"
-      :items="stateItems"
-      v-model="searchFilter.states"
-      multiple
-      hide-details
-      class="mb-1"
-      :rules="[rules.required]"
-    />
-    <div class="d-flex mb-1">
-      <v-text-field
-        :label="$t('search')"
-        v-model="searchFilter.search"
-        class="mr-1"
-        hide-details
-        clearable
-      />
+    <v-form :disabled="noMeetings">
       <v-select
-        :label="$t('meeting.yearStarted')"
-        :items="yearItems"
-        v-model="searchFilter.year"
+        class="mb-1"
+        chips
+        closable-chips
+        density="comfortable"
         hide-details
+        :items="stateItems"
+        :label="$t('state')"
+        multiple
+        :rules="[rules.required]"
+        v-model="searchFilter.states"
       />
-    </div>
+      <div class="d-flex mb-1 ga-1">
+        <v-text-field
+          class="w-50"
+          clearable
+          hide-details
+          :label="$t('search')"
+          v-model="searchFilter.search"
+        />
+        <v-select
+          class="w-50"
+          :items="yearItems"
+          hide-details
+          :label="$t('meeting.yearStarted')"
+          v-model="searchFilter.year"
+        />
+      </div>
+    </v-form>
 
     <v-alert v-if="searchInfo" class="mt-4" prominent v-bind="searchInfo" />
 
