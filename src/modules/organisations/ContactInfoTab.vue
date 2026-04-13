@@ -10,7 +10,7 @@ import DefaultForm from '@/components/DefaultForm.vue'
 const { t } = useI18n()
 const rules = useRules(t)
 
-const { handleSocketError } = useErrorHandler({ target: 'dialog' })
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { contactInfo, requiresCheck, fetchContactInfo, saveContactInfo } =
   useContactInfo()
 
@@ -27,7 +27,7 @@ async function saveHandler(data: ContactInfo) {
   try {
     changeForm.value = await saveContactInfo(data)
   } catch (e) {
-    handleSocketError(e)
+    handleRestError(e)
   }
 }
 

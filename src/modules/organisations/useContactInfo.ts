@@ -1,5 +1,5 @@
-import { SocketState, socket, socketState } from '@/utils/Socket'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
+import restApi from '@/utils/restApi'
 import useOrgStore from './useOrgStore'
 
 export interface ContactInfo {
@@ -17,15 +17,18 @@ const contactInfo = ref<ContactInfo | null>(null)
 const requiresCheck = computed(() => contactInfo.value?.requires_check)
 
 async function fetchContactInfo() {
-  const { p } = await socket.call<ContactInfo>('contact_info.get')
-  contactInfo.value = p
-  return p
+  const { data } = await restApi.get<ContactInfo>('contact-info/')
+  contactInfo.value = data
+  return data
 }
 
-async function saveContactInfo(data: ContactInfo) {
-  const { p } = await socket.call<ContactInfo>('contact_info.set', data)
-  contactInfo.value = p
-  return p
+async function saveContactInfo(info: ContactInfo) {
+  const { data } = await restApi.patch<ContactInfo>(
+    'contact-info/change/',
+    info
+  )
+  contactInfo.value = data
+  return data
 }
 
 /**
@@ -33,24 +36,13 @@ async function saveContactInfo(data: ContactInfo) {
  * @returns
  */
 export default function useContactInfo(quietCheck = false) {
-  // Trigger when socket is open, user is manager and quietCheck is set
   const orgStore = useOrgStore()
 
-  watch(
-    () =>
-      orgStore.canChangeOrganisation &&
-      socketState.value === SocketState.Open &&
-      quietCheck,
-    async (value) => {
-      if (!value) return
-      try {
-        fetchContactInfo()
-      } catch {
-        // Suppress error
-      }
-    },
-    { immediate: true }
-  )
+  // Trigger when socket is open, user is manager and quietCheck is set
+  if (quietCheck)
+    watchEffect(() => {
+      if (orgStore.canChangeOrganisation) fetchContactInfo().catch()
+    })
 
   return {
     contactInfo,
