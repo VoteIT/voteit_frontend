@@ -68,10 +68,6 @@ export class BaseContentType<
   private queueMessage(method: string, payload: ChannelsMessage['p']) {
     if (!this.messageQueue.has(method)) this.messageQueue.set(method, [])
     this.messageQueue.get(method)!.push(payload)
-    // If no handler was registered within a minute, throw away message queue.
-    setTimeout(() => {
-      this.messageQueue.delete(method)
-    }, 60_000)
   }
 
   /**
