@@ -37,7 +37,7 @@ readyToLoadEvent.once(performLoad)
 
 function call(...cbs: (() => Promise<unknown>)[]) {
   // If it has an init state, load is already started. Therefore, call immediately.
-  if (!!initState.value) return cbs.forEach((cb) => cb())
+  if (initState.value !== undefined) return cbs.forEach((cb) => cb())
   cbs.forEach((cb) => callbacks.push(cb))
 }
 

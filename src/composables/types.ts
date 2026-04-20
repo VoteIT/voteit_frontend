@@ -103,7 +103,7 @@ export interface ContextRoleDefinition {
 }
 
 export enum InitState {
-  Loading = 0,
-  Done = 1,
-  Failed = 2
+  Loading = 1,
+  Done = 2,
+  Failed = 3
 }
