@@ -250,7 +250,7 @@ provide(TagClickHandlerKey, async (tagName) => {
           :title="$t('poll.pollCount', pollCount)"
           modelValue
         >
-          <template #actions>
+          <template #actions v-if="canAddPoll">
             <v-btn
               :disabled="!hasPublishedProposals"
               icon="mdi-star-plus"
