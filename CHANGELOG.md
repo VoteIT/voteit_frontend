@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.40.0 (??)
+
+- Permissions refactoring [#406](https://github.com/VoteIT/voteit_frontend/issues/406)
+
 ## 0.39.5 (2026-03-13)
 
 - Find meeting button is now always visible
