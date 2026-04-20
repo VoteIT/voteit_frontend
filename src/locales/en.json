@@ -353,7 +353,7 @@
   "meeting": {
     "addParticipant": "Add participant",
     "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
-    "confirmRemoveParticipant": "This will remove the user from this meeting.\nAre you sure?",
+    "confirmRemoveParticipant": "It's usually a bad idea to remove users from a meeting. There might be proposals and other content. It's better to remove permissions.\nDo you still want to remove user?",
     "copyUrl": "Copy meeting link",
     "controlPanel": "Control panel",
     "componentBlocked": "Not available in this meeting dialect",
