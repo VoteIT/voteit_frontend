@@ -24,7 +24,7 @@ defineEmits<{
 
 const meetingId = useMeetingId()
 const { agendaId, nextPollTitle } = useAgendaItem()
-const { isBroadcasting, handleBroadcast, setHandler } = useRoom()
+const { isBroadcasting, handleBroadcast } = useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 const { createPoll: create, getPoll } = usePollStore()
 
@@ -79,7 +79,6 @@ const takingOver = shallowRef(false)
 async function takeOverAndStart() {
   takingOver.value = true
   try {
-    await setHandler()
     await handleBroadcast({
       agenda_item: agendaId.value,
       highlighted: props.proposals.map((p) => p.pk)

@@ -46,8 +46,7 @@ const {
   highlighted,
   isBroadcasting,
   meetingRoom,
-  handleBroadcast,
-  setHandler
+  handleBroadcast
 } = useRoom()
 const { isBroadcastingAI, selectedProposalIds, selectProposalIds } =
   usePlenary(agendaId)
@@ -217,7 +216,6 @@ function getAgendaAlert(): IAlertInfo | undefined {
                 )
                   return
                 try {
-                  await setHandler()
                   await broadcastThis()
                 } catch (e) {
                   handleRestError(e)

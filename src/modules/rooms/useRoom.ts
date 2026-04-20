@@ -66,20 +66,9 @@ export default function useRoom() {
     computed(() => meetingRoom.value?.poll ?? 0)
   )
 
-  /**
-   * Set broadcasted poll. Should always be called when starting poll in plenary view.
-   */
-  // function setPoll(poll: number | null) {
-  //   return roomType.api.action(roomId.value, 'handle', { poll }, 'patch')
-  // }
-
   async function setOpen(open: boolean) {
     await roomType.api.patch(roomId.value, { open })
   }
-
-  // function setShowBallot(show_ballot: boolean) {
-  //   return roomType.update(roomId.value, { show_ballot })
-  // }
 
   /**
    * Wrapper to handle room broadcast (proposal tab)
@@ -98,57 +87,6 @@ export default function useRoom() {
   ) {
     return store.handleSpeaker(roomId.value, values)
   }
-
-  // async function setBroadcast(content?: {
-  //   agenda_item?: number
-  //   highlighted: number[]
-  // }) {
-  //   if (!authStore.user)
-  //     throw new Error(
-  //       'No authenticated user available when trying to set broadcast'
-  //     )
-  //   if (!meetingRoom.value)
-  //     throw new Error(
-  //       `No meeting room data available for room ${roomId.value} when trying to set broadcast`
-  //     )
-  //   const { handler, open, send_proposals } = meetingRoom.value
-  //   // Make sure broadcast is on
-  //   if (!open || !send_proposals)
-  //     await roomType.update(roomId.value, {
-  //       open: true,
-  //       send_proposals: true
-  //     })
-  //   // Make sure user is handler
-  //   if (handler !== authStore.user?.pk) await setHandler()
-  //   // Set content
-  //   if (content)
-  //     await roomType.api.action(roomId.value, 'handle', content, 'patch')
-  // }
-
-  /**
-   * Sets current user as handler.
-   */
-  function setHandler() {
-    return roomType.api.action(roomId.value, 'set-handler')
-  }
-
-  // async function setProposalBroadcast(active = true) {
-  //   await roomType.api.patch(roomId.value, { send_proposals: active })
-  // }
-
-  // async function setSlsBroadcast(active = true) {
-  //   await roomType.api.patch(roomId.value, { send_sls: active })
-  // }
-
-  // async function setHighlightedProposals(proposalIds: number[]) {
-  //   if (isEqual(proposalIds, highlighted.value)) return
-  //   await roomType.api.action(
-  //     roomId.value,
-  //     'handle',
-  //     { highlighted: proposalIds },
-  //     'patch'
-  //   )
-  // }
 
   const speakerSystem = computed(() =>
     findSpeakerSystem((s) => s.room === roomId.value)
@@ -194,13 +132,6 @@ export default function useRoom() {
     getRoomRoute,
     handleBroadcast,
     handleSpeaker,
-    // setBroadcast,
-    setHandler,
     setOpen
-    // setPoll,
-    // setProposalBroadcast,
-    // setSlsBroadcast,
-    // setShowBallot,
-    // setHighlightedProposals
   }
 }
