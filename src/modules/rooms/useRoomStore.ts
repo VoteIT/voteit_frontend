@@ -1,6 +1,7 @@
 import { type Predicate, any, filter } from 'itertools'
 import { defineStore } from 'pinia'
 import { reactive, watch } from 'vue'
+import { useSessionStorage } from '@vueuse/core'
 
 import { generateToken } from '@/utils'
 
@@ -11,7 +12,7 @@ import type { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 export default defineStore('rooms', () => {
   const meetingRooms = reactive(new Map<number, IMeetingRoom>())
   const highlights = reactive(new Map<number, IRoomHighlight>())
-  const roomTokens = reactive(new Map<number, string>())
+  const roomTokens = useSessionStorage('room:tokens', new Map<number, string>())
 
   roomType
     .updateMap(meetingRooms, { meeting: 'meeting' })
@@ -22,11 +23,11 @@ export default defineStore('rooms', () => {
 
   // Complicated way to check room tokens :)
   watch(meetingRooms, (rooms) => {
-    if (!roomTokens.size) return
+    if (!roomTokens.value.size) return
     for (const { pk, token } of rooms.values()) {
       if (!token) continue
-      const myToken = roomTokens.get(pk)
-      if (myToken && myToken !== token) roomTokens.delete(pk)
+      const myToken = roomTokens.value.get(pk)
+      if (myToken && myToken !== token) roomTokens.value.delete(pk)
     }
   })
 
@@ -42,12 +43,12 @@ export default defineStore('rooms', () => {
    * Will generate a new token if none found
    */
   function getRoomToken(room: number) {
-    if (!roomTokens.has(room)) roomTokens.set(room, generateToken())
-    return roomTokens.get(room)!
+    if (!roomTokens.value.has(room)) roomTokens.value.set(room, generateToken())
+    return roomTokens.value.get(room)!
   }
 
   function hasRoomToken(room: number) {
-    return roomTokens.has(room)
+    return roomTokens.value.has(room)
   }
 
   function anyRoom(predicate: Predicate<IMeetingRoom>) {
