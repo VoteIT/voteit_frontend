@@ -39,14 +39,6 @@ export default defineStore('rooms', () => {
     return meetingRooms.get(room)
   }
 
-  /**
-   * Will generate a new token if none found
-   */
-  function getRoomToken(room: number) {
-    if (!roomTokens.value.has(room)) roomTokens.value.set(room, generateToken())
-    return roomTokens.value.get(room)!
-  }
-
   function hasRoomToken(room: number) {
     return roomTokens.value.has(room)
   }
@@ -67,12 +59,16 @@ export default defineStore('rooms', () => {
   }
 
   async function handleRoom(room: number, values: Partial<RoomHandleData>) {
+    // Get existing token, or generate new
+    const token = roomTokens.value.get(room) ?? generateToken()
     const { data } = await roomType.api.action<RoomHandleData>(
       room,
       'handle',
-      { ...values, token: getRoomToken(room) },
+      { ...values, token },
       'patch'
     )
+    // Save token after request is successful.
+    roomTokens.value.set(room, token)
     // Update data from response
     const { highlighted, ...partial } = data
     if (highlighted) highlights.set(room, { pk: room, highlighted })
