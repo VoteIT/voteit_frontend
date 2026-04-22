@@ -44,6 +44,7 @@ const { agendaId, agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
 const {
   hasBroadcast,
   highlighted,
+  isBroadcaster,
   isBroadcasting,
   meetingRoom,
   handleBroadcast
@@ -193,58 +194,83 @@ const selectApprovedAction = computed(() => {
 
 function getAgendaAlert(): IAlertInfo | undefined {
   if (!isBroadcasting.value && agendaItem.value?.state !== AgendaState.Private)
-    return hasBroadcast.value && meetingRoom.value?.handler
-      ? {
-          props: {
-            icon: 'mdi-broadcast',
-            title: t('room.broadcastingUser', {
-              ...getUser(meetingRoom.value.handler)
-            }),
-            text: t('plenary.noBroadcastDescription'),
-            type: 'warning'
-          },
-          actions: [
-            {
-              prependIcon: 'mdi-broadcast',
-              text: t('plenary.takeOverBroadcast'),
-              async onClick() {
-                if (
-                  !(await dialogQuery({
-                    title: t('room.confirmBroadcastTakeover'),
-                    theme: ThemeColor.Warning
-                  }))
-                )
-                  return
-                try {
-                  await broadcastThis()
-                } catch (e) {
-                  handleRestError(e)
+    if (hasBroadcast.value && meetingRoom.value?.handler)
+      // There is a broadcast, but we're controlling it
+      return isBroadcaster.value
+        ? {
+            props: {
+              icon: 'mdi-broadcast',
+              title: t('room.broadcastingSelf'),
+              text: t('room.broadcastingSelfDescription'),
+              type: 'warning'
+            },
+            actions: [
+              {
+                prependIcon: 'mdi-broadcast',
+                text: t('room.broadcastHere'),
+                async onClick() {
+                  try {
+                    await broadcastThis()
+                  } catch (e) {
+                    handleRestError(e)
+                  }
                 }
               }
-            }
-          ]
-        }
-      : {
-          props: {
-            icon: 'mdi-broadcast-off',
-            title: t('room.noBroadcast'),
-            text: t('plenary.noBroadcastDescription'),
-            type: 'info'
-          },
-          actions: [
-            {
-              prependIcon: 'mdi-broadcast',
-              text: t('plenary.startBroadcast'),
-              async onClick() {
-                try {
-                  await broadcastThis()
-                } catch (e) {
-                  handleRestError(e)
+            ]
+          }
+        : {
+            props: {
+              icon: 'mdi-broadcast',
+              title: t('room.broadcastingUser', {
+                ...getUser(meetingRoom.value.handler)
+              }),
+              text: t('plenary.noBroadcastDescription'),
+              type: 'warning'
+            },
+            actions: [
+              {
+                prependIcon: 'mdi-broadcast',
+                text: t('plenary.takeOverBroadcast'),
+                async onClick() {
+                  if (
+                    !(await dialogQuery({
+                      title: t('room.confirmBroadcastTakeover'),
+                      theme: ThemeColor.Warning
+                    }))
+                  )
+                    return
+                  try {
+                    await broadcastThis()
+                  } catch (e) {
+                    handleRestError(e)
+                  }
                 }
               }
+            ]
+          }
+    // Else there is no broadcast.
+    else
+      return {
+        props: {
+          icon: 'mdi-broadcast-off',
+          title: t('room.noBroadcast'),
+          text: t('plenary.noBroadcastDescription'),
+          type: 'info'
+        },
+        actions: [
+          {
+            prependIcon: 'mdi-broadcast',
+            text: t('plenary.startBroadcast'),
+            async onClick() {
+              try {
+                await broadcastThis()
+              } catch (e) {
+                handleRestError(e)
+              }
             }
-          ]
-        }
+          }
+        ]
+      }
   switch (agendaItem.value?.state) {
     case AgendaState.Private:
       return {

@@ -848,6 +848,9 @@
   "room": {
     "broadcast": "Broadcast",
     "broadcastDesc": "Choose what to send to real-time view",
+    "broadcastHere": "Broadcast here",
+    "broadcastingSelf": "You're broadcasting from another device",
+    "broadcastingSelfDescription": "You're handling the broadcast in this room, but it seems like you're broadcasting from another device.",
     "broadcastingUser": "Broadcasting by ({userid})",
     "closed": "This room is currently closed.",
     "create": "Create room",

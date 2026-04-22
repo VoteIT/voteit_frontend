@@ -51,14 +51,19 @@ export default function useRoom() {
   /**
    * Is current user broadcasting?
    */
-  const isBroadcasting = computed(() => {
+  const isBroadcaster = computed(() => {
     if (!meetingRoom.value) return false
     return (
-      store.hasRoomToken(roomId.value) &&
-      hasBroadcast.value &&
-      meetingRoom.value.handler === authStore.user?.pk
+      hasBroadcast.value && meetingRoom.value.handler === authStore.user?.pk
     )
   })
+
+  /**
+   * Is current broadcasting session.
+   */
+  const isBroadcasting = computed(
+    () => store.hasRoomToken(roomId.value) && isBroadcaster.value
+  )
 
   /**
    * Use this to react and open selected poll in real-time view.
@@ -122,6 +127,7 @@ export default function useRoom() {
     hasSpeakerLists,
     highlighted,
     highlightedProposals,
+    isBroadcaster,
     isBroadcasting,
     meetingRoom,
     passiveMode,

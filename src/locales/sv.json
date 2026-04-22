@@ -848,6 +848,9 @@
   "room": {
     "broadcast": "Sändning",
     "broadcastDesc": "Välj vad som sänds till realtidsvyn",
+    "broadcastHere": "Sänd här",
+    "broadcastingSelf": "Du sänder från annan enhet",
+    "broadcastingSelfDescription": "Du som sköter sändningen i det här rummet, men det verkar som att du gör det från en annan enhet.",
     "broadcastingUser": "Sändning pågår ({userid})",
     "closed": "Rummet är för närvarande stängt.",
     "create": "skapa rum",
