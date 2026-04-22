@@ -17,7 +17,6 @@ const {
   isBroadcasting,
   meetingRoom,
   realTimeRoute,
-  handleBroadcast,
   handleSpeaker,
   setOpen
 } = useRoom()
@@ -90,7 +89,9 @@ async function savePauseMessage(pauseBroadcast = false) {
           :model-value="meetingRoom.send_proposals"
           :disabled="!meetingRoom.open"
           :title="$t('room.displayProposals')"
-          @update:model-value="handleBroadcast({ send_proposals: $event })"
+          @update:model-value="
+            roomType.api.patch(meetingRoom.pk, { send_proposals: $event })
+          "
         />
         <DefaultDialog
           :title="$t('room.pauseMessage')"
