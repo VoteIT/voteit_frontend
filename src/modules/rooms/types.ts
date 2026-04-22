@@ -11,6 +11,7 @@ export interface IMeetingRoom {
   show_ballot: boolean
   show_time: boolean // Clock face when paused
   title: string
+  token: string | null
 }
 
 export interface IRoomHighlight {

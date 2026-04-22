@@ -1,6 +1,8 @@
 import { type Predicate, any, filter } from 'itertools'
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
+
+import { generateToken } from '@/utils'
 
 import { roomType } from './contentTypes'
 import { proposalHighlightEvent } from './events'
@@ -9,6 +11,7 @@ import type { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 export default defineStore('rooms', () => {
   const meetingRooms = reactive(new Map<number, IMeetingRoom>())
   const highlights = reactive(new Map<number, IRoomHighlight>())
+  const roomTokens = reactive(new Map<number, string>())
 
   roomType
     .updateMap(meetingRooms, { meeting: 'meeting' })
@@ -17,12 +20,34 @@ export default defineStore('rooms', () => {
       proposalHighlightEvent.emit(selection)
     )
 
+  // Complicated way to check room tokens :)
+  watch(meetingRooms, (rooms) => {
+    if (!roomTokens.size) return
+    for (const { pk, token } of rooms.values()) {
+      if (!token) continue
+      const myToken = roomTokens.get(pk)
+      if (myToken && myToken !== token) roomTokens.delete(pk)
+    }
+  })
+
   function getHighlighted(room: number) {
     return highlights.get(room)
   }
 
   function getRoom(room: number) {
     return meetingRooms.get(room)
+  }
+
+  /**
+   * Will generate a new token if none found
+   */
+  function getRoomToken(room: number) {
+    if (!roomTokens.has(room)) roomTokens.set(room, generateToken())
+    return roomTokens.get(room)!
+  }
+
+  function hasRoomToken(room: number) {
+    return roomTokens.has(room)
   }
 
   function anyRoom(predicate: Predicate<IMeetingRoom>) {
@@ -44,7 +69,7 @@ export default defineStore('rooms', () => {
     const { data } = await roomType.api.action<RoomHandleData>(
       room,
       'handle',
-      values,
+      { ...values, token: getRoomToken(room) },
       'patch'
     )
     // Update data from response
@@ -80,6 +105,7 @@ export default defineStore('rooms', () => {
     getHighlighted,
     getRoom,
     handleRoom,
-    handleSpeaker
+    handleSpeaker,
+    hasRoomToken
   }
 })

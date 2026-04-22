@@ -1,4 +1,3 @@
-import { isEqual } from 'lodash'
 import { computed } from 'vue'
 import { RouteLocationNamedRaw, useRoute } from 'vue-router'
 import { useStorage } from '@vueuse/core'
@@ -55,7 +54,9 @@ export default function useRoom() {
   const isBroadcasting = computed(() => {
     if (!meetingRoom.value) return false
     return (
-      hasBroadcast.value && meetingRoom.value.handler === authStore.user?.pk
+      store.hasRoomToken(roomId.value) &&
+      hasBroadcast.value &&
+      meetingRoom.value.handler === authStore.user?.pk
     )
   })
 
