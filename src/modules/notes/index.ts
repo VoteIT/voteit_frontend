@@ -26,7 +26,9 @@ meetingSettingsPlugins.register({
 
 proposalButtonPlugins.register({
   id: COMPONENT_ID,
-  checkActive,
+  checkActive(meeting, mode) {
+    return mode !== 'voteExample' && checkActive(meeting)
+  },
   component: ProposalNoteButton
 })
 

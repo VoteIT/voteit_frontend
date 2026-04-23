@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRef, onBeforeUnmount } from 'vue'
+import { computed, ref, toRef, onBeforeUnmount, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -11,6 +11,8 @@ import usePoll from '../polls/usePoll'
 import { Poll, PollTransition } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
 import useRoom from '../rooms/useRoom'
+
+provide('buttonMode', 'voteExample')
 
 const props = defineProps<{
   data: Poll

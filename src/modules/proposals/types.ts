@@ -50,7 +50,11 @@ export function isRichtextProposal(prop: Proposal): prop is RichtextProposal {
 
 export type PreviewProposal = Omit<Proposal, 'created' | 'pk' | 'shortname'>
 
-export type ProposalButtonMode = 'presentation' | 'vote' | 'voteTemplate'
+export type ProposalButtonMode =
+  | 'presentation'
+  | 'vote'
+  | 'voteExample'
+  | 'voteTemplate'
 export interface ProposalButtonPlugin extends MeetingPlugin {
   checkActive?(meeting: Meeting, mode?: ProposalButtonMode): boolean
   component: Component<{

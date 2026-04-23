@@ -4,7 +4,7 @@
  * It will only ever show poll selected in bradcast view.
  * It may be closed by user, though, for example if they need to disable passive mode.
  */
-import { computed } from 'vue'
+import { computed, provide } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
@@ -16,6 +16,8 @@ import usePoll from '../polls/usePoll'
 import { pollType } from '../polls/contentTypes'
 
 import useRoom from './useRoom'
+
+provide('buttonMode', 'voteExample')
 
 const props = defineProps<{
   pollId: number

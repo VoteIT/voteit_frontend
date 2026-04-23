@@ -45,9 +45,15 @@ export default defineStore('reactions', () => {
     return ifilter(reactionButtons.values(), (b) => {
       if (b.meeting !== meeting) return false
       if (contentType && !b.allowed_models.includes(contentType)) return false
-      if (mode === 'voteTemplate') return b.vote_template
-      if (mode && !b[`on_${mode}`]) return false
-      return true
+      switch (mode) {
+        case 'presentation':
+        case 'vote':
+          return b[`on_${mode}`]
+        case 'voteTemplate':
+          return b.vote_template
+        default:
+          return true
+      }
     })
   }
 
