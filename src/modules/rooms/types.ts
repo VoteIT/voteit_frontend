@@ -17,6 +17,7 @@ export interface IMeetingRoom {
 export interface IRoomHighlight {
   pk: number
   highlighted: number[] // Proposal ids
+  token: string | null
 }
 
 interface ProposalBaseHighlight {

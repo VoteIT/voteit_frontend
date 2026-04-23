@@ -11,12 +11,25 @@ import type { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 
 export default defineStore('rooms', () => {
   const meetingRooms = reactive(new Map<number, IMeetingRoom>())
-  const highlights = reactive(new Map<number, IRoomHighlight>())
+  const highlights = reactive(new Map<number, number[]>())
   const roomTokens = useSessionStorage('room:tokens', new Map<number, string>())
+
+  /**
+   * Clears room token if provided value differs from saved value.
+   * Talking stick logic.
+   */
+  function checkRoomToken(room: number, token: string | null) {
+    if (!token) return
+    const savedToken = roomTokens.value.get(room)
+    if (savedToken !== token) roomTokens.value.delete(room)
+  }
 
   roomType
     .updateMap(meetingRooms, { meeting: 'meeting' })
-    .on<IRoomHighlight>('highlighted', (data) => highlights.set(data.pk, data))
+    .on<IRoomHighlight>('highlighted', (data) => {
+      highlights.set(data.pk, data.highlighted)
+      checkRoomToken(data.pk, data.token)
+    })
     .on<ProposalHighlight>('marked', (selection) =>
       proposalHighlightEvent.emit(selection)
     )
@@ -24,11 +37,7 @@ export default defineStore('rooms', () => {
   // Complicated way to check room tokens :)
   watch(meetingRooms, (rooms) => {
     if (!roomTokens.value.size) return
-    for (const { pk, token } of rooms.values()) {
-      if (!token) continue
-      const myToken = roomTokens.value.get(pk)
-      if (myToken && myToken !== token) roomTokens.value.delete(pk)
-    }
+    for (const { pk, token } of rooms.values()) checkRoomToken(pk, token)
   })
 
   function getHighlighted(room: number) {
@@ -71,7 +80,7 @@ export default defineStore('rooms', () => {
     roomTokens.value.set(room, token)
     // Update data from response
     const { highlighted, ...partial } = data
-    if (highlighted) highlights.set(room, { pk: room, highlighted })
+    if (highlighted) highlights.set(room, highlighted)
     const _room = meetingRooms.get(room)
     if (_room) meetingRooms.set(room, { ..._room, ...partial })
   }

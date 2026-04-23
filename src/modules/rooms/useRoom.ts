@@ -33,9 +33,7 @@ export default function useRoom() {
   useChannel('room', roomId)
 
   const meetingRoom = computed(() => store.getRoom(roomId.value))
-  const highlighted = computed(
-    () => store.getHighlighted(roomId.value)?.highlighted
-  )
+  const highlighted = computed(() => store.getHighlighted(roomId.value))
   const highlightedProposals = computed(() =>
     highlighted.value ? proposalStore.getProposals(highlighted.value) : []
   )
