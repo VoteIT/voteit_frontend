@@ -6,20 +6,15 @@ import { useRouter } from 'vue-router'
 import { getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
 import useOrgStore from '@/modules/organisations/useOrgStore'
-import { IUser } from '@/modules/organisations/types'
-import { profileType } from '@/modules/organisations/contentTypes'
 
 import DefaultDialog from './DefaultDialog.vue'
 import { toggleUserMenu } from './events'
 import UserAvatar from './UserAvatar.vue'
-import DefaultForm from './DefaultForm.vue'
-import useRules from '@/composables/useRules'
-import SlugField from './inputs/SlugField.vue'
 import useAuthStore from '@/modules/auth/useAuthStore'
+import SwitchProfileDialog from '@/modules/organisations/SwitchProfileDialog.vue'
 
 const { t } = useI18n()
 const router = useRouter()
-const rules = useRules(t)
 
 const authStore = useAuthStore()
 const orgStore = useOrgStore()
@@ -39,27 +34,6 @@ async function logout() {
   await authStore.logout()
   if (orgStore.proxyLogoutURL) location.assign(orgStore.proxyLogoutURL)
   else router.push({ name: 'home' })
-}
-
-function updateProfile(data: IUser) {
-  return authStore.updateProfile(data)
-}
-
-const emailChoices = shallowRef<string[] | null>(null)
-const emailError = shallowRef(false)
-async function fetchEmailChoices() {
-  if (emailChoices.value) return
-  emailError.value = false
-  try {
-    const { data } = await profileType.api.listAction<{ emails: string[] }>(
-      'email_choices',
-      undefined,
-      'get'
-    )
-    emailChoices.value = data.emails
-  } catch {
-    emailError.value = true
-  }
 }
 
 const canSwitchUser = computed(() => {
@@ -86,112 +60,20 @@ const canSwitchUser = computed(() => {
       <v-divider v-if="$slots.prependProfile" class="my-3" />
       <slot name="prependProfile"></slot>
       <v-divider class="my-3" />
-      <DefaultDialog
-        :title="$t('profile.changeUserid')"
-        @open="fetchEmailChoices"
-      >
-        <template #activator="{ props }">
-          <v-list-item
-            prepend-icon="mdi-account"
-            :title="$t('profile.profile')"
-            v-bind="props"
-          />
-        </template>
-        <template v-slot="{ close }">
-          <v-alert
-            :text="$t('profile.editProfileHelp')"
-            type="info"
-            class="my-4"
-          />
-          <v-defaults-provider :defaults="{ VList: { bgColor: 'surface' } }">
-            <DefaultForm
-              :modelValue="authStore.user"
-              :handler="updateProfile"
-              @done="close"
-              v-slot="{ errors, formData }"
-            >
-              <v-text-field
-                :error-messages="errors.first_name"
-                :label="$t('profile.firstName')"
-                :rules="[rules.required]"
-                v-model="formData.first_name"
-              />
-              <v-text-field
-                :error-messages="errors.last_name"
-                :label="$t('profile.lastName')"
-                :rules="[rules.required]"
-                v-model="formData.last_name"
-              />
-              <v-select
-                v-if="emailChoices"
-                :error-messages="errors.email"
-                :items="emailChoices"
-                :label="$t('profile.email')"
-                v-model="formData.email"
-              />
-              <v-alert
-                v-else-if="emailError"
-                class="mb-5"
-                icon="mdi-email-off"
-                :text="$t('profile.emailFetchFailed')"
-              />
-              <v-progress-linear
-                v-else
-                class="my-4"
-                indeterminate
-                color="primary"
-              />
-              <SlugField
-                :error-messages="errors.userid"
-                :label="$t('profile.userId')"
-                :rules="[rules.required]"
-                v-model="formData.userid!"
-              />
-            </DefaultForm>
-          </v-defaults-provider>
-        </template>
-      </DefaultDialog>
-      <DefaultDialog v-if="canSwitchUser" :title="$t('profile.switchUser')">
+      <v-list-item
+        prepend-icon="mdi-account"
+        :title="$t('profile.profile')"
+        :to="{ name: 'profile' }"
+      />
+      <SwitchProfileDialog>
         <template #activator="{ props }">
           <v-list-item
             prepend-icon="mdi-account-switch"
-            :title="$t('profile.switchUser')"
+            :title="$t('organization.switchProfile')"
             v-bind="props"
           />
         </template>
-        <v-alert
-          class="my-4"
-          icon="mdi-account-convert"
-          :title="$t('auth.switchUserTitle')"
-          :text="$t('auth.switchUserText')"
-        />
-        <v-list>
-          <v-list-item
-            disabled
-            append-icon="mdi-check"
-            :prepend-avatar="authStore.user.img_url!"
-            :subtitle="authStore.user.userid ?? ''"
-            :title="getFullName(authStore.user)"
-          />
-          <v-list-item
-            v-for="user in authStore.alternateUsers"
-            :key="user.pk"
-            @click="authStore.switchUser(user)"
-          >
-            <template #prepend>
-              <UserAvatar :user="user" />
-            </template>
-            <v-list-item-title
-              :class="{ 'text-secondary': !getFullName(user) }"
-            >
-              {{ getFullName(user) || `- ${t('unknownUser')} (${user.pk}) -` }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ user.userid }}
-            </v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
-      </DefaultDialog>
+      </SwitchProfileDialog>
       <DefaultDialog :title="$t('language.choose')">
         <template #activator="{ props }">
           <v-list-item

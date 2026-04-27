@@ -490,8 +490,16 @@
   "organization": {
     "allYears": "Alla år",
     "cantLogin": "Organisationen är inte längre aktiv - inloggning avstängd",
+    "editProfile": "Redigera profil",
     "loginTo": "Logga in till {title}",
-    "showMore": "Visa fler"
+    "profilePageIntro": "På den här sidan hittar du information om din VoteIT-profil hos {title}. Du kan ändra vissa uppgifter.",
+    "showMore": "Visa fler",
+    "switchProfile": "Byt profil",
+    "yourProfile": "Din profil hos {title}",
+    "gdpr": {
+      "title": "Det här stannar mellan oss",
+      "text": "Om du undrar varför du inte fått godkänna kakor från 99 olika spårningstjänster så beror det på att vi valt att inte spåra våra användare. Vi sätter en sessionskaka för att hålla reda på din inloggning. Det är allt."
+    }
   },
   "participantNumber": {
     "alreadyInList": "Deltagarnummer {ids} står redan på talarlistan | Deltagarnumren {ids} står redan på talarlistan",
@@ -748,14 +756,12 @@
     "selectProposals": "Välj förslag"
   },
   "profile": {
-    "changeUserid": "Byt användar-ID",
     "editProfileHelp": "Du kan bara välja epostadresser som du verifierat på ditt konto. Gå till Hantera konto för att verifiera en ny adress.",
     "email": "E-post",
     "emailFetchFailed": "Kunde inte hämta dina e-postadresser.",
     "firstName": "Förnamn",
     "lastName": "Efternamn",
     "profile": "Profil",
-    "switchUser": "Byt användare",
     "userId": "Användar-ID"
   },
   "proposal": {

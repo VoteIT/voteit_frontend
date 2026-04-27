@@ -490,8 +490,16 @@
   "organization": {
     "allYears": "All years",
     "cantLogin": "Organization no longer active - login disabled",
+    "editProfile": "Edit profile",
     "loginTo": "Log in to {title}",
-    "showMore": "Show more"
+    "profilePageIntro": "On this page you find information about your profile at {title}. You can edit some details.",
+    "showMore": "Show more",
+    "switchProfile": "Switch profile",
+    "yourProfile": "Your profile at {title}",
+    "gdpr": {
+      "title": "This stays between us",
+      "text": "If you're wondering why we haven't asked you to approve cookies from 99 different tracking services, that's because we have choosen to not track our users. We set a session cookie to keep track of your login. That's it."
+    }
   },
   "participantNumber": {
     "alreadyInList": "Participant number {ids} is already in speaker queue | Participant numbers {ids} are already in speaker queue",
@@ -748,14 +756,12 @@
     "selectProposals": "Select proposals"
   },
   "profile": {
-    "changeUserid": "Change user ID",
     "editProfileHelp": "You can only add email addresses you've validated already. Go to handle account to validate a new adress.",
     "email": "Email",
     "emailFetchFailed": "Couldn't fetch your email addresses.",
     "firstName": "First name",
     "lastName": "Last name",
     "profile": "Profile",
-    "switchUser": "Switch user",
     "userId": "User ID"
   },
   "proposal": {
