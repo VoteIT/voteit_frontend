@@ -5,10 +5,7 @@ import { getApiLink } from '@/utils/restApi'
 import { speakerAnnotationRegistry } from '../speakerLists/registry'
 
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
-import {
-  MeetingInviteAnnotationPlugin,
-  meetingInviteAnnotationPlugins
-} from '../meetingInvites/registry'
+import { meetingInviteAnnotationPlugins } from '../meetingInvites/registry'
 
 import FakeRolesBubble from './FakeRolesBubble.vue'
 import {
@@ -19,6 +16,9 @@ import {
 import useMeetingGroups from './useMeetingGroups'
 import { hasFakeRoles } from './rules'
 import { MeetingRole } from './types'
+
+// Register routes
+import './router'
 
 function getDownloadFormat(meetingId: number, format: 'csv' | 'json') {
   return {

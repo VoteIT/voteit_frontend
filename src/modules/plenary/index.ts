@@ -12,6 +12,9 @@ import { Meeting } from '../meetings/types'
 import useRooms from '../rooms/useRooms'
 import { IMeetingRoom } from '../rooms/types'
 
+// Register routes
+import './router'
+
 function checkActive(meeting: Meeting) {
   return (
     !!isModerator(meeting) &&

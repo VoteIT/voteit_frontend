@@ -10,6 +10,7 @@ import { i18n } from './utils/locales'
 // REGISTER PLUGINS
 // Registration order matters.
 import './modules/auth'
+import './modules/organisations'
 import './modules/meetings'
 import './modules/meetings/dialects'
 import './modules/active'
