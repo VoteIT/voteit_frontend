@@ -147,7 +147,9 @@
   "auth": {
     "error": "Login error",
     "logout": "Log out",
-    "manageAccount": "Manage account"
+    "manageAccount": "Manage account",
+    "switchUserText": "There is more than one user profiles connected to your account. You can switch beween profiles to access old meetings.",
+    "switchUserTitle": "You have more than one user profile"
   },
   "content": {
     "delete": "Radera",

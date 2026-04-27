@@ -159,7 +159,20 @@ const canSwitchUser = computed(() => {
             v-bind="props"
           />
         </template>
+        <v-alert
+          class="my-4"
+          icon="mdi-account-convert"
+          :title="$t('auth.switchUserTitle')"
+          :text="$t('auth.switchUserText')"
+        />
         <v-list>
+          <v-list-item
+            disabled
+            append-icon="mdi-check"
+            :prepend-avatar="authStore.user.img_url!"
+            :subtitle="authStore.user.userid ?? ''"
+            :title="getFullName(authStore.user)"
+          />
           <v-list-item
             v-for="user in authStore.alternateUsers"
             :key="user.pk"

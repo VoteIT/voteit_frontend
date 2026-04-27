@@ -147,7 +147,9 @@
   "auth": {
     "error": "Inloggningsfel",
     "logout": "Logga ut",
-    "manageAccount": "Hantera konto"
+    "manageAccount": "Hantera konto",
+    "switchUserText": "Det finns mer än en användarprofil som är knuten till ditt konto. Här kan du växla mellan profiler för att komma åt gamla möten.",
+    "switchUserTitle": "Du har mer än en användarprofil"
   },
   "content": {
     "delete": "Radera",
