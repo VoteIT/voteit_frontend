@@ -3,6 +3,7 @@ import { Duration } from 'luxon'
 import { expect, test } from 'vitest'
 
 import {
+  capFirst,
   countMatching,
   dialogQuery,
   durationToString,
@@ -108,4 +109,12 @@ test('countMatching', () => {
   expect(countMatching([1, 2, 3], (n) => n === 2)).toEqual(1)
   expect(countMatching([1, 2, 4], (n) => n % 2 === 0)).toEqual(2)
   expect(countMatching([1, 2, 4], (n) => n > 0)).toEqual(3)
+})
+
+test('capitalizeFirstLetter', () => {
+  expect(capFirst('hello')).toBe('Hello')
+  expect(capFirst('Hello')).toBe('Hello')
+  expect(capFirst('')).toBe('')
+  expect(capFirst('a')).toBe('A')
+  expect(capFirst('abc def')).toBe('Abc def')
 })

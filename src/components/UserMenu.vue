@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { getFullName } from '@/utils'
+import { capFirst, getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
 import useOrgStore from '@/modules/organisations/useOrgStore'
 
@@ -13,7 +12,6 @@ import UserAvatar from './UserAvatar.vue'
 import useAuthStore from '@/modules/auth/useAuthStore'
 import SwitchProfileDialog from '@/modules/organisations/SwitchProfileDialog.vue'
 
-const { t } = useI18n()
 const router = useRouter()
 
 const authStore = useAuthStore()
@@ -36,9 +34,15 @@ async function logout() {
   else router.push({ name: 'home' })
 }
 
-const canSwitchUser = computed(() => {
-  return !!authStore.alternateUsers.length
-})
+const langs = computed(() =>
+  languages.map((locale) => ({
+    isActive: locale === currentLocale.value,
+    locale,
+    title: capFirst(
+      new Intl.DisplayNames([locale], { type: 'language' }).of(locale)!
+    )
+  }))
+)
 </script>
 
 <template>
@@ -88,13 +92,11 @@ const canSwitchUser = computed(() => {
           </p>
           <v-list class="my-4" color="primary">
             <v-list-item
-              v-for="locale in languages"
+              v-for="{ isActive, locale, title } in langs"
               :key="locale"
-              :active="locale === currentLocale"
-              :disabled="locale === currentLocale"
-              :title="
-                new Intl.DisplayNames([locale], { type: 'language' }).of(locale)
-              "
+              :active="isActive"
+              :disabled="isActive"
+              :title="title"
               @click="setCurrentLocale(locale, close)"
             />
           </v-list>

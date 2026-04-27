@@ -158,3 +158,12 @@ export function generateToken(length = 16) {
     result += chars.charAt(Math.floor(Math.random() * chars.length))
   return result
 }
+
+/**
+ * Capitalize the first letter of a string
+ * @param str The string to capitalize
+ */
+export function capFirst(str: string): string {
+  if (!str) return str
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
