@@ -2,7 +2,6 @@ import { ref } from 'vue'
 
 import { Socket, SocketOptions } from 'envelope-client'
 
-import hostname from '@/utils/hostname'
 import {
   beforeAppStateEvent,
   channelLeftEvent,
@@ -25,7 +24,7 @@ type SocketStateValue = (typeof SocketState)[keyof typeof SocketState]
 
 export const frontendVersion = ref<string | undefined>()
 export const socketState = ref<SocketStateValue>()
-export const socket = new Socket(`${wsProtocol}//${hostname}/ws/`, {
+export const socket = new Socket(`${wsProtocol}//${location.host}/ws/`, {
   beforeAppStateHandler(channel) {
     beforeAppStateEvent.emit(channel)
   },

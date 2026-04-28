@@ -1,9 +1,6 @@
 import axios from 'axios'
-import type { Dictionary } from 'lodash'
 
-import hostname from './hostname'
-
-export function parseRestError(e: unknown): Dictionary<string[]> {
+export function parseRestError(e: unknown): Record<string, string[]> {
   if (axios.isAxiosError(e)) {
     if (!e.response) return { __root__: ['No response from server'] }
     const { data } = e.response
@@ -16,8 +13,8 @@ export function parseRestError(e: unknown): Dictionary<string[]> {
  * Build a server URL
  * @param path Should begin with /
  */
-export function buildServerURL(path: string) {
-  return `${location.protocol}//${hostname}${path}`
+function buildServerURL(path: string) {
+  return `${location.protocol}//${location.host}${path}`
 }
 
 export function getApiLink(path: string) {
