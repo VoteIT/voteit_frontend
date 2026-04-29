@@ -86,8 +86,7 @@ const cropX = computed(() => {
   return imageRatio > targetRatio.value
 })
 
-const crop = computed(() => {
-  // FIXME: Need full image size here
+const cropData = computed(() => {
   if (!image.origSize) return
   const { width, height } = image.origSize
   if (cropX.value) {
@@ -134,7 +133,7 @@ const crop = computed(() => {
   }
 })
 
-function resizeImage(file: File, _crop?: (typeof crop)['value']) {
+function resizeImage(file: File, crop?: (typeof cropData)['value']) {
   const reader = new FileReader()
   const img = new Image()
 
@@ -150,13 +149,13 @@ function resizeImage(file: File, _crop?: (typeof crop)['value']) {
       img.onload = () => {
         const canvas = document.createElement('canvas')
         const orig = { width: img.width, height: img.height }
-        const size = getScaled(_crop?.absolute ?? orig)
+        const size = getScaled(crop?.absolute ?? orig)
         canvas.width = size.width
         canvas.height = size.height
         const context = canvas.getContext('2d')
         if (!context) throw new Error(`Can't draw image, no 2d context`)
-        if (_crop) {
-          const abs = _crop.absolute
+        if (crop) {
+          const abs = crop.absolute
           context.drawImage(
             img,
             abs.x,
@@ -199,7 +198,7 @@ watch(
       if (props.crop) {
         const [full, cropped] = await Promise.all([
           resizeImage(file),
-          resizeImage(file, crop.value)
+          resizeImage(file, cropData.value)
         ])
         image.origSize = full.orig
         image.src = full.src
@@ -243,11 +242,11 @@ function openImageSelector() {
 
 async function savePosition(close: () => void) {
   const { position, file } = image
-  if (crop) {
+  if (props.crop) {
     if (!file) throw new Error('No image selected')
     image.loading = true
     try {
-      const { blob } = await resizeImage(file, crop.value)
+      const { blob } = await resizeImage(file, cropData.value)
       emit('update:modelValue', blob)
     } catch {
       image.failed = true
@@ -293,7 +292,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
       <div class="d-flex flex-column flex-sm-row ga-2 ga-sm-4">
         <div class="flex-shrink-0">
           <PositionedImage
-            v-if="!image.src || image.file === null"
+            v-if="!image.src && image.file === null"
             :active="isOverDropZone"
             :aspect-ratio="aspectRatio"
             class="cursor-pointer d-flex"
@@ -344,14 +343,14 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                     v-bind="props"
                   />
                 </template>
-                <template v-if="crop" #default="{ close }">
+                <template v-if="cropData" #default="{ close }">
                   <div
                     v-if="image.src"
                     class="focus-selection mb-4 overflow-hidden"
                     :class="{ cropX }"
                     :style="{
-                      '--crop-start': `${crop.fractions.start * 100}%`,
-                      '--crop-end': `${crop.fractions.end * 100}%`
+                      '--crop-start': `${cropData.fractions.start * 100}%`,
+                      '--crop-end': `${cropData.fractions.end * 100}%`
                     }"
                   >
                     <img
@@ -385,7 +384,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                     class="focus-selection mb-4 overflow-hidden"
                     :style="{
                       '--pos-x': `${image.position.x * 100}%`,
-                      '--pos-y': `${image.position.x * 100}%`
+                      '--pos-y': `${image.position.y * 100}%`
                     }"
                   >
                     <img
