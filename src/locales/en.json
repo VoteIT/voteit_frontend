@@ -269,6 +269,17 @@
     "minutes": "Minutes",
     "seconds": "Seconds"
   },
+  "img": {
+    "allowedFormats": "Allowed formats: jpeg, png, webp och svg.",
+    "change": "Change image",
+    "clear": "Clear",
+    "cropping": "Cropping",
+    "cropAspect": "The image is cropped to {aspectText}.",
+    "focusPoint": "Focus point",
+    "focusPointInfo": "You can move the focus point in the image above. This affects how the image is cropped if the image has different proportions than the image area.",
+    "preview": "Preview",
+    "upload": "Upload image"
+  },
   "invites": {
     "add": "Invite participants",
     "addUserInvitesWarning": "Use with precaution! Participants should normaly be added using invitations.",
