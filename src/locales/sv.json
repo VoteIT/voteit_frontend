@@ -780,6 +780,7 @@
     "agendaItemHasUnresolved": "Dagordningspunkten har obehandlade förslag.\nDet är en bra idé att behandla färdigt alla förslag innan du stänger en dagordningspunkt. Vill du ändå stänga den?",
     "approved": "Bifallet",
     "change": "Föreslå ändring",
+    "countInMeeting": "Inga förslag i mötet | Ett förslag i mötet | {count} förslag i mötet",
     "deletePrompt": "Du håller på att permanent radera ett förslag.\nÄr du säker?",
     "denied": "Avslaget",
     "edit": "Redigera förslag",

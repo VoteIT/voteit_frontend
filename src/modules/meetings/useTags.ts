@@ -11,7 +11,7 @@ const domParser = new DOMParser()
 
 export const TagsKey: InjectionKey<Ref<Set<string>>> = Symbol('tags')
 export const TagClickHandlerKey = Symbol('tagClickHandler') as InjectionKey<
-  (tag: string) => void
+  ((tag: string) => void) | undefined
 >
 
 function setTagColors(container: HTMLElement) {

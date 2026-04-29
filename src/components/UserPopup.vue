@@ -1,41 +1,78 @@
+<script setup lang="ts">
+import { computed, provide } from 'vue'
+
+import { getFullName, slugify } from '@/utils'
+import useAgendaStore from '@/modules/agendas/useAgendaStore'
+import useMeetingId from '@/modules/meetings/useMeetingId'
+import { TagClickHandlerKey } from '@/modules/meetings/useTags'
+import { IUser } from '@/modules/organisations/types'
+import useProposalStore from '@/modules/proposals/useProposalStore'
+
+import UserAvatar from './UserAvatar.vue'
+import Tag from './Tag.vue'
+
+provide(TagClickHandlerKey, undefined)
+
+const props = defineProps<{
+  user: IUser
+}>()
+
+const { filterProposals } = useProposalStore()
+const { getAgendaItems } = useAgendaStore()
+const meetingId = useMeetingId()
+
+const proposals = computed(() =>
+  filterProposals((p) => p.m === meetingId.value && p.author === props.user.pk)
+)
+
+const proposalAgendaItems = computed(() =>
+  getAgendaItems((a) =>
+    proposals.value.some((p) => p.agenda_item === a.pk)
+  ).map((a) => ({
+    ...a,
+    proposalIds: proposals.value
+      .filter((p) => p.agenda_item === a.pk)
+      .map((p) => p.prop_id)
+  }))
+)
+</script>
+
 <template>
-  <v-overlay
-    scroll-strategy="close"
-    location-strategy="connected"
-    location="top center"
-    origin="auto"
-    :scrim="false"
-    :transition="false"
-  >
+  <v-menu scroll-strategy="close" location="top center">
     <template #activator="{ props }">
       <slot name="activator" :props="props"></slot>
     </template>
-    <v-card rounded="lg" class="mb-1" elevation="4">
-      <v-card-item>
+    <v-card
+      class="mb-1"
+      elevation="4"
+      rounded="lg"
+      :subtitle="user.userid ?? undefined"
+      :title="getFullName(user)"
+      width="300"
+    >
+      <template #prepend>
         <UserAvatar :user="user" size="large" class="mt-1" />
-        <v-card-title>
-          {{ getFullName(user) }}
-        </v-card-title>
-        <v-card-subtitle>
-          {{ user.userid }}
-        </v-card-subtitle>
-      </v-card-item>
-      <v-card-text v-if="user.email">
-        <a :href="`mailto:${user.email}`">
-          {{ user.email }}
-        </a>
-      </v-card-text>
+      </template>
+      <v-list v-if="proposalAgendaItems.length" density="compact">
+        <v-list-subheader
+          :title="$t('proposal.countInMeeting', proposals.length)"
+        />
+        <v-list-item
+          v-for="{ pk, proposalIds, title } in proposalAgendaItems"
+          :key="pk"
+          :title="title"
+          :to="{
+            name: 'agendaItem',
+            params: { aid: pk, aslug: slugify(title) }
+          }"
+        >
+          <template #subtitle>
+            <div class="d-flex ga-1">
+              <Tag v-for="prop in proposalIds" :key="prop" :name="prop" />
+            </div>
+          </template>
+        </v-list-item>
+      </v-list>
     </v-card>
-  </v-overlay>
+  </v-menu>
 </template>
-
-<script setup lang="ts">
-import { getFullName } from '@/utils'
-import { IUser } from '@/modules/organisations/types'
-
-import UserAvatar from './UserAvatar.vue'
-
-defineProps<{
-  user: IUser
-}>()
-</script>
