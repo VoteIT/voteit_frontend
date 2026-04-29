@@ -128,6 +128,9 @@ export default defineStore('auth', () => {
     logout,
     switchUser,
     updateProfile,
-    uploadProfileImage
+    uploadProfileImage,
+    userImage: computed(
+      () => user.value?.image ?? user.value?.img_url ?? undefined
+    )
   }
 })

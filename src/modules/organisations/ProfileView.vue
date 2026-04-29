@@ -64,10 +64,6 @@ async function saveImage(close: () => void) {
   }
   image.saving = false
 }
-
-const imagePath = computed(
-  () => authStore.user?.image || authStore.user?.img_url
-)
 </script>
 
 <template>
@@ -90,8 +86,8 @@ const imagePath = computed(
       <v-row v-if="authStore.user">
         <v-col class="d-flex flex-column ga-4" v-bind="cols.wideLeft.left">
           <v-sheet class="d-flex ga-4 pa-4" border rounded>
-            <div v-if="imagePath" class="flex-shrink-0">
-              <v-avatar :image="imagePath" size="80px" />
+            <div v-if="authStore.userImage" class="flex-shrink-0">
+              <v-avatar :image="authStore.userImage" size="80px" />
             </div>
             <div class="flex-grow-1">
               <h2>{{ getFullName(authStore.user) }}</h2>
@@ -192,6 +188,7 @@ const imagePath = computed(
                   <ImageField
                     crop
                     :error-messages="image.errors?.image"
+                    :src="authStore.userImage"
                     v-model="image.blob"
                   />
                   <div class="text-right">

@@ -26,7 +26,7 @@ const authStore = useAuthStore()
       <v-list-item
         disabled
         append-icon="mdi-check"
-        :prepend-avatar="authStore.user.img_url!"
+        :prepend-avatar="authStore.userImage"
         :subtitle="authStore.user.userid ?? ''"
         :title="getFullName(authStore.user)"
       />
