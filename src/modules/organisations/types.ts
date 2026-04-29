@@ -26,15 +26,12 @@ export interface IOrganisation {
   readonly components: OrganisationComponent[]
 }
 
-// TODO This needs to be synced with variants of backend serializers
-// Meeting user data can be based on this and be defined in ../meetings/types.ts
 export interface IUser {
   pk: number
   first_name: string
+  image: string | null
   img_url: string | null
   last_name: string
-  organisation: number // Only for authenticated user
-  organisation_roles: OrganisationRole[] // Only when loading authenticated user from /api/user
   userid: string | null
   email: string
 }

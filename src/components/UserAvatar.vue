@@ -1,19 +1,3 @@
-<template>
-  <UserPopup v-if="popup && computedUser" :user="computedUser">
-    <template #activator="{ props }">
-      <v-avatar
-        class="cursor-pointer"
-        :color="bg"
-        :image="image"
-        :size="size"
-        :text="initials"
-        v-bind="{ ...$attrs, ...props }"
-      />
-    </template>
-  </UserPopup>
-  <v-avatar v-else :color="bg" :image="image" :size="size" :text="initials" />
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 
@@ -44,15 +28,15 @@ const computedUser = computed(
   () => props.user ?? (props.pk ? getUser(props.pk) : authStore.user)
 )
 
+const image = computed(
+  () => computedUser.value?.image ?? computedUser.value?.img_url ?? undefined // Change null to undefined
+)
+
 const bg = computed(() => {
   if (!computedUser.value) return ThemeColor.Secondary
   if (image.value) return
   return props.color
 })
-
-const image = computed(
-  () => computedUser.value?.img_url ?? undefined // Change null to undefined
-)
 
 const initials = computed(() => {
   if (image.value) return
@@ -64,3 +48,19 @@ const initials = computed(() => {
   return (first_name[0] + last_name[0]).toUpperCase()
 })
 </script>
+
+<template>
+  <UserPopup v-if="popup && computedUser" :user="computedUser">
+    <template #activator="{ props }">
+      <v-avatar
+        class="cursor-pointer"
+        :color="bg"
+        :image="image"
+        :size="size"
+        :text="initials"
+        v-bind="{ ...$attrs, ...props }"
+      />
+    </template>
+  </UserPopup>
+  <v-avatar v-else :color="bg" :image="image" :size="size" :text="initials" />
+</template>

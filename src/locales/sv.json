@@ -265,6 +265,17 @@
       "title": "Kontaktinformation"
     }
   },
+  "img": {
+    "allowedFormats": "Tillåtna bildformat: jpeg, png, webp och svg.",
+    "change": "Ändra bild",
+    "clear": "Rensa",
+    "cropping": "Beskär bild",
+    "cropAspect": "Bilden beskärs till {aspectText}.",
+    "focusPoint": "Fokuspunkt",
+    "focusPointInfo": "Du kan flytta fokuspunkt i bilden ovan. Det påverkar hur bilden beskärs om bilden har andra proportioner än bildytan.",
+    "preview": "Förhandsvisning",
+    "upload": "Ladda upp bild"
+  },
   "input": {
     "minutes": "Minuter",
     "seconds": "Sekunder"

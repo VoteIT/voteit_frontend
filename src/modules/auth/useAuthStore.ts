@@ -7,19 +7,19 @@ import { socketState } from '@/utils/Socket'
 import { readyToLoadEvent } from '@/composables/events'
 import useContextRoles from '@/composables/useContextRoles' // Import order important!
 import { profileType } from '../organisations/contentTypes' // ^
-import { OrganisationRole } from '../organisations/types'
+import { IOrganisationUser, OrganisationRole } from '../organisations/types'
 
-import { IUser } from './types'
+import restApi from '@/utils/restApi'
 
 export default defineStore('auth', () => {
-  const alternateUsers = shallowRef<IUser[]>([])
-  const user = shallowRef<IUser | null>()
+  const alternateUsers = shallowRef<IOrganisationUser[]>([])
+  const user = shallowRef<IOrganisationUser | null>()
 
   const isAnonymous = computed(() => user.value === null)
   const isAuthenticated = computed(() => !!user.value)
   const organizationRoles = useContextRoles<OrganisationRole>('organisation')
 
-  function setAuthenticatedUser(_user: IUser) {
+  function setAuthenticatedUser(_user: IOrganisationUser) {
     user.value = _user
     organizationRoles.set(
       _user.organisation,
@@ -30,7 +30,7 @@ export default defineStore('auth', () => {
   }
 
   async function fetchAlternateUsers() {
-    const { data } = await profileType.api.listAction<IUser[]>(
+    const { data } = await profileType.api.listAction<IOrganisationUser[]>(
       'alternate',
       undefined,
       'get'
@@ -38,9 +38,11 @@ export default defineStore('auth', () => {
     alternateUsers.value = data
   }
 
-  async function fetchAuthenticatedUser(tries = 3): Promise<IUser | undefined> {
+  async function fetchAuthenticatedUser(
+    tries = 3
+  ): Promise<IOrganisationUser | undefined> {
     try {
-      const { data } = await profileType.api.list<IUser>()
+      const { data } = await profileType.api.list<IOrganisationUser>()
       console.log('User authenticated', data.userid)
       setAuthenticatedUser(data)
       return data
@@ -82,11 +84,26 @@ export default defineStore('auth', () => {
     location.reload()
   }
 
-  async function updateProfile(profile: Pick<IUser, 'userid'>) {
+  async function updateProfile(
+    profile: Partial<
+      Pick<IOrganisationUser, 'userid' | 'first_name' | 'last_name' | 'email'>
+    >
+  ) {
     // Handle errors in calling function
     if (!user.value)
       throw new Error("Unauthenticated user can't update profile")
     const { data } = await profileType.api.patch(user.value.pk, profile)
+    user.value = data
+  }
+
+  async function uploadProfileImage(image: Blob) {
+    if (!user.value)
+      throw new Error("Unauthenticated user can't update profile image")
+    const { data } = await restApi.patch<IOrganisationUser>(
+      `user/${user.value.pk}/`,
+      { image },
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    )
     user.value = data
   }
 
@@ -110,6 +127,7 @@ export default defineStore('auth', () => {
     getUserRandomSortValue,
     logout,
     switchUser,
-    updateProfile
+    updateProfile,
+    uploadProfileImage
   }
 })

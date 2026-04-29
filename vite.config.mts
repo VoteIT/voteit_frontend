@@ -27,6 +27,10 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false
         },
+        '/media': {
+          target: `http://${env.VITE_PROXY_HOST || 'localhost:8000'}`,
+          secure: false
+        },
         '/ws': {
           target: `ws://${env.VITE_PROXY_HOST || 'localhost:8000'}`,
           changeOrigin: true,

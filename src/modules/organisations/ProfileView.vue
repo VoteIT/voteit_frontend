@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
+import { computed, shallowReactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
@@ -9,6 +9,7 @@ import UserMenu from '@/components/UserMenu.vue'
 import useRules from '@/composables/useRules'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import DefaultForm from '@/components/DefaultForm.vue'
+import ImageField from '@/components/inputs/ImageField.vue'
 import SlugField from '@/components/inputs/SlugField.vue'
 import useAuthStore from '../auth/useAuthStore'
 
@@ -16,6 +17,7 @@ import useOrgStore from './useOrgStore'
 import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
+import { parseRestError } from '@/utils/restApi'
 
 const authStore = useAuthStore()
 const store = useOrgStore()
@@ -43,6 +45,29 @@ async function fetchEmailChoices() {
     emailError.value = true
   }
 }
+
+const image = shallowReactive({
+  blob: null as Blob | null,
+  errors: undefined as { image?: string[] } | undefined,
+  saving: false
+})
+
+async function saveImage(close: () => void) {
+  if (!image.blob) throw new Error('No image to upload')
+  image.saving = true
+  try {
+    await authStore.uploadProfileImage(image.blob)
+    close()
+  } catch (e) {
+    image.errors = parseRestError(e)
+    console.error('Failed to upload profile image', e)
+  }
+  image.saving = false
+}
+
+const imagePath = computed(
+  () => authStore.user?.image || authStore.user?.img_url
+)
 </script>
 
 <template>
@@ -65,15 +90,15 @@ async function fetchEmailChoices() {
       <v-row v-if="authStore.user">
         <v-col class="d-flex flex-column ga-4" v-bind="cols.wideLeft.left">
           <v-sheet class="d-flex ga-4 pa-4" border rounded>
-            <div class="flex-shrink-0">
-              <v-avatar :image="authStore.user.img_url!" size="80px" />
+            <div v-if="imagePath" class="flex-shrink-0">
+              <v-avatar :image="imagePath" size="80px" />
             </div>
             <div class="flex-grow-1">
               <h2>{{ getFullName(authStore.user) }}</h2>
               <p class="text-grey mb-1">{{ authStore.user.userid }}</p>
               <p v-if="authStore.user.email">{{ authStore.user.email }}</p>
             </div>
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 d-flex flex-column ga-1">
               <DefaultDialog
                 :title="$t('organization.editProfile')"
                 @open="fetchEmailChoices"
@@ -146,6 +171,45 @@ async function fetchEmailChoices() {
                       />
                     </DefaultForm>
                   </v-defaults-provider>
+                </template>
+              </DefaultDialog>
+              <DefaultDialog :title="$t('img.change')">
+                <template #activator="{ props }">
+                  <v-btn
+                    class="d-none d-sm-block"
+                    :text="$t('img.change')"
+                    variant="tonal"
+                    v-bind="props"
+                  />
+                  <v-btn
+                    class="d-sm-none"
+                    icon="mdi-image-edit"
+                    variant="tonal"
+                    v-bind="props"
+                  />
+                </template>
+                <template #default="{ close }">
+                  <ImageField
+                    crop
+                    :error-messages="image.errors?.image"
+                    v-model="image.blob"
+                  />
+                  <div class="text-right">
+                    <v-btn
+                      color="primary"
+                      :text="$t('cancel')"
+                      variant="text"
+                      @click="close"
+                    />
+                    <v-btn
+                      color="primary"
+                      :disabled="!image.blob"
+                      :loading="image.saving"
+                      prepend-icon="mdi-upload"
+                      :text="$t('img.upload')"
+                      @click="saveImage(close)"
+                    />
+                  </div>
                 </template>
               </DefaultDialog>
             </div>

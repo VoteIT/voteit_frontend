@@ -26,12 +26,12 @@ export const organisationType = new ContentType<
   }
 })
 
-export const userType = new ContentType<IOrganisationUser>({
+export const userType = new ContentType<IUser>({
   name: 'user',
   restEndpoint: 'users/'
 })
 
-export const profileType = new ContentType<IUser>({
+export const profileType = new ContentType<IOrganisationUser>({
   name: 'user',
   restEndpoint: 'user/',
   restConfig: { alertOnError: false }
