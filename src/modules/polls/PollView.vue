@@ -259,7 +259,7 @@ const {
   nextUnvoted,
   voteCount
 } = usePoll(pollId)
-const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, meetingId } = useMeeting()
 const { agendaItem, agendaItemRoute } = useAgendaItem(
   computed(() => poll.value?.agenda_item)
 )
@@ -370,7 +370,7 @@ const buttons = computed(() => {
     {
       props: {
         color: ThemeColor.Primary,
-        to: getMeetingRoute('polls'),
+        to: { name: 'polls' },
         prependIcon: 'mdi-chevron-double-left'
       },
       title: t('poll.all')
@@ -392,10 +392,13 @@ const buttons = computed(() => {
     btns.push({
       props: {
         color: ThemeColor.Primary,
-        to: getMeetingRoute('poll', {
-          pid: nextUnvoted.value.pk,
-          pslug: slugify(nextUnvoted.value.title)
-        }),
+        to: {
+          name: 'poll',
+          params: {
+            pid: nextUnvoted.value.pk,
+            pslug: slugify(nextUnvoted.value.title)
+          }
+        },
         prependIcon: 'mdi-star'
       },
       title: t('poll.nextUnvoted', { ...nextUnvoted.value })

@@ -24,11 +24,11 @@ import { AgendaItem } from './types'
 import useAgendaTags from './useAgendaTags'
 
 export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
-  const { getMeetingRoute } = useMeeting()
   const { getAgendaItem, getAgendaItems, getAgendaBody, getLastRead } =
     useAgendaStore()
   const { anyProposal } = useProposalStore()
   const route = useRoute()
+  const { meeting, meetingId } = useMeeting()
 
   const _agendaId = computed(() => unref(agendaId) ?? Number(route.params.aid))
 
@@ -68,18 +68,15 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   )
   // END OF NEXT / PREVIOUS
 
-  function getAgendaItemRoute(
-    name: string = 'agendaItem',
-    params?: Dictionary<string | number>
-  ) {
-    if (!_agendaId.value) return
-    return getMeetingRoute(name, {
+  const agendaItemRoute = computed(() => ({
+    name: 'agendaItem',
+    params: {
+      id: meetingId.value,
+      slug: slugify(meeting.value?.title),
       aid: _agendaId.value,
-      aslug: slugify(agendaItem.value?.title),
-      ...params
-    })
-  }
-  const agendaItemRoute = computed(() => getAgendaItemRoute())
+      aslug: slugify(agendaItem.value?.title)
+    }
+  }))
 
   const nextPollTitle = computed(() => {
     if (!agendaItem.value) return ''
@@ -150,7 +147,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
     nextAgendaItem,
     nextPollTitle,
     previousAgendaItem,
-    proposalBlockReason,
-    getAgendaItemRoute
+    proposalBlockReason
+    // getAgendaItemRoute
   }
 }

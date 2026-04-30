@@ -116,7 +116,7 @@ import ProposalCard from '../proposals/ProposalCard.vue'
 const props = defineProps<{ poll: Poll }>()
 
 const { t } = useI18n()
-const { isModerator, getMeetingRoute } = useMeeting()
+const { isModerator } = useMeeting()
 const { getPollStatus, getUserVote } = usePollStore()
 const {
   canVote,
@@ -133,12 +133,10 @@ const { width } = useElementSize(rootEl)
 const proposalColumns = computed(() => (width.value < 640 ? 1 : 2))
 
 const pollStatus = computed(() => getPollStatus(props.poll.pk))
-const pollRoute = computed(() =>
-  getMeetingRoute('poll', {
-    pid: props.poll.pk,
-    pslug: slugify(props.poll.title)
-  })
-)
+const pollRoute = computed(() => ({
+  name: 'poll',
+  params: { pid: props.poll.pk, pslug: slugify(props.poll.title) }
+}))
 const userVote = computed(() => getUserVote(props.poll))
 </script>
 

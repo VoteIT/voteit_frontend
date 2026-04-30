@@ -21,7 +21,7 @@ import { Proposal, ProposalState } from '@/modules/proposals/types'
 
 const { t } = useI18n()
 const route = useRoute()
-const { meetingId, isModerator, getMeetingRoute, hasRole } = useMeeting()
+const { meetingId, isModerator, hasRole } = useMeeting()
 const { getAgendaItem, hasNewContent } = useAgendaStore()
 const { agenda, filteredAgenda } = useAgenda(
   meetingId,
@@ -55,7 +55,10 @@ function isCountedProposal({ state }: Proposal) {
 function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
   return getAiType(s.state).map((ai) => ({
     title: ai.title,
-    to: getMeetingRoute('agendaItem', { aid: ai.pk, aslug: slugify(ai.title) }),
+    to: {
+      name: 'agendaItem',
+      params: { aid: ai.pk, aslug: slugify(ai.title) }
+    },
     icons: getAiPolls(ai.pk, PollState.Ongoing).length
       ? ['mdi-star-outline']
       : [],
@@ -71,7 +74,7 @@ const agendaLinks = computed(() =>
     ? [
         {
           title: t('agenda.edit'),
-          to: getMeetingRoute('agendaEdit'),
+          to: { name: 'agendaEdit' },
           icons: ['mdi-pencil']
         }
       ]

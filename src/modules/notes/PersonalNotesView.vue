@@ -19,7 +19,7 @@ import { IProposalNote, ProposalIntent } from './types'
 import NoteForm from './NoteForm.vue'
 import useNotesStore from './useNotesStore'
 
-const { meetingId, getMeetingRoute } = useMeeting()
+const { meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { getProposal } = useProposalStore()
 const store = useNotesStore()
@@ -78,10 +78,10 @@ function* iterAgendaItems() {
     if (notes.length)
       yield {
         ...ai,
-        route: getMeetingRoute('agendaItem', {
-          aid: ai.pk,
-          aslug: slugify(ai.title)
-        }),
+        route: {
+          name: 'agendaItem',
+          params: { aid: ai.pk, aslug: slugify(ai.title) }
+        },
         notes
       }
   }

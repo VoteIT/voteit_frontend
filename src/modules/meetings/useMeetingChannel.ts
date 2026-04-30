@@ -9,8 +9,7 @@ import useMeetingStore from './useMeetingStore'
 const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel() {
-  const { isModerator, meetingId, meeting, meetingJoinRoute, userRoles } =
-    useMeeting()
+  const { isModerator, meetingId, meeting, userRoles } = useMeeting()
   const { fetchMeeting } = useMeetingStore()
   const router = useRouter()
 
@@ -42,7 +41,7 @@ export default function useMeetingChannel() {
     loader.call(async () => {
       try {
         if (!(await fetchMeeting(meetingId.value)))
-          await router.push(meetingJoinRoute.value) // Fetch was OK, but user has no meeting role
+          await router.push({ name: 'meeting:join' }) // Fetch was OK, but user has no meeting role
       } catch {
         fetchFailed.value = true
       }

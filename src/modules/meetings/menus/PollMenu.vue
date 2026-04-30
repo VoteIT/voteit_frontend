@@ -12,7 +12,7 @@ import usePollStore from '@/modules/polls/usePollStore'
 import useMeeting from '../useMeeting'
 
 const { t } = useI18n()
-const { meeting, meetingId, getMeetingRoute } = useMeeting()
+const { meeting, meetingId } = useMeeting()
 const { getUnvotedPolls } = usePollStore()
 
 const unvotedPolls = computed(() =>
@@ -23,12 +23,12 @@ function* iterPollLinks() {
   yield {
     exactActive: true,
     title: t('poll.all'),
-    to: getMeetingRoute('polls')
+    to: { name: 'polls' }
   }
   if (meeting.value && canAddPoll(meeting.value))
     yield {
       title: t('poll.new'),
-      to: getMeetingRoute('pollStart'),
+      to: { name: 'pollStart' },
       icons: ['mdi-star-plus']
     }
 }
@@ -43,7 +43,7 @@ watch(hasUnvotedPolls, (value, oldValue) => {
 const unvotedPollLinks = computed(() =>
   unvotedPolls.value.map((p) => ({
     title: p.title,
-    to: getMeetingRoute('poll', { pid: p.pk, pslug: slugify(p.title) }),
+    to: { name: 'poll', params: { pid: p.pk, pslug: slugify(p.title) } },
     icons: ['mdi-star']
   }))
 )

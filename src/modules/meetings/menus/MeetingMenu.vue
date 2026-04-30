@@ -7,7 +7,7 @@ import useMeeting from '../useMeeting'
 import { meetingNavPlugins } from '../registry'
 
 const { t } = useI18n()
-const { canChange, meeting, meetingRoute, getMeetingRoute } = useMeeting()
+const { canChange, meeting, meetingRoute } = useMeeting()
 
 function* iterMeetingItems() {
   if (!meeting.value) return
@@ -19,22 +19,22 @@ function* iterMeetingItems() {
     },
     {
       title: t('meeting.participants'),
-      to: getMeetingRoute('participants')
+      to: { name: 'participants' }
     },
     {
       title: t('electoralRegister.plural'),
-      to: getMeetingRoute('electoralRegisters')
+      to: { name: 'electoralRegisters' }
     },
     {
       title: t('minutes.documents'),
-      to: getMeetingRoute('meetingMinutes')
+      to: { name: 'meetingMinutes' }
     }
   ]
   if (canChange.value)
     yield {
       icons: ['mdi-cog'],
       title: t('meeting.controlPanel'),
-      to: getMeetingRoute('settings')
+      to: { name: 'settings' }
     }
   for (const plugin of meetingNavPlugins.getActivePlugins(meeting.value))
     yield* plugin.iterItems({ meeting: meeting.value, menu: 'meeting', t })

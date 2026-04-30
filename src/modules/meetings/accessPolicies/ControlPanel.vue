@@ -13,7 +13,7 @@
             color="primary"
             prepend-icon="mdi-account"
             :text="$t('meeting.participants')"
-            :to="getMeetingRoute('participants')"
+            :to="{ name: 'participants' }"
           />
         </v-alert>
         <v-switch
@@ -141,8 +141,7 @@ const NON_MODIFIABLE_ROLES = Object.freeze([
 ])
 
 const { t } = useI18n()
-const { meetingId, meeting, meetingDialect, meetingJoinUrl, getMeetingRoute } =
-  useMeeting()
+const { meetingId, meeting, meetingDialect, meetingJoinUrl } = useMeeting()
 const { alert } = useAlert()
 const {
   accessPolicies,

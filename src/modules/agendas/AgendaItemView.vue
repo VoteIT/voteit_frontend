@@ -49,7 +49,7 @@ const { t } = useI18n()
 const { filterDiscussions } = useDiscussionStore()
 const { anyProposal, filterProposals } = useProposalStore()
 const { getAiPolls } = usePollStore()
-const { meetingId, meeting, getMeetingRoute } = useMeeting()
+const { meetingId, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { getAgendaItem, hasNewContent } = useAgendaStore()
 const {
@@ -92,7 +92,7 @@ const agendaItemExists = computed(() => {
   if (!agenda.value.length) return
   return !agendaId.value || !!agendaItem.value
 })
-usePermission(agendaItemExists, { to: getMeetingRoute() })
+usePermission(agendaItemExists, { to: { name: 'meeting' } })
 useMeetingTitle(computed(() => agendaItem.value?.title ?? t('agenda.item')))
 
 function proposalFilter(p: Proposal) {
@@ -136,9 +136,10 @@ const allTags = computed<Set<string>>(() => {
 })
 provide(TagsKey, allTags)
 
-const toNewPoll = computed(() =>
-  getMeetingRoute('pollStartAI', { aid: agendaId.value })
-)
+const toNewPoll = computed(() => ({
+  name: 'pollStartAI',
+  params: { aid: agendaId.value }
+}))
 
 function getAgendaMenuContext(menu: string) {
   if (!agendaItem.value || !meeting.value)

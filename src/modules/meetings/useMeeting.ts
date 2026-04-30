@@ -8,14 +8,10 @@ import useAuthStore from '../auth/useAuthStore'
 import { Author, MeetingRole } from './types'
 import * as rules from './rules'
 import { meetingType } from './contentTypes'
-import {
-  getMeetingRoute as _getMeetingRoute,
-  getMeetingRoleIcon,
-  roleIcons,
-  translateMeetingRole
-} from './utils'
+import { translateMeetingRole } from './utils'
 import useMeetingId from './useMeetingId'
 import useMeetingStore from './useMeetingStore'
+import { slugify } from '@/utils'
 
 const postAsStore = reactive(new Map<number, Author>())
 
@@ -48,14 +44,19 @@ export default function useMeeting() {
   const meetingId = useMeetingId()
   const meeting = computed(() => getMeeting(meetingId.value))
   const meetingDialect = computed(() => meeting.value?.dialect)
-  const meetingJoinRoute = computed(() => getMeetingRoute('meeting:join'))
-  const meetingRoute = computed(() => getMeetingRoute())
+  const meetingRoute = computed(() => ({
+    name: 'meeting',
+    params: {
+      id: meetingId.value,
+      slug: slugify(meeting.value?.title ?? '')
+    }
+  }))
 
   function getUrl(route: RouteLocationRaw) {
     return location.origin + router.resolve(route).href
   }
   const meetingUrl = computed(() => getUrl(meetingRoute.value))
-  const meetingJoinUrl = computed(() => getUrl(meetingJoinRoute.value))
+  const meetingJoinUrl = computed(() => getUrl({ name: 'meeting:join' }))
 
   const userRoles = computed(
     () =>
@@ -63,17 +64,6 @@ export default function useMeeting() {
   )
   function hasRole(role: MeetingRole, user?: number) {
     return meetingRoles.hasRole(meetingId.value, role, user)
-  }
-
-  function getMeetingRoute(
-    name: string = 'meeting',
-    extraParams?: Dictionary<string | number>
-  ) {
-    return _getMeetingRoute(
-      { pk: meetingId.value, title: meeting.value?.title ?? '' },
-      name,
-      extraParams
-    )
   }
 
   /**
@@ -109,7 +99,6 @@ export default function useMeeting() {
     meeting,
     meetingId,
     meetingDialect,
-    meetingJoinRoute,
     meetingJoinUrl,
     meetingRoute,
     meetingUrl,
@@ -118,7 +107,6 @@ export default function useMeeting() {
     roleLabels,
     roleLabelsEditable,
     userRoles,
-    getMeetingRoute,
     getRoleLabels,
     hasRole
   }

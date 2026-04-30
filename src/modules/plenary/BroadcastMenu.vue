@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 
-import { autoEllipsis } from '@/utils'
+import { autoEllipsis, slugify } from '@/utils'
 import CheckableListItem from '@/components/CheckableListItem.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import HeaderMenu from '@/components/HeaderMenu.vue'
@@ -20,7 +20,7 @@ const {
   handleSpeaker,
   setOpen
 } = useRoom()
-const { isModerator, getMeetingRoute } = useMeeting()
+const { isModerator, meeting } = useMeeting()
 
 const pauseEdit = reactive({
   isOpen: false,
@@ -155,7 +155,10 @@ async function savePauseMessage(pauseBroadcast = false) {
         <v-list-item
           v-if="isModerator"
           append-icon="mdi-chevron-right"
-          :to="getMeetingRoute('controlPanel', { panel: 'rooms' })"
+          :to="{
+            name: 'controlPanel',
+            params: { panel: 'rooms', slug: slugify(meeting?.title) }
+          }"
           :title="$t('room.settings')"
         />
       </v-list>

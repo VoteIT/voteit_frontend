@@ -24,24 +24,6 @@ export function translateMeetingRole(
   }
 }
 
-/**
- * Convenience fn to create a meeting route
- */
-export function getMeetingRoute(
-  meeting: Pick<Meeting, 'title' | 'pk'>,
-  name: string = 'meeting',
-  extraParams?: Dictionary<string | number>
-) {
-  return {
-    name,
-    params: {
-      id: meeting.pk,
-      slug: slugify(meeting.title),
-      ...extraParams
-    }
-  }
-}
-
 export const roleIcons: Record<MeetingRole, string> = {
   [MeetingRole.Participant]: 'mdi-eye',
   [MeetingRole.Moderator]: 'mdi-gavel',

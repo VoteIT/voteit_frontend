@@ -16,10 +16,10 @@ import type { Meeting } from './types'
 
 const { t } = useI18n()
 const route = useRoute()
-const { isModerator, meeting, getMeetingRoute } = useMeeting()
+const { isModerator, meeting } = useMeeting()
 
 useMeetingTitle(t('settings'))
-usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
+usePermission(isModerator, { to: computed(() => ({ name: 'meeting' })) })
 
 const panelPlugins = computed(() => {
   if (!meeting.value) return []
@@ -29,11 +29,11 @@ const panelPlugins = computed(() => {
         description: panel.getDescription && panel.getDescription(t),
         disabled: !!panel.isDisabled?.(meeting.value as Meeting),
         title: panel.getTitle(t),
-        to: panel.route
-          ? getMeetingRoute(panel.route.name, panel.route.params)
-          : panel.component
-          ? getMeetingRoute('controlPanel', { panel: panel.id })
-          : undefined,
+        to:
+          panel.route ??
+          (panel.component
+            ? { name: 'controlPanel', params: { panel: panel.id } }
+            : undefined),
         ...panel
       }
     }),
@@ -53,11 +53,11 @@ const breadcrumbs = computed(() => {
   return [
     {
       title: t('meeting.controlPanel'),
-      to: getMeetingRoute('settings')
+      to: { name: 'settings' }
     },
     {
       title: currentPlugin.value.getTitle(t),
-      to: getMeetingRoute('controlPanel', { panel: currentPlugin.value.id })
+      to: { name: 'controlPanel', params: { panel: currentPlugin.value.id } }
     }
   ]
 })

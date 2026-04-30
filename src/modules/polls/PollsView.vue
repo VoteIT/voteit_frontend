@@ -10,7 +10,7 @@
           color="primary"
           prepend-icon="mdi-star-plus"
           :text="$t('poll.new')"
-          :to="toAddPoll"
+          :to="{ name: 'pollStart' }"
         />
       </header>
       <v-divider />
@@ -37,7 +37,7 @@ import * as rules from './rules'
 import { PollState } from './types'
 
 const { t } = useI18n()
-const { meeting, getMeetingRoute } = useMeeting()
+const { meeting } = useMeeting()
 useMeetingTitle(t('poll.all'))
 
 const pollStatesOpen = ref(
@@ -50,5 +50,4 @@ watch(pollStatesOpen, (value) => {
 const canAddPoll = computed(
   () => meeting.value && rules.canAddPoll(meeting.value)
 )
-const toAddPoll = computed(() => getMeetingRoute('pollStart'))
 </script>

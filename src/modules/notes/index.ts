@@ -6,7 +6,6 @@ import { proposalButtonPlugins } from '../proposals/registry'
 
 import ControlPanel from './ControlPanel.vue'
 import ProposalNoteButton from './ProposalNoteButton.vue'
-import { getMeetingRoute } from '../meetings/utils'
 import PersonalNotesView from './PersonalNotesView.vue'
 
 const COMPONENT_ID = 'notes'
@@ -40,7 +39,7 @@ meetingNavPlugins.register({
     yield {
       icons: ['mdi-note-edit'],
       title: t('notes.personal', 2),
-      to: getMeetingRoute(meeting, 'notes:list')
+      to: { name: 'notes:list' }
     }
   }
 })

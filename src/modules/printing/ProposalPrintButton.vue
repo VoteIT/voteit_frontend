@@ -5,9 +5,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
-import useAgendaItem from '../agendas/useAgendaItem'
 import { Proposal, ProposalButtonMode } from '../proposals/types'
 
 import usePrinting from './usePrinting'
@@ -19,10 +18,10 @@ const props = defineProps<{
   proposal: Proposal
 }>()
 
-const { getAgendaItemRoute } = useAgendaItem(ref(props.proposal.agenda_item))
-const to = computed(() =>
-  getAgendaItemRoute('printing:proposals', { propIds: props.proposal.pk })
-)
+const to = computed(() => ({
+  name: 'printing:proposals',
+  params: { propIds: props.proposal.pk }
+}))
 
 function goTo() {
   backOnPrinted.value = true

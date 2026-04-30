@@ -29,14 +29,14 @@ import AgendaOrdering from './AgendaOrdering.vue'
 
 const { t } = useI18n()
 const agendaTag = ref<string | undefined>(undefined)
-const { isModerator, meeting, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meeting, meetingId } = useMeeting()
 const { createAgendaItem } = useAgendaStore()
 const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
 const { getState } = agendaItemType.useWorkflows()
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 
-usePermission(isModerator, { to: computed(() => getMeetingRoute('meeting')) })
+usePermission(isModerator, { to: computed(() => ({ name: 'meeting' })) })
 useMeetingTitle(t('agenda.agenda'))
 
 const pages = shallowReactive({

@@ -139,8 +139,7 @@ const {
   meetingDialect,
   canChangeRoles,
   canViewMeetingInvite,
-  roleItems,
-  getMeetingRoute
+  roleItems
 } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
 const { getUser } = useUserDetails()
@@ -187,7 +186,7 @@ function searchFilter(user: IUser): boolean {
 }
 
 const { currentTab } = useTabRoute(
-  getMeetingRoute,
+  (name, params) => ({ name, params }),
   'participants',
   'participantsTab'
 )

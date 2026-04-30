@@ -30,7 +30,7 @@ import { AgendaState } from '../agendas/types'
 const { t } = useI18n()
 const router = useRouter()
 const { filterProposals } = useProposalStore()
-const { isModerator, meetingRoute, meetingId, getMeetingRoute } = useMeeting()
+const { isModerator, meetingRoute, meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { agendaId, agendaItem, nextPollTitle } = useAgendaItem()
 const { alert } = useAlert()
@@ -50,7 +50,7 @@ const pollableAgendaItems = computed(() => {
     .filter((ai) => canAddPoll(ai) && getPublishedProposals(ai.pk).length)
     .map((ai) => ({
       ai,
-      to: getMeetingRoute('pollStartAI', { aid: ai.pk }),
+      to: { name: 'pollStartAI', params: { aid: ai.pk } },
       subtitle: t(
         'proposal.proposalCount',
         getPublishedProposals(ai.pk).length
@@ -136,9 +136,10 @@ async function createPoll(
     start
   }
   const { data } = await pollType.api.add(pollData)
-  router.push(
-    getMeetingRoute('poll', { pid: data.pk, pslug: slugify(data.title) })
-  )
+  router.push({
+    name: 'poll',
+    params: { pid: data.pk, pslug: slugify(data.title) }
+  })
 }
 
 watch(agendaId, () => {
@@ -174,7 +175,7 @@ watch(agendaId, () => {
               size="small"
               variant="text"
               icon="mdi-close"
-              :to="getMeetingRoute('pollStart')"
+              :to="{ name: 'pollStart' }"
             />
           </template>
         </v-list-item>
