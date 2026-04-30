@@ -30,6 +30,7 @@ const emit = defineEmits<{
 }>()
 
 const image = reactive({
+  croppingOpen: false,
   src: props.src,
   failed: false,
   file: null as File | null,
@@ -199,6 +200,7 @@ watch(
       image.failed = true
     }
     image.loading = false
+    image.croppingOpen = true
   },
   { immediate: true }
 )
@@ -225,7 +227,7 @@ function openImageSelector() {
   input.click()
 }
 
-async function setCrop(close: () => void) {
+async function setCrop() {
   const { file } = image
   if (!file) throw new Error('No image selected')
   image.loading = true
@@ -236,7 +238,7 @@ async function setCrop(close: () => void) {
     image.failed = true
   }
   image.loading = false
-  close()
+  image.croppingOpen = false
 }
 
 const imageElem = ref<HTMLImageElement>()
@@ -308,7 +310,11 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                 :text="$t('img.change')"
                 @click="openImageSelector"
               />
-              <DefaultDialog v-if="image.file" :title="$t('img.cropping')">
+              <DefaultDialog
+                v-if="image.file"
+                :title="$t('img.cropping')"
+                v-model="image.croppingOpen"
+              >
                 <template #activator="{ props }">
                   <v-btn
                     color="primary"
@@ -349,7 +355,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                       color="primary"
                       :loading="image.loading"
                       :text="$t('ok')"
-                      @click="setCrop(close)"
+                      @click="setCrop"
                     />
                   </div>
                 </template>
