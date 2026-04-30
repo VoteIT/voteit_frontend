@@ -5,8 +5,7 @@ import Vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  console.log('Loaded environment variables:', env) // Debug log to check loaded environment variables
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
 
   return {
     build: {
