@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { computed, shallowReactive, shallowRef } from 'vue'
+import { shallowReactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 import { cols } from '@/utils/defaults'
+import { parseRestError } from '@/utils/restApi'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import useRules from '@/composables/useRules'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import DefaultForm from '@/components/DefaultForm.vue'
-import ImageField from '@/components/inputs/ImageField.vue'
 import SlugField from '@/components/inputs/SlugField.vue'
+import QueryDialog from '@/components/QueryDialog.vue'
+import CropImageField from '@/components/inputs/CropImageField.vue'
 import useAuthStore from '../auth/useAuthStore'
 
 import useOrgStore from './useOrgStore'
 import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
-import { parseRestError } from '@/utils/restApi'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 const authStore = useAuthStore()
 const store = useOrgStore()
@@ -216,8 +216,7 @@ async function saveImage(close: () => void) {
                       </QueryDialog>
                     </template>
                   </v-card>
-                  <ImageField
-                    crop
+                  <CropImageField
                     :error-messages="image.errors?.image"
                     :src="authStore.userImage"
                     v-model="image.blob"
