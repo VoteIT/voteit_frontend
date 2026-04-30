@@ -18,7 +18,3 @@ export const cols = {
     }
   }
 }
-
-export const dialogDefaults = {
-  width: 640
-}

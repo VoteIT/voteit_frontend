@@ -1,8 +1,8 @@
 <template>
   <v-dialog
     v-model="isActive"
-    v-bind="dialogDefaults"
     :persistent="!dismissible"
+    :width="`${dialogWidth}px`"
   >
     <v-sheet
       id="dialog"
@@ -44,6 +44,7 @@
 import {
   ComponentPublicInstance,
   computed,
+  inject,
   nextTick,
   onBeforeMount,
   reactive,
@@ -51,9 +52,10 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogDefaults } from '@/utils/defaults'
 import { openDialogEvent } from '@/utils/events'
 import { Dialog } from '@/composables/types'
+
+const dialogWidth = inject('dialogWidth', 640)
 
 const { t } = useI18n()
 

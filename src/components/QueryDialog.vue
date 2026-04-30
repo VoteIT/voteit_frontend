@@ -1,5 +1,45 @@
+<script lang="ts" setup>
+import { inject, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { Color } from '@/utils/types'
+
+const dialogWidth = inject('dialogWidth', 640)
+
+const { t } = useI18n()
+
+const emit = defineEmits(['confirmed'])
+
+interface Props {
+  confirmText?: string
+  modelValue?: boolean
+  persistent?: boolean
+  text?: string
+  color?: Color
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  color: 'primary'
+})
+
+const isActive = ref(props.modelValue)
+
+function close() {
+  isActive.value = false
+}
+
+function confirm() {
+  emit('confirmed')
+  close()
+}
+</script>
+
 <template>
-  <v-dialog v-model="isActive" v-bind="dialogDefaults" :persistent="persistent">
+  <v-dialog
+    v-model="isActive"
+    :width="`${dialogWidth}px`"
+    :persistent="persistent"
+  >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
     </template>
@@ -33,41 +73,6 @@
     </v-sheet>
   </v-dialog>
 </template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { dialogDefaults } from '@/utils/defaults'
-import { Color } from '@/utils/types'
-
-const { t } = useI18n()
-
-const emit = defineEmits(['confirmed'])
-
-interface Props {
-  confirmText?: string
-  modelValue?: boolean
-  persistent?: boolean
-  text?: string
-  color?: Color
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  color: 'primary'
-})
-
-const isActive = ref(props.modelValue)
-
-function close() {
-  isActive.value = false
-}
-
-function confirm() {
-  emit('confirmed')
-  close()
-}
-</script>
 
 <style lang="sass">
 p.text-h6

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
-import { dialogDefaults } from '@/utils/defaults'
 import { ThemeColor } from '@/utils/types'
 import QueryDialog from '@/components/QueryDialog.vue'
 
 import useMeetingId from '../meetings/useMeetingId'
 
 import useActive from './useActive'
+
+const dialogWidth = inject('dialogWidth', 640)
 
 const meetingId = useMeetingId()
 const { componentActive, isActive, isBusy, isDismissed, dismiss, setActive } =
@@ -29,7 +30,7 @@ async function dialogSetActive() {
 </script>
 
 <template>
-  <v-dialog v-model="dialogActive" v-bind="dialogDefaults" persistent>
+  <v-dialog v-model="dialogActive" :width="`${dialogWidth}px`" persistent>
     <v-sheet class="pa-4">
       <div class="d-flex mb-2">
         <h2 class="flex-grow-1 text-truncate">

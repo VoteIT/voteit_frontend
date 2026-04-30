@@ -4,12 +4,6 @@ import { useDisplay } from 'vuetify'
 export default function useDefaults() {
   const { mobile } = useDisplay()
 
-  const dialogDefaults = computed(() => {
-    return {
-      width: 640
-    }
-  })
-
   const collapsedBodyHeight = computed(() => (mobile.value ? 80 : 240))
   const collapsedBodyHeightMobile = computed(() =>
     mobile.value ? 80 : undefined
@@ -17,7 +11,6 @@ export default function useDefaults() {
 
   return {
     collapsedBodyHeight,
-    collapsedBodyHeightMobile,
-    dialogDefaults
+    collapsedBodyHeightMobile
   }
 }

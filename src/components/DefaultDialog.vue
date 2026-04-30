@@ -1,9 +1,46 @@
+<script lang="ts" setup>
+import { inject, provide, ref, watch } from 'vue'
+
+import { Color } from '@/utils/types'
+
+const dialogWidth = inject('dialogWidth', 640)
+provide('dialogWidth', dialogWidth - 20)
+
+const emit = defineEmits(['close', 'open', 'update:modelValue'])
+
+const props = defineProps<{
+  color?: Color
+  height?: string | number
+  modelValue?: boolean
+  persistent?: boolean
+  title?: string
+  width?: string
+}>()
+
+const isActive = ref(props.modelValue)
+
+function close() {
+  isActive.value = false
+}
+
+watch(isActive, (value) => {
+  emit(value ? 'open' : 'close')
+  emit('update:modelValue', value)
+})
+watch(
+  () => props.modelValue,
+  (value) => {
+    isActive.value = value
+  }
+)
+</script>
+
 <template>
   <v-dialog
     v-model="isActive"
     :persistent="persistent"
     :height="height"
-    :width="width"
+    :width="width ?? `${dialogWidth}px`"
   >
     <template #activator="attrs">
       <slot name="activator" v-bind="attrs"></slot>
@@ -29,42 +66,3 @@
     </template>
   </v-dialog>
 </template>
-
-<script lang="ts" setup>
-import { ref, watch } from 'vue'
-
-import { Color } from '@/utils/types'
-
-const emit = defineEmits(['close', 'open', 'update:modelValue'])
-
-const props = withDefaults(
-  defineProps<{
-    color?: Color
-    height?: string | number
-    modelValue?: boolean
-    persistent?: boolean
-    title?: string
-    width?: string
-  }>(),
-  {
-    width: '640px'
-  }
-)
-
-const isActive = ref(props.modelValue)
-
-function close() {
-  isActive.value = false
-}
-
-watch(isActive, (value) => {
-  emit(value ? 'open' : 'close')
-  emit('update:modelValue', value)
-})
-watch(
-  () => props.modelValue,
-  (value) => {
-    isActive.value = value
-  }
-)
-</script>
