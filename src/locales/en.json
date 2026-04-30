@@ -410,6 +410,7 @@
     "groups": {
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
+      "count": "No groups | One group | {count} groups",
       "delegatedFrom": "One delegation | {count} delegations",
       "delegateTo": "Delegate votes",
       "delegations": "Delegations",

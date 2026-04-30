@@ -10,6 +10,9 @@ import useProposalStore from '@/modules/proposals/useProposalStore'
 
 import UserAvatar from './UserAvatar.vue'
 import Tag from './Tag.vue'
+import useMeetingGroups, {
+  getGroupRole
+} from '@/modules/meetings/useMeetingGroups'
 
 provide(TagClickHandlerKey, undefined)
 
@@ -20,6 +23,19 @@ const props = defineProps<{
 const { filterProposals } = useProposalStore()
 const { getAgendaItems } = useAgendaStore()
 const meetingId = useMeetingId()
+const { filterGroups } = useMeetingGroups(meetingId)
+
+const userGroups = computed(() =>
+  filterGroups((g) => g.memberships.some((m) => m.user === props.user.pk)).map(
+    (g) => {
+      const role = g.memberships.find((m) => m.user === props.user.pk)?.role
+      return {
+        ...g,
+        roleName: role ? getGroupRole(role)?.title : undefined
+      }
+    }
+  )
+)
 
 const proposals = computed(() =>
   filterProposals((p) => p.m === meetingId.value && p.author === props.user.pk)
@@ -53,7 +69,21 @@ const proposalAgendaItems = computed(() =>
       <template #prepend>
         <UserAvatar :user="user" size="large" class="mt-1" />
       </template>
-      <v-list v-if="proposalAgendaItems.length" density="compact">
+      <v-list
+        v-if="proposalAgendaItems.length || userGroups.length"
+        density="compact"
+      >
+        <v-list-subheader
+          v-if="userGroups.length"
+          :title="$t('meeting.groups.count', userGroups.length)"
+        />
+        <v-list-item
+          v-for="group in userGroups"
+          prepend-icon="mdi-account-group"
+          :key="group.pk"
+          :subtitle="group.roleName"
+          :title="group.title"
+        />
         <v-list-subheader
           :title="$t('proposal.countInMeeting', proposals.length)"
         />

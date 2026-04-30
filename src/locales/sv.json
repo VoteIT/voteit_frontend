@@ -410,6 +410,7 @@
     "groups": {
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Ny grupp",
+      "count": "Inga grupper | En grupp | {count} grupper",
       "delegatedFrom": "En delegation | {count} delegationer",
       "delegateTo": "Delegera röster",
       "delegations": "Delegationer",

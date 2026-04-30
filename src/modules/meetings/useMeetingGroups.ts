@@ -1,4 +1,4 @@
-import { any, filter, imap, sum } from 'itertools'
+import { any, filter, ifilter, imap, Predicate, sorted, sum } from 'itertools'
 import { sortBy } from 'lodash'
 import { computed, MaybeRef, reactive, unref } from 'vue'
 
@@ -25,6 +25,10 @@ groupMembershipType.updateMap(groupMemberships, { meeting: 'm' })
 
 export function getMeetingGroup(pk: number) {
   return meetingGroups.get(pk)
+}
+
+export function getGroupRole(role: number) {
+  return groupRoles.get(role)
 }
 
 export function isGroupMember(group: number, user: number) {
@@ -87,6 +91,24 @@ export default function useMeetingGroups(meetingId: MaybeRef<number>) {
     })
   })
 
+  function filterGroups(
+    predicate: Predicate<MeetingGroup & { memberships: GroupMembership[] }>
+  ) {
+    return sorted(
+      ifilter(
+        imap(meetingGroups.values(), (g) => ({
+          ...g,
+          memberships: filter(
+            groupMemberships.values(),
+            (m) => m.meeting_group === g.pk
+          )
+        })),
+        (g) => g.meeting === unref(meetingId) && predicate(g)
+      ),
+      (g) => g.title.toLocaleLowerCase()
+    )
+  }
+
   /**
    * Ordered, annotated groups in current meeting that current user is member of.
    */
@@ -115,6 +137,7 @@ export default function useMeetingGroups(meetingId: MaybeRef<number>) {
     postAsGroups,
     voteCount,
     userGroups,
+    filterGroups,
     getMeetingGroup,
     getRole(pk: number) {
       return roles.value.find((r) => r.pk === pk)
