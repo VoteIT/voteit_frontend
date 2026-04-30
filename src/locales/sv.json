@@ -267,12 +267,16 @@
   },
   "img": {
     "allowedFormats": "Tillåtna bildformat: jpeg, png, webp och svg.",
-    "change": "Ändra bild",
+    "change": "Byt bild",
     "clear": "Rensa",
+    "clearUploaded": "Rensa uppladdad bild",
+    "clearUploadedConfirmation": "Vill du rensa din uppladdade bild och återgå till bild från extern källa?",
     "cropping": "Beskär bild",
     "cropAspect": "Bilden beskärs till {aspectText}.",
+    "externalSourceExplanation": "Du har även en bild hämtad från din inloggning. Om du vill använda den externa bilden som din profilbild i VoteIT, rensa din nuvarande profilbild.",
     "focusPoint": "Fokuspunkt",
     "focusPointInfo": "Du kan flytta fokuspunkt i bilden ovan. Det påverkar hur bilden beskärs om bilden har andra proportioner än bildytan.",
+    "fromExternalSource": "Bild från extern källa",
     "preview": "Förhandsvisning",
     "upload": "Ladda upp bild"
   },

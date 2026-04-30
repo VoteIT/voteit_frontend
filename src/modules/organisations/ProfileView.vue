@@ -18,6 +18,7 @@ import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
 import { parseRestError } from '@/utils/restApi'
+import QueryDialog from '@/components/QueryDialog.vue'
 
 const authStore = useAuthStore()
 const store = useOrgStore()
@@ -185,6 +186,36 @@ async function saveImage(close: () => void) {
                   />
                 </template>
                 <template #default="{ close }">
+                  <v-card
+                    v-if="authStore.user.image && authStore.user.img_url"
+                    class="mb-4"
+                    color="grey-lighten-4"
+                    :text="$t('img.externalSourceExplanation')"
+                    :title="$t('img.fromExternalSource')"
+                  >
+                    <template #append>
+                      <v-avatar
+                        :image="authStore.user.img_url"
+                        size="x-large"
+                      />
+                    </template>
+                    <template #actions>
+                      <QueryDialog
+                        color="warning"
+                        :text="$t('img.clearUploadedConfirmation')"
+                        @confirmed="authStore.clearProfileImage"
+                      >
+                        <template #activator="{ props }">
+                          <v-btn
+                            color="warning"
+                            prepend-icon="mdi-delete"
+                            :text="$t('img.clearUploaded')"
+                            v-bind="props"
+                          />
+                        </template>
+                      </QueryDialog>
+                    </template>
+                  </v-card>
                   <ImageField
                     crop
                     :error-messages="image.errors?.image"

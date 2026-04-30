@@ -107,6 +107,17 @@ export default defineStore('auth', () => {
     user.value = data
   }
 
+  async function clearProfileImage() {
+    if (!user.value)
+      throw new Error("Unauthenticated user can't clear profile image")
+    const { data } = await restApi.patch<IOrganisationUser>(
+      `user/${user.value.pk}/`,
+      { image: '' },
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    )
+    user.value = data
+  }
+
   /**
    * Ready to run loaders?
    */
@@ -122,6 +133,7 @@ export default defineStore('auth', () => {
     isAnonymous,
     isAuthenticated,
     user,
+    clearProfileImage,
     fetchAlternateUsers,
     fetchAuthenticatedUser,
     getUserRandomSortValue,
