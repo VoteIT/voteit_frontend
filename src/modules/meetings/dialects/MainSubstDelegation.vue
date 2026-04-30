@@ -13,15 +13,15 @@ import useUserDetails from '@/modules/organisations/useUserDetails'
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 import useVoteTransfers from '../electoralRegisters/useVoteTransfers'
+import useGroupStore from '../useGroupStore'
 import useMeeting from '../useMeeting'
 
 const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
-const { allGroupMembers, getMeetingGroup, getRole } = useMeetingGroups(
-  props.group.meeting
-)
+const { allGroupMembers } = useMeetingGroups(props.group.meeting)
+const { getMeetingGroup, getGroupRole } = useGroupStore()
 const authStore = useAuthStore()
 const { isModerator } = useMeeting()
 const { getUser } = useUserDetails()
@@ -78,7 +78,7 @@ function* iterRoleProblems() {
       yield {
         fullName: getFullName(user),
         groupName: getMeetingGroup(problem.meeting_group)?.title ?? '?',
-        roleName: getRole(problem.role)?.title ?? '?',
+        roleName: getGroupRole(problem.role)?.title ?? '?',
         userid: user.userid
       }
   }
@@ -108,7 +108,7 @@ const annotatedMembers = computed(() =>
           !transfer &&
           (isModerator.value || gm.user === authStore.user?.pk),
         hasVoteInGroup: !transfer === isMain,
-        roleTitle: getRole(gm.role)?.title
+        roleTitle: getGroupRole(gm.role)?.title
       }
     }),
     orderByName

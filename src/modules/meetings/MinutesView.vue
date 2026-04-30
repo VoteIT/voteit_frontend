@@ -18,7 +18,7 @@ import { isUnresolvedState } from '../proposals/utils'
 
 import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
-import { getMeetingGroup } from './useMeetingGroups'
+import useGroupStore from './useGroupStore'
 
 const PROPOSAL_ORDERING = {
   created: 'created',
@@ -69,6 +69,7 @@ const { t } = useI18n()
 const { meetingId, isFinishedMeeting, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { filterProposals } = useProposalStore()
+const groupStore = useGroupStore()
 
 const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
 useMeetingTitle(
@@ -357,7 +358,7 @@ function getProposalBody(p: Proposal) {
                 ><Tag disabled :name="p.prop_id"
               /></template>
               <template v-if="p.meeting_group" #author>
-                {{ getMeetingGroup(p.meeting_group)?.title }}
+                {{ groupStore.getMeetingGroup(p.meeting_group)?.title }}
               </template>
               <template v-else-if="p.author" #author>
                 <User :pk="p.author" />

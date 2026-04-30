@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 import { type Author, isGroupAuthor, isUserAuthor } from './types'
 import useMeeting from './useMeeting'
-import { getMeetingGroup, isGroupMember } from './useMeetingGroups'
+import useGroupStore from './useGroupStore'
 import User from '@/components/User.vue'
 import useUserDetails from '../organisations/useUserDetails'
 import { useI18n } from 'vue-i18n'
@@ -12,6 +12,7 @@ import { getFullName } from '@/utils'
 const { t } = useI18n()
 const { isModerator } = useMeeting()
 const { getUser } = useUserDetails()
+const groupStore = useGroupStore()
 
 const props = defineProps<{
   author: Author
@@ -21,7 +22,7 @@ const props = defineProps<{
 
 const group = computed(() =>
   props.author.meeting_group
-    ? getMeetingGroup(props.author.meeting_group)
+    ? groupStore.getMeetingGroup(props.author.meeting_group)
     : undefined
 )
 
@@ -34,7 +35,7 @@ const groupUserId = computed(() => {
   if (!props.author.as_group) return
   if (
     !isModerator.value ||
-    !isGroupMember(props.author.meeting_group, props.author.author)
+    !groupStore.isGroupMember(props.author.meeting_group, props.author.author)
   )
     return
   const user = getUser(props.author.author)

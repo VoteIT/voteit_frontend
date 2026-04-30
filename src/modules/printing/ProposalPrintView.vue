@@ -80,7 +80,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { cols } from '@/utils/defaults'
 import User from '@/components/User.vue'
 
-import { getMeetingGroup } from '../meetings/useMeetingGroups'
+import useGroupStore from '../meetings/useGroupStore'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import { ProposalState, isDiffProposal } from '../proposals/types'
 import useProposalStore from '../proposals/useProposalStore'
@@ -90,6 +90,7 @@ import usePrinting from './usePrinting'
 useMeetingTitle('Printing') // TODO
 const agendaId = computed(() => Number(route.params.aid))
 const { filterProposals } = useProposalStore()
+const groupStore = useGroupStore()
 const route = useRoute()
 const router = useRouter()
 const propIds = computed<number[]>({
@@ -111,7 +112,7 @@ const selectedProposals = computed(() => {
   return filterProposals(
     (p) => p.agenda_item === agendaId.value && propIds.value.includes(p.pk)
   ).map((p) => ({
-    meetingGroup: p.meeting_group && getMeetingGroup(p.meeting_group),
+    meetingGroup: p.meeting_group && groupStore.getMeetingGroup(p.meeting_group),
     ...p
   }))
 })

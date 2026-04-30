@@ -50,13 +50,15 @@ import useMeetingGroups from '../useMeetingGroups'
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeeting from '../useMeeting'
 import { meetingGroupType } from '../contentTypes'
+import useGroupStore from '../useGroupStore'
 
 const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
 const { canChange, meetingId } = useMeeting()
-const { meetingGroups, getMeetingGroup } = useMeetingGroups(meetingId)
+const { meetingGroups } = useMeetingGroups(meetingId)
+const { getMeetingGroup } = useGroupStore()
 const { handleRestError } = useErrorHandler({
   showField: 'delegate_to',
   target: 'alert'

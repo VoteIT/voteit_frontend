@@ -13,6 +13,7 @@ import {
   meetingExportPlugins,
   meetingRolePlugins
 } from './registry'
+import useGroupStore from './useGroupStore'
 import useMeetingGroups from './useMeetingGroups'
 import { hasFakeRoles } from './rules'
 import { MeetingRole } from './types'
@@ -133,7 +134,8 @@ meetingInviteAnnotationPlugins.register({
     }))
   },
   getTranslator(t, meeting) {
-    const { getMeetingGroup, groupRoles } = useMeetingGroups(meeting)
+    const { groupRoles } = useMeetingGroups(meeting)
+    const { getMeetingGroup } = useGroupStore()
     return (annotation: {
       name: 'group'
       meeting_group: number

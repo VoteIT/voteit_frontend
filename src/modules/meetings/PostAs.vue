@@ -8,6 +8,7 @@ import type { IUser } from '../organisations/types'
 import useUserDetails from '../organisations/useUserDetails'
 import { userType } from '../organisations/contentTypes'
 
+import useGroupStore from './useGroupStore'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { Author, isGroupAuthor, isUserAuthor } from './types'
@@ -28,8 +29,8 @@ const props = defineProps<{
 
 const authStore = useAuthStore()
 const { isModerator, meetingId, postAs } = useMeeting()
-const { meetingGroups, postAsGroups, getMeetingGroup } =
-  useMeetingGroups(meetingId)
+const { meetingGroups, postAsGroups } = useMeetingGroups(meetingId)
+const { getMeetingGroup } = useGroupStore()
 const { getUser } = useUserDetails()
 
 // This means we're editing pre-existing content

@@ -5,14 +5,12 @@ import { getFullName, slugify } from '@/utils'
 import useAgendaStore from '@/modules/agendas/useAgendaStore'
 import useMeetingId from '@/modules/meetings/useMeetingId'
 import { TagClickHandlerKey } from '@/modules/meetings/useTags'
+import useGroupStore from '@/modules/meetings/useGroupStore'
 import { IUser } from '@/modules/organisations/types'
 import useProposalStore from '@/modules/proposals/useProposalStore'
 
 import UserAvatar from './UserAvatar.vue'
 import Tag from './Tag.vue'
-import useMeetingGroups, {
-  getGroupRole
-} from '@/modules/meetings/useMeetingGroups'
 
 provide(TagClickHandlerKey, undefined)
 
@@ -23,18 +21,16 @@ const props = defineProps<{
 const { filterProposals } = useProposalStore()
 const { getAgendaItems } = useAgendaStore()
 const meetingId = useMeetingId()
-const { filterGroups } = useMeetingGroups(meetingId)
+const { getGroupRole, getUserGroups } = useGroupStore()
 
 const userGroups = computed(() =>
-  filterGroups((g) => g.memberships.some((m) => m.user === props.user.pk)).map(
-    (g) => {
-      const role = g.memberships.find((m) => m.user === props.user.pk)?.role
-      return {
-        ...g,
-        roleName: role ? getGroupRole(role)?.title : undefined
-      }
+  getUserGroups(meetingId.value).map((g) => {
+    const role = g.memberships.find((m) => m.user === props.user.pk)?.role
+    return {
+      ...g,
+      roleName: role ? getGroupRole(role)?.title : undefined
     }
-  )
+  })
 )
 
 const proposals = computed(() =>
