@@ -215,7 +215,8 @@ watch(
       image.failed = true
     }
     image.loading = false
-  }
+  },
+  { immediate: true }
 )
 
 watch(
@@ -288,9 +289,9 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
 
 <template>
   <v-input :error-messages="errorMessages">
-    <v-sheet class="pa-2 pa-sm-4" rounded>
+    <v-sheet class="pa-2 pa-sm-4 w-100" rounded>
       <div class="d-flex flex-column flex-sm-row ga-2 ga-sm-4">
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 w-100 w-sm-50">
           <PositionedImage
             v-if="!image.src && image.file === null"
             :active="isOverDropZone"
@@ -299,7 +300,6 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
             :position="image.position"
             ref="dropZoneRef"
             rounded
-            width="280px"
             @click="openImageSelector"
           >
             <div
@@ -318,7 +318,6 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
             :position="image.position"
             ref="dropZoneRef"
             rounded
-            width="280px"
           >
             <div class="flex-grow-1 pa-2 d-flex flex-column align-end ga-1">
               <v-btn
