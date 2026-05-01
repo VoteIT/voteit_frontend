@@ -199,22 +199,6 @@ async function saveImage(close: () => void) {
                         size="x-large"
                       />
                     </template>
-                    <template #actions>
-                      <QueryDialog
-                        color="warning"
-                        :text="$t('img.clearUploadedConfirmation')"
-                        @confirmed="authStore.clearProfileImage"
-                      >
-                        <template #activator="{ props }">
-                          <v-btn
-                            color="warning"
-                            prepend-icon="mdi-delete"
-                            :text="$t('img.clearUploaded')"
-                            v-bind="props"
-                          />
-                        </template>
-                      </QueryDialog>
-                    </template>
                   </v-card>
                   <CropImageField
                     :error-messages="image.errors?.image"
@@ -223,17 +207,31 @@ async function saveImage(close: () => void) {
                     rounded
                   >
                     <template #actions>
-                      <v-fade-transition>
-                        <div v-if="image.blob" class="text-right">
-                          <v-btn
-                            color="primary"
-                            :loading="image.saving"
-                            prepend-icon="mdi-upload"
-                            :text="$t('img.upload')"
-                            @click="saveImage(close)"
-                          />
-                        </div>
-                      </v-fade-transition>
+                      <div class="text-right">
+                        <v-btn
+                          v-if="image.blob"
+                          color="primary"
+                          :loading="image.saving"
+                          prepend-icon="mdi-upload"
+                          :text="$t('img.upload')"
+                          @click="saveImage(close)"
+                        />
+                        <QueryDialog
+                          v-else-if="authStore.user.image"
+                          color="warning"
+                          :text="$t('img.clearUploadedConfirmation')"
+                          @confirmed="authStore.clearProfileImage"
+                        >
+                          <template #activator="{ props }">
+                            <v-btn
+                              color="warning"
+                              prepend-icon="mdi-delete"
+                              :text="$t('img.clearUploaded')"
+                              v-bind="props"
+                            />
+                          </template>
+                        </QueryDialog>
+                      </div>
                     </template>
                   </CropImageField>
                   <div class="text-right">
