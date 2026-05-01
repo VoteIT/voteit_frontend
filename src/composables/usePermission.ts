@@ -30,9 +30,10 @@ const DEFAULT_OPTIONS: PermissionOptions = {
 const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   default({ message, to }, router, t, changed) {
     const title =
-      message ?? changed
+      message ??
+      (changed
         ? t('permission.defaultChangedMessage')
-        : t('permission.defaultMessage')
+        : t('permission.defaultMessage'))
     openDialogEvent.emit({
       title,
       resolve: () => router.push(unref(to)),
