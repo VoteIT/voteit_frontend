@@ -41,11 +41,6 @@ function call(...cbs: (() => Promise<unknown>)[]) {
   cbs.forEach((cb) => callbacks.push(cb))
 }
 
-function reset() {
-  clearAlertsEvent.emit()
-  performLoad()
-}
-
 export default function useLoader(
   name: string,
   ...promises: Promise<unknown>[]
@@ -61,7 +56,6 @@ export default function useLoader(
     initDone,
     initFailed,
     initState,
-    reset,
     setLoaded,
     call
   }
