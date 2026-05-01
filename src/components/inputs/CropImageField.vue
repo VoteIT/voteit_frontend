@@ -2,11 +2,11 @@
 import { computed, reactive, ref, shallowRef, watch } from 'vue'
 import { useDropZone, useElementSize } from '@vueuse/core'
 
-import PositionedImage from '@/components/PositionedImage.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import { withinBounds } from '../utils'
 
 type ImageSize = { width: number; height: number }
+type CropArea = { sx: number; sy: number; sWidth: number; sHeight: number }
 
 const DATA_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
 
@@ -17,6 +17,7 @@ const props = withDefaults(
     label?: string
     errorMessages?: string[]
     maxSize?: number
+    rounded?: boolean
     src?: string
   }>(),
   {
@@ -31,13 +32,13 @@ const emit = defineEmits<{
 
 const image = reactive({
   croppingOpen: false,
-  src: props.src,
+  src: props.src, // beskuren thumbnail — visas i huvudvyn
+  origSrc: undefined as string | undefined, // full originalbild — visas i beskärningsdialogen
   failed: false,
   file: null as File | null,
   loading: false,
   origSize: null as ImageSize | null,
-  size: null as ImageSize | null,
-  position: { x: 0.5, y: 0.5 }
+  cropArea: null as CropArea | null
 })
 
 /**
@@ -61,6 +62,29 @@ function getScaled({ width, height }: { width: number; height: number }) {
   }
 }
 
+function loadOriginalImage(
+  file: File
+): Promise<{ src: string; orig: ImageSize }> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.match(/image.*/)) return reject(new Error('Not an image'))
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = (evt) => {
+      const dataURL = evt.target?.result as string | undefined
+      if (!dataURL) return reject(new Error('No result'))
+      const img = new Image()
+      img.onerror = reject
+      img.onload = () =>
+        resolve({
+          src: dataURL,
+          orig: { width: img.naturalWidth, height: img.naturalHeight }
+        })
+      img.src = dataURL
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 /**
  * Turn aspect ration as width/height from string
  * @param aspectRatio A string, for example 1.234, 1 or 16/9
@@ -72,56 +96,33 @@ const targetRatio = computed(() => {
   return wAsp
 })
 
-const cropX = computed(() => {
-  if (!image.size) return
-  const { width, height } = image.size
-  const imageRatio = width / height
-  return imageRatio > targetRatio.value
-})
+function initCropArea(orig: ImageSize): CropArea {
+  const sWidth = Math.min(orig.width, orig.height * targetRatio.value)
+  const sHeight = sWidth / targetRatio.value
+  return {
+    sx: (orig.width - sWidth) / 2,
+    sy: (orig.height - sHeight) / 2,
+    sWidth,
+    sHeight
+  }
+}
 
 const cropData = computed(() => {
-  if (!image.origSize) return
-  const { width, height } = image.origSize
-  if (cropX.value) {
-    const croppedWidth = height * targetRatio.value
-    const full = croppedWidth / width
-    const half = full / 2 // Only true for 1/1 ratio
-    const minCrop = 1 - full
-    const fractions = {
-      start: withinBounds(image.position.x - half, 0, minCrop),
-      end: withinBounds(1 - image.position.x - half, 0, minCrop)
-    }
-    return {
-      width,
-      height,
-      fractions,
-      // TODO: Calculate cutting positions here for drawImage (https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage)
-      absolute: {
-        x: width * fractions.start,
-        y: 0,
-        width: croppedWidth,
-        height: height
-      }
-    }
-  }
-
-  const croppedHeight = width * targetRatio.value
-  const full = croppedHeight / height
-  const half = full / 2
-  const minCrop = 1 - full
-  const fractions = {
-    start: withinBounds(image.position.y - half, 0, minCrop),
-    end: withinBounds(1 - image.position.y - half, 0, minCrop)
-  }
+  if (!image.origSize || !image.cropArea) return
+  const { sx, sy, sWidth, sHeight } = image.cropArea
+  const { width: imgW, height: imgH } = image.origSize
   return {
-    width,
-    height,
-    fractions,
+    fractions: {
+      left: sx / imgW,
+      top: sy / imgH,
+      right: (imgW - sx - sWidth) / imgW,
+      bottom: (imgH - sy - sHeight) / imgH
+    },
     absolute: {
-      x: 0,
-      y: height * fractions.start,
-      width,
-      height: croppedHeight
+      x: sx,
+      y: sy,
+      width: sWidth,
+      height: sHeight
     }
   }
 })
@@ -185,17 +186,16 @@ watch(
   async (file) => {
     image.failed = false
     if (file === null) return emit('update:modelValue', null)
-    if (!file) return // Revoke old using URL.revokeObjectURL()?
+    if (!file) return
     image.loading = true
     try {
-      const [full, cropped] = await Promise.all([
-        resizeImage(file),
-        resizeImage(file, cropData.value)
-      ])
-      image.origSize = full.orig
-      image.src = full.src
-      image.size = full.size
-      emit('update:modelValue', cropped.blob)
+      const { src, orig } = await loadOriginalImage(file)
+      image.origSrc = src
+      image.origSize = orig
+      image.cropArea = initCropArea(orig)
+      const { blob, src: croppedSrc } = await resizeImage(file, cropData.value)
+      image.src = croppedSrc
+      emit('update:modelValue', blob)
     } catch {
       image.failed = true
     }
@@ -232,7 +232,8 @@ async function setCrop() {
   if (!file) throw new Error('No image selected')
   image.loading = true
   try {
-    const { blob } = await resizeImage(file, cropData.value)
+    const { blob, src } = await resizeImage(file, cropData.value)
+    image.src = src
     emit('update:modelValue', blob)
   } catch {
     image.failed = true
@@ -244,19 +245,130 @@ async function setCrop() {
 const imageElem = ref<HTMLImageElement>()
 const imageSize = useElementSize(imageElem)
 
-function setPosition(e: MouseEvent) {
-  if (e.buttons !== 1) return
-  image.position = {
-    x: withinBounds(e.layerX / imageSize.width.value),
-    y: withinBounds(e.layerY / imageSize.height.value)
+type DragHandle = 'tl' | 'tr' | 'bl' | 'br' | 't' | 'b' | 'l' | 'r' | 'move'
+
+const dragging = ref<{
+  handle: DragHandle
+  startX: number
+  startY: number
+  startArea: CropArea
+} | null>(null)
+
+function startDrag(handle: DragHandle, e: MouseEvent) {
+  if (!image.cropArea) return
+  dragging.value = {
+    handle,
+    startX: e.clientX,
+    startY: e.clientY,
+    startArea: { ...image.cropArea }
   }
+  window.addEventListener('mousemove', onDrag)
+  window.addEventListener('mouseup', stopDrag)
 }
 
-const aspectText = computed(() =>
-  targetRatio.value === 1
-    ? 'kvadratiskt format'
-    : `bildförhållande ${props.aspectRatio.replace('/', ':')}`
-)
+function onDrag(e: MouseEvent) {
+  if (!dragging.value || !image.origSize || !image.cropArea) return
+  const scaleX = image.origSize.width / imageSize.width.value
+  const scaleY = image.origSize.height / imageSize.height.value
+  const dx = (e.clientX - dragging.value.startX) * scaleX
+  const dy = (e.clientY - dragging.value.startY) * scaleY
+  const { sx, sy, sWidth, sHeight } = dragging.value.startArea
+  const { width: imgW, height: imgH } = image.origSize
+  const ratio = targetRatio.value
+  const MIN = Math.min(imgW, imgH) * 0.1
+
+  const next: CropArea = { sx, sy, sWidth, sHeight }
+
+  switch (dragging.value.handle) {
+    case 'move': {
+      next.sx = withinBounds(sx + dx, 0, imgW - sWidth)
+      next.sy = withinBounds(sy + dy, 0, imgH - sHeight)
+      break
+    }
+    case 'br': {
+      const w = withinBounds(sWidth + dx, MIN, imgW - sx)
+      const h = w / ratio
+      if (sy + h <= imgH) {
+        next.sWidth = w
+        next.sHeight = h
+      }
+      break
+    }
+    case 'bl': {
+      const w = withinBounds(sWidth - dx, MIN, sx + sWidth)
+      const h = w / ratio
+      if (sy + h <= imgH) {
+        next.sx = sx + sWidth - w
+        next.sWidth = w
+        next.sHeight = h
+      }
+      break
+    }
+    case 'tr': {
+      const w = withinBounds(sWidth + dx, MIN, imgW - sx)
+      const h = w / ratio
+      if (sy + sHeight - h >= 0) {
+        next.sy = sy + sHeight - h
+        next.sWidth = w
+        next.sHeight = h
+      }
+      break
+    }
+    case 'tl': {
+      const w = withinBounds(sWidth - dx, MIN, sx + sWidth)
+      const h = w / ratio
+      if (sy + sHeight - h >= 0) {
+        next.sx = sx + sWidth - w
+        next.sy = sy + sHeight - h
+        next.sWidth = w
+        next.sHeight = h
+      }
+      break
+    }
+    case 'r': {
+      const w = withinBounds(sWidth + dx, MIN, imgW - sx)
+      const h = w / ratio
+      next.sWidth = w
+      next.sHeight = h
+      next.sy = withinBounds(sy + (sHeight - h) / 2, 0, imgH - h)
+      break
+    }
+    case 'l': {
+      const w = withinBounds(sWidth - dx, MIN, sx + sWidth)
+      const h = w / ratio
+      next.sx = sx + sWidth - w
+      next.sWidth = w
+      next.sHeight = h
+      next.sy = withinBounds(sy + (sHeight - h) / 2, 0, imgH - h)
+      break
+    }
+    case 'b': {
+      const h = withinBounds(sHeight + dy, MIN, imgH - sy)
+      const w = h * ratio
+      next.sHeight = h
+      next.sWidth = w
+      next.sx = withinBounds(sx + (sWidth - w) / 2, 0, imgW - w)
+      break
+    }
+    case 't': {
+      const h = withinBounds(sHeight - dy, MIN, sy + sHeight)
+      const w = h * ratio
+      next.sy = sy + sHeight - h
+      next.sHeight = h
+      next.sWidth = w
+      next.sx = withinBounds(sx + (sWidth - w) / 2, 0, imgW - w)
+      break
+    }
+  }
+
+  image.cropArea = next
+}
+
+function stopDrag() {
+  dragging.value = null
+  window.removeEventListener('mousemove', onDrag)
+  window.removeEventListener('mouseup', stopDrag)
+}
 
 /* Drop zone logic */
 const dropZoneRef = shallowRef<HTMLDivElement>()
@@ -275,34 +387,35 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
     <v-sheet class="pa-2 pa-sm-4 w-100" rounded>
       <div class="d-flex flex-column flex-sm-row ga-2 ga-sm-4">
         <div class="flex-shrink-0 w-100 w-sm-50">
-          <PositionedImage
-            v-if="!image.src && image.file === null"
-            :active="isOverDropZone"
-            :aspect-ratio="aspectRatio"
-            class="cursor-pointer d-flex"
-            :position="image.position"
+          <div
+            class="preview-wrapper"
+            :style="{ aspectRatio }"
             ref="dropZoneRef"
-            rounded
-            @click="openImageSelector"
           >
+            <!-- Image container — overflow:hidden klipper rundningen -->
             <div
-              class="flex-grow-1 pa-12 d-flex flex-column justify-center align-center"
+              class="preview-container"
+              :class="{
+                'preview-container--rounded': rounded,
+                'preview-container--active': isOverDropZone
+              }"
             >
-              <v-icon icon="mdi-camera" size="x-large" />
-              <p class="text-center">{{ $t('img.upload') }}</p>
+              <div
+                v-if="!image.src && image.file === null"
+                class="preview-placeholder cursor-pointer d-flex flex-column justify-center align-center pa-12"
+                @click="openImageSelector"
+              >
+                <v-icon icon="mdi-camera" size="x-large" />
+                <p class="text-center">{{ $t('img.upload') }}</p>
+              </div>
+              <img v-else-if="image.src" :src="image.src" class="preview-img" />
             </div>
-          </PositionedImage>
-          <PositionedImage
-            v-else
-            :active="isOverDropZone"
-            :aspect-ratio="aspectRatio"
-            class="d-flex"
-            :src="image.src"
-            :position="image.position"
-            ref="dropZoneRef"
-            rounded
-          >
-            <div class="flex-grow-1 pa-2 d-flex flex-column align-end ga-1">
+
+            <!-- Knappar utanför overflow:hidden — beskärs inte av rundningen -->
+            <div
+              v-if="image.src || image.file !== null"
+              class="preview-actions pa-2 d-flex flex-column align-end ga-1"
+            >
               <v-btn
                 color="primary"
                 prepend-icon="mdi-refresh"
@@ -326,28 +439,60 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                 </template>
                 <template #default="{ close }">
                   <div
-                    v-if="cropData && image.src"
+                    v-if="cropData && image.origSrc"
                     class="focus-selection mb-4 overflow-hidden"
-                    :class="{ cropX }"
                     :style="{
-                      '--crop-start': `${cropData.fractions.start * 100}%`,
-                      '--crop-end': `${cropData.fractions.end * 100}%`
+                      '--crop-left': `${cropData.fractions.left * 100}%`,
+                      '--crop-top': `${cropData.fractions.top * 100}%`,
+                      '--crop-right': `${cropData.fractions.right * 100}%`,
+                      '--crop-bottom': `${cropData.fractions.bottom * 100}%`
                     }"
                   >
-                    <img
-                      :src="image.src"
-                      @mousedown.prevent="setPosition"
-                      @pointermove.prevent="setPosition"
-                      ref="imageElem"
-                    />
-                    <div class="crop-start"></div>
-                    <div class="crop-end"></div>
+                    <img :src="image.origSrc" ref="imageElem" />
+                    <div
+                      class="crop-frame"
+                      :class="{ 'crop-frame--rounded': rounded }"
+                    ></div>
+                    <div
+                      class="crop-move"
+                      @mousedown.prevent="startDrag('move', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-t"
+                      @mousedown.prevent="startDrag('t', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-b"
+                      @mousedown.prevent="startDrag('b', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-l"
+                      @mousedown.prevent="startDrag('l', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-r"
+                      @mousedown.prevent="startDrag('r', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-tl"
+                      @mousedown.prevent="startDrag('tl', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-tr"
+                      @mousedown.prevent="startDrag('tr', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-bl"
+                      @mousedown.prevent="startDrag('bl', $event)"
+                    ></div>
+                    <div
+                      class="handle handle-br"
+                      @mousedown.prevent="startDrag('br', $event)"
+                    ></div>
                   </div>
                   <div class="mb-4">
                     <h3>{{ $t('img.preview') }}</h3>
-                    <p>
-                      {{ $t('img.focusPointInfo') }}
-                    </p>
+                    <p>{{ $t('img.focusPointInfo') }}</p>
                   </div>
                   <div class="text-right">
                     <v-btn variant="text" :text="$t('cancel')" @click="close" />
@@ -370,12 +515,13 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                 @click="image.file = null"
               />
             </div>
-          </PositionedImage>
+          </div>
         </div>
-        <div>
+        <div class="d-flex flex-column">
           <h2 v-if="label" class="mb-2">{{ label }}</h2>
-          <p class="mb-1">{{ $t('img.cropAspect', { aspectText }) }}</p>
           <p>{{ $t('img.allowedFormats') }}</p>
+          <v-spacer />
+          <slot name="actions"></slot>
         </div>
       </div>
     </v-sheet>
@@ -386,6 +532,41 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
 .v-sheet
   background-color: rgba(0,0,0,var(--v-idle-opacity))
 
+.preview-wrapper
+  position: relative
+
+.preview-container
+  position: absolute
+  inset: 0
+  overflow: hidden
+  border-radius: 4px
+  background-color: rgba(0, 0, 0, var(--v-idle-opacity))
+  transition: box-shadow 0.2s
+
+  &--rounded
+    border-radius: 50%
+
+  &--active
+    box-shadow: 0 5px 5px -3px rgba(0,0,0,0.2), 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12)
+
+.preview-placeholder
+  height: 100%
+
+.preview-img
+  width: 100%
+  height: 100%
+  object-fit: cover
+  display: block
+
+.preview-actions
+  position: absolute
+  inset: 0
+  display: flex
+  flex-direction: column
+  align-items: flex-end
+  padding: 8px
+  gap: 4px
+
 .focus-selection
   position: relative
   line-height: 0
@@ -393,38 +574,80 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
     width: 100%
     filter: brightness(0.8)
 
-  .crop-start,
-  .crop-end
+  .crop-frame
     position: absolute
-    background-color: rgba(32,32,32,.7)
+    left: var(--crop-left)
+    top: var(--crop-top)
+    right: var(--crop-right)
+    bottom: var(--crop-bottom)
     pointer-events: none
+    box-shadow: 0 0 0 9999px rgba(32, 32, 32, 0.7)
+    border: 1px solid rgba(255, 255, 255, 0.5)
 
-  .crop-start
-    border-bottom: 1px solid rgba(0,0,0,.8)
-    top: 0
-    left: 0
-    right: 0
-    height: var(--crop-start)
+    &--rounded
+      border-radius: 50%
 
-  .crop-end
-    border-left: 1px solid rgba(0,0,0,.8)
-    bottom: 0
-    left: 0
-    right: 0
-    height: var(--crop-end)
+  .crop-move
+    position: absolute
+    left: var(--crop-left)
+    top: var(--crop-top)
+    right: var(--crop-right)
+    bottom: var(--crop-bottom)
+    cursor: move
 
-  &.cropX
-    .crop-start
-      border-right: 1px solid rgba(0,0,0,.8)
-      bottom: 0
-      right: unset
-      width: var(--crop-start)
-      height: auto
+  .handle
+    position: absolute
+    width: 10px
+    height: 10px
+    background: white
+    border: 1px solid rgba(0, 0, 0, 0.5)
+    z-index: 1
 
-    .crop-end
-      border-left: 1px solid rgba(0,0,0,.8)
-      top: 0
-      left: unset
-      height: auto
-      width: var(--crop-end)
+  .handle-t
+    left: calc(var(--crop-left) + (100% - var(--crop-left) - var(--crop-right)) / 2)
+    top: var(--crop-top)
+    transform: translate(-50%, -50%)
+    cursor: n-resize
+
+  .handle-b
+    left: calc(var(--crop-left) + (100% - var(--crop-left) - var(--crop-right)) / 2)
+    bottom: var(--crop-bottom)
+    transform: translate(-50%, 50%)
+    cursor: s-resize
+
+  .handle-l
+    left: var(--crop-left)
+    top: calc(var(--crop-top) + (100% - var(--crop-top) - var(--crop-bottom)) / 2)
+    transform: translate(-50%, -50%)
+    cursor: w-resize
+
+  .handle-r
+    right: var(--crop-right)
+    top: calc(var(--crop-top) + (100% - var(--crop-top) - var(--crop-bottom)) / 2)
+    transform: translate(50%, -50%)
+    cursor: e-resize
+
+  .handle-tl
+    left: var(--crop-left)
+    top: var(--crop-top)
+    transform: translate(-50%, -50%)
+    cursor: nw-resize
+
+  .handle-tr
+    right: var(--crop-right)
+    top: var(--crop-top)
+    transform: translate(50%, -50%)
+    cursor: ne-resize
+
+  .handle-bl
+    left: var(--crop-left)
+    bottom: var(--crop-bottom)
+    transform: translate(-50%, 50%)
+    cursor: sw-resize
+
+  .handle-br
+    right: var(--crop-right)
+    bottom: var(--crop-bottom)
+    transform: translate(50%, 50%)
+    cursor: se-resize
 </style>

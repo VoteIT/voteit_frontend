@@ -220,22 +220,24 @@ async function saveImage(close: () => void) {
                     :error-messages="image.errors?.image"
                     :src="authStore.userImage"
                     v-model="image.blob"
-                  />
+                    rounded
+                  >
+                    <template #actions>
+                      <v-fade-transition>
+                        <div v-if="image.blob" class="text-right">
+                          <v-btn
+                            color="primary"
+                            :loading="image.saving"
+                            prepend-icon="mdi-upload"
+                            :text="$t('img.upload')"
+                            @click="saveImage(close)"
+                          />
+                        </div>
+                      </v-fade-transition>
+                    </template>
+                  </CropImageField>
                   <div class="text-right">
-                    <v-btn
-                      color="primary"
-                      :text="$t('cancel')"
-                      variant="text"
-                      @click="close"
-                    />
-                    <v-btn
-                      color="primary"
-                      :disabled="!image.blob"
-                      :loading="image.saving"
-                      prepend-icon="mdi-upload"
-                      :text="$t('img.upload')"
-                      @click="saveImage(close)"
-                    />
+                    <v-btn :text="$t('Stäng')" variant="text" @click="close" />
                   </div>
                 </template>
               </DefaultDialog>
