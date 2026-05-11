@@ -547,6 +547,7 @@
     "started": "Startad",
     "timeToVote": "Dags att rösta",
     "timeToVoteDescription": "Det finns en omröstning du inte röstat i än. | Det finns {count} omröstningar du inte röstat i än.",
+    "unknown": "Okänd omröstning",
     "unvoted": "Ej röstat",
     "nextUnvoted": "Nästa: {title}",
     "vote": "Rösta",

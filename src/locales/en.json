@@ -547,6 +547,7 @@
     "started": "Started",
     "timeToVote": "Time to vote",
     "timeToVoteDescription": "There is a poll where you haven't voted yet. | There are {count} polls where you haven't voted yet.",
+    "unknown": "Unknown poll",
     "unvoted": "Unvoted",
     "nextUnvoted": "Next: {title}",
     "vote": "Vote",
