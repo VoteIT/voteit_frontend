@@ -109,6 +109,13 @@ const passiveModeOptions = [
     value: true
   }
 ]
+
+const voteBtnProps = computed(() => {
+  if (passiveMode.value) return
+  return firstUnvotedPoll.value
+    ? ({ color: 'yellow', variant: 'outlined' } as const)
+    : {}
+})
 </script>
 
 <template>
@@ -132,16 +139,17 @@ const passiveModeOptions = [
       <v-breadcrumbs :items="crumbs" />
     </v-app-bar-title>
     <template v-if="meetingHasPoll">
-      <RealTimeVotingModal v-if="!passiveMode" :open-poll="meetingRoom?.poll">
+      <RealTimeVotingModal v-if="voteBtnProps" :open-poll="meetingRoom?.poll">
         <template #activator="{ props }">
           <v-btn
-            class="mx-1"
-            :color="firstUnvotedPoll ? 'yellow' : undefined"
+            class="mx-1 d-none d-sm-flex"
             prepend-icon="mdi-star"
             :text="$t('room.toPoll')"
-            :variant="firstUnvotedPoll ? 'outlined' : undefined"
-            v-bind="props"
+            v-bind="{ ...props, ...voteBtnProps }"
           />
+          <v-btn class="mx-1 d-sm-none" v-bind="{ ...props, ...voteBtnProps }">
+            <v-icon icon="mdi-star" />
+          </v-btn>
         </template>
       </RealTimeVotingModal>
       <RealTimePollModal
@@ -150,10 +158,14 @@ const passiveModeOptions = [
       >
         <template #activator="{ props }">
           <v-btn
+            class="d-none d-sm-flex"
             prepend-icon="mdi-star"
             :text="$t('room.toPoll')"
             v-bind="props"
           />
+          <v-btn class="d-sm-none" v-bind="props">
+            <v-icon icon="mdi-star" />
+          </v-btn>
         </template>
       </RealTimePollModal>
     </template>
