@@ -79,3 +79,9 @@ socket.channels.onSubscriptionChanged(({ subscribed, ...channel }) => {
   if (subscribed) channelSubscribedEvent.emit(pathedChannel)
   else channelLeftEvent.emit(pathedChannel)
 })
+
+// When browser says it's online, ping will check socket alive status.
+// Should also trigger if a device wakes up from sleep.
+window.addEventListener('online', () => {
+  if (socket.isOpen) sendPing()
+})
