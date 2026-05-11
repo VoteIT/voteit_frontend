@@ -170,6 +170,7 @@
     "discussion": "Discussion post",
     "discussions": "Discussions",
     "hideComments": "Hide comments",
+    "notDiscusser": "You don't have permission to add comments in this meeting.",
     "postPlaceholder": "Write your comment"
   },
   "electoralRegister": {

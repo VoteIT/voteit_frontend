@@ -170,6 +170,7 @@
     "discussion": "Diskussionsinlägg",
     "discussions": "Diskussioner",
     "hideComments": "Dölj kommentarer",
+    "notDiscusser": "Du saknar behörighet för att skriva kommentarer i det här mötet.",
     "postPlaceholder": "Skriv din kommentar"
   },
   "electoralRegister": {

@@ -361,7 +361,7 @@ provide(TagClickHandlerKey, async (tagName) => {
         <v-alert
           v-if="agendaItem.block_discussion"
           class="mb-4"
-          icon="mdi-cancel"
+          icon="mdi-comment-off"
           :text="$t('discussion.closed')"
         />
         <Comments :comments="sortedDiscussions" />
