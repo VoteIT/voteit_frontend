@@ -17,7 +17,7 @@ import { pollType } from '../polls/contentTypes'
 
 import useRoom from './useRoom'
 
-provide('buttonMode', 'voteExample')
+provide('buttonMode', 'vote:example')
 
 const props = defineProps<{
   pollId: number
