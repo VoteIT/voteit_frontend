@@ -129,7 +129,10 @@ onBeforeUnmount(evt.dispose)
           >
             <template #append>
               <div class="d-flex flex-wrap ga-1 mt-2">
-                <ButtonPlugins mode="presentation" :proposal="p" />
+                <ButtonPlugins
+                  :mode="passiveMode ? 'presentation' : 'presentation:personal'"
+                  :proposal="p"
+                />
               </div>
             </template>
             <template #bottom>

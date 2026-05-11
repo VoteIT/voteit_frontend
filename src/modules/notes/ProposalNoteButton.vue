@@ -115,10 +115,8 @@ async function clearNote() {
 // Only editable in normal proposal display (on agenda item)
 const isEditable = computed(() => !props.mode)
 
-// Only display in normal proposal display or voting if there's a note
-const isVisible = computed(
-  () => !props.mode || (proposalNote.value && props.mode === 'vote')
-)
+// Only display in normal proposal display if there's no note
+const isVisible = computed(() => !props.mode || !!proposalNote.value)
 </script>
 
 <template>

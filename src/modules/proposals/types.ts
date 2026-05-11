@@ -52,8 +52,8 @@ export type PreviewProposal = Omit<Proposal, 'created' | 'pk' | 'shortname'>
 
 export type ProposalButtonMode =
   | 'presentation'
+  | 'presentation:personal'
   | 'vote'
-  | 'vote:example'
   | 'vote:template'
 export interface ProposalButtonPlugin extends MeetingPlugin {
   checkActive?(meeting: Meeting, mode?: ProposalButtonMode): boolean

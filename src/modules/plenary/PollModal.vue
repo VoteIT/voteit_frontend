@@ -12,7 +12,7 @@ import { Poll, PollTransition } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
 import useRoom from '../rooms/useRoom'
 
-provide('buttonMode', 'vote:example')
+provide('buttonMode', 'presentation')
 
 const props = defineProps<{
   data: Poll

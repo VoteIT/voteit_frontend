@@ -404,7 +404,7 @@ watchEffect(() => {
         </template>
         <template #append>
           <div class="d-flex flex-wrap ga-1 mt-2">
-            <ButtonPlugins mode="presentation" :proposal="p" />
+            <ButtonPlugins mode="presentation:personal" :proposal="p" />
           </div>
         </template>
       </ProposalSheet>
