@@ -7,6 +7,13 @@ import Vue from '@vitejs/plugin-vue'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
 
+  const target = `http://${env.VITE_PROXY_HOST || 'localhost:8000'}`
+  const changeOriginTarget = {
+    changeOrigin: true,
+    headers: { Origin: target },
+    target
+  }
+
   return {
     build: {
       chunkSizeWarningLimit: 1600,
@@ -21,19 +28,14 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       proxy: {
-        '/api': {
-          target: `http://${env.VITE_PROXY_HOST || 'localhost:8000'}`,
-          changeOrigin: true,
-          secure: false
-        },
-        '/media': {
-          target: `http://${env.VITE_PROXY_HOST || 'localhost:8000'}`,
-          secure: false
-        },
+        '/admin': changeOriginTarget,
+        '/api': changeOriginTarget,
+        '/complete': changeOriginTarget,
+        '/login': changeOriginTarget,
+        '/media': target,
+        '/static': target,
         '/ws': {
-          target: `ws://${env.VITE_PROXY_HOST || 'localhost:8000'}`,
-          changeOrigin: true,
-          secure: false,
+          ...changeOriginTarget,
           ws: true
         }
       }
