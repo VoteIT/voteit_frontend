@@ -208,16 +208,8 @@ async function saveImage(close: () => void) {
                   >
                     <template #actions>
                       <div class="text-right">
-                        <v-btn
-                          v-if="image.blob"
-                          color="primary"
-                          :loading="image.saving"
-                          prepend-icon="mdi-upload"
-                          :text="$t('img.upload')"
-                          @click="saveImage(close)"
-                        />
                         <QueryDialog
-                          v-else-if="authStore.user.image"
+                          v-if="!image.blob && authStore.user.image"
                           color="warning"
                           :text="$t('img.clearUploadedConfirmation')"
                           @confirmed="authStore.clearProfileImage"
@@ -235,7 +227,14 @@ async function saveImage(close: () => void) {
                     </template>
                   </CropImageField>
                   <div class="text-right">
-                    <v-btn :text="$t('close')" variant="text" @click="close" />
+                    <v-btn :text="$t('cancel')" variant="text" @click="close" />
+                    <v-btn
+                      color="primary"
+                      :disabled="!image.blob"
+                      :loading="image.saving"
+                      :text="$t('save')"
+                      @click="saveImage(close)"
+                    />
                   </div>
                 </template>
               </DefaultDialog>
