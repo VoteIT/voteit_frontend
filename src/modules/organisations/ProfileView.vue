@@ -235,7 +235,7 @@ async function saveImage(close: () => void) {
                     </template>
                   </CropImageField>
                   <div class="text-right">
-                    <v-btn :text="$t('Stäng')" variant="text" @click="close" />
+                    <v-btn :text="$t('close')" variant="text" @click="close" />
                   </div>
                 </template>
               </DefaultDialog>
