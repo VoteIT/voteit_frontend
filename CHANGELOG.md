@@ -4,6 +4,20 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.43.0 (2026-05-12)
+
+- Profile images: users can now upload and crop a profile picture
+- New profile page with basic user information
+- User popup now shows meeting group memberships
+- Real-time view: links to active agenda item(s) [#417](https://github.com/VoteIT/voteit_frontend/issues/417)
+- Real-time view: personal notes are shown (unless passive mode is active) [#416](https://github.com/VoteIT/voteit_frontend/issues/416)
+- Real-time view: warning shown when user lacks discusser role [#414](https://github.com/VoteIT/voteit_frontend/issues/414)
+- Real-time view: vote button is now responsive in size
+- Bugfix: deleted polls caused lockup in real-time view [#418](https://github.com/VoteIT/voteit_frontend/issues/418)
+- Routes refactoring: modules now register routes dynamically via Vue Router's merging mechanism
+- Socket stability: client now pings server on reconnect to verify socket is alive
+- Improved switch user interface
+
 ## 0.40.1 (2026-04-22)
 
 - Bugfix: Only eon browser window / tab allowed to broadcast (token logic)
