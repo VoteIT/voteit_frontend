@@ -20,7 +20,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 0.40.1 (2026-04-22)
 
-- Bugfix: Only eon browser window / tab allowed to broadcast (token logic)
+- Bugfix: Only one browser window / tab allowed to broadcast (token logic)
 
 ## 0.40.0 (UNRELEASED)
 
