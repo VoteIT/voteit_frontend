@@ -37,7 +37,7 @@ function hasTemplateProposals(btn: ReactionButton) {
 }
 
 const activeFlagButtons = computed(() =>
-  getMeetingButtons(meetingId.value, 'proposal', 'voteTemplate').filter(
+  getMeetingButtons(meetingId.value, 'proposal', 'vote:template').filter(
     hasTemplateProposals
   )
 )

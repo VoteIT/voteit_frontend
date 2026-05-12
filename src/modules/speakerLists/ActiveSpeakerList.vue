@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import Moment from '@/components/Moment.vue'
+import useAgendaStore from '../agendas/useAgendaStore'
+import useMeeting from '../meetings/useMeeting'
 
 import { speakerListType } from './contentTypes'
 import useSpeakerSystem from './useSpeakerSystem'
@@ -10,6 +12,7 @@ import EnterLeaveButton from './EnterLeaveButton.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
 import { CurrentSpeaker, QueuedSpeaker } from './types'
 import useSpeakerGroups from './useSpeakerGroups'
+import { slugify } from '@/utils'
 
 const props = defineProps<{
   passive: boolean
@@ -18,6 +21,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
+const { getAgendaItem } = useAgendaStore()
 const { getState } = speakerListType.useWorkflows()
 const {
   systemActiveList: list,
@@ -29,6 +33,9 @@ const { currentSpeaker, speakerGroups } = useSpeakerGroups(
   systemActiveListId,
   t
 )
+
+const agendaItem = computed(() => getAgendaItem(list.value?.agenda_item ?? 0))
+const { meeting } = useMeeting()
 
 const listState = computed(() => list.value && getState(list.value.state))
 
@@ -65,7 +72,18 @@ const groups = computed<SpeakerGroup[]>(() => {
         <h2 class="mb-2 flex-grow-1">
           <small>{{ $t('speaker.list') }}</small
           ><br />
-          {{ list.title }}
+          <router-link
+            :to="{
+              name: 'agendaItem',
+              params: {
+                slug: slugify(meeting?.title),
+                aid: list.agenda_item,
+                aslug: slugify(agendaItem?.title)
+              }
+            }"
+          >
+            {{ list.title }}
+          </router-link>
         </h2>
         <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
       </div>
@@ -115,6 +133,12 @@ const groups = computed<SpeakerGroup[]>(() => {
 </template>
 
 <style scoped lang="sass">
+h2 a
+  color: var(--v-theme-on-background)
+  text-decoration: none
+  &:hover
+    text-decoration: underline
+
 .timer
   background-color: rgba(var(--v-theme-primary), .08)
   border-radius: 3px

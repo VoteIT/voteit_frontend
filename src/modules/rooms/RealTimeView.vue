@@ -3,12 +3,14 @@ import { computed, onBeforeUnmount, provide } from 'vue'
 import { ReadonlyViewKey, RoleContextKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
+import { slugify } from '@/utils'
 import useChannel from '@/composables/useChannel'
 
 import UserActiveDialog from '../active/UserActiveDialog.vue'
-import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingChannel from '../meetings/useMeetingChannel'
+import useAgendaStore from '../agendas/useAgendaStore'
 import useMeetingTitle from '../meetings/useMeetingTitle'
+import useMeeting from '../meetings/useMeeting'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import { ProposalState } from '../proposals/types'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
@@ -25,12 +27,14 @@ provide(RoleContextKey, 'meeting')
 
 const { t } = useI18n()
 
+const { getAgendaItem } = useAgendaStore()
+const { meeting } = useMeeting()
 const { highlightedProposals, meetingRoom, passiveMode, textSize } = useRoom()
 const { findSpeakerSystem } = useSpeakerStore()
 provide(ReadonlyViewKey, passiveMode)
 
-const { agendaItem } = useAgendaItem(
-  computed(() => meetingRoom.value?.agenda_item ?? -1) // Can be undefined
+const agendaItem = computed(() =>
+  getAgendaItem(meetingRoom.value?.agenda_item ?? 0)
 )
 
 useChannel(
@@ -113,10 +117,21 @@ onBeforeUnmount(evt.dispose)
         <ActiveSpeakerList :passive="passiveMode" :room="meetingRoom.pk" />
       </div>
       <div v-if="display.proposals" class="right flex-grow-1 pa-6">
-        <h2 class="mb-2">
+        <h2 class="mb-2" v-if="agendaItem">
           <small>{{ $t('proposal.proposals') }}</small
           ><br />
-          {{ agendaItem?.title }}
+          <router-link
+            :to="{
+              name: 'agendaItem',
+              params: {
+                slug: slugify(meeting?.title),
+                aid: meetingRoom.agenda_item,
+                aslug: slugify(agendaItem.title)
+              }
+            }"
+          >
+            {{ agendaItem.title }}
+          </router-link>
         </h2>
         <v-slide-x-transition group>
           <ProposalSheet
@@ -129,7 +144,10 @@ onBeforeUnmount(evt.dispose)
           >
             <template #append>
               <div class="d-flex flex-wrap ga-1 mt-2">
-                <ButtonPlugins mode="presentation" :proposal="p" />
+                <ButtonPlugins
+                  :mode="passiveMode ? 'presentation' : 'presentation:personal'"
+                  :proposal="p"
+                />
               </div>
             </template>
             <template #bottom>
@@ -164,6 +182,12 @@ onBeforeUnmount(evt.dispose)
 </template>
 
 <style scoped lang="sass">
+h2 a
+  color: var(--v-theme-on-background)
+  text-decoration: none
+  &:hover
+    text-decoration: underline
+
 .left,
 .right
   flex-basis: 50%

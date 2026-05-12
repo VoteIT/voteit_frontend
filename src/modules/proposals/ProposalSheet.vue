@@ -89,7 +89,9 @@ onBeforeUnmount(evt.dispose)
       <div class="text-secondary">
         <AuthorName :author="proposal" icon :prepend-text="$t('by')" />
       </div>
-      <slot name="append"></slot>
+      <v-defaults-provider :defaults="{ VBtn: { size: 'small' } }">
+        <slot name="append"></slot>
+      </v-defaults-provider>
     </div>
     <slot name="bottom"></slot>
   </v-sheet>

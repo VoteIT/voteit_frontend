@@ -49,7 +49,7 @@ export default defineStore('reactions', () => {
         case 'presentation':
         case 'vote':
           return b[`on_${mode}`]
-        case 'voteTemplate':
+        case 'vote:template':
           return b.vote_template
         default:
           return true

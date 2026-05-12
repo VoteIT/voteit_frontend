@@ -4,7 +4,8 @@ import { ComponentPublicInstance, computed, ref } from 'vue'
 import { getDisplayName } from '@/utils'
 
 import useAgendaItem from '../agendas/useAgendaItem'
-import { isGroupAuthor } from '../meetings/types'
+import { isGroupAuthor, MeetingRole } from '../meetings/types'
+import { hasMeetingRole } from '../meetings/rules'
 import useMeetingId from '../meetings/useMeetingId'
 import useUserDetails from '../organisations/useUserDetails'
 import useReactionStore from '../reactions/useReactionStore'
@@ -20,10 +21,14 @@ defineProps<{
   setTag?: string
 }>()
 
-const meetingId = useMeetingId()
 const { getUser } = useUserDetails()
+const meetingId = useMeetingId()
 const { agendaId, agendaItem, canAddDiscussionPost } = useAgendaItem()
 const { getMeetingButtons } = useReactionStore()
+
+const hasDiscusserRole = computed(() =>
+  hasMeetingRole(meetingId.value, MeetingRole.Discusser)
+)
 
 const submitIcon = computed(() =>
   agendaItem.value?.block_discussion
@@ -98,6 +103,11 @@ defineExpose({
       :setTag="setTag"
       :submitIcon="submitIcon"
       :submitText="$t('post')"
+    />
+    <v-alert
+      v-else-if="!hasDiscusserRole"
+      icon="mdi-comment-remove"
+      :text="$t('discussion.notDiscusser')"
     />
   </div>
 </template>

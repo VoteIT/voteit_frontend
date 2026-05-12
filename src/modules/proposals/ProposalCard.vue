@@ -45,7 +45,7 @@
         <v-defaults-provider :defaults="BTN_DEFAULTS">
           <v-btn
             v-if="canAddDiscussionPost"
-            prepend-icon="mdi-comment-outline"
+            prepend-icon="mdi-comment"
             :text="$t('discussion.comment')"
             @click="comment"
           />

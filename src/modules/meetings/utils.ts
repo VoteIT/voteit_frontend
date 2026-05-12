@@ -27,8 +27,8 @@ export function translateMeetingRole(
 export const roleIcons: Record<MeetingRole, string> = {
   [MeetingRole.Participant]: 'mdi-eye',
   [MeetingRole.Moderator]: 'mdi-gavel',
-  [MeetingRole.Proposer]: 'mdi-note-plus',
-  [MeetingRole.Discusser]: 'mdi-comment-outline',
+  [MeetingRole.Proposer]: 'mdi-text-box-plus',
+  [MeetingRole.Discusser]: 'mdi-comment',
   [MeetingRole.PotentialVoter]: 'mdi-star-outline'
 }
 export function getMeetingRoleIcon(role: MeetingRole) {

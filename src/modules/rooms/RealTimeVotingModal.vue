@@ -242,10 +242,12 @@ watch(isOpen, (value) => {
               </h2>
               <p class="text-secondary">
                 {{
-                  t('poll.pollDescription', {
-                    method: pollMethodName,
-                    count: proposals.length
-                  })
+                  pollMethodName
+                    ? $t('poll.pollDescription', {
+                        method: pollMethodName,
+                        count: proposals.length
+                      })
+                    : $t('poll.unknown')
                 }}
               </p>
               <p v-if="isOngoing && !canVote" class="mt-3">

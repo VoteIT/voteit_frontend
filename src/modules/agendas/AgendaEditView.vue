@@ -418,14 +418,14 @@ function tagFilter(tags: string | string[], query: string) {
         <v-btn
           color="success"
           :disabled="bulkChanging"
-          prepend-icon="mdi-text-box-plus-outline"
+          prepend-icon="mdi-text-box-check"
           :text="$t('agenda.allowProposals')"
           @click="patchSelected({ block_proposals: false })"
         />
         <v-btn
           color="warning"
           :disabled="bulkChanging"
-          prepend-icon="mdi-text-box-plus-outline"
+          prepend-icon="mdi-text-box-remove"
           :text="$t('agenda.blockProposals')"
           @click="patchSelected({ block_proposals: true })"
         />
@@ -434,14 +434,14 @@ function tagFilter(tags: string | string[], query: string) {
         <v-btn
           color="success"
           :disabled="bulkChanging"
-          prepend-icon="mdi-comment-outline"
+          prepend-icon="mdi-comment-check"
           :text="$t('agenda.allowDiscussion')"
           @click="patchSelected({ block_discussion: false })"
         />
         <v-btn
           color="warning"
           :disabled="bulkChanging"
-          prepend-icon="mdi-comment-outline"
+          prepend-icon="mdi-comment-off"
           :text="$t('agenda.blockDiscussion')"
           @click="patchSelected({ block_discussion: true })"
         />
