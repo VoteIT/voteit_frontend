@@ -126,7 +126,7 @@ function mountWithData(
   // Set up mocks before mount so computed properties don't fire with undefined.
   const pinia = createTestingPinia()
   setActivePinia(pinia)
-  useGroupStore().getUserGroups = vi
+  useGroupStore().filterGroups = vi
     .fn()
     .mockReturnValue(overrides.groups ?? [])
   useGroupStore().getGroupRole = vi.fn().mockReturnValue(overrides.groupRole)
@@ -145,10 +145,13 @@ function mountWithData(
 }
 
 test('shows user name and userid in card header', () => {
-  const wrapper = mountWithData()
+  const wrapper = mountWithData({
+    groups: [makeGroup(10, 'Board')]
+  })
 
   expect(wrapper.text()).toContain('Anna Svensson')
   expect(wrapper.text()).toContain('annas')
+  expect(wrapper.text()).toContain('Board')
 })
 
 test('shows groups and agenda item when user has both', async () => {

@@ -20,10 +20,10 @@ const props = defineProps<{
 const { filterProposals } = useProposalStore()
 const { getAgendaItems } = useAgendaStore()
 const meetingId = useMeetingId()
-const { getGroupRole, getUserGroups } = useGroupStore()
+const { filterGroups, getGroupRole } = useGroupStore()
 
 const userGroups = computed(() =>
-  getUserGroups(meetingId.value).map((g) => {
+  filterGroups((g) => g.members.includes(props.user.pk)).map((g) => {
     const role = g.memberships.find((m) => m.user === props.user.pk)?.role
     return {
       ...g,
