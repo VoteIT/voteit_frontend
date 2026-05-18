@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { cols } from '@/utils/defaults'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 import useLoader from '@/composables/useLoader'
 import QueryDialog from '@/components/QueryDialog.vue'
 import { AccessPolicy } from '@/contentTypes/types'
@@ -19,6 +20,7 @@ import useMeetings from './useMeetings'
 import useMeetingStore from './useMeetingStore'
 import { canBecomeModerator } from './rules'
 
+const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
 const { getMeeting } = useMeetingStore()
@@ -44,12 +46,16 @@ const canBecomeModeratorMeeting = computed(
 
 async function joinAsModerator() {
   if (!authStore.user) throw new Error('Anonymous tried to join as moderator')
-  await meetingType.addRoles(
-    meetingId.value,
-    authStore.user.pk,
-    MeetingRole.Moderator
-  )
-  router.push(meetingRoute.value)
+  try {
+    await meetingType.addRoles(
+      meetingId.value,
+      authStore.user.pk,
+      MeetingRole.Moderator
+    )
+    router.push(meetingRoute.value)
+  } catch (e) {
+    handleSocketError(e)
+  }
 }
 
 onBeforeMount(() => {
