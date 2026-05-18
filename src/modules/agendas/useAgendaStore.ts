@@ -5,6 +5,7 @@ import { reactive } from 'vue'
 import { channelLeftEvent } from '@/composables/events'
 
 import { AgendaBody, AgendaItem, AgendaState } from './types'
+import { LastRead } from '@/utils/types'
 import { agendaBodyType, agendaItemType, lastReadType } from './contentTypes'
 import { agendaDeletedEvent } from './events'
 
@@ -76,6 +77,14 @@ export default defineStore('agendas', () => {
     if (!agendaItems.has(data.pk)) agendaItems.set(data.pk, data)
     return data
   }
+
+  async function updateLastRead(agendaItem: number) {
+    const { data } = await agendaItemType.api.action<LastRead>(
+      agendaItem,
+      'update-last-read'
+    )
+    agendaItemsLastRead.set(data.agenda_item, new Date(data.timestamp))
+  }
   // END AGENDA API
 
   return {
@@ -84,6 +93,7 @@ export default defineStore('agendas', () => {
     getAgendaItem,
     getAgendaItems,
     getLastRead,
-    hasNewContent
+    hasNewContent,
+    updateLastRead
   }
 })

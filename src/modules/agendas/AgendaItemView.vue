@@ -38,7 +38,6 @@ import useAgenda from './useAgenda'
 import AgendaFilters from './AgendaFilters.vue'
 import useAgendaFilter from './useAgendaFilter'
 import useAgendaItem from './useAgendaItem'
-import { lastReadType } from './contentTypes'
 import { agendaMenuPlugins } from './registry'
 import { agendaIdKey } from './injectionKeys'
 import AISpeakerLists from './AISpeakerLists.vue'
@@ -51,7 +50,7 @@ const { anyProposal, filterProposals } = useProposalStore()
 const { getAiPolls } = usePollStore()
 const { meetingId, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { getAgendaItem, hasNewContent } = useAgendaStore()
+const { getAgendaItem, hasNewContent, updateLastRead } = useAgendaStore()
 const {
   agendaId,
   agendaItem,
@@ -207,7 +206,7 @@ function setLastRead(agenda_item: number) {
   // Return if there is no new content
   const ai = getAgendaItem(agenda_item)
   if (!ai || !hasNewContent(ai)) return
-  lastReadType.methodCall('change', { agenda_item })
+  updateLastRead(agenda_item)
 }
 // Set last read when leaving route.
 onBeforeRouteLeave(() => setLastRead(agendaId.value))
