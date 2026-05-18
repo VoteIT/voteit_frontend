@@ -102,6 +102,16 @@ export function sleep(delay = 0): Promise<void> {
 }
 
 /**
+ * Ensures a promise takes at least `ms` milliseconds to resolve.
+ * If the promise settles before the timeout, the result is held until the timeout expires.
+ * If the promise takes longer, it resolves as soon as it's done. Rejections propagate immediately.
+ */
+export async function minTime<T>(promise: Promise<T>, ms = 500): Promise<T> {
+  const [result] = await Promise.all([promise, sleep(ms)])
+  return result
+}
+
+/**
  * Get a user's full name by concatenating their first and last names, if available. If both are missing, returns an empty string.
  */
 export function getFullName(

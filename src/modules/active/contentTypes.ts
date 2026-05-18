@@ -8,5 +8,6 @@ interface ActiveChangedMsg {
 
 export const activeUserType = new BaseContentType<ActiveChangedMsg>({
   name: 'active_user',
-  restEndpoint: 'active-users/'
+  restEndpoint: 'active-users/',
+  restConfig: { alertOnError: false }
 })

@@ -9,7 +9,7 @@ import { agendaItemType } from './contentTypes'
 import useAgenda from './useAgenda'
 import { AgendaItem } from './types'
 import { meetingType } from '../meetings/contentTypes'
-import { sleep } from '@/utils'
+import { minTime } from '@/utils'
 import useAgendaStore from './useAgendaStore'
 
 const emit = defineEmits<{
@@ -41,10 +41,11 @@ const orderSaving = ref(false)
 async function saveAgendaOrder() {
   orderSaving.value = true
   try {
-    await meetingType.api.action(meetingId.value, 'set_agenda_order', {
-      order: agendaItemOrder.value
-    })
-    await sleep(500)
+    await minTime(
+      meetingType.api.action(meetingId.value, 'set_agenda_order', {
+        order: agendaItemOrder.value
+      })
+    )
     emit('saved')
   } catch {
     alert("^Couldn't save agenda order")

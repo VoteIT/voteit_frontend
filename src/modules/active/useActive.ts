@@ -1,6 +1,6 @@
 import { computed, reactive, ref, Ref, watch } from 'vue'
 
-import { sleep } from '@/utils'
+import { minTime } from '@/utils'
 import useAuthStore from '../auth/useAuthStore'
 import { meetingType } from '../meetings/contentTypes'
 import useMeetingComponent from '../meetings/useMeetingComponent'
@@ -63,8 +63,10 @@ export default function useActive(meetingId: Ref<number>) {
     if (!authStore.user)
       throw new Error('Must have authenticated user to set active')
     isBusy.value = true
-    await activeUserType.api.action(meetingId.value, 'active', { active })
-    await sleep(2_000)
+    await minTime(
+      activeUserType.api.action(meetingId.value, 'active', { active }),
+      2_000
+    )
     isBusy.value = false
   }
 

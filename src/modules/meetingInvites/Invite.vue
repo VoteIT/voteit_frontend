@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, sleep, slugify } from '@/utils'
+import { dialogQuery, minTime, slugify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import { invitationScopes } from '../organisations/registry'
@@ -25,8 +25,8 @@ const submitting = ref<'accept' | 'reject'>()
 async function acceptInvite(inv: MeetingInvite) {
   submitting.value = 'accept'
   try {
-    await matchedInviteType.api.action(inv.pk, 'accept')
-    await sleep(250) // Slight delay for user, before sending to meeting page
+    // Slight delay for user, before sending to meeting page
+    await minTime(matchedInviteType.api.action(inv.pk, 'accept'))
     await router.push(
       `/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`
     )

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 
-import { sleep } from '@/utils'
+import { minTime } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
 import WorkflowState from '@/components/WorkflowState.vue'
@@ -53,8 +53,7 @@ const breadcrumbs = computed(() => [
 const settingAllowedProps = ref(false)
 async function setProposalsAllowed(value: boolean | null) {
   settingAllowedProps.value = true
-  await agendaApi.patch(agendaId.value, { block_proposals: !value })
-  await sleep(250)
+  await minTime(agendaApi.patch(agendaId.value, { block_proposals: !value }))
   settingAllowedProps.value = false
 }
 </script>
