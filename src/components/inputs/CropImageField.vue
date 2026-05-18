@@ -254,7 +254,7 @@ const dragging = ref<{
   startArea: CropArea
 } | null>(null)
 
-function startDrag(handle: DragHandle, e: MouseEvent) {
+function startDrag(handle: DragHandle, e: PointerEvent) {
   if (!image.cropArea) return
   dragging.value = {
     handle,
@@ -262,11 +262,11 @@ function startDrag(handle: DragHandle, e: MouseEvent) {
     startY: e.clientY,
     startArea: { ...image.cropArea }
   }
-  window.addEventListener('mousemove', onDrag)
-  window.addEventListener('mouseup', stopDrag)
+  window.addEventListener('pointermove', onDrag)
+  window.addEventListener('pointerup', stopDrag)
 }
 
-function onDrag(e: MouseEvent) {
+function onDrag(e: PointerEvent) {
   if (!dragging.value || !image.origSize || !image.cropArea) return
   const scaleX = image.origSize.width / imageSize.width.value
   const scaleY = image.origSize.height / imageSize.height.value
@@ -366,8 +366,8 @@ function onDrag(e: MouseEvent) {
 
 function stopDrag() {
   dragging.value = null
-  window.removeEventListener('mousemove', onDrag)
-  window.removeEventListener('mouseup', stopDrag)
+  window.removeEventListener('pointermove', onDrag)
+  window.removeEventListener('pointerup', stopDrag)
 }
 
 /* Drop zone logic */
@@ -455,39 +455,39 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
                     ></div>
                     <div
                       class="crop-move"
-                      @mousedown.prevent="startDrag('move', $event)"
+                      @pointerdown.prevent="startDrag('move', $event)"
                     ></div>
                     <div
                       class="handle handle-t"
-                      @mousedown.prevent="startDrag('t', $event)"
+                      @pointerdown.prevent="startDrag('t', $event)"
                     ></div>
                     <div
                       class="handle handle-b"
-                      @mousedown.prevent="startDrag('b', $event)"
+                      @pointerdown.prevent="startDrag('b', $event)"
                     ></div>
                     <div
                       class="handle handle-l"
-                      @mousedown.prevent="startDrag('l', $event)"
+                      @pointerdown.prevent="startDrag('l', $event)"
                     ></div>
                     <div
                       class="handle handle-r"
-                      @mousedown.prevent="startDrag('r', $event)"
+                      @pointerdown.prevent="startDrag('r', $event)"
                     ></div>
                     <div
                       class="handle handle-tl"
-                      @mousedown.prevent="startDrag('tl', $event)"
+                      @pointerdown.prevent="startDrag('tl', $event)"
                     ></div>
                     <div
                       class="handle handle-tr"
-                      @mousedown.prevent="startDrag('tr', $event)"
+                      @pointerdown.prevent="startDrag('tr', $event)"
                     ></div>
                     <div
                       class="handle handle-bl"
-                      @mousedown.prevent="startDrag('bl', $event)"
+                      @pointerdown.prevent="startDrag('bl', $event)"
                     ></div>
                     <div
                       class="handle handle-br"
-                      @mousedown.prevent="startDrag('br', $event)"
+                      @pointerdown.prevent="startDrag('br', $event)"
                     ></div>
                   </div>
                   <div class="mb-4">
@@ -570,6 +570,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
 .focus-selection
   position: relative
   line-height: 0
+  touch-action: none
   img
     width: 100%
     filter: brightness(0.8)
