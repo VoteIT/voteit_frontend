@@ -76,11 +76,12 @@ const purgedCount = ref<number | null>(null)
 
 async function purgeInactive() {
   working.value = true
-  const { p } = await activeUserType.methodCall<{ count: number }>('purge', {
-    meeting: meetingId.value,
-    hours: hours.value
-  })
-  purgedCount.value = p.count
+  const { data } = await activeUserType.api.action<{ count: number }>(
+    meetingId.value,
+    'purge',
+    { hours: hours.value }
+  )
+  purgedCount.value = data.count
   working.value = false
 }
 </script>

@@ -1,12 +1,11 @@
 import { computed, reactive, ref, Ref, watch } from 'vue'
 
+import { sleep } from '@/utils'
+import useAuthStore from '../auth/useAuthStore'
 import { meetingType } from '../meetings/contentTypes'
 import useMeetingComponent from '../meetings/useMeetingComponent'
 
 import { activeUserType } from './contentTypes'
-import { sleep } from '@/utils'
-import { storeToRefs } from 'pinia'
-import useAuthStore from '../auth/useAuthStore'
 
 interface ActiveUsersMsg {
   meeting: number
@@ -64,11 +63,7 @@ export default function useActive(meetingId: Ref<number>) {
     if (!authStore.user)
       throw new Error('Must have authenticated user to set active')
     isBusy.value = true
-    await activeUserType.methodCall('set', {
-      active,
-      meeting: meetingId.value,
-      user: authStore.user.pk
-    })
+    await activeUserType.api.action(meetingId.value, 'active', { active })
     await sleep(2_000)
     isBusy.value = false
   }
