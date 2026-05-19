@@ -205,7 +205,6 @@ import { useI18n } from 'vue-i18n'
 
 import { cols } from '@/utils/defaults'
 import restApi from '@/utils/restApi'
-import { socket } from '@/utils/Socket'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useLoader from '@/composables/useLoader'
@@ -366,10 +365,11 @@ async function triggerERCreation() {
   if (!canTriggerERCreation.value) throw new Error('ER creation not allowed')
   erTriggerResult.value = 'waiting'
   try {
-    const { p } = await socket.call<{ created: boolean }>('er.trigger_create', {
-      meeting: meetingId.value
-    })
-    erTriggerResult.value = p.created ? 'created' : 'up2date'
+    const { status } = await electoralRegisterType.api.listAction(
+      'trigger-create',
+      { meeting: meetingId.value }
+    )
+    erTriggerResult.value = status === 201 ? 'created' : 'up2date'
   } catch {
     erTriggerResult.value = 'failed'
   }
