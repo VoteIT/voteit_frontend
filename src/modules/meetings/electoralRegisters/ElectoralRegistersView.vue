@@ -127,7 +127,7 @@ async function createRegister(close: () => void) {
     weight: toInteger(weight)
   }))
   try {
-    await electoralRegisterType.methodCall('manual_create', {
+    await electoralRegisterType.api.listAction('manual-create', {
       meeting: meetingId.value,
       weights
     })
