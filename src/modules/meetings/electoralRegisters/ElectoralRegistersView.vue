@@ -1,202 +1,3 @@
-<template>
-  <MeetingToolbar>
-    <v-toolbar-title>
-      {{ $t('electoralRegister.plural') }}
-    </v-toolbar-title>
-    <DefaultDialog
-      v-if="canTriggerERCreation"
-      :title="$t('electoralRegister.establish')"
-      @open="triggerERCreation"
-    >
-      <template #activator="{ props }">
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-star-check"
-          :text="$t('electoralRegister.establish')"
-          variant="tonal"
-          v-bind="props"
-        />
-      </template>
-      <template #default="{ close }">
-        <div class="text-center py-4" v-if="erTriggerResult === 'waiting'">
-          <v-progress-circular color="primary" indeterminate />
-        </div>
-        <v-alert
-          v-else
-          class="mb-2"
-          :icon="erTriggerResult === 'failed' ? undefined : 'mdi-vote'"
-          :type="erTriggerResult === 'failed' ? 'warning' : undefined"
-          :title="erTriggerResultText"
-          :text="currentERText"
-        />
-        <div class="text-right">
-          <v-btn
-            color="primary"
-            :disabled="erTriggerResult === 'waiting'"
-            prepend-icon="mdi-close"
-            :text="$t('close')"
-            @click="close"
-          />
-        </div>
-      </template>
-    </DefaultDialog>
-    <DefaultDialog
-      v-if="erMethodAllowsManual && isModerator && isActiveMeeting"
-      :title="$t('electoralRegister.createManual')"
-      @open="fetchRoles"
-    >
-      <template #activator="{ props }">
-        <v-btn
-          prepend-icon="mdi-book-open-variant"
-          :text="$t('electoralRegister.createManual')"
-          variant="tonal"
-          v-bind="props"
-        />
-      </template>
-      <template #default="{ close }">
-        <v-alert
-          type="info"
-          class="my-2"
-          :text="$t('electoralRegister.createHelp')"
-        />
-        <div>
-          <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
-          <v-chip :text="$t('selectedCount', createSelection.size)" />
-        </div>
-        <UserList
-          multiple
-          :userIds="potentialVoters"
-          v-model="selectedUsers"
-          density="default"
-          class="mb-4"
-        >
-          <template #appendItem="{ user, isSelected }">
-            <div v-if="isSelected">
-              <v-text-field
-                v-if="erMethodWeighted"
-                class="er-weight"
-                density="compact"
-                hide-details
-                :label="$t('electoralRegister.weight')"
-                required
-                :min="minWeight"
-                :model-value="createSelection.get(user)"
-                :step="minWeight"
-                type="number"
-                variant="solo"
-                @click.stop
-                @keydown.stop
-                @update:modelValue="createSelection.set(user, round($event))"
-              />
-              <v-icon v-else>mdi-check-circle</v-icon>
-            </div>
-          </template>
-        </UserList>
-        <div class="text-right">
-          <v-btn :text="$t('cancel')" variant="text" @click="close" />
-          <v-btn
-            color="primary"
-            :disabled="createSelection.size === 0"
-            prepend-icon="mdi-account-plus"
-            :text="$t('create')"
-            @click="createRegister(close)"
-          />
-        </div>
-      </template>
-    </DefaultDialog>
-  </MeetingToolbar>
-  <v-row>
-    <v-col v-bind="cols.default">
-      <template
-        v-for="{ description, title, registers } in groups"
-        :key="title"
-      >
-        <h2 class="mt-6">
-          {{ title }}
-        </h2>
-        <p v-if="description" class="text-secondary">
-          {{ description }}
-        </p>
-        <p v-if="!registers.length" class="text-secondary my-4">
-          <em>
-            {{ $t('electoralRegister.none') }}
-          </em>
-        </p>
-        <v-expansion-panels class="mt-3">
-          <v-expansion-panel
-            v-for="{
-              pk,
-              created,
-              hasWeightedVotes,
-              weights,
-              source
-            } in registers"
-            :key="pk"
-          >
-            <v-expansion-panel-title class="d-flex">
-              <span class="text-left mr-2" style="min-width: 92px">
-                {{ $t('electoralRegister.voterCount', weights.length) }}
-              </span>
-              <small class="text-secondary flex-grow-1">
-                <span v-if="source">
-                  {{ getErMethod(source)?.title || source }},
-                </span>
-                {{
-                  DateTime.fromISO(created).toLocaleString(
-                    DateTime.DATETIME_SHORT
-                  )
-                }}
-              </small>
-            </v-expansion-panel-title>
-            <v-expansion-panel-text v-if="weights.length">
-              <div v-if="isModerator" class="text-right">
-                <v-menu>
-                  <template #activator="{ props }">
-                    <v-btn
-                      color="primary"
-                      prepend-icon="mdi-download"
-                      :text="$t('download')"
-                      variant="tonal"
-                      v-bind="props"
-                    />
-                  </template>
-                  <v-list>
-                    <v-list-item
-                      :href="getDownloadUrl(pk, 'csv')"
-                      prepend-icon="mdi-file-download"
-                      :title="`${t(
-                        'electoralRegister.electoralRegister'
-                      )} (CSV)`"
-                    />
-                    <v-list-item
-                      :href="getDownloadUrl(pk, 'json')"
-                      prepend-icon="mdi-file-download"
-                      :title="`${t(
-                        'electoralRegister.electoralRegister'
-                      )} (JSON)`"
-                    />
-                  </v-list>
-                </v-menu>
-              </div>
-              <UserList :userIds="weights.map((v) => v.user)">
-                <template #appendItem="{ user }" v-if="hasWeightedVotes">
-                  <v-chip>
-                    {{ $t('electoralRegister.weight') }}:
-                    {{ weights.find((w) => w.user === user)?.weight }}
-                  </v-chip>
-                </template>
-              </UserList>
-            </v-expansion-panel-text>
-            <v-expansion-panel-text v-else class="pt-2 text-center">
-              <em> - {{ $t('electoralRegister.empty') }} - </em>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </template>
-    </v-col>
-  </v-row>
-</template>
-
 <script lang="ts" setup>
 import { imap, partition, sum } from 'itertools'
 import { DateTime } from 'luxon'
@@ -397,6 +198,205 @@ const currentERText = computed(() => {
     : t('electoralRegister.voterCount', weights.length)
 })
 </script>
+
+<template>
+  <MeetingToolbar>
+    <v-toolbar-title>
+      {{ $t('electoralRegister.plural') }}
+    </v-toolbar-title>
+    <DefaultDialog
+      v-if="canTriggerERCreation"
+      :title="$t('electoralRegister.establish')"
+      @open="triggerERCreation"
+    >
+      <template #activator="{ props }">
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-star-check"
+          :text="$t('electoralRegister.establish')"
+          variant="tonal"
+          v-bind="props"
+        />
+      </template>
+      <template #default="{ close }">
+        <div class="text-center py-4" v-if="erTriggerResult === 'waiting'">
+          <v-progress-circular color="primary" indeterminate />
+        </div>
+        <v-alert
+          v-else
+          class="mb-2"
+          :icon="erTriggerResult === 'failed' ? undefined : 'mdi-vote'"
+          :type="erTriggerResult === 'failed' ? 'warning' : undefined"
+          :title="erTriggerResultText"
+          :text="currentERText"
+        />
+        <div class="text-right">
+          <v-btn
+            color="primary"
+            :disabled="erTriggerResult === 'waiting'"
+            prepend-icon="mdi-close"
+            :text="$t('close')"
+            @click="close"
+          />
+        </div>
+      </template>
+    </DefaultDialog>
+    <DefaultDialog
+      v-if="erMethodAllowsManual && isModerator && isActiveMeeting"
+      :title="$t('electoralRegister.createManual')"
+      @open="fetchRoles"
+    >
+      <template #activator="{ props }">
+        <v-btn
+          prepend-icon="mdi-book-open-variant"
+          :text="$t('electoralRegister.createManual')"
+          variant="tonal"
+          v-bind="props"
+        />
+      </template>
+      <template #default="{ close }">
+        <v-alert
+          type="info"
+          class="my-2"
+          :text="$t('electoralRegister.createHelp')"
+        />
+        <div>
+          <!-- <v-text-field v-if="setVoteWeight" type="number" min="0" max="6" v-model="decimalPlaces" label="Antal decimaler" /> -->
+          <v-chip :text="$t('selectedCount', createSelection.size)" />
+        </div>
+        <UserList
+          multiple
+          :userIds="potentialVoters"
+          v-model="selectedUsers"
+          density="default"
+          class="mb-4"
+        >
+          <template #appendItem="{ user, isSelected }">
+            <div v-if="isSelected">
+              <v-text-field
+                v-if="erMethodWeighted"
+                class="er-weight"
+                density="compact"
+                hide-details
+                :label="$t('electoralRegister.weight')"
+                required
+                :min="minWeight"
+                :model-value="createSelection.get(user)"
+                :step="minWeight"
+                type="number"
+                variant="solo"
+                @click.stop
+                @keydown.stop
+                @update:modelValue="createSelection.set(user, round($event))"
+              />
+              <v-icon v-else>mdi-check-circle</v-icon>
+            </div>
+          </template>
+        </UserList>
+        <div class="text-right">
+          <v-btn :text="$t('cancel')" variant="text" @click="close" />
+          <v-btn
+            color="primary"
+            :disabled="createSelection.size === 0"
+            prepend-icon="mdi-account-plus"
+            :text="$t('create')"
+            @click="createRegister(close)"
+          />
+        </div>
+      </template>
+    </DefaultDialog>
+  </MeetingToolbar>
+  <v-row>
+    <v-col v-bind="cols.default">
+      <template
+        v-for="{ description, title, registers } in groups"
+        :key="title"
+      >
+        <h2 class="mt-6">
+          {{ title }}
+        </h2>
+        <p v-if="description" class="text-secondary">
+          {{ description }}
+        </p>
+        <p v-if="!registers.length" class="text-secondary my-4">
+          <em>
+            {{ $t('electoralRegister.none') }}
+          </em>
+        </p>
+        <v-expansion-panels class="mt-3">
+          <v-expansion-panel
+            v-for="{
+              pk,
+              created,
+              hasWeightedVotes,
+              weights,
+              source
+            } in registers"
+            :key="pk"
+          >
+            <v-expansion-panel-title class="d-flex">
+              <span class="text-left mr-2" style="min-width: 92px">
+                {{ $t('electoralRegister.voterCount', weights.length) }}
+              </span>
+              <small class="text-secondary flex-grow-1">
+                <span v-if="source">
+                  {{ getErMethod(source)?.title || source }},
+                </span>
+                {{
+                  DateTime.fromISO(created).toLocaleString(
+                    DateTime.DATETIME_SHORT
+                  )
+                }}
+              </small>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text v-if="weights.length">
+              <div v-if="isModerator" class="text-right">
+                <v-menu>
+                  <template #activator="{ props }">
+                    <v-btn
+                      color="primary"
+                      prepend-icon="mdi-download"
+                      :text="$t('download')"
+                      variant="tonal"
+                      v-bind="props"
+                    />
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      :href="getDownloadUrl(pk, 'csv')"
+                      prepend-icon="mdi-file-download"
+                      :title="`${t(
+                        'electoralRegister.electoralRegister'
+                      )} (CSV)`"
+                    />
+                    <v-list-item
+                      :href="getDownloadUrl(pk, 'json')"
+                      prepend-icon="mdi-file-download"
+                      :title="`${t(
+                        'electoralRegister.electoralRegister'
+                      )} (JSON)`"
+                    />
+                  </v-list>
+                </v-menu>
+              </div>
+              <UserList :userIds="weights.map((v) => v.user)">
+                <template #appendItem="{ user }" v-if="hasWeightedVotes">
+                  <v-chip>
+                    {{ $t('electoralRegister.weight') }}:
+                    {{ weights.find((w) => w.user === user)?.weight }}
+                  </v-chip>
+                </template>
+              </UserList>
+            </v-expansion-panel-text>
+            <v-expansion-panel-text v-else class="pt-2 text-center">
+              <em> - {{ $t('electoralRegister.empty') }} - </em>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </template>
+    </v-col>
+  </v-row>
+</template>
 
 <style scoped lang="sass">
 .er-weight
