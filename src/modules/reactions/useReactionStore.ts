@@ -5,13 +5,11 @@ import { reactive } from 'vue'
 import useAuthStore from '../auth/useAuthStore'
 import { ProposalButtonMode } from '../proposals/types'
 import { reactionButtonType, reactionType } from './contentTypes'
-import {
-  isFlagButton,
-  ReactionListMessage,
-  type Reaction,
-  type ReactionButton,
-  type ReactionCountMessage,
-  type ReactionRelation
+import type {
+  Reaction,
+  ReactionButton,
+  ReactionCountMessage,
+  ReactionRelation
 } from './types'
 
 function getCountKey(contentType: string, objectId: number, button: number) {
@@ -87,10 +85,7 @@ export default defineStore('reactions', () => {
     return reactionCounts.get(key) ?? 0
   }
 
-  function getUserReaction(
-    button: ReactionButton,
-    relation: ReactionRelation
-  ): Reaction | void {
+  function getUserReaction(button: ReactionButton, relation: ReactionRelation) {
     for (const r of reactions.values())
       if (
         r.button === button.pk &&
@@ -101,39 +96,40 @@ export default defineStore('reactions', () => {
         return r
   }
 
-  function setUserReacted(button: ReactionButton, relation: ReactionRelation) {
+  async function setUserReacted(
+    button: ReactionButton,
+    relation: ReactionRelation
+  ) {
     if (!authStore.user)
       throw new Error('Authenticated user required for reactions')
-    return reactionType.add({
-      button: button.pk,
-      ...relation,
-      user: authStore.user.pk
-    })
+    const { data } = await reactionButtonType.api.action<Reaction>(
+      button.pk,
+      'set',
+      relation
+    )
+    reactions.set(data.pk, data)
+    return data
   }
 
   async function removeUserReacted(
     button: ReactionButton,
     relation: ReactionRelation
   ) {
-    if (isFlagButton(button))
-      return await reactionType.methodCall('delete_flag', {
-        button: button.pk,
-        ...relation
-      })
+    await reactionButtonType.api.action(button.pk, 'remove', relation)
     const reaction = getUserReaction(button, relation)
-    if (!reaction) throw new Error('User has no previous reaction')
-    return await reactionType.delete(reaction.pk)
+    if (reaction) reactions.delete(reaction.pk)
   }
 
   async function fetchReactions(
     button: ReactionButton,
     relation: ReactionRelation
   ) {
-    const { p } = await reactionType.methodCall<ReactionListMessage>('list', {
-      button: button.pk,
-      ...relation
-    })
-    return p
+    const { data } = await reactionButtonType.api.action<{ users: number[] }>(
+      button.pk,
+      'list-reactions',
+      relation
+    )
+    return data
   }
 
   return {
