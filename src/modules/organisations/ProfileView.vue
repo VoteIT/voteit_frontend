@@ -13,12 +13,16 @@ import DefaultForm from '@/components/DefaultForm.vue'
 import SlugField from '@/components/inputs/SlugField.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import CropImageField from '@/components/inputs/CropImageField.vue'
+import { useDisplay } from 'vuetify'
+
 import useAuthStore from '../auth/useAuthStore'
 
 import useOrgStore from './useOrgStore'
 import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
+
+const { smAndUp } = useDisplay()
 
 const authStore = useAuthStore()
 const store = useOrgStore()
@@ -102,14 +106,8 @@ async function saveImage(close: () => void) {
               >
                 <template #activator="{ props }">
                   <v-btn
-                    class="d-none d-sm-block"
-                    :text="$t('edit')"
-                    variant="tonal"
-                    v-bind="props"
-                  />
-                  <v-btn
-                    class="d-sm-none"
-                    icon="mdi-pencil"
+                    :icon="smAndUp ? undefined : 'mdi-pencil'"
+                    :text="smAndUp ? $t('edit') : undefined"
                     variant="tonal"
                     v-bind="props"
                   />
@@ -173,14 +171,8 @@ async function saveImage(close: () => void) {
               <DefaultDialog :title="$t('img.change')">
                 <template #activator="{ props }">
                   <v-btn
-                    class="d-none d-sm-block"
-                    :text="$t('img.change')"
-                    variant="tonal"
-                    v-bind="props"
-                  />
-                  <v-btn
-                    class="d-sm-none"
-                    icon="mdi-image-edit"
+                    :icon="smAndUp ? undefined : 'mdi-image-edit'"
+                    :text="smAndUp ? $t('img.change') : undefined"
                     variant="tonal"
                     v-bind="props"
                   />
@@ -251,14 +243,8 @@ async function saveImage(close: () => void) {
               <SwitchProfileDialog>
                 <template #activator="{ props }">
                   <v-btn
-                    class="d-none d-sm-block"
-                    :text="$t('organization.switchProfile')"
-                    variant="tonal"
-                    v-bind="props"
-                  />
-                  <v-btn
-                    class="d-sm-none"
-                    icon="mdi-account-arrow-right"
+                    :icon="smAndUp ? undefined : 'mdi-account-arrow-right'"
+                    :text="smAndUp ? $t('organization.switchProfile') : undefined"
                     variant="tonal"
                     v-bind="props"
                   />
