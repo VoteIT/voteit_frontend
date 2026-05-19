@@ -88,7 +88,7 @@ const groups = computed<SpeakerGroup[]>(() => {
         <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
       </div>
       <v-fade-transition>
-        <EnterLeaveButton :list="list" />
+        <EnterLeaveButton v-if="!passive" :list="list" />
       </v-fade-transition>
     </div>
     <p v-if="!currentSpeaker && !queue?.length" class="text-secondary">
