@@ -10,7 +10,6 @@ import useContextRoles from '@/composables/useContextRoles'
 import { IUser } from '@/modules/organisations/types'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 
-import Channel from './Channel'
 import ContentAPI from './ContentAPI'
 import { ChannelConfig, ConditionalWorkflowStates } from './types'
 import useWorkflows from './useWorkflows'
@@ -25,7 +24,6 @@ interface CType<
   Transition extends string = never,
   Role extends string = never
 > {
-  channels?: string[]
   name: string // Content type name in channels
   restConfig?: RestApiConfig
   restEndpoint?: string
@@ -34,7 +32,6 @@ interface CType<
     endpoint: string
   }
   states?: ConditionalWorkflowStates<T, Transition>
-  useSocketApi?: boolean
 }
 
 /**
@@ -138,7 +135,6 @@ export default class ContentType<
   Role extends string = string
 > extends BaseContentType<T, Transition, Role> {
   private rolesAvailable?: ContextRole<Role>[]
-  private _channel?: Channel
   private _transitions?: ReturnType<typeof useTransitions<T, Transition>>
   private _rolesApi?: ContentAPI<{
     pk: number
@@ -187,37 +183,6 @@ export default class ContentType<
 
   public get workflowStates() {
     return this.contentType.states
-  }
-
-  private getChannel(name?: string, config?: ChannelConfig): Channel {
-    name = name ?? this.name
-    if (!this.contentType.channels?.includes(name))
-      throw new Error(`Content Type "${this.name}" has no channel "${name}"`)
-    return new Channel(name, config)
-  }
-
-  public get channel() {
-    // Cache default channel instance with default settings
-    if (!this._channel) this._channel = this.getChannel(this.name)
-    return this._channel
-  }
-
-  public add(data: Partial<T>, config?: ChannelConfig) {
-    if (this.contentType.useSocketApi)
-      return this.methodCall('add', data, config)
-    return this.api.add(data)
-  }
-
-  public update(pk: number, data: Partial<T>, config?: ChannelConfig) {
-    if (this.contentType.useSocketApi)
-      return this.methodCall('change', { pk, kwargs: data }, config)
-    return this.api.patch(pk, data)
-  }
-
-  public delete(pk: number, config?: ChannelConfig) {
-    if (this.contentType.useSocketApi)
-      return this.methodCall('delete', { pk }, config)
-    return this.api.delete(pk)
   }
 
   public useWorkflows() {

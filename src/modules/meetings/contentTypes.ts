@@ -41,7 +41,6 @@ export const meetingType = new ContentType<
 >({
   states: meetingStates,
   name: 'meeting',
-  channels: ['meeting', 'participants', 'moderators', 'invites'],
   restEndpoint: 'meetings/',
   restConfig: { alertOnError: false },
   roles: {

@@ -2,7 +2,7 @@ import { computed, reactive, ref, Ref, watch } from 'vue'
 
 import { minTime } from '@/utils'
 import useAuthStore from '../auth/useAuthStore'
-import { meetingType } from '../meetings/contentTypes'
+import { meetingChannel } from '../meetings/channels'
 import useMeetingComponent from '../meetings/useMeetingComponent'
 
 import { activeUserType } from './contentTypes'
@@ -29,7 +29,7 @@ activeUserType
   })
 
 // Drop list of active users when leaving meeting
-meetingType.channel.onLeave((pk) => {
+meetingChannel.onLeave((pk) => {
   meetingActiveUsers.delete(pk)
 })
 

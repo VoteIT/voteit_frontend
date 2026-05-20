@@ -6,13 +6,11 @@ import { agendaItemStates } from './workflowStates'
 export const agendaItemType = new ContentType<AgendaItem, AgendaTransition>({
   states: agendaItemStates,
   name: 'agenda_item',
-  channels: ['agenda_item'],
   restEndpoint: 'agenda-items/'
 })
 
 export const lastReadType = new BaseContentType<LastRead>({
-  name: 'last_read',
-  useSocketApi: true
+  name: 'last_read'
 })
 
 export const agendaBodyType = new ContentType<AgendaBody>({

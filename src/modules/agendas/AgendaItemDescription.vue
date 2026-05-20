@@ -66,7 +66,7 @@ async function save() {
   form.submitting = true
   const { submitting, ...content } = form
   try {
-    await agendaItemType.update(props.agendaItem.pk, { ...content })
+    await agendaItemType.api.patch(props.agendaItem.pk, { ...content })
     emit('update:editing', false)
   } catch {} // TODO
   form.submitting = false

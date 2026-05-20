@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, titleSorter } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
-import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import HelpSection from '@/components/HelpSection.vue'
@@ -88,7 +87,7 @@ async function create({ room, speakerSystem }: FormData) {
 }
 
 function setOpen(room: number, open: boolean) {
-  return roomType.update(room, { open })
+  return roomType.api.patch(room, { open })
 }
 
 async function updateRoom(
@@ -106,7 +105,7 @@ async function updateRoom(
   const slsEnabled =
     !!system && room.speakers && system.state === SpeakerSystemState.Inactive
   try {
-    await roomType.update(pk, room)
+    await roomType.api.patch(pk, room)
     if (slsAdded) await createSpeakerSystem({ ...speakerSystem!, room: pk })
     if (slsModified)
       await speakerSystemType.api.patch(system.pk, speakerSystem!)
@@ -176,7 +175,7 @@ async function deleteRoom(pk: number) {
       )
         return
     }
-    await roomType.delete(pk)
+    await roomType.api.delete(pk)
   } catch (e) {
     handleRestError(e)
   }

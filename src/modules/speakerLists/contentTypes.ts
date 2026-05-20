@@ -39,7 +39,6 @@ export const speakerListType = new ContentType<
 >({
   states: speakerListStates,
   name: 'speaker_list',
-  channels: ['speaker_list'],
   restEndpoint: 'speaker-lists/'
 })
 

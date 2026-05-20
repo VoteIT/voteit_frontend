@@ -12,7 +12,6 @@ export const organisationType = new ContentType<
   OrganisationRole
 >({
   name: 'organisation', // Required for roles
-  channels: ['organisation'],
   restEndpoint: 'organisation/',
   roles: {
     definitions: {

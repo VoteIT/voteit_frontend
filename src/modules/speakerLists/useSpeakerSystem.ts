@@ -39,9 +39,7 @@ export default function useSpeakerSystem(
     stopActiveSpeaker = false
   ) {
     if (stopActiveSpeaker && systemActiveListId.value) await stopSpeaker()
-    await speakerSystemType.update(system, {
-      active_list
-    })
+    await speakerSystemType.api.patch(system, { active_list })
   }
 
   return {
