@@ -42,7 +42,7 @@ async function saveAgendaOrder() {
   orderSaving.value = true
   try {
     await minTime(
-      meetingType.api.action(meetingId.value, 'set_agenda_order', {
+      meetingType.api.action('set_agenda_order', meetingId.value, {
         order: agendaItemOrder.value
       })
     )

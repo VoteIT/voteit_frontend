@@ -108,8 +108,8 @@ export default class ContentAPI<
   }
 
   public action<Type>(
-    id: K,
     action: string,
+    id: K,
     data?: object,
     method?: HTTPMethod
   ) {

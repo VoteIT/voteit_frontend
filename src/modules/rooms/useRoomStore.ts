@@ -71,8 +71,8 @@ export default defineStore('rooms', () => {
     // Get existing token, or generate new
     const token = roomTokens.value.get(room) ?? generateToken()
     const { data } = await roomType.api.action<RoomHandleData>(
-      room,
       'handle',
+      room,
       { ...values, token },
       'patch'
     )
@@ -95,8 +95,8 @@ export default defineStore('rooms', () => {
     values: Partial<SpeakerHandleData>
   ) {
     const { data } = await roomType.api.action<SpeakerHandleData>(
-      room,
       'handle-speaker',
+      room,
       values,
       'patch'
     )

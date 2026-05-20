@@ -51,12 +51,12 @@ export default function useSpeakerList(listId: MaybeRef<number | null>) {
   function enterList() {
     const list = unref(listId)
     if (!list) throw new Error('Enter list requires list id')
-    return speakerListType.api.action(list, 'enter')
+    return speakerListType.api.action('enter', list)
   }
   function leaveList() {
     const list = unref(listId)
     if (!list) throw new Error('Leave list requires list id')
-    return speakerListType.api.action(list, 'leave')
+    return speakerListType.api.action('leave', list)
   }
 
   // Start by user pk, or first in queue

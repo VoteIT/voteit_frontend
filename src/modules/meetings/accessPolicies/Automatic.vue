@@ -49,7 +49,7 @@ const submitting = ref(false)
 async function joinNow() {
   submitting.value = true
   try {
-    await automaticAccessType.api.action(props.policy.pk, 'join')
+    await automaticAccessType.api.action('join', props.policy.pk)
     router.push(meetingRoute.value)
   } catch {
     alert('^Could not join meeting')

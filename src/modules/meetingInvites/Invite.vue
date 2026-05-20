@@ -26,7 +26,7 @@ async function acceptInvite(inv: MeetingInvite) {
   submitting.value = 'accept'
   try {
     // Slight delay for user, before sending to meeting page
-    await minTime(matchedInviteType.api.action(inv.pk, 'accept'))
+    await minTime(matchedInviteType.api.action('accept', inv.pk))
     await router.push(
       `/m/${props.invite.meeting}/${slugify(props.invite.meeting_title)}`
     )
@@ -45,7 +45,7 @@ async function rejectInvite(inv: MeetingInvite) {
     return
   submitting.value = 'reject'
   try {
-    await matchedInviteType.api.action(inv.pk, 'reject')
+    await matchedInviteType.api.action('reject', inv.pk)
     fetchMatchedInvites()
   } catch {
     openAlertEvent.emit('^Invite rejection failed')

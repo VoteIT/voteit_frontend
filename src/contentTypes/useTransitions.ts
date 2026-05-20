@@ -33,8 +33,8 @@ export default function useTransitions<
 
   async function get(pk: number): Promise<ITransition<Transition>[]> {
     const { data } = await api.action<ITransition<Transition>[]>(
-      pk,
       'transitions',
+      pk,
       undefined,
       'get'
     )
@@ -50,7 +50,7 @@ export default function useTransitions<
     t: ComposerTranslation | typeof UnguardedTransition
   ) {
     const action = () =>
-      api.action<Partial<T>>(obj.pk, 'transitions', { transition })
+      api.action<Partial<T>>('transitions', obj.pk, { transition })
     if (t === UnguardedTransition) return await action()
     const guardQuery = checkGuards(obj, transition, t)
     if (!guardQuery) return action()

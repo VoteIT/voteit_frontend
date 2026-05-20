@@ -127,7 +127,7 @@ export default defineStore('speakers', () => {
 
   const listApi = {
     shuffle(list: number) {
-      return speakerListType.api.action(list, 'shuffle')
+      return speakerListType.api.action('shuffle', list)
     }
   }
 
@@ -139,13 +139,13 @@ export default defineStore('speakers', () => {
       return speakerType.api.delete(speaker)
     },
     start(speaker: number) {
-      return speakerType.api.action(speaker, 'start')
+      return speakerType.api.action('start', speaker)
     },
     stop(speaker: number) {
-      return speakerType.api.action(speaker, 'stop')
+      return speakerType.api.action('stop', speaker)
     },
     undo(speaker: number) {
-      return speakerType.api.action(speaker, 'undo')
+      return speakerType.api.action('undo', speaker)
     }
   }
 

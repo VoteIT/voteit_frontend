@@ -80,8 +80,8 @@ export default defineStore('agendas', () => {
 
   async function updateLastRead(agendaItem: number) {
     const { data } = await agendaItemType.api.action<LastRead>(
-      agendaItem,
-      'update-last-read'
+      'update-last-read',
+      agendaItem
     )
     agendaItemsLastRead.set(data.agenda_item, new Date(data.timestamp))
   }

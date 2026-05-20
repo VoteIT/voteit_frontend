@@ -78,7 +78,7 @@ export default defineStore('auth', () => {
   }
 
   async function switchUser(user: { readonly pk: number }) {
-    await profileType.api.action(user.pk, 'switch')
+    await profileType.api.action('switch', user.pk)
     location.reload()
   }
 

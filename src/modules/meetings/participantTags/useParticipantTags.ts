@@ -61,11 +61,11 @@ export default function useParticipantTags(meeting: MaybeRef<number>) {
   }
 
   function removeNamespace(ns: string[]) {
-    return participantTagsType.api.action(unref(meeting), 'remove-ns', { ns })
+    return participantTagsType.api.action('remove-ns', unref(meeting), { ns })
   }
 
   function setTags(namespace: string, tags: string | string[]) {
-    return participantTagsType.api.action(unref(meeting), 'set', {
+    return participantTagsType.api.action('set', unref(meeting), {
       tags: { [namespace]: tags }
     })
   }

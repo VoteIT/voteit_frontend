@@ -64,7 +64,7 @@ export default function useActive(meetingId: Ref<number>) {
       throw new Error('Must have authenticated user to set active')
     isBusy.value = true
     await minTime(
-      activeUserType.api.action(meetingId.value, 'active', { active }),
+      activeUserType.api.action('active', meetingId.value, { active }),
       2_000
     )
     isBusy.value = false
