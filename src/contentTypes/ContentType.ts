@@ -7,14 +7,11 @@ import {
 } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
 
+import { IUser } from '@/modules/organisations/types'
+import useUserDetails from '@/modules/organisations/useUserDetails'
+
 import Channel from './Channel'
 import ContentAPI from './ContentAPI'
-import {
-  AvailableRolesPayload,
-  ContextRolesPayload,
-  RoleChangeMessage,
-  RolesGetMessage
-} from './messages'
 import { ChannelConfig, ConditionalWorkflowStates } from './types'
 import useWorkflows from './useWorkflows'
 import contentCleanup, { ChannelMap } from './contentCleanup'
@@ -32,7 +29,10 @@ interface CType<
   name: string // Content type name in channels
   restConfig?: RestApiConfig
   restEndpoint?: string
-  roles?: Record<Role, ContextRoleDefinition>
+  roles?: {
+    definitions: Record<Role, ContextRoleDefinition>
+    endpoint: string
+  }
   states?: ConditionalWorkflowStates<T, Transition>
   useSocketApi?: boolean
 }
@@ -140,9 +140,22 @@ export default class ContentType<
   private rolesAvailable?: ContextRole<Role>[]
   private _channel?: Channel
   private _transitions?: ReturnType<typeof useTransitions<T, Transition>>
+  private _rolesApi?: ContentAPI<{
+    pk: number
+    user: IUser
+    assigned: Role[]
+  }>
 
   private get roles() {
-    return this.contentType.roles
+    return this.contentType.roles?.definitions
+  }
+
+  public get rolesApi() {
+    // Cache an api instance with default settings
+    if (!this.contentType.roles) throw new Error('ContentType has no roles')
+    if (!this._rolesApi)
+      this._rolesApi = new ContentAPI(this.contentType.roles.endpoint)
+    return this._rolesApi
   }
 
   public get transitions() {
@@ -232,52 +245,42 @@ export default class ContentType<
   public async getAvailableRoles(): Promise<ContextRole<Role>[]> {
     this.assertHasRoles()
     if (this.rolesAvailable) return this.rolesAvailable
-    const response = await socket.call<AvailableRolesPayload<Role>>(
-      'roles.available',
-      { model: this.name }
+    const { data } = await this.rolesApi.listAction<ContextRole<Role>[]>(
+      'available',
+      undefined,
+      'get'
     )
-    const { roles } = response.p
-    this.rolesAvailable = roles
-    return roles
+    this.rolesAvailable = data
+    return data
   }
 
   public async fetchRoles(pk: number, users?: number[]) {
+    const { setUser } = useUserDetails()
     const { set } = this.useContextRoles()
-    const message: RolesGetMessage = {
-      model: this.name,
-      pk,
-      filter_users: users
+    const query = {
+      context: pk,
+      user_id_in: users
     }
-    const { p } = await socket.call<ContextRolesPayload<Role>>(
-      'roles.get',
-      message
-    )
-    for (const [user, roles] of p.items) {
-      set(pk, user, roles)
+    const { data } = await this.rolesApi.list(query)
+    for (const { user, assigned } of data) {
+      set(pk, user.pk, assigned)
+      setUser(user)
     }
-  }
-
-  private changeRoles(
-    method: string,
-    pk: number,
-    user: number,
-    roles: string[]
-  ) {
-    this.assertHasRoles()
-    const message: RoleChangeMessage = {
-      model: this.name,
-      pk,
-      users: [user],
-      roles
-    }
-    return socket.call(`roles.${method}`, message)
   }
 
   public addRoles(pk: number, user: number, ...roles: string[]) {
-    return this.changeRoles('add', pk, user, roles)
+    return this.rolesApi.listAction('add', {
+      [this.name]: pk,
+      user,
+      roles
+    })
   }
 
   public removeRoles(pk: number, user: number, ...roles: string[]) {
-    return this.changeRoles('remove', pk, user, roles)
+    return this.rolesApi.listAction('remove', {
+      [this.name]: pk,
+      user,
+      roles
+    })
   }
 }

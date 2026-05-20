@@ -19,13 +19,16 @@ export const speakerSystemType = new ContentType<
   restEndpoint: 'speaker-list-systems/',
   states: speakerSystemStates,
   roles: {
-    list_moderator: {
-      translateHelp: (t) => t('role.help.list_moderator'),
-      translateName: (t) => t('role.list_moderator')
-    },
-    speaker: {
-      translateHelp: (t) => t('role.help.speaker'),
-      translateName: (t) => t('role.speaker')
+    endpoint: 'speaker-system-roles/',
+    definitions: {
+      list_moderator: {
+        translateHelp: (t) => t('role.help.list_moderator'),
+        translateName: (t) => t('role.list_moderator')
+      },
+      speaker: {
+        translateHelp: (t) => t('role.help.speaker'),
+        translateName: (t) => t('role.speaker')
+      }
     }
   }
 })

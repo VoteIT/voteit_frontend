@@ -45,26 +45,29 @@ export const meetingType = new ContentType<
   restEndpoint: 'meetings/',
   restConfig: { alertOnError: false },
   roles: {
-    [MeetingRole.Participant]: {
-      translateHelp: (t) => t('role.help.participant'),
-      translateName: (t) => t('role.participant')
+    definitions: {
+      [MeetingRole.Participant]: {
+        translateHelp: (t) => t('role.help.participant'),
+        translateName: (t) => t('role.participant')
+      },
+      [MeetingRole.Discusser]: {
+        translateHelp: (t) => t('role.help.discusser'),
+        translateName: (t) => t('role.discusser')
+      },
+      [MeetingRole.Moderator]: {
+        translateHelp: (t) => t('role.help.moderator'),
+        translateName: (t) => t('role.moderator')
+      },
+      [MeetingRole.PotentialVoter]: {
+        translateHelp: (t) => t('role.help.potential_voter'),
+        translateName: (t) => t('role.potential_voter')
+      },
+      [MeetingRole.Proposer]: {
+        translateHelp: (t) => t('role.help.proposer'),
+        translateName: (t) => t('role.proposer')
+      }
     },
-    [MeetingRole.Discusser]: {
-      translateHelp: (t) => t('role.help.discusser'),
-      translateName: (t) => t('role.discusser')
-    },
-    [MeetingRole.Moderator]: {
-      translateHelp: (t) => t('role.help.moderator'),
-      translateName: (t) => t('role.moderator')
-    },
-    [MeetingRole.PotentialVoter]: {
-      translateHelp: (t) => t('role.help.potential_voter'),
-      translateName: (t) => t('role.potential_voter')
-    },
-    [MeetingRole.Proposer]: {
-      translateHelp: (t) => t('role.help.proposer'),
-      translateName: (t) => t('role.proposer')
-    }
+    endpoint: 'meeting-roles/'
   }
 })
 

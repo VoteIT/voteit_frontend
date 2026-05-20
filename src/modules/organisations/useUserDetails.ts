@@ -82,7 +82,12 @@ export default function useUserDetails() {
     return userDetails.get(user)
   }
 
+  function setUser(user: IUser) {
+    userDetails.set(user.pk, user)
+  }
+
   return {
-    getUser
+    getUser,
+    setUser
   }
 }
