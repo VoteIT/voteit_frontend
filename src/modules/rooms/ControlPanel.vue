@@ -166,7 +166,7 @@ async function deleteRoom(pk: number) {
     const { data } = await roomType.api.action<{
       speakers: number
       speaker_lists: number
-    }>(pk, 'status', undefined, 'get')
+    }>('status', pk, undefined, 'get')
     if (data.speakers || data.speaker_lists) {
       if (
         !(await dialogQuery({
