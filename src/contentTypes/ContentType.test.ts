@@ -8,7 +8,6 @@ import ContentType, { BaseContentType } from './ContentType'
 const {
   mockAddTypeHandler,
   mockSocketCall,
-  mockApiInstance,
   MockContentAPI,
   MockChannel,
   mockUseWorkflows,
@@ -29,7 +28,6 @@ const {
   return {
     mockAddTypeHandler: vi.fn(),
     mockSocketCall: vi.fn(),
-    mockApiInstance,
     MockContentAPI: vi.fn(() => mockApiInstance),
     MockChannel: vi.fn(() => ({})),
     mockUseWorkflows: vi.fn(() => ({})),
