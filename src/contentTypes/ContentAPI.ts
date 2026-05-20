@@ -116,9 +116,7 @@ export default class ContentAPI<
     return this.call<Type>(
       method ?? 'post',
       `${this.endpoint}${id}/${action}/`,
-      {
-        data
-      }
+      { data }
     )
   }
 }
