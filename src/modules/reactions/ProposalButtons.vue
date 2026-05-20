@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
+import useErrorHandler from '@/composables/useErrorHandler'
 import useMeeting from '../meetings/useMeeting'
 import { Proposal, ProposalButtonMode } from '../proposals/types'
 
@@ -15,6 +16,7 @@ const {
   removeUserReacted,
   setUserReacted
 } = useReactionStore()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const props = defineProps<{
   mode?: ProposalButtonMode
@@ -49,13 +51,12 @@ const activeButtons = computed(() =>
 )
 
 async function setFlag(button: IFlagButton, value: boolean) {
-  // TODO error handle!
   try {
     value
       ? await setUserReacted(button, relation.value)
       : await removeUserReacted(button, relation.value)
   } catch (e) {
-    console.error(e)
+    handleRestError(e)
   }
 }
 </script>

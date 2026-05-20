@@ -190,7 +190,6 @@ function tagBulkRemove(tag: string) {
   })
 }
 function tagBulkAdd(tag: string) {
-  console.log(tag)
   tag = tagify(tag)
   actionOnSelected(async ({ tags, pk }) => {
     if (tags.includes(tag)) return

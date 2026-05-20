@@ -8,6 +8,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import HelpSection from '@/components/HelpSection.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
@@ -20,6 +21,7 @@ import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { getMeetingButtons } = useReactionStore()
@@ -42,7 +44,7 @@ async function deleteButton(button: ReactionButton) {
   try {
     await reactionButtonType.api.delete(button.pk)
   } catch (err) {
-    console.error(err)
+    handleRestError(err)
   }
 }
 

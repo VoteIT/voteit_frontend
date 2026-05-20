@@ -7,6 +7,7 @@ import IconSearchInput from '@/components/inputs/IconSearchInput.vue'
 import ColorInput from '@/components/inputs/ColorInput.vue'
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 import useRules from '@/composables/useRules'
 
 import useAuthStore from '../auth/useAuthStore'
@@ -20,6 +21,7 @@ import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const emit = defineEmits(['close'])
 const props = defineProps<{
   data?: ReactionButton
@@ -94,8 +96,9 @@ async function save() {
     }
     emit('close')
   } catch (err) {
+    handleRestError(err)
+  } finally {
     submitting.value = false
-    console.error(err)
   }
 }
 </script>

@@ -12,6 +12,7 @@ import useMeetingGroups from '../meetings/useMeetingGroups'
 import PostAs from '../meetings/PostAs.vue'
 import type { Author } from '../meetings/types'
 
+import useErrorHandler from '@/composables/useErrorHandler'
 import type { DiscussionPost } from './types'
 import AuthorAvatar from '../meetings/AuthorAvatar.vue'
 import useMeetingId from '../meetings/useMeetingId'
@@ -52,6 +53,7 @@ const disabled = computed(
 const textLength = computed(() => stripHTML(text.value).length)
 
 const { canPostAs } = useMeetingGroups(useMeetingId())
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 function reset() {
   active.value = false
@@ -80,9 +82,10 @@ async function submit() {
     editorComponent.value?.setText(props.modelValue)
     reset()
   } catch (err) {
-    console.error(err)
+    handleRestError(err)
+  } finally {
+    submitting.value = false
   }
-  submitting.value = false
 }
 
 const editorComponent = ref<null | EditorComponent>(null)

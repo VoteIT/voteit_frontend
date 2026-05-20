@@ -65,7 +65,6 @@ function promptVersionReload() {
     no: t('system.reloadLater'),
     yes: t('system.reloadNow')
   })
-  console.log('SEARCHME', import.meta.env.VITE_FRONTEND_VERSION)
 }
 
 watch(

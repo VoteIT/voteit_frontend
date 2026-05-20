@@ -257,7 +257,6 @@ async function removeAllRoles(user: number) {
   if (!props.admin) return
   const userRoles = contextRoles.getUserRoles(props.pk, user)
   if (!userRoles) throw new Error(`User ${user} has no roles in this context`)
-  console.log(userRoles)
   props.contentType.removeRoles(props.pk, user, ...userRoles)
 }
 

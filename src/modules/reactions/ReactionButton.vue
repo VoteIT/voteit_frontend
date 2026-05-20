@@ -29,6 +29,7 @@
 import { computed, ref } from 'vue'
 
 import UserList from '@/components/UserList.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useReactionStore from './useReactionStore'
 import {
@@ -63,6 +64,7 @@ async function fetchUsers() {
   reactionUsers.value = data.users
 }
 
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const working = ref(false)
 
 const reacted = computed({
@@ -77,9 +79,10 @@ const reacted = computed({
         ? await setUserReacted(props.button, props.relation)
         : await removeUserReacted(props.button, props.relation)
     } catch (e) {
-      console.error(e)
+      handleRestError(e)
+    } finally {
+      working.value = false
     }
-    working.value = false
   }
 })
 

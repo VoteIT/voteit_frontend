@@ -6,6 +6,9 @@ import { ThemeColor } from '@/utils/types'
 
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
+import IconSearchInput from '@/components/inputs/IconSearchInput.vue'
+import ColorInput from '@/components/inputs/ColorInput.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 import useRules from '@/composables/useRules'
 
 import useAuthStore from '../auth/useAuthStore'
@@ -15,12 +18,11 @@ import { IFlagButton } from './types'
 import { reactionButtonType } from './contentTypes'
 import FlagButton from './FlagButton.vue'
 import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
-import IconSearchInput from '@/components/inputs/IconSearchInput.vue'
-import ColorInput from '@/components/inputs/ColorInput.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const rules = useRules(t)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const emit = defineEmits(['close'])
 const props = defineProps<{
   data?: IFlagButton
@@ -73,8 +75,9 @@ async function save() {
     }
     emit('close')
   } catch (err) {
+    handleRestError(err)
+  } finally {
     submitting.value = false
-    console.error(err)
   }
 }
 </script>

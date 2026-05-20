@@ -43,7 +43,6 @@ export default defineStore('auth', () => {
   ): Promise<IOrganisationUser | undefined> {
     try {
       const { data } = await profileType.api.list<IOrganisationUser>()
-      console.log('User authenticated', data.userid)
       setAuthenticatedUser(data)
       return data
     } catch (err) {
@@ -51,7 +50,7 @@ export default defineStore('auth', () => {
       switch (err.response?.status) {
         case 401:
           user.value = null
-          console.debug('Not logged in')
+          console.warn('Not logged in')
           return
         default:
           if (tries === 0) throw new Error('Unknown authentication error')
@@ -73,7 +72,6 @@ export default defineStore('auth', () => {
 
   async function logout() {
     if (!isAuthenticated.value) return
-    console.debug('Logging out')
     await profileType.api.listAction('logout')
     user.value = null
     alternateUsers.value = []
