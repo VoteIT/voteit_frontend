@@ -3,7 +3,7 @@ import { computed, provide } from 'vue'
 
 import { getFullName, slugify } from '@/utils'
 import useAgendaStore from '@/modules/agendas/useAgendaStore'
-import useMeetingId from '@/modules/meetings/useMeetingId'
+import useMeeting from '@/modules/meetings/useMeeting'
 import { TagClickHandlerKey } from '@/modules/meetings/useTags'
 import useGroupStore from '@/modules/meetings/useGroupStore'
 import { IUser } from '@/modules/organisations/types'
@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const { filterProposals } = useProposalStore()
 const { getAgendaItems } = useAgendaStore()
-const meetingId = useMeetingId()
+const { meeting, meetingId } = useMeeting()
 const { filterGroups, getGroupRole } = useGroupStore()
 
 const userGroups = computed(() =>
@@ -89,7 +89,11 @@ const proposalAgendaItems = computed(() =>
           :title="title"
           :to="{
             name: 'agendaItem',
-            params: { aid: pk, aslug: slugify(title) }
+            params: {
+              slug: slugify(meeting?.title),
+              aid: pk,
+              aslug: slugify(title)
+            }
           }"
         />
       </v-list>
