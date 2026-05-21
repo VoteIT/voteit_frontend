@@ -1,13 +1,19 @@
 <script lang="ts" setup>
 import { onClickOutside } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'
+import { ValidationResult } from 'vuetify/lib/composables/validation'
+
+// Attrs passed to v-input
+defineOptions({ inheritAttrs: false })
 
 interface Props {
-  modelValue: string
-  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  editing?: boolean
   clickToEdit?: boolean
+  editing?: boolean
+  errorMessages?: string[]
   maxlength?: number
+  modelValue: string
+  rules?: ((value: string) => ValidationResult)[]
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 }
 const props = withDefaults(defineProps<Props>(), {
   tag: 'h1'
@@ -60,26 +66,35 @@ onClickOutside(inputEl, () => {
 </script>
 
 <template>
-  <component :is="tag" class="editable-headline" @click="onClick">
-    <input
-      ref="inputEl"
+  <component :is="tag" @click="onClick">
+    <v-input
       v-if="editActive"
-      v-model="content"
-      :maxlength="maxlength"
-      @keydown.ctrl.enter="done"
-      @keydown.enter.exact="done"
-    />
+      :error-messages="errorMessages"
+      :model-value="content"
+      :rules="rules"
+      v-bind="$attrs"
+    >
+      <input
+        :maxlength="maxlength"
+        ref="inputEl"
+        v-model="content"
+        @keydown.ctrl.enter="done"
+        @keydown.enter.exact="done"
+      />
+    </v-input>
     <template v-else>{{ content }}</template>
   </component>
 </template>
 
-<style lang="sass">
-.editable-headline
-  input
-    width: 100%
-    padding: 0 .3em
-    background-color: rgb(var(--v-theme-surface))
-    border: 1px solid rgb(var(--v-border-color))
-    &:focus
-      outline: none
+<style lang="sass" scoped>
+.v-input
+  font-size: inherit
+
+input
+  width: 100%
+  padding: 0 .3em
+  background-color: rgb(var(--v-theme-surface))
+  border: 1px solid rgb(var(--v-border-color))
+  &:focus
+    outline: none
 </style>

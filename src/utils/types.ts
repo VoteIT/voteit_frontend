@@ -113,6 +113,10 @@ export interface ChannelsConfig {
   alertOnError?: boolean
 }
 
+export type RestError<T extends {} = {}> = {
+  [P in keyof T | 'non_field_errors']?: string[]
+}
+
 export enum ThemeColor {
   Accent = 'accent',
   Primary = 'primary',

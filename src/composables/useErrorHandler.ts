@@ -7,6 +7,8 @@ import { parseRestError } from '@/utils/restApi'
 import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 
+type APIError = { [P in string]?: string[] }
+
 interface HandlerOptions {
   target: 'alert' | 'dialog' | 'none'
   showField?: string
@@ -16,12 +18,9 @@ const DEFAULT_OPTIONS: HandlerOptions = {
   target: 'none'
 } as const
 
-function getSpecifiedFieldErrorMessage(
-  errors: Dictionary<string[]>,
-  field: string
-) {
+function getSpecifiedFieldErrorMessage(errors: APIError, field: string) {
   const fieldErrors = errors[field] ||
-    errors.non_field_errors || ['Unkown error']
+    errors.non_field_errors || ['Unknown error']
   return fieldErrors.join(', ')
 }
 
@@ -30,12 +29,10 @@ function joinStrings(msgs: string[] | string) {
   return msgs.join(', ')
 }
 
-function getNonspecificFieldErrorMessage(
-  errors: Dictionary<string[] | string>
-) {
+function getNonspecificFieldErrorMessage(errors: APIError) {
   if (isEmpty(errors)) return
   return Object.entries(errors)
-    .map(([field, msgs]) => `${field}: ${joinStrings(msgs)}`)
+    .map(([field, msgs]) => msgs && `${field}: ${joinStrings(msgs)}`)
     .join('\n')
 }
 
@@ -45,7 +42,7 @@ export default function useErrorHandler(
   const { t } = useI18n()
   opts = { ...DEFAULT_OPTIONS, ...opts }
 
-  const fieldErrors = ref<Dictionary<string[]>>({})
+  const fieldErrors = ref<APIError>({})
   const errorMessage = ref<string | null>(null)
   const hasError = computed(() => typeof errorMessage.value === 'string')
 
@@ -68,7 +65,7 @@ export default function useErrorHandler(
 
   function handleError(
     e: unknown,
-    parse: (e: Error) => Dictionary<string[]>,
+    parse: (e: Error) => APIError,
     showField?: string
   ) {
     if (!(e instanceof Error)) throw e

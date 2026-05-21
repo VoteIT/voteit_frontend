@@ -1,4 +1,4 @@
-import { AxiosError, AxiosPromise } from 'axios'
+import { isAxiosError, AxiosPromise } from 'axios'
 
 import { AlertLevel, RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils/events'
@@ -22,45 +22,48 @@ export default class ContentAPI<
     this.config = { ...DEFAULT_CONFIG, ...(config || {}) }
   }
 
-  // TODO Use parseRestError from utils.restApi
-  private handleError(error: AxiosError) {
-    const response = error.response
-    if (!response)
-      return openAlertEvent.emit({
-        title: 'Error',
-        text: 'No response from server',
-        level: AlertLevel.Error
-      })
-
-    let title = `HTTP ${response.status}`
-    let text = 'Unknown error'
-    let sticky = false
-    // Default strings from response.data, unless special cases below
-    if (typeof response.data === 'string') text = response.data
-    else if (typeof response.data === 'object')
-      text = JSON.stringify(response.data)
-    switch (response.status) {
-      case 500:
-        text = 'Server error'
-        break
-      case 400:
-        sticky = true
-        if (
-          response.data &&
-          typeof response.data === 'object' &&
-          'error' in response.data
-        ) {
-          title = 'Error'
-          text = response.data.error as string
-        }
-        break
-    }
+  private displayError(title: string | number, text: string, sticky = false) {
     openAlertEvent.emit({
-      title,
-      text,
+      level: AlertLevel.Error,
       sticky,
-      level: AlertLevel.Error
+      text,
+      title: typeof title === 'number' ? `HTTP ${title}` : title
     })
+  }
+
+  /**
+   * Doesn't use restApi.parseRestError because it displays title and text.
+   * Note: This should be phased out, handling errors in calling views.
+   */
+  private handleError(e: unknown) {
+    if (!isAxiosError(e)) {
+      console.error('Programming error', e)
+      return this.displayError('Unknown error', 'Check console for details.')
+    }
+    if (!e.response || !e.status)
+      return this.displayError('Error', 'No response from server')
+
+    const { data } = e.response
+    switch (e.response.status) {
+      case 500:
+        return this.displayError(e.status, 'Server error')
+      case 400:
+        if (
+          data !== null &&
+          typeof data === 'object' &&
+          typeof data.error === 'string'
+        )
+          return this.displayError('Error', data.error, true)
+      default: {
+        const text =
+          typeof data === 'string'
+            ? data
+            : typeof data === 'object'
+            ? JSON.stringify(data)
+            : 'Unknown error'
+        return this.displayError(e.status, text.slice(0, 200))
+      }
+    }
   }
 
   private call<Type>(method: HTTPMethod, url: string, config?: RestApiConfig) {
@@ -71,9 +74,7 @@ export default class ContentAPI<
       url
     }
     const request = restApi(config)
-    if (this.config.alertOnError) {
-      request.catch(this.handleError)
-    }
+    if (this.config.alertOnError) request.catch(this.handleError.bind(this))
     return request as AxiosPromise<Type>
   }
 

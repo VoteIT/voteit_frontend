@@ -1,11 +1,38 @@
 import axios from 'axios'
+import { RestError } from './types'
 
-export function parseRestError(e: unknown): Record<string, string[]> {
-  if (!axios.isAxiosError(e)) return { __root__: ['Unknown error'] }
-  if (e.status === 500) return { __root__: ['Server error (HTTP 500)'] }
-  if (!e.response) return { __root__: ['No response from server'] }
+function nonFieldErrors(non_field_errors: string[]) {
+  return { non_field_errors }
+}
+
+const statusErrors: Record<string, string> = {
+  401: 'Unauthorized (HTTP 401)',
+  403: 'Forbidden (HTTP 403)',
+  500: 'Server error (HTTP 500)'
+}
+
+function parseErrorObject(data: object) {
+  return Object.fromEntries(
+    Object.entries(data).map(([key, value]) => {
+      if (Array.isArray(value)) return [key, value as string[]]
+      if (typeof value === 'string') return [key, [value]]
+      return [key, [JSON.stringify(value)]]
+    })
+  ) as RestError
+}
+
+export function parseRestError<T extends {} = {}>(e: unknown): RestError<T> {
+  if (!axios.isAxiosError(e)) return nonFieldErrors(['Unknown error'])
+  if (!e.status || !e.response)
+    return nonFieldErrors(['No response from server'])
+  const statusError = statusErrors[e.status]
+  if (statusError) return nonFieldErrors([statusError])
   const { data } = e.response
-  return Array.isArray(data) ? { __root__: data } : data
+  if (typeof data === 'string') return nonFieldErrors([data.slice(0, 200)])
+  if (Array.isArray(data)) return nonFieldErrors(data)
+  if (data === null || typeof data !== 'object')
+    return nonFieldErrors(['Unknown error'])
+  return parseErrorObject(data)
 }
 
 /**

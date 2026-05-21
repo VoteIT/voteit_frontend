@@ -308,10 +308,11 @@ function tagFilter(tags: string | string[], query: string) {
     </template>
     <template #item.title="{ item, value }">
       <Headline
+        clickToEdit
+        hide-details
+        :maxlength="100"
         :modelValue="value"
         tag="h4"
-        :maxlength="100"
-        clickToEdit
         @update:modelValue="setTitle(item, $event)"
       />
     </template>

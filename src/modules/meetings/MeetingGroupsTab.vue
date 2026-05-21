@@ -300,20 +300,20 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
               @done="close"
             >
               <v-text-field
-                :errors="errors.title"
+                :error-messages="errors.title"
                 :label="$t('name')"
                 :rules="[rules.maxLength(100), rules.required]"
                 v-model="formData.title"
               />
               <v-textarea
-                :errors="errors.body"
+                :error-messages="errors.body"
                 :label="$t('textBody')"
                 v-model="formData.body"
               />
               <TagEdit :label="$t('tags')" v-model="formData.tags" />
               <v-text-field
                 v-if="meeting?.group_votes_active"
-                :errors="errors.votes"
+                :error-messages="errors.votes"
                 :label="$t('meeting.groups.votes')"
                 min="0"
                 :rules="[rules.min(0)]"
@@ -472,20 +472,20 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
                   v-slot="{ errors, formData }"
                 >
                   <v-text-field
-                    :errors="errors.title"
+                    :error-messages="errors.title"
                     :label="$t('name')"
                     :rules="[rules.maxLength(100), rules.required]"
                     v-model="formData.title!"
                   />
                   <v-textarea
-                    :errors="errors.body"
+                    :error-messages="errors.body"
                     :label="$t('textBody')"
                     v-model="formData.body!"
                   />
                   <TagEdit :label="$t('tags')" v-model="formData.tags" />
                   <v-text-field
                     v-if="meeting?.group_votes_active"
-                    :errors="errors.votes"
+                    :error-messages="errors.votes"
                     :label="$t('meeting.groups.votes')"
                     min="0"
                     :rules="[rules.min(0)]"

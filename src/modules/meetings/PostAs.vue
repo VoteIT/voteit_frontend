@@ -216,15 +216,16 @@ watch(postAsSelect, () => {
 
 <template>
   <v-autocomplete
-    ref="autocomplete"
     v-if="options"
+    density="compact"
     :label="$t('proposal.postAs')"
+    hide-details
     :items="options"
+    :no-data-text="$t('noSuggestions')"
+    ref="autocomplete"
+    variant="solo-inverted"
     v-model="postAsSelect"
     v-model:search="search"
-    :no-data-text="$t('noSuggestions')"
-    hide-details
-    density="compact"
   >
     <template #item="{ item, props }">
       <v-list-item v-bind="props">

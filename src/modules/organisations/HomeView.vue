@@ -2,13 +2,14 @@
 import { imap, sum } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
-import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
+import { computed, onBeforeMount, reactive, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
-import { MenuItem } from '@/utils/types'
+import { parseRestError } from '@/utils/restApi'
+import { MenuItem, RestError } from '@/utils/types'
 
 import AppBar from '@/components/AppBar.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
@@ -21,6 +22,7 @@ import UserSearch from '@/components/UserSearch.vue'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
+import useRules from '@/composables/useRules'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
 
@@ -37,7 +39,7 @@ import useMeetingStore from '../meetings/useMeetingStore'
 import ContactInfoTab from './ContactInfoTab.vue'
 import useOrgStore from './useOrgStore'
 import { organisationType } from './contentTypes'
-import { OrganisationRole } from './types'
+import { IOrganisation, OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 import FindMeetingDialog from './FindMeetingDialog.vue'
 import { displayRoles } from './utils'
@@ -53,6 +55,7 @@ const { t } = useI18n()
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
+const rules = useRules(t)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -102,6 +105,7 @@ onBeforeMount(async () => {
 })
 
 const editing = ref(false)
+const formErrors = shallowRef<RestError<IOrganisation> | null>(null)
 const changeForm = reactive({
   body: orgStore.organisation?.body ?? '',
   page_title: orgStore.organisation?.page_title ?? ''
@@ -113,6 +117,7 @@ watch(
     changeForm.page_title = org?.page_title ?? ''
   }
 )
+watch(changeForm, () => (formErrors.value = null), { deep: true })
 
 const menu = computed<MenuItem[]>(() => {
   if (!orgStore.organisation || !orgStore.canChangeOrganisation) return []
@@ -145,8 +150,12 @@ const tabs = computed(() => {
 })
 
 async function save() {
-  if (formChanged.value) await orgStore.updateOrganisation(changeForm)
-  editing.value = false
+  try {
+    await orgStore.updateOrganisation(changeForm)
+    editing.value = false
+  } catch (e) {
+    formErrors.value = parseRestError(e)
+  }
 }
 
 function addUser(user: number) {
@@ -272,15 +281,27 @@ function cancelEdit() {
               </v-alert>
               <template v-if="editing">
                 <Headline
-                  v-model="changeForm.page_title"
                   editing
+                  :error-messages="formErrors?.page_title"
+                  :rules="[rules.required]"
+                  v-model="changeForm.page_title"
                   @submit="save"
                 />
                 <RichtextEditor
-                  v-model="changeForm.body"
+                  :error-messages="formErrors?.body"
                   variant="full"
+                  v-model="changeForm.body"
                   @keydown.ctrl.enter="save"
                 />
+                <v-expand-transition>
+                  <div v-if="formErrors?.non_field_errors">
+                    <v-alert
+                      class="mb-3"
+                      :text="formErrors.non_field_errors.join(', ')"
+                      type="error"
+                    />
+                  </div>
+                </v-expand-transition>
                 <div class="text-right">
                   <v-btn
                     :text="$t('cancel')"

@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import { minTime } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
+import type { RestError } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import useRules from '@/composables/useRules'
 
@@ -18,7 +19,7 @@ const rules = useRules(t)
 const hours = ref(1)
 const working = ref(false)
 const purgedCount = ref<number | null>(null)
-const error = ref<{ hours?: string[]; __root__?: string[] } | null>(null)
+const error = ref<RestError<{ hours: number }> | null>(null)
 
 async function purgeInactive() {
   error.value = null
@@ -89,9 +90,9 @@ async function purgeInactive() {
           />
         </v-form>
         <v-alert
-          v-if="error?.__root__"
+          v-if="error?.non_field_errors"
           type="error"
-          :text="error.__root__.join(' ')"
+          :text="error.non_field_errors.join(' ')"
         />
         <v-alert
           v-else-if="purgedCount !== null"

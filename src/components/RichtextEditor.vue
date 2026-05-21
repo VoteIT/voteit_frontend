@@ -2,6 +2,7 @@
 import Quill from 'quill'
 import 'quill-mention/autoregister'
 import { computed, getCurrentInstance, inject, onMounted, ref } from 'vue'
+import { ValidationResult } from 'vuetify/lib/composables/validation'
 
 import { getDisplayName, tagify } from '@/utils'
 import useMeetingId from '@/modules/meetings/useMeetingId'
@@ -110,11 +111,12 @@ const variants: Record<
 
 const props = withDefaults(
   defineProps<{
+    autofocus?: boolean
     disabled?: boolean
-    errors?: string[]
+    errorMessages?: string[]
     modelValue?: string
     placeholder?: string
-    autofocus?: boolean
+    rules?: ((value: string) => ValidationResult)[]
     variant?: QuillVariant
   }>(),
   {
@@ -195,13 +197,17 @@ defineExpose({
 </script>
 
 <template>
-  <div :id="editorId" ref="rootElement">
-    <div ref="editorElement"></div>
-    <p v-if="errors" class="text-error">
-      {{ errors.join(', ') }}
-    </p>
-    <slot name="controls"></slot>
-  </div>
+  <v-input
+    :error-messages="errorMessages"
+    :id="editorId"
+    :model-value="modelValue"
+    :rules="rules"
+  >
+    <div class="flex-grow-1" ref="rootElement">
+      <div ref="editorElement"></div>
+      <slot name="controls"></slot>
+    </div>
+  </v-input>
 </template>
 
 <style lang="sass">

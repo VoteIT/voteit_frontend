@@ -15,11 +15,11 @@
             <slot name="editor">
               <RichtextEditor
                 v-model="body"
-                class="proposal-editor mb-2"
+                class="proposal-editor"
                 :placeholder="$t('proposal.postPlaceholder')"
               />
             </slot>
-            <TagEdit v-model="extraTags" class="mb-2" />
+            <TagEdit v-model="extraTags" />
             <div class="d-flex flex-column flex-md-row">
               <PostAs v-if="canPostAs" v-model="author" />
               <v-spacer />
@@ -91,6 +91,7 @@ import type { Author } from '../meetings/types'
 import { proposalType } from './contentTypes'
 import type { PreviewProposal, Proposal } from './types'
 import ProposalCard from './ProposalCard.vue'
+import { RestError } from '@/utils/types'
 
 const previewDelay = 500 // Wait 1 s before preview
 let previewTimeout: ReturnType<typeof setTimeout>
@@ -154,9 +155,9 @@ function getCreateData() {
 
 const api = proposalType.getContentApi({ alertOnError: false })
 const proposalPreview = ref<Proposal>()
-const errors = ref<Record<string, string[]>>({})
+const errors = ref<RestError<Proposal>>({})
 const errorText = computed(() => {
-  const errs = errors.value.body ?? errors.value.__root__
+  const errs = errors.value.body ?? errors.value.non_field_errors
   if (!errs) return
   return errs.join(', ')
 })

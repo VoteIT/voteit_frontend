@@ -1,32 +1,38 @@
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 
 import { cols } from '@/utils/defaults'
-import { MenuItem } from '@/utils/types'
+import { parseRestError } from '@/utils/restApi'
+import { MenuItem, RestError } from '@/utils/types'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
+import useRules from '@/composables/useRules'
 
 import { meetingType } from './contentTypes'
 import useMeeting from './useMeeting'
-import { MeetingState } from './types'
+import { Meeting, MeetingState } from './types'
 import { meetingMenuPlugins } from './registry'
 
 const { t } = useI18n()
 
-const editing = ref(false)
+const editing = shallowRef(false)
+const saving = shallowRef(false)
 const { meeting, meetingId, canChange, isModerator } = useMeeting()
+const rules = useRules(t)
 
 useTitle(computed(() => `${meeting.value?.title} | VoteIT`))
 
+const contentErrors = shallowRef<RestError<Meeting> | null>(null)
 const content = reactive({
   title: meeting.value?.title ?? '',
   body: meeting.value?.body ?? ''
 })
+watch(content, () => (contentErrors.value = null), { deep: true })
 watch(meeting, (value) => {
   if (editing.value) return
   content.title = value?.title ?? ''
@@ -68,29 +74,53 @@ function cancelEdit() {
   content.title = meeting.value.title
 }
 
-function submit() {
-  editing.value = false
-  if (contentChanged.value)
-    meetingType.api.patch(meetingId.value, { ...content })
+async function submit() {
+  if (!contentChanged.value) return
+  saving.value = true
+  try {
+    await meetingType.api.patch(meetingId.value, { ...content })
+    editing.value = false
+  } catch (e) {
+    contentErrors.value = parseRestError(e)
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
 <template>
   <v-row v-if="meeting">
     <v-col v-if="editing" class="py-6" v-bind="cols.default">
-      <Headline v-model="content.title" class="mb-2" editing @submit="submit" />
-      <RichtextEditor
-        v-model="content.body"
-        class="mb-3"
-        @keydown.ctrl.enter="submit"
-        variant="full"
+      <Headline
+        editing
+        :error-messages="contentErrors?.title"
+        :rules="[rules.required]"
+        v-model="content.title"
+        @submit="submit"
       />
+      <RichtextEditor
+        :error-messages="contentErrors?.body"
+        variant="full"
+        v-model="content.body"
+        @keydown.ctrl.enter="submit"
+      />
+      <v-expand-transition>
+        <div v-if="contentErrors?.non_field_errors">
+          <v-alert
+            class="mb-3"
+            :text="contentErrors.non_field_errors.join(', ')"
+            type="error"
+          />
+        </div>
+      </v-expand-transition>
       <div class="text-right">
         <v-btn :text="$t('cancel')" variant="text" @click="cancelEdit" />
         <v-btn
-          :text="$t('save')"
           color="primary"
           :disabled="!contentChanged"
+          :loading="saving"
+          :text="$t('save')"
+          type="submit"
           @click="submit"
         />
       </div>

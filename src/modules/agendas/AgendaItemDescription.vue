@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { isEqual } from 'lodash'
 import { computed, reactive, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-import Richtext from '@/components/Richtext.vue'
+import { parseRestError } from '@/utils/restApi'
+import { RestError } from '@/utils/types'
 import useDefaults from '@/composables/useDefaults'
+import useRules from '@/composables/useRules'
+import Richtext from '@/components/Richtext.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import TagEdit from '@/components/TagEdit.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
@@ -24,6 +28,8 @@ const emit = defineEmits<{
   (e: 'update:editing', value: boolean): void
 }>()
 
+const { t } = useI18n()
+const rules = useRules(t)
 const { collapsedBodyHeight } = useDefaults()
 
 const extraTags = computed(() => {
@@ -39,13 +45,18 @@ const article = computed(() => ({
 }))
 
 const form = reactive({
+  errors: null as RestError<(typeof article)['value']> | null,
   submitting: false,
   ...article.value
 })
 
-watch(article, (value) => {
-  Object.assign(form, value)
-})
+watch(
+  article,
+  (value) => {
+    Object.assign(form, value)
+  },
+  { deep: true }
+)
 
 const articleModified = computed(
   () =>
@@ -64,29 +75,48 @@ function cancelEdit() {
 async function save() {
   if (!articleModified.value) return
   form.submitting = true
-  const { submitting, ...content } = form
+  form.errors = null
+  const { errors, submitting, ...content } = form
   try {
     await agendaItemType.api.patch(props.agendaItem.pk, { ...content })
     emit('update:editing', false)
-  } catch {} // TODO
-  form.submitting = false
+  } catch (e) {
+    form.errors = parseRestError(e)
+  } finally {
+    form.submitting = false
+  }
 }
 </script>
 
 <template>
   <div v-if="editing" class="mt-6 mb-8">
-    <Headline v-model="form.title" class="mb-2" editing @submit="save" />
+    <Headline
+      v-model="form.title"
+      editing
+      :error-messages="form.errors?.title"
+      :rules="[rules.required]"
+      @submit="save"
+    />
     <RichtextEditor
-      v-model="form.body"
-      class="mb-2"
+      :error-messages="form.errors?.body"
       variant="full"
+      v-model="form.body"
       @keydown.ctrl.enter="save"
     />
     <TagEdit
-      v-model="form.tags"
-      class="mb-2"
+      :error-messages="form.errors?.tags"
       :label="$t('agenda.tagEditInfo')"
+      v-model="form.tags"
     />
+    <v-expand-transition>
+      <div v-if="form.errors?.non_field_errors">
+        <v-alert
+          class="mb-3"
+          :text="form.errors.non_field_errors.join(', ')"
+          type="error"
+        />
+      </div>
+    </v-expand-transition>
     <div class="text-right">
       <v-btn variant="text" :text="$t('cancel')" @click="cancelEdit" />
       <v-btn

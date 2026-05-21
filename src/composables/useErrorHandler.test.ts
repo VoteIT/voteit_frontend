@@ -33,7 +33,7 @@ test('Error.message', () => {
   handleRestError(new Error('message'))
   expect(errorMessage.value).toBe('message')
   expect(fieldErrors.value).toEqual({
-    __root__: ['Unknown error']
+    non_field_errors: ['Unknown error']
   })
   clearErrors()
   expect(errorMessage.value).toBe(null)
@@ -44,7 +44,8 @@ function mockAxiosError(message: string) {
   const axiosError = new Error(message)
   return Object.assign(axiosError, {
     isAxiosError: true,
-    response: { data: { test: [message] } }
+    response: { data: { test: [message] } },
+    status: 400
   })
 }
 
