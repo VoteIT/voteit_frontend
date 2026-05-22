@@ -21,50 +21,65 @@ socket.addTypeHandler('user', ({ t, p }) => {
   }
 })
 
-const fetchQueue = new Set<number>(new Set())
-let fetchTimeout: NodeJS.Timeout
-let loading = false
+interface QueueContext {
+  queue: Set<number>
+  timeout?: NodeJS.Timeout
+  loading: boolean
+}
+
 const TIMEOUT = 50
+const contextQueues = new Map<string, QueueContext>()
+
+function getContextKey(id: number | undefined): string {
+  return id ? `meeting:${id}` : 'org'
+}
+
+function getOrCreateQueue(key: string): QueueContext {
+  if (!contextQueues.has(key)) {
+    contextQueues.set(key, { queue: new Set(), loading: false })
+  }
+  return contextQueues.get(key)!
+}
+
+async function fetchMultiple(key: string) {
+  const ctx = getOrCreateQueue(key)
+  const missing = [...ctx.queue].filter((pk) => !userDetails.has(pk))
+  if (ctx.loading || !missing.length) return
+  const ctxId = key === 'org' ? undefined : Number(key.split(':')[1])
+  const ep = ctxId ? 'meeting-roles/' : 'organisation-roles/'
+  const params = { context: ctxId, user_id_in: missing.join(',') }
+  ctx.queue.clear()
+  ctx.loading = true
+  try {
+    const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(ep, { params })
+    for (const { user } of data) {
+      userDetails.set(user.pk, user)
+    }
+  } catch {}
+  ctx.loading = false
+  if (ctx.queue.size) fetchMultiple(key)
+}
 
 export default function useUserDetails(meetingId?: MaybeRef<number>) {
-  const endpoint = unref(meetingId) ? 'meeting-roles/' : 'organisation-roles/'
-
   if (isRef(meetingId))
-    watch(meetingId, () => {
-      fetchQueue.clear()
-      clearTimeout(fetchTimeout)
-    })
-
-  async function fetchMultiple() {
-    // Fetch all queued users (rest)
-    const missing = [...fetchQueue].filter((pk) => !userDetails.has(pk))
-    if (loading || !missing.length) return
-    const params = {
-      context: unref(meetingId),
-      user_id_in: missing.join(',')
-    }
-    fetchQueue.clear()
-    loading = true
-    try {
-      const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(
-        endpoint,
-        { params }
-      )
-      for (const { user } of data) {
-        userDetails.set(user.pk, user)
+    watch(meetingId, (_newId, oldId) => {
+      const key = getContextKey(oldId || undefined)
+      const ctx = contextQueues.get(key)
+      if (ctx) {
+        ctx.queue.clear()
+        clearTimeout(ctx.timeout)
       }
-    } catch {}
-    loading = false
-    // Any new queued
-    if (fetchQueue.size) fetchMultiple()
-  }
+    })
 
   function fetchUserDetails(user: number) {
     // Avoid getting participants in several requests by queueing, and setting a short timeout.
-    if (!fetchQueue.has(user)) {
-      fetchQueue.add(user)
-      clearTimeout(fetchTimeout)
-      fetchTimeout = setTimeout(fetchMultiple, TIMEOUT)
+    const ctxId = unref(meetingId) || undefined
+    const key = getContextKey(ctxId)
+    const ctx = getOrCreateQueue(key)
+    if (!ctx.queue.has(user)) {
+      ctx.queue.add(user)
+      clearTimeout(ctx.timeout)
+      ctx.timeout = setTimeout(() => fetchMultiple(key), TIMEOUT)
     }
   }
 
