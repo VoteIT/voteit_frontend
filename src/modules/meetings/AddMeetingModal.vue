@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { sorted } from 'itertools'
+import { computed, reactive, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -38,6 +39,9 @@ type FormData = {
 
 defineEmits(['close'])
 
+// Preselect this method if available
+const PRESELECTED_ER_METHOD = 'auto_before_poll'
+
 const { t } = useI18n()
 const router = useRouter()
 const { availableErMethods } = useElectoralRegisters()
@@ -45,7 +49,7 @@ const { installableDialects } = useDialects()
 const rules = useRules(t)
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
-const currentStep = ref(0)
+const currentStep = shallowRef(0)
 const steps = computed<{ info: string; title: string }[]>(() => {
   const erStep = formData.meeting.install_dialect
     ? []
@@ -86,7 +90,7 @@ function prevStep() {
   currentStep.value--
 }
 
-const formValid = ref(false)
+const formValid = shallowRef(false)
 function nextStep() {
   if (!formValid.value) return
   if (currentStep.value === steps.value.length - 1) addMeeting()
@@ -124,8 +128,21 @@ function annotateErMethod(
   }
 }
 
-const erMethods = computed(
-  () => availableErMethods.value?.map(annotateErMethod) ?? []
+const erMethods = computed(() =>
+  sorted(availableErMethods.value?.map(annotateErMethod) ?? [], (m) =>
+    m.name === PRESELECTED_ER_METHOD ? 0 : 1
+  )
+)
+
+watch(
+  erMethods,
+  (methods) => {
+    if (formData.meeting.er_policy_name !== null) return
+    if (methods.some((m) => m.name === PRESELECTED_ER_METHOD)) {
+      formData.meeting.er_policy_name = PRESELECTED_ER_METHOD
+    }
+  },
+  { immediate: true }
 )
 
 watch(
@@ -134,7 +151,7 @@ watch(
     if (value) formData.meeting.er_policy_name = null
   }
 )
-const submitting = ref(false)
+const submitting = shallowRef(false)
 
 function cleanFormData(meeting: FormData['meeting']) {
   return {
