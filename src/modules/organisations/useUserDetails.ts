@@ -41,6 +41,9 @@ function getOrCreateQueue(key: string): QueueContext {
   return contextQueues.get(key)!
 }
 
+/**
+ * Fetches any users requested for this context.
+ */
 async function fetchMultiple(key: string) {
   const ctx = getOrCreateQueue(key)
   const missing = [...ctx.queue].filter((pk) => !userDetails.has(pk))
@@ -51,12 +54,16 @@ async function fetchMultiple(key: string) {
   ctx.queue.clear()
   ctx.loading = true
   try {
-    const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(ep, { params })
+    const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(
+      ep,
+      { params }
+    )
     for (const { user } of data) {
       userDetails.set(user.pk, user)
     }
   } catch {}
   ctx.loading = false
+  // Did another getUser get called while fetching? The go again, because we don't know if that fetch was triggered while loading.
   if (ctx.queue.size) fetchMultiple(key)
 }
 
