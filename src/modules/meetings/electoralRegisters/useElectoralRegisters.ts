@@ -20,11 +20,14 @@ export default function useElectoralRegisters(meetingId?: MaybeRef<number>) {
   const availableErMethods = computed(() => {
     if (erMethod.value && erMethodLocked.value) return [erMethod.value]
     if (!store.erMethods) return
-    return store.erMethods.filter((method) => {
-      if (!method.available) return false
-      if (method.group_votes_active === null) return true
-      return !!meeting.value?.group_votes_active === method.group_votes_active
-    })
+    return sorted(
+      store.erMethods.filter((method) => {
+        if (!method.available) return false
+        if (method.group_votes_active === null) return true
+        return !!meeting.value?.group_votes_active === method.group_votes_active
+      }),
+      (method) => method.title.toLocaleLowerCase()
+    )
   })
 
   const erMethod = computed(() => {
