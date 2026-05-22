@@ -189,7 +189,7 @@ onBeforeMount(fetchTokenData)
               </template>
             </v-text-field>
             <div class="text-right">
-              <v-btn text="Close" @click="close" />
+              <v-btn :text="$t('close')" variant="text" @click="close" />
             </div>
           </template>
           <v-form v-else @submit.prevent="createToken" v-slot="{ isValid }">
