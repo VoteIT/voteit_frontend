@@ -151,7 +151,10 @@ onBeforeMount(fetchTokenData)
         />
       </template>
     </v-alert>
-    <v-toolbar class="rounded-t-lg" :title="meeting ? `API tokens for ${meeting.title}` : 'API tokens'">
+    <v-toolbar
+      class="rounded-t-lg"
+      :title="meeting ? `API tokens for ${meeting.title}` : 'API tokens'"
+    >
       <DefaultDialog title="Create new API token" @close="onDialogClose">
         <template #activator="{ props }">
           <v-btn
@@ -237,6 +240,7 @@ onBeforeMount(fetchTokenData)
       :loading="status.fetching"
       :headers="[
         { key: 'name', title: 'Token name' },
+        { key: 'prefix', title: 'Prefix' },
         { key: 'scopes', title: 'Scopes' },
         { key: 'created', title: 'Created' },
         { key: 'last_used', title: 'Last used' },
