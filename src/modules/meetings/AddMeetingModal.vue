@@ -148,7 +148,14 @@ watch(
 watch(
   () => formData.meeting.install_dialect,
   (value) => {
-    if (value) formData.meeting.er_policy_name = null
+    if (value) {
+      formData.meeting.er_policy_name = null
+    } else if (
+      formData.meeting.er_policy_name === null &&
+      erMethods.value.some((m) => m.name === PRESELECTED_ER_METHOD)
+    ) {
+      formData.meeting.er_policy_name = PRESELECTED_ER_METHOD
+    }
   }
 )
 const submitting = shallowRef(false)
