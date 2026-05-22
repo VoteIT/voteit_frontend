@@ -81,7 +81,8 @@ async function takeOverAndStart() {
   try {
     await handleBroadcast({
       agenda_item: agendaId.value,
-      highlighted: props.proposals.map((p) => p.pk)
+      highlighted: props.proposals.map((p) => p.pk),
+      send_proposals: true
     })
   } catch {
     alert("^Couldn't take over broadcast")
