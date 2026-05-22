@@ -4,6 +4,7 @@
   "addTag": "Add tag",
   "all": "All",
   "allDone": "All done!",
+  "areYouSure": "Are you sure?",
   "by": "by",
   "cancel": "Cancel",
   "clear": "Clear",
@@ -242,6 +243,7 @@
     "defaultPlaceholder": "Add help text"
   },
   "home": {
+    "confirmRemoveRole": "Are you sure?",
     "helpInfoPlaceholder": "Add contact info, that participants can use to get help.",
     "home": "Home",
     "noCurrentMeetings": "You have no meetings.",

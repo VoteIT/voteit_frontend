@@ -338,6 +338,7 @@ function cancelEdit() {
                   :contentType="organisationType"
                   :pk="orgStore.organisation.pk"
                   :icons="organisationIcons"
+                  :remove-confirm-text="$t('areYouSure')"
                 />
               </v-window-item>
 
