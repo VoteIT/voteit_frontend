@@ -31,7 +31,7 @@ const authStore = useAuthStore()
 const { isModerator, meetingId, postAs } = useMeeting()
 const { meetingGroups, postAsGroups } = useMeetingGroups(meetingId)
 const { getMeetingGroup } = useGroupStore()
-const { getUser } = useUserDetails()
+const { getUser } = useUserDetails(meetingId)
 
 // This means we're editing pre-existing content
 const editingMode = !!props.modelValue

@@ -21,8 +21,8 @@ defineProps<{
   setTag?: string
 }>()
 
-const { getUser } = useUserDetails()
 const meetingId = useMeetingId()
+const { getUser } = useUserDetails(meetingId)
 const { agendaId, agendaItem, canAddDiscussionPost } = useAgendaItem()
 const { getMeetingButtons } = useReactionStore()
 

@@ -36,8 +36,8 @@ interface IAlertInfo {
 
 const { t } = useI18n()
 
-const { meeting } = useMeeting()
-const { getUser } = useUserDetails()
+const { meeting, meetingId } = useMeeting()
+const { getUser } = useUserDetails(meetingId)
 const { filterProposals } = useProposalStore()
 const { agendaId, agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
   useAgendaItem()

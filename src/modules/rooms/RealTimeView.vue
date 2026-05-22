@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, provide } from 'vue'
-import { ReadonlyViewKey, RoleContextKey } from '@/injectionKeys'
+import { ReadonlyViewKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
@@ -22,8 +22,6 @@ import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { roomDisplayMode } from './displayOptions'
 import { proposalHighlightEvent } from './events'
-
-provide(RoleContextKey, 'meeting')
 
 const { t } = useI18n()
 

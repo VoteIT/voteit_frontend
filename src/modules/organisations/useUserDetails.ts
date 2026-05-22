@@ -1,9 +1,8 @@
-import { RoleContextKey } from '@/injectionKeys'
+import { isRef, MaybeRef, reactive, unref, watch } from 'vue'
+
 import { MeetingRoles, OrganisationRoles } from '@/composables/types'
 import restApi from '@/utils/restApi'
 import { socket } from '@/utils/Socket'
-import { computed, inject, reactive, watch } from 'vue'
-import { useRoute } from 'vue-router'
 
 import { IUser } from './types'
 
@@ -27,23 +26,21 @@ let fetchTimeout: NodeJS.Timeout
 let loading = false
 const TIMEOUT = 50
 
-export default function useUserDetails() {
-  const context = inject(RoleContextKey, 'organisation')
-  const { params } = useRoute()
-  const contextId = computed(() => (params.id ? Number(params.id) : undefined))
-  const endpoint = `${context}-roles/`
+export default function useUserDetails(meetingId?: MaybeRef<number>) {
+  const endpoint = unref(meetingId) ? 'meeting-roles/' : 'organisation-roles/'
 
-  watch(contextId, () => {
-    fetchQueue.clear()
-    clearTimeout(fetchTimeout)
-  })
+  if (isRef(meetingId))
+    watch(meetingId, () => {
+      fetchQueue.clear()
+      clearTimeout(fetchTimeout)
+    })
 
   async function fetchMultiple() {
     // Fetch all queued users (rest)
     const missing = [...fetchQueue].filter((pk) => !userDetails.has(pk))
     if (loading || !missing.length) return
     const params = {
-      context: contextId.value,
+      context: unref(meetingId),
       user_id_in: missing.join(',')
     }
     fetchQueue.clear()

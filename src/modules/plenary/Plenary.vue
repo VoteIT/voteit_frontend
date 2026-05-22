@@ -3,7 +3,6 @@ import { computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
-import { RoleContextKey } from '@/injectionKeys'
 import useChannel from '@/composables/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 import useLoader from '@/composables/useLoader'
@@ -35,7 +34,6 @@ import PollModal from './PollModal.vue'
 
 const { t } = useI18n()
 
-provide(RoleContextKey, 'meeting')
 provide(LastReadKey, ref(new Date()))
 
 const tabs = computed(() => [

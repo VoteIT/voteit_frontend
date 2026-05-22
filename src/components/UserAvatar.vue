@@ -3,6 +3,7 @@ import { computed } from 'vue'
 
 import { ThemeColor } from '@/utils/types'
 import useAuthStore from '@/modules/auth/useAuthStore'
+import useMeetingId from '@/modules/meetings/useMeetingId'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 import type { IUser } from '@/modules/organisations/types'
 
@@ -22,7 +23,7 @@ const props = withDefaults(
 )
 
 const authStore = useAuthStore()
-const { getUser } = useUserDetails()
+const { getUser } = useUserDetails(useMeetingId())
 
 const computedUser = computed(
   () => props.user ?? (props.pk ? getUser(props.pk) : authStore.user)

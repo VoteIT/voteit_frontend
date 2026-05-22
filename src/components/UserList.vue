@@ -4,7 +4,9 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
+import useMeetingId from '@/modules/meetings/useMeetingId'
 import useUserDetails from '@/modules/organisations/useUserDetails'
+
 import UserAvatar from './UserAvatar.vue'
 
 defineEmits<{
@@ -29,7 +31,7 @@ if (props.multiple && typeof props.modelValue === 'number')
 if (!props.multiple && typeof props.modelValue === 'object')
   throw new Error('Got single select but modelValue is not a number')
 const { t } = useI18n()
-const { getUser } = useUserDetails()
+const { getUser } = useUserDetails(useMeetingId())
 const users = computed(() => {
   return orderBy(
     props.userIds.map(

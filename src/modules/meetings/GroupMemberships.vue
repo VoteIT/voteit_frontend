@@ -163,8 +163,8 @@ const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
 }>()
 
-const { getUser } = useUserDetails()
 const { meeting, meetingId } = useMeeting()
+const { getUser } = useUserDetails(meetingId)
 const { groupRoles } = useMeetingGroups(meetingId)
 const { activeUserIds, componentActive } = useActive(meetingId)
 const { erMethodWeighted, getWeightInCurrent } =

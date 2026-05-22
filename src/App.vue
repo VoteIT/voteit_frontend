@@ -16,7 +16,6 @@ import 'resize-observer-polyfill/dist/ResizeObserver.global'
 import { onBeforeMount, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { RoleContextKey } from './injectionKeys'
 import useLoader from './composables/useLoader'
 
 import Alerts from './components/Alerts.vue'
@@ -45,7 +44,6 @@ onBeforeMount(async () => {
     loader.setLoaded(false)
   }
 })
-provide(RoleContextKey, 'organisation') // Default context name
 provide('cols', {
   default: {
     cols: 12,

@@ -142,7 +142,7 @@ const {
   roleItems
 } = useMeeting()
 const { getUserIds } = meetingType.useContextRoles()
-const { getUser } = useUserDetails()
+const { getUser } = useUserDetails(meetingId)
 const { hasSpeakerSystems } = useSpeakerSystems(meetingId)
 const orgStore = useOrgStore()
 

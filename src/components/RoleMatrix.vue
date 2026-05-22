@@ -149,9 +149,9 @@ const props = withDefaults(
 
 const { t } = useI18n()
 const authStore = useAuthStore()
-const { getUser } = useUserDetails()
 const loader = useLoader('RoleMatrix')
-const { meeting } = useMeeting()
+const { meeting, meetingId } = useMeeting()
+const { getUser } = useUserDetails(meetingId)
 const contextRoles = props.contentType.useContextRoles()
 
 function translateRoleHelp(role: Role): string {

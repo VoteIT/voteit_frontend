@@ -21,7 +21,8 @@
 import { computed } from 'vue'
 
 import { getFullName } from '@/utils'
-import useUserDetails from '../modules/organisations/useUserDetails'
+import useMeetingId from '@/modules/meetings/useMeetingId'
+import useUserDetails from '@/modules/organisations/useUserDetails'
 
 import UserPopup from './UserPopup.vue'
 
@@ -31,6 +32,6 @@ const props = defineProps<{
   userid?: boolean
 }>()
 
-const { getUser } = useUserDetails()
+const { getUser } = useUserDetails(useMeetingId())
 const user = computed(() => getUser(props.pk))
 </script>

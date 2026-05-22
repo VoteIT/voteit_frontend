@@ -23,8 +23,8 @@ const props = defineProps<{
 const { allGroupMembers } = useMeetingGroups(props.group.meeting)
 const { getMeetingGroup, getGroupRole } = useGroupStore()
 const authStore = useAuthStore()
-const { isModerator } = useMeeting()
-const { getUser } = useUserDetails()
+const { isModerator, meetingId } = useMeeting()
+const { getUser } = useUserDetails(meetingId)
 const {
   api,
   canRecieveVote,

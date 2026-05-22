@@ -10,8 +10,8 @@ import { useI18n } from 'vue-i18n'
 import { getFullName } from '@/utils'
 
 const { t } = useI18n()
-const { isModerator } = useMeeting()
-const { getUser } = useUserDetails()
+const { isModerator, meetingId } = useMeeting()
+const { getUser } = useUserDetails(meetingId)
 const groupStore = useGroupStore()
 
 const props = defineProps<{

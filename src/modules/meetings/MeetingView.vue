@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { computed, provide } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { RoleContextKey } from '@/injectionKeys'
 import UserMenu from '@/components/UserMenu.vue'
 import AppBar from '@/components/AppBar.vue'
 import usePermission, {
@@ -61,8 +60,6 @@ const viewPermission = computed(
 )
 
 usePermission(viewPermission, {}, PermissionDeniedStrategy.RequireLogin)
-
-provide(RoleContextKey, 'meeting')
 </script>
 
 <template>

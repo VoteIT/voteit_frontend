@@ -31,7 +31,7 @@ const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const authStore = useAuthStore()
-const { getUser } = useUserDetails()
+const { getUser } = useUserDetails(meetingId)
 const rules = useRules(t)
 
 const groupFilter = reactive<{
