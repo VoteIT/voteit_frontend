@@ -8,6 +8,7 @@ import PlenarySuggestions from './PlenarySuggestions.vue'
 import ProposalButtons from './ProposalButtons.vue'
 import QuickPanel from './QuickPanel.vue'
 import useReactionStore from './useReactionStore'
+import { type IFlagButton, isFlagButton } from './types'
 
 meetingSettingsPlugins.register({
   id: 'reactions',
@@ -30,25 +31,25 @@ proposalButtonPlugins.register({
 })
 
 plenarySuggestions.register({
-  // @ts-ignore  Don't know how to type this
   getComponent(proposals) {
     const store = useReactionStore()
     const meeting = proposals[0].m
     const buttons = filter(
       store.iterMeetingButtons(meeting, 'proposal'),
       (b) =>
-        b.flag_mode &&
+        isFlagButton(b) &&
         proposals.some((prop) =>
           store.getButtonReactionCount(b, {
             content_type: 'proposal',
             object_id: prop.pk
           })
         )
-    )
-    return {
-      component: PlenarySuggestions,
-      props: { buttons, proposals }
-    }
+    ) as IFlagButton[]
+    if (buttons.length)
+      return {
+        component: PlenarySuggestions,
+        props: { buttons, proposals }
+      }
   },
   getTitle(t) {
     return t('reaction.flags', 2)

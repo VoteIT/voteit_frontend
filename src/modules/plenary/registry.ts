@@ -3,9 +3,9 @@ import { Proposal } from '../proposals/types'
 import { ComposerTranslation } from 'vue-i18n'
 
 interface IPlenaryCustomSuggestion {
-  getComponent<Props extends {}>(
+  getComponent(
     proposals: Proposal[]
-  ): { component: Component<Props>; props: Props } | void
+  ): { component: Component; props: Record<string, unknown> } | undefined
   getTitle(t: ComposerTranslation): string
 }
 interface IPlenaryTagSuggestion {
