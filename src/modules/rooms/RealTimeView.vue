@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, provide } from 'vue'
+import { computed, onBeforeUnmount, provide, shallowRef } from 'vue'
 import { ReadonlyViewKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
@@ -22,6 +22,7 @@ import ClockFace from './ClockFace.vue'
 import AppBar from './AppBar.vue'
 import { roomDisplayMode } from './displayOptions'
 import { proposalHighlightEvent } from './events'
+import { isTextHighlight, ProposalHighlight } from './types'
 
 const { t } = useI18n()
 
@@ -80,11 +81,24 @@ const display = computed<{ speakers: boolean; proposals: boolean }>(() => {
 })
 
 /**
- * Deselect can't be picked up in proposals
+ * Text / proposal selection event
  */
+const selection = shallowRef<ProposalHighlight>()
+const textSelection = computed(() => {
+  if (!selection.value || !isTextHighlight(selection.value)) return
+  const { proposal, start, end } = selection.value
+  return {
+    proposal,
+    range: { start, end }
+  }
+})
 const evt = proposalHighlightEvent.on((evt) => {
-  if (evt.room !== meetingRoom.value?.pk || evt.proposal) return
-  getSelection()?.removeAllRanges()
+  if (evt.room !== meetingRoom.value?.pk) return
+  if (evt.proposal) selection.value = evt
+  else {
+    selection.value = undefined
+    getSelection()?.removeAllRanges()
+  }
 })
 onBeforeUnmount(evt.dispose)
 </script>
@@ -137,7 +151,10 @@ onBeforeUnmount(evt.dispose)
             read-only
             :key="p.pk"
             :proposal="p"
-            :select-in-room="meetingRoom.pk"
+            :selected="selection?.proposal === p.pk"
+            :selection="
+              textSelection?.proposal === p.pk ? textSelection.range : undefined
+            "
             class="my-4"
           >
             <template #append>

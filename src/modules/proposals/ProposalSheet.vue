@@ -1,79 +1,110 @@
 <script setup lang="ts">
-import { ComponentPublicInstance, onBeforeUnmount, ref } from 'vue'
+import { ComponentPublicInstance, ref, watch } from 'vue'
+import { useTextSelection } from '@vueuse/core'
 
 import Tag from '@/components/Tag.vue'
 
 import AuthorName from '../meetings/AuthorName.vue'
-import { proposalHighlightEvent } from '../rooms/events'
-import { ProposalHighlight, isTextHighlight } from '../rooms/types'
 
 import { Proposal } from './types'
 import ProposalText from './ProposalText.vue'
 
 const props = defineProps<{
   proposal: Proposal
-  selectInRoom?: number
+  selected?: boolean
+  selection?: { start: number; end: number }
 }>()
 
-const selected = ref(false)
+const emit = defineEmits<{
+  (e: 'update:selection', value?: { start: number; end: number }): void
+}>()
+
 const textEl = ref<ComponentPublicInstance>()
 
 function isText(el: Node): el is Text {
   return el.nodeType === el.TEXT_NODE
 }
 
-function select(savedSel: ProposalHighlight) {
-  selected.value = true
-  if (!isTextHighlight(savedSel)) return
-  const containerEl = textEl.value?.$el as HTMLElement
-  const sel = window.getSelection()
-  if (!sel || !savedSel || !containerEl) return
-  let charIndex = 0
-  const range = document.createRange()
-  range.setStart(containerEl, 0)
-  range.collapse(true)
-  const nodeStack: Node[] = [containerEl]
-  let node: Node | undefined
-  let foundStart = false
-  let stop = false
-
-  while (!stop && (node = nodeStack.pop())) {
-    if (isText(node)) {
-      var nextCharIndex = charIndex + node.length
-      if (
-        !foundStart &&
-        savedSel.start >= charIndex &&
-        savedSel.start <= nextCharIndex
-      ) {
-        range.setStart(node, savedSel.start - charIndex)
-        foundStart = true
-      }
-      if (
-        foundStart &&
-        savedSel.end >= charIndex &&
-        savedSel.end <= nextCharIndex
-      ) {
-        range.setEnd(node, savedSel.end - charIndex)
-        stop = true
-      }
-      charIndex = nextCharIndex
-    } else {
-      // Add in reverse order
-      var i = node.childNodes.length
-      while (i--) nodeStack.push(node.childNodes[i])
-    }
+watch(
+  () => props.selected,
+  (value) => {
+    if (!value) return
+    const containerEl = textEl.value?.$el as HTMLElement
+    containerEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
-  sel.removeAllRanges()
-  sel.addRange(range)
-  containerEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-}
+)
 
-const evt = proposalHighlightEvent.on((evt) => {
-  if (evt.room === props.selectInRoom && evt.proposal === props.proposal.pk)
-    return select(evt)
-  selected.value = false
-})
-onBeforeUnmount(evt.dispose)
+watch(
+  () => props.selection,
+  (selection) => {
+    if (!selection) return
+    const containerEl = textEl.value?.$el as HTMLElement
+    const sel = window.getSelection()
+    if (!sel || !selection || !containerEl) return
+    let charIndex = 0
+    const range = document.createRange()
+    range.setStart(containerEl, 0)
+    range.collapse(true)
+    const nodeStack: Node[] = [containerEl]
+    let node: Node | undefined
+    let foundStart = false
+    let stop = false
+
+    while (!stop && (node = nodeStack.pop())) {
+      if (isText(node)) {
+        var nextCharIndex = charIndex + node.length
+        if (
+          !foundStart &&
+          selection.start >= charIndex &&
+          selection.start <= nextCharIndex
+        ) {
+          range.setStart(node, selection.start - charIndex)
+          foundStart = true
+        }
+        if (
+          foundStart &&
+          selection.end >= charIndex &&
+          selection.end <= nextCharIndex
+        ) {
+          range.setEnd(node, selection.end - charIndex)
+          stop = true
+        }
+        charIndex = nextCharIndex
+      } else {
+        // Add in reverse order
+        var i = node.childNodes.length
+        while (i--) nodeStack.push(node.childNodes[i])
+      }
+    }
+    sel.removeAllRanges()
+    sel.addRange(range)
+  },
+  { immediate: true }
+)
+
+const { ranges } = useTextSelection()
+let hasSelection = false
+
+watch(
+  () => ranges.value.at(0),
+  (range) => {
+    // No selection
+    const elem = textEl.value?.$el as HTMLElement | undefined
+    if (!elem || !range?.toString().length) {
+      if (!hasSelection) return
+      hasSelection = false
+      return emit('update:selection', undefined)
+    }
+    if (!range.intersectsNode(elem)) return
+    hasSelection = true
+    const startRange = document.createRange()
+    startRange.setStart(elem, 0)
+    startRange.setEnd(range.startContainer, range.startOffset)
+    const start = startRange.toString().length
+    const end = Math.min(elem.innerText.length, start + range.toString().length)
+    emit('update:selection', { start, end })
+  }
+)
 </script>
 
 <template>

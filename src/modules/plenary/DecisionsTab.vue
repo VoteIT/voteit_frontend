@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { enumerate, map, range, sorted } from 'itertools'
-import { flatten, isEqual, sortBy } from 'lodash'
+import { map, range, sorted } from 'itertools'
+import { flatten } from 'lodash'
 import {
-  ComponentPublicInstance,
   computed,
   provide,
   reactive,
@@ -11,7 +10,7 @@ import {
   watchEffect
 } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { onKeyStroke, useElementBounding, useTextSelection } from '@vueuse/core'
+import { onKeyStroke, useElementBounding } from '@vueuse/core'
 
 import { socket } from '@/utils/Socket'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
@@ -234,64 +233,28 @@ const proposalsStyle = computed(() => {
   }
 })
 
-const proposalComponents = shallowRef<ComponentPublicInstance[]>()
-const { ranges } = useTextSelection()
-function findProposalEl(range: Range) {
-  if (!proposalComponents.value) return
-  for (const [i, { $el }] of enumerate(proposalComponents.value)) {
-    const elem = ($el as Element).querySelector(
-      '.proposal-text-paragraph,.ql-editor'
-    )
-    if (elem && range.intersectsNode(elem))
-      return { i, elem: elem as HTMLElement }
+// Expected proposal selection
+const proposalHighlight = shallowRef<Omit<ProposalHighlight, 'room'>>()
+
+function setTextSelection(
+  proposal: number,
+  selection?: { start: number; end: number }
+) {
+  proposalHighlight.value = {
+    proposal,
+    ...selection
   }
 }
 
-let delayTimeout: NodeJS.Timeout
-function delayed(cb: () => void) {
-  clearTimeout(delayTimeout)
-  delayTimeout = setTimeout(cb, 125)
-}
-
-let lastSelection: ProposalHighlight | undefined
-
-/**
- * Get proposal and selection if there is selected proposal text.
- */
-function getProposalSelection() {
-  const range = ranges.value.at(0)
-  if (!range?.toString().length) return // No selection
-  const prop = findProposalEl(range)
-  if (!prop) return // Selection not in a proposal
-  const startRange = document.createRange()
-  startRange.setStart(prop.elem, 0)
-  startRange.setEnd(range.startContainer, range.startOffset)
-  const start = startRange.toString().length
-  const selection = {
-    room: roomId.value,
-    proposal: selectedProposalIds.value[prop.i],
-    start,
-    end: Math.min(prop.elem.innerText.length, start + range.toString().length)
-  }
-  return selection
-}
-
-const proposalClicked = shallowRef<number>()
-function setHighlight() {
+function handleProposalClick(proposal?: number) {
   if (!isBroadcastingAI.value) return // Only when broadcasting...
-  const selection = getProposalSelection() ?? {
+  if (proposalHighlight.value?.proposal !== proposal)
+    proposalHighlight.value = { proposal }
+  socket.send('room.mark_text', {
     room: roomId.value,
-    proposal: proposalClicked.value
-  }
-  if (isEqual(selection, lastSelection)) return
-  lastSelection = selection
-  socket.send('room.mark_text', selection)
+    ...proposalHighlight.value
+  })
 }
-
-watch(
-  () => ranges.value.at(0),
-  () => delayed(setHighlight)
-)
 
 /**
  * Make user choose whether to follow my Agenda Item of if that shoud be an active choice
@@ -366,15 +329,16 @@ watchEffect(() => {
     </v-col>
   </v-row>
   <v-row v-else class="proposals" :style="proposalsStyle">
-    <v-col cols="7" md="8" lg="9" @click="proposalClicked = undefined">
+    <v-col cols="7" md="8" lg="9" @click="handleProposalClick()">
       <ProposalSheet
         v-for="p in selectedProposals"
         :key="p.pk"
         class="mb-4"
         :proposal="p"
-        :selectInRoom="meetingRoom?.pk"
+        :selected="proposalHighlight?.proposal === p.pk"
         ref="proposalComponents"
-        @click.stop="proposalClicked = p.pk"
+        @click.stop="handleProposalClick(p.pk)"
+        @update:selection="setTextSelection(p.pk, $event)"
       >
         <template #actions>
           <div class="text-right" @click.stop>
