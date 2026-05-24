@@ -1,34 +1,3 @@
-<template>
-  <div style="height: 64px"></div>
-  <div id="bubbles" class="d-print-none">
-    <v-overlay
-      v-for="{ component, id, icon, requireAttention } in bubbles"
-      :key="id"
-      eager
-      transition="bubble-content"
-      scroll-strategy="reposition"
-      location-strategy="connected"
-      location="bottom end"
-      anchor="top end"
-      :scrim="false"
-      :modelValue="id === openBubble"
-      @update:modelValue="setOpen(id, $event)"
-    >
-      <template #activator="{ props, isActive }">
-        <v-btn
-          v-bind="props"
-          :icon="icon"
-          class="activator"
-          :class="{ open: isActive, attention: requireAttention }"
-        />
-      </template>
-      <v-sheet rounded class="pa-4 mb-3" elevation="8">
-        <component :is="component" @update:modelValue="setOpen(id, $event)" />
-      </v-sheet>
-    </v-overlay>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { isFunction, sortBy } from 'lodash'
 import { computed, ref } from 'vue'
@@ -62,6 +31,37 @@ function setOpen(id: string, value: boolean) {
 }
 </script>
 
+<template>
+  <div style="height: 64px"></div>
+  <div id="bubbles" class="d-print-none">
+    <v-overlay
+      v-for="{ component, id, icon, requireAttention } in bubbles"
+      :key="id"
+      eager
+      transition="bubble-content"
+      scroll-strategy="reposition"
+      location-strategy="connected"
+      location="bottom end"
+      anchor="top end"
+      :scrim="false"
+      :modelValue="id === openBubble"
+      @update:modelValue="setOpen(id, $event)"
+    >
+      <template #activator="{ props, isActive }">
+        <v-btn
+          v-bind="props"
+          :icon="icon"
+          class="activator"
+          :class="{ open: isActive, attention: requireAttention }"
+        />
+      </template>
+      <v-sheet rounded class="pa-4 mb-3" elevation="8">
+        <component :is="component" @update:modelValue="setOpen(id, $event)" />
+      </v-sheet>
+    </v-overlay>
+  </div>
+</template>
+
 <style lang="sass">
 @keyframes attention
   0%
@@ -85,6 +85,7 @@ function setOpen(id: string, value: boolean) {
   padding: 10px
   display: flex
   flex-flow: row-reverse
+  pointer-events: none
   // overflow-x: auto
 
   .activator
@@ -95,6 +96,7 @@ function setOpen(id: string, value: boolean) {
     height: 64px
     width: 64px
     border-radius: 50%
+    pointer-events: all
     &:focus
       outline: none
     &.attention
