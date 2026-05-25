@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref } from 'vue'
+import { computed, onUnmounted, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
@@ -36,21 +36,6 @@ const { t } = useI18n()
 
 provide(LastReadKey, ref(new Date()))
 
-const tabs = computed(() => [
-  {
-    disabled: !hasSpeakerLists.value,
-    prependIcon: 'mdi-bullhorn',
-    value: 'discussion' as const,
-    text: t('plenary.discussion')
-  },
-  {
-    disabled: !isModerator.value,
-    prependIcon: 'mdi-gavel',
-    value: 'decisions' as const,
-    text: t('plenary.decisions')
-  }
-])
-
 const { isModerator } = useMeeting()
 const { agendaId } = useAgendaItem()
 const {
@@ -59,8 +44,7 @@ const {
   meetingRoom,
   roomId,
   roomOpenPoll,
-  handleBroadcast,
-  handleSpeaker
+  handleBroadcast
 } = useRoom()
 const { getState, getPriorityStates } = pollType.useWorkflows()
 const { systemActiveList } = useSpeakerSystem(roomId, agendaId)
@@ -210,12 +194,90 @@ const pollMethodMenu = computed(() => {
 const ongoingPollCount = computed(
   () => getAiPolls(agendaId.value, PollState.Ongoing).length
 )
+
+const viewOptions = computed(() => [
+  {
+    disabled: !hasSpeakerLists.value,
+    icon: 'mdi-lectern',
+    id: 'discussion',
+    subtitle: 'Hantera talare',
+    title: 'Talarlistor'
+  },
+  {
+    disabled: !isModerator.value,
+    icon: 'mdi-gavel',
+    id: 'decisions',
+    subtitle: 'Visa förslag och starta omröstningar',
+    title: 'Förslag och beslut'
+  },
+  {
+    disabled: !isModerator.value,
+    icon: 'mdi-view-split-vertical',
+    id: 'split',
+    subtitle: 'Hantera talare och beslut i samma vy',
+    title: 'Delad vy'
+  }
+])
+const currentView = computed(
+  () => viewOptions.value.find(({ id }) => currentTab.value === id)!
+)
+
+const splitContainer = ref<HTMLElement | null>(null)
+const leftColEl = ref<HTMLElement | null>(null)
+const leftWidth = ref<number | null>(null)
+
+let cleanupResize: (() => void) | null = null
+
+function startResize(e: MouseEvent) {
+  e.preventDefault()
+  const startX = e.clientX
+  const startWidth = leftColEl.value?.offsetWidth ?? 0
+
+  const onMouseMove = (ev: MouseEvent) => {
+    if (!splitContainer.value) return
+    const containerWidth = splitContainer.value.offsetWidth
+    const maxWidth = containerWidth - 640 - 24
+    leftWidth.value = Math.max(
+      640,
+      Math.min(maxWidth, startWidth + (ev.clientX - startX))
+    )
+  }
+
+  const onMouseUp = () => {
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+    cleanupResize = null
+  }
+
+  cleanupResize = onMouseUp
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
+}
+
+onUnmounted(() => cleanupResize?.())
 </script>
 
 <template>
   <AppBar>
     <template #default>
-      <v-tabs v-model="currentTab" :items="tabs" />
+      <v-menu>
+        <template #activator="{ props }">
+          <v-btn
+            append-icon="mdi-chevron-down"
+            :prepend-icon="currentView.icon"
+            :text="currentView.title"
+            v-bind="props"
+          />
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="{ id, icon, ...props } in viewOptions"
+            :prepend-icon="icon"
+            v-bind="props"
+            :to="{ params: { tab: id } }"
+          />
+        </v-list>
+      </v-menu>
       <v-spacer />
       <template v-if="currentTab === 'decisions'">
         <v-fade-transition>
@@ -323,26 +385,70 @@ const ongoingPollCount = computed(
     </template>
   </AppBar>
   <AgendaNavigation />
-  <v-main class="ma-6">
-    <template v-if="currentTab === 'discussion'">
-      <v-alert
-        v-if="!meetingRoom?.send_sls"
-        class="mb-6"
-        :border="true"
-        type="info"
-        :title="$t('room.displaySpeakers')"
-        :text="$t('room.displaySpeakersDescription')"
-      >
-        <template #append>
-          <v-btn
-            @click="handleSpeaker({ send_sls: true })"
-            prepend-icon="mdi-bullhorn"
-            :text="$t('room.displaySpeakers')"
-          />
-        </template>
-      </v-alert>
-      <SpeakerHandling :room="roomId" />
-    </template>
+  <v-main>
+    <SpeakerHandling
+      v-if="currentTab === 'discussion'"
+      class="ma-6"
+      :room="roomId"
+    />
     <DecisionsTab v-if="currentTab === 'decisions'" />
+    <div
+      v-if="currentTab === 'split'"
+      ref="splitContainer"
+      class="d-flex split-container overflow-hidden"
+    >
+      <div
+        ref="leftColEl"
+        class="split-left flex-shrink-0 overflow-auto"
+        :style="leftWidth ? { width: leftWidth + 'px' } : {}"
+      >
+        <SpeakerHandling class="ma-6" :room="roomId" />
+      </div>
+      <div class="resizer" @mousedown="startResize">
+        <v-icon class="resizer-icon">mdi-arrow-split-vertical</v-icon>
+      </div>
+      <div class="split-right">
+        <DecisionsTab />
+      </div>
+    </div>
   </v-main>
 </template>
+
+<style scoped>
+.split-left {
+  min-width: 640px;
+}
+
+.resizer {
+  flex-shrink: 0;
+  width: 24px;
+  cursor: col-resize;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.resizer-icon {
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.resizer:hover .resizer-icon,
+.resizer:active .resizer-icon {
+  opacity: 1;
+}
+
+.resizer:hover,
+.resizer:active {
+  background: rgba(var(--v-theme-primary), 0.25);
+}
+
+.split-right {
+  flex: 1;
+  min-width: 640px;
+  overflow: auto;
+}
+</style>

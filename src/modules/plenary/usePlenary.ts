@@ -40,7 +40,7 @@ export default function usePlenary(agendaItem: ComputedRef<number>) {
   const { filterProposals, getProposal } = useProposalStore()
   const { isBroadcasting, meetingRoom, getRoomRoute } = useRoom()
 
-  type Tab = 'discussion' | 'decisions'
+  type Tab = 'discussion' | 'decisions' | 'split'
 
   function getPlenaryRoute(params: { aid?: number; tab?: Tab }) {
     return getRoomRoute('room:broadcast', {

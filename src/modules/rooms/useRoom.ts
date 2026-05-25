@@ -105,7 +105,7 @@ export default function useRoom() {
       aid?: number
       id?: number
       roomId?: number
-      tab?: 'decisions' | 'discussion'
+      tab?: 'decisions' | 'discussion' | 'split'
     }
   ): RouteLocationNamedRaw {
     return {
