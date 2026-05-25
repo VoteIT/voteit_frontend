@@ -180,7 +180,7 @@ const otherRoomsWithLists = computed(() => {
       </template>
     </v-alert>
     <div class="speaker-cq-root">
-      <div class="speaker-body ga-6">
+      <div class="speaker-body ga-6 d-flex">
         <div class="speaker-sidebar">
           <div class="d-flex ga-1 mb-3">
             <h2 class="flex-grow-1">
@@ -394,7 +394,7 @@ const otherRoomsWithLists = computed(() => {
   </div>
 </template>
 
-<style lang="sass">
+<style lang="sass" scoped>
 div.speaker-lists
   .v-card
     overflow: visible
@@ -422,7 +422,7 @@ ol.speaker-queue
 
   .speaker-sidebar
     order: 1
-    width: 33%
+    width: 33.3333%
     min-width: 320px
     flex-shrink: 0
 </style>

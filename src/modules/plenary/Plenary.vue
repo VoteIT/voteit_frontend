@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onUnmounted, provide, ref } from 'vue'
+import { computed, onUnmounted, provide, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
@@ -225,10 +225,12 @@ const currentView = computed(
 const splitContainer = ref<HTMLElement | null>(null)
 const leftColEl = ref<HTMLElement | null>(null)
 const leftWidth = ref<number | null>(null)
+const isDragging = ref(false)
 
 let cleanupResize: (() => void) | null = null
 
 function startResize(e: MouseEvent) {
+  if (e.button !== 0) return
   e.preventDefault()
   const startX = e.clientX
   const startWidth = leftColEl.value?.offsetWidth ?? 0
@@ -243,7 +245,10 @@ function startResize(e: MouseEvent) {
     )
   }
 
+  isDragging.value = true
+
   const onMouseUp = () => {
+    isDragging.value = false
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
     cleanupResize = null
@@ -253,6 +258,13 @@ function startResize(e: MouseEvent) {
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', onMouseUp)
 }
+
+watch(splitContainer, (el) => {
+  if (!el || leftWidth.value !== null) return
+  const containerWidth = el.offsetWidth
+  const third = Math.floor(containerWidth / 3)
+  leftWidth.value = Math.max(640, Math.min(containerWidth - 640 - 24, third))
+})
 
 onUnmounted(() => cleanupResize?.())
 </script>
@@ -391,7 +403,7 @@ onUnmounted(() => cleanupResize?.())
       class="ma-6"
       :room="roomId"
     />
-    <DecisionsTab v-if="currentTab === 'decisions'" />
+    <DecisionsTab v-if="currentTab === 'decisions'" class="ma-6" />
     <div
       v-if="currentTab === 'split'"
       ref="splitContainer"
@@ -404,51 +416,48 @@ onUnmounted(() => cleanupResize?.())
       >
         <SpeakerHandling class="ma-6" :room="roomId" />
       </div>
-      <div class="resizer" @mousedown="startResize">
+      <div
+        class="resizer"
+        :class="{ active: isDragging }"
+        @mousedown="startResize"
+      >
         <v-icon class="resizer-icon">mdi-arrow-split-vertical</v-icon>
       </div>
-      <div class="split-right">
-        <DecisionsTab />
-      </div>
+      <DecisionsTab class="split-right ma-6 w-100" />
     </div>
   </v-main>
 </template>
 
-<style scoped>
-.split-left {
-  min-width: 640px;
-}
+<style lang="sass" scoped>
+.split-container
+  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom))
 
-.resizer {
-  flex-shrink: 0;
-  width: 24px;
-  cursor: col-resize;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s;
-}
+.split-left
+  min-width: 640px
 
-.resizer-icon {
-  opacity: 0;
-  transition: opacity 0.15s;
-  pointer-events: none;
-}
+.resizer
+  flex-shrink: 0
+  width: 24px
+  cursor: col-resize
+  background: transparent
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: background 0.15s
 
-.resizer:hover .resizer-icon,
-.resizer:active .resizer-icon {
-  opacity: 1;
-}
+  &-icon
+    opacity: 0
+    transition: opacity 0.15s
+    pointer-events: none
 
-.resizer:hover,
-.resizer:active {
-  background: rgba(var(--v-theme-primary), 0.25);
-}
+  &:hover,
+  &:active,
+  &.active
+    background: rgba(var(--v-theme-secondary), 0.25)
 
-.split-right {
-  flex: 1;
-  min-width: 640px;
-  overflow: auto;
-}
+    .resizer-icon
+      opacity: 1
+
+.split-right
+  min-width: 640px
 </style>
