@@ -299,7 +299,17 @@ onUnmounted(() => cleanupResize?.())
         </v-list>
       </v-menu>
       <v-spacer />
-      <template v-if="currentTab === 'decisions'">
+      <template v-if="currentTab === 'discussion'">
+        <v-fade-transition>
+          <v-btn
+            v-if="toActiveSpeakerList"
+            :text="$t('plenary.toActiveSpeakerList')"
+            :to="toActiveSpeakerList"
+            variant="tonal"
+          />
+        </v-fade-transition>
+      </template>
+      <template v-else>
         <v-fade-transition>
           <v-btn
             v-if="toActiveProposals"
@@ -390,16 +400,6 @@ onUnmounted(() => cleanupResize?.())
             </v-item-group>
           </v-list>
         </v-menu>
-      </template>
-      <template v-if="currentTab === 'discussion'">
-        <v-fade-transition>
-          <v-btn
-            v-if="toActiveSpeakerList"
-            :text="$t('plenary.toActiveSpeakerList')"
-            :to="toActiveSpeakerList"
-            variant="tonal"
-          />
-        </v-fade-transition>
       </template>
       <BroadcastMenu />
     </template>
