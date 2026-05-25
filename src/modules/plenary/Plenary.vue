@@ -229,6 +229,8 @@ const currentView = computed(
   () => viewOptions.value.find(({ id }) => currentTab.value === id)!
 )
 
+const minLeft = 480
+const minRight = 980
 const splitContainer = ref<ComponentPublicInstance | null>(null)
 const leftColEl = ref<ComponentPublicInstance | null>(null)
 const leftWidth = ref<number | null>(null)
@@ -245,10 +247,9 @@ function startResize(e: MouseEvent) {
   const onMouseMove = (ev: MouseEvent) => {
     if (!splitContainer.value) return
     const containerWidth = splitContainer.value.$el.offsetWidth
-    const maxWidth = containerWidth - 640 - 24
-    console.debug(startWidth, maxWidth, ev.clientX - startX)
+    const maxWidth = containerWidth - minRight - 24
     leftWidth.value = Math.max(
-      640,
+      minLeft,
       Math.min(maxWidth, startWidth + (ev.clientX - startX))
     )
   }
@@ -271,7 +272,10 @@ watch(splitContainer, (el) => {
   if (!el || leftWidth.value !== null) return
   const containerWidth = el.$el.offsetWidth
   const third = Math.floor(containerWidth / 3)
-  leftWidth.value = Math.max(640, Math.min(containerWidth - 640 - 24, third))
+  leftWidth.value = Math.max(
+    minLeft,
+    Math.min(containerWidth - minRight - 24, third)
+  )
 })
 
 onUnmounted(() => cleanupResize?.())
@@ -438,7 +442,7 @@ onUnmounted(() => cleanupResize?.())
   overflow: hidden
 
 .split-left
-  min-width: 640px
+  min-width: 480px
 
 .resizer
   flex-shrink: 0

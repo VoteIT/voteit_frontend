@@ -390,12 +390,13 @@ const otherRoomsWithLists = computed(() => {
             class="mt-4"
           />
         </div>
-        <SpeakerListControls
-          v-if="currentList"
-          class="flex-grow-1"
-          :key-bindings="keyBindings"
-          :list-id="currentList.pk"
-        />
+        <div class="flex-grow-1">
+          <SpeakerListControls
+            v-if="currentList"
+            :key-bindings="keyBindings"
+            :list-id="currentList.pk"
+          />
+        </div>
       </div>
     </div>
   </div>
