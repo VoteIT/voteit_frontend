@@ -7,6 +7,7 @@ import {
   ref,
   watch
 } from 'vue'
+import { useStorage } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
@@ -233,7 +234,7 @@ const minLeft = 480
 const minRight = 980
 const splitContainer = ref<ComponentPublicInstance | null>(null)
 const leftColEl = ref<ComponentPublicInstance | null>(null)
-const leftWidth = ref<number | null>(null)
+const leftWidth = useStorage<number | null>('plenary:leftWidth', null)
 const isDragging = ref(false)
 
 let cleanupResize: (() => void) | null = null
