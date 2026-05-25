@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, onUnmounted, provide, ref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onUnmounted,
+  provide,
+  ref,
+  watch
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
@@ -222,8 +229,8 @@ const currentView = computed(
   () => viewOptions.value.find(({ id }) => currentTab.value === id)!
 )
 
-const splitContainer = ref<HTMLElement | null>(null)
-const leftColEl = ref<HTMLElement | null>(null)
+const splitContainer = ref<ComponentPublicInstance | null>(null)
+const leftColEl = ref<ComponentPublicInstance | null>(null)
 const leftWidth = ref<number | null>(null)
 const isDragging = ref(false)
 
@@ -233,12 +240,13 @@ function startResize(e: MouseEvent) {
   if (e.button !== 0) return
   e.preventDefault()
   const startX = e.clientX
-  const startWidth = leftColEl.value?.offsetWidth ?? 0
+  const startWidth = leftColEl.value?.$el.offsetWidth ?? 0
 
   const onMouseMove = (ev: MouseEvent) => {
     if (!splitContainer.value) return
-    const containerWidth = splitContainer.value.offsetWidth
+    const containerWidth = splitContainer.value.$el.offsetWidth
     const maxWidth = containerWidth - 640 - 24
+    console.debug(startWidth, maxWidth, ev.clientX - startX)
     leftWidth.value = Math.max(
       640,
       Math.min(maxWidth, startWidth + (ev.clientX - startX))
@@ -261,7 +269,7 @@ function startResize(e: MouseEvent) {
 
 watch(splitContainer, (el) => {
   if (!el || leftWidth.value !== null) return
-  const containerWidth = el.offsetWidth
+  const containerWidth = el.$el.offsetWidth
   const third = Math.floor(containerWidth / 3)
   leftWidth.value = Math.max(640, Math.min(containerWidth - 640 - 24, third))
 })
@@ -397,40 +405,33 @@ onUnmounted(() => cleanupResize?.())
     </template>
   </AppBar>
   <AgendaNavigation />
-  <v-main>
+  <v-main class="split-container d-flex" ref="splitContainer">
     <SpeakerHandling
-      v-if="currentTab === 'discussion'"
-      class="ma-6"
+      v-if="currentTab !== 'decisions'"
+      class="pa-6 split-left flex-shrink-0 overflow-auto"
+      ref="leftColEl"
       :room="roomId"
+      :style="leftWidth ? { width: leftWidth + 'px' } : {}"
     />
-    <DecisionsTab v-if="currentTab === 'decisions'" class="ma-6" />
     <div
       v-if="currentTab === 'split'"
-      ref="splitContainer"
-      class="d-flex split-container overflow-hidden"
+      class="resizer"
+      :class="{ active: isDragging }"
+      @mousedown="startResize"
     >
-      <div
-        ref="leftColEl"
-        class="split-left flex-shrink-0 overflow-auto"
-        :style="leftWidth ? { width: leftWidth + 'px' } : {}"
-      >
-        <SpeakerHandling class="ma-6" :room="roomId" />
-      </div>
-      <div
-        class="resizer"
-        :class="{ active: isDragging }"
-        @mousedown="startResize"
-      >
-        <v-icon class="resizer-icon">mdi-arrow-split-vertical</v-icon>
-      </div>
-      <DecisionsTab class="split-right ma-6 w-100" />
+      <v-icon class="resizer-icon">mdi-arrow-split-vertical</v-icon>
     </div>
+    <DecisionsTab
+      v-if="currentTab !== 'discussion'"
+      class="split-right flex-grow-1"
+    />
   </v-main>
 </template>
 
 <style lang="sass" scoped>
 .split-container
   height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom))
+  overflow: hidden
 
 .split-left
   min-width: 640px

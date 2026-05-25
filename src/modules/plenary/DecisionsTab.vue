@@ -302,10 +302,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="d-flex flex-column ga-6">
-    <div ref="agendaInfoEl">
-      <AgendaInfoAlert />
-    </div>
+  <div>
     <ChoiceDialog
       :description="$t('plenary.follow.description')"
       :handler="setFollowAI"
@@ -313,6 +310,9 @@ watchEffect(() => {
       :title="$t('plenary.follow.title')"
       v-model="followChoiceDialog"
     />
+    <div ref="agendaInfoEl">
+      <AgendaInfoAlert class="ma-6 mb-0" />
+    </div>
     <div
       v-if="!selectedProposals.length && !pool.length"
       class="text-center text-secondary pt-12 flex-grow-1"
@@ -326,11 +326,11 @@ watchEffect(() => {
     </div>
     <div
       v-else
-      class="proposals d-flex ga-6 overflow-hidden"
+      class="proposals d-flex overflow-hidden"
       :style="proposalsStyle"
     >
       <div
-        class="flex-grow-1 overflow-y-auto d-flex flex-column ga-4"
+        class="flex-grow-1 overflow-y-auto d-flex flex-column ga-4 pa-6"
         @click="handleProposalClick()"
       >
         <ProposalSheet
@@ -376,7 +376,7 @@ watchEffect(() => {
         </ProposalSheet>
         <div
           v-if="!selectedProposals.length"
-          class="text-h4 text-center text-secondary pt-12"
+          class="text-h4 text-center text-secondary pa-6 pt-12"
         >
           <div
             class="my-12"
@@ -409,7 +409,9 @@ watchEffect(() => {
           </template>
         </div>
       </div>
-      <div class="proposal-pool d-flex flex-column ga-6 w-25 overflow-y-auto">
+      <div
+        class="proposal-pool d-flex flex-column ga-6 w-25 overflow-y-auto pa-6 pl-0"
+      >
         <div class="d-flex" v-for="p in pool" :key="p.pk">
           <v-btn
             size="small"
@@ -425,6 +427,9 @@ watchEffect(() => {
 </template>
 
 <style scoped lang="sass">
+.proposals
+  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - var(--aiheight))
+
 .proposal-pool
-  min-width: 320px
+  min-width: 344px
 </style>
