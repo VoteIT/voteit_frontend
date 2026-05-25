@@ -4,12 +4,13 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.44.0 (??)
+## 0.44.0 (2026-05-25)
 
 - REST API migration: roles, reactions, room entry/exit, active users, and last-read updates now use REST instead of WebSocket
 - Token API: added control panel for inspecting and managing API tokens (hidden developer tool)
 - Error handling: Several API errors are now shown in a dialog instead of logged to the console
 - Bugfix: EnterLeaveButton was visible in passive mode
+- Bugfix: Proposal end text selection in sender view was glitchy
 
 ## 0.43.1 (2026-05-20)
 
