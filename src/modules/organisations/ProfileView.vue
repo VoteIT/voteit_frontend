@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowReactive, shallowRef } from 'vue'
+import { computed, shallowReactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
@@ -29,6 +29,12 @@ const store = useOrgStore()
 
 const { t } = useI18n()
 const rules = useRules(t)
+
+const userFormData = computed(() => {
+  if (!authStore.user) return {}
+  const { email, first_name, last_name, userid } = authStore.user
+  return { email, first_name, last_name, userid }
+})
 
 function updateProfile(data: IUser) {
   return authStore.updateProfile(data)
@@ -122,7 +128,7 @@ async function saveImage(close: () => void) {
                     :defaults="{ VList: { bgColor: 'surface' } }"
                   >
                     <DefaultForm
-                      :modelValue="authStore.user"
+                      :modelValue="userFormData"
                       :handler="updateProfile"
                       @done="close"
                       v-slot="{ errors, formData }"
@@ -244,7 +250,9 @@ async function saveImage(close: () => void) {
                 <template #activator="{ props }">
                   <v-btn
                     :icon="smAndUp ? undefined : 'mdi-account-arrow-right'"
-                    :text="smAndUp ? $t('organization.switchProfile') : undefined"
+                    :text="
+                      smAndUp ? $t('organization.switchProfile') : undefined
+                    "
                     variant="tonal"
                     v-bind="props"
                   />
