@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.44.1 (2026-05-25)
+
+- Bugfix: Profile form sent full user object as patch, which caused problem with image field
+
 ## 0.44.0 (2026-05-25)
 
 - REST API migration: roles, reactions, room entry/exit, active users, and last-read updates now use REST instead of WebSocket
