@@ -409,9 +409,13 @@ onUnmounted(() => cleanupResize?.())
     <SpeakerHandling
       v-if="currentTab !== 'decisions'"
       class="pa-6 split-left flex-shrink-0 overflow-auto"
+      :class="{ 'flex-grow-1': currentTab !== 'split' }"
+      :key-bindings="currentTab === 'discussion' ? 'all' : 'startStop'"
       ref="leftColEl"
       :room="roomId"
-      :style="leftWidth ? { width: leftWidth + 'px' } : {}"
+      :style="
+        currentTab === 'split' && leftWidth ? { width: leftWidth + 'px' } : {}
+      "
     />
     <div
       v-if="currentTab === 'split'"
@@ -445,9 +449,10 @@ onUnmounted(() => cleanupResize?.())
   align-items: center
   justify-content: center
   transition: background 0.15s
+  background: rgba(var(--v-theme-secondary), 0.05)
 
   &-icon
-    opacity: 0
+    opacity: .1
     transition: opacity 0.15s
     pointer-events: none
 
@@ -457,7 +462,7 @@ onUnmounted(() => cleanupResize?.())
     background: rgba(var(--v-theme-secondary), 0.25)
 
     .resizer-icon
-      opacity: 1
+      opacity: .5
 
 .split-right
   min-width: 640px

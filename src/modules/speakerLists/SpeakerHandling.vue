@@ -34,9 +34,15 @@ import SpeakerListHistory from './SpeakerListHistory.vue'
 import useSpeakerStore from './useSpeakerStore'
 import useRoom from '../rooms/useRoom'
 
-const props = defineProps<{
-  room: number
-}>()
+const props = withDefaults(
+  defineProps<{
+    keyBindings?: 'all' | 'startStop'
+    room: number
+  }>(),
+  {
+    keyBindings: 'all'
+  }
+)
 
 const { t } = useI18n()
 
@@ -387,6 +393,7 @@ const otherRoomsWithLists = computed(() => {
         <SpeakerListControls
           v-if="currentList"
           class="flex-grow-1"
+          :key-bindings="keyBindings"
           :list-id="currentList.pk"
         />
       </div>

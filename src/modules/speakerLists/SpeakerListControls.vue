@@ -24,6 +24,7 @@ import useSpeakerStore from './useSpeakerStore'
 
 const props = defineProps<{
   listId: number
+  keyBindings: 'all' | 'startStop'
 }>()
 
 const { t } = useI18n()
@@ -111,14 +112,16 @@ async function addParticipantNumbers() {
 /*
  * Keyboard navigation
  */
-onKeyStroke(
-  (e) => map(range(1, 10), String).includes(e.key) && navigationEventAllowed(e),
-  (e) => {
-    const speaker = speakerQueue.value[Number(e.key) - 1]
-    if (!speaker) return
-    startSpeaker(speaker.pk)
-  }
-)
+if (props.keyBindings === 'all')
+  onKeyStroke(
+    (e) =>
+      map(range(1, 10), String).includes(e.key) && navigationEventAllowed(e),
+    (e) => {
+      const speaker = speakerQueue.value[Number(e.key) - 1]
+      if (!speaker) return
+      startSpeaker(speaker.pk)
+    }
+  )
 onKeyStroke(
   (e) => e.key === 'z' && navigationEventAllowed(e, ['ctrlKey']),
   (e) => e.ctrlKey && undoSpeaker()
