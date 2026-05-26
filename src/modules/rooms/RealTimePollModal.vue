@@ -4,7 +4,7 @@
  * It will only ever show poll selected in bradcast view.
  * It may be closed by user, though, for example if they need to disable passive mode.
  */
-import { computed, provide } from 'vue'
+import { computed, provide, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle } from '@vueuse/core'
 
@@ -12,6 +12,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 
+import { useAutoScroll } from '@/composables/useAutoScroll'
 import usePoll from '../polls/usePoll'
 import { pollType } from '../polls/contentTypes'
 
@@ -25,6 +26,13 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const { idle } = useIdle(5_000)
+
+const contentRef = shallowRef<HTMLElement>()
+const scrollEl = shallowRef<HTMLElement | null>(null)
+watch(contentRef, (el) => {
+  scrollEl.value = el?.closest<HTMLElement>('.v-sheet') ?? null
+})
+useAutoScroll(scrollEl, { initialDelay: 1_500 })
 
 const currentPollId = computed(() => props.pollId)
 const { meetingRoom } = useRoom()
@@ -70,68 +78,70 @@ const progressBar = computed(() => {
     <template #activator="{ props }">
       <slot name="activator" :props="props"></slot>
     </template>
-    <div v-if="!poll" class="my-8 text-center">
-      <v-progress-circular indeterminate color="primary" />
-    </div>
-    <template v-else-if="isOngoing">
-      <main>
-        <p class="mb-4">
-          {{
-            $t('poll.pollDescription', {
-              method: pollMethodName,
-              count: proposals.length
-            })
-          }}
-        </p>
-        <ProgressBar
-          v-if="progressBar"
-          v-bind="progressBar"
-          absolute
-          class="mt-8"
-        />
-        <v-alert
-          v-if="poll?.withheld_result"
-          :text="$t('poll.result.willBeWithheld')"
-          type="info"
-          class="my-6"
-        />
-      </main>
-      <DefaultDialog
-        :model-value="meetingRoom?.show_ballot"
-        :persistent="idle"
-        :title="$t('poll.ballot')"
-        width="600px"
-      >
-        <component
-          :is="voteComponent"
-          disabled
-          :poll="poll"
-          :proposals="proposals"
-        />
-      </DefaultDialog>
-    </template>
-    <main v-else>
-      <p class="mb-4">
-        {{ $t('poll.result.method', { method: pollMethodName }) }}
-      </p>
-      <div v-if="isFinished">
-        <component
-          :is="resultComponent"
-          :result="poll.result"
-          :abstain-count="poll.abstain_count"
-          :proposals="poll.proposals"
-        />
+    <div ref="contentRef">
+      <div v-if="!poll" class="my-8 text-center">
+        <v-progress-circular indeterminate color="primary" />
       </div>
-      <v-alert
-        v-else-if="isWithheld"
-        class="mt-6"
-        :text="$t('poll.result.withheldExplanation')"
-        type="info"
-      />
-      <p v-else class="my-2">
-        <WorkflowState :content-type="pollType" :object="poll" />
-      </p>
-    </main>
+      <template v-else-if="isOngoing">
+        <main>
+          <p class="mb-4">
+            {{
+              $t('poll.pollDescription', {
+                method: pollMethodName,
+                count: proposals.length
+              })
+            }}
+          </p>
+          <ProgressBar
+            v-if="progressBar"
+            v-bind="progressBar"
+            absolute
+            class="mt-8"
+          />
+          <v-alert
+            v-if="poll?.withheld_result"
+            :text="$t('poll.result.willBeWithheld')"
+            type="info"
+            class="my-6"
+          />
+        </main>
+        <DefaultDialog
+          :model-value="meetingRoom?.show_ballot"
+          :persistent="idle"
+          :title="$t('poll.ballot')"
+          width="600px"
+        >
+          <component
+            :is="voteComponent"
+            disabled
+            :poll="poll"
+            :proposals="proposals"
+          />
+        </DefaultDialog>
+      </template>
+      <main v-else>
+        <p class="mb-4">
+          {{ $t('poll.result.method', { method: pollMethodName }) }}
+        </p>
+        <div v-if="isFinished">
+          <component
+            :is="resultComponent"
+            :result="poll.result"
+            :abstain-count="poll.abstain_count"
+            :proposals="poll.proposals"
+          />
+        </div>
+        <v-alert
+          v-else-if="isWithheld"
+          class="mt-6"
+          :text="$t('poll.result.withheldExplanation')"
+          type="info"
+        />
+        <p v-else class="my-2">
+          <WorkflowState :content-type="pollType" :object="poll" />
+        </p>
+      </main>
+    </div>
   </DefaultDialog>
 </template>
 
