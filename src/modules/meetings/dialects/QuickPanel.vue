@@ -9,4 +9,7 @@ const { meeting } = useMeeting()
     <strong>{{ meeting.dialect.title }}:</strong>
     {{ meeting.dialect.description }}
   </v-card-text>
+  <v-card-text v-else>
+    <em>{{ $t('meeting.noDialectDescription') }}</em>
+  </v-card-text>
 </template>

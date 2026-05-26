@@ -27,7 +27,7 @@ interface ExportsPlugin extends MeetingPlugin {
 interface SettingsPlugin extends MeetingPlugin {
   component?: Component<any, { path: string; translationKey: string }>
   quickComponent?: Component
-  advanced?: boolean
+  checkAdvanced?: (meeting: Meeting) => boolean
   icon: string
   route?: {
     name: string

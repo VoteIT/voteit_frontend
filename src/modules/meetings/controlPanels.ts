@@ -12,11 +12,11 @@ meetingSettingsPlugins.register({
   component: DialectControlPanel,
   quickComponent: DialectQuick,
   icon: 'mdi-brush-variant',
+  checkAdvanced(meeting) {
+    return !meeting.dialect
+  },
   getTitle(t) {
     return t('meeting.dialect')
-  },
-  checkActive(meeting) {
-    return !!meeting.dialect
   }
 })
 

@@ -11,7 +11,7 @@ meetingSettingsPlugins.register({
   getDescription(t) {
     return t('tokenAPI.description')
   },
-  advanced: true,
+  checkAdvanced: () => true,
   icon: 'mdi-key-chain',
   id: 'token-api',
   component: ControlPanel

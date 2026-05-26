@@ -391,6 +391,7 @@
     "dialectHandlesMeetingRoles": "Dialekten hanterar en mötesroll (denna går inte att ändra manuellt) | Dialekten hanterar flera mötesroller (dessa går inte att ändra manuellt)",
     "dialectHint": "Om du är osäker, starta mötet utan att välja dialekt.",
     "dialectNoDescription": "Beskrivning saknas",
+    "noDialectDescription": "Ingen dialekt är installerad för det här mötet.",
     "dialectReadonlyRole": "Hanteras av mötets dialekt",
     "exports": "Exportera från möte",
     "exportsDescription": "Ladda ner deltagarlista, talarstatistik, med mera",
@@ -444,6 +445,15 @@
       "deleting": "Raderas",
       "ongoing": "Pågående",
       "upcoming": "Kommande"
+    },
+    "dialects": {
+      "installBtn": "Installera {title}",
+      "installConfirm": "Installation av dialekten {title} kommer göra ändringar i ditt möte och kan ställa till problem med grupper, rättigheter och inställningar i mötet. Är du säker?",
+      "installDescription": "En mötesdialekt är en uppsättning regler för rösträtt i ett möte. Det här mötet har ingen installerad mötesdialekt och om du inte vet att du behöver välja en dialekt kan du förmodligen strunta i det här.",
+      "installOnlyUpcoming": "Du kan bara installera dialekt i ett möte som är kommande.",
+      "uninstallConfirm": "Avinstallation av dialekten {title} kommer göra ändringar i ditt möte och kan ställa till problem med grupper, rättigheter och inställningar i mötet. Är du säker?",
+      "uninstallText": "Du kan avinstallera den här dialekten, men vi kommer då att ändra saker i ditt möte. Det kan påverka grupper, rättigheter och inställningar. Gör inte det om du inte vet vad du håller på med.",
+      "uninstallTitle": "Avinstallera dialect"
     }
   },
   "minutes": {

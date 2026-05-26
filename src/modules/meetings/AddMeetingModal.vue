@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { sorted } from 'itertools'
-import { computed, reactive, shallowRef, watch } from 'vue'
+import { computed, onBeforeMount, reactive, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -45,9 +45,11 @@ const PRESELECTED_ER_METHOD = 'auto_before_poll'
 const { t } = useI18n()
 const router = useRouter()
 const { availableErMethods } = useElectoralRegisters()
-const { installableDialects } = useDialects()
+const { installableDialects, loadDialects } = useDialects()
 const rules = useRules(t)
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
+
+onBeforeMount(() => loadDialects().catch(handleRestError))
 
 const currentStep = shallowRef(0)
 const steps = computed<{ info: string; title: string }[]>(() => {

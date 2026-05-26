@@ -38,11 +38,15 @@ const panelPlugins = computed(() => {
   })
 })
 const advancedPanels = sorted(
-  panelPlugins.value.filter((p) => p.advanced),
+  panelPlugins.value.filter((p) =>
+    p.checkAdvanced?.(meeting.value as Meeting) ?? false
+  ),
   (p) => p.title.toLocaleLowerCase()
 )
 const panels = sorted(
-  panelPlugins.value.filter((p) => !p.advanced),
+  panelPlugins.value.filter(
+    (p) => !(p.checkAdvanced?.(meeting.value as Meeting) ?? false)
+  ),
   (p) => p.title.toLocaleLowerCase()
 )
 const currentPanel = computed(() => route.params.panel as string | undefined)
