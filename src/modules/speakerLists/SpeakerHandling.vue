@@ -400,6 +400,30 @@ const otherRoomsWithLists = computed(() => {
       </div>
     </div>
   </div>
+  <div v-else>
+    <v-card
+      prepend-icon="mdi-lectern"
+      text="Det här mötesrummet har inga talarlistor konfigurerade. Använd vyn förslag och beslut, eller konfigurera talarlistor."
+      title="Inga talarlistor"
+      color="info"
+    >
+      <template #actions>
+        <v-btn
+          prepend-icon="mdi-gavel"
+          text="Förslag och beslut"
+          :to="{ params: { tab: 'decisions' } }"
+        />
+        <v-btn
+          prepend-icon="mdi-cog"
+          :text="$t('room.settings')"
+          :to="{
+            name: 'controlPanel',
+            params: { ...meetingRoute.params, panel: 'rooms' }
+          }"
+        />
+      </template>
+    </v-card>
+  </div>
 </template>
 
 <style lang="sass" scoped>

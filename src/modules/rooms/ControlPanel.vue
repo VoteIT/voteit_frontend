@@ -241,8 +241,7 @@ async function deleteRoom(pk: number) {
                 getRoomRoute('room:broadcast', {
                   id: meetingId,
                   roomId: room.pk,
-                  aid: room.agenda_item || agenda[0].pk,
-                  tab: 'decisions'
+                  aid: room.agenda_item || agenda[0].pk
                 })
               "
             />

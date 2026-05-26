@@ -23,8 +23,7 @@ const sortedRooms = computed(() => {
         params: {
           id: meetingId.value,
           roomId: pk,
-          aid,
-          tab: 'decisions'
+          aid
         }
       }
     })),

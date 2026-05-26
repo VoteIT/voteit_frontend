@@ -39,8 +39,7 @@ function getItems({ agendaItem, meeting, t }: OptionalAIContext) {
         params: {
           id: meeting.pk,
           aid: agendaItem?.pk ?? room.agenda_item ?? firstAI,
-          roomId: room.pk,
-          tab: 'decisions'
+          roomId: room.pk
         }
       }
     }

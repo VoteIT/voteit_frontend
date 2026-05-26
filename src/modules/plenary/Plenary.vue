@@ -203,26 +203,36 @@ const ongoingPollCount = computed(
   () => getAiPolls(agendaId.value, PollState.Ongoing).length
 )
 
+function getSplitSubtitle() {
+  if (!isModerator.value) return 'Du kan bara hantera talare'
+  if (!hasSpeakerLists.value) return 'Talarlistor ej konfigurerade'
+  return 'Hantera talare och beslut i samma vy'
+}
+
 const viewOptions = computed(() => [
   {
     disabled: !hasSpeakerLists.value,
     icon: 'mdi-lectern',
     id: 'discussion',
-    subtitle: 'Hantera talare',
+    subtitle: hasSpeakerLists.value
+      ? 'Hantera talare'
+      : 'Talarlistor ej konfigurerade',
     title: 'Talarlistor'
   },
   {
     disabled: !isModerator.value,
     icon: 'mdi-gavel',
     id: 'decisions',
-    subtitle: 'Visa förslag och starta omröstningar',
+    subtitle: isModerator.value
+      ? 'Visa förslag och starta omröstningar'
+      : 'Du kan bara hantera talare',
     title: 'Förslag och beslut'
   },
   {
-    disabled: !isModerator.value,
+    disabled: !isModerator.value || !hasSpeakerLists.value,
     icon: 'mdi-view-split-vertical',
     id: 'split',
-    subtitle: 'Hantera talare och beslut i samma vy',
+    subtitle: getSplitSubtitle(),
     title: 'Delad vy'
   }
 ])
@@ -419,7 +429,6 @@ onUnmounted(() => cleanupResize?.())
       class="pa-6 split-left flex-shrink-0 overflow-auto"
       :class="{ 'flex-grow-1': currentTab !== 'split' }"
       :key-bindings="currentTab === 'discussion' ? 'all' : 'startStop'"
-
       :room="roomId"
       :style="
         currentTab === 'split' && leftWidth ? { width: leftWidth + 'px' } : {}
