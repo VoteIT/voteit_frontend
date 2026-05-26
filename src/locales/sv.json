@@ -371,6 +371,7 @@
   },
   "meeting": {
     "addParticipant": "Lägg till deltagare",
+    "advancedSettings": "Avancerat",
     "cantRemoveSelfModerator": "Du kan inte ta bort moderator- eller deltagarroller från din egen användare.",
     "confirmRemoveParticipant": "Det är oftast en dålig ide att radera användare från ett möte. Det kan finnas förslag och annat innehåll. Avmarkera hellre rättigheter.\nVill du ändå ta bort användaren?",
     "copyUrl": "Kopiera möteslänk",
@@ -1023,5 +1024,31 @@
     "reloadLater": "Jag ska bara ...",
     "reloadNow": "Ladda om nu",
     "versionReloadQuery": "Det finns en ny version av VoteIT.\nDu behöver ladda om sidan."
+  },
+  "tokenAPI": {
+    "apiKeyLabel": "API-nyckel",
+    "colCreated": "Skapad",
+    "colExpires": "Upphör",
+    "colLastUsed": "Senast använd",
+    "colPrefix": "Prefix",
+    "colStatus": "Status",
+    "colTokenName": "Namn",
+    "createBtn": "Skapa ny token",
+    "createDialogTitle": "Skapa ny API-token",
+    "description": "Åtkomst till mötet för externa tjänster",
+    "fetchFailed": "Kunde inte hämta tokens för detta möte.",
+    "fetchFailedTitle": "Hämtning misslyckades",
+    "help": "Det här är en avancerad funktion som tillåter extern API-åtkomst till ditt VoteIT-möte. Lämna det orört om du inte vet exakt vad du gör.",
+    "revokeBtn": "Återkalla",
+    "revokeConfirm": "Det här gör nyckeln oanvändbar. Är du säker?",
+    "revoked": "Återkallad",
+    "revokeError": "Det gick inte att återkalla token. Försök igen.",
+    "saveKeyText": "Den här nyckeln visas bara en gång och kan inte hämtas senare.",
+    "saveKeyTitle": "Spara din nyckel nu",
+    "scopes": "Behörigheter",
+    "title": "Token API",
+    "tokenNameLabel": "Namn på token (identifierare)",
+    "toolbarTitle": "API-tokens",
+    "toolbarTitleWithMeeting": "API-tokens för {title}"
   }
 }

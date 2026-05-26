@@ -5,13 +5,17 @@ import { meetingSettingsPlugins } from '../meetings/registry'
 import ControlPanel from './ControlPanel.vue'
 
 meetingSettingsPlugins.register({
-  getTitle() {
-    return 'Token API (advanced)'
+  getTitle(t) {
+    return t('tokenAPI.title')
   },
+  getDescription(t) {
+    return t('tokenAPI.description')
+  },
+  advanced: true,
   icon: 'mdi-key-chain',
   id: 'token-api',
   checkActive() {
-    return false
+    return true
   },
   component: ControlPanel
 })

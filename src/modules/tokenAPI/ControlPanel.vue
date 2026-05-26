@@ -14,7 +14,6 @@ import restApi, { parseRestError } from '@/utils/restApi'
 import type { RestError } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
-import HelpSection from '@/components/HelpSection.vue'
 import useRules from '@/composables/useRules'
 
 import useMeeting from '../meetings/useMeeting'
@@ -103,7 +102,7 @@ async function revokeKey(prefix: string) {
       t.prefix === prefix ? { ...t, revoked: true } : t
     )
   } catch {
-    revokeError.value = 'Failed to revoke token. Please try again.'
+    revokeError.value = t('tokenAPI.revokeError')
   }
 }
 
@@ -131,36 +130,38 @@ onBeforeMount(fetchTokenData)
 
 <template>
   <div>
-    <HelpSection class="mb-3" id="tokenAPI.settings">
-      This is an advanced feature, allowing external API access to your VoteIT
-      meeting. Leave this untouched, unless you know exactly what you're doing.
-    </HelpSection>
+    <v-alert
+      class="mb-3"
+      type="info"
+      :title="$t('meeting.advancedSettings')"
+      :text="$t('tokenAPI.help')"
+    />
     <v-alert
       v-if="status.failed"
       class="my-3"
       type="warning"
-      text="Couldn't fetch tokens for this meeting."
-      title="Fetch failed"
+      :text="$t('tokenAPI.fetchFailed')"
+      :title="$t('tokenAPI.fetchFailedTitle')"
     >
       <template #append>
         <v-btn
           :loading="status.fetching"
           prepend-icon="mdi-refresh"
-          text="Try again"
+          :text="$t('tryAgain')"
           @click="fetchTokenData"
         />
       </template>
     </v-alert>
     <v-toolbar
       class="rounded-t-lg"
-      :title="meeting ? `API tokens for ${meeting.title}` : 'API tokens'"
+      :title="meeting ? $t('tokenAPI.toolbarTitleWithMeeting', { title: meeting.title }) : $t('tokenAPI.toolbarTitle')"
     >
-      <DefaultDialog title="Create new API token" @close="onDialogClose">
+      <DefaultDialog :title="$t('tokenAPI.createDialogTitle')" @close="onDialogClose">
         <template #activator="{ props }">
           <v-btn
             color="primary"
             prepend-icon="mdi-key-plus"
-            text="Create new token"
+            :text="$t('tokenAPI.createBtn')"
             variant="tonal"
             v-bind="props"
           />
@@ -170,12 +171,12 @@ onBeforeMount(fetchTokenData)
             <v-alert
               class="mb-4"
               type="warning"
-              title="Save your key now"
-              text="This key will only be shown once and cannot be retrieved later."
+              :title="$t('tokenAPI.saveKeyTitle')"
+              :text="$t('tokenAPI.saveKeyText')"
             />
             <v-text-field
               :model-value="createdToken.key"
-              label="API Key"
+              :label="$t('tokenAPI.apiKeyLabel')"
               readonly
               variant="outlined"
             >
@@ -200,14 +201,14 @@ onBeforeMount(fetchTokenData)
               :text="formErrors.non_field_errors.join(', ')"
             />
             <v-text-field
-              label="Token name (identifier)"
+              :label="$t('tokenAPI.tokenNameLabel')"
               :rules="[rules.required, rules.maxLength(50)]"
               :error-messages="formErrors?.name"
               v-model="formData.name"
             />
             <v-select
               :items="scopes"
-              label="Scopes"
+              :label="$t('tokenAPI.scopes')"
               multiple
               :rules="[rules.required]"
               :error-messages="formErrors?.scopes"
@@ -239,25 +240,24 @@ onBeforeMount(fetchTokenData)
       :items="annotatedTokens"
       :loading="status.fetching"
       :headers="[
-        { key: 'name', title: 'Token name' },
-        { key: 'prefix', title: 'Prefix' },
-        { key: 'scopes', title: 'Scopes' },
-        { key: 'created', title: 'Created' },
-        { key: 'last_used', title: 'Last used' },
-        { key: 'expiry_date', title: 'Expires' },
-        { key: 'revoked', align: 'end', title: 'Status', sortable: false }
+        { key: 'name', title: $t('tokenAPI.colTokenName') },
+        { key: 'prefix', title: $t('tokenAPI.colPrefix') },
+        { key: 'scopes', title: $t('tokenAPI.scopes') },
+        { key: 'created', title: $t('tokenAPI.colCreated') },
+        { key: 'last_used', title: $t('tokenAPI.colLastUsed') },
+        { key: 'expiry_date', title: $t('tokenAPI.colExpires') },
+        { key: 'revoked', align: 'end', title: $t('tokenAPI.colStatus'), sortable: false }
       ]"
     >
       <template #item.scopes="{ value }">
         {{ value.join(' ') }}
       </template>
       <template #item.revoked="{ value, item }">
-        <v-chip v-if="value" prepend-icon="mdi-cancel" text="Revoked" />
+        <v-chip v-if="value" prepend-icon="mdi-cancel" :text="$t('tokenAPI.revoked')" />
         <QueryDialog
           v-else
           color="warning"
-          text="This will render the key unusable.
-          Are you sure?"
+          :text="$t('tokenAPI.revokeConfirm')"
           @confirmed="revokeKey(item.prefix)"
         >
           <template #activator="{ props }">
@@ -265,7 +265,7 @@ onBeforeMount(fetchTokenData)
               color="warning"
               prepend-icon="mdi-key-remove"
               size="small"
-              text="Revoke"
+              :text="$t('tokenAPI.revokeBtn')"
               v-bind="props"
             />
           </template>

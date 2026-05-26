@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { sortBy } from 'lodash'
+import { sorted } from 'itertools'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -23,23 +23,28 @@ usePermission(isModerator, { to: computed(() => ({ name: 'meeting' })) })
 
 const panelPlugins = computed(() => {
   if (!meeting.value) return []
-  return sortBy(
-    meetingSettingsPlugins.getActivePlugins(meeting.value).map((panel) => {
-      return {
-        description: panel.getDescription && panel.getDescription(t),
-        disabled: !!panel.isDisabled?.(meeting.value as Meeting),
-        title: panel.getTitle(t),
-        to:
-          panel.route ??
-          (panel.component
-            ? { name: 'controlPanel', params: { panel: panel.id } }
-            : undefined),
-        ...panel
-      }
-    }),
-    titleSorter
-  )
+  return meetingSettingsPlugins.getActivePlugins(meeting.value).map((panel) => {
+    return {
+      description: panel.getDescription && panel.getDescription(t),
+      disabled: !!panel.isDisabled?.(meeting.value as Meeting),
+      title: panel.getTitle(t),
+      to:
+        panel.route ??
+        (panel.component
+          ? { name: 'controlPanel', params: { panel: panel.id } }
+          : undefined),
+      ...panel
+    }
+  })
 })
+const advancedPanels = sorted(
+  panelPlugins.value.filter((p) => p.advanced),
+  (p) => p.title.toLocaleLowerCase()
+)
+const panels = sorted(
+  panelPlugins.value.filter((p) => !p.advanced),
+  (p) => p.title.toLocaleLowerCase()
+)
 const currentPanel = computed(() => route.params.panel as string | undefined)
 const currentPlugin = computed(() =>
   currentPanel.value
@@ -64,11 +69,29 @@ const breadcrumbs = computed(() => {
 </script>
 
 <template>
-  <MeetingToolbar>
-    <v-breadcrumbs v-if="breadcrumbs" :items="breadcrumbs" />
-    <v-toolbar-title v-else>
-      {{ $t('meeting.controlPanel') }}
-    </v-toolbar-title>
+  <MeetingToolbar v-if="breadcrumbs">
+    <v-breadcrumbs :items="breadcrumbs" />
+  </MeetingToolbar>
+  <MeetingToolbar v-else :title="$t('meeting.controlPanel')">
+    <v-menu v-if="advancedPanels.length">
+      <template #activator="{ props }">
+        <v-btn
+          append-icon="mdi-chevron-down"
+          :text="$t('meeting.advancedSettings')"
+          v-bind="props"
+        />
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="panel in advancedPanels"
+          :key="panel.id"
+          :prepend-icon="panel.icon"
+          :subtitle="panel.description"
+          :title="panel.title"
+          :to="panel.to"
+        />
+      </v-list>
+    </v-menu>
   </MeetingToolbar>
   <v-row id="setting-panels">
     <v-col v-if="currentComponent">
@@ -84,7 +107,7 @@ const breadcrumbs = computed(() => {
           title,
           to,
           quickComponent
-        } in panelPlugins"
+        } in panels"
         class="d-flex flex-column"
         :disabled="disabled"
         :text="description"

@@ -372,6 +372,7 @@
   },
   "meeting": {
     "addParticipant": "Add participant",
+    "advancedSettings": "Advanced",
     "cantRemoveSelfModerator": "You cannot remove moderator or participant roles from your own user.",
     "confirmRemoveParticipant": "It's usually a bad idea to remove users from a meeting. There might be proposals and other content. It's better to remove permissions.\nDo you still want to remove user?",
     "copyUrl": "Copy meeting link",
@@ -1024,5 +1025,31 @@
     "reloadLater": "Just let me ...",
     "reloadNow": "Reload now",
     "versionReloadQuery": "There's a new VoteIT version.\nYou need to reload the page."
+  },
+  "tokenAPI": {
+    "apiKeyLabel": "API Key",
+    "colCreated": "Created",
+    "colExpires": "Expires",
+    "colLastUsed": "Last used",
+    "colPrefix": "Prefix",
+    "colStatus": "Status",
+    "colTokenName": "Name",
+    "createBtn": "Create new token",
+    "createDialogTitle": "Create new API token",
+    "description": "Meeting access for external services",
+    "fetchFailed": "Couldn't fetch tokens for this meeting.",
+    "fetchFailedTitle": "Fetch failed",
+    "help": "This is an advanced feature, allowing external API access to your VoteIT meeting. Leave this untouched, unless you know exactly what you're doing.",
+    "revokeBtn": "Revoke",
+    "revokeConfirm": "This will render the key unusable. Are you sure?",
+    "revoked": "Revoked",
+    "revokeError": "Failed to revoke token. Please try again.",
+    "saveKeyText": "This key will only be shown once and cannot be retrieved later.",
+    "saveKeyTitle": "Save your key now",
+    "scopes": "Scopes",
+    "title": "Token API",
+    "tokenNameLabel": "Token name (identifier)",
+    "toolbarTitle": "API tokens",
+    "toolbarTitleWithMeeting": "API tokens for {title}"
   }
 }
