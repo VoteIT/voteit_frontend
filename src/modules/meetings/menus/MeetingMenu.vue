@@ -30,14 +30,14 @@ function* iterMeetingItems() {
       to: { name: 'meetingMinutes' }
     }
   ]
+  for (const plugin of meetingNavPlugins.getActivePlugins(meeting.value))
+    yield* plugin.iterItems({ meeting: meeting.value, menu: 'meeting', t })
   if (canChange.value)
     yield {
       icons: ['mdi-cog'],
       title: t('meeting.controlPanel'),
       to: { name: 'settings' }
     }
-  for (const plugin of meetingNavPlugins.getActivePlugins(meeting.value))
-    yield* plugin.iterItems({ meeting: meeting.value, menu: 'meeting', t })
 }
 
 const meetingLinks = computed(() => [...iterMeetingItems()])
