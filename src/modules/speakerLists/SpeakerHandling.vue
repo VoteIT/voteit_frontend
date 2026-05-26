@@ -403,14 +403,14 @@ const otherRoomsWithLists = computed(() => {
   <div v-else>
     <v-card
       prepend-icon="mdi-lectern"
-      text="Det här mötesrummet har inga talarlistor konfigurerade. Använd vyn förslag och beslut, eller konfigurera talarlistor."
-      title="Inga talarlistor"
+      :text="$t('plenary.noSpeakerListsDescription')"
+      :title="$t('plenary.noSpeakerListsTitle')"
       color="info"
     >
       <template #actions>
         <v-btn
           prepend-icon="mdi-gavel"
-          text="Förslag och beslut"
+          :text="$t('plenary.proposalsAndDecisions')"
           :to="{ params: { tab: 'decisions' } }"
         />
         <v-btn

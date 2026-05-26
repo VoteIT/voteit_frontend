@@ -204,9 +204,9 @@ const ongoingPollCount = computed(
 )
 
 function getSplitSubtitle() {
-  if (!isModerator.value) return 'Du kan bara hantera talare'
-  if (!hasSpeakerLists.value) return 'Talarlistor ej konfigurerade'
-  return 'Hantera talare och beslut i samma vy'
+  if (!isModerator.value) return t('plenary.onlyManageSpeakers')
+  if (!hasSpeakerLists.value) return t('plenary.speakerListsNotConfigured')
+  return t('plenary.manageSpeakersAndDecisions')
 }
 
 const viewOptions = computed(() => [
@@ -215,25 +215,25 @@ const viewOptions = computed(() => [
     icon: 'mdi-lectern',
     id: 'discussion',
     subtitle: hasSpeakerLists.value
-      ? 'Hantera talare'
-      : 'Talarlistor ej konfigurerade',
-    title: 'Talarlistor'
+      ? t('plenary.manageSpeakers')
+      : t('plenary.speakerListsNotConfigured'),
+    title: t('plenary.speakerListsTitle')
   },
   {
     disabled: !isModerator.value,
     icon: 'mdi-gavel',
     id: 'decisions',
     subtitle: isModerator.value
-      ? 'Visa förslag och starta omröstningar'
-      : 'Du kan bara hantera talare',
-    title: 'Förslag och beslut'
+      ? t('plenary.viewProposalsAndStartPolls')
+      : t('plenary.onlyManageSpeakers'),
+    title: t('plenary.proposalsAndDecisions')
   },
   {
     disabled: !isModerator.value || !hasSpeakerLists.value,
     icon: 'mdi-view-split-vertical',
     id: 'split',
     subtitle: getSplitSubtitle(),
-    title: 'Delad vy'
+    title: t('plenary.splitViewTitle')
   }
 ])
 const currentView = computed(
