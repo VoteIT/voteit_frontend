@@ -14,8 +14,5 @@ meetingSettingsPlugins.register({
   advanced: true,
   icon: 'mdi-key-chain',
   id: 'token-api',
-  checkActive() {
-    return true
-  },
   component: ControlPanel
 })
