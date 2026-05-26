@@ -7,7 +7,7 @@ import {
   ref,
   watch
 } from 'vue'
-import { useStorage } from '@vueuse/core'
+import { useElementSize, useStorage } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
@@ -233,9 +233,15 @@ const currentView = computed(
 const minLeft = 480
 const minRight = 980
 const splitContainer = ref<ComponentPublicInstance | null>(null)
-const leftColEl = ref<ComponentPublicInstance | null>(null)
 const leftWidth = useStorage<number | null>('plenary:leftWidth', null)
 const isDragging = ref(false)
+
+const { width: containerWidth } = useElementSize(
+  computed(() => {
+    const el = splitContainer.value?.$el
+    return el instanceof Element ? (el as HTMLElement) : null
+  })
+)
 
 let cleanupResize: (() => void) | null = null
 
@@ -243,12 +249,10 @@ function startResize(e: MouseEvent) {
   if (e.button !== 0) return
   e.preventDefault()
   const startX = e.clientX
-  const startWidth = leftColEl.value?.$el.offsetWidth ?? 0
+  const startWidth = leftWidth.value ?? 0
 
   const onMouseMove = (ev: MouseEvent) => {
-    if (!splitContainer.value) return
-    const containerWidth = splitContainer.value.$el.offsetWidth
-    const maxWidth = containerWidth - minRight - 24
+    const maxWidth = containerWidth.value - minRight - 24
     leftWidth.value = Math.max(
       minLeft,
       Math.min(maxWidth, startWidth + (ev.clientX - startX))
@@ -269,14 +273,13 @@ function startResize(e: MouseEvent) {
   document.addEventListener('mouseup', onMouseUp)
 }
 
-watch(splitContainer, (el) => {
-  if (!el || leftWidth.value !== null) return
-  const containerWidth = el.$el.offsetWidth
-  const third = Math.floor(containerWidth / 3)
-  leftWidth.value = Math.max(
-    minLeft,
-    Math.min(containerWidth - minRight - 24, third)
-  )
+watch(containerWidth, (w) => {
+  if (w === 0) return
+  const max = w - minRight - 24
+  leftWidth.value =
+    leftWidth.value === null
+      ? Math.max(minLeft, Math.min(max, Math.floor(w / 3)))
+      : Math.max(minLeft, Math.min(max, leftWidth.value))
 })
 
 onUnmounted(() => cleanupResize?.())
@@ -416,7 +419,7 @@ onUnmounted(() => cleanupResize?.())
       class="pa-6 split-left flex-shrink-0 overflow-auto"
       :class="{ 'flex-grow-1': currentTab !== 'split' }"
       :key-bindings="currentTab === 'discussion' ? 'all' : 'startStop'"
-      ref="leftColEl"
+
       :room="roomId"
       :style="
         currentTab === 'split' && leftWidth ? { width: leftWidth + 'px' } : {}
