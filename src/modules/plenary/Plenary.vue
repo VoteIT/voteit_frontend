@@ -310,6 +310,7 @@ onUnmounted(() => cleanupResize?.())
         <v-list>
           <v-list-item
             v-for="{ id, icon, ...props } in viewOptions"
+            :key="id"
             :prepend-icon="icon"
             v-bind="props"
             :to="{ params: { tab: id } }"

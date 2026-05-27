@@ -2,8 +2,6 @@
 import { ComponentPublicInstance, computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ThemeColor } from '@/utils/types'
-
 import UserList from '@/components/UserList.vue'
 import Widget from '@/components/Widget.vue'
 import IconSearchInput from '@/components/inputs/IconSearchInput.vue'
@@ -45,6 +43,7 @@ function getDefaults(
 const meetingId = useMeetingId()
 const formData = reactive(getDefaults(props.data))
 const transformedData = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { change_roles, list_roles, target, ...data } = formData
   if (!data.icon) data.icon = '' // Empty string required by API
   return data as IFlagButton

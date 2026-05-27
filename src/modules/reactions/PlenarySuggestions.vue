@@ -35,7 +35,7 @@ const annotated = computed(() =>
 
 <template>
   <v-badge
-    v-for="({ button, proposals }, i) in annotated"
+    v-for="{ button, proposals } in annotated"
     :key="button.pk"
     class="my-2"
     color="secondary"

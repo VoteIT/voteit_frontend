@@ -126,9 +126,7 @@ function mountWithData(
   // Set up mocks before mount so computed properties don't fire with undefined.
   const pinia = createTestingPinia()
   setActivePinia(pinia)
-  useGroupStore().filterGroups = vi
-    .fn()
-    .mockReturnValue(overrides.groups ?? [])
+  useGroupStore().filterGroups = vi.fn().mockReturnValue(overrides.groups ?? [])
   useGroupStore().getGroupRole = vi.fn().mockReturnValue(overrides.groupRole)
   useProposalStore().filterProposals = vi
     .fn()

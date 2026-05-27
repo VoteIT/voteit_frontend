@@ -43,7 +43,7 @@ async function castVote() {
   try {
     await socket.call(`${props.poll.method_name}_vote.add`, msg)
     emit('votingComplete')
-  } catch (e) {
+  } catch {
     openAlertEvent.emit(
       '^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!'
     )
@@ -69,7 +69,7 @@ async function abstainVote() {
     await voteType.methodCall('abstain', { poll: props.poll.pk })
     validVote.value = undefined
     emit('votingComplete')
-  } catch (e) {
+  } catch {
     openAlertEvent.emit(
       '^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!'
     )

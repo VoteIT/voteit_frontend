@@ -1,7 +1,5 @@
 import { ComposerTranslation } from 'vue-i18n'
-import { Meeting, MeetingRole } from './types'
-import { Dictionary } from 'lodash'
-import { slugify } from '@/utils'
+import { MeetingRole } from './types'
 
 /**
  * Translation method to avoid dynamic translation strings

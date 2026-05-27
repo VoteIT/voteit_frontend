@@ -9,6 +9,7 @@ import useMeetingId from '@/modules/meetings/useMeetingId'
 
 import { GENDER_ICONS, getGenderIcon, translateGender } from './utils'
 import useGenderTag from './useGenderTag'
+import type { GenderTag } from './types'
 
 const { t } = useI18n()
 const authStore = useAuthStore()

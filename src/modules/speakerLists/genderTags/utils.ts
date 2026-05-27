@@ -1,5 +1,7 @@
 import { ComposerTranslation } from 'vue-i18n'
 
+import type { GenderTag } from './types'
+
 export const GENDER_ICONS = {
   f: 'mdi-gender-female',
   m: 'mdi-gender-male',

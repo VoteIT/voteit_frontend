@@ -1,5 +1,7 @@
-import useParticipantTags from '@/modules/meetings/participantTags/useParticipantTags'
 import { computed, MaybeRef, unref } from 'vue'
+
+import useParticipantTags from '@/modules/meetings/participantTags/useParticipantTags'
+import { GenderTag } from './types'
 
 export default function useGenderTag(
   meeting: MaybeRef<number>,

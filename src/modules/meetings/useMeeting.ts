@@ -1,4 +1,3 @@
-import { Dictionary } from 'lodash'
 import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouteLocationRaw, useRouter } from 'vue-router'

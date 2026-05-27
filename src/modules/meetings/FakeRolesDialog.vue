@@ -59,9 +59,10 @@ onBeforeUnmount(() => setFakeRoles(meetingId.value))
     </template>
     <v-alert type="info" :text="$t('admin.testModeDescription')" class="mb-3" />
     <v-checkbox
+      v-for="{ setValue, title, value } in fakeableRoles"
+      :key="title"
       density="comfortable"
       hide-details
-      v-for="{ setValue, title, value } in fakeableRoles"
       :label="title"
       :model-value="value"
       @update:model-value="setValue"

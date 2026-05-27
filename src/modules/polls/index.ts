@@ -1,5 +1,3 @@
-import { computed } from 'vue'
-
 import { meetingBubblePlugins } from '../meetings/registry'
 
 import UnvotedPollsBubble from './UnvotedPollsBubble.vue'

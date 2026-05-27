@@ -157,7 +157,7 @@ const canManageVotes = computed(
         type="warning"
       >
         <ul class="my-2">
-          <li v-for="problem in roleProblems">
+          <li v-for="(problem, i) in roleProblems" :key="i">
             •
             <i18n-t keypath="erMethods.mainSubstDelegate.mainProblemDetail">
               <template #user>
@@ -179,7 +179,11 @@ const canManageVotes = computed(
         type="info"
       />
       <v-list>
-        <v-list-item v-for="m in annotatedMembers" :subtitle="m.roleTitle">
+        <v-list-item
+          v-for="m in annotatedMembers"
+          :key="m.pk"
+          :subtitle="m.roleTitle"
+        >
           <template #prepend>
             <UserAvatar :pk="m.user" />
           </template>
@@ -200,7 +204,8 @@ const canManageVotes = computed(
               </template>
               <v-list>
                 <v-list-item
-                  v-for="{ disabled, user } in availableTargets"
+                  v-for="{ disabled, pk, user } in availableTargets"
+                  :key="pk"
                   :disabled="disabled"
                   :subtitle="
                     disabled
@@ -235,7 +240,7 @@ const canManageVotes = computed(
           </tr>
         </thead>
         <tbody>
-          <tr v-for="t in groupTransfers">
+          <tr v-for="t in groupTransfers" :key="t.pk">
             <td><User :pk="t.source" userid /></td>
             <td><v-icon icon="mdi-arrow-right" /></td>
             <td><User :pk="t.target" userid /></td>
@@ -252,7 +257,8 @@ const canManageVotes = computed(
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="{ disabled, user } in availableTargets"
+                    v-for="{ disabled, pk, user } in availableTargets"
+                    :key="pk"
                     :disabled="disabled"
                     :subtitle="
                       disabled

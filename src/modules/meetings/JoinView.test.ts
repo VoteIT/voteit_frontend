@@ -29,7 +29,10 @@ vi.mock('./contentTypes', () => ({
 vi.mock('./useMeeting', () => ({
   default: () => ({
     meetingId: ref(1),
-    meetingRoute: ref({ name: 'meeting', params: { id: 1, slug: 'test-meeting' } })
+    meetingRoute: ref({
+      name: 'meeting',
+      params: { id: 1, slug: 'test-meeting' }
+    })
   })
 }))
 
@@ -41,7 +44,9 @@ vi.mock('./useMeetingStore', () => ({
   })
 }))
 
-vi.mock('./rules', () => ({ canBecomeModerator: vi.fn().mockReturnValue(true) }))
+vi.mock('./rules', () => ({
+  canBecomeModerator: vi.fn().mockReturnValue(true)
+}))
 
 vi.mock('../auth/useAuthStore', () => ({
   default: () => ({

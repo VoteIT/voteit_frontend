@@ -1,4 +1,4 @@
-import { filter, first } from 'itertools'
+import { first } from 'itertools'
 import { computed, MaybeRef, reactive, unref } from 'vue'
 
 import { meetingComponentType } from './contentTypes'

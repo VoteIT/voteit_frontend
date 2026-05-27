@@ -37,6 +37,7 @@ async function selectValue(value: T) {
     <div class="d-flex ga-2">
       <v-sheet
         v-for="{ color, icon, title, value } in options"
+        :key="title"
         class="cursor-pointer text-center pa-6 w-50"
         color="background"
         rounded

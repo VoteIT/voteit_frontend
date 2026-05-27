@@ -34,7 +34,7 @@ proposalButtonPlugins.register({
 meetingNavPlugins.register({
   id: COMPONENT_ID,
   checkActive,
-  *iterItems({ meeting, menu, t }) {
+  *iterItems({ menu, t }) {
     if (menu !== 'meeting') return
     yield {
       icons: ['mdi-note-edit'],

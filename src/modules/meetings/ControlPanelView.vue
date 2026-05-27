@@ -4,7 +4,6 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { titleSorter } from '@/utils'
 import usePermission from '@/composables/usePermission'
 
 import { meetingSettingsPlugins } from './registry'
@@ -38,8 +37,8 @@ const panelPlugins = computed(() => {
   })
 })
 const advancedPanels = sorted(
-  panelPlugins.value.filter((p) =>
-    p.checkAdvanced?.(meeting.value as Meeting) ?? false
+  panelPlugins.value.filter(
+    (p) => p.checkAdvanced?.(meeting.value as Meeting) ?? false
   ),
   (p) => p.title.toLocaleLowerCase()
 )

@@ -7,7 +7,6 @@ import useProposalOrdering from '../proposals/useProposalOrdering'
 
 import { Poll } from './types'
 import { PollPlugin } from './registry'
-import { pollType } from './contentTypes'
 
 const props = defineProps<{
   allowStart: boolean

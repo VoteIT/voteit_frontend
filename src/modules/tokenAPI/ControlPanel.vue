@@ -118,7 +118,7 @@ async function fetchTokenData() {
     scopes.value = scopesResponse.data
     tokens.value = tokensResponse.data
     status.failed = false
-  } catch (e) {
+  } catch {
     status.failed = true
   } finally {
     status.fetching = false
@@ -154,9 +154,16 @@ onBeforeMount(fetchTokenData)
     </v-alert>
     <v-toolbar
       class="rounded-t-lg"
-      :title="meeting ? $t('tokenAPI.toolbarTitleWithMeeting', { title: meeting.title }) : $t('tokenAPI.toolbarTitle')"
+      :title="
+        meeting
+          ? $t('tokenAPI.toolbarTitleWithMeeting', { title: meeting.title })
+          : $t('tokenAPI.toolbarTitle')
+      "
     >
-      <DefaultDialog :title="$t('tokenAPI.createDialogTitle')" @close="onDialogClose">
+      <DefaultDialog
+        :title="$t('tokenAPI.createDialogTitle')"
+        @close="onDialogClose"
+      >
         <template #activator="{ props }">
           <v-btn
             color="primary"
@@ -246,14 +253,23 @@ onBeforeMount(fetchTokenData)
         { key: 'created', title: $t('tokenAPI.colCreated') },
         { key: 'last_used', title: $t('tokenAPI.colLastUsed') },
         { key: 'expiry_date', title: $t('tokenAPI.colExpires') },
-        { key: 'revoked', align: 'end', title: $t('tokenAPI.colStatus'), sortable: false }
+        {
+          key: 'revoked',
+          align: 'end',
+          title: $t('tokenAPI.colStatus'),
+          sortable: false
+        }
       ]"
     >
       <template #item.scopes="{ value }">
         {{ value.join(' ') }}
       </template>
       <template #item.revoked="{ value, item }">
-        <v-chip v-if="value" prepend-icon="mdi-cancel" :text="$t('tokenAPI.revoked')" />
+        <v-chip
+          v-if="value"
+          prepend-icon="mdi-cancel"
+          :text="$t('tokenAPI.revoked')"
+        />
         <QueryDialog
           v-else
           color="warning"

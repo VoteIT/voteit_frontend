@@ -1,7 +1,5 @@
 import { computed, shallowRef } from 'vue'
 
-import { clearAlertsEvent } from '@/utils/events'
-
 import { InitState } from './types'
 import { readyToLoadEvent } from './events'
 

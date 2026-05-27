@@ -112,7 +112,8 @@ const selectedProposals = computed(() => {
   return filterProposals(
     (p) => p.agenda_item === agendaId.value && propIds.value.includes(p.pk)
   ).map((p) => ({
-    meetingGroup: p.meeting_group && groupStore.getMeetingGroup(p.meeting_group),
+    meetingGroup:
+      p.meeting_group && groupStore.getMeetingGroup(p.meeting_group),
     ...p
   }))
 })

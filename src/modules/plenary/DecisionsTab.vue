@@ -387,15 +387,16 @@ watchEffect(() => {
             <p class="mb-1">
               {{ plugin.title }}
             </p>
-            <Tag
-              v-if="plugin.v === 'tags'"
-              v-for="{ tag, count } in plugin.tags"
-              :key="tag"
-              class="mx-5"
-              :count="count"
-              :name="tag"
-              style="transform: scale(var(--tag-scale, 1.2))"
-            />
+            <template v-if="plugin.v === 'tags'">
+              <Tag
+                v-for="{ tag, count } in plugin.tags"
+                :key="tag"
+                class="mx-5"
+                :count="count"
+                :name="tag"
+                style="transform: scale(var(--tag-scale, 1.2))"
+              />
+            </template>
             <component
               v-else
               :is="plugin.component"

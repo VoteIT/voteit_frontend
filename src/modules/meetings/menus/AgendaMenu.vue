@@ -181,6 +181,7 @@ const isOpen = shallowRef(true)
       <template #append>
         <CollapsibleMenu
           v-for="menu in AgendaMenus"
+          :key="menu.state"
           :links="menu.items"
           :title="menu.title"
           :modelValue="openMenus[menu.state]"

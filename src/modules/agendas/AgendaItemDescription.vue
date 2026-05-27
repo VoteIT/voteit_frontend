@@ -76,6 +76,7 @@ async function save() {
   if (!articleModified.value) return
   form.submitting = true
   form.errors = null
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { errors, submitting, ...content } = form
   try {
     await agendaItemType.api.patch(props.agendaItem.pk, { ...content })

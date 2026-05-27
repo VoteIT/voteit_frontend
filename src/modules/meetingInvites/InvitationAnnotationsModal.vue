@@ -27,15 +27,15 @@ function isAnnotationProgress(p: Progress): p is AnnotationProgress {
 const { t } = useI18n()
 const rules = useRules(t)
 // Not used in template
-const { meeting } = useMeeting()
-const { allDataTypes } = useInviteAnnotations(meeting)
+const { meeting: m } = useMeeting()
+const { allDataTypes } = useInviteAnnotations(m)
 
 const annotatedDataTypes = computed(() => {
   return allDataTypes.value.map((dt) => {
-    if (!meeting.value) throw new Error('Meeting is missing')
+    if (!m.value) throw new Error('Meeting is missing')
     const possibleValues = meetingInviteAnnotationPlugins
       .getPlugin(dt.name)
-      ?.getPossibleValues?.(meeting.value)
+      ?.getPossibleValues?.(m.value)
     return { ...dt, possibleValues }
   })
 })

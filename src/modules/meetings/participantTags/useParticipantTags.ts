@@ -2,6 +2,7 @@ import { ifilter, map } from 'itertools'
 import { computed, MaybeRef, reactive, unref } from 'vue'
 
 import { participantTagsType } from './contentTypes'
+import type { AllTagsPayload, TagChangedPayload } from './types'
 
 const tagStore = reactive(new Map<number, Map<number, string[]>>()) // meeting -> user -> tag[]
 
@@ -43,6 +44,7 @@ export default function useParticipantTags(meeting: MaybeRef<number>) {
    */
   function getTagUsers(tag: string) {
     return map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ifilter(users.value.entries(), ([_, tags]) => tags.includes(tag)),
       ([user]) => user
     )

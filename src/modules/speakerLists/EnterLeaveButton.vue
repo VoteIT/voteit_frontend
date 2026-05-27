@@ -8,10 +8,11 @@ import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 import useParticipantTags from '../meetings/participantTags/useParticipantTags'
 
-import useSpeakerList from './useSpeakerList'
 import useGenderTag from './genderTags/useGenderTag'
 import { GENDER_ICONS, translateGender } from './genderTags/utils'
-import { SpeakerList, SpeakerSystemMethod } from './types'
+import type { GenderTag } from './genderTags/types'
+import useSpeakerList from './useSpeakerList'
+import { type SpeakerList, SpeakerSystemMethod } from './types'
 
 const props = defineProps<{
   list: SpeakerList
@@ -102,6 +103,7 @@ const genderChoices = Object.entries(GENDER_ICONS).map(([tag, icon]) => ({
         <div class="d-flex flex-column ga-2">
           <v-btn
             v-for="{ icon, tag, text } in genderChoices"
+            :key="tag"
             color="primary"
             :prepend-icon="icon"
             size="large"

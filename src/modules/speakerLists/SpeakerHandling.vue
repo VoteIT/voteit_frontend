@@ -209,6 +209,7 @@ const otherRoomsWithLists = computed(() => {
                 <v-list>
                   <v-list-item
                     v-for="room in otherRoomsWithLists"
+                    :key="room.pk"
                     prepend-icon="mdi-lectern"
                     :title="room.title"
                     :to="{
@@ -274,6 +275,7 @@ const otherRoomsWithLists = computed(() => {
           </div>
           <v-sheet
             v-for="list in speakerLists"
+            :key="list.pk"
             class="mb-4"
             elevation="4"
             rounded

@@ -1,5 +1,3 @@
-import { filter } from 'itertools'
-
 import restApi from '@/utils/restApi'
 
 import { agendaItemType } from '../agendas/contentTypes'

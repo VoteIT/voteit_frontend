@@ -1,5 +1,4 @@
 import type { Maybe } from 'itertools/types'
-import type { Dictionary } from 'lodash'
 import { computed, MaybeRef, unref } from 'vue'
 import { useRoute } from 'vue-router'
 

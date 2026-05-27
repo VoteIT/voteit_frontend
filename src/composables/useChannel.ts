@@ -48,7 +48,7 @@ export default function useChannel(
     subscription = socket.channels.subscribe(channelType, pk.value)
     try {
       await subscription.promise
-    } catch (e) {
+    } catch {
       if (!config?.critical) return
       openDialogEvent.emit({
         dismissible: false,

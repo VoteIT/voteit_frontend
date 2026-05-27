@@ -1,5 +1,5 @@
 import { Dictionary } from 'lodash'
-import { Component, Ref } from 'vue'
+import { Component } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
 import { MenuItem, TreeMenuLink } from '@/utils/types'

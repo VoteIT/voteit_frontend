@@ -1,5 +1,3 @@
-import { useI18n } from 'vue-i18n'
-
 import { meetingSlotPlugins } from '@/modules/meetings/registry'
 import useMeetingComponent from '@/modules/meetings/useMeetingComponent'
 

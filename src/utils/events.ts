@@ -4,7 +4,6 @@ import TypedEvent from './TypedEvent'
 export const DocumentVisibleEvent = new TypedEvent()
 export const DocumentHiddenEvent = new TypedEvent()
 
-export const clearAlertsEvent = new TypedEvent()
 export const closeModalEvent = new TypedEvent()
 /**
  * Can be used with only string as a shortcut:

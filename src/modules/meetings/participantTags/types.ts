@@ -1,9 +1,9 @@
-interface AllTagsPayload {
+export interface AllTagsPayload {
   meeting: number
   tags: { [k: string]: number[] }
 }
 
-interface TagChangedPayload {
+export interface TagChangedPayload {
   meeting: number
   tags: { [k: string]: string | string[] }
   user: number

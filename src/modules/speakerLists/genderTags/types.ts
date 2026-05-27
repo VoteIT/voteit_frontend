@@ -1,1 +1,1 @@
-type GenderTag = 'f' | 'm' | 'nb'
+export type GenderTag = 'f' | 'm' | 'nb'

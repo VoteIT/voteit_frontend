@@ -22,7 +22,7 @@ defineProps<{
       <v-spacer />
       <v-icon v-if="active" icon="mdi-account-voice" size="small" />
     </v-list-item-title>
-    <v-list-item-subtitle v-for="{ icon, text } in annotations">
+    <v-list-item-subtitle v-for="({ icon, text }, i) in annotations" :key="i">
       <v-icon :icon="icon" size="small" />
       {{ text }}
     </v-list-item-subtitle>

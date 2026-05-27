@@ -85,6 +85,7 @@ async function setFlag(button: IFlagButton, value: boolean) {
     <v-list>
       <v-list-item
         v-for="{ active, button } in flagButtons"
+        :key="button.pk"
         :active="active"
         :append-icon="button.icon"
         :prepend-icon="

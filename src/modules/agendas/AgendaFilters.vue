@@ -77,6 +77,7 @@ const states = computed(() =>
       <v-item-group mandatory v-model="agendaFilter.order">
         <v-item
           v-for="f in orders"
+          :key="f.id"
           :value="f.id"
           v-slot="{ isSelected, toggle }"
         >
@@ -94,6 +95,7 @@ const states = computed(() =>
       <v-item-group mandatory multiple v-model="agendaFilter.states">
         <v-item
           v-for="{ label, state } in states"
+          :key="state"
           :value="state"
           v-slot="{ isSelected, toggle }"
         >

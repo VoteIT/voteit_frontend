@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, reactive } from 'vue'
 
-import { clearAlertsEvent, openAlertEvent } from '@/utils/events'
+import { openAlertEvent } from '@/utils/events'
 import { Alert, AlertLevel } from '@/composables/types'
 
 const AUTO_DISMISS_DELAY = 5000 // Auto dismiss in ms
@@ -89,7 +89,6 @@ function open(data: string | Alert) {
 
 onBeforeMount(() => {
   openAlertEvent.on(open)
-  clearAlertsEvent.on(() => dismiss())
 })
 </script>
 

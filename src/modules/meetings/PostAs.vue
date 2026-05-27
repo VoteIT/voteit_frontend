@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed, Ref, ref, watch, type ComponentPublicInstance } from 'vue'
-import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
 

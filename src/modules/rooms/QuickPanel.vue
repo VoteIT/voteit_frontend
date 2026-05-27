@@ -35,7 +35,8 @@ const sortedRooms = computed(() => {
 <template>
   <v-card-actions v-if="sortedRooms.length" class="overflow-x-auto">
     <v-btn
-      v-for="{ open, title, to } in sortedRooms"
+      v-for="{ pk, open, title, to } in sortedRooms"
+      :key="pk"
       color="primary"
       :prepend-icon="open ? 'mdi-broadcast' : 'mdi-broadcast-off'"
       size="small"

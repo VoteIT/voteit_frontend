@@ -61,6 +61,7 @@ export default function useSpeakerGroups(
       ),
       ([title, posUsers]) => ({
         title, // groupby key is title
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         queue: map(posUsers, ([_, speaker]) => annotateSpeaker(speaker))
       })
     ) // Deconstruct enumeration into an array of speakers

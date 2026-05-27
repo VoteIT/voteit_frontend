@@ -14,7 +14,9 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'vue/multi-word-component-names':
       process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    indent: 'off'
+    indent: 'off',
+    'vue/valid-v-slot': ['error', { allowModifiers: true }],
+    'vue/return-in-computed-property': 'off'
   },
 
   extends: ['plugin:vue/vue3-essential', '@vue/prettier', '@vue/typescript']

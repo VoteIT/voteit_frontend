@@ -1,4 +1,4 @@
-import { isEmpty, type Dictionary } from 'lodash'
+import { isEmpty } from 'lodash'
 import { computed, ref } from 'vue'
 import { isValidationError, parseSocketError } from 'envelope-client'
 

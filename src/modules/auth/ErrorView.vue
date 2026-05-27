@@ -59,7 +59,8 @@ onBeforeMount(fetchMessages)
           </div>
           <v-list v-else bg-color="transparent" class="text-left mb-6">
             <v-list-item
-              v-for="props in annotatedMessages"
+              v-for="(props, i) in annotatedMessages"
+              :key="i"
               active
               v-bind="props"
             />

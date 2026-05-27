@@ -62,7 +62,7 @@ function* iterMdiRules() {
           }
         }
       }
-    } catch (e) {
+    } catch {
       // Ignore cross-origin errors
     }
   }
@@ -109,6 +109,7 @@ const iconList = computed(() => {
       <p class="mr-4">{{ $t('content.suggestions') }}:</p>
       <v-icon
         v-for="icon in suggestions"
+        :key="icon"
         :icon="'mdi-' + icon"
         @click="selectedIcon = icon"
       />

@@ -201,7 +201,7 @@ async function deleteNote(note: number) {
         class="mt-6"
         :text="$t('notes.noNotesDescription')"
       />
-      <template v-for="{ route, notes, title } in aiPartitioned">
+      <template v-for="{ route, notes, pk, title } in aiPartitioned" :key="pk">
         <div class="d-flex mt-6">
           <h2 class="mb-1 flex-grow-1 text-truncate">{{ title }}</h2>
           <v-btn
@@ -219,6 +219,7 @@ async function deleteNote(note: number) {
         <div class="d-flex flex-column ga-2">
           <ProposalSheet
             v-for="{ color, icon, note, proposal } in notes"
+            :key="proposal.pk"
             :proposal="proposal"
           >
             <template #append>
