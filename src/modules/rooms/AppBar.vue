@@ -177,8 +177,7 @@ const voteBtnProps = computed(() => {
       variant="tonal"
       :to="
         getRoomRoute('room:broadcast', {
-          aid: meetingRoom.agenda_item || agenda[0].pk,
-          tab: 'decisions'
+          aid: meetingRoom.agenda_item || agenda[0].pk
         })
       "
     />

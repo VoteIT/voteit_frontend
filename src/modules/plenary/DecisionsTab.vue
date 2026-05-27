@@ -302,23 +302,20 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div ref="agendaInfoEl">
-    <AgendaInfoAlert class="mb-6" />
-  </div>
-  <ChoiceDialog
-    :description="$t('plenary.follow.description')"
-    :handler="setFollowAI"
-    :options="broadcastFollowOptions"
-    :title="$t('plenary.follow.title')"
-    v-model="followChoiceDialog"
-  />
-  <v-row v-if="!selectedProposals.length && !pool.length">
-    <v-col
-      md="8"
-      offset-md="2"
-      lg="4"
-      offset-lg="4"
-      class="text-center text-secondary mt-12"
+  <div>
+    <ChoiceDialog
+      :description="$t('plenary.follow.description')"
+      :handler="setFollowAI"
+      :options="broadcastFollowOptions"
+      :title="$t('plenary.follow.title')"
+      v-model="followChoiceDialog"
+    />
+    <div ref="agendaInfoEl">
+      <AgendaInfoAlert class="ma-6 mb-0" />
+    </div>
+    <div
+      v-if="!selectedProposals.length && !pool.length"
+      class="text-center text-secondary pt-12 flex-grow-1"
     >
       <h2 class="text-h4 mb-6">
         {{ $t('plenary.noProposalsInFilter') }}
@@ -326,107 +323,113 @@ watchEffect(() => {
       <p>
         {{ $t('plenary.hintModifyFilter') }}
       </p>
-    </v-col>
-  </v-row>
-  <v-row v-else class="proposals" :style="proposalsStyle">
-    <v-col cols="7" md="8" lg="9" @click="handleProposalClick()">
-      <ProposalSheet
-        v-for="p in selectedProposals"
-        :key="p.pk"
-        class="mb-4"
-        :proposal="p"
-        :selected="proposalHighlight?.proposal === p.pk"
-        ref="proposalComponents"
-        @click.stop="handleProposalClick(p.pk)"
-        @update:selection="setTextSelection(p.pk, $event)"
+    </div>
+    <div
+      v-else
+      class="proposals d-flex overflow-hidden"
+      :style="proposalsStyle"
+    >
+      <div
+        class="flex-grow-1 overflow-y-auto d-flex flex-column ga-4 pa-6"
+        @click="handleProposalClick()"
       >
-        <template #actions>
-          <div class="text-right" @click.stop>
-            <v-btn-group class="mr-2">
+        <ProposalSheet
+          v-for="p in selectedProposals"
+          :key="p.pk"
+          :proposal="p"
+          :selected="proposalHighlight?.proposal === p.pk"
+          ref="proposalComponents"
+          @click.stop="handleProposalClick(p.pk)"
+          @update:selection="setTextSelection(p.pk, $event)"
+        >
+          <template #actions>
+            <div class="text-right" @click.stop>
+              <v-btn-group class="mr-2">
+                <v-btn
+                  v-for="s in getProposalStates(p.state)"
+                  :key="s.state"
+                  :color="p.state === s.state ? s.color : 'secondary'"
+                  :disabled="!canChangeProposalState"
+                  :loading="p.state !== s.state && transitioning.has(p.pk)"
+                  :variant="p.state === s.state ? 'flat' : 'tonal'"
+                  @click="makeTransition(p, s)"
+                >
+                  <v-icon
+                    :icon="s.icon"
+                    size="large"
+                    :color="p.state === s.state ? undefined : s.color"
+                  />
+                </v-btn>
+              </v-btn-group>
               <v-btn
-                v-for="s in getProposalStates(p.state)"
-                :key="s.state"
-                :color="p.state === s.state ? s.color : 'secondary'"
-                :disabled="!canChangeProposalState"
-                :loading="p.state !== s.state && transitioning.has(p.pk)"
-                :variant="p.state === s.state ? 'flat' : 'tonal'"
-                @click="makeTransition(p, s)"
-              >
-                <v-icon
-                  :icon="s.icon"
-                  size="large"
-                  :color="p.state === s.state ? undefined : s.color"
-                />
-              </v-btn>
-            </v-btn-group>
-            <v-btn
-              icon="mdi-chevron-right"
-              variant="text"
-              @click="deselect(p)"
+                icon="mdi-chevron-right"
+                variant="text"
+                @click="deselect(p)"
+              />
+            </div>
+          </template>
+          <template #append>
+            <div class="d-flex flex-wrap ga-1 mt-2">
+              <ButtonPlugins mode="presentation:personal" :proposal="p" />
+            </div>
+          </template>
+        </ProposalSheet>
+        <div
+          v-if="!selectedProposals.length"
+          class="text-h4 text-center text-secondary pa-6 pt-12"
+        >
+          <div
+            class="my-12"
+            v-for="plugin in suggestions"
+            :key="plugin.title"
+            :style="plugin.style"
+          >
+            <p class="mb-1">
+              {{ plugin.title }}
+            </p>
+            <Tag
+              v-if="plugin.v === 'tags'"
+              v-for="{ tag, count } in plugin.tags"
+              :key="tag"
+              class="mx-5"
+              :count="count"
+              :name="tag"
+              style="transform: scale(var(--tag-scale, 1.2))"
+            />
+            <component
+              v-else
+              :is="plugin.component"
+              v-bind="plugin.props"
+              @selected="replaceSelection"
             />
           </div>
-        </template>
-        <template #append>
-          <div class="d-flex flex-wrap ga-1 mt-2">
-            <ButtonPlugins mode="presentation:personal" :proposal="p" />
-          </div>
-        </template>
-      </ProposalSheet>
-      <div
-        v-if="!selectedProposals.length"
-        class="text-h4 text-center text-secondary mt-12"
-      >
-        <div
-          class="my-12"
-          v-for="plugin in suggestions"
-          :key="plugin.title"
-          :style="plugin.style"
-        >
-          <p class="mb-1">
-            {{ plugin.title }}
-          </p>
-          <Tag
-            v-if="plugin.v === 'tags'"
-            v-for="{ tag, count } in plugin.tags"
-            :key="tag"
-            class="mx-5"
-            :count="count"
-            :name="tag"
-            style="transform: scale(var(--tag-scale, 1.2))"
-          />
-          <component
-            v-else
-            :is="plugin.component"
-            v-bind="plugin.props"
-            @selected="replaceSelection"
-          />
+          <template v-if="!suggestions.length">
+            {{ $t('plenary.selectProposals') }}
+            <v-icon icon="mdi-chevron-right" />
+          </template>
         </div>
-        <template v-if="!suggestions.length">
-          {{ $t('plenary.selectProposals') }}
-          <v-icon icon="mdi-chevron-right" />
-        </template>
       </div>
-    </v-col>
-    <v-col cols="5" md="4" lg="3">
-      <div class="mb-6 d-flex" v-for="p in pool" :key="p.pk">
-        <v-btn
-          size="small"
-          icon="mdi-chevron-left"
-          variant="text"
-          @click="select(p)"
-        />
-        <ProposalSheet :proposal="p" class="flex-grow-1" />
+      <div
+        class="proposal-pool d-flex flex-column ga-6 w-25 overflow-y-auto pa-6 pl-0"
+      >
+        <div class="d-flex" v-for="p in pool" :key="p.pk">
+          <v-btn
+            size="small"
+            icon="mdi-chevron-left"
+            variant="text"
+            @click="select(p)"
+          />
+          <ProposalSheet :proposal="p" class="flex-grow-1" />
+        </div>
       </div>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="sass">
 .proposals
-  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - var(--aiheight) - 12px) !important
-  overflow: hidden !important
-  margin-bottom: -24px !important
-  > div
-    overflow-y: auto
-    height: 100%
+  height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom) - var(--aiheight))
+
+.proposal-pool
+  min-width: 344px
 </style>

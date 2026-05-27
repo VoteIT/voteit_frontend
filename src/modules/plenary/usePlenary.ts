@@ -1,10 +1,16 @@
-import { ComputedRef, computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ComputedRef, computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { StorageSerializers, useStorage } from '@vueuse/core'
 
 import { ProposalState, Proposal, isProposal } from '@/modules/proposals/types'
 import useProposalStore from '@/modules/proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
+
+export const plenaryViewMode = useStorage<'discussion' | 'decisions' | 'split'>(
+  'plenary:viewMode',
+  'decisions',
+  localStorage
+)
 
 /**
  * Whether broadcast should follow the senders agenda item or wait for sender to broadcast item.
@@ -36,11 +42,10 @@ function filterProposalStates(p: Proposal) {
 
 export default function usePlenary(agendaItem: ComputedRef<number>) {
   const route = useRoute()
-  const router = useRouter()
   const { filterProposals, getProposal } = useProposalStore()
   const { isBroadcasting, meetingRoom, getRoomRoute } = useRoom()
 
-  type Tab = 'discussion' | 'decisions'
+  type Tab = 'discussion' | 'decisions' | 'split'
 
   function getPlenaryRoute(params: { aid?: number; tab?: Tab }) {
     return getRoomRoute('room:broadcast', {
@@ -50,13 +55,10 @@ export default function usePlenary(agendaItem: ComputedRef<number>) {
     })
   }
 
-  const currentTab = computed({
-    get() {
-      return (route.params.tab ?? 'decisions') as Tab
-    },
-    set(tab) {
-      router.replace(getPlenaryRoute({ tab }))
-    }
+  const currentTab = computed(() => (route.params.tab ?? 'decisions') as Tab)
+
+  watch(currentTab, (tab) => {
+    plenaryViewMode.value = tab
   })
 
   /**

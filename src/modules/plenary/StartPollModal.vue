@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useRoom from '../rooms/useRoom'
@@ -22,6 +23,7 @@ defineEmits<{
   (e: 'cancel'): void
 }>()
 
+const { t } = useI18n()
 const meetingId = useMeetingId()
 const { agendaId, nextPollTitle } = useAgendaItem()
 const { isBroadcasting, handleBroadcast } = useRoom()
@@ -71,7 +73,7 @@ async function createPoll() {
     createState.value = 'done'
   } catch {
     createState.value = 'failed'
-    alert("^Couldn't create poll!")
+    alert(`^${t('plenary.createPollFailed')}`)
   }
 }
 
@@ -85,7 +87,7 @@ async function takeOverAndStart() {
       send_proposals: true
     })
   } catch {
-    alert("^Couldn't take over broadcast")
+    alert(`^${t('plenary.takeOverBroadcastFailed')}`)
   }
   takingOver.value = false
   createPoll()

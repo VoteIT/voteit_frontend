@@ -32,15 +32,23 @@ import {
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
 import useSpeakerStore from './useSpeakerStore'
+import useRoom from '../rooms/useRoom'
 
-const props = defineProps<{
-  room: number
-}>()
+const props = withDefaults(
+  defineProps<{
+    keyBindings?: 'all' | 'startStop'
+    room: number
+  }>(),
+  {
+    keyBindings: 'all'
+  }
+)
 
 const { t } = useI18n()
 
 const { meetingId, meetingRoute } = useMeeting()
 const { filterRooms } = useRoomStore()
+const { meetingRoom, handleSpeaker } = useRoom()
 const { listApi, getSpeakerLists } = useSpeakerStore()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
 const { agendaId, agendaItem } = useAgendaItem()
@@ -160,208 +168,265 @@ const otherRoomsWithLists = computed(() => {
 </script>
 
 <template>
-  <v-row v-if="speakerSystem">
-    <v-col cols="12" order-sm="1" sm="5" md="5" class="speaker-lists">
-      <div class="d-flex ga-1 mb-3">
-        <h2 class="flex-grow-1">
-          {{ $t('speaker.listChoices') }}
-        </h2>
-        <v-menu v-if="otherRoomsWithLists.length">
-          <template #activator="{ props }">
-            <v-btn
-              color="warning"
-              icon="mdi-alert"
-              variant="tonal"
-              v-bind="props"
-            />
-          </template>
-          <v-card
-            :title="
-              $t('room.otherRoomsSpeakerlists', otherRoomsWithLists.length)
-            "
-          >
-            <v-list>
-              <v-list-item
-                v-for="room in otherRoomsWithLists"
-                prepend-icon="mdi-lectern"
-                :title="room.title"
-                :to="{
-                  name: 'room:broadcast',
-                  params: {
-                    aid: agendaId,
-                    id: meetingId,
-                    roomId: room.pk,
-                    tab: 'discussion'
-                  }
-                }"
-              />
-            </v-list>
-          </v-card>
-        </v-menu>
-        <v-btn-group>
-          <v-btn
-            color="primary"
-            :disabled="!canManageSystem"
-            prepend-icon="mdi-plus"
-            size="small"
-            :text="$t('speaker.newList')"
-            @click="addSpeakerList({ title: nextSpeakerListName })"
-          />
-          <v-menu :text="$t('speaker.addQuick')" location="bottom right">
-            <template #activator="{ props }">
+  <div v-if="speakerSystem">
+    <v-alert
+      v-if="!meetingRoom?.send_sls"
+      class="mb-6"
+      :border="true"
+      type="info"
+      :title="$t('room.displaySpeakers')"
+      :text="$t('room.displaySpeakersDescription')"
+    >
+      <template #append>
+        <v-btn
+          @click="handleSpeaker({ send_sls: true })"
+          prepend-icon="mdi-bullhorn"
+          :text="$t('room.displaySpeakers')"
+        />
+      </template>
+    </v-alert>
+    <div class="speaker-cq-root">
+      <div class="speaker-body ga-6 d-flex">
+        <div class="speaker-sidebar">
+          <div class="d-flex ga-1 mb-3">
+            <h2 class="flex-grow-1">
+              {{ $t('speaker.listChoices') }}
+            </h2>
+            <v-menu v-if="otherRoomsWithLists.length">
+              <template #activator="{ props }">
+                <v-btn
+                  color="warning"
+                  icon="mdi-alert"
+                  variant="tonal"
+                  v-bind="props"
+                />
+              </template>
+              <v-card
+                :title="
+                  $t('room.otherRoomsSpeakerlists', otherRoomsWithLists.length)
+                "
+              >
+                <v-list>
+                  <v-list-item
+                    v-for="room in otherRoomsWithLists"
+                    prepend-icon="mdi-lectern"
+                    :title="room.title"
+                    :to="{
+                      name: 'room:broadcast',
+                      params: {
+                        aid: agendaId,
+                        id: meetingId,
+                        roomId: room.pk,
+                        tab: 'discussion'
+                      }
+                    }"
+                  />
+                </v-list>
+              </v-card>
+            </v-menu>
+            <v-btn-group>
               <v-btn
-                v-bind="props"
                 color="primary"
                 :disabled="!canManageSystem"
+                prepend-icon="mdi-plus"
                 size="small"
-              >
-                <v-icon icon="mdi-chevron-down" />
-              </v-btn>
-            </template>
-            <v-list>
-              <DefaultDialog :title="$t('speaker.newList')">
+                :text="$t('speaker.newList')"
+                @click="addSpeakerList({ title: nextSpeakerListName })"
+              />
+              <v-menu :text="$t('speaker.addQuick')" location="bottom right">
                 <template #activator="{ props }">
-                  <v-list-item
+                  <v-btn
                     v-bind="props"
-                    :title="$t('speaker.addWithName')"
-                  />
-                </template>
-                <template #default="{ close }">
-                  <DefaultForm
-                    :model-value="{ title: nextSpeakerListName }"
-                    :handler="addSpeakerList"
-                    @done="close"
-                    v-slot="{ errors, formData }"
+                    color="primary"
+                    :disabled="!canManageSystem"
+                    size="small"
                   >
-                    <v-text-field
-                      :label="$t('name')"
-                      :error-messages="errors.title"
-                      v-model="formData.title"
-                      :rules="[rules.required, rules.minLength(3)]"
-                    />
-                  </DefaultForm>
+                    <v-icon icon="mdi-chevron-down" />
+                  </v-btn>
                 </template>
-              </DefaultDialog>
-            </v-list>
-          </v-menu>
-        </v-btn-group>
-      </div>
-      <v-sheet v-for="list in speakerLists" class="mb-4" elevation="4" rounded>
-        <div class="pa-3">
-          <div class="d-flex">
-            <h3 class="flex-grow-1 flex-shrink-1">
-              {{ list.title }}
-              <small
-                :class="`text-${getState(list.state)?.color}`"
-                class="ml-2"
-              >
-                <v-icon
-                  :icon="
-                    list.state === SpeakerListState.Open
-                      ? 'mdi-play-circle-outline'
-                      : 'mdi-lock'
-                  "
-                  size="small"
-                />
-                &nbsp;{{ getState(list.state)?.getName(t) }}</small
-              >
-            </h3>
-            <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
-              <template #top v-if="canManageSystem">
-                <DefaultDialog :title="$t('speaker.editList')">
-                  <template #activator="{ props }">
-                    <v-list-item
-                      v-bind="props"
-                      prepend-icon="mdi-pencil"
-                      :title="$t('edit')"
-                    />
-                  </template>
-                  <template #default="{ close }">
-                    <DefaultForm
-                      :model-value="{ title: list.title, pk: list.pk }"
-                      :handler="updateSpeakerList"
-                      @done="close"
-                      v-slot="{ errors, formData }"
-                    >
-                      <v-text-field
-                        :label="$t('name')"
-                        :error-messages="errors.title"
-                        v-model="formData.title"
-                        :rules="[rules.required, rules.minLength(3)]"
+                <v-list>
+                  <DefaultDialog :title="$t('speaker.newList')">
+                    <template #activator="{ props }">
+                      <v-list-item
+                        v-bind="props"
+                        :title="$t('speaker.addWithName')"
                       />
-                    </DefaultForm>
-                  </template>
-                </DefaultDialog>
-                <QueryDialog
-                  :text="$t('speaker.shuffleListConfirm')"
-                  @confirmed="listApi.shuffle(list.pk)"
-                >
-                  <template #activator="{ props }">
-                    <v-list-item
-                      :disabled="!list.queue.length || !!list.current"
-                      prepend-icon="mdi-shuffle-variant"
-                      :title="$t('speaker.shuffleList')"
-                      v-bind="props"
+                    </template>
+                    <template #default="{ close }">
+                      <DefaultForm
+                        :model-value="{ title: nextSpeakerListName }"
+                        :handler="addSpeakerList"
+                        @done="close"
+                        v-slot="{ errors, formData }"
+                      >
+                        <v-text-field
+                          :label="$t('name')"
+                          :error-messages="errors.title"
+                          v-model="formData.title"
+                          :rules="[rules.required, rules.minLength(3)]"
+                        />
+                      </DefaultForm>
+                    </template>
+                  </DefaultDialog>
+                </v-list>
+              </v-menu>
+            </v-btn-group>
+          </div>
+          <v-sheet
+            v-for="list in speakerLists"
+            class="mb-4"
+            elevation="4"
+            rounded
+          >
+            <div class="pa-3">
+              <div class="d-flex">
+                <h3 class="flex-grow-1 flex-shrink-1">
+                  {{ list.title }}
+                  <small
+                    :class="`text-${getState(list.state)?.color}`"
+                    class="ml-2"
+                  >
+                    <v-icon
+                      :icon="
+                        list.state === SpeakerListState.Open
+                          ? 'mdi-play-circle-outline'
+                          : 'mdi-lock'
+                      "
+                      size="small"
                     />
+                    &nbsp;{{ getState(list.state)?.getName(t) }}</small
+                  >
+                </h3>
+                <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
+                  <template #top v-if="canManageSystem">
+                    <DefaultDialog :title="$t('speaker.editList')">
+                      <template #activator="{ props }">
+                        <v-list-item
+                          v-bind="props"
+                          prepend-icon="mdi-pencil"
+                          :title="$t('edit')"
+                        />
+                      </template>
+                      <template #default="{ close }">
+                        <DefaultForm
+                          :model-value="{ title: list.title, pk: list.pk }"
+                          :handler="updateSpeakerList"
+                          @done="close"
+                          v-slot="{ errors, formData }"
+                        >
+                          <v-text-field
+                            :label="$t('name')"
+                            :error-messages="errors.title"
+                            v-model="formData.title"
+                            :rules="[rules.required, rules.minLength(3)]"
+                          />
+                        </DefaultForm>
+                      </template>
+                    </DefaultDialog>
+                    <QueryDialog
+                      :text="$t('speaker.shuffleListConfirm')"
+                      @confirmed="listApi.shuffle(list.pk)"
+                    >
+                      <template #activator="{ props }">
+                        <v-list-item
+                          :disabled="!list.queue.length || !!list.current"
+                          prepend-icon="mdi-shuffle-variant"
+                          :title="$t('speaker.shuffleList')"
+                          v-bind="props"
+                        />
+                      </template>
+                    </QueryDialog>
                   </template>
-                </QueryDialog>
-              </template>
-            </DropdownMenu>
-          </div>
-          <p>
-            {{ $t('speaker.speakerCount', list.queue.length) }}
-          </p>
-        </div>
-        <template v-if="canChangeSpeakerList">
-          <v-divider />
-          <div class="px-3 py-1">
-            <v-btn
+                </DropdownMenu>
+              </div>
+              <p>
+                {{ $t('speaker.speakerCount', list.queue.length) }}
+              </p>
+            </div>
+            <template v-if="canChangeSpeakerList">
+              <v-divider />
+              <div class="px-3 py-1">
+                <v-btn
+                  v-if="list.isActive"
+                  @click="setActive(list, false)"
+                  :text="$t('speaker.deactivateList')"
+                  variant="text"
+                  class="mr-1"
+                />
+                <v-btn
+                  v-else
+                  @click="setActive(list)"
+                  :text="$t('speaker.activateList')"
+                  variant="text"
+                  class="mr-1"
+                />
+                <v-btn
+                  v-if="list.state === SpeakerListState.Open"
+                  @click="transitionList(list, 'close')"
+                  :text="$t('speaker.closeList')"
+                  class="mr-1"
+                  variant="text"
+                />
+                <v-btn
+                  v-else
+                  @click="transitionList(list, 'open')"
+                  :text="$t('speaker.openList')"
+                  class="mr-1"
+                  variant="text"
+                />
+              </div>
+            </template>
+            <div
               v-if="list.isActive"
-              @click="setActive(list, false)"
-              :text="$t('speaker.deactivateList')"
-              variant="text"
-              class="mr-1"
-            />
-            <v-btn
-              v-else
-              @click="setActive(list)"
-              :text="$t('speaker.activateList')"
-              variant="text"
-              class="mr-1"
-            />
-            <v-btn
-              v-if="list.state === SpeakerListState.Open"
-              @click="transitionList(list, 'close')"
-              :text="$t('speaker.closeList')"
-              class="mr-1"
-              variant="text"
-            />
-            <v-btn
-              v-else
-              @click="transitionList(list, 'open')"
-              :text="$t('speaker.openList')"
-              class="mr-1"
-              variant="text"
-            />
-          </div>
-        </template>
-        <div
-          v-if="list.isActive"
-          class="bg-success-lighten-4 rounded-b px-3 py-1"
-        >
-          <v-icon icon="mdi-television-play" color="success" class="mr-2" />
-          {{ $t('speaker.listActive') }}
+              class="bg-success-lighten-4 rounded-b px-3 py-1"
+            >
+              <v-icon icon="mdi-television-play" color="success" class="mr-2" />
+              {{ $t('speaker.listActive') }}
+            </div>
+          </v-sheet>
+          <SpeakerListHistory
+            v-if="currentList"
+            :list="currentList"
+            class="mt-4"
+          />
         </div>
-      </v-sheet>
-      <SpeakerListHistory v-if="currentList" :list="currentList" class="mt-4" />
-    </v-col>
-    <v-col cols="12" order-sm="0" sm="7" md="7">
-      <SpeakerListControls v-if="currentList" :list-id="currentList.pk" />
-    </v-col>
-  </v-row>
+        <div class="flex-grow-1">
+          <SpeakerListControls
+            v-if="currentList"
+            :key-bindings="keyBindings"
+            :list-id="currentList.pk"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-else>
+    <v-card
+      prepend-icon="mdi-lectern"
+      :text="$t('plenary.noSpeakerListsDescription')"
+      :title="$t('plenary.noSpeakerListsTitle')"
+      color="info"
+    >
+      <template #actions>
+        <v-btn
+          prepend-icon="mdi-gavel"
+          :text="$t('plenary.proposalsAndDecisions')"
+          :to="{ params: { tab: 'decisions' } }"
+        />
+        <v-btn
+          prepend-icon="mdi-cog"
+          :text="$t('room.settings')"
+          :to="{
+            name: 'controlPanel',
+            params: { ...meetingRoute.params, panel: 'rooms' }
+          }"
+        />
+      </template>
+    </v-card>
+  </div>
 </template>
 
-<style lang="sass">
+<style lang="sass" scoped>
 div.speaker-lists
   .v-card
     overflow: visible
@@ -372,4 +437,24 @@ ol.speaker-queue
   li
     &.self
       font-weight: 700
+
+.speaker-cq-root
+  container-type: inline-size
+
+.speaker-body
+  display: flex
+  flex-direction: column
+
+.speaker-sidebar
+  width: 100%
+
+@container (min-width: 700px)
+  .speaker-body
+    flex-direction: row
+
+  .speaker-sidebar
+    order: 1
+    width: 33.3333%
+    min-width: 320px
+    flex-shrink: 0
 </style>
