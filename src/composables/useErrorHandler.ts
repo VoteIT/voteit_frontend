@@ -36,6 +36,15 @@ function getNonspecificFieldErrorMessage(errors: APIError) {
     .join('\n')
 }
 
+/**
+ * Centralised error handling for REST and WebSocket API calls.
+ * Parses validation errors into per-field messages and optionally
+ * surfaces them via an alert snackbar or a modal dialog.
+ *
+ * @param opts.target - Where to show errors: `'alert'` (snackbar), `'dialog'` (modal), or `'none'` (silent)
+ * @param opts.showField - If set, only the error for this field (or `non_field_errors`) is displayed
+ * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handleError, handleSocketError, handleRestError }`
+ */
 export default function useErrorHandler(
   opts: HandlerOptions = DEFAULT_OPTIONS
 ) {

@@ -8,7 +8,11 @@ import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
 // REGISTER PLUGINS
-// Registration order matters.
+// Registration order matters: modules register into shared plugin registries
+// (e.g. meetingSettingsPlugins, agendaMenuPlugins) via side effects at import time.
+// - auth and organisations must come before meetings (meetings depends on them)
+// - sub-modules (polls/methods, speakerLists/genderTags, meetings/dialects) must
+//   come after their parent module
 import './modules/auth'
 import './modules/organisations'
 import './modules/meetings'

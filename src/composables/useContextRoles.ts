@@ -9,6 +9,11 @@ import { ContextRoles, UserContextRoles } from './types'
 
 const contextRoles = reactive<Map<string, Set<string>>>(new Map())
 
+/**
+ * Role keys encode a (contentType, objectPk, userPk) triple as a slash-delimited string.
+ * Format: "<contentType>/<objectPk>/<userId>"  e.g. "organisation/123/456"
+ * When userId is '' the key is used as a prefix to query all users on an object.
+ */
 function getRoleKey(...components: [string, number, number | '']) {
   return components.join('/')
 }

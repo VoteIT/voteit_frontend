@@ -6,8 +6,10 @@ export const DocumentHiddenEvent = new TypedEvent()
 
 export const closeModalEvent = new TypedEvent()
 /**
- * Can be used with only string as a shortcut:
- * Start with '*' for warning level and '^' for error level.
+ * Emit an Alert object, or a plain string as a shortcut:
+ * - No prefix → info level  e.g. `openAlertEvent.emit('Saved')`
+ * - `'*'` prefix  → warning  e.g. `openAlertEvent.emit('*Check your input')`
+ * - `'^'` prefix  → error    e.g. `openAlertEvent.emit('^Something went wrong')`
  */
 export const openAlertEvent = new TypedEvent<Alert | string>()
 export const openDialogEvent = new TypedEvent<Dialog>()

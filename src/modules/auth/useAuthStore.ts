@@ -65,7 +65,7 @@ export default defineStore('auth', () => {
    */
   function getUserRandomSortValue(value: number) {
     const userPk = user.value?.pk ?? 0
-    let n = userPk * 374761393 + value * 668265263 // big primes
+    let n = userPk * 374761393 + value * 668265263 // Knuth multiplicative hash — maps pk to a stable pseudo-random sort position
     n = (n ^ (n >> 13)) * 1274126177
     return (n ^ (n >> 16)) >>> 0 // ensure unsigned 32-bit
   }

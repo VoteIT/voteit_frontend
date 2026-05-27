@@ -56,7 +56,7 @@ function promptVersionReload() {
   openDialogEvent.emit({
     resolve(reload) {
       if (reload) location.reload()
-      else setTimeout(promptVersionReload, 30_000)
+      else setTimeout(promptVersionReload, 30_000) // re-ask after 30 s to give users time to finish their action
     },
     title: t('system.versionReloadQuery'),
     dismissible: false,

@@ -39,6 +39,15 @@ function call(...cbs: (() => Promise<unknown>)[]) {
   cbs.forEach((cb) => callbacks.push(cb))
 }
 
+/**
+ * Tracks global app initialisation state. Pass the promises that must
+ * resolve before the app is considered ready. Resolves them in parallel
+ * when the `readyToLoadEvent` fires (i.e. after authentication).
+ *
+ * @param name - Human-readable label used in error logging
+ * @param promises - Async operations that must complete during initialisation
+ * @returns `{ initDone, initFailed, initState, setLoaded, call }`
+ */
 export default function useLoader(
   name: string,
   ...promises: Promise<unknown>[]

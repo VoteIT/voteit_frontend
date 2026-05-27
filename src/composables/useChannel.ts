@@ -15,6 +15,16 @@ const subscribedChannels = reactive(new Set<string>())
 channelSubscribedEvent.on((channel) => subscribedChannels.add(channel.path))
 channelLeftEvent.on((channel) => subscribedChannels.delete(channel.path))
 
+/**
+ * Subscribes to a WebSocket channel and keeps the subscription in sync
+ * with reactive `name` and `pk` values. Automatically unsubscribes on unmount.
+ *
+ * @param name - Channel type name (e.g. `'meeting'`), reactive or static
+ * @param pk - Primary key of the object to subscribe to, reactive
+ * @param config.critical - If true, a subscription failure redirects to home with an error dialog
+ * @param config.leaveDelay - Milliseconds to delay unsubscribing (e.g. to avoid flicker on route change)
+ * @returns `{ isSubscribed, promise }` — `isSubscribed` is true once the server confirms the subscription
+ */
 export default function useChannel(
   name: string | Ref<string | undefined>,
   pk: Ref<number | undefined>,

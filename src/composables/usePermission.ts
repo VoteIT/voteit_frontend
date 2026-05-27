@@ -15,7 +15,7 @@ export enum PermissionDeniedStrategy {
   Default = 'default',
   RequireLogin = 'requireLogin'
 }
-type PermissonValue = boolean | undefined
+type PermissionValue = boolean | undefined
 type PermissionDeniedHandler = (
   options: PermissionOptions,
   router: Router,
@@ -63,7 +63,7 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
 }
 
 export default function usePermission(
-  permission: Ref<PermissonValue>,
+  permission: Ref<PermissionValue>,
   options: Partial<PermissionOptions> = {},
   strategy:
     | PermissionDeniedStrategy
@@ -72,7 +72,7 @@ export default function usePermission(
   const router = useRouter()
   const { t } = useI18n()
 
-  const previousValue = ref<PermissonValue>(permission.value)
+  const previousValue = ref<PermissionValue>(permission.value)
 
   function denyUser() {
     const method =
