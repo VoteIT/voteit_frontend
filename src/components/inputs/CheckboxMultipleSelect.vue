@@ -1,22 +1,6 @@
-<template>
-  <v-label v-if="label" :text="label" />
-  <div class="mb-4 d-flex flex-wrap">
-    <v-checkbox
-      v-for="[key, label] in Object.entries(settings.options)"
-      :key="key"
-      v-model="val[key]"
-      :label="label"
-      :disabled="requiredValues.includes(key)"
-      density="compact"
-      hide-details
-      class="flex-grow-0"
-    />
-  </div>
-</template>
-
-<script lang="ts">
-import { Dictionary } from 'lodash'
-import { defineComponent, PropType, reactive, watch } from 'vue'
+<script setup lang="ts">
+import { reactive, watch } from 'vue'
+import type { ValidationRule } from 'vuetify'
 
 type ChoiceRecord = Record<string, boolean>
 
@@ -31,51 +15,75 @@ function toOutputValue(obj: ChoiceRecord): string[] {
   return Object.keys(obj).filter((k) => obj[k])
 }
 
-export default defineComponent({
-  props: {
-    modelValue: {
-      type: Array as PropType<string[]>,
-      default: () => []
-    },
-    settings: {
-      type: Object as PropType<{ options: Dictionary<string> }>,
-      required: true
-    },
-    label: String,
-    requiredValues: {
-      type: Array as PropType<string[]>,
-      default: () => []
-    }
-  },
-  setup(props, { emit }) {
-    if (!props.settings?.options)
-      throw new Error(
-        'CheckboxMultipleSelect requires :settings="{ options: Record<string, string> }"'
-      )
-    const val = reactive(
-      createInitialValues(
-        Object.keys(props.settings.options),
-        new Set([...props.modelValue, ...props.requiredValues])
-      )
-    )
-    watch(
-      () => props.modelValue,
-      (values) => {
-        if (!props.settings?.options) return
-        for (const key in props.settings.options) {
-          val[key] = values.includes(key)
-        }
-      }
-    )
-    watch(val, (value) => {
-      emit('update:modelValue', toOutputValue(value))
-    })
-    return {
-      val
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string[]
+    settings: { options: Record<string, string> }
+    label?: string
+    requiredValues?: string[]
+    rules?: ValidationRule[]
+    errorMessages?: string | string[]
+  }>(),
+  {
+    modelValue: () => [],
+    requiredValues: () => [],
+    rules: () => [],
+    errorMessages: undefined
+  }
+)
+
+const emit = defineEmits<{
+  'update:modelValue': [value: string[]]
+}>()
+
+if (!props.settings?.options)
+  throw new Error(
+    'CheckboxMultipleSelect requires :settings="{ options: Record<string, string> }"'
+  )
+
+const val = reactive(
+  createInitialValues(
+    Object.keys(props.settings.options),
+    new Set([...props.modelValue, ...props.requiredValues])
+  )
+)
+
+watch(
+  () => props.modelValue,
+  (values) => {
+    if (!props.settings?.options) return
+    for (const key in props.settings.options) {
+      val[key] = values.includes(key)
     }
   }
+)
+
+watch(val, (value) => {
+  emit('update:modelValue', toOutputValue(value))
 })
 </script>
+
+<template>
+  <v-input
+    :model-value="modelValue"
+    :label="label"
+    :rules="rules"
+    :error-messages="errorMessages"
+  >
+    <div class="mb-4 d-flex flex-wrap">
+      <v-checkbox
+        v-for="[key, optionLabel] in Object.entries(settings.options)"
+        :key="key"
+        v-model="val[key]"
+        :label="optionLabel"
+        :disabled="requiredValues.includes(key)"
+        density="compact"
+        hide-details
+        class="flex-grow-0"
+      />
+    </div>
+  </v-input>
+</template>
 
 <style lang="sass" scoped>
 span
