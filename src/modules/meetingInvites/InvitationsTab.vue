@@ -284,7 +284,7 @@ async function clearAnnotationType(type: string) {
     >
       <v-icon>mdi-filter-menu</v-icon>
     </v-btn>
-    <DefaultDialog v-if="scopeItems.length === 1" :title="$t('invites.add')">
+    <DefaultDialog :title="$t('invites.add')" width="920">
       <template #activator="{ props }">
         <v-btn
           class="text-no-wrap"
@@ -301,43 +301,7 @@ async function clearAnnotationType(type: string) {
         />
       </template>
     </DefaultDialog>
-    <v-menu v-else-if="scopeItems.length > 1">
-      <template #activator="{ props }">
-        <v-btn
-          append-icon="mdi-chevron-down"
-          class="text-no-wrap"
-          :text="$t('invites.add')"
-          v-bind="props"
-        />
-      </template>
-      <v-list>
-        <DefaultDialog
-          v-for="{ icon, title, value } in scopeItems"
-          :key="value"
-          :title="$t('invites.add')"
-        >
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" :title="title" :prepend-icon="icon" />
-          </template>
-          <template #default="{ close }">
-            <InvitationModal :type="value" :meeting="meetingId" @done="close" />
-          </template>
-        </DefaultDialog>
-        <DefaultDialog :title="$t('invites.add')">
-          <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              :title="$t('invites.mixed.typeLabel')"
-              prepend-icon="mdi-account-star"
-            />
-          </template>
-          <template #default="{ close }">
-            <InvitationModal :meeting="meetingId" @done="close" />
-          </template>
-        </DefaultDialog>
-      </v-list>
-    </v-menu>
-    <v-btn-group variant="text" color="white" density="compact">
+    <!-- <v-btn-group variant="text" color="white" density="compact">
       <DefaultDialog :title="$t('invites.annotate.title')">
         <template #activator="{ props }">
           <v-btn
@@ -374,7 +338,7 @@ async function clearAnnotationType(type: string) {
           </QueryDialog>
         </v-list>
       </v-menu>
-    </v-btn-group>
+    </v-btn-group> -->
   </v-toolbar>
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
