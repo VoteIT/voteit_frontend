@@ -2,44 +2,39 @@
 import { imap, sum } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
-import { computed, onBeforeMount, reactive, ref, shallowRef, watch } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
 import { slugify } from '@/utils'
 import { cols } from '@/utils/defaults'
-import { parseRestError } from '@/utils/restApi'
-import { MenuItem, RestError } from '@/utils/types'
 
 import AppBar from '@/components/AppBar.vue'
-import DropdownMenu from '@/components/DropdownMenu.vue'
-import Headline from '@/components/Headline.vue'
 import Richtext from '@/components/Richtext.vue'
-import RichtextEditor from '@/components/RichtextEditor.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import UserSearch from '@/components/UserSearch.vue'
+import DefaultDialog from '@/components/DefaultDialog.vue'
+import EditableHelpText from '@/components/EditableHelpText.vue'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
-import useRules from '@/composables/useRules'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import EditableHelpText from '@/components/EditableHelpText.vue'
 
 import useAuthStore from '../auth/useAuthStore'
+import InviteCard from '../meetingInvites/InviteCard.vue'
 import useInviteStore from '../meetingInvites/useInviteStore'
 import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
-import Invite from '../meetingInvites/Invite.vue'
 import { MeetingState } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
 import { meetingStates } from '../meetings/workflowStates'
 import useMeetingStore from '../meetings/useMeetingStore'
 
 import ContactInfoTab from './ContactInfoTab.vue'
+import OrgEditForm from './OrgEditForm.vue'
 import useOrgStore from './useOrgStore'
 import { organisationType } from './contentTypes'
-import { IOrganisation, OrganisationRole } from './types'
+import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 import FindMeetingDialog from './FindMeetingDialog.vue'
 import { displayRoles } from './utils'
@@ -55,7 +50,6 @@ const { t } = useI18n()
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
-const rules = useRules(t)
 
 const currentTab = ref('default')
 const subscribeOrganisationId = computed(() => {
@@ -105,32 +99,8 @@ onBeforeMount(async () => {
 })
 
 const editing = ref(false)
-const formErrors = shallowRef<RestError<IOrganisation> | null>(null)
-const changeForm = reactive({
-  body: orgStore.organisation?.body ?? '',
-  page_title: orgStore.organisation?.page_title ?? ''
-})
-watch(
-  () => orgStore.organisation,
-  (org) => {
-    changeForm.body = org?.body ?? ''
-    changeForm.page_title = org?.page_title ?? ''
-  }
-)
-watch(changeForm, () => (formErrors.value = null), { deep: true })
+const { collapsedBodyHeightMobile } = useDefaults()
 
-const menu = computed<MenuItem[]>(() => {
-  if (!orgStore.organisation || !orgStore.canChangeOrganisation) return []
-  return [
-    {
-      title: t('edit'),
-      prependIcon: 'mdi-pencil',
-      onClick: async () => {
-        editing.value = true
-      }
-    }
-  ]
-})
 const tabs = computed(() => {
   if (!orgStore.canChangeOrganisation) return
   return [
@@ -149,15 +119,6 @@ const tabs = computed(() => {
   ]
 })
 
-async function save() {
-  try {
-    await orgStore.updateOrganisation(changeForm)
-    editing.value = false
-  } catch (e) {
-    formErrors.value = parseRestError(e)
-  }
-}
-
 function addUser(user: number) {
   if (!orgStore.organisation) throw new Error('No organisation')
   organisationType.addRoles(
@@ -166,8 +127,6 @@ function addUser(user: number) {
     OrganisationRole.MeetingCreator
   )
 }
-
-const { collapsedBodyHeightMobile } = useDefaults()
 
 function mkGroupRule(
   state: keyof (typeof meetingStore)['participatingMeetings'],
@@ -205,19 +164,6 @@ const groupsExpanded = ref(false)
 const meetingCount = computed(() =>
   sum(imap(groupRules, ({ meetings }) => meetings.value.length))
 )
-
-const formChanged = computed(
-  () =>
-    changeForm.body !== orgStore.organisation?.body ||
-    changeForm.page_title !== orgStore.organisation.page_title
-)
-
-function cancelEdit() {
-  editing.value = false
-  if (!orgStore.organisation) return
-  changeForm.body = orgStore.organisation.body
-  changeForm.page_title = orgStore.organisation.page_title
-}
 </script>
 
 <template>
@@ -225,8 +171,12 @@ function cancelEdit() {
   <UserMenu />
   <v-main>
     <v-container>
-      <v-row v-if="orgStore.organisation" class="home mt-4 mb-4">
-        <v-col v-if="!isAuthenticated" cols="12" order-sm="1" sm="4" xl="3">
+      <v-row v-if="orgStore.organisation" class="home my-4">
+        <v-col
+          v-if="!isAuthenticated"
+          v-bind="cols.wideLeft.right"
+          order-md="1"
+        >
           <v-btn
             v-if="orgStore.loginURL"
             block
@@ -247,15 +197,7 @@ function cancelEdit() {
             class="mt-3"
           />
         </v-col>
-        <v-col
-          cols="12"
-          order-md="0"
-          md="8"
-          lg="6"
-          offset-lg="1"
-          xl="5"
-          offset-xl="2"
-        >
+        <v-col v-bind="cols.wideLeft.left" order-md="0">
           <v-tabs
             v-if="tabs"
             :items="tabs"
@@ -279,49 +221,32 @@ function cancelEdit() {
                   />
                 </template>
               </v-alert>
-              <template v-if="editing">
-                <Headline
-                  editing
-                  :error-messages="formErrors?.page_title"
-                  :rules="[rules.required]"
-                  v-model="changeForm.page_title"
-                  @submit="save"
-                />
-                <RichtextEditor
-                  :error-messages="formErrors?.body"
-                  variant="full"
-                  v-model="changeForm.body"
-                  @keydown.ctrl.enter="save"
-                />
-                <v-expand-transition>
-                  <div v-if="formErrors?.non_field_errors">
-                    <v-alert
-                      class="mb-3"
-                      :text="formErrors.non_field_errors.join(', ')"
-                      type="error"
-                    />
-                  </div>
-                </v-expand-transition>
-                <div class="text-right">
-                  <v-btn
-                    :text="$t('cancel')"
-                    variant="text"
-                    @click="cancelEdit"
-                  />
-                  <v-btn
-                    color="primary"
-                    :disabled="!formChanged"
-                    :text="$t('save')"
-                    @click="save"
-                  />
-                </div>
-              </template>
+              <OrgEditForm
+                v-if="editing"
+                :organisation="orgStore.organisation"
+                @close="editing = false"
+              />
               <template v-else>
                 <header class="d-flex">
                   <h1 class="flex-grow-1">
                     {{ orgStore.organisation.page_title }}
                   </h1>
-                  <DropdownMenu :items="menu" />
+                  <v-menu v-if="orgStore.canChangeOrganisation">
+                    <template #activator="{ props }">
+                      <v-btn
+                        icon="mdi-dots-vertical"
+                        variant="text"
+                        v-bind="props"
+                      />
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        prepend-icon="mdi-pencil"
+                        :title="$t('edit')"
+                        @click="editing = true"
+                      />
+                    </v-list>
+                  </v-menu>
                 </header>
                 <Richtext
                   :value="orgStore.organisation.body"
@@ -349,12 +274,12 @@ function cancelEdit() {
           </v-window>
         </v-col>
         <v-divider vertical />
-        <v-col v-if="isAuthenticated" cols="12" md="4" xl="3">
+        <v-col v-if="isAuthenticated" v-bind="cols.wideLeft.right">
           <div v-if="inviteStore.matchedInvites.length" class="mb-4">
             <h2 class="mb-2">
               {{ $t('join.invites', inviteStore.matchedInvites.length) }}
             </h2>
-            <Invite
+            <InviteCard
               v-for="inv in inviteStore.matchedInvites"
               :key="inv.pk"
               :invite="inv"
@@ -448,7 +373,7 @@ function cancelEdit() {
         </v-col>
       </v-row>
       <v-row v-else-if="orgStore.organisationIsUnavailable">
-        <v-col v-bind="cols">
+        <v-col v-bind="cols.default">
           <v-sheet class="py-8 px-4 text-center" :border="true" rounded>
             <h1 class="mb-4">
               {{ $t('home.noOrganisationTitle') }}
