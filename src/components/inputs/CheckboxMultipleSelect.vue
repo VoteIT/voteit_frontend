@@ -64,9 +64,9 @@ watch(val, (value) => {
 </script>
 
 <template>
+  <v-label v-if="label" :text="label" />
   <v-input
     :model-value="modelValue"
-    :label="label"
     :rules="rules"
     :error-messages="errorMessages"
   >
