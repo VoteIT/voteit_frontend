@@ -1,4 +1,5 @@
 import router from '@/router'
+import AboutView from './AboutView.vue'
 import HomeView from './HomeView.vue'
 import ProfileView from './ProfileView.vue'
 
@@ -12,4 +13,10 @@ router.addRoute({
   component: ProfileView,
   name: 'profile',
   path: '/profile'
+})
+
+router.addRoute({
+  component: AboutView,
+  name: 'about',
+  path: '/about'
 })

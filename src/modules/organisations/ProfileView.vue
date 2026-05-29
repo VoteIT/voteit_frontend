@@ -260,6 +260,11 @@ async function saveImage(close: () => void) {
               </SwitchProfileDialog>
             </template>
           </v-alert>
+          <v-btn
+            prepend-icon="mdi-chevron-left"
+            :text="$t('navigation.back')"
+            to="/"
+          />
         </v-col>
         <v-col v-bind="cols.wideLeft.right">
           <v-alert

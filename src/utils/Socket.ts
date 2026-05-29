@@ -23,6 +23,8 @@ export const SocketState = {
 type SocketStateValue = (typeof SocketState)[keyof typeof SocketState]
 
 export const frontendVersion = ref<string | undefined>()
+export const backendVersion = ref<string | undefined>()
+
 export const socketState = ref<SocketStateValue>()
 export const socket = new Socket(`${wsProtocol}//${location.host}/ws/`, {
   beforeAppStateHandler(channel) {
@@ -55,8 +57,9 @@ socket.addTypeHandler('s', ({ t, i, p }) => {
     case 'ping':
       socket.respond('s.pong', i)
       break
-    case 'frontend_version':
-      frontendVersion.value = (p as { version: string }).version
+    case 'versions':
+      frontendVersion.value = (p as { frontend: string }).frontend
+      backendVersion.value = (p as { backend: string }).backend
       break
     case 'batch':
     case 'pong':

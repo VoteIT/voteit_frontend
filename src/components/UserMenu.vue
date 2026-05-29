@@ -109,6 +109,11 @@ const langs = computed(() =>
     <template #append>
       <v-list nav density="comfortable">
         <v-list-item
+          prepend-icon="mdi-information-outline"
+          :to="{ name: 'about' }"
+          title="Om VoteIT"
+        />
+        <v-list-item
           prepend-icon="mdi-account"
           :href="orgStore.manageAccountURL"
           :title="$t('auth.manageAccount')"
