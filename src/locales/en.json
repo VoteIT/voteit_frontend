@@ -291,9 +291,14 @@
     "addUserInvitesWarning": "Use with precaution! Participants should normaly be added using invitations.",
     "bulkChange": "Change one invite | Change {count} invites",
     "confirmDelete": "Do you want to delete one invite | Do you want to delete {count} invites?",
+    "clearAnnotations": "Clear annotations",
+    "confirmClearAnnotations": "Do you want to clear annotations for one invite | Do you want to clear annotations for {count} invites?",
     "confirmRevoke": "Do you want to revoke one invite | Do you want to revoke {count} invites?",
     "copyMatchingTooltip": "Copies all invitations matching filter",
     "done": "Your invitations were added.",
+    "errorClearAnnotations": "Couldn't clear annotations",
+    "errorDelete": "Couldn't delete invitations",
+    "errorRevoke": "Couldn't revoke invitations",
     "existing": "Existing invitations",
     "filterOnRoles": "Filter on roles",
     "filterMatchRoles": "Match roles exactly",
@@ -310,15 +315,7 @@
       "annotated": "Annotated",
       "annotatedData": "Annotated data",
       "annotatedTitle": "Annotated invite",
-      "annotatedType": "Annotated one invite ({name}) | Annotated {count} invites ({name})",
-      "clearType": "Clear {title}",
-      "confirmClearType": "If you continue, {title} will be cleared from all annotated invites.\nAre you sure?",
-      "done": "Done!",
-      "helpText": "This form is for adding additional functions to your invites. Copy and paste from a spreadsheet like in the template below. To be able to annotate invites, there must be existing invites to this meeting with the user data that you're annotating.",
-      "helpTitle": "What's an annotated invite?",
-      "possibleValuesFor": "Possible values for \"{name}\"",
-      "title": "Annotate invites",
-      "working": "Annotating invites ..."
+      "possibleValuesFor": "Possible values for \"{name}\""
     },
     "email": {
       "invalid": "Invalid email",
@@ -327,10 +324,22 @@
       "typeLabel": "Email"
     },
     "mixed": {
-      "helpText": "In order to invite using mixed user data, you'll need to copy and paste from a spreadsheet document. The first row must be headers that defines the type of user data in that column, according to the table below.",
-      "helpTitle": "Paste from spreadsheet",
-      "label": "Paste user data",
-      "typeLabel": "Multiple user data"
+      "helpText": "You can add invitations by pasting a list of email addresses, one per row, or you can paste more data from a spreadsheet. The top row can consist of headers that indicate what type of user data the column contains, according to the table below. Otherwise the system will guess based on the content.",
+      "helpTitle": "How to add invitations",
+      "label": "Paste user data"
+    },
+    "review": {
+      "added": "Added",
+      "changed": "Changed",
+      "checkButton": "Review invitations",
+      "errorText": "We could not parse your invitation data. Please check the data and try again.",
+      "errorTitle": "Invalid data",
+      "existed": "Already existed",
+      "helpText": "Make sure the invitations look correct before adding them.",
+      "title": "Review invitations",
+      "submit": "Add invitations",
+      "unknownColumn": "Unknown",
+      "unknownColumnTooltip": "This column could not be parsed."
     },
     "swedish_ssn": {
       "invalid": "Invalid swedish personnummer",
@@ -736,8 +745,6 @@
     "closedAI": "Finished agenda item",
     "closedAIDescription": "This agenda item is finished. If you need to handle decisions on this agenda item, you must move it back to ongoing.",
     "confirmStartBlockingPolls": "You have selected proposals that are already in an ongoing poll ({polls}).\nDo you still want to start the poll? | You have selected proposals that are already in ongoing polls ({polls}).\nDo you still want to start the poll?",
-    "decisions": "Decisions",
-    "discussion": "Speaker list",
     "displayApprovedProposals": "Display approved proposal | Display approved proposals",
     "hintModifyFilter": "Try selecting more proposal states in filter menu.",
     "meetingClosed": "Meeting in a closed state",

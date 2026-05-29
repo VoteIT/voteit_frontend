@@ -1,18 +1,19 @@
 <script setup lang="ts">
+import { sorted } from 'itertools'
 import { computed, reactive, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { countMatching } from '@/utils'
 import restApi, { parseRestError } from '@/utils/restApi'
 import type { RestError, ValueOf } from '@/utils/types'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import useRules from '@/composables/useRules'
-import { invitationScopes } from '../organisations/registry'
-import useGroupStore from '../meetings/useGroupStore'
 import useMeeting from '../meetings/useMeeting'
 import { MeetingRole } from '../meetings/types'
 
-import { translateInviteType } from './utils'
-import { countMatching } from '@/utils'
+import useInviteAnnotations from './useInviteAnnotations'
+import { meetingInviteAnnotationPlugins } from './registry'
+import AnnotationDataTypesTable from './AnnotationDataTypesTable.vue'
 
 interface InviteData {
   data: Record<string, string>[]
@@ -31,11 +32,6 @@ interface InviteResult {
   annotations: [] // TODO
 }
 
-const validHeaders = new Set<string>(
-  invitationScopes.getActivePlugins().map((p) => p.id)
-)
-validHeaders.add('group') // TODO All annotation values
-
 defineEmits<{ (e: 'done'): void }>()
 const props = defineProps<{
   meeting: number
@@ -43,9 +39,22 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const rules = useRules(t)
-const { roleLabelsEditable } = useMeeting()
-const { filterGroups } = useGroupStore()
+const { meeting: m, roleLabelsEditable } = useMeeting()
+const { allDataTypes } = useInviteAnnotations(m)
 const rolesRequired = [MeetingRole.Participant]
+
+const annotatedDataTypes = computed(() => {
+  return sorted(
+    allDataTypes.value.map((dt) => {
+      if (!m.value) throw new Error('Meeting is missing')
+      const possibleValues = meetingInviteAnnotationPlugins
+        .getPlugin(dt.name)
+        ?.getPossibleValues?.(m.value)
+      return { ...dt, possibleValues }
+    }),
+    (dt) => dt.is_annotation
+  )
+})
 
 const submittingInvites = ref(false)
 const inviteData = reactive({
@@ -61,51 +70,45 @@ watch(
   { deep: true }
 )
 
-// const ruleMapping = {
-//   email: [rules.multiline(rules.trimmed(rules.email)), rules.required],
-//   swedish_ssn: [
-//     rules.multiline(rules.trimmed(rules.swedishSSN)),
-//     rules.required
-//   ]
-// }
-
-const groupIds = computed(() =>
-  filterGroups((g) => g.meeting === props.meeting).map((g) => g.groupid)
-)
-
-const validatorRules = {
-  email: rules.email,
-  swedish_ssn: rules.swedishSSN,
-  group(value: string) {
-    return groupIds.value.includes(value) || 'Invalid group'
+function* getPossibleValuesValidators() {
+  for (const dt of annotatedDataTypes.value) {
+    if (!dt.possibleValues) continue
+    const values = new Set(dt.possibleValues.map((pv) => pv.value))
+    yield [dt.name, (v: string) => values.has(v) || `Invalid for ${dt.name}`]
   }
-} as const
-
-const HEADER_VALIDATION_THRESHHOLD = 0.9
-
-type ValidatorRule = (v: string) => true | string
-
-function matchRatio(values: string[], rule: ValidatorRule): number {
-  return countMatching(values, (v) => rule(v) === true) / values.length
 }
 
 /**
- * Returns the first validatorRule key where the first value passes (quick check)
- * and >= HEADER_VALIDATION_THRESHHOLD of all values pass. Returns undefined if
- * no rule reaches the threshold.
+ * This should possibly be a part of useInviteAnnotations / allDataTypes in future
  */
+const validatorRules = computed<Record<string, ValidatorRule>>(() => {
+  return {
+    email: rules.email,
+    swedish_ssn: rules.swedishSSN,
+    ...Object.fromEntries(getPossibleValuesValidators())
+  }
+})
+
+type ValidatorRule = (v: string) => true | string
+
 function guessColumnHeader(
   values: string[]
-): keyof typeof validatorRules | undefined {
+): keyof typeof validatorRules.value | undefined {
   if (values.length === 0) return undefined
   const ruleKeys = Object.keys(
-    validatorRules
-  ) as (keyof typeof validatorRules)[]
+    validatorRules.value
+  ) as (keyof typeof validatorRules.value)[]
+  let bestKey: (typeof ruleKeys)[number] | undefined
+  let bestCount = 0
   for (const key of ruleKeys) {
-    const rule = validatorRules[key]
-    if (rule(values[0]) !== true) continue
-    if (matchRatio(values, rule) >= HEADER_VALIDATION_THRESHHOLD) return key
+    const rule = validatorRules.value[key]
+    const count = countMatching(values, (v) => rule(v) === true)
+    if (count > bestCount) {
+      bestCount = count
+      bestKey = key
+    }
   }
+  return bestKey
 }
 
 /**
@@ -122,8 +125,8 @@ function guessHeaders(rows: string[][]) {
 }
 
 function parseRows(rows: string[][]) {
-  if (rows[0].every((value) => validHeaders.has(value))) {
-    const headers = rows[0]
+  if (rows[0].every((value) => !value || value in validatorRules.value)) {
+    const headers = rows[0].map((value) => value || null)
     return { headers, rows: rows.slice(1) }
   }
   return { headers: guessHeaders(rows), rows }
@@ -131,7 +134,7 @@ function parseRows(rows: string[][]) {
 
 function* iterInviteData(rows: string[][]) {
   for (const row of rows) {
-    if (row.every((value) => !value.trim())) continue
+    if (row.every((value) => !value)) continue
     yield Object.fromEntries(
       row.map((value, i) => [i, value]).filter((r) => !!r[1])
     )
@@ -147,7 +150,7 @@ function checkData() {
     inviteData.user_data
       .trim()
       .split('\n')
-      .map((row) => row.split('\t'))
+      .map((row) => row.split('\t').map((value) => value.trim()))
   )
   importData.columnTypes = headers
   importData.data = [...iterInviteData(rows)]
@@ -156,29 +159,20 @@ function checkData() {
 const tableheaders = computed(
   () =>
     importData.columnTypes &&
-    Object.keys(importData.columnTypes).map((_, i) => ({
-      key: i.toString()
+    Object.entries(importData.columnTypes).map(([key, type]) => ({
+      key,
+      title: allDataTypes.value.find((dt) => dt.name === type)?.title
     }))
 )
-function headerChoicesFor(colIndex: number) {
-  const takenTypes = new Set(
-    importData.columnTypes!.filter((t, i) => i !== colIndex && t !== null)
-  )
-  return [
-    ...invitationScopes.getActivePlugins().map(({ id }) => ({
-      value: id,
-      title: translateInviteType(id, t).typeLabel,
-      disabled: takenTypes.has(id)
-    })),
-    { value: 'group', title: 'Group', disabled: takenTypes.has('group') },
-    { value: null, title: '- ignore -', disabled: false }
-  ]
-}
-
-const scopes = computed(() =>
-  invitationScopes.getActivePlugins().map(({ id }) => id)
+const unknownHeaders = computed(() =>
+  Object.entries(importData.columnTypes ?? [])
+    .filter((e) => e[1] === null)
+    .map((e) => `header.${e[0]}`)
 )
 
+/**
+ * CSV columns are positional but the API expects named fields — null type means that column has no content.
+ */
 function* mapRow(row: Record<number, string>, columnTypes: (string | null)[]) {
   for (const [i, type] of columnTypes.entries()) {
     if (type !== null && row[i] != null) yield [type, row[i]] as const
@@ -199,7 +193,7 @@ async function submitInvites() {
       data,
       meeting: props.meeting,
       roles: inviteData.roles,
-      dryrun: true // Change
+      dryrun: false
     })
     result.value = response.data
   } catch (e) {
@@ -207,6 +201,10 @@ async function submitInvites() {
     importData.columnTypes = undefined
   }
   submittingInvites.value = false
+}
+
+function restart() {
+  importData.columnTypes = undefined
 }
 </script>
 
@@ -218,9 +216,9 @@ async function submitInvites() {
     <v-table>
       <thead>
         <tr>
-          <th>Added</th>
-          <th>Changed</th>
-          <th>Existed</th>
+          <th>{{ $t('invites.review.added') }}</th>
+          <th>{{ $t('invites.review.changed') }}</th>
+          <th>{{ $t('invites.review.existed') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -240,33 +238,49 @@ async function submitInvites() {
       />
     </div>
   </div>
-  <v-form
-    v-else-if="importData.columnTypes"
-    @submit.prevent="submitInvites"
-    v-slot="{ isValid }"
-  >
+  <div v-else-if="importData.columnTypes">
     <v-alert
+      v-if="unknownHeaders.length"
       class="mb-6"
-      text="Kontrollera att inbjudningarna ser rätt ut innan du lägger till dem."
-      title="Kontrollera inbjudningar"
+      :text="$t('invites.review.errorText')"
+      :title="$t('invites.review.errorTitle')"
+      type="warning"
+    >
+      <template #append>
+        <v-btn
+          prepend-icon="mdi-chevron-left"
+          :text="$t('navigation.back')"
+          @click="restart"
+        />
+      </template>
+    </v-alert>
+    <v-alert
+      v-else
+      class="mb-6"
+      :text="$t('invites.review.helpText')"
+      :title="$t('invites.review.title')"
       type="info"
     />
-    <v-data-table class="mb-3" :headers="tableheaders" :items="importData.data">
-      <template #headers="{ headers }">
-        <tr>
-          <th v-for="header in headers[0]" :key="header.key ?? '_'">
-            <v-select
-              density="compact"
-              :items="headerChoicesFor(Number(header.key))"
-              variant="outlined"
-              v-model="importData.columnTypes[Number(header.key)]"
-            >
-              <template #item="{ item, props }">
-                <v-list-item v-bind="props" :disabled="item.raw.disabled" />
-              </template>
-            </v-select>
-          </th>
-        </tr>
+    <v-data-table
+      class="mb-3"
+      :headers="tableheaders"
+      :items="importData.data"
+      :items-per-page-text="$t('content.itemsPerPageText')"
+      striped="odd"
+    >
+      <template v-for="h in unknownHeaders" #[h] :key="h">
+        <div class="d-flex align-center">
+          <strong class="text-grey">
+            {{ $t('invites.review.unknownColumn') }}
+          </strong>
+          <v-spacer />
+          <v-icon
+            color="warning"
+            size="small"
+            icon="mdi-alert"
+            v-tooltip="{ text: $t('invites.review.unknownColumnTooltip') }"
+          />
+        </div>
       </template>
     </v-data-table>
     <CheckboxMultipleSelect
@@ -279,41 +293,32 @@ async function submitInvites() {
     <div class="text-right">
       <v-btn
         prepend-icon="mdi-chevron-left"
-        text="Tillbaka"
+        :text="$t('navigation.back')"
         variant="text"
-        @click="importData.columnTypes = undefined"
+        @click="restart"
       />
       <v-btn
         color="primary"
-        :disabled="!isValid.value"
+        :disabled="!!unknownHeaders.length"
         prepend-icon="mdi-account-multiple-plus"
-        text="Lägg till inbjudningar"
+        :text="$t('invites.review.submit')"
         type="submit"
+        @click="submitInvites"
       />
     </div>
-  </v-form>
+  </div>
   <v-form v-else @submit.prevent="checkData" v-slot="{ isValid }">
     <v-alert type="info" class="my-3" :title="$t('invites.mixed.helpTitle')">
       <p class="mb-3">
         {{ $t('invites.mixed.helpText') }}
       </p>
-      <v-table density="compact">
-        <tbody>
-          <tr>
-            <td v-for="scope in scopes" :key="scope">
-              {{ scope }}
-            </td>
-          </tr>
-          <tr>
-            <td v-for="scope in scopes" :key="scope">...</td>
-          </tr>
-        </tbody>
-      </v-table>
+      <AnnotationDataTypesTable :dataTypes="annotatedDataTypes" />
     </v-alert>
     <v-textarea
       v-model="inviteData.user_data"
       class="mb-2"
       :error-messages="inviteErrors.data || inviteErrors.non_field_errors"
+      :label="$t('invites.mixed.label')"
       rows="10"
       :rules="[rules.required]"
     />
@@ -325,15 +330,21 @@ async function submitInvites() {
       :settings="{ options: roleLabelsEditable }"
     />
     <div class="text-right">
+      <v-btn :text="$t('cancel')" variant="text" @click="$emit('done')" />
       <v-btn
         color="primary"
         :disabled="!isValid.value"
         :loading="submittingInvites"
-        prepend-icon="mdi-account-multiple-plus"
-        :text="$t('add')"
+        append-icon="mdi-chevron-right"
+        :text="$t('invites.review.checkButton')"
         type="submit"
         variant="elevated"
       />
     </div>
   </v-form>
 </template>
+
+<style lang="sass" scoped>
+.v-textarea
+  tab-size: 8rem
+</style>

@@ -291,9 +291,14 @@
     "addUserInvitesWarning": "Använd med försiktighet! Deltagare ska i första hand läggas till genom inbjudningar.",
     "bulkChange": "Ändra en inbjudan | Ändra {count} inbjudningar",
     "confirmDelete": "Vill du radera en inbjudan? | Vill du radera {count} inbjudningar?",
+    "clearAnnotations": "Rensa annoteringar",
+    "confirmClearAnnotations": "Vill du rensa annoteringar för en inbjudan? | Vill du rensa annoteringar för {count} inbjudningar?",
     "confirmRevoke": "Vill du dra tillbaka en inbjudan? | Vill du dra tillbaka {count} inbjudningar?",
     "copyMatchingTooltip": "Kopierar alla inbjudningar som matchar filtret",
     "done": "Dina inbjudningar har lagts till.",
+    "errorClearAnnotations": "Det gick inte att rensa annoteringarna",
+    "errorDelete": "Det gick inte att radera inbjudningarna",
+    "errorRevoke": "Det gick inte att dra tillbaka inbjudningarna",
     "existing": "Existerande inbjudningar",
     "filterOnRoles": "Filtrera på roller",
     "filterMatchRoles": "Matcha roller exakt",
@@ -310,15 +315,7 @@
       "annotated": "Utökad",
       "annotatedData": "Utökad information",
       "annotatedTitle": "Utökad inbjudan",
-      "annotatedType": "Utökade en inbjudan ({name}) | Utökade {count} inbjudningar ({name})",
-      "clearType": "Rensa {title}",
-      "confirmClearType": "Om du fortsätter kommer {title} att rensas från alla utökade inbjudningar.\nÄr du säker?",
-      "done": "Färdigt!",
-      "helpText": "Här kan du koppla ytterligare funktioner till dina inbjudningar. Kopiera och klistra in från ett kalkylblad som följer mallen nedan. För att kunna utöka inbjudningar behöver du först se till att den användardata du vill utöka har en befintlig inbjudan till mötet.",
-      "helpTitle": "Vad är en utökad inbjudan?",
-      "possibleValuesFor": "Möjliga värden för \"{name}\"",
-      "title": "Utöka inbjudningar",
-      "working": "Utökar inbjudningar ..."
+      "possibleValuesFor": "Möjliga värden för \"{name}\""
     },
     "email": {
       "invalid": "Ogiltig e-postadress",
@@ -327,10 +324,22 @@
       "typeLabel": "E-post"
     },
     "mixed": {
-      "helpText": "För att bjuda in med blandade användaruppgifter behöver du kopiera och klistra in från ett kalkylblad. Den översta raden ska bestå av rubriker som definierar vilken typ av användardata kolumnen innehåller, enligt tabellen nedan.",
-      "helpTitle": "Klistra in från kalkylblad",
-      "label": "Klistra in användaruppgifter",
-      "typeLabel": "Flera användaruppgifter"
+      "helpText": "Du kan göra inbjudningar genom att klistra en en lista med e-postadresser, en adress per rad, eller så kan du klistra in fler uppgifter från ett kalkylblad. Den översta raden kan bestå av rubriker som talar om vilken typ av användardata kolumnen innehåller, enligt tabellen nedan. Annars kommer systemet gissa utifrån innehållet.",
+      "helpTitle": "Så lägger du till inbjudningar",
+      "label": "Klistra in användaruppgifter"
+    },
+    "review": {
+      "added": "Tillagda",
+      "changed": "Ändrade",
+      "checkButton": "Kontrollera inbjudningar",
+      "errorText": "Vi kunde inte tolka dina inbjudningsdata. Kontrollera uppgifterna och försök igen.",
+      "errorTitle": "Felaktig data",
+      "existed": "Existerade redan",
+      "helpText": "Kontrollera att inbjudningarna ser rätt ut innan du lägger till dem.",
+      "title": "Kontrollera inbjudningar",
+      "submit": "Lägg till inbjudningar",
+      "unknownColumn": "Okänt",
+      "unknownColumnTooltip": "Den här kolumnen kunde inte tolkas."
     },
     "swedish_ssn": {
       "invalid": "Ogiltigt personnummer",
@@ -736,8 +745,6 @@
     "closedAI": "Avslutad dagordningspunkt",
     "closedAIDescription": "Den här dagordningspunkten är avslutad. Om du behöver hantera flera beslut på den här dagordningspunkten behöver du ändra den till pågående igen.",
     "confirmStartBlockingPolls": "Du har valt förslag som redan ingår i en pågående omröstning ({polls}).\nVill du ändå starta omröstningen? | Du har valt förslag som redan ingår i pågående omröstningar ({polls}).\nVill du ändå starta omröstningen?",
-    "decisions": "Beslut",
-    "discussion": "Talarlista",
     "displayApprovedProposals": "Visa bifallet förslag | Visa bifallna förslag",
     "hintModifyFilter": "Försök att välja fler förslagslägen i filtermenyn.",
     "meetingClosed": "Mötet är stängt",

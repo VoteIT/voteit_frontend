@@ -5,19 +5,17 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
-import { socket } from '@/utils/Socket'
 import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useAlert from '@/composables/useAlert'
 import useChannel from '@/composables/useChannel'
 import usePermission from '@/composables/usePermission'
 
 import useMeeting from '../meetings/useMeeting'
 import { MeetingRole } from '../meetings/types'
 import InvitationModal from '../meetingInvites/InvitationModal.vue'
-import InvitationAnnotationsModal from '../meetingInvites/InvitationAnnotationsModal.vue'
 import InvitationAnnotation from '../meetingInvites/InvitationAnnotation.vue'
-import useInviteAnnotations from './useInviteAnnotations'
 import { getMeetingRoleIcon, translateMeetingRole } from '../meetings/utils'
 import { canDeleteMeetingInvite } from '../meetings/rules'
 import { invitationScopes } from '../organisations/registry'
@@ -27,16 +25,17 @@ import { meetingInviteStates } from './workflowStates'
 import { translateInviteType } from './utils'
 import useMeetingInvites from './useMeetingInvites'
 import useInviteStore from './useInviteStore'
+import { meetingInviteType } from './contentTypes'
 
 const PAGE_LENGTH = 25
 
 const emit = defineEmits(['denied'])
 
 const { t } = useI18n()
-const { isModerator, meeting, meetingId, roleLabelsEditable } = useMeeting()
+const { alert } = useAlert()
+const { isModerator, meetingId, roleLabelsEditable } = useMeeting()
 const { bulkDelete, bulkRevoke } = useInviteStore()
 const { meetingInvites } = useMeetingInvites(meetingId)
-const { clearableDataTypes } = useInviteAnnotations(meeting)
 const { copy, copied } = useClipboard()
 
 const { isSubscribed } = useChannel('invites', meetingId)
@@ -172,7 +171,7 @@ async function deleteSelected() {
   try {
     await bulkDelete(meetingId.value, selectedInviteIds.value)
   } catch {
-    alert("^Couldn't delete invitations")
+    alert('^' + t('invites.errorDelete'))
   }
 }
 
@@ -181,7 +180,7 @@ async function revokeSelected() {
   try {
     await bulkRevoke(meetingId.value, selectedInviteIds.value)
   } catch {
-    alert("^Couldn't revoke invitations")
+    alert('^' + t('invites.errorRevoke'))
   }
 }
 
@@ -205,11 +204,19 @@ const hasAnnotations = computed(() =>
   meetingInvites.value.some((inv) => inv.has_annotations)
 )
 
-async function clearAnnotationType(type: string) {
-  await socket.call('invites.clear_annotations', {
-    meeting: meetingId.value,
-    types: [type]
-  })
+const selectedWithAnnotations = computed(() =>
+  meetingInvites.value.filter((a) => selectedInviteIds.value.includes(a.pk))
+)
+async function clearSelectedAnnotations() {
+  const invites = selectedWithAnnotations.value.map((i) => i.pk)
+  try {
+    await meetingInviteType.api.listAction('clear-annotations', {
+      invites,
+      meeting: meetingId.value
+    })
+  } catch {
+    alert('^' + t('invites.errorClearAnnotations'))
+  }
 }
 </script>
 
@@ -301,44 +308,6 @@ async function clearAnnotationType(type: string) {
         />
       </template>
     </DefaultDialog>
-    <!-- <v-btn-group variant="text" color="white" density="compact">
-      <DefaultDialog :title="$t('invites.annotate.title')">
-        <template #activator="{ props }">
-          <v-btn
-            prepend-icon="mdi-badge-account"
-            :text="$t('invites.annotate.title')"
-            v-bind="props"
-          />
-        </template>
-        <template #default="{ close }">
-          <InvitationAnnotationsModal :meeting="meetingId" @close="close" />
-        </template>
-      </DefaultDialog>
-      <v-menu v-if="hasAnnotations" location="bottom right">
-        <template #activator="{ props }">
-          <v-btn v-bind="props" size="small">
-            <v-icon icon="mdi-chevron-down" />
-          </v-btn>
-        </template>
-        <v-list v-if="clearableDataTypes.length">
-          <QueryDialog
-            v-for="{ name, title } in clearableDataTypes"
-            :key="name"
-            :text="$t('invites.annotate.confirmClearType', { title })"
-            color="warning"
-            @confirmed="clearAnnotationType(name)"
-          >
-            <template #activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                prepend-icon="mdi-delete-forever"
-                :title="$t('invites.annotate.clearType', { title })"
-              />
-            </template>
-          </QueryDialog>
-        </v-list>
-      </v-menu>
-    </v-btn-group> -->
   </v-toolbar>
   <v-expand-transition>
     <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
@@ -462,36 +431,54 @@ async function clearAnnotationType(type: string) {
         <h2 class="mb-2">
           {{ $t('invites.bulkChange', selectedInvites.length) }}
         </h2>
-        <QueryDialog
-          :text="$t('invites.confirmRevoke', selectedInvites.length)"
-          @confirmed="revokeSelected"
-        >
-          <template #activator="{ props }">
-            <v-btn
-              class="mr-1"
-              color="primary"
-              :disabled="!selectedHasDeletable"
-              prepend-icon="mdi-undo"
-              :text="$t('invites.revoke')"
-              v-bind="props"
-            />
-          </template>
-        </QueryDialog>
-        <QueryDialog
-          color="warning"
-          :text="$t('invites.confirmDelete', selectedInvites.length)"
-          @confirmed="deleteSelected"
-        >
-          <template #activator="{ props }">
-            <v-btn
-              color="warning"
-              :disabled="!selectedHasDeletable"
-              prepend-icon="mdi-delete"
-              :text="$t('content.delete')"
-              v-bind="props"
-            />
-          </template>
-        </QueryDialog>
+        <div class="d-flex ga-1">
+          <QueryDialog
+            :text="$t('invites.confirmRevoke', selectedInvites.length)"
+            @confirmed="revokeSelected"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                color="primary"
+                :disabled="!selectedHasDeletable"
+                prepend-icon="mdi-undo"
+                :text="$t('invites.revoke')"
+                v-bind="props"
+              />
+            </template>
+          </QueryDialog>
+          <QueryDialog
+            color="warning"
+            :text="
+              $t('invites.confirmClearAnnotations', selectedInvites.length)
+            "
+            @confirmed="clearSelectedAnnotations"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                color="secondary"
+                :disabled="!selectedWithAnnotations.length"
+                prepend-icon="mdi-eraser"
+                :text="$t('invites.clearAnnotations')"
+                v-bind="props"
+              />
+            </template>
+          </QueryDialog>
+          <QueryDialog
+            color="warning"
+            :text="$t('invites.confirmDelete', selectedInvites.length)"
+            @confirmed="deleteSelected"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                color="warning"
+                :disabled="!selectedHasDeletable"
+                prepend-icon="mdi-delete"
+                :text="$t('content.delete')"
+                v-bind="props"
+              />
+            </template>
+          </QueryDialog>
+        </div>
       </div>
     </v-sheet>
   </v-expand-transition>

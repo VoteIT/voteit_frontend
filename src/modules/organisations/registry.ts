@@ -1,7 +1,6 @@
 import PluginHandler from '@/utils/PluginHandler'
-
-import useOrgStore from './useOrgStore'
 import { MeetingInvite } from '../meetingInvites/types'
+import useOrgStore from './useOrgStore'
 
 interface InvitationScope {
   id: keyof MeetingInvite['user_data']
