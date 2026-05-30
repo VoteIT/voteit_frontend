@@ -24,18 +24,18 @@ import BackBtn from '@/components/BackBtn.vue'
             <h2>VoteIT</h2>
             <v-list class="my-3" :border="true">
               <v-list-item
-                :title="$t('about.website')"
-                subtitle="voteit.se"
                 append-icon="mdi-home"
                 href="https://voteit.se"
+                subtitle="voteit.se"
                 target="_blank"
+                :title="$t('about.website')"
               />
               <v-list-item
-                :title="$t('about.sourceCode')"
                 append-icon="mdi-github"
-                subtitle="github.com/voteit"
                 href="https://github.com/voteit"
+                subtitle="github.com/voteit"
                 target="_blank"
+                :title="$t('about.sourceCode')"
               />
             </v-list>
           </div>
@@ -49,12 +49,16 @@ import BackBtn from '@/components/BackBtn.vue'
               />
               <v-list-item
                 append-icon="mdi-monitor-cellphone"
+                href="https://github.com/voteit/voteit_frontend"
                 :subtitle="frontendVersion"
+                target="_blank"
                 title="Frontend"
               />
               <v-list-item
                 append-icon="mdi-server"
+                href="https://github.com/voteit/voteit"
                 :subtitle="backendVersion"
+                target="_blank"
                 title="Backend"
               />
             </v-list>
@@ -63,9 +67,11 @@ import BackBtn from '@/components/BackBtn.vue'
             <h2>{{ $t('about.licenseHeading') }}</h2>
             <v-list class="my-3" :border="true">
               <v-list-item
-                lines="three"
                 append-icon="mdi-copyleft"
+                href="https://www.gnu.org/licenses/agpl-3.0.html"
+                lines="three"
                 subtitle="VoteIT is licensed under the GNU Affero General Public License v3.0 or later."
+                target="_blank"
                 title="AGPL v3"
               >
                 <template #append>
