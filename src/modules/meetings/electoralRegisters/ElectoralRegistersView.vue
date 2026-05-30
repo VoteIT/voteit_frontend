@@ -201,10 +201,7 @@ const currentERText = computed(() => {
 </script>
 
 <template>
-  <MeetingToolbar>
-    <v-toolbar-title>
-      {{ $t('electoralRegister.plural') }}
-    </v-toolbar-title>
+  <MeetingToolbar :title="$t('electoralRegister.plural')">
     <DefaultDialog
       v-if="canTriggerERCreation"
       :title="$t('electoralRegister.establish')"
@@ -215,7 +212,6 @@ const currentERText = computed(() => {
           color="primary"
           prepend-icon="mdi-star-check"
           :text="$t('electoralRegister.establish')"
-          variant="tonal"
           v-bind="props"
         />
       </template>
@@ -251,7 +247,6 @@ const currentERText = computed(() => {
         <v-btn
           prepend-icon="mdi-book-open-variant"
           :text="$t('electoralRegister.createManual')"
-          variant="tonal"
           v-bind="props"
         />
       </template>

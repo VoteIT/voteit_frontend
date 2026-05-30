@@ -232,7 +232,6 @@ function tagFilter(tags: string | string[], query: string) {
           color="primary"
           prepend-icon="mdi-reorder-horizontal"
           :text="$t('agenda.ordering')"
-          variant="elevated"
         />
       </template>
       <template #default="{ close }">
