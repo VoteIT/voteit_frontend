@@ -10,10 +10,7 @@ export default defineStore('electoralRegisters', () => {
   const registers = reactive(new Map<number, ElectoralRegister>())
   const erMethods = shallowRef<ErMethod[]>()
 
-  electoralRegisterType.updateMap(
-    registers as Map<number, ElectoralRegister>, // Don't bother about that null value. That's ok.
-    { meeting: 'meeting' }
-  )
+  electoralRegisterType.updateMap(registers, { meeting: 'meeting' })
 
   async function fetchErMethods() {
     try {
