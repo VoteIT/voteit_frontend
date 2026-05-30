@@ -187,6 +187,7 @@
     "empty": "Empty electoral register",
     "establish": "Establish Electoral Register",
     "failed": "Failed creating new Electoral Register. Try later, or contact support.",
+    "fetchFailed": "Couldn't fetch electoral registers",
     "groupVotesActive": "Group votes",
     "handlesActiveCheck": "Works with active users",
     "handlesVoteWeight": "Weighted votes",

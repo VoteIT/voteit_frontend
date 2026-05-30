@@ -187,6 +187,7 @@
     "establish": "Fastställ röstlängd",
     "empty": "Tom röstlängd",
     "failed": "Misslyckades med att skapa en ny röstlängd. Försök igen senare, eller kontakta supporten.",
+    "fetchFailed": "Kunde inte hämta röstlängder",
     "groupVotesActive": "Gruppröster",
     "handlesActiveCheck": "Fungerar med aktiva användare",
     "handlesVoteWeight": "Viktade röster",

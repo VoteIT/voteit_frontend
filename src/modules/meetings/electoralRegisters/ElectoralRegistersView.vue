@@ -8,6 +8,7 @@ import { cols } from '@/utils/defaults'
 import restApi from '@/utils/restApi'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
+import useAlert from '@/composables/useAlert'
 import useLoader from '@/composables/useLoader'
 import usePollStore from '@/modules/polls/usePollStore'
 import { PollState } from '@/modules/polls/types'
@@ -33,6 +34,7 @@ const {
 } = useElectoralRegisters(meetingId)
 const { fetchMeetingRegisters, getErMethod } = useERStore()
 const loader = useLoader('ElectoralRegisters')
+const { alert } = useAlert()
 const { anyPoll } = usePollStore()
 
 useMeetingTitle(t('electoralRegister.plural'))
@@ -137,13 +139,12 @@ async function createRegister(close: () => void) {
   }
 }
 
-async function fetchRegisters() {
-  // TODO: Handle errors?
-  await fetchMeetingRegisters(meetingId.value).catch()
-}
-
 onBeforeMount(() => {
-  loader.call(fetchRegisters)
+  loader.call(() =>
+    fetchMeetingRegisters(meetingId.value).catch(() =>
+      alert('^' + t('electoralRegister.fetchFailed'))
+    )
+  )
 })
 
 function fetchRoles() {
