@@ -66,6 +66,15 @@
   "yes": "Yes",
   "roles": "Roles",
   "selectRoles": "Select roles",
+  "about": {
+    "body1": "The VoteIT project is run by the VoteIT association, which is a non-profit Swedish organization. The association was founded in 2011. The project exists thanks to members paying an annual fee, which goes towards maintaining and developing the project.",
+    "body2": "VoteIT would not have been possible without using open source software. Thanks to all the thousands of people who contributed their time and knowledge to all the projects that VoteIT uses!",
+    "licenseHeading": "License",
+    "operatingSince": "In operation since 2021",
+    "sourceCode": "Source code and bug reports",
+    "title": "About VoteIT",
+    "website": "Website and more information"
+  },
   "accessPolicy": {
     "confirmDelete": "You're about to delete this access policy.\nAre you sure?",
     "invitationsAlert": "You can invite participants directly. That does not require any other access policies. Invited users will see the meeting when they log in.",

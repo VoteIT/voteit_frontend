@@ -7,6 +7,7 @@ import { cols } from '@/utils/defaults'
 import { parseRestError } from '@/utils/restApi'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
+import BackBtn from '@/components/BackBtn.vue'
 import useRules from '@/composables/useRules'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import DefaultForm from '@/components/DefaultForm.vue'
@@ -260,11 +261,7 @@ async function saveImage(close: () => void) {
               </SwitchProfileDialog>
             </template>
           </v-alert>
-          <v-btn
-            prepend-icon="mdi-chevron-left"
-            :text="$t('navigation.back')"
-            to="/"
-          />
+          <BackBtn />
         </v-col>
         <v-col v-bind="cols.wideLeft.right">
           <v-alert

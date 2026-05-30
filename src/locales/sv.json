@@ -66,6 +66,15 @@
   "yes": "Ja",
   "roles": "Roller",
   "selectRoles": "Välj roller",
+  "about": {
+    "body1": "Projektet VoteIT drivs av föreningen VoteIT, som är en ideell icke vinstdriven svensk organisation. Föreningen bildades 2011. Projektet existerar tack vare att medlemmarna betalar in en årsavgift, som går till att underhålla och vidareutveckla projektet.",
+    "body2": "VoteIT hade inte varit möjligt att genomföra utan att använda öppen källkod. Tack till alla tusentals personer som bidragit med sin tid och sitt kunnande till alla projekt som VoteIT använder!",
+    "licenseHeading": "Licens",
+    "operatingSince": "I drift sen år 2021",
+    "sourceCode": "Källkod och buggrapporter",
+    "title": "Om VoteIT",
+    "website": "Hemsida och mer information"
+  },
   "accessPolicy": {
     "confirmDelete": "Du håller nu på att radera den här åtkomstregeln.\nÄr du säker?",
     "invitationsAlert": "Du kan även bjuda in deltagare direkt. Det kräver inga andra åtkomstregler. En person som är inbjuden kommer se mötet när hen loggat in.",
