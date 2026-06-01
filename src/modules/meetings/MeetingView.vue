@@ -19,6 +19,8 @@ import useMeetingGroups from './useMeetingGroups'
 import { MeetingRole } from './types'
 import { DEFAULT_ROLE_ORDER } from './constants'
 import { getMeetingRoleIcon, translateMeetingRole } from './utils'
+import { meetingType } from './contentTypes'
+import { openDialogEvent } from '@/utils/events'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -60,6 +62,23 @@ const viewPermission = computed(
 )
 
 usePermission(viewPermission, {}, PermissionDeniedStrategy.RequireLogin)
+
+function promptDialectReload() {
+  openDialogEvent.emit({
+    resolve(reload) {
+      if (reload) location.reload()
+      else setTimeout(promptDialectReload, 30_000) // re-ask after 30 s to give users time to finish their action
+    },
+    title: t('meeting.dialectReloadQuery'),
+    dismissible: false,
+    no: t('system.reloadLater'),
+    yes: t('system.reloadNow')
+  })
+}
+
+meetingType.on<{ pk: number }>('dialect_changed', ({ pk }) => {
+  if (pk === meetingId.value) promptDialectReload()
+})
 </script>
 
 <template>

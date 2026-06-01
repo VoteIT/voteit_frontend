@@ -414,6 +414,7 @@
     "dialectHandlesMeetingRoles": "Dialekten hanterar en mötesroll (denna går inte att ändra manuellt) | Dialekten hanterar flera mötesroller (dessa går inte att ändra manuellt)",
     "noDialectDescription": "Ingen dialekt är installerad för det här mötet.",
     "dialectReadonlyRole": "Hanteras av mötets dialekt",
+    "dialectReloadQuery": "Mötesdialekten har ändrats. Mötet behöver laddas om för att ändringarna ska gälla.",
     "exports": "Exportera från möte",
     "exportsDescription": "Ladda ner deltagarlista, talarstatistik, med mera",
     "exportsLongDescription": "Här kan du ladda ner data från mötet i {json}- eller {csv}-format. De exporterade filerna kan användas för att föra över data från mötet till andra program.",
