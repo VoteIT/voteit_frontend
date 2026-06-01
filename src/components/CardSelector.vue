@@ -2,7 +2,7 @@
   setup
   lang="ts"
   generic="
-    Item extends { text?: string; title?: string; value: Value },
+    Item extends { text?: string; title?: string; value: Value | null },
     Value extends string | number
   "
 >
@@ -19,7 +19,7 @@ withDefaults(
 )
 
 defineEmits<{
-  (e: 'update:modelValue', value: Value): void
+  (e: 'update:modelValue', value: Value | null): void
 }>()
 </script>
 
@@ -30,7 +30,7 @@ defineEmits<{
   >
     <v-item
       v-for="item in items"
-      :key="item.value"
+      :key="item.value ?? ''"
       :value="item.value"
       v-slot="{ isSelected, toggle }"
     >

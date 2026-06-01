@@ -67,6 +67,10 @@ const steps = computed<{ info: string; title: string }[]>(() => {
       title: t('meeting.createBaseTitle')
     },
     {
+      info: t('meeting.createDialectDescription'),
+      title: t('meeting.createDialectTitle')
+    },
+    {
       info: t('meeting.createRoomDescription'),
       title: t('meeting.createRoomTitle')
     },
@@ -129,6 +133,19 @@ function annotateErMethod(
     ...method
   }
 }
+
+const dialectItems = computed(() => [
+  {
+    title: t('meeting.createDialectNone'),
+    text: t('meeting.createDialectNoneDescription'),
+    value: null
+  },
+  ...(installableDialects.value ?? [])?.map(({ title, description, name }) => ({
+    title,
+    text: description,
+    value: name
+  }))
+])
 
 const erMethods = computed(() =>
   sorted(availableErMethods.value?.map(annotateErMethod) ?? [], (m) =>
@@ -223,26 +240,15 @@ async function addMeeting() {
           maxlength="100"
           v-model="formData.meeting.title"
         />
-        <v-select
-          v-if="installableDialects"
-          clearable
-          item-value="name"
-          :label="$t('meeting.dialect')"
-          :hint="$t('meeting.dialectHint')"
-          :items="installableDialects"
-          v-model="formData.meeting.install_dialect"
-        >
-          <template #item="{ item, props }">
-            <v-list-item
-              v-bind="{ ...props, ...item.props }"
-              :subtitle="
-                item.raw.description ?? $t('meeting.dialectNoDescription')
-              "
-            />
-          </template>
-        </v-select>
       </template>
       <template v-else-if="currentStep === 1">
+        <CardSelector
+          color="success"
+          :items="dialectItems"
+          v-model="formData.meeting.install_dialect"
+        />
+      </template>
+      <template v-else-if="currentStep === 2">
         <v-checkbox
           hide-details
           :label="$t('room.create')"
@@ -267,7 +273,7 @@ async function addMeeting() {
           hide-time-option
         />
       </template>
-      <template v-else-if="currentStep === 2">
+      <template v-else-if="currentStep === 3">
         <CardSelector
           color="success"
           :items="erMethods"
