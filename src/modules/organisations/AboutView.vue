@@ -16,7 +16,7 @@ import BackBtn from '@/components/BackBtn.vue'
           <h1>{{ $t('about.title') }}</h1>
           <p class="mb-2">{{ $t('about.body1') }}</p>
           <p class="mb-2">{{ $t('about.body2') }}</p>
-          <BackBtn fallback="/" />
+          <BackBtn />
         </v-col>
         <v-divider vertical />
         <v-col v-bind="cols.wideLeft.right">
