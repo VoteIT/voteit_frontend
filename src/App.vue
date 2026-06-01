@@ -13,7 +13,7 @@
 import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
-import { onBeforeMount, provide, watch } from 'vue'
+import { onBeforeMount, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import useLoader from './composables/useLoader'
@@ -44,13 +44,6 @@ onBeforeMount(async () => {
     loader.setLoaded(false)
   }
 })
-provide('cols', {
-  default: {
-    cols: 12,
-    lg: 8,
-    offsetLg: 2
-  }
-})
 
 function promptVersionReload() {
   openDialogEvent.emit({
@@ -65,15 +58,11 @@ function promptVersionReload() {
   })
 }
 
-watch(
-  frontendVersion,
-  (version) => {
-    const clientVersion = import.meta.env.VITE_FRONTEND_VERSION
-    if (!(version && clientVersion)) return
-    if (version !== clientVersion) promptVersionReload()
-  },
-  { immediate: true }
-)
+watchEffect(() => {
+  const clientVersion = import.meta.env.VITE_FRONTEND_VERSION
+  if (!(frontendVersion.value && clientVersion)) return
+  if (frontendVersion.value !== clientVersion) promptVersionReload()
+})
 </script>
 
 <style lang="sass">
