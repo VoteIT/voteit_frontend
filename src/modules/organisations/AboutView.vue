@@ -16,7 +16,7 @@ import BackBtn from '@/components/BackBtn.vue'
           <h1>{{ $t('about.title') }}</h1>
           <p class="mb-2">{{ $t('about.body1') }}</p>
           <p class="mb-2">{{ $t('about.body2') }}</p>
-          <BackBtn />
+          <BackBtn fallback="/" />
         </v-col>
         <v-divider vertical />
         <v-col v-bind="cols.wideLeft.right">
@@ -39,7 +39,7 @@ import BackBtn from '@/components/BackBtn.vue'
               />
             </v-list>
           </div>
-          <div class="mb-4">
+          <div class="mb-4" v-if="!!frontendVersion">
             <h2>Version</h2>
             <v-list class="my-3" :border="true">
               <v-list-item

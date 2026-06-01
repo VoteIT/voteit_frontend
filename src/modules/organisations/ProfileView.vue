@@ -261,7 +261,7 @@ async function saveImage(close: () => void) {
               </SwitchProfileDialog>
             </template>
           </v-alert>
-          <BackBtn />
+          <BackBtn fallback="/" />
         </v-col>
         <v-col v-bind="cols.wideLeft.right">
           <v-alert
