@@ -122,6 +122,7 @@ async function removeDialect() {
         </QueryDialog>
       </template>
     </v-card>
+    <v-alert v-else :text="$t('meeting.dialects.changeOnlyUpcoming')" />
   </div>
   <div v-else class="d-flex flex-column ga-3">
     <v-card
@@ -134,7 +135,7 @@ async function removeDialect() {
     />
     <v-alert
       v-if="!isUpcomingMeeting"
-      :text="$t('meeting.dialects.installOnlyUpcoming')"
+      :text="$t('meeting.dialects.changeOnlyUpcoming')"
     />
     <v-card
       v-for="{ description, name, title } in installableDialects"

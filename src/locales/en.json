@@ -472,7 +472,7 @@
       "installBtn": "Install {title}",
       "installConfirm": "Installation of the dialect {title} will make changes to your meeting and can cause problems with groups, rights and settings in the meeting. Are you sure?",
       "installDescription": "A meeting dialect is a set of rules for voting rights in a meeting. This meeting has no installed meeting dialect and if you don't know that you need to choose a dialect, you can probably ignore this.",
-      "installOnlyUpcoming": "You can only install a dialect in a meeting that is upcoming.",
+      "changeOnlyUpcoming": "You can only change the dialect in a meeting that is upcoming.",
       "uninstallConfirm": "Uninstallation of the dialect {title} will make changes to your meeting and can cause problems with groups, rights and settings in the meeting. Are you sure?",
       "uninstallText": "You can uninstall this dialect, but we will then make changes to your meeting. This can affect groups, rights and settings. Don't do this unless you know what you're doing.",
       "uninstallTitle": "Uninstall dialect"
