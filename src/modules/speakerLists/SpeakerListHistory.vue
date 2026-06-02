@@ -14,9 +14,8 @@ import useSpeakerList from './useSpeakerList'
 import { SpeakerList } from './types'
 import { speakerType } from './contentTypes'
 
-const SPEAKER_HISTORY_CAP = 3
-
 const props = defineProps<{
+  expandAt?: number
   list: SpeakerList
 }>()
 
@@ -24,12 +23,12 @@ const { speakerHistory } = useSpeakerList(computed(() => props.list.pk))
 
 const speakerHistoryExpanded = ref(false)
 const speakerHistoryExpandable = computed(
-  () => speakerHistory.value.length > SPEAKER_HISTORY_CAP
+  () => !!props.expandAt && speakerHistory.value.length > props.expandAt
 )
 const annotatedSpeakerHistory = computed(() => {
   const history = speakerHistoryExpanded.value
     ? speakerHistory.value
-    : speakerHistory.value.slice(0, SPEAKER_HISTORY_CAP)
+    : speakerHistory.value.slice(0, props.expandAt)
   return history.map(({ pk, user, seconds }) => {
     return {
       pk,
@@ -57,9 +56,6 @@ async function deleteHistory(pk: number) {
 
 <template>
   <div v-if="list && annotatedSpeakerHistory.length">
-    <h2>
-      {{ $t('speaker.history') }}
-    </h2>
     <v-list bg-color="background">
       <v-list-item
         v-for="{ pk, seconds, time, user } in annotatedSpeakerHistory"

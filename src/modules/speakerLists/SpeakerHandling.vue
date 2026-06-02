@@ -33,6 +33,8 @@ import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
 import useSpeakerStore from './useSpeakerStore'
 import useRoom from '../rooms/useRoom'
+import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
+import Dropdown from '@/components/Dropdown.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -386,11 +388,12 @@ const otherRoomsWithLists = computed(() => {
               {{ $t('speaker.listActive') }}
             </div>
           </v-sheet>
-          <SpeakerListHistory
-            v-if="currentList"
-            :list="currentList"
-            class="mt-4"
-          />
+          <div v-if="currentList" class="mt-4 speaker-history-wide">
+            <h2>
+              {{ $t('speaker.history') }}
+            </h2>
+            <SpeakerListHistory :expand-at="3" :list="currentList" />
+          </div>
         </div>
         <div class="flex-grow-1">
           <SpeakerListControls
@@ -398,6 +401,13 @@ const otherRoomsWithLists = computed(() => {
             :key-bindings="keyBindings"
             :list-id="currentList.pk"
           />
+          <Dropdown
+            v-if="currentList"
+            class="speaker-history-thin mt-12"
+            :title="$t('speaker.history')"
+          >
+            <SpeakerListHistory :list="currentList" />
+          </Dropdown>
         </div>
       </div>
     </div>
@@ -450,9 +460,18 @@ ol.speaker-queue
 .speaker-sidebar
   width: 100%
 
+.speaker-history-wide
+  display: none
+
 @container (min-width: 700px)
   .speaker-body
     flex-direction: row
+
+  .speaker-history-thin
+    display: none
+
+  .speaker-history-wide
+    display: block
 
   .speaker-sidebar
     order: 1
