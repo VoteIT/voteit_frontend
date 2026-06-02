@@ -1,23 +1,92 @@
+<script setup lang="ts">
+import { orderBy } from 'lodash'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import Tag from '@/components/Tag.vue'
+import useProposalStore from '@/modules/proposals/useProposalStore'
+import { STVResult } from './types'
+import { translateSTVStatus } from './utils'
+import ProposalSheet from '@/modules/proposals/ProposalSheet.vue'
+
+const props = defineProps<{
+  abstainCount: number
+  proposals: number[]
+  result: STVResult
+}>()
+
+const { getProposal } = useProposalStore()
+const { t } = useI18n()
+
+const metadata = computed(() => [
+  [t('poll.result.complete'), props.result.complete ? t('yes') : t('no')],
+  [t('poll.result.quota'), props.result.quota],
+  [t('poll.result.randomized'), props.result.randomized ? t('yes') : t('no')]
+])
+
+function pkToPropId(pk: number) {
+  return getProposal(pk)?.prop_id ?? t('unknown')
+}
+
+const approved = computed(() => {
+  return props.result.approved.map((id) => getProposal(id) ?? id)
+})
+
+const rounds = computed(() => {
+  return props.result.rounds.map((round, i) => {
+    const voteCount = orderBy(
+      round.vote_count.map(([pk, count]) => ({
+        count,
+        id: pkToPropId(pk),
+        pk,
+        text: [0, 1].includes(count) // Always plural if not exactly zero or one
+          ? t('poll.result.voteCount', count)
+          : t(
+              'poll.result.voteCount',
+              {
+                count: count.toLocaleString(undefined, {
+                  maximumFractionDigits: 5
+                })
+              },
+              2
+            )
+      })),
+      'count',
+      'desc'
+    )
+    const divideBefore =
+      round.status === 'Elected'
+        ? voteCount.find(({ pk }) => !round.selected.includes(pk))?.id
+        : voteCount.at(-1)?.id
+    return {
+      ...round,
+      divideBefore,
+      statusText: translateSTVStatus(round.status, t),
+      title: `${t('poll.result.round')} ${i + 1}`,
+      proposalIds: round.selected.map(pkToPropId),
+      voteCount
+    }
+  })
+})
+</script>
+
 <template>
   <div>
-    <v-list bg-color="background">
-      <v-list-item v-for="(proposal, i) in approved" :key="i">
-        <template #prepend>
-          <span class="text-h6 mr-4 mt-n3"> {{ i + 1 }}. </span>
-        </template>
-        <v-list-item-title v-if="!proposal">
-          - {{ $t('proposal.unknown') }} -
-        </v-list-item-title>
-        <template v-else>
-          <v-list-item-title class="mb-1">
-            <Tag disabled :name="proposal.prop_id" />
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            <div v-html="proposal.body"></div>
-          </v-list-item-subtitle>
-        </template>
-      </v-list-item>
-    </v-list>
+    <div class="d-flex flex-column ga-2 my-6">
+      <div v-for="(proposal, i) in approved" :key="i" class="d-flex ga-1">
+        <v-sheet color="success" class="d-flex px-2 py-3 text-h5" rounded>
+          {{ i + 1 }}
+        </v-sheet>
+        <v-sheet
+          v-if="typeof proposal === 'number'"
+          class="flex-grow-1 pa-4"
+          rounded
+        >
+          <em>{{ $t('proposal.unknown') }}: {{ proposal }}</em>
+        </v-sheet>
+        <ProposalSheet v-else class="flex-grow-1" :proposal="proposal" />
+      </div>
+    </div>
     <v-divider class="my-3" />
     <v-list density="comfortable" bg-color="background">
       <v-list-item v-for="[key, value] in metadata" :key="key">
@@ -69,74 +138,3 @@
     </v-expansion-panels>
   </div>
 </template>
-
-<script setup lang="ts">
-import { orderBy } from 'lodash'
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import Tag from '@/components/Tag.vue'
-import useProposalStore from '@/modules/proposals/useProposalStore'
-import { STVResult } from './types'
-import { translateSTVStatus } from './utils'
-
-const props = defineProps<{
-  abstainCount: number
-  proposals: number[]
-  result: STVResult
-}>()
-
-const { getProposal } = useProposalStore()
-const { t } = useI18n()
-
-const metadata = computed(() => [
-  [t('poll.result.complete'), props.result.complete ? t('yes') : t('no')],
-  [t('poll.result.quota'), props.result.quota],
-  [t('poll.result.randomized'), props.result.randomized ? t('yes') : t('no')]
-])
-
-function pkToPropId(pk: number) {
-  return getProposal(pk)?.prop_id ?? t('unknown')
-}
-
-const approved = computed(() => {
-  return props.result.approved.map(getProposal)
-})
-
-const rounds = computed(() => {
-  return props.result.rounds.map((round, i) => {
-    const voteCount = orderBy(
-      round.vote_count.map(([pk, count]) => ({
-        count,
-        id: pkToPropId(pk),
-        pk,
-        text: [0, 1].includes(count) // Always plural if not exactly zero or one
-          ? t('poll.result.voteCount', count)
-          : t(
-              'poll.result.voteCount',
-              {
-                count: count.toLocaleString(undefined, {
-                  maximumFractionDigits: 5
-                })
-              },
-              2
-            )
-      })),
-      'count',
-      'desc'
-    )
-    const divideBefore =
-      round.status === 'Elected'
-        ? voteCount.find(({ pk }) => !round.selected.includes(pk))?.id
-        : voteCount.at(-1)?.id
-    return {
-      ...round,
-      divideBefore,
-      statusText: translateSTVStatus(round.status, t),
-      title: `${t('poll.result.round')} ${i + 1}`,
-      proposalIds: round.selected.map(pkToPropId),
-      voteCount
-    }
-  })
-})
-</script>

@@ -27,11 +27,12 @@
         class="mb-8"
       />
     </template>
-    <ProposalCard
+    <ProposalSheet
       v-else-if="winningProposal"
-      :p="winningProposal"
+      elevation="2"
+      class="my-6"
+      :proposal="winningProposal"
       readOnly
-      class="my-8"
     >
       <template #bottom-right>
         <v-btn
@@ -40,52 +41,113 @@
           :text="$t('poll.winningProposal')"
         />
       </template>
-    </ProposalCard>
+    </ProposalSheet>
     <v-expansion-panels multiple class="my-4">
       <v-expansion-panel
         v-for="{ btn, proposal, pairs } in proposalPairs"
         :key="proposal?.pk ?? 0"
       >
-        <v-expansion-panel-title>
+        <template #title>
           <v-icon v-bind="btn" class="mr-4" />
           <Tag v-if="proposal" disabled :name="proposal.prop_id" />
           <span v-else class="rounded bg-warning px-2 py-1">{{
             t('poll.deny')
           }}</span>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text
-          v-for="pair in pairs"
-          :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0}`"
-          class="my-2"
-        >
-          {{ $t('poll.result.versus') }}:
-          <Tag v-if="pair.proposal" disabled :name="pair.proposal.prop_id" />
-          <span v-else class="rounded bg-warning px-2">{{
-            t('poll.deny')
-          }}</span>
-          <div class="d-flex justify-space-between mt-2">
-            <span class="bg-success px-2 rounded-pill"
-              >{{ $t('poll.result.approveThis') }} ({{ pair.approve }})</span
-            >
-            <span class="bg-secondary px-2 rounded-pill"
-              >{{ $t('poll.result.tie') }} ({{ pair.tie }})</span
-            >
-            <span class="bg-warning px-2 rounded-pill"
-              >{{ $t('poll.result.approveOther') }} ({{ pair.deny }})</span
-            >
-          </div>
-          <div class="d-flex mt-1 overflow-hidden rounded">
+        </template>
+        <template #text>
+          <div class="d-flex flex-column ga-8">
             <div
-              v-for="({ percentage, color }, i) in pair.results"
-              :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0} ${i}`"
-              :class="`bg-${color}`"
-              class="text-center overflow-hidden text-no-wrap"
-              :style="{ width: `${percentage}%` }"
+              v-for="pair in pairs"
+              :key="`${proposal?.pk ?? 0} vs ${pair.proposal?.pk ?? 0}`"
             >
-              {{ Math.round(percentage) }} %
+              <div class="mb-4 d-flex justify-space-between flex-wrap">
+                <v-dialog v-if="proposal" max-width="640">
+                  <template #activator="{ props }">
+                    <Tag
+                      class="cursor-pointer"
+                      :name="proposal.prop_id"
+                      v-bind="props"
+                    />
+                  </template>
+                  <template #default="{ isActive }">
+                    <ProposalSheet :proposal="proposal">
+                      <template #actions>
+                        <v-btn
+                          class="mt-n2 mr-n2"
+                          icon="mdi-close"
+                          size="small"
+                          variant="text"
+                          @click="isActive.value = false"
+                        />
+                      </template>
+                    </ProposalSheet>
+                  </template>
+                </v-dialog>
+                <v-icon icon="mdi-swap-horizontal" />
+                <v-dialog v-if="pair.proposal" max-width="640">
+                  <template #activator="{ props }">
+                    <Tag
+                      class="cursor-pointer"
+                      :name="pair.proposal.prop_id"
+                      v-bind="props"
+                    />
+                  </template>
+                  <template #default="{ isActive }">
+                    <ProposalSheet :proposal="pair.proposal">
+                      <template #actions>
+                        <v-btn
+                          class="mt-n2 mr-n2"
+                          icon="mdi-close"
+                          size="small"
+                          variant="text"
+                          @click="isActive.value = false"
+                        />
+                      </template>
+                    </ProposalSheet>
+                  </template>
+                </v-dialog>
+                <span v-else class="rounded bg-warning px-2">{{
+                  t('poll.deny')
+                }}</span>
+              </div>
+              <div class="d-none d-sm-flex justify-space-between ga-1">
+                <span class="bg-success px-2 rounded-pill">
+                  {{ $t('poll.result.approveThis') }} ({{ pair.approve }})
+                </span>
+                <span class="bg-secondary px-2 rounded-pill">
+                  {{ $t('poll.result.tie') }} ({{ pair.tie }})
+                </span>
+                <span class="bg-warning px-2 rounded-pill">
+                  {{ $t('poll.result.approveOther') }} ({{ pair.deny }})
+                </span>
+              </div>
+              <div class="d-flex d-sm-none justify-space-between ga-1">
+                <span class="bg-success px-2 rounded-pill">
+                  {{ pair.approve }}
+                </span>
+                <span class="bg-secondary px-2 rounded-pill">
+                  {{ pair.tie }}
+                </span>
+                <span class="bg-warning px-2 rounded-pill">
+                  {{ pair.deny }}
+                </span>
+              </div>
+              <div class="d-flex mt-1 overflow-hidden rounded">
+                <div
+                  v-for="({ percentage, color }, i) in pair.results"
+                  :key="`${proposal?.pk ?? 0} vs ${
+                    pair.proposal?.pk ?? 0
+                  } ${i}`"
+                  :class="`bg-${color}`"
+                  class="text-center overflow-hidden text-no-wrap"
+                  :style="{ width: `${percentage}%` }"
+                >
+                  {{ Math.round(percentage) }} %
+                </div>
+              </div>
             </div>
           </div>
-        </v-expansion-panel-text>
+        </template>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
@@ -102,6 +164,7 @@ import useProposalStore from '@/modules/proposals/useProposalStore'
 import ProposalCard from '@/modules/proposals/ProposalCard.vue'
 
 import { SchulzeResult } from './types'
+import ProposalSheet from '@/modules/proposals/ProposalSheet.vue'
 
 const props = defineProps<{
   abstainCount: number

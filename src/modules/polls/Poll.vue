@@ -1,3 +1,50 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useElementSize } from '@vueuse/core'
+
+import { slugify } from '@/utils'
+import Dropdown from '@/components/Dropdown.vue'
+import Moment from '@/components/Moment.vue'
+import ProgressBar from '@/components/ProgressBar.vue'
+import Widget from '@/components/Widget.vue'
+import WorkflowState from '@/components/WorkflowState.vue'
+
+import useMeeting from '../meetings/useMeeting'
+import usePollStore from '../polls/usePollStore'
+import ProposalSheet from '../proposals/ProposalSheet.vue'
+
+import { pollType } from './contentTypes'
+import usePoll from './usePoll'
+import { Poll } from './types'
+
+const props = defineProps<{ poll: Poll }>()
+
+const { t } = useI18n()
+const { isModerator } = useMeeting()
+const { getPollStatus, getUserVote } = usePollStore()
+const {
+  canVote,
+  approved,
+  denied,
+  isOngoing,
+  isFinished,
+  pollMethodName,
+  voteCount
+} = usePoll(computed(() => props.poll.pk))
+
+const rootEl = ref<HTMLDivElement>()
+const { width } = useElementSize(rootEl)
+const proposalColumns = computed(() => (width.value < 640 ? 1 : 2))
+
+const pollStatus = computed(() => getPollStatus(props.poll.pk))
+const pollRoute = computed(() => ({
+  name: 'poll',
+  params: { pid: props.poll.pk, pslug: slugify(props.poll.title) }
+}))
+const userVote = computed(() => getUserVote(props.poll))
+</script>
+
 <template>
   <Widget class="poll" ref="rootEl" :style="{ '--columns': proposalColumns }">
     <header class="mb-1">
@@ -41,8 +88,16 @@
           :title="$t('poll.numApproved', approved.length)"
           class="mb-2"
         >
-          <div class="proposals ga-2">
-            <ProposalCard v-for="p in approved" :key="p.pk" :p="p" read-only />
+          <div
+            class="proposals ga-2"
+            :class="{ 'full-width': approved.length === 1 }"
+          >
+            <ProposalSheet
+              v-for="p in approved"
+              :key="p.pk"
+              elevation="2"
+              :proposal="p"
+            />
           </div>
         </Dropdown>
         <Dropdown
@@ -50,8 +105,16 @@
           :title="$t('poll.numDenied', denied.length)"
           class="mb-2"
         >
-          <div class="proposals ga-2">
-            <ProposalCard v-for="p in denied" :key="p.pk" :p="p" read-only />
+          <div
+            class="proposals ga-2"
+            :class="{ 'full-width': denied.length === 1 }"
+          >
+            <ProposalSheet
+              v-for="p in denied"
+              :key="p.pk"
+              elevation="2"
+              :proposal="p"
+            />
           </div>
         </Dropdown>
         <ProgressBar
@@ -93,53 +156,6 @@
   </Widget>
 </template>
 
-<script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useElementSize } from '@vueuse/core'
-
-import { slugify } from '@/utils'
-import Dropdown from '@/components/Dropdown.vue'
-import Moment from '@/components/Moment.vue'
-import ProgressBar from '@/components/ProgressBar.vue'
-import Widget from '@/components/Widget.vue'
-import WorkflowState from '@/components/WorkflowState.vue'
-
-import usePollStore from '../polls/usePollStore'
-import useMeeting from '../meetings/useMeeting'
-
-import { pollType } from './contentTypes'
-import usePoll from './usePoll'
-import { Poll } from './types'
-import ProposalCard from '../proposals/ProposalCard.vue'
-
-const props = defineProps<{ poll: Poll }>()
-
-const { t } = useI18n()
-const { isModerator } = useMeeting()
-const { getPollStatus, getUserVote } = usePollStore()
-const {
-  canVote,
-  approved,
-  denied,
-  isOngoing,
-  isFinished,
-  pollMethodName,
-  voteCount
-} = usePoll(computed(() => props.poll.pk))
-
-const rootEl = ref<HTMLDivElement>()
-const { width } = useElementSize(rootEl)
-const proposalColumns = computed(() => (width.value < 640 ? 1 : 2))
-
-const pollStatus = computed(() => getPollStatus(props.poll.pk))
-const pollRoute = computed(() => ({
-  name: 'poll',
-  params: { pid: props.poll.pk, pslug: slugify(props.poll.title) }
-}))
-const userVote = computed(() => getUserVote(props.poll))
-</script>
-
 <style lang="sass" scoped>
 header
   a
@@ -152,4 +168,6 @@ header
 .proposals
   display: grid
   grid-template-columns: repeat(var(--columns, 1), 1fr)
+  &.full-width
+    --columns: 1
 </style>
