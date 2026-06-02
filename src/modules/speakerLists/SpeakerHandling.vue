@@ -5,12 +5,13 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { MenuItem, ThemeColor } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
+import DefaultForm from '@/components/DefaultForm.vue'
+import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useRules from '@/composables/useRules'
-import DefaultForm from '@/components/DefaultForm.vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
@@ -33,8 +34,6 @@ import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
 import useSpeakerStore from './useSpeakerStore'
 import useRoom from '../rooms/useRoom'
-import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
-import Dropdown from '@/components/Dropdown.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -298,8 +297,8 @@ const otherRoomsWithLists = computed(() => {
                       "
                       size="small"
                     />
-                    &nbsp;{{ getState(list.state)?.getName(t) }}</small
-                  >
+                    &nbsp;{{ getState(list.state)?.getName(t) }}
+                  </small>
                 </h3>
                 <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
                   <template #top v-if="canManageSystem">
