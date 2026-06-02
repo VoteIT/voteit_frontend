@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.45.0 (2026-06-01)
+## 0.45.0 (??)
 
 - Split mode for sender view: agenda and poll/decision content can now be viewed side by side with a resizable divider
 - Token API: moved from hidden developer tool to advanced settings
@@ -13,6 +13,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Meeting menu: control panel moved to last position
 - About VoteIT view
 - Developer experience improvements
+- Improved poll results (STV, Schulze)
 
 ## 0.44.1 (2026-05-25)
 
