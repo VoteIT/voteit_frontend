@@ -1,22 +1,3 @@
-<template>
-  <span
-    class="btn-dropdown"
-    :class="{ dark, isOpen, right }"
-    @keydown.esc.prevent="isOpen = false"
-  >
-    <slot name="activator" :toggle="toggle"></slot>
-    <v-btn
-      v-if="title && !$slots.activator"
-      @click="isOpen = !isOpen"
-      append-icon="mdi-chevron-down"
-      >{{ title }}</v-btn
-    >
-    <Widget :dense="dense" v-show="isOpen">
-      <slot v-if="eager || isOpen"></slot>
-    </Widget>
-  </span>
-</template>
-
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
 
@@ -53,6 +34,25 @@ defineExpose({
   close
 })
 </script>
+
+<template>
+  <span
+    class="btn-dropdown"
+    :class="{ dark, isOpen, right }"
+    @keydown.esc.prevent="isOpen = false"
+  >
+    <slot name="activator" :toggle="toggle"></slot>
+    <v-btn
+      v-if="title && !$slots.activator"
+      append-icon="mdi-chevron-down"
+      :text="title"
+      @click="isOpen = !isOpen"
+    />
+    <Widget :dense="dense" v-show="isOpen">
+      <slot v-if="eager || isOpen"></slot>
+    </Widget>
+  </span>
+</template>
 
 <style lang="sass">
 .btn-dropdown

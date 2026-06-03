@@ -100,8 +100,9 @@ const groupUserId = computed(() => {
       <span class="ml-6"><slot name="appendSecondary"></slot></span>
     </template>
     <br />
-    <small class="text-secondary"
-      ><v-icon icon="mdi-account-multiple" /> {{ groupName }}</small
-    >
+    <small class="text-secondary">
+      <v-icon icon="mdi-account-multiple" />
+      {{ groupName }}
+    </small>
   </span>
 </template>

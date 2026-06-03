@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useElementSize } from '@vueuse/core'
 
 import { slugify } from '@/utils'
@@ -20,7 +19,6 @@ import { Poll } from './types'
 
 const props = defineProps<{ poll: Poll }>()
 
-const { t } = useI18n()
 const { isModerator } = useMeeting()
 const { getPollStatus, getUserVote } = usePollStore()
 const {
@@ -129,27 +127,29 @@ const userVote = computed(() => getUserVote(props.poll))
         :value="pollStatus?.voted"
         :total="pollStatus?.total"
       >
-        <span v-if="pollStatus">{{
-          t(
-            'poll.votedProgress',
-            {
-              ...pollStatus,
-              percentage: Math.round(
-                (pollStatus.voted / pollStatus.total) * 100
-              )
-            },
-            pollStatus.voted
-          )
-        }}</span>
+        <span v-if="pollStatus">
+          {{
+            $t(
+              'poll.votedProgress',
+              {
+                ...pollStatus,
+                percentage: Math.round(
+                  (pollStatus.voted / pollStatus.total) * 100
+                )
+              },
+              pollStatus.voted
+            )
+          }}
+        </span>
         <template #right>
-          <span v-if="userVote" class="active"
-            >{{ $t('poll.youHaveVoted') }}
-            <v-icon size="x-small" icon="mdi-check"
-          /></span>
-          <span v-else-if="canVote"
-            >{{ $t('poll.youHaveNotVoted') }}
-            <v-icon size="x-small" icon="mdi-check"
-          /></span>
+          <span v-if="userVote" class="active">
+            {{ $t('poll.youHaveVoted') }}
+            <v-icon size="x-small" icon="mdi-check" />
+          </span>
+          <span v-else-if="canVote">
+            {{ $t('poll.youHaveNotVoted') }}
+            <v-icon size="x-small" icon="mdi-check" />
+          </span>
         </template>
       </ProgressBar>
     </div>

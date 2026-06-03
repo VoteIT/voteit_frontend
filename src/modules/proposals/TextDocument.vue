@@ -69,9 +69,9 @@ const collapsed = ref(false)
   <v-card class="my-2 proposal-text" :border="true">
     <v-card-title class="d-flex">
       <!-- Empty title not really allowed, so no translation needed here -->
-      <span class="text-truncate flex-grow-1">{{
-        document.title || '-- text document --'
-      }}</span>
+      <span class="text-truncate flex-grow-1">
+        {{ document.title || '-- text document --' }}
+      </span>
       <v-btn
         v-if="perms.change"
         icon="mdi-pencil"

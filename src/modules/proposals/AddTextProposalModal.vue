@@ -12,13 +12,13 @@
     </template>
     <template #actions>
       <v-btn
-        variant="text"
         color="warning"
-        prepend-icon="mdi-undo-variant"
         :disabled="!isModified"
+        prepend-icon="mdi-undo-variant"
+        :text="$t('reset')"
+        variant="text"
         @click="reset"
-        >{{ $t('reset') }}</v-btn
-      >
+      />
     </template>
   </AddProposalModal>
 </template>

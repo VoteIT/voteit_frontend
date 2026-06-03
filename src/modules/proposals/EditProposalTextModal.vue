@@ -15,12 +15,12 @@
       ></textarea>
       <div class="btn-group text-right">
         <v-btn
-          type="submit"
-          :disabled="saving"
           color="primary"
+          :disabled="saving"
           prepend-icon="mdi-check-all"
-          >{{ $t('save') }}</v-btn
-        >
+          :text="$t('save')"
+          type="submit"
+        />
       </div>
     </form>
   </main>

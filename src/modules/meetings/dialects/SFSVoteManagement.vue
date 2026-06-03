@@ -1,8 +1,8 @@
 <template>
   <div v-if="groupVotes || assignedVotes">
-    <span :class="{ 'text-warning': !allAssigned }"
-      >{{ assignedVotes }}/{{ groupVotes }}</span
-    >
+    <span :class="{ 'text-warning': !allAssigned }">
+      {{ assignedVotes }}/{{ groupVotes }}
+    </span>
     <DefaultDialog v-if="canAssignVotes" v-model="editing">
       <template #activator="{ props }">
         <v-btn

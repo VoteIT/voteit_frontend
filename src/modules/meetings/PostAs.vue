@@ -242,12 +242,12 @@ watch(postAsSelect, () => {
       <span class="text-truncate">
         <v-icon v-if="item.raw.titleIcon" :icon="item.raw.titleIcon" />
         {{ item.raw.title }}
-        <small v-if="item.raw.subtitle"
-          >(<v-icon
+        <small v-if="item.raw.subtitle">
+          (<v-icon
             v-if="item.raw.subtitleIcon"
             :icon="item.raw.subtitleIcon"
-          />{{ item.raw.subtitle }})</small
-        >
+          />{{ item.raw.subtitle }})
+        </small>
       </span>
     </template>
   </v-autocomplete>

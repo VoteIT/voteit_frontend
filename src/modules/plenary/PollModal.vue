@@ -89,7 +89,7 @@ onBeforeUnmount(() => {
     <main class="mb-8">
       <p>
         {{
-          t('poll.pollDescription', {
+          $t('poll.pollDescription', {
             method: pollMethodName,
             count: poll.proposals.length
           })

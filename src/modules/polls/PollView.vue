@@ -1,210 +1,3 @@
-<template>
-  <v-row v-if="poll">
-    <v-col offset-lg="2" lg="8">
-      <header>
-        <header class="d-flex">
-          <div class="flex-grow-1">
-            <span v-if="isOngoing && !canVote" class="header-tag">{{
-              t('poll.cantVote')
-            }}</span>
-            <WorkflowState
-              :admin="isModerator"
-              :contentType="pollType"
-              :object="poll"
-            />
-            <h1>{{ poll.title }}</h1>
-            <p class="text-secondary">
-              {{
-                t('poll.pollDescription', {
-                  method: pollMethodName,
-                  count: poll.proposals.length
-                })
-              }}
-            </p>
-            <p v-if="agendaItem && agendaItemRoute">
-              {{ $t('agenda.item') }}:
-              <router-link :to="agendaItemRoute">
-                {{ agendaItem.title }}
-              </router-link>
-            </p>
-            <p v-if="electoralRegister">
-              <v-tooltip>
-                <template #activator="{ props }">
-                  <span v-bind="props">
-                    {{
-                      erPreliminary
-                        ? $t('electoralRegister.preliminary')
-                        : $t('electoralRegister.electoralRegister')
-                    }}:
-                    <span class="text-secondary">
-                      {{
-                        DateTime.fromISO(
-                          electoralRegister.created
-                        ).toLocaleString(DateTime.DATETIME_SHORT)
-                      }}
-                    </span>
-                  </span>
-                </template>
-                <span>
-                  {{ erMethod?.title }}
-                  (ID: {{ electoralRegister.pk }})
-                </span>
-              </v-tooltip>
-            </p>
-          </div>
-          <DropdownMenu :items="menuItems" />
-        </header>
-        <div v-if="poll.body" v-html="poll.body"></div>
-        <template v-if="isOngoing">
-          <v-alert type="success" v-if="votingComplete" class="my-6">
-            {{ $t('poll.voteAddedInfo') }}
-          </v-alert>
-          <v-alert type="info" v-else class="my-6">
-            {{ pollHelpText }}
-          </v-alert>
-        </template>
-      </header>
-      <div v-if="isWithheld" id="poll-results" class="my-6">
-        <ProgressBar
-          class="my-4"
-          :text="voteCount.text"
-          :value="voteCount.voted"
-          :total="voteCount.total"
-        />
-        <WithheldResult :pollId="pollId" />
-      </div>
-      <div v-if="isFinished" id="poll-results" class="my-6">
-        <ProgressBar
-          class="my-4"
-          :text="voteCount.text"
-          :value="voteCount.voted"
-          :total="voteCount.total"
-        />
-        <h3>
-          {{ $t('poll.result.method', { method: pollMethodName }) }}
-        </h3>
-        <component
-          v-if="resultComponent"
-          :is="resultComponent"
-          :result="poll.result"
-          :abstainCount="poll.abstain_count"
-          :proposals="poll.proposals"
-          class="mb-8"
-        />
-        <div v-else class="mt-4">
-          <h2>
-            {{ $t('poll.numApproved', approved.length) }}
-          </h2>
-          <ProposalCard
-            v-for="proposal in approved"
-            :key="proposal.pk"
-            class="my-3"
-            readOnly
-            :p="proposal"
-          />
-          <Dropdown :title="$t('poll.numDenied', approved.length)">
-            <ProposalCard
-              v-for="proposal in denied"
-              :key="proposal.pk"
-              class="my-3"
-              readOnly
-              :p="proposal"
-            />
-          </Dropdown>
-        </div>
-      </div>
-      <div v-else-if="isPrivateOrUpcoming">
-        <v-divider class="my-3" />
-        <h2>
-          {{ $t('poll.ballot') }}
-        </h2>
-        <p class="text-secondary mb-4">
-          {{ $t('proposal.ordering') }}: {{ proposalOrderingTitle }}
-        </p>
-        <component
-          :is="voteComponent"
-          :poll="poll"
-          :proposals="proposals"
-          disabled
-          :key="poll.pk"
-        />
-      </div>
-      <template v-else-if="!votingComplete">
-        <component
-          class="voting-component"
-          :disabled="!canVote"
-          v-if="isOngoing"
-          :is="voteComponent"
-          :poll="poll"
-          :proposals="proposals"
-          v-model="validVote"
-          :key="poll.pk"
-        />
-        <div class="btn-controls mt-6" v-if="canVote">
-          <v-btn
-            color="primary"
-            :disabled="!validVote || submitting"
-            size="large"
-            :text="$t('poll.vote')"
-            prepend-icon="mdi-vote"
-            @click="castVote"
-          />
-          <v-btn
-            color="warning"
-            :disabled="submitting"
-            prepend-icon="mdi-cancel"
-            :text="$t('poll.abstain')"
-            @click="abstainVote"
-          />
-        </div>
-      </template>
-      <div class="mt-6">
-        <v-btn
-          v-for="{ props, title } in buttons"
-          :key="title"
-          class="mr-1 mb-1"
-          :text="title"
-          v-bind="props"
-        />
-        <DefaultDialog
-          v-if="isFinished && isPollVoter"
-          :title="$t('poll.yourVote')"
-        >
-          <template #activator="{ props }">
-            <v-btn
-              color="secondary mb-1"
-              prepend-icon="mdi-vote"
-              :text="$t('poll.showVote')"
-              v-bind="props"
-            />
-          </template>
-          <template v-slot="{ close }">
-            <p v-if="!userVote">
-              {{ $t('poll.didNotVote') }}
-            </p>
-            <p v-else-if="userVote.abstain">
-              {{ $t('poll.abstained') }}
-            </p>
-            <component
-              v-else
-              class="voting-component"
-              disabled
-              :is="voteComponent"
-              :poll="poll"
-              :proposals="proposals"
-              :modelValue="userVote.vote"
-            />
-            <v-spacer />
-            <div class="text-right">
-              <v-btn color="primary" :text="$t('close')" @click="close" />
-            </div>
-          </template>
-        </DefaultDialog>
-      </div>
-    </v-col>
-  </v-row>
-</template>
-
 <script lang="ts" setup>
 import { DateTime } from 'luxon'
 import { computed, ref, watch } from 'vue'
@@ -409,6 +202,213 @@ const buttons = computed(() => {
 
 const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
 </script>
+
+<template>
+  <v-row v-if="poll">
+    <v-col offset-lg="2" lg="8">
+      <header>
+        <header class="d-flex">
+          <div class="flex-grow-1">
+            <span v-if="isOngoing && !canVote" class="header-tag">
+              {{ $t('poll.cantVote') }}
+            </span>
+            <WorkflowState
+              :admin="isModerator"
+              :contentType="pollType"
+              :object="poll"
+            />
+            <h1>{{ poll.title }}</h1>
+            <p class="text-secondary">
+              {{
+                $t('poll.pollDescription', {
+                  method: pollMethodName,
+                  count: poll.proposals.length
+                })
+              }}
+            </p>
+            <p v-if="agendaItem && agendaItemRoute">
+              {{ $t('agenda.item') }}:
+              <router-link :to="agendaItemRoute">
+                {{ agendaItem.title }}
+              </router-link>
+            </p>
+            <p v-if="electoralRegister">
+              <v-tooltip>
+                <template #activator="{ props }">
+                  <span v-bind="props">
+                    {{
+                      erPreliminary
+                        ? $t('electoralRegister.preliminary')
+                        : $t('electoralRegister.electoralRegister')
+                    }}:
+                    <span class="text-secondary">
+                      {{
+                        DateTime.fromISO(
+                          electoralRegister.created
+                        ).toLocaleString(DateTime.DATETIME_SHORT)
+                      }}
+                    </span>
+                  </span>
+                </template>
+                <span>
+                  {{ erMethod?.title }}
+                  (ID: {{ electoralRegister.pk }})
+                </span>
+              </v-tooltip>
+            </p>
+          </div>
+          <DropdownMenu :items="menuItems" />
+        </header>
+        <div v-if="poll.body" v-html="poll.body"></div>
+        <template v-if="isOngoing">
+          <v-alert type="success" v-if="votingComplete" class="my-6">
+            {{ $t('poll.voteAddedInfo') }}
+          </v-alert>
+          <v-alert type="info" v-else class="my-6">
+            {{ pollHelpText }}
+          </v-alert>
+        </template>
+      </header>
+      <div v-if="isWithheld" id="poll-results" class="my-6">
+        <ProgressBar
+          class="my-4"
+          :text="voteCount.text"
+          :value="voteCount.voted"
+          :total="voteCount.total"
+        />
+        <WithheldResult :pollId="pollId" />
+      </div>
+      <div v-if="isFinished" id="poll-results" class="my-6">
+        <ProgressBar
+          class="my-4"
+          :text="voteCount.text"
+          :value="voteCount.voted"
+          :total="voteCount.total"
+        />
+        <h3>
+          {{ $t('poll.result.method', { method: pollMethodName }) }}
+        </h3>
+        <component
+          v-if="resultComponent"
+          :is="resultComponent"
+          :result="poll.result"
+          :abstainCount="poll.abstain_count"
+          :proposals="poll.proposals"
+          class="mb-8"
+        />
+        <div v-else class="mt-4">
+          <h2>
+            {{ $t('poll.numApproved', approved.length) }}
+          </h2>
+          <ProposalCard
+            v-for="proposal in approved"
+            :key="proposal.pk"
+            class="my-3"
+            readOnly
+            :p="proposal"
+          />
+          <Dropdown :title="$t('poll.numDenied', approved.length)">
+            <ProposalCard
+              v-for="proposal in denied"
+              :key="proposal.pk"
+              class="my-3"
+              readOnly
+              :p="proposal"
+            />
+          </Dropdown>
+        </div>
+      </div>
+      <div v-else-if="isPrivateOrUpcoming">
+        <v-divider class="my-3" />
+        <h2>
+          {{ $t('poll.ballot') }}
+        </h2>
+        <p class="text-secondary mb-4">
+          {{ $t('proposal.ordering') }}: {{ proposalOrderingTitle }}
+        </p>
+        <component
+          :is="voteComponent"
+          :poll="poll"
+          :proposals="proposals"
+          disabled
+          :key="poll.pk"
+        />
+      </div>
+      <template v-else-if="!votingComplete">
+        <component
+          class="voting-component"
+          :disabled="!canVote"
+          v-if="isOngoing"
+          :is="voteComponent"
+          :poll="poll"
+          :proposals="proposals"
+          v-model="validVote"
+          :key="poll.pk"
+        />
+        <div class="btn-controls mt-6" v-if="canVote">
+          <v-btn
+            color="primary"
+            :disabled="!validVote || submitting"
+            size="large"
+            :text="$t('poll.vote')"
+            prepend-icon="mdi-vote"
+            @click="castVote"
+          />
+          <v-btn
+            color="warning"
+            :disabled="submitting"
+            prepend-icon="mdi-cancel"
+            :text="$t('poll.abstain')"
+            @click="abstainVote"
+          />
+        </div>
+      </template>
+      <div class="mt-6">
+        <v-btn
+          v-for="{ props, title } in buttons"
+          :key="title"
+          class="mr-1 mb-1"
+          :text="title"
+          v-bind="props"
+        />
+        <DefaultDialog
+          v-if="isFinished && isPollVoter"
+          :title="$t('poll.yourVote')"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              color="secondary mb-1"
+              prepend-icon="mdi-vote"
+              :text="$t('poll.showVote')"
+              v-bind="props"
+            />
+          </template>
+          <template v-slot="{ close }">
+            <p v-if="!userVote">
+              {{ $t('poll.didNotVote') }}
+            </p>
+            <p v-else-if="userVote.abstain">
+              {{ $t('poll.abstained') }}
+            </p>
+            <component
+              v-else
+              class="voting-component"
+              disabled
+              :is="voteComponent"
+              :poll="poll"
+              :proposals="proposals"
+              :modelValue="userVote.vote"
+            />
+            <v-spacer />
+            <div class="text-right">
+              <v-btn color="primary" :text="$t('close')" @click="close" />
+            </div>
+          </template>
+        </DefaultDialog>
+      </div>
+    </v-col>
+  </v-row>
+</template>
 
 <style lang="sass">
 header .header-tag

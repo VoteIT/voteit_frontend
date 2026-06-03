@@ -173,9 +173,9 @@ const denyProposalWon = computed(() => {
         <template #title>
           <v-icon v-bind="btn" class="mr-4" />
           <Tag v-if="proposal" disabled :name="proposal.prop_id" />
-          <span v-else class="rounded bg-warning px-2 py-1">{{
-            t('poll.deny')
-          }}</span>
+          <span v-else class="rounded bg-warning px-2 py-1">
+            {{ $t('poll.deny') }}
+          </span>
         </template>
         <template #text>
           <div class="d-flex flex-column ga-8">
@@ -229,9 +229,9 @@ const denyProposalWon = computed(() => {
                     </ProposalSheet>
                   </template>
                 </v-dialog>
-                <span v-else class="rounded bg-warning px-2">{{
-                  t('poll.deny')
-                }}</span>
+                <span v-else class="rounded bg-warning px-2">
+                  {{ $t('poll.deny') }}
+                </span>
               </div>
               <div class="d-none d-sm-flex justify-space-between ga-1">
                 <span class="bg-success px-2 rounded-pill">
