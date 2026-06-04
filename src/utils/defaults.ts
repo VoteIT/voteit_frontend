@@ -8,13 +8,13 @@ export const cols = {
     left: {
       cols: 12,
       md: 8,
-      lg: 5,
-      offsetLg: 2
+      xl: 5,
+      offsetXl: 2
     },
     right: {
       cols: 12,
       md: 4,
-      lg: 3
+      xl: 3
     }
   }
 }
