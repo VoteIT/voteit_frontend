@@ -1,115 +1,6 @@
-<template>
-  <div>
-    <HelpSection :id="`roleMatrix-${contentType.name}`" start-open class="mb-4">
-      <p class="mb-4">{{ $t('role.help.intro') }}</p>
-      <ul>
-        <li
-          class="mb-1"
-          v-for="{ description, icon, name, title } in columnDescriptions"
-          :key="name"
-        >
-          <v-icon :icon="icon" />
-          {{ title }} &mdash; {{ description }}
-        </li>
-      </ul>
-    </HelpSection>
-    <slot name="filter"></slot>
-    <v-pagination
-      v-if="pageCount > 1"
-      v-model="currentPage"
-      :length="pageCount"
-    />
-    <v-table
-      class="context-roles"
-      :class="{ orderReversed: ordering.reversed, admin }"
-    >
-      <thead>
-        <tr>
-          <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
-            {{ $t('name') }} ({{ allRoles.length }})
-          </th>
-          <th v-if="admin">
-            {{ $t('email') }}
-          </th>
-          <th
-            v-for="{ count, icon, name, title } in columnTitles"
-            class="text-center"
-            :key="name"
-            @click="orderUsers(name)"
-            :class="{ orderBy: name === ordering.column }"
-          >
-            <v-tooltip :text="title" location="top">
-              <template #activator="{ props }">
-                <v-icon v-bind="props" :icon="icon" />
-                {{ count }}
-              </template>
-            </v-tooltip>
-          </th>
-          <th v-if="admin"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="!userMatrix.length">
-          <td class="text-center" :colspan="(admin ? 3 : 1) + columns.length">
-            <em>{{ $t('noFilteredRoles', allRoles.length) }}</em>
-          </td>
-        </tr>
-        <tr
-          v-for="{ user, row } in pageUsers"
-          :key="user"
-          :class="{ currentUser: isCurrentUser({ user }) }"
-        >
-          <td><User :pk="user" userid /></td>
-          <td v-if="admin">
-            <small>
-              {{ getUser(user)?.email }}
-            </small>
-          </td>
-          <td
-            v-for="({ name, setValue }, i) in columns"
-            :key="name"
-            class="text-center"
-          >
-            <v-btn
-              :disabled="!admin || !setValue"
-              variant="text"
-              :color="row[i] ? 'success' : 'warning'"
-              @click="setValue?.(user, !row[i])"
-            >
-              <v-icon :icon="row[i] ? 'mdi-check' : 'mdi-close'" />
-            </v-btn>
-          </td>
-          <td v-if="admin" class="text-right">
-            <QueryDialog
-              v-if="removeConfirmText"
-              :text="removeConfirmText"
-              color="warning"
-              @confirmed="removeAllRoles(user)"
-            >
-              <template #activator="{ props }">
-                <v-btn v-bind="props" color="warning" variant="text">
-                  <v-icon icon="mdi-delete" />
-                </v-btn>
-              </template>
-            </QueryDialog>
-            <v-btn
-              v-else
-              color="warning"
-              @click="removeAllRoles(user)"
-              variant="text"
-            >
-              <v-icon icon="mdi-delete" />
-            </v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </div>
-</template>
-
 <script lang="ts" setup generic="Role extends string">
 import { ifilter } from 'itertools'
-import { Dictionary, orderBy as _orderBy } from 'lodash'
+import { orderBy } from 'lodash'
 import { computed, onBeforeMount, reactive, ref, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -136,9 +27,9 @@ const props = withDefaults(
     cols?: Role[]
     contentType: ContentType<any, any, Role>
     filter?(userRoles: UserContextRoles): boolean
-    icons: Dictionary<string>
+    icons: Record<string, string>
     pk: number
-    readonlyRoles?: Dictionary<string>
+    readonlyRoles?: Record<string, string>
     removeConfirm?(user: number, role: string): Promise<boolean>
     removeConfirmText?: string
   }>(),
@@ -305,7 +196,7 @@ const userMatrix = computed(() => {
     ordering.reversed !== orderByName // XOR
       ? 'asc'
       : 'desc'
-  return _orderBy(matrix, [isCurrentUser, _ordering], ['desc', order])
+  return orderBy(matrix, [isCurrentUser, _ordering], ['desc', order])
 })
 
 const currentPage = ref(1)
@@ -319,6 +210,112 @@ const pageUsers = computed(() => {
   )
 })
 </script>
+
+<template>
+  <div>
+    <HelpSection :id="`roleMatrix-${contentType.name}`" start-open class="mb-4">
+      <p class="mb-4">{{ $t('role.help.intro') }}</p>
+      <ul>
+        <li
+          class="mb-1"
+          v-for="{ description, icon, name, title } in columnDescriptions"
+          :key="name"
+        >
+          <v-icon :icon="icon" />
+          {{ title }} &mdash; {{ description }}
+        </li>
+      </ul>
+    </HelpSection>
+    <slot name="filter"></slot>
+    <v-pagination
+      v-if="pageCount > 1"
+      v-model="currentPage"
+      :length="pageCount"
+    />
+    <v-table :class="{ orderReversed: ordering.reversed, admin }">
+      <thead>
+        <tr>
+          <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
+            {{ $t('name') }} ({{ allRoles.length }})
+          </th>
+          <th v-if="admin">
+            {{ $t('email') }}
+          </th>
+          <th
+            v-for="{ count, icon, name, title } in columnTitles"
+            class="text-center"
+            :key="name"
+            @click="orderUsers(name)"
+            :class="{ orderBy: name === ordering.column }"
+          >
+            <v-tooltip :text="title" location="top">
+              <template #activator="{ props }">
+                <v-icon v-bind="props" :icon="icon" />
+                {{ count }}
+              </template>
+            </v-tooltip>
+          </th>
+          <th v-if="admin"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="!userMatrix.length">
+          <td class="text-center" :colspan="(admin ? 3 : 1) + columns.length">
+            <em>{{ $t('noFilteredRoles', allRoles.length) }}</em>
+          </td>
+        </tr>
+        <tr
+          v-for="{ user, row } in pageUsers"
+          :key="user"
+          :class="{ currentUser: isCurrentUser({ user }) }"
+        >
+          <td><User :pk="user" userid /></td>
+          <td v-if="admin">
+            <small>
+              {{ getUser(user)?.email }}
+            </small>
+          </td>
+          <td
+            v-for="({ name, setValue }, i) in columns"
+            :key="name"
+            class="text-center"
+          >
+            <v-btn
+              :disabled="!admin || !setValue"
+              variant="text"
+              :color="row[i] ? 'success' : 'warning'"
+              @click="setValue?.(user, !row[i])"
+            >
+              <v-icon :icon="row[i] ? 'mdi-check' : 'mdi-close'" />
+            </v-btn>
+          </td>
+          <td v-if="admin" class="text-right">
+            <QueryDialog
+              v-if="removeConfirmText"
+              :text="removeConfirmText"
+              color="warning"
+              @confirmed="removeAllRoles(user)"
+            >
+              <template #activator="{ props }">
+                <v-btn v-bind="props" color="warning" variant="text">
+                  <v-icon icon="mdi-delete" />
+                </v-btn>
+              </template>
+            </QueryDialog>
+            <v-btn
+              v-else
+              color="warning"
+              @click="removeAllRoles(user)"
+              variant="text"
+            >
+              <v-icon icon="mdi-delete" />
+            </v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+  </div>
+</template>
 
 <style lang="sass" scoped>
 .v-table
