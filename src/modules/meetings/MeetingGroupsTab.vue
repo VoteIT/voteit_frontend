@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { any, flatmap } from 'itertools'
-import { chunk, orderBy } from 'lodash'
-import { computed, provide, reactive, ref, watch } from 'vue'
+import { flatmap, sorted } from 'itertools'
+import { computed, provide, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
@@ -73,21 +72,22 @@ function searchGroup({
 }
 
 const orderedMeetingGroups = computed(() => {
-  return orderBy(
-    meetingGroups.value
-      .map((g) => ({
-        ...g,
-        isMember: g.members.includes(authStore.user!.pk)
-      }))
-      .filter((g) => {
-        if (groupFilter.mine && !g.isMember) return false
-        if (groupFilter.search && !searchGroup(g)) return false
-        return true
-      }),
-    'isMember',
-    'desc'
+  return sorted(
+    meetingGroups.value.map((g) => ({
+      ...g,
+      isMember: g.members.includes(authStore.user!.pk)
+    })),
+    (mg) => mg.isMember,
+    true // Reversed
   )
 })
+
+function customFilter(_value: unknown, _query: string, item: any) {
+  const g = item.raw as (typeof orderedMeetingGroups)['value'][number]
+  const { mine, search } = groupFilter
+  if (mine && !g.isMember) return false
+  return !search || searchGroup(g)
+}
 
 const columns = computed(() => {
   if (!meeting.value) return []
@@ -103,7 +103,29 @@ const columns = computed(() => {
     title: col.getTitle(t)
   }))
 })
-const hasCountColumns = computed(() => any(columns.value, (c) => !!c.getCount))
+const ITEMS_PER_PAGE = 20
+
+const headers = computed(() => {
+  const h: { title: string; key: string; sortable: boolean }[] = [
+    { title: t('name'), key: 'title', sortable: true },
+    { title: t('meeting.groups.members'), key: 'members', sortable: false },
+    ...groupSwitches.value.map((sw) => ({
+      title: '',
+      key: sw.prop,
+      sortable: false
+    })),
+    ...columns.value.map((col) => ({
+      title: '',
+      key: col.name,
+      sortable: false
+    }))
+  ]
+  if (allTags.value.size)
+    h.push({ title: t('tags'), key: 'tags', sortable: false })
+  if (canChangeMeeting.value)
+    h.push({ title: '', key: 'actions', sortable: false })
+  return h
+})
 
 const groupImportMultiline = rules.multiline(
   rules.or(
@@ -121,17 +143,6 @@ async function createGroups(data: { groups: string }) {
     ...data
   })
 }
-
-// Paginate
-const GROUPS_PER_PAGE = 20
-const currentPage = ref(1)
-const groupChunks = computed(() =>
-  chunk(orderedMeetingGroups.value, GROUPS_PER_PAGE)
-)
-watch(groupChunks, (chunks) => {
-  const maxPage = chunks.length + 1
-  if (currentPage.value > maxPage) currentPage.value = maxPage
-})
 
 // Provide tag autocompletion
 const allTags = computed(
@@ -341,174 +352,166 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
         </div>
       </v-sheet>
     </v-expand-transition>
-    <v-pagination
-      v-if="groupChunks.length > 1"
-      v-model="currentPage"
-      :length="groupChunks.length"
-    />
-    <v-table>
-      <thead>
-        <tr>
-          <th>
-            {{ $t('name') }}
-          </th>
-          <th>
-            {{ $t('meeting.groups.members') }}
-          </th>
-          <th v-for="sw in groupSwitches" :key="sw.prop">
-            {{ sw.title }}
-            <v-tooltip :text="sw.description" location="top">
-              <template #activator="{ props }">
-                <v-icon
-                  icon="mdi-help-circle"
-                  v-bind="props"
-                  class="ml-1 my-n2"
-                />
-              </template>
-            </v-tooltip>
-          </th>
-          <th
-            v-for="{ description, name, title } in columns"
-            :key="name"
-            class="text-truncate"
-          >
-            <span>
-              {{ title }}
-            </span>
-            <v-tooltip v-if="description" :text="description" location="top">
-              <template #activator="{ props }">
-                <v-icon
-                  icon="mdi-help-circle"
-                  v-bind="props"
-                  class="ml-1 my-n2"
-                />
-              </template>
-            </v-tooltip>
-          </th>
-          <th v-if="allTags.size">
-            {{ $t('tags') }}
-          </th>
-          <th v-if="canChangeMeeting"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="group in groupChunks[currentPage - 1]"
-          :key="group.pk"
-          :class="group.isMember ? 'bg-secondary-lighten-2' : undefined"
+    <v-data-table
+      :custom-filter="customFilter"
+      :headers="headers"
+      :hide-default-footer="orderedMeetingGroups.length <= ITEMS_PER_PAGE"
+      :items="orderedMeetingGroups"
+      :sort-by="[{ key: 'title' }]"
+      :items-per-page="ITEMS_PER_PAGE"
+      :items-per-page-text="$t('content.itemsPerPageText')"
+      item-value="pk"
+      :page-text="$t('content.pageText')"
+      search=" "
+      :row-props="
+        ({ item }) => ({
+          class: { 'bg-secondary-lighten-2': (item as any).isMember }
+        })
+      "
+    >
+      <template
+        v-for="sw in groupSwitches"
+        #[`header.${sw.prop}`]
+        :key="sw.prop"
+      >
+        {{ sw.title }}
+        <v-tooltip :text="sw.description" location="top">
+          <template #activator="{ props }">
+            <v-icon icon="mdi-help-circle" v-bind="props" class="ml-1 my-n2" />
+          </template>
+        </v-tooltip>
+      </template>
+
+      <template v-for="col in columns" #[`header.${col.name}`] :key="col.name">
+        {{ col.title
+        }}<span v-if="col.count !== undefined"> ({{ col.count }})</span>
+        <v-tooltip
+          v-if="col.description"
+          :text="col.description"
+          location="top"
         >
-          <td>
-            {{ group.title }}
-          </td>
-          <td>
-            {{ group.members.length || '-' }}
-            <DefaultDialog
-              v-if="group.members.length || canChangeMeeting"
-              :title="$t('meeting.groups.membersIn', { ...group })"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  color="secondary"
-                  class="ml-2"
-                  size="small"
-                  :text="canChangeMeeting ? $t('handle') : $t('show')"
-                  v-bind="props"
+          <template #activator="{ props }">
+            <v-icon icon="mdi-help-circle" v-bind="props" class="ml-1 my-n2" />
+          </template>
+        </v-tooltip>
+      </template>
+
+      <template #item.members="{ item }">
+        {{ (item as any).members.length || '-' }}
+        <DefaultDialog
+          v-if="(item as any).members.length || canChangeMeeting"
+          :title="$t('meeting.groups.membersIn', { ...(item as any) })"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              color="secondary"
+              class="ml-2"
+              size="small"
+              :text="canChangeMeeting ? $t('handle') : $t('show')"
+              v-bind="props"
+            />
+          </template>
+          <GroupMemberships :group="item as any" :editable="canChangeMeeting" />
+        </DefaultDialog>
+      </template>
+
+      <template
+        v-for="sw in groupSwitches"
+        #[`item.${sw.prop}`]="{ item }"
+        :key="sw.prop"
+      >
+        <v-switch
+          color="primary"
+          hide-details
+          :model-value="(item as any)[sw.prop]"
+          @click="toggleGroupProp(item as any, sw.prop)"
+        />
+      </template>
+
+      <template
+        v-for="col in columns"
+        #[`item.${col.name}`]="{ item }"
+        :key="col.name"
+      >
+        {{ col.getValue?.(item as any) }}
+        <component
+          v-if="col.component"
+          :is="col.component"
+          :group="item as any"
+        />
+      </template>
+
+      <template v-if="allTags.size" #item.tags="{ item }">
+        <Tag
+          v-for="tag in (item as any).tags"
+          :key="tag"
+          :name="tag"
+          class="mr-1"
+        />
+      </template>
+
+      <template v-if="canChangeMeeting" #item.actions="{ item }">
+        <div class="text-right">
+          <DefaultDialog :title="$t('meeting.groups.edit')">
+            <template #activator="{ props }">
+              <ButtonWithDropdown
+                color="primary"
+                size="small"
+                :text="$t('edit')"
+                v-bind="props"
+              >
+                <v-list density="compact">
+                  <QueryDialog
+                    :text="
+                      $t('meeting.groups.deleteConfirm', { ...(item as any) })
+                    "
+                    color="warning"
+                    @confirmed="deleteGroup(item as any)"
+                  >
+                    <template #activator="{ props }">
+                      <v-list-item
+                        base-color="warning"
+                        v-bind="props"
+                        :title="$t('content.delete')"
+                      />
+                    </template>
+                  </QueryDialog>
+                </v-list>
+              </ButtonWithDropdown>
+            </template>
+            <template #default="{ close }">
+              <DefaultForm
+                :handler="changeGroup((item as any).pk)"
+                :modelValue="{ ...(item as any) }"
+                @done="close"
+                v-slot="{ errors, formData }"
+              >
+                <v-text-field
+                  :error-messages="errors.title"
+                  :label="$t('name')"
+                  :rules="[rules.maxLength(100), rules.required]"
+                  v-model="formData.title!"
                 />
-              </template>
-              <GroupMemberships :group="group" :editable="canChangeMeeting" />
-            </DefaultDialog>
-          </td>
-          <th v-for="{ prop } in groupSwitches" :key="prop">
-            <v-switch
-              color="primary"
-              hide-details
-              :model-value="group[prop]"
-              @click="toggleGroupProp(group, prop)"
-            />
-          </th>
-          <td v-for="{ component, name, getValue } in columns" :key="name">
-            {{ getValue?.(group) }}
-            <component v-if="component" :is="component" :group="group" />
-          </td>
-          <td v-if="allTags.size">
-            <Tag
-              v-for="tag in group.tags"
-              :key="tag"
-              :name="tag"
-              class="mr-1"
-            />
-          </td>
-          <td class="text-right" v-if="canChangeMeeting">
-            <DefaultDialog :title="$t('meeting.groups.edit')">
-              <template #activator="{ props }">
-                <ButtonWithDropdown
-                  color="primary"
-                  size="small"
-                  :text="$t('edit')"
-                  v-bind="props"
-                >
-                  <v-list density="compact">
-                    <QueryDialog
-                      :text="$t('meeting.groups.deleteConfirm', { ...group })"
-                      color="warning"
-                      @confirmed="deleteGroup(group)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          base-color="warning"
-                          v-bind="props"
-                          :title="$t('content.delete')"
-                        />
-                      </template>
-                    </QueryDialog>
-                  </v-list>
-                </ButtonWithDropdown>
-              </template>
-              <template #default="{ close }">
-                <DefaultForm
-                  :handler="changeGroup(group.pk)"
-                  :modelValue="{ ...group }"
-                  @done="close"
-                  v-slot="{ errors, formData }"
-                >
-                  <v-text-field
-                    :error-messages="errors.title"
-                    :label="$t('name')"
-                    :rules="[rules.maxLength(100), rules.required]"
-                    v-model="formData.title!"
-                  />
-                  <v-textarea
-                    :error-messages="errors.body"
-                    :label="$t('textBody')"
-                    v-model="formData.body!"
-                  />
-                  <TagEdit :label="$t('tags')" v-model="formData.tags" />
-                  <v-text-field
-                    v-if="meeting?.group_votes_active"
-                    :error-messages="errors.votes"
-                    :label="$t('meeting.groups.votes')"
-                    min="0"
-                    :rules="[rules.min(0)]"
-                    type="number"
-                    v-model="formData.votes"
-                  />
-                </DefaultForm>
-              </template>
-            </DefaultDialog>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot v-if="hasCountColumns">
-        <tr>
-          <th>{{ $t('total') }}</th>
-          <th :colspan="groupSwitches.length + 1"></th>
-          <th v-for="{ name, getCount } in columns" :key="name">
-            {{ getCount?.() || '-' }}
-          </th>
-          <th v-if="allTags.size"></th>
-          <th v-if="canChangeMeeting"></th>
-        </tr>
-      </tfoot>
-    </v-table>
+                <v-textarea
+                  :error-messages="errors.body"
+                  :label="$t('textBody')"
+                  v-model="formData.body!"
+                />
+                <TagEdit :label="$t('tags')" v-model="formData.tags" />
+                <v-text-field
+                  v-if="meeting?.group_votes_active"
+                  :error-messages="errors.votes"
+                  :label="$t('meeting.groups.votes')"
+                  min="0"
+                  :rules="[rules.min(0)]"
+                  type="number"
+                  v-model="formData.votes"
+                />
+              </DefaultForm>
+            </template>
+          </DefaultDialog>
+        </div>
+      </template>
+    </v-data-table>
   </div>
 </template>
