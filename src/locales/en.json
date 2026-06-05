@@ -892,6 +892,7 @@
     }
   },
   "role": {
+    "usersPerPage": "Users per page",
     "discusser": "Discusser",
     "list_moderator": "List moderator",
     "meeting_creator": "Meeting creator",
