@@ -1,12 +1,11 @@
 <script lang="ts" setup generic="Role extends string">
 import { ifilter } from 'itertools'
-import { orderBy } from 'lodash'
-import { computed, onBeforeMount, reactive, ref, type Ref } from 'vue'
+import { computed, onBeforeMount, shallowRef, type Ref } from 'vue'
+import type { FilterFunction } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
-import useLoader from '@/composables/useLoader'
-import { ContextRole, UserContextRoles } from '@/composables/types'
+import { ContextRole } from '@/composables/types'
 import ContentType from '@/contentTypes/ContentType'
 import useAuthStore from '@/modules/auth/useAuthStore'
 import { meetingRolePlugins } from '@/modules/meetings/registry'
@@ -18,15 +17,13 @@ import HelpSection from './HelpSection.vue'
 import QueryDialog from './QueryDialog.vue'
 import User from './User.vue'
 
-const USERS_PER_PAGE = 50
-
 const props = withDefaults(
   defineProps<{
     admin: boolean
     addConfirm?(user: number, role: string): Promise<boolean>
     cols?: Role[]
     contentType: ContentType<any, any, Role>
-    filter?(userRoles: UserContextRoles): boolean
+    filter?: FilterFunction
     icons: Record<string, string>
     pk: number
     readonlyRoles?: Record<string, string>
@@ -40,7 +37,6 @@ const props = withDefaults(
 
 const { t } = useI18n()
 const authStore = useAuthStore()
-const loader = useLoader('RoleMatrix')
 const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails(meetingId)
 const contextRoles = props.contentType.useContextRoles()
@@ -123,14 +119,19 @@ const columnDescriptions = computed(() => {
   }))
 })
 
-const availableRoles: Ref<ContextRole<Role>[]> = ref([])
-onBeforeMount(() => {
-  loader.call(
-    async () => {
-      availableRoles.value = await props.contentType.getAvailableRoles()
-    },
-    () => props.contentType.fetchRoles(props.pk)
-  )
+const loading = shallowRef(false)
+const availableRoles: Ref<ContextRole<Role>[]> = shallowRef([])
+onBeforeMount(async () => {
+  loading.value = true
+  try {
+    const [roles] = await Promise.all([
+      props.contentType.getAvailableRoles(),
+      props.contentType.fetchRoles(props.pk)
+    ])
+    availableRoles.value = roles
+  } finally {
+    loading.value = false
+  }
 })
 
 async function addRole(user: number, role: string) {
@@ -151,64 +152,62 @@ async function removeAllRoles(user: number) {
   props.contentType.removeRoles(props.pk, user, ...userRoles)
 }
 
-const ordering = reactive<{ column: string | null; reversed: boolean }>({
-  column: null,
-  reversed: false
-})
-
-function orderUsers(column: string | null) {
-  if (ordering.column === column) ordering.reversed = !ordering.reversed
-  else ordering.column = column
-}
-
-function getRow(userRoles: UserContextRoles) {
-  return {
-    user: userRoles.user,
-    row: columns.value.map((c) => c.getValue(userRoles))
-  }
-}
-
-function isCurrentUser(roles: { user: number }): boolean {
-  return roles.user === authStore.user?.pk
+function isCurrentUser(userId: number): boolean {
+  return userId === authStore.user?.pk
 }
 
 const allRoles = computed(() => contextRoles.getAll<Role>(props.pk))
 
-const userMatrix = computed(() => {
-  const userRoles = props.filter
-    ? allRoles.value.filter(props.filter)
-    : allRoles.value
-  const matrix = userRoles.map(getRow)
-  const orderByName = ordering.column === null
-  const orderColumn = columns.value.findIndex((c) => c.name === ordering.column)
-  // Ordering function
-  const _ordering: (roles: {
-    user: number
-    row: boolean[]
-  }) => string | boolean | undefined = orderByName
-    ? ({ user }) => {
-        const _user = getUser(user)
-        if (_user) return getFullName(_user).toLocaleLowerCase() // Get user full name to order by
-      }
-    : ({ row }) => row[orderColumn]
-  // Ordering direction
-  const order =
-    ordering.reversed !== orderByName // XOR
-      ? 'asc'
-      : 'desc'
-  return orderBy(matrix, [isCurrentUser, _ordering], ['desc', order])
+const tableItems = computed(() =>
+  allRoles.value.map((userRole) => ({
+    user: userRole.user,
+    _isCurrentUser: isCurrentUser(userRole.user),
+    ...Object.fromEntries(
+      columns.value.map((col) => [col.name, col.getValue(userRole)])
+    )
+  }))
+)
+
+const headers = computed(() => [
+  {
+    title: `${t('name')} (${allRoles.value.length})`,
+    key: 'user',
+    sortable: true
+  },
+  ...(props.admin ? [{ title: t('email'), key: 'email' }] : []),
+  ...columnTitles.value.map((col) => ({
+    title: '',
+    key: col.name,
+    align: 'center' as const,
+    sortable: true
+  })),
+  ...(props.admin ? [{ title: '', key: 'actions', sortable: false }] : [])
+])
+
+const _userSortBy = shallowRef<{ key: string; order: 'asc' | 'desc' }[]>([
+  { key: 'user', order: 'asc' }
+])
+const sortBy = computed({
+  get: () => [
+    { key: '_isCurrentUser', order: 'desc' as const },
+    ..._userSortBy.value
+  ],
+  set(newVal: { key: string; order: 'asc' | 'desc' }[]) {
+    _userSortBy.value = newVal.filter((s) => s.key !== '_isCurrentUser')
+  }
 })
 
-const currentPage = ref(1)
-const pageCount = computed(() =>
-  Math.ceil(userMatrix.value.length / USERS_PER_PAGE)
-)
-const pageUsers = computed(() => {
-  return userMatrix.value.slice(
-    USERS_PER_PAGE * (currentPage.value - 1),
-    USERS_PER_PAGE * currentPage.value
-  )
-})
+const customKeySort = {
+  user: (a: unknown, b: unknown) => {
+    const userA = getUser(a as number)
+    const userB = getUser(b as number)
+    const nameA = userA ? getFullName(userA).toLocaleLowerCase() : ''
+    const nameB = userB ? getFullName(userB).toLocaleLowerCase() : ''
+    return nameA.localeCompare(nameB)
+  }
+}
+
+const itemsPerPage = shallowRef(50)
 </script>
 
 <template>
@@ -226,115 +225,106 @@ const pageUsers = computed(() => {
         </li>
       </ul>
     </HelpSection>
-    <slot name="filter"></slot>
-    <v-pagination
-      v-if="pageCount > 1"
-      v-model="currentPage"
-      :length="pageCount"
-    />
-    <v-table :class="{ orderReversed: ordering.reversed, admin }">
-      <thead>
-        <tr>
-          <th @click="orderUsers(null)" :class="{ orderBy: !ordering.column }">
-            {{ $t('name') }} ({{ allRoles.length }})
-          </th>
-          <th v-if="admin">
-            {{ $t('email') }}
-          </th>
-          <th
-            v-for="{ count, icon, name, title } in columnTitles"
-            class="text-center"
-            :key="name"
-            @click="orderUsers(name)"
-            :class="{ orderBy: name === ordering.column }"
-          >
-            <v-tooltip :text="title" location="top">
-              <template #activator="{ props }">
-                <v-icon v-bind="props" :icon="icon" />
-                {{ count }}
-              </template>
-            </v-tooltip>
-          </th>
-          <th v-if="admin"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="!userMatrix.length">
-          <td class="text-center" :colspan="(admin ? 3 : 1) + columns.length">
-            <em>{{ $t('noFilteredRoles', allRoles.length) }}</em>
-          </td>
-        </tr>
-        <tr
-          v-for="{ user, row } in pageUsers"
-          :key="user"
-          :class="{ currentUser: isCurrentUser({ user }) }"
+    <slot name="filter" :column-descriptions="columnDescriptions"></slot>
+    <v-data-table
+      :custom-filter="filter"
+      :custom-key-sort="customKeySort"
+      :search="filter ? ' ' : undefined"
+      :headers="headers"
+      :loading="loading"
+      :hide-default-footer="tableItems.length < itemsPerPage"
+      :items="tableItems"
+      :items-per-page-text="$t('role.usersPerPage')"
+      :page-text="$t('content.pageText')"
+      :row-props="
+        ({ item }) => ({
+          class: { currentUser: isCurrentUser((item as any).user) }
+        })
+      "
+      v-model:items-per-page="itemsPerPage"
+      v-model:sort-by="sortBy"
+    >
+      <template
+        v-for="col in columnTitles"
+        #[`header.${col.name}`]="{ column, isSorted, getSortIcon }"
+        :key="col.name"
+      >
+        <v-tooltip :text="col.title" location="top">
+          <template #activator="{ props: ttProps }">
+            <span v-bind="ttProps">
+              <v-icon :icon="col.icon" />
+              {{ col.count }}
+            </span>
+          </template>
+        </v-tooltip>
+        <v-icon
+          v-if="isSorted(column)"
+          :icon="getSortIcon(column)"
+          size="small"
+        />
+      </template>
+
+      <template #item.user="{ item }">
+        <User :pk="(item as any).user as number" userid />
+      </template>
+
+      <template #item.email="{ item }">
+        <small>{{ getUser((item as any).user as number)?.email }}</small>
+      </template>
+
+      <template
+        v-for="col in columns"
+        #[`item.${col.name}`]="{ item }"
+        :key="col.name"
+      >
+        <v-btn
+          :disabled="!admin || !col.setValue"
+          variant="text"
+          :color="(item as any)[col.name] ? 'success' : 'warning'"
+          @click="
+            col.setValue?.(
+              (item as any).user as number,
+              !(item as any)[col.name]
+            )
+          "
         >
-          <td><User :pk="user" userid /></td>
-          <td v-if="admin">
-            <small>
-              {{ getUser(user)?.email }}
-            </small>
-          </td>
-          <td
-            v-for="({ name, setValue }, i) in columns"
-            :key="name"
-            class="text-center"
+          <v-icon :icon="(item as any)[col.name] ? 'mdi-check' : 'mdi-close'" />
+        </v-btn>
+      </template>
+
+      <template v-if="admin" #item.actions="{ item }">
+        <div class="text-right">
+          <QueryDialog
+            v-if="removeConfirmText"
+            :text="removeConfirmText"
+            color="warning"
+            @confirmed="removeAllRoles((item as any).user as number)"
           >
-            <v-btn
-              :disabled="!admin || !setValue"
-              variant="text"
-              :color="row[i] ? 'success' : 'warning'"
-              @click="setValue?.(user, !row[i])"
-            >
-              <v-icon :icon="row[i] ? 'mdi-check' : 'mdi-close'" />
-            </v-btn>
-          </td>
-          <td v-if="admin" class="text-right">
-            <QueryDialog
-              v-if="removeConfirmText"
-              :text="removeConfirmText"
-              color="warning"
-              @confirmed="removeAllRoles(user)"
-            >
-              <template #activator="{ props }">
-                <v-btn v-bind="props" color="warning" variant="text">
-                  <v-icon icon="mdi-delete" />
-                </v-btn>
-              </template>
-            </QueryDialog>
-            <v-btn
-              v-else
-              color="warning"
-              @click="removeAllRoles(user)"
-              variant="text"
-            >
-              <v-icon icon="mdi-delete" />
-            </v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
+            <template #activator="{ props: dlgProps }">
+              <v-btn v-bind="dlgProps" color="warning" variant="text">
+                <v-icon icon="mdi-delete" />
+              </v-btn>
+            </template>
+          </QueryDialog>
+          <v-btn
+            v-else
+            color="warning"
+            variant="text"
+            @click="removeAllRoles((item as any).user as number)"
+          >
+            <v-icon icon="mdi-delete" />
+          </v-btn>
+        </div>
+      </template>
+
+      <template #no-data>
+        <em>{{ $t('noFilteredRoles', allRoles.length) }}</em>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <style lang="sass" scoped>
-.v-table
-  th
-    position: relative
-    cursor: pointer
-    color: rgb(var(--v-theme-on-background))
-    &.orderBy::after
-      content: "⬇"
-      color: rgba(var(--v-theme-on-background), .4)
-      font-size: 1.4em
-      position: absolute
-      top: 12px
-      padding: 0 4px
-      transition: transform 150ms
-  &.orderReversed
-    th::after
-      transform: rotate(180deg)
-
-.currentUser
+:deep(.currentUser)
   background-color: rgb(var(--v-theme-secondary-lighten-2))
 </style>
