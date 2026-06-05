@@ -19,6 +19,10 @@ export default defineStore('groups', () => {
   groupRoleType.updateMap(groupRoles)
   groupMembershipType.updateMap(groupMemberships, { meeting: 'm' })
 
+  function anyGroupMembership(predicate: Predicate<GroupMembership>) {
+    return any(groupMemberships.values(), predicate)
+  }
+
   function getMeetingGroup(pk: number) {
     return meetingGroups.get(pk)
   }
@@ -103,6 +107,7 @@ export default defineStore('groups', () => {
   }
 
   return {
+    anyGroupMembership,
     filterGroups,
     getAllGroupMembers,
     getMeetingGroup,

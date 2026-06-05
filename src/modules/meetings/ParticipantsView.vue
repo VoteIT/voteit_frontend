@@ -25,6 +25,8 @@ import useMeetingTitle from './useMeetingTitle'
 import MeetingGroupsTab from './MeetingGroupsTab.vue'
 import MeetingToolbar from './MeetingToolbar.vue'
 import { roleIcons } from './utils'
+import useMeetingGroups from './useMeetingGroups'
+import useGroupStore from './useGroupStore'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -109,21 +111,39 @@ const tabs = computed(() => {
 
 /* Filter for RoleMatrix */
 const participantFilter = reactive<{
+  groupRoles: number[]
   roles: string[]
   search: string | null
 }>({
+  groupRoles: [],
   roles: [],
   search: null
 })
+
+// Allow group role filtering
+const { groupRoles } = useMeetingGroups(meetingId)
+const { anyGroupMembership } = useGroupStore()
+const groupRoleItems = computed(() =>
+  groupRoles.value.map((gr) => ({ value: gr.pk, title: gr.title }))
+)
+
 function filterParticipants(_value: unknown, _query: string, item: any) {
-  const { roles, search } = participantFilter
+  const { groupRoles, roles, search } = participantFilter
   if (search) {
     const u = getUser(item.raw.user)
     if (!u) return false
     const joined = `${getFullName(u)} ${u.email}`.toLocaleLowerCase()
     if (!joined.includes(search.toLocaleLowerCase())) return false
   }
-  return roles.every((r) => item.raw[r] === true)
+  return (
+    roles.every((r) => item.raw[r] === true) &&
+    groupRoles.every((r) =>
+      anyGroupMembership(
+        (gm) =>
+          gm.m === meetingId.value && gm.role === r && gm.user === item.raw.user
+      )
+    )
+  )
 }
 </script>
 
@@ -156,8 +176,18 @@ function filterParticipants(_value: unknown, _query: string, item: any) {
                   v-model="participantFilter.search"
                 />
                 <v-select
+                  v-if="groupRoleItems.length"
                   chips
-                  class="w-50"
+                  class="w-50 d-none d-sm-block"
+                  clearable
+                  :items="groupRoleItems"
+                  :label="$t('meeting.filterOnlyGroupRoles')"
+                  multiple
+                  v-model="participantFilter.groupRoles"
+                />
+                <v-select
+                  chips
+                  class="w-50 d-none d-sm-block"
                   clearable
                   :items="
                     columnDescriptions.map((cd) => ({
@@ -165,7 +195,7 @@ function filterParticipants(_value: unknown, _query: string, item: any) {
                       title: cd.title
                     }))
                   "
-                  label="Begränsa till roller"
+                  :label="$t('meeting.filterOnlyRoles')"
                   multiple
                   v-model="participantFilter.roles"
                 />

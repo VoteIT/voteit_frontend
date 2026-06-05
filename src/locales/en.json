@@ -421,6 +421,8 @@
     "find": "Find meeting",
     "markedForDeleteWarn": "The meeting will be deleted",
     "meeting": "Meeting",
+    "filterOnlyGroupRoles": "Only group roles",
+    "filterOnlyRoles": "Only roles",
     "participants": "Participants",
     "participantsList": "Participants list",
     "subscriptionFailedMessage": "Couldn't load meeting.",
