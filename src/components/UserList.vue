@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="Value extends number[] | number">
-import { orderBy } from 'lodash'
+import { sorted } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -16,10 +16,10 @@ defineEmits<{
 const props = withDefaults(
   defineProps<{
     bgColor?: string
-    userIds: number[]
+    density?: 'default' | 'comfortable' | 'compact'
     multiple?: boolean
     modelValue?: Value // Active user(s) pk, makes active list item
-    density?: 'default' | 'comfortable' | 'compact'
+    userIds: number[]
   }>(),
   {
     density: 'comfortable'
@@ -30,10 +30,11 @@ if (props.multiple && typeof props.modelValue === 'number')
   throw new Error('Got multiple select but modelValue is not an array')
 if (!props.multiple && typeof props.modelValue === 'object')
   throw new Error('Got single select but modelValue is not a number')
+
 const { t } = useI18n()
 const { getUser } = useUserDetails(useMeetingId())
 const users = computed(() => {
-  return orderBy(
+  return sorted(
     props.userIds.map(
       (pk) => getUser(pk) ?? { pk, first_name: '', last_name: '', userid: '' }
     ),
@@ -47,7 +48,7 @@ const users = computed(() => {
     <v-item-group
       :multiple="multiple"
       :modelValue="modelValue"
-      @update:modelValue="$emit('update:modelValue', $event as Value)"
+      @update:modelValue="$emit('update:modelValue', $event)"
     >
       <v-item
         v-for="user in users"
@@ -55,9 +56,12 @@ const users = computed(() => {
         :value="user.pk"
         v-slot="{ isSelected, toggle }"
       >
-        <v-list-item @click="toggle?.()" :active="isSelected">
+        <v-list-item
+          :onClick="modelValue ? toggle : undefined"
+          :active="isSelected"
+        >
           <template #prepend>
-            <UserAvatar popup :pk="user.pk" />
+            <UserAvatar :pk="user.pk" />
           </template>
           <v-list-item-title :class="{ 'text-secondary': !getFullName(user) }">
             {{ getFullName(user) ?? `- ${t('unknownUser')} (${user.pk}) -` }}
