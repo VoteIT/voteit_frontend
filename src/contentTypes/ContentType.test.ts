@@ -24,12 +24,17 @@ const {
     list: vi.fn(),
     listAction: vi.fn()
   }
+
   const mockUseTransitionsResult = { get: vi.fn(), make: vi.fn() }
   return {
     mockAddTypeHandler: vi.fn(),
     mockSocketCall: vi.fn(),
-    MockContentAPI: vi.fn(() => mockApiInstance),
-    MockChannel: vi.fn(() => ({})),
+    MockContentAPI: vi.fn(function () {
+      return mockApiInstance
+    }),
+    MockChannel: vi.fn(function () {
+      return {}
+    }),
     mockUseWorkflows: vi.fn(() => ({})),
     mockUseTransitionsResult,
     mockUseTransitions: vi.fn(() => mockUseTransitionsResult),
