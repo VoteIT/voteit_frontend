@@ -421,6 +421,8 @@
     "find": "Hitta möte",
     "markedForDeleteWarn": "Mötet kommer raderas",
     "meeting": "Möte",
+    "filterOnlyGroupRoles": "Endast grupproller",
+    "filterOnlyRoles": "Endast roller",
     "participants": "Deltagare",
     "participantsList": "Deltagarlista",
     "subscriptionFailedMessage": "Kunde inte ladda mötet.",
