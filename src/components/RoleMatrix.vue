@@ -17,6 +17,8 @@ import HelpSection from './HelpSection.vue'
 import QueryDialog from './QueryDialog.vue'
 import User from './User.vue'
 
+const ITEMS_PER_PAGE = 20
+
 const props = withDefaults(
   defineProps<{
     admin: boolean
@@ -206,8 +208,6 @@ const customKeySort = {
     return nameA.localeCompare(nameB)
   }
 }
-
-const itemsPerPage = shallowRef(50)
 </script>
 
 <template>
@@ -232,8 +232,9 @@ const itemsPerPage = shallowRef(50)
       :search="filter ? ' ' : undefined"
       :headers="headers"
       :loading="loading"
-      :hide-default-footer="tableItems.length < itemsPerPage"
+      :hide-default-footer="tableItems.length <= ITEMS_PER_PAGE"
       :items="tableItems"
+      :items-per-page="ITEMS_PER_PAGE"
       :items-per-page-text="$t('role.usersPerPage')"
       :page-text="$t('content.pageText')"
       :row-props="
@@ -241,7 +242,6 @@ const itemsPerPage = shallowRef(50)
           class: { currentUser: isCurrentUser((item as any).user) }
         })
       "
-      v-model:items-per-page="itemsPerPage"
       v-model:sort-by="sortBy"
     >
       <template
