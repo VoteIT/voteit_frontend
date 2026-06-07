@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { flatmap, sorted } from 'itertools'
-import { computed, provide, reactive } from 'vue'
+import { computed, provide, reactive, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
@@ -17,6 +17,7 @@ import TagEdit from '@/components/TagEdit.vue'
 
 import useAuthStore from '../auth/useAuthStore'
 import useUserDetails from '../organisations/useUserDetails'
+import useProposalStore from '../proposals/useProposalStore'
 
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
@@ -31,6 +32,7 @@ const { meeting, meetingId } = useMeeting()
 const { meetingGroups, canChangeMeeting } = useMeetingGroups(meetingId)
 const authStore = useAuthStore()
 const { getUser } = useUserDetails(meetingId)
+const proposalStore = useProposalStore()
 const rules = useRules(t)
 
 const groupFilter = reactive<{
@@ -209,6 +211,49 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
     handleRestError(e, prop)
   }
 }
+
+// Multi delete
+const selected = shallowRef<number[]>([])
+
+// Clear stale selections when a group is deleted individually
+watch(meetingGroups, (groups) => {
+  const existingIds = new Set(groups.map((g) => g.pk))
+  selected.value = selected.value.filter((id) => existingIds.has(id))
+})
+
+const groupsWithProposals = computed(
+  () =>
+    new Set(
+      proposalStore
+        .filterProposals(
+          (p) =>
+            p.m === meetingId.value && p.as_group && p.meeting_group !== null
+        )
+        .map((p) => p.meeting_group!)
+    )
+)
+
+const groupsToDelete = computed(() =>
+  selected.value.filter((id) => !groupsWithProposals.value.has(id))
+)
+
+const skippedGroups = computed(() =>
+  meetingGroups.value.filter(
+    (g) => selected.value.includes(g.pk) && groupsWithProposals.value.has(g.pk)
+  )
+)
+
+async function deleteSelected() {
+  try {
+    await meetingGroupType.api.listAction('bulk-delete', {
+      meeting: meetingId.value,
+      pks: groupsToDelete.value
+    })
+    selected.value = []
+  } catch (e) {
+    handleRestError(e, 'pks')
+  }
+}
 </script>
 
 <template>
@@ -366,12 +411,14 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
       :items-per-page-text="$t('content.itemsPerPageText')"
       item-value="pk"
       :page-text="$t('content.pageText')"
+      show-select
       search=" "
       :row-props="
         ({ item }) => ({
           class: { 'bg-secondary-lighten-2': (item as any).isMember }
         })
       "
+      v-model="selected"
     >
       <template
         v-for="sw in groupSwitches"
@@ -517,5 +564,44 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
         </div>
       </template>
     </v-data-table>
+    <v-expand-transition>
+      <div v-if="selected.length">
+        <v-sheet
+          :border="true"
+          class="mt-3 pa-4 d-flex flex-column ga-2"
+          rounded
+        >
+          <h2>{{ $t('meeting.groups.count', selected.length) }}</h2>
+          <v-alert v-if="skippedGroups.length">
+            {{
+              $t('meeting.groups.deleteSelectedSkipped', skippedGroups.length)
+            }}
+            <em>{{ skippedGroups.map((g) => g.title).join(', ') }}</em>
+          </v-alert>
+          <div>
+            <QueryDialog
+              color="warning"
+              :text="
+                $t(
+                  'meeting.groups.deleteSelectedConfirm',
+                  groupsToDelete.length
+                )
+              "
+              @confirmed="deleteSelected"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  color="warning"
+                  :disabled="!groupsToDelete.length"
+                  prepend-icon="mdi-delete"
+                  :text="$t('content.delete')"
+                  v-bind="props"
+                />
+              </template>
+            </QueryDialog>
+          </div>
+        </v-sheet>
+      </div>
+    </v-expand-transition>
   </div>
 </template>

@@ -443,6 +443,8 @@
       "delegateTo": "Delegera röster",
       "delegations": "Delegationer",
       "deleteConfirm": "Du håller på att radera gruppen {title} permanent.\nÄr du säker?",
+      "deleteSelectedConfirm": "Du håller på att radera en grupp.\nÄr du säker? | Du håller på att radera {count} grupper.\nÄr du säker?",
+      "deleteSelectedSkipped": "Följande grupp kan inte raderas eftersom den har lagda förslag: | Följande grupper kan inte raderas eftersom de har lagda förslag:",
       "edit": "Ändra grupp",
       "filterMine": "Endast mina grupper",
       "group": "Grupp",
