@@ -223,7 +223,11 @@ async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
     <v-alert type="info" class="mb-4">
       {{ $t('meeting.groups.help') }}
     </v-alert>
-    <v-toolbar :title="$t('meeting.groups.groups')" color="secondary">
+    <v-toolbar
+      class="rounded-t"
+      color="secondary"
+      :title="$t('meeting.groups.groups')"
+    >
       <v-btn
         class="mr-2 d-none d-md-inline"
         :variant="groupFilter.open ? 'elevated' : 'text'"
