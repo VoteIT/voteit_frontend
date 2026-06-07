@@ -228,7 +228,11 @@ async function clearSelectedAnnotations() {
     color="primary"
     icon="mdi-email-off"
   />
-  <v-toolbar color="secondary" :title="$t('invites.existing')">
+  <v-toolbar
+    class="rounded-t"
+    color="secondary"
+    :title="$t('invites.existing')"
+  >
     <v-tooltip
       v-if="existingInviteScopes.length === 1"
       :modelValue="copied"
