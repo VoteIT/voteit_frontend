@@ -443,6 +443,8 @@
       "delegateTo": "Delegate votes",
       "delegations": "Delegations",
       "deleteConfirm": "You're about to permanently delete the group {title}.\nAre you sure?",
+      "deleteSelectedConfirm": "You're about to delete one group.\nAre you sure? | You're about to delete {count} groups.\nAre you sure?",
+      "deleteSelectedSkipped": "The following group cannot be deleted because it has posted proposals: | The following groups cannot be deleted because they have posted proposals:",
       "edit": "Edit group",
       "filterMine": "Only my groups",
       "group": "Group",
