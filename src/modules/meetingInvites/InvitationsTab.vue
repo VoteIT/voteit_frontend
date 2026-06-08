@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { chunked } from 'itertools'
 import { isEqual } from 'lodash'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
@@ -27,7 +26,7 @@ import useMeetingInvites from './useMeetingInvites'
 import useInviteStore from './useInviteStore'
 import { meetingInviteType } from './contentTypes'
 
-const PAGE_LENGTH = 25
+const ITEMS_PER_PAGE = 25
 
 const emit = defineEmits(['denied'])
 
@@ -76,20 +75,6 @@ const selectedHasDeletable = computed(() =>
   selectedInvites.value.some(canDeleteMeetingInvite)
 )
 
-const allInvitesSelected = computed({
-  get() {
-    if (!filteredInvites.value.length) return false
-    return filteredInvites.value.every((inv) =>
-      selectedInviteIds.value.includes(inv.pk)
-    )
-  },
-  set(value) {
-    selectedInviteIds.value = value
-      ? filteredInvites.value.map((inv) => inv.pk)
-      : []
-  }
-})
-
 function search(inv: MeetingInvite) {
   const searchLower = inviteFilter.search?.toLocaleLowerCase()
   return (
@@ -108,7 +93,7 @@ const existingInviteScopes = computed(() => {
     )
     .map((scope) => ({
       ...scope,
-      typeLabel: translateInviteType(scope.id, t).typeLabel
+      typeLabel: translateInviteType(scope.id, t).typeLabel ?? scope.id
     }))
 })
 
@@ -150,12 +135,28 @@ const filteredInvites = computed(() => {
     })
 })
 
-const pages = computed(() => [...chunked(filteredInvites.value, PAGE_LENGTH)])
-const currentPage = ref(1)
-// When filtering, the number of pages might change. Make sure currentPage is never higher than number of pages.
-watch(pages, (value) => {
-  if (currentPage.value > value.length) currentPage.value = value.length || 1
-})
+function* iterHeaders() {
+  for (const scope of existingInviteScopes.value)
+    yield {
+      key: `user_data.${scope.id}`,
+      title: scope.typeLabel
+    }
+  yield { key: 'roles', title: t('roles'), sortable: false }
+  if (hasAnnotations.value)
+    yield {
+      title: t('invites.annotate.annotated'),
+      key: 'annotations',
+      sortRaw: (a: any, b: any) =>
+        Number(a.has_annotations) - Number(b.has_annotations)
+    }
+  yield {
+    title: t('state'),
+    key: 'state',
+    sortRaw: (a: any, b: any) => a.stateLabel.localeCompare(b.stateLabel)
+  }
+}
+
+const headers = computed(() => [...iterHeaders()])
 
 function copyFilteredData(scope?: string) {
   copy(
@@ -314,7 +315,7 @@ async function clearSelectedAnnotations() {
     </DefaultDialog>
   </v-toolbar>
   <v-expand-transition>
-    <v-sheet v-show="filterMenu" color="secondary" class="rounded-b">
+    <v-sheet v-show="filterMenu" color="secondary">
       <div class="pa-4">
         <v-text-field
           :label="$t('search')"
@@ -339,87 +340,73 @@ async function clearSelectedAnnotations() {
       </div>
     </v-sheet>
   </v-expand-transition>
-  <v-pagination
-    v-if="pages.length > 1"
-    v-model="currentPage"
-    :length="pages.length"
-  />
-  <v-table class="mb-4">
-    <thead>
-      <tr>
-        <th>
-          <input type="checkbox" v-model="allInvitesSelected" />
-        </th>
-        <th v-for="{ id, icon, typeLabel } in existingInviteScopes" :key="id">
-          <v-icon :icon="icon" />
-          {{ typeLabel }}
-        </th>
-        <th>
-          {{ $t('roles') }}
-        </th>
-        <th v-if="hasAnnotations">
-          {{ $t('invites.annotate.annotated') }}
-        </th>
-        <th>
-          {{ $t('state') }}
-        </th>
-      </tr>
-    </thead>
-    <v-item-group tag="tbody" v-model="selectedInviteIds" multiple>
-      <v-item
-        v-for="invite in pages[currentPage - 1]"
-        :key="invite.pk"
-        :value="invite.pk"
+  <v-data-table
+    class="mb-3"
+    :headers="headers"
+    :hide-default-footer="filteredInvites.length <= ITEMS_PER_PAGE"
+    :items="filteredInvites"
+    :items-per-page="ITEMS_PER_PAGE"
+    :items-per-page-text="$t('content.itemsPerPageText')"
+    :page-text="$t('content.pageText')"
+    item-value="pk"
+    show-select
+    v-model="selectedInviteIds"
+  >
+    <template
+      v-for="scope in existingInviteScopes"
+      #[`header.user_data.${scope.id}`]="{ column, getSortIcon }"
+      :key="scope.id"
+    >
+      <v-icon :icon="scope.icon" />
+      {{ scope.typeLabel }}
+      <v-icon
+        class="v-data-table-header__sort-icon"
+        :icon="getSortIcon(column)"
+      />
+    </template>
+
+    <template
+      v-for="scope in existingInviteScopes"
+      #[`item.user_data.${scope.id}`]="{ item }"
+      :key="scope.id"
+    >
+      {{ item.user_data[scope.id] }}
+    </template>
+
+    <template #item.roles="{ item }">
+      <v-tooltip
+        location="top"
+        v-for="{ title, icon } in item.rolesDescription"
+        :key="icon"
+        :text="title"
       >
-        <template v-slot="{ isSelected, toggle }">
-          <tr @click="toggle" :class="{ 'bg-secondary-lighten-2': isSelected }">
-            <td>
-              <input type="checkbox" :checked="isSelected" />
-            </td>
-            <td v-for="{ id } in existingInviteScopes" :key="id">
-              {{ invite.user_data[id] }}
-            </td>
-            <td>
-              <v-tooltip
-                location="top"
-                v-for="{ title, icon } in invite.rolesDescription"
-                :key="icon"
-                :text="title"
-              >
-                <template #activator="{ props }">
-                  <v-icon :icon="icon" v-bind="props" />
-                </template>
-              </v-tooltip>
-            </td>
-            <th v-if="hasAnnotations">
-              <DefaultDialog
-                v-if="invite.has_annotations"
-                :title="$t('invites.annotate.annotatedTitle')"
-              >
-                <template #activator="{ props }">
-                  <v-icon v-bind="props" icon="mdi-badge-account" />
-                </template>
-                <template #default="{ close }">
-                  <InvitationAnnotation :invite="invite" />
-                  <div class="text-right">
-                    <v-btn color="primary" :text="$t('close')" @click="close" />
-                  </div>
-                </template>
-              </DefaultDialog>
-            </th>
-            <td>
-              {{ invite.stateLabel }}
-            </td>
-          </tr>
+        <template #activator="{ props }">
+          <v-icon :icon="icon" v-bind="props" />
         </template>
-      </v-item>
-    </v-item-group>
-  </v-table>
-  <v-pagination
-    v-if="pages.length > 1"
-    v-model="currentPage"
-    :length="pages.length"
-  />
+      </v-tooltip>
+    </template>
+
+    <template v-if="hasAnnotations" #item.annotations="{ item }">
+      <DefaultDialog
+        v-if="item.has_annotations"
+        :title="$t('invites.annotate.annotatedTitle')"
+      >
+        <template #activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-badge-account" />
+        </template>
+        <template #default="{ close }">
+          <InvitationAnnotation :invite="item" />
+          <div class="text-right">
+            <v-btn color="primary" :text="$t('close')" @click="close" />
+          </div>
+        </template>
+      </DefaultDialog>
+    </template>
+
+    <template #item.state="{ item }">
+      {{ item.stateLabel }}
+    </template>
+  </v-data-table>
   <div v-if="!isSubscribed" class="text-center my-6">
     <v-progress-circular indeterminate />
   </div>
