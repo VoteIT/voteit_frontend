@@ -430,10 +430,6 @@
     "yearStarted": "Startades år",
     "yourGroups": "Dina mötesgrupper",
     "yourRoles": "Dina mötesroller",
-    "componentState": {
-      "off": "Av",
-      "on": "På"
-    },
     "groups": {
       "addMemberEmptyHelp": "Lägg till några medlemmar i gruppen genom att använda sökfältet ovan.",
       "create": "Ny grupp",
