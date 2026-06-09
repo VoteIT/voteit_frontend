@@ -8,9 +8,9 @@ import type { PickByType } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import useRules from '@/composables/useRules'
 
+import { meetingType } from '../meetings/contentTypes'
 import useMeetingStore from '../meetings/useMeetingStore'
 import { Meeting, MeetingState } from '../meetings/types'
-import { meetingStates } from '../meetings/workflowStates'
 import { translateMeetingRole } from '../meetings/utils'
 import { displayRoles } from './utils'
 
@@ -75,13 +75,13 @@ const yearItems = computed(() => [
 ])
 
 const stateItems = computed(() =>
-  meetingStates
-    .filter(({ state }) => state in meetingStore.stateCount)
-    .map(({ state, getName }) => {
+  meetingType.sm
+    .getStateList(({ state }) => state in meetingStore.stateCount)
+    .map(({ state, translate }) => {
       const count = meetingStore.stateCount[state]!
       return {
         value: state,
-        title: `${getName(t, count)} (${count})`
+        title: `${translate(t, count)} (${count})`
       }
     })
 )
@@ -173,7 +173,7 @@ const searchInfo = computed<
         ]"
         :key="pk"
         :title="title"
-        :subtitle="meetingStates.find((s) => s.state === state)?.getName(t)"
+        :subtitle="meetingType.sm.getState(state)?.translate(t)"
         :to="
           current_user_roles
             ? {

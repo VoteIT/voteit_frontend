@@ -17,7 +17,6 @@ import { navigationEventAllowed } from '@/utils/keyNavigation'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import Tag from '@/components/Tag.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
-import { ExtractTransition, WorkflowState } from '@/contentTypes/types'
 import { AgendaState } from '../agendas/types'
 import useAgendaItem from '../agendas/useAgendaItem'
 import { TagClickHandlerKey } from '../meetings/useTags'
@@ -26,7 +25,6 @@ import { ProposalState } from '../proposals/types'
 import { proposalType } from '../proposals/contentTypes'
 import useProposalStore from '../proposals/useProposalStore'
 import useTextDocuments from '../proposals/useTextDocuments'
-import { proposalStates } from '../proposals/workflowStates'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
 import useRoom from '../rooms/useRoom'
@@ -140,25 +138,20 @@ watch(
  * (Published, approved, denied, <other current state>)
  */
 function getProposalStates(state: ProposalState) {
-  return proposalStates.filter(
+  return proposalType.sm.getStateList(
     (s) => AVAILABLE_STATES.includes(s.state) || state === s.state
   )
 }
 
 const pool = computed(() => filteredProposals.value.filter(isProposalInPool))
 const transitioning = reactive(new Set<number>())
-async function makeTransition(
-  p: Proposal,
-  state: WorkflowState<ProposalState, ExtractTransition<typeof proposalStates>>
-) {
-  if (!state.transition)
-    throw new Error(
-      `Proposal state ${state.state} has no registered transition`
-    )
-  if (state.state === p.state) return // No need to change state then, is there?
+async function makeTransition(p: Proposal, state: Proposal['state']) {
+  const event = proposalType.sm.getAvailableEvents(p, state).at(0)
+  if (!event)
+    throw new Error(`Proposal state ${state} has no registered transition`)
   transitioning.add(p.pk)
   try {
-    await proposalType.transitions.make(p, state.transition, t)
+    await proposalType.events.make(p, event.id, t)
   } catch (e) {
     handleRestError(e, 'transition')
   }
@@ -352,7 +345,7 @@ watchEffect(() => {
                   :disabled="!canChangeProposalState"
                   :loading="p.state !== s.state && transitioning.has(p.pk)"
                   :variant="p.state === s.state ? 'flat' : 'tonal'"
-                  @click="makeTransition(p, s)"
+                  @click="makeTransition(p, s.state)"
                 >
                   <v-icon
                     :icon="s.icon"

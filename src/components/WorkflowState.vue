@@ -12,7 +12,7 @@
         :disabled="working"
         :prepend-icon="currentState.icon"
         size="x-small"
-        :text="currentState.getName(t)"
+        :text="currentState.translate($t)"
         variant="flat"
         v-bind="{ ...$attrs, ...props }"
       />
@@ -41,7 +41,7 @@
     disabled
     :prepend-icon="currentState.icon"
     size="x-small"
-    :text="currentState.getName(t)"
+    :text="currentState.translate($t)"
     variant="flat"
   />
   <v-btn
@@ -66,7 +66,7 @@ import { useI18n } from 'vue-i18n'
 
 import { Color } from '@/utils/types'
 import useAlert from '@/composables/useAlert'
-import { Transition as ITransition, StateContent } from '@/contentTypes/types'
+import { ITransition as ITransition, StateContent } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
 
 type Transition = CT extends ContentType<any, infer T, any> ? T : never
@@ -86,7 +86,6 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
-const { getState } = props.contentType.useWorkflows()
 const _transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
 const transitionsAvailable = computed(
   () =>
@@ -97,9 +96,11 @@ const transitionsAvailable = computed(
 )
 const { alert } = useAlert()
 
-const currentState = computed(() => getState(props.object.state))
+const currentState = computed(() =>
+  props.contentType.sm.getState(props.object.state)
+)
 const isUserModifiable = computed<boolean>(
-  () => props.admin && !currentState.value?.isFinal
+  () => props.admin && !currentState.value?.final
 )
 
 const fetching = ref(false)
@@ -107,7 +108,7 @@ async function menuOpenChange(open: boolean) {
   if (!open || fetching.value) return
   fetching.value = true
   try {
-    _transitionsAvailable.value = await props.contentType.transitions.get(
+    _transitionsAvailable.value = await props.contentType.events.get(
       props.object.pk
     )
   } catch {
@@ -120,7 +121,7 @@ const working = ref(false)
 
 async function makeTransition(transition: Transition) {
   working.value = true
-  await props.contentType.transitions.make(props.object, transition, t)
+  await props.contentType.events.make(props.object, transition, t)
   working.value = false
 }
 

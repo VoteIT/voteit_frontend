@@ -24,14 +24,13 @@ const props = defineProps<{
 
 const { filterPolls, getUserVote } = usePollStore()
 const meetingId = useMeetingId()
-const { getState } = pollType.useWorkflows()
 
 function annotatePoll(poll: Poll) {
   return {
     ...poll,
     hasVoted: !!getUserVote(poll),
     methodName: pollPlugins.getName(poll.method_name, t),
-    stateName: getState(poll.state)?.getName(t)
+    stateName: pollType.sm.getState(poll.state).translate(t)
   }
 }
 

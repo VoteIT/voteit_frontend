@@ -2,10 +2,15 @@ import { all, sorted } from 'itertools'
 import { computed, reactive } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 
-import { DEFAULT_FILTER_STATES } from '@/modules/proposals/workflowStates'
 import { ProposalState } from '../proposals/types'
 
 import { AgendaFilter } from './types'
+
+export const DEFAULT_FILTER_STATES = [
+  ProposalState.Published,
+  ProposalState.Voting,
+  ProposalState.Approved
+]
 
 /**
  * Important to create a new Array when resetting

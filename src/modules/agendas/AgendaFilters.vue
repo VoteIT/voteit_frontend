@@ -5,8 +5,7 @@ import { onClickOutside } from '@vueuse/core'
 
 import BtnDropdown from '@/components/BtnDropdown.vue'
 import Tag from '@/components/Tag.vue'
-
-import { proposalStates } from '../proposals/workflowStates'
+import { proposalType } from '../proposals/contentTypes'
 
 import useAgendaFilter from './useAgendaFilter'
 import { agendaIdKey } from './injectionKeys'
@@ -16,6 +15,7 @@ const agendaId = inject(agendaIdKey)
 if (!agendaId) throw new Error('AgendaFilters required agendaId context')
 
 const { agendaFilter, isModified, clearFilter, clearTag } = useAgendaFilter()
+
 const root = ref<ComponentPublicInstance<{ close: () => void }> | null>(null)
 onClickOutside(root, () => root.value?.close())
 
@@ -31,8 +31,8 @@ const orders = ref([
 ] as const)
 
 const states = computed(() =>
-  proposalStates.map(({ state, getName }) => ({
-    label: getName(t, 2), // Get name in plural
+  proposalType.sm.getStateList().map(({ state, translate }) => ({
+    label: translate(t, 2), // Get name in plural
     state
   }))
 )

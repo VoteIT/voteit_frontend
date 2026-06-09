@@ -53,7 +53,6 @@ const emit = defineEmits(['update:modelValue'])
 const { t } = useI18n()
 const meetingId = useMeetingId()
 const { getMeetingPolls, getAiPolls } = usePollStore()
-const { getPriorityStates } = pollType.useWorkflows()
 
 const dropdowns = reactive(
   Object.fromEntries(
@@ -69,7 +68,8 @@ watch(dropdowns, (value) =>
 )
 
 const tabStates = computed(() => {
-  return getPriorityStates()
+  return pollType.sm
+    .getPriorityStates()
     .map((s) => {
       const [attr, direction] = STATE_ORDERS[s.state] || ['pk', 'asc']
       const polls = props.agendaItem
@@ -78,7 +78,7 @@ const tabStates = computed(() => {
       return {
         ...s,
         polls: orderBy(polls, attr, direction),
-        title: `${s.getName(t, polls.length)} (${polls.length})`
+        title: `${s.translate(t, polls.length)} (${polls.length})`
       }
     })
     .filter((s) => s.polls.length)

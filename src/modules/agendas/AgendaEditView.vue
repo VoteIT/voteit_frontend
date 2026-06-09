@@ -32,7 +32,12 @@ const agendaTag = ref<string | undefined>(undefined)
 const { isModerator, meeting, meetingId } = useMeeting()
 const { createAgendaItem } = useAgendaStore()
 const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
-const { getState } = agendaItemType.useWorkflows()
+const { getState } = agendaItemType.sm
+const { states: agendaStates } = agendaItemType.events
+
+const setableStates = computed(() =>
+  (Object.keys(agendaStates.value) as AgendaState[]).map(getState)
+)
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 const { handleSocketError } = useErrorHandler({ target: 'dialog' })
 
@@ -406,10 +411,8 @@ function tagFilter(tags: string | string[], query: string) {
           :disabled="bulkChanging || !canSetState(state.state)"
           :key="state.state"
           :prepend-icon="state.icon"
-          v-for="state in agendaItemType.transitions.states.filter(
-            (s) => s.transition
-          )"
-          :text="`${$t('agenda.setTo')} ${state.getName($t, 2)}`"
+          v-for="state in setableStates"
+          :text="`${$t('agenda.setTo')} ${state.translate($t)}`"
           @click="patchSelected({ state: state.state })"
         />
       </div>

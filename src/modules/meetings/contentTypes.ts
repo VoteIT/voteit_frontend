@@ -1,6 +1,7 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
-import { ExtractTransition, MeetingAccessPolicy } from '@/contentTypes/types'
+import { MeetingAccessPolicy } from '@/contentTypes/types'
+import { ThemeColor } from '@/utils/types'
 import { ElectoralRegister, ErMethod } from './electoralRegisters/types'
 import {
   ComponentBase,
@@ -10,11 +11,11 @@ import {
   Meeting,
   MeetingDialectDefinition,
   MeetingGroup,
-  MeetingRole
+  MeetingRole,
+  MeetingState
 } from './types'
-import { meetingStates } from './workflowStates'
 
-export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
+export const accessPolicyType = new BaseContentType<MeetingAccessPolicy>({
   name: 'access_policy',
   restEndpoint: 'access-policies/'
 })
@@ -29,17 +30,56 @@ export const erMethodType = new BaseContentType<ErMethod>({
   restEndpoint: 'electoral-register-policies/'
 })
 
-export const meetingRoleType = new ContentType<MeetingRoles>({
+export const meetingRoleType = new BaseContentType<MeetingRoles>({
   name: 'meeting_role',
   restEndpoint: 'meeting-roles/'
 })
 
 export const meetingType = new ContentType<
   Meeting,
-  ExtractTransition<typeof meetingStates>,
+  | 'abort_archiving'
+  | 'abort_delete'
+  | 'close'
+  | 'make_ongoing'
+  | 'make_upcoming'
+  | 'request_archiving'
+  | 'request_delete',
   MeetingRole
 >({
-  states: meetingStates,
+  states: {
+    name: 'MeetingStateMachine',
+    meta: {
+      [MeetingState.Upcoming]: {
+        icon: 'mdi-progress-clock',
+        translate: (t, count = 1) => t('meeting.workflow.upcoming', count)
+      },
+      [MeetingState.Ongoing]: {
+        icon: 'mdi-play-circle',
+        translate: (t, count = 1) => t('meeting.workflow.ongoing', count)
+      },
+      [MeetingState.Closed]: {
+        icon: 'mdi-close-circle-outline',
+        translate: (t, count = 1) => t('meeting.workflow.closed', count)
+      },
+      [MeetingState.Archiving]: {
+        icon: 'mdi-archive',
+        translate: (t, count = 1) => t('meeting.workflow.archiving', count)
+      },
+      [MeetingState.Archived]: {
+        icon: 'mdi-archive',
+        translate: (t, count = 1) => t('meeting.workflow.archived', count)
+      },
+      [MeetingState.Deleting]: {
+        color: ThemeColor.Warning,
+        icon: 'mdi-delete',
+        translate: (t, count = 1) => t('meeting.workflow.deleting', count)
+      },
+      [MeetingState.Previous]: {
+        icon: 'mdi-undo',
+        translate: (t, count = 1) => t('meeting.workflow.pre', count)
+      }
+    }
+  },
   name: 'meeting',
   restEndpoint: 'meetings/',
   restConfig: { alertOnError: false },

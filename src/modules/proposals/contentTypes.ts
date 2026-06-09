@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
 import ContentType from '@/contentTypes/ContentType'
-import { Proposal } from './types'
-import { proposalStates } from './workflowStates'
-import { ExtractTransition } from '@/contentTypes/types'
+import { Proposal, ProposalState } from './types'
+import { ThemeColor } from '@/utils/types'
 
 export interface TextParagraph {
   paragraph_id: number
@@ -22,11 +20,42 @@ export interface ProposalText {
   base_tag: string
 }
 
-export const proposalType = new ContentType<
-  Proposal,
-  ExtractTransition<typeof proposalStates>
->({
-  states: proposalStates,
+export const proposalType = new ContentType<Proposal>({
+  states: {
+    name: 'ProposalStateMachine',
+    meta: {
+      [ProposalState.Published]: {
+        color: ThemeColor.Primary,
+        icon: 'mdi-eye',
+        translate: (t, count = 1) => t('speaker.workflow.published', count)
+      },
+      [ProposalState.Retracted]: {
+        color: ThemeColor.Secondary,
+        icon: 'mdi-undo-variant',
+        translate: (t, count = 1) => t('speaker.workflow.retracted', count)
+      },
+      [ProposalState.Voting]: {
+        color: ThemeColor.Info,
+        icon: 'mdi-vote',
+        translate: (t, count = 1) => t('speaker.workflow.voting', count)
+      },
+      [ProposalState.Approved]: {
+        color: ThemeColor.Success,
+        icon: 'mdi-check-circle-outline',
+        translate: (t, count = 1) => t('speaker.workflow.approved', count)
+      },
+      [ProposalState.Denied]: {
+        color: ThemeColor.Warning,
+        icon: 'mdi-close-circle-outline',
+        translate: (t, count = 1) => t('speaker.workflow.denied', count)
+      },
+      [ProposalState.Unhandled]: {
+        color: ThemeColor.Secondary,
+        icon: 'mdi-help-circle-outline',
+        translate: (t, count = 1) => t('speaker.workflow.unhandled', count)
+      }
+    }
+  },
   name: 'proposal',
   restEndpoint: 'proposals/'
 })

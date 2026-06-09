@@ -1,23 +1,38 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
-import { ExtractTransition } from '@/contentTypes/types'
 
 import {
   SpeakerHistory,
   SpeakerList,
   Speaker,
   SpeakerSystem,
-  SpeakerSystemRole
+  SpeakerSystemRole,
+  SpeakerSystemState
 } from './types'
-import { speakerSystemStates } from './workflowStates'
 
 export const speakerSystemType = new ContentType<
   SpeakerSystem,
-  ExtractTransition<typeof speakerSystemStates>,
+  'activate' | 'inactivate',
   SpeakerSystemRole
 >({
   name: 'speaker_system',
   restEndpoint: 'speaker-list-systems/',
-  states: speakerSystemStates,
+  states: {
+    name: 'SpeakerSystemStateMachine',
+    meta: {
+      [SpeakerSystemState.Inactive]: {
+        icon: 'mdi-eye-off',
+        translate: (t, count = 1) => t('speaker.systemWorkflow.inactive', count)
+      },
+      [SpeakerSystemState.Active]: {
+        icon: 'mdi-eye',
+        translate: (t, count = 1) => t('speaker.systemWorkflow.active', count)
+      },
+      [SpeakerSystemState.Archived]: {
+        icon: 'mdi-archive',
+        translate: (t, count = 1) => t('speaker.systemWorkflow.archived', count)
+      }
+    }
+  },
   roles: {
     endpoint: 'speaker-system-roles/',
     definitions: {

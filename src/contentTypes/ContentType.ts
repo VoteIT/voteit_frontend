@@ -12,16 +12,14 @@ import useUserDetails from '@/modules/organisations/useUserDetails'
 
 import ContentAPI from './ContentAPI'
 import { ChannelConfig, ConditionalWorkflowStates } from './types'
-import useWorkflows from './useWorkflows'
 import contentCleanup, { ChannelMap } from './contentCleanup'
 import useTransitions from './useTransitions'
+import useStateMachine from '@/composables/useStateMachine'
 
 type MethodHandler<T> = (item: T) => void
-type PKStateContent = { pk: number; state?: string }
 
-interface CType<
-  T extends Partial<PKStateContent>,
-  Transition extends string = never,
+interface IContentType<
+  T extends { pk?: number; state?: string },
   Role extends string = never
 > {
   name: string // Content type name in channels
@@ -31,24 +29,20 @@ interface CType<
     definitions: Record<Role, ContextRoleDefinition>
     endpoint: string
   }
-  states?: ConditionalWorkflowStates<T, Transition>
+  states?: ConditionalWorkflowStates<T>
 }
 
 /**
  * Basic content type, providing a unified access to rest and socket api.
- * Used for content that has no pk or state.
+ * Used for content that has no state.
  */
-export class BaseContentType<
-  T extends {},
-  Transition extends string = never,
-  Role extends string = never
-> {
-  protected readonly contentType: CType<T, Transition, Role>
+export class BaseContentType<T extends {}, Role extends string = never> {
+  protected readonly contentType: IContentType<T, Role>
   protected methodHandlers: Map<string, MethodHandler<any>>
   private _api?: ContentAPI<T>
   private messageQueue: Map<string, ChannelsMessage['p'][]> // Payloads
 
-  constructor(contentType: CType<T, Transition, Role>) {
+  constructor(contentType: IContentType<T, Role>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
     this.messageQueue = new Map()
@@ -130,12 +124,13 @@ export class BaseContentType<
  * Used for content that has pk and possibly state.
  */
 export default class ContentType<
-  T extends PKStateContent,
-  Transition extends string = string,
+  T extends { pk: number; state?: string },
+  Event extends string = string,
   Role extends string = string
-> extends BaseContentType<T, Transition, Role> {
+> extends BaseContentType<T, Role> {
   private rolesAvailable?: ContextRole<Role>[]
-  private _transitions?: ReturnType<typeof useTransitions<T, Transition>>
+  private _events?: ReturnType<typeof useTransitions<T, Event>>
+  private _sm?: ReturnType<typeof useStateMachine<T & { state: string }, Event>>
   private _rolesApi?: ContentAPI<{
     pk: number
     user: IUser
@@ -154,17 +149,17 @@ export default class ContentType<
     return this._rolesApi
   }
 
-  public get transitions() {
+  public get events() {
     if (!this.contentType.states)
       throw new Error(
-        `Content type ${this.name} has not registered transitions`
+        `Content type ${this.name} has no registered state machine`
       )
-    if (!this._transitions)
-      this._transitions = useTransitions<T, Transition>(
-        this.contentType.states,
+    if (!this._events)
+      this._events = useTransitions<T, Event>(
+        this.contentType.states.name,
         this.api
       )
-    return this._transitions
+    return this._events
   }
 
   public getRole(role: Role): ContextRoleDefinition {
@@ -181,16 +176,20 @@ export default class ContentType<
     )
   }
 
-  public get workflowStates() {
-    return this.contentType.states
-  }
-
-  public useWorkflows() {
+  /**
+   * Cached state machine for this content type.
+   */
+  public get sm() {
     if (!this.contentType.states)
       throw new Error(
-        `Workflow States not configured for Content Type ${this.name}`
+        `Content type ${this.name} has no registered state machine`
       )
-    return useWorkflows<T['state']>(this.contentType.states)
+    if (!this._sm)
+      this._sm = useStateMachine<T & { state: string }, Event>(
+        this.contentType.states.name,
+        this.contentType.states.meta
+      )
+    return this._sm
   }
 
   public useContextRoles() {

@@ -62,9 +62,6 @@ const SETTING_DEFAULTS = {
   }
 } as const
 
-const { getState: getProposalState } = proposalType.useWorkflows()
-const { getState: getAgendaState } = agendaItemType.useWorkflows()
-
 const { t } = useI18n()
 const { meetingId, isFinishedMeeting, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
@@ -101,7 +98,7 @@ const proposalStateSettings = {
   options: Object.fromEntries(
     PROPOSAL_STATE_ORDER.map((state) => [
       state,
-      getProposalState(state)!.getName(t, 2) // Go plural
+      proposalType.sm.getState(state).translate(t, 2)
     ])
   )
 }
@@ -110,7 +107,7 @@ const agendaStateSettings = {
   options: Object.fromEntries(
     AGENDA_STATE_ODER.map((state) => [
       state,
-      getAgendaState(state)!.getName(t, 2) // Go plural
+      agendaItemType.sm.getState(state).translate(t, 2)
     ])
   )
 }
@@ -134,7 +131,7 @@ const annotatedAgenda = computed(() => {
         )
         return {
           state,
-          title: getProposalState(state)?.getName(t, proposals.length),
+          title: proposalType.sm.getState(state).translate(t, proposals.length),
           proposals
         }
       })

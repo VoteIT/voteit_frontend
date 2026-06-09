@@ -44,7 +44,7 @@
         :key="state.state"
       >
         <v-list-subheader v-if="items.length">
-          {{ state.getName(t, items.length) }}
+          {{ state.translate(t, items.length) }}
         </v-list-subheader>
         <v-list-item
           v-for="ai in items"

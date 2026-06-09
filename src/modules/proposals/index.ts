@@ -37,7 +37,7 @@ meetingExportPlugins.register({
   }
 })
 
-agendaItemType.transitions.registerGuard(AgendaTransition.Close, (obj, t) => {
+agendaItemType.events.registerGuard(AgendaTransition.Close, (obj, t) => {
   if (
     useProposalStore().anyProposal(
       (p) => p.agenda_item === obj.pk && UNRESOLVED_STATES.includes(p.state)
