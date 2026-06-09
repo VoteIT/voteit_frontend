@@ -25,11 +25,7 @@ import {
 import { speakerListType } from './contentTypes'
 import useSpeakerLists from './useSpeakerLists'
 import useSpeakerSystem from './useSpeakerSystem'
-import {
-  SpeakerListState,
-  type SpeakerList,
-  type SpeakerListAddMessage
-} from './types'
+import type { SpeakerList, SpeakerListAddMessage } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
 import useSpeakerStore from './useSpeakerStore'
@@ -65,7 +61,6 @@ const {
   computed(() => props.room),
   agendaId
 )
-const { getState } = speakerListType.useWorkflows()
 
 const currentList = computed<SpeakerList | undefined>(() => {
   if (systemActiveList.value?.agenda_item !== agendaId.value) return
@@ -93,6 +88,10 @@ async function addSpeakerList(data: { title: string }) {
 }
 function updateSpeakerList(data: { title: string; pk: number }) {
   return speakerApi.patch(data.pk, { title: data.title })
+}
+
+function setIsOpen(list: number, is_open: boolean) {
+  speakerApi.patch(list, { is_open })
 }
 
 async function deleteList(list: SpeakerList) {
@@ -146,14 +145,6 @@ async function setActive(list: SpeakerList, active = true) {
   }
 }
 
-async function transitionList(list: SpeakerList, transition: 'close' | 'open') {
-  try {
-    await speakerListType.transitions.make(list, transition, t)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
-
 // Warn if there are other rooms with speaker lists
 const otherRoomsWithLists = computed(() => {
   const rooms = new Set(
@@ -161,7 +152,7 @@ const otherRoomsWithLists = computed(() => {
       (sl) =>
         sl.room !== props.room &&
         sl.agenda_item === agendaId.value &&
-        sl.state === SpeakerListState.Open
+        sl.is_open
     ).map((sl) => sl.room)
   )
   return filterRooms((room) => rooms.has(room.pk))
@@ -286,18 +277,20 @@ const otherRoomsWithLists = computed(() => {
                 <h3 class="flex-grow-1 flex-shrink-1">
                   {{ list.title }}
                   <small
-                    :class="`text-${getState(list.state)?.color}`"
+                    :class="`text-${list.is_open ? 'primary' : 'warning'}`"
                     class="ml-2"
                   >
                     <v-icon
                       :icon="
-                        list.state === SpeakerListState.Open
-                          ? 'mdi-play-circle-outline'
-                          : 'mdi-lock'
+                        list.is_open ? 'mdi-play-circle-outline' : 'mdi-lock'
                       "
                       size="small"
                     />
-                    &nbsp;{{ getState(list.state)?.getName(t) }}
+                    &nbsp;{{
+                      list.is_open
+                        ? $t('speaker.listWorkflow.open')
+                        : $t('speaker.listWorkflow.closed')
+                    }}
                   </small>
                 </h3>
                 <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
@@ -364,15 +357,15 @@ const otherRoomsWithLists = computed(() => {
                   class="mr-1"
                 />
                 <v-btn
-                  v-if="list.state === SpeakerListState.Open"
-                  @click="transitionList(list, 'close')"
+                  v-if="list.is_open"
+                  @click="setIsOpen(list.pk, false)"
                   :text="$t('speaker.closeList')"
                   class="mr-1"
                   variant="text"
                 />
                 <v-btn
                   v-else
-                  @click="transitionList(list, 'open')"
+                  @click="setIsOpen(list.pk, true)"
                   :text="$t('speaker.openList')"
                   class="mr-1"
                   variant="text"

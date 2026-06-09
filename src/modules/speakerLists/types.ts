@@ -42,13 +42,8 @@ export type SpeakerSystemEditable = Pick<
   | 'show_time'
 >
 
-export enum SpeakerListState {
-  Open = 'open',
-  Closed = 'closed'
-}
-
 export interface SpeakerList extends BaseContent {
-  state: SpeakerListState
+  is_open: boolean
   readonly agenda_item: number
   readonly current: number
   readonly room: number
