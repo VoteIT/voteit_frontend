@@ -1,6 +1,6 @@
 import { WorkflowStates } from '@/contentTypes/types'
 import { ThemeColor } from '@/utils/types'
-import { MeetingComponentState, MeetingState } from './types'
+import { MeetingState } from './types'
 
 export const meetingStates: WorkflowStates<
   MeetingState,
@@ -68,28 +68,6 @@ export const meetingStates: WorkflowStates<
     state: MeetingState.Previous, // FIXME Workaround - state and transition shouldn't be 1-to-1
     getName(t, count = 1) {
       return t('meeting.workflow.deleting', count)
-    }
-  }
-]
-
-export const meetingComponentStates: WorkflowStates<
-  MeetingComponentState,
-  'disable' | 'enable'
-> = [
-  {
-    icon: 'mdi-close',
-    state: MeetingComponentState.Off,
-    transition: 'disable',
-    getName(t) {
-      return t('meeting.componentState.off')
-    }
-  },
-  {
-    icon: 'mdi-check',
-    state: MeetingComponentState.On,
-    transition: 'enable',
-    getName(t) {
-      return t('meeting.componentState.on')
     }
   }
 ]

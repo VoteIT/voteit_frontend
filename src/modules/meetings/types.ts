@@ -31,11 +31,6 @@ export enum MeetingRole {
   Moderator = 'mo'
 }
 
-export enum MeetingComponentState {
-  On = 'on',
-  Off = 'off'
-}
-
 export enum MeetingState {
   Upcoming = 'upcoming',
   Ongoing = 'ongoing',
@@ -128,9 +123,9 @@ export function isWithGroupAuthor(author: Author): author is WithGroupAuthor {
 
 export interface ComponentBase<N = string> {
   readonly pk: number
-  state: 'on' | 'off'
-  meeting: number
   component_name: N
+  enabled: boolean
+  meeting: number
   settings: unknown
 }
 

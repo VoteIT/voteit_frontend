@@ -3,7 +3,6 @@ import { computed, MaybeRef, reactive, unref } from 'vue'
 
 import { meetingComponentType } from './contentTypes'
 import { ComponentBase } from './types'
-import { UnguardedTransition } from '@/contentTypes/useTransitions'
 
 const meetingComponents = reactive(new Map<number, ComponentBase>())
 
@@ -19,25 +18,21 @@ export default function useMeetingComponent<T extends ComponentBase>(
       (c) => c.meeting === unref(meeting) && c.component_name === name
     )
   )
-  const componentActive = computed(() => component.value?.state === 'on')
+  const componentActive = computed(() => component.value?.enabled ?? false)
 
-  async function setComponentState(state: boolean) {
+  async function setComponentState(enabled: boolean) {
     if (!component.value) throw new Error(`No component loaded`)
-    await meetingComponentType.transitions.make(
-      component.value,
-      state ? 'enable' : 'disable',
-      UnguardedTransition
-    )
+    await meetingComponentType.api.patch(component.value.pk, { enabled })
   }
 
-  async function addComponent(settings: T['settings'], activate = false) {
+  async function addComponent(settings: T['settings'], enabled = false) {
     const { data } = await meetingComponentType.api.add({
       component_name: name,
+      enabled,
       meeting: unref(meeting),
       settings
     })
     meetingComponents.set(data.pk, data)
-    if (activate) setComponentState(true)
   }
 
   return {
