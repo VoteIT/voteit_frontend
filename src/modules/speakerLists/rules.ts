@@ -5,7 +5,6 @@ import { Meeting, MeetingRole } from '../meetings/types'
 
 import {
   type SpeakerList,
-  SpeakerListState,
   type SpeakerSystem,
   SpeakerSystemRole,
   SpeakerSystemState
@@ -86,10 +85,6 @@ function isActiveList(list: SpeakerList): boolean {
   return system?.active_list === list.pk
 }
 
-export function isOpenList(list: SpeakerList): boolean {
-  return list.state === SpeakerListState.Open
-}
-
 function isCurrentlySpeaking(list: SpeakerList): boolean {
   return useSpeakerStore().getCurrent(list.pk) === useAuthStore().user?.pk
 }
@@ -132,7 +127,7 @@ export function canStopSpeaker(list: SpeakerList): boolean {
 export function canEnterList(list: SpeakerList): boolean {
   const system = useSpeakerStore().getRoomSpeakerSystem(list.room)
   if (!system) return false
-  return isActiveSystem(system) && isOpenList(list) && !!isSystemSpeaker(system)
+  return isActiveSystem(system) && list.is_open && !!isSystemSpeaker(system)
 }
 
 export function canLeaveList(list: SpeakerList): boolean {

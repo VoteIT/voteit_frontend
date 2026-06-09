@@ -6,7 +6,6 @@ import Moment from '@/components/Moment.vue'
 import useAgendaStore from '../agendas/useAgendaStore'
 import useMeeting from '../meetings/useMeeting'
 
-import { speakerListType } from './contentTypes'
 import useSpeakerSystem from './useSpeakerSystem'
 import EnterLeaveButton from './EnterLeaveButton.vue'
 import SpeakerEntry from './SpeakerEntry.vue'
@@ -22,7 +21,6 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const { getAgendaItem } = useAgendaStore()
-const { getState } = speakerListType.useWorkflows()
 const {
   systemActiveList: list,
   systemActiveListId,
@@ -36,8 +34,6 @@ const { currentSpeaker, speakerGroups } = useSpeakerGroups(
 
 const agendaItem = computed(() => getAgendaItem(list.value?.agenda_item ?? 0))
 const { meeting } = useMeeting()
-
-const listState = computed(() => list.value && getState(list.value.state))
 
 type Annotated<T extends {}> = T & {
   annotations: { icon: string; text: string }[]
@@ -85,7 +81,14 @@ const groups = computed<SpeakerGroup[]>(() => {
             {{ list.title }}
           </router-link>
         </h2>
-        <p class="mb-1" v-if="listState">- {{ listState.getName(t) }}</p>
+        <p class="mb-1" :class="{ 'text-warning': !list.is_open }">
+          -
+          {{
+            list.is_open
+              ? $t('speaker.listWorkflow.open')
+              : $t('speaker.listWorkflow.closed')
+          }}
+        </p>
       </div>
       <v-fade-transition>
         <EnterLeaveButton v-if="!passive" :list="list" />

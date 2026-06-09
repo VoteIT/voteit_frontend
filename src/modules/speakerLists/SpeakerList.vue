@@ -7,7 +7,7 @@ import useAuthStore from '../auth/useAuthStore'
 import useRoom from '../rooms/useRoom'
 import { IMeetingRoom } from '../rooms/types'
 
-import { canChangeSpeakerList, isOpenList } from './rules'
+import { canChangeSpeakerList } from './rules'
 import { SpeakerList } from './types'
 import useSpeakerSystem from './useSpeakerSystem'
 import EnterLeaveButton from './EnterLeaveButton.vue'
@@ -122,13 +122,13 @@ const fullscreenPath = computed(
       <v-icon icon="mdi-television-play" color="success" class="mr-2" />
       {{ $t('speaker.listActive') }}
       <v-spacer />
-      <span v-if="!isOpenList(list)">
+      <span v-if="!list.is_open">
         <v-icon class="mr-2" icon="mdi-lock" size="small" />
         {{ $t('speaker.listWorkflow.closed') }}
       </span>
     </div>
     <div
-      v-else-if="!isOpenList(list)"
+      v-else-if="!list.is_open"
       class="bg-grey-lighten-2 rounded-b px-3 py-1 d-flex"
     >
       <v-spacer />

@@ -8,7 +8,7 @@ import {
   SpeakerSystem,
   SpeakerSystemRole
 } from './types'
-import { speakerListStates, speakerSystemStates } from './workflowStates'
+import { speakerSystemStates } from './workflowStates'
 
 export const speakerSystemType = new ContentType<
   SpeakerSystem,
@@ -33,11 +33,7 @@ export const speakerSystemType = new ContentType<
   }
 })
 
-export const speakerListType = new ContentType<
-  SpeakerList,
-  ExtractTransition<typeof speakerListStates>
->({
-  states: speakerListStates,
+export const speakerListType = new ContentType<SpeakerList>({
   name: 'speaker_list',
   restEndpoint: 'speaker-lists/'
 })
