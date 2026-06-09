@@ -12,7 +12,7 @@ import {
   MeetingGroup,
   MeetingRole
 } from './types'
-import { meetingComponentStates, meetingStates } from './workflowStates'
+import { meetingStates } from './workflowStates'
 
 export const accessPolicyType = new ContentType<MeetingAccessPolicy>({
   name: 'access_policy',
@@ -76,13 +76,9 @@ export const meetingGroupType = new ContentType<MeetingGroup>({
   restConfig: { alertOnError: false }
 })
 
-export const meetingComponentType = new ContentType<
-  ComponentBase,
-  ExtractTransition<typeof meetingComponentStates>
->({
+export const meetingComponentType = new ContentType<ComponentBase>({
   restEndpoint: 'meeting-components/',
-  name: 'meeting_component',
-  states: meetingComponentStates
+  name: 'meeting_component'
 })
 
 export const groupRoleType = new ContentType<GroupRole>({

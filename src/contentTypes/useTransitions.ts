@@ -8,8 +8,6 @@ import { ThemeColor } from '@/utils/types'
 import ContentAPI from './ContentAPI'
 import type { Transition as ITransition, WorkflowStates } from './types'
 
-export const UnguardedTransition = Symbol('UnguardedTransition')
-
 type GuardTrigger = { text: string; isBlocking?: boolean }
 type TransitionGuard<T> = (
   obj: T,
@@ -44,14 +42,9 @@ export default function useTransitions<
     }))
   }
 
-  async function make(
-    obj: T,
-    transition: Transition,
-    t: ComposerTranslation | typeof UnguardedTransition
-  ) {
+  async function make(obj: T, transition: Transition, t: ComposerTranslation) {
     const action = () =>
       api.action<Partial<T>>('transitions', obj.pk, { transition })
-    if (t === UnguardedTransition) return await action()
     const guardQuery = checkGuards(obj, transition, t)
     if (!guardQuery) return action()
     const dialog = { title: guardQuery.text, theme: ThemeColor.Warning }
