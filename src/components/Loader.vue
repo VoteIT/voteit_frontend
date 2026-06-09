@@ -3,7 +3,12 @@
     <main v-if="visible" :class="{ initFailed, initDone }">
       <img src="@/assets/voteit-logo.svg" class="logo" />
       <transition name="fade">
-        <h1 v-if="!initDone">{{ message }}</h1>
+        <div v-if="!initDone" class="fail-message">
+          <h1>{{ message }}</h1>
+          <p v-if="failedMessage">
+            {{ failedMessage }}
+          </p>
+        </div>
       </transition>
     </main>
   </transition>
@@ -22,7 +27,7 @@ const DOT_INTERVAL = 333
 
 const { t } = useI18n()
 const dotCount = ref(0)
-const { initDone, initFailed, initState } = useLoader('Loader')
+const { initDone, initFailed, initState, failedMessage } = useLoader('Loader')
 const visible = ref(true)
 
 function dotUp() {
@@ -108,11 +113,13 @@ img.logo
   .initFailed &
     transform: rotate(6deg)
 
-h1
+.fail-message
   position: fixed
   color: rgb(var(--v-theme-on-app-bar))
-  position: fixed
   left: calc(50vw - 12vh)
   top: 44vh
-  font-size: 1.6vh
+  h1
+    font-size: 1.6vh
+  p
+    font-style: italic
 </style>

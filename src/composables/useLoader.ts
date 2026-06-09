@@ -7,12 +7,18 @@ export type LoaderCallback = () => Promise<unknown>
 let callbacks: LoaderCallback[] = []
 
 const initState = shallowRef<InitState>()
+const failedMessage = shallowRef<string>()
 const initFailed = computed(() => initState.value === InitState.Failed)
 const initDone = computed(() => initState.value === InitState.Done)
 // const isReady = computed(() => isAuthenticated.value && socketState.value)
 
-async function _failure(name?: string) {
-  console.error('Loading failed', name)
+function isError(e: unknown): e is Error {
+  return e !== null && typeof e === 'object' && 'message' in e
+}
+
+async function _failure(name?: string, message?: string) {
+  console.error('Loading failed', name, message)
+  if (message) failedMessage.value = message
   initState.value = InitState.Failed
 }
 
@@ -21,12 +27,13 @@ function _success() {
 }
 
 async function performLoad() {
+  if (initState.value === InitState.Failed) return
   initState.value = InitState.Loading
   try {
     await Promise.all(callbacks.map((cb) => cb()))
     _success()
-  } catch {
-    _failure()
+  } catch (e) {
+    _failure(isError(e) ? e.message : undefined)
   }
   callbacks = []
 }
@@ -52,9 +59,9 @@ export default function useLoader(
   name: string,
   ...promises: Promise<unknown>[]
 ) {
-  function setLoaded(success = true) {
+  function setLoaded(success = true, message?: string) {
     if (success) _success()
-    else _failure(name)
+    else _failure(name, message)
   }
 
   call(() => Promise.all(promises))
@@ -63,6 +70,7 @@ export default function useLoader(
     initDone,
     initFailed,
     initState,
+    failedMessage,
     setLoaded,
     call
   }
