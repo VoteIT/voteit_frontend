@@ -27,32 +27,32 @@ export const proposalType = new ContentType<Proposal>({
       [ProposalState.Published]: {
         color: ThemeColor.Primary,
         icon: 'mdi-eye',
-        translate: (t, count = 1) => t('speaker.workflow.published', count)
+        translate: (t, count = 1) => t('proposal.workflow.published', count)
       },
       [ProposalState.Retracted]: {
         color: ThemeColor.Secondary,
         icon: 'mdi-undo-variant',
-        translate: (t, count = 1) => t('speaker.workflow.retracted', count)
+        translate: (t, count = 1) => t('proposal.workflow.retracted', count)
       },
       [ProposalState.Voting]: {
         color: ThemeColor.Info,
         icon: 'mdi-vote',
-        translate: (t, count = 1) => t('speaker.workflow.voting', count)
+        translate: (t, count = 1) => t('proposal.workflow.voting', count)
       },
       [ProposalState.Approved]: {
         color: ThemeColor.Success,
         icon: 'mdi-check-circle-outline',
-        translate: (t, count = 1) => t('speaker.workflow.approved', count)
+        translate: (t, count = 1) => t('proposal.workflow.approved', count)
       },
       [ProposalState.Denied]: {
         color: ThemeColor.Warning,
         icon: 'mdi-close-circle-outline',
-        translate: (t, count = 1) => t('speaker.workflow.denied', count)
+        translate: (t, count = 1) => t('proposal.workflow.denied', count)
       },
       [ProposalState.Unhandled]: {
         color: ThemeColor.Secondary,
         icon: 'mdi-help-circle-outline',
-        translate: (t, count = 1) => t('speaker.workflow.unhandled', count)
+        translate: (t, count = 1) => t('proposal.workflow.unhandled', count)
       }
     }
   },

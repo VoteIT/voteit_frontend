@@ -60,12 +60,12 @@ const working = ref(false)
 
 async function cancel() {
   working.value = true
-  await pollType.events.make(poll.value!, PollTransition.Cancel, t)
+  await pollType.sm.sendEvent(poll.value!, PollTransition.Cancel, t)
 }
 
 async function close() {
   working.value = true
-  await pollType.events.make(poll.value!, PollTransition.Close, t)
+  await pollType.sm.sendEvent(poll.value!, PollTransition.Close, t)
 }
 
 /**

@@ -193,7 +193,7 @@ function deleteProposal() {
 }
 
 function retract() {
-  proposalType.events.make(props.p, 'retract', t)
+  proposalType.sm.sendEvent(props.p, 'retract', t)
 }
 
 const discussionPosts = computed(() => {

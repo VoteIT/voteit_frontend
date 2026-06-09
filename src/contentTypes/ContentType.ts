@@ -13,7 +13,6 @@ import useUserDetails from '@/modules/organisations/useUserDetails'
 import ContentAPI from './ContentAPI'
 import { ChannelConfig, ConditionalWorkflowStates } from './types'
 import contentCleanup, { ChannelMap } from './contentCleanup'
-import useTransitions from './useTransitions'
 import useStateMachine from '@/composables/useStateMachine'
 
 type MethodHandler<T> = (item: T) => void
@@ -129,7 +128,6 @@ export default class ContentType<
   Role extends string = string
 > extends BaseContentType<T, Role> {
   private rolesAvailable?: ContextRole<Role>[]
-  private _events?: ReturnType<typeof useTransitions<T, Event>>
   private _sm?: ReturnType<typeof useStateMachine<T & { state: string }, Event>>
   private _rolesApi?: ContentAPI<{
     pk: number
@@ -147,19 +145,6 @@ export default class ContentType<
     if (!this._rolesApi)
       this._rolesApi = new ContentAPI(this.contentType.roles.endpoint)
     return this._rolesApi
-  }
-
-  public get events() {
-    if (!this.contentType.states)
-      throw new Error(
-        `Content type ${this.name} has no registered state machine`
-      )
-    if (!this._events)
-      this._events = useTransitions<T, Event>(
-        this.contentType.states.name,
-        this.api
-      )
-    return this._events
   }
 
   public getRole(role: Role): ContextRoleDefinition {
@@ -187,7 +172,8 @@ export default class ContentType<
     if (!this._sm)
       this._sm = useStateMachine<T & { state: string }, Event>(
         this.contentType.states.name,
-        this.contentType.states.meta
+        this.contentType.states.meta,
+        this.api as ContentAPI<T & { state: string }, number>
       )
     return this._sm
   }

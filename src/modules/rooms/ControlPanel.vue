@@ -110,8 +110,8 @@ async function updateRoom(
     if (slsModified)
       await speakerSystemType.api.patch(system.pk, speakerSystem!)
     if (slsDisabled)
-      await speakerSystemType.events.make(system, 'inactivate', t)
-    if (slsEnabled) await speakerSystemType.events.make(system, 'activate', t)
+      await speakerSystemType.sm.sendEvent(system, 'inactivate', t)
+    if (slsEnabled) await speakerSystemType.sm.sendEvent(system, 'activate', t)
     close()
   } catch (e) {
     errors.value = parseRestError(e)

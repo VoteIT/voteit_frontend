@@ -1,8 +1,67 @@
+<script
+  lang="ts"
+  setup
+  generic="T extends StateContent, CT extends ContentType<T, any, any>"
+>
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { Color } from '@/utils/types'
+import { StateContent } from '@/contentTypes/types'
+import ContentType from '@/contentTypes/ContentType'
+
+type Event = CT extends ContentType<any, infer E, any> ? E : never
+
+const props = withDefaults(
+  defineProps<{
+    admin?: boolean
+    color?: Color
+    contentType: CT
+    object: T
+    right?: boolean
+  }>(),
+  {
+    admin: false,
+    color: 'secondary'
+  }
+)
+
+const { t } = useI18n()
+const eventsAvailable = computed(() =>
+  props.contentType.sm.getAvailableEvents(props.object).map((t) => ({
+    ...t,
+    unmetConditions: t.reason
+  }))
+)
+
+const currentState = computed(() =>
+  props.contentType.sm.getState(props.object.state)
+)
+const isUserModifiable = computed<boolean>(
+  () => props.admin && !currentState.value?.final
+)
+
+const working = ref(false)
+
+async function sendEvent(event: Event) {
+  working.value = true
+  await props.contentType.sm.sendEvent(props.object, event, t)
+  working.value = false
+}
+
+// function unmetConditions(t: ITransition<Transition>) {
+//   if (t.allowed) return
+//   return t.conditions
+//     .filter((c) => !c.allowed)
+//     .map((c) => c.title)
+//     .join(', ')
+// }
+</script>
+
 <template>
   <v-menu
     v-if="currentState && isUserModifiable"
     :location="right ? 'bottom end' : 'bottom start'"
-    @update:model-value="menuOpenChange"
   >
     <template #activator="{ props }">
       <v-btn
@@ -18,19 +77,15 @@
       />
     </template>
     <v-list density="comfortable">
-      <div v-if="fetching" class="text-center">
-        <v-progress-circular indeterminate />
-      </div>
       <v-list-item
-        v-else
-        v-for="t in transitionsAvailable"
+        v-for="t in eventsAvailable"
         :key="t.name"
-        :prepend-icon="t.icon"
-        :title="t.title"
-        :disabled="!t.allowed"
-        :subtitle="t.unmetConditions"
-        @click="makeTransition(t.name)"
+        :disabled="t.disabled"
         link
+        :prepend-icon="t.icon"
+        :subtitle="t.reason"
+        :title="t.name"
+        @click="sendEvent(t.id)"
       />
     </v-list>
   </v-menu>
@@ -55,88 +110,3 @@
     variant="flat"
   />
 </template>
-
-<script
-  lang="ts"
-  setup
-  generic="T extends StateContent, CT extends ContentType<T, any, any>"
->
-import { computed, Ref, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { Color } from '@/utils/types'
-import useAlert from '@/composables/useAlert'
-import { ITransition as ITransition, StateContent } from '@/contentTypes/types'
-import ContentType from '@/contentTypes/ContentType'
-
-type Transition = CT extends ContentType<any, infer T, any> ? T : never
-
-const props = withDefaults(
-  defineProps<{
-    admin?: boolean
-    color?: Color
-    contentType: CT
-    object: T
-    right?: boolean
-  }>(),
-  {
-    admin: false,
-    color: 'secondary'
-  }
-)
-
-const { t } = useI18n()
-const _transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
-const transitionsAvailable = computed(
-  () =>
-    _transitionsAvailable.value?.map((t) => ({
-      ...t,
-      unmetConditions: unmetConditions(t)
-    }))
-)
-const { alert } = useAlert()
-
-const currentState = computed(() =>
-  props.contentType.sm.getState(props.object.state)
-)
-const isUserModifiable = computed<boolean>(
-  () => props.admin && !currentState.value?.final
-)
-
-const fetching = ref(false)
-async function menuOpenChange(open: boolean) {
-  if (!open || fetching.value) return
-  fetching.value = true
-  try {
-    _transitionsAvailable.value = await props.contentType.events.get(
-      props.object.pk
-    )
-  } catch {
-    alert('^Could not get available transitions')
-  }
-  fetching.value = false
-}
-
-const working = ref(false)
-
-async function makeTransition(transition: Transition) {
-  working.value = true
-  await props.contentType.events.make(props.object, transition, t)
-  working.value = false
-}
-
-function unmetConditions(t: ITransition<Transition>) {
-  if (t.allowed) return
-  return t.conditions
-    .filter((c) => !c.allowed)
-    .map((c) => c.title)
-    .join(', ')
-}
-
-watch(
-  () => props.object,
-  () => {
-    _transitionsAvailable.value = null
-  }
-)
-</script>

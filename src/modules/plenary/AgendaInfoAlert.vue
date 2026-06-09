@@ -72,7 +72,11 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
             text: t('plenary.meetingToOngoing'),
             async onClick() {
               try {
-                await meetingType.events.make(meeting.value!, 'make_ongoing', t)
+                await meetingType.sm.sendEvent(
+                  meeting.value!,
+                  'make_ongoing',
+                  t
+                )
               } catch (e) {
                 handleRestError(e, 'transition')
               }
@@ -100,7 +104,7 @@ function getUpcomingAlert(): IAlertInfo | undefined {
           text: t('plenary.toDecisionMode'),
           async onClick() {
             try {
-              await agendaItemType.events.make(
+              await agendaItemType.sm.sendEvent(
                 agendaItem.value!,
                 AgendaTransition.Ongoing,
                 t
@@ -117,7 +121,7 @@ function getUpcomingAlert(): IAlertInfo | undefined {
           text: t('plenary.toDecisionMode'),
           async onClick() {
             try {
-              await agendaItemType.events.make(
+              await agendaItemType.sm.sendEvent(
                 agendaItem.value!,
                 AgendaTransition.Ongoing,
                 t
@@ -300,7 +304,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
               prependIcon: 'mdi-gavel',
               text: t('plenary.closeAI'),
               async onClick() {
-                await agendaItemType.events.make(
+                await agendaItemType.sm.sendEvent(
                   agendaItem.value!,
                   AgendaTransition.Close,
                   t

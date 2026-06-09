@@ -11,8 +11,6 @@ const {
   MockContentAPI,
   MockChannel,
   mockUseStateMachine,
-  mockUseTransitionsResult,
-  mockUseTransitions,
   mockContentCleanup,
   mockUseContextRoles,
   mockSetUser
@@ -25,7 +23,6 @@ const {
     listAction: vi.fn()
   }
 
-  const mockUseTransitionsResult = { get: vi.fn(), make: vi.fn() }
   return {
     mockAddTypeHandler: vi.fn(),
     mockSocketCall: vi.fn(),
@@ -36,8 +33,6 @@ const {
       return {}
     }),
     mockUseStateMachine: vi.fn(() => ({})),
-    mockUseTransitionsResult,
-    mockUseTransitions: vi.fn(() => mockUseTransitionsResult),
     mockContentCleanup: { register: vi.fn() },
     mockUseContextRoles: vi.fn(() => ({ set: vi.fn() })),
     mockSetUser: vi.fn()
@@ -50,7 +45,6 @@ vi.mock('@/utils/Socket', () => ({
 vi.mock('./ContentAPI', () => ({ default: MockContentAPI }))
 vi.mock('./Channel', () => ({ default: MockChannel }))
 vi.mock('@/composables/useStateMachine', () => ({ default: mockUseStateMachine }))
-vi.mock('./useTransitions', () => ({ default: mockUseTransitions }))
 vi.mock('./contentCleanup', () => ({ default: mockContentCleanup }))
 vi.mock('@/composables/useContextRoles', () => ({
   default: mockUseContextRoles
@@ -222,27 +216,6 @@ describe('ContentType', () => {
     expect(MockContentAPI).toHaveBeenCalledTimes(1)
   })
 
-  test('transitions throws when no states are configured', () => {
-    const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/' })
-    expect(() => ct.events).toThrow('has no registered state machine')
-  })
-
-  test('transitions returns the useTransitions result', () => {
-    const states = { name: 'MyMachine', meta: {} } as any
-    const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
-
-    const result = ct.events
-    expect(mockUseTransitions).toHaveBeenCalledWith(states.name, expect.anything())
-    expect(result).toBe(mockUseTransitionsResult)
-  })
-
-  test('transitions getter caches the result', () => {
-    const states = { name: 'MyMachine', meta: {} } as any
-    const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
-    expect(ct.events).toBe(ct.events)
-    expect(mockUseTransitions).toHaveBeenCalledTimes(1)
-  })
-
   test('getRole throws when no role definitions are available', () => {
     const ct = new ContentType({ name: 'mytype' })
     expect(() => ct.getRole('admin' as never)).toThrow('No role definitions')
@@ -287,16 +260,27 @@ describe('ContentType', () => {
     expect(mockContentCleanup.register).not.toHaveBeenCalled()
   })
 
-  test('useStateMachine throws when no states are configured', () => {
+  test('sm throws when no states are configured', () => {
     const ct = new ContentType({ name: 'mytype' })
-    expect(() => (ct as any).useStateMachine()).toThrow()
+    expect(() => ct.sm).toThrow('has no registered state machine')
   })
 
-  test('useStateMachine calls useStateMachine composable with states name and meta', () => {
+  test('sm calls useStateMachine composable with states name, meta and api', () => {
     const states = { name: 'MyMachine', meta: { draft: { icon: 'mdi-draft' } } } as any
-    const ct = new ContentType({ name: 'mytype', states })
-    ;(ct as any).useStateMachine()
-    expect(mockUseStateMachine).toHaveBeenCalledWith(states.name, states.meta)
+    const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
+    void ct.sm
+    expect(mockUseStateMachine).toHaveBeenCalledWith(
+      states.name,
+      states.meta,
+      expect.anything()
+    )
+  })
+
+  test('sm getter caches the result', () => {
+    const states = { name: 'MyMachine', meta: {} } as any
+    const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
+    expect(ct.sm).toBe(ct.sm)
+    expect(mockUseStateMachine).toHaveBeenCalledTimes(1)
   })
 
   test('useContextRoles throws when no roles are configured', () => {
