@@ -430,10 +430,6 @@
     "yearStarted": "Year (started)",
     "yourGroups": "Your meeting roles",
     "yourRoles": "Your meeting groups",
-    "componentState": {
-      "off": "Off",
-      "on": "On"
-    },
     "groups": {
       "addMemberEmptyHelp": "Add some members from the meeting to the group, using the search field above.",
       "create": "Create group",
