@@ -1,8 +1,9 @@
-import { any, filter, map, Predicate, Primitive, sorted } from 'itertools'
+import { any, filter, map, Primitive, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
 import { countMatching } from '@/utils'
+import { Predicate } from '@/utils/types'
 import useAgendaStore from '../agendas/useAgendaStore'
 import { agendaDeletedEvent } from '../agendas/events'
 import { meetingChannel } from '../meetings/channels'

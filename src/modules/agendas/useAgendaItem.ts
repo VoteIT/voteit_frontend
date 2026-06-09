@@ -1,4 +1,3 @@
-import type { Maybe } from 'itertools/types'
 import { computed, MaybeRef, unref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -46,17 +45,14 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
       getAgendaItems((ai) => ai.meeting === agendaItem.value?.meeting)
     )
   )
-  function getRelativeAgendaItem(
-    agendaItem: AgendaItem,
-    positions: number
-  ): Maybe<AgendaItem> {
+  function getRelativeAgendaItem(agendaItem: AgendaItem, positions: number) {
     const agenda = getAgendaItems(
       (ai) =>
         ai.meeting === agendaItem.meeting &&
         (!selectedAgendaTag.value || ai.tags.includes(selectedAgendaTag.value))
     )
     const index = agenda.indexOf(agendaItem)
-    return agenda[index + positions]
+    return agenda.at(index + positions)
   }
 
   const previousAgendaItem = computed(
