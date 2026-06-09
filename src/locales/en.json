@@ -56,7 +56,6 @@
   "tags": "Tags",
   "textBody": "Text body",
   "title": "Title",
-  "total": "Total",
   "tryAgain": "Try again",
   "update": "Update",
   "unknown": "Unknown",
@@ -481,6 +480,21 @@
       "uninstallText": "You can uninstall this dialect, but we will then make changes to your meeting. This can affect groups, rights and settings. Don't do this unless you know what you're doing.",
       "uninstallTitle": "Uninstall dialect"
     }
+  },
+  "meetingImport": {
+    "agendaItems": "Agenda items",
+    "agendaItemsWarning": "This meeting already has agenda items. New items will be added to the existing ones.",
+    "back": "Back",
+    "confirmImport": "Confirm import",
+    "description": "Import from a signed file",
+    "dropZoneLabel": "Drop a YAML file here, or click to select",
+    "groups": "Groups",
+    "importAnother": "Import another file",
+    "importSuccess": "Import successful",
+    "previewTitle": "Preview",
+    "proposalCount": "{count} proposals",
+    "selectedFile": "Selected file: {name}",
+    "title": "Import to meeting"
   },
   "minutes": {
     "documents": "Meeting documents",

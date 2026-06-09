@@ -56,7 +56,6 @@
   "tags": "Taggar",
   "textBody": "Brödtext",
   "title": "Titel",
-  "total": "Totalt",
   "tryAgain": "Försök igen",
   "update": "Uppdatera",
   "unknown": "Okänd",
@@ -481,6 +480,21 @@
       "uninstallText": "Du kan avinstallera den här dialekten, men vi kommer då att ändra saker i ditt möte. Det kan påverka grupper, rättigheter och inställningar. Gör inte det om du inte vet vad du håller på med.",
       "uninstallTitle": "Avinstallera dialect"
     }
+  },
+  "meetingImport": {
+    "agendaItems": "Dagordningspunkter",
+    "agendaItemsWarning": "Det finns redan dagordningspunkter i mötet. Nya punkter läggs till de befintliga.",
+    "back": "Tillbaka",
+    "confirmImport": "Bekräfta import",
+    "description": "Importera till mötet från en signerad fil",
+    "dropZoneLabel": "Dra en YAML-fil hit, eller klicka för att välja",
+    "groups": "Grupper",
+    "importAnother": "Importera en annan fil",
+    "importSuccess": "Importen lyckades",
+    "previewTitle": "Förhandsgranskning",
+    "proposalCount": "{count} förslag",
+    "selectedFile": "Vald fil: {name}",
+    "title": "Importera till möte"
   },
   "minutes": {
     "documents": "Möteshandlingar",
