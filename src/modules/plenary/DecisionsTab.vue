@@ -145,13 +145,13 @@ function getProposalStates(state: ProposalState) {
 
 const pool = computed(() => filteredProposals.value.filter(isProposalInPool))
 const transitioning = reactive(new Set<number>())
-async function makeTransition(p: Proposal, state: Proposal['state']) {
+async function sendEvent(p: Proposal, state: Proposal['state']) {
   const event = proposalType.sm.getAvailableEvents(p, state).at(0)
   if (!event)
     throw new Error(`Proposal state ${state} has no registered transition`)
   transitioning.add(p.pk)
   try {
-    await proposalType.events.make(p, event.id, t)
+    await proposalType.sm.sendEvent(p, event.id, t)
   } catch (e) {
     handleRestError(e, 'transition')
   }
@@ -345,7 +345,7 @@ watchEffect(() => {
                   :disabled="!canChangeProposalState"
                   :loading="p.state !== s.state && transitioning.has(p.pk)"
                   :variant="p.state === s.state ? 'flat' : 'tonal'"
-                  @click="makeTransition(p, s.state)"
+                  @click="sendEvent(p, s.state)"
                 >
                   <v-icon
                     :icon="s.icon"

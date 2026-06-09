@@ -32,11 +32,10 @@ const agendaTag = ref<string | undefined>(undefined)
 const { isModerator, meeting, meetingId } = useMeeting()
 const { createAgendaItem } = useAgendaStore()
 const { agenda, filteredAgenda } = useAgenda(meetingId, agendaTag)
-const { getState } = agendaItemType.sm
-const { states: agendaStates } = agendaItemType.events
+const { getState, getStateList } = agendaItemType.sm
 
 const setableStates = computed(() =>
-  (Object.keys(agendaStates.value) as AgendaState[]).map(getState)
+  getStateList((s) => s.state !== AgendaState.Archived)
 )
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 const { handleSocketError } = useErrorHandler({ target: 'dialog' })

@@ -1,9 +1,13 @@
+import { chain, filter, first, ifilter, imap, sorted } from 'itertools'
 import { computed, reactive } from 'vue'
+import { ComposerTranslation } from 'vue-i18n'
 
 import restApi from '@/utils/restApi'
-import { Predicate } from '@/utils/types'
-import { filter, ifilter, imap, sorted } from 'itertools'
-import { IStateMeta } from '@/contentTypes/types'
+import { Predicate, ThemeColor } from '@/utils/types'
+import { IStateMeta, ITransition } from '@/contentTypes/types'
+import DefaultMap from '@/utils/DefaultMap'
+import { dialogQuery } from '@/utils'
+import ContentAPI from '@/contentTypes/ContentAPI'
 
 export interface StateContent<State extends string = string> {
   state: State
@@ -36,6 +40,12 @@ interface IStateMachine<
 
 type ApiMachines = Record<string, IStateMachine>
 type EventValidator<T extends StateContent> = (obj: T) => string | undefined
+
+type GuardTrigger = { text: string; isBlocking?: boolean }
+type TransitionGuard<T> = (
+  obj: T,
+  t: ComposerTranslation
+) => GuardTrigger | undefined
 
 /**
  * Escape validation using this
@@ -85,7 +95,7 @@ transitionValidators.register('manual_er_not_needed', () => undefined)
 transitionValidators.register('meeting_is_ongoing', () => undefined)
 transitionValidators.register('no_active_speaker', () => undefined)
 transitionValidators.register('no_ongoing_polls', () => undefined)
-transitionValidators.register('not_allowed', () => undefined)
+transitionValidators.register('not_allowed', () => 'Not allowed')
 transitionValidators.register('pre_delete_state_is_archived', () => undefined)
 transitionValidators.register('pre_delete_state_is_archiving', () => undefined)
 transitionValidators.register('pre_delete_state_is_closed', () => undefined)
@@ -122,9 +132,9 @@ export async function fetchStateMachines() {
 }
 
 export default function useStateMachine<
-  T extends StateContent,
+  T extends StateContent & { pk: number },
   Event extends string = never
->(name: string, meta: Record<T['state'], IStateMeta>) {
+>(name: string, meta: Record<string, IStateMeta>, api: ContentAPI<T, number>) {
   const states = computed(() => stateMachines.get(name)?.states ?? {})
   const events = computed(
     () =>
@@ -154,9 +164,12 @@ export default function useStateMachine<
           const validation =
             !!obj &&
             transitionValidators.validate<T>(transition.validators, obj)
+          const { color, icon } = meta[event.transitions[0]?.to] ?? {}
           yield {
             disabled: !!validation,
-            id,
+            color,
+            icon,
+            id: id as Event,
             name: event.name,
             reason: validation
           }
@@ -186,11 +199,68 @@ export default function useStateMachine<
     }
   }
 
+  // Transition guards — only relevant when api is provided
+  const guards = new DefaultMap<Event | '*', TransitionGuard<T>[]>(() => [])
+
+  function isGuardTrigger(value?: GuardTrigger): value is GuardTrigger {
+    return !!value
+  }
+
+  // async function get(pk: number): Promise<ITransition<Event>[]> {
+  //   const { data } = await api!.action<ITransition<Event>[]>(
+  //     'transitions',
+  //     pk,
+  //     undefined,
+  //     { method: 'get' }
+  //   )
+  //   return data.map((t) => ({
+  //     ...t,
+  //     icon: 'mdi-help' // TODO
+  //   }))
+  // }
+
+  async function sendEvent(obj: T, event: Event, t: ComposerTranslation) {
+    const action = () => api.action<Partial<T>>('event', obj.pk, { event })
+    const guardQuery = checkGuards(obj, event, t)
+    if (!guardQuery) return action()
+    const dialog = { title: guardQuery.text, theme: ThemeColor.Warning }
+    if (guardQuery.isBlocking) {
+      dialogQuery({ ...dialog, no: false, yes: t('ok') })
+      return
+    }
+    if (await dialogQuery(dialog)) return await action()
+  }
+
+  function registerGuard(transition: Event, guard: TransitionGuard<T>) {
+    guards.get(transition).push(guard)
+  }
+
+  function checkGuards(
+    obj: T,
+    transition: Event | '*',
+    t: ComposerTranslation
+  ) {
+    const triggeredGuards = filter(
+      imap(chain(guards.get('*'), guards.get(transition)), (guard) =>
+        guard(obj, t)
+      ),
+      isGuardTrigger
+    )
+    // First non-overridable or first triggered
+    return (
+      first(triggeredGuards, (g) => !!g?.isBlocking) ?? first(triggeredGuards)
+    )
+  }
+
   return {
     states,
     getAvailableEvents,
     getPriorityStates,
     getState,
-    getStateList
+    getStateList,
+    checkGuards,
+    // get,
+    sendEvent,
+    registerGuard
   }
 }

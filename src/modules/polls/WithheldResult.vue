@@ -18,7 +18,7 @@ const { resultComponent, poll } = usePoll(computed(() => props.pollId))
 
 function publishNow() {
   if (!poll.value) return
-  pollType.events.make(poll.value, PollTransition.PublishResult, t)
+  pollType.sm.sendEvent(poll.value, PollTransition.PublishResult, t)
 }
 
 const showResult = ref(false)

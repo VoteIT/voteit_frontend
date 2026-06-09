@@ -31,7 +31,7 @@ meetingExportPlugins.register({
   }
 })
 
-agendaItemType.events.registerGuard(AgendaTransition.Close, (ai, t) => {
+agendaItemType.sm.registerGuard(AgendaTransition.Close, (ai, t) => {
   if (
     useSpeakerStore().anySpeakerList(
       (sl) => sl.agenda_item === ai.pk && !!sl.current
