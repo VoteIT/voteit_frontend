@@ -46,7 +46,7 @@ meetingSettingsPlugins.register({
   getDescription(t) {
     return t('meeting.exportsDescription')
   },
-  icon: 'mdi-file-download',
+  icon: 'mdi-file-export',
   getTitle(t) {
     return t('meeting.exports')
   }
