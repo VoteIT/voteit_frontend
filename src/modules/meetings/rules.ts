@@ -1,19 +1,16 @@
 import { reactive } from 'vue'
 
 import useContextRoles from '@/composables/useContextRoles'
-import useWorkflows from '@/contentTypes/useWorkflows'
 
 import useAuthStore from '../auth/useAuthStore'
 import { Meeting, MeetingRole, MeetingState } from '../meetings/types'
 import { MeetingInvite } from '../meetingInvites/types'
 import { isOrganisationManager } from '../organisations/rules'
 
-import { meetingStates } from './workflowStates'
 import useMeetingStore from './useMeetingStore'
+import { meetingType } from './contentTypes'
 
 const { hasRole } = useContextRoles<MeetingRole>('meeting')
-// Import this a bit differently, to avoid cirkular imports
-const { getState } = useWorkflows(meetingStates)
 
 const FINISHED_STATES = [
   MeetingState.Closed,
@@ -81,7 +78,7 @@ export function isActiveMeeting(meeting: MeetingT): boolean {
 export function isArchivedMeeting(meeting: MeetingT): boolean {
   if (typeof meeting === 'number')
     meeting = useMeetingStore().getMeeting(meeting)
-  return !!meeting && !!getState(meeting.state)?.isFinal
+  return !!meeting && !!meetingType.sm.getState(meeting.state).final
 }
 
 export function isFinishedMeeting(meeting: MeetingT): boolean {

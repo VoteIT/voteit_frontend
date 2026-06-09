@@ -20,7 +20,6 @@ import { canDeleteMeetingInvite } from '../meetings/rules'
 import { invitationScopes } from '../organisations/registry'
 
 import { MeetingInvite } from './types'
-import { meetingInviteStates } from './workflowStates'
 import { translateInviteType } from './utils'
 import useMeetingInvites from './useMeetingInvites'
 import useInviteStore from './useInviteStore'
@@ -64,7 +63,9 @@ const inviteFilter = reactive<{
 })
 const stateLabels = computed(() => {
   return Object.fromEntries(
-    meetingInviteStates.map(({ getName, state }) => [state, getName(t, 2)])
+    meetingInviteType.sm
+      .getStateList()
+      .map(({ state, translate }) => [state, translate(t, 2)])
   )
 })
 const selectedInviteIds = ref<number[]>([])

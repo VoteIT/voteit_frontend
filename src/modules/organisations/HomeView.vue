@@ -27,7 +27,6 @@ import AddMeeting from '../meetings/AddMeetingModal.vue'
 import useMeetings from '../meetings/useMeetings'
 import { MeetingState } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
-import { meetingStates } from '../meetings/workflowStates'
 import useMeetingStore from '../meetings/useMeetingStore'
 
 import ContactInfoTab from './ContactInfoTab.vue'
@@ -38,6 +37,7 @@ import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 import FindMeetingDialog from './FindMeetingDialog.vue'
 import { displayRoles } from './utils'
+import { meetingType } from '../meetings/contentTypes'
 
 const inviteStore = useInviteStore()
 
@@ -134,7 +134,7 @@ function mkGroupRule(
 ) {
   return {
     meetings: computed(() => meetingStore.participatingMeetings[state]),
-    state: meetingStates.find((s) => s.state === state)!,
+    state: meetingType.sm.getState(state),
     maxLength
   }
 }
@@ -154,7 +154,7 @@ const meetingGroups = computed(() => {
           maxLength && !groupsExpanded.value
             ? meetings.value.slice(0, maxLength)
             : meetings.value,
-        title: state.getName(t, meetings.value.length),
+        title: state.translate(t, meetings.value.length),
         expandable: !!maxLength && meetings.value.length > maxLength
       }
     })

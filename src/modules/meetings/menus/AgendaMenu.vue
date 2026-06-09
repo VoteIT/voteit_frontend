@@ -6,7 +6,6 @@ import { useRoute } from 'vue-router'
 import { slugify } from '@/utils'
 import { TreeMenuLink } from '@/utils/types'
 import CollapsibleMenu from '@/components/CollapsibleMenu.vue'
-import { WorkflowState } from '@/contentTypes/types'
 import { AgendaState } from '@/modules/agendas/types'
 import { agendaItemType } from '@/modules/agendas/contentTypes'
 import { agendaLoadedEvent } from '@/modules/agendas/events'
@@ -21,13 +20,12 @@ import { Proposal, ProposalState } from '@/modules/proposals/types'
 
 const { t } = useI18n()
 const route = useRoute()
-const { meetingId, isModerator, hasRole } = useMeeting()
+const { meetingId, isModerator } = useMeeting()
 const { getAgendaItem, hasNewContent } = useAgendaStore()
 const { agenda, filteredAgenda } = useAgenda(
   meetingId,
   computed(() => selectedAgendaTag.value) // Cirkular
 )
-const agendaWorkflows = agendaItemType.useWorkflows()
 const { agendaTags, selectedAgendaTag } = useAgendaTags(agenda)
 const { getAiPolls } = usePollStore()
 const { countProposals } = useProposalStore()
@@ -37,8 +35,8 @@ function getAiType(state: string) {
 }
 
 const aiGroups = computed(() =>
-  agendaWorkflows.getPriorityStates(
-    (s) => !s.requiresRole || !!hasRole(s.requiresRole)
+  agendaItemType.sm.getPriorityStates(
+    (s) => s.state !== AgendaState.Private || !!isModerator.value
   )
 )
 
@@ -52,7 +50,7 @@ function isCountedProposal({ state }: Proposal) {
 /**
  * Get menu items for a given agenda state
  */
-function getAIMenuItems(s: WorkflowState): TreeMenuLink[] {
+function getAIMenuItems(s: (typeof aiGroups)['value'][number]): TreeMenuLink[] {
   return getAiType(s.state).map((ai) => ({
     title: ai.title,
     to: {
@@ -108,7 +106,7 @@ const AgendaMenus = computed(() =>
       count,
       items,
       state: s.state,
-      title: s.getName(t, items.length)
+      title: s.translate(t, items.length)
     }
   })
 )

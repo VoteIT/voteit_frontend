@@ -19,7 +19,6 @@ const emit = defineEmits<{
 const { getAgendaItem } = useAgendaStore()
 const meetingId = useMeetingId()
 const { agenda } = useAgenda(meetingId)
-const { getState } = agendaItemType.useWorkflows()
 
 function isAI(ai?: AgendaItem): ai is AgendaItem {
   return !!ai
@@ -69,7 +68,10 @@ watch(agenda, (agendaItems) => {
     <Draggable v-model="agendaItems" item-key="pk">
       <template #item="{ element }">
         <div>
-          <v-icon size="small" :icon="getState(element.state)?.icon" />
+          <v-icon
+            size="small"
+            :icon="agendaItemType.sm.getState(element.state)?.icon"
+          />
           <span>{{ element.title }}</span>
           <v-icon size="small" icon="mdi-drag-horizontal" />
         </div>

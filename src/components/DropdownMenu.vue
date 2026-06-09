@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n'
 
 import { MenuItem, MenuSubheader } from '@/utils/types'
 import ContentType from '@/contentTypes/ContentType'
-import { Transition as ITransition, StateContent } from '@/contentTypes/types'
+import { ITransition as ITransition, StateContent } from '@/contentTypes/types'
 
 type Transition = CT extends ContentType<any, infer T, any> ? T : never
 
@@ -37,7 +37,6 @@ const { t } = useI18n()
 
 const isOpen = ref(false)
 const working = ref(false)
-const workflows = props.contentType?.useWorkflows()
 const transitionsAvailable: Ref<ITransition<Transition>[] | null> = ref(null)
 if (props.showTransitions && (!props.object || !props.contentType)) {
   console.warn(
@@ -48,7 +47,7 @@ if (props.showTransitions && (!props.object || !props.contentType)) {
 async function makeTransition(transition: Transition) {
   if (!props.contentType || !props.object) return
   working.value = true
-  await props.contentType.transitions.make(props.object, transition, t)
+  await props.contentType.events.make(props.object, transition, t)
   working.value = false
   isOpen.value = false
 }
@@ -58,7 +57,7 @@ watch(isOpen, async (value) => {
   if (!value) return
   if (props.showTransitions && props.contentType && props.object) {
     working.value = true
-    transitionsAvailable.value = await props.contentType.transitions.get(
+    transitionsAvailable.value = await props.contentType.events.get(
       props.object.pk
     )
     working.value = false
@@ -72,8 +71,8 @@ const openerAttrs = computed(() => ({
 }))
 
 const currentState = computed(() => {
-  if (!workflows || !props.object) return
-  return workflows.getState(props.object.state)
+  if (!props.contentType || !props.object) return
+  return props.contentType.sm.getState(props.object.state)
 })
 
 function isSubheader(item: MenuItem): item is MenuSubheader {

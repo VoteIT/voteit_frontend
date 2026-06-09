@@ -4,9 +4,10 @@ import { ComposerTranslation } from 'vue-i18n'
 import DefaultMap from '@/utils/DefaultMap'
 import { dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
+import useStateMachine from '@/composables/useStateMachine'
 
 import ContentAPI from './ContentAPI'
-import type { Transition as ITransition, WorkflowStates } from './types'
+import type { ITransition } from './types'
 
 type GuardTrigger = { text: string; isBlocking?: boolean }
 type TransitionGuard<T> = (
@@ -19,18 +20,17 @@ type TransitionGuard<T> = (
  */
 export default function useTransitions<
   T extends { pk: number; state?: string },
-  Transition extends string
->(states: WorkflowStates<T['state'], Transition>, api: ContentAPI<T, number>) {
-  const guards = new DefaultMap<Transition | '*', TransitionGuard<T>[]>(
-    () => []
-  )
+  Event extends string
+>(stateMachine: string, api: ContentAPI<T, number>) {
+  const guards = new DefaultMap<Event | '*', TransitionGuard<T>[]>(() => [])
+  const { states } = useStateMachine(stateMachine, {})
 
   function isGuardTrigger(value?: GuardTrigger): value is GuardTrigger {
     return !!value
   }
 
-  async function get(pk: number): Promise<ITransition<Transition>[]> {
-    const { data } = await api.action<ITransition<Transition>[]>(
+  async function get(pk: number): Promise<ITransition<Event>[]> {
+    const { data } = await api.action<ITransition<Event>[]>(
       'transitions',
       pk,
       undefined,
@@ -38,11 +38,11 @@ export default function useTransitions<
     )
     return data.map((t) => ({
       ...t,
-      icon: states.find((s) => s.transition === t.name)?.icon
+      icon: 'mdi-help' // TODO
     }))
   }
 
-  async function make(obj: T, transition: Transition, t: ComposerTranslation) {
+  async function make(obj: T, transition: Event, t: ComposerTranslation) {
     const action = () =>
       api.action<Partial<T>>('transitions', obj.pk, { transition })
     const guardQuery = checkGuards(obj, transition, t)
@@ -55,7 +55,7 @@ export default function useTransitions<
     if (await dialogQuery(dialog)) return await action()
   }
 
-  function registerGuard(transition: Transition, guard: TransitionGuard<T>) {
+  function registerGuard(transition: Event, guard: TransitionGuard<T>) {
     guards.get(transition).push(guard)
   }
 
@@ -64,7 +64,7 @@ export default function useTransitions<
    */
   function checkGuards(
     obj: T,
-    transition: Transition | '*',
+    transition: Event | '*',
     t: ComposerTranslation
   ) {
     const triggeredGuards = filter(

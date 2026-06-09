@@ -1,4 +1,4 @@
-import ContentType from '@/contentTypes/ContentType'
+import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import {
   IOrganisation,
   OrganisationRole,
@@ -8,7 +8,6 @@ import {
 
 export const organisationType = new ContentType<
   IOrganisation,
-  string,
   OrganisationRole
 >({
   name: 'organisation', // Required for roles
@@ -28,12 +27,12 @@ export const organisationType = new ContentType<
   }
 })
 
-export const userType = new ContentType<IUser>({
+export const userType = new BaseContentType<IUser>({
   name: 'user',
   restEndpoint: 'users/'
 })
 
-export const profileType = new ContentType<IOrganisationUser>({
+export const profileType = new BaseContentType<IOrganisationUser>({
   name: 'user',
   restEndpoint: 'user/',
   restConfig: { alertOnError: false }

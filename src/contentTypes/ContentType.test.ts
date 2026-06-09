@@ -10,7 +10,7 @@ const {
   mockSocketCall,
   MockContentAPI,
   MockChannel,
-  mockUseWorkflows,
+  mockUseStateMachine,
   mockUseTransitionsResult,
   mockUseTransitions,
   mockContentCleanup,
@@ -35,7 +35,7 @@ const {
     MockChannel: vi.fn(function () {
       return {}
     }),
-    mockUseWorkflows: vi.fn(() => ({})),
+    mockUseStateMachine: vi.fn(() => ({})),
     mockUseTransitionsResult,
     mockUseTransitions: vi.fn(() => mockUseTransitionsResult),
     mockContentCleanup: { register: vi.fn() },
@@ -49,7 +49,7 @@ vi.mock('@/utils/Socket', () => ({
 }))
 vi.mock('./ContentAPI', () => ({ default: MockContentAPI }))
 vi.mock('./Channel', () => ({ default: MockChannel }))
-vi.mock('./useWorkflows', () => ({ default: mockUseWorkflows }))
+vi.mock('@/composables/useStateMachine', () => ({ default: mockUseStateMachine }))
 vi.mock('./useTransitions', () => ({ default: mockUseTransitions }))
 vi.mock('./contentCleanup', () => ({ default: mockContentCleanup }))
 vi.mock('@/composables/useContextRoles', () => ({
@@ -224,29 +224,23 @@ describe('ContentType', () => {
 
   test('transitions throws when no states are configured', () => {
     const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/' })
-    expect(() => ct.transitions).toThrow('has not registered transitions')
+    expect(() => ct.events).toThrow('has no registered state machine')
   })
 
   test('transitions returns the useTransitions result', () => {
-    const states = [{ state: 'draft', transition: 'publish' }] as any
+    const states = { name: 'MyMachine', meta: {} } as any
     const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
 
-    const result = ct.transitions
-    expect(mockUseTransitions).toHaveBeenCalledWith(states, expect.anything())
+    const result = ct.events
+    expect(mockUseTransitions).toHaveBeenCalledWith(states.name, expect.anything())
     expect(result).toBe(mockUseTransitionsResult)
   })
 
   test('transitions getter caches the result', () => {
-    const states = [{ state: 'draft', transition: 'publish' }] as any
+    const states = { name: 'MyMachine', meta: {} } as any
     const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
-    expect(ct.transitions).toBe(ct.transitions)
+    expect(ct.events).toBe(ct.events)
     expect(mockUseTransitions).toHaveBeenCalledTimes(1)
-  })
-
-  test('workflowStates returns the configured states', () => {
-    const states = [{ state: 'draft', transition: 'publish' }] as any
-    const ct = new ContentType({ name: 'mytype', states })
-    expect(ct.workflowStates).toBe(states)
   })
 
   test('getRole throws when no role definitions are available', () => {
@@ -293,16 +287,16 @@ describe('ContentType', () => {
     expect(mockContentCleanup.register).not.toHaveBeenCalled()
   })
 
-  test('useWorkflows throws when no states are configured', () => {
+  test('useStateMachine throws when no states are configured', () => {
     const ct = new ContentType({ name: 'mytype' })
-    expect(() => ct.useWorkflows()).toThrow('Workflow States not configured')
+    expect(() => (ct as any).useStateMachine()).toThrow()
   })
 
-  test('useWorkflows calls useWorkflows composable with states', () => {
-    const states = [{ state: 'draft', transition: 'publish' }] as any
+  test('useStateMachine calls useStateMachine composable with states name and meta', () => {
+    const states = { name: 'MyMachine', meta: { draft: { icon: 'mdi-draft' } } } as any
     const ct = new ContentType({ name: 'mytype', states })
-    ct.useWorkflows()
-    expect(mockUseWorkflows).toHaveBeenCalledWith(states)
+    ;(ct as any).useStateMachine()
+    expect(mockUseStateMachine).toHaveBeenCalledWith(states.name, states.meta)
   })
 
   test('useContextRoles throws when no roles are configured', () => {

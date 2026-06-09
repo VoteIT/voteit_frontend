@@ -1,12 +1,43 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import { LastRead } from '@/utils/types'
-import { AgendaItem, AgendaBody, AgendaTransition } from './types'
-import { agendaItemStates } from './workflowStates'
+import { AgendaItem, AgendaBody, AgendaTransition, AgendaState } from './types'
 
-export const agendaItemType = new ContentType<AgendaItem, AgendaTransition>({
-  states: agendaItemStates,
+export const agendaItemType = new ContentType<
+  AgendaItem,
+  string,
+  AgendaTransition
+>({
   name: 'agenda_item',
-  restEndpoint: 'agenda-items/'
+  restEndpoint: 'agenda-items/',
+  states: {
+    name: 'AgendaItemStateMachine',
+    meta: {
+      [AgendaState.Private]: {
+        icon: 'mdi-eye-off',
+        priority: 4,
+        translate: (t, count = 1) => t('agenda.workflow.private', count)
+      },
+      [AgendaState.Upcoming]: {
+        icon: 'mdi-progress-clock',
+        priority: 2,
+        translate: (t, count = 1) => t('agenda.workflow.upcoming', count)
+      },
+      [AgendaState.Ongoing]: {
+        icon: 'mdi-play-circle',
+        priority: 1,
+        translate: (t, count = 1) => t('agenda.workflow.ongoing', count)
+      },
+      [AgendaState.Closed]: {
+        icon: 'mdi-check-all',
+        priority: 3,
+        translate: (t, count = 1) => t('agenda.workflow.closed', count)
+      },
+      [AgendaState.Archived]: {
+        icon: 'mdi-archive',
+        translate: (t, count = 1) => t('agenda.workflow.archived', count)
+      }
+    }
+  }
 })
 
 export const lastReadType = new BaseContentType<LastRead>({

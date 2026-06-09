@@ -24,7 +24,7 @@ import { pollType } from '../polls/contentTypes'
 import { Poll, PollState } from '../polls/types'
 import { pollPlugins } from '../polls/registry'
 import usePollStore from '../polls/usePollStore'
-import { proposalStates } from '../proposals/workflowStates'
+import { proposalType } from '../proposals/contentTypes'
 import { ProposalState } from '../proposals/types'
 import useProposalStore from '../proposals/useProposalStore'
 import useRoom from '../rooms/useRoom'
@@ -54,7 +54,6 @@ const {
   roomOpenPoll,
   handleBroadcast
 } = useRoom()
-const { getState, getPriorityStates } = pollType.useWorkflows()
 const { systemActiveList } = useSpeakerSystem(roomId, agendaId)
 
 const {
@@ -94,18 +93,18 @@ const toActiveProposals = computed(() => {
 })
 
 const filterStates = computed(() => {
-  return proposalStates.map((state) => {
+  return proposalType.sm.getStateList().map((state) => {
     const count = getStateProposalCount(state.state)
     return {
       state,
       count,
-      title: state.getName(t, count)
+      title: state.translate(t, count)
     }
   })
 })
 
 function pollStateToItems(state: PollState) {
-  const wfState = getState(state)
+  const wfState = pollType.sm.getState(state)
   if (!wfState) throw new Error(`Unknown poll state '${state}'`)
 
   return getAiPolls(agendaId.value, state).map((poll) => {
@@ -126,13 +125,13 @@ function pollStateToItems(state: PollState) {
  * Display order important.
  */
 function* iterMenuPollStates() {
-  for (const { state, getName } of getPriorityStates()) {
+  for (const { state, translate } of pollType.sm.getPriorityStates()) {
     if (state === PollState.Canceled) continue // No need to display actively canceled polls
     const polls = pollStateToItems(state)
     if (polls.length)
       yield {
         polls,
-        title: `${getName(t, polls.length)} ${t(
+        title: `${translate(t, polls.length)} ${t(
           'poll.poll',
           polls.length
         ).toLocaleLowerCase()}`
