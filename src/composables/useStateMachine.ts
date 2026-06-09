@@ -4,7 +4,7 @@ import { ComposerTranslation } from 'vue-i18n'
 
 import restApi from '@/utils/restApi'
 import { Predicate, ThemeColor } from '@/utils/types'
-import { IStateMeta, ITransition } from '@/contentTypes/types'
+import { IStateMeta } from '@/contentTypes/types'
 import DefaultMap from '@/utils/DefaultMap'
 import { dialogQuery } from '@/utils'
 import ContentAPI from '@/contentTypes/ContentAPI'
@@ -39,7 +39,7 @@ interface IStateMachine<
 }
 
 type ApiMachines = Record<string, IStateMachine>
-type EventValidator<T extends StateContent> = (obj: T) => string | undefined
+type EventValidator<T extends StateContent> = (obj: T) => string | true
 
 type GuardTrigger = { text: string; isBlocking?: boolean }
 type TransitionGuard<T> = (
@@ -51,7 +51,9 @@ type TransitionGuard<T> = (
  * Escape validation using this
  * @returns true
  */
-export function noValidation(): undefined {}
+export function noValidation(): true {
+  return true
+}
 
 class ValidatorRegistry {
   private validators: Map<string, EventValidator<StateContent>>
@@ -73,7 +75,7 @@ class ValidatorRegistry {
   validate<T extends StateContent>(validators: string[], obj: T) {
     for (const name of validators) {
       const validation = this.get_validator(name)(obj)
-      if (validation) return validation
+      if (typeof validation === 'string') return validation
     }
   }
 
@@ -85,26 +87,25 @@ export const transitionValidators = new ValidatorRegistry()
 
 // TODO: Register these elsewhere
 // Probably needs to register per state machine?
-transitionValidators.register('has_archive_permission', () => undefined)
-transitionValidators.register('has_change_permission', () => undefined)
-transitionValidators.register('has_change_state_permission', () => undefined)
-transitionValidators.register('has_delete_permission', () => undefined)
-transitionValidators.register('has_moderate_permission', () => undefined)
-transitionValidators.register('has_retract_permission', () => undefined)
-transitionValidators.register('manual_er_not_needed', () => undefined)
-transitionValidators.register('meeting_is_ongoing', () => undefined)
-transitionValidators.register('no_active_speaker', () => undefined)
-transitionValidators.register('no_ongoing_polls', () => undefined)
+transitionValidators.register('has_archive_permission', noValidation)
+transitionValidators.register('has_change_permission', noValidation)
+transitionValidators.register('has_change_state_permission', noValidation)
+transitionValidators.register('has_delete_permission', noValidation)
+transitionValidators.register('has_moderate_permission', noValidation)
+transitionValidators.register('has_retract_permission', noValidation)
+transitionValidators.register('manual_er_not_needed', noValidation)
+transitionValidators.register('no_active_speaker', noValidation)
+transitionValidators.register('no_ongoing_polls', noValidation)
 transitionValidators.register('not_allowed', () => 'Not allowed')
-transitionValidators.register('pre_delete_state_is_archived', () => undefined)
-transitionValidators.register('pre_delete_state_is_archiving', () => undefined)
-transitionValidators.register('pre_delete_state_is_closed', () => undefined)
-transitionValidators.register('pre_delete_state_is_ongoing', () => undefined)
-transitionValidators.register('pre_delete_state_is_upcoming', () => undefined)
-transitionValidators.register('valid_er_policy', () => undefined)
-transitionValidators.register('validate_er_policy', () => undefined)
-transitionValidators.register('validate_method', () => undefined)
-transitionValidators.register('validate_settings', () => undefined)
+transitionValidators.register('pre_delete_state_is_archived', noValidation)
+transitionValidators.register('pre_delete_state_is_archiving', noValidation)
+transitionValidators.register('pre_delete_state_is_closed', noValidation)
+transitionValidators.register('pre_delete_state_is_ongoing', noValidation)
+transitionValidators.register('pre_delete_state_is_upcoming', noValidation)
+transitionValidators.register('valid_er_policy', noValidation)
+transitionValidators.register('validate_er_policy', noValidation)
+transitionValidators.register('validate_method', noValidation)
+transitionValidators.register('validate_settings', noValidation)
 
 const stateMachines = reactive(new Map<string, IStateMachine>())
 /**
@@ -166,12 +167,12 @@ export default function useStateMachine<
             transitionValidators.validate<T>(transition.validators, obj)
           const { color, icon } = meta[event.transitions[0]?.to] ?? {}
           yield {
-            disabled: !!validation,
+            disabled: typeof validation === 'string',
             color,
             icon,
             id: id as Event,
             name: event.name,
-            reason: validation
+            reason: typeof validation === 'string' ? validation : undefined
           }
         }
       }

@@ -1,11 +1,12 @@
 import { toRef } from 'vue'
 
-import { RoleMatrixColumn } from '@/components/types'
 import { getApiLink } from '@/utils/restApi'
-import { speakerAnnotationRegistry } from '../speakerLists/registry'
+import { RoleMatrixColumn } from '@/components/types'
+import { transitionValidators } from '@/composables/useStateMachine'
 
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import { meetingInviteAnnotationPlugins } from '../meetingInvites/registry'
+import { speakerAnnotationRegistry } from '../speakerLists/registry'
 
 import FakeRolesBubble from './FakeRolesBubble.vue'
 import {
@@ -16,7 +17,7 @@ import {
 import useGroupStore from './useGroupStore'
 import useMeetingGroups from './useMeetingGroups'
 import { hasFakeRoles } from './rules'
-import { MeetingRole } from './types'
+import { type Meeting, MeetingRole, MeetingState } from './types'
 
 // Register routes
 import './router'
@@ -192,3 +193,9 @@ speakerAnnotationRegistry.register({
     }
   }
 })
+
+transitionValidators.register(
+  'meeting_is_ongoing',
+  (meeting: Meeting) =>
+    meeting.state === MeetingState.Ongoing || 'Meeting must be ongoing'
+)
