@@ -1,4 +1,4 @@
-import { isAxiosError, AxiosPromise } from 'axios'
+import { isAxiosError, AxiosPromise, AxiosRequestConfig } from 'axios'
 
 import { AlertLevel, RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils/events'
@@ -73,9 +73,9 @@ export default class ContentAPI<
       method,
       url
     }
-    const request = restApi(config)
+    const request = restApi<Type>(config)
     if (this.config.alertOnError) request.catch(this.handleError.bind(this))
-    return request as AxiosPromise<Type>
+    return request
   }
 
   public add(data: Partial<T>): AxiosPromise<T> {
@@ -90,8 +90,12 @@ export default class ContentAPI<
     return this.call('get', `${this.endpoint}${pk}/`)
   }
 
-  public put(pk: K, data: Omit<T, 'pk'>): AxiosPromise<T> {
-    return this.call('put', `${this.endpoint}${pk}/`, { data })
+  public put(
+    pk: K,
+    data: Omit<T, 'pk'>,
+    config?: AxiosRequestConfig
+  ): AxiosPromise<T> {
+    return this.call('put', `${this.endpoint}${pk}/`, { data, ...config })
   }
 
   public patch(pk: K, data: Partial<T>): AxiosPromise<T> {
@@ -102,9 +106,15 @@ export default class ContentAPI<
     return this.call('delete', `${this.endpoint}${pk}/`)
   }
 
-  public listAction<Type>(action: string, data?: object, method?: HTTPMethod) {
-    return this.call<Type>(method ?? 'post', `${this.endpoint}${action}/`, {
-      data
+  public listAction<Type>(
+    action: string,
+    data?: object,
+    config?: AxiosRequestConfig
+  ) {
+    const { method = 'post', ...rest } = config ?? {}
+    return this.call<Type>(method as HTTPMethod, `${this.endpoint}${action}/`, {
+      data,
+      ...rest
     })
   }
 
@@ -112,12 +122,13 @@ export default class ContentAPI<
     action: string,
     id: K,
     data?: object,
-    method?: HTTPMethod
+    config?: AxiosRequestConfig
   ) {
+    const { method = 'post', ...rest } = config ?? {}
     return this.call<Type>(
-      method ?? 'post',
+      method as HTTPMethod,
       `${this.endpoint}${id}/${action}/`,
-      { data }
+      { data, ...rest }
     )
   }
 }

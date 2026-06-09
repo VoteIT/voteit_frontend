@@ -213,7 +213,7 @@ export default class ContentType<
     const { data } = await this.rolesApi.listAction<ContextRole<Role>[]>(
       'available',
       undefined,
-      'get'
+      { method: 'get' }
     )
     this.rolesAvailable = data
     return data
