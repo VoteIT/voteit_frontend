@@ -4,6 +4,7 @@ import { RouteLocationNamedRaw } from 'vue-router'
 import TypedEvent from './TypedEvent'
 
 /* Util types */
+export type Predicate<T> = (value: T) => boolean
 export type Nullable<T> = T | null | undefined
 export type PickByType<T, Value> = {
   [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]

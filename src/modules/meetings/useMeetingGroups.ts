@@ -1,6 +1,6 @@
-import { Predicate } from 'itertools'
 import { computed, MaybeRef, unref } from 'vue'
 
+import { Predicate } from '@/utils/types'
 import useGroupStore from './useGroupStore'
 import { GroupMembership, MeetingGroup } from './types'
 import { canChangeMeeting, isModerator } from './rules'

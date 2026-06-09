@@ -1,7 +1,9 @@
-import { Predicate, any, filter, first, ifilter, sorted } from 'itertools'
+import { any, filter, first, ifilter, sorted } from 'itertools'
+import { countBy } from 'lodash'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
+import { Predicate } from '@/utils/types'
 import {
   SpeakerList,
   SpeakerSystem,
@@ -12,7 +14,6 @@ import {
   CurrentSpeaker
 } from './types'
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
-import { countBy } from 'lodash'
 
 export default defineStore('speakers', () => {
   const speakerSystems = reactive(new Map<number, SpeakerSystem>())
