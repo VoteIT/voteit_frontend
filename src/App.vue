@@ -16,32 +16,37 @@ import 'resize-observer-polyfill/dist/ResizeObserver.global'
 import { onBeforeMount, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import useLoader from './composables/useLoader'
-
+import { frontendVersion } from './utils/Socket'
+import { openDialogEvent } from './utils/events'
 import Alerts from './components/Alerts.vue'
 import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
+import useLoader from './composables/useLoader'
+import { fetchStateMachines } from './composables/useStateMachine'
 import OnlineStatus from './components/OnlineStatus.vue'
 import useAuthStore from './modules/auth/useAuthStore'
 import useOrgStore from './modules/organisations/useOrgStore'
-import { frontendVersion } from './utils/Socket'
-import { openDialogEvent } from './utils/events'
 
 const { t } = useI18n()
 const loader = useLoader('App')
 const { fetchAuthenticatedUser } = useAuthStore()
 const { fetchOrganisation } = useOrgStore()
 
+function isError(e: unknown): e is Error {
+  return e !== null && typeof e === 'object' && 'message' in e
+}
+
 onBeforeMount(async () => {
   try {
     const [user] = await Promise.all([
       fetchAuthenticatedUser(),
-      fetchOrganisation()
+      fetchOrganisation(),
+      fetchStateMachines()
     ])
     if (!user) loader.setLoaded()
-  } catch {
-    loader.setLoaded(false)
+  } catch (e) {
+    loader.setLoaded(false, isError(e) ? e.message : undefined)
   }
 })
 
