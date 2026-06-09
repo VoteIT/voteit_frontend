@@ -33,7 +33,7 @@ export default defineStore('auth', () => {
     const { data } = await profileType.api.listAction<IOrganisationUser[]>(
       'alternate',
       undefined,
-      'get'
+      { method: 'get' }
     )
     alternateUsers.value = data
   }

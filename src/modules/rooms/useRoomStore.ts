@@ -74,7 +74,7 @@ export default defineStore('rooms', () => {
       'handle',
       room,
       { ...values, token },
-      'patch'
+      { method: 'patch' }
     )
     // Save token after request is successful.
     roomTokens.value.set(room, token)
@@ -98,7 +98,7 @@ export default defineStore('rooms', () => {
       'handle-speaker',
       room,
       values,
-      'patch'
+      { method: 'patch' }
     )
     // Update data from response
     const _room = meetingRooms.get(room)

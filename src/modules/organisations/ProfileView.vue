@@ -50,7 +50,7 @@ async function fetchEmailChoices() {
     const { data } = await profileType.api.listAction<{ emails: string[] }>(
       'email_choices',
       undefined,
-      'get'
+      { method: 'get' }
     )
     emailChoices.value = data.emails
   } catch {

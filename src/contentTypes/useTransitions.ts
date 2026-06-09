@@ -36,7 +36,7 @@ export default function useTransitions<
       'transitions',
       pk,
       undefined,
-      'get'
+      { method: 'get' }
     )
     return data.map((t) => ({
       ...t,
