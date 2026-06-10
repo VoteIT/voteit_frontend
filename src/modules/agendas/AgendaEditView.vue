@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Axios from 'axios'
+import { isAxiosError } from 'axios'
 import { difference } from 'lodash'
 import { computed, ref, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -95,7 +95,7 @@ function isRejected(
 
 function getRejectedDescriptions(settled: PromiseSettledResult<unknown>[]) {
   const rejectedDescriptions = settled.filter(isRejected).map(({ reason }) => {
-    if (Axios.isAxiosError(reason))
+    if (isAxiosError(reason))
       return Object.values(reason.response?.data ?? {})[0]
     return t('error.unknown')
   })
