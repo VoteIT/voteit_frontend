@@ -1,11 +1,10 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import { LastRead } from '@/utils/types'
-import { AgendaItem, AgendaBody, AgendaTransition, AgendaState } from './types'
+import { AgendaItem, AgendaBody, AgendaState } from './types'
 
 export const agendaItemType = new ContentType<
   AgendaItem,
-  string,
-  AgendaTransition
+  'make_upcoming' | 'make_ongoing' | 'close' | 'unpublish'
 >({
   name: 'agenda_item',
   restEndpoint: 'agenda-items/',

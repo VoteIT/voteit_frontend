@@ -8,7 +8,7 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 
 import usePoll from '../polls/usePoll'
-import { Poll, PollTransition } from '../polls/types'
+import { Poll } from '../polls/types'
 import { pollType } from '../polls/contentTypes'
 import useRoom from '../rooms/useRoom'
 
@@ -60,12 +60,12 @@ const working = ref(false)
 
 async function cancel() {
   working.value = true
-  await pollType.sm.sendEvent(poll.value!, PollTransition.Cancel, t)
+  await pollType.sm.sendEvent(poll.value!, 'cancel', t)
 }
 
 async function close() {
   working.value = true
-  await pollType.sm.sendEvent(poll.value!, PollTransition.Close, t)
+  await pollType.sm.sendEvent(poll.value!, 'close', t)
 }
 
 /**

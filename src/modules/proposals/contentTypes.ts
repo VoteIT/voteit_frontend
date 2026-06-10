@@ -20,7 +20,15 @@ export interface ProposalText {
   base_tag: string
 }
 
-export const proposalType = new ContentType<Proposal>({
+export const proposalType = new ContentType<
+  Proposal,
+  | 'approve'
+  | 'deny'
+  | 'lock_for_vote'
+  | 'mark_unhandled'
+  | 'publish'
+  | 'retract'
+>({
   states: {
     name: 'ProposalStateMachine',
     meta: {

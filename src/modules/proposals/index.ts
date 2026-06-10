@@ -4,7 +4,6 @@ import { registerValidator } from '@/composables/useStateMachine'
 
 import { meetingExportPlugins } from '../meetings/registry'
 import { agendaItemType } from '../agendas/contentTypes'
-import { AgendaTransition } from '../agendas/types'
 import { UNRESOLVED_STATES } from './constants'
 import { plenarySuggestions } from '../plenary/registry'
 import useTextDocuments from './useTextDocuments'
@@ -39,7 +38,7 @@ meetingExportPlugins.register({
   }
 })
 
-agendaItemType.sm.registerGuard(AgendaTransition.Close, (obj, t) => {
+agendaItemType.sm.registerGuard('close', (obj, t) => {
   if (
     useProposalStore().anyProposal(
       (p) => p.agenda_item === obj.pk && UNRESOLVED_STATES.includes(p.state)

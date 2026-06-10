@@ -1,8 +1,17 @@
 import ContentType from '@/contentTypes/ContentType'
 import { Vote } from '@/contentTypes/types'
-import { Poll, PollState, PollTransition } from './types'
+import { Poll, PollState } from './types'
 
-export const pollType = new ContentType<Poll, PollTransition>({
+export const pollType = new ContentType<
+  Poll,
+  | 'cancel'
+  | 'close'
+  | 'make_ongoing'
+  | 'make_upcoming'
+  | 'publish_result'
+  | 'unpublish'
+  | 'withhold_result'
+>({
   states: {
     name: 'PollStateMachine',
     meta: {

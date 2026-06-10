@@ -2,7 +2,6 @@ import restApi from '@/utils/restApi'
 import { registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
-import { AgendaTransition } from '../agendas/types'
 import { meetingExportPlugins } from '../meetings/registry'
 import useRoomStore from '../rooms/useRoomStore'
 
@@ -33,7 +32,7 @@ meetingExportPlugins.register({
   }
 })
 
-agendaItemType.sm.registerGuard(AgendaTransition.Close, (ai, t) => {
+agendaItemType.sm.registerGuard('close', (ai, t) => {
   if (
     useSpeakerStore().anySpeakerList(
       (sl) => sl.agenda_item === ai.pk && !!sl.current
