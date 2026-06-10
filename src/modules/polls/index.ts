@@ -3,7 +3,6 @@ import { meetingBubblePlugins } from '../meetings/registry'
 
 import UnvotedPollsBubble from './UnvotedPollsBubble.vue'
 import usePollStore from './usePollStore'
-import * as rules from './rules'
 
 meetingBubblePlugins.register({
   component: UnvotedPollsBubble,

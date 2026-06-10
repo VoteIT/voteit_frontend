@@ -1,6 +1,6 @@
 import { sortBy } from 'lodash'
 import { getApiLink } from '@/utils/restApi'
-import { noValidation, registerValidator } from '@/composables/useStateMachine'
+import { registerValidator } from '@/composables/useStateMachine'
 
 import { meetingExportPlugins } from '../meetings/registry'
 import { agendaItemType } from '../agendas/contentTypes'
