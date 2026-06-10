@@ -151,7 +151,8 @@
       "ongoing": "Ongoing",
       "private": "Private",
       "upcoming": "Upcoming"
-    }
+    },
+    "hasOngoingPolls": "This agenda item has ongoing polls"
   },
   "auth": {
     "error": "Login error",
@@ -476,7 +477,9 @@
       "uninstallConfirm": "Uninstallation of the dialect {title} will make changes to your meeting and can cause problems with groups, rights and settings in the meeting. Are you sure?",
       "uninstallText": "You can uninstall this dialect, but we will then make changes to your meeting. This can affect groups, rights and settings. Don't do this unless you know what you're doing.",
       "uninstallTitle": "Uninstall dialect"
-    }
+    },
+    "mustBeOngoing": "The meeting must be ongoing",
+    "mustNotBeUpcoming": "The meeting must not be upcoming"
   },
   "meetingImport": {
     "agendaItems": "Agenda items",
@@ -874,7 +877,9 @@
       "retracted": "Retracted",
       "unhandled": "Unhandled",
       "voting": "Locked for vote"
-    }
+    },
+    "cantChange": "You don't have permission to change this proposal",
+    "cantRetract": "You don't have permission to retract this proposal"
   },
   "reaction": {
     "active": "Active (users can react)",
@@ -1075,7 +1080,9 @@
     "listWorkflow": {
       "closed": "Closed",
       "open": "Open"
-    }
+    },
+    "cantChangeSystem": "You don't have permission to change this speaker system",
+    "hasActiveSpeaker": "This speaker system has an active speaker"
   },
   "system": {
     "reloadLater": "Just let me ...",

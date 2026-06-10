@@ -1,20 +1,17 @@
 import { getApiLink } from '@/utils/restApi'
+import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
 import {
   meetingExportPlugins,
   meetingSettingsPlugins
 } from '../meetings/registry'
 import useMeetingId from '../meetings/useMeetingId'
-
-import useAgenda from './useAgenda'
-import {
-  notAllowed,
-  noValidation,
-  registerValidator
-} from '@/composables/useStateMachine'
-import { AgendaItem } from './types'
 import { MeetingState } from '../meetings/types'
 import useMeetingStore from '../meetings/useMeetingStore'
+
+import useAgenda from './useAgenda'
+import { AgendaItem } from './types'
+import * as rules from './rules'
 
 meetingSettingsPlugins.register({
   id: 'agenda',
@@ -54,11 +51,19 @@ meetingExportPlugins.register({
 })
 
 const MACHINE = 'AgendaItemStateMachine'
-registerValidator(MACHINE, 'has_change_permission', noValidation)
-registerValidator(MACHINE, 'no_ongoing_polls', noValidation)
-registerValidator(MACHINE, 'not_allowed', notAllowed)
-registerValidator(MACHINE, 'meeting_is_ongoing', (ai: AgendaItem) => {
+registerValidator(MACHINE, 'has_change_permission', noValidation) // User won't get option to change otherwise
+registerValidator(
+  MACHINE,
+  'no_ongoing_polls',
+  (ai, t) => !rules.hasOngoingPolls(ai) || t('agenda.hasOngoingPolls')
+)
+registerValidator(MACHINE, 'meeting_is_ongoing', (ai: AgendaItem, t) => {
   const meeting = useMeetingStore().getMeeting(ai.meeting)
-  if (!meeting) return 'Meeting not found'
-  return meeting.state === MeetingState.Ongoing || 'Meeting must be ongoing'
+  return meeting?.state === MeetingState.Ongoing || t('meeting.mustBeOngoing')
+})
+registerValidator(MACHINE, 'meeting_not_upcoming', (ai: AgendaItem, t) => {
+  const meeting = useMeetingStore().getMeeting(ai.meeting)
+  return (
+    meeting?.state !== MeetingState.Upcoming || t('meeting.mustNotBeUpcoming')
+  )
 })

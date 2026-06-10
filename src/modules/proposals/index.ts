@@ -1,5 +1,6 @@
 import { sortBy } from 'lodash'
 import { getApiLink } from '@/utils/restApi'
+import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
 import { meetingExportPlugins } from '../meetings/registry'
 import { agendaItemType } from '../agendas/contentTypes'
@@ -12,7 +13,7 @@ import { proposalTypeRegistry } from './registry'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import useProposalStore from './useProposalStore'
-import { noValidation, registerValidator } from '@/composables/useStateMachine'
+import * as rules from './rules'
 
 function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
   return {
@@ -99,5 +100,13 @@ proposalTypeRegistry.register('diff_proposal', {
 })
 
 const MACHINE = 'ProposalStateMachine'
-registerValidator(MACHINE, 'has_change_permission', noValidation)
-registerValidator(MACHINE, 'has_retract_permission', noValidation)
+registerValidator(
+  MACHINE,
+  'has_change_permission',
+  (prop, t) => rules.canChangeProposal(prop) || t('proposal.cantChange')
+)
+registerValidator(
+  MACHINE,
+  'has_retract_permission',
+  (prop, t) => rules.canRetractProposal(prop) || t('proposal.cantRetract')
+)

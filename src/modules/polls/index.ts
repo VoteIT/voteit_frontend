@@ -1,12 +1,9 @@
-import {
-  notAllowed,
-  noValidation,
-  registerValidator
-} from '@/composables/useStateMachine'
+import { noValidation, registerValidator } from '@/composables/useStateMachine'
 import { meetingBubblePlugins } from '../meetings/registry'
 
 import UnvotedPollsBubble from './UnvotedPollsBubble.vue'
 import usePollStore from './usePollStore'
+import * as rules from './rules'
 
 meetingBubblePlugins.register({
   component: UnvotedPollsBubble,
@@ -20,9 +17,8 @@ meetingBubblePlugins.register({
 })
 
 const MACHINE = 'PollStateMachine'
-registerValidator(MACHINE, 'has_change_state_permission', noValidation)
+registerValidator(MACHINE, 'has_change_state_permission', noValidation) // Change permission will already be checked
 registerValidator(MACHINE, 'manual_er_not_needed', noValidation)
-registerValidator(MACHINE, 'not_allowed', notAllowed)
 registerValidator(MACHINE, 'validate_er_policy', noValidation)
 registerValidator(MACHINE, 'validate_method', noValidation)
 registerValidator(MACHINE, 'validate_settings', noValidation)

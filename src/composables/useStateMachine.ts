@@ -39,7 +39,10 @@ interface IStateMachine<
 }
 
 type ApiMachines = Record<string, IStateMachine>
-type EventValidator<T extends StateContent> = (obj: T) => string | true
+type EventValidator<T extends StateContent> = (
+  obj: T,
+  t: ComposerTranslation
+) => string | true
 
 type GuardTrigger = { text: string; isBlocking?: boolean }
 type eventGuard<T> = (
@@ -53,13 +56,6 @@ type eventGuard<T> = (
  */
 export function noValidation(): true {
   return true
-}
-/**
- * Never allowed, should probably be removed
- * @returns 'Not allowed'
- */
-export function notAllowed() {
-  return 'Not allowed'
 }
 
 class ValidatorRegistry {
@@ -79,9 +75,13 @@ class ValidatorRegistry {
     return this.validators.has(name)
   }
 
-  validate<T extends StateContent>(validators: string[], obj: T) {
+  validate<T extends StateContent>(
+    validators: string[],
+    obj: T,
+    t: ComposerTranslation
+  ) {
     for (const name of validators) {
-      const validation = this.get_validator(name)(obj)
+      const validation = this.get_validator(name)(obj, t)
       if (typeof validation === 'string') return validation
     }
   }
@@ -149,7 +149,7 @@ export default function useStateMachine<
     )
   }
 
-  function getAvailableEvents(obj: T, target?: string) {
+  function getAvailableEvents(obj: T, t: ComposerTranslation, target?: string) {
     function* iterAvailableEvents() {
       for (const [id, event] of Object.entries<SMEvent<StateContent['state']>>(
         events.value
@@ -157,13 +157,11 @@ export default function useStateMachine<
         if (obj.state === id) continue
         // If called with target state
         if (target !== undefined && id !== target) continue
-        for (const transition of event.transitions) {
-          if (obj.state !== transition.from || transition.cond.length) continue
+        for (const { cond, from, validators } of event.transitions) {
+          if (obj.state !== from || cond.length) continue
           const validation =
             !!obj &&
-            validatorsByMachine
-              .get(name)
-              ?.validate<T>(transition.validators, obj)
+            validatorsByMachine.get(name)?.validate<T>(validators, obj, t)
           const { color, icon } = meta[event.transitions[0]?.to] ?? {}
           yield {
             disabled: typeof validation === 'string',

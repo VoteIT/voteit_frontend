@@ -2,9 +2,17 @@ import { AgendaItem, AgendaState } from '@/modules/agendas/types'
 
 import { isArchivedMeeting, isModerator } from '../meetings/rules'
 import { Meeting } from '../meetings/types'
+import usePollStore from '../polls/usePollStore'
+import { PollState } from '../polls/types'
 
 const FINISHED_STATES = [AgendaState.Closed, AgendaState.Archived]
 const ACTIVE_STATES = [AgendaState.Upcoming, AgendaState.Ongoing]
+
+export function hasOngoingPolls(ai: AgendaItem): boolean {
+  return usePollStore().anyPoll(
+    (p) => p.agenda_item === ai.pk && p.state === PollState.Ongoing
+  )
+}
 
 export function isAIModerator(agendaItem: AgendaItem): boolean | undefined {
   return isModerator(agendaItem.meeting)
