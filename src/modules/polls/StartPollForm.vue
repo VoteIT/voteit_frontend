@@ -31,8 +31,12 @@ const working = shallowRef(false)
 
 async function createPoll(start = false) {
   working.value = true
-  await props.createHandler(poll, start)
-  working.value = false
+  try {
+    await props.createHandler(poll, start)
+  } finally {
+    // pollType has alertOnError
+    working.value = false
+  }
 }
 </script>
 
