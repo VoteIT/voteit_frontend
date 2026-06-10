@@ -146,7 +146,7 @@ function getProposalStates(state: ProposalState) {
 const pool = computed(() => filteredProposals.value.filter(isProposalInPool))
 const transitioning = reactive(new Set<number>())
 async function sendEvent(p: Proposal, state: Proposal['state']) {
-  const event = proposalType.sm.getAvailableEvents(p, state).at(0)
+  const event = proposalType.sm.getAvailableEvents(p, t, state).at(0)
   if (!event)
     throw new Error(`Proposal state ${state} has no registered transition`)
   transitioning.add(p.pk)

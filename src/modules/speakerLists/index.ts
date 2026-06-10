@@ -1,4 +1,5 @@
 import restApi from '@/utils/restApi'
+import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
 import { AgendaTransition } from '../agendas/types'
@@ -6,11 +7,7 @@ import { meetingExportPlugins } from '../meetings/registry'
 import useRoomStore from '../rooms/useRoomStore'
 
 import useSpeakerStore from './useSpeakerStore'
-import {
-  notAllowed,
-  noValidation,
-  registerValidator
-} from '@/composables/useStateMachine'
+import * as rules from './rules'
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
@@ -46,6 +43,13 @@ agendaItemType.sm.registerGuard(AgendaTransition.Close, (ai, t) => {
 })
 
 const MACHINE = 'SpeakerSystemStateMachine'
-registerValidator(MACHINE, 'has_change_permission', noValidation)
-registerValidator(MACHINE, 'no_active_speaker', noValidation)
-registerValidator(MACHINE, 'not_allowed', notAllowed)
+registerValidator(
+  MACHINE,
+  'has_change_permission',
+  (s, t) => rules.canChangeSpeakerSystem(s) || t('speaker.cantChangeSystem')
+)
+registerValidator(
+  MACHINE,
+  'no_active_speaker',
+  (s, t) => !rules.hasActiveSpeaker(s) || t('speaker.hasActiveSpeaker')
+)

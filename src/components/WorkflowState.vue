@@ -28,7 +28,7 @@ const props = withDefaults(
 
 const { t } = useI18n()
 const eventsAvailable = computed(() =>
-  props.contentType.sm.getAvailableEvents(props.object).map((t) => ({
+  props.contentType.sm.getAvailableEvents(props.object, t).map((t) => ({
     ...t,
     unmetConditions: t.reason
   }))
@@ -48,14 +48,6 @@ async function sendEvent(event: Event) {
   await props.contentType.sm.sendEvent(props.object, event, t)
   working.value = false
 }
-
-// function unmetConditions(t: ITransition<Transition>) {
-//   if (t.allowed) return
-//   return t.conditions
-//     .filter((c) => !c.allowed)
-//     .map((c) => c.title)
-//     .join(', ')
-// }
 </script>
 
 <template>

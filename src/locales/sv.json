@@ -151,7 +151,8 @@
       "ongoing": "Pågående",
       "private": "Privat | Privata",
       "upcoming": "Kommande"
-    }
+    },
+    "hasOngoingPolls": "Den här dagordningspunkten har pågående omröstningar"
   },
   "auth": {
     "error": "Inloggningsfel",
@@ -476,7 +477,9 @@
       "uninstallConfirm": "Avinstallation av dialekten {title} kommer göra ändringar i ditt möte och kan ställa till problem med grupper, rättigheter och inställningar i mötet. Är du säker?",
       "uninstallText": "Du kan avinstallera den här dialekten, men vi kommer då att ändra saker i ditt möte. Det kan påverka grupper, rättigheter och inställningar. Gör inte det om du inte vet vad du håller på med.",
       "uninstallTitle": "Avinstallera dialect"
-    }
+    },
+    "mustBeOngoing": "Mötet måste vara pågående",
+    "mustNotBeUpcoming": "Mötet får inte vara kommande"
   },
   "meetingImport": {
     "agendaItems": "Dagordningspunkter",
@@ -874,7 +877,9 @@
       "retracted": "Tillbakadraget | Tillbakadragna",
       "unhandled": "Ohanterat | Ohanterade",
       "voting": "Låst för omröstning | Låsta för omröstning"
-    }
+    },
+    "cantChange": "Du har inte rätt att ändra det här förslaget",
+    "cantRetract": "Du har inte rätt att dra tillbaka det här förslaget"
   },
   "reaction": {
     "active": "Aktiv (användare kan reagera)",
@@ -1075,7 +1080,9 @@
     "listWorkflow": {
       "closed": "Stängd | Stängda",
       "open": "Öppen | Öppna"
-    }
+    },
+    "cantChangeSystem": "Du har inte rätt att ändra det här talarsystemet",
+    "hasActiveSpeaker": "Det här talarsystemet har en aktiv talare"
   },
   "system": {
     "reloadLater": "Jag ska bara ...",
