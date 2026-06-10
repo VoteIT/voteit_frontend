@@ -2,7 +2,7 @@ import { toRef } from 'vue'
 
 import { getApiLink } from '@/utils/restApi'
 import { RoleMatrixColumn } from '@/components/types'
-import { transitionValidators } from '@/composables/useStateMachine'
+import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
 import { meetingInviteAnnotationPlugins } from '../meetingInvites/registry'
@@ -194,8 +194,24 @@ speakerAnnotationRegistry.register({
   }
 })
 
-transitionValidators.register(
+const MACHINE = 'MeetingStateMachine'
+registerValidator(MACHINE, 'has_archive_permission', noValidation)
+registerValidator(MACHINE, 'has_delete_permission', noValidation)
+registerValidator(MACHINE, 'has_moderate_permission', noValidation)
+registerValidator(MACHINE, 'no_ongoing_polls', noValidation)
+registerValidator(MACHINE, 'pre_delete_state_is_archived', noValidation)
+registerValidator(MACHINE, 'pre_delete_state_is_archiving', noValidation)
+registerValidator(MACHINE, 'pre_delete_state_is_closed', noValidation)
+registerValidator(MACHINE, 'pre_delete_state_is_ongoing', noValidation)
+registerValidator(MACHINE, 'pre_delete_state_is_upcoming', noValidation)
+registerValidator(MACHINE, 'valid_er_policy', noValidation)
+registerValidator(
+  MACHINE,
   'meeting_is_ongoing',
   (meeting: Meeting) =>
     meeting.state === MeetingState.Ongoing || 'Meeting must be ongoing'
 )
+
+// Move?
+const INVITE_MACHINE = 'InviteStateMachine'
+registerValidator(INVITE_MACHINE, 'has_change_permission', noValidation)

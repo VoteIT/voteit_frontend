@@ -7,6 +7,14 @@ import {
 import useMeetingId from '../meetings/useMeetingId'
 
 import useAgenda from './useAgenda'
+import {
+  notAllowed,
+  noValidation,
+  registerValidator
+} from '@/composables/useStateMachine'
+import { AgendaItem } from './types'
+import { MeetingState } from '../meetings/types'
+import useMeetingStore from '../meetings/useMeetingStore'
 
 meetingSettingsPlugins.register({
   id: 'agenda',
@@ -43,4 +51,14 @@ meetingExportPlugins.register({
   getTitle(t) {
     return t('agenda.agenda')
   }
+})
+
+const MACHINE = 'AgendaItemStateMachine'
+registerValidator(MACHINE, 'has_change_permission', noValidation)
+registerValidator(MACHINE, 'no_ongoing_polls', noValidation)
+registerValidator(MACHINE, 'not_allowed', notAllowed)
+registerValidator(MACHINE, 'meeting_is_ongoing', (ai: AgendaItem) => {
+  const meeting = useMeetingStore().getMeeting(ai.meeting)
+  if (!meeting) return 'Meeting not found'
+  return meeting.state === MeetingState.Ongoing || 'Meeting must be ongoing'
 })

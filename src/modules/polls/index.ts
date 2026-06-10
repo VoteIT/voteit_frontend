@@ -1,3 +1,8 @@
+import {
+  notAllowed,
+  noValidation,
+  registerValidator
+} from '@/composables/useStateMachine'
 import { meetingBubblePlugins } from '../meetings/registry'
 
 import UnvotedPollsBubble from './UnvotedPollsBubble.vue'
@@ -13,3 +18,11 @@ meetingBubblePlugins.register({
     return !!usePollStore().getNextUnvotedPoll(meeting.pk)
   }
 })
+
+const MACHINE = 'PollStateMachine'
+registerValidator(MACHINE, 'has_change_state_permission', noValidation)
+registerValidator(MACHINE, 'manual_er_not_needed', noValidation)
+registerValidator(MACHINE, 'not_allowed', notAllowed)
+registerValidator(MACHINE, 'validate_er_policy', noValidation)
+registerValidator(MACHINE, 'validate_method', noValidation)
+registerValidator(MACHINE, 'validate_settings', noValidation)

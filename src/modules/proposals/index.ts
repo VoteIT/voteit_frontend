@@ -12,6 +12,7 @@ import { proposalTypeRegistry } from './registry'
 import AddProposalModal from './AddProposalModal.vue'
 import AddTextProposalModal from './AddTextProposalModal.vue'
 import useProposalStore from './useProposalStore'
+import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
 function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
   return {
@@ -96,3 +97,7 @@ proposalTypeRegistry.register('proposal', {
 proposalTypeRegistry.register('diff_proposal', {
   editComponent: AddTextProposalModal
 })
+
+const MACHINE = 'ProposalStateMachine'
+registerValidator(MACHINE, 'has_change_permission', noValidation)
+registerValidator(MACHINE, 'has_retract_permission', noValidation)

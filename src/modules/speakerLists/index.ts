@@ -6,6 +6,11 @@ import { meetingExportPlugins } from '../meetings/registry'
 import useRoomStore from '../rooms/useRoomStore'
 
 import useSpeakerStore from './useSpeakerStore'
+import {
+  notAllowed,
+  noValidation,
+  registerValidator
+} from '@/composables/useStateMachine'
 
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
@@ -39,3 +44,8 @@ agendaItemType.sm.registerGuard(AgendaTransition.Close, (ai, t) => {
   )
     return { text: t('speaker.agendaItemHasOngoingSpeaker'), isBlocking: true }
 })
+
+const MACHINE = 'SpeakerSystemStateMachine'
+registerValidator(MACHINE, 'has_change_permission', noValidation)
+registerValidator(MACHINE, 'no_active_speaker', noValidation)
+registerValidator(MACHINE, 'not_allowed', notAllowed)
