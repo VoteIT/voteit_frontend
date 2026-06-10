@@ -42,7 +42,7 @@ type ApiMachines = Record<string, IStateMachine>
 type EventValidator<T extends StateContent> = (obj: T) => string | true
 
 type GuardTrigger = { text: string; isBlocking?: boolean }
-type TransitionGuard<T> = (
+type eventGuard<T> = (
   obj: T,
   t: ComposerTranslation
 ) => GuardTrigger | undefined
@@ -53,6 +53,13 @@ type TransitionGuard<T> = (
  */
 export function noValidation(): true {
   return true
+}
+/**
+ * Never allowed, should probably be removed
+ * @returns 'Not allowed'
+ */
+export function notAllowed() {
+  return 'Not allowed'
 }
 
 class ValidatorRegistry {
@@ -83,46 +90,36 @@ class ValidatorRegistry {
     this.validators.set(name, validator)
   }
 }
-export const transitionValidators = new ValidatorRegistry()
 
-// TODO: Register these elsewhere
-// Probably needs to register per state machine?
-transitionValidators.register('has_archive_permission', noValidation)
-transitionValidators.register('has_change_permission', noValidation)
-transitionValidators.register('has_change_state_permission', noValidation)
-transitionValidators.register('has_delete_permission', noValidation)
-transitionValidators.register('has_moderate_permission', noValidation)
-transitionValidators.register('has_retract_permission', noValidation)
-transitionValidators.register('manual_er_not_needed', noValidation)
-transitionValidators.register('no_active_speaker', noValidation)
-transitionValidators.register('no_ongoing_polls', noValidation)
-transitionValidators.register('not_allowed', () => 'Not allowed')
-transitionValidators.register('pre_delete_state_is_archived', noValidation)
-transitionValidators.register('pre_delete_state_is_archiving', noValidation)
-transitionValidators.register('pre_delete_state_is_closed', noValidation)
-transitionValidators.register('pre_delete_state_is_ongoing', noValidation)
-transitionValidators.register('pre_delete_state_is_upcoming', noValidation)
-transitionValidators.register('valid_er_policy', noValidation)
-transitionValidators.register('validate_er_policy', noValidation)
-transitionValidators.register('validate_method', noValidation)
-transitionValidators.register('validate_settings', noValidation)
+const validatorsByMachine = new Map<string, ValidatorRegistry>()
+
+export function registerValidator(
+  machineName: string,
+  name: string,
+  validator: EventValidator<any>
+) {
+  if (!validatorsByMachine.has(machineName))
+    validatorsByMachine.set(machineName, new ValidatorRegistry())
+  validatorsByMachine.get(machineName)!.register(name, validator)
+}
 
 const stateMachines = reactive(new Map<string, IStateMachine>())
 /**
  * Debugging function, should only run in dev
  */
 function validateStateMachines(machines: ApiMachines) {
-  for (const { events } of Object.values(machines))
+  for (const [machineName, { events }] of Object.entries(machines)) {
+    const registry = validatorsByMachine.get(machineName)
     for (const { transitions } of Object.values(events)) {
       for (const { cond, validators } of transitions) {
-        for (const name of validators)
-          if (!transitionValidators.has(name))
-            throw new Error(`Missing validator ${name}`)
-        for (const name of cond)
-          if (!transitionValidators.has(name))
-            throw new Error(`Missing cond validator ${name}`)
+        for (const name of [...validators, ...cond])
+          if (!registry?.has(name))
+            throw new Error(
+              `Machine '${machineName}': missing validator '${name}'`
+            )
       }
     }
+  }
 }
 
 export async function fetchStateMachines() {
@@ -164,7 +161,9 @@ export default function useStateMachine<
           if (obj.state !== transition.from || transition.cond.length) continue
           const validation =
             !!obj &&
-            transitionValidators.validate<T>(transition.validators, obj)
+            validatorsByMachine
+              .get(name)
+              ?.validate<T>(transition.validators, obj)
           const { color, icon } = meta[event.transitions[0]?.to] ?? {}
           yield {
             disabled: typeof validation === 'string',
@@ -201,24 +200,11 @@ export default function useStateMachine<
   }
 
   // Transition guards — only relevant when api is provided
-  const guards = new DefaultMap<Event | '*', TransitionGuard<T>[]>(() => [])
+  const guards = new DefaultMap<Event | '*', eventGuard<T>[]>(() => [])
 
   function isGuardTrigger(value?: GuardTrigger): value is GuardTrigger {
     return !!value
   }
-
-  // async function get(pk: number): Promise<ITransition<Event>[]> {
-  //   const { data } = await api!.action<ITransition<Event>[]>(
-  //     'transitions',
-  //     pk,
-  //     undefined,
-  //     { method: 'get' }
-  //   )
-  //   return data.map((t) => ({
-  //     ...t,
-  //     icon: 'mdi-help' // TODO
-  //   }))
-  // }
 
   async function sendEvent(obj: T, event: Event, t: ComposerTranslation) {
     const action = () => api.action<Partial<T>>('event', obj.pk, { event })
@@ -232,7 +218,7 @@ export default function useStateMachine<
     if (await dialogQuery(dialog)) return await action()
   }
 
-  function registerGuard(transition: Event, guard: TransitionGuard<T>) {
+  function registerGuard(transition: Event, guard: eventGuard<T>) {
     guards.get(transition).push(guard)
   }
 
@@ -260,7 +246,6 @@ export default function useStateMachine<
     getState,
     getStateList,
     checkGuards,
-    // get,
     sendEvent,
     registerGuard
   }
