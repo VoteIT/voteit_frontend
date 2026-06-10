@@ -150,14 +150,25 @@ export default function useStateMachine<
     )
   }
 
-  function getAvailableEvents(obj: T, t: ComposerTranslation, target?: string) {
+  /**
+   * Does not check validators / cond
+   */
+  function getEventForTarget(from: T['state'], target: T['state']) {
+    for (const [id, event] of Object.entries<SMEvent<StateContent['state']>>(
+      events.value
+    )) {
+      const transition = event.transitions.find(
+        (t) => t.from === from && t.to === target
+      )
+      if (transition) return id as Event
+    }
+  }
+
+  function getAvailableEvents(obj: T, t: ComposerTranslation) {
     function* iterAvailableEvents() {
       for (const [id, event] of Object.entries<SMEvent<StateContent['state']>>(
         events.value
       )) {
-        if (obj.state === id) continue
-        // If called with target state
-        if (target !== undefined && id !== target) continue
         for (const { cond, from, validators } of event.transitions) {
           if (obj.state !== from) continue
           const validation =
@@ -244,6 +255,7 @@ export default function useStateMachine<
   return {
     states,
     getAvailableEvents,
+    getEventForTarget,
     getPriorityStates,
     getState,
     getStateList,
