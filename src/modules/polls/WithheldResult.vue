@@ -7,7 +7,6 @@ import QueryDialog from '@/components/QueryDialog.vue'
 
 import usePoll from './usePoll'
 import { pollType } from './contentTypes'
-import { PollTransition } from './types'
 
 const props = defineProps<{
   pollId: number
@@ -18,7 +17,7 @@ const { resultComponent, poll } = usePoll(computed(() => props.pollId))
 
 function publishNow() {
   if (!poll.value) return
-  pollType.sm.sendEvent(poll.value, PollTransition.PublishResult, t)
+  pollType.sm.sendEvent(poll.value, 'publish_result', t)
 }
 
 const showResult = ref(false)

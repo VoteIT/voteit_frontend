@@ -25,17 +25,6 @@ export enum PollIcon {
   Withheld = 'mdi-gavel'
 }
 
-export enum PollTransition {
-  Unpublish = 'unpublish',
-  Upcoming = 'upcoming',
-  Ongoing = 'ongoing',
-  Close = 'close',
-  Finish = 'finish',
-  Cancel = 'cancel',
-  PublishResult = 'publish_result',
-  WithholdResult = 'withhold_result'
-}
-
 export interface PollStatus {
   pk: number
   voted: number

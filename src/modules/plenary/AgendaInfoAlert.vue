@@ -8,7 +8,7 @@ import { ThemeColor } from '@/utils/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaItem from '../agendas/useAgendaItem'
-import { AgendaState, AgendaTransition } from '../agendas/types'
+import { AgendaState } from '../agendas/types'
 import useMeeting from '../meetings/useMeeting'
 import useRoom from '../rooms/useRoom'
 import { agendaItemType } from '../agendas/contentTypes'
@@ -106,7 +106,7 @@ function getUpcomingAlert(): IAlertInfo | undefined {
             try {
               await agendaItemType.sm.sendEvent(
                 agendaItem.value!,
-                AgendaTransition.Ongoing,
+                'make_ongoing',
                 t
               )
             } catch (e) {
@@ -123,7 +123,7 @@ function getUpcomingAlert(): IAlertInfo | undefined {
             try {
               await agendaItemType.sm.sendEvent(
                 agendaItem.value!,
-                AgendaTransition.Ongoing,
+                'make_ongoing',
                 t
               )
               await broadcastThis()
@@ -304,11 +304,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
               prependIcon: 'mdi-gavel',
               text: t('plenary.closeAI'),
               async onClick() {
-                await agendaItemType.sm.sendEvent(
-                  agendaItem.value!,
-                  AgendaTransition.Close,
-                  t
-                )
+                await agendaItemType.sm.sendEvent(agendaItem.value!, 'close', t)
               }
             },
             ...selectApprovedAction.value
