@@ -52,7 +52,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
         (!selectedAgendaTag.value || ai.tags.includes(selectedAgendaTag.value))
     )
     const index = agenda.indexOf(agendaItem)
-    return agenda.at(index + positions)
+    return agenda[index + positions]
   }
 
   const previousAgendaItem = computed(
