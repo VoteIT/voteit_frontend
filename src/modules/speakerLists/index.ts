@@ -1,5 +1,5 @@
 import restApi from '@/utils/restApi'
-import { noValidation, registerValidator } from '@/composables/useStateMachine'
+import { registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
 import { AgendaTransition } from '../agendas/types'
