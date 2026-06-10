@@ -76,14 +76,15 @@ class ValidatorRegistry {
   }
 
   validate<T extends StateContent>(
-    validators: string[],
+    validators: Iterable<string>,
     obj: T,
     t: ComposerTranslation
   ) {
-    for (const name of validators) {
-      const validation = this.get_validator(name)(obj, t)
-      if (typeof validation === 'string') return validation
-    }
+    const validationErrors = filter(
+      imap(validators, (name) => this.get_validator(name)(obj, t)),
+      (res) => typeof res === 'string'
+    )
+    if (validationErrors.length) return validationErrors
   }
 
   register(name: string, validator: EventValidator<any>) {
@@ -112,7 +113,7 @@ function validateStateMachines(machines: ApiMachines) {
     const registry = validatorsByMachine.get(machineName)
     for (const { transitions } of Object.values(events)) {
       for (const { cond, validators } of transitions) {
-        for (const name of [...validators, ...cond])
+        for (const name of chain(validators, cond))
           if (!registry?.has(name))
             throw new Error(
               `Machine '${machineName}': missing validator '${name}'`
@@ -158,19 +159,22 @@ export default function useStateMachine<
         // If called with target state
         if (target !== undefined && id !== target) continue
         for (const { cond, from, validators } of event.transitions) {
-          if (obj.state !== from || cond.length) continue
+          if (obj.state !== from) continue
           const validation =
             !!obj &&
-            validatorsByMachine.get(name)?.validate<T>(validators, obj, t)
+            validatorsByMachine
+              .get(name)
+              ?.validate<T>(chain(cond, validators), obj, t)
           const { color, icon } = meta[event.transitions[0]?.to] ?? {}
           yield {
-            disabled: typeof validation === 'string',
+            disabled: Array.isArray(validation),
             color,
             icon,
             id: id as Event,
             name: event.name,
-            reason: typeof validation === 'string' ? validation : undefined
+            reason: validation?.join(', ')
           }
+          break
         }
       }
     }
