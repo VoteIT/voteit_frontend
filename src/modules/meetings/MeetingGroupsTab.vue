@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
 import { chunk, orderBy } from 'lodash'
-import { computed, provide, reactive, ref, shallowRef, watch } from 'vue'
+import { computed, provide, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName, minTime } from '@/utils'
