@@ -282,12 +282,12 @@ export default function useStateMachine<
 
   return {
     states,
+    checkGuards,
     getAvailableEvents,
     getEventForTarget,
     getPriorityStates,
     getState,
     getStateList,
-    checkGuards,
     sendEvent,
     registerGuard
   }
