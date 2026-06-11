@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.45.2 (2026-06-11)
+
+- Bugfix: Group import was broken (moved to rest API)
+
 ## 0.45.1 (2026-06-05)
 
 - User list: removed user popup and click feedback

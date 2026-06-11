@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { any, flatmap } from 'itertools'
 import { chunk, orderBy } from 'lodash'
-import { computed, provide, reactive, ref, watch } from 'vue'
+import { computed, provide, reactive, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getFullName } from '@/utils'
+import { getFullName, minTime } from '@/utils'
 import { PickByType } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
 import Tag from '@/components/Tag.vue'
@@ -113,13 +113,20 @@ const groupImportMultiline = rules.multiline(
 )
 
 /**
- * Socket call to import groups.
+ * Request group import.
  */
 async function createGroups(data: { groups: string }) {
-  await meetingGroupType.methodCall('bulk_create', {
-    meeting: meetingId.value,
-    ...data
-  })
+  try {
+    await minTime(
+      meetingGroupType.api.listAction('bulk-create', {
+        meeting: meetingId.value,
+        ...data
+      }),
+      500
+    )
+  } catch (e) {
+    handleRestError(e, 'groups')
+  }
 }
 
 // Paginate
