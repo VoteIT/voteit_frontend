@@ -2,11 +2,11 @@ import { chain, filter, first, ifilter, imap, sorted } from 'itertools'
 import { computed, reactive } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
+import { dialogQuery } from '@/utils'
+import DefaultMap from '@/utils/DefaultMap'
 import restApi from '@/utils/restApi'
 import { Predicate, ThemeColor } from '@/utils/types'
 import { IStateMeta } from '@/contentTypes/types'
-import DefaultMap from '@/utils/DefaultMap'
-import { dialogQuery } from '@/utils'
 import ContentAPI from '@/contentTypes/ContentAPI'
 
 export interface StateContent<State extends string = string> {
@@ -164,6 +164,18 @@ export default function useStateMachine<
     }
   }
 
+  /**
+   * Returns all events whose `from` state matches `obj.state`, annotated with
+   * UI metadata and validation results.
+   *
+   * Each entry carries:
+   * - `disabled` — true when validators/conditions report failures
+   * - `reason`   — joined validation messages (shown as tooltip/hint)
+   * - `color` / `icon` — taken from the target state's meta
+   *
+   * Only the first matching transition per event is considered; subsequent
+   * transitions for the same event are ignored (see `break`).
+   */
   function getAvailableEvents(obj: T, t: ComposerTranslation) {
     function* iterAvailableEvents() {
       for (const [id, event] of Object.entries<SMEvent<StateContent['state']>>(
@@ -192,6 +204,13 @@ export default function useStateMachine<
     return [...iterAvailableEvents()]
   }
 
+  /**
+   * Returns all states that have a `priority` value, sorted ascending by that
+   * priority, optionally filtered by `predicate`.
+   *
+   * States without a `priority` are excluded entirely. Useful for ordered
+   * display of significant states (e.g. show ongoing before upcoming, etc).
+   */
   function getPriorityStates(
     predicate?: Predicate<ReturnType<typeof getState>>
   ) {
@@ -219,6 +238,15 @@ export default function useStateMachine<
     return !!value
   }
 
+  /**
+   * Sends a state-machine event for `obj`, checking any registered guards first.
+   *
+   * - No guards → fires immediately.
+   * - Non-blocking guard → shows a confirmation dialog; fires only on confirm.
+   * - Blocking guard → shows an info dialog and returns without firing.
+   *
+   * Handle errors where calling.
+   */
   async function sendEvent(obj: T, event: Event, t: ComposerTranslation) {
     const action = () => api.action<Partial<T>>('event', obj.pk, { event })
     const guardQuery = checkGuards(obj, event, t)
