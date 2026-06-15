@@ -31,6 +31,6 @@ import './modules/speakerLists/genderTags'
 import './modules/rooms'
 import './modules/notes'
 import './modules/tokenAPI'
-import './modules/meetingImport'
+import './modules/exportImport/index.js'
 
 createApp(App).use(i18n).use(pinia).use(router).use(vuetify).mount('#app')
