@@ -1,5 +1,5 @@
 import ControlPanel from './ControlPanel.vue'
-import { meetingSettingsPlugins } from '../meetings/registry'
+import { meetingSettingsPlugins } from '../meetings/registry.js'
 
 meetingSettingsPlugins.register({
   id: 'meeting_import',
