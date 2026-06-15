@@ -16,13 +16,6 @@ interface MeetingBubblePlugin extends MeetingPlugin {
   requireAttention: boolean | ((meeting?: Meeting) => boolean)
 }
 
-interface ExportsPlugin extends MeetingPlugin {
-  getExports(
-    meetingId: number
-  ): { title?: string; formats: { format: string; url: string }[] }[]
-  getTitle(t: ComposerTranslation): string
-}
-
 interface SettingsPlugin extends MeetingPlugin {
   component?: Component<any, { path: string; translationKey: string }>
   quickComponent?: Component
@@ -70,7 +63,6 @@ export interface MeetingNavPlugin extends MeetingPlugin {
   }): Generator<TreeMenuLink>
 }
 
-export const meetingExportPlugins = new PluginHandler<ExportsPlugin>()
 export const meetingSettingsPlugins = new PluginHandler<SettingsPlugin>()
 export const meetingSlotPlugins = new PluginHandler<MeetingSlotPlugin>()
 export const meetingRolePlugins = new PluginHandler<MeetingRolePlugin>()

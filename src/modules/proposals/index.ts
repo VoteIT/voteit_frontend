@@ -1,12 +1,14 @@
-import { sortBy } from 'lodash'
+import { sorted } from 'itertools'
+
 import { getApiLink } from '@/utils/restApi'
 import { registerValidator } from '@/composables/useStateMachine'
 
-import { meetingExportPlugins } from '../meetings/registry'
 import { agendaItemType } from '../agendas/contentTypes'
-import { UNRESOLVED_STATES } from './constants'
+import { meetingExportPlugins } from '../exportImport/registry'
 import { plenarySuggestions } from '../plenary/registry'
+
 import useTextDocuments from './useTextDocuments'
+import { UNRESOLVED_STATES } from './constants'
 import { Proposal } from './types'
 import { proposalTypeRegistry } from './registry'
 import AddProposalModal from './AddProposalModal.vue'
@@ -78,12 +80,12 @@ plenarySuggestions.register({
         .flatMap((p) => p.tags)
         .filter((tag) => tag !== textSuggested && !propIdTags.has(tag))
     )
-    return sortBy(
+    return sorted(
       [...otherTags].map((tag) => ({
         tag,
         count: proposals.filter((p) => p.tags.includes(tag)).length
       })),
-      'tag'
+      (p) => p.tag
     )
   },
   getTitle(t) {
