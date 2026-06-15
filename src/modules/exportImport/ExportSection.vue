@@ -1,9 +1,9 @@
 <template>
   <div>
     <header class="mb-6">
-      <h1>
+      <h2>
         {{ $t('exportImport.exports') }}
-      </h1>
+      </h2>
       <i18n-t keypath="exportImport.exportsLongDescription">
         <template #csv>
           <a
@@ -17,45 +17,37 @@
         </template>
       </i18n-t>
     </header>
-    <v-table class="my-2">
-      <thead>
-        <tr>
-          <th colspan="2">
-            {{ $t('exportImport.exports') }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="{ exports, id, title } in exportPlugins" :key="id">
-          <td>
-            {{ title }}
-          </td>
-          <td class="text-right">
-            <v-menu location="bottom right">
-              <template #activator="{ props }">
-                <v-btn
-                  append-icon="mdi-download"
-                  color="primary"
-                  :text="$t('download')"
-                  variant="tonal"
-                  v-bind="props"
-                />
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="{ title, url } in exports"
-                  :key="url"
-                  append-icon="mdi-file-download"
-                  target="_blank"
-                  :href="url"
-                  :title="title"
-                />
-              </v-list>
-            </v-menu>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
+    <v-list class="my-2" rounded>
+      <v-list-item
+        v-for="{ exports, id, title } in exportPlugins"
+        :key="id"
+        :title="title"
+      >
+        <template #append>
+          <v-menu location="bottom right">
+            <template #activator="{ props }">
+              <v-btn
+                append-icon="mdi-chevron-down"
+                color="primary"
+                :text="$t('download')"
+                variant="flat"
+                v-bind="props"
+              />
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="{ title, url } in exports"
+                :key="url"
+                append-icon="mdi-download"
+                target="_blank"
+                :href="url"
+                :title="title"
+              />
+            </v-list>
+          </v-menu>
+        </template>
+      </v-list-item>
+    </v-list>
   </div>
 </template>
 

@@ -44,7 +44,9 @@ vi.mock('@/utils/Socket', () => ({
 }))
 vi.mock('./ContentAPI', () => ({ default: MockContentAPI }))
 vi.mock('./Channel', () => ({ default: MockChannel }))
-vi.mock('@/composables/useStateMachine', () => ({ default: mockUseStateMachine }))
+vi.mock('@/composables/useStateMachine', () => ({
+  default: mockUseStateMachine
+}))
 vi.mock('./contentCleanup', () => ({ default: mockContentCleanup }))
 vi.mock('@/composables/useContextRoles', () => ({
   default: mockUseContextRoles
@@ -266,7 +268,10 @@ describe('ContentType', () => {
   })
 
   test('sm calls useStateMachine composable with states name, meta and api', () => {
-    const states = { name: 'MyMachine', meta: { draft: { icon: 'mdi-draft' } } } as any
+    const states = {
+      name: 'MyMachine',
+      meta: { draft: { icon: 'mdi-draft' } }
+    } as any
     const ct = new ContentType({ name: 'mytype', restEndpoint: 'my/', states })
     void ct.sm
     expect(mockUseStateMachine).toHaveBeenCalledWith(
