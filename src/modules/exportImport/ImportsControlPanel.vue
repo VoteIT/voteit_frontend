@@ -128,32 +128,32 @@ async function runImport() {
 
 <template>
   <div>
-    <h2 class="mb-4">{{ $t('meetingImport.title') }}</h2>
+    <h2 class="mb-4">{{ $t('exportImport.title') }}</h2>
 
     <!-- Done state -->
     <template v-if="importDone">
       <v-alert
         type="success"
-        :text="$t('meetingImport.importSuccess')"
+        :text="$t('exportImport.importSuccess')"
         class="mb-4"
       />
       <v-btn
         variant="text"
-        :text="$t('meetingImport.importAnother')"
+        :text="$t('exportImport.importAnother')"
         @click="reset"
       />
     </template>
 
     <!-- Stage 2: preview result -->
     <template v-else-if="previewResult !== null">
-      <h3 class="mb-3">{{ $t('meetingImport.previewTitle') }}</h3>
+      <h3 class="mb-3">{{ $t('exportImport.previewTitle') }}</h3>
       <v-list class="mb-3" rounded>
         <v-list-group value="groups">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
               prepend-icon="mdi-account-group"
-              :title="`${$t('meetingImport.groups')} (${
+              :title="`${$t('exportImport.groups')} (${
                 previewResult.groups?.length ?? 0
               })`"
             />
@@ -171,7 +171,7 @@ async function runImport() {
             <v-list-item
               v-bind="props"
               prepend-icon="mdi-format-list-numbered"
-              :title="`${$t('meetingImport.agendaItems')} (${
+              :title="`${$t('exportImport.agendaItems')} (${
                 previewResult.agenda_items?.length ?? 0
               })`"
             />
@@ -186,7 +186,7 @@ async function runImport() {
                   v-bind="props"
                   :title="item.title"
                   :subtitle="
-                    $t('meetingImport.proposalCount', {
+                    $t('exportImport.proposalCount', {
                       count: item.proposals.length
                     })
                   "
@@ -206,14 +206,14 @@ async function runImport() {
       <div class="text-right">
         <v-btn
           variant="text"
-          :text="$t('meetingImport.back')"
+          :text="$t('exportImport.back')"
           :disabled="working"
           @click="reset"
         />
         <v-btn
           color="primary"
           :loading="working"
-          :text="$t('meetingImport.confirmImport')"
+          :text="$t('exportImport.confirmImport')"
           @click="runImport"
         />
       </div>
@@ -225,7 +225,7 @@ async function runImport() {
         v-if="hasExistingItems"
         class="mb-4"
         type="warning"
-        :text="$t('meetingImport.agendaItemsWarning')"
+        :text="$t('exportImport.agendaItemsWarning')"
       />
 
       <input
@@ -243,9 +243,9 @@ async function runImport() {
         @click="openFilePicker"
       >
         <v-icon icon="mdi-file-upload-outline" size="x-large" class="mb-2" />
-        <p class="text-center">{{ $t('meetingImport.dropZoneLabel') }}</p>
+        <p class="text-center">{{ $t('exportImport.dropZoneLabel') }}</p>
         <p v-if="file" class="text-body-2 mt-2 font-weight-medium">
-          {{ $t('meetingImport.selectedFile', { name: file.name }) }}
+          {{ $t('exportImport.selectedFile', { name: file.name }) }}
         </p>
       </div>
 
