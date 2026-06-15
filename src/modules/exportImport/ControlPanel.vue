@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import ImportSection from './ImportSection.vue'
 import ExportSection from './ExportSection.vue'
+import DownloadSection from './DownloadSection.vue'
 </script>
 
 <template>
@@ -9,5 +10,7 @@ import ExportSection from './ExportSection.vue'
     <ImportSection class="mb-8" />
     <v-divider class="my-6" />
     <ExportSection />
+    <v-divider class="my-6" />
+    <DownloadSection />
   </div>
 </template>
