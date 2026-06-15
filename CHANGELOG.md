@@ -4,6 +4,15 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.46.0 (2026-06-15)
+
+- State machine refactoring: transitions, conditions, and validators are now handled in a unified way, with validators registered per state machine
+- Available events now computed in frontend instead of fetching available from API.
+- Group management: bulk deletion of groups and participant filtering by group role
+- Tables: invites, meeting groups, and the role matrix now use Vuetify data tables
+- Meeting import: new control panel (prototype)
+- Bugfix: poll creation could get stuck in a working state when creation failed
+
 ## 0.45.2 (2026-06-11)
 
 - Bugfix: Group import was broken (moved to rest API)
