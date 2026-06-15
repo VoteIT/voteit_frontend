@@ -599,6 +599,7 @@
     "finalVoteCountWeighted": "{votes} of {total} votes ({abstains} abstains)",
     "finalVoteCountNoEr": "{votes} voted, {abstains} abstained actively, no electoral register",
     "finished": "Finished",
+    "meetingAndAgendaMustBeOngoing": "Meeting and agenda item must be ongoing.",
     "noPollableAgendaItems": "There are no agenda items where you can start a poll.",
     "numApproved": "Approved proposal | Approved proposals",
     "numDenied": "Denied proposal | Denied proposals",
