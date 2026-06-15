@@ -63,7 +63,10 @@ vi.mock('../proposals/useProposalStore', () => ({
 }))
 
 vi.mock('../polls/usePollStore', () => ({
-  default: () => ({ allPollTitles: [], anyPoll: vi.fn().mockReturnValue(false) })
+  default: () => ({
+    allPollTitles: [],
+    anyPoll: vi.fn().mockReturnValue(false)
+  })
 }))
 
 vi.mock('../discussions/rules', () => ({
