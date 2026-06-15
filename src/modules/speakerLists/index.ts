@@ -2,7 +2,7 @@ import restApi from '@/utils/restApi'
 import { registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
-import { meetingExportPlugins } from '../meetings/registry'
+import { meetingExportPlugins } from '../exportImport/registry'
 import useRoomStore from '../rooms/useRoomStore'
 
 import useSpeakerStore from './useSpeakerStore'

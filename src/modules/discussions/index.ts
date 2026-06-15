@@ -1,6 +1,6 @@
 import { getApiLink } from '@/utils/restApi'
 
-import { meetingExportPlugins } from '../meetings/registry'
+import { meetingExportPlugins } from '../exportImport/registry'
 
 function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
   return {

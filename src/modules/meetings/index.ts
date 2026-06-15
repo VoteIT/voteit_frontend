@@ -5,15 +5,12 @@ import { RoleMatrixColumn } from '@/components/types'
 import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
 import useElectoralRegisters from './electoralRegisters/useElectoralRegisters'
+import { meetingExportPlugins } from '../exportImport/registry'
 import { meetingInviteAnnotationPlugins } from '../meetingInvites/registry'
 import { speakerAnnotationRegistry } from '../speakerLists/registry'
 
 import FakeRolesBubble from './FakeRolesBubble.vue'
-import {
-  meetingBubblePlugins,
-  meetingExportPlugins,
-  meetingRolePlugins
-} from './registry'
+import { meetingBubblePlugins, meetingRolePlugins } from './registry'
 import useGroupStore from './useGroupStore'
 import useMeetingGroups from './useMeetingGroups'
 import { hasFakeRoles } from './rules'

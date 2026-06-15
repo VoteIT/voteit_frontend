@@ -1,10 +1,8 @@
 import { getApiLink } from '@/utils/restApi'
 import { noValidation, registerValidator } from '@/composables/useStateMachine'
 
-import {
-  meetingExportPlugins,
-  meetingSettingsPlugins
-} from '../meetings/registry'
+import { meetingExportPlugins } from '../exportImport/registry'
+import { meetingSettingsPlugins } from '../meetings/registry'
 import useMeetingId from '../meetings/useMeetingId'
 import { MeetingState } from '../meetings/types'
 import useMeetingStore from '../meetings/useMeetingStore'

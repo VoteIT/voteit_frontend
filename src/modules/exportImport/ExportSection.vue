@@ -1,3 +1,48 @@
+<script lang="ts" setup>
+import { sorted } from 'itertools'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import { meetingExportPlugins } from './registry'
+import useMeeting from '../meetings/useMeeting'
+
+const { t } = useI18n()
+
+const { meeting, meetingId } = useMeeting()
+
+function* iterDownloads(
+  defaultTitle: string,
+  exports: { title?: string; formats: { format: string; url: string }[] }[]
+) {
+  for (const { title, formats } of exports) {
+    for (const { format, url } of formats) {
+      yield {
+        title: `${title || defaultTitle} (${format.toUpperCase()})`,
+        url
+      }
+    }
+  }
+}
+
+const exportPlugins = computed(() => {
+  if (!meeting.value) return []
+  const plugins = meetingExportPlugins.getActivePlugins(meeting.value)
+  return sorted(
+    plugins
+      .map(({ id, getExports, getTitle }) => {
+        const title = getTitle(t)
+        return {
+          id,
+          exports: [...iterDownloads(title, getExports(meetingId.value))],
+          title
+        }
+      })
+      .filter((e) => e.exports.length),
+    (o) => o.title.toLocaleLowerCase()
+  )
+})
+</script>
+
 <template>
   <div>
     <header class="mb-6">
@@ -50,48 +95,3 @@
     </v-list>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { sorted } from 'itertools'
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-
-import { meetingExportPlugins } from '../meetings/registry'
-import useMeeting from '../meetings/useMeeting'
-
-const { t } = useI18n()
-
-const { meeting, meetingId } = useMeeting()
-
-function* iterDownloads(
-  defaultTitle: string,
-  exports: { title?: string; formats: { format: string; url: string }[] }[]
-) {
-  for (const { title, formats } of exports) {
-    for (const { format, url } of formats) {
-      yield {
-        title: `${title || defaultTitle} (${format.toUpperCase()})`,
-        url
-      }
-    }
-  }
-}
-
-const exportPlugins = computed(() => {
-  if (!meeting.value) return []
-  const plugins = meetingExportPlugins.getActivePlugins(meeting.value)
-  return sorted(
-    plugins
-      .map(({ id, getExports, getTitle }) => {
-        const title = getTitle(t)
-        return {
-          id,
-          exports: [...iterDownloads(title, getExports(meetingId.value))],
-          title
-        }
-      })
-      .filter((e) => e.exports.length),
-    (o) => o.title.toLocaleLowerCase()
-  )
-})
-</script>
