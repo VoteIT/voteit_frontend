@@ -2,9 +2,9 @@
   <div>
     <header class="mb-6">
       <h1>
-        {{ $t('meeting.exports') }}
+        {{ $t('exportImport.exports') }}
       </h1>
-      <i18n-t keypath="meeting.exportsLongDescription">
+      <i18n-t keypath="exportImport.exportsLongDescription">
         <template #csv>
           <a
             href="https://en.wikipedia.org/wiki/Comma-separated_values"
@@ -21,7 +21,7 @@
       <thead>
         <tr>
           <th colspan="2">
-            {{ $t('meeting.exports') }}
+            {{ $t('exportImport.exports') }}
           </th>
         </tr>
       </thead>
@@ -64,8 +64,8 @@ import { sorted } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { meetingExportPlugins } from './registry'
-import useMeeting from './useMeeting'
+import { meetingExportPlugins } from '../meetings/registry'
+import useMeeting from '../meetings/useMeeting'
 
 const { t } = useI18n()
 

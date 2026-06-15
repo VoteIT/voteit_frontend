@@ -1,6 +1,5 @@
 import AccessPolicies from './accessPolicies/ControlPanel.vue'
 import APQuick from './accessPolicies/QuickPanel.vue'
-import ExportsControlPanel from './ExportsControlPanel.vue'
 import ElectoralRegisters from './electoralRegisters/ControlPanel.vue'
 import ERQuick from './electoralRegisters/QuickPanel.vue'
 import DialectQuick from './dialects/QuickPanel.vue'
@@ -37,17 +36,5 @@ meetingSettingsPlugins.register({
   icon: 'mdi-vote',
   getTitle(t) {
     return t('electoralRegister.plural')
-  }
-})
-
-meetingSettingsPlugins.register({
-  id: 'exports',
-  component: ExportsControlPanel,
-  getDescription(t) {
-    return t('meeting.exportsDescription')
-  },
-  icon: 'mdi-file-export',
-  getTitle(t) {
-    return t('meeting.exports')
   }
 })

@@ -415,9 +415,6 @@
     "noDialectDescription": "No dialect installed for this meeting.",
     "dialectReadonlyRole": "Handled by meeting dialect",
     "dialectReloadQuery": "The meeting dialect has changed. The meeting needs to be reloaded to apply the changes.",
-    "exports": "Export from meeting",
-    "exportsDescription": "Download Participant list, speaker stats, and more",
-    "exportsLongDescription": "You can download data from the meeting in {json} or {csv} format. Exported files can be used to transfer data from VoteIT to other applications.",
     "find": "Find meeting",
     "markedForDeleteWarn": "The meeting will be deleted",
     "meeting": "Meeting",
@@ -481,13 +478,16 @@
     "mustBeOngoing": "The meeting must be ongoing",
     "mustNotBeUpcoming": "The meeting must not be upcoming"
   },
-  "meetingImport": {
+  "exportImport": {
     "agendaItems": "Agenda items",
     "agendaItemsWarning": "This meeting already has agenda items. New items will be added to the existing ones.",
     "back": "Back",
     "confirmImport": "Confirm import",
     "description": "Import from a signed file",
     "dropZoneLabel": "Drop a YAML file here, or click to select",
+    "exports": "Export from meeting",
+    "exportsDescription": "Download Participant list, speaker stats, and more",
+    "exportsLongDescription": "You can download data from the meeting in {json} or {csv} format. Exported files can be used to transfer data from VoteIT to other applications.",
     "groups": "Groups",
     "importAnother": "Import another file",
     "importSuccess": "Import successful",
