@@ -31,7 +31,7 @@ function getDownloadFormat(meetingId: number, format: 'csv' | 'json') {
 
 meetingExportPlugins.register({
   id: 'participants',
-  getExports(t, meetingId) {
+  getExports(meetingId) {
     return [
       {
         formats: [
@@ -58,7 +58,7 @@ meetingExportPlugins.register({
   checkActive(meeting) {
     return meeting.group_votes_active
   },
-  getExports(t, meetingId) {
+  getExports(meetingId) {
     return [
       {
         formats: [

@@ -18,7 +18,6 @@ interface MeetingBubblePlugin extends MeetingPlugin {
 
 interface ExportsPlugin extends MeetingPlugin {
   getExports(
-    t: ComposerTranslation,
     meetingId: number
   ): { title?: string; formats: { format: string; url: string }[] }[]
   getTitle(t: ComposerTranslation): string
