@@ -60,11 +60,9 @@
 </template>
 
 <script lang="ts" setup>
-import { sortBy } from 'lodash'
+import { sorted } from 'itertools'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-import { titleSorter } from '@/utils'
 
 import { meetingExportPlugins } from './registry'
 import useMeeting from './useMeeting'
@@ -90,18 +88,18 @@ function* iterDownloads(
 const exportPlugins = computed(() => {
   if (!meeting.value) return []
   const plugins = meetingExportPlugins.getActivePlugins(meeting.value)
-  return sortBy(
+  return sorted(
     plugins
       .map(({ id, getExports, getTitle }) => {
         const title = getTitle(t)
         return {
           id,
-          exports: [...iterDownloads(title, getExports(t, meetingId.value))],
+          exports: [...iterDownloads(title, getExports(meetingId.value))],
           title
         }
       })
       .filter((e) => e.exports.length),
-    titleSorter
+    (o) => o.title.toLocaleLowerCase()
   )
 })
 </script>

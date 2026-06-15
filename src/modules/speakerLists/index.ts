@@ -17,7 +17,7 @@ function getDownloadFormat(system: number, format: 'csv' | 'json') {
 
 meetingExportPlugins.register({
   id: 'speakerHistory',
-  getExports(t, meetingId) {
+  getExports(meetingId) {
     const systems = useSpeakerStore().getSpeakerSystems(meetingId)
     const { getRoom } = useRoomStore()
     return systems.map(({ pk, room }) => {

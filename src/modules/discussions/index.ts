@@ -11,7 +11,7 @@ function getDownloadFormat(meeting: number, format: 'csv' | 'json') {
 
 meetingExportPlugins.register({
   id: 'discussions',
-  getExports(t, meetingId) {
+  getExports(meetingId) {
     return [
       {
         formats: [
