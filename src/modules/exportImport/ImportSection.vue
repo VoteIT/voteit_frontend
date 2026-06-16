@@ -105,11 +105,12 @@ const displayedReactionButtons = computed(() =>
 )
 
 interface ImportWarning {
-  key: string
-  icon: string
+  clamp?: boolean
   color: 'warning' | 'info'
-  title: string
+  icon: string
+  key: string
   subtitle?: string
+  title: string
 }
 
 function lc(s: string) {
@@ -133,11 +134,11 @@ const importWarnings = computed<ImportWarning[]>(() => {
     .map((item) => item.title)
   if (agendaMatches.length)
     warnings.push({
-      key: 'agenda',
-      icon: 'mdi-alert',
       color: 'warning',
-      title: t('exportImport.warnings.agendaItems', agendaMatches.length),
-      subtitle: agendaMatches.join(', ')
+      icon: 'mdi-alert',
+      key: 'agenda',
+      subtitle: agendaMatches.join(', '),
+      title: t('exportImport.warnings.agendaItems', agendaMatches.length)
     })
 
   // 2. Proposals with an identical prop_id
@@ -153,11 +154,11 @@ const importWarnings = computed<ImportWarning[]>(() => {
       .map((proposal) => proposal.prop_id)
     if (proposalMatches.length)
       warnings.push({
-        key: 'proposals',
-        icon: 'mdi-alert',
         color: 'warning',
-        title: t('exportImport.warnings.proposalIds', proposalMatches.length),
-        subtitle: proposalMatches.join(', ')
+        icon: 'mdi-alert',
+        key: 'proposals',
+        subtitle: proposalMatches.join(', '),
+        title: t('exportImport.warnings.proposalIds', proposalMatches.length)
       })
   }
 
@@ -179,11 +180,11 @@ const importWarnings = computed<ImportWarning[]>(() => {
       .map((button) => button.title)
     if (buttonMatches.length)
       warnings.push({
-        key: 'buttons',
-        icon: 'mdi-alert',
         color: 'warning',
-        title: t('exportImport.warnings.buttons', buttonMatches.length),
-        subtitle: buttonMatches.join(', ')
+        icon: 'mdi-alert',
+        key: 'buttons',
+        subtitle: buttonMatches.join(', '),
+        title: t('exportImport.warnings.buttons', buttonMatches.length)
       })
   }
 
@@ -194,16 +195,13 @@ const importWarnings = computed<ImportWarning[]>(() => {
       .filter((group) => existingGroupIds.has(group.groupid))
       .map((group) => group.title)
     if (groupMatches.length) {
-      const subtitle =
-        groupMatches.length > 3
-          ? groupMatches.slice(0, 3).join(', ') + '...'
-          : groupMatches.join(', ')
       warnings.push({
-        key: 'groups',
-        icon: 'mdi-information',
+        clamp: true,
         color: 'info',
-        title: t('exportImport.warnings.groups', groupMatches.length),
-        subtitle
+        icon: 'mdi-information',
+        key: 'groups',
+        subtitle: groupMatches.join(', '),
+        title: t('exportImport.warnings.groups', groupMatches.length)
       })
     }
   }
@@ -388,6 +386,7 @@ async function runImport() {
           >
             <v-list-item
               v-for="warning in importWarnings"
+              :class="{ 'no-clamp': !warning.clamp }"
               :key="warning.key"
               :title="warning.title"
               :subtitle="warning.subtitle"
@@ -554,7 +553,7 @@ async function runImport() {
 
 <style lang="sass" scoped>
 // Let the summary subtitle wrap so every concerned title stays visible.
-.import-warnings :deep(.v-list-item-subtitle)
+.no-clamp :deep(.v-list-item-subtitle)
   -webkit-line-clamp: unset
   white-space: normal
 
