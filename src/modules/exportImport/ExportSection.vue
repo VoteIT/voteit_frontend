@@ -2,7 +2,6 @@
 import { computed, shallowReactive, type ComputedRef } from 'vue'
 import { ComposerTranslation, useI18n } from 'vue-i18n'
 
-import useRules from '@/composables/useRules'
 import { getApiLink } from '@/utils/restApi'
 import useMeetingId from '../meetings/useMeetingId'
 
@@ -76,8 +75,21 @@ const exportOptions: ExportOption[] = [
   }
 ]
 
+// When the user sets `when[0]` to `when[1]`, force `force[0]` to `force[1]`
+// to keep export-option combinations valid.
+const constraints: Array<{
+  when: [string, boolean]
+  force: [string, boolean]
+}> = [
+  // clear_group_authors and include_groups can't both be false
+  { when: ['include_groups', false], force: ['clear_group_authors', true] },
+  { when: ['clear_group_authors', false], force: ['include_groups', true] },
+  // include_buttons can't be false while include_reactions is true
+  { when: ['include_reactions', true], force: ['include_buttons', true] },
+  { when: ['include_buttons', false], force: ['include_reactions', false] }
+]
+
 const { t } = useI18n()
-const rules = useRules(t)
 
 const options = computed(() =>
   exportOptions.map((option) => ({
@@ -105,8 +117,21 @@ function selectionModel(group: ComputedRef<{ key: string }[]>) {
     get: () =>
       group.value.filter((option) => values[option.key]).map((o) => o.key),
     set: (keys) => {
+      // Apply the user's own changes first, then resolve constraints — so a
+      // forced value isn't clobbered by a later option in the same group.
+      const changed: string[] = []
       for (const option of group.value) {
-        values[option.key] = keys.includes(option.key)
+        const next = keys.includes(option.key)
+        if (values[option.key] === next) continue
+        values[option.key] = next
+        changed.push(option.key)
+      }
+      for (const key of changed) {
+        for (const { when, force } of constraints) {
+          if (when[0] === key && when[1] === values[key]) {
+            values[force[0]] = force[1]
+          }
+        }
       }
     }
   })
@@ -120,7 +145,7 @@ const meetingId = useMeetingId()
 function download() {
   const params = new URLSearchParams()
   for (const [key, enabled] of Object.entries(values)) {
-    if (enabled) params.set(key, 'true')
+    params.set(key, String(enabled))
   }
   const url = getApiLink(`meeting-data/${meetingId.value}/yaml?${params}`)
   window.open(url, '_blank')
@@ -142,7 +167,6 @@ function download() {
         item-title="title"
         item-value="key"
         :label="$t('exportImport.options.includeLabel')"
-        :rules="[rules.required]"
         multiple
         chips
         closable-chips
