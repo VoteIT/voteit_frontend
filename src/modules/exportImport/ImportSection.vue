@@ -8,6 +8,9 @@ import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgenda from '../agendas/useAgenda'
 import useMeetingId from '../meetings/useMeetingId'
+import useMeetingGroups from '../meetings/useMeetingGroups'
+import useProposalStore from '../proposals/useProposalStore'
+import useReactionStore from '../reactions/useReactionStore'
 
 import { meetingDataType } from './contentTypes'
 import type { PreviewResponse } from './types'
@@ -17,6 +20,9 @@ const { t } = useI18n()
 const meetingId = useMeetingId()
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { agenda } = useAgenda(meetingId)
+const { meetingGroups } = useMeetingGroups(meetingId)
+const proposalStore = useProposalStore()
+const reactionStore = useReactionStore()
 
 const { optionsFor, valuesFor, selectionModel } = useExportImport(t)
 
@@ -97,6 +103,108 @@ const displayedReactionButtons = computed(() =>
       }))
     : []
 )
+
+interface ImportWarning {
+  key: string
+  icon: string
+  color: 'warning' | 'info'
+  title: string
+  subtitle?: string
+}
+
+function lc(s: string) {
+  return s.toLocaleLowerCase()
+}
+
+// Surfaces collisions between the file being imported and content that already
+// exists in the current meeting. Each category is summarised into a single row:
+// a pluralised count in the title and the concerned titles/ids in the subtitle.
+// Proposal/button/group cases are gated by the include selection so we only warn
+// about what will actually be imported; agenda items are always imported.
+const importWarnings = computed<ImportWarning[]>(() => {
+  const preview = previewResult.value
+  if (!preview) return []
+  const warnings: ImportWarning[] = []
+
+  // 1. Agenda items with a matching title
+  const existingTitles = new Set(agenda.value.map((ai) => lc(ai.title)))
+  const agendaMatches = preview.agenda_items
+    .filter((item) => existingTitles.has(lc(item.title)))
+    .map((item) => item.title)
+  if (agendaMatches.length)
+    warnings.push({
+      key: 'agenda',
+      icon: 'mdi-alert',
+      color: 'warning',
+      title: t('exportImport.warnings.agendaItems', agendaMatches.length),
+      subtitle: agendaMatches.join(', ')
+    })
+
+  // 2. Proposals with an identical prop_id
+  if (showProposals.value) {
+    const existingPropIds = new Set(
+      proposalStore
+        .filterProposals((p) => p.m === meetingId.value)
+        .map((p) => p.prop_id)
+    )
+    const proposalMatches = preview.agenda_items
+      .flatMap((item) => item.proposals)
+      .filter((proposal) => existingPropIds.has(proposal.prop_id))
+      .map((proposal) => proposal.prop_id)
+    if (proposalMatches.length)
+      warnings.push({
+        key: 'proposals',
+        icon: 'mdi-alert',
+        color: 'warning',
+        title: t('exportImport.warnings.proposalIds', proposalMatches.length),
+        subtitle: proposalMatches.join(', ')
+      })
+  }
+
+  // 3. Buttons: same title, but a differing color/target/icon
+  if (showButtons.value) {
+    const existingButtons = reactionStore.getMeetingButtons(meetingId.value)
+    const buttonMatches = preview.reaction_buttons
+      .filter((button) => {
+        const match = existingButtons.find(
+          (b) => lc(b.title) === lc(button.title)
+        )
+        return (
+          !!match &&
+          (match.color !== button.color ||
+            match.target !== (button.target ?? null) ||
+            match.icon !== button.icon)
+        )
+      })
+      .map((button) => button.title)
+    if (buttonMatches.length)
+      warnings.push({
+        key: 'buttons',
+        icon: 'mdi-alert',
+        color: 'warning',
+        title: t('exportImport.warnings.buttons', buttonMatches.length),
+        subtitle: buttonMatches.join(', ')
+      })
+  }
+
+  // 4. Groups that already exist (informational)
+  if (showGroups.value) {
+    const existingGroupIds = new Set(meetingGroups.value.map((g) => g.groupid))
+    const groupMatches = preview.groups
+      .filter((group) => existingGroupIds.has(group.groupid))
+      .map((group) => group.title)
+    if (groupMatches.length)
+      warnings.push({
+        key: 'groups',
+        icon: 'mdi-information',
+        color: 'info',
+        title: t('exportImport.warnings.groups', groupMatches.length),
+        subtitle: groupMatches.join(', ')
+      })
+  }
+
+  return warnings
+})
 
 function itemSubtitle(item: { proposals: unknown[]; discussions: unknown[] }) {
   const parts: string[] = []
@@ -262,6 +370,29 @@ async function runImport() {
             importSelected = $event ? ['add_participants'] : []
           "
         />
+        <v-alert
+          v-if="importWarnings.length"
+          variant="tonal"
+          color="warning"
+          class="mb-4"
+        >
+          <v-list
+            bg-color="transparent"
+            density="compact"
+            class="import-warnings"
+          >
+            <v-list-item
+              v-for="warning in importWarnings"
+              :key="warning.key"
+              :title="warning.title"
+              :subtitle="warning.subtitle"
+            >
+              <template #append>
+                <v-icon :icon="warning.icon" :color="warning.color" />
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-alert>
         <v-list
           v-if="
             displayedGroups.length ||
@@ -417,6 +548,11 @@ async function runImport() {
 </template>
 
 <style lang="sass" scoped>
+// Let the summary subtitle wrap so every concerned title stays visible.
+.import-warnings :deep(.v-list-item-subtitle)
+  -webkit-line-clamp: unset
+  white-space: normal
+
 .drop-zone
   border: 2px dashed rgba(var(--v-border-color), var(--v-border-opacity))
   transition: border-color 0.15s, background-color 0.15s

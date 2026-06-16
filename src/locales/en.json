@@ -509,7 +509,13 @@
     "proposalCount": "{count} proposals",
     "reactionCount": "{count} reactions",
     "selectedFile": "Selected file: {name}",
-    "title": "Import to meeting"
+    "title": "Import to meeting",
+    "warnings": {
+      "agendaItems": "One agenda item with an identical title already exists | {count} agenda items with identical titles already exist",
+      "proposalIds": "One proposal with an identical ID already exists | {count} proposals with identical IDs already exist",
+      "buttons": "One button with an identical title differs and will be created as new | {count} buttons with identical titles differ and will be created as new",
+      "groups": "One group with identical group ID may be updated | {count} groups with identical group IDs may be updated"
+    }
   },
   "minutes": {
     "documents": "Meeting documents",
