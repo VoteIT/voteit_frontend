@@ -481,7 +481,6 @@
   "exportImport": {
     "agendaItems": "Dagordningspunkter",
     "agendaItemsWarning": "Det finns redan dagordningspunkter i mötet. Nya punkter läggs till de befintliga.",
-    "back": "Tillbaka",
     "confirmImport": "Bekräfta import",
     "downloadFromMeeting": "Ladda ner från möte",
     "dropZoneLabel": "Dra en YAML-fil hit, eller klicka för att välja",
@@ -495,6 +494,7 @@
     "importSuccess": "Importen lyckades",
     "options": {
       "addParticipants": "Lägg till deltagare",
+      "addParticipantsHint": "Lägger till författare till förslag eller diskussionsinlägg som deltagare i mötet. Om du inte väljer detta går det kanske inte att se vem som lagt ett förslag.",
       "clearAiStates": "Tillstånd för dagordningspunkter",
       "clearAuthors": "Författare",
       "clearGroupAuthors": "Gruppförfattare",
@@ -504,8 +504,10 @@
       "includeLabel": "Inkludera innehåll",
       "useExistingGroups": "Använd befintliga grupper"
     },
-    "previewTitle": "Förhandsgranskning",
+    "discussionCount": "{count} inlägg",
+    "importFrom": "Importera från {title}",
     "proposalCount": "{count} förslag",
+    "reactionCount": "{count} reaktioner",
     "selectedFile": "Vald fil: {name}",
     "title": "Importera till möte"
   },
