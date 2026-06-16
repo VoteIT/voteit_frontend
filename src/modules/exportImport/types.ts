@@ -60,7 +60,7 @@ export interface PreviewResponse {
     description: string
     icon: string
     color: string
-    target: number | null
+    target?: number
     order: number
     change_roles: MeetingRole[]
     list_roles: MeetingRole[]

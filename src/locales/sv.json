@@ -509,7 +509,13 @@
     "proposalCount": "{count} förslag",
     "reactionCount": "{count} reaktioner",
     "selectedFile": "Vald fil: {name}",
-    "title": "Importera till möte"
+    "title": "Importera till möte",
+    "warnings": {
+      "agendaItems": "En dagordningspunkt med identisk titel finns redan | {count} dagordningspunkter med identiska titlar finns redan",
+      "proposalIds": "Ett förslag med identiskt ID finns redan | {count} förslag med identiska ID:n finns redan",
+      "buttons": "En knapp med identisk titel skiljer sig och skapas som ny | {count} knappar med identiska titlar skiljer sig och skapas som nya",
+      "groups": "En grupp med identiskt grupp-ID kan uppdateras | {count} grupper med identiska grupp-ID:n kan uppdateras"
+    }
   },
   "minutes": {
     "documents": "Möteshandlingar",
