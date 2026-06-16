@@ -193,14 +193,19 @@ const importWarnings = computed<ImportWarning[]>(() => {
     const groupMatches = preview.groups
       .filter((group) => existingGroupIds.has(group.groupid))
       .map((group) => group.title)
-    if (groupMatches.length)
+    if (groupMatches.length) {
+      const subtitle =
+        groupMatches.length > 3
+          ? groupMatches.slice(0, 3).join(', ') + '...'
+          : groupMatches.join(', ')
       warnings.push({
         key: 'groups',
         icon: 'mdi-information',
         color: 'info',
         title: t('exportImport.warnings.groups', groupMatches.length),
-        subtitle: groupMatches.join(', ')
+        subtitle
       })
+    }
   }
 
   return warnings
