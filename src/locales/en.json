@@ -481,7 +481,6 @@
   "exportImport": {
     "agendaItems": "Agenda items",
     "agendaItemsWarning": "This meeting already has agenda items. New items will be added to the existing ones.",
-    "back": "Back",
     "confirmImport": "Confirm import",
     "downloadFromMeeting": "Download from meeting",
     "dropZoneLabel": "Drop a YAML file here, or click to select",
@@ -495,6 +494,7 @@
     "importSuccess": "Import successful",
     "options": {
       "addParticipants": "Add participants",
+      "addParticipantsHint": "Adds the authors of proposals or discussion posts as participants in the meeting. If you don't select this, it may not be possible to see who made a proposal.",
       "clearAiStates": "Agenda item states",
       "clearAuthors": "Authors",
       "clearGroupAuthors": "Group authors",
@@ -504,8 +504,10 @@
       "includeLabel": "Include content",
       "useExistingGroups": "Use existing groups"
     },
-    "previewTitle": "Preview",
+    "discussionCount": "{count} discussions",
+    "importFrom": "To import from {title}",
     "proposalCount": "{count} proposals",
+    "reactionCount": "{count} reactions",
     "selectedFile": "Selected file: {name}",
     "title": "Import to meeting"
   },
