@@ -8,7 +8,7 @@ import { PickByType } from '@/utils/types'
 import useAuthStore from '../auth/useAuthStore'
 
 import { meetingType } from './contentTypes'
-import { Meeting, MeetingState } from './types'
+import { Meeting, MeetingRole, MeetingState } from './types'
 
 type MeetingSortKeys = keyof PickByType<Meeting, Primitive | undefined | null>
 
@@ -90,6 +90,19 @@ export default defineStore('meetings', () => {
   }))
 
   /**
+   * Meetings where the current user has the moderator role, sorted by title.
+   */
+  const moderatedMeetings = computed(() =>
+    sorted(
+      ifilter(
+        meetings.values(),
+        (m) => !!m.current_user_roles?.includes(MeetingRole.Moderator)
+      ),
+      titleSorter
+    )
+  )
+
+  /**
    * For no visible meetings info (closed, ongoing, upcoming)
    */
   const hasVisibleMeetings = computed(() =>
@@ -159,6 +172,7 @@ export default defineStore('meetings', () => {
     hasVisibleMeetings,
     stateCount,
     participatingMeetings,
+    moderatedMeetings,
     anyMeeting,
     clearMeetings,
     fetchMeeting,
