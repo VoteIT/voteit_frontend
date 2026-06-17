@@ -493,6 +493,7 @@
     "importAndExport": "Import och export",
     "importAndExportDescription": "Importera från en signerad fil, eller ladda ner mötesdata",
     "importAnother": "Importera en annan fil",
+    "importOnlyUpcoming": "Import är inte tillgängligt för möten som redan startats.",
     "importSuccess": "Importen lyckades",
     "options": {
       "addParticipants": "Lägg till deltagare",
