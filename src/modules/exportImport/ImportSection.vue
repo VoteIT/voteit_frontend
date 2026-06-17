@@ -262,16 +262,20 @@ watch(file, (f) => {
   if (f) runPreview()
 })
 
+const MULTIPART_CONFIG = { headers: { 'Content-Type': 'multipart/form-data' } }
+
 async function previewYamlImport(meeting: number, file: File) {
   const formData = new FormData()
   formData.append('file', file)
+  formData.append('preview', 'true')
+  for (const { key } of includeOptions.value) {
+    formData.append(key, 'true')
+  }
   const { data } = await meetingDataType.api.action<PreviewResponse>(
-    'preview',
+    'import',
     meeting,
-    formData,
-    {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    }
+    formData as any,
+    MULTIPART_CONFIG
   )
   return data
 }
@@ -286,9 +290,12 @@ async function confirmYamlImport(
   for (const [key, enabled] of Object.entries(options)) {
     formData.append(key, String(enabled))
   }
-  const { data } = await meetingDataType.api.put(meeting, formData as any, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
+  const { data } = await meetingDataType.api.action(
+    'import',
+    meeting,
+    formData as any,
+    MULTIPART_CONFIG
+  )
   return data
 }
 

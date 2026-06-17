@@ -70,7 +70,12 @@ export interface PreviewResponse {
     on_vote: boolean
     vote_template: boolean
     flag_mode: boolean
-    reactions: unknown[]
+    reactions: {
+      username: string
+      agenda_item_id: string
+      content_type: ('discussion' | 'discussionpost')[]
+      object_id: string
+    }[]
   }[]
   signature_valid: boolean
   size_limit: number
