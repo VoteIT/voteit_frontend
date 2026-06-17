@@ -504,10 +504,10 @@
       "includeLabel": "Include content",
       "useExistingGroups": "Use existing groups"
     },
-    "discussionCount": "{count} discussions",
+    "discussionCount": "One discussion | {count} discussions",
     "importFrom": "To import from {title}",
-    "proposalCount": "{count} proposals",
-    "reactionCount": "{count} reactions",
+    "proposalCount": "One proposal | {count} proposals",
+    "reactionCount": "One reaction | {count} reactions",
     "selectedFile": "Selected file: {name}",
     "title": "Import to meeting",
     "warnings": {
