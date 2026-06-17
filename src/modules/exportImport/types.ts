@@ -21,7 +21,7 @@ export interface PreviewResponse {
     created: string
     discussions: {
       as_group: boolean
-      author: string
+      author?: string
       body: string
       created: string
       modified: string
@@ -32,14 +32,14 @@ export interface PreviewResponse {
     modified: string
     proposals: {
       as_group: boolean
-      author: string
+      author?: string
       body: string
       created: string
       modified: string
       meeting_group?: string
       pk: string
-      prop_id: string
-      state: ProposalState
+      prop_id?: string
+      state?: ProposalState
       tags: string[]
     }[]
     pk: string

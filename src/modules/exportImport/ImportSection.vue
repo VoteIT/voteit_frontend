@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, shallowRef, computed, watch } from 'vue'
+import { ref, shallowRef, computed, watch, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDropZone } from '@vueuse/core'
 
@@ -24,13 +24,15 @@ const { meetingGroups } = useMeetingGroups(meetingId)
 const proposalStore = useProposalStore()
 const reactionStore = useReactionStore()
 
-const { optionsFor, valuesFor, selectionModel } = useExportImport(t)
+const { optionsFor, valuesFor, selectionModel, values } = useExportImport(t)
 
-const clearOptions = optionsFor('clear')
+const baseClearOptions = optionsFor('clear')
+const baseIncludeOptions = optionsFor('include')
 const clearSelected = selectionModel('clear')
-const includeOptions = optionsFor('include')
 const includeSelected = selectionModel('include')
 const importSelected = selectionModel('import')
+// Default all import options on (e.g. "Add participants").
+for (const option of baseIncludeOptions.value) values[option.key] = true
 
 const hasExistingItems = computed(() => agenda.value.length > 0)
 
@@ -49,6 +51,79 @@ const hasDiscussions = computed(() =>
     (item) => item.discussions.length
   )
 )
+
+// Only offer an option when the previewed file actually contains the data it
+// acts on. Each select is filtered to its available options (and hidden when
+// none apply).
+const hasReactions = computed(() =>
+  (previewResult.value?.reaction_buttons ?? []).some((b) => b.reactions.length)
+)
+const hasAuthors = computed(() =>
+  (previewResult.value?.agenda_items ?? []).some((item) =>
+    [...item.proposals, ...item.discussions].some((c) => c.author)
+  )
+)
+const hasGroupAuthors = computed(() =>
+  (previewResult.value?.agenda_items ?? []).some((item) =>
+    [...item.proposals, ...item.discussions].some((c) => c.meeting_group)
+  )
+)
+const hasAiStates = computed(() =>
+  (previewResult.value?.agenda_items ?? []).some((item) => item.state)
+)
+const proposals = computed(() =>
+  (previewResult.value?.agenda_items ?? []).flatMap((item) => item.proposals)
+)
+const hasProposalStates = computed(() => proposals.value.some((p) => p.state))
+const hasProposalIds = computed(() => proposals.value.some((p) => p.prop_id))
+
+const availableOptionKeys = computed<Set<string>>(() => {
+  const p = previewResult.value
+  const keys = new Set<string>()
+  if (!p) return keys
+  if (p.groups.length) keys.add('include_groups')
+  if (hasProposals.value) keys.add('include_proposals')
+  if (hasDiscussions.value) keys.add('include_discussions')
+  if (p.reaction_buttons.length) keys.add('include_buttons')
+  if (hasReactions.value) keys.add('include_reactions')
+  if (hasProposalStates.value) keys.add('clear_proposal_states')
+  if (hasProposalIds.value) keys.add('clear_proposal_id')
+  if (hasAuthors.value) keys.add('clear_authors')
+  if (hasGroupAuthors.value) keys.add('clear_group_authors')
+  if (hasAiStates.value) keys.add('clear_ai_states')
+  return keys
+})
+
+const clearOptions = computed(() =>
+  baseClearOptions.value.filter((o) => availableOptionKeys.value.has(o.key))
+)
+const includeOptions = computed(() =>
+  baseIncludeOptions.value.filter((o) => availableOptionKeys.value.has(o.key))
+)
+
+// Display wrappers for the selects: only ever show keys whose option is
+// available (otherwise Vuetify renders a chip for a value that has no matching
+// item). Writes are delegated to the real model — which applies constraints —
+// while any hidden selections are preserved so we don't clobber their values.
+function visibleSelection(
+  model: Ref<string[]>,
+  available: Ref<{ key: string }[]>
+) {
+  const availableKeys = computed(
+    () => new Set(available.value.map((o) => o.key))
+  )
+  return computed<string[]>({
+    get: () => model.value.filter((key) => availableKeys.value.has(key)),
+    set: (visibleKeys) => {
+      const hidden = model.value.filter((key) => !availableKeys.value.has(key))
+      model.value = [...hidden, ...visibleKeys]
+    }
+  })
+}
+
+const clearSelectedVisible = visibleSelection(clearSelected, clearOptions)
+const includeSelectedVisible = visibleSelection(includeSelected, includeOptions)
+
 // "Add participants" pulls in proposal/discussion authors, so it's only
 // relevant when such content both exists and is being imported — and never
 // when authors are being cleared anyway.
@@ -150,8 +225,10 @@ const importWarnings = computed<ImportWarning[]>(() => {
     )
     const proposalMatches = preview.agenda_items
       .flatMap((item) => item.proposals)
-      .filter((proposal) => existingPropIds.has(proposal.prop_id))
       .map((proposal) => proposal.prop_id)
+      .filter(
+        (propId): propId is string => !!propId && existingPropIds.has(propId)
+      )
     if (proposalMatches.length)
       warnings.push({
         color: 'warning',
@@ -268,7 +345,9 @@ async function previewYamlImport(meeting: number, file: File) {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('preview', 'true')
-  for (const { key } of includeOptions.value) {
+  // Request all include data so the preview reflects the full file; the filtered
+  // `includeOptions` only drives what the user can toggle afterwards.
+  for (const { key } of baseIncludeOptions.value) {
     formData.append(key, 'true')
   }
   const { data } = await meetingDataType.api.action<PreviewResponse>(
@@ -350,7 +429,8 @@ async function runImport() {
     <template v-else-if="previewResult !== null">
       <v-form @submit.prevent="runImport">
         <v-select
-          v-model="includeSelected"
+          v-if="includeOptions.length"
+          v-model="includeSelectedVisible"
           :items="includeOptions"
           item-title="title"
           item-value="key"
@@ -360,7 +440,8 @@ async function runImport() {
           closable-chips
         />
         <v-select
-          v-model="clearSelected"
+          v-if="clearOptions.length"
+          v-model="clearSelectedVisible"
           :items="clearOptions"
           item-title="title"
           item-value="key"
