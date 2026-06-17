@@ -11,6 +11,8 @@ export default function useElectoralRegisters(meetingId?: MaybeRef<number>) {
   const store = useERStore()
   const { getMeeting } = useMeetingStore()
 
+  store.fetchErMethods()
+
   const meeting = computed(() => {
     const meeting = unref(meetingId)
     if (!meeting) return
