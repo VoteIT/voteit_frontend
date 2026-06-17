@@ -486,6 +486,8 @@
     "confirmImport": "Confirm import",
     "downloadFromMeeting": "Download from meeting",
     "dropZoneLabel": "Drop a YAML file here, or click to select",
+    "evaluationNotice": "Meeting import is a new feature that is under evaluation. You may encounter strange error messages. You're welcome to use it, and please contact us if you find any bugs.",
+    "evaluationNoticeTitle": "Under evaluation",
     "exportFromMeeting": "Export from meeting",
     "exportFromMeetingDescription": "Here you can download a signed export file from your meeting that you can use for later import into another meeting. It can be used as a template for meetings, or to move meetings to another VoteIT instance. Agenda items are always exported.",
     "exportsLongDescription": "You can download data from the meeting in {json} or {csv} format. Exported files can be used to transfer data from VoteIT to other applications.",

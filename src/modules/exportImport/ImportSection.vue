@@ -480,6 +480,19 @@ async function runImport() {
   <div>
     <h2 class="mb-4">{{ $t('exportImport.title') }}</h2>
 
+    <v-alert
+      class="mb-4"
+      color="warning"
+      icon="mdi-crane"
+      :text="$t('exportImport.evaluationNotice')"
+      :title="$t('exportImport.evaluationNoticeTitle')"
+      variant="tonal"
+    >
+      <template #append>
+        <v-btn icon="mdi-email" href="mailto:info@mp.se" variant="tonal" />
+      </template>
+    </v-alert>
+
     <!-- Done state -->
     <template v-if="importDone">
       <v-alert
