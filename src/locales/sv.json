@@ -481,6 +481,8 @@
   "exportImport": {
     "agendaItems": "Dagordningspunkter",
     "agendaItemsWarning": "Det finns redan dagordningspunkter i mötet. Nya punkter läggs till de befintliga.",
+    "cloneFromMeeting": "Klona från ett befintligt möte",
+    "cloneOr": "eller",
     "confirmImport": "Bekräfta import",
     "downloadFromMeeting": "Ladda ner från möte",
     "dropZoneLabel": "Dra en YAML-fil hit, eller klicka för att välja",

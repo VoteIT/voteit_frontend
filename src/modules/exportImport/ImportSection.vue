@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, shallowRef, computed, watch, type Ref } from 'vue'
+import { ref, shallowRef, computed, onMounted, watch, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDropZone } from '@vueuse/core'
 
@@ -9,6 +9,7 @@ import useErrorHandler from '@/composables/useErrorHandler'
 import useAgenda from '../agendas/useAgenda'
 import useMeetingId from '../meetings/useMeetingId'
 import useMeetingGroups from '../meetings/useMeetingGroups'
+import useMeetingStore from '../meetings/useMeetingStore'
 import useProposalStore from '../proposals/useProposalStore'
 import useReactionStore from '../reactions/useReactionStore'
 
@@ -21,6 +22,7 @@ const meetingId = useMeetingId()
 const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { agenda } = useAgenda(meetingId)
 const { meetingGroups } = useMeetingGroups(meetingId)
+const meetingStore = useMeetingStore()
 const proposalStore = useProposalStore()
 const reactionStore = useReactionStore()
 
@@ -40,6 +42,25 @@ const file = ref<File | null>(null)
 const previewResult = ref<PreviewResponse | null>(null)
 const importDone = ref(false)
 const working = ref(false)
+
+// Clone source: an existing meeting the user moderates (excluding this one).
+const sourceMeetingId = ref<number | null>(null)
+const loadingMeetings = ref(false)
+const cloneMeetings = computed(() =>
+  meetingStore.moderatedMeetings
+    .filter((m) => m.pk !== meetingId.value)
+    .map((m) => ({ title: m.title, value: m.pk }))
+)
+
+onMounted(async () => {
+  loadingMeetings.value = true
+  try {
+    await meetingStore.fetchMeetings()
+  } catch (e) {
+    handleRestError(e)
+  }
+  loadingMeetings.value = false
+})
 
 const hasProposals = computed(() =>
   (previewResult.value?.agenda_items ?? []).some(
@@ -331,6 +352,7 @@ function onFileSelected(e: Event) {
 
 function reset() {
   file.value = null
+  sourceMeetingId.value = null
   previewResult.value = null
   importDone.value = false
 }
@@ -338,6 +360,15 @@ function reset() {
 watch(file, (f) => {
   if (f) runPreview()
 })
+
+watch(sourceMeetingId, (id) => {
+  if (id !== null) runPreview()
+})
+
+// All include_* flags on — the preview always reflects the full source; the
+// filtered `includeOptions` only drive what the user can toggle afterwards.
+const allIncludeOn = () =>
+  Object.fromEntries(baseIncludeOptions.value.map(({ key }) => [key, true]))
 
 const MULTIPART_CONFIG = { headers: { 'Content-Type': 'multipart/form-data' } }
 
@@ -378,27 +409,51 @@ async function confirmYamlImport(
   return data
 }
 
+async function previewClone(meeting: number, source: number) {
+  const { data } = await meetingDataType.api.action<PreviewResponse>(
+    'clone',
+    meeting,
+    { source, preview: true, ...allIncludeOn() }
+  )
+  return data
+}
+
+async function confirmClone(
+  meeting: number,
+  source: number,
+  options: Record<string, boolean>
+) {
+  const { data } = await meetingDataType.api.action('clone', meeting, {
+    source,
+    ...options
+  })
+  return data
+}
+
 async function runPreview() {
-  if (!file.value) return
+  if (sourceMeetingId.value === null && !file.value) return
   working.value = true
   try {
-    previewResult.value = await previewYamlImport(meetingId.value, file.value)
+    previewResult.value =
+      sourceMeetingId.value !== null
+        ? await previewClone(meetingId.value, sourceMeetingId.value)
+        : await previewYamlImport(meetingId.value, file.value!)
   } catch (e) {
     handleRestError(e)
     file.value = null
+    sourceMeetingId.value = null
   }
   working.value = false
 }
 
 async function runImport() {
-  if (!file.value) return
+  if (sourceMeetingId.value === null && !file.value) return
   working.value = true
   try {
-    await confirmYamlImport(
-      meetingId.value,
-      file.value,
-      valuesFor('clear', 'import', 'include')
-    )
+    const options = valuesFor('clear', 'import', 'include')
+    if (sourceMeetingId.value !== null)
+      await confirmClone(meetingId.value, sourceMeetingId.value, options)
+    else await confirmYamlImport(meetingId.value, file.value!, options)
     importDone.value = true
   } catch (e) {
     handleRestError(e)
@@ -607,6 +662,23 @@ async function runImport() {
         type="warning"
         :text="$t('exportImport.agendaItemsWarning')"
       />
+
+      <v-select
+        v-if="cloneMeetings.length"
+        v-model="sourceMeetingId"
+        :items="cloneMeetings"
+        :loading="loadingMeetings"
+        :disabled="working"
+        clearable
+        :label="$t('exportImport.cloneFromMeeting')"
+      />
+
+      <div
+        v-if="cloneMeetings.length"
+        class="text-center text-medium-emphasis mb-2"
+      >
+        {{ $t('exportImport.cloneOr') }}
+      </div>
 
       <input
         ref="fileInputRef"

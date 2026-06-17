@@ -481,6 +481,8 @@
   "exportImport": {
     "agendaItems": "Agenda items",
     "agendaItemsWarning": "This meeting already has agenda items. New items will be added to the existing ones.",
+    "cloneFromMeeting": "Clone from an existing meeting",
+    "cloneOr": "or",
     "confirmImport": "Confirm import",
     "downloadFromMeeting": "Download from meeting",
     "dropZoneLabel": "Drop a YAML file here, or click to select",
