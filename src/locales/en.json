@@ -493,6 +493,7 @@
     "importAndExport": "Import and export",
     "importAndExportDescription": "Import from a signed file, or download meeting data",
     "importAnother": "Import another file",
+    "importOnlyUpcoming": "Import is not available for meetings that have already started.",
     "importSuccess": "Import successful",
     "options": {
       "addParticipants": "Add participants",
