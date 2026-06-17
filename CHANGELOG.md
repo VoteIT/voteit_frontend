@@ -10,7 +10,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - Available events now computed in frontend instead of fetching available from API.
 - Group management: bulk deletion of groups and participant filtering by group role
 - Tables: invites, meeting groups, and the role matrix now use Vuetify data tables
-- Meeting import: new control panel (prototype)
+- Import/export control panel: unified page for importing content into upcoming meetings, exporting meeting content, and downloading data files
 - Bugfix: poll creation could get stuck in a working state when creation failed
 
 ## 0.45.2 (2026-06-11)
