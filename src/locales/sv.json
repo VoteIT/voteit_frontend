@@ -504,10 +504,10 @@
       "includeLabel": "Inkludera innehåll",
       "useExistingGroups": "Använd befintliga grupper"
     },
-    "discussionCount": "{count} inlägg",
+    "discussionCount": "Ett inlägg | {count} inlägg",
     "importFrom": "Importera från {title}",
-    "proposalCount": "{count} förslag",
-    "reactionCount": "{count} reaktioner",
+    "proposalCount": "Ett förslag | {count} förslag",
+    "reactionCount": "En reaktion | {count} reaktioner",
     "selectedFile": "Vald fil: {name}",
     "title": "Importera till möte",
     "warnings": {
