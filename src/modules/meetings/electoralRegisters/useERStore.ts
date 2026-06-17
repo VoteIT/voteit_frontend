@@ -12,11 +12,15 @@ export default defineStore('electoralRegisters', () => {
 
   electoralRegisterType.updateMap(registers, { meeting: 'meeting' })
 
+  let fetchingErMethods = false
   async function fetchErMethods() {
+    if (fetchingErMethods || erMethods.value) return
+    fetchingErMethods = true
     try {
       const { data } = await erMethodType.api.list()
       erMethods.value = data
     } catch {} // TODO
+    fetchingErMethods = false
   }
 
   function filterRegisters(predicate: Predicate<ElectoralRegister>) {
@@ -60,10 +64,7 @@ export default defineStore('electoralRegisters', () => {
   }
 
   return {
-    erMethods: computed(() => {
-      if (!erMethods.value) fetchErMethods()
-      return erMethods.value
-    }),
+    erMethods: computed(() => erMethods.value),
     fetchErMethods,
     fetchMeetingRegisters,
     fetchRegister,
