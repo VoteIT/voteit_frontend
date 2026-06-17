@@ -98,7 +98,7 @@ export default defineStore('meetings', () => {
         meetings.values(),
         (m) => !!m.current_user_roles?.includes(MeetingRole.Moderator)
       ),
-      titleSorter
+      (m) => m.title.toLocaleLowerCase()
     )
   )
 

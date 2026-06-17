@@ -7,6 +7,8 @@ import { stripHTML } from '@/utils'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgenda from '../agendas/useAgenda'
+import { meetingType } from '../meetings/contentTypes'
+import type { Meeting } from '../meetings/types'
 import useMeetingId from '../meetings/useMeetingId'
 import useMeetingGroups from '../meetings/useMeetingGroups'
 import useMeetingStore from '../meetings/useMeetingStore'
@@ -43,13 +45,25 @@ const previewResult = ref<PreviewResponse | null>(null)
 const importDone = ref(false)
 const working = ref(false)
 
+/** Subtitle: creation year and translated state, e.g. "2026 · Ongoing". */
+function getSubTitle(m: Meeting) {
+  const date = m.end_time ?? m.start_time
+  const state = meetingType.sm.getState(m.state).translate(t)
+  if (!date) return state
+  return `${new Date(date).getFullYear()} · ${state}`
+}
+
 // Clone source: an existing meeting the user moderates (excluding this one).
 const sourceMeetingId = ref<number | null>(null)
 const loadingMeetings = ref(false)
 const cloneMeetings = computed(() =>
   meetingStore.moderatedMeetings
     .filter((m) => m.pk !== meetingId.value)
-    .map((m) => ({ title: m.title, value: m.pk }))
+    .map((m) => ({
+      title: m.title,
+      value: m.pk,
+      subtitle: getSubTitle(m)
+    }))
 )
 
 onMounted(async () => {
@@ -661,23 +675,30 @@ async function runImport() {
         class="mb-4"
         type="warning"
         :text="$t('exportImport.agendaItemsWarning')"
+        variant="tonal"
       />
 
       <v-select
         v-if="cloneMeetings.length"
-        v-model="sourceMeetingId"
-        :items="cloneMeetings"
-        :loading="loadingMeetings"
-        :disabled="working"
         clearable
+        :disabled="working"
+        hide-details
+        :items="cloneMeetings"
         :label="$t('exportImport.cloneFromMeeting')"
-      />
+        :loading="loadingMeetings"
+        variant="outlined"
+        v-model="sourceMeetingId"
+      >
+        <template #item="{ props, item }">
+          <v-list-item v-bind="props" :subtitle="item.raw.subtitle" />
+        </template>
+      </v-select>
 
       <div
         v-if="cloneMeetings.length"
-        class="text-center text-medium-emphasis mb-2"
+        class="text-center text-medium-emphasis my-2"
       >
-        {{ $t('exportImport.cloneOr') }}
+        – {{ $t('exportImport.cloneOr') }} –
       </div>
 
       <input
@@ -718,10 +739,13 @@ async function runImport() {
   white-space: normal
 
 .drop-zone
-  border: 2px dashed rgba(var(--v-border-color), var(--v-border-opacity))
+  border: 2px dashed rgba(var(--v-border-color), .5)
   transition: border-color 0.15s, background-color 0.15s
 
+  &:hover
+    border-color: rgba(var(--v-border-color), 1)
+
   &--active
-    border-color: rgb(var(--v-theme-primary))
+    border-color: rgba(var(--v-theme-primary), 1)
     background-color: rgba(var(--v-theme-primary), 0.08)
 </style>
