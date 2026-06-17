@@ -65,7 +65,7 @@ export interface MeetingDialectDefinition {
 export interface Meeting extends BaseContent {
   state: MeetingState
   body: string
-  current_user_roles?: MeetingRole[]
+  current_user_roles: MeetingRole[] | null
   dialect: MeetingDialectDefinition | null
   end_time: string | null
   er_policy_name?: string
