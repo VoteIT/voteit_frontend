@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 0.46.0 (2026-06-15)
+## 0.46.0 (2026-06-18)
 
 - State machine refactoring: transitions, conditions, and validators are now handled in a unified way, with validators registered per state machine
 - Available events now computed in frontend instead of fetching available from API.
