@@ -16,18 +16,27 @@ interface MeetingBubblePlugin extends MeetingPlugin {
   requireAttention: boolean | ((meeting?: Meeting) => boolean)
 }
 
+interface SettingsTab {
+  id: string
+  title: string
+  component: Component
+  icon?: string
+  disabled?: boolean
+}
+
 interface SettingsPlugin extends MeetingPlugin {
   component?: Component<any, { path: string; translationKey: string }>
   quickComponent?: Component
-  checkAdvanced?: (meeting: Meeting) => boolean
   icon: string
   route?: {
     name: string
     params?: Dictionary<string | number>
   }
+  checkAdvanced?: (meeting: Meeting) => boolean
   isConfigured?(meeting: Meeting): boolean
   isDisabled?(meeting: Meeting): boolean
   getDescription?(t: ComposerTranslation): string
+  getTabs?(meeting: Meeting, t: ComposerTranslation): SettingsTab[]
   getTitle(t: ComposerTranslation): string
 }
 
