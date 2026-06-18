@@ -86,6 +86,7 @@ test('MajorityResult component', () => {
       result: {
         approved: [2],
         denied: [1],
+        vote_count: 123,
         results: [
           {
             proposal: 1,
@@ -115,6 +116,7 @@ test('RepeatedIRVResult component', async () => {
       result: {
         approved: [1, 2],
         denied: [3],
+        vote_count: 4,
         quota: 123,
         complete: true,
         randomized: false,
@@ -122,12 +124,21 @@ test('RepeatedIRVResult component', async () => {
           {
             status: 'Elected',
             selected: [1],
-            method: 'Direct'
+            method: 'Direct',
+            vote_count: [
+              [1, 200],
+              [2, 100],
+              [3, 100]
+            ]
           },
           {
             status: 'Elected',
             selected: [2],
-            method: 'Direct'
+            method: 'Direct',
+            vote_count: [
+              [2, 150],
+              [3, 100]
+            ]
           }
         ],
         runtime: 0.0123
@@ -153,12 +164,13 @@ test('RepeatedSchulzeResult component', async () => {
         approved: [1, 2],
         candidates: [1, 2, 3],
         denied: [3],
-        votes: 4,
+        vote_count: 4,
         rounds: [
           {
             approved: [1],
             denied: [2, 3],
             winner: 1,
+            tied_winners: null,
             candidates: [1, 2, 3],
             pairs: [
               [[1, 2], 3],
@@ -169,18 +181,21 @@ test('RepeatedSchulzeResult component', async () => {
               [[3, 2], 0]
             ],
             strong_pairs: [],
+            vote_count: 4,
             votes: 4
           },
           {
             approved: [2],
             denied: [3],
             winner: 2,
+            tied_winners: null,
             candidates: [2, 3],
             pairs: [
               [[2, 3], 4],
               [[3, 2], 0]
             ],
             strong_pairs: [],
+            vote_count: 4,
             votes: 4
           }
         ]
@@ -211,6 +226,7 @@ test('SchulzeResult component', async () => {
         approved: [1],
         denied: [2, 3],
         winner: 1,
+        tied_winners: null,
         candidates: [1, 2, 3],
         pairs: [
           [[1, 2], 3],
@@ -221,6 +237,7 @@ test('SchulzeResult component', async () => {
           [[3, 2], 0]
         ],
         strong_pairs: [],
+        vote_count: 4,
         votes: 4
       }
     }
@@ -282,6 +299,7 @@ test('STVResult component', async () => {
       result: {
         approved: [1, 2],
         denied: [3],
+        vote_count: 4,
         quota: 123,
         complete: true,
         randomized: false,

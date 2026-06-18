@@ -21,10 +21,19 @@ test('Mount component', () => {
     },
     props: {
       group: {
+        pk: 1,
+        title: 'Group',
+        body: '',
+        delegate_to: null,
+        groupid: 'group',
+        meeting: 1,
+        post_as: false,
+        show_on_speaker: false,
+        tags: [],
         votes: 123,
         memberships: [
-          { votes: 3, role: 1 },
-          { votes: 2, role: 1 }
+          { m: 1, meeting_group: 1, pk: 1, user: 1, votes: 3, role: 1 },
+          { m: 1, meeting_group: 1, pk: 2, user: 2, votes: 2, role: 1 }
         ]
       }
     }
