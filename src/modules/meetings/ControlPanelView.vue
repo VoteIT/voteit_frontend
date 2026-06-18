@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { sorted } from 'itertools'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
@@ -12,6 +12,7 @@ import useMeeting from './useMeeting'
 import useMeetingTitle from './useMeetingTitle'
 import './controlPanels'
 import type { Meeting } from './types'
+import { cols } from '@/utils/defaults'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -29,7 +30,7 @@ const panelPlugins = computed(() => {
       title: panel.getTitle(t),
       to:
         panel.route ??
-        (panel.component
+        (panel.component || panel.getTabs
           ? { name: 'controlPanel', params: { panel: panel.id } }
           : undefined),
       ...panel
@@ -59,6 +60,26 @@ const currentPlugin = computed(() =>
     : undefined
 )
 const currentComponent = computed(() => currentPlugin.value?.component)
+const currentTabs = computed(() =>
+  meeting.value ? currentPlugin.value?.getTabs?.(meeting.value, t) : undefined
+)
+const tabItems = computed(
+  () =>
+    currentTabs.value?.map((tab) => ({
+      value: tab.id,
+      text: tab.title,
+      prependIcon: tab.icon,
+      disabled: !!tab.disabled
+    }))
+)
+const currentTab = ref<string>()
+// Reset selection when the active panel changes
+watch(
+  currentPlugin,
+  () =>
+    (currentTab.value = currentTabs.value?.find((tab) => !tab.disabled)?.id),
+  { immediate: true }
+)
 
 const breadcrumbs = computed(() => {
   if (!currentPlugin.value) return
@@ -78,6 +99,8 @@ const breadcrumbs = computed(() => {
 <template>
   <MeetingToolbar v-if="breadcrumbs">
     <v-breadcrumbs :items="breadcrumbs" />
+    <v-spacer />
+    <v-tabs v-if="tabItems" v-model="currentTab" :items="tabItems" />
   </MeetingToolbar>
   <MeetingToolbar v-else :title="$t('meeting.controlPanel')">
     <v-menu v-if="advancedPanels.length">
@@ -101,7 +124,14 @@ const breadcrumbs = computed(() => {
     </v-menu>
   </MeetingToolbar>
   <v-row id="setting-panels">
-    <v-col v-if="currentComponent">
+    <v-col v-if="currentTabs" v-bind="cols.default">
+      <v-window v-model="currentTab" :touch="false">
+        <v-window-item v-for="tab in currentTabs" :key="tab.id" :value="tab.id">
+          <component :is="tab.component" />
+        </v-window-item>
+      </v-window>
+    </v-col>
+    <v-col v-else-if="currentComponent">
       <component :is="currentComponent" />
     </v-col>
     <v-col class="grid" v-else>
