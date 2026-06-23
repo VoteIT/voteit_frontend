@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 if [ $# -lt 1 ]; then
-  echo "Usage: build_version.sh <version>"
+  echo "Usage: $0 <version>"
   exit
 fi
 VERSION="$1"
