@@ -38,6 +38,6 @@ fi
 read -p "Do you want to add and push git tag '${TAG}' [y/N] " -n 1 -r
 echo
 if [[ "$REPLY" =~ ^[yY]$ ]]; then
-  git tag ${TAG} || { echo "Failed to create tag."; exit 1; }
-  git push origin "${TAG}" || { echo "Failed to push tag."; exit 1; }
+  git tag ${TAG} || { error "Failed to create tag."; exit 1; }
+  git push origin "${TAG}" || { error "Failed to push tag."; exit 1; }
 fi
