@@ -6,22 +6,24 @@ if [ $# -lt 1 ]; then
 fi
 VERSION="$1"
 
+# Warn about potential issues before tagging.
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+warn() { echo -e "${YELLOW}WARNING: $1${NC}" >&2; }
+error() { echo -e "${RED}ERROR: $1${NC}" >&2; }
+
 if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.(rc|beta)?[0-9]+$ ]]; then
-  echo "<version> must be in format <number>.<number>.(rc|beta)?<number>, i.e."
+  error "<version> must be in format <number>.<number>.(rc|beta)?<number>, i.e."
   exit 1
 fi
 
 TAG="v$VERSION"
 
 if git tag -l "$TAG" | grep -q "^$TAG$"; then
-    echo "Tag '$TAG' already exists."
+    error "Tag '$TAG' already exists."
     exit 1
 fi
-
-# Warn about potential issues before tagging.
-YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
-warn() { echo -e "${YELLOW}WARNING: $1${NC}"; }
 
 if [ -n "$(git status --porcelain)" ]; then
   warn "You have uncommitted changes. They will not be included in the tag."
