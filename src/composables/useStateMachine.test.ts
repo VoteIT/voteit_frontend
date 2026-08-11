@@ -70,7 +70,7 @@ function makeSM() {
 // Wrap in arrow so Vitest's TestContext arg doesn't override the default parameter
 async function loadMachines() {
   vi.mocked(restApi.get).mockResolvedValueOnce({
-    data: { [MACHINE_NAME]: MACHINE_DEF }
+    [MACHINE_NAME]: MACHINE_DEF
   })
   await fetchStateMachines()
 }
@@ -202,17 +202,15 @@ describe('getAvailableEvents', () => {
     const MACHINE = 'av_validator_machine'
     registerValidator(MACHINE, 'always_fail', () => 'Not allowed')
     vi.mocked(restApi.get).mockResolvedValueOnce({
-      data: {
-        [MACHINE]: {
-          name: MACHINE,
-          states: { a: { name: 'A' }, b: { name: 'B' } },
-          events: {
-            go: {
-              name: 'Go',
-              transitions: [
-                { cond: [], from: 'a', to: 'b', validators: ['always_fail'] }
-              ]
-            }
+      [MACHINE]: {
+        name: MACHINE,
+        states: { a: { name: 'A' }, b: { name: 'B' } },
+        events: {
+          go: {
+            name: 'Go',
+            transitions: [
+              { cond: [], from: 'a', to: 'b', validators: ['always_fail'] }
+            ]
           }
         }
       }
@@ -314,17 +312,15 @@ describe('registerValidator', () => {
     const MACHINE = 'rv_machine'
     registerValidator(MACHINE, 'always_fail', () => 'always fails')
     vi.mocked(restApi.get).mockResolvedValueOnce({
-      data: {
-        [MACHINE]: {
-          name: MACHINE,
-          states: { a: { name: 'A' }, b: { name: 'B' } },
-          events: {
-            go: {
-              name: 'Go',
-              transitions: [
-                { cond: [], from: 'a', to: 'b', validators: ['always_fail'] }
-              ]
-            }
+      [MACHINE]: {
+        name: MACHINE,
+        states: { a: { name: 'A' }, b: { name: 'B' } },
+        events: {
+          go: {
+            name: 'Go',
+            transitions: [
+              { cond: [], from: 'a', to: 'b', validators: ['always_fail'] }
+            ]
           }
         }
       }

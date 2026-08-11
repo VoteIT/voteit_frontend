@@ -17,16 +17,13 @@ const contactInfo = ref<ContactInfo | null>(null)
 const requiresCheck = computed(() => contactInfo.value?.requires_check)
 
 async function fetchContactInfo() {
-  const { data } = await restApi.get<ContactInfo>('contact-info/')
+  const data = await restApi.get<ContactInfo>('contact-info/')
   contactInfo.value = data
   return data
 }
 
 async function saveContactInfo(info: ContactInfo) {
-  const { data } = await restApi.patch<ContactInfo>(
-    'contact-info/change/',
-    info
-  )
+  const data = await restApi.patch<ContactInfo>('contact-info/change/', info)
   contactInfo.value = data
   return data
 }

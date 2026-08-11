@@ -11,3 +11,9 @@ global.CSS = {
     return false
   }
 }
+
+// Tests must never reach the network. Reject instead, so an unmocked request
+// surfaces as a failure rather than a real (and possibly hanging) connection.
+// Override per test with vi.stubGlobal('fetch', ...) where a response is needed.
+global.fetch = () =>
+  Promise.reject(new Error('Unmocked fetch in test — mock @/utils/restApi'))

@@ -124,7 +124,7 @@ function validateStateMachines(machines: ApiMachines) {
 }
 
 export async function fetchStateMachines() {
-  const { data } = await restApi.get<ApiMachines>('state-machines/')
+  const data = await restApi.get<ApiMachines>('state-machines/')
   if (import.meta.env.DEV) validateStateMachines(data)
   for (const [id, machine] of Object.entries(data))
     stateMachines.set(id, machine)

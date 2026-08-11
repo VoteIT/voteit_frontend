@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { isAxiosError } from 'axios'
 import { difference } from 'lodash'
 import { computed, ref, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, tagify } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
+import { isApiError } from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import Headline from '@/components/Headline.vue'
@@ -95,8 +95,8 @@ function isRejected(
 
 function getRejectedDescriptions(settled: PromiseSettledResult<unknown>[]) {
   const rejectedDescriptions = settled.filter(isRejected).map(({ reason }) => {
-    if (isAxiosError(reason))
-      return Object.values(reason.response?.data ?? {})[0]
+    if (isApiError(reason) && reason.data && typeof reason.data === 'object')
+      return Object.values(reason.data)[0]
     return t('error.unknown')
   })
   return [...new Set(rejectedDescriptions)]

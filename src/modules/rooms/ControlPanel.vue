@@ -59,7 +59,7 @@ const working = ref(false)
 const createOpen = ref(false)
 
 async function createSpeakerSystem(speakerSystem: Partial<SpeakerSystem>) {
-  const { data } = await speakerSystemType.api.add({
+  const data = await speakerSystemType.api.add({
     meeting: meetingId.value,
     ...speakerSystem
   })
@@ -69,7 +69,7 @@ async function createSpeakerSystem(speakerSystem: Partial<SpeakerSystem>) {
 async function create({ room, speakerSystem }: FormData) {
   working.value = true
   try {
-    const { data } = await roomType.api.add({
+    const data = await roomType.api.add({
       meeting: meetingId.value,
       ...room
     })
@@ -161,7 +161,7 @@ const systemIcons = {
 
 async function deleteRoom(pk: number) {
   try {
-    const { data } = await roomType.api.action<{
+    const data = await roomType.api.action<{
       speakers: number
       speaker_lists: number
     }>('status', pk, undefined, { method: 'get' })

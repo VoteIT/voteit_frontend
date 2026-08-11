@@ -21,7 +21,7 @@ const error = ref(false)
 async function fetchAnnotations() {
   error.value = false
   try {
-    const { data } = await restApi.get<{ annotations: Annotation[] }>(
+    const data = await restApi.get<{ annotations: Annotation[] }>(
       `meeting-invites/${props.invite.pk}/`
     )
     annotations.value = data.annotations

@@ -60,7 +60,7 @@ async function joinAsModerator() {
 
 onBeforeMount(() => {
   loader.call(async () => {
-    const { data } = await accessPolicyType.api.retrieve(meetingId.value)
+    const data = await accessPolicyType.api.retrieve(meetingId.value)
     policies.value = data.policies
   })
 })

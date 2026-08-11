@@ -1,4 +1,3 @@
-import { isAxiosError } from 'axios'
 import { defineStore } from 'pinia'
 import { computed, shallowRef, watch } from 'vue'
 
@@ -9,7 +8,7 @@ import useContextRoles from '@/composables/useContextRoles' // Import order impo
 import { profileType } from '../organisations/contentTypes' // ^
 import { IOrganisationUser, OrganisationRole } from '../organisations/types'
 
-import restApi from '@/utils/restApi'
+import restApi, { isApiError } from '@/utils/restApi'
 
 export default defineStore('auth', () => {
   const alternateUsers = shallowRef<IOrganisationUser[]>([])
@@ -30,24 +29,21 @@ export default defineStore('auth', () => {
   }
 
   async function fetchAlternateUsers() {
-    const { data } = await profileType.api.listAction<IOrganisationUser[]>(
-      'alternate',
-      undefined,
-      { method: 'get' }
-    )
-    alternateUsers.value = data
+    alternateUsers.value = await profileType.api.listAction<
+      IOrganisationUser[]
+    >('alternate', undefined, { method: 'get' })
   }
 
   async function fetchAuthenticatedUser(
     tries = 3
   ): Promise<IOrganisationUser | undefined> {
     try {
-      const { data } = await profileType.api.list<IOrganisationUser>()
+      const data = await profileType.api.list<IOrganisationUser>()
       setAuthenticatedUser(data)
       return data
     } catch (err) {
-      if (!isAxiosError(err)) throw err
-      switch (err.response?.status) {
+      if (!isApiError(err)) throw err
+      switch (err.status) {
         case 401:
           user.value = null
           console.warn('Not logged in')
@@ -90,30 +86,27 @@ export default defineStore('auth', () => {
     // Handle errors in calling function
     if (!user.value)
       throw new Error("Unauthenticated user can't update profile")
-    const { data } = await profileType.api.patch(user.value.pk, profile)
-    user.value = data
+    user.value = await profileType.api.patch(user.value.pk, profile)
   }
 
-  async function uploadProfileImage(image: Blob) {
+  /** The image field is multipart, so send it as FormData either way. */
+  async function setProfileImage(image: Blob | '') {
     if (!user.value)
       throw new Error("Unauthenticated user can't update profile image")
-    const { data } = await restApi.patch<IOrganisationUser>(
+    const formData = new FormData()
+    formData.append('image', image)
+    user.value = await restApi.patch<IOrganisationUser>(
       `user/${user.value.pk}/`,
-      { image },
-      { headers: { 'Content-Type': 'multipart/form-data' } }
+      formData
     )
-    user.value = data
   }
 
-  async function clearProfileImage() {
-    if (!user.value)
-      throw new Error("Unauthenticated user can't clear profile image")
-    const { data } = await restApi.patch<IOrganisationUser>(
-      `user/${user.value.pk}/`,
-      { image: '' },
-      { headers: { 'Content-Type': 'multipart/form-data' } }
-    )
-    user.value = data
+  function uploadProfileImage(image: Blob) {
+    return setProfileImage(image)
+  }
+
+  function clearProfileImage() {
+    return setProfileImage('')
   }
 
   /**

@@ -6,7 +6,7 @@ const dialectStore = shallowRef<MeetingDialectDefinition[] | null>(null)
 
 async function loadDialects() {
   if (dialectStore.value) return
-  const { data } = await meetingDialectType.api.list()
+  const data = await meetingDialectType.api.list()
   dialectStore.value = data
 }
 

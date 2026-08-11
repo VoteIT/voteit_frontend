@@ -3,7 +3,7 @@ import { computed, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { getFullName } from '@/utils'
-import restApi from '@/utils/restApi'
+import { getApiLink } from '@/utils/restApi'
 import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
@@ -40,7 +40,7 @@ const orgStore = useOrgStore()
 useMeetingTitle(t('meeting.participants'))
 
 function getDownloadUrl(type: 'csv' | 'json') {
-  return `${restApi.defaults.baseURL}export-participants/${meetingId.value}/${type}/`
+  return getApiLink(`export-participants/${meetingId.value}/${type}/`)
 }
 
 const matrixCols = DEFAULT_ROLE_ORDER.slice(1)

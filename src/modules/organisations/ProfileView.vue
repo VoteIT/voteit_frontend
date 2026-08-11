@@ -47,7 +47,7 @@ async function fetchEmailChoices() {
   if (emailChoices.value) return
   emailError.value = false
   try {
-    const { data } = await profileType.api.listAction<{ emails: string[] }>(
+    const data = await profileType.api.listAction<{ emails: string[] }>(
       'email_choices',
       undefined,
       { method: 'get' }

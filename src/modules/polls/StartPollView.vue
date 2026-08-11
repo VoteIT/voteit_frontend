@@ -135,7 +135,7 @@ async function createPoll(
     method_name: methodSelected.value,
     start
   }
-  const { data } = await pollType.api.add(pollData)
+  const data = await pollType.api.add(pollData)
   router.push({
     name: 'poll',
     params: { pid: data.pk, pslug: slugify(data.title) }

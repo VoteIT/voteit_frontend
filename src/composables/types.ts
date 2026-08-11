@@ -5,12 +5,12 @@ import {
   IUser,
   IOrganisationUser
 } from '@/modules/organisations/types'
+import { RequestConfig } from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
-import { AxiosRequestConfig } from 'axios'
 import { Component } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
-export interface RestApiConfig extends AxiosRequestConfig {
+export interface RestApiConfig extends RequestConfig {
   alertOnError?: boolean
 }
 

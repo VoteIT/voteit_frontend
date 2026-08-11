@@ -189,13 +189,12 @@ async function submitInvites() {
         mapRow(row as Record<number, string>, importData.columnTypes!)
       )
     )
-    const response = await restApi.post<InviteResult>('meeting-invites/', {
+    result.value = await restApi.post<InviteResult>('meeting-invites/', {
       data,
       meeting: props.meeting,
       roles: inviteData.roles,
       dryrun: false
     })
-    result.value = response.data
   } catch (e) {
     inviteErrors.value = parseRestError(e)
     importData.columnTypes = undefined

@@ -146,13 +146,13 @@ export default defineStore('meetings', () => {
    * @returns true: User currently has meeting role(s)
    */
   async function fetchMeeting(pk: number) {
-    const { data } = await meetingType.api.retrieve(pk)
+    const data = await meetingType.api.retrieve(pk)
     setMeeting(data)
     return !!data.current_user_roles
   }
 
   async function fetchMeetings() {
-    const { data } = await meetingType.api.list()
+    const data = await meetingType.api.list()
     for (const m of data) meetings.set(m.pk, m)
   }
 

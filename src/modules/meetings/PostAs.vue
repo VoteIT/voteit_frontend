@@ -52,8 +52,8 @@ function authorToString(author: Author): string {
   return isGroupAuthor(author)
     ? `g:${author.author}:${author.meeting_group}`
     : isUserAuthor(author)
-    ? `u:${author.author}`
-    : `wg:${author.author}:${author.meeting_group}`
+      ? `u:${author.author}`
+      : `wg:${author.author}:${author.meeting_group}`
 }
 
 /**
@@ -99,17 +99,17 @@ function authorToAutocompleteItem(author: Author): AutocompleteItem {
         value
       }
     : isUserAuthor(author)
-    ? {
-        subtitle: user?.userid ?? '-',
-        title: fullName,
-        value
-      }
-    : {
-        subtitle: getMeetingGroup(author.meeting_group)?.title ?? '-',
-        subtitleIcon: 'mdi-account-multiple',
-        title: fullName,
-        value
-      }
+      ? {
+          subtitle: user?.userid ?? '-',
+          title: fullName,
+          value
+        }
+      : {
+          subtitle: getMeetingGroup(author.meeting_group)?.title ?? '-',
+          subtitleIcon: 'mdi-account-multiple',
+          title: fullName,
+          value
+        }
 }
 
 function* userToAutocomplete(user: IUser): Generator<AutocompleteItem> {
@@ -156,7 +156,7 @@ watch(search, async (search) => {
     searchOptions.value = []
     return
   }
-  const { data } = await userType.api.list({
+  const data = await userType.api.list({
     meeting: meetingId.value,
     search
   })

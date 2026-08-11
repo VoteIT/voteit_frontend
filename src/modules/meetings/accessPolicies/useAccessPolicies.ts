@@ -32,7 +32,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
     p: Pick<AccessPolicy, 'meeting' | 'name' | 'roles_given'>
   ) {
     const { api } = getContentType(p)
-    const { data } = await api.add(p)
+    const data = await api.add(p)
     policyStore.set(data.pk, data)
   }
 
@@ -53,7 +53,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
   async function setActive(p: AccessPolicy, active: boolean) {
     const { api } = getContentType(p)
     try {
-      const { data } = await api.patch(p.pk, {
+      const data = await api.patch(p.pk, {
         active
       })
       policyStore.set(data.pk, data)
@@ -65,7 +65,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
   async function setRoles(p: AccessPolicy, rolesGiven: MeetingRole[]) {
     const { api } = getContentType(p)
     try {
-      const { data } = await api.patch(p.pk, {
+      const data = await api.patch(p.pk, {
         roles_given: rolesGiven
       })
       policyStore.set(data.pk, data)
@@ -78,7 +78,7 @@ export default function useAccessPolicies(meetingId: Ref<number>) {
     // Store meeting id in scope
     const meeting = meetingId.value
     try {
-      const { data } = await accessPolicyType.api.retrieve(meeting)
+      const data = await accessPolicyType.api.retrieve(meeting)
       // Start by removing any policies in store that's not in response
       const newPks = data.policies.map((p) => p.pk)
       for (const { pk } of ifilter(

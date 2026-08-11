@@ -26,7 +26,7 @@ async function purgeInactive() {
   purgedCount.value = null
   working.value = true
   try {
-    const { data } = await minTime(
+    const data = await minTime(
       activeUserType.api.action<{ count: number }>('purge', meetingId.value, {
         hours: hours.value
       })

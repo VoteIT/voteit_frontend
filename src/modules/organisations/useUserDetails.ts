@@ -54,10 +54,9 @@ async function fetchMultiple(key: string) {
   ctx.queue.clear()
   ctx.loading = true
   try {
-    const { data } = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(
-      ep,
-      { params }
-    )
+    const data = await restApi.get<MeetingRoles[] | OrganisationRoles[]>(ep, {
+      params
+    })
     for (const { user } of data) {
       userDetails.set(user.pk, user)
     }

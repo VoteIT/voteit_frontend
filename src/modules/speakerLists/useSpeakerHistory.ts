@@ -22,7 +22,7 @@ export default function useSpeakerHistory(
     key,
     async (key) => {
       if (!key) return
-      const { data } = await speakerHistoryType.api.list({
+      const data = await speakerHistoryType.api.list({
         meeting: meeting.value,
         speaker_system: speakerSystem.value
       })

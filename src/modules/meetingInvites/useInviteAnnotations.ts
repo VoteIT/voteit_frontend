@@ -39,7 +39,7 @@ export default function useInviteAnnotations(
   async function fetchDataTypes() {
     if (inviteDataTypes.value) return
     try {
-      const { data } = await restApi.get<InviteDataType[]>('invite-data-types/')
+      const data = await restApi.get<InviteDataType[]>('invite-data-types/')
       inviteDataTypes.value = data
     } catch {
       fetchFailed.value = true

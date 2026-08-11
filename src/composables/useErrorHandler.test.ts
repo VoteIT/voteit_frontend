@@ -1,6 +1,7 @@
 import { ValidationError } from 'envelope-client/src/errors.js'
 import { expect, test, vi } from 'vitest'
 
+import { ApiError } from '@/utils/restApi'
 import useErrorHandler from './useErrorHandler'
 import { useI18n } from 'vue-i18n'
 
@@ -40,13 +41,8 @@ test('Error.message', () => {
   expect(fieldErrors.value).toEqual({})
 })
 
-function mockAxiosError(message: string) {
-  const axiosError = new Error(message)
-  return Object.assign(axiosError, {
-    isAxiosError: true,
-    response: { data: { test: [message] } },
-    status: 400
-  })
+function mockApiError(message: string) {
+  return new ApiError(400, { test: [message] }, new Headers(), message)
 }
 
 test('ValidationError.errors', () => {
@@ -69,7 +65,7 @@ test('ValidationError.errors', () => {
   expect(errorMessage.value).toBe('message')
   expect(fieldErrors.value).toEqual({ test: ['field message'] })
   const teapot = "I'm a teapot"
-  handleRestError(mockAxiosError(teapot))
+  handleRestError(mockApiError(teapot))
   expect(errorMessage.value).toBe(teapot)
   expect(fieldErrors.value).toEqual({ test: [teapot] })
   clearErrors()

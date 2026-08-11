@@ -199,7 +199,7 @@ async function addMeeting() {
     if (formData.createSpeakerSystem) createData.sls = { ...formData.sls }
   }
   try {
-    const { data: meeting } = await meetingType.api.add(createData)
+    const meeting = await meetingType.api.add(createData)
     await router.push(`/m/${meeting.pk}/${slugify(meeting.title)}`)
   } catch (e) {
     handleRestError(e)

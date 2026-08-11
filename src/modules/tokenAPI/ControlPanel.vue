@@ -64,10 +64,13 @@ async function createToken() {
   creating.value = true
   formErrors.value = null
   try {
-    const { data } = await restApi.post('meeting-api-token/', {
-      meeting: meetingId.value,
-      ...formData
-    })
+    const data = await restApi.post<IAPIKey & { key: string }>(
+      'meeting-api-token/',
+      {
+        meeting: meetingId.value,
+        ...formData
+      }
+    )
     tokens.value = [...tokens.value, data]
     createdToken.value = data
   } catch (e) {
@@ -109,14 +112,14 @@ async function revokeKey(prefix: string) {
 async function fetchTokenData() {
   status.fetching = true
   try {
-    const [tokensResponse, scopesResponse] = await Promise.all([
-      restApi.get('meeting-api-token/', {
+    const [tokenData, scopeData] = await Promise.all([
+      restApi.get<IAPIKey[]>('meeting-api-token/', {
         params: { meeting: meetingId.value }
       }),
       restApi.get<string[]>('meeting-api-token/scopes/')
     ])
-    scopes.value = scopesResponse.data
-    tokens.value = tokensResponse.data
+    scopes.value = scopeData
+    tokens.value = tokenData
     status.failed = false
   } catch {
     status.failed = true

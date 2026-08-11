@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { durationToString } from '@/utils'
-import restApi from '@/utils/restApi'
+import { getApiLink } from '@/utils/restApi'
 import User from '@/components/User.vue'
 import useMeeting from '../meetings/useMeeting'
 import useRoomStore from '../rooms/useRoomStore'
@@ -14,7 +14,7 @@ import useSpeakerHistory from './useSpeakerHistory'
 import useSpeakerSystems from './useSpeakerSystems'
 
 function getDownloadUrl(system: number, type: 'csv' | 'json') {
-  return `${restApi.defaults.baseURL}export-speakers/${system}/${type}/`
+  return getApiLink(`export-speakers/${system}/${type}/`)
 }
 
 const { t } = useI18n()

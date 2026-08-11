@@ -72,14 +72,14 @@ export default defineStore('agendas', () => {
   const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 
   async function createAgendaItem(meeting: number, title: string) {
-    const { data } = await agendaApi.add({ meeting, title })
+    const data = await agendaApi.add({ meeting, title })
     // Only if not already set by channel message. Serializers may differ.
     if (!agendaItems.has(data.pk)) agendaItems.set(data.pk, data)
     return data
   }
 
   async function updateLastRead(agendaItem: number) {
-    const { data } = await agendaItemType.api.action<LastRead>(
+    const data = await agendaItemType.api.action<LastRead>(
       'update-last-read',
       agendaItem
     )

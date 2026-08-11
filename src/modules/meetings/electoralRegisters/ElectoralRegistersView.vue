@@ -5,7 +5,7 @@ import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { cols } from '@/utils/defaults'
-import restApi from '@/utils/restApi'
+import { getApiLink } from '@/utils/restApi'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAlert from '@/composables/useAlert'
@@ -40,7 +40,7 @@ const { anyPoll } = usePollStore()
 useMeetingTitle(t('electoralRegister.plural'))
 
 function getDownloadUrl(register: number, type: 'csv' | 'json') {
-  return `${restApi.defaults.baseURL}export-electoral-register/${register}/${type}/`
+  return getApiLink(`export-electoral-register/${register}/${type}/`)
 }
 
 const groups = computed(() => {
@@ -167,11 +167,18 @@ async function triggerERCreation() {
   if (!canTriggerERCreation.value) throw new Error('ER creation not allowed')
   erTriggerResult.value = 'waiting'
   try {
-    const { status } = await electoralRegisterType.api.listAction(
+    await electoralRegisterType.api.listAction(
       'trigger-create',
-      { meeting: meetingId.value }
+      { meeting: meetingId.value },
+      {
+        // 201 means a register was created, any other 2xx that it was already
+        // up to date. Failures stay with the catch below — this hook also runs
+        // for error responses, and not at all when there is no response.
+        onResponse({ ok, status }) {
+          if (ok) erTriggerResult.value = status === 201 ? 'created' : 'up2date'
+        }
+      }
     )
-    erTriggerResult.value = status === 201 ? 'created' : 'up2date'
   } catch {
     erTriggerResult.value = 'failed'
   }

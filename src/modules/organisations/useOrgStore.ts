@@ -1,9 +1,8 @@
-import { isAxiosError } from 'axios'
 import { first } from 'itertools'
 import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
-import restApi from '@/utils/restApi'
+import restApi, { isApiError } from '@/utils/restApi'
 import { IOrganisation } from './types'
 import * as orgRules from './rules'
 
@@ -57,10 +56,10 @@ export default defineStore('organisation', () => {
    */
   async function fetchOrganisation() {
     try {
-      const { data } = await restApi.get<IOrganisation>('organisation/')
-      currentOrganisation.value = data
+      currentOrganisation.value =
+        await restApi.get<IOrganisation>('organisation/')
     } catch (e) {
-      if (!isAxiosError(e) || e.response?.status !== 404) throw e
+      if (!isApiError(e) || e.status !== 404) throw e
       currentOrganisation.value = false // Unavailable
     }
   }
@@ -68,11 +67,10 @@ export default defineStore('organisation', () => {
   async function updateOrganisation(
     partial: Partial<Pick<IOrganisation, 'body' | 'help_info' | 'page_title'>>
   ) {
-    const { data } = await restApi.patch<IOrganisation>(
+    currentOrganisation.value = await restApi.patch<IOrganisation>(
       'organisation/change/',
       partial
     )
-    currentOrganisation.value = data
   }
 
   // Assumes singleton components

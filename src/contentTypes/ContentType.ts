@@ -195,7 +195,7 @@ export default class ContentType<
   public async getAvailableRoles(): Promise<ContextRole<Role>[]> {
     this.assertHasRoles()
     if (this.rolesAvailable) return this.rolesAvailable
-    const { data } = await this.rolesApi.listAction<ContextRole<Role>[]>(
+    const data = await this.rolesApi.listAction<ContextRole<Role>[]>(
       'available',
       undefined,
       { method: 'get' }
@@ -211,7 +211,7 @@ export default class ContentType<
       context: pk,
       user_id_in: users
     }
-    const { data } = await this.rolesApi.list(query)
+    const data = await this.rolesApi.list(query)
     for (const { user, assigned } of data) {
       set(pk, user.pk, assigned)
       setUser(user)

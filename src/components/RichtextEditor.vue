@@ -27,7 +27,7 @@ function* iterTagObjects(query: string) {
 
 async function getUserObjects(query: string) {
   if (!query.length) return []
-  const { data } = await meetingRoleType.api.list({
+  const data = await meetingRoleType.api.list({
     search: query.toLowerCase(),
     meeting: meetingId.value
   })

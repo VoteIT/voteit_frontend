@@ -43,7 +43,7 @@ async function search() {
     results.value = []
     return
   }
-  const { data } = await userType.api.list({
+  const data = await userType.api.list({
     ...props.params,
     search: query.value
   })

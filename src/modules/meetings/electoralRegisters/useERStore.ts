@@ -17,7 +17,7 @@ export default defineStore('electoralRegisters', () => {
     if (fetchingErMethods || erMethods.value) return
     fetchingErMethods = true
     try {
-      const { data } = await erMethodType.api.list()
+      const data = await erMethodType.api.list()
       erMethods.value = data
     } catch {} // TODO
     fetchingErMethods = false
@@ -39,7 +39,7 @@ export default defineStore('electoralRegisters', () => {
     if (registers.has(pk) || fetchingRegisters.has(pk)) return // Stop: Got it, or already fetching
     fetchingRegisters.add(pk)
     try {
-      const { data } = await electoralRegisterType.api.retrieve(pk)
+      const data = await electoralRegisterType.api.retrieve(pk)
       registers.set(pk, data)
     } catch (e) {
       if (retries < 1) return console.error(e)
@@ -50,7 +50,7 @@ export default defineStore('electoralRegisters', () => {
   }
 
   async function fetchMeetingRegisters(meeting: number) {
-    const { data } = await electoralRegisterType.api.list({ meeting })
+    const data = await electoralRegisterType.api.list({ meeting })
     for (const er of data) registers.set(er.pk, er)
   }
 

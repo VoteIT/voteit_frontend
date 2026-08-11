@@ -15,7 +15,7 @@ export default defineStore('invites', () => {
   }
 
   async function fetchMatchedInvites() {
-    const { data } = await matchedInviteType.api.list()
+    const data = await matchedInviteType.api.list()
     // During update downtime server will send a non-JSON-response for a short time. Throw an error if that happens.
     if (!Array.isArray(data))
       throw new Error('Bad response for matched invites')

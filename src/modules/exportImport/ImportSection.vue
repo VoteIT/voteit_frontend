@@ -190,7 +190,7 @@ const showReactions = computed(() =>
 )
 
 const displayedGroups = computed(() =>
-  showGroups.value ? previewResult.value?.groups ?? [] : []
+  showGroups.value ? (previewResult.value?.groups ?? []) : []
 )
 
 // Agenda items are always imported; only their proposals/discussions are gated.
@@ -384,8 +384,6 @@ watch(sourceMeetingId, (id) => {
 const allIncludeOn = () =>
   Object.fromEntries(baseIncludeOptions.value.map(({ key }) => [key, true]))
 
-const MULTIPART_CONFIG = { headers: { 'Content-Type': 'multipart/form-data' } }
-
 async function previewYamlImport(meeting: number, file: File) {
   const formData = new FormData()
   formData.append('file', file)
@@ -395,13 +393,11 @@ async function previewYamlImport(meeting: number, file: File) {
   for (const { key } of baseIncludeOptions.value) {
     formData.append(key, 'true')
   }
-  const { data } = await meetingDataType.api.action<PreviewResponse>(
+  return await meetingDataType.api.action<PreviewResponse>(
     'import',
     meeting,
-    formData as any,
-    MULTIPART_CONFIG
+    formData
   )
-  return data
 }
 
 async function confirmYamlImport(
@@ -414,22 +410,15 @@ async function confirmYamlImport(
   for (const [key, enabled] of Object.entries(options)) {
     formData.append(key, String(enabled))
   }
-  const { data } = await meetingDataType.api.action(
-    'import',
-    meeting,
-    formData as any,
-    MULTIPART_CONFIG
-  )
-  return data
+  return await meetingDataType.api.action('import', meeting, formData)
 }
 
 async function previewClone(meeting: number, source: number) {
-  const { data } = await meetingDataType.api.action<PreviewResponse>(
-    'clone',
-    meeting,
-    { source, preview: true, ...allIncludeOn() }
-  )
-  return data
+  return await meetingDataType.api.action<PreviewResponse>('clone', meeting, {
+    source,
+    preview: true,
+    ...allIncludeOn()
+  })
 }
 
 async function confirmClone(
@@ -437,11 +426,10 @@ async function confirmClone(
   source: number,
   options: Record<string, boolean>
 ) {
-  const { data } = await meetingDataType.api.action('clone', meeting, {
+  return await meetingDataType.api.action('clone', meeting, {
     source,
     ...options
   })
-  return data
 }
 
 async function runPreview() {

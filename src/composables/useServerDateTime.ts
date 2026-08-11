@@ -1,17 +1,16 @@
-import { AxiosResponse } from 'axios'
 import { DateTime, Duration } from 'luxon'
 import { Ref, computed, ref } from 'vue'
 
-import restApi from '@/utils/restApi'
+import { addResponseHook } from '@/utils/restApi'
 
 const serverAhead = ref(Duration.fromMillis(0))
-let interceptorId: number | null = null
 
-// Intercept server time until we can calculate a valid serverAhead value
-function interceptTime(response: AxiosResponse): AxiosResponse {
+// Intercept server time until we can calculate a valid serverAhead value.
+// `unsubscribe` is only read once a response arrives, so it is always assigned.
+const unsubscribe = addResponseHook((response) => {
   try {
-    const serverTime = DateTime.fromRFC2822(response.headers.date)
-    if (!serverTime.isValid) return response
+    const serverTime = DateTime.fromRFC2822(response.headers.get('date') ?? '')
+    if (!serverTime.isValid) return
     // Go ahead with diff calculation
     serverAhead.value = serverTime.diff(DateTime.now())
     console.log(
@@ -19,14 +18,11 @@ function interceptTime(response: AxiosResponse): AxiosResponse {
         serverAhead.value.milliseconds > 0 ? 'ahead of' : 'behind'
       } you`
     )
-    if (typeof interceptorId === 'number')
-      restApi.interceptors.response.eject(interceptorId)
+    unsubscribe()
   } catch {
     // Did not get an OK datetime string. That's OK.
   }
-  return response
-}
-interceptorId = restApi.interceptors.response.use(interceptTime)
+})
 
 // Adjust serverAhead value if we got a date in the future.
 function adjustServerAhead(date: DateTime) {

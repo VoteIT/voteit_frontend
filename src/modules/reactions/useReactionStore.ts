@@ -102,7 +102,7 @@ export default defineStore('reactions', () => {
   ) {
     if (!authStore.user)
       throw new Error('Authenticated user required for reactions')
-    const { data } = await reactionButtonType.api.action<Reaction>(
+    const data = await reactionButtonType.api.action<Reaction>(
       'set',
       button.pk,
       relation
@@ -124,7 +124,7 @@ export default defineStore('reactions', () => {
     button: ReactionButton,
     relation: ReactionRelation
   ) {
-    const { data } = await reactionButtonType.api.action<{ users: number[] }>(
+    const data = await reactionButtonType.api.action<{ users: number[] }>(
       'list-reactions',
       button.pk,
       relation

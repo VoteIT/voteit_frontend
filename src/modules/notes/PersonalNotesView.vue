@@ -30,7 +30,7 @@ const fetching = shallowRef(false)
 async function fetchNotes(meeting: number) {
   fetching.value = true
   try {
-    const { data } = await noteType.api.list({ meeting })
+    const data = await noteType.api.list({ meeting })
     personalNotes.value = data
   } catch {
     alert("Couldn't fetch your notes!")
@@ -120,7 +120,7 @@ function setEditNote(note: IProposalNote) {
 
 async function saveNote(note: number, close: () => void) {
   try {
-    const { data } = await noteType.api.patch(note, noteEdit.formData)
+    const data = await noteType.api.patch(note, noteEdit.formData)
     personalNotes.value = [
       ...personalNotes.value.filter((n) => n.pk !== note),
       data

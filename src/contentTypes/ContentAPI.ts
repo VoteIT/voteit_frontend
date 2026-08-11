@@ -1,14 +1,15 @@
-import { isAxiosError, AxiosPromise, AxiosRequestConfig } from 'axios'
-
 import { AlertLevel, RestApiConfig } from '@/composables/types'
 import { openAlertEvent } from '@/utils/events'
-import restApi from '@/utils/restApi'
+import restApi, {
+  HTTPMethod,
+  NetworkError,
+  RequestConfig,
+  isApiError
+} from '@/utils/restApi'
 
 const DEFAULT_CONFIG: RestApiConfig = {
   alertOnError: true
 }
-
-type HTTPMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 export default class ContentAPI<
   T extends { pk?: number; state?: string },
@@ -36,21 +37,22 @@ export default class ContentAPI<
    * Note: This should be phased out, handling errors in calling views.
    */
   private handleError(e: unknown) {
-    if (!isAxiosError(e)) {
+    if (e instanceof NetworkError)
+      return this.displayError('Error', 'No response from server')
+    if (!isApiError(e)) {
       console.error('Programming error', e)
       return this.displayError('Unknown error', 'Check console for details.')
     }
-    if (!e.response || !e.status)
-      return this.displayError('Error', 'No response from server')
 
-    const { data } = e.response
-    switch (e.response.status) {
+    const { data } = e
+    switch (e.status) {
       case 500:
         return this.displayError(e.status, 'Server error')
       case 400:
         if (
           data !== null &&
           typeof data === 'object' &&
+          'error' in data &&
           typeof data.error === 'string'
         )
           return this.displayError('Error', data.error, true)
@@ -59,8 +61,8 @@ export default class ContentAPI<
           typeof data === 'string'
             ? data
             : typeof data === 'object'
-            ? JSON.stringify(data)
-            : 'Unknown error'
+              ? JSON.stringify(data)
+              : 'Unknown error'
         return this.displayError(e.status, text.slice(0, 200))
       }
     }
@@ -73,47 +75,43 @@ export default class ContentAPI<
       method,
       url
     }
-    const request = restApi<Type>(config)
+    const request = restApi.request<Type>(config)
     if (this.config.alertOnError) request.catch(this.handleError.bind(this))
     return request
   }
 
-  public add(data: Partial<T>): AxiosPromise<T> {
-    return this.call('post', this.endpoint, { data })
+  public add(data: Partial<T>): Promise<T> {
+    return this.call('post', this.endpoint, { body: data })
   }
 
-  public list<RT = T[]>(params?: object): AxiosPromise<RT> {
+  public list<RT = T[]>(params?: Record<string, unknown>): Promise<RT> {
     return this.call('get', this.endpoint, { params })
   }
 
-  public retrieve(pk: K): AxiosPromise<T> {
+  public retrieve(pk: K): Promise<T> {
     return this.call('get', `${this.endpoint}${pk}/`)
   }
 
-  public put(
-    pk: K,
-    data: Omit<T, 'pk'>,
-    config?: AxiosRequestConfig
-  ): AxiosPromise<T> {
-    return this.call('put', `${this.endpoint}${pk}/`, { data, ...config })
+  public put(pk: K, data: Omit<T, 'pk'>, config?: RequestConfig): Promise<T> {
+    return this.call('put', `${this.endpoint}${pk}/`, { body: data, ...config })
   }
 
-  public patch(pk: K, data: Partial<T>): AxiosPromise<T> {
-    return this.call('patch', `${this.endpoint}${pk}/`, { data })
+  public patch(pk: K, data: Partial<T>): Promise<T> {
+    return this.call('patch', `${this.endpoint}${pk}/`, { body: data })
   }
 
-  public delete(pk: K): AxiosPromise {
+  public delete(pk: K): Promise<unknown> {
     return this.call('delete', `${this.endpoint}${pk}/`)
   }
 
   public listAction<Type>(
     action: string,
-    data?: object,
-    config?: AxiosRequestConfig
+    data?: unknown,
+    config?: RequestConfig
   ) {
     const { method = 'post', ...rest } = config ?? {}
-    return this.call<Type>(method as HTTPMethod, `${this.endpoint}${action}/`, {
-      data,
+    return this.call<Type>(method, `${this.endpoint}${action}/`, {
+      body: data,
       ...rest
     })
   }
@@ -121,14 +119,13 @@ export default class ContentAPI<
   public action<Type>(
     action: string,
     id: K,
-    data?: object,
-    config?: AxiosRequestConfig
+    data?: unknown,
+    config?: RequestConfig
   ) {
     const { method = 'post', ...rest } = config ?? {}
-    return this.call<Type>(
-      method as HTTPMethod,
-      `${this.endpoint}${id}/${action}/`,
-      { data, ...rest }
-    )
+    return this.call<Type>(method, `${this.endpoint}${id}/${action}/`, {
+      body: data,
+      ...rest
+    })
   }
 }

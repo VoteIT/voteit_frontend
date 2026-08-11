@@ -57,7 +57,7 @@ export default defineStore('polls', () => {
   }
 
   async function createPoll(pollData: PollStartData) {
-    const { data } = await pollType.api.add(pollData)
+    const data = await pollType.api.add(pollData)
     polls.set(data.pk, data)
     return data
   }

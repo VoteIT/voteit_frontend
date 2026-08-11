@@ -26,7 +26,7 @@ export default function useMeetingComponent<T extends ComponentBase>(
   }
 
   async function addComponent(settings: T['settings'], enabled = false) {
-    const { data } = await meetingComponentType.api.add({
+    const data = await meetingComponentType.api.add({
       component_name: name,
       enabled,
       meeting: unref(meeting),

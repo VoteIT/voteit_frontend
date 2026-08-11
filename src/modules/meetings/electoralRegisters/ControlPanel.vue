@@ -66,9 +66,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import axios from 'axios'
 
 import { openDialogEvent } from '@/utils/events'
+import { NetworkError, parseRestError } from '@/utils/restApi'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useAlert from '@/composables/useAlert'
 import { meetingType } from '../contentTypes'
@@ -92,36 +92,35 @@ const currentName = computed({
     try {
       await api.patch(meetingId.value, { er_policy_name: name })
     } catch (e) {
-      if (axios.isAxiosError(e)) {
-        if (!e.response) return alert('^Could not reach server')
+      if (e instanceof NetworkError) return alert('^Could not reach server')
+      const errors = parseRestError<{ er_policy_name: string }>(e)
+      if (errors.er_policy_name)
         return openDialogEvent.emit({
-          title: e.response.data.er_policy_name.join('\n'),
+          title: errors.er_policy_name.join('\n'),
           no: false,
           yes: t('ok'),
           resolve() {}
         })
-      }
       alert('^Unknown error')
     }
   }
 })
 
-const methods = computed(
-  () =>
-    availableErMethods.value?.map((method) => {
-      const isCurrent = method.name === currentName.value
-      return {
-        ...method,
-        attributes: [...iterErAttributes(method, t)],
-        isCurrent,
-        props: {
-          elevation: isCurrent ? 6 : 0,
-          color: isCurrent ? 'info' : undefined,
-          class: {
-            'pa-4': isCurrent
-          }
+const methods = computed(() =>
+  availableErMethods.value?.map((method) => {
+    const isCurrent = method.name === currentName.value
+    return {
+      ...method,
+      attributes: [...iterErAttributes(method, t)],
+      isCurrent,
+      props: {
+        elevation: isCurrent ? 6 : 0,
+        color: isCurrent ? 'info' : undefined,
+        class: {
+          'pa-4': isCurrent
         }
       }
-    })
+    }
+  })
 )
 </script>

@@ -22,9 +22,7 @@ const messages = ref<IDjangoMessage[]>()
 
 async function fetchMessages() {
   try {
-    messages.value = (
-      await restApi.get<IDjangoMessage[]>('user/messages/')
-    ).data
+    messages.value = await restApi.get<IDjangoMessage[]>('user/messages/')
     if (!messages.value.length) router.push({ name: 'home' })
   } catch {
     alert('Misslyckades med att hämta meddelanden')

@@ -22,7 +22,7 @@ vi.mock('./contentTypes', () => ({
     useContextRoles: () => ({ getUserRoles: vi.fn(), hasRole: vi.fn() })
   },
   accessPolicyType: {
-    api: { retrieve: vi.fn().mockResolvedValue({ data: { policies: [] } }) }
+    api: { retrieve: vi.fn().mockResolvedValue({ policies: [] }) }
   }
 }))
 

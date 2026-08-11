@@ -1,4 +1,4 @@
-import restApi from '@/utils/restApi'
+import { getApiLink } from '@/utils/restApi'
 import { registerValidator } from '@/composables/useStateMachine'
 
 import { agendaItemType } from '../agendas/contentTypes'
@@ -11,7 +11,7 @@ import * as rules from './rules'
 function getDownloadFormat(system: number, format: 'csv' | 'json') {
   return {
     format,
-    url: `${restApi.defaults.baseURL}export-speakers/${system}/${format}/`
+    url: getApiLink(`export-speakers/${system}/${format}/`)
   }
 }
 
