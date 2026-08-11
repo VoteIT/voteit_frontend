@@ -2,7 +2,7 @@
 import Quill from 'quill'
 import 'quill-mention/autoregister'
 import { computed, getCurrentInstance, inject, onMounted, ref } from 'vue'
-import { ValidationResult } from 'vuetify/lib/composables/validation'
+import type { ValidationRule } from 'vuetify'
 
 import { getDisplayName, tagify } from '@/utils'
 import useMeetingId from '@/modules/meetings/useMeetingId'
@@ -116,7 +116,7 @@ const props = withDefaults(
     errorMessages?: string[]
     modelValue?: string
     placeholder?: string
-    rules?: ((value: string) => ValidationResult)[]
+    rules?: ValidationRule[]
     variant?: QuillVariant
   }>(),
   {

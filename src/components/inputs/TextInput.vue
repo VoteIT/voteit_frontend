@@ -2,7 +2,7 @@
   <v-text-field
     :id="name"
     :label="label"
-    :type="settings.type ?? 'text'"
+    :type="settings?.type ?? 'text'"
     v-model="value"
     :required="required"
   />

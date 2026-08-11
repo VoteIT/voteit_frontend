@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onClickOutside } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'
-import { ValidationResult } from 'vuetify/lib/composables/validation'
+import type { ValidationRule } from 'vuetify'
 
 // Attrs passed to v-input
 defineOptions({ inheritAttrs: false })
@@ -12,7 +12,7 @@ interface Props {
   errorMessages?: string[]
   maxlength?: number
   modelValue: string
-  rules?: ((value: string) => ValidationResult)[]
+  rules?: ValidationRule[]
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 }
 const props = withDefaults(defineProps<Props>(), {

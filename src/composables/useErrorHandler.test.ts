@@ -1,4 +1,4 @@
-import { ValidationError } from 'envelope-client/src/errors'
+import { ValidationError } from 'envelope-client/src/errors.js'
 import { expect, test, vi } from 'vitest'
 
 import useErrorHandler from './useErrorHandler'

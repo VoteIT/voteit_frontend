@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, reactive, ref, watch } from 'vue'
-import { ValidationResult } from 'vuetify/lib/composables/validation'
+import type { ValidationRule } from 'vuetify'
 
 import { tagify } from '@/utils'
 
@@ -15,7 +15,7 @@ const props = withDefaults(
     errorMessages?: string[]
     label?: string
     modelValue?: string[]
-    rules?: ((value: string[]) => ValidationResult)[]
+    rules?: ValidationRule[]
     setTag?: string
   }>(),
   {

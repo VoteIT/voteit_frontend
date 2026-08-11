@@ -3,8 +3,8 @@
     :label="label"
     type="number"
     v-model="model"
-    :min="settings.min"
-    :max="settings.max"
+    :min="settings?.min"
+    :max="settings?.max"
     :required="required"
   />
 </template>
