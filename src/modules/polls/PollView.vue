@@ -6,8 +6,6 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { MenuItem, ThemeColor } from '@/utils/types'
 import { dialogQuery, slugify } from '@/utils'
-import { socket } from '@/utils/Socket'
-import { openAlertEvent } from '@/utils/events'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
@@ -22,7 +20,8 @@ import { proposalButtonPlugins } from '../proposals/registry'
 import useProposalOrdering from '../proposals/useProposalOrdering'
 
 import usePoll from './usePoll'
-import { pollType, voteType } from './contentTypes'
+import { pollType } from './contentTypes'
+import PollBallot from './PollBallot.vue'
 import WithheldResult from './WithheldResult.vue'
 import { PollState } from './types'
 
@@ -42,12 +41,10 @@ const {
   isOngoing,
   isPollVoter,
   isWithheld,
-  pollHelpText,
   pollMethodName,
   userVote,
   canDelete,
   canVote,
-  voteComponent,
   resultComponent,
   nextUnvoted,
   voteCount
@@ -73,62 +70,11 @@ const subscribeAgendaItem = computed(() => {
 useChannel('agenda_item', subscribeAgendaItem)
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.poll', 2)))
 
-const validVote = ref(userVote.value?.vote) // Gets updates from method vote component, when valid.
 const votingComplete = ref(!!userVote.value) // Set to false to allow changing vote
 watch(userVote, (value) => {
   // Reset voting values if user vote is updated.
   votingComplete.value = !!value
-  validVote.value = value?.vote
 })
-watch(pollId, () => {
-  validVote.value = undefined
-})
-
-const submitting = ref(false)
-async function castVote() {
-  if (!validVote.value || !poll.value) return
-  submitting.value = true
-  const msg = {
-    poll: poll.value.pk,
-    vote: validVote.value
-  }
-  try {
-    await socket.call(`${poll.value.method_name}_vote.add`, msg)
-    votingComplete.value = true
-  } catch {
-    openAlertEvent.emit(
-      '^Critical error. Your vote was not accepted! Try again, or contact a meeting offical!'
-    )
-  }
-  submitting.value = false
-}
-
-async function abstainVote() {
-  if (!poll.value) return
-  if (validVote.value) {
-    if (
-      !(await dialogQuery({
-        title: t('poll.abstainValidVoteConfirm'),
-        no: t('cancel'),
-        yes: t('poll.abstain'),
-        theme: ThemeColor.Warning
-      }))
-    ) {
-      return
-    }
-  }
-  submitting.value = true
-  try {
-    await voteType.methodCall('abstain', { poll: poll.value.pk })
-    votingComplete.value = true
-    validVote.value = undefined // Forget vote
-  } catch {
-    openAlertEvent.emit(
-      '^Critical error. Your abstain vote was not accepted! Try again, or contact a meeting offical!'
-    )
-  }
-  submitting.value = false
-}
 
 async function deletePoll() {
   if (!canDelete.value || !poll.value) return
@@ -260,14 +206,12 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
           <DropdownMenu :items="menuItems" />
         </header>
         <div v-if="poll.body" v-html="poll.body"></div>
-        <template v-if="isOngoing">
-          <v-alert type="success" v-if="votingComplete" class="my-6">
-            {{ $t('poll.voteAddedInfo') }}
-          </v-alert>
-          <v-alert type="info" v-else class="my-6">
-            {{ pollHelpText }}
-          </v-alert>
-        </template>
+        <v-alert
+          v-if="isOngoing && votingComplete"
+          class="my-6"
+          :text="$t('poll.voteAddedInfo')"
+          type="success"
+        />
       </header>
       <div v-if="isWithheld" id="poll-results" class="my-6">
         <ProgressBar
@@ -326,43 +270,22 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
         <p class="text-secondary mb-4">
           {{ $t('proposal.ordering') }}: {{ proposalOrderingTitle }}
         </p>
-        <component
-          :is="voteComponent"
-          :poll="poll"
-          :proposals="proposals"
+        <PollBallot
           disabled
           :key="poll.pk"
-        />
-      </div>
-      <template v-else-if="!votingComplete">
-        <component
-          class="voting-component"
-          :disabled="!canVote"
-          v-if="isOngoing"
-          :is="voteComponent"
           :poll="poll"
           :proposals="proposals"
-          v-model="validVote"
-          :key="poll.pk"
         />
-        <div class="btn-controls mt-6" v-if="canVote">
-          <v-btn
-            color="primary"
-            :disabled="!validVote || submitting"
-            size="large"
-            :text="$t('poll.vote')"
-            prepend-icon="mdi-vote"
-            @click="castVote"
-          />
-          <v-btn
-            color="warning"
-            :disabled="submitting"
-            prepend-icon="mdi-cancel"
-            :text="$t('poll.abstain')"
-            @click="abstainVote"
-          />
-        </div>
-      </template>
+      </div>
+      <PollBallot
+        v-else-if="isOngoing && !votingComplete"
+        :key="poll.pk"
+        :disabled="!canVote"
+        :poll="poll"
+        :proposals="proposals"
+        :modelValue="userVote?.vote"
+        @votingComplete="votingComplete = true"
+      />
       <div class="mt-6">
         <v-btn
           v-for="{ props, title } in buttons"
@@ -390,11 +313,9 @@ const erPreliminary = computed(() => poll.value?.state === PollState.Upcoming)
             <p v-else-if="userVote.abstain">
               {{ $t('poll.abstained') }}
             </p>
-            <component
+            <PollBallot
               v-else
-              class="voting-component"
               disabled
-              :is="voteComponent"
               :poll="poll"
               :proposals="proposals"
               :modelValue="userVote.vote"
