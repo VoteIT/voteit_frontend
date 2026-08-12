@@ -38,7 +38,9 @@ const setableStates = computed(() =>
   getStateList((s) => s.state !== AgendaState.Archived)
 )
 const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
-const { handleSocketError } = useErrorHandler({ target: 'dialog' })
+const { handleRestError } = useErrorHandler({
+  target: 'dialog'
+})
 
 usePermission(isModerator, { to: computed(() => ({ name: 'meeting' })) })
 useMeetingTitle(t('agenda.agenda'))
@@ -137,12 +139,12 @@ async function actionOnSelected(
 async function deleteSelected() {
   bulkChanging.value = true
   try {
-    await agendaItemType.methodCall('bulk_delete', {
+    await agendaApi.listAction('bulk-delete', {
       meeting: meetingId.value,
       agenda_items: bulkEdit.selected
     })
   } catch (e) {
-    handleSocketError(e, '__root__')
+    handleRestError(e)
   }
   bulkChanging.value = false
 }
@@ -155,13 +157,13 @@ const bulkChanging = ref(false)
 async function patchSelected(data: Partial<AgendaItem>) {
   bulkChanging.value = true
   try {
-    await agendaItemType.methodCall('bulk_update', {
+    await agendaApi.listAction('bulk-change', {
       meeting: meetingId.value,
       agenda_items: bulkEdit.selected,
       ...data
     })
   } catch (e) {
-    handleSocketError(e, '__root__')
+    handleRestError(e)
   }
   bulkChanging.value = false
 }
