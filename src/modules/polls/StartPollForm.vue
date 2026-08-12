@@ -34,7 +34,7 @@ async function createPoll(start = false) {
   try {
     await props.createHandler(poll, start)
   } finally {
-    // pollType has alertOnError
+    // Errors are reported by the create handler
     working.value = false
   }
 }

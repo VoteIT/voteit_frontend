@@ -33,7 +33,7 @@ const meetingButtons = computed({
   set(btns) {
     for (const [order, btn] of enumerate(btns, 1)) {
       if (btn.order === order) continue
-      reactionButtonType.api.patch(btn.pk, { order })
+      reactionButtonType.api.patch(btn.pk, { order }).catch(handleRestError)
     }
   }
 })
@@ -56,11 +56,19 @@ async function setContentType(
   const allowed_models = value
     ? [contentType, ...button.allowed_models]
     : button.allowed_models.filter((ct) => ct !== contentType)
-  await reactionButtonType.api.patch(button.pk, { allowed_models })
+  try {
+    await reactionButtonType.api.patch(button.pk, { allowed_models })
+  } catch (e) {
+    handleRestError(e, 'allowed_models')
+  }
 }
 
 async function setActive(button: ReactionButton, active: boolean) {
-  await reactionButtonType.api.patch(button.pk, { active })
+  try {
+    await reactionButtonType.api.patch(button.pk, { active })
+  } catch (e) {
+    handleRestError(e, 'active')
+  }
 }
 
 const model = reactive<Record<number, boolean>>({})

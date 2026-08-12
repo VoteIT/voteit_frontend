@@ -11,6 +11,7 @@ import useAuthStore from '@/modules/auth/useAuthStore'
 import { meetingRolePlugins } from '@/modules/meetings/registry'
 import useMeeting from '@/modules/meetings/useMeeting'
 import useUserDetails from '@/modules/organisations/useUserDetails'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import { DescribedColumn, isDescribedColumn, RoleMatrixColumn } from './types'
 import HelpSection from './HelpSection.vue'
@@ -38,6 +39,7 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails(meetingId)
@@ -131,6 +133,8 @@ onBeforeMount(async () => {
       props.contentType.fetchRoles(props.pk)
     ])
     availableRoles.value = roles
+  } catch (e) {
+    handleRestError(e)
   } finally {
     loading.value = false
   }
@@ -139,19 +143,31 @@ onBeforeMount(async () => {
 async function addRole(user: number, role: string) {
   if (!props.admin) return
   if (props.addConfirm && !(await props.addConfirm(user, role))) return
-  props.contentType.addRoles(props.pk, user, role)
+  try {
+    await props.contentType.addRoles(props.pk, user, role)
+  } catch (e) {
+    handleRestError(e, 'roles')
+  }
 }
 async function removeRole(user: number, role: string) {
   if (!props.admin) return
   if (props.removeConfirm && !(await props.removeConfirm(user, role))) return
-  props.contentType.removeRoles(props.pk, user, role)
+  try {
+    await props.contentType.removeRoles(props.pk, user, role)
+  } catch (e) {
+    handleRestError(e, 'roles')
+  }
 }
 
 async function removeAllRoles(user: number) {
   if (!props.admin) return
   const userRoles = contextRoles.getUserRoles(props.pk, user)
   if (!userRoles) throw new Error(`User ${user} has no roles in this context`)
-  props.contentType.removeRoles(props.pk, user, ...userRoles)
+  try {
+    await props.contentType.removeRoles(props.pk, user, ...userRoles)
+  } catch (e) {
+    handleRestError(e, 'roles')
+  }
 }
 
 function isCurrentUser(userId: number): boolean {

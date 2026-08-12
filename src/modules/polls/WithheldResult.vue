@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import usePoll from './usePoll'
 import { pollType } from './contentTypes'
@@ -13,11 +14,16 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { resultComponent, poll } = usePoll(computed(() => props.pollId))
 
-function publishNow() {
+async function publishNow() {
   if (!poll.value) return
-  pollType.sm.sendEvent(poll.value, 'publish_result', t)
+  try {
+    await pollType.sm.sendEvent(poll.value, 'publish_result', t)
+  } catch (e) {
+    handleRestError(e, 'transition')
+  }
 }
 
 const showResult = ref(false)

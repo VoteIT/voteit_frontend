@@ -22,11 +22,16 @@ export default function useSpeakerHistory(
     key,
     async (key) => {
       if (!key) return
-      const data = await speakerHistoryType.api.list({
-        meeting: meeting.value,
-        speaker_system: speakerSystem.value
-      })
-      speakerHistory.set(key, orderBy(data, 'seconds_spoken', 'desc'))
+      try {
+        const data = await speakerHistoryType.api.list({
+          meeting: meeting.value,
+          speaker_system: speakerSystem.value
+        })
+        speakerHistory.set(key, orderBy(data, 'seconds_spoken', 'desc'))
+      } catch (e) {
+        // Loaded on watch; nothing to interrupt the user with
+        console.warn(e)
+      }
     },
     { immediate: true }
   )

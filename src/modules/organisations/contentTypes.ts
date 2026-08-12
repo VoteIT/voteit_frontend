@@ -34,6 +34,5 @@ export const userType = new BaseContentType<IUser>({
 
 export const profileType = new BaseContentType<IOrganisationUser>({
   name: 'user',
-  restEndpoint: 'user/',
-  restConfig: { alertOnError: false }
+  restEndpoint: 'user/'
 })

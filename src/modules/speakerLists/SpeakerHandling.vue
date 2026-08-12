@@ -73,7 +73,6 @@ const nextSpeakerListName = computed(() =>
   agendaItem.value ? getUniqueListTitle(agendaItem.value.title) : ''
 )
 
-const speakerApi = speakerListType.getContentApi({ alertOnError: false })
 async function addSpeakerList(data: { title: string }) {
   if (!agendaItem.value)
     throw new Error("No agenda item; can't add speaker list")
@@ -84,14 +83,34 @@ async function addSpeakerList(data: { title: string }) {
     agenda_item: agendaItem.value.pk,
     ...data
   }
-  await speakerApi.add(listData)
+  await speakerListType.api.add(listData)
 }
 function updateSpeakerList(data: { title: string; pk: number }) {
-  return speakerApi.patch(data.pk, { title: data.title })
+  return speakerListType.api.patch(data.pk, { title: data.title })
 }
 
-function setIsOpen(list: number, is_open: boolean) {
-  speakerApi.patch(list, { is_open })
+async function setIsOpen(list: number, is_open: boolean) {
+  try {
+    await speakerListType.api.patch(list, { is_open })
+  } catch (e) {
+    handleRestError(e)
+  }
+}
+
+async function shuffleList(list: number) {
+  try {
+    await listApi.shuffle(list)
+  } catch (e) {
+    handleRestError(e)
+  }
+}
+
+async function addNextSpeakerList() {
+  try {
+    await addSpeakerList({ title: nextSpeakerListName.value })
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 
 async function deleteList(list: SpeakerList) {
@@ -101,7 +120,11 @@ async function deleteList(list: SpeakerList) {
       theme: ThemeColor.Warning
     })
   )
-    await speakerListType.api.delete(list.pk)
+    try {
+      await speakerListType.api.delete(list.pk)
+    } catch (e) {
+      handleRestError(e)
+    }
 }
 
 function getListMenu(list: SpeakerList): MenuItem[] {
@@ -224,7 +247,7 @@ const otherRoomsWithLists = computed(() => {
                 prepend-icon="mdi-plus"
                 size="small"
                 :text="$t('speaker.newList')"
-                @click="addSpeakerList({ title: nextSpeakerListName })"
+                @click="addNextSpeakerList"
               />
               <v-menu :text="$t('speaker.addQuick')" location="bottom right">
                 <template #activator="{ props }">
@@ -321,7 +344,7 @@ const otherRoomsWithLists = computed(() => {
                     </DefaultDialog>
                     <QueryDialog
                       :text="$t('speaker.shuffleListConfirm')"
-                      @confirmed="listApi.shuffle(list.pk)"
+                      @confirmed="shuffleList(list.pk)"
                     >
                       <template #activator="{ props }">
                         <v-list-item

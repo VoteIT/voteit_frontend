@@ -1,10 +1,7 @@
 import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
-import {
-  ContextRole,
-  ContextRoleDefinition,
-  RestApiConfig
-} from '@/composables/types'
+import { ContextRole, ContextRoleDefinition } from '@/composables/types'
+import { RequestConfig } from '@/utils/restApi'
 import useContextRoles from '@/composables/useContextRoles'
 
 import { IUser } from '@/modules/organisations/types'
@@ -22,7 +19,6 @@ interface IContentType<
   Role extends string = never
 > {
   name: string // Content type name in channels
-  restConfig?: RestApiConfig
   restEndpoint?: string
   roles?: {
     definitions: Record<Role, ContextRoleDefinition>
@@ -103,7 +99,7 @@ export class BaseContentType<T extends {}, Role extends string = never> {
     return this.on('deleted', fn)
   }
 
-  public getContentApi(config?: RestApiConfig) {
+  public getContentApi(config?: RequestConfig) {
     if (!this.contentType.restEndpoint)
       throw new Error(
         `Content Api not configured for Content Type ${this.name}`
@@ -113,7 +109,7 @@ export class BaseContentType<T extends {}, Role extends string = never> {
 
   public get api() {
     // Cache an api instance with default settings
-    if (!this._api) this._api = this.getContentApi(this.contentType.restConfig)
+    if (!this._api) this._api = this.getContentApi()
     return this._api
   }
 }

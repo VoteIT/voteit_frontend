@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import useAuthStore from '@/modules/auth/useAuthStore'
 import useParticipantTags from '@/modules/meetings/participantTags/useParticipantTags'
 import useMeetingId from '@/modules/meetings/useMeetingId'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import { GENDER_ICONS, getGenderIcon, translateGender } from './utils'
 import useGenderTag from './useGenderTag'
@@ -15,6 +16,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { removeNamespace, setTags } = useParticipantTags(meetingId)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const genderTag = useGenderTag(
   meetingId,
   computed(() => authStore.user?.pk)
@@ -35,6 +37,22 @@ const genderText = computed(
   () => genderTag.value && translateGender(t, genderTag.value)
 )
 const genderIcon = computed(() => getGenderIcon(genderTag.value))
+
+async function setGender(gender: string) {
+  try {
+    await setTags('gen', gender)
+  } catch (e) {
+    handleRestError(e)
+  }
+}
+
+async function clearGender() {
+  try {
+    await removeNamespace(['gen'])
+  } catch (e) {
+    handleRestError(e)
+  }
+}
 </script>
 
 <template>
@@ -57,14 +75,14 @@ const genderIcon = computed(() => getGenderIcon(genderTag.value))
         :key="gender"
         :prepend-icon="icon"
         :title="title"
-        @click="setTags('gen', gender)"
+        @click="setGender(gender)"
       />
       <v-list-item
         v-if="genderTag"
         base-color="warning"
         prepend-icon="mdi-close"
         :title="$t('clear')"
-        @click="removeNamespace(['gen'])"
+        @click="clearGender"
       />
     </v-list>
   </v-menu>

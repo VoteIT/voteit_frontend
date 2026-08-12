@@ -6,6 +6,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import usePoll from '../polls/usePoll'
 import { Poll } from '../polls/types'
@@ -19,6 +20,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const pollId = toRef(props.data, 'pk')
 const {
   canChange,
@@ -59,13 +61,22 @@ const progressBar = computed(() => {
 const working = ref(false)
 
 async function cancel() {
-  working.value = true
-  await pollType.sm.sendEvent(poll.value!, 'cancel', t)
+  await transition('cancel')
 }
 
 async function close() {
+  await transition('close')
+}
+
+async function transition(event: 'cancel' | 'close') {
   working.value = true
-  await pollType.sm.sendEvent(poll.value!, 'close', t)
+  try {
+    await pollType.sm.sendEvent(poll.value!, event, t)
+  } catch (e) {
+    handleRestError(e, 'transition')
+  } finally {
+    working.value = false
+  }
 }
 
 /**
@@ -139,7 +150,7 @@ onBeforeUnmount(() => {
         <template #activator="{ props }">
           <v-btn
             color="warning"
-            :disabled="working"
+            :loading="working"
             prepend-icon="mdi-cancel"
             :text="$t('poll.cancel')"
             variant="text"
@@ -149,7 +160,7 @@ onBeforeUnmount(() => {
       </QueryDialog>
       <v-btn
         color="primary"
-        :disabled="working"
+        :loading="working"
         prepend-icon="mdi-gavel"
         :text="$t('poll.close')"
         variant="elevated"

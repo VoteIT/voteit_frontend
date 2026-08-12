@@ -32,6 +32,7 @@ import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
 import { closeModalEvent } from '@/utils/events'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 
@@ -42,6 +43,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { agendaId } = useAgendaItem()
 const formData = reactive<Pick<ProposalText, 'base_tag' | 'body' | 'title'>>({
   base_tag: props.data?.base_tag ?? t('proposal.textBaseTagDefault'),
@@ -63,7 +65,9 @@ async function save() {
         ...formData
       })
     closeModalEvent.emit()
-  } catch {
+  } catch (e) {
+    handleRestError(e)
+  } finally {
     saving.value = false
   }
 }

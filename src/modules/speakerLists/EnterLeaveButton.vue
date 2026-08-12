@@ -43,8 +43,8 @@ async function enter(tag?: GenderTag, close?: () => void) {
   if (tag) {
     try {
       await setTags('gen', tag)
-    } catch {
-      // Handled automatically in rest api
+    } catch (e) {
+      handleRestError(e)
     }
   }
   try {

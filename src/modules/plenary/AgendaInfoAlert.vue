@@ -304,7 +304,15 @@ function getAgendaAlert(): IAlertInfo | undefined {
               prependIcon: 'mdi-gavel',
               text: t('plenary.closeAI'),
               async onClick() {
-                await agendaItemType.sm.sendEvent(agendaItem.value!, 'close', t)
+                try {
+                  await agendaItemType.sm.sendEvent(
+                    agendaItem.value!,
+                    'close',
+                    t
+                  )
+                } catch (e) {
+                  handleRestError(e, 'transition')
+                }
               }
             },
             ...selectApprovedAction.value

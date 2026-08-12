@@ -156,13 +156,19 @@ watch(search, async (search) => {
     searchOptions.value = []
     return
   }
-  const data = await userType.api.list({
-    meeting: meetingId.value,
-    search
-  })
-  searchOptions.value = [
-    ...usersToAutocomplete(data.filter(({ pk }) => authStore.user?.pk !== pk))
-  ]
+  try {
+    const data = await userType.api.list({
+      meeting: meetingId.value,
+      search
+    })
+    searchOptions.value = [
+      ...usersToAutocomplete(data.filter(({ pk }) => authStore.user?.pk !== pk))
+    ]
+  } catch (e) {
+    // Typeahead: a dialog per keystroke would be worse than no results
+    searchOptions.value = []
+    console.warn(e)
+  }
 })
 
 const currentUserOptions = computed(() => [

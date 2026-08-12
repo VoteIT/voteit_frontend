@@ -5,14 +5,9 @@ import {
   IUser,
   IOrganisationUser
 } from '@/modules/organisations/types'
-import { RequestConfig } from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import { Component } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
-
-export interface RestApiConfig extends RequestConfig {
-  alertOnError?: boolean
-}
 
 export interface Modal {
   component?: Component

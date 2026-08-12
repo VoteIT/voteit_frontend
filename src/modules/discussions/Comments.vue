@@ -2,6 +2,7 @@
 import { ComponentPublicInstance, computed, ref } from 'vue'
 
 import { getDisplayName } from '@/utils'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import { isGroupAuthor, MeetingRole } from '../meetings/types'
@@ -23,6 +24,7 @@ defineProps<{
 
 const meetingId = useMeetingId()
 const { getUser } = useUserDetails(meetingId)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { agendaId, agendaItem, canAddDiscussionPost } = useAgendaItem()
 const { getMeetingButtons } = useReactionStore()
 
@@ -36,10 +38,14 @@ const submitIcon = computed(() =>
     : 'mdi-comment-text-outline'
 )
 async function submit(post: Partial<IDiscussionPost>) {
-  await discussionPostType.api.add({
-    agenda_item: agendaId.value,
-    ...post
-  })
+  try {
+    await discussionPostType.api.add({
+      agenda_item: agendaId.value,
+      ...post
+    })
+  } catch (e) {
+    handleRestError(e, 'body')
+  }
 }
 
 const addContentComponent = ref<null | ComponentPublicInstance<{

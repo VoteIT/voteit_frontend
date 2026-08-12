@@ -43,13 +43,19 @@ async function search() {
     results.value = []
     return
   }
-  const data = await userType.api.list({
-    ...props.params,
-    search: query.value
-  })
-  results.value = (props.filter ? data.filter(props.filter) : data).map(
-    annotateFullName
-  )
+  try {
+    const data = await userType.api.list({
+      ...props.params,
+      search: query.value
+    })
+    results.value = (props.filter ? data.filter(props.filter) : data).map(
+      annotateFullName
+    )
+  } catch (e) {
+    // Typeahead: a dialog per keystroke would be worse than no results
+    results.value = []
+    console.warn(e)
+  }
 }
 
 watch(query, () => {

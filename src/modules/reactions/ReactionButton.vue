@@ -60,8 +60,12 @@ const count = computed(() =>
 )
 const reactionUsers = ref<number[]>([])
 async function fetchUsers() {
-  const data = await fetchReactions(props.button, props.relation)
-  reactionUsers.value = data.users
+  try {
+    const data = await fetchReactions(props.button, props.relation)
+    reactionUsers.value = data.users
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 
 const { handleRestError } = useErrorHandler({ target: 'dialog' })

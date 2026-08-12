@@ -12,6 +12,8 @@ import DropdownMenu from '@/components/DropdownMenu.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useChannel from '@/composables/useChannel'
+import useErrorHandler from '@/composables/useErrorHandler'
+
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
@@ -26,6 +28,7 @@ import WithheldResult from './WithheldResult.vue'
 import { PollState } from './types'
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
@@ -85,11 +88,15 @@ async function deletePoll() {
     }))
   )
     return
-  await pollType.api.delete(poll.value.pk)
-  router.push({
-    name: 'polls',
-    params: { id: meetingId.value }
-  })
+  try {
+    await pollType.api.delete(poll.value.pk)
+    router.push({
+      name: 'polls',
+      params: { id: meetingId.value }
+    })
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 
 const menuItems = computed<MenuItem[]>(() => {

@@ -19,6 +19,7 @@ import EditableHelpText from '@/components/EditableHelpText.vue'
 import useChannel from '@/composables/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAuthStore from '../auth/useAuthStore'
 import InviteCard from '../meetingInvites/InviteCard.vue'
@@ -47,6 +48,7 @@ const organisationIcons: Record<OrganisationRole, string> = {
 }
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
@@ -73,7 +75,12 @@ useTitle(
 
 async function fetchInvitesIfAuthenticated() {
   if (!user.value) return
-  await inviteStore.fetchMatchedInvites()
+  try {
+    await inviteStore.fetchMatchedInvites()
+  } catch (e) {
+    // Polled in the background — don't interrupt the user on every failure
+    console.warn(e)
+  }
 }
 
 watch(user, () => {
@@ -119,13 +126,17 @@ const tabs = computed(() => {
   ]
 })
 
-function addUser(user: number) {
+async function addUser(user: number) {
   if (!orgStore.organisation) throw new Error('No organisation')
-  organisationType.addRoles(
-    orgStore.organisation.pk,
-    user,
-    OrganisationRole.MeetingCreator
-  )
+  try {
+    await organisationType.addRoles(
+      orgStore.organisation.pk,
+      user,
+      OrganisationRole.MeetingCreator
+    )
+  } catch (e) {
+    handleRestError(e, 'roles')
+  }
 }
 
 function mkGroupRule(

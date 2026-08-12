@@ -37,7 +37,6 @@ const { getState, getStateList } = agendaItemType.sm
 const setableStates = computed(() =>
   getStateList((s) => s.state !== AgendaState.Archived)
 )
-const agendaApi = agendaItemType.getContentApi({ alertOnError: false })
 const { handleRestError } = useErrorHandler({
   target: 'dialog'
 })
@@ -139,7 +138,7 @@ async function actionOnSelected(
 async function deleteSelected() {
   bulkChanging.value = true
   try {
-    await agendaApi.listAction('bulk-delete', {
+    await agendaItemType.api.listAction('bulk-delete', {
       meeting: meetingId.value,
       agenda_items: bulkEdit.selected
     })
@@ -150,14 +149,14 @@ async function deleteSelected() {
 }
 
 function patchAgendaItem(ai: AgendaItem, data: Partial<AgendaItem>) {
-  agendaApi.patch(ai.pk, data)
+  agendaItemType.api.patch(ai.pk, data)
 }
 
 const bulkChanging = ref(false)
 async function patchSelected(data: Partial<AgendaItem>) {
   bulkChanging.value = true
   try {
-    await agendaApi.listAction('bulk-change', {
+    await agendaItemType.api.listAction('bulk-change', {
       meeting: meetingId.value,
       agenda_items: bulkEdit.selected,
       ...data
@@ -205,7 +204,11 @@ function tagBulkAdd(tag: string) {
 /* END TAGS */
 
 async function setTitle({ pk }: AgendaItem, title: string) {
-  agendaItemType.api.patch(pk, { title })
+  try {
+    await agendaItemType.api.patch(pk, { title })
+  } catch (e) {
+    handleRestError(e, 'title')
+  }
 }
 
 /**
@@ -365,7 +368,7 @@ function tagFilter(tags: string | string[], query: string) {
         v-if="canDeleteAgendaItem(item)"
         color="warning"
         :text="$t('agenda.deleteItemConfirm')"
-        @confirmed="agendaApi.delete(value)"
+        @confirmed="agendaItemType.api.delete(value)"
       >
         <template #activator="{ props }">
           <v-btn

@@ -10,6 +10,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import User from '@/components/User.vue'
 import Moment from '@/components/Moment.vue'
 import UserSearch from '@/components/UserSearch.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAuthStore from '../auth/useAuthStore'
 import useParticipantNumbers from '../participantNumbers/useParticipantNumbers'
@@ -43,6 +44,25 @@ const {
   undoSpeaker
 } = useSpeakerList(toRef(props, 'listId'))
 const { currentSpeaker, speakerGroups } = useSpeakerGroups(listId, t)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
+
+/**
+ * Speaker actions, with errors reported to the user.
+ */
+async function handled(action: () => Promise<unknown>) {
+  try {
+    await action()
+  } catch (e) {
+    handleRestError(e)
+  }
+}
+const handle = {
+  start: (speaker?: number) => handled(() => startSpeaker(speaker)),
+  stop: () => handled(stopSpeaker),
+  undo: () => handled(undoSpeaker),
+  add: (user: number) => handled(() => speakerApi.add(props.listId, user)),
+  remove: (speaker: number) => handled(() => speakerApi.delete(speaker))
+}
 const { hasParticipantNumbers, participantNumbers } =
   useParticipantNumbers(meetingId)
 
@@ -86,7 +106,7 @@ async function addParticipantNumbers() {
     const user = participantNumbers.value.find((pn) => pn.number === n)?.user
     if (!user) missing.push(n)
     else if (checkUserInQueue(user)) inList.push(n)
-    else speakerApi.add(props.listId, user)
+    else handle.add(user)
   }
   if (missing.length)
     openAlertEvent.emit(
@@ -119,20 +139,20 @@ if (props.keyBindings === 'all')
     (e) => {
       const speaker = speakerQueue.value[Number(e.key) - 1]
       if (!speaker) return
-      startSpeaker(speaker.pk)
+      handle.start(speaker.pk)
     }
   )
 onKeyStroke(
   (e) => e.key === 'z' && navigationEventAllowed(e, ['ctrlKey']),
-  (e) => e.ctrlKey && undoSpeaker()
+  (e) => e.ctrlKey && currentSpeaker.value && handle.undo()
 )
 onKeyStroke(
   (e) => e.key === 's' && navigationEventAllowed(e),
-  () => startSpeaker()
+  () => canStartSpeaker.value && speakerQueue.value.length && handle.start()
 )
 onKeyStroke(
   (e) => e.key === 'e' && navigationEventAllowed(e),
-  () => currentSpeaker.value && stopSpeaker()
+  () => currentSpeaker.value && handle.stop()
 )
 /*
  * End keyboard navigation
@@ -145,13 +165,13 @@ onKeyStroke(
       <v-btn
         color="primary"
         :disabled="!canStartSpeaker || !speakerQueue.length"
-        @click="startSpeaker()"
+        @click="handle.start()"
         ><v-icon icon="mdi-play"
       /></v-btn>
-      <v-btn color="primary" :disabled="!currentSpeaker" @click="stopSpeaker"
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="handle.stop"
         ><v-icon icon="mdi-stop"
       /></v-btn>
-      <v-btn color="primary" :disabled="!currentSpeaker" @click="undoSpeaker"
+      <v-btn color="primary" :disabled="!currentSpeaker" @click="handle.undo"
         ><v-icon icon="mdi-undo"
       /></v-btn>
     </div>
@@ -159,7 +179,7 @@ onKeyStroke(
       <UserSearch
         :label="$t('speaker.addByName')"
         :filter="userSearchFilter"
-        @submit="speakerApi.add(listId, $event)"
+        @submit="handle.add($event)"
         :params="userSearchParams"
         instant
         class="flex-grow-1"
@@ -207,14 +227,14 @@ onKeyStroke(
               <v-btn
                 color="primary"
                 :disabled="!canStartSpeaker"
-                @click="speakerApi.start(speaker.pk)"
+                @click="handle.start(speaker.pk)"
                 size="x-small"
               >
                 <v-icon icon="mdi-play" />
               </v-btn>
               <v-btn
                 color="warning"
-                @click="speakerApi.delete(speaker.pk)"
+                @click="handle.remove(speaker.pk)"
                 size="x-small"
               >
                 <v-icon icon="mdi-delete" />

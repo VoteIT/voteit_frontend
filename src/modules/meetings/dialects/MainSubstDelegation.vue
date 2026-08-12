@@ -9,6 +9,7 @@ import User from '@/components/User.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 
 import useUserDetails from '@/modules/organisations/useUserDetails'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
@@ -33,6 +34,34 @@ const {
   hasSubstRole,
   hasVoteRole
 } = useVoteTransfers(props.group.meeting)
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
+
+/**
+ * Vote transfer calls, with errors reported to the user.
+ */
+const transferActions = {
+  async add(source: number, target: number) {
+    try {
+      await api.add(source, target)
+    } catch (e) {
+      handleRestError(e)
+    }
+  },
+  async update(vt: number, target: number) {
+    try {
+      await api.update(vt, target)
+    } catch (e) {
+      handleRestError(e)
+    }
+  },
+  async delete(vt: number) {
+    try {
+      await api.delete(vt)
+    } catch (e) {
+      handleRestError(e)
+    }
+  }
+}
 
 /**
  * User ids available for vote transfer
@@ -212,7 +241,7 @@ const canManageVotes = computed(
                       ? $t('erMethods.mainSubstDelegate.voteInOtherGroup')
                       : undefined
                   "
-                  @click="api.add(m.user, user)"
+                  @click="transferActions.add(m.user, user)"
                 >
                   <template #title>
                     <User :pk="user" userid no-popup />
@@ -265,7 +294,7 @@ const canManageVotes = computed(
                         ? $t('erMethods.mainSubstDelegate.voteInOtherGroup')
                         : undefined
                     "
-                    @click="api.update(t.pk, user)"
+                    @click="transferActions.update(t.pk, user)"
                   >
                     <template #title>
                       <User :pk="user" userid no-popup />
@@ -275,7 +304,7 @@ const canManageVotes = computed(
                     append-icon="mdi-undo"
                     base-color="warning"
                     :title="$t('erMethods.mainSubstDelegate.return')"
-                    @click="api.delete(t.pk)"
+                    @click="transferActions.delete(t.pk)"
                   />
                 </v-list>
               </v-menu>

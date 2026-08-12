@@ -82,7 +82,6 @@ export const meetingType = new ContentType<
   },
   name: 'meeting',
   restEndpoint: 'meetings/',
-  restConfig: { alertOnError: false },
   roles: {
     definitions: {
       [MeetingRole.Participant]: {
@@ -112,8 +111,7 @@ export const meetingType = new ContentType<
 
 export const meetingGroupType = new ContentType<MeetingGroup>({
   restEndpoint: 'meeting-groups/',
-  name: 'meeting_group',
-  restConfig: { alertOnError: false }
+  name: 'meeting_group'
 })
 
 export const meetingComponentType = new ContentType<ComponentBase>({

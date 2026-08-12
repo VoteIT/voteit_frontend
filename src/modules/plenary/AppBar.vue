@@ -7,6 +7,7 @@ import { minTime } from '@/utils'
 import { toggleNavDrawerEvent } from '@/utils/events'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
 import WorkflowState from '@/components/WorkflowState.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import { agendaItemType } from '../agendas/contentTypes'
 import useAgendaItem from '../agendas/useAgendaItem'
@@ -25,7 +26,7 @@ const {
   agendaItemRoute
 } = useAgendaItem()
 const { meetingRoom } = useRoom()
-const agendaApi = agendaItemType.getContentApi()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const { getPlenaryRoute } = usePlenary(agendaId)
 
@@ -53,7 +54,13 @@ const breadcrumbs = computed(() => [
 const settingAllowedProps = ref(false)
 async function setProposalsAllowed(value: boolean | null) {
   settingAllowedProps.value = true
-  await minTime(agendaApi.patch(agendaId.value, { block_proposals: !value }))
+  try {
+    await minTime(
+      agendaItemType.api.patch(agendaId.value, { block_proposals: !value })
+    )
+  } catch (e) {
+    handleRestError(e, 'block_proposals')
+  }
   settingAllowedProps.value = false
 }
 </script>

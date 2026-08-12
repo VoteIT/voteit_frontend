@@ -9,6 +9,7 @@ import { useI18n } from 'vue-i18n'
 import { Color } from '@/utils/types'
 import { StateContent } from '@/contentTypes/types'
 import ContentType from '@/contentTypes/ContentType'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 type Event = CT extends ContentType<any, infer E, any> ? E : never
 
@@ -27,6 +28,7 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const eventsAvailable = computed(() =>
   props.contentType.sm.getAvailableEvents(props.object, t).map((t) => ({
     ...t,
@@ -45,8 +47,13 @@ const working = ref(false)
 
 async function sendEvent(event: Event) {
   working.value = true
-  await props.contentType.sm.sendEvent(props.object, event, t)
-  working.value = false
+  try {
+    await props.contentType.sm.sendEvent(props.object, event, t)
+  } catch (e) {
+    handleRestError(e, 'transition')
+  } finally {
+    working.value = false
+  }
 }
 </script>
 

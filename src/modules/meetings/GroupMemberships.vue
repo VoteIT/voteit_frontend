@@ -148,6 +148,7 @@ import { getFullName } from '@/utils'
 import Tag from '@/components/Tag.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 import useActive from '../active/useActive'
 import useUserDetails from '../organisations/useUserDetails'
 import type { IUser } from '../organisations/types'
@@ -164,6 +165,7 @@ const props = defineProps<{
 }>()
 
 const { meeting, meetingId } = useMeeting()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { getUser } = useUserDetails(meetingId)
 const { groupRoles } = useMeetingGroups(meetingId)
 const { activeUserIds, componentActive } = useActive(meetingId)
@@ -192,11 +194,15 @@ function filterUser(user: IUser) {
   return !props.group.memberships.find((m) => m.user === user.pk)
 }
 
-function addUser(user: number) {
-  groupMembershipType.api.add({
-    meeting_group: props.group.pk,
-    user
-  })
+async function addUser(user: number) {
+  try {
+    await groupMembershipType.api.add({
+      meeting_group: props.group.pk,
+      user
+    })
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 
 function getRoleTitle(role: number | null) {
@@ -204,8 +210,12 @@ function getRoleTitle(role: number | null) {
   return _role ? _role.title : '---'
 }
 
-function removeMember(pk: number) {
-  groupMembershipType.api.delete(pk)
+async function removeMember(pk: number) {
+  try {
+    await groupMembershipType.api.delete(pk)
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 
 /**
@@ -213,7 +223,11 @@ function removeMember(pk: number) {
  * @param user User primary key
  * @param pk Primary key of membership object
  */
-function setRole(role: number | null, pk: number) {
-  groupMembershipType.api.patch(pk, { role })
+async function setRole(role: number | null, pk: number) {
+  try {
+    await groupMembershipType.api.patch(pk, { role })
+  } catch (e) {
+    handleRestError(e, 'role')
+  }
 }
 </script>

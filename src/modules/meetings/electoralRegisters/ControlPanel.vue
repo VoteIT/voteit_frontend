@@ -81,7 +81,6 @@ const { t } = useI18n()
 const { meeting, meetingId } = useMeeting()
 const { availableErMethods, erMethodLocked } = useElectoralRegisters(meetingId)
 const { alert } = useAlert()
-const api = meetingType.getContentApi({ alertOnError: false })
 
 const currentName = computed({
   get() {
@@ -90,7 +89,7 @@ const currentName = computed({
   async set(name) {
     if (name === meeting.value?.er_policy_name) return
     try {
-      await api.patch(meetingId.value, { er_policy_name: name })
+      await meetingType.api.patch(meetingId.value, { er_policy_name: name })
     } catch (e) {
       if (e instanceof NetworkError) return alert('^Could not reach server')
       const errors = parseRestError<{ er_policy_name: string }>(e)

@@ -153,7 +153,6 @@ function getCreateData() {
   } as Partial<Proposal>
 }
 
-const api = proposalType.getContentApi({ alertOnError: false })
 const proposalPreview = ref<Proposal>()
 const errors = ref<RestError<Proposal>>({})
 const errorText = computed(() => {
@@ -165,7 +164,7 @@ async function preview() {
   errors.value = {}
   if (!body.value) return
   try {
-    const data = await api.listAction<PreviewProposal>(
+    const data = await proposalType.api.listAction<PreviewProposal>(
       'preview',
       getCreateData()
     )

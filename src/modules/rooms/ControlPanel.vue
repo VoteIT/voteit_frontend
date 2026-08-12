@@ -140,14 +140,18 @@ const editableMeetingRooms = computed(() =>
       userSearch: {
         params: { meeting: meetingId.value },
         filter: ({ pk }: IUser) => !userIds.includes(pk),
-        onSubmit: (user: number) => {
+        onSubmit: async (user: number) => {
           if (!speakerSystem)
             throw new Error("Can't add roles without speaker system")
-          speakerSystemType.addRoles(
-            speakerSystem.pk,
-            user,
-            SpeakerSystemRole.Speaker
-          )
+          try {
+            await speakerSystemType.addRoles(
+              speakerSystem.pk,
+              user,
+              SpeakerSystemRole.Speaker
+            )
+          } catch (e) {
+            handleRestError(e, 'roles')
+          }
         }
       }
     }

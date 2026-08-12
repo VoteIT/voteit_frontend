@@ -11,6 +11,7 @@ import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
 import useUnread from '@/composables/useUnread'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import { getHTMLTags } from '../meetings/useTags'
 import useMeetingGroups from '../meetings/useMeetingGroups'
@@ -30,6 +31,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { canPostAs } = useMeetingGroups(useMeetingId())
 
 const editing = ref(false)
@@ -55,7 +57,11 @@ async function queryDelete() {
       theme: ThemeColor.Warning
     })
   )
-    discussionPostType.api.delete(props.p.pk)
+    try {
+      await discussionPostType.api.delete(props.p.pk)
+    } catch (e) {
+      handleRestError(e)
+    }
 }
 
 const menuItems = computed<MenuItem[]>(() => {
@@ -104,12 +110,16 @@ function cancel() {
 
 async function save() {
   saving.value = true
-  discussionPostType.api.patch(props.p.pk, {
-    body: body.value,
-    tags: extraTags.value,
-    ...author.value
-  })
-  editing.value = false
+  try {
+    await discussionPostType.api.patch(props.p.pk, {
+      body: body.value,
+      tags: extraTags.value,
+      ...author.value
+    })
+    editing.value = false
+  } catch (e) {
+    handleRestError(e, 'body')
+  }
   saving.value = false
 }
 </script>

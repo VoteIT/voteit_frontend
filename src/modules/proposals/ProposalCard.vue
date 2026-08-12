@@ -152,6 +152,7 @@ import Tag from '@/components/Tag.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useUnread from '@/composables/useUnread'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useAgendaFilter from '../agendas/useAgendaFilter'
@@ -179,6 +180,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { isModerator } = useMeeting()
 const agendaId = computed(() => props.p.agenda_item)
 const { orderContent } = useAgendaFilter()
@@ -188,12 +190,20 @@ const { getProposalDiscussions } = useDiscussionStore()
 
 const { isUnread } = useUnread(new Date(props.p.created))
 
-function deleteProposal() {
-  proposalType.api.delete(props.p.pk)
+async function deleteProposal() {
+  try {
+    await proposalType.api.delete(props.p.pk)
+  } catch (e) {
+    handleRestError(e)
+  }
 }
 
-function retract() {
-  proposalType.sm.sendEvent(props.p, 'retract', t)
+async function retract() {
+  try {
+    await proposalType.sm.sendEvent(props.p, 'retract', t)
+  } catch (e) {
+    handleRestError(e, 'transition')
+  }
 }
 
 const discussionPosts = computed(() => {

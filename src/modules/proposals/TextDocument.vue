@@ -6,6 +6,7 @@ import { dialogQuery } from '@/utils'
 import { openModalEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaStore from '../agendas/useAgendaStore'
 
@@ -20,6 +21,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 
 const { countProposals } = useProposalStore()
 const { getAgendaItem } = useAgendaStore()
@@ -59,7 +61,11 @@ async function deleteDocument() {
       theme: ThemeColor.Warning
     })
   )
-    proposalTextType.api.delete(props.document.pk)
+    try {
+      await proposalTextType.api.delete(props.document.pk)
+    } catch (e) {
+      handleRestError(e)
+    }
 }
 
 const collapsed = ref(false)

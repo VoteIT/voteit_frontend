@@ -8,6 +8,7 @@ import { openAlertEvent } from '@/utils/events'
 import UserSearch from '@/components/UserSearch.vue'
 import RoleMatrix from '@/components/RoleMatrix.vue'
 import useTabRoute from '@/composables/useTabRoute'
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAuthStore from '../auth/useAuthStore'
 import InvitationsTab from '../meetingInvites/InvitationsTab.vue'
@@ -29,6 +30,7 @@ import useMeetingGroups from './useMeetingGroups'
 import useGroupStore from './useGroupStore'
 
 const { t } = useI18n()
+const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meetingId, meetingDialect, canChangeRoles, canViewMeetingInvite } =
   useMeeting()
@@ -45,8 +47,12 @@ function getDownloadUrl(type: 'csv' | 'json') {
 
 const matrixCols = DEFAULT_ROLE_ORDER.slice(1)
 
-function addRole(user: number, role: string) {
-  meetingType.addRoles(meetingId.value, user, role)
+async function addRole(user: number, role: string) {
+  try {
+    await meetingType.addRoles(meetingId.value, user, role)
+  } catch (e) {
+    handleRestError(e, 'roles')
+  }
 }
 
 function addUser(user: number) {

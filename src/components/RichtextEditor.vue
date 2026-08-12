@@ -27,14 +27,20 @@ function* iterTagObjects(query: string) {
 
 async function getUserObjects(query: string) {
   if (!query.length) return []
-  const data = await meetingRoleType.api.list({
-    search: query.toLowerCase(),
-    meeting: meetingId.value
-  })
-  return data.map(({ user }) => ({
-    id: user.pk,
-    value: getDisplayName(user)
-  }))
+  try {
+    const data = await meetingRoleType.api.list({
+      search: query.toLowerCase(),
+      meeting: meetingId.value
+    })
+    return data.map(({ user }) => ({
+      id: user.pk,
+      value: getDisplayName(user)
+    }))
+  } catch (e) {
+    // Mention lookup: a dialog per keystroke would be worse than no matches
+    console.warn(e)
+    return []
+  }
 }
 
 const mentionOptions = {

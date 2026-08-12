@@ -3,6 +3,5 @@ import { IProposalNote } from './types'
 
 export const noteType = new ContentType<IProposalNote>({
   name: 'note',
-  restEndpoint: 'notes/',
-  restConfig: { alertOnError: false }
+  restEndpoint: 'notes/'
 })
