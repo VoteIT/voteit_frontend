@@ -67,5 +67,6 @@ export const pollType = new ContentType<
 })
 
 export const voteType = new ContentType<Vote>({
-  name: 'vote'
+  name: 'vote',
+  restEndpoint: 'votes/'
 })

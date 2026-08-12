@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import { dialogQuery } from '@/utils'
 import { openAlertEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
-import { socket } from '@/utils/Socket'
 
 import { Proposal } from '../proposals/types'
 
@@ -41,7 +40,7 @@ async function castVote() {
     vote: validVote.value
   }
   try {
-    await socket.call(`${props.poll.method_name}_vote.add`, msg)
+    await voteType.api.add(msg)
     emit('votingComplete')
   } catch {
     openAlertEvent.emit(
@@ -52,21 +51,20 @@ async function castVote() {
 }
 
 async function abstainVote() {
-  if (validVote.value) {
-    if (
-      !(await dialogQuery({
-        title: t('poll.abstainValidVoteConfirm'),
-        no: t('cancel'),
-        yes: t('poll.abstain'),
-        theme: ThemeColor.Warning
-      }))
-    ) {
-      return
-    }
+  if (
+    validVote.value &&
+    !(await dialogQuery({
+      title: t('poll.abstainValidVoteConfirm'),
+      no: t('cancel'),
+      yes: t('poll.abstain'),
+      theme: ThemeColor.Warning
+    }))
+  ) {
+    return
   }
   submitting.value = true
   try {
-    await voteType.methodCall('abstain', { poll: props.poll.pk })
+    await voteType.api.add({ poll: props.poll.pk, abstain: true })
     validVote.value = undefined
     emit('votingComplete')
   } catch {
