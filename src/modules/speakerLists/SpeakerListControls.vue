@@ -44,24 +44,17 @@ const {
   undoSpeaker
 } = useSpeakerList(toRef(props, 'listId'))
 const { currentSpeaker, speakerGroups } = useSpeakerGroups(listId, t)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 
 /**
  * Speaker actions, with errors reported to the user.
  */
-async function handled(action: () => Promise<unknown>) {
-  try {
-    await action()
-  } catch (e) {
-    handleRestError(e)
-  }
-}
 const handle = {
-  start: (speaker?: number) => handled(() => startSpeaker(speaker)),
-  stop: () => handled(stopSpeaker),
-  undo: () => handled(undoSpeaker),
-  add: (user: number) => handled(() => speakerApi.add(props.listId, user)),
-  remove: (speaker: number) => handled(() => speakerApi.delete(speaker))
+  start: handler(startSpeaker),
+  stop: handler(stopSpeaker),
+  undo: handler(undoSpeaker),
+  add: handler((user: number) => speakerApi.add(props.listId, user)),
+  remove: handler(speakerApi.delete)
 }
 const { hasParticipantNumbers, participantNumbers } =
   useParticipantNumbers(meetingId)

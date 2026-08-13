@@ -20,7 +20,7 @@ import useMeetings from './useMeetings'
 import useMeetingStore from './useMeetingStore'
 import { canBecomeModerator } from './rules'
 
-const { handleSocketError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
 const { getMeeting } = useMeetingStore()
@@ -46,16 +46,11 @@ const canBecomeModeratorMeeting = computed(
 
 async function joinAsModerator() {
   if (!authStore.user) throw new Error('Anonymous tried to join as moderator')
-  try {
-    await meetingType.addRoles(
-      meetingId.value,
-      authStore.user.pk,
-      MeetingRole.Moderator
-    )
+  const { pk } = authStore.user
+  await handled(async () => {
+    await meetingType.addRoles(meetingId.value, pk, MeetingRole.Moderator)
     router.push(meetingRoute.value)
-  } catch (e) {
-    handleSocketError(e)
-  }
+  }, 'roles')
 }
 
 onBeforeMount(() => {

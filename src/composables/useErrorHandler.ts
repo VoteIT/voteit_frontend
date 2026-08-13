@@ -43,7 +43,7 @@ function getNonspecificFieldErrorMessage(errors: APIError) {
  *
  * @param opts.target - Where to show errors: `'alert'` (snackbar), `'dialog'` (modal), or `'none'` (silent)
  * @param opts.showField - If set, only the error for this field (or `non_field_errors`) is displayed
- * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handleError, handleSocketError, handleRestError }`
+ * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handled, handler, handleError, handleSocketError, handleRestError }`
  */
 export default function useErrorHandler(
   opts: HandlerOptions = DEFAULT_OPTIONS
@@ -84,7 +84,7 @@ export default function useErrorHandler(
     displayError(
       showField
         ? getSpecifiedFieldErrorMessage(fieldErrors.value, showField)
-        : getNonspecificFieldErrorMessage(fieldErrors.value) ?? e.message
+        : (getNonspecificFieldErrorMessage(fieldErrors.value) ?? e.message)
     )
   }
 
@@ -96,11 +96,47 @@ export default function useErrorHandler(
     handleError(e, parseRestError, showField)
   }
 
+  /**
+   * Runs an action, reporting any REST error to the user.
+   * Resolves to the action's value, or `undefined` if it failed.
+   *
+   * @param showField - Overrides `opts.showField` for this action
+   */
+  async function handled<T>(
+    action: () => Promise<T> | T,
+    showField?: string
+  ): Promise<Awaited<T> | undefined> {
+    try {
+      return await action()
+    } catch (e) {
+      handleRestError(e, showField)
+    }
+  }
+
+  /**
+   * Wraps an action, returning a function that reports any REST error to the
+   * user. Use for reusable handlers; use `handled` for a one-off action.
+   *
+   * The wrapper forwards its arguments to the action, so avoid binding it
+   * straight to a template event (`@click="handle.start"`) unless the action
+   * should receive the event object.
+   *
+   * @param showField - Overrides `opts.showField` for this action
+   */
+  function handler<A extends unknown[], T>(
+    action: (...args: A) => Promise<T> | T,
+    showField?: string
+  ) {
+    return (...args: A) => handled(() => action(...args), showField)
+  }
+
   return {
     errorMessage,
     fieldErrors,
     hasError,
     clearErrors,
+    handled,
+    handler,
     handleError(e: unknown) {
       if (isValidationError(e)) handleSocketError(e)
       else handleRestError(e)

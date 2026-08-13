@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 import vuetify from '@/plugins/vuetify'
 import { openDialogEvent } from '@/utils/events'
+import { ApiError } from '@/utils/restApi'
 import JoinView from './JoinView.vue'
 
 const { mockPush, mockAddRoles } = vi.hoisted(() => ({
@@ -107,6 +108,7 @@ function mountJoinView() {
 }
 
 beforeEach(() => {
+  vi.restoreAllMocks()
   mockPush.mockReset()
   mockAddRoles.mockReset()
 })
@@ -125,8 +127,15 @@ test('redirects to meeting route when addRoles succeeds', async () => {
   })
 })
 
-test('opens error dialog when addRoles fails', async () => {
-  mockAddRoles.mockRejectedValue(new Error('Permission denied'))
+test('opens error dialog with the roles error when addRoles fails', async () => {
+  mockAddRoles.mockRejectedValue(
+    new ApiError(
+      400,
+      { roles: ['Permission denied'] },
+      new Headers(),
+      'Bad Request'
+    )
+  )
   const dialogSpy = vi.spyOn(openDialogEvent, 'emit')
   const wrapper = mountJoinView()
 
@@ -134,5 +143,23 @@ test('opens error dialog when addRoles fails', async () => {
   await flushPromises()
 
   expect(mockPush).not.toHaveBeenCalled()
-  expect(dialogSpy).toHaveBeenCalled()
+  expect(dialogSpy).toHaveBeenCalledWith(
+    expect.objectContaining({ title: 'Permission denied' })
+  )
+})
+
+test('opens error dialog when the server rejects with a status error', async () => {
+  mockAddRoles.mockRejectedValue(
+    new ApiError(403, null, new Headers(), 'Forbidden')
+  )
+  const dialogSpy = vi.spyOn(openDialogEvent, 'emit')
+  const wrapper = mountJoinView()
+
+  await wrapper.find('.query-confirm').trigger('click')
+  await flushPromises()
+
+  expect(mockPush).not.toHaveBeenCalled()
+  expect(dialogSpy).toHaveBeenCalledWith(
+    expect.objectContaining({ title: 'Forbidden (HTTP 403)' })
+  )
 })

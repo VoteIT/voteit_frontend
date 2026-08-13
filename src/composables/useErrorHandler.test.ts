@@ -45,6 +45,55 @@ function mockApiError(message: string) {
   return new ApiError(400, { test: [message] }, new Headers(), message)
 }
 
+test('handled', async () => {
+  const { errorMessage, fieldErrors, handled } = useErrorHandler()
+  expect(await handled(async () => 'ok')).toBe('ok')
+  expect(errorMessage.value).toBe(null)
+
+  const teapot = "I'm a teapot"
+  expect(
+    await handled(async () => {
+      throw mockApiError(teapot)
+    })
+  ).toBe(undefined)
+  expect(errorMessage.value).toBe(teapot)
+  expect(fieldErrors.value).toEqual({ test: [teapot] })
+
+  // Synchronous throws are caught too
+  expect(
+    await handled(() => {
+      throw mockApiError(teapot)
+    })
+  ).toBe(undefined)
+
+  // Non-Errors are still rethrown
+  await expect(handled(async () => Promise.reject('bad error'))).rejects.toBe(
+    'bad error'
+  )
+})
+
+test('handler', async () => {
+  const { errorMessage, fieldErrors, handler } = useErrorHandler()
+  const teapot = "I'm a teapot"
+
+  const ok = handler((a: number, b: number) => Promise.resolve(a + b))
+  expect(await ok(1, 2)).toBe(3)
+  expect(errorMessage.value).toBe(null)
+
+  // Arguments are forwarded, and synchronous throws are caught
+  const fails = handler((message: string) => {
+    throw mockApiError(message)
+  })
+  expect(await fails(teapot)).toBe(undefined)
+  expect(errorMessage.value).toBe(teapot)
+  expect(fieldErrors.value).toEqual({ test: [teapot] })
+
+  // Non-Errors are still rethrown
+  await expect(handler(() => Promise.reject('bad error'))()).rejects.toBe(
+    'bad error'
+  )
+})
+
 test('ValidationError.errors', () => {
   const {
     errorMessage,
