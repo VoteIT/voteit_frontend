@@ -15,7 +15,7 @@ const emit = defineEmits<{
   (e: 'done'): void
 }>()
 
-const { fieldErrors, clearErrors, handleError } = useErrorHandler()
+const { fieldErrors, clearErrors, handleRestError } = useErrorHandler()
 
 const formData = reactive(props.modelValue)
 
@@ -32,7 +32,7 @@ async function submit() {
     await props.handler(formData as T)
     emit('done')
   } catch (e) {
-    handleError(e)
+    handleRestError(e)
     emit('error')
   }
   submitting.value = false
