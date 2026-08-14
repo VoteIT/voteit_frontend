@@ -50,7 +50,7 @@ const paragraph = computed(
 )
 
 function getInitialBody() {
-  return props.proposal ? props.proposal.body : paragraph.value?.body ?? ''
+  return props.proposal ? props.proposal.body : (paragraph.value?.body ?? '')
 }
 
 const body = ref(getInitialBody())

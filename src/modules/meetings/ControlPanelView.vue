@@ -63,14 +63,13 @@ const currentComponent = computed(() => currentPlugin.value?.component)
 const currentTabs = computed(() =>
   meeting.value ? currentPlugin.value?.getTabs?.(meeting.value, t) : undefined
 )
-const tabItems = computed(
-  () =>
-    currentTabs.value?.map((tab) => ({
-      value: tab.id,
-      text: tab.title,
-      prependIcon: tab.icon,
-      disabled: !!tab.disabled
-    }))
+const tabItems = computed(() =>
+  currentTabs.value?.map((tab) => ({
+    value: tab.id,
+    text: tab.title,
+    prependIcon: tab.icon,
+    disabled: !!tab.disabled
+  }))
 )
 const currentTab = ref<string>()
 // Reset selection when the active panel changes

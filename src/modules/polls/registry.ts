@@ -10,8 +10,10 @@ import type { PollMethodCriterion } from './methods/types'
 import { Poll } from './types'
 import { Proposal } from '../proposals/types'
 
-export interface PollPlugin<T extends Poll = any, TVote extends {} = any>
-  extends OrganisationPlugin {
+export interface PollPlugin<
+  T extends Poll = any,
+  TVote extends {} = any
+> extends OrganisationPlugin {
   criterion: PollMethodCriterion
   discouraged?: boolean
   getDefaultSettings?(proposals: number): T['settings']

@@ -8,8 +8,8 @@ import useMeetingComponent from './useMeetingComponent'
 const props = defineProps<{ componentName: string; switchLabel: string }>()
 
 const { meeting, meetingId } = useMeeting()
-const isBlocked = computed(
-  () => meeting.value?.dialect?.block_components?.includes(props.componentName)
+const isBlocked = computed(() =>
+  meeting.value?.dialect?.block_components?.includes(props.componentName)
 )
 const isRequired = computed(
   () =>

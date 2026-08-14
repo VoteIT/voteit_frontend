@@ -11,11 +11,8 @@ export default function useElectoralRegister(pk: Ref<number | undefined>) {
     return store.getRegister(pk.value)
   })
 
-  const erMethod = computed(
-    () =>
-      store.erMethods?.find(
-        (erm) => erm.name === electoralRegister.value?.source
-      )
+  const erMethod = computed(() =>
+    store.erMethods?.find((erm) => erm.name === electoralRegister.value?.source)
   )
   const erMethodWeighted = computed(() => erMethod.value?.handles_vote_weight)
   const erWeightDecimals = computed(() => 0)

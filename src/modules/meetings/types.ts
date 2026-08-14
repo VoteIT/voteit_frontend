@@ -129,8 +129,9 @@ export interface ComponentBase<N = string> {
   settings: unknown
 }
 
-export interface NoSettingsComponent<N extends string = string>
-  extends ComponentBase<N> {
+export interface NoSettingsComponent<
+  N extends string = string
+> extends ComponentBase<N> {
   settings: null
 }
 

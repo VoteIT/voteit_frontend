@@ -106,11 +106,9 @@ onBeforeMount(() => {
     nextTick(() => {
       if (!window.value) return
       const el = window.value.$el as HTMLElement
-      el
-        .querySelector<HTMLElement>(
-          'input,button:not(.closer),a[href],textarea,[tabindex]'
-        )
-        ?.focus()
+      el.querySelector<HTMLElement>(
+        'input,button:not(.closer),a[href],textarea,[tabindex]'
+      )?.focus()
     })
   })
 })
