@@ -21,7 +21,7 @@ import { reactionButtonType } from './contentTypes'
 import RealReactionButton from './RealReactionButton.vue'
 import FlagButton from './FlagButton.vue'
 
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handleRestError, handler } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { getMeetingButtons } = useReactionStore()
@@ -40,36 +40,25 @@ const meetingButtons = computed({
 
 const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
 
-async function deleteButton(button: ReactionButton) {
-  try {
-    await reactionButtonType.api.delete(button.pk)
-  } catch (err) {
-    handleRestError(err)
-  }
-}
+const deleteButton = handler((button: ReactionButton) =>
+  reactionButtonType.api.delete(button.pk)
+)
 
-async function setContentType(
-  button: ReactionButton,
-  contentType: string,
-  value: boolean
-) {
-  const allowed_models = value
-    ? [contentType, ...button.allowed_models]
-    : button.allowed_models.filter((ct) => ct !== contentType)
-  try {
-    await reactionButtonType.api.patch(button.pk, { allowed_models })
-  } catch (e) {
-    handleRestError(e, 'allowed_models')
-  }
-}
+const setContentType = handler(
+  (button: ReactionButton, contentType: string, value: boolean) => {
+    const allowed_models = value
+      ? [contentType, ...button.allowed_models]
+      : button.allowed_models.filter((ct) => ct !== contentType)
+    return reactionButtonType.api.patch(button.pk, { allowed_models })
+  },
+  'allowed_models'
+)
 
-async function setActive(button: ReactionButton, active: boolean) {
-  try {
-    await reactionButtonType.api.patch(button.pk, { active })
-  } catch (e) {
-    handleRestError(e, 'active')
-  }
-}
+const setActive = handler(
+  (button: ReactionButton, active: boolean) =>
+    reactionButtonType.api.patch(button.pk, { active }),
+  'active'
+)
 
 const model = reactive<Record<number, boolean>>({})
 </script>

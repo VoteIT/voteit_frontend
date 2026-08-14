@@ -31,7 +31,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const { canPostAs } = useMeetingGroups(useMeetingId())
 
 const editing = ref(false)
@@ -57,11 +57,7 @@ async function queryDelete() {
       theme: ThemeColor.Warning
     })
   )
-    try {
-      await discussionPostType.api.delete(props.p.pk)
-    } catch (e) {
-      handleRestError(e)
-    }
+    await handled(() => discussionPostType.api.delete(props.p.pk))
 }
 
 const menuItems = computed<MenuItem[]>(() => {
@@ -110,16 +106,14 @@ function cancel() {
 
 async function save() {
   saving.value = true
-  try {
+  await handled(async () => {
     await discussionPostType.api.patch(props.p.pk, {
       body: body.value,
       tags: extraTags.value,
       ...author.value
     })
     editing.value = false
-  } catch (e) {
-    handleRestError(e, 'body')
-  }
+  }, 'body')
   saving.value = false
 }
 </script>

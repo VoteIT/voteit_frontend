@@ -19,7 +19,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const store = useNotesStore()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 const proposalNote = computed(() => store.getProposalNote(props.proposal.pk))
 const form = shallowReactive({
@@ -102,13 +102,12 @@ const clearing = shallowRef(false)
 const menuOpen = shallowRef(false)
 async function clearNote() {
   if (!proposalNote.value) throw new Error('No proposal note to clear')
+  const { pk } = proposalNote.value
   clearing.value = true
-  try {
-    await noteType.api.delete(proposalNote.value.pk)
+  await handled(async () => {
+    await noteType.api.delete(pk)
     cancelEdit()
-  } catch (e) {
-    handleRestError(e)
-  }
+  })
   clearing.value = false
 }
 

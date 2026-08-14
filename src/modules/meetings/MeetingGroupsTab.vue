@@ -136,21 +136,19 @@ const groupImportMultiline = rules.multiline(
   )
 )
 
+const { handled, handler } = useErrorHandler({ target: 'dialog' })
+
 /**
- * Request group import.
+ * Request group import. Errors are handled by the form.
  */
-async function createGroups(data: { groups: string }) {
-  try {
-    await minTime(
-      meetingGroupType.api.listAction('bulk-create', {
-        meeting: meetingId.value,
-        ...data
-      }),
-      500
-    )
-  } catch (e) {
-    handleRestError(e, 'groups')
-  }
+function createGroups(data: { groups: string }) {
+  return minTime(
+    meetingGroupType.api.listAction('bulk-create', {
+      meeting: meetingId.value,
+      ...data
+    }),
+    500
+  )
 }
 
 // Provide tag autocompletion
@@ -173,14 +171,9 @@ function changeGroup(pk: number) {
   return (data: Partial<MeetingGroup>) => meetingGroupType.api.patch(pk, data)
 }
 
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
-async function deleteGroup(group: MeetingGroup) {
-  try {
-    await meetingGroupType.api.delete(group.pk)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const deleteGroup = handler((group: MeetingGroup) =>
+  meetingGroupType.api.delete(group.pk)
+)
 
 /**
  * Switches to handle group settings for post_as, etc
@@ -212,11 +205,7 @@ const groupSwitches = computed<
 async function toggleGroupProp(group: MeetingGroup, prop: GroupBoolean) {
   const patchData: Partial<MeetingGroup> = {}
   patchData[prop] = !group[prop]
-  try {
-    await meetingGroupType.api.patch(group.pk, patchData)
-  } catch (e) {
-    handleRestError(e, prop)
-  }
+  await handled(() => meetingGroupType.api.patch(group.pk, patchData), prop)
 }
 
 // Multi delete
@@ -250,17 +239,13 @@ const skippedGroups = computed(() =>
   )
 )
 
-async function deleteSelected() {
-  try {
-    await meetingGroupType.api.listAction('bulk-delete', {
-      meeting: meetingId.value,
-      pks: groupsToDelete.value
-    })
-    selected.value = []
-  } catch (e) {
-    handleRestError(e, 'pks')
-  }
-}
+const deleteSelected = handler(async () => {
+  await meetingGroupType.api.listAction('bulk-delete', {
+    meeting: meetingId.value,
+    pks: groupsToDelete.value
+  })
+  selected.value = []
+}, 'pks')
 </script>
 
 <template>

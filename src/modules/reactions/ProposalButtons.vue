@@ -16,7 +16,7 @@ const {
   removeUserReacted,
   setUserReacted
 } = useReactionStore()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 
 const props = defineProps<{
   mode?: ProposalButtonMode
@@ -50,15 +50,11 @@ const activeButtons = computed(() =>
     : buttons.value
 )
 
-async function setFlag(button: IFlagButton, value: boolean) {
-  try {
-    value
-      ? await setUserReacted(button, relation.value)
-      : await removeUserReacted(button, relation.value)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const setFlag = handler(async (button: IFlagButton, value: boolean) => {
+  value
+    ? await setUserReacted(button, relation.value)
+    : await removeUserReacted(button, relation.value)
+})
 </script>
 
 <template>

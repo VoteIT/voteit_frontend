@@ -21,7 +21,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const { canEnterList, canLeaveList, speakerSystem, enterList, leaveList } =
   useSpeakerList(props.list.pk)
 const genderTag = useGenderTag(
@@ -40,29 +40,16 @@ const working = shallowRef(false)
 
 async function enter(tag?: GenderTag, close?: () => void) {
   working.value = true
-  if (tag) {
-    try {
-      await setTags('gen', tag)
-    } catch (e) {
-      handleRestError(e)
-    }
-  }
-  try {
-    await enterList()
-  } catch (e) {
-    handleRestError(e)
-  }
+  // Entering the list is attempted even if the gender tag failed
+  if (tag) await handled(() => setTags('gen', tag))
+  await handled(enterList)
   if (close) close()
   working.value = false
 }
 
 async function leave() {
   working.value = true
-  try {
-    await leaveList()
-  } catch (e) {
-    handleRestError(e)
-  }
+  await handled(leaveList)
   working.value = false
 }
 

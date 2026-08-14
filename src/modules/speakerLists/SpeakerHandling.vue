@@ -66,7 +66,7 @@ const currentList = computed<SpeakerList | undefined>(() => {
   if (systemActiveList.value?.agenda_item !== agendaId.value) return
   return systemActiveList.value
 })
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled, handler } = useErrorHandler({ target: 'dialog' })
 usePermission(canManageSystem, { to: meetingRoute.value })
 
 const nextSpeakerListName = computed(() =>
@@ -89,29 +89,15 @@ function updateSpeakerList(data: { title: string; pk: number }) {
   return speakerListType.api.patch(data.pk, { title: data.title })
 }
 
-async function setIsOpen(list: number, is_open: boolean) {
-  try {
-    await speakerListType.api.patch(list, { is_open })
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const setIsOpen = handler((list: number, is_open: boolean) =>
+  speakerListType.api.patch(list, { is_open })
+)
 
-async function shuffleList(list: number) {
-  try {
-    await listApi.shuffle(list)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const shuffleList = handler((list: number) => listApi.shuffle(list))
 
-async function addNextSpeakerList() {
-  try {
-    await addSpeakerList({ title: nextSpeakerListName.value })
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const addNextSpeakerList = handler(() =>
+  addSpeakerList({ title: nextSpeakerListName.value })
+)
 
 async function deleteList(list: SpeakerList) {
   if (
@@ -120,11 +106,7 @@ async function deleteList(list: SpeakerList) {
       theme: ThemeColor.Warning
     })
   )
-    try {
-      await speakerListType.api.delete(list.pk)
-    } catch (e) {
-      handleRestError(e)
-    }
+    await handled(() => speakerListType.api.delete(list.pk))
 }
 
 function getListMenu(list: SpeakerList): MenuItem[] {
@@ -146,6 +128,7 @@ function getListMenu(list: SpeakerList): MenuItem[] {
 async function setActive(list: SpeakerList, active = true) {
   if (!speakerSystem.value)
     throw new Error("No speaker system; can't set active speaker list")
+  const { pk: systemPk } = speakerSystem.value
   const speakerActive = hasActiveSpeaker(speakerSystem.value)
   if (
     speakerActive &&
@@ -157,15 +140,9 @@ async function setActive(list: SpeakerList, active = true) {
     }))
   )
     return
-  try {
-    await setActiveList(
-      speakerSystem.value.pk,
-      active ? list.pk : null,
-      speakerActive
-    )
-  } catch (e) {
-    handleRestError(e)
-  }
+  await handled(() =>
+    setActiveList(systemPk, active ? list.pk : null, speakerActive)
+  )
 }
 
 // Warn if there are other rooms with speaker lists

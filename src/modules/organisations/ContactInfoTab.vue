@@ -4,13 +4,11 @@ import { useI18n } from 'vue-i18n'
 
 import useRules from '@/composables/useRules'
 import useContactInfo, { type ContactInfo } from './useContactInfo'
-import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultForm from '@/components/DefaultForm.vue'
 
 const { t } = useI18n()
 const rules = useRules(t)
 
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { contactInfo, requiresCheck, fetchContactInfo, saveContactInfo } =
   useContactInfo()
 
@@ -23,12 +21,10 @@ const contactInfoModified = computed(() => {
   )
 })
 
+// Assignment stays inside the action, so a failed save leaves changeForm intact.
+// Errors are handled by the form.
 async function saveHandler(data: ContactInfo) {
-  try {
-    changeForm.value = await saveContactInfo(data)
-  } catch (e) {
-    handleRestError(e)
-  }
+  changeForm.value = await saveContactInfo(data)
 }
 
 async function updateContactInfo() {

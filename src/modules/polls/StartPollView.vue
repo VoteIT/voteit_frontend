@@ -35,7 +35,7 @@ const { isModerator, meetingRoute, meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { agendaId, agendaItem, nextPollTitle } = useAgendaItem()
 const { alert } = useAlert()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 usePermission(isModerator, { to: meetingRoute }) // TODO canAddPoll might be different in the future
 
@@ -137,15 +137,13 @@ async function createPoll(
     method_name: methodSelected.value,
     start
   }
-  try {
+  await handled(async () => {
     const data = await pollType.api.add(pollData)
     router.push({
       name: 'poll',
       params: { pid: data.pk, pslug: slugify(data.title) }
     })
-  } catch (e) {
-    handleRestError(e)
-  }
+  })
 }
 
 watch(agendaId, () => {

@@ -26,7 +26,7 @@ const {
   agendaItemRoute
 } = useAgendaItem()
 const { meetingRoom } = useRoom()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 const { getPlenaryRoute } = usePlenary(agendaId)
 
@@ -54,13 +54,13 @@ const breadcrumbs = computed(() => [
 const settingAllowedProps = ref(false)
 async function setProposalsAllowed(value: boolean | null) {
   settingAllowedProps.value = true
-  try {
-    await minTime(
-      agendaItemType.api.patch(agendaId.value, { block_proposals: !value })
-    )
-  } catch (e) {
-    handleRestError(e, 'block_proposals')
-  }
+  await handled(
+    () =>
+      minTime(
+        agendaItemType.api.patch(agendaId.value, { block_proposals: !value })
+      ),
+    'block_proposals'
+  )
   settingAllowedProps.value = false
 }
 </script>

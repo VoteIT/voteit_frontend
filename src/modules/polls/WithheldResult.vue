@@ -14,16 +14,16 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const { resultComponent, poll } = usePoll(computed(() => props.pollId))
 
 async function publishNow() {
   if (!poll.value) return
-  try {
-    await pollType.sm.sendEvent(poll.value, 'publish_result', t)
-  } catch (e) {
-    handleRestError(e, 'transition')
-  }
+  const p = poll.value
+  await handled(
+    () => pollType.sm.sendEvent(p, 'publish_result', t),
+    'transition'
+  )
 }
 
 const showResult = ref(false)

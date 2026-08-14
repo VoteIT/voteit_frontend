@@ -58,17 +58,14 @@ const reaction = computed(() => getUserReaction(props.button, props.relation))
 const count = computed(() =>
   getButtonReactionCount(props.button, props.relation)
 )
-const reactionUsers = ref<number[]>([])
-async function fetchUsers() {
-  try {
-    const data = await fetchReactions(props.button, props.relation)
-    reactionUsers.value = data.users
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const { handled, handler } = useErrorHandler({ target: 'dialog' })
 
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const reactionUsers = ref<number[]>([])
+const fetchUsers = handler(async () => {
+  const data = await fetchReactions(props.button, props.relation)
+  reactionUsers.value = data.users
+})
+
 const working = ref(false)
 
 const reacted = computed({
@@ -78,15 +75,12 @@ const reacted = computed({
   async set(value) {
     if (props.readonly) return
     working.value = true
-    try {
+    await handled(async () => {
       value
         ? await setUserReacted(props.button, props.relation)
         : await removeUserReacted(props.button, props.relation)
-    } catch (e) {
-      handleRestError(e)
-    } finally {
-      working.value = false
-    }
+    })
+    working.value = false
   }
 })
 

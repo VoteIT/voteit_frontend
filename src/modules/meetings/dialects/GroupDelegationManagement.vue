@@ -59,7 +59,7 @@ const props = defineProps<{
 const { canChange, meetingId } = useMeeting()
 const { meetingGroups } = useMeetingGroups(meetingId)
 const { getMeetingGroup } = useGroupStore()
-const { handleRestError } = useErrorHandler({
+const { handled } = useErrorHandler({
   showField: 'delegate_to',
   target: 'alert'
 })
@@ -83,16 +83,16 @@ const modelValue = computed({
   },
   async set(value) {
     if (submitting) return
-    submitting = true
+    // Bail out before claiming the flag — returning while it is set would
+    // leave it stuck and silently ignore every later change.
     if (value === props.group.delegate_to) return
-    try {
-      await meetingGroupType.api.patch(
+    submitting = true
+    await handled(() =>
+      meetingGroupType.api.patch(
         props.group.pk, // FIXME
         { delegate_to: value }
       )
-    } catch (e) {
-      handleRestError(e)
-    }
+    )
     submitting = false
   }
 })

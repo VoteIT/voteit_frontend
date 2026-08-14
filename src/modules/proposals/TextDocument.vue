@@ -21,7 +21,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 const { countProposals } = useProposalStore()
 const { getAgendaItem } = useAgendaStore()
@@ -61,11 +61,7 @@ async function deleteDocument() {
       theme: ThemeColor.Warning
     })
   )
-    try {
-      await proposalTextType.api.delete(props.document.pk)
-    } catch (e) {
-      handleRestError(e)
-    }
+    await handled(() => proposalTextType.api.delete(props.document.pk))
 }
 
 const collapsed = ref(false)

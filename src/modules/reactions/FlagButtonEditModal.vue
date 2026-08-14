@@ -20,7 +20,7 @@ import ButtonDisplayCheckboxes from './ButtonDisplayCheckboxes.vue'
 const { t } = useI18n()
 const authStore = useAuthStore()
 const rules = useRules(t)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const emit = defineEmits(['close'])
 const props = defineProps<{
   data?: IFlagButton
@@ -63,7 +63,7 @@ const isValid = computed(() => formValid.value && formData.color)
 async function save() {
   submitting.value = true
   // Transform target to value or null
-  try {
+  await handled(async () => {
     if (transformedData.value.pk) {
       await reactionButtonType.api.patch(
         transformedData.value.pk,
@@ -73,11 +73,8 @@ async function save() {
       await reactionButtonType.api.add(transformedData.value)
     }
     emit('close')
-  } catch (err) {
-    handleRestError(err)
-  } finally {
-    submitting.value = false
-  }
+  })
+  submitting.value = false
 }
 </script>
 

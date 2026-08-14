@@ -58,7 +58,7 @@ const {
 
 const { t } = useI18n()
 const { filterProposals } = useProposalStore()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 const canChangeProposalState = computed(
   () =>
@@ -76,36 +76,30 @@ const isBroadcastingAI = computed(
 
 async function select(proposal: Proposal) {
   if (!isBroadcastingAI.value) return selectProposal(proposal.pk)
-  try {
+  await handled(async () => {
     await handleBroadcast({
       highlighted: [...selectedProposalIds.value, proposal.pk]
     })
     selectProposal(proposal.pk)
-  } catch (e) {
-    handleRestError(e, 'highlighted')
-  }
+  }, 'highlighted')
 }
 
 async function deselect(proposal: Proposal) {
   if (!isBroadcastingAI.value) return deselectProposal(proposal.pk)
-  try {
+  await handled(async () => {
     await handleBroadcast({
       highlighted: selectedProposalIds.value.filter((pk) => proposal.pk !== pk)
     })
     deselectProposal(proposal.pk)
-  } catch (e) {
-    handleRestError(e, 'highlighted')
-  }
+  }, 'highlighted')
 }
 
 async function replaceSelection(proposals: number[]) {
   if (!isBroadcastingAI.value) return selectProposalIds(proposals)
-  try {
+  await handled(async () => {
     await handleBroadcast({ highlighted: proposals })
     selectProposalIds(proposals)
-  } catch (e) {
-    handleRestError(e, 'highlighted')
-  }
+  }, 'highlighted')
 }
 
 function selectTag(tag: string) {
@@ -150,11 +144,7 @@ async function sendEvent(p: Proposal, state: Proposal['state']) {
   if (!event)
     throw new Error(`Proposal state ${state} has no registered transition`)
   transitioning.add(p.pk)
-  try {
-    await proposalType.sm.sendEvent(p, event, t)
-  } catch (e) {
-    handleRestError(e, 'transition')
-  }
+  await handled(() => proposalType.sm.sendEvent(p, event, t), 'transition')
   transitioning.delete(p.pk)
 }
 

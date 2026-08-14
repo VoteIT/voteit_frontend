@@ -2,7 +2,6 @@
 import { ComponentPublicInstance, computed, ref } from 'vue'
 
 import { getDisplayName } from '@/utils'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import { isGroupAuthor, MeetingRole } from '../meetings/types'
@@ -24,7 +23,6 @@ defineProps<{
 
 const meetingId = useMeetingId()
 const { getUser } = useUserDetails(meetingId)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
 const { agendaId, agendaItem, canAddDiscussionPost } = useAgendaItem()
 const { getMeetingButtons } = useReactionStore()
 
@@ -37,15 +35,13 @@ const submitIcon = computed(() =>
     ? 'mdi-lock-outline'
     : 'mdi-comment-text-outline'
 )
+// Errors propagate to DiscussionPostEditor, which reports them and keeps the
+// text. Catching here would make a failed post look successful and reset it.
 async function submit(post: Partial<IDiscussionPost>) {
-  try {
-    await discussionPostType.api.add({
-      agenda_item: agendaId.value,
-      ...post
-    })
-  } catch (e) {
-    handleRestError(e, 'body')
-  }
+  await discussionPostType.api.add({
+    agenda_item: agendaId.value,
+    ...post
+  })
 }
 
 const addContentComponent = ref<null | ComponentPublicInstance<{

@@ -2,6 +2,7 @@ import { ValidationError } from 'envelope-client/src/errors.js'
 import { expect, test, vi } from 'vitest'
 
 import { ApiError } from '@/utils/restApi'
+import { openDialogEvent } from '@/utils/events'
 import useErrorHandler from './useErrorHandler'
 import { useI18n } from 'vue-i18n'
 
@@ -15,9 +16,20 @@ useI18n.mockReturnValue({
 })
 
 test('Bad error', () => {
-  const { handleSocketError, handleRestError } = useErrorHandler()
-  expect(() => handleSocketError('bad error')).toThrowError('bad error')
-  expect(() => handleRestError('bad error')).toThrowError('bad error')
+  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const { errorMessage, fieldErrors, handleSocketError, handleRestError } =
+    useErrorHandler()
+  // Non-Errors are reported rather than rethrown, so callers can reset a
+  // loading flag on the line after handling. They are logged as well, since
+  // they mean a bug rather than a failed request.
+  handleSocketError('bad error')
+  expect(errorMessage.value).toBe('bad error')
+  expect(fieldErrors.value).toEqual({ __root__: ['bad error'] })
+  handleRestError('bad error')
+  expect(errorMessage.value).toBe('bad error')
+  expect(fieldErrors.value).toEqual({ non_field_errors: ['Unknown error'] })
+  expect(consoleSpy).toHaveBeenCalledTimes(2)
+  consoleSpy.mockRestore()
 })
 
 test('Error.message', () => {
@@ -66,10 +78,12 @@ test('handled', async () => {
     })
   ).toBe(undefined)
 
-  // Non-Errors are still rethrown
-  await expect(handled(async () => Promise.reject('bad error'))).rejects.toBe(
-    'bad error'
-  )
+  // Never rejects, so `loading.value = false` on the next line always runs
+  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  expect(await handled(async () => Promise.reject('bad error'))).toBe(undefined)
+  expect(errorMessage.value).toBe('bad error')
+  expect(consoleSpy).toHaveBeenCalledWith('bad error')
+  consoleSpy.mockRestore()
 })
 
 test('handler', async () => {
@@ -88,10 +102,44 @@ test('handler', async () => {
   expect(errorMessage.value).toBe(teapot)
   expect(fieldErrors.value).toEqual({ test: [teapot] })
 
-  // Non-Errors are still rethrown
-  await expect(handler(() => Promise.reject('bad error'))()).rejects.toBe(
-    'bad error'
+  // Never rejects, so `loading.value = false` on the next line always runs
+  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  expect(await handler(() => Promise.reject('bad error'))()).toBe(undefined)
+  expect(errorMessage.value).toBe('bad error')
+  expect(consoleSpy).toHaveBeenCalledWith('bad error')
+  consoleSpy.mockRestore()
+})
+
+test('API failures are reported but not logged as bugs', async () => {
+  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const { handled } = useErrorHandler()
+  await handled(async () => {
+    throw mockApiError("I'm a teapot")
+  })
+  expect(consoleSpy).not.toHaveBeenCalled()
+  consoleSpy.mockRestore()
+})
+
+test('showField falls back to the other field errors', async () => {
+  const dialogSpy = vi.spyOn(openDialogEvent, 'emit')
+  const { handled } = useErrorHandler({ target: 'dialog', showField: 'body' })
+
+  // The requested field wins
+  await handled(async () => {
+    throw new ApiError(400, { body: ['Too short'] }, new Headers(), 'Bad')
+  })
+  expect(dialogSpy).toHaveBeenLastCalledWith(
+    expect.objectContaining({ title: 'Too short' })
   )
+
+  // Errors on other fields must not be hidden behind 'Unknown error'
+  await handled(async () => {
+    throw new ApiError(400, { tags: ['Too many'] }, new Headers(), 'Bad')
+  })
+  expect(dialogSpy).toHaveBeenLastCalledWith(
+    expect.objectContaining({ title: 'tags: Too many' })
+  )
+  dialogSpy.mockRestore()
 })
 
 test('ValidationError.errors', () => {

@@ -21,7 +21,7 @@ import useExportImport from './useExportImport'
 
 const { t } = useI18n()
 const meetingId = useMeetingId()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled, handleRestError } = useErrorHandler({ target: 'dialog' })
 const { agenda } = useAgenda(meetingId)
 const { meetingGroups } = useMeetingGroups(meetingId)
 const meetingStore = useMeetingStore()
@@ -68,11 +68,7 @@ const cloneMeetings = computed(() =>
 
 onMounted(async () => {
   loadingMeetings.value = true
-  try {
-    await meetingStore.fetchMeetings()
-  } catch (e) {
-    handleRestError(e)
-  }
+  await handled(() => meetingStore.fetchMeetings())
   loadingMeetings.value = false
 })
 
@@ -451,15 +447,13 @@ async function runPreview() {
 async function runImport() {
   if (sourceMeetingId.value === null && !file.value) return
   working.value = true
-  try {
+  await handled(async () => {
     const options = valuesFor('clear', 'import', 'include')
     if (sourceMeetingId.value !== null)
       await confirmClone(meetingId.value, sourceMeetingId.value, options)
     else await confirmYamlImport(meetingId.value, file.value!, options)
     importDone.value = true
-  } catch (e) {
-    handleRestError(e)
-  }
+  })
   working.value = false
 }
 </script>

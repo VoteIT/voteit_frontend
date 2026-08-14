@@ -43,7 +43,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const { agendaId } = useAgendaItem()
 const formData = reactive<Pick<ProposalText, 'base_tag' | 'body' | 'title'>>({
   base_tag: props.data?.base_tag ?? t('proposal.textBaseTagDefault'),
@@ -57,7 +57,7 @@ function cleanBaseTag() {
 const saving = ref(false)
 async function save() {
   saving.value = true
-  try {
+  await handled(async () => {
     if (props.data) await proposalTextType.api.patch(props.data.pk, formData)
     else
       await proposalTextType.api.add({
@@ -65,11 +65,8 @@ async function save() {
         ...formData
       })
     closeModalEvent.emit()
-  } catch (e) {
-    handleRestError(e)
-  } finally {
-    saving.value = false
-  }
+  })
+  saving.value = false
 }
 </script>
 

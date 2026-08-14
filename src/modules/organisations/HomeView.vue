@@ -48,7 +48,7 @@ const organisationIcons: Record<OrganisationRole, string> = {
 }
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
@@ -128,15 +128,11 @@ const tabs = computed(() => {
 
 async function addUser(user: number) {
   if (!orgStore.organisation) throw new Error('No organisation')
-  try {
-    await organisationType.addRoles(
-      orgStore.organisation.pk,
-      user,
-      OrganisationRole.MeetingCreator
-    )
-  } catch (e) {
-    handleRestError(e, 'roles')
-  }
+  const { pk } = orgStore.organisation
+  await handled(
+    () => organisationType.addRoles(pk, user, OrganisationRole.MeetingCreator),
+    'roles'
+  )
 }
 
 function mkGroupRule(

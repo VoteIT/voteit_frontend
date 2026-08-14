@@ -28,7 +28,7 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const eventsAvailable = computed(() =>
   props.contentType.sm.getAvailableEvents(props.object, t).map((t) => ({
     ...t,
@@ -47,13 +47,11 @@ const working = ref(false)
 
 async function sendEvent(event: Event) {
   working.value = true
-  try {
-    await props.contentType.sm.sendEvent(props.object, event, t)
-  } catch (e) {
-    handleRestError(e, 'transition')
-  } finally {
-    working.value = false
-  }
+  await handled(
+    () => props.contentType.sm.sendEvent(props.object, event, t),
+    'transition'
+  )
+  working.value = false
 }
 </script>
 

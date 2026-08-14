@@ -51,7 +51,12 @@ const {
 } = useRoom()
 const { isBroadcastingAI, selectedProposalIds, selectProposalIds } =
   usePlenary(agendaId)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled, handler } = useErrorHandler({ target: 'dialog' })
+
+/**
+ * Broadcast this agenda item, with errors reported to the user.
+ */
+const broadcast = handler(broadcastThis)
 
 function getMeetingStateAlert(): IAlertInfo | undefined {
   switch (meeting.value?.state) {
@@ -70,17 +75,10 @@ function getMeetingStateAlert(): IAlertInfo | undefined {
           {
             prependIcon: 'mdi-play-circle',
             text: t('plenary.meetingToOngoing'),
-            async onClick() {
-              try {
-                await meetingType.sm.sendEvent(
-                  meeting.value!,
-                  'make_ongoing',
-                  t
-                )
-              } catch (e) {
-                handleRestError(e, 'transition')
-              }
-            }
+            onClick: handler(
+              () => meetingType.sm.sendEvent(meeting.value!, 'make_ongoing', t),
+              'transition'
+            )
           }
         ]
       }
@@ -102,46 +100,28 @@ function getUpcomingAlert(): IAlertInfo | undefined {
         {
           prependIcon: 'mdi-gavel',
           text: t('plenary.toDecisionMode'),
-          async onClick() {
-            try {
-              await agendaItemType.sm.sendEvent(
-                agendaItem.value!,
-                'make_ongoing',
-                t
-              )
-            } catch (e) {
-              handleRestError(e)
-            }
-          }
+          onClick: handler(() =>
+            agendaItemType.sm.sendEvent(agendaItem.value!, 'make_ongoing', t)
+          )
         }
       ]
     : [
         {
           prependIcon: 'mdi-gavel',
           text: t('plenary.toDecisionMode'),
-          async onClick() {
-            try {
-              await agendaItemType.sm.sendEvent(
-                agendaItem.value!,
-                'make_ongoing',
-                t
-              )
-              await broadcastThis()
-            } catch (e) {
-              handleRestError(e)
-            }
-          }
+          onClick: handler(async () => {
+            await agendaItemType.sm.sendEvent(
+              agendaItem.value!,
+              'make_ongoing',
+              t
+            )
+            await broadcastThis()
+          })
         },
         {
           prependIcon: 'mdi-broadcast',
           text: t('plenary.broadcastAI'),
-          async onClick() {
-            try {
-              await broadcastThis()
-            } catch (e) {
-              handleRestError(e)
-            }
-          }
+          onClick: broadcast
         }
       ]
   return {
@@ -182,15 +162,13 @@ const selectApprovedAction = computed(() => {
       prependIcon: 'mdi-check-circle-outline',
       text: t('plenary.displayApprovedProposals', proposals.length),
       async onClick() {
-        try {
+        await handled(async () => {
           await handleBroadcast({
             agenda_item: agendaId.value,
             highlighted: proposals
           })
           selectProposalIds(proposals)
-        } catch (e) {
-          handleRestError(e, 'highlighted')
-        }
+        }, 'highlighted')
       }
     }
   ]
@@ -212,13 +190,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
               {
                 prependIcon: 'mdi-broadcast',
                 text: t('room.broadcastHere'),
-                async onClick() {
-                  try {
-                    await broadcastThis()
-                  } catch (e) {
-                    handleRestError(e)
-                  }
-                }
+                onClick: broadcast
               }
             ]
           }
@@ -243,11 +215,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
                     }))
                   )
                     return
-                  try {
-                    await broadcastThis()
-                  } catch (e) {
-                    handleRestError(e)
-                  }
+                  await handled(broadcastThis)
                 }
               }
             ]
@@ -265,13 +233,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
           {
             prependIcon: 'mdi-broadcast',
             text: t('plenary.startBroadcast'),
-            async onClick() {
-              try {
-                await broadcastThis()
-              } catch (e) {
-                handleRestError(e)
-              }
-            }
+            onClick: broadcast
           }
         ]
       }
@@ -303,17 +265,11 @@ function getAgendaAlert(): IAlertInfo | undefined {
             {
               prependIcon: 'mdi-gavel',
               text: t('plenary.closeAI'),
-              async onClick() {
-                try {
-                  await agendaItemType.sm.sendEvent(
-                    agendaItem.value!,
-                    'close',
-                    t
-                  )
-                } catch (e) {
-                  handleRestError(e, 'transition')
-                }
-              }
+              onClick: handler(
+                () =>
+                  agendaItemType.sm.sendEvent(agendaItem.value!, 'close', t),
+                'transition'
+              )
             },
             ...selectApprovedAction.value
           ]
@@ -330,13 +286,7 @@ function getAgendaAlert(): IAlertInfo | undefined {
           {
             prependIcon: 'mdi-broadcast',
             text: t('plenary.broadcastAI'),
-            async onClick() {
-              try {
-                await broadcastThis()
-              } catch (e) {
-                handleRestError(e)
-              }
-            }
+            onClick: broadcast
           }
         ]
       }

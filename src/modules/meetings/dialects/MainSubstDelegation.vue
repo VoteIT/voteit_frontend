@@ -34,33 +34,15 @@ const {
   hasSubstRole,
   hasVoteRole
 } = useVoteTransfers(props.group.meeting)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 
 /**
  * Vote transfer calls, with errors reported to the user.
  */
 const transferActions = {
-  async add(source: number, target: number) {
-    try {
-      await api.add(source, target)
-    } catch (e) {
-      handleRestError(e)
-    }
-  },
-  async update(vt: number, target: number) {
-    try {
-      await api.update(vt, target)
-    } catch (e) {
-      handleRestError(e)
-    }
-  },
-  async delete(vt: number) {
-    try {
-      await api.delete(vt)
-    } catch (e) {
-      handleRestError(e)
-    }
-  }
+  add: handler(api.add),
+  update: handler(api.update),
+  delete: handler(api.delete)
 }
 
 /**

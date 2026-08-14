@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { isValidationError, parseSocketError } from 'envelope-client'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
-import { parseRestError } from '@/utils/restApi'
+import { isApiError, NetworkError, parseRestError } from '@/utils/restApi'
 import { useI18n } from 'vue-i18n'
 import { ThemeColor } from '@/utils/types'
 
@@ -19,14 +19,21 @@ const DEFAULT_OPTIONS: HandlerOptions = {
 } as const
 
 function getSpecifiedFieldErrorMessage(errors: APIError, field: string) {
-  const fieldErrors = errors[field] ||
-    errors.non_field_errors || ['Unknown error']
-  return fieldErrors.join(', ')
+  const fieldErrors = errors[field] || errors.non_field_errors
+  if (fieldErrors) return fieldErrors.join(', ')
+  // Nothing on the requested field: report whatever the server did complain
+  // about, rather than hiding it behind a generic message.
+  return getNonspecificFieldErrorMessage(errors) ?? 'Unknown error'
 }
 
 function joinStrings(msgs: string[] | string) {
   if (typeof msgs === 'string') return msgs
   return msgs.join(', ')
+}
+
+/** True for errors that mean a request failed, as opposed to a bug. */
+function isRequestFailure(e: unknown) {
+  return isApiError(e) || isValidationError(e) || e instanceof NetworkError
 }
 
 function getNonspecificFieldErrorMessage(errors: APIError) {
@@ -43,7 +50,7 @@ function getNonspecificFieldErrorMessage(errors: APIError) {
  *
  * @param opts.target - Where to show errors: `'alert'` (snackbar), `'dialog'` (modal), or `'none'` (silent)
  * @param opts.showField - If set, only the error for this field (or `non_field_errors`) is displayed
- * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handled, handler, handleError, handleSocketError, handleRestError }`
+ * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handled, handler, handleSocketError, handleRestError }`
  */
 export default function useErrorHandler(
   opts: HandlerOptions = DEFAULT_OPTIONS
@@ -77,14 +84,19 @@ export default function useErrorHandler(
     parse: (e: Error) => APIError,
     showField?: string
   ) {
-    if (!(e instanceof Error)) throw e
-    errorMessage.value = e.message
-    fieldErrors.value = parse(e)
+    // Never rethrow: callers reset their loading flags on the line after
+    // `handled`, so throwing here would strand them. Anything that isn't a
+    // failed request is a bug, so log it rather than only showing the
+    // generic message it parses down to.
+    if (!isRequestFailure(e)) console.error(e)
+    const error = e instanceof Error ? e : new Error(String(e))
+    errorMessage.value = error.message
+    fieldErrors.value = parse(error)
     showField = showField ?? opts.showField
     displayError(
       showField
         ? getSpecifiedFieldErrorMessage(fieldErrors.value, showField)
-        : (getNonspecificFieldErrorMessage(fieldErrors.value) ?? e.message)
+        : (getNonspecificFieldErrorMessage(fieldErrors.value) ?? error.message)
     )
   }
 
@@ -99,6 +111,9 @@ export default function useErrorHandler(
   /**
    * Runs an action, reporting any REST error to the user.
    * Resolves to the action's value, or `undefined` if it failed.
+   *
+   * Never rejects, so a loading flag can safely be reset on the next line
+   * rather than in a `finally` block.
    *
    * @param showField - Overrides `opts.showField` for this action
    */
@@ -137,10 +152,6 @@ export default function useErrorHandler(
     clearErrors,
     handled,
     handler,
-    handleError(e: unknown) {
-      if (isValidationError(e)) handleSocketError(e)
-      else handleRestError(e)
-    },
     handleSocketError,
     handleRestError
   }

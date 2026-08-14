@@ -165,7 +165,7 @@ const props = defineProps<{
 }>()
 
 const { meeting, meetingId } = useMeeting()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 const { getUser } = useUserDetails(meetingId)
 const { groupRoles } = useMeetingGroups(meetingId)
 const { activeUserIds, componentActive } = useActive(meetingId)
@@ -194,40 +194,28 @@ function filterUser(user: IUser) {
   return !props.group.memberships.find((m) => m.user === user.pk)
 }
 
-async function addUser(user: number) {
-  try {
-    await groupMembershipType.api.add({
-      meeting_group: props.group.pk,
-      user
-    })
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const addUser = handler((user: number) =>
+  groupMembershipType.api.add({
+    meeting_group: props.group.pk,
+    user
+  })
+)
 
 function getRoleTitle(role: number | null) {
   const _role = groupRoles.value.find((r) => r.pk === role)
   return _role ? _role.title : '---'
 }
 
-async function removeMember(pk: number) {
-  try {
-    await groupMembershipType.api.delete(pk)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const removeMember = handler((pk: number) => groupMembershipType.api.delete(pk))
 
 /**
  * Set role on users existing group membership
  * @param user User primary key
  * @param pk Primary key of membership object
  */
-async function setRole(role: number | null, pk: number) {
-  try {
-    await groupMembershipType.api.patch(pk, { role })
-  } catch (e) {
-    handleRestError(e, 'role')
-  }
-}
+const setRole = handler(
+  (role: number | null, pk: number) =>
+    groupMembershipType.api.patch(pk, { role }),
+  'role'
+)
 </script>

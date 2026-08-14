@@ -53,7 +53,7 @@ const disabled = computed(
 const textLength = computed(() => stripHTML(text.value).length)
 
 const { canPostAs } = useMeetingGroups(useMeetingId())
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 function reset() {
   active.value = false
@@ -73,7 +73,7 @@ async function submit() {
       return
   }
   submitting.value = true
-  try {
+  await handled(async () => {
     await props.handler({
       body: text.value,
       tags: tags.value,
@@ -81,11 +81,8 @@ async function submit() {
     })
     editorComponent.value?.setText(props.modelValue)
     reset()
-  } catch (err) {
-    handleRestError(err)
-  } finally {
-    submitting.value = false
-  }
+  }, 'body')
+  submitting.value = false
 }
 
 const editorComponent = ref<null | EditorComponent>(null)

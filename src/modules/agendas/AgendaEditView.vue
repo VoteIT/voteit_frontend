@@ -37,7 +37,7 @@ const { getState, getStateList } = agendaItemType.sm
 const setableStates = computed(() =>
   getStateList((s) => s.state !== AgendaState.Archived)
 )
-const { handleRestError } = useErrorHandler({
+const { handled, handler } = useErrorHandler({
   target: 'dialog'
 })
 
@@ -137,14 +137,12 @@ async function actionOnSelected(
 
 async function deleteSelected() {
   bulkChanging.value = true
-  try {
-    await agendaItemType.api.listAction('bulk-delete', {
+  await handled(() =>
+    agendaItemType.api.listAction('bulk-delete', {
       meeting: meetingId.value,
       agenda_items: bulkEdit.selected
     })
-  } catch (e) {
-    handleRestError(e)
-  }
+  )
   bulkChanging.value = false
 }
 
@@ -155,15 +153,13 @@ function patchAgendaItem(ai: AgendaItem, data: Partial<AgendaItem>) {
 const bulkChanging = ref(false)
 async function patchSelected(data: Partial<AgendaItem>) {
   bulkChanging.value = true
-  try {
-    await agendaItemType.api.listAction('bulk-change', {
+  await handled(() =>
+    agendaItemType.api.listAction('bulk-change', {
       meeting: meetingId.value,
       agenda_items: bulkEdit.selected,
       ...data
     })
-  } catch (e) {
-    handleRestError(e)
-  }
+  )
   bulkChanging.value = false
 }
 
@@ -203,13 +199,11 @@ function tagBulkAdd(tag: string) {
 }
 /* END TAGS */
 
-async function setTitle({ pk }: AgendaItem, title: string) {
-  try {
-    await agendaItemType.api.patch(pk, { title })
-  } catch (e) {
-    handleRestError(e, 'title')
-  }
-}
+const setTitle = handler(
+  ({ pk }: AgendaItem, title: string) =>
+    agendaItemType.api.patch(pk, { title }),
+  'title'
+)
 
 /**
  * Used to disable state selection if all selected AI:s are already that state,

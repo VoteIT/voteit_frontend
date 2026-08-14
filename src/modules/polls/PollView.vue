@@ -28,7 +28,7 @@ import WithheldResult from './WithheldResult.vue'
 import { PollState } from './types'
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const route = useRoute()
 const router = useRouter()
 const pollId = computed(() => Number(route.params.pid))
@@ -81,6 +81,9 @@ watch(userVote, (value) => {
 
 async function deletePoll() {
   if (!canDelete.value || !poll.value) return
+  // Captured up front: this is the poll the user is asked to confirm, and
+  // `poll` may have changed by the time the dialog resolves.
+  const { pk } = poll.value
   if (
     !(await dialogQuery({
       title: t('poll.confirmDeleteQuery'),
@@ -88,15 +91,13 @@ async function deletePoll() {
     }))
   )
     return
-  try {
-    await pollType.api.delete(poll.value.pk)
+  await handled(async () => {
+    await pollType.api.delete(pk)
     router.push({
       name: 'polls',
       params: { id: meetingId.value }
     })
-  } catch (e) {
-    handleRestError(e)
-  }
+  })
 }
 
 const menuItems = computed<MenuItem[]>(() => {

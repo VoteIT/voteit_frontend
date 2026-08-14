@@ -30,7 +30,7 @@ import useMeetingGroups from './useMeetingGroups'
 import useGroupStore from './useGroupStore'
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meetingId, meetingDialect, canChangeRoles, canViewMeetingInvite } =
   useMeeting()
@@ -47,13 +47,11 @@ function getDownloadUrl(type: 'csv' | 'json') {
 
 const matrixCols = DEFAULT_ROLE_ORDER.slice(1)
 
-async function addRole(user: number, role: string) {
-  try {
-    await meetingType.addRoles(meetingId.value, user, role)
-  } catch (e) {
-    handleRestError(e, 'roles')
-  }
-}
+const addRole = handler(
+  (user: number, role: string) =>
+    meetingType.addRoles(meetingId.value, user, role),
+  'roles'
+)
 
 function addUser(user: number) {
   addRole(user, MeetingRole.Participant)

@@ -16,7 +16,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { removeNamespace, setTags } = useParticipantTags(meetingId)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 const genderTag = useGenderTag(
   meetingId,
   computed(() => authStore.user?.pk)
@@ -38,21 +38,10 @@ const genderText = computed(
 )
 const genderIcon = computed(() => getGenderIcon(genderTag.value))
 
-async function setGender(gender: string) {
-  try {
-    await setTags('gen', gender)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const setGender = handler((gender: string) => setTags('gen', gender))
 
-async function clearGender() {
-  try {
-    await removeNamespace(['gen'])
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+// Bound directly to @click, so it must not forward the event to removeNamespace
+const clearGender = handler(() => removeNamespace(['gen']))
 </script>
 
 <template>

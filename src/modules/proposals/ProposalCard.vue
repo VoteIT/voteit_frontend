@@ -180,7 +180,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handler } = useErrorHandler({ target: 'dialog' })
 const { isModerator } = useMeeting()
 const agendaId = computed(() => props.p.agenda_item)
 const { orderContent } = useAgendaFilter()
@@ -190,21 +190,12 @@ const { getProposalDiscussions } = useDiscussionStore()
 
 const { isUnread } = useUnread(new Date(props.p.created))
 
-async function deleteProposal() {
-  try {
-    await proposalType.api.delete(props.p.pk)
-  } catch (e) {
-    handleRestError(e)
-  }
-}
+const deleteProposal = handler(() => proposalType.api.delete(props.p.pk))
 
-async function retract() {
-  try {
-    await proposalType.sm.sendEvent(props.p, 'retract', t)
-  } catch (e) {
-    handleRestError(e, 'transition')
-  }
-}
+const retract = handler(
+  () => proposalType.sm.sendEvent(props.p, 'retract', t),
+  'transition'
+)
 
 const discussionPosts = computed(() => {
   if (props.readOnly) return []

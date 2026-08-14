@@ -77,6 +77,7 @@ import { computed, ref, watch } from 'vue'
 
 import { stripHTML } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
+import useErrorHandler from '@/composables/useErrorHandler'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
 import TagEdit from '@/components/TagEdit.vue'
@@ -116,6 +117,7 @@ const emit = defineEmits<{
 
 const { agendaId } = useAgendaItem()
 const { canPostAs } = useMeetingGroups(useMeetingId())
+const { handled } = useErrorHandler({ target: 'dialog' })
 
 const body = ref(props.proposal ? props.proposal.body : props.modelValue)
 function getExtraTags(proposal?: Proposal) {
@@ -185,12 +187,12 @@ const saving = ref(false)
 const done = ref(false)
 async function saveProposal() {
   saving.value = true
-  try {
+  await handled(async () => {
     if (props.proposal)
       await proposalType.api.patch(props.proposal.pk, getPatchData())
     else await proposalType.api.add(getCreateData())
     done.value = true
-  } catch {}
+  })
   saving.value = false
 }
 

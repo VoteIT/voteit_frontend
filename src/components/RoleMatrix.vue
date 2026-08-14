@@ -39,7 +39,7 @@ const props = withDefaults(
 )
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails(meetingId)
@@ -127,47 +127,38 @@ const loading = shallowRef(false)
 const availableRoles: Ref<ContextRole<Role>[]> = shallowRef([])
 onBeforeMount(async () => {
   loading.value = true
-  try {
+  await handled(async () => {
     const [roles] = await Promise.all([
       props.contentType.getAvailableRoles(),
       props.contentType.fetchRoles(props.pk)
     ])
     availableRoles.value = roles
-  } catch (e) {
-    handleRestError(e)
-  } finally {
-    loading.value = false
-  }
+  })
+  loading.value = false
 })
 
 async function addRole(user: number, role: string) {
   if (!props.admin) return
   if (props.addConfirm && !(await props.addConfirm(user, role))) return
-  try {
-    await props.contentType.addRoles(props.pk, user, role)
-  } catch (e) {
-    handleRestError(e, 'roles')
-  }
+  await handled(() => props.contentType.addRoles(props.pk, user, role), 'roles')
 }
 async function removeRole(user: number, role: string) {
   if (!props.admin) return
   if (props.removeConfirm && !(await props.removeConfirm(user, role))) return
-  try {
-    await props.contentType.removeRoles(props.pk, user, role)
-  } catch (e) {
-    handleRestError(e, 'roles')
-  }
+  await handled(
+    () => props.contentType.removeRoles(props.pk, user, role),
+    'roles'
+  )
 }
 
 async function removeAllRoles(user: number) {
   if (!props.admin) return
   const userRoles = contextRoles.getUserRoles(props.pk, user)
   if (!userRoles) throw new Error(`User ${user} has no roles in this context`)
-  try {
-    await props.contentType.removeRoles(props.pk, user, ...userRoles)
-  } catch (e) {
-    handleRestError(e, 'roles')
-  }
+  await handled(
+    () => props.contentType.removeRoles(props.pk, user, ...userRoles),
+    'roles'
+  )
 }
 
 function isCurrentUser(userId: number): boolean {

@@ -38,7 +38,7 @@ const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
 const { findSpeakerSystem } = useSpeakerStore()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled, handler } = useErrorHandler({ target: 'dialog' })
 
 const { getUserIds } = speakerSystemType.useContextRoles()
 
@@ -143,15 +143,15 @@ const editableMeetingRooms = computed(() =>
         onSubmit: async (user: number) => {
           if (!speakerSystem)
             throw new Error("Can't add roles without speaker system")
-          try {
-            await speakerSystemType.addRoles(
-              speakerSystem.pk,
-              user,
-              SpeakerSystemRole.Speaker
-            )
-          } catch (e) {
-            handleRestError(e, 'roles')
-          }
+          await handled(
+            () =>
+              speakerSystemType.addRoles(
+                speakerSystem.pk,
+                user,
+                SpeakerSystemRole.Speaker
+              ),
+            'roles'
+          )
         }
       }
     }
@@ -163,26 +163,22 @@ const systemIcons = {
   list_moderator: 'mdi-gavel'
 }
 
-async function deleteRoom(pk: number) {
-  try {
-    const data = await roomType.api.action<{
-      speakers: number
-      speaker_lists: number
-    }>('status', pk, undefined, { method: 'get' })
-    if (data.speakers || data.speaker_lists) {
-      if (
-        !(await dialogQuery({
-          title: t('room.confirmDeleteWithContent', data),
-          theme: ThemeColor.Warning
-        }))
-      )
-        return
-    }
-    await roomType.api.delete(pk)
-  } catch (e) {
-    handleRestError(e)
+const deleteRoom = handler(async (pk: number) => {
+  const data = await roomType.api.action<{
+    speakers: number
+    speaker_lists: number
+  }>('status', pk, undefined, { method: 'get' })
+  if (data.speakers || data.speaker_lists) {
+    if (
+      !(await dialogQuery({
+        title: t('room.confirmDeleteWithContent', data),
+        theme: ThemeColor.Warning
+      }))
+    )
+      return
   }
-}
+  await roomType.api.delete(pk)
+})
 </script>
 
 <template>

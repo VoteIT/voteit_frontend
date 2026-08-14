@@ -47,7 +47,7 @@ const router = useRouter()
 const { availableErMethods } = useElectoralRegisters()
 const { installableDialects, loadDialects } = useDialects()
 const rules = useRules(t)
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled, handleRestError } = useErrorHandler({ target: 'dialog' })
 
 onBeforeMount(() => loadDialects().catch(handleRestError))
 
@@ -198,12 +198,10 @@ async function addMeeting() {
     createData.room = { ...formData.room }
     if (formData.createSpeakerSystem) createData.sls = { ...formData.sls }
   }
-  try {
+  await handled(async () => {
     const meeting = await meetingType.api.add(createData)
     await router.push(`/m/${meeting.pk}/${slugify(meeting.title)}`)
-  } catch (e) {
-    handleRestError(e)
-  }
+  })
   submitting.value = false
 }
 </script>

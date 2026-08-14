@@ -20,7 +20,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled } = useErrorHandler({ target: 'dialog' })
 const pollId = toRef(props.data, 'pk')
 const {
   canChange,
@@ -70,13 +70,11 @@ async function close() {
 
 async function transition(event: 'cancel' | 'close') {
   working.value = true
-  try {
-    await pollType.sm.sendEvent(poll.value!, event, t)
-  } catch (e) {
-    handleRestError(e, 'transition')
-  } finally {
-    working.value = false
-  }
+  await handled(
+    () => pollType.sm.sendEvent(poll.value!, event, t),
+    'transition'
+  )
+  working.value = false
 }
 
 /**

@@ -13,7 +13,7 @@ import { MeetingState } from '../types'
 
 const { t } = useI18n()
 const { meeting, meetingDialect, meetingId } = useMeeting()
-const { handleRestError } = useErrorHandler({ target: 'dialog' })
+const { handled, handler } = useErrorHandler({ target: 'dialog' })
 const { installableDialects, loadDialects } = useDialects()
 
 const isUpcomingMeeting = computed(
@@ -25,14 +25,11 @@ const loading = shallowRef(false)
 const stopWatch = watchEffect(async () => {
   if (meetingDialect.value || !isUpcomingMeeting.value) return
   loading.value = true
-  try {
+  await handled(async () => {
     await loadDialects()
     stopWatch()
-  } catch (e) {
-    handleRestError(e)
-  } finally {
-    loading.value = false
-  }
+  })
+  loading.value = false
 })
 
 function* getDialectDefines() {
@@ -58,23 +55,16 @@ function* getDialectDefines() {
 
 const dialectDefines = computed(() => [...getDialectDefines()])
 
-async function installDialect(dialect: string) {
-  try {
-    await meetingType.api.action('install-dialect', meetingId.value, {
-      dialect
-    })
-  } catch (e) {
-    handleRestError(e, 'dialect')
-  }
-}
+const installDialect = handler(
+  (dialect: string) =>
+    meetingType.api.action('install-dialect', meetingId.value, { dialect }),
+  'dialect'
+)
 
-async function removeDialect() {
-  try {
-    await meetingType.api.action('remove-dialect', meetingId.value)
-  } catch (e) {
-    handleRestError(e, 'dialect')
-  }
-}
+const removeDialect = handler(
+  () => meetingType.api.action('remove-dialect', meetingId.value),
+  'dialect'
+)
 </script>
 
 <template>

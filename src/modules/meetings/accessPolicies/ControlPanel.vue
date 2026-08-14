@@ -125,7 +125,7 @@ import { useI18n } from 'vue-i18n'
 import { useClipboard } from '@vueuse/core'
 
 import QueryDialog from '@/components/QueryDialog.vue'
-import useAlert from '@/composables/useAlert'
+import useErrorHandler from '@/composables/useErrorHandler'
 import { AccessPolicyType } from '@/contentTypes/types'
 
 import useMeeting from '../useMeeting'
@@ -142,7 +142,7 @@ const NON_MODIFIABLE_ROLES = Object.freeze([
 
 const { t } = useI18n()
 const { meetingId, meeting, meetingDialect, meetingJoinUrl } = useMeeting()
-const { alert } = useAlert()
+const { handled } = useErrorHandler({ target: 'dialog' })
 const {
   accessPolicies,
   hasActivePolicy,
@@ -190,14 +190,16 @@ const meetingListed = computed<boolean>({
   get() {
     return !!meeting.value && meeting.value.visible_in_lists
   },
-  set(value) {
-    try {
-      meetingType.api.patch(meetingId.value, {
-        visible_in_lists: value
-      })
-    } catch {
-      alert('*Could not set meeting visible_in_lists status')
-    }
+  // Must await: a bare call left the rejection unobservable, so a failed
+  // toggle was silent.
+  async set(value) {
+    await handled(
+      () =>
+        meetingType.api.patch(meetingId.value, {
+          visible_in_lists: value
+        }),
+      'visible_in_lists'
+    )
   }
 })
 
