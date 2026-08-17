@@ -65,7 +65,7 @@ const SETTING_DEFAULTS = {
 const { t } = useI18n()
 const { meetingId, isFinishedMeeting, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { filterProposals } = useProposalStore()
+const { getAiProposals } = useProposalStore()
 const groupStore = useGroupStore()
 
 const baseSetting = ref<keyof typeof SETTING_DEFAULTS | null>(null)
@@ -126,7 +126,7 @@ const annotatedAgenda = computed(() => {
     .map(({ pk, state, title }) => {
       const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
         const proposals = sortBy(
-          filterProposals((p) => p.agenda_item === pk && p.state === state),
+          getAiProposals(pk, (p) => p.state === state),
           PROPOSAL_ORDERING[settings.proposalOrder]
         )
         return {

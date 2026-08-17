@@ -57,7 +57,7 @@ const {
 } = usePlenary(agendaId)
 
 const { t } = useI18n()
-const { filterProposals } = useProposalStore()
+const { getAiProposals } = useProposalStore()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
 const canChangeProposalState = computed(
@@ -105,11 +105,9 @@ async function replaceSelection(proposals: number[]) {
 function selectTag(tag: string) {
   replaceSelection(
     sorted(
-      filterProposals(
-        (p) =>
-          p.agenda_item === agendaId.value &&
-          filterProposalStates(p) &&
-          p.tags.includes(tag)
+      getAiProposals(
+        agendaId.value,
+        (p) => filterProposalStates(p) && p.tags.includes(tag)
       ),
       (p) => p.created
     ).map((p) => p.pk)

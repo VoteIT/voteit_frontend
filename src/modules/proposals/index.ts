@@ -42,8 +42,8 @@ meetingExportPlugins.register({
 
 agendaItemType.sm.registerGuard('close', (obj, t) => {
   if (
-    useProposalStore().anyProposal(
-      (p) => p.agenda_item === obj.pk && UNRESOLVED_STATES.includes(p.state)
+    useProposalStore().anyAiProposal(obj.pk, (p) =>
+      UNRESOLVED_STATES.includes(p.state)
     )
   )
     return { text: t('proposal.agendaItemHasUnresolved') }

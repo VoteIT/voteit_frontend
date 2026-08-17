@@ -63,7 +63,7 @@ const {
   selectedProposals,
   getPlenaryRoute
 } = usePlenary(agendaId)
-const { countProposals } = useProposalStore()
+const { countAiProposals } = useProposalStore()
 const { getAiPolls, getPollMethod, getPollStatus } = usePollStore()
 
 useMeetingChannel()
@@ -71,9 +71,7 @@ useLoader('Plenary', useChannel('agenda_item', agendaId).promise)
 useMeetingTitle(t('plenary.view'))
 
 function getStateProposalCount(state: ProposalState) {
-  return countProposals(
-    (p) => p.agenda_item == agendaId.value && p.state === state
-  )
+  return countAiProposals(agendaId.value, (p) => p.state === state)
 }
 
 function getActiveAIRoute(agendaItem?: number | null) {

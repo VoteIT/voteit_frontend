@@ -28,7 +28,7 @@ const { agenda, filteredAgenda } = useAgenda(
 )
 const { agendaTags, selectedAgendaTag } = useAgendaTags(agenda)
 const { getAiPolls } = usePollStore()
-const { countProposals } = useProposalStore()
+const { countAiProposals } = useProposalStore()
 
 function getAiType(state: string) {
   return filteredAgenda.value.filter((ai) => ai.state === state)
@@ -60,9 +60,7 @@ function getAIMenuItems(s: (typeof aiGroups)['value'][number]): TreeMenuLink[] {
     icons: getAiPolls(ai.pk, PollState.Ongoing).length
       ? ['mdi-star-outline']
       : [],
-    count:
-      countProposals((p) => p.agenda_item === ai.pk && isCountedProposal(p)) ||
-      undefined,
+    count: countAiProposals(ai.pk, isCountedProposal) || undefined,
     hasNewItems: hasNewContent(ai)
   }))
 }

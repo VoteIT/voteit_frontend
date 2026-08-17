@@ -45,8 +45,8 @@ import AgendaItemDescription from './AgendaItemDescription.vue'
 import useAgendaStore from './useAgendaStore'
 
 const { t } = useI18n()
-const { filterDiscussions } = useDiscussionStore()
-const { anyProposal, filterProposals } = useProposalStore()
+const { getAiDiscussions } = useDiscussionStore()
+const { anyAiProposal, getAiProposals } = useProposalStore()
 const { getAiPolls } = usePollStore()
 const { meetingId, meeting } = useMeeting()
 const { agenda } = useAgenda(meetingId)
@@ -98,15 +98,17 @@ function proposalFilter(p: Proposal) {
   return tagIncluded(p.tags) && stateIncluded(p.state)
 }
 const sortedProposals = computed(() =>
-  filterProposals(
-    (p) => isAIProposal(p) && proposalFilter(p),
+  getAiProposals(
+    agendaId.value,
+    proposalFilter,
     (p) => p.created,
     agendaFilter.order === 'desc'
   )
 )
 const hiddenProposals = computed(() =>
-  filterProposals(
-    (p) => isAIProposal(p) && !proposalFilter(p),
+  getAiProposals(
+    agendaId.value,
+    (p) => !proposalFilter(p),
     (p) => p.created,
     agendaFilter.order === 'desc'
   )
@@ -114,11 +116,7 @@ const hiddenProposals = computed(() =>
 const pollCount = computed(() => getAiPolls(agendaId.value).length)
 
 const sortedDiscussions = computed(() =>
-  orderContent(
-    filterDiscussions(
-      (d) => d.agenda_item === agendaId.value && tagIncluded(d.tags)
-    )
-  )
+  orderContent(getAiDiscussions(agendaId.value, (d) => tagIncluded(d.tags)))
 )
 
 const allTags = computed<Set<string>>(() => {
@@ -129,8 +127,8 @@ const allTags = computed<Set<string>>(() => {
       getter(agendaId.value).map((i) => i.tags)
     )
   return new Set([
-    ...transform((ai) => filterProposals((p) => p.agenda_item === ai)),
-    ...transform((ai) => filterDiscussions((p) => p.agenda_item === ai))
+    ...transform((ai) => getAiProposals(ai)),
+    ...transform((ai) => getAiDiscussions(ai))
   ])
 })
 provide(TagsKey, allTags)
@@ -151,12 +149,8 @@ function getAgendaMenuContext(menu: string) {
   }
 }
 
-function isAIProposal(p: Proposal) {
-  return p.agenda_item === agendaId.value
-}
-
 const hasPublishedProposals = computed(() =>
-  anyProposal((p) => isAIProposal(p) && p.state === ProposalState.Published)
+  anyAiProposal(agendaId.value, (p) => p.state === ProposalState.Published)
 )
 
 const editDescription = shallowRef(false)
@@ -200,7 +194,7 @@ const menuItems = computed<MenuItem[]>(() => {
   return pluginMenuItems.length ? [...items, '---', ...pluginMenuItems] : items
 })
 
-const hasProposals = computed(() => anyProposal(isAIProposal))
+const hasProposals = computed(() => anyAiProposal(agendaId.value))
 
 function setLastRead(agenda_item: number) {
   // Return if there is no new content

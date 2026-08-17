@@ -1,8 +1,9 @@
-import { any, filter, map, Primitive, sorted } from 'itertools'
+import { any, map, Primitive, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { shallowReactive } from 'vue'
 
 import { countMatching } from '@/utils'
+import IndexedMap from '@/utils/IndexedMap'
 import { Predicate } from '@/utils/types'
 import useAgendaStore from '../agendas/useAgendaStore'
 import { agendaDeletedEvent } from '../agendas/events'
@@ -12,8 +13,20 @@ import { Proposal } from './types'
 import { ProposalText, proposalTextType, proposalType } from './contentTypes'
 
 export default defineStore('proposals', () => {
-  const proposals = shallowReactive(new Map<number, Proposal>())
-  const proposalTexts = shallowReactive(new Map<number, ProposalText>())
+  // Only indexed by agenda item: a user is subscribed to one meeting at a time,
+  // so an index on `m` would hold a single key covering every proposal — no
+  // narrower than a full scan, but with a Map.get per item on top.
+  const proposals = shallowReactive(
+    new IndexedMap<Proposal, 'agenda_item'>({
+      agenda_item: (p) => p.agenda_item
+    })
+  )
+  const proposalTexts = shallowReactive(
+    new IndexedMap<ProposalText, 'agenda_item' | 'paragraph'>({
+      agenda_item: (d) => d.agenda_item,
+      paragraph: (d) => d.paragraphs.map((p) => p.pk)
+    })
+  )
 
   proposalType.updateMap(proposals, { participants: 'm', moderators: 'm' })
   proposalTextType.updateMap(proposalTexts, { agenda_item: 'agenda_item' })
@@ -30,13 +43,21 @@ export default defineStore('proposals', () => {
 
   /* Make sure proposals for agenda item are cleaned up on "deletion" (private). */
   agendaDeletedEvent.on((pk) => {
-    for (const proposal of proposals.values()) {
-      if (proposal.agenda_item === pk) proposals.delete(proposal.pk)
-    }
+    // by() materialises, so deleting while looping is safe
+    for (const proposal of proposals.by('agenda_item', pk))
+      proposals.delete(proposal.pk)
   })
 
   function* iterProposals(predicate?: Predicate<Proposal>) {
     for (const p of proposals.values()) if (!predicate || predicate(p)) yield p
+  }
+
+  function* iterAiProposals(
+    agendaItem: number,
+    predicate?: Predicate<Proposal>
+  ) {
+    for (const p of proposals.iterBy('agenda_item', agendaItem))
+      if (!predicate || predicate(p)) yield p
   }
 
   function countProposals(predicate: Predicate<Proposal>) {
@@ -62,6 +83,36 @@ export default defineStore('proposals', () => {
     map(iterProposals(predicate), fn)
   }
 
+  /* Index-backed lookups. Prefer these whenever the agenda item or meeting is
+   * known — they only touch that key's proposals, so unrelated updates elsewhere
+   * in the meeting don't invalidate the caller. */
+
+  function getAiProposals(
+    agendaItem: number,
+    predicate?: Predicate<Proposal>,
+    keyFn: (prop: Proposal) => Primitive = (p) => p.created,
+    reverse = false
+  ) {
+    return sorted(iterAiProposals(agendaItem, predicate), keyFn, reverse)
+  }
+
+  function countAiProposals(
+    agendaItem: number,
+    predicate?: Predicate<Proposal>
+  ) {
+    return countMatching(
+      proposals.iterBy('agenda_item', agendaItem),
+      predicate ?? (() => true)
+    )
+  }
+
+  function anyAiProposal(
+    agendaItem: number,
+    predicate?: Predicate<Proposal>
+  ): boolean {
+    return any(iterAiProposals(agendaItem, predicate))
+  }
+
   function getProposal(pk: number) {
     return proposals.get(pk)
   }
@@ -75,33 +126,39 @@ export default defineStore('proposals', () => {
 
   // Text documents (diff stuff)
 
-  function anyDocument(predicate: Predicate<ProposalText>) {
-    return any(proposalTexts.values(), predicate)
+  /**
+   * Does this agenda item have any text document?
+   */
+  function anyAiDocument(agendaItem: number) {
+    return any(proposalTexts.iterBy('agenda_item', agendaItem))
   }
 
   /**
-   * Get a list of documents matching predicate
+   * Get the text documents of an agenda item
    */
-  function getDocuments(predicate: Predicate<ProposalText>) {
-    return filter(proposalTexts.values(), predicate)
+  function getAiDocuments(agendaItem: number) {
+    return proposalTexts.by('agenda_item', agendaItem)
   }
 
   /**
    * Get document paragraph by primary key
    */
   function getParagraph(pk: number) {
-    for (const document of proposalTexts.values())
+    for (const document of proposalTexts.iterBy('paragraph', pk))
       for (const paragraph of document.paragraphs)
         if (paragraph.pk === pk) return paragraph
   }
 
   return {
-    anyDocument,
+    anyAiDocument,
+    anyAiProposal,
+    countAiProposals,
     countProposals,
     anyProposal,
     filterProposals,
     forProposals,
-    getDocuments,
+    getAiDocuments,
+    getAiProposals,
     getParagraph,
     getProposal,
     getProposals

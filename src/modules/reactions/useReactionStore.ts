@@ -2,6 +2,7 @@ import { ifilter, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { shallowReactive } from 'vue'
 
+import IndexedMap from '@/utils/IndexedMap'
 import useAuthStore from '../auth/useAuthStore'
 import { ProposalButtonMode } from '../proposals/types'
 import { reactionButtonType, reactionType } from './contentTypes'
@@ -16,9 +17,22 @@ function getCountKey(contentType: string, objectId: number, button: number) {
   return `${contentType}/${objectId}/${button}`
 }
 
+/**
+ * Index key identifying the object a reaction is attached to.
+ */
+function getObjectKey(contentType: string, objectId: number) {
+  return `${contentType}/${objectId}`
+}
+
 export default defineStore('reactions', () => {
+  // Buttons are few and all belong to the current meeting, so an index on
+  // `meeting` would cover every one of them — a plain scan is cheaper.
   const reactionButtons = shallowReactive(new Map<number, ReactionButton>())
-  const reactions = shallowReactive(new Map<number, Reaction>())
+  const reactions = shallowReactive(
+    new IndexedMap<Reaction, 'object'>({
+      object: (r) => getObjectKey(r.content_type, r.object_id)
+    })
+  )
   const reactionCounts = shallowReactive(new Map<string, number>())
 
   reactionButtonType.updateMap(reactionButtons, { meeting: 'meeting' })
@@ -86,14 +100,10 @@ export default defineStore('reactions', () => {
   }
 
   function getUserReaction(button: ReactionButton, relation: ReactionRelation) {
-    for (const r of reactions.values())
-      if (
-        r.button === button.pk &&
-        r.content_type === relation.content_type &&
-        r.object_id === relation.object_id &&
-        r.user === useAuthStore().user?.pk
-      )
-        return r
+    const user = authStore.user?.pk
+    const key = getObjectKey(relation.content_type, relation.object_id)
+    for (const r of reactions.iterBy('object', key))
+      if (r.button === button.pk && r.user === user) return r
   }
 
   async function setUserReacted(

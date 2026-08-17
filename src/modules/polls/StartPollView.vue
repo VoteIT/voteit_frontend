@@ -30,7 +30,7 @@ import { AgendaState } from '../agendas/types'
 
 const { t } = useI18n()
 const router = useRouter()
-const { filterProposals } = useProposalStore()
+const { getAiProposals } = useProposalStore()
 const { isModerator, meetingRoute, meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
 const { agendaId, agendaItem, nextPollTitle } = useAgendaItem()
@@ -43,9 +43,7 @@ useMeetingTitle(t('poll.start'))
 
 const selectedProposalIds = ref<number[]>([])
 function getPublishedProposals(agendaItem: number) {
-  return filterProposals(
-    (p) => p.agenda_item === agendaItem && p.state === ProposalState.Published
-  )
+  return getAiProposals(agendaItem, (p) => p.state === ProposalState.Published)
 }
 const pollableAgendaItems = computed(() => {
   return agenda.value

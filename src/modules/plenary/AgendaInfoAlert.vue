@@ -38,7 +38,7 @@ const { t } = useI18n()
 
 const { meeting, meetingId } = useMeeting()
 const { getUser } = useUserDetails(meetingId)
-const { filterProposals } = useProposalStore()
+const { getAiProposals } = useProposalStore()
 const { agendaId, agendaItem, hasOngoingPolls, hasUnresolvedProposals } =
   useAgendaItem()
 const {
@@ -145,9 +145,9 @@ function broadcastThis() {
 }
 
 const selectApprovedAction = computed(() => {
-  const proposals = filterProposals(
-    (p) =>
-      p.agenda_item === agendaId.value && p.state === ProposalState.Approved,
+  const proposals = getAiProposals(
+    agendaId.value,
+    (p) => p.state === ProposalState.Approved,
     (p) => p.modified
   ).map((p) => p.pk)
   if (

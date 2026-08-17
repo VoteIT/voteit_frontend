@@ -89,7 +89,7 @@ import usePrinting from './usePrinting'
 
 useMeetingTitle('Printing') // TODO
 const agendaId = computed(() => Number(route.params.aid))
-const { filterProposals } = useProposalStore()
+const { getAiProposals } = useProposalStore()
 const groupStore = useGroupStore()
 const route = useRoute()
 const router = useRouter()
@@ -103,14 +103,11 @@ const propIds = computed<number[]>({
   }
 })
 const proposals = computed(() =>
-  filterProposals(
-    (p) =>
-      p.agenda_item === agendaId.value && p.state !== ProposalState.Retracted
-  )
+  getAiProposals(agendaId.value, (p) => p.state !== ProposalState.Retracted)
 )
 const selectedProposals = computed(() => {
-  return filterProposals(
-    (p) => p.agenda_item === agendaId.value && propIds.value.includes(p.pk)
+  return getAiProposals(agendaId.value, (p) =>
+    propIds.value.includes(p.pk)
   ).map((p) => ({
     meetingGroup:
       p.meeting_group && groupStore.getMeetingGroup(p.meeting_group),

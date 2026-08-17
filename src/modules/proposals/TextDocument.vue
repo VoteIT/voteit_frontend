@@ -23,7 +23,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
-const { countProposals } = useProposalStore()
+const { countAiProposals } = useProposalStore()
 const { getAgendaItem } = useAgendaStore()
 
 const perms = computed(() => {
@@ -38,10 +38,8 @@ const perms = computed(() => {
 const proposalCount = computed(() => {
   const mapping: Record<string, number> = {}
   for (const p of props.document.paragraphs) {
-    mapping[p.tag] = countProposals(
-      (prop) =>
-        prop.agenda_item === props.document.agenda_item &&
-        prop.tags.includes(p.tag)
+    mapping[p.tag] = countAiProposals(props.document.agenda_item, (prop) =>
+      prop.tags.includes(p.tag)
     )
   }
   return mapping

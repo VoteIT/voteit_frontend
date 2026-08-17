@@ -24,7 +24,7 @@ import useAgendaTags from './useAgendaTags'
 export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   const { getAgendaItem, getAgendaItems, getAgendaBody, getLastRead } =
     useAgendaStore()
-  const { anyProposal } = useProposalStore()
+  const { anyAiProposal } = useProposalStore()
   const route = useRoute()
   const { meeting, meetingId } = useMeeting()
 
@@ -115,15 +115,11 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
   })
 
   const hasOngoingPolls = computed(() =>
-    pollStore.anyPoll(
-      (p) => p.agenda_item === _agendaId.value && p.state === PollState.Ongoing
-    )
+    pollStore.anyAiPoll(_agendaId.value, PollState.Ongoing)
   )
 
   const hasUnresolvedProposals = computed(() =>
-    anyProposal(
-      (p) => p.agenda_item === _agendaId.value && isUnresolvedState(p.state)
-    )
+    anyAiProposal(_agendaId.value, (p) => isUnresolvedState(p.state))
   )
 
   return {

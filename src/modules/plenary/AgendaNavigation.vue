@@ -100,7 +100,7 @@ const { agendaTags, selectedAgendaTag, aiMatchesTag } = useAgendaTags(agenda)
 const { speakerSystem, meetingRoom, getRoomRoute } = useRoom()
 const { currentTab, filterProposalStates } = usePlenary(agendaId)
 const { anyPoll } = usePollStore()
-const { countProposals } = useProposalStore()
+const { countAiProposals } = useProposalStore()
 const { anySpeakerList } = useSpeakerStore()
 
 const isOpen = ref(false)
@@ -151,10 +151,8 @@ const annotatedAgendaStates = computed(() => {
         items: items.filter(aiMatchesTag).map((ai) => ({
           ...ai,
           proposals: {
-            filtered: countProposals(
-              (prop) => prop.agenda_item === ai.pk && filterProposalStates(prop)
-            ),
-            total: countProposals((prop) => prop.agenda_item === ai.pk)
+            filtered: countAiProposals(ai.pk, filterProposalStates),
+            total: countAiProposals(ai.pk)
           },
           symbols: [...getSymbols(ai.pk)]
         }))

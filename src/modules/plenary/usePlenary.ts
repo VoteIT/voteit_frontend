@@ -42,7 +42,7 @@ function filterProposalStates(p: Proposal) {
 
 export default function usePlenary(agendaItem: ComputedRef<number>) {
   const route = useRoute()
-  const { filterProposals, getProposal } = useProposalStore()
+  const { getAiProposals, getProposal } = useProposalStore()
   const { isBroadcasting, meetingRoom, getRoomRoute } = useRoom()
 
   type Tab = 'discussion' | 'decisions' | 'split'
@@ -91,10 +91,7 @@ export default function usePlenary(agendaItem: ComputedRef<number>) {
   )
 
   const filteredProposals = computed(() =>
-    filterProposals(
-      (prop) =>
-        prop.agenda_item === agendaItem.value && filterProposalStates(prop)
-    )
+    getAiProposals(agendaItem.value, filterProposalStates)
   )
 
   return {

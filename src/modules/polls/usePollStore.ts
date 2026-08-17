@@ -11,6 +11,7 @@ import { defineStore } from 'pinia'
 import { computed, shallowReactive } from 'vue'
 
 import { Vote } from '@/contentTypes/types'
+import IndexedMap from '@/utils/IndexedMap'
 import { agendaDeletedEvent } from '../agendas/events'
 
 import { pollType, voteType } from './contentTypes'
@@ -20,8 +21,18 @@ import { Poll, PollState, PollStatus } from './types'
 import type { PollStartData } from './methods/types'
 
 export default defineStore('polls', () => {
-  const polls = shallowReactive(new Map<number, Poll>())
-  const userVotes = shallowReactive(new Map<number, Vote>())
+  // No `meeting` index: only one meeting's polls are ever loaded at a time,
+  // so it would degenerate into a single key covering every poll.
+  const polls = shallowReactive(
+    new IndexedMap<Poll, 'agenda_item' | 'proposal'>({
+      agenda_item: (p) => p.agenda_item,
+      // One poll is indexed under every proposal it contains
+      proposal: (p) => p.proposals
+    })
+  )
+  const userVotes = shallowReactive(
+    new IndexedMap<Vote, 'poll'>({ poll: (v) => v.poll })
+  )
   const pollStatuses = shallowReactive(new Map<number, PollStatus>())
 
   pollType
@@ -40,8 +51,8 @@ export default defineStore('polls', () => {
    ** Clear private polls when agenda item deleted.
    */
   agendaDeletedEvent.on((pk) => {
-    for (const poll of polls.values())
-      if (poll.agenda_item === pk) polls.delete(poll.pk)
+    // by() materialises, so deleting while looping is safe
+    for (const poll of polls.by('agenda_item', pk)) polls.delete(poll.pk)
   })
 
   /**
@@ -70,8 +81,9 @@ export default defineStore('polls', () => {
   }
 
   function getAiPolls(agendaItem: number, state?: PollState) {
-    return filterPolls(
-      (p) => p.agenda_item === agendaItem && (!state || p.state === state)
+    return filter(
+      polls.iterBy('agenda_item', agendaItem),
+      (p) => !state || p.state === state
     )
   }
 
@@ -79,6 +91,20 @@ export default defineStore('polls', () => {
     return filterPolls(
       (p) => p.meeting === meeting && (!state || p.state === state)
     )
+  }
+
+  function anyAiPoll(agendaItem: number, state?: PollState) {
+    return any(
+      polls.iterBy('agenda_item', agendaItem),
+      (p) => !state || p.state === state
+    )
+  }
+
+  /**
+   * Is the proposal part of any poll?
+   */
+  function anyPollWithProposal(proposal: number) {
+    return any(polls.iterBy('proposal', proposal))
   }
 
   function getPoll(pk: number) {
@@ -100,7 +126,7 @@ export default defineStore('polls', () => {
   }
 
   function getUserVote(poll: Poll) {
-    return first(userVotes.values(), (vote) => vote.poll === poll.pk)
+    return first(userVotes.iterBy('poll', poll.pk))
   }
 
   /**
@@ -113,16 +139,13 @@ export default defineStore('polls', () => {
   }
 
   /**
-   * Generate a predicate to filter on current users unvoted polls in meeting.
+   * Get first ongoing poll in a meeting that current user hasn't voted in.
+   * @param poll If provided, function will return next unvoted poll in order
    */
   function getMeetingUnvotedPredicate(meeting: number): Predicate<Poll> {
     return (poll: Poll) => poll.meeting === meeting && isUnvotedPoll(poll)
   }
 
-  /**
-   * Get first ongoing poll in a meeting that current user hasn't voted in.
-   * @param poll If provided, function will return next unvoted poll in order
-   */
   function getNextUnvotedPoll(meeting: number, poll?: Poll) {
     const isUnvoted = getMeetingUnvotedPredicate(meeting)
     if (poll) {
@@ -139,7 +162,9 @@ export default defineStore('polls', () => {
 
   return {
     allPollTitles,
+    anyAiPoll,
     anyPoll,
+    anyPollWithProposal,
     createPoll,
     filterPolls,
     getPoll,

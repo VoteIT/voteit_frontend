@@ -18,15 +18,13 @@ import useProposalStore from './useProposalStore'
 
 export function documentHasProposals(doc: ProposalText): boolean {
   const tags = doc.paragraphs.map((p) => p.tag)
-  return useProposalStore().anyProposal(
-    (prop) =>
-      prop.agenda_item === doc.agenda_item &&
-      tags.some((tag) => prop.tags.includes(tag))
+  return useProposalStore().anyAiProposal(doc.agenda_item, (prop) =>
+    tags.some((tag) => prop.tags.includes(tag))
   )
 }
 
 function agendaItemHasDocuments(ai: AgendaItem): boolean {
-  return useProposalStore().anyDocument((doc) => doc.agenda_item === ai.pk)
+  return useProposalStore().anyAiDocument(ai.pk)
 }
 
 export function canAddDocument(ai: AgendaItem): boolean {
@@ -52,7 +50,7 @@ function isPublishedProposal(proposal: Proposal): boolean {
 }
 
 function isUsedInPoll(proposal: Proposal): boolean {
-  return usePollStore().anyPoll((p) => p.proposals.includes(proposal.pk))
+  return usePollStore().anyPollWithProposal(proposal.pk)
 }
 
 export function getProposalBlockReason(agendaItem: AgendaItem) {

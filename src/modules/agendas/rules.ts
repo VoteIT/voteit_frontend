@@ -9,9 +9,7 @@ const FINISHED_STATES = [AgendaState.Closed, AgendaState.Archived]
 const ACTIVE_STATES = [AgendaState.Upcoming, AgendaState.Ongoing]
 
 export function hasOngoingPolls(ai: AgendaItem): boolean {
-  return usePollStore().anyPoll(
-    (p) => p.agenda_item === ai.pk && p.state === PollState.Ongoing
-  )
+  return usePollStore().anyAiPoll(ai.pk, PollState.Ongoing)
 }
 
 export function isAIModerator(agendaItem: AgendaItem): boolean | undefined {

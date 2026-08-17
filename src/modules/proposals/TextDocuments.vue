@@ -13,8 +13,6 @@ import TextDocument from './TextDocument.vue'
 import useProposalStore from './useProposalStore'
 
 const { agendaId } = useAgendaItem()
-const { getDocuments } = useProposalStore()
-const documents = computed(() =>
-  getDocuments((doc) => doc.agenda_item === agendaId.value)
-)
+const { getAiDocuments } = useProposalStore()
+const documents = computed(() => getAiDocuments(agendaId.value))
 </script>
