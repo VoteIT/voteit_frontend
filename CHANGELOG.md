@@ -4,6 +4,12 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 0.47.0 (2026-08-17)
+
+- REST API migration: All calls except channel subscriptions now use REST instead of WebSocket
+- Error handling refactoring: `alertOnError` removed in favour of explicit handling, with new `handled()` and `handler()` helpers in `useErrorHandler`
+- Axios replaced by native `fetch` in the REST client, removing a runtime dependency
+
 ## 0.46.0 (2026-06-18)
 
 - State machine refactoring: transitions, conditions, and validators are now handled in a unified way, with validators registered per state machine
