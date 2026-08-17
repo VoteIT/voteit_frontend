@@ -7,7 +7,6 @@ import ContentType, { BaseContentType } from './ContentType'
 
 const {
   mockAddTypeHandler,
-  mockSocketCall,
   MockContentAPI,
   MockChannel,
   mockUseStateMachine,
@@ -25,7 +24,6 @@ const {
 
   return {
     mockAddTypeHandler: vi.fn(),
-    mockSocketCall: vi.fn(),
     MockContentAPI: vi.fn(function () {
       return mockApiInstance
     }),
@@ -40,7 +38,7 @@ const {
 })
 
 vi.mock('@/utils/Socket', () => ({
-  socket: { addTypeHandler: mockAddTypeHandler, call: mockSocketCall }
+  socket: { addTypeHandler: mockAddTypeHandler }
 }))
 vi.mock('./ContentAPI', () => ({ default: MockContentAPI }))
 vi.mock('./Channel', () => ({ default: MockChannel }))
@@ -153,23 +151,6 @@ describe('BaseContentType', () => {
     captureSocketHandler()({ t: 'mytype.deleted', p: { pk: 5 } })
 
     expect(handler).toHaveBeenCalledWith({ pk: 5 })
-  })
-
-  test('methodCall calls socket.call with name.method', () => {
-    const ct = new BaseContentType({ name: 'mytype' })
-    ct.methodCall('add', { foo: 'bar' })
-    expect(mockSocketCall).toHaveBeenCalledWith(
-      'mytype.add',
-      { foo: 'bar' },
-      undefined
-    )
-  })
-
-  test('methodCall forwards config to socket.call', () => {
-    const ct = new BaseContentType({ name: 'mytype' })
-    const config = { leaveDelay: 0 }
-    ct.methodCall('add', {}, config)
-    expect(mockSocketCall).toHaveBeenCalledWith('mytype.add', {}, config)
   })
 
   test('getContentApi throws when no restEndpoint is configured', () => {

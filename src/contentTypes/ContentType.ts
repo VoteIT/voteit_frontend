@@ -8,7 +8,7 @@ import { IUser } from '@/modules/organisations/types'
 import useUserDetails from '@/modules/organisations/useUserDetails'
 
 import ContentAPI from './ContentAPI'
-import { ChannelConfig, ConditionalWorkflowStates } from './types'
+import { ConditionalWorkflowStates } from './types'
 import contentCleanup, { ChannelMap } from './contentCleanup'
 import useStateMachine from '@/composables/useStateMachine'
 
@@ -73,14 +73,6 @@ export class BaseContentType<T extends {}, Role extends string = never> {
     const handler = this.methodHandlers.get(method)
     if (handler) handler(p)
     else this.queueMessage(method, p)
-  }
-
-  public methodCall<RT = T>(
-    method: string,
-    data?: object,
-    config?: ChannelConfig
-  ) {
-    return socket.call<RT>(`${this.name}.${method}`, data, config)
   }
 
   public on<LT = T>(method: string, fn: MethodHandler<LT>, override = true) {
