@@ -1,6 +1,5 @@
 import { isEmpty } from 'lodash'
 import { computed, ref } from 'vue'
-import { isValidationError, parseSocketError } from 'envelope-client'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
 import { isApiError, NetworkError, parseRestError } from '@/utils/restApi'
@@ -33,7 +32,7 @@ function joinStrings(msgs: string[] | string) {
 
 /** True for errors that mean a request failed, as opposed to a bug. */
 function isRequestFailure(e: unknown) {
-  return isApiError(e) || isValidationError(e) || e instanceof NetworkError
+  return isApiError(e) || e instanceof NetworkError
 }
 
 function getNonspecificFieldErrorMessage(errors: APIError) {
@@ -44,13 +43,13 @@ function getNonspecificFieldErrorMessage(errors: APIError) {
 }
 
 /**
- * Centralised error handling for REST and WebSocket API calls.
+ * Centralised error handling for REST API calls.
  * Parses validation errors into per-field messages and optionally
  * surfaces them via an alert snackbar or a modal dialog.
  *
  * @param opts.target - Where to show errors: `'alert'` (snackbar), `'dialog'` (modal), or `'none'` (silent)
  * @param opts.showField - If set, only the error for this field (or `non_field_errors`) is displayed
- * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handled, handler, handleSocketError, handleRestError }`
+ * @returns `{ errorMessage, fieldErrors, hasError, clearErrors, handled, handler, handleRestError }`
  */
 export default function useErrorHandler(
   opts: HandlerOptions = DEFAULT_OPTIONS
@@ -79,11 +78,7 @@ export default function useErrorHandler(
     if (opts.target === 'alert') openAlertEvent.emit(`^${message}`)
   }
 
-  function handleError(
-    e: unknown,
-    parse: (e: Error) => APIError,
-    showField?: string
-  ) {
+  function handleRestError(e: unknown, showField?: string) {
     // Never rethrow: callers reset their loading flags on the line after
     // `handled`, so throwing here would strand them. Anything that isn't a
     // failed request is a bug, so log it rather than only showing the
@@ -91,21 +86,13 @@ export default function useErrorHandler(
     if (!isRequestFailure(e)) console.error(e)
     const error = e instanceof Error ? e : new Error(String(e))
     errorMessage.value = error.message
-    fieldErrors.value = parse(error)
+    fieldErrors.value = parseRestError(error)
     showField = showField ?? opts.showField
     displayError(
       showField
         ? getSpecifiedFieldErrorMessage(fieldErrors.value, showField)
         : (getNonspecificFieldErrorMessage(fieldErrors.value) ?? error.message)
     )
-  }
-
-  function handleSocketError(e: unknown, showField?: string) {
-    handleError(e, parseSocketError, showField)
-  }
-
-  function handleRestError(e: unknown, showField?: string) {
-    handleError(e, parseRestError, showField)
   }
 
   /**
@@ -152,7 +139,6 @@ export default function useErrorHandler(
     clearErrors,
     handled,
     handler,
-    handleSocketError,
     handleRestError
   }
 }

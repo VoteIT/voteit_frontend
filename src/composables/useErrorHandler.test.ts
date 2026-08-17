@@ -1,4 +1,3 @@
-import { ValidationError } from 'envelope-client/src/errors.js'
 import { expect, test, vi } from 'vitest'
 
 import { ApiError } from '@/utils/restApi'
@@ -17,32 +16,20 @@ useI18n.mockReturnValue({
 
 test('Bad error', () => {
   const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-  const { errorMessage, fieldErrors, handleSocketError, handleRestError } =
-    useErrorHandler()
+  const { errorMessage, fieldErrors, handleRestError } = useErrorHandler()
   // Non-Errors are reported rather than rethrown, so callers can reset a
   // loading flag on the line after handling. They are logged as well, since
   // they mean a bug rather than a failed request.
-  handleSocketError('bad error')
-  expect(errorMessage.value).toBe('bad error')
-  expect(fieldErrors.value).toEqual({ __root__: ['bad error'] })
   handleRestError('bad error')
   expect(errorMessage.value).toBe('bad error')
   expect(fieldErrors.value).toEqual({ non_field_errors: ['Unknown error'] })
-  expect(consoleSpy).toHaveBeenCalledTimes(2)
+  expect(consoleSpy).toHaveBeenCalledTimes(1)
   consoleSpy.mockRestore()
 })
 
 test('Error.message', () => {
-  const {
-    errorMessage,
-    fieldErrors,
-    clearErrors,
-    handleSocketError,
-    handleRestError
-  } = useErrorHandler()
-  handleSocketError(new Error('message'))
-  expect(errorMessage.value).toBe('message')
-  expect(fieldErrors.value).toEqual({ __root__: ['message'] })
+  const { errorMessage, fieldErrors, clearErrors, handleRestError } =
+    useErrorHandler()
   handleRestError(new Error('message'))
   expect(errorMessage.value).toBe('message')
   expect(fieldErrors.value).toEqual({
@@ -142,25 +129,9 @@ test('showField falls back to the other field errors', async () => {
   dialogSpy.mockRestore()
 })
 
-test('ValidationError.errors', () => {
-  const {
-    errorMessage,
-    fieldErrors,
-    clearErrors,
-    handleSocketError,
-    handleRestError
-  } = useErrorHandler()
-  handleSocketError(
-    new ValidationError('message', [
-      {
-        loc: ['test'],
-        msg: 'field message',
-        type: 'error.testing'
-      }
-    ])
-  )
-  expect(errorMessage.value).toBe('message')
-  expect(fieldErrors.value).toEqual({ test: ['field message'] })
+test('field errors', () => {
+  const { errorMessage, fieldErrors, clearErrors, handleRestError } =
+    useErrorHandler()
   const teapot = "I'm a teapot"
   handleRestError(mockApiError(teapot))
   expect(errorMessage.value).toBe(teapot)

@@ -52,12 +52,7 @@ export interface MeetingAccessPolicy {
   policies: AccessPolicy[]
 }
 
-export enum SchemaType {
-  Incoming = 'incoming',
-  Outgoing = 'outgoing'
-}
-
-// For Channel.ts
+// For useChannel.ts
 export interface ChannelConfig extends ChannelsConfig {
   leaveDelay?: number
 }
