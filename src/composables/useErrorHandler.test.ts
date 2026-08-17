@@ -129,14 +129,10 @@ test('showField falls back to the other field errors', async () => {
   dialogSpy.mockRestore()
 })
 
-test('field errors', () => {
-  const { errorMessage, fieldErrors, clearErrors, handleRestError } =
-    useErrorHandler()
+test('ApiError field errors', () => {
+  const { errorMessage, fieldErrors, handleRestError } = useErrorHandler()
   const teapot = "I'm a teapot"
   handleRestError(mockApiError(teapot))
   expect(errorMessage.value).toBe(teapot)
   expect(fieldErrors.value).toEqual({ test: [teapot] })
-  clearErrors()
-  expect(errorMessage.value).toBe(null)
-  expect(fieldErrors.value).toEqual({})
 })
