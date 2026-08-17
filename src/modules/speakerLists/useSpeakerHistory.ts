@@ -1,9 +1,9 @@
 import { orderBy } from 'lodash'
-import { computed, reactive, Ref, watch } from 'vue'
+import { computed, Ref, shallowReactive, watch } from 'vue'
 import { speakerHistoryType } from './contentTypes'
 import { SpeakerHistory } from './types'
 
-const speakerHistory = reactive(new Map<string, SpeakerHistory[]>())
+const speakerHistory = shallowReactive(new Map<string, SpeakerHistory[]>())
 
 export default function useSpeakerHistory(
   meeting: Ref<number>,

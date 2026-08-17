@@ -50,9 +50,28 @@ Before writing new logic, check if one of these already covers it:
 | `useContextRoles` | `src/composables/useContextRoles.ts` | Query user roles for a given content object |
 | `useChannel` | `src/composables/useChannel.ts` | Subscribe to a WebSocket channel |
 
+## Content stores are shallow — replace, never mutate
+
+Content stores hold server objects in `shallowReactive(new Map<number, T>())`, not `reactive(...)`. Only the map itself
+is tracked; values come back **raw**.
+
+This works because `ContentType.updateMap()` (`src/contentTypes/ContentType.ts`) — the funnel for all socket-driven
+store writes — replaces whole entries (`map.set(item.pk, item)`), and the server sends full objects rather than diffs.
+
+Two rules follow, and breaking either fails **silently** (no error, just a view that never updates):
+
+- **Never mutate a stored object in place.** Not `store.get(pk)!.title = x`, not `Object.assign(store.get(pk)!, patch)`,
+  not `push`/`splice` on one of its arrays. Build a new object and `set()` it — see `useRoomStore` for the merge pattern:
+  `meetingRooms.set(room, { ..._room, ...partial })`.
+- **A nested container needs its own wrapper.** A `Map`/`Set`/array stored inside a shallow store is not made reactive
+  for you. Either wrap it explicitly (`tagStore.set(m, shallowReactive(new Map()))` in `useParticipantTags`) or replace
+  it wholesale on every change (`contextRoles.set(key, new Set([...]))` in `useContextRoles`).
+
+Deep `reactive()` is still the right choice for local component form state, where `v-model` binds nested fields.
+
 ## Role key encoding
 
-`useContextRoles` stores roles in a flat reactive `Map` keyed by a slash-delimited string:
+`useContextRoles` stores roles in a flat shallow-reactive `Map` keyed by a slash-delimited string:
 
 ```
 Format:  "<contentType>/<objectPk>/<userId>"

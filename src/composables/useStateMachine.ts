@@ -1,5 +1,5 @@
 import { chain, filter, first, ifilter, imap, sorted } from 'itertools'
-import { computed, reactive } from 'vue'
+import { computed, shallowReactive } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
@@ -104,7 +104,7 @@ export function registerValidator(
   validatorsByMachine.get(machineName)!.register(name, validator)
 }
 
-const stateMachines = reactive(new Map<string, IStateMachine>())
+const stateMachines = shallowReactive(new Map<string, IStateMachine>())
 /**
  * Debugging function, should only run in dev
  */

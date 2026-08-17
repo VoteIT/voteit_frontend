@@ -1,4 +1,4 @@
-import { computed, onUnmounted, reactive, Ref, unref, watch } from 'vue'
+import { computed, onUnmounted, Ref, shallowReactive, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openDialogEvent } from '@/utils/events'
@@ -17,7 +17,7 @@ interface ChannelConfig {
 
 type SubscriptionObj = ReturnType<(typeof socket)['channels']['subscribe']>
 
-const subscribedChannels = reactive(new Set<string>())
+const subscribedChannels = shallowReactive(new Set<string>())
 channelSubscribedEvent.on((channel) => subscribedChannels.add(channel.path))
 channelLeftEvent.on((channel) => subscribedChannels.delete(channel.path))
 

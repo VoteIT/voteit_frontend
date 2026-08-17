@@ -1,7 +1,7 @@
 import { any, ifilter, imap, reduce, sorted } from 'itertools'
 import type { Predicate, Primitive } from 'itertools'
 import { defineStore } from 'pinia'
-import { computed, reactive } from 'vue'
+import { computed, shallowReactive } from 'vue'
 
 import { titleSorter } from '@/utils'
 import { PickByType } from '@/utils/types'
@@ -19,7 +19,7 @@ const MAIN_PAGE_MEETING_STATES: MeetingState[] = [
 ]
 
 export default defineStore('meetings', () => {
-  const meetings = reactive(new Map<number, Meeting>())
+  const meetings = shallowReactive(new Map<number, Meeting>())
   const meetingRoles = meetingType.useContextRoles()
 
   meetingType.updateMap(meetings)

@@ -1,6 +1,6 @@
 import { any, filter, ifilter, imap, Predicate, sorted } from 'itertools'
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
 import useAuthStore from '../auth/useAuthStore'
 import {
@@ -11,9 +11,9 @@ import {
 import { GroupMembership, GroupRole, MeetingGroup } from './types'
 
 export default defineStore('groups', () => {
-  const meetingGroups = reactive(new Map<number, MeetingGroup>())
-  const groupRoles = reactive(new Map<number, GroupRole>())
-  const groupMemberships = reactive(new Map<number, GroupMembership>())
+  const meetingGroups = shallowReactive(new Map<number, MeetingGroup>())
+  const groupRoles = shallowReactive(new Map<number, GroupRole>())
+  const groupMemberships = shallowReactive(new Map<number, GroupMembership>())
 
   meetingGroupType.updateMap(meetingGroups, { meeting: 'meeting' })
   groupRoleType.updateMap(groupRoles)

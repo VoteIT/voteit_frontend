@@ -1,13 +1,13 @@
 import { map } from 'itertools'
-import { defer } from 'lodash'
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
 import ContentType from '@/contentTypes/ContentType'
 import useAuthStore from '@/modules/auth/useAuthStore'
 
 import { ContextRoles, UserContextRoles } from './types'
 
-const contextRoles = reactive<Map<string, Set<string>>>(new Map())
+// Shallow: only the Map itself is tracked, so role Sets must be replaced, never mutated in place.
+const contextRoles = shallowReactive(new Map<string, Set<string>>())
 
 /**
  * Role keys encode a (contentType, objectPk, userPk) triple as a slash-delimited string.
@@ -25,10 +25,9 @@ function hasRoleKey(p: ContextRoles): boolean {
 
 function getRoleStore(p: ContextRoles): { key: string; store: Set<string> } {
   const key = getRoleKey(p.model.toLowerCase(), p.pk, p.user_pk)
-  if (!contextRoles.has(key)) contextRoles.set(key, new Set())
   return {
     key,
-    store: contextRoles.get(key) as Set<string>
+    store: contextRoles.get(key) ?? new Set()
   }
 }
 
@@ -36,13 +35,14 @@ new ContentType<ContextRoles>({ name: 'roles' })
   .on('removed', (payload) => {
     if (!hasRoleKey(payload)) return
     const { store, key } = getRoleStore(payload)
-    payload.roles.forEach((r) => store.delete(r))
-    // Defer to trigger reactivity on empty role list, before removing role store completely
-    if (!store.size) defer(() => contextRoles.delete(key))
+    const remaining = new Set(store)
+    payload.roles.forEach((r) => remaining.delete(r))
+    if (remaining.size) contextRoles.set(key, remaining)
+    else contextRoles.delete(key)
   })
   .on('added', (payload) => {
-    const { store } = getRoleStore(payload)
-    payload.roles.forEach((r) => store.add(r))
+    const { store, key } = getRoleStore(payload)
+    contextRoles.set(key, new Set([...store, ...payload.roles]))
   })
 
 export default function useContextRoles<T extends string>(contentType: string) {

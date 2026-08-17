@@ -1,13 +1,13 @@
 import { filter, Predicate } from 'itertools'
 import { defineStore } from 'pinia'
-import { computed, reactive, shallowRef } from 'vue'
+import { computed, shallowReactive, shallowRef } from 'vue'
 
 import { sleep } from '@/utils'
 import { electoralRegisterType, erMethodType } from '../contentTypes'
 import type { ElectoralRegister, ErMethod } from './types'
 
 export default defineStore('electoralRegisters', () => {
-  const registers = reactive(new Map<number, ElectoralRegister>())
+  const registers = shallowReactive(new Map<number, ElectoralRegister>())
   const erMethods = shallowRef<ErMethod[]>()
 
   electoralRegisterType.updateMap(registers, { meeting: 'meeting' })

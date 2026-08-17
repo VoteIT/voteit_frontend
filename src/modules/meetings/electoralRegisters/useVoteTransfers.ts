@@ -1,11 +1,11 @@
 import { filter } from 'itertools'
-import { computed, MaybeRef, reactive, unref } from 'vue'
+import { computed, MaybeRef, shallowReactive, unref } from 'vue'
 
 import { voteTransferType } from '../contentTypes'
 import { GroupMembership, IVoteTransfer } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 
-const voteTransfers = reactive(new Map<number, IVoteTransfer>())
+const voteTransfers = shallowReactive(new Map<number, IVoteTransfer>())
 
 voteTransferType.updateMap(voteTransfers, { meeting: 'meeting' })
 

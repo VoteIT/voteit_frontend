@@ -1,6 +1,6 @@
 import { ifilter, sorted } from 'itertools'
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
 import useAuthStore from '../auth/useAuthStore'
 import { ProposalButtonMode } from '../proposals/types'
@@ -17,9 +17,9 @@ function getCountKey(contentType: string, objectId: number, button: number) {
 }
 
 export default defineStore('reactions', () => {
-  const reactionButtons = reactive(new Map<number, ReactionButton>())
-  const reactions = reactive(new Map<number, Reaction>())
-  const reactionCounts = reactive(new Map<string, number>())
+  const reactionButtons = shallowReactive(new Map<number, ReactionButton>())
+  const reactions = shallowReactive(new Map<number, Reaction>())
+  const reactionCounts = shallowReactive(new Map<string, number>())
 
   reactionButtonType.updateMap(reactionButtons, { meeting: 'meeting' })
   reactionType

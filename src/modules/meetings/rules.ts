@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
 import useContextRoles from '@/composables/useContextRoles'
 
@@ -21,7 +21,7 @@ const ACTIVE_STATES = [MeetingState.Upcoming, MeetingState.Ongoing]
 
 type MeetingT = Meeting | number | undefined
 
-const fakeRoles = reactive(new Map<number, MeetingRole[]>())
+const fakeRoles = shallowReactive(new Map<number, MeetingRole[]>())
 
 export function hasMeetingRole(
   meeting: MeetingT,

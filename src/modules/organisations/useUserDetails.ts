@@ -1,4 +1,4 @@
-import { isRef, MaybeRef, reactive, unref, watch } from 'vue'
+import { isRef, MaybeRef, shallowReactive, unref, watch } from 'vue'
 
 import { MeetingRoles, OrganisationRoles } from '@/composables/types'
 import restApi from '@/utils/restApi'
@@ -6,7 +6,7 @@ import { socket } from '@/utils/Socket'
 
 import { IUser } from './types'
 
-const userDetails = reactive(new Map<number, IUser>())
+const userDetails = shallowReactive(new Map<number, IUser>())
 
 socket.addTypeHandler('user', ({ t, p }) => {
   const type = t.split('.')[1]

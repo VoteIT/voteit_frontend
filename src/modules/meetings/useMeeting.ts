@@ -1,4 +1,4 @@
-import { computed, reactive } from 'vue'
+import { computed, shallowReactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouteLocationRaw, useRouter } from 'vue-router'
 
@@ -12,7 +12,7 @@ import useMeetingId from './useMeetingId'
 import useMeetingStore from './useMeetingStore'
 import { slugify } from '@/utils'
 
-const postAsStore = reactive(new Map<number, Author>())
+const postAsStore = shallowReactive(new Map<number, Author>())
 
 export default function useMeeting() {
   const authStore = useAuthStore()

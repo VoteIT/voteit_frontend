@@ -1,6 +1,6 @@
 import { ifilter, sorted } from 'itertools'
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
 import { channelLeftEvent } from '@/composables/events'
 
@@ -10,9 +10,9 @@ import { agendaBodyType, agendaItemType, lastReadType } from './contentTypes'
 import { agendaDeletedEvent } from './events'
 
 export default defineStore('agendas', () => {
-  const agendaBodies = reactive(new Map<number, AgendaBody>())
-  const agendaItems = reactive(new Map<number, AgendaItem>())
-  const agendaItemsLastRead = reactive(new Map<number, Date>())
+  const agendaBodies = shallowReactive(new Map<number, AgendaBody>())
+  const agendaItems = shallowReactive(new Map<number, AgendaItem>())
+  const agendaItemsLastRead = shallowReactive(new Map<number, Date>())
 
   agendaItemType
     .updateMap(agendaItems, { participants: 'meeting', moderators: 'meeting' })

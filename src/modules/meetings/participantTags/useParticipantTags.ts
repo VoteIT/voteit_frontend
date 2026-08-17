@@ -1,10 +1,12 @@
 import { ifilter, map } from 'itertools'
-import { computed, MaybeRef, reactive, unref } from 'vue'
+import { computed, MaybeRef, shallowReactive, unref } from 'vue'
 
 import { participantTagsType } from './contentTypes'
 import type { AllTagsPayload, TagChangedPayload } from './types'
 
-const tagStore = reactive(new Map<number, Map<number, string[]>>()) // meeting -> user -> tag[]
+// meeting -> user -> tag[]. Both levels are shallow, so the inner Map must be made
+// reactive explicitly - values read out of a shallowReactive container are raw.
+const tagStore = shallowReactive(new Map<number, Map<number, string[]>>())
 
 function* iterTags(tags: TagChangedPayload['tags']): Generator<string> {
   for (const [ns, tag] of Object.entries(tags)) {
@@ -14,7 +16,7 @@ function* iterTags(tags: TagChangedPayload['tags']): Generator<string> {
 }
 
 function getMeetingStore(m: number) {
-  if (!tagStore.has(m)) tagStore.set(m, new Map())
+  if (!tagStore.has(m)) tagStore.set(m, shallowReactive(new Map()))
   return tagStore.get(m)!
 }
 

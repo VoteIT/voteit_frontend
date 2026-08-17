@@ -1,10 +1,10 @@
 import { first } from 'itertools'
-import { computed, MaybeRef, reactive, unref } from 'vue'
+import { computed, MaybeRef, shallowReactive, unref } from 'vue'
 
 import { meetingComponentType } from './contentTypes'
 import { ComponentBase } from './types'
 
-const meetingComponents = reactive(new Map<number, ComponentBase>())
+const meetingComponents = shallowReactive(new Map<number, ComponentBase>())
 
 meetingComponentType.updateMap(meetingComponents, { meeting: 'meeting' })
 

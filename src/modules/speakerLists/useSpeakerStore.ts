@@ -1,7 +1,7 @@
 import { any, filter, first, ifilter, sorted } from 'itertools'
 import { countBy } from 'lodash'
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 
 import { Predicate } from '@/utils/types'
 import {
@@ -16,9 +16,9 @@ import {
 import { speakerListType, speakerSystemType, speakerType } from './contentTypes'
 
 export default defineStore('speakers', () => {
-  const speakerSystems = reactive(new Map<number, SpeakerSystem>())
-  const speakerLists = reactive(new Map<number, SpeakerList>())
-  const speakers = reactive(new Map<number, Speaker>())
+  const speakerSystems = shallowReactive(new Map<number, SpeakerSystem>())
+  const speakerLists = shallowReactive(new Map<number, SpeakerList>())
+  const speakers = shallowReactive(new Map<number, Speaker>())
 
   speakerSystemType.updateMap(speakerSystems, { meeting: 'meeting' })
   speakerListType.updateMap(speakerLists, {

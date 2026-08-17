@@ -8,7 +8,7 @@ import {
   Predicate
 } from 'itertools'
 import { defineStore } from 'pinia'
-import { computed, reactive } from 'vue'
+import { computed, shallowReactive } from 'vue'
 
 import { Vote } from '@/contentTypes/types'
 import { agendaDeletedEvent } from '../agendas/events'
@@ -20,9 +20,9 @@ import { Poll, PollState, PollStatus } from './types'
 import type { PollStartData } from './methods/types'
 
 export default defineStore('polls', () => {
-  const polls = reactive(new Map<number, Poll>())
-  const userVotes = reactive(new Map<number, Vote>())
-  const pollStatuses = reactive(new Map<number, PollStatus>())
+  const polls = shallowReactive(new Map<number, Poll>())
+  const userVotes = shallowReactive(new Map<number, Vote>())
+  const pollStatuses = shallowReactive(new Map<number, PollStatus>())
 
   pollType
     .updateMap(polls, { participants: 'meeting', moderators: 'meeting' })

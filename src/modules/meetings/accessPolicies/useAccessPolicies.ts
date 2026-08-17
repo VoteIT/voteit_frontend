@@ -1,5 +1,5 @@
 import { filter, ifilter } from 'itertools'
-import { computed, onBeforeMount, reactive, Ref } from 'vue'
+import { computed, onBeforeMount, Ref, shallowReactive } from 'vue'
 import useAlert from '@/composables/useAlert'
 import ContentType from '@/contentTypes/ContentType'
 import { AccessPolicy, AccessPolicyType } from '@/contentTypes/types'
@@ -8,7 +8,7 @@ import { accessPolicyType } from '../contentTypes'
 import { automaticAccessType } from './contentTypes'
 import { MeetingRole } from '../types'
 
-const policyStore = reactive<Map<number, AccessPolicy>>(new Map())
+const policyStore = shallowReactive<Map<number, AccessPolicy>>(new Map())
 const contentTypes: Partial<
   Record<AccessPolicyType, ContentType<AccessPolicy>>
 > = {

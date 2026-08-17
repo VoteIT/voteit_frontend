@@ -1,6 +1,6 @@
 import { type Predicate, any, filter } from 'itertools'
 import { defineStore } from 'pinia'
-import { reactive, watch } from 'vue'
+import { shallowReactive, watch } from 'vue'
 import { useSessionStorage } from '@vueuse/core'
 
 import { generateToken } from '@/utils'
@@ -10,8 +10,8 @@ import { proposalHighlightEvent } from './events'
 import type { IMeetingRoom, IRoomHighlight, ProposalHighlight } from './types'
 
 export default defineStore('rooms', () => {
-  const meetingRooms = reactive(new Map<number, IMeetingRoom>())
-  const highlights = reactive(new Map<number, number[]>())
+  const meetingRooms = shallowReactive(new Map<number, IMeetingRoom>())
+  const highlights = shallowReactive(new Map<number, number[]>())
   const roomTokens = useSessionStorage('room:tokens', new Map<number, string>())
 
   /**

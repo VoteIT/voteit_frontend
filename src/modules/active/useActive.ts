@@ -1,4 +1,4 @@
-import { computed, reactive, ref, Ref, watch } from 'vue'
+import { computed, ref, Ref, shallowReactive, watch } from 'vue'
 
 import { minTime } from '@/utils'
 import useAuthStore from '../auth/useAuthStore'
@@ -12,7 +12,7 @@ interface ActiveUsersMsg {
   users: number[]
 }
 
-const meetingActiveUsers = reactive(new Map<number, number[]>())
+const meetingActiveUsers = shallowReactive(new Map<number, number[]>())
 activeUserType
   .on<ActiveUsersMsg>('all', (msg) => {
     // FIXME get meeting
@@ -33,7 +33,7 @@ onMeetingChannelLeave((pk) => {
   meetingActiveUsers.delete(pk)
 })
 
-const dismissedMeetings = reactive(new Set<number>())
+const dismissedMeetings = shallowReactive(new Set<number>())
 
 export default function useActive(meetingId: Ref<number>) {
   const authStore = useAuthStore()

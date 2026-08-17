@@ -1,9 +1,11 @@
 import { filter } from 'itertools'
-import { computed, reactive, Ref } from 'vue'
+import { computed, Ref, shallowReactive } from 'vue'
 import { participantNumberType } from './contentTypes'
 import { ParticipantNumber } from './types'
 
-const participantNumberStore = reactive(new Map<number, ParticipantNumber>())
+const participantNumberStore = shallowReactive(
+  new Map<number, ParticipantNumber>()
+)
 
 participantNumberType.updateMap(participantNumberStore, { meeting: 'meeting' })
 
