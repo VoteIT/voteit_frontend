@@ -206,6 +206,9 @@ const denyProposalWon = computed(() => {
                     </ProposalSheet>
                   </template>
                 </v-dialog>
+                <span v-else class="rounded bg-warning px-2">
+                  {{ $t('poll.deny') }}
+                </span>
                 <v-icon icon="mdi-swap-horizontal" />
                 <v-dialog v-if="pair.proposal" max-width="640">
                   <template #activator="{ props }">
