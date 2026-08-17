@@ -12,7 +12,6 @@ import {
 import { useI18n } from 'vue-i18n'
 import { onKeyStroke, useElementBounding } from '@vueuse/core'
 
-import { socket } from '@/utils/Socket'
 import { navigationEventAllowed } from '@/utils/keyNavigation'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import Tag from '@/components/Tag.vue'
@@ -27,6 +26,7 @@ import useProposalStore from '../proposals/useProposalStore'
 import useTextDocuments from '../proposals/useTextDocuments'
 import ButtonPlugins from '../proposals/ButtonPlugins.vue'
 import ProposalSheet from '../proposals/ProposalSheet.vue'
+import { roomType } from '../rooms/contentTypes'
 import useRoom from '../rooms/useRoom'
 import { ProposalHighlight } from '../rooms/types'
 
@@ -233,10 +233,9 @@ function handleProposalClick(proposal?: number) {
   if (!isBroadcastingAI.value) return // Only when broadcasting...
   if (proposalHighlight.value?.proposal !== proposal)
     proposalHighlight.value = { proposal }
-  socket.send('room.mark_text', {
-    room: roomId.value,
-    ...proposalHighlight.value
-  })
+  roomType.api
+    .action('mark-text', roomId.value, proposalHighlight.value ?? {})
+    .catch(console.warn)
 }
 
 /**
