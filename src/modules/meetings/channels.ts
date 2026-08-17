@@ -1,4 +1,8 @@
-import Channel from '@/contentTypes/Channel'
+import { channelLeftEvent } from '@/composables/events'
 
-// Currently used for onLeave events
-export const meetingChannel = new Channel('meeting')
+/** Calls `fn` with the meeting pk whenever a meeting channel is left. */
+export function onMeetingChannelLeave(fn: (pk: number) => void) {
+  return channelLeftEvent.on(({ channelType, pk }) => {
+    if (channelType === 'meeting') fn(pk)
+  })
+}
