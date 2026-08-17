@@ -66,7 +66,6 @@ import { imap, sum } from 'itertools'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { socket } from '@/utils/Socket'
 import UserList from '@/components/UserList.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
@@ -77,6 +76,7 @@ import { GroupMembership, MeetingGroup } from '../types'
 import useMeetingGroups from '../useMeetingGroups'
 import useMeeting from '../useMeeting'
 import { isFinishedMeeting } from '../rules'
+import { sfsDelegationVotersType } from './contentTypes'
 
 const props = defineProps<{
   group: MeetingGroup & { memberships: GroupMembership[] }
@@ -87,7 +87,7 @@ const authStore = useAuthStore()
 const { isModerator, meetingId } = useMeeting()
 const { groupRoles } = useMeetingGroups(meetingId)
 const rules = useRules(t)
-const { errorMessage, clearErrors, handleSocketError } = useErrorHandler()
+const { errorMessage, clearErrors, handled } = useErrorHandler()
 
 interface RoleMembership extends GroupMembership {
   role: number
@@ -158,17 +158,13 @@ async function saveUserVotes() {
     throw new Error('Cannot save user votes, becuase not all votes assigned')
   clearErrors()
   working.value = true
-  try {
-    await socket.call('sfs.set_delegation_voters', {
-      meeting_group: props.group.pk,
-      weights: [...editUserVotes.entries()]
-        .map(([user, weight]) => ({ user, weight }))
-        .filter(({ weight }) => weight)
-    })
+  const weights = [...editUserVotes.entries()]
+    .map(([user, weight]) => ({ user, weight }))
+    .filter(({ weight }) => weight)
+  await handled(async () => {
+    await sfsDelegationVotersType.api.action('set', props.group.pk, { weights })
     editing.value = false
-  } catch (e) {
-    handleSocketError(e)
-  }
+  })
   working.value = false
 }
 </script>
