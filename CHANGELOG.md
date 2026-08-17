@@ -9,6 +9,7 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 - REST API migration: All calls except channel subscriptions now use REST instead of WebSocket
 - Error handling refactoring: `alertOnError` removed in favour of explicit handling, with new `handled()` and `handler()` helpers in `useErrorHandler`
 - Axios replaced by native `fetch` in the REST client, removing a runtime dependency
+- Performance: content stores now use `shallowReactive` and index frequently queried keys via a new `IndexedMap`, cutting reactivity overhead and repeated lookups in large meetings
 
 ## 0.46.0 (2026-06-18)
 
