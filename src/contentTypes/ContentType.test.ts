@@ -153,17 +153,17 @@ describe('BaseContentType', () => {
     expect(handler).toHaveBeenCalledWith({ pk: 5 })
   })
 
-  test('getContentApi throws when no restEndpoint is configured', () => {
+  test('api throws when no restEndpoint is configured', () => {
     const ct = new BaseContentType({ name: 'mytype' })
-    expect(() => ct.getContentApi()).toThrow(
+    expect(() => ct.api).toThrow(
       'Content Api not configured for Content Type mytype'
     )
   })
 
-  test('getContentApi returns a ContentAPI instance with the configured endpoint', () => {
+  test('api returns a ContentAPI instance with the configured endpoint', () => {
     const ct = new BaseContentType({ name: 'mytype', restEndpoint: 'my/' })
-    ct.getContentApi()
-    expect(MockContentAPI).toHaveBeenCalledWith('my/', undefined)
+    ct.api
+    expect(MockContentAPI).toHaveBeenCalledWith('my/')
   })
 
   test('api getter caches the ContentAPI instance', () => {

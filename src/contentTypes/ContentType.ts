@@ -1,7 +1,6 @@
 import { socket } from '@/utils/Socket'
 import { ChannelsMessage } from '@/utils/types'
 import { ContextRole, ContextRoleDefinition } from '@/composables/types'
-import { RequestConfig } from '@/utils/restApi'
 import useContextRoles from '@/composables/useContextRoles'
 
 import { IUser } from '@/modules/organisations/types'
@@ -91,12 +90,12 @@ export class BaseContentType<T extends {}, Role extends string = never> {
     return this.on('deleted', fn)
   }
 
-  public getContentApi(config?: RequestConfig) {
+  private getContentApi() {
     if (!this.contentType.restEndpoint)
       throw new Error(
         `Content Api not configured for Content Type ${this.name}`
       )
-    return new ContentAPI<T>(this.contentType.restEndpoint, config)
+    return new ContentAPI<T>(this.contentType.restEndpoint)
   }
 
   public get api() {
