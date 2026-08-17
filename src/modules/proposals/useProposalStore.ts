@@ -1,4 +1,4 @@
-import { any, map, Primitive, sorted } from 'itertools'
+import { any, Primitive, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { shallowReactive } from 'vue'
 
@@ -60,27 +60,16 @@ export default defineStore('proposals', () => {
       if (!predicate || predicate(p)) yield p
   }
 
-  function countProposals(predicate: Predicate<Proposal>) {
-    return countMatching(proposals.values(), predicate)
-  }
-
-  function anyProposal(predicate: Predicate<Proposal>): boolean {
-    return any(iterProposals(predicate))
-  }
-
+  /**
+   * Scan every proposal. Only for predicates that no index can serve — prefer
+   * the agenda-item lookups below whenever the agenda item is known.
+   */
   function filterProposals(
     predicate: Predicate<Proposal>,
     keyFn: (prop: Proposal) => Primitive = (p) => p.created,
     reverse = false
   ) {
     return sorted(iterProposals(predicate), keyFn, reverse)
-  }
-
-  function forProposals(
-    predicate: Predicate<Proposal>,
-    fn: (proposal: Proposal) => void
-  ) {
-    map(iterProposals(predicate), fn)
   }
 
   /* Index-backed lookups. Prefer these whenever the agenda item or meeting is
@@ -153,10 +142,7 @@ export default defineStore('proposals', () => {
     anyAiDocument,
     anyAiProposal,
     countAiProposals,
-    countProposals,
-    anyProposal,
     filterProposals,
-    forProposals,
     getAiDocuments,
     getAiProposals,
     getParagraph,

@@ -59,13 +59,13 @@ vi.mock('../meetings/useMeeting', () => ({
 }))
 
 vi.mock('../proposals/useProposalStore', () => ({
-  default: () => ({ anyProposal: vi.fn().mockReturnValue(false) })
+  default: () => ({ anyAiProposal: vi.fn().mockReturnValue(false) })
 }))
 
 vi.mock('../polls/usePollStore', () => ({
   default: () => ({
     allPollTitles: [],
-    anyPoll: vi.fn().mockReturnValue(false)
+    anyAiPoll: vi.fn().mockReturnValue(false)
   })
 }))
 

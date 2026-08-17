@@ -17,10 +17,6 @@ export default defineStore('discussions', () => {
 
   discussionPostType.updateMap(discussions, { agenda_item: 'agenda_item' })
 
-  function filterDiscussions(predicate: Predicate<DiscussionPost>) {
-    return filter(discussions.values(), predicate)
-  }
-
   /**
    * Get the discussion posts of an agenda item
    */
@@ -39,7 +35,6 @@ export default defineStore('discussions', () => {
   }
 
   return {
-    filterDiscussions,
     getAiDiscussions,
     getProposalDiscussions
   }

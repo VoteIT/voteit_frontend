@@ -174,7 +174,6 @@ export default defineStore('polls', () => {
     getUnvotedPolls,
     getPollMethod,
     getPollStatus,
-    getUserVote,
-    isUnvotedPoll
+    getUserVote
   }
 })
