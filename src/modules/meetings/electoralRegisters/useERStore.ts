@@ -35,7 +35,7 @@ export default defineStore('electoralRegisters', () => {
   const fetchingRegisters = new Set<number>() // Register ids that are already being fetched
   async function fetchRegister(pk: number, retries = 3) {
     // Wait 250-1250 ms to avoid self-DDOS of fetch when already got value from websocket channel
-    await sleep(250 + Math.random())
+    await sleep(250 + Math.random() * 1000)
     if (registers.has(pk) || fetchingRegisters.has(pk)) return // Stop: Got it, or already fetching
     fetchingRegisters.add(pk)
     try {
