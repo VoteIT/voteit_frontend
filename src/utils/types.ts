@@ -90,12 +90,6 @@ export type ProgressHandler<PT extends Progress = Progress> = (
   progress: PT
 ) => void
 
-// For Socket.ts
-export interface ChannelsConfig {
-  timeout?: number
-  alertOnError?: boolean
-}
-
 export type RestError<T extends {} = {}> = {
   [P in keyof T | 'non_field_errors']?: string[]
 }

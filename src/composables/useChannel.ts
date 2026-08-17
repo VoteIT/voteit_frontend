@@ -1,13 +1,19 @@
 import { computed, onUnmounted, reactive, Ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ChannelConfig } from '@/contentTypes/types'
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
 import { useRouter } from 'vue-router'
 import { socket } from '@/utils/Socket'
 
 import { channelLeftEvent, channelSubscribedEvent } from './events'
+
+interface ChannelConfig {
+  timeout?: number
+  alertOnError?: boolean
+  critical?: boolean
+  leaveDelay?: number
+}
 
 type SubscriptionObj = ReturnType<(typeof socket)['channels']['subscribe']>
 
@@ -28,7 +34,7 @@ channelLeftEvent.on((channel) => subscribedChannels.delete(channel.path))
 export default function useChannel(
   name: string | Ref<string | undefined>,
   pk: Ref<number | undefined>,
-  config?: ChannelConfig & { critical?: boolean }
+  config?: ChannelConfig
 ) {
   const { t } = useI18n()
   const router = useRouter()

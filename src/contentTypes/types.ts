@@ -1,6 +1,6 @@
 import { ComposerTranslation } from 'vue-i18n'
 
-import { ChannelsConfig, ThemeColor } from '@/utils/types'
+import { ThemeColor } from '@/utils/types'
 import { MeetingRole } from '@/modules/meetings/types'
 
 export interface IStateMeta {
@@ -50,9 +50,4 @@ export interface AccessPolicy {
 export interface MeetingAccessPolicy {
   pk: number // Meeting id
   policies: AccessPolicy[]
-}
-
-// For useChannel.ts
-export interface ChannelConfig extends ChannelsConfig {
-  leaveDelay?: number
 }
