@@ -76,27 +76,9 @@ export interface FailedMessage extends BaseChannelsMessage {
   p: ValidationErrorPayload | ErrorPayload
 }
 
-export function isValidationErrorPayload(
-  p: FailedMessage['p']
-): p is ValidationErrorPayload {
-  return 'errors' in p
-}
-
 export interface SubscribePayload {
   channel_type: string
   pk: number
-}
-
-export interface SubscribedPayload {
-  app_state: SuccessMessage<object>[] | null
-  channel_name: string
-  channel_type: string
-  pk: number
-}
-
-export interface BatchPayload {
-  t: string
-  payloads: object[]
 }
 
 export type ChannelsMessage<T = unknown> =
