@@ -11,52 +11,83 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+# No permissions by default; each job asks for exactly what it needs.
+permissions: {}
+
+# Supply chain boundary: no job may both run npm and hold registry credentials.
+# `build` runs the dependency tree but has no credentials and no registry access.
+# `docker` holds the ghcr push token but never runs npm — it only packages the
+# artifact `build` produced. Jobs run on separate VMs, so a compromised dependency
+# cannot read the docker credentials file.
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'npm'
-      - run: npm ci
+      # Only used here for the `version` output, which is baked into the client and
+      # compared against the version the backend reports. Needs no credentials.
+      - name: Extract version metadata
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      # --ignore-scripts blocks dependency install hooks (pre/post-install), the most
+      # common supply chain vector. Verified that lint, tests and build all pass
+      # without them; no dependency here needs a build step at install time.
+      - run: npm ci --ignore-scripts
       - run: npm run lint -- --no-fix
       - run: npm test
+      - name: Build distribution files
+        run: |
+          echo VITE_FRONTEND_VERSION=${{ steps.meta.outputs.version }} > .env.production
+          npm run build
+      - name: Upload distribution files
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
 
   docker:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
       packages: write
-      attestations: write
-      id-token: write
     steps:
-      # Checkout
+      # Checkout — only Dockerfile and etc/nginx.conf are used here, nothing is run.
       - name: Checkout
         uses: actions/checkout@v4
+      # The distribution files built by the `build` job. Dockerfile copies ./dist.
+      - name: Download distribution files
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       # Uses the `docker/login-action` action to log in to the Container registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
+      # Deliberately the last step before the push: the registry credential is written
+      # to ~/.docker/config.json here, and only build-push-action runs after it.
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: Build distribution files
-        run: |
-          echo VITE_FRONTEND_VERSION=${{ steps.meta.outputs.version }} > .env.production
-          npm ci
-          npm run build
       - name: Build and push docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
         with:
           context: .
           # Manual or tagged
