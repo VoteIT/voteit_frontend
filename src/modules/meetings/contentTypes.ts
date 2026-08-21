@@ -1,7 +1,9 @@
 import { MeetingRoles } from '@/composables/types'
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
 import { MeetingAccessPolicy } from '@/contentTypes/types'
+import defineChannel from '@/socket/defineChannel'
 import { ThemeColor } from '@/utils/types'
+
 import { ElectoralRegister, ErMethod } from './electoralRegisters/types'
 import {
   ComponentBase,
@@ -14,6 +16,14 @@ import {
   MeetingRole,
   MeetingState
 } from './types'
+
+export const meetingChannel = defineChannel('meeting')
+export const participantChannel = defineChannel('participants', {
+  leaveTimeout: 500
+})
+export const moderatorChannel = defineChannel('moderators', {
+  leaveTimeout: 500
+})
 
 export const accessPolicyType = new BaseContentType<MeetingAccessPolicy>({
   name: 'access_policy',

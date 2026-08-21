@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/admin': changeOriginTarget,
         '/api': changeOriginTarget,
+        '/asyncapi': changeOriginTarget,
         '/complete': changeOriginTarget,
         '/login': changeOriginTarget,
         '/media': target,
