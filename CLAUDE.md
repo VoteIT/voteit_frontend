@@ -7,7 +7,7 @@ Codebase guide for AI-assisted development. See also [CONTRIBUTING.md](CONTRIBUT
 - **Vue 3** (`<script setup lang="ts">`) + **Vuetify 3** + **Pinia** + **Vue Router 4**
 - **TypeScript** (strict mode, path alias `@/` → `src/`)
 - **Vite** for builds, **Vitest** for tests (happy-dom environment)
-- **envelope-client** for real-time WebSocket updates
+- **`src/socket/`** — in-house WebSocket client for real-time updates
 - **Vue i18n** for translations (keys in `src/locales/`)
 
 ## Project layout
@@ -18,7 +18,8 @@ src/
   modules/           # Feature modules (self-contained, side-effect registration)
   components/        # Shared UI components
   composables/       # Reusable Vue 3 composables
-  utils/             # REST API client, WebSocket, TypedEvent, general utilities
+  socket/            # WebSocket client, channel subscriptions
+  utils/             # REST API client, TypedEvent, general utilities
   contentTypes/      # ContentType base class and registry
   plugins/           # Pinia + Vuetify configuration
   locales/           # i18n translation files
@@ -48,7 +49,33 @@ Before writing new logic, check if one of these already covers it:
 | `useAlert` | `src/composables/useAlert.ts` | Show snackbar/toast alerts |
 | `useModal` | `src/composables/useModal.ts` | Open modal dialogs |
 | `useContextRoles` | `src/composables/useContextRoles.ts` | Query user roles for a given content object |
-| `useChannel` | `src/composables/useChannel.ts` | Subscribe to a WebSocket channel |
+| `useChannel` | `src/socket/useChannel.ts` | Subscribe to a real-time channel |
+
+## Real-time channels
+
+Channels are **objects, not strings**. Each one is created once with `defineChannel(name)` in its module's
+`contentTypes.ts` and exported — `agendaItemChannel`, `meetingChannel`, `roomChannel` and so on. Defining the same
+name twice throws, so import the existing handle rather than calling `defineChannel` again.
+
+```typescript
+import { agendaItemChannel } from '../agendas/contentTypes'
+import useChannel from '@/socket/useChannel'
+
+const { promise, subscribed, subscribeError } = useChannel(agendaItemChannel, agendaId)
+```
+
+Both arguments may be reactive; the subscription follows them and is dropped on unmount.
+
+A channel's initial state arrives in bundles that are held back until the server says it's complete, then applied in
+one tick. Two consequences worth knowing:
+
+- `subscribed` (and the `promise`) settle only once **all** the initial state is in, not when the server accepts the
+  subscription. The `promise` is a `ProgressPromise` — attach `onProgress` to follow the bundles as they land.
+- `beforeChannelStateEvent` fires immediately before that state is applied. It's how `contentCleanup` drops what a
+  previous subscription to the same channel left behind, without the views ever rendering an empty channel.
+
+Use `channel.onSubscribe()` / `channel.onLeave()` for module-level side effects — they also fire for resubscriptions
+after a reconnect, which the per-component `promise` does not.
 
 ## Content stores are shallow — replace, never mutate
 
@@ -98,8 +125,7 @@ openAlertEvent.emit('^error message')     // '^' prefix → error level
 
 ## Known issues / active FIXMEs
 
-- `src/contentTypes/types.ts:18` — The `Transition`/`State` 1-to-1 relationship is modelled incorrectly; marked FIXME
-- `src/utils/Socket.ts:49` — Outgoing heartbeat is a workaround for a backend connectivity-tracking limitation; TODO to remove when backend handles it
+- `src/socket/index.ts:40` — Outgoing heartbeat is a workaround for a backend connectivity-tracking limitation; TODO to remove when backend handles it
 - `src/modules/meetings/types.ts` — The `Previous` meeting state is a workaround, not a real state
 - `src/modules/polls/rules.ts` — Adding polls to different contexts needs architectural improvement (TODO)
 

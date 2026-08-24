@@ -84,4 +84,4 @@ Write tests for new composables and utilities. Component tests use [Vue Test Uti
 - **Pinia stores** (`useXxxStore`) manage server-synced state per domain.
 - **Composables** (`useXxx`) encapsulate reusable reactive logic. Prefer reusing `useLoader`, `useErrorHandler`, `usePermission`, and `useAlert` rather than reimplementing them.
 - **ContentType registry** — the `ContentType` class in `src/contentTypes/` is the base for all server-pushed content. Modules register handlers via `.on('added', ...)` / `.on('removed', ...)`.
-- **Real-time updates** come in via `envelope-client` (WebSocket). Falling back to REST is handled by the individual store or composable.
+- **Real-time updates** come in over the WebSocket client in `src/socket/`. Subscriptions are channel objects created with `defineChannel()` and consumed via `useChannel()` — pass the exported channel, not its name. Falling back to REST is handled by the individual store or composable.

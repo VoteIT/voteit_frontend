@@ -13,7 +13,7 @@ The app is built with:
 - **[Vuetify 3](https://vuetifyjs.com/)** for the component library
 - **[Pinia](https://pinia.vuejs.org/)** for state management
 - **[Vue Router 4](https://router.vuejs.org/)** for client-side routing
-- **[envelope-client](https://github.com/VoteIT/envelope_client)** for real-time updates via WebSocket
+- An in-house **WebSocket client** (`src/socket/`) for real-time updates
 - **[Vue i18n](https://vue-i18n.intlify.dev/)** for translations (Swedish/English)
 
 ### Module system
@@ -29,7 +29,8 @@ Key modules: `auth`, `organisations`, `meetings`, `polls`, `proposals`, `agendas
 | `src/modules/`      | Feature modules (each self-contained)            |
 | `src/components/`   | Shared UI components                             |
 | `src/composables/`  | Reusable Vue 3 composables                       |
-| `src/utils/`        | Utilities, REST API client, WebSocket, event bus |
+| `src/socket/`       | WebSocket client and channel subscriptions       |
+| `src/utils/`        | Utilities, REST API client, event bus            |
 | `src/contentTypes/` | Content type registry and base classes           |
 | `src/plugins/`      | Vue plugin configuration (Pinia, Vuetify)        |
 | `src/locales/`      | i18n translation files                           |
