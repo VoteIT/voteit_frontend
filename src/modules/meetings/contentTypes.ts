@@ -17,7 +17,6 @@ import {
   MeetingState
 } from './types'
 
-export const meetingChannel = defineChannel('meeting')
 export const participantChannel = defineChannel('participants', {
   leaveTimeout: 500
 })

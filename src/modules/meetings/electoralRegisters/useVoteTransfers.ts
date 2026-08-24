@@ -7,7 +7,10 @@ import useMeetingGroups from '../useMeetingGroups'
 
 const voteTransfers = shallowReactive(new Map<number, IVoteTransfer>())
 
-voteTransferType.updateMap(voteTransfers, { meeting: 'meeting' })
+voteTransferType.updateMap(voteTransfers, {
+  participants: 'meeting',
+  moderators: 'meeting'
+})
 
 export default function useVoteTransfers(meeting: MaybeRef<number>) {
   const transfers = computed(() => {

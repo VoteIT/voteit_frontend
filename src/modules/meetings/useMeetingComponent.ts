@@ -6,7 +6,10 @@ import { ComponentBase } from './types'
 
 const meetingComponents = shallowReactive(new Map<number, ComponentBase>())
 
-meetingComponentType.updateMap(meetingComponents, { meeting: 'meeting' })
+meetingComponentType.updateMap(meetingComponents, {
+  participants: 'meeting',
+  moderators: 'meeting'
+})
 
 export default function useMeetingComponent<T extends ComponentBase>(
   meeting: MaybeRef<number>,

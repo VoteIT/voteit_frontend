@@ -20,7 +20,10 @@ export default defineStore('speakers', () => {
   const speakerLists = shallowReactive(new Map<number, SpeakerList>())
   const speakers = shallowReactive(new Map<number, Speaker>())
 
-  speakerSystemType.updateMap(speakerSystems, { meeting: 'meeting' })
+  speakerSystemType.updateMap(speakerSystems, {
+    participants: 'meeting',
+    moderators: 'meeting'
+  })
   speakerListType.updateMap(speakerLists, {
     room: 'room',
     agenda_item: 'agenda_item'

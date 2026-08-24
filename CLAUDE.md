@@ -54,7 +54,7 @@ Before writing new logic, check if one of these already covers it:
 ## Real-time channels
 
 Channels are **objects, not strings**. Each one is created once with `defineChannel(name)` in its module's
-`contentTypes.ts` and exported — `agendaItemChannel`, `meetingChannel`, `roomChannel` and so on. Defining the same
+`contentTypes.ts` and exported — `agendaItemChannel`, `participantChannel`, `roomChannel` and so on. Defining the same
 name twice throws, so import the existing handle rather than calling `defineChannel` again.
 
 ```typescript

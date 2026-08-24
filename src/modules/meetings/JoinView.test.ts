@@ -28,7 +28,6 @@ vi.mock('./contentTypes', () => {
     accessPolicyType: {
       api: { retrieve: vi.fn().mockResolvedValue({ policies: [] }) }
     },
-    meetingChannel: mockChannel(),
     moderatorChannel: mockChannel(),
     participantChannel: mockChannel()
   }

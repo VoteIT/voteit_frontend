@@ -15,9 +15,15 @@ export default defineStore('groups', () => {
   const groupRoles = shallowReactive(new Map<number, GroupRole>())
   const groupMemberships = shallowReactive(new Map<number, GroupMembership>())
 
-  meetingGroupType.updateMap(meetingGroups, { meeting: 'meeting' })
+  meetingGroupType.updateMap(meetingGroups, {
+    participants: 'meeting',
+    moderators: 'meeting'
+  })
   groupRoleType.updateMap(groupRoles)
-  groupMembershipType.updateMap(groupMemberships, { meeting: 'm' })
+  groupMembershipType.updateMap(groupMemberships, {
+    participants: 'm',
+    moderators: 'm'
+  })
 
   function anyGroupMembership(predicate: Predicate<GroupMembership>) {
     return any(groupMemberships.values(), predicate)

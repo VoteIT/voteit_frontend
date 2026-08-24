@@ -25,7 +25,7 @@ export default defineStore('rooms', () => {
   }
 
   roomType
-    .updateMap(meetingRooms, { meeting: 'meeting' })
+    .updateMap(meetingRooms, { participants: 'meeting', moderators: 'meeting' })
     .on<IRoomHighlight>('highlighted', (data) => {
       highlights.set(data.pk, data.highlighted)
       checkRoomToken(data.pk, data.token)

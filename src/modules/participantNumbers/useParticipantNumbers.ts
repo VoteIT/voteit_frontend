@@ -7,7 +7,10 @@ const participantNumberStore = shallowReactive(
   new Map<number, ParticipantNumber>()
 )
 
-participantNumberType.updateMap(participantNumberStore, { meeting: 'meeting' })
+participantNumberType.updateMap(participantNumberStore, {
+  participants: 'meeting',
+  moderators: 'meeting'
+})
 
 export default function useParticipantNumbers(meeting: Ref<number>) {
   const participantNumbers = computed(() =>

@@ -35,7 +35,10 @@ export default defineStore('reactions', () => {
   )
   const reactionCounts = shallowReactive(new Map<string, number>())
 
-  reactionButtonType.updateMap(reactionButtons, { meeting: 'meeting' })
+  reactionButtonType.updateMap(reactionButtons, {
+    participants: 'meeting',
+    moderators: 'meeting'
+  })
   reactionType
     .updateMap(reactions, { agenda_item: 'agenda_item' })
     .on<ReactionCountMessage>('count', (payload) => {
