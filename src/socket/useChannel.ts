@@ -1,6 +1,9 @@
 import { computed, onUnmounted, shallowRef, toValue, watch } from 'vue'
 import type { MaybeRefOrGetter, Ref } from 'vue'
 
+import ProgressPromise from '@/utils/ProgressPromise'
+import type { ProgressHandler } from '@/utils/types'
+
 import type defineChannel from './defineChannel'
 import { ErrorStatus, isSubscribeError } from './defineChannel'
 
@@ -14,6 +17,9 @@ type Channel = ReturnType<typeof defineChannel>
  *
  * Subscription failures are reported through `state` and `subscribeError` -
  * how to act on them is up to the caller.
+ *
+ * `promise` reports how much of the initial state has arrived: attach
+ * `onProgress` to it to follow the channel's collectors as they complete.
  *
  * @param channel Channel to subscribe to, static or reactive
  * @param pk Primary key of the object to subscribe to
@@ -33,8 +39,10 @@ export default function useChannel(
 
   // Settles once the first subscription attempt is done, successful or not
   let settle: () => void
-  const promise = new Promise<void>((resolve) => {
+  let setProgress: ProgressHandler
+  const promise = new ProgressPromise<void>((resolve, _reject, progress) => {
     settle = resolve
+    setProgress = progress
   })
 
   /**
@@ -63,6 +71,10 @@ export default function useChannel(
       // Keep the handle before awaiting, so a pending or failed subscription
       // can still be left
       subscription = to.channel.subscribe(to.pk)
+      // Pass on the delivery progress, unless we've moved on since
+      subscription.promise.onProgress((progress) => {
+        if (current === generation) setProgress(progress)
+      })
       try {
         await subscription.promise
         if (current !== generation) return

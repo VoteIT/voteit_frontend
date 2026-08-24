@@ -90,14 +90,17 @@ export default class Socket {
     this.ws.onmessage = (event) => {
       this.updateReadyState()
       this.heartbeat('incoming')
-      const msg: IChannelsMessage = JSON.parse(event.data)
-
-      // Handle type message
-      this.handleTypeMessage(msg)
+      this.receive(JSON.parse(event.data))
     }
   }
 
-  private handleTypeMessage(msg: IChannelsMessage) {
+  /**
+   * Dispatch a message to the handlers registered for its type, unpacking a
+   * batch into the messages it stands for. Everything arriving on the wire
+   * goes through here, and so does initial state that a channel bundled up
+   * and held back until it was complete.
+   */
+  public receive(msg: IChannelsMessage) {
     const [type, ...action] = msg.action.split('.')
     const handlers = this.typeHandlers.get(type)
     if (!handlers) {
