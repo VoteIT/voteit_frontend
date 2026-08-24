@@ -121,6 +121,7 @@ meetingType.on<{ pk: number }>('dialect_changed', ({ pk }) => {
       </template>
       <div v-else class="my-8">
         <!-- Indeterminate until the channels have announced what they'll send -->
+        <p>{{ $t('meeting.loading') }}</p>
         <v-progress-linear
           :indeterminate="!progress.total"
           :model-value="progress.curr"

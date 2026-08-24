@@ -416,6 +416,7 @@
     "dialectReadonlyRole": "Hanteras av mötets dialekt",
     "dialectReloadQuery": "Mötesdialekten har ändrats. Mötet behöver laddas om för att ändringarna ska gälla.",
     "find": "Hitta möte",
+    "loading": "Laddar möte",
     "markedForDeleteWarn": "Mötet kommer raderas",
     "meeting": "Möte",
     "filterOnlyGroupRoles": "Endast grupproller",
