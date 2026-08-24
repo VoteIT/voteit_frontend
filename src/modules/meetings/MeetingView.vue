@@ -55,7 +55,7 @@ const groupList = computed(() => {
 })
 
 const { canViewMeeting } = useMeeting()
-const { isLoaded, fetchFailed } = useMeetingChannel()
+const { isLoaded, fetchFailed, progress } = useMeetingChannel()
 
 const viewPermission = computed(
   () => !fetchFailed.value && canViewMeeting.value
@@ -119,8 +119,13 @@ meetingType.on<{ pk: number }>('dialect_changed', ({ pk }) => {
         <router-view />
         <Bubbles />
       </template>
-      <div v-else class="my-8 text-center">
-        <v-progress-circular indeterminate />
+      <div v-else class="my-8">
+        <!-- Indeterminate until the channels have announced what they'll send -->
+        <v-progress-linear
+          :indeterminate="!progress.total"
+          :model-value="progress.curr"
+          :max="progress.total"
+        />
       </div>
     </v-container>
   </v-main>

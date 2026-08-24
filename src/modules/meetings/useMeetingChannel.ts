@@ -1,4 +1,5 @@
-import { onBeforeMount, computed, ref, watchEffect } from 'vue'
+import { sum } from 'itertools'
+import { onBeforeMount, computed, ref, shallowReactive, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -6,7 +7,7 @@ import useLoader from '@/composables/useLoader'
 import { ErrorStatus } from '@/socket/defineChannel'
 import useChannel from '@/socket/useChannel'
 import { openDialogEvent } from '@/utils/events'
-import { ThemeColor } from '@/utils/types'
+import { type Progress, ThemeColor } from '@/utils/types'
 
 import {
   meetingChannel,
@@ -42,6 +43,23 @@ export default function useMeetingChannel() {
     'useMeetingChannel',
     ...channels.map((ch) => ch.promise)
   )
+
+  // Where each channel's delivery has got to. Reports replace their slot
+  // rather than being merged into it, which is what a shallow container needs
+  // to notice them.
+  const channelProgress = shallowReactive<Progress[]>(
+    channels.map(() => ({ curr: 0, total: 1 }))
+  )
+  for (const [i, channel] of channels.entries())
+    channel.promise.onProgress((p) => (channelProgress[i] = p))
+
+  // Added up, so a single bar can show how far the whole meeting subscription
+  // has got: each channel reports its own collectors, and nobody cares which
+  // of them a completed one belonged to.
+  const progress = computed<Progress>(() => ({
+    curr: sum(channelProgress.map(({ curr }) => curr)),
+    total: sum(channelProgress.map(({ total }) => total))
+  }))
 
   // The meeting can't be shown without these channels. A missing channel means
   // the meeting isn't there (or isn't ours), so there's nothing to wait for -
@@ -82,6 +100,7 @@ export default function useMeetingChannel() {
 
   return {
     isLoaded,
-    fetchFailed
+    fetchFailed,
+    progress
   }
 }
