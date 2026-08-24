@@ -1,25 +1,3 @@
-<template>
-  <div
-    v-if="isAuthenticated"
-    :class="{ visible, dismissed }"
-    id="socket-info"
-    class="d-flex align-center"
-    v-element-hover="onHover"
-  >
-    <span class="mx-4">{{ displayText }}</span>
-    <v-progress-circular v-if="isConnecting" size="small" indeterminate />
-    <v-btn v-if="retryBtn" :text="$t('tryAgain')" v-bind="retryBtn" />
-    <v-spacer />
-    <v-btn
-      class="mr-2"
-      icon="mdi-chevron-up"
-      size="small"
-      variant="text"
-      @click="dismissed = true"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -150,3 +128,25 @@ const retryBtn = computed(() => {
       top: -58px
       background-color: rgb(var(--v-theme-error))
 </style>
+
+<template>
+  <div
+    v-if="isAuthenticated"
+    :class="{ visible, dismissed }"
+    id="socket-info"
+    class="d-flex align-center"
+    v-element-hover="onHover"
+  >
+    <span class="mx-4">{{ displayText }}</span>
+    <v-progress-circular v-if="isConnecting" size="small" indeterminate />
+    <v-btn v-if="retryBtn" :text="$t('tryAgain')" v-bind="retryBtn" />
+    <v-spacer />
+    <v-btn
+      class="mr-2"
+      icon="mdi-chevron-up"
+      size="small"
+      variant="text"
+      @click="dismissed = true"
+    />
+  </div>
+</template>
