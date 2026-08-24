@@ -11,9 +11,10 @@ import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
-import useChannel from '@/composables/useChannel'
+import useChannel from '@/socket/useChannel'
 import useErrorHandler from '@/composables/useErrorHandler'
 
+import { agendaItemChannel } from '../agendas/contentTypes'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
@@ -70,7 +71,7 @@ const subscribeAgendaItem = computed(() => {
     return
   return poll.value?.agenda_item
 })
-useChannel('agenda_item', subscribeAgendaItem)
+useChannel(agendaItemChannel, subscribeAgendaItem)
 useMeetingTitle(computed(() => poll.value?.title ?? t('poll.poll', 2)))
 
 const votingComplete = ref(!!userVote.value) // Set to false to allow changing vote

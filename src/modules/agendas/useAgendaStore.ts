@@ -2,7 +2,7 @@ import { ifilter, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { shallowReactive } from 'vue'
 
-import { channelLeftEvent } from '@/composables/events'
+import { moderatorChannel } from '../meetings/contentTypes'
 
 import { AgendaBody, AgendaItem, AgendaState } from './types'
 import { LastRead } from '@/utils/types'
@@ -29,8 +29,7 @@ export default defineStore('agendas', () => {
   /*
    ** Clear private agenda items when leaving moderators channel.
    */
-  channelLeftEvent.on(({ channelType, pk }) => {
-    if (channelType !== 'moderators') return
+  moderatorChannel.onLeave(({ pk }) => {
     for (const { pk: agendaPk, meeting, state } of agendaItems.values()) {
       if (meeting === pk && state === AgendaState.Private)
         agendaDeletedEvent.emit(agendaPk)

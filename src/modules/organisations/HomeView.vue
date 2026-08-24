@@ -16,7 +16,7 @@ import UserMenu from '@/components/UserMenu.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
-import useChannel from '@/composables/useChannel'
+import useChannel from '@/socket/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useLoader from '@/composables/useLoader'
 import useErrorHandler from '@/composables/useErrorHandler'
@@ -33,7 +33,7 @@ import useMeetingStore from '../meetings/useMeetingStore'
 import ContactInfoTab from './ContactInfoTab.vue'
 import OrgEditForm from './OrgEditForm.vue'
 import useOrgStore from './useOrgStore'
-import { organisationType } from './contentTypes'
+import { organisationChannel, organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 import FindMeetingDialog from './FindMeetingDialog.vue'
@@ -60,7 +60,7 @@ const subscribeOrganisationId = computed(() => {
 })
 const loader = useLoader(
   'Home',
-  useChannel('organisation', subscribeOrganisationId).promise
+  useChannel(organisationChannel, subscribeOrganisationId).promise
 )
 
 useMeetings(loader.call)

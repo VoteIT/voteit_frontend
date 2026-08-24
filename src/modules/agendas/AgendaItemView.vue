@@ -15,7 +15,7 @@ import { MenuItem } from '@/utils/types'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import Tag from '@/components/Tag.vue'
-import useChannel from '@/composables/useChannel'
+import useChannel from '@/socket/useChannel'
 import usePermission from '@/composables/usePermission'
 import { LastReadKey } from '@/composables/useUnread'
 import useLoader from '@/composables/useLoader'
@@ -34,6 +34,7 @@ import usePollStore from '../polls/usePollStore'
 import AddProposalModal from '../proposals/AddProposalModal.vue'
 import EditTextDocumentModalVue from '../proposals/EditProposalTextModal.vue'
 
+import { agendaItemChannel } from './contentTypes'
 import useAgenda from './useAgenda'
 import AgendaFilters from './AgendaFilters.vue'
 import useAgendaFilter from './useAgendaFilter'
@@ -71,7 +72,7 @@ const {
   orderContent
 } = useAgendaFilter()
 
-const { isSubscribed, promise } = useChannel('agenda_item', agendaId)
+const { subscribed, promise } = useChannel(agendaItemChannel, agendaId)
 useLoader('AgendaItem', promise)
 provide(agendaIdKey, agendaId)
 provide(LastReadKey, agendaItemLastRead)
@@ -352,7 +353,7 @@ provide(TagClickHandlerKey, async (tagName) => {
         <h2 class="mb-2">
           {{ $t('discussion.discussions') }}
         </h2>
-        <v-progress-circular v-if="!isSubscribed" indeterminate class="my-2" />
+        <v-progress-circular v-if="!subscribed" indeterminate class="my-2" />
         <v-alert
           v-if="agendaItem.block_discussion"
           class="mb-4"

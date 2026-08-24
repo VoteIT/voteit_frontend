@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cols } from '@/utils/defaults'
-import { backendVersion, frontendVersion } from '@/utils/Socket'
+import { versions } from '@/socket'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import BackBtn from '@/components/BackBtn.vue'
@@ -39,7 +39,7 @@ import BackBtn from '@/components/BackBtn.vue'
               />
             </v-list>
           </div>
-          <div class="mb-4" v-if="!!frontendVersion">
+          <div class="mb-4" v-if="versions">
             <h2>Version</h2>
             <v-list class="my-3" :border="true">
               <v-list-item
@@ -50,14 +50,14 @@ import BackBtn from '@/components/BackBtn.vue'
               <v-list-item
                 append-icon="mdi-monitor-cellphone"
                 href="https://github.com/voteit/voteit_frontend"
-                :subtitle="frontendVersion"
+                :subtitle="versions.frontend"
                 target="_blank"
                 title="Frontend"
               />
               <v-list-item
                 append-icon="mdi-server"
                 href="https://github.com/voteit/voteit"
-                :subtitle="backendVersion"
+                :subtitle="versions.backend"
                 target="_blank"
                 title="Backend"
               />

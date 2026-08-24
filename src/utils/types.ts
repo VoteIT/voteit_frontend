@@ -27,33 +27,10 @@ export type VModelComponent<T, Props extends {} = {}> = DefineComponent<
 >
 
 // For Channels
-export enum State {
-  Success = 's',
-  Failed = 'f',
-  Waiting = 'w', // Deprecated
-  Queued = 'q',
-  Running = 'r'
-}
-
 export interface Progress {
   curr: number
   total: number
   msg?: string
-}
-
-export interface BaseChannelsMessage {
-  t: string
-  i: string | null
-}
-
-export interface SuccessMessage<T> extends BaseChannelsMessage {
-  s?: State.Success
-  p: T
-}
-
-export interface ProgressMessage extends BaseChannelsMessage {
-  s: State.Running | State.Waiting | State.Queued
-  p: Progress | null
 }
 
 export interface PydanticError {
@@ -71,20 +48,10 @@ export interface ValidationErrorPayload extends ErrorPayload {
   errors: PydanticError[]
 }
 
-export interface FailedMessage extends BaseChannelsMessage {
-  s: State.Failed
-  p: ValidationErrorPayload | ErrorPayload
-}
-
 export interface SubscribePayload {
   channel_type: string
   pk: number
 }
-
-export type ChannelsMessage<T = unknown> =
-  | SuccessMessage<T>
-  | ProgressMessage
-  | FailedMessage
 
 export type ProgressHandler<PT extends Progress = Progress> = (
   progress: PT

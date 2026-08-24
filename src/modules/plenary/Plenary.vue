@@ -11,11 +11,12 @@ import { useElementSize, useStorage } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
 import { openModalEvent } from '@/utils/events'
-import useChannel from '@/composables/useChannel'
+import useChannel from '@/socket/useChannel'
 import { LastReadKey } from '@/composables/useUnread'
 import useLoader from '@/composables/useLoader'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 
+import { agendaItemChannel } from '../agendas/contentTypes'
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
 import useMeetingChannel from '../meetings/useMeetingChannel'
@@ -67,7 +68,7 @@ const { countAiProposals } = useProposalStore()
 const { getAiPolls, getPollMethod, getPollStatus } = usePollStore()
 
 useMeetingChannel()
-useLoader('Plenary', useChannel('agenda_item', agendaId).promise)
+useLoader('Plenary', useChannel(agendaItemChannel, agendaId).promise)
 useMeetingTitle(t('plenary.view'))
 
 function getStateProposalCount(state: ProposalState) {

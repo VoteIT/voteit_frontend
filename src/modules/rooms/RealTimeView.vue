@@ -4,10 +4,11 @@ import { ReadonlyViewKey } from '@/injectionKeys'
 import { useI18n } from 'vue-i18n'
 
 import { slugify } from '@/utils'
-import useChannel from '@/composables/useChannel'
+import useChannel from '@/socket/useChannel'
 
 import UserActiveDialog from '../active/UserActiveDialog.vue'
 import useMeetingChannel from '../meetings/useMeetingChannel'
+import { agendaItemChannel } from '../agendas/contentTypes'
 import useAgendaStore from '../agendas/useAgendaStore'
 import useMeetingTitle from '../meetings/useMeetingTitle'
 import useMeeting from '../meetings/useMeeting'
@@ -37,7 +38,7 @@ const agendaItem = computed(() =>
 )
 
 useChannel(
-  'agenda_item',
+  agendaItemChannel,
   computed(() => meetingRoom.value?.agenda_item || undefined) // null not acceptable in useChannel
 )
 useMeetingChannel()

@@ -2,22 +2,21 @@ import { isRef, MaybeRef, shallowReactive, unref, watch } from 'vue'
 
 import { MeetingRoles, OrganisationRoles } from '@/composables/types'
 import restApi from '@/utils/restApi'
-import { socket } from '@/utils/Socket'
+import { socket } from '@/socket'
 
 import { IUser } from './types'
 
 const userDetails = shallowReactive(new Map<number, IUser>())
 
-socket.addTypeHandler('user', ({ t, p }) => {
-  const type = t.split('.')[1]
-  switch (type) {
+socket.registerTypeHandler('user', ({ action, payload }) => {
+  switch (action) {
     case 'inv': {
-      const { pk } = p as { pk: number }
+      const { pk } = payload as { pk: number }
       userDetails.delete(pk)
       break
     }
     default:
-      console.warn(`Got unknown user message type '${type}'`)
+      console.warn(`Got unknown user message type '${action}'`)
   }
 })
 

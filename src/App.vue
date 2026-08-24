@@ -16,7 +16,7 @@ import 'resize-observer-polyfill/dist/ResizeObserver.global'
 import { onBeforeMount, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { frontendVersion } from './utils/Socket'
+import { versions } from './socket'
 import { openDialogEvent } from './utils/events'
 import Alerts from './components/Alerts.vue'
 import Dialogs from './components/Dialogs.vue'
@@ -65,8 +65,8 @@ function promptVersionReload() {
 
 watchEffect(() => {
   const clientVersion = import.meta.env.VITE_FRONTEND_VERSION
-  if (!(frontendVersion.value && clientVersion)) return
-  if (frontendVersion.value !== clientVersion) promptVersionReload()
+  if (!(versions.value && clientVersion)) return
+  if (versions.value.frontend !== clientVersion) promptVersionReload()
 })
 </script>
 

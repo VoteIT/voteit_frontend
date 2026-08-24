@@ -1,17 +1,26 @@
-import { onBeforeMount, computed, ref } from 'vue'
+import { onBeforeMount, computed, ref, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import useLoader from '@/composables/useLoader'
-import useChannel from '@/composables/useChannel'
+import { ErrorStatus } from '@/socket/defineChannel'
+import useChannel from '@/socket/useChannel'
+import { openDialogEvent } from '@/utils/events'
+import { ThemeColor } from '@/utils/types'
+
+import {
+  meetingChannel,
+  moderatorChannel,
+  participantChannel
+} from './contentTypes'
 import useMeeting from './useMeeting'
 import useMeetingStore from './useMeetingStore'
-
-const channelConfig = { timeout: 15_000, critical: true } // Use long timeout for meeting channel subscription, so people don't get thrown out.
 
 export default function useMeetingChannel() {
   const { isModerator, meetingId, meeting, userRoles } = useMeeting()
   const { fetchMeeting } = useMeetingStore()
   const router = useRouter()
+  const { t } = useI18n()
 
   const fetchFailed = ref(false)
 
@@ -21,21 +30,40 @@ export default function useMeetingChannel() {
   )
 
   const roleChannel = computed(() =>
-    isModerator.value ? 'moderators' : 'participants'
+    isModerator.value ? moderatorChannel : participantChannel
   )
 
   const channels = [
-    useChannel('meeting', conditionalMeetingId, channelConfig),
-    useChannel(roleChannel, conditionalMeetingId, {
-      ...channelConfig,
-      leaveDelay: 500
-    })
+    useChannel(meetingChannel, conditionalMeetingId),
+    useChannel(roleChannel, conditionalMeetingId)
   ]
 
   const loader = useLoader(
     'useMeetingChannel',
     ...channels.map((ch) => ch.promise)
   )
+
+  // The meeting can't be shown without these channels. A missing channel means
+  // the meeting isn't there (or isn't ours), so there's nothing to wait for -
+  // unlike a timeout, which the channel retries on reconnect.
+  let dialogOpened = false
+  watchEffect(() => {
+    const missing = channels.some(
+      (ch) => ch.subscribeError.value?.status === ErrorStatus.NotFound
+    )
+    if (!missing || dialogOpened) return
+    dialogOpened = true
+    openDialogEvent.emit({
+      dismissible: false,
+      title: t('meeting.subscriptionFailedMessage'),
+      theme: ThemeColor.Error,
+      no: false,
+      yes: t('meeting.subscriptionFailedButton'),
+      resolve() {
+        router.push({ name: 'home' })
+      }
+    })
+  })
 
   onBeforeMount(() => {
     loader.call(async () => {
@@ -49,7 +77,7 @@ export default function useMeetingChannel() {
   })
 
   const isLoaded = computed(
-    () => !!meeting.value && channels.every((ch) => ch.isSubscribed.value)
+    () => !!meeting.value && channels.every((ch) => ch.subscribed.value)
   )
 
   return {

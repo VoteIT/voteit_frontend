@@ -1,11 +1,10 @@
-import { channelSubscribedEvent } from '@/composables/events'
 import TypedEvent from '@/utils/TypedEvent'
+
+import { moderatorChannel, participantChannel } from '../meetings/contentTypes'
 
 export const agendaDeletedEvent = new TypedEvent<number>()
 export const agendaLoadedEvent = new TypedEvent()
 
-channelSubscribedEvent.on(({ channelType }) => {
-  // Agenda is loaded when "participants" or "moderators" channels are subscribed
-  if (['participants', 'moderators'].includes(channelType))
-    agendaLoadedEvent.emit()
-})
+// Agenda is loaded when "participants" or "moderators" channels are subscribed
+for (const channel of [participantChannel, moderatorChannel])
+  channel.onSubscribe(() => agendaLoadedEvent.emit())

@@ -17,15 +17,22 @@ vi.mock('vue-router', async (importOriginal) => {
   return { ...actual, useRouter: vi.fn(() => ({ push: mockPush })) }
 })
 
-vi.mock('./contentTypes', () => ({
-  meetingType: {
-    addRoles: mockAddRoles,
-    useContextRoles: () => ({ getUserRoles: vi.fn(), hasRole: vi.fn() })
-  },
-  accessPolicyType: {
-    api: { retrieve: vi.fn().mockResolvedValue({ policies: [] }) }
+vi.mock('./contentTypes', () => {
+  // Transitively imported modules subscribe to these on import
+  const mockChannel = () => ({ onLeave: vi.fn(), onSubscribe: vi.fn() })
+  return {
+    meetingType: {
+      addRoles: mockAddRoles,
+      useContextRoles: () => ({ getUserRoles: vi.fn(), hasRole: vi.fn() })
+    },
+    accessPolicyType: {
+      api: { retrieve: vi.fn().mockResolvedValue({ policies: [] }) }
+    },
+    meetingChannel: mockChannel(),
+    moderatorChannel: mockChannel(),
+    participantChannel: mockChannel()
   }
-}))
+})
 
 vi.mock('./useMeeting', () => ({
   default: () => ({

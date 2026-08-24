@@ -5,24 +5,24 @@ import { ContextRoles } from './types'
 // Importing the module registers the 'roles' content type as a side effect
 import useContextRoles from './useContextRoles'
 
-const { mockAddTypeHandler } = vi.hoisted(() => ({
-  mockAddTypeHandler: vi.fn()
+const { mockRegisterTypeHandler } = vi.hoisted(() => ({
+  mockRegisterTypeHandler: vi.fn()
 }))
 
-vi.mock('@/utils/Socket', () => ({
-  socket: { addTypeHandler: mockAddTypeHandler }
+vi.mock('@/socket', () => ({
+  socket: { registerTypeHandler: mockRegisterTypeHandler }
 }))
 vi.mock('@/modules/auth/useAuthStore', () => ({
   default: () => ({ user: { pk: 1 } })
 }))
 
 // Other content types are registered by transitive imports, so find ours by name
-const socketHandler = mockAddTypeHandler.mock.calls.find(
+const socketHandler = mockRegisterTypeHandler.mock.calls.find(
   ([name]) => name === 'roles'
-)![1] as (msg: { t: string; p: ContextRoles }) => void
+)![1] as (msg: { action: string; payload: ContextRoles }) => void
 
 function send(method: 'added' | 'removed', payload: ContextRoles) {
-  socketHandler({ t: `roles.${method}`, p: payload })
+  socketHandler({ action: method, payload })
 }
 
 const MEETING = 10
@@ -34,7 +34,10 @@ beforeEach(() => {
 })
 
 test('registers a socket handler for the roles content type', () => {
-  expect(mockAddTypeHandler).toHaveBeenCalledWith('roles', expect.any(Function))
+  expect(mockRegisterTypeHandler).toHaveBeenCalledWith(
+    'roles',
+    expect.any(Function)
+  )
 })
 
 test('added/removed role events trigger reactive effects', () => {

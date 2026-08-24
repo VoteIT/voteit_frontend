@@ -17,7 +17,6 @@
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
     "core-js": "^3.49.0",
-    "envelope-client": "github:VoteIT/envelope_client",
     "itertools": "^2.7.1",
     "lodash": "^4.18.1",
     "luxon": "^3.7.2",

@@ -8,7 +8,7 @@ import CheckboxMultipleSelect from '@/components/inputs/CheckboxMultipleSelect.v
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import QueryDialog from '@/components/QueryDialog.vue'
 import useAlert from '@/composables/useAlert'
-import useChannel from '@/composables/useChannel'
+import useChannel from '@/socket/useChannel'
 import usePermission from '@/composables/usePermission'
 
 import useMeeting from '../meetings/useMeeting'
@@ -23,7 +23,7 @@ import { MeetingInvite } from './types'
 import { translateInviteType } from './utils'
 import useMeetingInvites from './useMeetingInvites'
 import useInviteStore from './useInviteStore'
-import { meetingInviteType } from './contentTypes'
+import { inviteChannel, meetingInviteType } from './contentTypes'
 
 const ITEMS_PER_PAGE = 25
 
@@ -36,7 +36,7 @@ const { bulkDelete, bulkRevoke } = useInviteStore()
 const { meetingInvites } = useMeetingInvites(meetingId)
 const { copy, copied } = useClipboard()
 
-const { isSubscribed } = useChannel('invites', meetingId)
+const { subscribed } = useChannel(inviteChannel, meetingId)
 usePermission(isModerator, {}, () => {
   emit('denied')
 })
@@ -408,7 +408,7 @@ async function clearSelectedAnnotations() {
       {{ item.stateLabel }}
     </template>
   </v-data-table>
-  <div v-if="!isSubscribed" class="text-center my-6">
+  <div v-if="!subscribed" class="text-center my-6">
     <v-progress-circular indeterminate />
   </div>
   <v-alert

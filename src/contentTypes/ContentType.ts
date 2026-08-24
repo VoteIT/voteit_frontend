@@ -1,5 +1,5 @@
-import { socket } from '@/utils/Socket'
-import { ChannelsMessage } from '@/utils/types'
+import { socket } from '@/socket'
+import type { IChannelsMessage } from '@/socket/types'
 import { ContextRole, ContextRoleDefinition } from '@/composables/types'
 import useContextRoles from '@/composables/useContextRoles'
 
@@ -34,13 +34,13 @@ export class BaseContentType<T extends {}, Role extends string = never> {
   protected readonly contentType: IContentType<T, Role>
   protected methodHandlers: Map<string, MethodHandler<any>>
   private _api?: ContentAPI<T>
-  private messageQueue: Map<string, ChannelsMessage['p'][]> // Payloads
+  private messageQueue: Map<string, object[]> // Payloads
 
   constructor(contentType: IContentType<T, Role>) {
     this.contentType = contentType
     this.methodHandlers = new Map()
     this.messageQueue = new Map()
-    socket.addTypeHandler(this.name, this.handleMessage.bind(this))
+    socket.registerTypeHandler(this.name, this.handleMessage.bind(this))
   }
 
   public get name() {
@@ -50,7 +50,7 @@ export class BaseContentType<T extends {}, Role extends string = never> {
   /**
    * If we get a message that has no handler yet, queue that message for when/if we get a handler.
    */
-  private queueMessage(method: string, payload: ChannelsMessage['p']) {
+  private queueMessage(method: string, payload: object) {
     if (!this.messageQueue.has(method)) this.messageQueue.set(method, [])
     this.messageQueue.get(method)!.push(payload)
   }
@@ -67,11 +67,10 @@ export class BaseContentType<T extends {}, Role extends string = never> {
     this.messageQueue.delete(method)
   }
 
-  private handleMessage({ p, t }: ChannelsMessage) {
-    const method = t.split('.')[1]
-    const handler = this.methodHandlers.get(method)
-    if (handler) handler(p)
-    else this.queueMessage(method, p)
+  private handleMessage({ action, payload }: IChannelsMessage) {
+    const handler = this.methodHandlers.get(action)
+    if (handler) handler(payload)
+    else this.queueMessage(action, payload)
   }
 
   public on<LT = T>(method: string, fn: MethodHandler<LT>, override = true) {

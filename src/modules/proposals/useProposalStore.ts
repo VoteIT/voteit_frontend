@@ -5,9 +5,7 @@ import { shallowReactive } from 'vue'
 import { countMatching } from '@/utils'
 import IndexedMap from '@/utils/IndexedMap'
 import { Predicate } from '@/utils/types'
-import useAgendaStore from '../agendas/useAgendaStore'
 import { agendaDeletedEvent } from '../agendas/events'
-import { onMeetingChannelLeave } from '../meetings/channels'
 
 import { Proposal } from './types'
 import { ProposalText, proposalTextType, proposalType } from './contentTypes'
@@ -30,16 +28,6 @@ export default defineStore('proposals', () => {
 
   proposalType.updateMap(proposals, { participants: 'm', moderators: 'm' })
   proposalTextType.updateMap(proposalTexts, { agenda_item: 'agenda_item' })
-
-  // Automatically clear proposals for meeting when leaving.
-  onMeetingChannelLeave((meeting) => {
-    for (const p of proposals.values()) {
-      const ai = useAgendaStore().getAgendaItem(p.agenda_item)
-      if (ai?.meeting === meeting) {
-        proposals.delete(p.pk)
-      }
-    }
-  })
 
   /* Make sure proposals for agenda item are cleaned up on "deletion" (private). */
   agendaDeletedEvent.on((pk) => {

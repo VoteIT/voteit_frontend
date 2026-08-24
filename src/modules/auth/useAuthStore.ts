@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, shallowRef, watch } from 'vue'
 
 import { sleep } from '@/utils'
-import { socketState } from '@/utils/Socket'
+import { socketState } from '@/socket'
 import { readyToLoadEvent } from '@/composables/events'
 import useContextRoles from '@/composables/useContextRoles' // Import order important!
 import { profileType } from '../organisations/contentTypes' // ^

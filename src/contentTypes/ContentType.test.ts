@@ -6,7 +6,7 @@ import ContentType, { BaseContentType } from './ContentType'
 // must be declared with vi.hoisted() to be available at hoist time.
 
 const {
-  mockAddTypeHandler,
+  mockRegisterTypeHandler,
   MockContentAPI,
   MockChannel,
   mockUseStateMachine,
@@ -23,7 +23,7 @@ const {
   }
 
   return {
-    mockAddTypeHandler: vi.fn(),
+    mockRegisterTypeHandler: vi.fn(),
     MockContentAPI: vi.fn(function () {
       return mockApiInstance
     }),
@@ -37,8 +37,8 @@ const {
   }
 })
 
-vi.mock('@/utils/Socket', () => ({
-  socket: { addTypeHandler: mockAddTypeHandler }
+vi.mock('@/socket', () => ({
+  socket: { registerTypeHandler: mockRegisterTypeHandler }
 }))
 vi.mock('./ContentAPI', () => ({ default: MockContentAPI }))
 vi.mock('./Channel', () => ({ default: MockChannel }))
@@ -56,8 +56,11 @@ vi.mock('@/modules/organisations/useUserDetails', () => ({
 // --- Helpers ---
 
 function captureSocketHandler() {
-  const calls = mockAddTypeHandler.mock.calls
-  return calls[calls.length - 1][1] as (msg: { t: string; p: unknown }) => void
+  const calls = mockRegisterTypeHandler.mock.calls
+  return calls[calls.length - 1][1] as (msg: {
+    action: string
+    payload: unknown
+  }) => void
 }
 
 // --- Tests ---
@@ -69,7 +72,7 @@ beforeEach(() => {
 describe('BaseContentType', () => {
   test('registers a socket type handler on construction', () => {
     new BaseContentType({ name: 'mytype' })
-    expect(mockAddTypeHandler).toHaveBeenCalledWith(
+    expect(mockRegisterTypeHandler).toHaveBeenCalledWith(
       'mytype',
       expect.any(Function)
     )
@@ -85,7 +88,7 @@ describe('BaseContentType', () => {
     const handler = vi.fn()
     ct.on('added', handler)
 
-    captureSocketHandler()({ t: 'mytype.added', p: { pk: 1 } })
+    captureSocketHandler()({ action: 'added', payload: { pk: 1 } })
 
     expect(handler).toHaveBeenCalledWith({ pk: 1 })
   })
@@ -94,8 +97,8 @@ describe('BaseContentType', () => {
     const ct = new BaseContentType({ name: 'mytype' })
     const socketHandler = captureSocketHandler()
 
-    socketHandler({ t: 'mytype.added', p: { pk: 1 } })
-    socketHandler({ t: 'mytype.added', p: { pk: 2 } })
+    socketHandler({ action: 'added', payload: { pk: 1 } })
+    socketHandler({ action: 'added', payload: { pk: 2 } })
 
     const handler = vi.fn()
     ct.on('added', handler)
@@ -107,7 +110,7 @@ describe('BaseContentType', () => {
 
   test('queue is cleared after replay so a second handler does not receive old messages', () => {
     const ct = new BaseContentType({ name: 'mytype' })
-    captureSocketHandler()({ t: 'mytype.added', p: { pk: 1 } })
+    captureSocketHandler()({ action: 'added', payload: { pk: 1 } })
     ct.on('added', vi.fn())
 
     const lateHandler = vi.fn()
@@ -124,7 +127,7 @@ describe('BaseContentType', () => {
     ct.on('added', first)
     ct.on('added', second, false)
 
-    captureSocketHandler()({ t: 'mytype.added', p: { pk: 1 } })
+    captureSocketHandler()({ action: 'added', payload: { pk: 1 } })
 
     expect(first).toHaveBeenCalledWith({ pk: 1 })
     expect(second).not.toHaveBeenCalled()
@@ -136,8 +139,8 @@ describe('BaseContentType', () => {
     ct.onChanged(handler)
 
     const socketHandler = captureSocketHandler()
-    socketHandler({ t: 'mytype.changed', p: { pk: 1 } })
-    socketHandler({ t: 'mytype.added', p: { pk: 2 } })
+    socketHandler({ action: 'changed', payload: { pk: 1 } })
+    socketHandler({ action: 'added', payload: { pk: 2 } })
 
     expect(handler).toHaveBeenNthCalledWith(1, { pk: 1 })
     expect(handler).toHaveBeenNthCalledWith(2, { pk: 2 })
@@ -148,7 +151,7 @@ describe('BaseContentType', () => {
     const handler = vi.fn()
     ct.onDeleted(handler)
 
-    captureSocketHandler()({ t: 'mytype.deleted', p: { pk: 5 } })
+    captureSocketHandler()({ action: 'deleted', payload: { pk: 5 } })
 
     expect(handler).toHaveBeenCalledWith({ pk: 5 })
   })
@@ -219,13 +222,13 @@ describe('ContentType', () => {
     ct.updateMap(map)
 
     const socketHandler = captureSocketHandler()
-    socketHandler({ t: 'mytype.added', p: { pk: 1, state: 'draft' } })
+    socketHandler({ action: 'added', payload: { pk: 1, state: 'draft' } })
     expect(map.get(1)).toEqual({ pk: 1, state: 'draft' })
 
-    socketHandler({ t: 'mytype.changed', p: { pk: 1, state: 'published' } })
+    socketHandler({ action: 'changed', payload: { pk: 1, state: 'published' } })
     expect(map.get(1)).toEqual({ pk: 1, state: 'published' })
 
-    socketHandler({ t: 'mytype.deleted', p: { pk: 1 } })
+    socketHandler({ action: 'deleted', payload: { pk: 1 } })
     expect(map.has(1)).toBe(false)
   })
 

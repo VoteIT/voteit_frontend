@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { vElementHover } from '@vueuse/components'
 import { useOnline } from '@vueuse/core'
 
-import { socket, socketState } from '@/utils/Socket'
+import { socket, socketState } from '@/socket'
 import { ThemeColor } from '@/utils/types'
 import useAuthStore from '@/modules/auth/useAuthStore'
 

@@ -1,7 +1,11 @@
 import { any } from 'itertools'
 
-import { beforeAppStateEvent, channelLeftEvent } from '@/composables/events'
-import { socket } from '@/utils/Socket'
+import {
+  beforeChannelStateEvent,
+  channelLeftEvent,
+  getSubscribedChannels
+} from '@/socket/defineChannel'
+import type { ChannelRef } from '@/socket/defineChannel'
 
 // Utility type to get keys where the property has certain types
 type KeysOfType<T, Value> = keyof {
@@ -19,14 +23,18 @@ const channelMaps: ChannelMapEntry<PKContent>[] = []
 
 /**
  * Check if any subscribed channel type and pk is mapped to an attribute of obj.
+ * @param except Channel to disregard. A channel about to redeliver its state
+ * does not protect what its previous subscription left behind.
  * @returns true if obj is protected
  */
 function checkProtectingChannels<T extends PKContent>(
   obj: T,
-  channelMap: ChannelMap<T>
+  channelMap: ChannelMap<T>,
+  except?: ChannelRef
 ) {
-  return any(socket.channels.getSubscribedChannels(), ({ channelType, pk }) => {
-    const attr = channelMap[channelType]
+  return any(getSubscribedChannels(), ({ channel_type, pk }) => {
+    if (channel_type === except?.channel_type && pk === except.pk) return false
+    const attr = channelMap[channel_type]
     return attr && obj[attr] === pk
   })
 }
@@ -44,15 +52,17 @@ function cleanupContentType<T extends PKContent>(
 }
 
 /**
- * Clean up channels before processing app_state (just delete all cleanable data)
+ * Clean up a channel before its state arrives (just delete all cleanable data)
  */
-beforeAppStateEvent.on(({ channelType, pk }) => {
+beforeChannelStateEvent.on((channel) => {
+  const { channel_type, pk } = channel
   for (const { channelMap, map } of channelMaps) {
-    const attr = channelMap[channelType]
+    const attr = channelMap[channel_type]
     if (!attr) continue
     for (const [key, obj] of map.entries()) {
       // Delete only if obj belongs to this channel, and isn't protected from another subscribed channel
-      if (obj[attr] !== pk || checkProtectingChannels(obj, channelMap)) continue
+      if (obj[attr] !== pk || checkProtectingChannels(obj, channelMap, channel))
+        continue
       map.delete(key)
     }
   }
@@ -61,9 +71,9 @@ beforeAppStateEvent.on(({ channelType, pk }) => {
 /**
  * Set up event to clean all registered content types on channel left event
  */
-channelLeftEvent.on(({ channelType }) => {
+channelLeftEvent.on(({ channel_type }) => {
   for (const { channelMap, map } of channelMaps)
-    if (channelType in channelMap) cleanupContentType(map, channelMap)
+    if (channel_type in channelMap) cleanupContentType(map, channelMap)
 })
 
 export default {
