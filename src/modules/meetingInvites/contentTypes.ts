@@ -1,5 +1,9 @@
 import ContentType from '@/contentTypes/ContentType'
+import defineChannel from '@/socket/defineChannel'
+
 import { MeetingInvite, MeetingInviteState } from './types'
+
+export const inviteChannel = defineChannel('invites')
 
 export const matchedInviteType = new ContentType<MeetingInvite>({
   name: 'meeting_invite',

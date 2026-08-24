@@ -1,6 +1,10 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
+import defineChannel from '@/socket/defineChannel'
 import { LastRead } from '@/utils/types'
+
 import { AgendaItem, AgendaBody, AgendaState } from './types'
+
+export const agendaItemChannel = defineChannel('agenda_item')
 
 export const agendaItemType = new ContentType<
   AgendaItem,
