@@ -145,7 +145,7 @@ export default class Socket {
     return this.readyState === WebSocket.OPEN
   }
 
-  private async assertOpen() {
+  private assertOpen() {
     if (!this.isOpen)
       throw new Error(`Socket not open (readyState ${this.readyState})`)
   }
@@ -160,6 +160,26 @@ export default class Socket {
     this.assertOpen()
     this.heartbeat('outgoing')
     this.ws?.send(JSON.stringify({ action, payload }))
+  }
+
+  /**
+   * Call `callback` every `ms` while the socket is open. Traffic in
+   * `direction` resets the timer, so a heartbeat only fires when the line has
+   * been quiet. Without a direction, any traffic resets it.
+   * @returns dispose method
+   */
+  public addHeartbeat(
+    callback: Heartbeat['callback'],
+    ms: number,
+    direction?: Heartbeat['direction']
+  ) {
+    const heartbeat: Heartbeat = { callback, direction, ms }
+    this.heartbeats.push(heartbeat)
+    if (this.isOpen)
+      heartbeat.intervalID = setInterval(() => callback(this), ms)
+    return () => {
+      this.removeHeartbeat(callback)
+    }
   }
 
   public removeHeartbeat(callback: Heartbeat['callback']) {

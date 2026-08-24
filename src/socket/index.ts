@@ -9,9 +9,9 @@ const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const DEFAULT_CONFIG: SocketOptions['config'] = {
   timeout: 20_000 // 20 s, longer than server's 15 s
 }
+const OUTGOING_HEARTBEAT_MS = 60_000
 
 export const versions = shallowRef<{ backend: string; frontend: string }>()
-export const backendVersion = shallowRef<string | undefined>()
 
 export const socketState = shallowRef<ValueOf<typeof SocketState>>()
 export const socket = new Socket(`${wsProtocol}//${location.host}/ws/`, {
@@ -38,6 +38,14 @@ function sendPing() {
 }
 
 // TODO Drop this when backend is able to handle user connectivity on it's own
+socket.addHeartbeat(sendPing, OUTGOING_HEARTBEAT_MS, 'outgoing')
+
+// When browser says it's online, ping will check socket alive status.
+// Should also trigger if a device wakes up from sleep.
+window.addEventListener('online', () => {
+  if (socket.isOpen) sendPing()
+})
+
 socket.registerTypeHandler('s', ({ action, payload }) => {
   switch (action) {
     case 'versions':
