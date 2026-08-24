@@ -1,6 +1,6 @@
 {
   "name": "voteit_4_frontend",
-  "version": "0.47.0",
+  "version": "1.0.0-rc.0",
   "private": true,
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",
