@@ -9,9 +9,8 @@ export default class ProgressPromise<
   T,
   PT extends Progress = Progress
 > extends Promise<T> {
-  _progress: Progress
-  _listeners: Set<ProgressHandler<PT>>
-  _setProgress: ProgressHandler<PT>
+  private currProgress: Progress
+  private listeners: Set<ProgressHandler<PT>>
 
   constructor(
     executor: (
@@ -28,8 +27,9 @@ export default class ProgressPromise<
         // Note: we don't really have guarantees over
         // the order in which async operations are evaluated,
         // so if we get an out-of-order progress, we won't save it.
-        if (progress.curr >= this._progress.curr) this._progress = progress
-        for (const listener of this._listeners) {
+        if (progress.curr >= this.currProgress.curr)
+          this.currProgress = progress
+        for (const listener of this.listeners) {
           listener(progress)
         }
       })()
@@ -44,13 +44,12 @@ export default class ProgressPromise<
       }
     )
 
-    this._listeners = new Set()
-    this._setProgress = setProgress
-    this._progress = PROGRESS_INITIAL
+    this.listeners = new Set()
+    this.currProgress = PROGRESS_INITIAL
   }
 
   get progress() {
-    return this._progress
+    return this.currProgress
   }
 
   public onProgress(callback: ProgressHandler<PT>) {
@@ -58,7 +57,7 @@ export default class ProgressPromise<
       throw new TypeError(`Expected a \`Function\`, got \`${typeof callback}\``)
     }
 
-    this._listeners.add(callback)
+    this.listeners.add(callback)
     return this
   }
 }
