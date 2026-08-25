@@ -31,7 +31,7 @@ export default function useMeetingChannel() {
 
   const channel = useChannel(roleChannel, conditionalMeetingId)
 
-  const loader = useLoader('useMeetingChannel', channel.promise)
+  const loader = useLoader('useMeetingChannel')
 
   // How far the channel's delivery has got, for the progress bar. Reports
   // replace the ref's value rather than being merged into it, which is what a
@@ -59,14 +59,20 @@ export default function useMeetingChannel() {
     })
   })
 
+  // The channel can't subscribe until the fetch has brought in the meeting
+  // roles, so the two are awaited in order - anything else lets the loader
+  // finish while the channel is still delivering. Both failures return without
+  // waiting for a subscription that is never going to be attempted.
   onBeforeMount(() => {
     loader.call(async () => {
       try {
         if (!(await fetchMeeting(meetingId.value)))
-          await router.push({ name: 'meeting:join' }) // Fetch was OK, but user has no meeting role
+          return await router.push({ name: 'meeting:join' }) // Fetch was OK, but user has no meeting role
       } catch {
         fetchFailed.value = true
+        return
       }
+      await channel.whenSettled()
     })
   })
 

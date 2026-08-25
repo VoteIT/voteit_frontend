@@ -19,7 +19,10 @@ type Channel = ReturnType<typeof defineChannel>
  * how to act on them is up to the caller.
  *
  * `promise` reports how much of the initial state has arrived: attach
- * `onProgress` to it to follow the channel's collectors as they complete.
+ * `onProgress` to it to follow the channel's collectors as they complete. It
+ * covers the first subscription attempt only, and resolves right away if there
+ * was nothing to subscribe to. Callers whose target appears later - once a
+ * fetch has settled what to subscribe to - want `whenSettled` instead.
  *
  * @param channel Channel to subscribe to, static or reactive
  * @param pk Primary key of the object to subscribe to
@@ -43,6 +46,39 @@ export default function useChannel(
   const promise = new ProgressPromise<void>((resolve, _reject, progress) => {
     settle = resolve
     setProgress = progress
+  })
+
+  // Waiting on the attempt that's running now, rather than on the first one
+  const settleWaiters = new Set<() => void>()
+
+  function resolveWaiters() {
+    for (const resolve of settleWaiters) resolve()
+    settleWaiters.clear()
+  }
+
+  /**
+   * Resolves once the current subscription attempt has settled - subscribed or
+   * failed. Unlike `promise` it waits for a target to appear, so it's what to
+   * await when the id or channel is only known after some other load.
+   *
+   * A failure resolves rather than rejects: a channel that isn't there is the
+   * caller's to report, and a timed out one is retried on reconnect.
+   *
+   * Note that an attempt which has already settled resolves immediately, even
+   * if the target is about to change.
+   */
+  function whenSettled() {
+    return new Promise<void>((resolve) => {
+      if (state.value === 'subscribed' || state.value === 'failed')
+        return resolve()
+      settleWaiters.add(resolve)
+    })
+  }
+
+  // Only the current generation ever sets a settled state, so an attempt we've
+  // moved on from can't release the waiters. Resubscriptions land here too.
+  watch(state, (value) => {
+    if (value === 'subscribed' || value === 'failed') resolveWaiters()
   })
 
   /**
@@ -119,11 +155,15 @@ export default function useChannel(
     generation++
     subscription?.leave()
     subscription = undefined
+    // Whoever awaited this is going away with us; leaving them hanging would
+    // stall the loader they belong to
+    resolveWaiters()
   })
 
   return {
     promise,
     subscribeError,
+    whenSettled,
     state,
     subscribed: computed(() => state.value === 'subscribed'),
     subscribing: computed(() => state.value === 'subscribing')
