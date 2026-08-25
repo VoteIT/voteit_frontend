@@ -7,6 +7,8 @@ export type LoaderCallback = () => Promise<unknown>
 let callbacks: LoaderCallback[] = []
 
 const initState = shallowRef<InitState>()
+/** Whether the full-screen Loader is covering the app. Owned by Loader.vue. */
+const loaderVisible = shallowRef(true)
 const failedMessage = shallowRef<string>()
 const initFailed = computed(() => initState.value === InitState.Failed)
 const initDone = computed(() => initState.value === InitState.Done)
@@ -53,7 +55,7 @@ function call(...cbs: (() => Promise<unknown>)[]) {
  *
  * @param name - Human-readable label used in error logging
  * @param promises - Async operations that must complete during initialisation
- * @returns `{ initDone, initFailed, initState, setLoaded, call }`
+ * @returns `{ initDone, initFailed, initState, loaderVisible, setLoaded, call }`
  */
 export default function useLoader(
   name: string,
@@ -71,6 +73,7 @@ export default function useLoader(
     initFailed,
     initState,
     failedMessage,
+    loaderVisible,
     setLoaded,
     call
   }

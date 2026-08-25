@@ -417,6 +417,7 @@
     "dialectReloadQuery": "Mötesdialekten har ändrats. Mötet behöver laddas om för att ändringarna ska gälla.",
     "find": "Hitta möte",
     "loading": "Laddar möte",
+    "loadingTitled": "Laddar {title}",
     "markedForDeleteWarn": "Mötet kommer raderas",
     "meeting": "Möte",
     "filterOnlyGroupRoles": "Endast grupproller",

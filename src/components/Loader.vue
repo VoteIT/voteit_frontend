@@ -27,8 +27,13 @@ const DOT_INTERVAL = 333
 
 const { t } = useI18n()
 const dotCount = ref(0)
-const { initDone, initFailed, initState, failedMessage } = useLoader('Loader')
-const visible = ref(true)
+const {
+  initDone,
+  initFailed,
+  initState,
+  failedMessage,
+  loaderVisible: visible
+} = useLoader('Loader')
 
 function dotUp() {
   dotCount.value = (dotCount.value + 1) % 4

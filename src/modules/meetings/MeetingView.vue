@@ -1,9 +1,12 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onUnmounted, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { openDialogEvent } from '@/utils/events'
+import { cols } from '@/utils/defaults'
 import UserMenu from '@/components/UserMenu.vue'
 import AppBar from '@/components/AppBar.vue'
+import useLoader from '@/composables/useLoader'
 import usePermission, {
   PermissionDeniedStrategy
 } from '@/composables/usePermission'
@@ -20,7 +23,6 @@ import { MeetingRole } from './types'
 import { DEFAULT_ROLE_ORDER } from './constants'
 import { getMeetingRoleIcon, translateMeetingRole } from './utils'
 import { meetingType } from './contentTypes'
-import { openDialogEvent } from '@/utils/events'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -56,6 +58,20 @@ const groupList = computed(() => {
 
 const { canViewMeeting } = useMeeting()
 const { isLoaded, fetchFailed, progress } = useMeetingChannel()
+
+// Even if everything arrives at once, keep the loading screen up long enough
+// that it doesn't flash by. While the app-wide Loader covers the screen there's
+// nothing to flash, so count it as passed right away.
+const MIN_LOADING_TIME = 1_000
+const { loaderVisible } = useLoader('MeetingView')
+const minTimePassed = shallowRef(loaderVisible.value)
+if (!minTimePassed.value) {
+  const minTimeTimer = setTimeout(
+    () => (minTimePassed.value = true),
+    MIN_LOADING_TIME
+  )
+  onUnmounted(() => clearTimeout(minTimeTimer))
+}
 
 const viewPermission = computed(
   () => !fetchFailed.value && canViewMeeting.value
@@ -115,19 +131,27 @@ meetingType.on<{ pk: number }>('dialect_changed', ({ pk }) => {
   <v-main>
     <div id="toolbar"></div>
     <v-container>
-      <template v-if="isLoaded">
+      <template v-if="isLoaded && minTimePassed">
         <router-view />
         <Bubbles />
       </template>
-      <div v-else class="my-8">
+      <v-row v-else>
         <!-- Indeterminate until the channels have announced what they'll send -->
-        <p>{{ $t('meeting.loading') }}</p>
-        <v-progress-linear
-          :indeterminate="!progress.total"
-          :model-value="progress.curr"
-          :max="progress.total"
-        />
-      </div>
+        <v-col v-bind="cols.default">
+          <p>
+            {{
+              meeting
+                ? $t('meeting.loadingTitled', { title: meeting.title })
+                : $t('meeting.loading')
+            }}
+          </p>
+          <v-progress-linear
+            :indeterminate="!progress.total"
+            :model-value="progress.curr"
+            :max="progress.total"
+          />
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>
