@@ -168,10 +168,24 @@ function copyFilteredData(scope?: string) {
   )
 }
 
+// Bulk actions run on what the confirmation dialog counted: selected invites that
+// are still in the filtered list. Ids of invites that have since been deleted, or
+// filtered away, linger in selectedInviteIds and would make the server reject the
+// whole call.
+// Another client can delete the whole selection while the confirmation dialog is
+// open, leaving nothing to act on. Each action bails on an empty list rather than
+// asking the server to act on no invites at all.
+const selectedInviteIdsInView = computed(() =>
+  selectedInvites.value.map(({ pk }) => pk)
+)
+
 async function deleteSelected() {
   // Delete any selected deletable invites
+  if (!selectedInviteIdsInView.value.length) return
   try {
-    await bulkDelete(meetingId.value, selectedInviteIds.value)
+    await bulkDelete(meetingId.value, selectedInviteIdsInView.value)
+    // The invites are gone; keeping their ids in the model would only let them pile up
+    selectedInviteIds.value = []
   } catch {
     alert('^' + t('invites.errorDelete'))
   }
@@ -179,8 +193,9 @@ async function deleteSelected() {
 
 async function revokeSelected() {
   // Revoke any selected deletable invites (same as revokable?)
+  if (!selectedInviteIdsInView.value.length) return
   try {
-    await bulkRevoke(meetingId.value, selectedInviteIds.value)
+    await bulkRevoke(meetingId.value, selectedInviteIdsInView.value)
   } catch {
     alert('^' + t('invites.errorRevoke'))
   }
@@ -207,10 +222,11 @@ const hasAnnotations = computed(() =>
 )
 
 const selectedWithAnnotations = computed(() =>
-  meetingInvites.value.filter((a) => selectedInviteIds.value.includes(a.pk))
+  selectedInvites.value.filter((a) => a.has_annotations)
 )
 async function clearSelectedAnnotations() {
   const invites = selectedWithAnnotations.value.map((i) => i.pk)
+  if (!invites.length) return
   try {
     await meetingInviteType.api.listAction('clear-annotations', {
       invites,
