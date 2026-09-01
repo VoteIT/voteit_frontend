@@ -416,8 +416,6 @@
     "dialectReadonlyRole": "Handled by meeting dialect",
     "dialectReloadQuery": "The meeting dialect has changed. The meeting needs to be reloaded to apply the changes.",
     "find": "Find meeting",
-    "loading": "Loading meeting",
-    "loadingTitled": "Loading {title}",
     "markedForDeleteWarn": "The meeting will be deleted",
     "meeting": "Meeting",
     "filterOnlyGroupRoles": "Only group roles",
