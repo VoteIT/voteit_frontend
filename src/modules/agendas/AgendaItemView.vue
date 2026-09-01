@@ -18,7 +18,6 @@ import Tag from '@/components/Tag.vue'
 import useChannel from '@/socket/useChannel'
 import usePermission from '@/composables/usePermission'
 import { LastReadKey } from '@/composables/useUnread'
-import useLoader from '@/composables/useLoader'
 
 import Comments from '../discussions/Comments.vue'
 import AgendaProposals from '../proposals/AgendaProposals.vue'
@@ -72,8 +71,11 @@ const {
   orderContent
 } = useAgendaFilter()
 
-const { subscribed, promise } = useChannel(agendaItemChannel, agendaId)
-useLoader('AgendaItem', promise)
+// The route starts this channel (see its meta.load) but doesn't wait for it -
+// switching agenda items would hold the old page for a round trip otherwise,
+// and most of what's on this one is already in from the meeting channel. So
+// the view says what's still coming, through `subscribed`.
+const { subscribed } = useChannel(agendaItemChannel, agendaId)
 provide(agendaIdKey, agendaId)
 provide(LastReadKey, agendaItemLastRead)
 

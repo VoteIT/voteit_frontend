@@ -2,8 +2,6 @@ import { computed } from 'vue'
 import { RouteLocationNamedRaw, useRoute } from 'vue-router'
 import { useStorage } from '@vueuse/core'
 
-import useChannel from '@/socket/useChannel'
-
 import useAuthStore from '../auth/useAuthStore'
 import usePoll from '../polls/usePoll'
 import useProposalStore from '../proposals/useProposalStore'
@@ -11,7 +9,7 @@ import { SpeakerSystemState } from '../speakerLists/types'
 import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
 import useRoomStore from './useRoomStore'
-import { roomChannel, roomType } from './contentTypes'
+import { roomType } from './contentTypes'
 
 /**
  * Set client to passive mode to disable interaction in real-time view (no speaker registration or voting)
@@ -31,7 +29,6 @@ export default function useRoom() {
   const proposalStore = useProposalStore()
   const route = useRoute()
   const roomId = computed(() => Number(route.params.roomId))
-  useChannel(roomChannel, roomId)
 
   const meetingRoom = computed(() => store.getRoom(roomId.value))
   const highlighted = computed(() => store.getHighlighted(roomId.value))

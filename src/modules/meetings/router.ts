@@ -1,5 +1,6 @@
 import router from '@/router'
 
+import { agendaItemRequirement } from '../agendas/requirements'
 import AgendaEditView from '../agendas/AgendaEditView.vue'
 import AgendaItemView from '../agendas/AgendaItemView.vue'
 import polls from '../polls/router'
@@ -11,11 +12,15 @@ import ParticipantsView from './ParticipantsView.vue'
 import StartView from './StartView.vue'
 import MeetingView from './MeetingView.vue'
 import MinutesView from './MinutesView.vue'
+import { meetingRequirement } from './requirements'
 
 router.addRoute({
   path: '/m/:id/:slug',
   name: 'MeetingRouterView',
   component: MeetingView,
+  // Everything below lives inside the meeting, so the meeting and its channel
+  // are loaded once here rather than by each of them
+  meta: { load: meetingRequirement },
   children: [
     {
       path: '',
@@ -65,7 +70,8 @@ router.addRoute({
     {
       path: 'a/:aid/:aslug',
       name: 'agendaItem',
-      component: AgendaItemView
+      component: AgendaItemView,
+      meta: { load: agendaItemRequirement }
     }
   ]
 })

@@ -3,7 +3,9 @@ import {
   meetingBubblePlugins,
   meetingSettingsPlugins
 } from '../meetings/registry'
+import { meetingRequirement } from '../meetings/requirements'
 
+import { roomRequirement } from './requirements'
 import ControlPanel from './ControlPanel.vue'
 import RealTimeBubble from './RealTimeBubble.vue'
 import RealTimeView from './RealTimeView.vue'
@@ -37,5 +39,9 @@ meetingBubblePlugins.register({
 router.addRoute({
   component: RealTimeView,
   name: 'room:main',
-  path: '/room/:id/:roomId'
+  path: '/room/:id/:roomId',
+  // Outside MeetingRouterView, but it shows meeting content all the same. The
+  // agenda item it displays follows the room rather than the route, so that
+  // one channel stays with the view.
+  meta: { load: [meetingRequirement, roomRequirement] }
 })

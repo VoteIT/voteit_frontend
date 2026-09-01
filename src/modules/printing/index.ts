@@ -1,5 +1,6 @@
 import router from '@/router'
 
+import { agendaItemRequirement } from '../agendas/requirements'
 import { meetingSettingsPlugins } from '../meetings/registry'
 import useMeetingComponent from '../meetings/useMeetingComponent'
 import { Meeting } from '../meetings/types'
@@ -31,5 +32,6 @@ meetingSettingsPlugins.register({
 router.addRoute('MeetingRouterView', {
   component: ProposalPrintView,
   name: 'printing:proposals',
-  path: 'a/:aid/:aslug/print/:propIds'
+  path: 'a/:aid/:aslug/print/:propIds',
+  meta: { load: agendaItemRequirement }
 })

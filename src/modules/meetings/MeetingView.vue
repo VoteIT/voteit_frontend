@@ -1,12 +1,10 @@
 <script lang="ts" setup>
-import { computed, onUnmounted, shallowRef } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { openDialogEvent } from '@/utils/events'
-import { cols } from '@/utils/defaults'
 import UserMenu from '@/components/UserMenu.vue'
 import AppBar from '@/components/AppBar.vue'
-import useLoader from '@/composables/useLoader'
 import usePermission, {
   PermissionDeniedStrategy
 } from '@/composables/usePermission'
@@ -16,13 +14,13 @@ import Bubbles from './Bubbles.vue'
 import ComponentSlot from './ComponentSlot.vue'
 import FakeRolesDialog from './FakeRolesDialog.vue'
 import NavigationDrawer from './NavigationDrawer.vue'
-import useMeetingChannel from './useMeetingChannel'
 import useMeeting from './useMeeting'
 import useMeetingGroups from './useMeetingGroups'
 import { MeetingRole } from './types'
 import { DEFAULT_ROLE_ORDER } from './constants'
 import { getMeetingRoleIcon, translateMeetingRole } from './utils'
 import { meetingType } from './contentTypes'
+import { meetingFetchFailed } from './requirements'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -57,24 +55,12 @@ const groupList = computed(() => {
 })
 
 const { canViewMeeting } = useMeeting()
-const { isLoaded, fetchFailed, progress } = useMeetingChannel()
 
-// Even if everything arrives at once, keep the loading screen up long enough
-// that it doesn't flash by. While the app-wide Loader covers the screen there's
-// nothing to flash, so count it as passed right away.
-const MIN_LOADING_TIME = 1_000
-const { loaderVisible } = useLoader('MeetingView')
-const minTimePassed = shallowRef(loaderVisible.value)
-if (!minTimePassed.value) {
-  const minTimeTimer = setTimeout(
-    () => (minTimePassed.value = true),
-    MIN_LOADING_TIME
-  )
-  onUnmounted(() => clearTimeout(minTimeTimer))
-}
-
+// The meeting and its channel are in before this view is mounted - see
+// meetingRequirement. This is the backstop for what the guard can't decide:
+// roles revoked while the user is here, and a fetch that never got through.
 const viewPermission = computed(
-  () => !fetchFailed.value && canViewMeeting.value
+  () => !meetingFetchFailed.value && canViewMeeting.value
 )
 
 usePermission(viewPermission, {}, PermissionDeniedStrategy.RequireLogin)
@@ -131,27 +117,8 @@ meetingType.on<{ pk: number }>('dialect_changed', ({ pk }) => {
   <v-main>
     <div id="toolbar"></div>
     <v-container>
-      <template v-if="isLoaded && minTimePassed">
-        <router-view />
-        <Bubbles />
-      </template>
-      <v-row v-else>
-        <!-- Indeterminate until the channels have announced what they'll send -->
-        <v-col v-bind="cols.default">
-          <p>
-            {{
-              meeting
-                ? $t('meeting.loadingTitled', { title: meeting.title })
-                : $t('meeting.loading')
-            }}
-          </p>
-          <v-progress-linear
-            :indeterminate="!progress.total"
-            :model-value="progress.curr"
-            :max="progress.total"
-          />
-        </v-col>
-      </v-row>
+      <router-view />
+      <Bubbles />
     </v-container>
   </v-main>
 </template>

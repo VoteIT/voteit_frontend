@@ -7,7 +7,6 @@ import { slugify } from '@/utils'
 import useChannel from '@/socket/useChannel'
 
 import UserActiveDialog from '../active/UserActiveDialog.vue'
-import useMeetingChannel from '../meetings/useMeetingChannel'
 import { agendaItemChannel } from '../agendas/contentTypes'
 import useAgendaStore from '../agendas/useAgendaStore'
 import useMeetingTitle from '../meetings/useMeetingTitle'
@@ -41,7 +40,6 @@ useChannel(
   agendaItemChannel,
   computed(() => meetingRoom.value?.agenda_item || undefined) // null not acceptable in useChannel
 )
-useMeetingChannel()
 useMeetingTitle(t('room.realTime'))
 
 const targetTime = computed(() => {

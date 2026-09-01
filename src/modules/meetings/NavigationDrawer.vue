@@ -4,7 +4,6 @@ import { useDisplay } from 'vuetify'
 
 import { toggleNavDrawerEvent } from '@/utils/events'
 import MenuLevel from '@/components/MenuLevel.vue'
-import useLoader from '@/composables/useLoader'
 
 import ComponentSlot from './ComponentSlot.vue'
 import PollMenu from './menus/PollMenu.vue'
@@ -12,7 +11,6 @@ import AgendaMenu from './menus/AgendaMenu.vue'
 import MeetingMenu from './menus/MeetingMenu.vue'
 
 const { mobile } = useDisplay()
-const { initDone } = useLoader('Agenda')
 
 const isOpen = shallowRef(!mobile.value)
 function toggleDrawer() {
@@ -29,7 +27,7 @@ toggleNavDrawerEvent.on(toggleDrawer)
     width="348"
     class="d-print-none"
   >
-    <MenuLevel v-if="initDone">
+    <MenuLevel>
       <MeetingMenu />
       <PollMenu />
       <AgendaMenu />
