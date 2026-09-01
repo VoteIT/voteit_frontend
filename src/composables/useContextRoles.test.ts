@@ -21,7 +21,7 @@ const socketHandler = mockRegisterTypeHandler.mock.calls.find(
   ([name]) => name === 'roles'
 )![1] as (msg: { action: string; payload: ContextRoles }) => void
 
-function send(method: 'added' | 'removed', payload: ContextRoles) {
+function send(method: 'changed' | 'removed', payload: ContextRoles) {
   socketHandler({ action: method, payload })
 }
 
@@ -53,7 +53,7 @@ test('added/removed role events trigger reactive effects', () => {
   expect(isModerator.value).toBe(false)
   expect(runs).toBe(1)
 
-  send('added', {
+  send('changed', {
     model: 'Meeting',
     pk: MEETING,
     user_pk: USER,
@@ -73,7 +73,7 @@ test('added/removed role events trigger reactive effects', () => {
   expect(isParticipant.value).toBe(false)
   expect(participantRuns).toBe(1)
 
-  send('added', {
+  send('changed', {
     model: 'Meeting',
     pk: MEETING,
     user_pk: USER,
@@ -95,7 +95,7 @@ test('added/removed role events trigger reactive effects', () => {
 
 test('removing the last role drops the role store and triggers effects', () => {
   const { hasRole, getUserRoles } = useContextRoles<'moderator'>('meeting')
-  send('added', {
+  send('changed', {
     model: 'Meeting',
     pk: MEETING,
     user_pk: USER,

@@ -40,7 +40,7 @@ new ContentType<ContextRoles>({ name: 'roles' })
     if (remaining.size) contextRoles.set(key, remaining)
     else contextRoles.delete(key)
   })
-  .on('added', (payload) => {
+  .on('changed', (payload) => {
     const { store, key } = getRoleStore(payload)
     contextRoles.set(key, new Set([...store, ...payload.roles]))
   })
