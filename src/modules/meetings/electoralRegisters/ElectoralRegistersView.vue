@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { imap, partition, sum } from 'itertools'
 import { DateTime } from 'luxon'
-import { computed, onBeforeMount, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { cols } from '@/utils/defaults'
@@ -9,7 +9,6 @@ import { getApiLink } from '@/utils/restApi'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import useAlert from '@/composables/useAlert'
-import useLoader from '@/composables/useLoader'
 import usePollStore from '@/modules/polls/usePollStore'
 import { PollState } from '@/modules/polls/types'
 
@@ -32,8 +31,7 @@ const {
   erMethodWeighted,
   erMethodAllowsManual
 } = useElectoralRegisters(meetingId)
-const { fetchMeetingRegisters, getErMethod } = useERStore()
-const loader = useLoader('ElectoralRegisters')
+const { getErMethod } = useERStore()
 const { alert } = useAlert()
 const { anyPoll } = usePollStore()
 
@@ -138,14 +136,6 @@ async function createRegister(close: () => void) {
     alert('*Could not create electoral register')
   }
 }
-
-onBeforeMount(() => {
-  loader.call(() =>
-    fetchMeetingRegisters(meetingId.value).catch(() =>
-      alert('^' + t('electoralRegister.fetchFailed'))
-    )
-  )
-})
 
 function fetchRoles() {
   meetingType.fetchRoles(meetingId.value)

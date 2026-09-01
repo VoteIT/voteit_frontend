@@ -12,6 +12,7 @@ import ParticipantsView from './ParticipantsView.vue'
 import StartView from './StartView.vue'
 import MeetingView from './MeetingView.vue'
 import MinutesView from './MinutesView.vue'
+import { electoralRegisterRequirement } from './electoralRegisters/requirements'
 import { meetingRequirement } from './requirements'
 
 router.addRoute({
@@ -59,7 +60,8 @@ router.addRoute({
     {
       path: 'er',
       name: 'electoralRegisters',
-      component: ElectoralRegistersView
+      component: ElectoralRegistersView,
+      meta: { load: electoralRegisterRequirement }
     },
     {
       path: 'minutes',
