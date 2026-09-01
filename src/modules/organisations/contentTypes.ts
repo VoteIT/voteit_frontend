@@ -1,5 +1,4 @@
 import ContentType, { BaseContentType } from '@/contentTypes/ContentType'
-import defineChannel from '@/socket/defineChannel'
 
 import {
   IOrganisation,
@@ -7,8 +6,6 @@ import {
   IOrganisationUser,
   IUser
 } from './types'
-
-export const organisationChannel = defineChannel('organisation')
 
 export const organisationType = new ContentType<
   IOrganisation,

@@ -2,7 +2,7 @@
 import { imap, sum } from 'itertools'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useIdle, useIntervalFn, useTitle } from '@vueuse/core'
 
@@ -16,7 +16,6 @@ import UserMenu from '@/components/UserMenu.vue'
 import UserSearch from '@/components/UserSearch.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
-import useChannel from '@/socket/useChannel'
 import useDefaults from '@/composables/useDefaults'
 import useErrorHandler from '@/composables/useErrorHandler'
 
@@ -32,7 +31,7 @@ import useMeetingStore from '../meetings/useMeetingStore'
 import ContactInfoTab from './ContactInfoTab.vue'
 import OrgEditForm from './OrgEditForm.vue'
 import useOrgStore from './useOrgStore'
-import { organisationChannel, organisationType } from './contentTypes'
+import { organisationType } from './contentTypes'
 import { OrganisationRole } from './types'
 import useContactInfo from './useContactInfo'
 import FindMeetingDialog from './FindMeetingDialog.vue'
@@ -53,12 +52,6 @@ const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
 
 const currentTab = ref('default')
-const subscribeOrganisationId = computed(() => {
-  if (currentTab.value !== 'roles') return
-  return orgStore.organisation?.pk
-})
-// Follows the selected tab rather than the route, so it stays with the view
-useChannel(organisationChannel, subscribeOrganisationId)
 
 useMeetings()
 
@@ -90,16 +83,6 @@ useIntervalFn(
   computed(() => (idle.value ? 600_000 : 15_000)),
   { immediateCallback: true }
 )
-
-onBeforeMount(async () => {
-  // Keeps the page current when someone comes back to it. Skips the fetch the
-  // boot has only just done, which is why this isn't fetchOrganisation.
-  try {
-    await orgStore.refreshOrganisation()
-  } catch {
-    // Ignore org fetch here. We should already have data, so it's just an update that failed.
-  }
-})
 
 const editing = ref(false)
 const { collapsedBodyHeightMobile } = useDefaults()
