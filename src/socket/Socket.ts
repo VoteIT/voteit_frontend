@@ -73,7 +73,13 @@ export default class Socket {
     for (const handler of this.readyStateHandlers) handler(this.readyState)
   }
 
+  /**
+   * Open the socket. Idempotent: a connection that is already open or on its
+   * way is left alone, so several callers may ask for one without replacing
+   * each other's socket.
+   */
   public connect() {
+    if (this.readyState === WebSocket.CONNECTING || this.isOpen) return
     this.ws = new WebSocket(this.url)
     this.updateReadyState()
 
