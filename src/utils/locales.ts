@@ -60,6 +60,20 @@ export const i18n = createI18n<[typeof en], 'en'>({
   }
 }) as I18n
 
+/**
+ * Translate outside a component, where `useI18n()` is out of reach - route
+ * requirements and other module-level code. `i18n.global` is a Composer here
+ * (legacy mode is off), which the shared `I18n` type doesn't narrow to.
+ *
+ * Named `t` because that is what vue-i18n-extract looks for: it finds keys by
+ * matching the call, not the import, and anything else leaves every key used
+ * out here reported as unused - which `extractLocales:remove` would then
+ * delete. Import it as it is.
+ */
+export function t(key: string): string {
+  return (i18n.global as unknown as { t: (key: string) => string }).t(key)
+}
+
 async function loadLocaleMessages(i18n: I18n, locale: string) {
   const loader = locales[`/src/locales/${locale}.json`] as () => Promise<string>
   if (!loader) throw new Error(`Locale ${locale} not found!`)
