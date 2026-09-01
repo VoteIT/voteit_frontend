@@ -1,9 +1,7 @@
 import { defineStore } from 'pinia'
-import { computed, shallowRef, watch } from 'vue'
+import { computed, shallowRef } from 'vue'
 
 import { sleep } from '@/utils'
-import { socketState } from '@/socket'
-import { readyToLoadEvent } from '@/composables/events'
 import useContextRoles from '@/composables/useContextRoles' // Import order important!
 import { profileType } from '../organisations/contentTypes' // ^
 import { IOrganisationUser, OrganisationRole } from '../organisations/types'
@@ -108,16 +106,6 @@ export default defineStore('auth', () => {
   function clearProfileImage() {
     return setProfileImage('')
   }
-
-  /**
-   * Ready to run loaders?
-   */
-  watch(
-    () => !!user.value && socketState.value,
-    (ready) => {
-      if (ready) readyToLoadEvent.emit()
-    }
-  )
 
   return {
     alternateUsers,
