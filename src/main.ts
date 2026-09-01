@@ -33,4 +33,12 @@ import './modules/notes'
 import './modules/tokenAPI'
 import './modules/exportImport/index.js'
 
-createApp(App).use(i18n).use(pinia).use(router).use(vuetify).mount('#app')
+import { startAppLoad } from './loader'
+
+const app = createApp(App).use(i18n).use(pinia).use(vuetify)
+
+// Start the boot fetches now that pinia is installed. The guards await them,
+// so nothing is loaded or mounted until they're through.
+startAppLoad()
+
+app.use(router).mount('#app')

@@ -5,6 +5,7 @@
     <Modal />
     <Dialogs />
     <Loader />
+    <NavigationProgress />
     <Alerts />
   </v-app>
 </template>
@@ -13,7 +14,7 @@
 import 'core-js/actual/array'
 import 'resize-observer-polyfill/dist/ResizeObserver.global'
 
-import { onBeforeMount, watchEffect } from 'vue'
+import { watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { versions } from './socket'
@@ -22,33 +23,13 @@ import Alerts from './components/Alerts.vue'
 import Dialogs from './components/Dialogs.vue'
 import Loader from './components/Loader.vue'
 import Modal from './components/Modal.vue'
-import useLoader from './composables/useLoader'
-import { fetchStateMachines } from './composables/useStateMachine'
+import NavigationProgress from './components/NavigationProgress.vue'
 import OnlineStatus from './components/OnlineStatus.vue'
-import useAuthStore from './modules/auth/useAuthStore'
-import useOrgStore from './modules/organisations/useOrgStore'
+
+// Boot loading lives in src/loader, started from main.ts before the router's
+// first navigation - waiting for a component to mount would be too late.
 
 const { t } = useI18n()
-const loader = useLoader('App')
-const { fetchAuthenticatedUser } = useAuthStore()
-const { fetchOrganisation } = useOrgStore()
-
-function isError(e: unknown): e is Error {
-  return e !== null && typeof e === 'object' && 'message' in e
-}
-
-onBeforeMount(async () => {
-  try {
-    const [user] = await Promise.all([
-      fetchAuthenticatedUser(),
-      fetchOrganisation(),
-      fetchStateMachines()
-    ])
-    if (!user) loader.setLoaded()
-  } catch (e) {
-    loader.setLoaded(false, isError(e) ? e.message : undefined)
-  }
-})
 
 function promptVersionReload() {
   openDialogEvent.emit({
