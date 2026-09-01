@@ -19,6 +19,7 @@ src/
   components/        # Shared UI components
   composables/       # Reusable Vue 3 composables
   socket/            # WebSocket client, channel subscriptions
+  loader/            # App boot + what each route must load before it's shown
   utils/             # REST API client, TypedEvent, general utilities
   contentTypes/      # ContentType base class and registry
   plugins/           # Pinia + Vuetify configuration
@@ -43,13 +44,54 @@ Before writing new logic, check if one of these already covers it:
 
 | Composable | File | Purpose |
 |-----------|------|---------|
-| `useLoader` | `src/composables/useLoader.ts` | Track async loading state |
 | `useErrorHandler` | `src/composables/useErrorHandler.ts` | Centralised error catching and display |
 | `usePermission` | `src/composables/usePermission.ts` | Guard routes/actions behind auth/role checks |
 | `useAlert` | `src/composables/useAlert.ts` | Show snackbar/toast alerts |
 | `useModal` | `src/composables/useModal.ts` | Open modal dialogs |
 | `useContextRoles` | `src/composables/useContextRoles.ts` | Query user roles for a given content object |
 | `useChannel` | `src/socket/useChannel.ts` | Subscribe to a real-time channel |
+
+## Loading
+
+Nothing loads by mounting. The app's boot fetches run from `startAppLoad()` in `src/loader/appReady.ts`, called by
+`main.ts` before the router's first navigation, and everything a route needs is declared on the route itself:
+
+```typescript
+router.addRoute({
+  path: '/m/:id/:slug',
+  name: 'MeetingRouterView',
+  component: MeetingView,
+  meta: { load: meetingRequirement }   // a RequirementFactory, or an array of them
+})
+```
+
+`src/loader/index.ts` installs a `beforeResolve` guard that runs them. The consequences worth knowing:
+
+- **A requirement loads in the background by default.** The navigation goes through at once and the view says what's
+  still coming — the agenda item view's spinner reads `subscribed` from its own `useChannel`. Holding a navigation for
+  a channel that fills in *part* of a page just makes the app feel slow; switching agenda items is the case that
+  proves it.
+- **`blocking: true` holds the navigation** until the requirement is met. Worth it only where the page is no use
+  without it, or where the answer decides whether we belong on the route at all — `meetingRequirement` is currently
+  the only one. A redirect can't be issued once the view is mounted, so only a blocking requirement may return one.
+- **The first navigation waits for everything**, blocking or not. Nothing but the splash is on screen, so there is
+  nothing there to feel slow, and the app's first page arrives whole with the splash counting it down.
+- Requirements of one route record run in parallel and records run in sequence, parent first; within a record the
+  background ones wait for the blocking ones. So nothing subscribes to meeting content before we know the meeting is
+  ours — whether it's declared on a child record (the agenda item) or alongside it (the room routes ask for the
+  meeting and the room together). Anything that genuinely depends on another step stays a single composite
+  requirement — see `meetingRequirement` (`src/modules/meetings/requirements.ts`), where the fetch is what decides
+  which channel to subscribe.
+- A requirement with `release()` is **held** across navigations and skipped while it's in hand, so moving between two
+  agenda items doesn't retake the meeting channel. One without it is a plain fetch that runs every time.
+
+A factory decides from the route alone — it runs before the boot fetches have settled, so that the step count is
+whole from the first frame instead of growing as data arrives. Anything that needs fetched state (who's signed in,
+what's in a store) goes in `load`, which runs after; producing a requirement that turns out to have nothing to do is
+fine. See `meetingListRequirement` (`src/modules/meetings/listRequirement.ts`).
+
+Requirement factories import from `@/loader/channelRequirement` and `@/loader/types` directly. Importing `@/loader`
+installs the guards, so only `main.ts` and the loading UI do that.
 
 ## Real-time channels
 
@@ -63,6 +105,12 @@ import useChannel from '@/socket/useChannel'
 
 const { promise, subscribed, subscribeError } = useChannel(agendaItemChannel, agendaId)
 ```
+
+`useChannel` is for a target that follows **live data** rather than the route — the agenda item a room is showing, a
+channel gated on a selected tab. When the target comes from route params, declare it with `channelFromParam` in the
+route's `meta.load` *as well*, so the subscription is under way before the view is mounted. The view still calls
+`useChannel` for the same target: that's what gives it `subscribed`, and unless the requirement is `blocking` the view
+is up before the content is in.
 
 Both arguments may be reactive; the subscription follows them and is dropped on unmount.
 
