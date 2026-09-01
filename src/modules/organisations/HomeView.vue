@@ -18,7 +18,6 @@ import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
 import useChannel from '@/socket/useChannel'
 import useDefaults from '@/composables/useDefaults'
-import useLoader from '@/composables/useLoader'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAuthStore from '../auth/useAuthStore'
@@ -58,12 +57,10 @@ const subscribeOrganisationId = computed(() => {
   if (currentTab.value !== 'roles') return
   return orgStore.organisation?.pk
 })
-const loader = useLoader(
-  'Home',
-  useChannel(organisationChannel, subscribeOrganisationId).promise
-)
+// Follows the selected tab rather than the route, so it stays with the view
+useChannel(organisationChannel, subscribeOrganisationId)
 
-useMeetings(loader.call)
+useMeetings()
 
 const { requiresCheck } = useContactInfo(true)
 
@@ -95,11 +92,10 @@ useIntervalFn(
 )
 
 onBeforeMount(async () => {
-  // App.vue loads organisation data at first load
-  // Call again to update page content
-  if (!loader.initDone.value) return
+  // Keeps the page current when someone comes back to it. Skips the fetch the
+  // boot has only just done, which is why this isn't fetchOrganisation.
   try {
-    await orgStore.fetchOrganisation()
+    await orgStore.refreshOrganisation()
   } catch {
     // Ignore org fetch here. We should already have data, so it's just an update that failed.
   }

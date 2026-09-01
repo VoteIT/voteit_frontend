@@ -76,10 +76,6 @@ vi.mock('../organisations/useOrgStore', () => ({
   default: () => ({ loginURL: null, canLogin: false, organisation: null })
 }))
 
-vi.mock('@/composables/useLoader', () => ({
-  default: vi.fn().mockReturnValue({ call: vi.fn() })
-}))
-
 vi.mock('@/composables/useContextRoles', () => ({
   default: vi.fn().mockReturnValue({
     getUserRoles: vi.fn(),

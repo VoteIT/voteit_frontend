@@ -1,4 +1,6 @@
 import router from '@/router'
+
+import { meetingListRequirement } from '../meetings/listRequirement'
 import AboutView from './AboutView.vue'
 import HomeView from './HomeView.vue'
 import ProfileView from './ProfileView.vue'
@@ -6,7 +8,8 @@ import ProfileView from './ProfileView.vue'
 router.addRoute({
   component: HomeView,
   name: 'home',
-  path: '/'
+  path: '/',
+  meta: { load: meetingListRequirement }
 })
 
 router.addRoute({

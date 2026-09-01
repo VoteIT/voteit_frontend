@@ -1,19 +1,16 @@
-import { onBeforeMount, watch } from 'vue'
-
-import type { LoaderCallback } from '@/composables/useLoader'
+import { watch } from 'vue'
 
 import useAuthStore from '../auth/useAuthStore'
 import useMeetingStore from './useMeetingStore'
 
-export default function useMeetings(
-  loader: (...callbacks: LoaderCallback[]) => void
-) {
+/**
+ * Keep the meeting list in step with who is signed in. The initial fetch is a
+ * route requirement (`meetingListRequirement`), so it's already in by the time
+ * a view using this is mounted.
+ */
+export default function useMeetings() {
   const authStore = useAuthStore()
   const store = useMeetingStore()
-
-  onBeforeMount(() => {
-    if (authStore.isAuthenticated) loader(store.fetchMeetings)
-  })
 
   // User could be logged in/out or switched directly. Always clear meetings first.
   watch(

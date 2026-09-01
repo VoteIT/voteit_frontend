@@ -13,6 +13,7 @@ import StartView from './StartView.vue'
 import MeetingView from './MeetingView.vue'
 import MinutesView from './MinutesView.vue'
 import { electoralRegisterRequirement } from './electoralRegisters/requirements'
+import { meetingListRequirement } from './listRequirement'
 import { meetingRequirement } from './requirements'
 
 router.addRoute({
@@ -82,5 +83,8 @@ router.addRoute({
 router.addRoute({
   component: JoinMeeting,
   name: 'meeting:join',
-  path: '/join/:id/:slug'
+  path: '/join/:id/:slug',
+  // The meeting list is what tells the join view which meeting this is - the
+  // user has no role here, so the meeting channel is out of reach
+  meta: { load: meetingListRequirement }
 })

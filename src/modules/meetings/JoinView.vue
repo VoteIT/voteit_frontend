@@ -6,7 +6,6 @@ import { cols } from '@/utils/defaults'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
-import useLoader from '@/composables/useLoader'
 import QueryDialog from '@/components/QueryDialog.vue'
 import { AccessPolicy } from '@/contentTypes/types'
 import useAuthStore from '../auth/useAuthStore'
@@ -25,8 +24,7 @@ const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
 const { getMeeting } = useMeetingStore()
 const orgStore = useOrgStore()
-const loader = useLoader('JoinMeeting')
-useMeetings(loader.call)
+useMeetings()
 const router = useRouter()
 const policies = ref<AccessPolicy[]>([])
 
@@ -53,11 +51,9 @@ async function joinAsModerator() {
   }, 'roles')
 }
 
-onBeforeMount(() => {
-  loader.call(async () => {
-    const data = await accessPolicyType.api.retrieve(meetingId.value)
-    policies.value = data.policies
-  })
+onBeforeMount(async () => {
+  const data = await accessPolicyType.api.retrieve(meetingId.value)
+  policies.value = data.policies
 })
 </script>
 
