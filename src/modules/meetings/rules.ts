@@ -23,6 +23,20 @@ type MeetingT = Meeting | number | undefined
 
 const fakeRoles = shallowReactive(new Map<number, MeetingRole[]>())
 
+/**
+ * Whether the user holds `role` in this meeting.
+ *
+ * Undefined means only one thing: the meeting itself isn't loaded. A loaded
+ * meeting always carries its roles - `setMeeting` writes the meeting object and
+ * the user's roles in the same tick, and `meetingRequirement` is blocking - so
+ * no role store for a loaded meeting means the roles were taken away, not that
+ * they haven't arrived yet. Saying `undefined` there would let a revoked role
+ * read as "don't know yet" and slip past `usePermission`, which acts on `false`
+ * alone.
+ *
+ * Passing a pk rather than the object gives up the loaded check, so that form
+ * holds inside a mounted meeting - which is where these rules are used.
+ */
 export function hasMeetingRole(
   meeting: MeetingT,
   role: MeetingRole,
@@ -33,11 +47,11 @@ export function hasMeetingRole(
   if (!meeting) return
   if (typeof meeting !== 'number') meeting = meeting.pk
   // Meeting can have fake roles for testing purposes (only set by moderators)
-  if (actualRole) return hasRole(meeting, role)
+  if (actualRole) return hasRole(meeting, role) ?? false
   const meetingFakeRoles = fakeRoles.get(meeting)
   return meetingFakeRoles
     ? meetingFakeRoles.includes(role)
-    : hasRole(meeting, role)
+    : (hasRole(meeting, role) ?? false)
 }
 
 export function hasFakeRoles(meeting: number) {
