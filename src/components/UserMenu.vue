@@ -111,7 +111,7 @@ const langs = computed(() =>
         <v-list-item
           prepend-icon="mdi-information-outline"
           :to="{ name: 'about' }"
-          title="Om VoteIT"
+          :title="$t('about.title')"
         />
         <v-list-item
           prepend-icon="mdi-account"

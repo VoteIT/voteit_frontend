@@ -161,6 +161,7 @@ const meetingCount = computed(() =>
         <v-col
           v-if="!isAuthenticated"
           v-bind="cols.wideLeft.right"
+          class="d-flex flex-column ga-3"
           order-md="1"
         >
           <v-btn
@@ -174,13 +175,17 @@ const meetingCount = computed(() =>
           />
           <v-alert
             v-if="!orgStore.canLogin"
-            class="my-3"
             :text="$t('organization.cantLogin')"
             type="error"
           />
-          <EditableHelpText
-            :modelValue="orgStore.organisation.help_info"
-            class="mt-3"
+          <EditableHelpText :modelValue="orgStore.organisation.help_info" />
+          <v-card
+            elevation="0"
+            prepend-icon="mdi-information-outline"
+            append-icon="mdi-chevron-right"
+            :title="$t('about.title')"
+            :text="$t('about.description')"
+            :to="{ name: 'about' }"
           />
         </v-col>
         <v-col v-bind="cols.wideLeft.left" order-md="0">
