@@ -9,7 +9,9 @@ router.addRoute({
   component: HomeView,
   name: 'home',
   path: '/',
-  meta: { load: meetingListRequirement }
+  // Signed out this is the front page, with the login button on it - and the
+  // meeting list is simply not loaded
+  meta: { anonymous: true, load: meetingListRequirement }
 })
 
 router.addRoute({
@@ -21,5 +23,6 @@ router.addRoute({
 router.addRoute({
   component: AboutView,
   name: 'about',
-  path: '/about'
+  path: '/about',
+  meta: { anonymous: true }
 })

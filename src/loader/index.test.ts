@@ -16,6 +16,10 @@ vi.mock('./appReady', async () => {
   }
 })
 
+// Who is signed in is the gate's own test. Here it stands aside, so the guard
+// gets on with the route's own requirements.
+vi.mock('@/modules/auth/loginGate', () => ({ anonymousGate: () => undefined }))
+
 import router from '@/router'
 
 import useNavigationProgress from './index'

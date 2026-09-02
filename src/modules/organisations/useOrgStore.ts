@@ -40,14 +40,19 @@ export default defineStore('organisation', () => {
 
   const manageAccountURL = computed(() => buildIdServerURL('/'))
   const proxyLogoutURL = computed(() => buildIdServerURL('/log-out'))
-  const loginURL = computed(() => {
+  /**
+   * Where to send a user to sign in, coming back to `next` afterwards.
+   *
+   * Takes the path rather than reading it, so a guard turning someone away
+   * from a route can name the page they were heading for - by then the
+   * browser is still on the one they're leaving.
+   */
+  function getLoginURL(next = location.pathname) {
     if (!organisation.value) return
-    const params =
-      location.pathname === '/'
-        ? ''
-        : `?next=${encodeURIComponent(location.pathname)}`
+    const params = next === '/' ? '' : `?next=${encodeURIComponent(next)}`
     return organisation.value.login_url + params
-  })
+  }
+  const loginURL = computed(() => getLoginURL())
 
   // Permissions
   const canAddMeeting = computed(() => orgRules.canAddMeeting())
@@ -100,6 +105,7 @@ export default defineStore('organisation', () => {
     organisationIsUnavailable,
     proxyLogoutURL,
     fetchOrganisation,
+    getLoginURL,
     getOrganisationComponent,
     updateOrganisation
   }

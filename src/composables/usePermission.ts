@@ -4,8 +4,8 @@ import { RouteLocationRaw, Router, useRouter } from 'vue-router'
 
 import { openDialogEvent } from '@/utils/events'
 import { ThemeColor } from '@/utils/types'
+import { promptLogin } from '@/modules/auth/loginGate'
 import useAuthStore from '@/modules/auth/useAuthStore'
-import useOrgStore from '@/modules/organisations/useOrgStore'
 
 interface PermissionOptions {
   message?: string
@@ -46,18 +46,12 @@ const strategies: Record<PermissionDeniedStrategy, PermissionDeniedHandler> = {
   requireLogin(options, router, t, changed) {
     if (useAuthStore().isAuthenticated)
       return strategies.default(options, router, t, changed)
-    openDialogEvent.emit({
-      title: options.message ?? t('permission.defaultLoginMessage'),
-      resolve: (doLogin) => {
-        const { loginURL } = useOrgStore()
-        if (!loginURL) throw new Error('No login URL available')
-        if (doLogin) location.assign(loginURL)
-        else router.push({ name: 'home' })
-      },
-      dismissible: false,
-      no: t('cancel'),
-      yes: t('login'),
-      theme: ThemeColor.Primary
+    // The loader turns an anonymous visitor away before any of this is
+    // mounted, so what reaches here is a session that ran out while they were
+    // using the page. Same prompt either way.
+    promptLogin({
+      message: options.message,
+      cancel: () => router.push({ name: 'home' })
     })
   }
 }

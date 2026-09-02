@@ -1,6 +1,7 @@
 import { computed, shallowRef, watch } from 'vue'
 
 import router from '@/router'
+import { anonymousGate } from '@/modules/auth/loginGate'
 
 import { appReady, bootDone, bootFailed, reportLoadFailure } from './appReady'
 import {
@@ -45,8 +46,13 @@ export const loadFailed = computed(
  * Load what the route needs before the navigation is confirmed. Held here
  * rather than in the views, so nothing is mounted until its data is in and a
  * requirement that can't be met can still redirect.
+ *
+ * `anonymousGate` is consulted first: requirements assume a signed in user, so
+ * a visitor without a session loads nothing and is asked to log in.
  */
-router.beforeResolve((to, from) => startNavigation(to, from, appReady))
+router.beforeResolve((to, from) =>
+  startNavigation(to, from, appReady, anonymousGate)
+)
 
 router.afterEach((to, from, failure) => {
   if (failure) abortNavigation(to)

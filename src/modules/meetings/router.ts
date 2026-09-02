@@ -85,6 +85,8 @@ router.addRoute({
   name: 'meeting:join',
   path: '/join/:id/:slug',
   // The meeting list is what tells the join view which meeting this is - the
-  // user has no role here, so the meeting channel is out of reach
-  meta: { load: meetingListRequirement }
+  // user has no role here, so the meeting channel is out of reach. Signed out
+  // it says so and offers a login, which is where `meetingRequirement` sends
+  // anyone without a role.
+  meta: { anonymous: true, load: meetingListRequirement }
 })

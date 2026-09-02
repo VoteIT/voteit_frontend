@@ -188,7 +188,13 @@ export async function startNavigation(
    * the first frame, rather than the route's requirements appearing when boot
    * lands and shifting the total under the bar.
    */
-  ready?: Promise<unknown>
+  ready?: Promise<unknown>,
+  /**
+   * Consulted once `ready` has settled, before any requirement runs. `false`
+   * lets the navigation through with nothing loaded, a route sends it
+   * elsewhere instead, and nothing at all gets on with the work as usual.
+   */
+  gate?: (to: RouteLocationNormalized) => void | false | RouteLocationRaw
 ): Promise<void | RouteLocationRaw> {
   const current = ++generation
   const { groups, keys } = collect(to, from)
@@ -213,6 +219,14 @@ export async function startNavigation(
 
   if (ready) await ready
   if (current !== generation) return
+
+  const gated = gate?.(to)
+  if (gated !== undefined) {
+    // Counted before the gate had anything to say, so they're finished rather
+    // than dropped: the total mustn't move under a bar already drawn.
+    for (const key of fractions.keys()) fractions.set(key, 1)
+    return gated || undefined
+  }
 
   for (const group of groups) {
     const blocking = group.filter(awaits)

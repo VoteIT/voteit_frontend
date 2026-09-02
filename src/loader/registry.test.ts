@@ -550,6 +550,54 @@ test('the boot fetches are one step, and drop out once the app is up', async () 
   await sleep()
 })
 
+test('a gate that says no leaves the requirements unrun', async () => {
+  // Nobody signed in: every requirement is meeting content the server won't
+  // hand over, so none of them are worth starting
+  const meeting = deferred('meeting/1')
+  const item = deferred('agenda_item/5')
+  const navigation = startNavigation(
+    route(record(meeting.factory), record(item.factory)),
+    START_LOCATION,
+    undefined,
+    () => false
+  )
+
+  await expect(navigation).resolves.toBeUndefined()
+  expect(meeting.started).not.toHaveBeenCalled()
+  expect(item.started).not.toHaveBeenCalled()
+  // Counted before the gate had anything to say, so they're finished rather
+  // than dropped: the splash mustn't be left short of its own total
+  expect(steps.value).toEqual({ done: 2, total: 2 })
+})
+
+test('a gate can send the navigation elsewhere', async () => {
+  const meeting = deferred('meeting/1')
+  const navigation = startNavigation(
+    route(record(meeting.factory)),
+    FROM,
+    undefined,
+    () => ({ name: 'home' })
+  )
+
+  await expect(navigation).resolves.toEqual({ name: 'home' })
+  expect(meeting.started).not.toHaveBeenCalled()
+})
+
+test('a gate with nothing to say gets out of the way', async () => {
+  const meeting = deferred('meeting/1')
+  const navigation = startNavigation(
+    route(record(meeting.factory)),
+    FROM,
+    undefined,
+    () => undefined
+  )
+  await sleep()
+  expect(meeting.started).toHaveBeenCalled()
+
+  meeting.resolve()
+  await expect(navigation).resolves.toBeUndefined()
+})
+
 test('requirements are counted before the gate they wait behind opens', async () => {
   // Boot is what the gate stands for: the count has to be whole from the first
   // frame, or the bar's total moves under it when the fetches land

@@ -21,14 +21,17 @@ vi.mock(
   '@/modules/auth/useAuthStore',
   vi.fn(() => ({ default: () => ({ isAuthenticated: mockIsAuthenticated }) }))
 )
+// The login prompt itself is loginGate's business, and tested there
+const { promptLogin } = vi.hoisted(() => ({ promptLogin: vi.fn() }))
 vi.mock(
-  '@/modules/organisations/useOrgStore',
-  vi.fn(() => ({ default: () => ({ loginURL: 'https://login.example.com' }) }))
+  '@/modules/auth/loginGate',
+  vi.fn(() => ({ promptLogin }))
 )
 
 afterEach(() => {
   mockIsAuthenticated = false
   mockRouter.push.mockClear()
+  promptLogin.mockClear()
 })
 
 test('usePermission custom', async () => {
@@ -115,21 +118,26 @@ test('usePermission default - shows changed message when permission is revoked',
   dispose()
 })
 
-test('usePermission requireLogin - shows login dialog when not authenticated', () => {
+test('usePermission requireLogin - asks for a login when not authenticated', () => {
   mockIsAuthenticated = false
   const fn = vi.fn()
   const { dispose } = openDialogEvent.on(fn)
 
-  usePermission(ref(false), {}, PermissionDeniedStrategy.RequireLogin)
-
-  expect(fn).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      title: 'permission.defaultLoginMessage',
-      yes: 'login',
-      no: 'cancel',
-      theme: 'primary'
-    })
+  usePermission(
+    ref(false),
+    { message: 'Members only' },
+    PermissionDeniedStrategy.RequireLogin
   )
+
+  expect(promptLogin).toHaveBeenCalledWith(
+    expect.objectContaining({ message: 'Members only' })
+  )
+  // The permission dialog is not also shown - the login prompt is the answer
+  expect(fn).not.toHaveBeenCalled()
+
+  // Declining leaves the page they can't see
+  promptLogin.mock.calls[0][0].cancel()
+  expect(mockRouter.push).toHaveBeenCalledWith({ name: 'home' })
   dispose()
 })
 
@@ -140,6 +148,7 @@ test('usePermission requireLogin - falls back to default strategy when authentic
 
   usePermission(ref(false), {}, PermissionDeniedStrategy.RequireLogin)
 
+  expect(promptLogin).not.toHaveBeenCalled()
   expect(fn).toHaveBeenLastCalledWith(
     expect.objectContaining({
       theme: 'error',

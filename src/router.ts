@@ -13,7 +13,9 @@ export default createRouter({
       components: {
         default: PageNotFoundView,
         appBar
-      }
+      },
+      // A wrong address is a wrong address whether or not anyone is signed in
+      meta: { anonymous: true }
     }
   ],
   scrollBehavior(to, from, savedPosition) {

@@ -35,9 +35,9 @@ export function channelRequirement(channel: Channel, pk: number): Requirement {
       pending.promise.onProgress(report)
 
       // Subscribed for whenever the connection turns up, but not waited for:
-      // with no socket this can only run out the subscribe timeout, and an
-      // anonymous visitor never gets one at all - they'd watch the splash for
-      // twenty seconds before being asked to log in.
+      // with the socket down this can only run out the subscribe timeout, and
+      // holding the navigation for twenty seconds says nothing the view can't
+      // say better once it reconnects.
       if (!socket.isOpen) {
         pending.promise.catch(() => {})
         return

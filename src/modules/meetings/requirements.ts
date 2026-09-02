@@ -16,8 +16,8 @@ import useMeetingStore from './useMeetingStore'
  * Whether the last attempt to fetch a meeting failed outright - a network
  * error, or the server refusing us. Distinct from a meeting we simply have no
  * role in, which redirects to the join view instead. `MeetingView` turns this
- * into the permission dialog, so an anonymous visitor following a meeting link
- * is offered a login.
+ * into the permission dialog, which offers a login to anyone whose session ran
+ * out on the way in - an anonymous visitor never gets this far.
  */
 export const meetingFetchFailed = shallowRef(false)
 
@@ -91,8 +91,7 @@ export const meetingRequirement: RequirementFactory = (to) => {
             params: { id: pk, slug: slugify(getMeeting(pk)?.title) }
           }
       } catch (e) {
-        // Left to MeetingView's usePermission, which knows how to ask an
-        // anonymous visitor to log in
+        // Left to MeetingView's usePermission, which knows what to ask
         console.warn('Could not fetch meeting', pk, e)
         meetingFetchFailed.value = true
         return
