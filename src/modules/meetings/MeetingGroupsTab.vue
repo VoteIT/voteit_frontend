@@ -403,7 +403,7 @@ const deleteSelected = handler(async () => {
       :items-per-page-text="$t('content.itemsPerPageText')"
       item-value="pk"
       :page-text="$t('content.pageText')"
-      show-select
+      :show-select="canChangeMeeting"
       search=" "
       :row-props="
         ({ item }) => ({
