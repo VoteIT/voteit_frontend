@@ -25,19 +25,31 @@ vi.mock('./rules', async (importOriginal) => ({
   isModerator: () => moderator.value
 }))
 
+/**
+ * What the meeting fetch does, swapped per test. Same hoisting argument as
+ * `moderator` above: the mock factory only runs when the module is imported,
+ * long after this has been assigned.
+ */
+let fetchMeeting = async () => true
+
 vi.mock('./useMeetingStore', () => ({
   default: () => ({
-    fetchMeeting: () => Promise.resolve(true),
+    fetchMeeting: () => fetchMeeting(),
     getMeeting: (pk: number) => ({ pk, title: 'Test meeting' })
   })
 }))
 
-import { meetingRequirement } from './requirements'
+import { ApiError } from '@/utils/restApi'
+
+import { meetingFetchFailed, meetingRequirement } from './requirements'
 
 const PK = 7
 
 const route = {
-  params: { id: String(PK) }
+  params: { id: String(PK) },
+  path: `/m/${PK}/test-meeting`,
+  query: {},
+  hash: ''
 } as unknown as RouteLocationNormalized
 
 /** Channel actions the client has sent for our meeting, in order. */
@@ -112,4 +124,56 @@ test('a role change moves the meeting to the other channel', async () => {
   requirement.release?.()
   await sleep(600)
   expect(await sent()).toContain('channel.leave moderators')
+})
+
+test('an id that is not a pk asks for the 404 page', async () => {
+  const bad = {
+    params: { id: 'abc' },
+    path: '/m/abc/def',
+    query: {},
+    hash: ''
+  } as unknown as RouteLocationNormalized
+  const requirement = meetingRequirement(bad, bad)
+  if (Array.isArray(requirement) || !requirement)
+    throw new Error('expected one requirement')
+
+  // Nothing to fetch and no meeting to show: the guard is the only place left
+  // that can still send the user somewhere.
+  expect(requirement.blocking).toBe(true)
+  expect(await requirement.load(() => {})).toMatchObject({
+    name: '404',
+    params: { pathMatch: ['m', 'abc', 'def'] }
+  })
+  // Holds nothing, so it is asked again on the next navigation rather than
+  // being skipped as still in hand.
+  expect(requirement.release).toBeUndefined()
+})
+
+test('a meeting the server says is not there asks for the 404 page', async () => {
+  fetchMeeting = () => {
+    throw new ApiError(404, {}, new Headers(), '404 Not Found')
+  }
+  const requirement = meetingRequirement(route, route)
+  if (Array.isArray(requirement) || !requirement)
+    throw new Error('expected one requirement')
+
+  // A wrong address, not a door we might be let through - so the 404 page
+  // rather than the permission dialog a refusal gets.
+  expect(await requirement.load(() => {})).toMatchObject({
+    name: '404',
+    params: { pathMatch: ['m', String(PK), 'test-meeting'] }
+  })
+  expect(meetingFetchFailed.value).toBe(false)
+})
+
+test('a fetch that failed some other way is left to the view', async () => {
+  fetchMeeting = () => {
+    throw new ApiError(403, {}, new Headers(), '403 Forbidden')
+  }
+  const requirement = meetingRequirement(route, route)
+  if (Array.isArray(requirement) || !requirement)
+    throw new Error('expected one requirement')
+
+  expect(await requirement.load(() => {})).toBeUndefined()
+  expect(meetingFetchFailed.value).toBe(true)
 })

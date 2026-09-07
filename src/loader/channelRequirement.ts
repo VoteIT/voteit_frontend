@@ -6,6 +6,7 @@ import defineChannelDefault, {
   isSubscribeError
 } from '@/socket/defineChannel'
 
+import { notFoundRequirement } from './notFound'
 import type { Requirement, RequirementFactory } from './types'
 
 type Channel = ReturnType<typeof defineChannelDefault>
@@ -73,7 +74,8 @@ export default function channelFromParam(
 ): RequirementFactory {
   return (to) => {
     const pk = paramPk(to, param)
-    if (!pk) return
+    // Not a pk at all: no channel to subscribe to, and no page to show either
+    if (!pk) return notFoundRequirement(to)
     return channelRequirement(channel, pk)
   }
 }

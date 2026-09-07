@@ -1,10 +1,15 @@
 import { expect, test, vi } from 'vitest'
+import type { RouteLocationNormalized } from 'vue-router'
 
 import { sleep } from '@/utils'
 import defineChannel from '@/socket/defineChannel'
 import { socket } from '@/socket'
 
-import { channelRequirement, paramPk } from './channelRequirement'
+import channelFromParam, {
+  channelRequirement,
+  paramPk
+} from './channelRequirement'
+import type { Requirement } from './types'
 
 const channel = defineChannel('requirementTest', { leaveTimeout: 0 })
 
@@ -32,4 +37,24 @@ test('paramPk reads a pk out of a route param', () => {
   expect(paramPk(route({ id: '0' }), 'id')).toBeUndefined()
   expect(paramPk(route({}), 'id')).toBeUndefined()
   expect(paramPk(route({ id: ['12'] }), 'id')).toBeUndefined()
+})
+
+test('a param that is not a pk asks for the 404 page', () => {
+  const route = (id: string) =>
+    ({
+      params: { id },
+      path: `/room/${id}`,
+      query: {},
+      hash: ''
+    }) as unknown as RouteLocationNormalized
+  const factory = channelFromParam(channel, 'id')
+
+  // Returning nothing here would say "this route has nothing to load", and the
+  // view would mount empty with nothing to explain itself with.
+  const missing = factory(route('abc'), route('abc'))
+  expect(missing).toMatchObject({ blocking: true })
+
+  const found = factory(route('12'), route('12'))
+  expect(found).toMatchObject({ key: 'requirementTest/12' })
+  ;(found as Requirement).release?.()
 })

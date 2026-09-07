@@ -1,10 +1,12 @@
 import { shallowRef, watch } from 'vue'
 
 import { channelRequirement, paramPk } from '@/loader/channelRequirement'
+import { notFoundRequirement, notFoundRoute } from '@/loader/notFound'
 import type { Requirement, RequirementFactory } from '@/loader/types'
 import { ErrorStatus, isSubscribeError } from '@/socket/defineChannel'
 import { slugify } from '@/utils'
 import { openDialogEvent } from '@/utils/events'
+import { isApiError } from '@/utils/restApi'
 import { t } from '@/utils/locales'
 import { ThemeColor } from '@/utils/types'
 
@@ -15,9 +17,10 @@ import useMeetingStore from './useMeetingStore'
 /**
  * Whether the last attempt to fetch a meeting failed outright - a network
  * error, or the server refusing us. Distinct from a meeting we simply have no
- * role in, which redirects to the join view instead. `MeetingView` turns this
- * into the permission dialog, which offers a login to anyone whose session ran
- * out on the way in - an anonymous visitor never gets this far.
+ * role in, which redirects to the join view instead, and from one the server
+ * says isn't there, which gets the 404 page. `MeetingView` turns this into the
+ * permission dialog, which offers a login to anyone whose session ran out on
+ * the way in - an anonymous visitor never gets this far.
  */
 export const meetingFetchFailed = shallowRef(false)
 
@@ -34,7 +37,8 @@ type RoleChannel = typeof participantChannel
  */
 export const meetingRequirement: RequirementFactory = (to) => {
   const pk = paramPk(to, 'id')
-  if (!pk) return
+  // Nothing to fetch and nothing to show - the address itself is wrong
+  if (!pk) return notFoundRequirement(to)
   const { fetchMeeting, getMeeting } = useMeetingStore()
   let channel: Requirement | undefined
   /** The channel `channel` is on, to tell a real role change from a repeat. */
@@ -91,7 +95,11 @@ export const meetingRequirement: RequirementFactory = (to) => {
             params: { id: pk, slug: slugify(getMeeting(pk)?.title) }
           }
       } catch (e) {
-        // Left to MeetingView's usePermission, which knows what to ask
+        // No such meeting is a wrong address, not a door we might be let
+        // through: there is nothing to log in for and nothing to come back to.
+        if (isApiError(e) && e.status === 404) return notFoundRoute(to)
+        // Anything else - refused, broken, unreachable - is left to
+        // MeetingView's usePermission, which knows what to ask
         console.warn('Could not fetch meeting', pk, e)
         meetingFetchFailed.value = true
         return

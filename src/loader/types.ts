@@ -56,8 +56,10 @@ export interface Requirement {
 
 /**
  * Turns a route into the requirements it brings. Returning nothing means this
- * route has nothing to load - typically because the param it works from isn't
- * there.
+ * route has nothing to load - which is not the same as a route that can't be
+ * loaded: a factory handed a param that isn't a pk returns
+ * `notFoundRequirement` rather than nothing, so the user is shown the 404 page
+ * instead of a view with nothing in it.
  *
  * Called before the boot fetches have settled, so decide from the route alone:
  * a factory that consults fetched state - who's signed in, what's in a store -
