@@ -130,10 +130,13 @@ watch(contentElem, (el) => {
     border-radius: 4px
     font-size: 10pt
 
-.overflow-fade::after
-  content: ""
-  position: absolute
-  inset: auto 0 0 0
-  height: 64px
-  background: linear-gradient(rgba(var(--v-theme-background), 0), rgba(var(--v-theme-background), 1))
+.overflow-fade
+  clip-path: inset(0)
+
+  & ::after
+    content: ""
+    position: absolute
+    inset: auto 0 0 0
+    height: 64px
+    background: linear-gradient(rgba(var(--v-theme-background), 0), rgba(var(--v-theme-background), 1))
 </style>
