@@ -1,5 +1,6 @@
 import router from '@/router'
 import ErrorView from './ErrorView.vue'
+import './sessionEnd'
 
 router.addRoute({
   path: '/error',

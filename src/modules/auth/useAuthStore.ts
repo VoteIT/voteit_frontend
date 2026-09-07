@@ -64,11 +64,16 @@ export default defineStore('auth', () => {
     return (n ^ (n >> 16)) >>> 0 // ensure unsigned 32-bit
   }
 
+  /** Forget who was signed in. See also `./sessionEnd`. */
+  function clearUser() {
+    user.value = null
+    alternateUsers.value = []
+  }
+
   async function logout() {
     if (!isAuthenticated.value) return
     await profileType.api.listAction('logout')
-    user.value = null
-    alternateUsers.value = []
+    clearUser()
   }
 
   async function switchUser(user: { readonly pk: number }) {
@@ -113,6 +118,7 @@ export default defineStore('auth', () => {
     isAuthenticated,
     user,
     clearProfileImage,
+    clearUser,
     fetchAlternateUsers,
     fetchAuthenticatedUser,
     getUserRandomSortValue,

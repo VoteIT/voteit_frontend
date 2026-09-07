@@ -12,12 +12,18 @@ type ReadyStateHandler = (readyState: ReadyState) => void
 
 const BATCH_ACTION = 'batch'
 
+export enum CustomSocketCode {
+  LoggedOut = 4000,
+  LoggedOutEverywhere = 4001 // Not implemented yet
+}
+
 /** Payload of a '<action>.batch' message: several payloads of <action>. */
 interface BatchPayload {
   items: object[]
 }
 
 export default class Socket {
+  private loggedOutHandlers: Set<(code: CustomSocketCode) => void>
   private readyStateHandlers: Set<ReadyStateHandler>
   private heartbeats: Heartbeat[]
   private options: SocketOptions
@@ -27,6 +33,7 @@ export default class Socket {
   private ws?: WebSocket
 
   constructor(url: string | URL, opts?: SocketOptions) {
+    this.loggedOutHandlers = new Set()
     this.readyStateHandlers = new Set()
     this.heartbeats = []
     this.options = opts || {}
@@ -37,6 +44,13 @@ export default class Socket {
 
   public get readyState() {
     return this.ws?.readyState as ReadyState
+  }
+
+  public onLoggedOut(handler: (code: CustomSocketCode) => void) {
+    this.loggedOutHandlers.add(handler)
+    return () => {
+      this.loggedOutHandlers.delete(handler)
+    }
   }
 
   /**
@@ -84,7 +98,14 @@ export default class Socket {
     this.updateReadyState()
 
     this.ws.onerror = this.updateReadyState.bind(this)
-    this.ws.onclose = () => {
+    this.ws.onclose = (ev) => {
+      if (
+        [
+          CustomSocketCode.LoggedOut,
+          CustomSocketCode.LoggedOutEverywhere
+        ].includes(ev.code)
+      )
+        for (const handler of this.loggedOutHandlers) handler(ev.code)
       this.updateReadyState()
       this.heartbeat('off')
     }
