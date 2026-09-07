@@ -108,10 +108,7 @@ const message = computed(() =>
 
 main
   position: fixed
-  top: 0
-  left: 0
-  bottom: 0
-  right: 0
+  inset: 0
   background-color: rgb(var(--v-theme-app-bar))
   transition: background-color 1s ease-in
   z-index: 1010

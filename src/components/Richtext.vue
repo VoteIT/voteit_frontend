@@ -76,9 +76,12 @@ watch(contentElem, (el) => {
 
 <template>
   <div>
-    <div class="overflow-hidden position-relative" :style="style">
+    <div
+      class="overflow-hidden position-relative"
+      :class="{ 'overflow-fade': isOverflowing && !userExpanded }"
+      :style="style"
+    >
       <div ref="contentElem" class="ql-editor pa-0" v-html="value"></div>
-      <div class="overflow-fade" v-show="isOverflowing && !userExpanded"></div>
     </div>
     <v-btn
       v-if="isOverflowing"
@@ -127,10 +130,10 @@ watch(contentElem, (el) => {
     border-radius: 4px
     font-size: 10pt
 
-.overflow-fade
+.overflow-fade::after
+  content: ""
   position: absolute
-  bottom: 0
-  width: 100%
+  inset: auto 0 0 0
   height: 64px
   background: linear-gradient(rgba(var(--v-theme-background), 0), rgba(var(--v-theme-background), 1))
 </style>
