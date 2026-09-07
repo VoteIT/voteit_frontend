@@ -19,7 +19,6 @@ exports[`ApprovalResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 3</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -56,7 +55,6 @@ exports[`ApprovalResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -93,7 +91,6 @@ exports[`ApprovalResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -147,7 +144,6 @@ exports[`MajorityResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -184,7 +180,6 @@ exports[`MajorityResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -298,7 +293,6 @@ exports[`RepeatedSchulzeResult component 1`] = `
               <div class="ql-editor pa-0">
                 <p>Proposal 1</p>
               </div>
-              <div class="overflow-fade" style="display: none;"></div>
             </div>
             <!--v-if-->
           </div>
@@ -324,7 +318,6 @@ exports[`RepeatedSchulzeResult component 1`] = `
               <div class="ql-editor pa-0">
                 <p>Proposal 2</p>
               </div>
-              <div class="overflow-fade" style="display: none;"></div>
             </div>
             <!--v-if-->
           </div>
@@ -359,7 +352,6 @@ exports[`RepeatedSchulzeResult component 1`] = `
                       <div class="ql-editor pa-0">
                         <p>Proposal 1</p>
                       </div>
-                      <div class="overflow-fade" style="display: none;"></div>
                     </div>
                     <!--v-if-->
                   </div>
@@ -501,7 +493,6 @@ exports[`STVResult component 1`] = `
               <div class="ql-editor pa-0">
                 <p>Proposal 1</p>
               </div>
-              <div class="overflow-fade" style="display: none;"></div>
             </div>
             <!--v-if-->
           </div>
@@ -527,7 +518,6 @@ exports[`STVResult component 1`] = `
               <div class="ql-editor pa-0">
                 <p>Proposal 2</p>
               </div>
-              <div class="overflow-fade" style="display: none;"></div>
             </div>
             <!--v-if-->
           </div>
@@ -683,7 +673,6 @@ exports[`SchulzeResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -808,7 +797,6 @@ exports[`SimpleResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 1</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -851,7 +839,6 @@ exports[`SimpleResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 2</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
@@ -894,7 +881,6 @@ exports[`SimpleResult component 1`] = `
           <div class="ql-editor pa-0">
             <p>Proposal 3</p>
           </div>
-          <div class="overflow-fade" style="display: none;"></div>
         </div>
         <!--v-if-->
       </div>
