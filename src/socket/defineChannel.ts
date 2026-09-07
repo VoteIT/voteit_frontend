@@ -129,10 +129,7 @@ export const channelLeftEvent = new TypedEvent<SubscribedPayload>()
 
 socket.registerTypeHandler('channel', ({ action, payload }) => {
   const ref = payload as ChannelRef
-  const handler = channelHandlers.get(ref.channel_type)
-  if (!handler)
-    return console.warn(`No channel defined for '${ref.channel_type}'`, payload)
-  handler(action, ref)
+  channelHandlers.get(ref.channel_type)?.(action, ref)
 })
 
 /**
