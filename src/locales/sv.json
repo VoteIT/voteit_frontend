@@ -618,7 +618,7 @@
     "approve": "Bifall",
     "ballot": "Valsedel",
     "cancel": "Avbryt omröstning",
-    "cantStartWithoutOngoing": "Eftersom dagordningspunkten inte är pågående kan du inte starta omröstningen ännu.",
+    "cantStartWithoutOngoing": "Omröstningar kan bara startas medan både mötet och dagordningspunkten pågår.",
     "cantVote": "Har inte rösträtt",
     "close": "Avsluta omröstning",
     "confirmCancel": "Är du säker på att du vill avbryta omröstningen?",

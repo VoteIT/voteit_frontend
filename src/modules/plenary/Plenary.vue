@@ -42,7 +42,7 @@ const { t } = useI18n()
 provide(LastReadKey, ref(new Date()))
 
 const { isModerator } = useMeeting()
-const { agendaId } = useAgendaItem()
+const { agendaId, canStartPoll } = useAgendaItem()
 const {
   hasSpeakerLists,
   isBroadcasting,
@@ -170,15 +170,17 @@ const pollMethodMenu = computed(() => {
     ({ id, proposalsMax, proposalsMin, settings, title }) => {
       const proposalsExact = proposalsMin === proposalsMax
       const proposalCount = selectedProposals.value.length
-      const disabled = !(
+      const proposalCountValid =
         proposalCount >= proposalsMin &&
         (!proposalsMax || proposalCount <= proposalsMax)
-      )
-      const subtitle = disabled
-        ? proposalsExact
+      const disabled = !canStartPoll.value || !proposalCountValid
+      let subtitle: string | undefined
+      if (!canStartPoll.value)
+        subtitle = t('poll.meetingAndAgendaMustBeOngoing')
+      else if (!proposalCountValid)
+        subtitle = proposalsExact
           ? t('plenary.selectExactProposals', proposalsMin)
           : t('plenary.selectMinProposals', proposalsMin)
-        : undefined
       return {
         disabled,
         prependIcon: 'mdi-vote',

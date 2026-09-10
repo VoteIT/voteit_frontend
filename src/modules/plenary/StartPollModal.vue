@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, shallowRef } from 'vue'
-import { useI18n } from 'vue-i18n'
+
+import useErrorHandler from '@/composables/useErrorHandler'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useRoom from '../rooms/useRoom'
@@ -23,12 +24,20 @@ defineEmits<{
   (e: 'cancel'): void
 }>()
 
-const { t } = useI18n()
 const meetingId = useMeetingId()
 const { agendaId, nextPollTitle } = useAgendaItem()
 const { isBroadcasting, handleBroadcast } = useRoom()
 const { meetingOngoingPolls } = useMeetingPolls(meetingId)
 const { createPoll: create, getPoll } = usePollStore()
+const { fieldErrors, clearErrors, handleRestError } = useErrorHandler()
+
+/**
+ * The server's own messages, without field names. A failed start is rarely
+ * about anything picked here - usually the meeting or agenda item state.
+ */
+const errorText = computed(
+  () => Object.values(fieldErrors.value).flat().join(' ') || undefined
+)
 
 /**
  * Ongoing polls with any on the selected proposals.
@@ -57,6 +66,7 @@ const createdPoll = computed(() =>
 const createState = shallowRef<'creating' | 'done' | 'failed'>()
 async function createPoll() {
   createState.value = 'creating'
+  clearErrors()
   const pollData: PollStartData = {
     agenda_item: agendaId.value,
     meeting: meetingId.value,
@@ -71,25 +81,32 @@ async function createPoll() {
     createdId.value = pk
     handleBroadcast({ poll: pk })
     createState.value = 'done'
-  } catch {
+  } catch (e) {
+    handleRestError(e)
     createState.value = 'failed'
-    alert(`^${t('plenary.createPollFailed')}`)
   }
 }
 
 const takingOver = shallowRef(false)
+const takeOverFailed = shallowRef(false)
 async function takeOverAndStart() {
   takingOver.value = true
+  takeOverFailed.value = false
+  clearErrors()
   try {
     await handleBroadcast({
       agenda_item: agendaId.value,
       highlighted: props.proposals.map((p) => p.pk),
       send_proposals: true
     })
-  } catch {
-    alert(`^${t('plenary.takeOverBroadcastFailed')}`)
+  } catch (e) {
+    // Don't start the poll - it would run unseen behind this prompt
+    handleRestError(e)
+    takeOverFailed.value = true
+    return
+  } finally {
+    takingOver.value = false
   }
-  takingOver.value = false
   createPoll()
 }
 
@@ -108,6 +125,13 @@ onMounted(() => {
       :title="$t('plenary.requiresBroadcasting')"
       type="warning"
     />
+    <v-alert
+      v-if="takeOverFailed"
+      class="mb-4"
+      :text="errorText"
+      :title="$t('plenary.takeOverBroadcastFailed')"
+      type="error"
+    />
     <div class="text-right">
       <v-btn :text="$t('cancel')" variant="text" @click="$emit('cancel')" />
       <v-btn
@@ -120,6 +144,17 @@ onMounted(() => {
     </div>
   </div>
   <PollModal v-else-if="createdPoll" :data="createdPoll" />
+  <div v-else-if="createState === 'failed'">
+    <v-alert
+      class="mb-4"
+      :text="errorText"
+      :title="$t('plenary.createPollFailed')"
+      type="error"
+    />
+    <div class="text-right">
+      <v-btn :text="$t('close')" variant="text" @click="$emit('cancel')" />
+    </div>
+  </div>
   <div v-else-if="!createState && blockingPolls.length">
     <p class="mb-6">
       <i18n-t

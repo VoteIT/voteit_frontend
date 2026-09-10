@@ -74,7 +74,8 @@ vi.mock('../discussions/rules', () => ({
 }))
 
 vi.mock('../polls/rules', () => ({
-  canAddPoll: vi.fn().mockReturnValue(false)
+  canAddPoll: vi.fn().mockReturnValue(false),
+  canStartPoll: vi.fn().mockReturnValue(false)
 }))
 
 vi.mock('../proposals/rules', () => ({

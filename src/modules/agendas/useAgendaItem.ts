@@ -5,7 +5,10 @@ import { autoEllipsis, slugify } from '@/utils'
 
 import useMeeting from '../meetings/useMeeting'
 import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
-import { canAddPoll as _canAddPoll } from '../polls/rules'
+import {
+  canAddPoll as _canAddPoll,
+  canStartPoll as _canStartPoll
+} from '../polls/rules'
 import usePollStore from '../polls/usePollStore'
 import { PollState } from '../polls/types'
 import {
@@ -94,6 +97,10 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
     () => agendaItem.value && _canAddPoll(agendaItem.value)
   )
 
+  const canStartPoll = computed(
+    () => !!agendaItem.value && _canStartPoll(agendaItem.value)
+  )
+
   const canAddProposal = computed(() => {
     if (!agendaItem.value) return false
     return _canAddProposal(agendaItem.value)
@@ -133,6 +140,7 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
     canAddPoll,
     canAddProposal,
     canChangeAgendaItem,
+    canStartPoll,
     hasOngoingPolls,
     hasUnresolvedProposals,
     nextAgendaItem,

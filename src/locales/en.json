@@ -618,7 +618,7 @@
     "approve": "Approve",
     "ballot": "Ballot",
     "cancel": "Cancel poll",
-    "cantStartWithoutOngoing": "Since the agenda item is not ongoing, the poll can't be started yet.",
+    "cantStartWithoutOngoing": "Polls can only be started while both the meeting and the agenda item are ongoing.",
     "cantVote": "Not a voter",
     "close": "Close poll",
     "confirmCancel": "Are you sure you want to cancel this poll?",

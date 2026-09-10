@@ -1,4 +1,4 @@
-import { AgendaItem } from '../agendas/types'
+import { AgendaItem, AgendaState } from '../agendas/types'
 import { isAIModerator, isArchivedAI, isFinishedAI } from '../agendas/rules'
 import useAgendaStore from '../agendas/useAgendaStore'
 import useAuthStore from '../auth/useAuthStore'
@@ -6,7 +6,8 @@ import useMeetingStore from '../meetings/useMeetingStore'
 import {
   isArchivedMeeting,
   isFinishedMeeting,
-  isModerator
+  isModerator,
+  isOngoingMeeting
 } from '../meetings/rules'
 import { Meeting } from '../meetings/types'
 
@@ -41,6 +42,19 @@ export function canAddPoll(context: Meeting | AgendaItem): boolean {
     return !isFinishedAI(context) && !!isAIModerator(context)
   // Else meeting
   return !isFinishedMeeting(context) && !!isModerator(context)
+}
+
+/**
+ * Whether the agenda item is in a state where polls can be started: both it
+ * and its meeting must be ongoing. An agenda item keeps its state when the
+ * meeting goes back to upcoming or closes, so checking it alone isn't enough.
+ * Who may start a poll is checked separately.
+ */
+export function canStartPoll(agendaItem: AgendaItem): boolean {
+  return (
+    agendaItem.state === AgendaState.Ongoing &&
+    isOngoingMeeting(agendaItem.meeting)
+  )
 }
 
 export function canChangePoll(poll: Poll): boolean {

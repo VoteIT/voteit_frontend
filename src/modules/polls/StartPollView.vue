@@ -26,14 +26,13 @@ import { canAddPoll } from './rules'
 import { pollType } from './contentTypes'
 import { PollPlugin, pollPlugins } from './registry'
 import StartPollForm from './StartPollForm.vue'
-import { AgendaState } from '../agendas/types'
 
 const { t } = useI18n()
 const router = useRouter()
 const { getAiProposals } = useProposalStore()
 const { isModerator, meetingRoute, meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { agendaId, agendaItem, nextPollTitle } = useAgendaItem()
+const { agendaId, agendaItem, canStartPoll, nextPollTitle } = useAgendaItem()
 const { alert } = useAlert()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
@@ -300,7 +299,7 @@ watch(agendaId, () => {
                 {{ $t('options') }}
               </h3>
               <StartPollForm
-                :allow-start="agendaItem?.state === AgendaState.Ongoing"
+                :allow-start="canStartPoll"
                 :create-handler="createPoll"
                 :poll-method="method"
                 :proposals="selectedProposals.length"
@@ -311,7 +310,7 @@ watch(agendaId, () => {
         </v-expansion-panels>
       </template>
       <v-alert
-        v-if="agendaItem && agendaItem.state !== AgendaState.Ongoing"
+        v-if="agendaItem && !canStartPoll"
         class="mt-2"
         :text="$t('poll.cantStartWithoutOngoing')"
         type="info"
