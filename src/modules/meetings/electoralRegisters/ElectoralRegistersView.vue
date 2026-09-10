@@ -8,7 +8,7 @@ import { cols } from '@/utils/defaults'
 import { getApiLink } from '@/utils/restApi'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
-import useAlert from '@/composables/useAlert'
+import useErrorHandler from '@/composables/useErrorHandler'
 import usePollStore from '@/modules/polls/usePollStore'
 import { PollState } from '@/modules/polls/types'
 
@@ -23,7 +23,7 @@ import { hasWeightedVotes } from './utils'
 
 const { t } = useI18n()
 const { getRoleUserIds } = meetingType.useContextRoles()
-const { isActiveMeeting, isModerator, meetingId } = useMeeting()
+const { isModerator, isOngoingMeeting, meetingId } = useMeeting()
 const {
   sortedRegisters,
   currentElectoralRegister,
@@ -32,7 +32,6 @@ const {
   erMethodAllowsManual
 } = useElectoralRegisters(meetingId)
 const { getErMethod } = useERStore()
-const { alert } = useAlert()
 const { anyPoll } = usePollStore()
 
 useMeetingTitle(t('electoralRegister.plural'))
@@ -120,24 +119,48 @@ function updateCreateSelection() {
 watch(currentElectoralRegister, updateCreateSelection)
 watch(potentialVoters, updateCreateSelection)
 
+/**
+ * The server's own messages, without field names. Errors here are rarely about
+ * a field the user filled in - usually the meeting itself, e.g. its state.
+ */
+function getErrorText(errors: Record<string, string[] | undefined>) {
+  return Object.values(errors).flat().join(' ') || undefined
+}
+
+// Registers can only be created in an ongoing meeting
+const canCreateManually = computed(
+  () =>
+    !!(
+      erMethodAllowsManual.value &&
+      isModerator.value &&
+      isOngoingMeeting.value
+    )
+)
+const createErrors = useErrorHandler()
+const createErrorText = computed(() =>
+  getErrorText(createErrors.fieldErrors.value)
+)
+
 async function createRegister(close: () => void) {
   if (!erMethod.value) return
   const weights = [...createSelection.entries()].map(([user, weight]) => ({
     user,
     weight: toInteger(weight)
   }))
+  createErrors.clearErrors()
   try {
     await electoralRegisterType.api.listAction('manual-create', {
       meeting: meetingId.value,
       weights
     })
     close()
-  } catch {
-    alert('*Could not create electoral register')
+  } catch (e) {
+    createErrors.handleRestError(e)
   }
 }
 
-function fetchRoles() {
+function openCreateDialog() {
+  createErrors.clearErrors()
   meetingType.fetchRoles(meetingId.value)
 }
 
@@ -147,15 +170,31 @@ const canTriggerERCreation = computed(
     !!(
       isModerator.value &&
       erMethod.value?.allow_trigger &&
-      isActiveMeeting.value
+      isOngoingMeeting.value
     )
 )
+
+// Tell moderators why the buttons to create registers are missing
+const showOngoingRequired = computed(
+  () =>
+    !!(
+      isModerator.value &&
+      !isOngoingMeeting.value &&
+      (erMethod.value?.allow_trigger || erMethodAllowsManual.value)
+    )
+)
+
 const erTriggerResult = ref<'waiting' | 'created' | 'up2date' | 'failed'>(
   'waiting'
+)
+const triggerErrors = useErrorHandler()
+const triggerErrorText = computed(() =>
+  getErrorText(triggerErrors.fieldErrors.value)
 )
 async function triggerERCreation() {
   if (!canTriggerERCreation.value) throw new Error('ER creation not allowed')
   erTriggerResult.value = 'waiting'
+  triggerErrors.clearErrors()
   try {
     await electoralRegisterType.api.listAction(
       'trigger-create',
@@ -169,7 +208,8 @@ async function triggerERCreation() {
         }
       }
     )
-  } catch {
+  } catch (e) {
+    triggerErrors.handleRestError(e)
     erTriggerResult.value = 'failed'
   }
 }
@@ -222,7 +262,9 @@ const currentERText = computed(() => {
           :icon="erTriggerResult === 'failed' ? undefined : 'mdi-vote'"
           :type="erTriggerResult === 'failed' ? 'warning' : undefined"
           :title="erTriggerResultText"
-          :text="currentERText"
+          :text="
+            erTriggerResult === 'failed' ? triggerErrorText : currentERText
+          "
         />
         <div class="text-right">
           <v-btn
@@ -236,9 +278,9 @@ const currentERText = computed(() => {
       </template>
     </DefaultDialog>
     <DefaultDialog
-      v-if="erMethodAllowsManual && isModerator && isActiveMeeting"
+      v-if="canCreateManually"
       :title="$t('electoralRegister.createManual')"
-      @open="fetchRoles"
+      @open="openCreateDialog"
     >
       <template #activator="{ props }">
         <v-btn
@@ -286,6 +328,12 @@ const currentERText = computed(() => {
             </div>
           </template>
         </UserList>
+        <v-alert
+          v-if="createErrorText"
+          class="mb-4"
+          type="warning"
+          :text="createErrorText"
+        />
         <div class="text-right">
           <v-btn :text="$t('cancel')" variant="text" @click="close" />
           <v-btn
@@ -301,6 +349,12 @@ const currentERText = computed(() => {
   </MeetingToolbar>
   <v-row>
     <v-col v-bind="cols.default">
+      <v-alert
+        v-if="showOngoingRequired"
+        class="mt-6"
+        type="info"
+        :text="$t('electoralRegister.createRequiresOngoing')"
+      />
       <template
         v-for="{ description, title, registers } in groups"
         :key="title"

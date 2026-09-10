@@ -94,6 +94,7 @@ export default function useMeeting() {
     ),
     isFinishedMeeting: computed(() => rules.isFinishedMeeting(meeting.value)),
     isActiveMeeting: computed(() => rules.isActiveMeeting(meeting.value)),
+    isOngoingMeeting: computed(() => rules.isOngoingMeeting(meeting.value)),
     isModerator: computed(() => rules.isModerator(meeting.value)),
     meeting,
     meetingId,

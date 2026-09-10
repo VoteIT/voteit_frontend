@@ -89,6 +89,12 @@ export function isActiveMeeting(meeting: MeetingT): boolean {
   return !!meeting && ACTIVE_STATES.includes(meeting.state)
 }
 
+export function isOngoingMeeting(meeting: MeetingT): boolean {
+  if (typeof meeting === 'number')
+    meeting = useMeetingStore().getMeeting(meeting)
+  return meeting?.state === MeetingState.Ongoing
+}
+
 export function isArchivedMeeting(meeting: MeetingT): boolean {
   if (typeof meeting === 'number')
     meeting = useMeetingStore().getMeeting(meeting)

@@ -192,6 +192,7 @@
     "createManual": "Skapa röstlängd manuellt",
     "created": "En ny röstlängd skapades",
     "createHelp": "Välj från mötets potentiella röstare för att skapa en ny röstlängd.",
+    "createRequiresOngoing": "Röstlängder kan bara skapas medan mötet pågår.",
     "dialectChangeMethodDisallowed": "Du kan inte ändra metod för röstlängd i det här mötet, eftersom mötets dialekt kräver en specifik metod för röstlängder.",
     "electoralRegister": "Röstlängd",
     "establish": "Fastställ röstlängd",

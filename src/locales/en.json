@@ -192,6 +192,7 @@
     "createManual": "Manually create electoral register",
     "created": "A new Electoral Register was created",
     "createHelp": "Pick users from potential voters to create a new electoral register.",
+    "createRequiresOngoing": "Electoral registers can only be created while the meeting is ongoing.",
     "dialectChangeMethodDisallowed": "You can't change this setting in this meeting, because it has a dialect setting that requires a specific electoral register method.",
     "electoralRegister": "Electoral register",
     "empty": "Empty electoral register",
