@@ -7,6 +7,8 @@ interface ExportImportOption {
   key: string
   default: boolean
   group: ExportImportGroup
+  // Only accepted when cloning from another meeting — never part of a YAML file.
+  cloneOnly?: boolean
   translate(t: ComposerTranslation): string
 }
 
@@ -82,6 +84,13 @@ const exportImportOptions: ExportImportOption[] = [
     default: false,
     group: 'include',
     translate: (t) => t('reaction.peopleReacted')
+  },
+  {
+    key: 'include_notes',
+    default: false,
+    group: 'include',
+    cloneOnly: true,
+    translate: (t) => t('notes.personal', 2)
   }
 ]
 
@@ -96,16 +105,27 @@ const constraints: Array<{
   { when: ['clear_group_authors', false], force: ['include_groups', true] },
   // include_buttons can't be false while include_reactions is true
   { when: ['include_reactions', true], force: ['include_buttons', true] },
-  { when: ['include_buttons', false], force: ['include_reactions', false] }
+  { when: ['include_buttons', false], force: ['include_reactions', false] },
+  // Notes are attached to proposals — the server skips any it has no proposal for
+  { when: ['include_notes', true], force: ['include_proposals', true] },
+  { when: ['include_proposals', false], force: ['include_notes', false] }
 ]
 
 /**
  * Shared option metadata, reactive values and constraint handling for the
  * meeting data export and import forms.
+ *
+ * `clone` tells whether the form currently targets the clone endpoint; while it
+ * doesn't, clone-only options are left out of both the options and the values.
  */
-export default function useExportImport(t: ComposerTranslation) {
+export default function useExportImport(
+  t: ComposerTranslation,
+  clone: () => boolean = () => false
+) {
+  const isOffered = (option: ExportImportOption) => !option.cloneOnly || clone()
+
   const options = computed(() =>
-    exportImportOptions.map((option) => ({
+    exportImportOptions.filter(isOffered).map((option) => ({
       ...option,
       title: option.translate(t)
     }))
@@ -128,7 +148,7 @@ export default function useExportImport(t: ComposerTranslation) {
   function valuesFor(...groups: ExportImportGroup[]): Record<string, boolean> {
     return Object.fromEntries(
       exportImportOptions
-        .filter((option) => groups.includes(option.group))
+        .filter((option) => groups.includes(option.group) && isOffered(option))
         .map((option) => [option.key, values[option.key]])
     )
   }

@@ -54,7 +54,13 @@ export interface PreviewResponse {
     title: string
     description: string
   }
-  notes: unknown[]
+  notes: {
+    user: string
+    proposal_id: string
+    body: string
+    intent: string
+    created?: string
+  }[]
   reaction_buttons: {
     title: string
     description: string

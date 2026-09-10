@@ -28,14 +28,21 @@ const meetingStore = useMeetingStore()
 const proposalStore = useProposalStore()
 const reactionStore = useReactionStore()
 
-const { optionsFor, valuesFor, selectionModel, values } = useExportImport(t)
+// Clone source: an existing meeting the user moderates (excluding this one).
+const sourceMeetingId = ref<number | null>(null)
+
+const { optionsFor, valuesFor, selectionModel, values } = useExportImport(
+  t,
+  () => sourceMeetingId.value !== null
+)
 
 const baseClearOptions = optionsFor('clear')
 const baseIncludeOptions = optionsFor('include')
 const clearSelected = selectionModel('clear')
 const includeSelected = selectionModel('include')
 const importSelected = selectionModel('import')
-// Default all import options on (e.g. "Add participants").
+// Default all import options on (e.g. "Add participants"). No clone source is
+// picked yet, so clone-only personal notes aren't among them and stay off.
 for (const option of baseIncludeOptions.value) values[option.key] = true
 
 const hasExistingItems = computed(() => agenda.value.length > 0)
@@ -53,8 +60,6 @@ function getSubTitle(m: Meeting) {
   return `${new Date(date).getFullYear()} · ${state}`
 }
 
-// Clone source: an existing meeting the user moderates (excluding this one).
-const sourceMeetingId = ref<number | null>(null)
 const loadingMeetings = ref(false)
 const cloneMeetings = computed(() =>
   meetingStore.moderatedMeetings
@@ -117,6 +122,8 @@ const availableOptionKeys = computed<Set<string>>(() => {
   if (hasDiscussions.value) keys.add('include_discussions')
   if (p.reaction_buttons.length) keys.add('include_buttons')
   if (hasReactions.value) keys.add('include_reactions')
+  // Only returned by a clone preview — a YAML file never carries notes
+  if (p.notes.length) keys.add('include_notes')
   if (hasProposalStates.value) keys.add('clear_proposal_states')
   if (hasProposalIds.value) keys.add('clear_proposal_id')
   if (hasAuthors.value) keys.add('clear_authors')
@@ -183,6 +190,13 @@ const showButtons = computed(() =>
 )
 const showReactions = computed(() =>
   includeSelected.value.includes('include_reactions')
+)
+const showNotes = computed(() =>
+  includeSelected.value.includes('include_notes')
+)
+// Notes come along with their proposals, which the option constraints ensure.
+const displayedNoteCount = computed(() =>
+  showNotes.value ? (previewResult.value?.notes.length ?? 0) : 0
 )
 
 const displayedGroups = computed(() =>
@@ -553,7 +567,8 @@ async function runImport() {
           v-if="
             displayedGroups.length ||
             displayedAgendaItems.length ||
-            displayedReactionButtons.length
+            displayedReactionButtons.length ||
+            displayedNoteCount
           "
           class="mb-3"
           rounded
@@ -645,6 +660,12 @@ async function runImport() {
               "
             />
           </v-list-group>
+
+          <v-list-item
+            v-if="displayedNoteCount"
+            prepend-icon="mdi-note"
+            :title="`${$t('notes.personal', 2)} (${displayedNoteCount})`"
+          />
         </v-list>
         <div class="text-right">
           <v-btn
