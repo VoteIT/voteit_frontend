@@ -122,7 +122,9 @@ export default function useExportImport(
   t: ComposerTranslation,
   clone: () => boolean = () => false
 ) {
-  const isOffered = (option: ExportImportOption) => !option.cloneOnly || clone()
+  function isOffered(option: ExportImportOption) {
+    return !option.cloneOnly || clone()
+  }
 
   const options = computed(() =>
     exportImportOptions.filter(isOffered).map((option) => ({
