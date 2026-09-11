@@ -32,7 +32,8 @@ const router = useRouter()
 const { getAiProposals } = useProposalStore()
 const { isModerator, meetingRoute, meetingId } = useMeeting()
 const { agenda } = useAgenda(meetingId)
-const { agendaId, agendaItem, canStartPoll, nextPollTitle } = useAgendaItem()
+const { agendaId, agendaItem, meetingAndAiOngoing, nextPollTitle } =
+  useAgendaItem()
 const { alert } = useAlert()
 const { handled } = useErrorHandler({ target: 'dialog' })
 
@@ -299,7 +300,7 @@ watch(agendaId, () => {
                 {{ $t('options') }}
               </h3>
               <StartPollForm
-                :allow-start="canStartPoll"
+                :allow-start="meetingAndAiOngoing"
                 :create-handler="createPoll"
                 :poll-method="method"
                 :proposals="selectedProposals.length"
@@ -310,7 +311,7 @@ watch(agendaId, () => {
         </v-expansion-panels>
       </template>
       <v-alert
-        v-if="agendaItem && !canStartPoll"
+        v-if="agendaItem && !meetingAndAiOngoing"
         class="mt-2"
         :text="$t('poll.cantStartWithoutOngoing')"
         type="info"

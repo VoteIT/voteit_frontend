@@ -7,7 +7,7 @@ import useMeeting from '../meetings/useMeeting'
 import { canAddDiscussionPost as _canAddDiscussionPost } from '../discussions/rules'
 import {
   canAddPoll as _canAddPoll,
-  canStartPoll as _canStartPoll
+  meetingAndAiOngoing as _meetingAndAiOngoing
 } from '../polls/rules'
 import usePollStore from '../polls/usePollStore'
 import { PollState } from '../polls/types'
@@ -97,8 +97,12 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
     () => agendaItem.value && _canAddPoll(agendaItem.value)
   )
 
-  const canStartPoll = computed(
-    () => !!agendaItem.value && _canStartPoll(agendaItem.value)
+  /**
+   * Whether polls can be started here at all. Who may start one is a separate
+   * question, checked where the view already knows it.
+   */
+  const meetingAndAiOngoing = computed(
+    () => !!agendaItem.value && _meetingAndAiOngoing(agendaItem.value)
   )
 
   const canAddProposal = computed(() => {
@@ -140,9 +144,9 @@ export default function useAgendaItem(agendaId?: MaybeRef<number | undefined>) {
     canAddPoll,
     canAddProposal,
     canChangeAgendaItem,
-    canStartPoll,
     hasOngoingPolls,
     hasUnresolvedProposals,
+    meetingAndAiOngoing,
     nextAgendaItem,
     nextPollTitle,
     previousAgendaItem,

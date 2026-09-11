@@ -45,12 +45,11 @@ export function canAddPoll(context: Meeting | AgendaItem): boolean {
 }
 
 /**
- * Whether the agenda item is in a state where polls can be started: both it
- * and its meeting must be ongoing. An agenda item keeps its state when the
- * meeting goes back to upcoming or closes, so checking it alone isn't enough.
- * Who may start a poll is checked separately.
+ * Whether the agenda item and its meeting are both ongoing. An agenda item
+ * keeps its state when the meeting goes back to upcoming or closes, so
+ * checking it alone isn't enough. Says nothing about who the user is.
  */
-export function canStartPoll(agendaItem: AgendaItem): boolean {
+export function meetingAndAiOngoing(agendaItem: AgendaItem): boolean {
   return (
     agendaItem.state === AgendaState.Ongoing &&
     isOngoingMeeting(agendaItem.meeting)

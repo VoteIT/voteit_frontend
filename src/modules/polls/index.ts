@@ -4,7 +4,7 @@ import { meetingBubblePlugins } from '../meetings/registry'
 import UnvotedPollsBubble from './UnvotedPollsBubble.vue'
 import usePollStore from './usePollStore'
 import { Poll } from './types'
-import { canStartPoll } from './rules'
+import { meetingAndAiOngoing } from './rules'
 import useAgendaStore from '../agendas/useAgendaStore'
 
 meetingBubblePlugins.register({
@@ -27,7 +27,7 @@ registerValidator(MACHINE, 'validate_settings', noValidation)
 registerValidator(MACHINE, 'meeting_and_ai_ongoing', (poll: Poll, t) => {
   const agendaItem = useAgendaStore().getAgendaItem(poll.agenda_item)
   return (
-    (!!agendaItem && canStartPoll(agendaItem)) ||
+    (!!agendaItem && meetingAndAiOngoing(agendaItem)) ||
     t('poll.meetingAndAgendaMustBeOngoing')
   )
 })

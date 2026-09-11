@@ -3,7 +3,7 @@ import { expect, test, vi } from 'vitest'
 import { AgendaItem, AgendaState } from '../agendas/types'
 import { Meeting, MeetingState } from '../meetings/types'
 
-import { canStartPoll } from './rules'
+import { meetingAndAiOngoing } from './rules'
 
 const { meetings } = vi.hoisted(() => ({
   meetings: new Map<number, Pick<Meeting, 'pk' | 'state'>>()
@@ -33,14 +33,16 @@ function agendaItemIn(
 
 test('a poll can be started when both meeting and agenda item are ongoing', () => {
   expect(
-    canStartPoll(agendaItemIn(MeetingState.Ongoing, AgendaState.Ongoing))
+    meetingAndAiOngoing(agendaItemIn(MeetingState.Ongoing, AgendaState.Ongoing))
   ).toBe(true)
 })
 
 test.each([AgendaState.Private, AgendaState.Upcoming, AgendaState.Closed])(
   'not in an agenda item that is %s',
   (state) => {
-    expect(canStartPoll(agendaItemIn(MeetingState.Ongoing, state))).toBe(false)
+    expect(meetingAndAiOngoing(agendaItemIn(MeetingState.Ongoing, state))).toBe(
+      false
+    )
   }
 )
 
@@ -48,8 +50,8 @@ test.each([AgendaState.Private, AgendaState.Upcoming, AgendaState.Closed])(
 test.each([MeetingState.Upcoming, MeetingState.Closed, undefined])(
   'not in an ongoing agenda item when the meeting is %s',
   (meetingState) => {
-    expect(canStartPoll(agendaItemIn(meetingState, AgendaState.Ongoing))).toBe(
-      false
-    )
+    expect(
+      meetingAndAiOngoing(agendaItemIn(meetingState, AgendaState.Ongoing))
+    ).toBe(false)
   }
 )
