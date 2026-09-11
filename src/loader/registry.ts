@@ -22,6 +22,18 @@ let pendingKeys = new Set<string>()
 let pendingPath: string | undefined
 
 /**
+ * The pending navigation was answered with a redirect, so it is already over.
+ *
+ * vue-router reports the navigation that replaced it, never the one that was
+ * redirected - and where the replacement is the route we are already on, it
+ * reports a duplicated navigation under *that* path instead. Clicking a meeting
+ * from the home page and being sent back to it is exactly that. So nothing is
+ * ever going to come back under this path, and whatever settles next may clear
+ * it however it is addressed.
+ */
+let pendingRedirected = false
+
+/**
  * Bumped whenever a navigation starts, so one that has been superseded can
  * neither redirect nor report progress. Same idiom as `useChannel`.
  */
@@ -153,19 +165,28 @@ async function runOne(
 }
 
 /**
- * Start a requirement the navigation isn't waiting for. Nobody is left to act
- * on what it returns, so a redirect it asks for is dropped and a failure is
- * only reported - neither can be allowed to reject into the guard, which by
- * then belongs to a navigation that has already happened.
+ * Start a requirement whose answer the navigation is not going to act on: a
+ * redirect it asks for is dropped and a failure is only reported. Neither can
+ * be allowed to reject into the guard - by then the navigation has usually
+ * gone through already, and where it hasn't, on the first navigation, this is
+ * still not the requirement that was declared able to call it off.
+ *
+ * `awaited` only says whether the progress bar is counting this one; it makes
+ * no difference to what is done with the answer.
+ *
+ * @returns a promise settling with the requirement, which never rejects
  */
-function runDetached(requirement: Requirement, current: number) {
-  runOne(requirement, current, false).then(
+function runDetached(
+  requirement: Requirement,
+  current: number,
+  awaited: boolean
+) {
+  return runOne(requirement, current, awaited).then(
     (redirect) => {
       if (redirect)
         console.warn(
-          `Requirement '${requirement.key}' asked to redirect, but its ` +
-            `navigation has already gone through. Mark it blocking to be ` +
-            `able to redirect.`
+          `Requirement '${requirement.key}' asked to redirect, but only a ` +
+            `blocking requirement may. Mark it blocking to be able to.`
         )
     },
     (error) => console.warn(`Requirement '${requirement.key}' failed`, error)
@@ -200,6 +221,7 @@ export async function startNavigation(
   const { groups, keys } = collect(to, from)
   pendingKeys = keys
   pendingPath = to.fullPath
+  pendingRedirected = false
   pendingRoute.value = to
 
   // Nothing but the splash is on screen for the first navigation, so there is
@@ -225,28 +247,42 @@ export async function startNavigation(
     // Counted before the gate had anything to say, so they're finished rather
     // than dropped: the total mustn't move under a bar already drawn.
     for (const key of fractions.keys()) fractions.set(key, 1)
+    if (gated) pendingRedirected = true
     return gated || undefined
   }
 
   for (const group of groups) {
-    const blocking = group.filter(awaits)
-    if (blocking.length) {
+    // Only a blocking requirement's answer is binding, because it is the one
+    // declared able to call the navigation off. The first navigation waits for
+    // the others as well - the splash is counting them - but it is not theirs
+    // to fail: a channel that didn't arrive is something the view can say, and
+    // no reason to refuse to start the app at all.
+    const binding = group.filter((requirement) => requirement.blocking)
+    if (binding.length) {
       const results = await Promise.all(
-        blocking.map((requirement) => runOne(requirement, current, true))
+        binding.map((requirement) => runOne(requirement, current, true))
       )
       if (current !== generation) return
       const redirect = results.find((result): result is RouteLocationRaw =>
         Boolean(result)
       )
-      if (redirect) return redirect
+      if (redirect) {
+        pendingRedirected = true
+        return redirect
+      }
     }
 
     // Started once this record's own blocking work is met, so nothing
     // subscribes to content behind a door we haven't been let through yet -
     // the room routes ask for the meeting and the room together. A record with
     // nothing blocking, which is the common case, starts its work at once.
-    for (const requirement of group)
-      if (!awaits(requirement)) runDetached(requirement, current)
+    const background = group
+      .filter((requirement) => !requirement.blocking)
+      .map((requirement) => runDetached(requirement, current, first))
+    if (first) {
+      await Promise.all(background)
+      if (current !== generation) return
+    }
   }
 }
 
@@ -262,6 +298,7 @@ function releaseUnmatched() {
 function clearPending() {
   pendingRoute.value = undefined
   pendingPath = undefined
+  pendingRedirected = false
   bootFraction = undefined
   fractions.clear()
 }
@@ -298,7 +335,10 @@ export function settleNavigation(
  */
 export function abortNavigation(to?: RouteLocationNormalized) {
   if (!pendingRoute.value) return
-  if (to && to.fullPath !== pendingPath) return
+  // Unless what is pending was redirected, in which case this is the only
+  // report we are going to get - see `pendingRedirected`. Leaving it standing
+  // would keep the progress bar up over a navigation that is long over.
+  if (to && to.fullPath !== pendingPath && !pendingRedirected) return
   releaseUnmatched()
   clearPending()
 }

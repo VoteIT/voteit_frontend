@@ -40,6 +40,7 @@ vi.mock('./useMeetingStore', () => ({
 }))
 
 import { ApiError } from '@/utils/restApi'
+import { openDialogEvent } from '@/utils/events'
 
 import { meetingFetchFailed, meetingRequirement } from './requirements'
 
@@ -176,4 +177,35 @@ test('a fetch that failed some other way is left to the view', async () => {
 
   expect(await requirement.load(() => {})).toBeUndefined()
   expect(meetingFetchFailed.value).toBe(true)
+})
+
+test('a channel nobody answers keeps us out of the meeting', async () => {
+  // The backend only half up - the meeting itself fetches over REST, and then
+  // nothing answers the subscribe. Going in anyway means a meeting view with
+  // no agenda, no participants and no way of ever filling itself, so the
+  // requirement that decides whether we belong here says no and explains why.
+  fetchMeeting = async () => true
+  const dialog = vi.fn()
+  const listener = openDialogEvent.on(dialog)
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+  try {
+    const requirement = meetingRequirement(route, route)
+    if (Array.isArray(requirement) || !requirement)
+      throw new Error('expected one requirement')
+
+    const loading = requirement.load(() => {})
+    await vi.advanceTimersByTimeAsync(10)
+    expect(await sent()).toContain('channel.subscribe participants')
+
+    // Nothing comes back, and the subscribe runs out of time
+    await vi.advanceTimersByTimeAsync(20_000)
+    expect(await loading).toMatchObject({ name: 'home' })
+    expect(dialog).toHaveBeenCalled()
+
+    requirement.release?.()
+    await vi.advanceTimersByTimeAsync(1_000)
+  } finally {
+    vi.useRealTimers()
+    listener.dispose()
+  }
 })

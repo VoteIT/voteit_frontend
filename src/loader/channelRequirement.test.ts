@@ -2,8 +2,15 @@ import { expect, test, vi } from 'vitest'
 import type { RouteLocationNormalized } from 'vue-router'
 
 import { sleep } from '@/utils'
-import defineChannel from '@/socket/defineChannel'
+import defineChannel, {
+  ErrorStatus,
+  isSubscribeError
+} from '@/socket/defineChannel'
 import { socket } from '@/socket'
+
+declare namespace global {
+  let WS: import('vitest-websocket-mock').default
+}
 
 import channelFromParam, {
   channelRequirement,
@@ -57,4 +64,22 @@ test('a param that is not a pk asks for the 404 page', () => {
   const found = factory(route('12'), route('12'))
   expect(found).toMatchObject({ key: 'requirementTest/12' })
   ;(found as Requirement).release?.()
+})
+
+test('a subscription nobody answers fails the requirement', async () => {
+  // A backend that's only half up: the socket is there, so we ask, and nothing
+  // comes back. Swallowing that here would leave whoever asked for the channel
+  // believing they had it - and a blocking requirement letting the navigation
+  // through to a view with nothing to show and no way to fill itself.
+  const channel = defineChannel('requirementTimeout', {
+    leaveTimeout: 0,
+    subscribeTimeout: 60
+  })
+  socket.connect()
+  await global.WS.connected
+
+  const requirement = channelRequirement(channel, 2)
+  const error = await requirement.load(() => {}).catch((e) => e)
+  expect(isSubscribeError(error) && error.status).toBe(ErrorStatus.Timeout)
+  requirement.release?.()
 })

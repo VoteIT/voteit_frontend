@@ -20,6 +20,7 @@ vi.mock('./appReady', async () => {
 // gets on with the route's own requirements.
 vi.mock('@/modules/auth/loginGate', () => ({ anonymousGate: () => undefined }))
 
+import { sleep } from '@/utils'
 import router from '@/router'
 
 import useNavigationProgress from './index'
@@ -54,4 +55,37 @@ test('a first route that cannot be loaded is said so, not waited on', async () =
   expect(reportLoadFailure).toHaveBeenCalledWith(
     expect.objectContaining({ message: 'the roof fell in' })
   )
+})
+
+test('a redirect back to where we came from settles the navigation', async () => {
+  // Being refused a meeting sends the user home - the page they clicked it
+  // from, and so the route they are already on. vue-router answers that with a
+  // duplicated navigation under the *home* path and never reports the meeting
+  // navigation at all, so a loader waiting to hear about the route it was
+  // loading waits forever, and the progress bar sits there over a navigation
+  // that is long over.
+  const { pendingRoute } = useNavigationProgress()
+  const component = { template: '<div />' }
+  router.addRoute({ path: '/start', name: 'start', component })
+  router.addRoute({
+    path: '/refused',
+    name: 'refused',
+    component,
+    meta: {
+      load: () => ({
+        key: 'refused',
+        blocking: true,
+        async load() {
+          return { name: 'start' }
+        }
+      })
+    }
+  })
+
+  await router.push('/start')
+  await router.push('/refused').catch(() => {})
+  await sleep()
+
+  expect(router.currentRoute.value.name).toBe('start')
+  expect(pendingRoute.value).toBeUndefined()
 })

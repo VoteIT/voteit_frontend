@@ -71,11 +71,15 @@ router.addRoute({
   still coming — the agenda item view's spinner reads `subscribed` from its own `useChannel`. Holding a navigation for
   a channel that fills in *part* of a page just makes the app feel slow; switching agenda items is the case that
   proves it.
-- **`blocking: true` holds the navigation** until the requirement is met. Worth it only where the page is no use
+- **`blocking: true` holds the navigation** until the requirement is met, and is the only thing that may call it off:
+  a channel subscription that fails - timed out included - fails its requirement, which aborts the navigation when it's
+  blocking and is logged and left to the view when it isn't. Worth it only where the page is no use
   without it, or where the answer decides whether we belong on the route at all — `meetingRequirement` is currently
   the only one. A redirect can't be issued once the view is mounted, so only a blocking requirement may return one.
 - **The first navigation waits for everything**, blocking or not. Nothing but the splash is on screen, so there is
-  nothing there to feel slow, and the app's first page arrives whole with the splash counting it down.
+  nothing there to feel slow, and the app's first page arrives whole with the splash counting it down. It only *waits*:
+  failing or redirecting the navigation stays a blocking requirement's privilege, so one channel that didn't arrive
+  can't keep the app from starting.
 - Requirements of one route record run in parallel and records run in sequence, parent first; within a record the
   background ones wait for the blocking ones. So nothing subscribes to meeting content before we know the meeting is
   ours — whether it's declared on a child record (the agenda item) or alongside it (the room routes ask for the

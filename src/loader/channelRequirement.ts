@@ -1,10 +1,7 @@
 import type { RouteLocationNormalized } from 'vue-router'
 
 import { socket } from '@/socket'
-import defineChannelDefault, {
-  ErrorStatus,
-  isSubscribeError
-} from '@/socket/defineChannel'
+import defineChannelDefault from '@/socket/defineChannel'
 
 import { notFoundRequirement } from './notFound'
 import type { Requirement, RequirementFactory } from './types'
@@ -44,16 +41,14 @@ export function channelRequirement(channel: Channel, pk: number): Requirement {
         return
       }
 
-      try {
-        await pending.promise
-      } catch (e) {
-        // A timeout is not a dead end - the channel resubscribes on reconnect,
-        // and the view's own useChannel follows it in. Holding the navigation
-        // for it would leave the user staring at the page they tried to leave.
-        if (isSubscribeError(e) && e.status === ErrorStatus.Timeout)
-          return console.warn(`Timed out subscribing to ${channel.name}/${pk}`)
-        throw e
-      }
+      // A subscription that doesn't arrive is a failure like any other,
+      // timeout included. What it's worth is for the requirement to say, not
+      // for this to decide on its behalf: a blocking one calls the navigation
+      // off rather than mounting a view with nothing in it, and a background
+      // one is logged and left to the view, which says it better itself -
+      // useChannel follows the channel in if it turns up late, and the channel
+      // resubscribes on reconnect.
+      await pending.promise
     },
     release() {
       subscription?.leave()

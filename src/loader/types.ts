@@ -29,7 +29,9 @@ export interface Requirement {
    *
    * The first navigation ignores this and waits for everything. Nothing is on
    * screen yet but the splash, so there's nothing there to feel slow, and the
-   * app's first page is worth having whole.
+   * app's first page is worth having whole. It only waits, though: calling the
+   * navigation off is still for a blocking requirement alone, so one channel
+   * that didn't arrive can't keep the app from starting.
    */
   blocking?: boolean
   /**
@@ -38,9 +40,11 @@ export interface Requirement {
    * reported - nobody is waiting on the rest.
    *
    * Resolving to a route redirects there, cancelling what's left of the
-   * navigation. Throwing fails the navigation. Both need `blocking`: a
-   * navigation that has already happened can't be called off, so a background
-   * requirement's redirect is dropped with a warning and a failure is logged.
+   * navigation. Throwing fails the navigation. Both need `blocking`, which is
+   * what marks a requirement as one whose answer the navigation is waiting on:
+   * a background requirement's redirect is dropped with a warning and its
+   * failure is logged, on the first navigation as much as any other - by then
+   * the navigation has usually gone through and can't be called off anyway.
    */
   load(report: ProgressHandler): Promise<void | RouteLocationRaw>
   /**

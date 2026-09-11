@@ -480,6 +480,29 @@ test('the first navigation waits for everything', async () => {
   expect(steps.value).toEqual({ done: 2, total: 2 })
 })
 
+test('the first navigation is not called off by background work', async () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  const meeting = deferred('meeting/1')
+  const item = deferred('agenda_item/5', { blocking: false })
+  const navigation = startNavigation(
+    route(record(meeting.factory), record(item.factory)),
+    START_LOCATION
+  )
+  meeting.resolve()
+  await sleep()
+
+  // Waited for, so the splash counts it - but not the requirement that was
+  // declared able to call the navigation off. A channel that didn't turn up is
+  // something the view can say; refusing to start the app at all isn't.
+  item.reject(new Error('channel never arrived'))
+  await expect(navigation).resolves.toBeUndefined()
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringContaining('agenda_item/5'),
+    expect.any(Error)
+  )
+  warn.mockRestore()
+})
+
 test('a background redirect is dropped rather than thrown', async () => {
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
   const stray = deferred('stray', { blocking: false })

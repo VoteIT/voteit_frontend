@@ -3,7 +3,7 @@ import { shallowRef, watch } from 'vue'
 import { channelRequirement, paramPk } from '@/loader/channelRequirement'
 import { notFoundRequirement, notFoundRoute } from '@/loader/notFound'
 import type { Requirement, RequirementFactory } from '@/loader/types'
-import { ErrorStatus, isSubscribeError } from '@/socket/defineChannel'
+import { isSubscribeError } from '@/socket/defineChannel'
 import { slugify } from '@/utils'
 import { openDialogEvent } from '@/utils/events'
 import { isApiError } from '@/utils/restApi'
@@ -110,15 +110,19 @@ export const meetingRequirement: RequirementFactory = (to) => {
       try {
         await channel.load(report)
       } catch (e) {
-        if (!isSubscribeError(e) || e.status !== ErrorStatus.NotFound) throw e
-        // No such channel means no such meeting, or not ours - nothing to wait
-        // for, unlike a timeout, which the channel retries on reconnect.
+        if (!isSubscribeError(e)) throw e
+        // Either there is no such channel - no such meeting, or not ours - or
+        // nobody answered in time. Neither leaves the meeting view anything to
+        // show or any way of filling itself, so we don't go in: this is the
+        // requirement that decides whether we belong on the route, and it has
+        // decided. A timeout can mean the backend is only half up, which is
+        // worth saying rather than sitting in an empty meeting over.
         openDialogEvent.emit({
           dismissible: false,
           title: t('meeting.subscriptionFailedMessage'),
           theme: ThemeColor.Error,
           no: false,
-          yes: t('meeting.subscriptionFailedButton'),
+          yes: t('ok'),
           resolve() {}
         })
         return { name: 'home' }
