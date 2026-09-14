@@ -161,32 +161,33 @@ const meetingCount = computed(() =>
         <v-col
           v-if="!isAuthenticated"
           v-bind="cols.wideLeft.right"
-          class="d-flex flex-column ga-3"
           order-md="1"
         >
-          <v-btn
-            v-if="orgStore.loginURL"
-            block
-            color="primary"
-            :disabled="!orgStore.canLogin"
-            :href="orgStore.loginURL"
-            prepend-icon="mdi-login"
-            :text="$t('organization.loginTo', { ...orgStore.organisation })"
-          />
-          <v-alert
-            v-if="!orgStore.canLogin"
-            :text="$t('organization.cantLogin')"
-            type="error"
-          />
-          <EditableHelpText :modelValue="orgStore.organisation.help_info" />
-          <v-card
-            elevation="0"
-            prepend-icon="mdi-information-outline"
-            append-icon="mdi-chevron-right"
-            :title="$t('about.title')"
-            :text="$t('about.description')"
-            :to="{ name: 'about' }"
-          />
+          <div class="d-flex flex-column ga-3">
+            <v-btn
+              v-if="orgStore.loginURL"
+              block
+              color="primary"
+              :disabled="!orgStore.canLogin"
+              :href="orgStore.loginURL"
+              prepend-icon="mdi-login"
+              :text="$t('organization.loginTo', { ...orgStore.organisation })"
+            />
+            <v-alert
+              v-if="!orgStore.canLogin"
+              :text="$t('organization.cantLogin')"
+              type="error"
+            />
+            <EditableHelpText :modelValue="orgStore.organisation.help_info" />
+            <v-card
+              elevation="0"
+              prepend-icon="mdi-information-outline"
+              append-icon="mdi-chevron-right"
+              :title="$t('about.title')"
+              :text="$t('about.description')"
+              :to="{ name: 'about' }"
+            />
+          </div>
         </v-col>
         <v-col v-bind="cols.wideLeft.left" order-md="0">
           <v-tabs
