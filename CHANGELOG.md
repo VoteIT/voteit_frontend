@@ -4,6 +4,22 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.0.0 (2026-09-14)
+
+- New socket module replacing `envelope-client`: channels are defined once as objects
+- Channel state bundles: a channel's initial state is held back until complete and applied in one tick, with delivery progress reported along the way
+- Loading framework: routes declare what they need via `meta.load` requirements (meeting, meeting list, rooms, agenda items, electoral registers), replacing `useMeetingChannel`, `useLoader` and `readyToLoadEvent`
+- App boot fetches now run from `main.ts` before the first navigation, with the splash screen showing loading progress
+- Not found pages for missing meetings and other content
+- Logging out elsewhere closes the socket and is handled by the app
+- Organisation updates now arrive on an automatic channel
+- Rules: starting polls requires both the meeting and the relevant agenda item to be ongoing, enforced in every view
+- Rules: electoral registers can only be created while the meeting is ongoing
+- Meeting cloning: user notes option only available when cloning
+- Bugfix: Group selection only shown to users who can change groups
+- Bugfix: selected invites weren't cleared from the invite list upon deletion [#433](https://github.com/VoteIT/voteit_frontend/issues/433)
+- Bugfix: deleted users didn't trigger permission denied dynamically
+
 ## 0.47.0 (2026-08-17)
 
 - REST API migration: All calls except channel subscriptions now use REST instead of WebSocket
