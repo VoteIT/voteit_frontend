@@ -16,6 +16,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import CropImageField from '@/components/inputs/CropImageField.vue'
 import { useDisplay } from 'vuetify'
 
+import LoginMethods from '../auth/LoginMethods.vue'
 import useAuthStore from '../auth/useAuthStore'
 
 import useOrgStore from './useOrgStore'
@@ -239,6 +240,7 @@ async function saveImage(close: () => void) {
               </DefaultDialog>
             </div>
           </v-sheet>
+          <LoginMethods />
           <v-alert
             v-if="authStore.alternateUsers.length"
             class="mb-4"

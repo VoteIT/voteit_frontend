@@ -19,6 +19,7 @@ import EditableHelpText from '@/components/EditableHelpText.vue'
 import useDefaults from '@/composables/useDefaults'
 import useErrorHandler from '@/composables/useErrorHandler'
 
+import LoginButton from '../auth/LoginButton.vue'
 import useAuthStore from '../auth/useAuthStore'
 import InviteCard from '../meetingInvites/InviteCard.vue'
 import useInviteStore from '../meetingInvites/useInviteStore'
@@ -164,15 +165,7 @@ const meetingCount = computed(() =>
           order-md="1"
         >
           <div class="d-flex flex-column ga-3">
-            <v-btn
-              v-if="orgStore.loginURL"
-              block
-              color="primary"
-              :disabled="!orgStore.canLogin"
-              :href="orgStore.loginURL"
-              prepend-icon="mdi-login"
-              :text="$t('organization.loginTo', { ...orgStore.organisation })"
-            />
+            <LoginButton block />
             <v-alert
               v-if="!orgStore.canLogin"
               :text="$t('organization.cantLogin')"

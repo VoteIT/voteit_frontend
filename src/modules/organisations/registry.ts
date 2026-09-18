@@ -10,10 +10,8 @@ interface InvitationScope {
 
 class InvitationScopePluginHandler extends PluginHandler<InvitationScope> {
   public getActivePlugins() {
-    const { organisation } = useOrgStore()
-    return this.getPlugins(
-      ({ id }) => organisation?.scope.includes(id) || false
-    )
+    const { scopes } = useOrgStore()
+    return this.getPlugins(({ id }) => scopes.includes(id))
   }
 }
 

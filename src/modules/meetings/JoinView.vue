@@ -8,8 +8,8 @@ import UserMenu from '@/components/UserMenu.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import QueryDialog from '@/components/QueryDialog.vue'
 import { AccessPolicy } from '@/contentTypes/types'
+import LoginButton from '../auth/LoginButton.vue'
 import useAuthStore from '../auth/useAuthStore'
-import useOrgStore from '../organisations/useOrgStore'
 
 import accessPolicies from './accessPolicies'
 import { accessPolicyType, meetingType } from './contentTypes'
@@ -23,7 +23,6 @@ const { handled } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const { meetingId, meetingRoute } = useMeeting()
 const { getMeeting } = useMeetingStore()
-const orgStore = useOrgStore()
 useMeetings()
 const router = useRouter()
 const policies = ref<AccessPolicy[]>([])
@@ -106,14 +105,8 @@ onBeforeMount(async () => {
             :title="$t('join.loginRequired')"
             :text="$t('join.loginDescription')"
           >
-            <div v-if="orgStore.loginURL" class="mt-2 text-right">
-              <v-btn
-                color="primary"
-                :disabled="!orgStore.canLogin"
-                :href="orgStore.loginURL"
-                prepend-icon="mdi-login"
-                :text="$t('organization.loginTo', { ...orgStore.organisation })"
-              />
+            <div class="mt-2 d-flex justify-end">
+              <LoginButton />
             </div>
           </v-alert>
         </v-col>

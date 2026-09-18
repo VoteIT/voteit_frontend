@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, shallowRef } from 'vue'
 
 import restApi, { isApiError } from '@/utils/restApi'
-import { IOrganisation } from './types'
+import { IOrganisation, LoginProvider } from './types'
 import * as orgRules from './rules'
 import { organisationType } from './contentTypes'
 
@@ -32,14 +32,21 @@ export default defineStore('organisation', () => {
    */
   const canLogin = computed(() => !!organisation.value?.active)
 
-  // URLs
-  function buildIdServerURL(path: string) {
-    if (!organisation.value?.id_host) return
-    return `${organisation.value.id_host}${path}`
-  }
+  // Login providers
+  /** Ordered by the backend: the primary first, then the rest by title. */
+  const providers = computed(() => organisation.value?.providers ?? [])
+  const primaryProvider = computed<LoginProvider | undefined>(
+    () => providers.value[0]
+  )
+  /**
+   * Everything the organisation's providers vouch for, which is what decides
+   * which invite data types are in play.
+   */
+  const scopes = computed(() => [
+    ...new Set(providers.value.flatMap((p) => p.scope))
+  ])
 
-  const manageAccountURL = computed(() => buildIdServerURL('/'))
-  const proxyLogoutURL = computed(() => buildIdServerURL('/log-out'))
+  // URLs
   /**
    * Where to send a user to sign in, coming back to `next` afterwards.
    *
@@ -47,12 +54,14 @@ export default defineStore('organisation', () => {
    * from a route can name the page they were heading for - by then the
    * browser is still on the one they're leaving.
    */
-  function getLoginURL(next = location.pathname) {
-    if (!organisation.value) return
+  function getLoginURL(provider: LoginProvider, next = location.pathname) {
     const params = next === '/' ? '' : `?next=${encodeURIComponent(next)}`
-    return organisation.value.login_url + params
+    return provider.login_url + params
   }
-  const loginURL = computed(() => getLoginURL())
+
+  function startLogin(provider: LoginProvider, next?: string) {
+    location.assign(getLoginURL(provider, next))
+  }
 
   // Permissions
   const canAddMeeting = computed(() => orgRules.canAddMeeting())
@@ -99,14 +108,15 @@ export default defineStore('organisation', () => {
     canChangeOrganisation,
     canLogin,
     isOrganisationManager,
-    loginURL,
-    manageAccountURL,
     organisation,
     organisationIsUnavailable,
-    proxyLogoutURL,
+    primaryProvider,
+    providers,
+    scopes,
     fetchOrganisation,
     getLoginURL,
     getOrganisationComponent,
+    startLogin,
     updateOrganisation
   }
 })

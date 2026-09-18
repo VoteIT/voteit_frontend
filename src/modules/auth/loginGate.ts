@@ -19,22 +19,26 @@ interface PromptLoginOptions {
 /**
  * Ask the user to log in, and send them off to do it if they say yes.
  *
- * An organisation that isn't taking logins has nowhere to send them, so they
- * get the same explanation with nothing but an acknowledgement - which is what
- * `canLogin` means everywhere else it's honoured.
+ * An organisation that isn't taking logins - or that has no login provider at
+ * all - has nowhere to send them, so they get the same explanation with
+ * nothing but an acknowledgement, which is what `canLogin` means everywhere
+ * else it's honoured.
+ *
+ * There's only room for one provider here, so it's the organisation's primary
+ * - the same one the login button leads with, wherever they last went. The
+ * rest of the choice is on the pages that have space for it.
  */
 export function promptLogin({
   message,
   next,
   cancel
 }: PromptLoginOptions = {}) {
-  const { canLogin, getLoginURL } = useOrgStore()
-  const url = getLoginURL(next)
-  const possible = canLogin && !!url
+  const { canLogin, primaryProvider, startLogin } = useOrgStore()
+  const possible = canLogin && !!primaryProvider
   openDialogEvent.emit({
     title: message ?? t('permission.defaultLoginMessage'),
     resolve: (yes) => {
-      if (possible && yes) return location.assign(url as string)
+      if (possible && yes) return startLogin(primaryProvider!, next)
       cancel?.()
     },
     dismissible: false,

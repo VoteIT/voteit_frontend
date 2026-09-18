@@ -113,3 +113,74 @@ test('an edit of our own is stored from the response', async () => {
   })
   expect(store.organisation).toEqual({ ...ORGANISATION, body: 'New body' })
 })
+
+const IDPROXY = {
+  provider_id: 'idproxy',
+  title: 'VoteIT ID',
+  login_url: 'https://id.example.com/login-to/testserver',
+  profile_url: 'https://id.example.com/',
+  logout_url: 'https://id.example.com/log-out',
+  scope: ['email']
+}
+const SCOUTID = {
+  provider_id: 'scoutid',
+  title: 'ScoutID',
+  login_url: '/login/scoutid/',
+  profile_url: null,
+  logout_url: null,
+  scope: ['openid', 'email']
+}
+
+/** What the boot fetch brings back for an organisation with these providers. */
+async function withProviders(...providers: object[]) {
+  get.mockResolvedValue({ ...ORGANISATION, active: true, providers })
+  const store = useOrgStore()
+  await store.fetchOrganisation()
+  return store
+}
+
+test('providers keep the order the backend sent, primary first', async () => {
+  const store = await withProviders(SCOUTID, IDPROXY)
+
+  expect(store.providers.map((p) => p.provider_id)).toEqual([
+    'scoutid',
+    'idproxy'
+  ])
+  expect(store.primaryProvider).toEqual(SCOUTID)
+})
+
+test('an organisation with no providers offers nothing to click', async () => {
+  const store = await withProviders()
+
+  expect(store.primaryProvider).toBeUndefined()
+})
+
+test('scopes are the union across the providers', async () => {
+  const store = await withProviders(IDPROXY, SCOUTID)
+
+  expect(store.scopes.toSorted()).toEqual(['email', 'openid'])
+})
+
+test('the login URL carries where to come back to', async () => {
+  const store = await withProviders(IDPROXY)
+
+  expect(store.getLoginURL(store.primaryProvider!, '/m/1/a-meeting')).toBe(
+    'https://id.example.com/login-to/testserver?next=%2Fm%2F1%2Fa-meeting'
+  )
+  // The front page is where they'd land anyway
+  expect(store.getLoginURL(store.primaryProvider!, '/')).toBe(
+    'https://id.example.com/login-to/testserver'
+  )
+})
+
+test('starting a login leaves for the provider, coming back to this page', async () => {
+  const assign = vi.fn()
+  const { location: realLocation } = window
+  vi.stubGlobal('location', { assign, pathname: '/here' })
+  const store = await withProviders(IDPROXY, SCOUTID)
+
+  store.startLogin(SCOUTID)
+
+  expect(assign).toHaveBeenCalledWith('/login/scoutid/?next=%2Fhere')
+  vi.stubGlobal('location', realLocation)
+})

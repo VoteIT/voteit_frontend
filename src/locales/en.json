@@ -157,8 +157,38 @@
   },
   "auth": {
     "error": "Login error",
+    "linkAccount": {
+      "description": "You signed in with {provider}, and we already have an account here on that email address. Take it over to keep the meetings on it, or start fresh with a new one.",
+      "error": {
+        "missing": "This page needs a link from a login that's waiting on an answer. Start logging in again.",
+        "expired": "That question has already been answered. Log in again if you still need to.",
+        "failed": "Couldn't fetch your options. Try logging in again."
+      },
+      "lastLogin": "Last signed in",
+      "meetings": "Meetings on this account:",
+      "neverUsed": "Never signed in",
+      "noneOfThese": "None of these - create a new account",
+      "noneOfTheseHelp": "If you don't recognise the account above, it belongs to somebody else who uses the same email address.",
+      "thisIsMine": "This is me",
+      "title": "Is this account yours?"
+    },
+    "loginMethods": {
+      "title": "Ways to log in",
+      "description": "The services you can use to sign in to this account.",
+      "connected": "Connected",
+      "disconnect": "Remove",
+      "confirmDisconnect": "Remove {title} as a way of logging in to this account?",
+      "confirmDisconnectLast": "{title} is your only way of logging in. Remove it and you won't be able to reach this account again.",
+      "add": "Connect {title}",
+      "addHelp": "Connect another service and you can use either to sign in.",
+      "none": "This account has no way of logging in.",
+      "fetchFailed": "Couldn't fetch your login methods."
+    },
+    "loginWith": "Log in with {title}",
     "logout": "Log out",
     "manageAccount": "Manage account",
+    "manageAccountAt": "Manage account at {title}",
+    "moreLoginOptions": "Other ways to log in",
     "switchUserText": "There is more than one user profiles connected to your account. You can switch beween profiles to access old meetings.",
     "switchUserTitle": "You have more than one user profile"
   },

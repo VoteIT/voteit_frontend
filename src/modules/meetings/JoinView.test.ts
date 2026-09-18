@@ -73,7 +73,13 @@ vi.mock('../auth/useAuthStore', () => ({
 }))
 
 vi.mock('../organisations/useOrgStore', () => ({
-  default: () => ({ loginURL: null, canLogin: false, organisation: null })
+  default: () => ({
+    canLogin: false,
+    organisation: null,
+    providers: [],
+    primaryProvider: undefined,
+    getLoginURL: () => ''
+  })
 }))
 
 vi.mock('@/composables/useContextRoles', () => ({

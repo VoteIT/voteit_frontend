@@ -4,18 +4,20 @@ import { useRouter } from 'vue-router'
 
 import { capFirst, getFullName } from '@/utils'
 import { languages, currentLocale } from '@/utils/locales'
-import useOrgStore from '@/modules/organisations/useOrgStore'
 
 import DefaultDialog from './DefaultDialog.vue'
 import { toggleUserMenu } from './events'
 import UserAvatar from './UserAvatar.vue'
 import useAuthStore from '@/modules/auth/useAuthStore'
+import useLoginMethods from '@/modules/auth/useLoginMethods'
 import SwitchProfileDialog from '@/modules/organisations/SwitchProfileDialog.vue'
 
 const router = useRouter()
 
 const authStore = useAuthStore()
-const orgStore = useOrgStore()
+// Which provider's pages to offer follows the one that opened this session,
+// which the user payload names.
+const { logoutURL, manageAccountURL, sessionProvider } = useLoginMethods()
 
 const userMenuOpen = ref(false)
 toggleUserMenu.on(() => {
@@ -30,7 +32,9 @@ function setCurrentLocale(locale: string, close: () => void) {
 async function logout() {
   userMenuOpen.value = false
   await authStore.logout()
-  if (orgStore.proxyLogoutURL) location.assign(orgStore.proxyLogoutURL)
+  // Ending the provider's session too, where we can tell whose it was -
+  // otherwise the next login would go through without asking anything.
+  if (logoutURL.value) location.assign(logoutURL.value)
   else router.push({ name: 'home' })
 }
 
@@ -114,9 +118,15 @@ const langs = computed(() =>
           :title="$t('about.title')"
         />
         <v-list-item
-          prepend-icon="mdi-account"
-          :href="orgStore.manageAccountURL"
-          :title="$t('auth.manageAccount')"
+          v-if="manageAccountURL"
+          v-tooltip="{
+            text: $t('auth.manageAccountAt', { title: sessionProvider?.title })
+          }"
+          append-icon="mdi-open-in-new"
+          prepend-icon="mdi-account-cog"
+          :href="manageAccountURL"
+          rel="noopener"
+          :title="sessionProvider?.title"
         />
         <v-list-item
           prepend-icon="mdi-logout"

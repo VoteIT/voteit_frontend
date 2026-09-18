@@ -157,8 +157,38 @@
   },
   "auth": {
     "error": "Inloggningsfel",
+    "linkAccount": {
+      "description": "Du loggade in med {provider}, och vi har redan ett konto här på den e-postadressen. Ta över det för att behålla mötena på det, eller börja om med ett nytt.",
+      "error": {
+        "missing": "Den här sidan behöver en länk från en inloggning som väntar på svar. Börja om med inloggningen.",
+        "expired": "Frågan är redan besvarad. Logga in igen om du fortfarande behöver.",
+        "failed": "Kunde inte hämta dina alternativ. Försök logga in igen."
+      },
+      "lastLogin": "Senast inloggad",
+      "meetings": "Möten på det här kontot:",
+      "neverUsed": "Aldrig inloggad",
+      "noneOfThese": "Inget av dessa - skapa ett nytt konto",
+      "noneOfTheseHelp": "Om du inte känner igen kontot ovan tillhör det någon annan som använder samma e-postadress.",
+      "thisIsMine": "Det är jag",
+      "title": "Är det här ditt konto?"
+    },
+    "loginMethods": {
+      "title": "Sätt att logga in",
+      "description": "De tjänster du kan använda för att logga in på det här kontot.",
+      "connected": "Kopplad",
+      "disconnect": "Ta bort",
+      "confirmDisconnect": "Ta bort {title} som inloggningssätt för det här kontot?",
+      "confirmDisconnectLast": "{title} är ditt enda sätt att logga in. Tar du bort det kommer du inte åt kontot igen.",
+      "add": "Koppla {title}",
+      "addHelp": "Koppla en tjänst till så kan du logga in med vilken som helst av dem.",
+      "none": "Det här kontot har inget sätt att logga in.",
+      "fetchFailed": "Kunde inte hämta dina inloggningssätt."
+    },
+    "loginWith": "Logga in med {title}",
     "logout": "Logga ut",
     "manageAccount": "Hantera konto",
+    "manageAccountAt": "Hantera konto hos {title}",
+    "moreLoginOptions": "Andra sätt att logga in",
     "switchUserText": "Det finns mer än en användarprofil som är knuten till ditt konto. Här kan du växla mellan profiler för att komma åt gamla möten.",
     "switchUserTitle": "Du har mer än en användarprofil"
   },
