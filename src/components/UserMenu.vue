@@ -31,10 +31,12 @@ function setCurrentLocale(locale: string, close: () => void) {
 
 async function logout() {
   userMenuOpen.value = false
-  await authStore.logout()
   // Ending the provider's session too, where we can tell whose it was -
-  // otherwise the next login would go through without asking anything.
-  if (logoutURL.value) location.assign(logoutURL.value)
+  // otherwise the next login would go through without asking anything. Read
+  // before logging out: the URL is derived from the user we're about to drop.
+  const providerLogoutURL = logoutURL.value
+  await authStore.logout()
+  if (providerLogoutURL) location.assign(providerLogoutURL)
   else router.push({ name: 'home' })
 }
 
