@@ -906,6 +906,10 @@
     "emailFetchFailed": "Kunde inte hämta dina e-postadresser.",
     "firstName": "Förnamn",
     "lastName": "Efternamn",
+    "memberIds": {
+      "title": "Medlems-ID",
+      "description": "Medlemsnummer kopplade till ditt konto."
+    },
     "profile": "Profil",
     "userId": "Användar-ID"
   },

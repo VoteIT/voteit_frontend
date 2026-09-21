@@ -60,4 +60,6 @@ export interface IOrganisationUser extends IUser {
    * several credentials and only one of them was used.
    */
   login_provider: string | null
+  /** Membership numbers tied to this account. Only ever sent for yourself. */
+  member_ids: string[] | null
 }

@@ -1,6 +1,7 @@
 import router from '@/router'
 import ErrorView from './ErrorView.vue'
 import LinkAccountView from './LinkAccountView.vue'
+import './selfInvalidation'
 import './sessionEnd'
 
 router.addRoute({

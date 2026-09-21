@@ -906,6 +906,10 @@
     "emailFetchFailed": "Couldn't fetch your email addresses.",
     "firstName": "First name",
     "lastName": "Last name",
+    "memberIds": {
+      "title": "Member ID",
+      "description": "Membership numbers tied to your account."
+    },
     "profile": "Profile",
     "userId": "User ID"
   },

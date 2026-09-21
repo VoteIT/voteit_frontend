@@ -240,6 +240,26 @@ async function saveImage(close: () => void) {
               </DefaultDialog>
             </div>
           </v-sheet>
+          <v-sheet
+            v-if="authStore.user.member_ids?.length"
+            border
+            class="pa-4"
+            rounded
+          >
+            <h2 class="mb-1">{{ $t('profile.memberIds.title') }}</h2>
+            <p class="text-medium-emphasis mb-4">
+              {{ $t('profile.memberIds.description') }}
+            </p>
+            <v-list bg-color="transparent" class="pa-0">
+              <v-list-item
+                v-for="memberId in authStore.user.member_ids"
+                :key="memberId"
+                class="px-0"
+                prepend-icon="mdi-badge-account-horizontal"
+                :title="memberId"
+              />
+            </v-list>
+          </v-sheet>
           <LoginMethods />
           <v-alert
             v-if="authStore.alternateUsers.length"

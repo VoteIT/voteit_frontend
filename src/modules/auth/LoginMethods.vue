@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, shallowRef } from 'vue'
+import { onBeforeMount, onBeforeUnmount, shallowRef } from 'vue'
 
 import { openAlertEvent } from '@/utils/events'
 import { parseRestError } from '@/utils/restApi'
@@ -8,6 +8,7 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import useOrgStore from '@/modules/organisations/useOrgStore'
 import { LoginProvider } from '@/modules/organisations/types'
 
+import { selfInvalidatedEvent } from './selfInvalidation'
 import useLoginMethods, { UserConnection } from './useLoginMethods'
 
 const orgStore = useOrgStore()
@@ -65,6 +66,9 @@ async function removeConnection(connection: UserConnection) {
 }
 
 onBeforeMount(load)
+// A connection added or removed elsewhere, e.g. another tab
+const invalidated = selfInvalidatedEvent.on(load)
+onBeforeUnmount(invalidated.dispose)
 </script>
 
 <template>
