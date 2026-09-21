@@ -350,6 +350,12 @@
     "invitedAs": "Inbjuden som",
     "invites": "Inbjudningar",
     "invitesGoTo": "För att bjuda in användare, gå till {link}",
+    "member_id": {
+      "invalid": "Ogiltigt medlemsnummer",
+      "label": "Klistra in medlemsnummer",
+      "hint": "Ett medlemsnummer per rad",
+      "typeLabel": "Medlemsnummer"
+    },
     "noInvitesHelp": "Ingen har bjudits in till det här mötet än.",
     "noFilteredInvitesHelp": "Inga inbjudningar matchar ditt filter.",
     "revoke": "Dra tillbaka",

@@ -23,6 +23,11 @@ invitationScopes.register({
 })
 
 invitationScopes.register({
+  id: 'member_id',
+  icon: 'mdi-badge-account-horizontal'
+})
+
+invitationScopes.register({
   id: 'swedish_ssn',
   icon: 'mdi-card-account-details',
   transformData(ssn) {

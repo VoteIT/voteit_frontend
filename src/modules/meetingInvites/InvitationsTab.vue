@@ -86,10 +86,10 @@ function search(inv: MeetingInvite) {
   )
 }
 
+// Whatever the invites hold, even types that aren't login scopes (member_id)
 const existingInviteScopes = computed(() => {
   return invitationScopes
-    .getActivePlugins()
-    .filter((scope) =>
+    .getPlugins((scope) =>
       meetingInvites.value.some((inv) => scope.id in inv.user_data)
     )
     .map((scope) => ({

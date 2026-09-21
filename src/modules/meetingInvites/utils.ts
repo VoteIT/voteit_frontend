@@ -13,6 +13,12 @@ export function translateInviteType(
         label: t('invites.email.label'),
         typeLabel: t('invites.email.typeLabel')
       }
+    case 'member_id':
+      return {
+        hint: t('invites.member_id.hint'),
+        label: t('invites.member_id.label'),
+        typeLabel: t('invites.member_id.typeLabel')
+      }
     case 'swedish_ssn':
       return {
         hint: t('invites.swedish_ssn.hint'),

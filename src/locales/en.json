@@ -350,6 +350,12 @@
     "invitedAs": "Invited as",
     "invites": "Invitations",
     "invitesGoTo": "To invite users, go to {link}",
+    "member_id": {
+      "invalid": "Invalid member id",
+      "label": "Paste member ids",
+      "hint": "One member id per row",
+      "typeLabel": "Member id"
+    },
     "noInvitesHelp": "Noone has been invited to this meeting yet.",
     "noFilteredInvitesHelp": "No invites matches your filter.",
     "revoke": "Revoke",

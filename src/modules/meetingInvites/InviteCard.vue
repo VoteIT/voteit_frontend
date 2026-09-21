@@ -55,8 +55,7 @@ async function rejectInvite(inv: MeetingInvite) {
 
 const invitedUserdata = computed(() => {
   return invitationScopes
-    .getActivePlugins()
-    .filter((scope) => scope.id in props.invite.user_data)
+    .getPlugins((scope) => scope.id in props.invite.user_data)
     .map((scope) => {
       const value = props.invite.user_data[scope.id]!
       return {

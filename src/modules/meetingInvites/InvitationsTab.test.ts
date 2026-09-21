@@ -50,6 +50,8 @@ vi.mock('../organisations/registry', () => {
   return {
     invitationScopes: {
       getActivePlugins: () => [email],
+      getPlugins: (filter: (p: typeof email) => boolean) =>
+        [email].filter(filter),
       getPlugin: () => email
     }
   }
