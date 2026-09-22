@@ -4,6 +4,10 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
+## 1.0.2 (2026-09-22)
+
+- Bugfix: tags were lost when editing an agenda item without body text
+
 ## 1.0.1 (2026-09-14)
 
 - Bugfix: login button on the start page stretched to fill the column for signed-out visitors
