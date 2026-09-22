@@ -16,17 +16,17 @@ vi.mock('@/utils/restApi', () => ({
 import useAuthStore from './useAuthStore'
 import './sessionEnd'
 
-// Registered at import time, the way the module does it in the app
-const [loggedOut] = mockOnLoggedOut.mock.calls[0] as [
-  (code: CustomSocketCode) => void
-]
+// Registered at import time, the way the module does it in the app.
+// Vitest clears mock calls before each test, so keep a copy.
+const importTimeCalls = [...mockOnLoggedOut.mock.calls]
+const [loggedOut] = importTimeCalls[0] as [(code: CustomSocketCode) => void]
 
 beforeEach(() => {
   setActivePinia(createPinia())
 })
 
 test('the handler is registered once, on import', () => {
-  expect(mockOnLoggedOut).toHaveBeenCalledOnce()
+  expect(importTimeCalls).toHaveLength(1)
 })
 
 test('a logged out socket leaves the app anonymous', () => {

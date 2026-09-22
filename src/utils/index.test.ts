@@ -50,16 +50,18 @@ test('stripHTML', () => {
   )
 })
 
-test('dialogQuery', () => {
+test('dialogQuery', async () => {
   openDialogEvent.once(({ resolve }) => {
     resolve(true)
   })
-  expect(dialogQuery('Testing resolve')).resolves.toBe(true)
+  await expect(dialogQuery('Testing resolve')).resolves.toBe(true)
 
   openDialogEvent.once(() => {
     throw new Error('error')
   })
-  expect(dialogQuery({ title: 'Testing reject' })).rejects.toBeInstanceOf(Error)
+  await expect(dialogQuery({ title: 'Testing reject' })).rejects.toBeInstanceOf(
+    Error
+  )
 })
 
 test('durationToString', () => {

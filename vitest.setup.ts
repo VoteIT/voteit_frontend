@@ -3,14 +3,18 @@ import { Settings } from 'luxon'
 
 Settings.defaultLocale = 'en'
 
-if (!global.WS) global.WS = new WS('ws://localhost:3000/ws/', { jsonProtocol: true })
+if (!global.WS)
+  global.WS = new WS('ws://localhost:3000/ws/', { jsonProtocol: true })
 
-// @ts-ignore
-global.CSS = {
-  supports () {
-    return false
+// happy-dom defines CSS as a getter-only property on window, so it can't be assigned
+Object.defineProperty(global, 'CSS', {
+  configurable: true,
+  value: {
+    supports() {
+      return false
+    }
   }
-}
+})
 
 // Tests must never reach the network. Reject instead, so an unmocked request
 // surfaces as a failure rather than a real (and possibly hanging) connection.
