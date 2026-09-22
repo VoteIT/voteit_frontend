@@ -16,8 +16,11 @@ vi.mock('@/modules/auth/useAuthStore', () => ({
   default: () => ({ user: { pk: 1 } })
 }))
 
+// Registered at import time. Vitest clears mock calls before each test, so keep a copy.
+const importTimeRegistrations = [...mockRegisterTypeHandler.mock.calls]
+
 // Other content types are registered by transitive imports, so find ours by name
-const socketHandler = mockRegisterTypeHandler.mock.calls.find(
+const socketHandler = importTimeRegistrations.find(
   ([name]) => name === 'roles'
 )![1] as (msg: { action: string; payload: ContextRoles }) => void
 
@@ -34,10 +37,10 @@ beforeEach(() => {
 })
 
 test('registers a socket handler for the roles content type', () => {
-  expect(mockRegisterTypeHandler).toHaveBeenCalledWith(
+  expect(importTimeRegistrations).toContainEqual([
     'roles',
     expect.any(Function)
-  )
+  ])
 })
 
 test('added/removed role events trigger reactive effects', () => {
