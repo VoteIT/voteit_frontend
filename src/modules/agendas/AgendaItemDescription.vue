@@ -33,7 +33,7 @@ const rules = useRules(t)
 const { collapsedBodyHeight } = useDefaults()
 
 const extraTags = computed(() => {
-  if (!props.body) return []
+  if (!props.body) return props.agendaItem.tags
   const docTags = getHTMLTags(props.body)
   return props.agendaItem.tags.filter((tag) => !docTags.has(tag))
 })
