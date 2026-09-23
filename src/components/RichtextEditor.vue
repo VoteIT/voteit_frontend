@@ -1,256 +1,37 @@
-<script lang="ts">
-import Quill from 'quill'
-import Link from 'quill/formats/link'
-
-import { sanitizeLink } from '@/utils/sanitizeLink'
-
-// Only allow absolute or root-relative links, prefixing https:// when protocol is missing
-class StrictLink extends Link {
-  static sanitize(url: string) {
-    return sanitizeLink(url) ?? this.SANITIZED_URL
-  }
-}
-Quill.register('formats/link', StrictLink, true)
-</script>
-
 <script lang="ts" setup>
-import 'quill-mention/autoregister'
-import { computed, getCurrentInstance, inject, onMounted, ref } from 'vue'
-import type { ValidationRule } from 'vuetify'
+import { defineAsyncComponent, ref } from 'vue'
 
-import { getDisplayName, tagify } from '@/utils'
-import useMeetingId from '@/modules/meetings/useMeetingId'
-import useTags, { TagsKey } from '@/modules/meetings/useTags'
-import { meetingRoleType } from '@/modules/meetings/contentTypes'
+import type {
+  EditorComponent,
+  RichtextEditorEmits,
+  RichtextEditorProps
+} from './types'
 
-import { QuillFormat, QuillOptions, QuillVariant, TagObject } from './types'
+// Quill and its styles are too large to ship with the app for views that never edit anything,
+// so they load with the first view that shows an editor.
+const QuillEditor = defineAsyncComponent(() => import('./QuillEditor.vue'))
 
-const tags = inject(TagsKey, ref(new Set<string>()))
+const props = defineProps<RichtextEditorProps>()
+const emit = defineEmits<RichtextEditorEmits>()
 
-function toTagObject(tagName: string) {
-  return { id: tagName, value: tagName }
-}
-
-function* iterTagObjects(query: string) {
-  if (query.length) yield toTagObject(tagify(query))
-  for (const tag of tags.value) {
-    if (tag === query) continue // Exact query already yielded
-    if (tag.startsWith(query)) yield toTagObject(tag)
-  }
-}
-
-async function getUserObjects(query: string) {
-  if (!query.length) return []
-  try {
-    const data = await meetingRoleType.api.list({
-      search: query.toLowerCase(),
-      meeting: meetingId.value
-    })
-    return data.map(({ user }) => ({
-      id: user.pk,
-      value: getDisplayName(user)
-    }))
-  } catch (e) {
-    // Mention lookup: a dialog per keystroke would be worse than no matches
-    console.warn(e)
-    return []
-  }
-}
-
-const mentionOptions = {
-  allowedChars: /^[0-9A-Za-z\-_\sÅÄÖåäö]*$/,
-  mentionDenotationChars: ['@', '#'],
-  source(
-    query: string,
-    renderList: (tags: TagObject[]) => void,
-    mentionChar: string
-  ) {
-    if (mentionChar === '#') return renderList([...iterTagObjects(query)])
-    if (mentionChar === '@') return getUserObjects(query).then(renderList)
-    throw new Error(`Unknown denotation character: ${mentionChar}`)
-  }
-}
-
-const variants: Record<
-  QuillVariant,
-  Pick<QuillOptions, 'theme' | 'formats' | 'modules'>
-> = {
-  restricted: {
-    theme: 'bubble',
-    formats: [
-      QuillFormat.Bold,
-      QuillFormat.Italic,
-      QuillFormat.Link,
-      QuillFormat.Mention
-    ],
-    modules: {
-      toolbar: [QuillFormat.Bold, QuillFormat.Italic, QuillFormat.Link],
-      mention: mentionOptions
-    }
-  },
-  full: {
-    theme: 'snow',
-    formats: [
-      QuillFormat.BlockQuote,
-      QuillFormat.Bold,
-      QuillFormat.Header,
-      QuillFormat.Image,
-      QuillFormat.Indent,
-      QuillFormat.InlineCode,
-      QuillFormat.Italic,
-      QuillFormat.Link,
-      QuillFormat.List,
-      QuillFormat.Mention,
-      QuillFormat.Script,
-      QuillFormat.TextAlignment,
-      QuillFormat.Video
-    ],
-    modules: {
-      toolbar: {
-        container: [
-          [{ header: [false, 2, 3, 4] }],
-          [
-            QuillFormat.Bold,
-            QuillFormat.Italic,
-            QuillFormat.Link,
-            QuillFormat.InlineCode
-          ],
-          [{ script: 'sub' }, { script: 'super' }],
-          [QuillFormat.BlockQuote, { indent: '-1' }, { indent: '+1' }],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          [QuillFormat.Image, QuillFormat.Video],
-          [{ align: [] }],
-          ['clean']
-        ],
-        handlers: {}
-      },
-      mention: mentionOptions
-    }
-  }
-}
-
-const props = withDefaults(
-  defineProps<{
-    autofocus?: boolean
-    disabled?: boolean
-    errorMessages?: string[]
-    modelValue?: string
-    placeholder?: string
-    rules?: ValidationRule[]
-    variant?: QuillVariant
-  }>(),
-  {
-    modelValue: '',
-    variant: 'restricted'
-  }
-)
-
-interface Emits {
-  (e: 'blur'): void
-  (e: 'focus'): void
-  (e: 'update:modelValue', value: string): void
-}
-const emit = defineEmits<Emits>()
-
-let editor: Quill | undefined
-const editorElement = ref<HTMLElement | null>(null)
-const rootElement = ref<HTMLElement | null>(null)
-
-const meetingId = useMeetingId()
-
-// GET uid for unique element id
-const instance = getCurrentInstance()
-const editorId = computed(() => `quill-editor-${instance?.uid}`)
-
-onMounted(() => {
-  if (!editorElement.value)
-    throw new Error('Richtext editor element not available')
-  editorElement.value.innerHTML = props.modelValue // Set initial value, never change this
-  const config: QuillOptions = {
-    ...variants[props.variant],
-    bounds: '#' + editorId.value,
-    placeholder: props.placeholder
-  }
-  if (config.modules.toolbar && 'handlers' in config.modules.toolbar)
-    config.modules.toolbar.handlers.image = () => {
-      if (!editor) return
-      const range = editor.getSelection()
-      if (!range) return
-      const value = prompt('please copy paste the image url here.')
-      if (!value) return
-      editor.insertEmbed(range.index, 'image', value, Quill.sources.USER)
-    }
-  editor = new Quill(editorElement.value, config)
-  editor.on('text-change', async () => {
-    if (!editor)
-      return console.error(
-        'Quill text-change event triggered, but editor is not available'
-      )
-    emit('update:modelValue', editor.root.innerHTML.replaceAll(/&nbsp;/g, ' ')) // Replace all non-beaking spaces - they often show up by accident
-  })
-  if (props.autofocus) focus()
-  editor.root.addEventListener('focus', () => emit('focus'))
-  editor.root.addEventListener('blur', () => emit('blur'))
-  // Allow tabbing to next input
-  const keyboard = editor.getModule('keyboard') as any
-  delete keyboard.bindings.Tab
-})
-
-function focus() {
-  if (!editor) return
-  editor.focus()
-  editor.setSelection(editor.getLength(), editor.getLength())
-  rootElement.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-}
-
-function setText(value: string = '') {
-  if (!editor) return
-  editor.root.innerHTML = value
-}
-
-useTags(editorElement)
+const editor = ref<EditorComponent | null>(null)
 
 defineExpose({
-  focus,
-  setText
+  focus: () => editor.value?.focus(),
+  setText: (value?: string) => editor.value?.setText(value ?? '')
 })
 </script>
 
 <template>
-  <v-input
-    :error-messages="errorMessages"
-    :id="editorId"
-    :model-value="modelValue"
-    :rules="rules"
+  <QuillEditor
+    ref="editor"
+    v-bind="props"
+    @blur="emit('blur')"
+    @focus="emit('focus')"
+    @update:model-value="emit('update:modelValue', $event)"
   >
-    <div class="flex-grow-1" ref="rootElement">
-      <div ref="editorElement"></div>
+    <template #controls>
       <slot name="controls"></slot>
-    </div>
-  </v-input>
+    </template>
+  </QuillEditor>
 </template>
-
-<style lang="sass">
-@import quill/dist/quill.core.css
-@import quill/dist/quill.bubble.css
-@import quill/dist/quill.snow.css
-@import quill-mention/dist/quill.mention.css
-
-.ql-container
-  background-color: rgb(var(--v-theme-surface))
-  border: 1px solid rgb(var(--v-border-color))
-  border-radius: 2px
-  font-size: inherit
-  height: auto
-
-.ql-editor p
-  margin-bottom: .5em !important
-  &:last-child
-    margin-bottom: 0 !important
-
-.ql-tooltip
-  z-index: 100
-
-ul.ql-mention-list
-  padding: 0 !important
-</style>
