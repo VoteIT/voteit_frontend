@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash'
 import { computed, ref } from 'vue'
 
 import { openAlertEvent, openDialogEvent } from '@/utils/events'
@@ -36,7 +35,7 @@ function isRequestFailure(e: unknown) {
 }
 
 function getNonspecificFieldErrorMessage(errors: APIError) {
-  if (isEmpty(errors)) return
+  if (!errors || !Object.keys(errors).length) return
   return Object.entries(errors)
     .map(([field, msgs]) => msgs && `${field}: ${joinStrings(msgs)}`)
     .join('\n')

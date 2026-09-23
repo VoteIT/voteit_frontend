@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sortBy } from 'lodash'
+import { orderBy } from '@/utils'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -125,7 +125,7 @@ const annotatedAgenda = computed(() => {
   return agenda.value
     .map(({ pk, state, title }) => {
       const proposalStates = PROPOSAL_STATE_ORDER.map((state) => {
-        const proposals = sortBy(
+        const proposals = orderBy(
           getAiProposals(pk, (p) => p.state === state),
           PROPOSAL_ORDERING[settings.proposalOrder]
         )

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isEqual } from 'lodash'
+import { arrayEquals } from '@/utils'
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -62,7 +62,7 @@ const articleModified = computed(
   () =>
     form.title !== props.agendaItem.title ||
     form.body !== props.body ||
-    !isEqual(form.tags, props.agendaItem.tags)
+    !arrayEquals(form.tags, props.agendaItem.tags)
 )
 
 function cancelEdit() {

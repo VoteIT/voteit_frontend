@@ -1,14 +1,16 @@
-import { sortBy } from 'lodash'
 import { Duration } from 'luxon'
 import { expect, test } from 'vitest'
 
 import {
+  arrayEquals,
   capFirst,
   countMatching,
   dialogQuery,
   durationToString,
   getFieldSorter,
   getFullName,
+  orderBy,
+  setEquals,
   sleep,
   slugify,
   stripHTML,
@@ -103,8 +105,47 @@ test('getFieldSorter', () => {
   const data = [{ t: 'AAA' }, { t: 'BBB' }, { t: 'abc' }]
   const sorter = getFieldSorter('t')
   expect(sorter(data[0])).toEqual('aaa')
-  expect(sortBy(data, 't').map((o) => o.t)).toEqual(['AAA', 'BBB', 'abc'])
-  expect(sortBy(data, sorter).map((o) => o.t)).toEqual(['AAA', 'abc', 'BBB'])
+  expect(orderBy(data, 't').map((o) => o.t)).toEqual(['AAA', 'BBB', 'abc'])
+  expect(orderBy(data, sorter).map((o) => o.t)).toEqual(['AAA', 'abc', 'BBB'])
+})
+
+test('orderBy', () => {
+  const data = [
+    { pk: 1, n: 2, s: 'b' },
+    { pk: 2, n: 1, s: 'a' },
+    { pk: 3, n: 2, s: 'a' },
+    { pk: 4, n: null, s: 'c' },
+    { pk: 5, n: 1, s: 'b' }
+  ]
+  const pks = (items: typeof data) => items.map((o) => o.pk)
+  // Stable, with missing values last ascending...
+  expect(pks(orderBy(data, 'n'))).toEqual([2, 5, 1, 3, 4])
+  // ...and first descending, ties still in original order
+  expect(pks(orderBy(data, 'n', 'desc'))).toEqual([4, 1, 3, 2, 5])
+  // Several keys, each with its own direction
+  expect(pks(orderBy(data, ['n', 's'], ['desc', 'asc']))).toEqual([
+    4, 3, 1, 2, 5
+  ])
+  // Function keys, and a missing direction defaults to ascending
+  expect(pks(orderBy(data, [(o) => o.s, 'n'], ['desc']))).toEqual([
+    4, 5, 1, 2, 3
+  ])
+  // Accepts any iterable, and leaves it untouched
+  expect(pks(orderBy(new Set(data), 's'))).toEqual([2, 3, 1, 5, 4])
+  expect(pks(data)).toEqual([1, 2, 3, 4, 5])
+})
+
+test('arrayEquals', () => {
+  expect(arrayEquals([1, 2], [1, 2])).toBe(true)
+  expect(arrayEquals([1, 2], [2, 1])).toBe(false)
+  expect(arrayEquals([1, 2], [1, 2, 3])).toBe(false)
+  expect(arrayEquals([], [])).toBe(true)
+})
+
+test('setEquals', () => {
+  expect(setEquals(new Set([1, 2]), new Set([2, 1]))).toBe(true)
+  expect(setEquals(new Set([1, 2]), new Set([1, 3]))).toBe(false)
+  expect(setEquals(new Set([1]), new Set([1, 2]))).toBe(false)
 })
 
 test('countMatching', () => {

@@ -1,4 +1,4 @@
-import { orderBy } from 'lodash'
+import { orderBy } from '@/utils'
 import { computed, Ref, shallowReactive, watch } from 'vue'
 import { speakerHistoryType } from './contentTypes'
 import { SpeakerHistory } from './types'

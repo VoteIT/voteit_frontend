@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { isEqual } from 'lodash'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { ComponentPublicInstance, computed, ref, watch } from 'vue'
 
@@ -9,7 +8,7 @@ import { agendaItemType } from './contentTypes'
 import useAgenda from './useAgenda'
 import { AgendaItem } from './types'
 import { meetingType } from '../meetings/contentTypes'
-import { minTime } from '@/utils'
+import { arrayEquals, minTime } from '@/utils'
 import useAgendaStore from './useAgendaStore'
 
 const emit = defineEmits<{
@@ -27,7 +26,7 @@ function isAI(ai?: AgendaItem): ai is AgendaItem {
 const actualAgendaOrder = computed(() => agenda.value.map((ai) => ai.pk))
 const agendaItemOrder = ref(actualAgendaOrder.value)
 const agendaOrderChanged = computed(
-  () => !isEqual(agendaItemOrder.value, actualAgendaOrder.value)
+  () => !arrayEquals(agendaItemOrder.value, actualAgendaOrder.value)
 )
 const agendaItems = computed({
   get: () => agendaItemOrder.value.map(getAgendaItem).filter(isAI),

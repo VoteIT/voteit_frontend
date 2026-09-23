@@ -1,8 +1,7 @@
-import { sortBy } from 'lodash'
 import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { stripHTML } from '@/utils'
+import { orderBy, stripHTML } from '@/utils'
 import useAuthStore from '../auth/useAuthStore'
 import useElectoralRegister from '../meetings/electoralRegisters/useElectoralRegister'
 import type { Proposal } from '../proposals/types'
@@ -106,7 +105,7 @@ export default function usePoll(pollRef: Ref<number | undefined>) {
 
   const proposals = computed(() => {
     if (!poll.value) return []
-    return sortBy(getProposals(poll.value.proposals), getProposalSortValue)
+    return orderBy(getProposals(poll.value.proposals), getProposalSortValue)
   })
   const approved = computed(() => {
     if (!poll.value?.result) return []

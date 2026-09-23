@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { sortBy } from 'lodash'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery, titleSorter } from '@/utils'
+import { dialogQuery, orderBy, titleSorter } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
 import { ThemeColor } from '@/utils/types'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
@@ -120,7 +119,7 @@ async function updateRoom(
 }
 
 const editableMeetingRooms = computed(() =>
-  sortBy(meetingRooms.value, titleSorter).map((r) => {
+  orderBy(meetingRooms.value, titleSorter).map((r) => {
     const speakerSystem = findSpeakerSystem((s) => s.room === r.pk)
     const userIds = speakerSystem ? getUserIds(speakerSystem.pk) : []
     return {

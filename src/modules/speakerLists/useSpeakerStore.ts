@@ -1,5 +1,4 @@
-import { any, filter, first, ifilter, sorted } from 'itertools'
-import { countBy } from 'lodash'
+import { any, filter, first, groupBy, ifilter, sorted } from 'itertools'
 import { defineStore } from 'pinia'
 import { shallowReactive } from 'vue'
 
@@ -102,8 +101,8 @@ export default defineStore('speakers', () => {
    */
   function timesSpokenGetter(list: number) {
     const spokenUserIds = getHistory(list).map(({ user }) => user)
-    const map = countBy(spokenUserIds)
-    return (user: number) => map[user] ?? 0
+    const map = groupBy(spokenUserIds, (user) => user)
+    return (user: number) => map[user]?.length ?? 0
   }
 
   function getSpeakerLists(predicate: Predicate<SpeakerList>) {
