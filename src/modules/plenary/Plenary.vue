@@ -7,6 +7,7 @@ import {
   ref,
   watch
 } from 'vue'
+import { useDisplay } from 'vuetify'
 import { useElementSize, useStorage } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
@@ -238,9 +239,16 @@ const currentView = computed(
 
 const minLeft = 480
 const minRight = 980
+const resizerWidth = 24
 const splitContainer = ref<ComponentPublicInstance | null>(null)
 const leftWidth = useStorage<number | null>('plenary:leftWidth', null)
 const isDragging = ref(false)
+
+// Below the lg breakpoint there's no room for both sides at all
+const { lgAndUp: splitPossible } = useDisplay()
+const showSplit = computed(
+  () => currentTab.value === 'split' && splitPossible.value
+)
 
 const { width: containerWidth } = useElementSize(
   computed(() => {
@@ -249,20 +257,32 @@ const { width: containerWidth } = useElementSize(
   })
 )
 
+// Resizing only makes sense when both sides fit at their minimum widths
+const canResize = computed(
+  () => containerWidth.value >= minLeft + minRight + resizerWidth
+)
+
+function clampLeft(width: number) {
+  const max = containerWidth.value - minRight - resizerWidth
+  return Math.max(minLeft, Math.min(max, width))
+}
+
+// Stored width is the user's preference, clamped here rather than overwritten
+const effectiveLeftWidth = computed(() => {
+  if (!canResize.value) return minLeft
+  return clampLeft(leftWidth.value ?? Math.floor(containerWidth.value / 3))
+})
+
 let cleanupResize: (() => void) | null = null
 
 function startResize(e: MouseEvent) {
   if (e.button !== 0) return
   e.preventDefault()
   const startX = e.clientX
-  const startWidth = leftWidth.value ?? 0
+  const startWidth = effectiveLeftWidth.value
 
   const onMouseMove = (ev: MouseEvent) => {
-    const maxWidth = containerWidth.value - minRight - 24
-    leftWidth.value = Math.max(
-      minLeft,
-      Math.min(maxWidth, startWidth + (ev.clientX - startX))
-    )
+    leftWidth.value = clampLeft(startWidth + (ev.clientX - startX))
   }
 
   isDragging.value = true
@@ -279,13 +299,9 @@ function startResize(e: MouseEvent) {
   document.addEventListener('mouseup', onMouseUp)
 }
 
-watch(containerWidth, (w) => {
-  if (w === 0) return
-  const max = w - minRight - 24
-  leftWidth.value =
-    leftWidth.value === null
-      ? Math.max(minLeft, Math.min(max, Math.floor(w / 3)))
-      : Math.max(minLeft, Math.min(max, leftWidth.value))
+// Abort an ongoing drag if the window shrinks below resizable width
+watch(canResize, (value) => {
+  if (!value) cleanupResize?.()
 })
 
 onUnmounted(() => cleanupResize?.())
@@ -420,25 +436,49 @@ onUnmounted(() => cleanupResize?.())
     </template>
   </AppBar>
   <AgendaNavigation />
-  <v-main class="split-container d-flex" ref="splitContainer">
+  <v-main
+    v-if="currentTab === 'split' && !splitPossible"
+    class="d-flex align-center justify-center pa-6"
+  >
+    <v-card
+      color="info"
+      max-width="560"
+      prepend-icon="mdi-view-split-vertical"
+      :text="$t('plenary.splitViewTooNarrowDescription')"
+      :title="$t('plenary.splitViewTooNarrowTitle')"
+    >
+      <template #actions>
+        <v-btn
+          v-for="{ id, icon, title, disabled } in viewOptions.filter(
+            ({ id }) => id !== 'split'
+          )"
+          :key="id"
+          :disabled="disabled"
+          :prepend-icon="icon"
+          :text="title"
+          :to="{ params: { tab: id } }"
+        />
+      </template>
+    </v-card>
+  </v-main>
+  <v-main v-else class="split-container d-flex" ref="splitContainer">
     <SpeakerHandling
       v-if="currentTab !== 'decisions'"
       class="pa-6 split-left flex-shrink-0 overflow-auto"
-      :class="{ 'flex-grow-1': currentTab !== 'split' }"
+      :class="{ 'flex-grow-1': !showSplit }"
       :key-bindings="currentTab === 'discussion' ? 'all' : 'startStop'"
       :room="roomId"
-      :style="
-        currentTab === 'split' && leftWidth ? { width: leftWidth + 'px' } : {}
-      "
+      :style="showSplit ? { width: effectiveLeftWidth + 'px' } : {}"
     />
     <div
-      v-if="currentTab === 'split'"
+      v-if="showSplit && canResize"
       class="resizer"
       :class="{ active: isDragging }"
       @mousedown="startResize"
     >
       <v-icon class="resizer-icon">mdi-arrow-split-vertical</v-icon>
     </div>
+    <v-divider v-else-if="showSplit" vertical />
     <DecisionsTab
       v-if="currentTab !== 'discussion'"
       class="split-right flex-grow-1"
