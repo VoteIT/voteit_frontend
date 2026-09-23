@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { difference } from 'lodash'
 import { computed, ref, shallowReactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -176,8 +175,10 @@ const bulkTags = computed({
     if (agendaTag.value && !tags.includes(agendaTag.value))
       agendaTag.value = undefined
     // Compare to all selected tags to find what's changed
-    difference(allSelectedTags.value, tags).map(tagBulkRemove)
-    difference(tags, allSelectedTags.value).map(tagBulkAdd)
+    allSelectedTags.value
+      .filter((tag) => !tags.includes(tag))
+      .map(tagBulkRemove)
+    tags.filter((tag) => !allSelectedTags.value.includes(tag)).map(tagBulkAdd)
   }
 })
 

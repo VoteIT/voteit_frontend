@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { isEqual } from 'lodash'
+import { setEquals } from '@/utils'
 import { computed, reactive, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -111,7 +111,7 @@ function transformUserdata(userData: MeetingInvite['user_data']) {
 const filteredInvites = computed(() => {
   const roleSet = new Set(inviteFilter.roles)
   const roleFilter = inviteFilter.exactRoles
-    ? (invite: MeetingInvite) => isEqual(roleSet, new Set(invite.roles))
+    ? (invite: MeetingInvite) => setEquals(roleSet, new Set(invite.roles))
     : (invite: MeetingInvite) =>
         inviteFilter.roles.every((role) =>
           invite.roles.includes(role as MeetingRole)

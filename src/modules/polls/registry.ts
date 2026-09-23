@@ -1,4 +1,3 @@
-import type { Dictionary } from 'lodash'
 import type { Component } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 
@@ -40,7 +39,7 @@ export interface PollPlugin<
   >
 }
 
-const LEGACY_POLL_NAMES: Dictionary<string> = {
+const LEGACY_POLL_NAMES: Record<string, string> = {
   schulze_pr: 'Schulze PR',
   schulze_stv: 'Schulze STV'
 }

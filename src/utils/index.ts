@@ -1,4 +1,4 @@
-import { reduce } from 'itertools'
+import { all, reduce } from 'itertools'
 import _slugify from 'slugify'
 import { Duration } from 'luxon'
 
@@ -151,6 +151,53 @@ export function getFieldSorter<Key extends string>(fieldName: Key) {
 }
 
 export const titleSorter = getFieldSorter('title')
+
+type SortKey<T> = keyof T | ((item: T) => unknown)
+type SortDirection = 'asc' | 'desc'
+
+function isMissing(value: unknown) {
+  return value === null || value === undefined || Number.isNaN(value)
+}
+
+function compareAscending(a: unknown, b: unknown) {
+  if (isMissing(a) || isMissing(b))
+    return Number(isMissing(a)) - Number(isMissing(b))
+  const [x, y] = [a as number | string, b as number | string]
+  return x < y ? -1 : x > y ? 1 : 0
+}
+
+/**
+ * Stable sort on one or more keys, each a property name or a function of the item, like lodash's orderBy.
+ * Missing values (null, undefined, NaN) sort last ascending and first descending.
+ */
+export function orderBy<T>(
+  iterable: Iterable<T>,
+  keys: SortKey<T> | readonly SortKey<T>[],
+  directions: SortDirection | readonly SortDirection[] = 'asc'
+): T[] {
+  const getters = (typeof keys === 'object' ? keys : [keys]).map((key) =>
+    typeof key === 'function' ? key : (item: T) => item[key]
+  )
+  const orders = typeof directions === 'string' ? [directions] : directions
+  return Array.from(iterable).sort((a, b) => {
+    for (const [i, getter] of getters.entries()) {
+      const result = compareAscending(getter(a), getter(b))
+      if (result) return orders[i] === 'desc' ? -result : result
+    }
+    return 0
+  })
+}
+
+/**
+ * Same items in the same order
+ */
+export function arrayEquals<T>(a: readonly T[], b: readonly T[]) {
+  return a.length === b.length && a.every((item, i) => item === b[i])
+}
+
+export function setEquals<T>(a: ReadonlySet<T>, b: ReadonlySet<T>) {
+  return a.size === b.size && all(a, (item) => b.has(item))
+}
 
 export function countMatching<T>(
   iterable: Iterable<T>,

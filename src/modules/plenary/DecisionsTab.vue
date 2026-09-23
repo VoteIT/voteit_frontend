@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { map, range, sorted } from 'itertools'
-import { flatten } from 'lodash'
 import {
   computed,
   provide,
@@ -151,7 +150,7 @@ function tagInPool(tag: string) {
 }
 
 const textProposalTags = computed(() =>
-  flatten(aiProposalTexts.value.map((doc) => doc.paragraphs.map((p) => p.tag)))
+  aiProposalTexts.value.flatMap((doc) => doc.paragraphs.map((p) => p.tag))
 )
 
 /**

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { orderBy, sortBy } from 'lodash'
+import { orderBy } from '@/utils'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -64,7 +64,7 @@ const finishedPolls = computed(() => {
 })
 
 const availablePolls = computed(() => {
-  const ongoingAndOpen = sortBy(
+  const ongoingAndOpen = orderBy(
     filterPolls(
       (p) =>
         p.meeting === meetingId.value &&

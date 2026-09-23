@@ -1,4 +1,3 @@
-import { Dictionary } from 'lodash'
 import { computed } from 'vue'
 import { RouteLocationRaw, useRoute, useRouter } from 'vue-router'
 
@@ -8,11 +7,11 @@ import { RouteLocationRaw, useRoute, useRouter } from 'vue-router'
 export default function useTabRoute(
   getRoute: (
     name: string,
-    params?: Dictionary<string | number>
+    params?: Record<string, string | number>
   ) => RouteLocationRaw,
   defaultName: string,
   subName: string,
-  params?: Dictionary<string | number>
+  params?: Record<string, string | number>
 ) {
   const route = useRoute()
   const router = useRouter()

@@ -1,4 +1,3 @@
-import { Dictionary } from 'lodash'
 import { Component } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
@@ -30,7 +29,7 @@ interface SettingsPlugin extends MeetingPlugin {
   icon: string
   route?: {
     name: string
-    params?: Dictionary<string | number>
+    params?: Record<string, string | number>
   }
   checkAdvanced?: (meeting: Meeting) => boolean
   isConfigured?(meeting: Meeting): boolean

@@ -1,10 +1,9 @@
 <!-- eslint-disable camelcase -->
 <script setup lang="ts">
-import { orderBy } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { autoEllipsis, titleSorter } from '@/utils'
+import { autoEllipsis, orderBy, titleSorter } from '@/utils'
 
 import useMeetingId from '../meetings/useMeetingId'
 import useRooms from '../rooms/useRooms'

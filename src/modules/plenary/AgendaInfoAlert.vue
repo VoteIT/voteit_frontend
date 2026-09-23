@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { isEqual } from 'lodash'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { dialogQuery } from '@/utils'
+import { arrayEquals, dialogQuery } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 
@@ -154,7 +153,7 @@ const selectApprovedAction = computed(() => {
     !isBroadcasting.value ||
     hasUnresolvedProposals.value ||
     !proposals.length ||
-    isEqual(proposals, highlighted.value)
+    (highlighted.value && arrayEquals(proposals, highlighted.value))
   )
     return []
   return [

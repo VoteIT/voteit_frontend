@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isFunction, sortBy } from 'lodash'
+import { orderBy } from '@/utils'
 import { computed, ref } from 'vue'
 
 import { meetingBubblePlugins } from './registry'
@@ -9,7 +9,7 @@ import useMeeting from './useMeeting'
 const { meeting } = useMeeting()
 const activePlugins = computed(() =>
   meeting.value
-    ? sortBy(meetingBubblePlugins.getActivePlugins(meeting.value), 'order')
+    ? orderBy(meetingBubblePlugins.getActivePlugins(meeting.value), 'order')
     : []
 )
 
@@ -17,9 +17,10 @@ const bubbles = computed(() =>
   activePlugins.value.map((plugin) => {
     return {
       ...plugin,
-      requireAttention: isFunction(plugin.requireAttention)
-        ? plugin.requireAttention(meeting.value)
-        : plugin.requireAttention
+      requireAttention:
+        typeof plugin.requireAttention === 'function'
+          ? plugin.requireAttention(meeting.value)
+          : plugin.requireAttention
     }
   })
 )
