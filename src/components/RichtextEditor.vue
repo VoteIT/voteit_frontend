@@ -1,5 +1,19 @@
-<script lang="ts" setup>
+<script lang="ts">
 import Quill from 'quill'
+import Link from 'quill/formats/link'
+
+import { sanitizeLink } from '@/utils/sanitizeLink'
+
+// Only allow absolute or root-relative links, prefixing https:// when protocol is missing
+class StrictLink extends Link {
+  static sanitize(url: string) {
+    return sanitizeLink(url) ?? this.SANITIZED_URL
+  }
+}
+Quill.register('formats/link', StrictLink, true)
+</script>
+
+<script lang="ts" setup>
 import 'quill-mention/autoregister'
 import { computed, getCurrentInstance, inject, onMounted, ref } from 'vue'
 import type { ValidationRule } from 'vuetify'
