@@ -4,7 +4,7 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 1.0.3 (2026-09-23)
+## 1.1.0 (unreleased)
 
 - Links in rich text are sanitized, allowing only safe protocols or root-relative paths and prefixing `https://` when the protocol is missing
 - Split plenary view: resizing adjustments, and a notice when the window is too narrow to fit both panes
