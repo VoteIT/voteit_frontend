@@ -85,7 +85,7 @@ async function saveImage(close: () => void) {
   <v-main>
     <v-container>
       <v-row>
-        <v-col v-if="authStore.user" class="mb-6" v-bind="cols.default">
+        <v-col v-if="authStore.user" class="mb-6" v-bind="cols.wide">
           <h1 class="mb-2">
             {{ $t('organization.yourProfile', { ...store.organisation }) }}
           </h1>
