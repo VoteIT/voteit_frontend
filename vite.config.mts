@@ -2,6 +2,7 @@ import path from 'path'
 import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
 import Vue from '@vitejs/plugin-vue'
+import Vuetify from 'vite-plugin-vuetify'
 import type { AtRule, Declaration, Plugin } from 'postcss'
 
 /**
@@ -52,7 +53,8 @@ export default defineConfig(({ mode }) => {
         plugins: [woff2Only]
       }
     },
-    plugins: [Vue()],
+    // Imports the Vuetify components and directives each template uses, so the rest stay out of the build
+    plugins: [Vue(), Vuetify({ autoImport: true })],
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, './src')
