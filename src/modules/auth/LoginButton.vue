@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import useOrgStore from '@/modules/organisations/useOrgStore'
 import { LoginProvider } from '@/modules/organisations/types'
 
@@ -34,29 +35,17 @@ function loginURL(provider: LoginProvider) {
 </script>
 
 <template>
-  <div v-if="primary" class="d-flex text-no-wrap" :class="{ 'w-100': block }">
-    <v-btn
-      :class="{ 'flex-grow-1': block, 'rounded-e-0 pr-2': rest.length }"
-      color="primary"
-      :disabled="!orgStore.canLogin"
-      :href="loginURL(primary)"
-      prepend-icon="mdi-login"
-      :text="primaryText"
-      variant="flat"
-    />
-    <v-menu v-if="rest.length" location="bottom end">
-      <template #activator="{ props: activator }">
-        <v-btn
-          :aria-label="$t('auth.moreLoginOptions')"
-          class="rounded-s-0 chevron pl-2 pr-3"
-          color="primary"
-          :disabled="!orgStore.canLogin"
-          variant="flat"
-          v-bind="activator"
-        >
-          <v-icon>mdi-chevron-down</v-icon>
-        </v-btn>
-      </template>
+  <ButtonWithDropdown
+    v-if="primary"
+    :block="block"
+    color="primary"
+    :disabled="!orgStore.canLogin"
+    :href="loginURL(primary)"
+    :menu-label="$t('auth.moreLoginOptions')"
+    prepend-icon="mdi-login"
+    :text="primaryText"
+  >
+    <template v-if="rest.length" #default>
       <v-list density="comfortable">
         <v-list-item
           v-for="provider in rest"
@@ -66,11 +55,6 @@ function loginURL(provider: LoginProvider) {
           :title="$t('auth.loginWith', { title: provider.title })"
         />
       </v-list>
-    </v-menu>
-  </div>
+    </template>
+  </ButtonWithDropdown>
 </template>
-
-<style lang="sass" scoped>
-.chevron
-  min-width: 0 !important
-</style>
