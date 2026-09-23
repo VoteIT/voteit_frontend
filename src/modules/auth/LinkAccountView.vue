@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 import { cols } from '@/utils/defaults'
@@ -10,6 +11,7 @@ import useOrgStore from '@/modules/organisations/useOrgStore'
 
 import { AccountLinkOptions, LINK_ACCOUNT_NEW } from './types'
 
+const { t } = useI18n()
 const route = useRoute()
 const orgStore = useOrgStore()
 
@@ -26,6 +28,16 @@ const providerTitle = computed(() => {
   return orgStore.providers.find((p) => p.provider_id === id)?.title ?? id ?? ''
 })
 const error = shallowRef<'missing' | 'expired' | 'failed'>()
+const errorText = computed(() => {
+  switch (error.value) {
+    case 'missing':
+      return t('auth.linkAccount.error.missing')
+    case 'expired':
+      return t('auth.linkAccount.error.expired')
+    case 'failed':
+      return t('auth.linkAccount.error.failed')
+  }
+})
 const answering = shallowRef(false)
 
 async function fetchOptions() {
@@ -74,7 +86,7 @@ onBeforeMount(fetchOptions)
           <v-alert
             v-if="error"
             class="mb-6"
-            :text="$t(`auth.linkAccount.error.${error}`)"
+            :text="errorText"
             :type="error === 'expired' ? 'info' : 'error'"
           />
           <template v-else-if="options">
