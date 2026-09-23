@@ -23,6 +23,7 @@ import useOrgStore from './useOrgStore'
 import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
+import GdprAlert from './GdprAlert.vue'
 
 const { smAndUp } = useDisplay()
 
@@ -286,12 +287,7 @@ async function saveImage(close: () => void) {
           <BackBtn />
         </v-col>
         <v-col v-bind="cols.wideLeft.right">
-          <v-alert
-            icon="mdi-cookie"
-            type="info"
-            :text="$t('organization.gdpr.text')"
-            :title="$t('organization.gdpr.title')"
-          />
+          <GdprAlert />
         </v-col>
       </v-row>
     </v-container>

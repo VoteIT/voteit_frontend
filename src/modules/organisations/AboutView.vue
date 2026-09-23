@@ -4,6 +4,8 @@ import { versions } from '@/socket'
 import AppBar from '@/components/AppBar.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import BackBtn from '@/components/BackBtn.vue'
+
+import GdprAlert from './GdprAlert.vue'
 </script>
 
 <template>
@@ -20,6 +22,7 @@ import BackBtn from '@/components/BackBtn.vue'
         </v-col>
         <v-divider vertical />
         <v-col v-bind="cols.wideLeft.right">
+          <GdprAlert class="mb-4" />
           <div class="mb-4">
             <h2>VoteIT</h2>
             <v-list class="my-3" :border="true">
