@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { BaseContent } from '@/contentTypes/types'
 import { MeetingRole } from '../meetings/types'
 

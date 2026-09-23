@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { ComposerTranslation } from 'vue-i18n'
 
 import { MenuItem } from '@/utils/types'

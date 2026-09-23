@@ -2,7 +2,6 @@ import { Component } from 'vue'
 import { MeetingPlugin } from '../meetings/PluginHandler'
 import { Author, Meeting } from '../meetings/types'
 
-/* eslint-disable camelcase */
 export enum ProposalState {
   Published = 'published',
   Retracted = 'retracted',

@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { Component } from 'vue'
 import { AccessPolicyType } from '@/contentTypes/types'
 import Automatic from './Automatic.vue'

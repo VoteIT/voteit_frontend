@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 export interface IDjangoMessage {
   level: number
   level_tag: 'debug' | 'info' | 'success' | 'warning' | 'error'

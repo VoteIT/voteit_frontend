@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { MeetingRole } from '@/modules/meetings/types'
 import {
   OrganisationRole,

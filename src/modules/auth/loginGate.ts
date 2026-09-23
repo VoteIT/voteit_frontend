@@ -38,7 +38,7 @@ export function promptLogin({
   openDialogEvent.emit({
     title: message ?? t('permission.defaultLoginMessage'),
     resolve: (yes) => {
-      if (possible && yes) return startLogin(primaryProvider!, next)
+      if (possible && yes) return startLogin(primaryProvider, next)
       cancel?.()
     },
     dismissible: false,

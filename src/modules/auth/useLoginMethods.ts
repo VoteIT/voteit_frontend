@@ -6,7 +6,6 @@ import { LoginProvider } from '@/modules/organisations/types'
 
 import useAuthStore from './useAuthStore'
 
-/* eslint-disable camelcase */
 /** One credential attached to the signed in account. */
 export interface UserConnection {
   readonly pk: number
@@ -17,7 +16,6 @@ export interface UserConnection {
   /** Removing this one would leave the account with no way in. */
   readonly is_only_login_method: boolean
 }
-/* eslint-enable camelcase */
 
 // Module level, not per component: the user menu, the profile page and the
 // logout all read the same list, and it only changes when we change it.

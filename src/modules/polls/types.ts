@@ -1,6 +1,5 @@
 import { BaseContent } from '@/contentTypes/types'
 
-/* eslint-disable camelcase */
 export enum PollState {
   Private = 'private',
   Upcoming = 'upcoming',

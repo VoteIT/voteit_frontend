@@ -35,9 +35,7 @@ export default defineStore('organisation', () => {
   // Login providers
   /** Ordered by the backend: the primary first, then the rest by title. */
   const providers = computed(() => organisation.value?.providers ?? [])
-  const primaryProvider = computed<LoginProvider | undefined>(
-    () => providers.value[0]
-  )
+  const primaryProvider = computed(() => providers.value.at(0))
   /**
    * Everything the organisation's providers vouch for, which is what decides
    * which invite data types are in play.
@@ -59,6 +57,11 @@ export default defineStore('organisation', () => {
     return provider.login_url + params
   }
 
+  /**
+   * @deprecated Starts login with a GET request.
+   * Logins should go as a POST request, submitted through a hidden form.
+   * ID Proxy may need an exception.
+   */
   function startLogin(provider: LoginProvider, next?: string) {
     location.assign(getLoginURL(provider, next))
   }

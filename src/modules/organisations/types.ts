@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 export enum OrganisationRole {
   Manager = 'org_manager',
   MeetingCreator = 'meeting_creator'
