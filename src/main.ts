@@ -1,10 +1,12 @@
 import { createApp } from 'vue'
+// First: it brings Vuetify's base styles, which must come before any component's own. Components are imported where
+// they're used, each with its stylesheet, and base rules like [type=button]{color:inherit} tie with component rules.
+import vuetify from './plugins/vuetify'
 import App from './App.vue'
 // import './registerServiceWorker'
 import router from './router'
 
 import pinia from './plugins/pinia'
-import vuetify from './plugins/vuetify'
 import { i18n } from './utils/locales'
 
 // REGISTER PLUGINS
