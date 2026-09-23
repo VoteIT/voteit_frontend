@@ -1,5 +1,6 @@
 import { ComponentPublicInstance } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
+import type { ValidationRule } from 'vuetify'
 import { UserContextRoles } from '@/composables/types'
 
 export type EditorComponent = ComponentPublicInstance<{
@@ -9,6 +10,22 @@ export type EditorComponent = ComponentPublicInstance<{
 }>
 
 export type QuillVariant = 'restricted' | 'full'
+
+export interface RichtextEditorProps {
+  autofocus?: boolean
+  disabled?: boolean
+  errorMessages?: string[]
+  modelValue?: string
+  placeholder?: string
+  rules?: ValidationRule[]
+  variant?: QuillVariant
+}
+
+export interface RichtextEditorEmits {
+  (e: 'blur'): void
+  (e: 'focus'): void
+  (e: 'update:modelValue', value: string): void
+}
 export enum QuillFormat {
   // Inline
   BackgroundColor = 'background',
