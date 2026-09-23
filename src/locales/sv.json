@@ -847,6 +847,8 @@
     "speakerListsNotConfigured": "Talarlistor ej konfigurerade",
     "speakerListsTitle": "Talarlistor",
     "splitViewTitle": "Delad vy",
+    "splitViewTooNarrowDescription": "Delad vy behöver ett bredare fönster för att få plats med talarlistor och beslut sida vid sida. Gör fönstret större, eller använd en av de enskilda vyerna.",
+    "splitViewTooNarrowTitle": "Delad vy kräver en bredare skärm",
     "takeOverBroadcastFailed": "Kunde inte ta över sändningen",
     "viewProposalsAndStartPolls": "Visa förslag och starta omröstningar",
     "follow": {

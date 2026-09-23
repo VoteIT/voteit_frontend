@@ -847,6 +847,8 @@
     "speakerListsNotConfigured": "Speaker lists not configured",
     "speakerListsTitle": "Speaker lists",
     "splitViewTitle": "Split view",
+    "splitViewTooNarrowDescription": "Split view needs a wider window to fit speaker lists and decisions side by side. Enlarge the window, or use one of the single views.",
+    "splitViewTooNarrowTitle": "Split view needs a wider screen",
     "takeOverBroadcastFailed": "Couldn't take over broadcast",
     "viewProposalsAndStartPolls": "View proposals and start polls",
     "follow": {
