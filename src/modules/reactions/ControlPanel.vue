@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { enumerate } from 'itertools'
-import { computed, reactive } from 'vue'
-import Draggable from 'vuedraggable'
+import { useSortable } from '@vueuse/integrations/useSortable'
+import { computed, reactive, ref } from 'vue'
 
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -37,6 +37,9 @@ const meetingButtons = computed({
     }
   }
 })
+
+const buttonRows = ref<HTMLElement | null>(null)
+useSortable(buttonRows, meetingButtons, { handle: '.handle' })
 
 const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
 
@@ -141,105 +144,99 @@ const model = reactive<Record<number, boolean>>({})
           <th v-if="canEditButtons"></th>
         </tr>
       </thead>
-      <draggable
-        v-model="meetingButtons"
-        handle=".handle"
-        item-key="pk"
-        tag="tbody"
-      >
-        <template #item="{ element: button }">
-          <tr>
-            <td class="text-no-wrap">
-              <v-icon icon="mdi-drag" class="handle ml-n3 mr-2" />
-              <FlagButton
-                v-if="isFlagButton(button)"
-                :button="button"
-                :can-toggle="true"
-                v-model="model[button.pk]"
-              />
-              <RealReactionButton
-                v-else
-                :button="button"
-                :count="Number(!!model[button.pk])"
-                :disabled="!button.active"
-                v-model="model[button.pk]"
-              >
-                <template #userList>
-                  <UserList
-                    v-if="authStore.user"
-                    :userIds="[authStore.user.pk]"
-                  />
-                </template>
-              </RealReactionButton>
-            </td>
-            <td>
-              <v-switch
-                hide-details
-                color="primary"
-                :modelValue="button.active"
-                @update:modelValue="setActive(button, $event!)"
-              />
-            </td>
-            <td
-              v-for="contentType in ['proposal', 'discussion_post']"
-              :key="contentType"
+      <tbody ref="buttonRows">
+        <tr v-for="button in meetingButtons" :key="button.pk">
+          <td class="text-no-wrap">
+            <v-icon icon="mdi-drag" class="handle cursor-grab ml-n3 mr-2" />
+            <FlagButton
+              v-if="isFlagButton(button)"
+              :button="button"
+              :can-toggle="true"
+              v-model="model[button.pk]"
+            />
+            <RealReactionButton
+              v-else
+              :button="button"
+              :count="Number(!!model[button.pk])"
+              :disabled="!button.active"
+              v-model="model[button.pk]"
             >
-              <v-switch
-                hide-details
-                color="primary"
-                :modelValue="button.allowed_models.includes(contentType)"
-                @update:modelValue="
-                  setContentType(button, contentType, $event!)
-                "
-              />
-            </td>
-            <td class="text-right" v-if="canEditButtons">
-              <DefaultDialog :title="$t('reaction.editButton')">
-                <template #activator="{ props }">
-                  <ButtonWithDropdown
-                    prepend-icon="mdi-pencil"
-                    color="primary"
-                    size="small"
-                    :text="$t('edit')"
-                    v-bind="props"
-                  >
-                    <v-list>
-                      <QueryDialog
-                        color="warning"
-                        :text="$t('reaction.deleteButtonConfirmation')"
-                        @confirmed="deleteButton(button)"
-                      >
-                        <template #activator="{ props }">
-                          <v-list-item
-                            prepend-icon="mdi-delete"
-                            base-color="warning"
-                            v-bind="props"
-                            size="small"
-                            :title="$t('content.delete')"
-                          />
-                        </template>
-                      </QueryDialog>
-                    </v-list>
-                  </ButtonWithDropdown>
-                </template>
-                <template #default="{ close }">
-                  <FlagButtonEditModal
-                    v-if="isFlagButton(button)"
-                    :data="button"
-                    @close="close"
-                  />
-                  <ReactionEditModal v-else :data="button" @close="close" />
-                </template>
-              </DefaultDialog>
-            </td>
-          </tr>
-        </template>
-      </draggable>
+              <template #userList>
+                <UserList
+                  v-if="authStore.user"
+                  :userIds="[authStore.user.pk]"
+                />
+              </template>
+            </RealReactionButton>
+          </td>
+          <td>
+            <v-switch
+              hide-details
+              color="primary"
+              :modelValue="button.active"
+              @update:modelValue="setActive(button, $event!)"
+            />
+          </td>
+          <td
+            v-for="contentType in ['proposal', 'discussion_post']"
+            :key="contentType"
+          >
+            <v-switch
+              hide-details
+              color="primary"
+              :modelValue="button.allowed_models.includes(contentType)"
+              @update:modelValue="setContentType(button, contentType, $event!)"
+            />
+          </td>
+          <td class="text-right" v-if="canEditButtons">
+            <DefaultDialog :title="$t('reaction.editButton')">
+              <template #activator="{ props }">
+                <ButtonWithDropdown
+                  prepend-icon="mdi-pencil"
+                  color="primary"
+                  size="small"
+                  :text="$t('edit')"
+                  v-bind="props"
+                >
+                  <v-list>
+                    <QueryDialog
+                      color="warning"
+                      :text="$t('reaction.deleteButtonConfirmation')"
+                      @confirmed="deleteButton(button)"
+                    >
+                      <template #activator="{ props }">
+                        <v-list-item
+                          prepend-icon="mdi-delete"
+                          base-color="warning"
+                          v-bind="props"
+                          size="small"
+                          :title="$t('content.delete')"
+                        />
+                      </template>
+                    </QueryDialog>
+                  </v-list>
+                </ButtonWithDropdown>
+              </template>
+              <template #default="{ close }">
+                <FlagButtonEditModal
+                  v-if="isFlagButton(button)"
+                  :data="button"
+                  @close="close"
+                />
+                <ReactionEditModal v-else :data="button" @close="close" />
+              </template>
+            </DefaultDialog>
+          </td>
+        </tr>
+      </tbody>
     </v-table>
   </div>
 </template>
 
 <style scoped lang="sass">
-.handle
-    cursor: grab
+.sortable-chosen
+  background-color: rgb(var(--v-theme-surface-active))
+
+.sortable-ghost
+  opacity: .5
 </style>

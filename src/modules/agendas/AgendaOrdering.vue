@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isEqual } from 'lodash'
-import { computed, ref, watch } from 'vue'
-import Draggable from 'vuedraggable'
+import { useSortable } from '@vueuse/integrations/useSortable'
+import { ComponentPublicInstance, computed, ref, watch } from 'vue'
 
 import useMeetingId from '../meetings/useMeetingId'
 import { agendaItemType } from './contentTypes'
@@ -36,6 +36,9 @@ const agendaItems = computed({
   }
 })
 
+const listElement = ref<ComponentPublicInstance | null>(null)
+useSortable(listElement, agendaItems)
+
 const orderSaving = ref(false)
 async function saveAgendaOrder() {
   orderSaving.value = true
@@ -65,21 +68,18 @@ watch(agenda, (agendaItems) => {
 
 <template>
   <div>
-    <Draggable v-model="agendaItems" item-key="pk">
-      <template #item="{ element }">
-        <div>
-          <v-icon
-            size="small"
-            :icon="agendaItemType.sm.getState(element.state)?.icon"
-          />
-          <span>{{ element.title }}</span>
-          <v-icon size="small" icon="mdi-drag-horizontal" />
-        </div>
-      </template>
-    </Draggable>
+    <v-list class="mb-3" ref="listElement" border density="compact" rounded>
+      <v-list-item
+        v-for="element in agendaItems"
+        :key="element.pk"
+        append-icon="mdi-drag-horizontal"
+        class="cursor-grab"
+        :prepend-icon="agendaItemType.sm.getState(element.state)?.icon"
+        :title="element.title"
+      />
+    </v-list>
     <div class="text-right">
       <v-btn
-        class="my-1"
         color="primary"
         :disabled="!agendaOrderChanged"
         :loading="orderSaving"
@@ -91,21 +91,8 @@ watch(agenda, (agendaItems) => {
 </template>
 
 <style lang="sass" scoped>
-[data-draggable]
-  padding: .5em
-  margin-bottom: .3em
-  border: 1px solid #ddd
-  border-radius: 3px
-  display: flex
-  cursor: grab
-  span
-    flex-grow: 1
-    padding: 0 .8em
-  .material-icons
-    color: #999
-
 .sortable-chosen
-  background-color: #eee
+  background-color: rgb(var(--v-theme-surface-active))
 
 .sortable-ghost
   opacity: .5
