@@ -1,5 +1,11 @@
+import type { Component, Ref } from 'vue'
+import type { ComposerTranslation } from 'vue-i18n'
+
 import PluginHandler from '@/utils/PluginHandler'
 import { MeetingInvite } from '../meetingInvites/types'
+import OrganisationPluginHandler, {
+  type OrganisationPlugin
+} from './PluginHandler'
 import useOrgStore from './useOrgStore'
 
 interface InvitationScope {
@@ -34,3 +40,19 @@ invitationScopes.register({
     return `${ssn.slice(0, 8)} ••••`
   }
 })
+
+export interface OrgControlPanelPlugin extends OrganisationPlugin {
+  /** Detail view. Without one the panel is only a card in the control panel. */
+  component?: Component
+  icon: string
+  getDescription?(t: ComposerTranslation): string
+  getTitle(t: ComposerTranslation): string
+  /**
+   * Composable, called once in the setup of whatever shows attention - so a
+   * panel may start fetching what it needs to know.
+   */
+  useRequiresAttention?(): Ref<boolean | undefined>
+}
+
+export const orgControlPanelPlugins =
+  new OrganisationPluginHandler<OrgControlPanelPlugin>()

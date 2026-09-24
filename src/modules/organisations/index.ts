@@ -3,6 +3,7 @@ import router from '@/router'
 import { meetingListRequirement } from '../meetings/listRequirement'
 import AboutView from './AboutView.vue'
 import HomeView from './HomeView.vue'
+import OrgControlPanelView from './OrgControlPanelView.vue'
 import ProfileView from './ProfileView.vue'
 
 router.addRoute({
@@ -25,4 +26,10 @@ router.addRoute({
   name: 'about',
   path: '/about',
   meta: { anonymous: true }
+})
+
+router.addRoute({
+  component: OrgControlPanelView,
+  name: 'orgControlPanel',
+  path: '/control-panel/:panel?'
 })

@@ -299,6 +299,7 @@
     "yourMeetings": "Ditt möte | Dina möten",
     "contactInfo": {
       "check": "Kontrollera",
+      "description": "Kontakt- och faktureringsuppgifter för din organisation",
       "genericEmail": "E-post för allmän kontakt",
       "invoiceEmail": "E-post för fakturor",
       "invoiceInfo": "Information för fakturering (referens, etc)",
@@ -625,9 +626,11 @@
   "organization": {
     "allYears": "Alla år",
     "cantLogin": "Organisationen är inte längre aktiv - inloggning avstängd",
+    "controlPanel": "Kontrollpanel",
     "editProfile": "Redigera profil",
     "loginTo": "Logga in till {title}",
     "profilePageIntro": "På den här sidan hittar du information om din VoteIT-profil hos {title}. Du kan ändra vissa uppgifter.",
+    "rolesDescription": "Vilka som får administrera organisationen och skapa möten",
     "showMore": "Visa fler",
     "switchProfile": "Byt profil",
     "yourProfile": "Din profil hos {title}",

@@ -11,8 +11,8 @@ export default class PluginHandler<P extends BasePlugin> {
     this.plugins = new Map()
   }
 
-  public getPlugins(_filter: (p: P) => boolean) {
-    return filter(this.plugins.values(), _filter)
+  public getPlugins(predicate: (p: P) => boolean = () => true) {
+    return filter(this.plugins.values(), predicate)
   }
 
   public getPlugin(id: string) {

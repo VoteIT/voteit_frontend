@@ -299,6 +299,7 @@
     "yourMeetings": "Your meeting | Your meetings",
     "contactInfo": {
       "check": "Check",
+      "description": "Contact and invoice details for your organisation",
       "genericEmail": "Email for generic contact",
       "invoiceEmail": "Email for invoices",
       "invoiceInfo": "Invoice information (reference, ...)",
@@ -625,9 +626,11 @@
   "organization": {
     "allYears": "All years",
     "cantLogin": "Organization no longer active - login disabled",
+    "controlPanel": "Control panel",
     "editProfile": "Edit profile",
     "loginTo": "Log in to {title}",
     "profilePageIntro": "On this page you find information about your profile at {title}. You can edit some details.",
+    "rolesDescription": "Who may manage the organisation and create meetings",
     "showMore": "Show more",
     "switchProfile": "Switch profile",
     "yourProfile": "Your profile at {title}",
