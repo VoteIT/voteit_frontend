@@ -10,7 +10,6 @@ import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
@@ -90,6 +89,11 @@ const setIsOpen = handler((list: number, is_open: boolean) =>
 )
 
 const shuffleList = handler((list: number) => listApi.shuffle(list))
+
+async function confirmShuffle(list: SpeakerList) {
+  if (await dialogQuery(t('speaker.shuffleListConfirm')))
+    await shuffleList(list.pk)
+}
 
 function addNamedSpeakerList() {
   const close = openModal({
@@ -290,19 +294,12 @@ const otherRoomsWithLists = computed(() => {
                       :title="$t('edit')"
                       @click="editSpeakerList(list)"
                     />
-                    <QueryDialog
-                      :text="$t('speaker.shuffleListConfirm')"
-                      @confirmed="shuffleList(list.pk)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          :disabled="!list.queue.length || !!list.current"
-                          prepend-icon="mdi-shuffle-variant"
-                          :title="$t('speaker.shuffleList')"
-                          v-bind="props"
-                        />
-                      </template>
-                    </QueryDialog>
+                    <v-list-item
+                      :disabled="!list.queue.length || !!list.current"
+                      prepend-icon="mdi-shuffle-variant"
+                      :title="$t('speaker.shuffleList')"
+                      @click="confirmShuffle(list)"
+                    />
                   </template>
                 </DropdownMenu>
               </div>

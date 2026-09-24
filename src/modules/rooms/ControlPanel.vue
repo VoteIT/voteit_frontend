@@ -9,7 +9,6 @@ import { ThemeColor } from '@/utils/types'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import HelpSection from '@/components/HelpSection.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 
 import useAgenda from '../agendas/useAgenda'
 import useMeetingId from '../meetings/useMeetingId'
@@ -154,6 +153,16 @@ const deleteRoom = handler(async (pk: number) => {
   }
   await roomType.api.delete(pk)
 })
+
+async function confirmDeleteRoom(pk: number) {
+  if (
+    await dialogQuery({
+      title: t('room.confirmDelete'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteRoom(pk)
+}
 </script>
 
 <template>
@@ -239,21 +248,13 @@ const deleteRoom = handler(async (pk: number) => {
                     >
                       {{ $t('speaker.handleRoles') }}
                     </v-list-item>
-                    <QueryDialog
-                      :text="$t('room.confirmDelete')"
-                      color="warning"
-                      @confirmed="deleteRoom(room.pk)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          base-color="warning"
-                          :disabled="room.open"
-                          v-bind="props"
-                          prepend-icon="mdi-delete"
-                          :title="$t('content.delete')"
-                        />
-                      </template>
-                    </QueryDialog>
+                    <v-list-item
+                      base-color="warning"
+                      :disabled="room.open"
+                      prepend-icon="mdi-delete"
+                      :title="$t('content.delete')"
+                      @click="confirmDeleteRoom(room.pk)"
+                    />
                   </v-list>
                 </ButtonWithDropdown>
               </template>

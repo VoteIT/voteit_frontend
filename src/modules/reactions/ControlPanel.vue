@@ -8,9 +8,10 @@ import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import HelpSection from '@/components/HelpSection.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
+import { dialogQuery } from '@/utils'
 import { openModal } from '@/utils/modal'
+import { ThemeColor } from '@/utils/types'
 import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
@@ -65,6 +66,16 @@ const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
 const deleteButton = handler((button: ReactionButton) =>
   reactionButtonType.api.delete(button.pk)
 )
+
+async function confirmDeleteButton(button: ReactionButton) {
+  if (
+    await dialogQuery({
+      title: t('reaction.deleteButtonConfirmation'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteButton(button)
+}
 
 const setContentType = handler(
   (button: ReactionButton, contentType: string, value: boolean) => {
@@ -208,21 +219,13 @@ const model = reactive<Record<number, boolean>>({})
                   v-bind="props"
                 >
                   <v-list>
-                    <QueryDialog
-                      color="warning"
-                      :text="$t('reaction.deleteButtonConfirmation')"
-                      @confirmed="deleteButton(button)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          prepend-icon="mdi-delete"
-                          base-color="warning"
-                          v-bind="props"
-                          size="small"
-                          :title="$t('content.delete')"
-                        />
-                      </template>
-                    </QueryDialog>
+                    <v-list-item
+                      prepend-icon="mdi-delete"
+                      base-color="warning"
+                      size="small"
+                      :title="$t('content.delete')"
+                      @click="confirmDeleteButton(button)"
+                    />
                   </v-list>
                 </ButtonWithDropdown>
               </template>
