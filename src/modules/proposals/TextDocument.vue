@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
-import { openModalEvent } from '@/utils/events'
+import { openModal } from '@/utils/modal'
 import { ThemeColor } from '@/utils/types'
 import Tag from '@/components/Tag.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
@@ -46,10 +46,10 @@ const proposalCount = computed(() => {
 })
 
 function editDocument() {
-  openModalEvent.emit({
+  openModal({
     title: t('proposal.textModify'),
     component: EditTextDocumentModal,
-    data: props.document
+    props: { data: props.document }
   })
 }
 async function deleteDocument() {

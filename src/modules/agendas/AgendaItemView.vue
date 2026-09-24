@@ -10,7 +10,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import { onBeforeRouteLeave } from 'vue-router'
 
-import { openModalEvent } from '@/utils/events'
+import { openModal } from '@/utils/modal'
 import { MenuItem } from '@/utils/types'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
@@ -181,11 +181,12 @@ const menuItems = computed<MenuItem[]>(() => {
     items.push({
       title: t('proposal.textAdd'),
       prependIcon: 'mdi-text-box-plus-outline',
-      onClick: async () =>
-        openModalEvent.emit({
+      onClick: async () => {
+        openModal({
           title: t('proposal.textAdd'),
           component: EditTextDocumentModalVue
         })
+      }
     })
   }
   // Extra menu items from plugins

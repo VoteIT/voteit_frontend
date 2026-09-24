@@ -47,7 +47,7 @@ Before writing new logic, check if one of these already covers it:
 | `useErrorHandler` | `src/composables/useErrorHandler.ts` | Centralised error catching and display |
 | `usePermission` | `src/composables/usePermission.ts` | Guard routes/actions behind auth/role checks |
 | `useAlert` | `src/composables/useAlert.ts` | Show snackbar/toast alerts |
-| `useModal` | `src/composables/useModal.ts` | Open modal dialogs |
+| `openModal` | `src/utils/modal.ts` | Open a modal dialog (util, not a composable); returns a function that closes it |
 | `useContextRoles` | `src/composables/useContextRoles.ts` | Query user roles for a given content object |
 | `useChannel` | `src/socket/useChannel.ts` | Subscribe to a real-time channel |
 
