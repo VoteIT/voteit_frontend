@@ -6,6 +6,8 @@ Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, A
 
 ## 1.1.0 (unreleased)
 
+- Multiple login providers: organisations can offer several ways to sign in, replacing the single `login_url`/`id_host`. Users can link and unlink login methods on their profile, and a new link account page lets someone signing in with a new provider connect it to an existing account (or cancel)
+- Member ID invitations: meeting invites can be sent by member ID, and a user's member IDs are listed on their profile
 - Links in rich text are sanitized, allowing only safe protocols or root-relative paths and prefixing `https://` when the protocol is missing
 - Split plenary view: resizing adjustments, and a notice when the window is too narrow to fit both panes
 - Smaller bundle: Quill editor loads lazily, only used Vuetify components are included, and only woff2 fonts are built
