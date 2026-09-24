@@ -192,6 +192,7 @@ const model = reactive<Record<number, boolean>>({})
             <DefaultDialog :title="$t('reaction.editButton')">
               <template #activator="{ props }">
                 <ButtonWithDropdown
+                  variant="flat"
                   prepend-icon="mdi-pencil"
                   color="primary"
                   size="small"

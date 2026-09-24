@@ -498,6 +498,7 @@ const deleteSelected = handler(async () => {
           <DefaultDialog :title="$t('meeting.groups.edit')">
             <template #activator="{ props }">
               <ButtonWithDropdown
+                variant="flat"
                 color="primary"
                 size="small"
                 :text="$t('edit')"

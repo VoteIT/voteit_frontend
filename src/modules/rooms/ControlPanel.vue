@@ -248,6 +248,7 @@ const deleteRoom = handler(async (pk: number) => {
             <DefaultDialog :title="$t('room.edit')">
               <template #activator="{ props }">
                 <ButtonWithDropdown
+                  variant="flat"
                   v-bind="props"
                   color="primary"
                   prepend-icon="mdi-pencil"
