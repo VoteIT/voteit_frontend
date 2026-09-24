@@ -158,6 +158,7 @@
   "auth": {
     "error": "Login error",
     "linkAccount": {
+      "cancel": "Cancel login",
       "description": "You signed in with {provider}, and we already have an account here on that email address. Take it over to keep the meetings on it, or start fresh with a new one.",
       "error": {
         "missing": "This page needs a link from a login that's waiting on an answer. Start logging in again.",

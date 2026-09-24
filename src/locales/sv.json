@@ -158,6 +158,7 @@
   "auth": {
     "error": "Inloggningsfel",
     "linkAccount": {
+      "cancel": "Avbryt inloggningen",
       "description": "Du loggade in med {provider}, och vi har redan ett konto här på den e-postadressen. Ta över det för att behålla mötena på det, eller börja om med ett nytt.",
       "error": {
         "missing": "Den här sidan behöver en länk från en inloggning som väntar på svar. Börja om med inloggningen.",

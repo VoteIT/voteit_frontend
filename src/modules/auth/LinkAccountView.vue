@@ -130,12 +130,20 @@ onBeforeMount(fetchOptions)
             </v-list>
             <v-divider class="mb-6" />
             <p class="mb-3">{{ $t('auth.linkAccount.noneOfTheseHelp') }}</p>
-            <v-btn
-              :disabled="answering"
-              :text="$t('auth.linkAccount.noneOfThese')"
-              variant="tonal"
-              @click="answer(LINK_ACCOUNT_NEW)"
-            />
+            <div class="d-flex ga-1 flex-wrap">
+              <v-btn
+                :disabled="answering"
+                :text="$t('auth.linkAccount.cancel')"
+                :to="{ name: 'home' }"
+                variant="text"
+              />
+              <v-btn
+                color="primary"
+                :disabled="answering"
+                :text="$t('auth.linkAccount.noneOfThese')"
+                @click="answer(LINK_ACCOUNT_NEW)"
+              />
+            </div>
           </template>
           <div v-else class="text-center">
             <v-progress-circular color="primary" indeterminate />
