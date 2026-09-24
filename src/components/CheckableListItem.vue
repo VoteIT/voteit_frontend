@@ -20,6 +20,6 @@ defineEmits<{
     :disabled="disabled"
     :subtitle="subtitle"
     :title="title"
-    @click.stop="$emit('update:modelValue', !modelValue)"
+    @click="$emit('update:modelValue', !modelValue)"
   />
 </template>
