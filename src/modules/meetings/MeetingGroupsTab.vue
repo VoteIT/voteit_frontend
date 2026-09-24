@@ -3,8 +3,8 @@ import { flatmap, sorted } from 'itertools'
 import { computed, provide, reactive, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { getFullName, minTime } from '@/utils'
-import { PickByType } from '@/utils/types'
+import { dialogQuery, getFullName, minTime } from '@/utils'
+import { PickByType, ThemeColor } from '@/utils/types'
 import { getApiLink } from '@/utils/restApi'
 import Tag from '@/components/Tag.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
@@ -174,6 +174,16 @@ function changeGroup(pk: number) {
 const deleteGroup = handler((group: MeetingGroup) =>
   meetingGroupType.api.delete(group.pk)
 )
+
+async function confirmDeleteGroup(group: MeetingGroup) {
+  if (
+    await dialogQuery({
+      title: t('meeting.groups.deleteConfirm', { ...group }),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteGroup(group)
+}
 
 /**
  * Switches to handle group settings for post_as, etc
@@ -505,21 +515,11 @@ const deleteSelected = handler(async () => {
                 v-bind="props"
               >
                 <v-list density="compact">
-                  <QueryDialog
-                    :text="
-                      $t('meeting.groups.deleteConfirm', { ...(item as any) })
-                    "
-                    color="warning"
-                    @confirmed="deleteGroup(item as any)"
-                  >
-                    <template #activator="{ props }">
-                      <v-list-item
-                        base-color="warning"
-                        v-bind="props"
-                        :title="$t('content.delete')"
-                      />
-                    </template>
-                  </QueryDialog>
+                  <v-list-item
+                    base-color="warning"
+                    :title="$t('content.delete')"
+                    @click="confirmDeleteGroup(item as any)"
+                  />
                 </v-list>
               </ButtonWithDropdown>
             </template>

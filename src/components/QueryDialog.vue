@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+/**
+ * Confirmation dialog with its own activator.
+ * Don't use inside a v-menu: its dialog is part of the menu content, which keeps the menu from closing.
+ * Call dialogQuery() from the menu item's click handler instead.
+ */
 import { inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
