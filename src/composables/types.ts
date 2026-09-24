@@ -5,31 +5,38 @@ import {
   IOrganisationUser
 } from '@/modules/organisations/types'
 import { ThemeColor } from '@/utils/types'
-import { Component } from 'vue'
+import { Component, ComponentInstance, MaybeRefOrGetter } from 'vue'
 import { ComposerTranslation } from 'vue-i18n'
 
-export interface Modal {
-  component?: Component
-  data?: object
+interface BaseModal {
   dismissible?: boolean
-  html?: string
-  title?: string
+  onClose?: () => void
+  title?: MaybeRefOrGetter<string | undefined>
 }
 
-interface ComponentModal extends Modal {
-  component: Component
-  data?: object
+/**
+ * Props (including listeners, e.g. onCancel) are checked against the component's own,
+ * when opened through openModal (@/utils/modal).
+ */
+export interface ComponentModal<
+  C extends Component = Component
+> extends BaseModal {
+  component: C
+  props?: ComponentInstance<C>['$props']
 }
 
-interface HTMLModal extends Modal {
+export interface HTMLModal extends BaseModal {
   html: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Modal = ComponentModal<any> | HTMLModal
+
 export function isComponentModal(modal: Modal): modal is ComponentModal {
-  return !!modal.component
+  return 'component' in modal
 }
 export function isHTMLModal(modal: Modal): modal is HTMLModal {
-  return !!modal.html
+  return 'html' in modal
 }
 
 export enum AlertLevel {

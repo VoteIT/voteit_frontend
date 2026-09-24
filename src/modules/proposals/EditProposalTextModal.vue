@@ -39,7 +39,7 @@ import useAgendaItem from '../agendas/useAgendaItem'
 import { ProposalText, proposalTextType } from './contentTypes'
 
 const props = defineProps<{
-  data: ProposalText
+  data?: ProposalText
 }>()
 
 const { t } = useI18n()
