@@ -45,7 +45,7 @@ async function savePauseMessage(pauseBroadcast = false) {
 </script>
 
 <template>
-  <v-menu>
+  <v-menu :close-on-content-click="false">
     <template #activator="{ props }">
       <v-btn
         append-icon="mdi-chevron-down"
