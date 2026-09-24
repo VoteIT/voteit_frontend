@@ -36,6 +36,7 @@ function loginURL(provider: LoginProvider) {
 
 <template>
   <ButtonWithDropdown
+    variant="flat"
     v-if="primary"
     :block="block"
     color="primary"
