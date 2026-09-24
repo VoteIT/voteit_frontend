@@ -11,13 +11,10 @@ import { cols } from '@/utils/defaults'
 
 import AppBar from '@/components/AppBar.vue'
 import Richtext from '@/components/Richtext.vue'
-import RoleMatrix from '@/components/RoleMatrix.vue'
 import UserMenu from '@/components/UserMenu.vue'
-import UserSearch from '@/components/UserSearch.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import EditableHelpText from '@/components/EditableHelpText.vue'
 import useDefaults from '@/composables/useDefaults'
-import useErrorHandler from '@/composables/useErrorHandler'
 
 import LoginButton from '../auth/LoginButton.vue'
 import useAuthStore from '../auth/useAuthStore'
@@ -29,34 +26,21 @@ import { MeetingState } from '../meetings/types'
 import { translateMeetingRole } from '../meetings/utils'
 import useMeetingStore from '../meetings/useMeetingStore'
 
-import ContactInfoTab from './ContactInfoTab.vue'
 import OrgEditForm from './OrgEditForm.vue'
+import OrgToolbar from './OrgToolbar.vue'
 import useOrgStore from './useOrgStore'
-import { organisationType } from './contentTypes'
-import { OrganisationRole } from './types'
-import useContactInfo from './useContactInfo'
 import FindMeetingDialog from './FindMeetingDialog.vue'
 import { displayRoles } from './utils'
 import { meetingType } from '../meetings/contentTypes'
 
 const inviteStore = useInviteStore()
 
-const organisationIcons: Record<OrganisationRole, string> = {
-  meeting_creator: 'mdi-calendar-plus',
-  org_manager: 'mdi-account-supervisor-circle'
-}
-
 const { t } = useI18n()
-const { handled } = useErrorHandler({ target: 'dialog' })
 const { isAuthenticated, user } = storeToRefs(useAuthStore())
 const orgStore = useOrgStore()
 const meetingStore = useMeetingStore()
 
-const currentTab = ref('default')
-
 useMeetings()
-
-const { requiresCheck } = useContactInfo(true)
 
 useTitle(
   computed(() =>
@@ -87,33 +71,6 @@ useIntervalFn(
 
 const editing = ref(false)
 const { collapsedBodyHeightMobile } = useDefaults()
-
-const tabs = computed(() => {
-  if (!orgStore.canChangeOrganisation) return
-  return [
-    {
-      value: 'default',
-      text: t('home.home')
-    },
-    {
-      value: 'roles',
-      text: t('roles')
-    },
-    {
-      value: 'contactInfo',
-      text: t('home.contactInfo.title')
-    }
-  ]
-})
-
-async function addUser(user: number) {
-  if (!orgStore.organisation) throw new Error('No organisation')
-  const { pk } = orgStore.organisation
-  await handled(
-    () => organisationType.addRoles(pk, user, OrganisationRole.MeetingCreator),
-    'roles'
-  )
-}
 
 function mkGroupRule(
   state: keyof (typeof meetingStore)['participatingMeetings'],
@@ -157,6 +114,7 @@ const meetingCount = computed(() =>
   <AppBar />
   <UserMenu />
   <v-main>
+    <OrgToolbar />
     <v-container>
       <v-row v-if="orgStore.organisation" class="home my-4">
         <v-col
@@ -183,80 +141,38 @@ const meetingCount = computed(() =>
           </div>
         </v-col>
         <v-col v-bind="cols.wideLeft.left" order-md="0">
-          <v-tabs
-            v-if="tabs"
-            :items="tabs"
-            v-model="currentTab"
-            align-tabs="end"
-            class="mb-4"
+          <OrgEditForm
+            v-if="editing"
+            :organisation="orgStore.organisation"
+            @close="editing = false"
           />
-          <v-window v-model="currentTab">
-            <v-window-item value="default">
-              <v-alert
-                v-if="tabs && requiresCheck"
-                :title="$t('home.contactInfo.requiresCheck')"
-                :text="$t('home.contactInfo.requiresCheckDescription')"
-                type="warning"
-                class="mb-4"
-              >
-                <template #append>
+          <template v-else>
+            <header class="d-flex">
+              <h1 class="flex-grow-1">
+                {{ orgStore.organisation.page_title }}
+              </h1>
+              <v-menu v-if="orgStore.canChangeOrganisation">
+                <template #activator="{ props }">
                   <v-btn
-                    :text="$t('home.contactInfo.check')"
-                    @click="currentTab = 'contactInfo'"
+                    icon="mdi-dots-vertical"
+                    variant="text"
+                    v-bind="props"
                   />
                 </template>
-              </v-alert>
-              <OrgEditForm
-                v-if="editing"
-                :organisation="orgStore.organisation"
-                @close="editing = false"
-              />
-              <template v-else>
-                <header class="d-flex">
-                  <h1 class="flex-grow-1">
-                    {{ orgStore.organisation.page_title }}
-                  </h1>
-                  <v-menu v-if="orgStore.canChangeOrganisation">
-                    <template #activator="{ props }">
-                      <v-btn
-                        icon="mdi-dots-vertical"
-                        variant="text"
-                        v-bind="props"
-                      />
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        prepend-icon="mdi-pencil"
-                        :title="$t('edit')"
-                        @click="editing = true"
-                      />
-                    </v-list>
-                  </v-menu>
-                </header>
-                <Richtext
-                  :value="orgStore.organisation.body"
-                  :maxHeight="collapsedBodyHeightMobile"
-                />
-              </template>
-            </v-window-item>
-
-            <template v-if="orgStore.canChangeOrganisation">
-              <v-window-item value="roles">
-                <UserSearch class="mb-6" @submit="addUser" />
-                <RoleMatrix
-                  admin
-                  :contentType="organisationType"
-                  :pk="orgStore.organisation.pk"
-                  :icons="organisationIcons"
-                  :remove-confirm-text="$t('areYouSure')"
-                />
-              </v-window-item>
-
-              <v-window-item value="contactInfo">
-                <ContactInfoTab />
-              </v-window-item>
-            </template>
-          </v-window>
+                <v-list>
+                  <v-list-item
+                    prepend-icon="mdi-pencil"
+                    :title="$t('edit')"
+                    @click="editing = true"
+                  />
+                </v-list>
+              </v-menu>
+            </header>
+            <Richtext
+              :value="orgStore.organisation.body"
+              :maxHeight="collapsedBodyHeightMobile"
+            />
+          </template>
         </v-col>
         <v-divider vertical />
         <v-col v-if="isAuthenticated" v-bind="cols.wideLeft.right">
