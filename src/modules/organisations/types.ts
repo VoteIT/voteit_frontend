@@ -62,3 +62,19 @@ export interface IOrganisationUser extends IUser {
   /** Membership numbers tied to this account. Only ever sent for yourself. */
   member_ids: string[] | null
 }
+
+/**
+ * A version of the organisation's terms of service. Users accept the global
+ * terms it's based on together with the organisation's addition in `body`.
+ */
+export interface TermsOfService {
+  readonly pk: number
+  /** The organisation's addition to the global terms. May be empty. */
+  readonly body: string
+  /** Global terms of service version */
+  readonly based_on: number
+  readonly global_body: string
+  readonly organisation: number
+  /** ISO datetime when it takes effect. May be in the future. */
+  readonly version: string
+}

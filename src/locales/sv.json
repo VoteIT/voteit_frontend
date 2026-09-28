@@ -157,6 +157,17 @@
   },
   "auth": {
     "error": "Inloggningsfel",
+    "acceptTos": {
+      "accept": "Jag godkänner",
+      "cancel": "Avbryt inloggning",
+      "help": "För att använda VoteIT hos {title} behöver du läsa och godkänna användarvillkoren.",
+      "title": "Användarvillkor",
+      "version": "Version från {date}",
+      "error": {
+        "failed": "Kunde inte hämta användarvillkoren. Försök logga in igen.",
+        "missing": "Länken är ofullständig. Börja om inloggningen från början."
+      }
+    },
     "linkAccount": {
       "cancel": "Avbryt inloggningen",
       "description": "Du loggade in med {provider}, och vi har redan ett konto här på den e-postadressen. Ta över det för att behålla mötena på det, eller börja om med ett nytt.",
@@ -634,6 +645,26 @@
     "gdpr": {
       "title": "Det här stannar mellan oss",
       "text": "Om du undrar varför du inte fått godkänna kakor från 99 olika spårningstjänster så beror det på att vi valt att inte spåra våra användare. Vi sätter en sessionskaka för att hålla reda på din inloggning. Det är allt."
+    },
+    "tos": {
+      "bodyHelp": "Er organisations tillägg till standardvillkoren. Användare godkänner båda tillsammans.",
+      "confirmPublish": "Publicera nya användarvillkor? Alla användare kommer behöva godkänna dem igen.",
+      "correction": "Korrigering av nuvarande version",
+      "correctionHint": "Ändrar versionen från {date} utan att användare behöver godkänna den igen",
+      "correctionWarning": "Använd endast detta för att rätta stavfel och liknande. Användare kommer inte att behöva godkänna villkoren igen, så textens innebörd får inte ändras på något sätt. Om innehållet ändras ska du publicera en ny version istället.",
+      "correctionWarningTitle": "Inga betydelsefulla ändringar",
+      "current": "Nuvarande",
+      "description": "Villkoren användare godkänner för att delta i organisationen",
+      "fetchFailed": "Kunde inte hämta användarvillkor",
+      "needsReview": "Nya standardvillkor",
+      "needsReviewText": "Nya standardvillkor har lagts till i era användarvillkor. Kontrollera att er organisations tillägg fortfarande passar dem, och publicera en ny version eller korrigera det.",
+      "noTos": "Din organisation har inga användarvillkor än.",
+      "publish": "Publicera ny version",
+      "saveCorrection": "Spara korrigering",
+      "scheduled": "Schemalagd",
+      "standardTerms": "Standardvillkor",
+      "title": "Användarvillkor",
+      "versions": "Versioner"
     }
   },
   "participantNumber": {

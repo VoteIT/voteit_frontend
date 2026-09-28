@@ -1,7 +1,9 @@
 import ContactInfoTab from './ContactInfoTab.vue'
 import OrgRolesPanel from './OrgRolesPanel.vue'
+import TermsOfServicePanel from './TermsOfServicePanel.vue'
 import { orgControlPanelPlugins } from './registry'
 import useContactInfo from './useContactInfo'
+import useTermsOfService from './useTermsOfService'
 
 orgControlPanelPlugins.register({
   id: 'roles',
@@ -27,5 +29,20 @@ orgControlPanelPlugins.register({
   },
   useRequiresAttention() {
     return useContactInfo(true).requiresCheck
+  }
+})
+
+orgControlPanelPlugins.register({
+  id: 'termsOfService',
+  component: TermsOfServicePanel,
+  icon: 'mdi-file-sign',
+  getDescription(t) {
+    return t('organization.tos.description')
+  },
+  getTitle(t) {
+    return t('organization.tos.title')
+  },
+  useRequiresAttention() {
+    return useTermsOfService(true).needsReview
   }
 })
