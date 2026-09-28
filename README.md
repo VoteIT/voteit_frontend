@@ -54,7 +54,6 @@ The dev server starts at `http://localhost:3000` and proxies API/WebSocket reque
 Copy `.env.development` and adjust if needed:
 
 ```
-VITE_ID_HOST=http://id.localhost:8081   # OAuth identity provider
 VITE_PROXY_HOST=voteit.localhost:8000   # Backend host:port to proxy requests to
 ```
 
