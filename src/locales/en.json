@@ -647,24 +647,32 @@
       "text": "If you're wondering why we haven't asked you to approve cookies from 99 different tracking services, that's because we have choosen to not track our users. We set a session cookie to keep track of your login. That's it."
     },
     "tos": {
+      "acceptUnchanged": "Accept without changes",
+      "add": "Add organisation terms",
       "bodyHelp": "Your organisation's addition to the standard terms. Users accept both together.",
+      "changeNotes": "Changes in this version",
       "confirmPublish": "Publish new terms of service? All users will have to accept them again.",
       "correction": "Correction of the current version",
       "correctionHint": "Changes the version from {date} without users having to accept it again",
       "correctionWarning": "Only use this to fix spelling mistakes and similar. Users will not be asked to accept the terms again, so the meaning of the text must not change in any way. If there are any changes to the content, publish a new version instead.",
       "correctionWarningTitle": "No meaningful changes",
-      "current": "Current",
       "description": "The terms users accept to take part in the organisation",
+      "details": "Details",
+      "edit": "Edit organisation terms",
+      "emptyBody": "No addition to the standard terms.",
       "fetchFailed": "Could not fetch terms of service",
+      "globalChanges": "Changes to the standard terms",
       "needsReview": "New standard terms",
-      "needsReviewText": "New standard terms were added to your terms of service. Check that your organisation's addition still fits them, and publish a new version or correct it.",
-      "noTos": "Your organisation has no terms of service yet.",
+      "needsReviewText": "New standard terms have been published. Check that your organisation's terms still fit them, then accept them as they are or edit them. Either publishes a new version that all users must accept.",
+      "noStandardTerms": "There are no standard terms yet.",
+      "noTos": "Your organisation has no terms of its own. Users only accept the standard terms. Would you like to add terms for your organisation?",
+      "notesTitle": "Changes of {date}",
+      "organisationTerms": "Your organisation's terms",
       "publish": "Publish new version",
+      "published": "Published {date}",
       "saveCorrection": "Save correction",
-      "scheduled": "Scheduled",
       "standardTerms": "Standard terms",
-      "title": "Terms of service",
-      "versions": "Versions"
+      "title": "Terms of service"
     }
   },
   "participantNumber": {

@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import Richtext from '@/components/Richtext.vue'
-import type { TermsOfService } from './types'
 
-defineProps<{ tos: Pick<TermsOfService, 'body' | 'global_body'> }>()
+defineProps<{
+  /** The global terms */
+  globalBody: string
+  /** The organisation's addition, if it has one */
+  body?: string
+}>()
 </script>
 
 <template>
-  <Richtext :value="tos.global_body" />
-  <template v-if="tos.body">
+  <Richtext :value="globalBody" />
+  <template v-if="body">
     <v-divider class="my-4" />
-    <Richtext :value="tos.body" />
+    <Richtext :value="body" />
   </template>
 </template>

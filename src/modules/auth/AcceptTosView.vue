@@ -7,8 +7,11 @@ import { useRoute } from 'vue-router'
 import { cols } from '@/utils/defaults'
 import AppBar from '@/components/AppBar.vue'
 import TosText from '@/modules/organisations/TosText.vue'
-import { listTos } from '@/modules/organisations/tosApi'
-import type { TermsOfService } from '@/modules/organisations/types'
+import { getCurrentTos } from '@/modules/organisations/tosApi'
+import type {
+  CurrentTermsOfService,
+  GlobalTermsOfService
+} from '@/modules/organisations/types'
 import useOrgStore from '@/modules/organisations/useOrgStore'
 
 import { getAcceptTosResume } from './acceptTos'
@@ -19,7 +22,13 @@ const orgStore = useOrgStore()
 
 const resume = computed(() => getAcceptTosResume(route.query))
 
-const tos = shallowRef<TermsOfService>()
+/** Global terms are always there when there is anything to accept. */
+type ToAccept = CurrentTermsOfService & {
+  global_tos: GlobalTermsOfService
+  version: string
+}
+
+const tos = shallowRef<ToAccept>()
 const error = shallowRef<'missing' | 'failed'>()
 const errorText = computed(() => {
   switch (error.value) {
@@ -43,9 +52,11 @@ async function fetchTos() {
     return
   }
   try {
-    // No session while the login is paused, so this is the active version only
-    tos.value = (await listTos())[0]
-    if (!tos.value) error.value = 'failed'
+    const current = await getCurrentTos()
+    const { global_tos, version } = current
+    // The login only pauses when there's something to accept
+    if (global_tos && version) tos.value = { ...current, global_tos, version }
+    else error.value = 'failed'
   } catch {
     error.value = 'failed'
   }
@@ -60,7 +71,7 @@ async function fetchTos() {
 function accept() {
   if (!tos.value || !resume.value) return
   answering.value = true
-  location.assign(resume.value(tos.value.pk))
+  location.assign(resume.value(tos.value.version))
 }
 
 onBeforeMount(fetchTos)
@@ -94,7 +105,10 @@ onBeforeMount(fetchTos)
               {{ $t('auth.acceptTos.version', { date: version }) }}
             </p>
             <v-sheet border class="mb-6 pa-4" rounded>
-              <TosText :tos="tos" />
+              <TosText
+                :body="tos.organisation_tos?.body"
+                :global-body="tos.global_tos.body"
+              />
             </v-sheet>
             <div class="d-flex ga-1 flex-wrap justify-end">
               <v-btn

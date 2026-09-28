@@ -1,14 +1,20 @@
 import restApi from '@/utils/restApi'
-import type { TermsOfService } from './types'
+import type {
+  CurrentTermsOfService,
+  GlobalTermsOfService,
+  TermsOfService
+} from './types'
 
 const ENDPOINT = 'terms-of-service/'
 
-/**
- * Organisation managers get every version, others only the active one.
- * Newest first.
- */
-export function listTos() {
-  return restApi.get<TermsOfService[]>(ENDPOINT)
+/** Every published version of the global terms, newest first. */
+export function listGlobalTos() {
+  return restApi.get<GlobalTermsOfService[]>('global-terms-of-service/')
+}
+
+/** The terms users accept, global and the organisation's. Works anonymously. */
+export function getCurrentTos() {
+  return restApi.get<CurrentTermsOfService>(`${ENDPOINT}current/`)
 }
 
 /** Publish a new version, which users must accept. Takes effect now. */

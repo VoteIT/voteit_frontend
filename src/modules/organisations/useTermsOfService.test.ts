@@ -1,23 +1,36 @@
 import { DateTime } from 'luxon'
 import { beforeEach, expect, test, vi } from 'vitest'
 
-import type { TermsOfService } from './types'
+import type { GlobalTermsOfService, TermsOfService } from './types'
 
 vi.mock('./useOrgStore', () => ({ default: () => ({}) }))
 
 const api = vi.hoisted(() => ({
   versions: [] as TermsOfService[],
-  lists: 0
+  globalVersions: [] as GlobalTermsOfService[],
+  newerGlobal: false,
+  globalLists: 0,
+  currents: 0
 }))
 
 vi.mock('./tosApi', () => ({
-  listTos: async () => {
-    api.lists++
-    return api.versions
+  listGlobalTos: async () => {
+    api.globalLists++
+    return api.globalVersions
+  },
+  getCurrentTos: async () => {
+    api.currents++
+    return {
+      organisation_tos: api.versions.find(
+        (v) => DateTime.fromISO(v.version) <= DateTime.now()
+      ),
+      newer_global_tos: api.newerGlobal
+    }
   },
   createTos: async (body: string) => {
-    const tos = { ...api.versions[0], body, pk: 99 }
+    const tos = { ...api.versions[0], body, pk: 99, version: daysAgo(0) }
     api.versions = [tos, ...api.versions]
+    api.newerGlobal = false
     return tos
   },
   updateTos: async (pk: number, body: string) => ({
@@ -32,84 +45,83 @@ function daysAgo(days: number) {
   return DateTime.now().minus({ days }).toISO()
 }
 
-function tos(pk: number, based_on: number, body: string, version: string) {
-  return { pk, based_on, body, global_body: '', organisation: 1, version }
+function tos(pk: number, body: string, version: string) {
+  return { pk, body, organisation: 1, version }
+}
+
+function globalTos(pk: number, version: string) {
+  return { pk, body: '', notes: '', required_from: version, version }
 }
 
 beforeEach(() => {
-  api.versions = [tos(1, 1, '<p>Ours</p>', daysAgo(10))]
+  api.versions = [tos(1, '<p>Ours</p>', daysAgo(10))]
+  api.globalVersions = []
+  api.newerGlobal = false
 })
 
-test('active is the newest version in effect', async () => {
-  api.versions = [
-    tos(3, 1, '<p>Coming</p>', daysAgo(-1)),
-    tos(2, 1, '<p>Now</p>', daysAgo(1)),
-    tos(1, 1, '<p>Old</p>', daysAgo(10))
+test('lists the global versions published after ours in effect', async () => {
+  api.versions = [tos(1, '<p>Ours</p>', daysAgo(5))]
+  api.globalVersions = [
+    globalTos(3, daysAgo(1)),
+    globalTos(2, daysAgo(3)),
+    globalTos(1, daysAgo(10))
   ]
-  const { active, fetchTos, newest } = useTermsOfService()
-  await fetchTos()
-  expect(active.value?.pk).toBe(2)
-  expect(newest.value?.pk).toBe(3)
-})
-
-test('added with new global terms and unchanged addition needs review', async () => {
-  api.versions = [
-    tos(2, 2, '<p>Ours</p>', daysAgo(1)),
-    tos(1, 1, '<p>Ours</p>', daysAgo(10))
-  ]
-  const { fetchTos, needsReview } = useTermsOfService()
-  await fetchTos()
-  expect(needsReview.value).toBe(true)
-})
-
-test('changed addition or same global terms needs no review', async () => {
-  const { fetchTos, needsReview } = useTermsOfService()
-  await fetchTos()
-  expect(needsReview.value).toBe(false) // Single version
-
-  api.versions = [
-    tos(2, 2, '<p>Reviewed</p>', daysAgo(1)),
-    tos(1, 1, '<p>Ours</p>', daysAgo(10))
-  ]
-  await fetchTos()
-  expect(needsReview.value).toBe(false)
-
-  api.versions = [
-    tos(2, 1, '<p>Ours</p>', daysAgo(1)),
-    tos(1, 1, '<p>Ours</p>', daysAgo(10))
-  ]
-  await fetchTos()
-  expect(needsReview.value).toBe(false)
-})
-
-test('correcting clears review, keeping the version', async () => {
-  api.versions = [
-    tos(2, 2, '<p>Ours</p>', daysAgo(1)),
-    tos(1, 1, '<p>Ours</p>', daysAgo(10))
-  ]
-  const { fetchTos, needsReview, newest, saveTos, versions } =
+  const { fetchCurrent, fetchGlobalVersions, newerGlobalVersions } =
     useTermsOfService()
-  await fetchTos()
-  await saveTos('<p>Ours, checked</p>', true)
-  expect(newest.value).toMatchObject({ pk: 2, body: '<p>Ours, checked</p>' })
-  expect(versions.value).toHaveLength(2)
+  await Promise.all([fetchCurrent(), fetchGlobalVersions()])
+  expect(newerGlobalVersions.value.map((g) => g.pk)).toEqual([3, 2])
+})
+
+test('newer global terms need review until a new version is published', async () => {
+  const { fetchCurrent, needsReview, saveTos } = useTermsOfService()
+  await fetchCurrent()
+  expect(needsReview.value).toBe(false)
+
+  api.newerGlobal = true
+  await fetchCurrent()
+  expect(needsReview.value).toBe(true)
+
+  await saveTos('<p>Ours, checked</p>', false)
   expect(needsReview.value).toBe(false)
 })
 
-test('publishing adds a version', async () => {
-  const { fetchTos, newest, saveTos, versions } = useTermsOfService()
-  await fetchTos()
+test('correcting changes the version in effect, keeping its date', async () => {
+  api.versions = [
+    tos(3, '<p>Coming</p>', daysAgo(-1)),
+    tos(2, '<p>Ours</p>', daysAgo(1)),
+    tos(1, '<p>Old</p>', daysAgo(10))
+  ]
+  const { fetchCurrent, organisationTos, saveTos } = useTermsOfService()
+  await fetchCurrent()
+  await saveTos('<p>Ours, fixed</p>', true)
+  expect(organisationTos.value).toMatchObject({
+    pk: 2,
+    body: '<p>Ours, fixed</p>',
+    version: api.versions[1].version
+  })
+})
+
+test('publishing a version makes it the one in effect', async () => {
+  const { fetchCurrent, organisationTos, saveTos } = useTermsOfService()
+  await fetchCurrent()
   await saveTos('<p>New</p>', false)
-  expect(newest.value).toMatchObject({ pk: 99, body: '<p>New</p>' })
-  expect(versions.value).toHaveLength(2)
+  expect(organisationTos.value).toMatchObject({ pk: 99, body: '<p>New</p>' })
 })
 
 test('simultaneous fetches share one request', async () => {
-  const { fetchTos, versions } = useTermsOfService()
-  api.lists = 0
-  await Promise.all([fetchTos(), fetchTos(), fetchTos()])
-  expect(api.lists).toBe(1)
-  expect(versions.value).toHaveLength(1)
-  await fetchTos()
-  expect(api.lists).toBe(2)
+  const { fetchCurrent, fetchGlobalVersions } = useTermsOfService()
+  api.globalLists = 0
+  api.currents = 0
+  await Promise.all([fetchCurrent(), fetchCurrent(), fetchGlobalVersions()])
+  expect(api.currents).toBe(1)
+  expect(api.globalLists).toBe(1)
+  await fetchCurrent()
+  expect(api.currents).toBe(2)
+})
+
+test('the current terms alone leave the global list unfetched', async () => {
+  const { fetchCurrent } = useTermsOfService()
+  api.globalLists = 0
+  await fetchCurrent()
+  expect(api.globalLists).toBe(0)
 })

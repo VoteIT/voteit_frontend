@@ -1,52 +1,67 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import DefaultDialog from '@/components/DefaultDialog.vue'
 import Richtext from '@/components/Richtext.vue'
 import RichtextEditor from '@/components/RichtextEditor.vue'
-import type { EditorComponent } from '@/components/types'
 import useErrorHandler from '@/composables/useErrorHandler'
 import { dialogQuery, stripHTML } from '@/utils'
 import { ThemeColor } from '@/utils/types'
 
-import TosText from './TosText.vue'
-import useTermsOfService, { isScheduled } from './useTermsOfService'
+import useTermsOfService from './useTermsOfService'
 
 const { t } = useI18n()
 const { handled } = useErrorHandler({ target: 'dialog' })
-const { active, needsReview, newest, versions, fetchTos, saveTos } =
-  useTermsOfService()
+const {
+  current,
+  globalVersions,
+  needsReview,
+  newerGlobalVersions,
+  organisationTos,
+  fetchCurrent,
+  fetchGlobalVersions,
+  saveTos
+} = useTermsOfService()
 
 const fetchFailed = ref(false)
-const body = ref(newest.value?.body ?? '')
-const editor = ref<EditorComponent | null>(null)
+const editing = ref(false)
+const body = ref('')
 const correction = ref(false)
 const saving = ref(false)
+
+/** The global versions are only needed to review our terms against. */
+const loaded = computed(
+  () => current.value && (!needsReview.value || globalVersions.value)
+)
+
+/** Newest published, which is what to review our terms against. */
+const globalTos = computed(
+  () => globalVersions.value?.[0] ?? current.value?.global_tos
+)
 
 function formatDate(iso: string) {
   return DateTime.fromISO(iso).toLocaleString(DateTime.DATE_FULL)
 }
 
-function reset() {
-  body.value = newest.value?.body ?? ''
-  // The editor only reads its value when mounted
-  editor.value?.setText(body.value)
+function startEditing() {
+  body.value = organisationTos.value?.body ?? ''
   correction.value = false
+  editing.value = true
 }
-
-// Without a version there's nothing to correct
-watch(newest, (tos) => {
-  if (!tos) correction.value = false
-})
 
 // The addition is optional, and an emptied editor still holds some markup
 const cleanBody = computed(() => (stripHTML(body.value) ? body.value : ''))
-const canSave = computed(() => cleanBody.value !== (newest.value?.body ?? ''))
+const canSave = computed(() =>
+  organisationTos.value
+    ? cleanBody.value !== organisationTos.value.body
+    : !!cleanBody.value
+)
 
-async function save() {
+async function publish(body: string, correction = false) {
   if (
-    !correction.value &&
+    !correction &&
     !(await dialogQuery({
       title: t('organization.tos.confirmPublish'),
       theme: ThemeColor.Warning
@@ -55,17 +70,23 @@ async function save() {
     return
   saving.value = true
   await handled(async () => {
-    await saveTos(cleanBody.value, correction.value)
-    reset()
+    await saveTos(body, correction)
+    editing.value = false
   })
   saving.value = false
 }
 
+/** Roll out the new global terms with our terms as they are. */
+function acceptUnchanged() {
+  if (organisationTos.value) publish(organisationTos.value.body)
+}
+
 async function load() {
   fetchFailed.value = false
+  editing.value = false
   try {
-    await fetchTos()
-    reset()
+    await fetchCurrent()
+    if (needsReview.value) await fetchGlobalVersions()
   } catch {
     fetchFailed.value = true
   }
@@ -84,7 +105,7 @@ onBeforeMount(load)
       @click="load"
     />
   </div>
-  <div v-else-if="versions">
+  <div v-else-if="loaded">
     <v-alert
       v-if="needsReview"
       class="mb-4"
@@ -92,52 +113,146 @@ onBeforeMount(load)
       :title="$t('organization.tos.needsReview')"
       type="warning"
     />
+
+    <h2 class="mb-2">{{ $t('organization.tos.standardTerms') }}</h2>
+    <template v-if="globalTos">
+      <p class="mb-2 text-medium-emphasis">
+        {{
+          $t('organization.tos.published', {
+            date: formatDate(globalTos.version)
+          })
+        }}
+      </p>
+      <v-sheet border class="mb-6 pa-4" rounded>
+        <Richtext :value="globalTos.body" />
+      </v-sheet>
+    </template>
+    <p v-else class="mb-6 text-medium-emphasis">
+      {{ $t('organization.tos.noStandardTerms') }}
+    </p>
+
+    <template v-if="needsReview && newerGlobalVersions.length">
+      <v-expansion-panels class="mb-6">
+        <v-expansion-panel :title="$t('organization.tos.globalChanges')">
+          <v-expansion-panel-text>
+            <v-list bg-color="transparent">
+              <v-list-item
+                v-for="g in newerGlobalVersions"
+                :key="g.pk"
+                :title="formatDate(g.version)"
+              >
+                <template #append>
+                  <DefaultDialog
+                    :title="
+                      $t('organization.tos.notesTitle', {
+                        date: formatDate(g.version)
+                      })
+                    "
+                  >
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        :prepend-icon="g.notes ? 'mdi-text-box' : undefined"
+                        size="small"
+                        :text="$t('organization.tos.details')"
+                        variant="tonal"
+                      />
+                    </template>
+                    <v-alert
+                      v-if="g.notes"
+                      class="mb-4"
+                      icon="mdi-text-box"
+                      :title="$t('organization.tos.changeNotes')"
+                    >
+                      <Richtext :value="g.notes" />
+                    </v-alert>
+                    <Richtext :value="g.body" />
+                  </DefaultDialog>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </template>
+
+    <template v-if="organisationTos">
+      <h2 class="mb-2">{{ $t('organization.tos.organisationTerms') }}</h2>
+      <p class="mb-2 text-medium-emphasis">
+        {{
+          $t('organization.tos.published', {
+            date: formatDate(organisationTos.version)
+          })
+        }}
+      </p>
+      <v-sheet v-if="!editing" border class="mb-4 pa-4" rounded>
+        <Richtext v-if="organisationTos.body" :value="organisationTos.body" />
+        <p v-else class="text-medium-emphasis">
+          {{ $t('organization.tos.emptyBody') }}
+        </p>
+      </v-sheet>
+    </template>
     <v-alert
-      v-else-if="!newest"
+      v-else-if="!editing"
       class="mb-4"
       :text="$t('organization.tos.noTos')"
       type="info"
     />
 
-    <v-expansion-panels v-if="newest" class="mb-6">
-      <v-expansion-panel :title="$t('organization.tos.standardTerms')">
-        <v-expansion-panel-text>
-          <Richtext :value="newest.global_body" />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-
-    <v-form @submit.prevent="save">
-      <p class="mb-2">{{ $t('organization.tos.bodyHelp') }}</p>
-      <RichtextEditor ref="editor" variant="full" v-model="body" />
-      <v-checkbox
-        v-if="newest"
-        :hint="
-          $t('organization.tos.correctionHint', {
-            date: formatDate(newest.version)
-          })
-        "
-        :label="$t('organization.tos.correction')"
-        persistent-hint
-        v-model="correction"
+    <div v-if="!editing" class="d-flex ga-2 flex-wrap justify-end">
+      <v-btn
+        v-if="needsReview"
+        :loading="saving"
+        :text="$t('organization.tos.acceptUnchanged')"
+        variant="tonal"
+        @click="acceptUnchanged"
       />
-      <v-expand-transition>
-        <div v-if="correction">
-          <v-alert
-            class="my-3"
-            :text="$t('organization.tos.correctionWarning')"
-            :title="$t('organization.tos.correctionWarningTitle')"
-            type="warning"
-          />
-        </div>
-      </v-expand-transition>
+      <v-btn
+        color="primary"
+        :disabled="saving"
+        :prepend-icon="organisationTos ? 'mdi-pencil' : 'mdi-plus'"
+        :text="
+          organisationTos
+            ? $t('organization.tos.edit')
+            : $t('organization.tos.add')
+        "
+        @click="startEditing"
+      />
+    </div>
+
+    <v-form v-else @submit.prevent="publish(cleanBody, correction)">
+      <p class="mb-2">{{ $t('organization.tos.bodyHelp') }}</p>
+      <RichtextEditor variant="full" v-model="body" />
+      <!-- A correction keeps the date, so it can't settle a review -->
+      <template v-if="organisationTos && !needsReview">
+        <v-checkbox
+          :hint="
+            $t('organization.tos.correctionHint', {
+              date: formatDate(organisationTos.version)
+            })
+          "
+          :label="$t('organization.tos.correction')"
+          persistent-hint
+          v-model="correction"
+        />
+        <v-expand-transition>
+          <div v-if="correction">
+            <v-alert
+              class="my-3"
+              :text="$t('organization.tos.correctionWarning')"
+              :title="$t('organization.tos.correctionWarningTitle')"
+              type="warning"
+            />
+          </div>
+        </v-expand-transition>
+      </template>
       <div class="d-flex ga-2 mt-3">
         <v-spacer />
         <v-btn
           :disabled="saving"
-          :text="$t('reset')"
+          :text="$t('cancel')"
           variant="text"
-          @click="reset"
+          @click="editing = false"
         />
         <v-btn
           color="primary"
@@ -152,35 +267,6 @@ onBeforeMount(load)
         />
       </div>
     </v-form>
-
-    <template v-if="versions.length">
-      <h2 class="mt-8 mb-4">{{ $t('organization.tos.versions') }}</h2>
-      <v-expansion-panels>
-        <v-expansion-panel v-for="tos in versions" :key="tos.pk">
-          <v-expansion-panel-title>
-            <span class="flex-grow-1">{{ formatDate(tos.version) }}</span>
-            <v-chip
-              v-if="tos.pk === active?.pk"
-              class="mr-2"
-              color="primary"
-              size="small"
-              :text="$t('organization.tos.current')"
-            />
-            <v-chip
-              v-else-if="isScheduled(tos)"
-              class="mr-2"
-              size="small"
-              :text="$t('organization.tos.scheduled')"
-            />
-          </v-expansion-panel-title>
-          <v-expansion-panel-text>
-            <TosText :tos="tos" />
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </template>
   </div>
-  <div v-else class="py-8 text-center">
-    <v-progress-circular indeterminate color="primary" />
-  </div>
+  <v-progress-linear v-else color="primary" indeterminate />
 </template>

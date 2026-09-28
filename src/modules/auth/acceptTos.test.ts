@@ -7,8 +7,8 @@ test('resumes the login with the accepted version', () => {
     partial_token: 'a-token',
     resume_url: '/complete/idproxy/'
   })
-  expect(resume?.(12)).toBe(
-    '/complete/idproxy/?partial_token=a-token&accept_tos=12'
+  expect(resume?.('2026-09-01T12:00:00+02:00')).toBe(
+    '/complete/idproxy/?partial_token=a-token&accept_tos=2026-09-01T12%3A00%3A00%2B02%3A00'
   )
 })
 

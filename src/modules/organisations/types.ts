@@ -65,16 +65,42 @@ export interface IOrganisationUser extends IUser {
 
 /**
  * A version of the organisation's terms of service. Users accept the global
- * terms it's based on together with the organisation's addition in `body`.
+ * terms together with the organisation's addition in `body`.
  */
 export interface TermsOfService {
   readonly pk: number
   /** The organisation's addition to the global terms. May be empty. */
   readonly body: string
-  /** Global terms of service version */
-  readonly based_on: number
-  readonly global_body: string
   readonly organisation: number
   /** ISO datetime when it takes effect. May be in the future. */
   readonly version: string
+}
+
+/** A version of the terms of service that apply to every organisation. */
+export interface GlobalTermsOfService {
+  readonly pk: number
+  readonly body: string
+  /** ISO datetime of this version */
+  readonly version: string
+  /** ISO date users must have accepted it by, or null if not yet decided. */
+  readonly required_from: string | null
+  /** Why it changed from the previous version. */
+  readonly notes: string
+}
+
+/**
+ * What a user accepts: the global terms and the organisation's, either of
+ * which may be missing.
+ */
+export interface CurrentTermsOfService {
+  readonly global_tos: GlobalTermsOfService | null
+  readonly organisation_tos: TermsOfService | null
+  /** ISO datetime of the newest of the two, sent back on accept. Null when there are no terms. */
+  readonly version: string | null
+  /** ISO datetime when the user last accepted. Always null when anonymous. */
+  readonly accepted: string | null
+  /** Whether the user has terms in effect they haven't accepted. */
+  readonly must_accept: boolean
+  /** Whether there is a newer global tos that require the local tos to be updates, for org admins. */
+  readonly newer_global_tos: boolean
 }

@@ -14,10 +14,11 @@ export function getAcceptTosResume(query: LocationQuery) {
   const { partial_token: token, resume_url: resumeURL } = query
   if (typeof token !== 'string' || !token) return
   if (typeof resumeURL !== 'string' || !RESUME_PATH.test(resumeURL)) return
-  return (tos: number) => {
+  /** Takes the `version` of the current terms that were shown. */
+  return (version: string) => {
     const params = new URLSearchParams({
       partial_token: token,
-      [ACCEPT_TOS_FIELD]: String(tos)
+      [ACCEPT_TOS_FIELD]: version
     })
     return `${resumeURL}?${params}`
   }

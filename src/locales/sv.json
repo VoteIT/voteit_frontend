@@ -647,24 +647,32 @@
       "text": "Om du undrar varför du inte fått godkänna kakor från 99 olika spårningstjänster så beror det på att vi valt att inte spåra våra användare. Vi sätter en sessionskaka för att hålla reda på din inloggning. Det är allt."
     },
     "tos": {
+      "acceptUnchanged": "Godkänn utan ändringar",
+      "add": "Lägg till organisationens villkor",
       "bodyHelp": "Er organisations tillägg till standardvillkoren. Användare godkänner båda tillsammans.",
+      "changeNotes": "Ändringar i den här versionen",
       "confirmPublish": "Publicera nya användarvillkor? Alla användare kommer behöva godkänna dem igen.",
       "correction": "Korrigering av nuvarande version",
       "correctionHint": "Ändrar versionen från {date} utan att användare behöver godkänna den igen",
       "correctionWarning": "Använd endast detta för att rätta stavfel och liknande. Användare kommer inte att behöva godkänna villkoren igen, så textens innebörd får inte ändras på något sätt. Om innehållet ändras ska du publicera en ny version istället.",
       "correctionWarningTitle": "Inga betydelsefulla ändringar",
-      "current": "Nuvarande",
       "description": "Villkoren användare godkänner för att delta i organisationen",
+      "details": "Detaljer",
+      "edit": "Redigera organisationens villkor",
+      "emptyBody": "Inget tillägg till standardvillkoren.",
       "fetchFailed": "Kunde inte hämta användarvillkor",
+      "globalChanges": "Ändringar i standardvillkoren",
       "needsReview": "Nya standardvillkor",
-      "needsReviewText": "Nya standardvillkor har lagts till i era användarvillkor. Kontrollera att er organisations tillägg fortfarande passar dem, och publicera en ny version eller korrigera det.",
-      "noTos": "Din organisation har inga användarvillkor än.",
+      "needsReviewText": "Nya standardvillkor har publicerats. Kontrollera att er organisations villkor fortfarande passar dem, och godkänn dem som de är eller redigera dem. Båda publicerar en ny version som alla användare måste godkänna.",
+      "noStandardTerms": "Det finns inga standardvillkor än.",
+      "noTos": "Din organisation har inga egna villkor. Användare godkänner bara standardvillkoren. Vill du lägga till villkor för din organisation?",
+      "notesTitle": "Ändringar {date}",
+      "organisationTerms": "Er organisations villkor",
       "publish": "Publicera ny version",
+      "published": "Publicerade {date}",
       "saveCorrection": "Spara korrigering",
-      "scheduled": "Schemalagd",
       "standardTerms": "Standardvillkor",
-      "title": "Användarvillkor",
-      "versions": "Versioner"
+      "title": "Användarvillkor"
     }
   },
   "participantNumber": {

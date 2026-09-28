@@ -2,62 +2,67 @@ import { DateTime } from 'luxon'
 import { computed, shallowRef, watchEffect } from 'vue'
 
 import * as tosApi from './tosApi'
-import type { TermsOfService } from './types'
+import type { CurrentTermsOfService, GlobalTermsOfService } from './types'
 import useOrgStore from './useOrgStore'
 
+const current = shallowRef<CurrentTermsOfService>()
 /** Newest first */
-const versions = shallowRef<TermsOfService[]>()
-
-/** The newest version, which may not have taken effect yet. */
-const newest = computed(() => versions.value?.[0])
-
-export function isScheduled(tos: TermsOfService) {
-  return DateTime.fromISO(tos.version) > DateTime.now()
-}
-
-/** The version in effect: the newest one that has taken effect. */
-const active = computed(() => versions.value?.find((v) => !isScheduled(v)))
+const globalVersions = shallowRef<GlobalTermsOfService[]>()
 
 /**
- * A new version based on new global terms, with the organisation's addition
- * copied over unchanged - as the backend adds them when global terms change.
- * The addition should be checked against the new global terms.
+ * Global terms were published after the version in effect, so the
+ * organisation's addition should be checked against them. Clears when a new
+ * version is published - a correction keeps its date.
  */
-const needsReview = computed(() => {
-  if (!versions.value) return
-  const [latest, previous] = versions.value
-  if (!previous) return false
-  return latest.based_on !== previous.based_on && latest.body === previous.body
+const needsReview = computed(() => current.value?.newer_global_tos)
+
+/** Our version in effect. Null when the organisation has no terms of its own. */
+const organisationTos = computed(() => current.value?.organisation_tos)
+
+/** Global versions published after ours in effect, newest first. */
+const newerGlobalVersions = computed(() => {
+  const tos = organisationTos.value
+  if (!tos || !globalVersions.value) return []
+  const version = DateTime.fromISO(tos.version)
+  return globalVersions.value.filter(
+    (g) => DateTime.fromISO(g.version) > version
+  )
 })
 
-let pending: Promise<void> | undefined
-
 /** Calls made while a fetch is under way share it. */
-function fetchTos() {
-  pending ??= tosApi
-    .listTos()
-    .then((data) => {
-      versions.value = data
-    })
-    .finally(() => {
+function shared(fetch: () => Promise<void>) {
+  let pending: Promise<void> | undefined
+  return () =>
+    (pending ??= fetch().finally(() => {
       pending = undefined
-    })
-  return pending
+    }))
 }
 
+/** Enough to tell whether the control panel needs attention. */
+const fetchCurrent = shared(async () => {
+  current.value = await tosApi.getCurrentTos()
+})
+
+/** What has changed in the global terms, for reviewing ours. */
+const fetchGlobalVersions = shared(async () => {
+  globalVersions.value = await tosApi.listGlobalTos()
+})
+
 /**
- * @param correction Change the newest version in place, instead of publishing
- * a new one that users must accept.
+ * Publishing a version, even with an unchanged body, rolls out the global
+ * terms published before it and clears `needsReview`.
+ * @param correction Change the version in effect in place, instead of
+ * publishing a new one that users must accept.
  */
 async function saveTos(body: string, correction: boolean) {
   if (correction) {
-    if (!newest.value) throw new Error('No version to correct')
-    const tos = await tosApi.updateTos(newest.value.pk, body)
-    versions.value = versions.value?.map((v) => (v.pk === tos.pk ? tos : v))
+    if (!organisationTos.value || !current.value)
+      throw new Error('No version to correct')
+    const tos = await tosApi.updateTos(organisationTos.value.pk, body)
+    current.value = { ...current.value, organisation_tos: tos }
   } else {
-    // A scheduled version stays ahead of one taking effect now
     await tosApi.createTos(body)
-    await fetchTos()
+    await fetchCurrent()
   }
 }
 
@@ -70,16 +75,18 @@ export default function useTermsOfService(quietCheck = false) {
   if (quietCheck)
     watchEffect(() => {
       // Once is enough for attention - the panel refreshes when opened
-      if (orgStore.canChangeOrganisation && !versions.value)
-        fetchTos().catch(() => {})
+      if (orgStore.canChangeOrganisation && !current.value)
+        fetchCurrent().catch(() => {})
     })
 
   return {
-    active,
+    current,
+    globalVersions,
     needsReview,
-    newest,
-    versions,
-    fetchTos,
+    newerGlobalVersions,
+    organisationTos,
+    fetchCurrent,
+    fetchGlobalVersions,
     saveTos
   }
 }
