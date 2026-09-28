@@ -4,14 +4,14 @@ Document notable changes here.
 
 Version format is `major`.`minor`.`patch`. Until major version 1 is realeased, API changes accours on minor version bumps, but never on patch version bumps.
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-09-28)
 
 - Multiple login providers: organisations can offer several ways to sign in, replacing the single `login_url`/`id_host`. Users can link and unlink login methods on their profile, and a new link account page lets someone signing in with a new provider connect it to an existing account (or cancel)
 - Member ID invitations: meeting invites can be sent by member ID, and a user's member IDs are listed on their profile
 - Links in rich text are sanitized, allowing only safe protocols or root-relative paths and prefixing `https://` when the protocol is missing
 - Split plenary view: resizing adjustments, and a notice when the window is too narrow to fit both panes
-- Smaller bundle: Quill editor loads lazily, only used Vuetify components are included, and only woff2 fonts are built
-- Dropped `lodash` and replaced `vuedraggable` with `useSortable` from VueUse
+- Opening a modal or query dialog from a menu no longer keeps the menu from closing
+- Bugfix: the next queued modal was hidden when a `DefaultDialog` closed
 
 ## 1.0.2 (2026-09-22)
 
