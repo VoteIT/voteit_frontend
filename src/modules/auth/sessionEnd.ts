@@ -1,5 +1,6 @@
 import { socket } from '@/socket'
 
+import { clearLoginMethods } from './useLoginMethods'
 import useAuthStore from './useAuthStore'
 
 /**
@@ -15,4 +16,5 @@ import useAuthStore from './useAuthStore'
  */
 socket.onLoggedOut(() => {
   useAuthStore().clearUser()
+  clearLoginMethods()
 })

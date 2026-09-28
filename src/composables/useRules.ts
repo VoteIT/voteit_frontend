@@ -6,6 +6,12 @@ type Rule = (value: string) => string | true
 const emailPattern =
   /^(([^<>()[\].,:\s@"]+(\.[^<>()[\].,:\s@"]+)*)|(".+"))@(([^<>()[\].,:\s@"]+\.)+[^<>()[\].,:\s@"]{2,})$/i
 const swedishSSNPattern = /^(\d{6}|\d{8})-?\d{4}$/
+/**
+ * Member ids have no fixed format, so this is what sets them apart from the
+ * other columns an invite list may have: no spaces or @, at least one digit.
+ * Same max length as the backend.
+ */
+const memberIdPattern = /^(?=[^\s@]*\d)[^\s@]{1,50}$/
 
 export default function useRules(t: ComposerTranslation) {
   function email(value: string) {
@@ -52,6 +58,14 @@ export default function useRules(t: ComposerTranslation) {
     return (value: string) => {
       return rules.some((rule) => rule(value) === true) || t('rules.noMatch')
     }
+  }
+
+  function memberId(value: string) {
+    return (
+      !value.length ||
+      memberIdPattern.test(value) ||
+      t('invites.member_id.invalid')
+    )
   }
 
   function swedishSSN(value: string) {
@@ -108,6 +122,7 @@ export default function useRules(t: ComposerTranslation) {
     maxLength,
     min,
     minLength,
+    memberId,
     multiline,
     or,
     swedishSSN,

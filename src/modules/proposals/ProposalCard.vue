@@ -90,36 +90,20 @@
                 />
               </template>
             </ProposalEditModal>
-            <QueryDialog
+            <v-list-item
               v-if="canRetractProposal(p)"
-              color="warning"
-              :text="$t('proposal.retractPrompt')"
-              @confirmed="retract"
-            >
-              <template #activator="{ props }">
-                <v-list-item
-                  base-color="warning"
-                  prepend-icon="mdi-undo"
-                  :title="$t('proposal.retract')"
-                  v-bind="props"
-                />
-              </template>
-            </QueryDialog>
-            <QueryDialog
+              base-color="warning"
+              prepend-icon="mdi-undo"
+              :title="$t('proposal.retract')"
+              @click="confirmRetract"
+            />
+            <v-list-item
               v-if="canDeleteProposal(p)"
-              color="warning"
-              :text="$t('proposal.deletePrompt')"
-              @confirmed="deleteProposal"
-            >
-              <template #activator="{ props }">
-                <v-list-item
-                  base-color="warning"
-                  prepend-icon="mdi-delete"
-                  :title="$t('content.delete')"
-                  v-bind="props"
-                />
-              </template>
-            </QueryDialog>
+              base-color="warning"
+              prepend-icon="mdi-delete"
+              :title="$t('content.delete')"
+              @click="confirmDelete"
+            />
           </v-list>
         </v-menu>
       </footer>
@@ -147,9 +131,10 @@
 import { ComponentPublicInstance, computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { dialogQuery } from '@/utils'
+import { ThemeColor } from '@/utils/types'
 import Moment from '@/components/Moment.vue'
 import Tag from '@/components/Tag.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import WorkflowState from '@/components/WorkflowState.vue'
 import useUnread from '@/composables/useUnread'
 import useErrorHandler from '@/composables/useErrorHandler'
@@ -196,6 +181,26 @@ const retract = handler(
   () => proposalType.sm.sendEvent(props.p, 'retract', t),
   'transition'
 )
+
+async function confirmRetract() {
+  if (
+    await dialogQuery({
+      title: t('proposal.retractPrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await retract()
+}
+
+async function confirmDelete() {
+  if (
+    await dialogQuery({
+      title: t('proposal.deletePrompt'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteProposal()
+}
 
 const discussionPosts = computed(() => {
   if (props.readOnly) return []

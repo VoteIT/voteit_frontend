@@ -16,6 +16,7 @@ export interface MeetingInvite {
   has_annotations: boolean
   user_data: {
     email?: string
+    member_id?: string
     swedish_ssn?: string
   }
   meeting: number

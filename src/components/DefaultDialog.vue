@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { inject, provide, ref, watch } from 'vue'
+import { inject, nextTick, provide, ref, watch } from 'vue'
 
 import { Color } from '@/utils/types'
 
@@ -26,6 +26,12 @@ function close() {
 watch(isActive, (value) => {
   emit(value ? 'open' : 'close')
   emit('update:modelValue', value)
+  // The parent may keep the dialog open (e.g. Modal with more queued), so
+  // once it has handled the close, follow modelValue again
+  if (!value)
+    nextTick(() => {
+      if (props.modelValue) isActive.value = true
+    })
 })
 watch(
   () => props.modelValue,

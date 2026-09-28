@@ -24,6 +24,17 @@ test('Min max length rules', () => {
   expect(rules.minLength(3)('ab')).toBe('rules.minLength')
 })
 
+test('Member id rule', () => {
+  const invalid = 'invites.member_id.invalid'
+  expect(rules.memberId('')).toBe(true)
+  expect(rules.memberId('9876543')).toBe(true)
+  expect(rules.memberId('AB-123')).toBe(true)
+  expect(rules.memberId('Anna')).toBe(invalid)
+  expect(rules.memberId('anna1@example.com')).toBe(invalid)
+  expect(rules.memberId('12 34')).toBe(invalid)
+  expect(rules.memberId('1'.repeat(51))).toBe(invalid)
+})
+
 test('Or rule', () => {
   expect(rules.or(rules.max(2), rules.min(4))('2')).toBe(true)
   expect(rules.or(rules.max(2), rules.min(4))('3')).toBe('rules.noMatch')

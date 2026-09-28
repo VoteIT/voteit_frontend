@@ -10,10 +10,8 @@ interface InvitationScope {
 
 class InvitationScopePluginHandler extends PluginHandler<InvitationScope> {
   public getActivePlugins() {
-    const { organisation } = useOrgStore()
-    return this.getPlugins(
-      ({ id }) => organisation?.scope.includes(id) || false
-    )
+    const { scopes } = useOrgStore()
+    return this.getPlugins(({ id }) => scopes.includes(id))
   }
 }
 
@@ -22,6 +20,11 @@ export const invitationScopes = new InvitationScopePluginHandler()
 invitationScopes.register({
   id: 'email',
   icon: 'mdi-email'
+})
+
+invitationScopes.register({
+  id: 'member_id',
+  icon: 'mdi-badge-account-horizontal'
 })
 
 invitationScopes.register({

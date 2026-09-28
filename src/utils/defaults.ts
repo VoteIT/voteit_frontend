@@ -4,6 +4,12 @@ export const cols = {
     lg: 8,
     offsetLg: 2
   },
+  // Same total width as wideLeft left + right combined
+  wide: {
+    cols: 12,
+    xl: 8,
+    offsetXl: 2
+  },
   wideLeft: {
     left: {
       cols: 12,

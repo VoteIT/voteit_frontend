@@ -85,6 +85,10 @@ const validatorRules = computed<Record<string, ValidatorRule>>(() => {
   return {
     email: rules.email,
     swedish_ssn: rules.swedishSSN,
+    // After swedish_ssn, which wins a tie: a personnummer passes both
+    ...(allDataTypes.value.some((dt) => dt.name === 'member_id') && {
+      member_id: rules.memberId
+    }),
     ...Object.fromEntries(getPossibleValuesValidators())
   }
 })

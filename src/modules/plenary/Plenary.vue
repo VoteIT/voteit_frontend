@@ -11,9 +11,8 @@ import { useDisplay } from 'vuetify'
 import { useElementSize, useStorage } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
-import { openModalEvent } from '@/utils/events'
+import { openModal } from '@/utils/modal'
 import { LastReadKey } from '@/composables/useUnread'
-import DefaultDialog from '@/components/DefaultDialog.vue'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
@@ -136,10 +135,24 @@ const menuPollStates = computed(() => [...iterMenuPollStates()])
 
 function openPoll(poll: Poll) {
   if (isBroadcasting.value) handleBroadcast({ poll: poll.pk })
-  openModalEvent.emit({
+  openModal({
     component: PollModal,
-    data: poll,
+    props: { data: poll },
     title: poll.title
+  })
+}
+
+function startPoll(methodName: Poll['method_name'], settings: object | null) {
+  const close = openModal({
+    component: StartPollModal,
+    props: {
+      methodName,
+      proposals: selectedProposals.value,
+      settings,
+      onCancel: () => close()
+    },
+    title: () => roomOpenPoll.value?.title ?? t('plenary.startPoll'),
+    onClose: () => handleBroadcast({ poll: null })
   })
 }
 
@@ -367,24 +380,12 @@ onUnmounted(() => cleanupResize?.())
             </template>
             <v-list>
               <v-list-subheader :title="$t('plenary.startPoll')" />
-              <DefaultDialog
+              <v-list-item
                 v-for="{ id, settings, ...item } in pollMethodMenu"
                 :key="id"
-                :title="roomOpenPoll?.title ?? $t('plenary.startPoll')"
-                @close="handleBroadcast({ poll: null })"
-              >
-                <template #activator="{ props }">
-                  <v-list-item v-bind="{ ...item, ...props }" />
-                </template>
-                <template #default="{ close }">
-                  <StartPollModal
-                    :method-name="id"
-                    :proposals="selectedProposals"
-                    :settings="settings"
-                    @cancel="close"
-                  />
-                </template>
-              </DefaultDialog>
+                v-bind="item"
+                @click="startPoll(id, settings)"
+              />
               <v-divider v-if="menuPollStates.length" class="my-3" />
               <template v-for="{ title, polls } in menuPollStates" :key="title">
                 <v-list-subheader :title="title" />
@@ -404,7 +405,7 @@ onUnmounted(() => cleanupResize?.())
             </v-list>
           </v-menu>
         </v-badge>
-        <v-menu location="bottom right">
+        <v-menu :close-on-content-click="false" location="bottom right">
           <template #activator="{ props }">
             <v-btn
               append-icon="mdi-chevron-down"
@@ -421,7 +422,7 @@ onUnmounted(() => cleanupResize?.())
                 v-slot="{ isSelected, toggle }"
               >
                 <v-list-item
-                  @click.stop="toggle"
+                  @click="toggle"
                   :prepend-icon="state.icon"
                   :active="isSelected"
                   :title="title"

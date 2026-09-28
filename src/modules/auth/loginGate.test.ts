@@ -17,12 +17,18 @@ vi.mock('./useAuthStore', () => ({
 }))
 
 let canLogin = true
+const provider = {
+  provider_id: 'idproxy',
+  login_url: 'https://id.example.com/'
+}
 vi.mock('@/modules/organisations/useOrgStore', () => ({
   default: () => ({
     get canLogin() {
       return canLogin
     },
-    getLoginURL: (next = '/here') => `https://id.example.com/?next=${next}`
+    primaryProvider: provider,
+    startLogin: (p: typeof provider, next = '/here') =>
+      location.assign(`${p.login_url}?next=${next}`)
   })
 }))
 

@@ -16,12 +16,14 @@ import QueryDialog from '@/components/QueryDialog.vue'
 import CropImageField from '@/components/inputs/CropImageField.vue'
 import { useDisplay } from 'vuetify'
 
+import LoginMethods from '../auth/LoginMethods.vue'
 import useAuthStore from '../auth/useAuthStore'
 
 import useOrgStore from './useOrgStore'
 import { IUser } from './types'
 import { profileType } from './contentTypes'
 import SwitchProfileDialog from './SwitchProfileDialog.vue'
+import GdprAlert from './GdprAlert.vue'
 
 const { smAndUp } = useDisplay()
 
@@ -84,7 +86,7 @@ async function saveImage(close: () => void) {
   <v-main>
     <v-container>
       <v-row>
-        <v-col v-if="authStore.user" class="mb-6" v-bind="cols.default">
+        <v-col v-if="authStore.user" class="mb-6" v-bind="cols.wide">
           <h1 class="mb-2">
             {{ $t('organization.yourProfile', { ...store.organisation }) }}
           </h1>
@@ -239,6 +241,27 @@ async function saveImage(close: () => void) {
               </DefaultDialog>
             </div>
           </v-sheet>
+          <v-sheet
+            v-if="authStore.user.member_ids?.length"
+            border
+            class="pa-4"
+            rounded
+          >
+            <h2 class="mb-1">{{ $t('profile.memberIds.title') }}</h2>
+            <p class="text-medium-emphasis mb-4">
+              {{ $t('profile.memberIds.description') }}
+            </p>
+            <v-list bg-color="transparent" class="pa-0">
+              <v-list-item
+                v-for="memberId in authStore.user.member_ids"
+                :key="memberId"
+                class="px-0"
+                prepend-icon="mdi-badge-account-horizontal"
+                :title="memberId"
+              />
+            </v-list>
+          </v-sheet>
+          <LoginMethods />
           <v-alert
             v-if="authStore.alternateUsers.length"
             class="mb-4"
@@ -264,12 +287,7 @@ async function saveImage(close: () => void) {
           <BackBtn />
         </v-col>
         <v-col v-bind="cols.wideLeft.right">
-          <v-alert
-            icon="mdi-cookie"
-            type="info"
-            :text="$t('organization.gdpr.text')"
-            :title="$t('organization.gdpr.title')"
-          />
+          <GdprAlert />
         </v-col>
       </v-row>
     </v-container>

@@ -3,15 +3,13 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { dialogQuery } from '@/utils'
+import { openModal } from '@/utils/modal'
 import { MenuItem, ThemeColor } from '@/utils/types'
-import DefaultDialog from '@/components/DefaultDialog.vue'
-import DefaultForm from '@/components/DefaultForm.vue'
+import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownMenu from '@/components/DropdownMenu.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 import usePermission from '@/composables/usePermission'
-import QueryDialog from '@/components/QueryDialog.vue'
-import useRules from '@/composables/useRules'
 
 import useAgendaItem from '../agendas/useAgendaItem'
 import useMeeting from '../meetings/useMeeting'
@@ -28,6 +26,7 @@ import useSpeakerSystem from './useSpeakerSystem'
 import type { SpeakerList, SpeakerListAddMessage } from './types'
 import SpeakerListControls from './SpeakerListControls.vue'
 import SpeakerListHistory from './SpeakerListHistory.vue'
+import SpeakerListTitleModal from './SpeakerListTitleModal.vue'
 import useSpeakerStore from './useSpeakerStore'
 import useRoom from '../rooms/useRoom'
 
@@ -49,7 +48,6 @@ const { meetingRoom, handleSpeaker } = useRoom()
 const { listApi, getSpeakerLists } = useSpeakerStore()
 const { getUniqueListTitle } = useSpeakerLists(meetingId)
 const { agendaId, agendaItem } = useAgendaItem()
-const rules = useRules(t)
 
 const {
   canManageSystem,
@@ -85,15 +83,41 @@ async function addSpeakerList(data: { title: string }) {
   }
   await speakerListType.api.add(listData)
 }
-function updateSpeakerList(data: { title: string; pk: number }) {
-  return speakerListType.api.patch(data.pk, { title: data.title })
-}
 
 const setIsOpen = handler((list: number, is_open: boolean) =>
   speakerListType.api.patch(list, { is_open })
 )
 
 const shuffleList = handler((list: number) => listApi.shuffle(list))
+
+async function confirmShuffle(list: SpeakerList) {
+  if (await dialogQuery(t('speaker.shuffleListConfirm')))
+    await shuffleList(list.pk)
+}
+
+function addNamedSpeakerList() {
+  const close = openModal({
+    component: SpeakerListTitleModal,
+    props: {
+      handler: addSpeakerList,
+      title: nextSpeakerListName.value,
+      onDone: () => close()
+    },
+    title: t('speaker.newList')
+  })
+}
+
+function editSpeakerList(list: SpeakerList) {
+  const close = openModal({
+    component: SpeakerListTitleModal,
+    props: {
+      handler: ({ title }) => speakerListType.api.patch(list.pk, { title }),
+      title: list.title,
+      onDone: () => close()
+    },
+    title: t('speaker.editList')
+  })
+}
 
 const addNextSpeakerList = handler(() =>
   addSpeakerList({ title: nextSpeakerListName.value })
@@ -217,53 +241,23 @@ const otherRoomsWithLists = computed(() => {
                 </v-list>
               </v-card>
             </v-menu>
-            <v-btn-group>
-              <v-btn
-                color="primary"
-                :disabled="!canManageSystem"
-                prepend-icon="mdi-plus"
-                size="small"
-                :text="$t('speaker.newList')"
-                @click="addNextSpeakerList"
-              />
-              <v-menu :text="$t('speaker.addQuick')" location="bottom right">
-                <template #activator="{ props }">
-                  <v-btn
-                    v-bind="props"
-                    color="primary"
-                    :disabled="!canManageSystem"
-                    size="small"
-                  >
-                    <v-icon icon="mdi-chevron-down" />
-                  </v-btn>
-                </template>
-                <v-list>
-                  <DefaultDialog :title="$t('speaker.newList')">
-                    <template #activator="{ props }">
-                      <v-list-item
-                        v-bind="props"
-                        :title="$t('speaker.addWithName')"
-                      />
-                    </template>
-                    <template #default="{ close }">
-                      <DefaultForm
-                        :model-value="{ title: nextSpeakerListName }"
-                        :handler="addSpeakerList"
-                        @done="close"
-                        v-slot="{ errors, formData }"
-                      >
-                        <v-text-field
-                          :label="$t('name')"
-                          :error-messages="errors.title"
-                          v-model="formData.title"
-                          :rules="[rules.required, rules.minLength(3)]"
-                        />
-                      </DefaultForm>
-                    </template>
-                  </DefaultDialog>
-                </v-list>
-              </v-menu>
-            </v-btn-group>
+            <ButtonWithDropdown
+              color="primary"
+              :disabled="!canManageSystem"
+              :menu-label="$t('speaker.addQuick')"
+              prepend-icon="mdi-plus"
+              size="small"
+              :text="$t('speaker.newList')"
+              variant="flat"
+              @click="addNextSpeakerList"
+            >
+              <v-list>
+                <v-list-item
+                  :title="$t('speaker.addWithName')"
+                  @click="addNamedSpeakerList"
+                />
+              </v-list>
+            </ButtonWithDropdown>
           </div>
           <v-sheet
             v-for="list in speakerLists"
@@ -295,43 +289,17 @@ const otherRoomsWithLists = computed(() => {
                 </h3>
                 <DropdownMenu :items="getListMenu(list)" class="mt-n3 mr-n3">
                   <template #top v-if="canManageSystem">
-                    <DefaultDialog :title="$t('speaker.editList')">
-                      <template #activator="{ props }">
-                        <v-list-item
-                          v-bind="props"
-                          prepend-icon="mdi-pencil"
-                          :title="$t('edit')"
-                        />
-                      </template>
-                      <template #default="{ close }">
-                        <DefaultForm
-                          :model-value="{ title: list.title, pk: list.pk }"
-                          :handler="updateSpeakerList"
-                          @done="close"
-                          v-slot="{ errors, formData }"
-                        >
-                          <v-text-field
-                            :label="$t('name')"
-                            :error-messages="errors.title"
-                            v-model="formData.title"
-                            :rules="[rules.required, rules.minLength(3)]"
-                          />
-                        </DefaultForm>
-                      </template>
-                    </DefaultDialog>
-                    <QueryDialog
-                      :text="$t('speaker.shuffleListConfirm')"
-                      @confirmed="shuffleList(list.pk)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          :disabled="!list.queue.length || !!list.current"
-                          prepend-icon="mdi-shuffle-variant"
-                          :title="$t('speaker.shuffleList')"
-                          v-bind="props"
-                        />
-                      </template>
-                    </QueryDialog>
+                    <v-list-item
+                      prepend-icon="mdi-pencil"
+                      :title="$t('edit')"
+                      @click="editSpeakerList(list)"
+                    />
+                    <v-list-item
+                      :disabled="!list.queue.length || !!list.current"
+                      prepend-icon="mdi-shuffle-variant"
+                      :title="$t('speaker.shuffleList')"
+                      @click="confirmShuffle(list)"
+                    />
                   </template>
                 </DropdownMenu>
               </div>

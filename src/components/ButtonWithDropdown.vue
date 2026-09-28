@@ -1,27 +1,40 @@
 <script setup lang="ts">
+import type { VBtn } from 'vuetify/components'
+
 defineProps<{
+  /** Fill the width of whatever it's in. */
+  block?: boolean
   color?: string
+  disabled?: boolean
+  /** Accessible name for the dropdown toggle. */
+  menuLabel?: string
   size?: 'small'
   text: string
+  variant?: VBtn['$props']['variant']
 }>()
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
-  <span class="text-no-wrap">
+  <span class="text-no-wrap" :class="block ? 'd-flex w-100' : 'd-inline-flex'">
     <v-btn
       :color="color"
+      :disabled="disabled"
       :size="size"
       :text="text"
-      class="rounded-e-0 pr-2"
-      variant="flat"
+      :class="{ 'flex-grow-1': block, 'rounded-e-0 pr-2': $slots.default }"
+      :variant="variant"
       v-bind="$attrs"
     />
-    <v-menu location="bottom right">
+    <v-menu v-if="$slots.default" location="bottom end">
       <template #activator="{ props }">
         <v-btn
+          :aria-label="menuLabel"
           :color="color"
+          :disabled="disabled"
           :size="size"
-          variant="flat"
+          :variant="variant"
           v-bind="props"
           class="rounded-s-0 chevron pl-2 pr-3"
         >

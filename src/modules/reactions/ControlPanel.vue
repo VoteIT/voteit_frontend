@@ -2,13 +2,16 @@
 import { enumerate } from 'itertools'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { computed, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
 import UserList from '@/components/UserList.vue'
 import HelpSection from '@/components/HelpSection.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
+import { dialogQuery } from '@/utils'
+import { openModal } from '@/utils/modal'
+import { ThemeColor } from '@/utils/types'
 import useAuthStore from '../auth/useAuthStore'
 import useMeetingId from '../meetings/useMeetingId'
 
@@ -25,6 +28,23 @@ const { handleRestError, handler } = useErrorHandler({ target: 'dialog' })
 const authStore = useAuthStore()
 const meetingId = useMeetingId()
 const { getMeetingButtons } = useReactionStore()
+const { t } = useI18n()
+
+function addReactionButton() {
+  const close = openModal({
+    component: ReactionEditModal,
+    props: { onClose: () => close() },
+    title: t('reaction.addButton')
+  })
+}
+
+function addFlagButton() {
+  const close = openModal({
+    component: FlagButtonEditModal,
+    props: { onClose: () => close() },
+    title: t('reaction.addButton')
+  })
+}
 
 const meetingButtons = computed({
   get() {
@@ -46,6 +66,16 @@ const canEditButtons = computed(() => canAddReactionButton(meetingId.value))
 const deleteButton = handler((button: ReactionButton) =>
   reactionButtonType.api.delete(button.pk)
 )
+
+async function confirmDeleteButton(button: ReactionButton) {
+  if (
+    await dialogQuery({
+      title: t('reaction.deleteButtonConfirmation'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteButton(button)
+}
 
 const setContentType = handler(
   (button: ReactionButton, contentType: string, value: boolean) => {
@@ -95,26 +125,15 @@ const model = reactive<Record<number, boolean>>({})
       <v-spacer />
       <v-menu v-if="canEditButtons">
         <v-list>
-          <DefaultDialog :title="$t('reaction.addButton')">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-gesture-tap-button">
-                {{ $t('reaction.button') }}
-              </v-list-item>
-            </template>
-            <template #default="{ close }">
-              <ReactionEditModal @close="close" />
-            </template>
-          </DefaultDialog>
-          <DefaultDialog :title="$t('reaction.addButton')">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-flag">
-                {{ $t('reaction.flags') }}
-              </v-list-item>
-            </template>
-            <template #default="{ close }">
-              <FlagButtonEditModal @close="close" />
-            </template>
-          </DefaultDialog>
+          <v-list-item
+            prepend-icon="mdi-gesture-tap-button"
+            @click="addReactionButton"
+          >
+            {{ $t('reaction.button') }}
+          </v-list-item>
+          <v-list-item prepend-icon="mdi-flag" @click="addFlagButton">
+            {{ $t('reaction.flags') }}
+          </v-list-item>
         </v-list>
         <template #activator="{ props }">
           <v-btn
@@ -192,6 +211,7 @@ const model = reactive<Record<number, boolean>>({})
             <DefaultDialog :title="$t('reaction.editButton')">
               <template #activator="{ props }">
                 <ButtonWithDropdown
+                  variant="flat"
                   prepend-icon="mdi-pencil"
                   color="primary"
                   size="small"
@@ -199,21 +219,13 @@ const model = reactive<Record<number, boolean>>({})
                   v-bind="props"
                 >
                   <v-list>
-                    <QueryDialog
-                      color="warning"
-                      :text="$t('reaction.deleteButtonConfirmation')"
-                      @confirmed="deleteButton(button)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          prepend-icon="mdi-delete"
-                          base-color="warning"
-                          v-bind="props"
-                          size="small"
-                          :title="$t('content.delete')"
-                        />
-                      </template>
-                    </QueryDialog>
+                    <v-list-item
+                      prepend-icon="mdi-delete"
+                      base-color="warning"
+                      size="small"
+                      :title="$t('content.delete')"
+                      @click="confirmDeleteButton(button)"
+                    />
                   </v-list>
                 </ButtonWithDropdown>
               </template>

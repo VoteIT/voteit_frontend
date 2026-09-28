@@ -4,23 +4,15 @@ import { useI18n } from 'vue-i18n'
 
 import { dialogQuery, orderBy, titleSorter } from '@/utils'
 import { parseRestError } from '@/utils/restApi'
+import { openModal } from '@/utils/modal'
 import { ThemeColor } from '@/utils/types'
 import ButtonWithDropdown from '@/components/ButtonWithDropdown.vue'
 import HelpSection from '@/components/HelpSection.vue'
 import DefaultDialog from '@/components/DefaultDialog.vue'
-import QueryDialog from '@/components/QueryDialog.vue'
-import RoleMatrix from '@/components/RoleMatrix.vue'
-import UserSearch from '@/components/UserSearch.vue'
 
 import useAgenda from '../agendas/useAgenda'
-import { translateMeetingRole } from '../meetings/utils'
 import useMeetingId from '../meetings/useMeetingId'
-import { IUser } from '../organisations/types'
-import {
-  SpeakerSystem,
-  SpeakerSystemRole,
-  SpeakerSystemState
-} from '../speakerLists/types'
+import { SpeakerSystem, SpeakerSystemState } from '../speakerLists/types'
 import { speakerSystemType } from '../speakerLists/contentTypes'
 import useSpeakerStore from '../speakerLists/useSpeakerStore'
 
@@ -29,6 +21,7 @@ import { IMeetingRoom } from './types'
 import useRooms from './useRooms'
 import useRoom from './useRoom'
 import RoomForm from './RoomForm.vue'
+import SpeakerRolesModal from './SpeakerRolesModal.vue'
 import useErrorHandler from '@/composables/useErrorHandler'
 
 const { t } = useI18n()
@@ -37,9 +30,7 @@ const { agenda } = useAgenda(meetingId)
 const { meetingRooms } = useRooms(meetingId)
 const { getRoomRoute } = useRoom()
 const { findSpeakerSystem } = useSpeakerStore()
-const { handled, handler } = useErrorHandler({ target: 'dialog' })
-
-const { getUserIds } = speakerSystemType.useContextRoles()
+const { handler } = useErrorHandler({ target: 'dialog' })
 
 interface FormData {
   room: Pick<IMeetingRoom, 'title'> & { speakers: boolean }
@@ -121,10 +112,8 @@ async function updateRoom(
 const editableMeetingRooms = computed(() =>
   orderBy(meetingRooms.value, titleSorter).map((r) => {
     const speakerSystem = findSpeakerSystem((s) => s.room === r.pk)
-    const userIds = speakerSystem ? getUserIds(speakerSystem.pk) : []
     return {
       ...r,
-      sls: speakerSystem?.pk,
       slsDisabled:
         !!speakerSystem && speakerSystem.state === SpeakerSystemState.Archived,
       formData: {
@@ -135,31 +124,17 @@ const editableMeetingRooms = computed(() =>
             speakerSystem.state !== SpeakerSystemState.Inactive
         },
         speakerSystem
-      },
-      userSearch: {
-        params: { meeting: meetingId.value },
-        filter: ({ pk }: IUser) => !userIds.includes(pk),
-        onSubmit: async (user: number) => {
-          if (!speakerSystem)
-            throw new Error("Can't add roles without speaker system")
-          await handled(
-            () =>
-              speakerSystemType.addRoles(
-                speakerSystem.pk,
-                user,
-                SpeakerSystemRole.Speaker
-              ),
-            'roles'
-          )
-        }
       }
     }
   })
 )
 
-const systemIcons = {
-  speaker: 'mdi-chat',
-  list_moderator: 'mdi-gavel'
+function openSpeakerRoles(room: number) {
+  openModal({
+    component: SpeakerRolesModal,
+    props: { room },
+    title: t('speaker.handleRoles')
+  })
 }
 
 const deleteRoom = handler(async (pk: number) => {
@@ -178,6 +153,16 @@ const deleteRoom = handler(async (pk: number) => {
   }
   await roomType.api.delete(pk)
 })
+
+async function confirmDeleteRoom(pk: number) {
+  if (
+    await dialogQuery({
+      title: t('room.confirmDelete'),
+      theme: ThemeColor.Warning
+    })
+  )
+    await deleteRoom(pk)
+}
 </script>
 
 <template>
@@ -248,6 +233,7 @@ const deleteRoom = handler(async (pk: number) => {
             <DefaultDialog :title="$t('room.edit')">
               <template #activator="{ props }">
                 <ButtonWithDropdown
+                  variant="flat"
                   v-bind="props"
                   color="primary"
                   prepend-icon="mdi-pencil"
@@ -255,61 +241,20 @@ const deleteRoom = handler(async (pk: number) => {
                   :text="$t('edit')"
                 >
                   <v-list>
-                    <DefaultDialog
+                    <v-list-item
                       v-if="room.formData.room.speakers"
-                      :title="$t('speaker.handleRoles')"
+                      prepend-icon="mdi-account-group"
+                      @click="openSpeakerRoles(room.pk)"
                     >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          prepend-icon="mdi-account-group"
-                          v-bind="props"
-                        >
-                          {{ $t('speaker.handleRoles') }}
-                        </v-list-item>
-                      </template>
-                      <p class="mb-3">
-                        <i18n-t
-                          keypath="speaker.handleRolesHelp"
-                          :plural="
-                            room.formData.speakerSystem
-                              ?.meeting_roles_to_speaker.length
-                          "
-                        >
-                          <template #roles>
-                            <strong>
-                              {{
-                                room.formData.speakerSystem?.meeting_roles_to_speaker
-                                  .map((r) => translateMeetingRole(r, t))
-                                  .join(', ')
-                              }}
-                            </strong>
-                          </template>
-                        </i18n-t>
-                      </p>
-                      <RoleMatrix
-                        admin
-                        class="mb-4"
-                        :content-type="speakerSystemType"
-                        :icons="systemIcons"
-                        :pk="room.sls!"
-                      />
-                      <UserSearch class="mb-2" v-bind="room.userSearch" />
-                    </DefaultDialog>
-                    <QueryDialog
-                      :text="$t('room.confirmDelete')"
-                      color="warning"
-                      @confirmed="deleteRoom(room.pk)"
-                    >
-                      <template #activator="{ props }">
-                        <v-list-item
-                          base-color="warning"
-                          :disabled="room.open"
-                          v-bind="props"
-                          prepend-icon="mdi-delete"
-                          :title="$t('content.delete')"
-                        />
-                      </template>
-                    </QueryDialog>
+                      {{ $t('speaker.handleRoles') }}
+                    </v-list-item>
+                    <v-list-item
+                      base-color="warning"
+                      :disabled="room.open"
+                      prepend-icon="mdi-delete"
+                      :title="$t('content.delete')"
+                      @click="confirmDeleteRoom(room.pk)"
+                    />
                   </v-list>
                 </ButtonWithDropdown>
               </template>
