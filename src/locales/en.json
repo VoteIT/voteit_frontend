@@ -160,7 +160,7 @@
     "acceptTos": {
       "accept": "I accept",
       "cancel": "Cancel login",
-      "help": "To use VoteIT with {title}, you need to read and accept the terms of service.",
+      "help": "To use VoteIT with {title}, you need to read and accept the terms of service and the privacy policy.",
       "title": "Terms of service",
       "version": "Version of {date}",
       "error": {

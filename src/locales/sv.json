@@ -160,7 +160,7 @@
     "acceptTos": {
       "accept": "Jag godkänner",
       "cancel": "Avbryt inloggning",
-      "help": "För att använda VoteIT hos {title} behöver du läsa och godkänna användarvillkoren.",
+      "help": "För att använda VoteIT hos {title} behöver du läsa och godkänna användarvillkoren och personuppgiftspolicyn.",
       "title": "Användarvillkor",
       "version": "Version från {date}",
       "error": {
